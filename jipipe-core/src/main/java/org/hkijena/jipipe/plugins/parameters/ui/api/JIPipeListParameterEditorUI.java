@@ -15,7 +15,6 @@ package org.hkijena.jipipe.plugins.parameters.ui.api;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeListParameter;
@@ -48,14 +47,17 @@ import java.util.List;
  * <p>
  * Pass 2: the inline view has no selection — the grip's left click opens the
  * per-row menu (Delete / Move up / Move down) just like the right click. The
- * row and menu factories ({@link #buildListRow}, {@link #buildRowMenu}) are
- * pure and callback-driven, so a modal editor can rebuild the rows over its
- * own state (SELECT behavior) without touching the inline view's rows.
+ * row and menu factories ({@link #buildListRow}, {@link #buildRowMenu}) keep
+ * no row state in the base: the caller passes its own row list (the row is
+ * appended to it, and drag-reorder indices resolve against it) and, for
+ * {@link RowGripBehavior#SELECT}, its own callbacks — so a modal editor can
+ * rebuild the full list over its own state without touching the inline
+ * view's rows.
  */
 @SuppressWarnings("rawtypes")
 public abstract class JIPipeListParameterEditorUI extends JIPipeDesktopParameterEditorUI<JIPipeListParameter> {
     /** Rows shown per page in the inline (non-scrolling) list view. */
-    public static final int PAGE_SIZE = 5;
+    static final int PAGE_SIZE = 5;
     /** Custom drag flavor so only grips drag onto list rows (in-JVM identity). */
     private static final DataFlavor GRIP_DRAG_FLAVOR =
             new DataFlavor(String.class, "JIPipeListGripDrag");
@@ -65,8 +67,6 @@ public abstract class JIPipeListParameterEditorUI extends JIPipeDesktopParameter
     private JIPipeDesktopFormPanel formPanel;
     /** Current pagination state; rebuilt in {@link #reload()}. */
     ListPaginationModel pagination;
-    /** Rows of the visible page, in order (for drag-reorder index resolution). */
-    private List<EntryComponents> visibleEntryComponents = new ArrayList<>();
 
     protected JIPipeListParameterEditorUI(Class<?> parameterClass, InitializationParameters parameters) {
         super((Class<JIPipeListParameter>) parameterClass, parameters);
@@ -197,14 +197,14 @@ public abstract class JIPipeListParameterEditorUI extends JIPipeDesktopParameter
     @Override
     public void reload() {
         formPanel.clear();
-        visibleEntryComponents.clear();
         JIPipeListParameter<?> parameter = getParameter();
         onBeforeGenerateEntries();
         pagination = new ListPaginationModel(parameter.size(), PAGE_SIZE,
                 paginationEnabled());
         int visibleCount = pagination.visibleCount();
+        List<EntryComponents> rows = new ArrayList<>();
         for (int i = 0; i < visibleCount; ++i) {
-            formPanel.addWideToForm(buildListRow(i, RowGripBehavior.MENU, null).entryPanel);
+            formPanel.addWideToForm(buildListRow(i, RowGripBehavior.MENU, null, rows).entryPanel);
         }
         formPanel.addWideToForm(buildPaginationFooter());
         formPanel.addVerticalGlue();
@@ -221,9 +221,9 @@ public abstract class JIPipeListParameterEditorUI extends JIPipeDesktopParameter
     /**
      * The centered footer below the visible rows: a "+k more" button (reveals
      * another page) and/or a "Show less" button (collapses to the first page)
-     * — both may show while the list is partially expanded. An empty,
-     * non-opaque panel (invisible when there is nothing to paginate) keeps
-     * the body layout stable.
+     * — both may show while the list is partially expanded. The panel is
+     * always added (invisible when there is nothing to paginate), so the body
+     * keeps a constant child structure: rows → footer → glue.
      */
     private JComponent buildPaginationFooter() {
         JPanel footer = new JPanel(new FlowLayout(FlowLayout.CENTER, 4, 0));
@@ -253,16 +253,19 @@ public abstract class JIPipeListParameterEditorUI extends JIPipeDesktopParameter
     /**
      * Builds one list row: a vertical grip (drag to reorder; left or right
      * click opens the per-row menu for {@link RowGripBehavior#MENU}) and the
-     * item content at gridx=1. Stateless — no selection or hover-× chrome —
-     * so a modal editor can rebuild rows with {@link RowGripBehavior#SELECT}
-     * over its own state.
+     * item content at gridx=1. No row state is kept in the base — the row is
+     * appended to the caller's {@code rows} list, and grip drags resolve
+     * their indices against that same list, so a modal editor (SELECT
+     * behavior) can rebuild the full list over its own state without
+     * touching the inline view's rows.
      *
      * @param index    the item's index in the list
      * @param behavior how the grip's left click behaves
      * @param cbs      callbacks for SELECT behavior (may be null for MENU)
+     * @param rows     the caller's row list; the built row is appended to it
      * @return the row's components
      */
-    EntryComponents buildListRow(int index, RowGripBehavior behavior, ListRowCallbacks cbs) {
+    EntryComponents buildListRow(int index, RowGripBehavior behavior, ListRowCallbacks cbs, List<EntryComponents> rows) {
         JIPipeListParameter<?> parameter = getParameter();
 
         JPanel buttonPanel = new JPanel(new GridBagLayout());
@@ -304,13 +307,15 @@ public abstract class JIPipeListParameterEditorUI extends JIPipeDesktopParameter
 
         // Drag-reorder via the grip; the whole row accepts the drop (child
         // components keep their own handlers, so text fields etc. are unaffected).
-        GripDragTransferHandler dragHandler = new GripDragTransferHandler(entryComponents);
+        // Indices resolve against the caller's row list (the one this row is
+        // appended to), so inline rows and a modal's own rows stay separate.
+        GripDragTransferHandler dragHandler = new GripDragTransferHandler(entryComponents, rows);
         handleButton.setTransferHandler(dragHandler);
         entryPanel.setTransferHandler(dragHandler);
 
         entryComponents.entryPanel = entryPanel;
         entryComponents.grip = handleButton;
-        visibleEntryComponents.add(entryComponents);
+        rows.add(entryComponents);
         return entryComponents;
     }
 
@@ -389,14 +394,18 @@ public abstract class JIPipeListParameterEditorUI extends JIPipeDesktopParameter
      * Drags a list row onto another row to reorder it. The handler is attached
      * to the grip button (the drag source); the drop target row is whichever
      * grip the drop lands on, and before/after is decided by the drop
-     * y-position within that row (upper half = before). The right-click menu
-     * (Delete / Move up / Move down) remains the guaranteed path.
+     * y-position within that row (upper half = before). Drop indices are
+     * resolved against the caller-supplied row list the dragged row belongs
+     * to (captured per row when it was built). The right-click menu (Delete /
+     * Move up / Move down) remains the guaranteed path.
      */
     private class GripDragTransferHandler extends TransferHandler {
         private final EntryComponents target;
+        private final List<EntryComponents> rows;
 
-        GripDragTransferHandler(EntryComponents target) {
+        GripDragTransferHandler(EntryComponents target, List<EntryComponents> rows) {
             this.target = target;
+            this.rows = rows;
         }
 
         @Override
@@ -428,8 +437,8 @@ public abstract class JIPipeListParameterEditorUI extends JIPipeDesktopParameter
             if (source == null || source == target) {
                 return false;
             }
-            int sourceIndex = visibleEntryComponents.indexOf(source);
-            int targetIndex = visibleEntryComponents.indexOf(target);
+            int sourceIndex = rows.indexOf(source);
+            int targetIndex = rows.indexOf(target);
             if (sourceIndex < 0 || targetIndex < 0) {
                 return false;
             }
@@ -489,7 +498,7 @@ public abstract class JIPipeListParameterEditorUI extends JIPipeDesktopParameter
      * </ul>
      * The right click opens the per-row menu for both.
      */
-    public enum RowGripBehavior {
+    enum RowGripBehavior {
         MENU, SELECT
     }
 
@@ -497,7 +506,7 @@ public abstract class JIPipeListParameterEditorUI extends JIPipeDesktopParameter
      * Callbacks a caller of {@link #buildListRow} supplies so the row stays
      * stateless — the modal editor owns its selection state.
      */
-    public interface ListRowCallbacks {
+    interface ListRowCallbacks {
         /**
          * The grip's left click (SELECT behavior).
          *
