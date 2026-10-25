@@ -19,6 +19,7 @@ import ij.ImagePlus;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ResamplingFunction;
@@ -27,6 +28,9 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.JIPipeFontParameter;
 import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
@@ -109,5 +113,22 @@ public class StackToMontage2Algorithm extends JIPipeIteratingAlgorithm {
     @JIPipeParameter("slice-filter")
     public void setSliceFilter(JIPipeExpressionParameter sliceFilter) {
         this.sliceFilter = sliceFilter;
+    }
+
+    /**
+     * #1339: migrate the legacy split label-font parameters (label-font-family,
+     * label-font-size) and the label-foreground color into the single
+     * {@code label-font} parameter of the montage's label settings when a
+     * pre-migration project is loaded. The nested collection is loaded via flat
+     * slash-keys, so the keys are prefixed with
+     * {@code montage-parameters/label-parameters/}. Idempotent.
+     */
+    @Override
+    protected void onDeserialized(JsonNode node, JIPipeValidationReport issues, JIPipeNotificationInbox notifications) {
+        String p = "montage-parameters/label-parameters/";
+        if (node.has(p + "label-font-family") || node.has(p + "label-font-size") || node.has(p + "label-foreground")) {
+            montageCreator.getLabelParameters().setLabelFont(JIPipeFontParameter.composeFromLegacy(node,
+                    p + "label-font-family", p + "label-font-size", null, p + "label-foreground", 12));
+        }
     }
 }

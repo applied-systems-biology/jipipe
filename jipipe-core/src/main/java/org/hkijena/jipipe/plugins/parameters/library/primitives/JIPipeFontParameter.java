@@ -144,9 +144,33 @@ public class JIPipeFontParameter {
     public static JIPipeFontParameter composeFromLegacy(JsonNode json,
                                                         String familyKey, String sizeKey,
                                                         String styleKey, String colorKey) {
+        return composeFromLegacy(json, familyKey, sizeKey, styleKey, colorKey, 12);
+    }
+
+    /**
+     * Composes the legacy split font fields (from a raw node/collection JSON
+     * object) into a single {@link JIPipeFontParameter} for a given set of
+     * parameter keys. Absent keys fall back to defaults (family,
+     * {@code defaultSize}, plain, white). This is the idempotent migration
+     * path: a node's {@code onDeserialized} (or a nested collection's
+     * {@code fromJson}) calls this when the legacy keys are still present in
+     * the loaded JSON (a project saved before the migration).
+     *
+     * @param json        the raw JSON object that holds the parameters
+     * @param familyKey   the legacy family key (a textual node, e.g. {@code "font-family"})
+     * @param sizeKey     the legacy size key (a number, e.g. {@code "font-size"})
+     * @param styleKey    the legacy style key (a textual node, e.g. {@code "font-style"}); may be null
+     * @param colorKey    the legacy color key (a hex/OptionalColor node); may be null
+     * @param defaultSize the size to use when {@code sizeKey} is absent
+     * @return the composed font parameter
+     */
+    public static JIPipeFontParameter composeFromLegacy(JsonNode json,
+                                                        String familyKey, String sizeKey,
+                                                        String styleKey, String colorKey,
+                                                        int defaultSize) {
         JIPipeFontParameter result = new JIPipeFontParameter();
         String family = null;
-        int size = 12;
+        int size = defaultSize;
         int style = Font.PLAIN;
         Color color = Color.WHITE;
 
@@ -154,7 +178,7 @@ public class JIPipeFontParameter {
             family = json.get(familyKey).textValue();
         }
         if (sizeKey != null && json.has(sizeKey)) {
-            size = json.get(sizeKey).asInt(12);
+            size = json.get(sizeKey).asInt(defaultSize);
         }
         if (styleKey != null && json.has(styleKey) && json.get(styleKey).isTextual()) {
             style = styleNameToFlags(json.get(styleKey).textValue());

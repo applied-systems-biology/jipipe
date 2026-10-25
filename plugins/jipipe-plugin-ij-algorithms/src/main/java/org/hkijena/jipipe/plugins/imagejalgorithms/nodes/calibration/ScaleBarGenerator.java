@@ -21,8 +21,6 @@ import ij.gui.Roi;
 import ij.gui.TextRoi;
 import ij.measure.Calibration;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.plugins.parameters.library.primitives.FontFamilyParameter;
-import org.hkijena.jipipe.plugins.parameters.library.primitives.FontStyleParameter;
 
 import java.awt.*;
 
@@ -123,9 +121,7 @@ public class ScaleBarGenerator {
         Color textColor = config.textColor;
         Color backgroundColor = config.backgroundColor;
 
-        int fontType = config.fontStyle.getNativeValue();
-        String face = config.fontFamily.getValue();
-        Font font = new Font(face, fontType, config.fontSize);
+        Font font = config.getFont();
         ImageProcessor ip = imp.getProcessor();
         ip.setFont(font);
 
@@ -252,7 +248,7 @@ public class ScaleBarGenerator {
 
     void updateFont() {
         ImageProcessor ip = imp.getProcessor();
-        ip.setFont(config.getFontStyle().toFont(config.getFontFamily(), config.fontSize));
+        ip.setFont(config.getFont());
         ip.setAntialiasedText(true);
     }
 
@@ -387,8 +383,11 @@ public class ScaleBarGenerator {
 
     public static class ScaleBarConfiguration {
         public Color textColor = Color.WHITE;
-        FontFamilyParameter fontFamily = new FontFamilyParameter();
-        FontStyleParameter fontStyle = FontStyleParameter.Bold;
+        /**
+         * The text font (family + size + style) as a single value (#1339).
+         * The legacy family/style/size split was folded into this.
+         */
+        Font font = new Font(new Font("Dialog", Font.BOLD, 14).getFamily(), Font.BOLD, 14);
         boolean labelAll;
         private boolean showHorizontal;
         private boolean showVertical;
@@ -531,20 +530,18 @@ public class ScaleBarGenerator {
             this.fontSize = fontSize;
         }
 
-        public FontFamilyParameter getFontFamily() {
-            return fontFamily;
+        public void setFont(Font font) {
+            this.font = font;
+            if (font != null) {
+                this.fontSize = font.getSize();
+            }
         }
 
-        public void setFontFamily(FontFamilyParameter fontFamily) {
-            this.fontFamily = fontFamily;
-        }
-
-        public FontStyleParameter getFontStyle() {
-            return fontStyle;
-        }
-
-        public void setFontStyle(FontStyleParameter fontStyle) {
-            this.fontStyle = fontStyle;
+        /**
+         * @return the text font (family + size + style).
+         */
+        public Font getFont() {
+            return font;
         }
 
         public boolean isLabelAll() {

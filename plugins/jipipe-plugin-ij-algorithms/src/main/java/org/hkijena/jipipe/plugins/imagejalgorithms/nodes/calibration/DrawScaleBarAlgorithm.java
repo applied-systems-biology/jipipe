@@ -22,6 +22,7 @@ import ij.measure.Calibration;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.MeasurementsFunction;
@@ -31,14 +32,15 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
-import org.hkijena.jipipe.plugins.parameters.library.primitives.FontFamilyParameter;
-import org.hkijena.jipipe.plugins.parameters.library.primitives.FontStyleParameter;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.JIPipeFontParameter;
 import org.hkijena.jipipe.plugins.parameters.library.quantities.OptionalQuantity;
 import org.hkijena.jipipe.plugins.parameters.library.quantities.Quantity;
 
@@ -116,10 +118,8 @@ public class DrawScaleBarAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         generator.getConfig().setBarThicknessInPixels(barThickness);
         generator.getConfig().setBarColor(barColor);
         generator.getConfig().setBackgroundColor(backgroundColor.isEnabled() ? backgroundColor.getContent() : null);
-        generator.getConfig().setTextColor(textSettings.getTextColor());
-        generator.getConfig().setFontFamily(textSettings.getFontFamily());
-        generator.getConfig().setFontSize(textSettings.getFontSize());
-        generator.getConfig().setFontStyle(textSettings.getFontStyle());
+        generator.getConfig().setTextColor(textSettings.getFont().getColor());
+        generator.getConfig().setFont(textSettings.getFont().toFont());
         generator.getConfig().setHideText(textSettings.isHideLabels());
 
         Overlay scaleBarOverlay = generator.createScaleBarOverlay();
@@ -236,25 +236,39 @@ public class DrawScaleBarAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.drawVertical = drawVertical;
     }
 
+    /**
+     * #1339: migrate the legacy split text-font parameters (text-font,
+     * text-font-size, font-style) and the separate text-color into the single
+     * {@code text-settings/font} parameter when a pre-migration project is
+     * loaded. The nested collection is loaded via flat slash-keys, so the
+     * keys are prefixed with {@code text-settings/}. Idempotent: after the next
+     * save the legacy keys are gone.
+     */
+    @Override
+    protected void onDeserialized(JsonNode node, JIPipeValidationReport issues, JIPipeNotificationInbox notifications) {
+        if (node.has("text-settings/text-font") || node.has("text-settings/text-font-size")
+                || node.has("text-settings/font-style") || node.has("text-settings/text-color")) {
+            textSettings.setFont(JIPipeFontParameter.composeFromLegacy(node,
+                    "text-settings/text-font", "text-settings/text-font-size",
+                    "text-settings/font-style", "text-settings/text-color", 12));
+        }
+    }
+
     public static class TextSettings extends AbstractJIPipeParameterCollection {
-        private FontFamilyParameter fontFamily = new FontFamilyParameter();
-        private int fontSize = 12;
-        private FontStyleParameter fontStyle = FontStyleParameter.Bold;
+        private JIPipeFontParameter font = new JIPipeFontParameter();
         private JIPipeExpressionParameter horizontalLabel = new JIPipeExpressionParameter("D2S(value, 0) + \" \" + unit");
 
         private JIPipeExpressionParameter verticalLabel = new JIPipeExpressionParameter("D2S(value, 0) + \" \" + unit");
-        private Color textColor = Color.WHITE;
 
         private boolean hideLabels = false;
 
         public TextSettings() {
+            // The default scale-bar text is bold white (legacy default).
+            font.migrateFrom(JIPipeFontParameter.defaultFamily(), 12, java.awt.Font.BOLD, Color.WHITE);
         }
 
         public TextSettings(TextSettings other) {
-            this.fontFamily = new FontFamilyParameter(other.fontFamily);
-            this.fontSize = other.fontSize;
-            this.fontStyle = other.fontStyle;
-            this.textColor = other.textColor;
+            this.font = new JIPipeFontParameter(other.font);
             this.horizontalLabel = new JIPipeExpressionParameter(other.horizontalLabel);
             this.verticalLabel = new JIPipeExpressionParameter(other.verticalLabel);
             this.hideLabels = other.hideLabels;
@@ -299,48 +313,15 @@ public class DrawScaleBarAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             this.hideLabels = hideLabels;
         }
 
-        @SetJIPipeDocumentation(name = "Text color", description = "The color of the text")
-        @JIPipeParameter("text-color")
-        public Color getTextColor() {
-            return textColor;
+        @SetJIPipeDocumentation(name = "Font", description = "Font (family, size, style and color) of the text")
+        @JIPipeParameter("font")
+        public JIPipeFontParameter getFont() {
+            return font;
         }
 
-        @JIPipeParameter("text-color")
-        public void setTextColor(Color textColor) {
-            this.textColor = textColor;
-        }
-
-        @SetJIPipeDocumentation(name = "Font", description = "Font of the text")
-        @JIPipeParameter("text-font")
-        public FontFamilyParameter getFontFamily() {
-            return fontFamily;
-        }
-
-        @JIPipeParameter("text-font")
-        public void setFontFamily(FontFamilyParameter fontFamily) {
-            this.fontFamily = fontFamily;
-        }
-
-        @SetJIPipeDocumentation(name = "Font size", description = "Size of the text")
-        @JIPipeParameter("text-font-size")
-        public int getFontSize() {
-            return fontSize;
-        }
-
-        @JIPipeParameter("text-font-size")
-        public void setFontSize(int fontSize) {
-            this.fontSize = fontSize;
-        }
-
-        @SetJIPipeDocumentation(name = "Font style", description = "The style of the font")
-        @JIPipeParameter("font-style")
-        public FontStyleParameter getFontStyle() {
-            return fontStyle;
-        }
-
-        @JIPipeParameter("font-style")
-        public void setFontStyle(FontStyleParameter fontStyle) {
-            this.fontStyle = fontStyle;
+        @JIPipeParameter("font")
+        public void setFont(JIPipeFontParameter font) {
+            this.font = font;
         }
     }
 }

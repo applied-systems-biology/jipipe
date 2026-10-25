@@ -28,9 +28,13 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.MontageCreator;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.JIPipeFontParameter;
+import com.fasterxml.jackson.databind.JsonNode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,5 +79,22 @@ public class InputImagesToMontage2 extends JIPipeMergingAlgorithm {
     @JIPipeParameter(value = "montage-parameters", uiOrder = -100)
     public MontageCreator getMontageCreator() {
         return montageCreator;
+    }
+
+    /**
+     * #1339: migrate the legacy split label-font parameters (label-font-family,
+     * label-font-size) and the label-foreground color into the single
+     * {@code label-font} parameter of the montage's label settings when a
+     * pre-migration project is loaded. The nested collection is loaded via flat
+     * slash-keys, so the keys are prefixed with
+     * {@code montage-parameters/label-parameters/}. Idempotent.
+     */
+    @Override
+    protected void onDeserialized(JsonNode node, JIPipeValidationReport issues, JIPipeNotificationInbox notifications) {
+        String p = "montage-parameters/label-parameters/";
+        if (node.has(p + "label-font-family") || node.has(p + "label-font-size") || node.has(p + "label-foreground")) {
+            montageCreator.getLabelParameters().setLabelFont(JIPipeFontParameter.composeFromLegacy(node,
+                    p + "label-font-family", p + "label-font-size", null, p + "label-foreground", 12));
+        }
     }
 }

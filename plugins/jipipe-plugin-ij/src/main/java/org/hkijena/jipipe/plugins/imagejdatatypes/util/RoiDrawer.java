@@ -53,6 +53,12 @@ public class RoiDrawer extends AbstractJIPipeParameterCollection {
     private FontFamilyParameter labelFontFamily = new FontFamilyParameter();
     private OptionalColorParameter labelBackground = new OptionalColorParameter(Color.BLACK, false);
     private int labelSize = 9;
+    /**
+     * An explicit label font (when set, it replaces the family/size pair).
+     * Additive API for consumers that manage the label font as one value
+     * (e.g. {@code JIPipeFontParameter}, #1339).
+     */
+    private Font labelFontOverride = null;
     private double opacity = 1.0;
     private boolean ignoreZ = false;
     private boolean ignoreC = false;
@@ -99,6 +105,7 @@ public class RoiDrawer extends AbstractJIPipeParameterCollection {
         this.drawFilledOutlineMode = other.drawFilledOutlineMode;
         this.drawnLabel = other.drawnLabel;
         this.labelFontFamily = new FontFamilyParameter(other.labelFontFamily);
+        this.labelFontOverride = other.labelFontOverride;
         this.overrideFillColor = new OptionalColorParameter(other.overrideFillColor);
         this.overrideLineColor = new OptionalColorParameter(other.overrideLineColor);
         this.overrideLineWidth = new OptionalDoubleParameter(other.overrideLineWidth);
@@ -158,6 +165,25 @@ public class RoiDrawer extends AbstractJIPipeParameterCollection {
     @JIPipeParameter("label-font-family")
     public void setLabelFontFamily(FontFamilyParameter labelFontFamily) {
         this.labelFontFamily = labelFontFamily;
+    }
+
+    /**
+     * Sets an explicit label font (overrides the family/size pair). Passing
+     * {@code null} falls back to the family/size.
+     */
+    public void setLabelFont(Font labelFont) {
+        this.labelFontOverride = labelFont;
+    }
+
+    /**
+     * @return the effective label font — the explicit override when set,
+     * otherwise the font built from the family/size pair.
+     */
+    public Font getLabelFont() {
+        if (labelFontOverride != null) {
+            return labelFontOverride;
+        }
+        return labelFontFamily.toFont(Font.PLAIN, labelSize);
     }
 
     @SetJIPipeDocumentation(name = "Draw labels", description = "Allows to draw labels on top of ROI.")
@@ -319,7 +345,7 @@ public class RoiDrawer extends AbstractJIPipeParameterCollection {
             result = IJ.createImage("ROIs", "RGB", sx, sy, sc, sz, st);
         }
 
-        Font labelFont = labelFontFamily.toFont(Font.PLAIN, labelSize);
+        Font labelFont = getLabelFont();
 
         // Draw ROI
         for (int z = 0; z < sz; z++) {
@@ -430,7 +456,7 @@ public class RoiDrawer extends AbstractJIPipeParameterCollection {
         final int z = index.getZ();
         final int c = index.getC();
         final int t = index.getT();
-        final Font labelFont = labelFontFamily.toFont(Font.PLAIN, labelSize);
+        final Font labelFont = getLabelFont();
 
         // Draw the ROIs
         if (withHighlight) {
@@ -552,7 +578,7 @@ public class RoiDrawer extends AbstractJIPipeParameterCollection {
         final int z = index.getZ();
         final int c = index.getC();
         final int t = index.getT();
-        final Font labelFont = labelFontFamily.toFont(Font.PLAIN, labelSize);
+        final Font labelFont = getLabelFont();
 
         // Draw the ROIs
         if (withHighlight) {

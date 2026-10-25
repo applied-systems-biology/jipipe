@@ -37,12 +37,15 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.draw.VisualROIPrope
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJROIUtils;
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
-import org.hkijena.jipipe.plugins.parameters.library.primitives.FontFamilyParameter;
-import org.hkijena.jipipe.plugins.parameters.library.primitives.FontStyleParameter;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.JIPipeFontParameter;
 import org.hkijena.jipipe.plugins.parameters.library.roi.InnerMargin;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 import org.hkijena.jipipe.utils.StringUtils;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
@@ -66,9 +69,7 @@ public class TableToTextROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private boolean oneBasedPositions = true;
     private boolean centerX = false;
     private boolean centerY = false;
-    private FontFamilyParameter fontFamily = new FontFamilyParameter();
-    private FontStyleParameter fontStyle = FontStyleParameter.Plain;
-    private int fontSize = 12;
+    private JIPipeFontParameter font = new JIPipeFontParameter();
     private double angle = 0;
     private boolean antialiased = true;
     private OptionalColorParameter backgroundColor = new OptionalColorParameter(Color.BLACK, false);
@@ -102,9 +103,7 @@ public class TableToTextROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.columnZ = new TableColumnSourceExpressionParameter(other.columnZ);
         this.columnT = new TableColumnSourceExpressionParameter(other.columnT);
         this.oneBasedPositions = other.oneBasedPositions;
-        this.fontFamily = new FontFamilyParameter(other.fontFamily);
-        this.fontSize = other.fontSize;
-        this.fontStyle = other.fontStyle;
+        this.font = new JIPipeFontParameter(other.font);
         this.centerX = other.centerX;
         this.centerY = other.centerY;
         this.angle = other.angle;
@@ -140,11 +139,11 @@ public class TableToTextROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ensureColumnExists(colName, table, "Name");
         ensureColumnExists(colMetadata, table, "Metadata");
 
-        Font font = fontStyle.toFont(fontFamily, fontSize);
+        Font font2 = font.toFont();
 
         // Calculate font metrics
         Canvas canvas = new Canvas();
-        FontMetrics fontMetrics = canvas.getFontMetrics(font);
+        FontMetrics fontMetrics = canvas.getFontMetrics(font2);
 
         for (int row = 0; row < table.getRowCount(); row++) {
             double x = (int) colX.getRowAsDouble(row);
@@ -185,7 +184,7 @@ public class TableToTextROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 rois.add(backgroundRoi);
             }
 
-            TextRoi textRoi = new TextRoi(x, y, width, height, text, font);
+            TextRoi textRoi = new TextRoi(x, y, width, height, text, font2);
             textRoi.setName(StringUtils.orElse(name, "Unnamed"));
             ImageJROIUtils.setRoiPropertiesFromString(textRoi, metadata, "metadata_");
             textRoi.setAngle(angle);
@@ -336,28 +335,6 @@ public class TableToTextROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.oneBasedPositions = oneBasedPositions;
     }
 
-    @SetJIPipeDocumentation(name = "Font size", description = "The size of the text")
-    @JIPipeParameter("font-size")
-    public int getFontSize() {
-        return fontSize;
-    }
-
-    @JIPipeParameter("font-size")
-    public void setFontSize(int fontSize) {
-        this.fontSize = fontSize;
-    }
-
-    @SetJIPipeDocumentation(name = "Font style", description = "The style of the text")
-    @JIPipeParameter("font-style")
-    public FontStyleParameter getFontStyle() {
-        return fontStyle;
-    }
-
-    @JIPipeParameter("font-style")
-    public void setFontStyle(FontStyleParameter fontStyle) {
-        this.fontStyle = fontStyle;
-    }
-
     @SetJIPipeDocumentation(name = "Center X at location", description = "If enabled, the calculated x location will be the center of the text")
     @JIPipeParameter("center-x")
     public boolean isCenterX() {
@@ -380,15 +357,15 @@ public class TableToTextROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.centerY = centerY;
     }
 
-    @SetJIPipeDocumentation(name = "Font family", description = "The font of the text")
-    @JIPipeParameter("font-family")
-    public FontFamilyParameter getFontFamily() {
-        return fontFamily;
+    @SetJIPipeDocumentation(name = "Font", description = "The font (family, size, style and color) of the text")
+    @JIPipeParameter("font")
+    public JIPipeFontParameter getFont() {
+        return font;
     }
 
-    @JIPipeParameter("font-family")
-    public void setFontFamily(FontFamilyParameter fontFamily) {
-        this.fontFamily = fontFamily;
+    @JIPipeParameter("font")
+    public void setFont(JIPipeFontParameter font) {
+        this.font = font;
     }
 
     @SetJIPipeDocumentation(name = "Angle", description = "Angle of the text")
@@ -411,6 +388,20 @@ public class TableToTextROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("antialiased")
     public void setAntialiased(boolean antialiased) {
         this.antialiased = antialiased;
+    }
+
+    /**
+     * #1339: migrate the legacy split font parameters (family/size/style) into
+     * the single {@code font} parameter when a pre-migration project is loaded.
+     * The text color is the ROI line color (see {@code roi-properties}), not a
+     * font-specific field, so it is left at the parameter default. Idempotent:
+     * after the next save the legacy keys are gone.
+     */
+    @Override
+    protected void onDeserialized(JsonNode node, JIPipeValidationReport issues, JIPipeNotificationInbox notifications) {
+        if (node.has("font-family") || node.has("font-size") || node.has("font-style")) {
+            this.font = JIPipeFontParameter.composeFromLegacy(node, "font-family", "font-size", "font-style", null);
+        }
     }
 
 }
