@@ -18,6 +18,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.service.JIPipeServiceInitializationSettings;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopDummyWorkbench;
+import org.hkijena.jipipe.desktop.commons.components.color.JIPipeDesktopColorChooserDialog;
 import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.launcher.commands.screenshotui.ScreenshotRenderer;
@@ -133,18 +134,26 @@ public class ScreenshotUiCommand {
     }
 
     private static void renderColorDialog(Path outDir, List<String> only, List<String> rendered) throws Exception {
-        if (!only.isEmpty() && !only.contains("dialog-color"))
+        if (!only.isEmpty() && !only.contains("dialog-color") && !only.contains("dialog-color-lab"))
             return;
-        // Baseline = the Java-provided chooser the overhaul replaces. (Task 7
-        // swaps this for JIPipeDesktopColorChooserDialog — same filename.)
-        JColorChooser chooser = new JColorChooser(Color.BLUE);
-        chooser.setOpaque(true);
-        JPanel wrap = new JPanel(new BorderLayout());
-        wrap.setOpaque(true);
-        wrap.setBackground(Color.GRAY.brighter());
-        wrap.add(chooser, BorderLayout.CENTER);
-        ScreenshotRenderer.renderFixed(wrap, DIALOG_WIDTH, DIALOG_HEIGHT, outDir.resolve("dialog-color.png"));
-        rendered.add("dialog-color");
+        // The modern dialog (#1339). Rendered at a fixed size, off-screen (the
+        // dialog itself is never shown; its content pane is captured). The
+        // alpha-capable capture uses a semi-transparent color so the checkerboard
+        // swatch, the α rail, and the 8-digit hex are all visible.
+        Color initial = new Color(59, 157, 255, 128);
+        if (only.isEmpty() || only.contains("dialog-color")) {
+            JIPipeDesktopColorChooserDialog dialog =
+                    new JIPipeDesktopColorChooserDialog(null, "Select color", initial, true);
+            ScreenshotRenderer.renderFixed(dialog.getContentPane(), DIALOG_WIDTH, DIALOG_HEIGHT, outDir.resolve("dialog-color.png"));
+            rendered.add("dialog-color");
+        }
+        if (only.isEmpty() || only.contains("dialog-color-lab")) {
+            JIPipeDesktopColorChooserDialog dialog =
+                    new JIPipeDesktopColorChooserDialog(null, "Select color", initial, false);
+            dialog.showLabTab();
+            ScreenshotRenderer.renderFixed(dialog.getContentPane(), DIALOG_WIDTH, DIALOG_HEIGHT, outDir.resolve("dialog-color-lab.png"));
+            rendered.add("dialog-color-lab");
+        }
     }
 
     private static void renderSettingsSheet(JIPipeDesktopDummyWorkbench workbench, Path outDir, List<String> only, List<String> rendered) throws Exception {

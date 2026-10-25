@@ -1,0 +1,844 @@
+/*
+ * Copyright by Zoltán Cseresnyés, Ruman Gerst
+ *
+ * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
+ * https://www.leibniz-hki.de/en/applied-systems-biology.html
+ * HKI-Center for Systems Biology of Infection
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
+ * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
+ *
+ * The project code is licensed under MIT.
+ * See the LICENSE file provided with the code for the full license.
+ */
+
+package org.hkijena.jipipe.desktop.commons.components.color;
+
+import org.hkijena.jipipe.utils.color.ColorSpaces;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.DoubleConsumer;
+import java.util.function.IntFunction;
+
+/**
+ * A modern color chooser dialog (#1339) replacing {@link JColorChooser}:
+ * three color spaces (RGB / HSB / CIE L*a*b*), a two-way hex field
+ * ({@code #RRGGBB} / {@code #RRGGBBAA}), palettes (pure colors, the GNOME
+ * HIG named library, last selected, user-saved), and optional alpha support.
+ * <p>
+ * Modal, same contract as {@link JColorChooser#showDialog}: {@link #show}
+ * returns the chosen color or {@code null} on cancel. Out-of-gamut L*a*b*
+ * values clamp to the nearest sRGB live (via {@link ColorSpaces#fromLab}),
+ * so the hex readout always shows a valid color.
+ */
+public class JIPipeDesktopColorChooserDialog extends JDialog {
+
+    // ------------------------------------------------------------------
+    // Public entry point (same contract as JColorChooser.showDialog)
+    // ------------------------------------------------------------------
+
+    /**
+     * Shows the dialog modally.
+     *
+     * @param parent           the parent component
+     * @param title            the window title
+     * @param initial          the initial color
+     * @param withTransparency whether to show the alpha rail + checkerboard
+     * @return the chosen color, or {@code null} if the user cancelled
+     */
+    public static Color show(Component parent, String title, Color initial, boolean withTransparency) {
+        Window owner = parent instanceof Window w ? w
+                : (parent != null ? SwingUtilities.getWindowAncestor(parent) : null);
+        JIPipeDesktopColorChooserDialog dialog = new JIPipeDesktopColorChooserDialog(owner, title,
+                initial != null ? initial : Color.WHITE, withTransparency);
+        dialog.setVisible(true);
+        return dialog.result;
+    }
+
+    // ------------------------------------------------------------------
+    // State
+    // ------------------------------------------------------------------
+
+    private Color currentColor;
+    private final boolean withTransparency;
+    private Color result;
+
+    private final JTextField hexField = new JTextField(12);
+    private final JTabbedPane spaceTabs = new JTabbedPane();
+    private boolean updating = false;
+
+    // RGB rails
+    private final ColorRail rRail = new ColorRail(0, 255, i -> new Color((int) i, 0, 0));
+    private final ColorRail gRail = new ColorRail(0, 255, i -> new Color(0, (int) i, 0));
+    private final ColorRail blueRail = new ColorRail(0, 255, i -> new Color(0, 0, (int) i));
+
+    // HSB
+    private HsbWell hsbWell;
+    private ColorRail hueRail;
+    private ColorRail satRail;
+    private ColorRail briRail;
+
+    // LAB
+    private LabWell labWell;
+    private ColorRail lRail;
+    private ColorRail aRail;
+    private ColorRail blueRailLab;
+
+    private CheckerSwatch currentSwatch;
+    private final JPanel savedRow;
+
+    // ------------------------------------------------------------------
+    // Construction
+    // ------------------------------------------------------------------
+
+    /**
+     * Creates the dialog (owner may be null; the dialog is not shown by this
+     * constructor — use {@link #show} or {@code setVisible(true)}).
+     */
+    public JIPipeDesktopColorChooserDialog(Window owner, String title, Color initial, boolean withTransparency) {
+        super(owner, title, ModalityType.APPLICATION_MODAL);
+        this.withTransparency = withTransparency;
+        this.currentColor = initial;
+
+        JPanel body = new JPanel(new BorderLayout(0, 8));
+        body.add(buildTop(), BorderLayout.NORTH);
+        body.add(buildSpaceTabs(), BorderLayout.CENTER);
+        body.add(buildHexRow(), BorderLayout.SOUTH);
+
+        savedRow = new JPanel();
+        savedRow.setLayout(new BoxLayout(savedRow, BoxLayout.X_AXIS));
+        savedRow.setAlignmentX(0f);
+
+        JPanel palettes = buildPalettes();
+        JScrollPane paletteScroll = new JScrollPane(palettes);
+        paletteScroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+        paletteScroll.setBorder(BorderFactory.createEmptyBorder());
+        paletteScroll.setPreferredSize(new Dimension(0, 200));
+
+        setLayout(new BorderLayout(0, 8));
+        getRootPane().setBorder(BorderFactory.createEmptyBorder(8, 10, 8, 10));
+        add(body, BorderLayout.NORTH);
+        add(paletteScroll, BorderLayout.CENTER);
+        add(buildButtons(), BorderLayout.SOUTH);
+
+        pack();
+        setSize(new Dimension(Math.max(getWidth(), 380), Math.max(getHeight(), 560)));
+        setLocationRelativeTo(owner);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+
+        refresh();
+    }
+
+    /** Shows the LAB tab (used by the screenshot harness). */
+    public void showLabTab() {
+        spaceTabs.setSelectedIndex(2);
+        refresh();
+    }
+
+    private JComponent buildTop() {
+        currentSwatch = new CheckerSwatch(44, 26);
+        JPanel header = new JPanel(new BorderLayout());
+        header.setOpaque(false);
+        header.add(new JLabel("Select color"), BorderLayout.WEST);
+        header.add(currentSwatch, BorderLayout.EAST);
+        return header;
+    }
+
+    private JComponent buildSpaceTabs() {
+        spaceTabs.addTab("RGB", buildRgbPanel());
+        spaceTabs.addTab("HSB", buildHsbPanel());
+        spaceTabs.addTab("LAB", buildLabPanel());
+        return spaceTabs;
+    }
+
+    private JPanel buildRgbPanel() {
+        JPanel p = railPanel();
+        p.add(railRow("Red", rRail, v -> {
+            int rgb = currentColor.getRGB();
+            setColor(new Color((int) v, ((rgb >> 8) & 0xFF), ((rgb & 0xFF)), ((rgb >> 24) & 0xFF)));
+        }));
+        p.add(railRow("Green", gRail, v -> {
+            int rgb = currentColor.getRGB();
+            setColor(new Color(((rgb >> 16) & 0xFF), (int) v, ((rgb & 0xFF)), ((rgb >> 24) & 0xFF)));
+        }));
+        p.add(railRow("Blue", blueRail, v -> {
+            int rgb = currentColor.getRGB();
+            setColor(new Color(((rgb >> 16) & 0xFF), ((rgb >> 8) & 0xFF), (int) v, ((rgb >> 24) & 0xFF)));
+        }));
+        if (withTransparency) {
+            p.add(railRow("Alpha", alphaRail(), v -> setColorAlpha((int) v)));
+        }
+        return p;
+    }
+
+    private JPanel buildHsbPanel() {
+        JPanel p = new JPanel(new BorderLayout(8, 0));
+        hsbWell = new HsbWell();
+        p.add(hsbWell, BorderLayout.CENTER);
+
+        JPanel rails = railPanel();
+        hueRail = new ColorRail(0, 360, null);
+        satRail = new ColorRail(0, 100, null);
+        briRail = new ColorRail(0, 100, null);
+        rails.add(railRow("Hue", hueRail, v -> {
+            double[] hsb = ColorSpaces.toHsb(currentColor);
+            setColor(ColorSpaces.fromHsb(v, hsb[1], hsb[2]));
+        }));
+        rails.add(railRow("Sat", satRail, v -> {
+            double[] hsb = ColorSpaces.toHsb(currentColor);
+            setColor(ColorSpaces.fromHsb(hsb[0], v, hsb[2]));
+        }));
+        rails.add(railRow("Bri", briRail, v -> {
+            double[] hsb = ColorSpaces.toHsb(currentColor);
+            setColor(ColorSpaces.fromHsb(hsb[0], hsb[1], v));
+        }));
+        if (withTransparency) {
+            rails.add(railRow("Alpha", alphaRail(), v -> setColorAlpha((int) v)));
+        }
+        p.add(rails, BorderLayout.EAST);
+        return p;
+    }
+
+    private JPanel buildLabPanel() {
+        JPanel p = new JPanel(new BorderLayout(8, 0));
+        labWell = new LabWell();
+        p.add(labWell, BorderLayout.CENTER);
+
+        JPanel rails = railPanel();
+        lRail = new ColorRail(0, 100, i -> new Color((int) i, (int) i, (int) i));
+        aRail = new ColorRail(-128, 127, null);
+        blueRailLab = new ColorRail(-128, 127, null);
+        rails.add(railRow("L", lRail, v -> setColorLab(v, aRail.getValue(), blueRailLab.getValue())));
+        rails.add(railRow("a", aRail, v -> setColorLab(lRail.getValue(), v, blueRailLab.getValue())));
+        rails.add(railRow("b", blueRailLab, v -> setColorLab(lRail.getValue(), aRail.getValue(), v)));
+        if (withTransparency) {
+            rails.add(railRow("Alpha", alphaRail(), v -> setColorAlpha((int) v)));
+        }
+        p.add(rails, BorderLayout.EAST);
+        return p;
+    }
+
+    private JPanel buildHexRow() {
+        JPanel p = new JPanel(new BorderLayout(8, 0));
+        p.setOpaque(false);
+        hexField.setFont(new Font(Font.MONOSPACED, Font.PLAIN, hexField.getFont().getSize()));
+        hexField.addActionListener(e -> commitHex());
+        hexField.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent e) {
+                commitHex();
+            }
+        });
+        JPanel left = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
+        left.setOpaque(false);
+        left.add(new JLabel("Hex"));
+        left.add(hexField);
+        p.add(left, BorderLayout.CENTER);
+        return p;
+    }
+
+    private JComponent buildButtons() {
+        JButton ok = new JButton("OK");
+        JButton cancel = new JButton("Cancel");
+        ok.addActionListener(e -> {
+            result = currentColor;
+            JIPipeColorHistory.get().remember(currentColor);
+            setVisible(false);
+        });
+        cancel.addActionListener(e -> setVisible(false));
+        JPanel p = new JPanel(new FlowLayout(FlowLayout.RIGHT, 6, 0));
+        p.setOpaque(false);
+        p.add(ok);
+        p.add(cancel);
+        return p;
+    }
+
+    // ------------------------------------------------------------------
+    // Palettes
+    // ------------------------------------------------------------------
+
+    private JPanel buildPalettes() {
+        JPanel p = new JPanel();
+        p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
+        p.add(sectionLabel("Pure colors"));
+        p.add(swatchesRow(pureColors()));
+        p.add(sectionLabel("GNOME HIG"));
+        p.add(swatchesRow(gnomeHig()));
+        p.add(sectionLabel("Last selected"));
+        p.add(swatchesRow(JIPipeColorHistory.get().getRecent()));
+
+        JPanel savedHeader = new JPanel(new BorderLayout());
+        savedHeader.setOpaque(false);
+        savedHeader.add(sectionLabel("Saved"), BorderLayout.CENTER);
+        JButton star = new JButton("☆");
+        star.setToolTipText("Save the current color");
+        star.setFocusable(false);
+        star.addActionListener(e -> {
+            JIPipeColorHistory.get().save(new NamedColor(currentColor, null));
+            fillSavedRow();
+        });
+        savedHeader.add(star, BorderLayout.EAST);
+        p.add(savedHeader);
+        fillSavedRow();
+        p.add(savedRow);
+        return p;
+    }
+
+    private void fillSavedRow() {
+        savedRow.removeAll();
+        for (NamedColor c : JIPipeColorHistory.get().getSaved()) {
+            JButton b = swatchButton(c.getColor(),
+                    c.getName() != null ? c.getName() : ColorSpaces.toHex(c.getColor()));
+            b.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    if (SwingUtilities.isRightMouseButton(e)) {
+                        JIPipeColorHistory.get().removeSaved(c.getColor());
+                        fillSavedRow();
+                    } else {
+                        setColor(c.getColor());
+                    }
+                }
+            });
+            savedRow.add(b);
+        }
+        savedRow.revalidate();
+        savedRow.repaint();
+    }
+
+    private static Component sectionLabel(String text) {
+        JLabel l = new JLabel(text);
+        l.setAlignmentX(0f);
+        l.setBorder(BorderFactory.createEmptyBorder(6, 0, 2, 0));
+        l.setFont(l.getFont().deriveFont(Font.BOLD));
+        l.setOpaque(false);
+        return l;
+    }
+
+    private JPanel swatchesRow(List<NamedColor> colors) {
+        JPanel p = new JPanel();
+        p.setLayout(new BoxLayout(p, BoxLayout.X_AXIS));
+        p.setAlignmentX(0f);
+        p.setOpaque(false);
+        for (NamedColor c : colors) {
+            p.add(swatchButtonAction(c.getColor(),
+                    c.getName() != null ? c.getName() : ColorSpaces.toHex(c.getColor())));
+        }
+        return p;
+    }
+
+    private static JButton swatchButton(Color c, String tooltip) {
+        JButton b = new JButton();
+        b.setPreferredSize(new Dimension(18, 18));
+        b.setMaximumSize(new Dimension(18, 18));
+        b.setMinimumSize(new Dimension(18, 18));
+        b.setBorder(BorderFactory.createLineBorder(new Color(110, 110, 110), 1, true));
+        b.setBackground(c);
+        b.setContentAreaFilled(true);
+        b.setFocusable(false);
+        b.setToolTipText(tooltip + "  " + ColorSpaces.toHex(c));
+        return b;
+    }
+
+    /** Returns a swatch button that, when left-clicked, sets the color. */
+    private JButton swatchButtonAction(Color c, String tooltip) {
+        JButton b = swatchButton(c, tooltip);
+        b.addActionListener(e -> setColor(c));
+        return b;
+    }
+
+    // ------------------------------------------------------------------
+    // Color state
+    // ------------------------------------------------------------------
+
+    private void setColorLab(double l, double a, double b) {
+        setColor(ColorSpaces.fromLab(l, a, b));
+    }
+
+    private void setColorAlpha(int alpha) {
+        int rgb = currentColor.getRGB();
+        setColor(new Color(((rgb >> 16) & 0xFF), ((rgb >> 8) & 0xFF), ((rgb & 0xFF)), alpha));
+    }
+
+    private void setColor(Color c) {
+        if (updating) {
+            return;
+        }
+        updating = true;
+        try {
+            currentColor = c;
+            refresh();
+        } finally {
+            updating = false;
+        }
+    }
+
+    private void refresh() {
+        if (updating) {
+            return;
+        }
+        updating = true;
+        try {
+            int rgb = currentColor.getRGB();
+            rRail.setValue(((rgb >> 16) & 0xFF));
+            gRail.setValue(((rgb >> 8) & 0xFF));
+            blueRail.setValue(((rgb & 0xFF)));
+
+            double[] hsb = ColorSpaces.toHsb(currentColor);
+            hueRail.setValue(hsb[0]);
+            satRail.setValue(hsb[1]);
+            briRail.setValue(hsb[2]);
+            hueRail.repaintGradient(i -> ColorSpaces.fromHsb(i, 100, 100));
+            satRail.repaintGradient(i -> ColorSpaces.fromHsb(hsb[0], i, 100));
+            briRail.repaintGradient(i -> ColorSpaces.fromHsb(hsb[0], hsb[1], i));
+
+            double[] lab = ColorSpaces.toLab(currentColor);
+            lRail.setValue(lab[0]);
+            aRail.setValue(lab[1]);
+            blueRailLab.setValue(lab[2]);
+            aRail.repaintGradient(i -> ColorSpaces.fromLab(lab[0], i, lab[2]));
+            blueRailLab.repaintGradient(i -> ColorSpaces.fromLab(lab[0], lab[1], i));
+
+            hexField.setText(ColorSpaces.toHex(currentColor));
+            if (hsbWell != null) {
+                hsbWell.repaint();
+            }
+            if (labWell != null) {
+                labWell.repaint();
+            }
+            if (currentSwatch != null) {
+                currentSwatch.setColor(currentColor);
+                currentSwatch.repaint();
+            }
+        } finally {
+            updating = false;
+        }
+    }
+
+    private void commitHex() {
+        try {
+            Color c = ColorSpaces.fromHex(hexField.getText());
+            if (!withTransparency) {
+                c = new Color(c.getRGB()); // normalize away any alpha
+            }
+            setColor(c);
+        } catch (RuntimeException e) {
+            hexField.setText(ColorSpaces.toHex(currentColor));
+        }
+    }
+
+    // ------------------------------------------------------------------
+    // Rail plumbing
+    // ------------------------------------------------------------------
+
+    private static JPanel railPanel() {
+        JPanel p = new JPanel();
+        p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
+        p.setOpaque(false);
+        return p;
+    }
+
+    private JPanel railRow(String label, ColorRail rail, DoubleConsumer onChange) {
+        // GridBag (not BorderLayout): a bare add() into a BorderLayout lands in
+        // EAST and would starve the rail (CENTER) of its width.
+        JPanel row = new JPanel(new GridBagLayout());
+        row.setOpaque(false);
+        row.setMaximumSize(new Dimension(Integer.MAX_VALUE, 18));
+        JLabel l = new JLabel(label, SwingConstants.RIGHT);
+        l.setOpaque(false);
+        rail.setMaximumSize(new Dimension(Integer.MAX_VALUE, 14));
+        rail.setMinimumSize(new Dimension(120, 14));
+        rail.addChangeListener(onChange::accept);
+        GridBagConstraints c = new GridBagConstraints();
+        c.gridx = 0;
+        c.gridy = 0;
+        c.insets = new Insets(0, 0, 4, 6);
+        c.anchor = GridBagConstraints.CENTER;
+        row.add(l, c);
+        c.gridx = 1;
+        c.weightx = 1;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        row.add(rail, c);
+        return row;
+    }
+
+    /** An alpha rail: fully transparent (left, 0) → opaque (right, 255) over a checkerboard. */
+    private ColorRail alphaRail() {
+        return new ColorRail(0, 255, i -> new Color(0, 0, 0, (int) i), true);
+    }
+
+    // ------------------------------------------------------------------
+    // Palette data
+    // ------------------------------------------------------------------
+
+    private static List<NamedColor> pureColors() {
+        String[][] data = {
+                {"Black", "000000"}, {"White", "FFFFFF"}, {"Grey", "808080"},
+                {"Red", "FF0000"}, {"Orange", "FF8800"}, {"Yellow", "EEEE00"},
+                {"Green", "00CC00"}, {"Blue", "0066FF"}, {"Purple", "8800CC"},
+        };
+        List<NamedColor> out = new ArrayList<>();
+        for (String[] d : data) {
+            out.add(new NamedColor(ColorSpaces.fromHex("#" + d[1]), d[0]));
+        }
+        return out;
+    }
+
+    /**
+     * The GNOME HIG / libadwaita named palette: 9 hue families × 5 steps
+     * (values from the GNOME HIG palette page / libadwaita {@code _palette.scss}).
+     */
+    private static List<NamedColor> gnomeHig() {
+        String[] names = {"Blue", "Green", "Yellow", "Orange", "Red", "Purple", "Brown", "Light", "Dark"};
+        String[][] rows = {
+                {"#99c1f1", "#62a0ea", "#3584e4", "#1c71d8", "#1a5fb4"},
+                {"#8ff0a4", "#57e389", "#33d17a", "#2ec27e", "#26a269"},
+                {"#f9f06b", "#f8e45c", "#f6d32d", "#f5c211", "#e5a50a"},
+                {"#ffbe6f", "#ffa348", "#ff7800", "#e66100", "#c64600"},
+                {"#f66151", "#ed333b", "#e01b24", "#c01c28", "#a51d2d"},
+                {"#dc8add", "#c061cb", "#9141ac", "#813d9c", "#613583"},
+                {"#cdab8f", "#b5835a", "#986a44", "#865e3c", "#63452c"},
+                {"#ffffff", "#f6f5f4", "#deddda", "#c0bfbc", "#9a9996"},
+                {"#77767b", "#5e5c64", "#3d3846", "#241f31", "#000000"},
+        };
+        List<NamedColor> out = new ArrayList<>();
+        for (int r = 0; r < names.length; r++) {
+            for (int s = 0; s < rows[r].length; s++) {
+                out.add(new NamedColor(ColorSpaces.fromHex(rows[r][s]), names[r] + " " + (s + 1)));
+            }
+        }
+        return out;
+    }
+
+    // ------------------------------------------------------------------
+    // Color rail (custom slider)
+    // ------------------------------------------------------------------
+
+    /**
+     * A horizontal gradient rail with a draggable handle. Custom-painted so
+     * the gradient renders identically in every look & feel (JSlider's track
+     * paints over its background). Keyboard accessible (arrows adjust).
+     */
+    private class ColorRail extends JComponent {
+        private final double min;
+        private final double max;
+        private IntFunction<Color> gradient;
+        private final boolean checkerboard;
+        private double value;
+        private List<DoubleConsumer> listeners = new ArrayList<>();
+        private BufferedImage image;
+        private boolean gradientDirty = true;
+
+        ColorRail(double min, double max, IntFunction<Color> gradient) {
+            this(min, max, gradient, false);
+        }
+
+        ColorRail(double min, double max, IntFunction<Color> gradient, boolean checkerboard) {
+            this.min = min;
+            this.max = max;
+            this.gradient = gradient;
+            this.checkerboard = checkerboard;
+            this.value = min;
+            setFocusable(true);
+            addMouseListener(new MouseAdapter() {
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    requestFocusInWindow();
+                    updateFromMouse(e);
+                }
+            });
+            addMouseMotionListener(new MouseAdapter() {
+                @Override
+                public void mouseDragged(MouseEvent e) {
+                    updateFromMouse(e);
+                }
+            });
+            addKeyListener(new KeyAdapter() {
+                @Override
+                public void keyPressed(KeyEvent e) {
+                    double step = (max - min) / 255.0;
+                    switch (e.getKeyCode()) {
+                        case KeyEvent.VK_LEFT, KeyEvent.VK_DOWN -> setValue(value - step);
+                        case KeyEvent.VK_RIGHT, KeyEvent.VK_UP -> setValue(value + step);
+                        default -> {
+                        }
+                    }
+                }
+            });
+        }
+
+        private void updateFromMouse(MouseEvent e) {
+            double frac = Math.max(0, Math.min(1, e.getX() / (double) Math.max(1, getWidth())));
+            setValue(min + frac * (max - min));
+        }
+
+        void setValue(double v) {
+            v = Math.max(min, Math.min(max, v));
+            if (v == value) {
+                return;
+            }
+            value = v;
+            repaint();
+            for (DoubleConsumer l : listeners) {
+                l.accept(v);
+            }
+        }
+
+        double getValue() {
+            return value;
+        }
+
+        void addChangeListener(DoubleConsumer l) {
+            listeners.add(l);
+        }
+
+        /** Replaces the (color-dependent) gradient function and repaints. */
+        void repaintGradient(IntFunction<Color> newGradient) {
+            if (newGradient != null) {
+                this.gradient = newGradient;
+            }
+            this.gradientDirty = true;
+            repaint();
+        }
+
+        private void ensureImage() {
+            if (!gradientDirty) {
+                return;
+            }
+            int w = Math.max(2, getWidth());
+            int h = Math.max(2, getHeight());
+            BufferedImage img = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g = img.createGraphics();
+            if (checkerboard) {
+                int sq = 4;
+                for (int y = 0; y < h; y += sq) {
+                    for (int x = 0; x < w; x += sq) {
+                        boolean light = ((x / sq + y / sq) & 1) == 0;
+                        g.setColor(light ? new Color(0xdd, 0xdd, 0xdd) : new Color(0xbb, 0xbb, 0xbb));
+                        g.fillRect(x, y, sq, sq);
+                    }
+                }
+            }
+            for (int x = 0; x < w; x++) {
+                int frac = (int) (x / (double) (w - 1) * (max - min) + min);
+                Color c = gradient != null ? gradient.apply(frac) : new Color(120, 120, 120);
+                g.setColor(c);
+                g.drawLine(x, 0, x, h - 1);
+            }
+            g.dispose();
+            this.image = img;
+            this.gradientDirty = false;
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            ensureImage();
+            int w = getWidth(), h = getHeight();
+            g.drawImage(image, 0, 0, null);
+            int x = (int) ((value - min) / (max - min) * w);
+            x = Math.max(0, Math.min(w - 1, x));
+            Graphics2D g2 = (Graphics2D) g.create();
+            g2.setStroke(new BasicStroke(1.5f));
+            g2.setColor(Color.WHITE);
+            g2.drawLine(x, 0, x, h);
+            g2.setColor(Color.BLACK);
+            g2.drawLine(x + 1, 0, x + 1, h);
+            g2.dispose();
+            g.setColor(new Color(110, 110, 110));
+            g.drawRect(0, 0, w - 1, h - 1);
+            if (isFocusOwner()) {
+                g.setColor(new Color(60, 130, 220));
+                g.drawRect(1, 1, w - 3, h - 3);
+            }
+        }
+
+        @Override
+        public Dimension getPreferredSize() {
+            return new Dimension(160, 14);
+        }
+    }
+
+    // ------------------------------------------------------------------
+    // 2D wells
+    // ------------------------------------------------------------------
+
+    /** Saturation × brightness well at the current hue (HSB space). */
+    private class HsbWell extends JComponent {
+        private BufferedImage bg;
+        private double bgHue = Double.NaN;
+
+        HsbWell() {
+            setPreferredSize(new Dimension(160, 160));
+            setMinimumSize(new Dimension(120, 120));
+            MouseAdapter ma = new MouseAdapter() {
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    update(e);
+                }
+
+                @Override
+                public void mouseDragged(MouseEvent e) {
+                    update(e);
+                }
+            };
+            addMouseListener(ma);
+            addMouseMotionListener(ma);
+        }
+
+        private void update(MouseEvent e) {
+            double sat = e.getX() / (double) Math.max(1, getWidth()) * 100;
+            double bri = (1.0 - e.getY() / (double) Math.max(1, getHeight())) * 100;
+            double hue = ColorSpaces.toHsb(currentColor)[0];
+            setColor(ColorSpaces.fromHsb(hue, sat, bri));
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            ensureBg();
+            int w = getWidth(), h = getHeight();
+            g.drawImage(bg, 0, 0, w, h, null);
+            double[] hsb = ColorSpaces.toHsb(currentColor);
+            int x = (int) (hsb[1] / 100 * (w - 1));
+            int y = (int) ((1 - hsb[2] / 100) * (h - 1));
+            g.setColor(Color.WHITE);
+            g.drawOval(x - 5, y - 5, 10, 10);
+            g.setColor(Color.BLACK);
+            g.drawOval(x - 4, y - 4, 8, 8);
+            g.setColor(new Color(110, 110, 110));
+            g.drawRect(0, 0, w - 1, h - 1);
+        }
+
+        private void ensureBg() {
+            double hue = ColorSpaces.toHsb(currentColor)[0];
+            if (bg == null || bgHue != hue) {
+                int s = 96;
+                bg = new BufferedImage(s, s, BufferedImage.TYPE_INT_RGB);
+                for (int y = 0; y < s; y++) {
+                    double bri = (1 - y / (double) (s - 1)) * 100;
+                    for (int x = 0; x < s; x++) {
+                        double sat = x / (double) (s - 1) * 100;
+                        bg.setRGB(x, y, ColorSpaces.fromHsb(hue, sat, bri).getRGB());
+                    }
+                }
+                bgHue = hue;
+            }
+        }
+    }
+
+    /** a/b chromaticity plane at the current L (LAB space, clamped to sRGB). */
+    private class LabWell extends JComponent {
+        private BufferedImage bg;
+        private double bgL = Double.NaN;
+
+        LabWell() {
+            setPreferredSize(new Dimension(160, 160));
+            setMinimumSize(new Dimension(120, 120));
+            MouseAdapter ma = new MouseAdapter() {
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    update(e);
+                }
+
+                @Override
+                public void mouseDragged(MouseEvent e) {
+                    update(e);
+                }
+            };
+            addMouseListener(ma);
+            addMouseMotionListener(ma);
+        }
+
+        private void update(MouseEvent e) {
+            double a = (e.getX() / (double) Math.max(1, getWidth()) * 2 - 1) * 128;
+            double b = (1 - e.getY() / (double) Math.max(1, getHeight()) * 2 + 1) * 128;
+            double L = ColorSpaces.toLab(currentColor)[0];
+            setColor(ColorSpaces.fromLab(L, a, b));
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            ensureBg();
+            int w = getWidth(), h = getHeight();
+            g.drawImage(bg, 0, 0, w, h, null);
+            // crosshair axes
+            Graphics2D g2 = (Graphics2D) g.create();
+            g2.setColor(new Color(255, 255, 255, 110));
+            g2.drawLine(w / 2, 0, w / 2, h);
+            g2.drawLine(0, h / 2, w, h / 2);
+            g2.setColor(new Color(0, 0, 0, 110));
+            g2.drawLine(w / 2 + 1, 0, w / 2 + 1, h);
+            g2.drawLine(0, h / 2 + 1, w, h / 2 + 1);
+            // corner tags
+            g2.setColor(Color.WHITE);
+            g2.setFont(getFont().deriveFont(9f));
+            g2.drawString("-a", 2, h - 3);
+            g2.drawString("+a", w - 16, 10);
+            g2.drawString("+b", 2, 10);
+            g2.drawString("-b", w - 16, h - 3);
+            // marker
+            double[] lab = ColorSpaces.toLab(currentColor);
+            int x = (int) ((lab[1] + 128) / 256 * (w - 1));
+            int y = (int) ((128 - lab[2]) / 256 * (h - 1));
+            g2.setColor(Color.WHITE);
+            g2.drawOval(x - 5, y - 5, 10, 10);
+            g2.setColor(Color.BLACK);
+            g2.drawOval(x - 4, y - 4, 8, 8);
+            g2.dispose();
+            g.setColor(new Color(110, 110, 110));
+            g.drawRect(0, 0, w - 1, h - 1);
+        }
+
+        private void ensureBg() {
+            double L = ColorSpaces.toLab(currentColor)[0];
+            if (bg == null || bgL != L) {
+                int s = 96;
+                bg = new BufferedImage(s, s, BufferedImage.TYPE_INT_RGB);
+                for (int y = 0; y < s; y++) {
+                    double b = (1 - y / (double) (s - 1)) * 256 - 128;
+                    for (int x = 0; x < s; x++) {
+                        double a = x / (double) (s - 1) * 256 - 128;
+                        bg.setRGB(x, y, ColorSpaces.fromLab(L, a, b).getRGB());
+                    }
+                }
+                bgL = L;
+            }
+        }
+    }
+
+    /** A color swatch with a checkerboard behind it (shows alpha). */
+    private static class CheckerSwatch extends JComponent {
+        private Color c;
+
+        CheckerSwatch(int w, int h) {
+            setPreferredSize(new Dimension(w, h));
+            setMinimumSize(new Dimension(w, h));
+        }
+
+        void setColor(Color c) {
+            this.c = c;
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            int w = getWidth(), h = getHeight();
+            int sq = 6;
+            for (int y = 0; y < h; y += sq) {
+                for (int x = 0; x < w; x += sq) {
+                    boolean light = ((x / sq + y / sq) & 1) == 0;
+                    g.setColor(light ? new Color(0xdd, 0xdd, 0xdd) : new Color(0xbb, 0xbb, 0xbb));
+                    g.fillRect(x, y, Math.min(sq, w - x), Math.min(sq, h - y));
+                }
+            }
+            if (c != null) {
+                g.setColor(c);
+                g.fillRect(0, 0, w, h);
+            }
+            g.setColor(new Color(110, 110, 110));
+            g.drawRect(0, 0, w - 1, h - 1);
+        }
+    }
+}

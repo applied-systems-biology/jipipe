@@ -27,6 +27,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopMenuExtension;
 import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.commons.components.color.JIPipeDesktopColorChooserDialog;
 import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopHTMLEditor;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
@@ -2634,7 +2635,7 @@ public class UIUtils {
     }
 
     public static Color selectColor(Component parent, String title, Color defaultValue, boolean withTransparency) {
-        return JColorChooser.showDialog(parent, title, defaultValue, withTransparency);
+        return org.hkijena.jipipe.desktop.commons.components.color.JIPipeDesktopColorChooserDialog.show(parent, title, defaultValue, withTransparency);
     }
 
     public static class DragThroughMouseListener implements MouseListener, MouseMotionListener {
