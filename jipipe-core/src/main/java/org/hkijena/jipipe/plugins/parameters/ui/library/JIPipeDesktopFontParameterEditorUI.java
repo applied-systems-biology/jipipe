@@ -64,9 +64,11 @@ public class JIPipeDesktopFontParameterEditorUI extends JIPipeDesktopParameterEd
     private void initialize() {
         setLayout(new BorderLayout());
         preview = new FontPreviewControl();
-        // A non-zero minimum keeps the GridBag cell from collapsing the control
-        // (the same failure mode as the boolean switch — #1339).
+        // A non-zero minimum AND preferred size keeps the GridBag row from
+        // collapsing the control (the same failure mode as the boolean switch
+        // — #1339; in packed panels the row gets only its preferred height).
         preview.setMinimumSize(new Dimension(120, 22));
+        preview.setPreferredSize(new Dimension(120, 22));
         preview.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {

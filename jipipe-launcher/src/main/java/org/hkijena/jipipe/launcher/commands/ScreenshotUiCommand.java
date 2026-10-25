@@ -67,6 +67,8 @@ public class ScreenshotUiCommand {
         // The generic enum editor in both modes: 42-value ColorMap (BOX) plus a
         // boolean; the montage panel covers the small (<=5) COMBO enums.
         SHOWCASE.put("panel-enum-box", "ij1-set-lut-from-color-map");
+        // #1339 font migration: the split font rows are now one "Font" preview row.
+        SHOWCASE.put("panel-draw-text-roi", "ij1-roi-draw-text");
         // Synthetic: a parameter collection with one JIPipeFontParameter (the
         // font editor has no node consumer until the Task 10 migration).
         SHOWCASE.put("panel-font", "<font-parameter>");
