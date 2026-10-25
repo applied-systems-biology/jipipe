@@ -356,6 +356,13 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
                 "Anchor",
                 "An anchor to a position within a rectangle",
                 JIPipeDesktopAnchorParameterEditorUI.class);
+        registerParameterType("jipipe:font",
+                JIPipeFontParameter.class,
+                JIPipeParameterArchetype.Value, JIPipeFontParameter::new,
+                o -> new JIPipeFontParameter((JIPipeFontParameter) o),
+                "Font",
+                "A font: family, size, style and text color",
+                null);
     }
 
     private void registerOptionalParameters() {
