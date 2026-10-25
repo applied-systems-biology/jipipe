@@ -23,6 +23,7 @@ import org.hkijena.jipipe.desktop.commons.components.color.JIPipeDesktopColorCho
 import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.launcher.commands.screenshotui.ScreenshotRenderer;
+import org.hkijena.jipipe.plugins.parameters.library.filesystem.PathList;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.JIPipeFontParameter;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeExtensionApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeGeneralUIApplicationSettings;
@@ -72,6 +73,12 @@ public class ScreenshotUiCommand {
         // Synthetic: a parameter collection with one JIPipeFontParameter (the
         // font editor has no node consumer until the Task 10 migration).
         SHOWCASE.put("panel-font", "<font-parameter>");
+        // Synthetic: a populated file list (8 items > page size 5) so the
+        // inline list editor's pagination (+k more) and grip rows are visible
+        // (#1339 pass 2, S2).
+        SHOWCASE.put("panel-list-populated", "<list-populated>");
+        // Synthetic: an empty file list (S2 empty state: hint, no rows, no footer).
+        SHOWCASE.put("panel-list-empty", "<list-empty>");
     }
 
     private static final int PANEL_WIDTH = 480;
@@ -138,6 +145,12 @@ public class ScreenshotUiCommand {
                 // migration lands in Task 10).
                 FontParameterShowcase root = new FontParameterShowcase();
                 panel = new JIPipeDesktopParameterFormPanel(workbench, root, null, PANEL_FLAGS);
+            } else if ("<list-populated>".equals(nodeId) || "<list-empty>".equals(nodeId)) {
+                // Synthetic file lists (#1339 pass 2, S2): 8 items to show the
+                // inline editor's pagination + grip rows; empty to show the
+                // hint-only empty state.
+                ListShowcase root = new ListShowcase("<list-empty>".equals(nodeId) ? 0 : 8);
+                panel = new JIPipeDesktopParameterFormPanel(workbench, root, null, PANEL_FLAGS);
             } else {
                 JIPipeGraphNode node = JIPipe.createNode(nodeId);
                 panel = new JIPipeDesktopParameterFormPanel(
@@ -157,6 +170,21 @@ public class ScreenshotUiCommand {
     private static class FontParameterShowcase extends JIPipeDynamicParameterCollection {
         FontParameterShowcase() {
             addParameter("font", JIPipeFontParameter.class, "Label font", "A font with family, size, style and text color");
+        }
+    }
+
+    /**
+     * A minimal parameter collection exposing a single {@link PathList} with a
+     * given number of entries (harness-only, #1339 pass 2 — the inline list
+     * editor's pagination/empty state have no populated node showcase).
+     */
+    private static class ListShowcase extends JIPipeDynamicParameterCollection {
+        ListShowcase(int itemCount) {
+            addParameter("files", PathList.class, "Files", "A list of files");
+            PathList list = getValue("files", PathList.class);
+            for (int i = 1; i <= itemCount; i++) {
+                list.add(Paths.get("/data/sample" + i + ".tif"));
+            }
         }
     }
 
