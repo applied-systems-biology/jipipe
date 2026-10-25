@@ -115,6 +115,8 @@ public class JIPipeBackupApplicationSettings extends JIPipeDefaultApplicationsSe
         private OptionalIntegerParameter keepBackupsPerWeek = new OptionalIntegerParameter(true, 4);
         private OptionalIntegerParameter keepBackupsPerDay = new OptionalIntegerParameter(true, 1);
         private OptionalIntegerParameter keepBackupsPerHour = new OptionalIntegerParameter(true, 1);
+        private boolean enableAutoGc = true;
+        private OptionalIntegerParameter storeSizeLimitMb = new OptionalIntegerParameter(false, 0);
 
         public CleanupSettings() {
 
@@ -214,6 +216,28 @@ public class JIPipeBackupApplicationSettings extends JIPipeDefaultApplicationsSe
         @JIPipeParameter("keep-backups-per-hour")
         public void setKeepBackupsPerHour(OptionalIntegerParameter keepBackupsPerHour) {
             this.keepBackupsPerHour = keepBackupsPerHour;
+        }
+
+        @SetJIPipeDocumentation(name = "Maximum backup storage (MB)", description = "If enabled, the oldest backups are removed when the backup data exceeds this size.")
+        @JIPipeParameter(value = "store-size-limit", uiOrder = 110)
+        public OptionalIntegerParameter getStoreSizeLimitMb() {
+            return storeSizeLimitMb;
+        }
+
+        @JIPipeParameter("store-size-limit")
+        public void setStoreSizeLimitMb(OptionalIntegerParameter storeSizeLimitMb) {
+            this.storeSizeLimitMb = storeSizeLimitMb;
+        }
+
+        @SetJIPipeDocumentation(name = "Automatically free unused backup data", description = "If enabled, data no longer used by any backup is deleted after cleanup runs.")
+        @JIPipeParameter(value = "enable-auto-gc", uiOrder = 120)
+        public boolean isEnableAutoGc() {
+            return enableAutoGc;
+        }
+
+        @JIPipeParameter("enable-auto-gc")
+        public void setEnableAutoGc(boolean enableAutoGc) {
+            this.enableAutoGc = enableAutoGc;
         }
     }
 }

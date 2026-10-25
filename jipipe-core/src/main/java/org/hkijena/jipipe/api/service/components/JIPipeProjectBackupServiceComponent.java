@@ -2,27 +2,25 @@ package org.hkijena.jipipe.api.service.components;
 
 import ij.IJ;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.backups.JIPipeProjectBackupSessionInfo;
+import org.hkijena.jipipe.api.backups.CreateBackupRun;
 import org.hkijena.jipipe.api.backups.ThinBackupsRun;
+import org.hkijena.jipipe.api.backups.store.JIPipeBackupObjectStore;
+import org.hkijena.jipipe.api.backups.store.JIPipeLocalBackupObjectStore;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.api.service.JIPipeServiceComponent;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalPathParameter;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeBackupApplicationSettings;
 import org.hkijena.jipipe.utils.PathUtils;
-import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import javax.swing.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 /**
  * Service responsible for handling project backups
@@ -72,13 +70,31 @@ public class JIPipeProjectBackupServiceComponent extends JIPipeServiceComponent 
         }
         JIPipe.getInstance().getProjectBackup().getQueue().cancelIf(runnable -> {
             if(runnable instanceof CreateBackupRun createBackupRun) {
-                return createBackupRun.window == window;
+                return createBackupRun.getWindow() == window;
             }
             return false;
         });
         String finalName = name;
         JIPipeRunnable run = new CreateBackupRun(window, finalName);
         JIPipe.getInstance().getProjectBackup().getQueue().enqueue(run);
+    }
+
+    /**
+     * @return a fresh content-addressed backup object store rooted at the current backup path
+     */
+    public JIPipeBackupObjectStore getStore() {
+        return new JIPipeLocalBackupObjectStore(getCurrentBackupPath());
+    }
+
+    /**
+     * Overrides the backup path for the rest of the JIPipe instance
+     * (TESTING ONLY — lets registry-backed backup tests operate on a
+     * hand-built backup root instead of the user directory).
+     *
+     * @param path the new backup path
+     */
+    public void setCustomBackupPath(Path path) {
+        getSettings().setCustomBackupPath(new OptionalPathParameter(path, true));
     }
 
     public Path getCurrentBackupPath() {
@@ -136,53 +152,5 @@ public class JIPipeProjectBackupServiceComponent extends JIPipeServiceComponent 
 
     public JIPipeQueuedRunnableExecutor getQueue() {
         return queue;
-    }
-
-    private class CreateBackupRun extends DefaultJIPipeRunnable {
-        private final JIPipeDesktopProjectWindow window;
-        private final String finalName;
-
-        public CreateBackupRun(JIPipeDesktopProjectWindow window, String finalName) {
-            this.window = window;
-            this.finalName = finalName;
-        }
-
-        @Override
-        public String getTaskLabel() {
-            return "Creating backup";
-        }
-
-        @Override
-        public void run() {
-            try {
-                Path directory = getCurrentBackupPath();
-                directory = directory.resolve(window.getSessionId().toString());
-                Files.createDirectories(directory);
-
-                String dateTimeFormatted = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-
-                String baseName = finalName + "_" + dateTimeFormatted.replace(':', '-');
-                baseName = StringUtils.makeFilesystemCompatible(baseName);
-                // Backups follow the project's current format — the
-                // saveProject dispatch writes the right container
-                boolean projectIsJipx = PathUtils.isJipxPath(window.getProjectSavePath());
-                Path targetFile = directory.resolve(baseName + (projectIsJipx ? ".jipx" : ".jip"));
-                window.getProject().saveProject(targetFile, false);
-
-                SwingUtilities.invokeLater(() -> window.getProjectWorkbench().sendStatusBarText("Saved backup to " + targetFile));
-
-                // Write storage info
-                JIPipeProjectBackupSessionInfo info = new JIPipeProjectBackupSessionInfo();
-                info.setProjectStoragePath(window.getProjectSavePath() != null ? window.getProjectSavePath().toString() : "");
-                info.setProjectSessionId(window.getSessionId().toString());
-                info.setLastDateTimeInfo(dateTimeFormatted);
-                JsonUtils.saveToFile(info, directory.resolve("backup-info.json"));
-
-            } catch (IOException e) {
-                SwingUtilities.invokeLater(() -> window.getProjectWorkbench().sendStatusBarText("Failed to save backup: " + e.getMessage()));
-                IJ.handleException(e);
-                e.printStackTrace();
-            }
-        }
     }
 }

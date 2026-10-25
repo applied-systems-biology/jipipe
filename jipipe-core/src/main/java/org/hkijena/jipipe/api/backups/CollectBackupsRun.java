@@ -15,6 +15,7 @@ package org.hkijena.jipipe.api.backups;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
+import org.hkijena.jipipe.api.backups.store.JIPipeBackupSnapshot;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeBackupApplicationSettings;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -57,6 +58,15 @@ public class CollectBackupsRun extends DefaultJIPipeRunnable {
                         getProgressInfo().log("Reading backup info: " + infoFile);
                         try {
                             JIPipeProjectBackupSessionInfo sessionInfo = JsonUtils.readFromFile(infoFile, JIPipeProjectBackupSessionInfo.class);
+                            String sessionId;
+                            if (StringUtils.isNullOrEmpty(sessionInfo.getProjectSessionId())) {
+                                sessionId = sessionPath.getFileName().toString();
+                            } else {
+                                sessionId = sessionInfo.getProjectSessionId();
+                            }
+                            // Content-addressed snapshot items (snapshots.json index)
+                            collectSnapshotItems(backupsDir, sessionPath, sessionInfo, sessionId, items);
+                            // Legacy file items (.jip/.jipx files in the session dir)
                             try (Stream<Path> stream1 = Files.list(sessionPath)) {
                                 stream1.forEach(backupFile -> {
                                     try {
@@ -64,11 +74,8 @@ public class CollectBackupsRun extends DefaultJIPipeRunnable {
                                             JIPipeProjectBackupItem item = new JIPipeProjectBackupItem();
                                             item.setProjectPath(backupFile);
                                             item.setBackupTime(LocalDateTime.ofInstant(Files.getLastModifiedTime(backupFile).toInstant(), ZoneId.systemDefault()));
-                                            item.setSessionId(sessionInfo.getProjectSessionId());
+                                            item.setSessionId(sessionId);
                                             item.setOriginalProjectPath(sessionInfo.getProjectStoragePath());
-                                            if (StringUtils.isNullOrEmpty(item.getSessionId())) {
-                                                item.setSessionId(sessionPath.getFileName().toString());
-                                            }
                                             items.add(item);
                                         }
                                     } catch (Exception e) {
@@ -132,5 +139,49 @@ public class CollectBackupsRun extends DefaultJIPipeRunnable {
         PruneBackupsRun.pruneEmptySessions(backupsDir, getProgressInfo().resolve("Prune"));
     }
 
-
+    /**
+     * Collects the content-addressed snapshot items of one session: for each
+     * id in the session's {@code snapshots.json} index, the manifest
+     * {@code <backupsDir>/snapshots/<id>.json} becomes an item (its
+     * {@code created} time is the backup time; the object files stay in the
+     * store, only the manifest is listed here). Unreadable or missing
+     * manifests are skipped with a log entry — the session's file items are
+     * unaffected.
+     */
+    private void collectSnapshotItems(Path backupsDir, Path sessionPath, JIPipeProjectBackupSessionInfo sessionInfo,
+                                      String sessionId, List<JIPipeProjectBackupItem> items) {
+        Path indexFile = sessionPath.resolve("snapshots.json");
+        if (!Files.isRegularFile(indexFile)) {
+            return;
+        }
+        List<String> snapshotIds;
+        try {
+            snapshotIds = JsonUtils.readListFromFile(indexFile, String.class);
+        } catch (Exception e) {
+            getProgressInfo().log("Could not read snapshot index " + indexFile + ": " + e);
+            return;
+        }
+        Path snapshotsDirectory = backupsDir.resolve("snapshots");
+        for (String snapshotId : snapshotIds) {
+            Path manifest = snapshotsDirectory.resolve(snapshotId + ".json");
+            try {
+                if (!Files.isRegularFile(manifest)) {
+                    getProgressInfo().log("Snapshot manifest is missing, skipping: " + manifest);
+                    continue;
+                }
+                JIPipeBackupSnapshot snapshot = JsonUtils.readFromFile(manifest, JIPipeBackupSnapshot.class);
+                JIPipeProjectBackupItem item = new JIPipeProjectBackupItem();
+                item.setSnapshotId(snapshot.getSnapshotId());
+                item.setSnapshotManifestPath(manifest);
+                item.setProjectFormat(snapshot.getProjectFormat());
+                item.setTotalSizeBytes(snapshot.getTotalSize());
+                item.setBackupTime(LocalDateTime.parse(snapshot.getCreated()));
+                item.setSessionId(sessionId);
+                item.setOriginalProjectPath(sessionInfo.getProjectStoragePath());
+                items.add(item);
+            } catch (Exception e) {
+                getProgressInfo().log("Unable to read snapshot " + manifest + ": " + e);
+            }
+        }
+    }
 }
