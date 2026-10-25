@@ -65,6 +65,7 @@ public class JIPipeDesktopRichSelectionBox extends JButton {
         private final String searchText;
         private final Icon icon;
         private final String group;
+        private final String tooltip;
 
         /**
          * @param value       the caller's value (returned to the change consumer)
@@ -74,10 +75,23 @@ public class JIPipeDesktopRichSelectionBox extends JButton {
          *                    headers / panes)
          */
         public Option(T value, String displayText, Icon icon, String group) {
+            this(value, displayText, icon, group, null);
+        }
+
+        /**
+         * @param value       the caller's value (returned to the change consumer)
+         * @param displayText the row text
+         * @param icon        the row icon (nullable)
+         * @param group       the section group (nullable; rendered as group
+         *                    headers / panes)
+         * @param tooltip     the row tooltip (nullable; shown on hover)
+         */
+        public Option(T value, String displayText, Icon icon, String group, String tooltip) {
             this.value = value;
             this.displayText = displayText;
             this.icon = icon;
             this.group = group;
+            this.tooltip = tooltip;
             this.searchText = displayText.toLowerCase(Locale.ROOT);
         }
 
@@ -95,6 +109,11 @@ public class JIPipeDesktopRichSelectionBox extends JButton {
 
         public String getGroup() {
             return group;
+        }
+
+        /** The row tooltip, or null. */
+        public String getTooltip() {
+            return tooltip;
         }
 
         /** The lower-cased display text, for case-insensitive substring search. */
@@ -244,6 +263,23 @@ public class JIPipeDesktopRichSelectionBox extends JButton {
         return Collections.unmodifiableSet(selectedValues);
     }
 
+    /**
+     * Evaluates the options supplier and updates the button's label and icon
+     * to reflect the current selection, <em>without</em> showing the popup.
+     * Call this after construction (and whenever the underlying value changes)
+     * so the button shows the selected option's display text and icon instead
+     * of the raw value — the option index is only built on the first popup
+     * open otherwise.
+     */
+    public void refreshDisplay() {
+        currentOptions = optionsSupplier.get();
+        optionsByValue.clear();
+        for (Option<?> option : currentOptions) {
+            optionsByValue.put(option.getValue(), option);
+        }
+        updateText();
+    }
+
     // ------------------------------------------------------------------
     // Popup
     // ------------------------------------------------------------------
@@ -328,6 +364,7 @@ public class JIPipeDesktopRichSelectionBox extends JButton {
                 if (value instanceof Option<?> option) {
                     label.setText(option.getDisplayText());
                     label.setIcon(option.getIcon());
+                    label.setToolTipText(option.getTooltip());
                     if (isGroupHeader(option)) {
                         label.setFont(label.getFont().deriveFont(Font.BOLD));
                     }
@@ -457,6 +494,7 @@ public class JIPipeDesktopRichSelectionBox extends JButton {
         if (selectedValues.isEmpty()) {
             setText(baseLabel);
             setFont(baseFont);
+            setIcon(null);
             return;
         }
         if (summaryLabel != null) {
@@ -464,7 +502,20 @@ public class JIPipeDesktopRichSelectionBox extends JButton {
             // bounded no matter how many options are selected.
             setText(summaryLabel + " (" + selectedValues.size() + ")");
             setFont(baseFont.deriveFont(Font.BOLD));
+            setIcon(null);
             return;
+        }
+        if (selectedValues.size() == 1) {
+            // Single select (e.g. an enum): show the selected option's label
+            // and icon on the button, not the raw value.
+            Option<?> option = optionsByValue.get(selectedValues.iterator().next());
+            if (option != null) {
+                setText(option.getDisplayText());
+                setIcon(option.getIcon());
+                setToolTipText(option.getTooltip() != null ? option.getTooltip() : option.getDisplayText());
+                setFont(baseFont);
+                return;
+            }
         }
         StringBuilder sb = new StringBuilder();
         int shown = 0;
@@ -481,6 +532,7 @@ public class JIPipeDesktopRichSelectionBox extends JButton {
             shown++;
         }
         setText(sb.toString());
+        setIcon(null);
         setFont(baseFont.deriveFont(Font.BOLD));
     }
 

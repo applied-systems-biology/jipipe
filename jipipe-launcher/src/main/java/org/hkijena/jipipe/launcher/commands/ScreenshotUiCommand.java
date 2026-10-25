@@ -61,6 +61,9 @@ public class ScreenshotUiCommand {
         SHOWCASE.put("panel-import-file-list", "import-file-list");
         SHOWCASE.put("panel-roi3d-statistics", "ij3d-measure-roi3d");
         SHOWCASE.put("panel-combo-boolean", "ij1-morph-reconstruct-2d");
+        // The generic enum editor in both modes: 42-value ColorMap (BOX) plus a
+        // boolean; the montage panel covers the small (<=5) COMBO enums.
+        SHOWCASE.put("panel-enum-box", "ij1-set-lut-from-color-map");
     }
 
     private static final int PANEL_WIDTH = 480;

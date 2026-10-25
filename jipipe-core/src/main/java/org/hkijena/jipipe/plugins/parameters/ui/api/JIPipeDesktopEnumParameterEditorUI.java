@@ -15,29 +15,37 @@ package org.hkijena.jipipe.plugins.parameters.ui.api;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
-import org.hkijena.jipipe.desktop.commons.components.pickers.JIPipeDesktopPickEnumValueDialog;
+import org.hkijena.jipipe.desktop.commons.components.selection.JIPipeDesktopRichSelectionBox;
 import org.hkijena.jipipe.plugins.parameters.api.enums.EnumParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.api.enums.JIPipeDefaultEnumItemInfo;
 import org.hkijena.jipipe.plugins.parameters.api.enums.JIPipeEnumItemInfoRenderTarget;
 import org.hkijena.jipipe.plugins.parameters.api.enums.JIPipeEnumParameterItemInfo;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.ThemeUtils;
-import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Objects;
 
 /**
- * A parameter editor UI that works for all enumerations
+ * A parameter editor UI that works for all enumerations.
+ * <p>
+ * #1339: small option sets (<= {@link EnumUiSelection#COMBO_MAX_VALUES}) render
+ * a plain combo box without a search button; larger sets render a
+ * {@link JIPipeDesktopRichSelectionBox} (searchable popup, closes on pick,
+ * no modal).
  */
 public class JIPipeDesktopEnumParameterEditorUI extends JIPipeDesktopParameterEditorUI<Object> {
 
     private JComboBox<Object> comboBox;
-    private JButton currentlyDisplayed;
+    private JIPipeDesktopRichSelectionBox selectionBox;
     private JIPipeEnumParameterItemInfo enumItemInfo = new JIPipeDefaultEnumItemInfo();
+    /** The enum constants, sorted by display label (computed once). */
+    private Object[] sortedValues;
 
     public JIPipeDesktopEnumParameterEditorUI(InitializationParameters parameters) {
         super(Object.class, parameters);
@@ -53,44 +61,73 @@ public class JIPipeDesktopEnumParameterEditorUI extends JIPipeDesktopParameterEd
     @Override
     public void reload() {
         Object target = getParameterAccess().get(Object.class);
-        if (!Objects.equals(target, comboBox.getSelectedItem())) {
-            comboBox.setSelectedItem(target);
+        if (comboBox != null) {
+            if (!Objects.equals(target, comboBox.getSelectedItem())) {
+                comboBox.setSelectedItem(target);
+            }
+        } else if (selectionBox != null) {
+            if (!selectionBox.getSelectedValues().contains(target)) {
+                selectionBox.setSelectedValues(target == null ? List.of() : List.of(target));
+            }
         }
     }
 
     private void initialize() {
         setLayout(new BorderLayout());
 
-        // Combo box style
-        Object[] values = getParameterAccess().getFieldClass().getEnumConstants();
+        // Option values + item info
+        sortedValues = getParameterAccess().getFieldClass().getEnumConstants();
         EnumParameterSettings settings = getParameterAccess().getAnnotationOfType(EnumParameterSettings.class);
         if (settings != null) {
             enumItemInfo = (JIPipeEnumParameterItemInfo) ReflectionUtils.newInstance(settings.itemInfo());
         }
+        Arrays.sort(sortedValues, Comparator.comparing(value -> enumItemInfo.getLabel(value, JIPipeEnumItemInfoRenderTarget.ComboBox)));
 
-        Arrays.sort(values, Comparator.comparing(value -> enumItemInfo.getLabel(value, JIPipeEnumItemInfoRenderTarget.ComboBox)));
-        comboBox = new JComboBox<>(values);
+        // The enum's constant set is fixed, so the mode is computed once.
+        EnumUiMode mode = EnumUiSelection.mode(sortedValues.length, false, false);
+        if (mode == EnumUiMode.COMBO) {
+            createCombo();
+        } else {
+            createSelectionBox();
+        }
+    }
+
+    private void createCombo() {
+        comboBox = new JComboBox<>(sortedValues);
         comboBox.setSelectedItem(getParameterAccess().get(Object.class));
         comboBox.addActionListener(e -> {
             setParameter(comboBox.getSelectedItem(), false);
         });
         comboBox.setRenderer(new Renderer(enumItemInfo, JIPipeEnumItemInfoRenderTarget.ComboBox));
         add(comboBox, BorderLayout.CENTER);
-
-        JButton selectButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/search.png"));
-        UIUtils.setStandardButtonBorder(selectButton);
-        selectButton.setToolTipText("Select value");
-        selectButton.addActionListener(e -> pickEnum());
-        add(selectButton, BorderLayout.EAST);
     }
 
-    private void pickEnum() {
-        Object[] values = getParameterAccess().getFieldClass().getEnumConstants();
-        Object target = getParameterAccess().get(Object.class);
-        Object selected = JIPipeDesktopPickEnumValueDialog.showDialog(this, Arrays.asList(values), enumItemInfo, target, "Select value");
-        if (selected != null) {
-            setParameter(selected, true);
+    private void createSelectionBox() {
+        selectionBox = new JIPipeDesktopRichSelectionBox("Select value", false,
+                this::options,
+                selected -> {
+                    if (!selected.isEmpty()) {
+                        setParameter(selected.get(0).getValue(), true);
+                    }
+                });
+        add(selectionBox, BorderLayout.CENTER);
+        // Show the current value's label/icon on the button (the option index
+        // is only built on the first popup open otherwise).
+        selectionBox.setSelectedValues(getParameterAccess().get(Object.class) == null
+                ? List.of() : List.of(getParameterAccess().get(Object.class)));
+        selectionBox.refreshDisplay();
+    }
+
+    private List<JIPipeDesktopRichSelectionBox.Option<?>> options() {
+        List<JIPipeDesktopRichSelectionBox.Option<?>> result = new ArrayList<>();
+        for (Object value : sortedValues) {
+            result.add(new JIPipeDesktopRichSelectionBox.Option<>(value,
+                    enumItemInfo.getLabel(value, JIPipeEnumItemInfoRenderTarget.List),
+                    enumItemInfo.getIcon(value, JIPipeEnumItemInfoRenderTarget.List),
+                    null,
+                    enumItemInfo.getTooltip(value, JIPipeEnumItemInfoRenderTarget.List)));
         }
+        return result;
     }
 
     /**
