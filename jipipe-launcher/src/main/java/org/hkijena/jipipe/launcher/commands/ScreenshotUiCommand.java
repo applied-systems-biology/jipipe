@@ -17,14 +17,20 @@ import net.imagej.ImageJ;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
+import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.service.JIPipeServiceInitializationSettings;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopDummyWorkbench;
+import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.color.JIPipeDesktopColorChooserDialog;
 import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.launcher.commands.screenshotui.ScreenshotRenderer;
+import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeParameterCollectionList;
 import org.hkijena.jipipe.plugins.parameters.library.filesystem.PathList;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.JIPipeFontParameter;
+import org.hkijena.jipipe.plugins.parameters.ui.api.JIPipeDesktopListEditorDialog;
+import org.hkijena.jipipe.plugins.parameters.ui.api.JIPipeListParameterEditorUI;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeExtensionApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeGeneralUIApplicationSettings;
 import org.hkijena.jipipe.utils.ThemeUtils;
@@ -84,6 +90,8 @@ public class ScreenshotUiCommand {
     private static final int PANEL_WIDTH = 480;
     private static final int DIALOG_WIDTH = 380;
     private static final int DIALOG_HEIGHT = 560;
+    private static final int LIST_DIALOG_WIDTH = 640;
+    private static final int LIST_DIALOG_HEIGHT = 520;
 
     /**
      * Panel flags for the showcase capture. Deliberately WITHOUT
@@ -123,6 +131,7 @@ public class ScreenshotUiCommand {
             try {
                 renderNodePanels(workbench, outDir, only, rendered);
                 renderColorDialog(outDir, only, rendered);
+                renderListEditorDialogs(workbench, outDir, only, rendered);
                 renderSettingsSheet(workbench, outDir, only, rendered);
                 System.out.println("[screenshot-ui] rendered: " + rendered);
             } catch (Throwable t) {
@@ -209,6 +218,68 @@ public class ScreenshotUiCommand {
             ScreenshotRenderer.renderFixed(dialog.getContentPane(), DIALOG_WIDTH, DIALOG_HEIGHT, outDir.resolve("dialog-color-lab.png"));
             rendered.add("dialog-color-lab");
         }
+    }
+
+    /**
+     * The list editor modal showcases (#1339 pass 2, S2c). The modal is
+     * app-modal, so it is never shown — the content pane is constructed and
+     * captured off-screen at its initial size (640×520). Each showcase
+     * builds a synthetic list, obtains the registered list editor instance
+     * for a synthetic parameter access (the same factory call the list
+     * editors' rows use internally), and renders
+     * {@code new JIPipeDesktopListEditorDialog(null, editor).getContentPane()}.
+     */
+    private static void renderListEditorDialogs(JIPipeDesktopDummyWorkbench workbench, Path outDir, List<String> only, List<String> rendered) throws Exception {
+        if (only.isEmpty() || only.contains("dialog-list-editor")) {
+            // A plain file list with 8 items (more than the inline page size of
+            // 5) so the modal's full-list body is visible.
+            JIPipeDynamicParameterCollection root = new JIPipeDynamicParameterCollection();
+            JIPipeMutableParameterAccess access =
+                    root.addParameter("files", PathList.class, "Files", "A list of files");
+            PathList list = (PathList) JIPipe.getParameterTypes().getInfoByFieldClass(PathList.class).newInstance();
+            for (int i = 1; i <= 8; i++) {
+                list.add(Paths.get("/data/sample" + i + ".tif"));
+            }
+            access.set(list);
+            ScreenshotRenderer.renderFixed(
+                    new JIPipeDesktopListEditorDialog(null, listEditorInstance(workbench, access)).getContentPane(),
+                    LIST_DIALOG_WIDTH, LIST_DIALOG_HEIGHT,
+                    outDir.resolve("dialog-list-editor.png"));
+            rendered.add("dialog-list-editor");
+        }
+        if (only.isEmpty() || only.contains("dialog-list-collection")) {
+            // A parameter collection list with 2 items, each rendered as a
+            // nested mini form (Review Focus #5: nested fully-editable rows).
+            // Mutate the STORED instance (the one addParameter defaults), not a
+            // separately created list: access.set() skips the store when the
+            // new value equals the current (empty) one, and the editor reads
+            // the stored value. The template carries a text + a number so each
+            // item shows real editable fields.
+            JIPipeDynamicParameterCollection root = new JIPipeDynamicParameterCollection();
+            JIPipeMutableParameterAccess access = root.addParameter("collections",
+                    JIPipeParameterCollectionList.class, "Collections", "A list of parameter collections");
+            JIPipeParameterCollectionList list =
+                    root.getValue("collections", JIPipeParameterCollectionList.class);
+            list.getTemplate().addParameter("label", String.class, "Label", "A text label");
+            list.getTemplate().addParameter("weight", Double.class, "Weight", "A number");
+            list.addNewInstance();
+            list.addNewInstance();
+            ScreenshotRenderer.renderFixed(
+                    new JIPipeDesktopListEditorDialog(null, listEditorInstance(workbench, access)).getContentPane(),
+                    LIST_DIALOG_WIDTH, LIST_DIALOG_HEIGHT,
+                    outDir.resolve("dialog-list-collection.png"));
+            rendered.add("dialog-list-collection");
+        }
+    }
+
+    /**
+     * Creates the registered editor instance for a list parameter access —
+     * the same factory call the list editors' rows use internally (a
+     * synthetic tree over the access, the dummy workbench, null parent).
+     */
+    private static JIPipeListParameterEditorUI listEditorInstance(JIPipeDesktopDummyWorkbench workbench, JIPipeMutableParameterAccess access) {
+        return (JIPipeListParameterEditorUI) JIPipe.getParameterTypes().createEditorInstance(
+                access, workbench, new JIPipeParameterTree(access), null);
     }
 
     private static void renderSettingsSheet(JIPipeDesktopDummyWorkbench workbench, Path outDir, List<String> only, List<String> rendered) throws Exception {

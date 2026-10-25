@@ -67,6 +67,15 @@ public abstract class JIPipeListParameterEditorUI extends JIPipeDesktopParameter
     private JIPipeDesktopFormPanel formPanel;
     /** Current pagination state; rebuilt in {@link #reload()}. */
     ListPaginationModel pagination;
+    /**
+     * Invoked after a structural change to the row order (grip drag or the
+     * row menu's Delete / Move up / Move down) has been written to the
+     * parameter. The modal editor ({@link JIPipeDesktopListEditorDialog})
+     * registers itself to rebuild its rows so the new order is visible — its
+     * row list must be re-derived from the parameter. The inline view leaves
+     * it null (the parameter write already reloads it).
+     */
+    Runnable afterRowOrderChanged;
 
     protected JIPipeListParameterEditorUI(Class<?> parameterClass, InitializationParameters parameters) {
         super((Class<JIPipeListParameter>) parameterClass, parameters);
@@ -137,6 +146,15 @@ public abstract class JIPipeListParameterEditorUI extends JIPipeDesktopParameter
         addButton.addActionListener(e -> addNewEntry());
         controls.add(addButton);
 
+        JButton editButton = new JButton("Edit");
+        applyFlatHeaderButton(editButton);
+        editButton.setToolTipText("Open the list in a dialog with selection, search and bulk operations");
+        editButton.addActionListener(e -> {
+            Window window = SwingUtilities.getWindowAncestor(this);
+            new JIPipeDesktopListEditorDialog(window, this).setVisible(true);
+        });
+        controls.add(editButton);
+
         countLabel.setForeground(UIManager.getColor("Label.disabledForeground"));
         controls.add(countLabel);
 
@@ -172,6 +190,13 @@ public abstract class JIPipeListParameterEditorUI extends JIPipeDesktopParameter
      * {@code ParameterCollectionListTemplate} fixup.
      */
     protected void onBeforeGenerateEntries() {
+    }
+
+    /**
+     * Registers the modal's post-reorder hook (see {@link #afterRowOrderChanged}).
+     */
+    void setAfterRowOrderChanged(Runnable hook) {
+        this.afterRowOrderChanged = hook;
     }
 
     /**
@@ -276,7 +301,9 @@ public abstract class JIPipeListParameterEditorUI extends JIPipeDesktopParameter
         handleButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         handleButton.setOpaque(false);
         UIUtils.makeButtonFlat25x25(handleButton);
-        handleButton.setToolTipText("Menu for this entry. Drag to reorder.");
+        handleButton.setToolTipText(behavior == RowGripBehavior.SELECT
+                ? "Select this entry (Ctrl: toggle, Shift: range). Drag to reorder."
+                : "Menu for this entry. Drag to reorder.");
         handleButton.addActionListener(e -> {
             boolean shift = (e.getModifiers() & ActionEvent.SHIFT_MASK) == ActionEvent.SHIFT_MASK;
             boolean ctrl = (e.getModifiers() & ActionEvent.CTRL_MASK) == ActionEvent.CTRL_MASK;
@@ -338,10 +365,13 @@ public abstract class JIPipeListParameterEditorUI extends JIPipeDesktopParameter
         menu.add(UIUtils.createMenuItem("Delete", "Removes this item", JIPipe.RESOURCES.getIcon16("actions/delete.png"), () -> {
             parameter.remove(index);
             setParameter(parameter, true);
+            if (afterRowOrderChanged != null) {
+                afterRowOrderChanged.run();
+            }
         }));
         menu.addSeparator();
-        menu.add(UIUtils.createMenuItem("Move up", "Moves this item one position up", JIPipe.RESOURCES.getIcon16("actions/go-up.png"), () -> moveItem(parameter, index, index - 1)));
-        menu.add(UIUtils.createMenuItem("Move down", "Moves this item one position down", JIPipe.RESOURCES.getIcon16("actions/go-down.png"), () -> moveItem(parameter, index, index + 1)));
+        menu.add(UIUtils.createMenuItem("Move up", "Moves this item one position up", JIPipe.RESOURCES.getIcon16("actions/go-up.png"), () -> moveEntryTo(index, index - 1)));
+        menu.add(UIUtils.createMenuItem("Move down", "Moves this item one position down", JIPipe.RESOURCES.getIcon16("actions/go-down.png"), () -> moveEntryTo(index, index + 1)));
     }
 
     /**
@@ -387,6 +417,9 @@ public abstract class JIPipeListParameterEditorUI extends JIPipeDesktopParameter
     private void moveEntryTo(int from, int to) {
         if (moveItem(getParameter(), from, to)) {
             setParameter(getParameter(), true);
+            if (afterRowOrderChanged != null) {
+                afterRowOrderChanged.run();
+            }
         }
     }
 
