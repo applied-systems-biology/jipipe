@@ -35,7 +35,9 @@ import org.junit.jupiter.api.io.TempDir;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.FileTime;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -131,6 +133,16 @@ class JIPipeBackupIntegrationTest {
         // One legacy .jip inside the same session dir + one root-level legacy .jip
         Path legacyInSession = sessionDir.resolve("2026-01-01T10-00-00.jip");
         Files.writeString(legacyInSession, "legacy-jip-content");
+        // The test asserts the legacy file sorts strictly after the snapshot
+        // (newest first). The OS would otherwise stamp a just-written file with
+        // the filesystem clock, which on some filesystems (the CI runner,
+        // virtiofs) lags the wall clock used for snapshot.created by a few ms,
+        // inverting the order and flaking the assertion. Stamp the mtime
+        // explicitly, a little after the snapshot's created time, so the
+        // ordering is deterministic regardless of the filesystem clock.
+        Files.setLastModifiedTime(legacyInSession, FileTime.from(
+                LocalDateTime.parse(snapshot.getCreated()).plusSeconds(5)
+                        .atZone(ZoneId.systemDefault()).toInstant()));
         Path legacyAtRoot = backupRoot.resolve("2026-01-02T10-00-00.jip");
         Files.writeString(legacyAtRoot, "legacy-root-content");
 
