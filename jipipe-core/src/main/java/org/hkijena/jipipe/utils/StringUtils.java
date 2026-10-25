@@ -668,6 +668,45 @@ public class StringUtils {
         return text;
     }
 
+    /**
+     * Formats bytes into a compact string representation with MB as the minimum unit.
+     * Rounds up decimal values as requested.
+     *
+     * @param bytes The number of bytes to format
+     * @return Formatted string like "1 MB", "1.5 GB", "0.5 MB", etc.
+     */
+    public static String formatBytes(long bytes) {
+        if (bytes < 0) {
+            return "0 MB";
+        }
+
+        // Convert MB to first value to check
+        double value = bytes / (1024.0 * 1024.0);
+        String unit = "MB";
+
+        if (value >= 1024.0) {
+            value /= 1024.0;
+            unit = "GB";
+            if (value >= 1024.0) {
+                value /= 1024.0;
+                unit = "TB";
+                if (value >= 1024.0) {
+                    value /= 1024.0;
+                    unit = "PB";
+                }
+            }
+        }
+
+        // Round up and format with appropriate decimal places
+        if (unit.equals("MB")) {
+            double rounded = Math.ceil(value * 100) / 100;
+            return String.format(Locale.ROOT, "%.2f %s", rounded, unit);
+        } else {
+            double rounded = Math.ceil(value * 10) / 10;
+            return String.format(Locale.ROOT, "%.1f %s", rounded, unit);
+        }
+    }
+
     public static String formatSize(long size) {
         if (size <= 0) return "0 bytes";
 
