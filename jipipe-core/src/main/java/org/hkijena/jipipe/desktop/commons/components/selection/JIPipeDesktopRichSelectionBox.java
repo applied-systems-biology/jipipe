@@ -964,7 +964,6 @@ public class JIPipeDesktopRichSelectionBox extends JButton {
     private void focusSearchField() {
         keyModel.focusSearch();
         searchField.requestFocusInWindow();
-        searchField.selectAll();
     }
 
     private void focusPaneList(int pane, int row) {
