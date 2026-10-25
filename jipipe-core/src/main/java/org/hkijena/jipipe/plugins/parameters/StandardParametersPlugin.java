@@ -362,7 +362,7 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
                 o -> new JIPipeFontParameter((JIPipeFontParameter) o),
                 "Font",
                 "A font: family, size, style and text color",
-                null);
+                JIPipeDesktopFontParameterEditorUI.class);
     }
 
     private void registerOptionalParameters() {

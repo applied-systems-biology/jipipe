@@ -16,12 +16,14 @@ package org.hkijena.jipipe.launcher.commands;
 import net.imagej.ImageJ;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.service.JIPipeServiceInitializationSettings;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopDummyWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.color.JIPipeDesktopColorChooserDialog;
 import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.launcher.commands.screenshotui.ScreenshotRenderer;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.JIPipeFontParameter;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeExtensionApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeGeneralUIApplicationSettings;
 import org.hkijena.jipipe.utils.ThemeUtils;
@@ -65,6 +67,9 @@ public class ScreenshotUiCommand {
         // The generic enum editor in both modes: 42-value ColorMap (BOX) plus a
         // boolean; the montage panel covers the small (<=5) COMBO enums.
         SHOWCASE.put("panel-enum-box", "ij1-set-lut-from-color-map");
+        // Synthetic: a parameter collection with one JIPipeFontParameter (the
+        // font editor has no node consumer until the Task 10 migration).
+        SHOWCASE.put("panel-font", "<font-parameter>");
     }
 
     private static final int PANEL_WIDTH = 480;
@@ -125,11 +130,31 @@ public class ScreenshotUiCommand {
             if (!only.isEmpty() && !only.contains(name))
                 continue;
             String nodeId = e.getValue();
-            JIPipeGraphNode node = JIPipe.createNode(nodeId);
-            JIPipeDesktopParameterFormPanel panel = new JIPipeDesktopParameterFormPanel(
-                    workbench, node, TooltipUtils.getAlgorithmDocumentation(node), PANEL_FLAGS);
+            JIPipeDesktopParameterFormPanel panel;
+            if ("<font-parameter>".equals(nodeId)) {
+                // Synthetic: one JIPipeFontParameter (no node uses it yet — the
+                // migration lands in Task 10).
+                FontParameterShowcase root = new FontParameterShowcase();
+                panel = new JIPipeDesktopParameterFormPanel(workbench, root, null, PANEL_FLAGS);
+            } else {
+                JIPipeGraphNode node = JIPipe.createNode(nodeId);
+                panel = new JIPipeDesktopParameterFormPanel(
+                        workbench, node, TooltipUtils.getAlgorithmDocumentation(node), PANEL_FLAGS);
+            }
             ScreenshotRenderer.renderComponent(panel, PANEL_WIDTH, outDir.resolve(name + ".png"));
             rendered.add(name);
+        }
+    }
+
+    /**
+     * A minimal parameter collection exposing a single {@link JIPipeFontParameter}
+     * (harness-only, #1339 — no node uses the font parameter until the Task 10
+     * migration). {@link JIPipeDynamicParameterCollection} instantiates the
+     * registered type automatically.
+     */
+    private static class FontParameterShowcase extends JIPipeDynamicParameterCollection {
+        FontParameterShowcase() {
+            addParameter("font", JIPipeFontParameter.class, "Label font", "A font with family, size, style and text color");
         }
     }
 
