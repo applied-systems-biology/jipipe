@@ -50,6 +50,8 @@ public class JIPipeDesktopListParameterEditorUI extends JIPipeDesktopParameterEd
 
     private final JLabel emptyLabel = UIUtils.createInfoLabel("This list is empty", "Click <i>Add</i> to insert a new item.");
     private final JLabel countLabel = new JLabel("");
+    /** Count label for the name row's header controls (kept in sync with the footer's {@link #countLabel} until the footer moves into the shared base, #1339). */
+    private final JLabel headerCountLabel = new JLabel("");
     private final List<EntryComponents> entryComponentsList = new ArrayList<>();
     private final Set<EntryComponents> selectedEntryComponents = new HashSet<>();
     private JIPipeDesktopFormPanel formPanel;
@@ -142,7 +144,9 @@ public class JIPipeDesktopListParameterEditorUI extends JIPipeDesktopParameterEd
 
     private void updateCountLabel() {
         int n = entryComponentsList.size();
-        countLabel.setText(n + " " + (n == 1 ? "item" : "items"));
+        String text = n + " " + (n == 1 ? "item" : "items");
+        countLabel.setText(text);
+        headerCountLabel.setText(text);
     }
 
     private void invertSelection() {
@@ -204,6 +208,41 @@ public class JIPipeDesktopListParameterEditorUI extends JIPipeDesktopParameterEd
     @Override
     public boolean isUIImportantLabelEnabled() {
         return false;
+    }
+
+    /**
+     * #1339: row-level chrome on the stacked row's name line — Add button,
+     * item count, ⋯ menu. Additive: the pass-1 footer is still present until
+     * the chrome is consolidated into the shared base.
+     */
+    @Override
+    public JComponent createHeaderControls() {
+        JPanel controls = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
+        controls.setOpaque(false);
+
+        JButton addButton = new JButton("Add", JIPipe.RESOURCES.getIcon16("actions/list-add.png"));
+        applyFlatHeaderButton(addButton);
+        addButton.addActionListener(e -> addNewEntry());
+        controls.add(addButton);
+
+        headerCountLabel.setForeground(UIManager.getColor("Label.disabledForeground"));
+        controls.add(headerCountLabel);
+
+        JButton menuButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/hamburger-menu.png"));
+        applyFlatHeaderButton(menuButton);
+        menuButton.setToolTipText("List options");
+        JPopupMenu menu = UIUtils.addPopupMenuToButton(menuButton);
+        initializeMoreMenu(menu);
+        controls.add(menuButton);
+
+        return controls;
+    }
+
+    private static void applyFlatHeaderButton(JButton b) {
+        b.setOpaque(false);
+        b.setContentAreaFilled(false);
+        b.setBorder(BorderFactory.createEmptyBorder(0, 4, 0, 4));
+        b.setFocusable(false);
     }
 
     @Override

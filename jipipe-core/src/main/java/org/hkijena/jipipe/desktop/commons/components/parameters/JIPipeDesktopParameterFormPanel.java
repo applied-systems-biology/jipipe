@@ -544,7 +544,8 @@ public class JIPipeDesktopParameterFormPanel extends JIPipeDesktopFormPanel impl
                 addToForm(wrappedUI, labelPanel, documentation);
                 uiComponents.add(labelPanel);
             } else {
-                addToFormStacked(wrappedUI, labelPanel, documentation);
+                JComponent headerControls = (ui instanceof JIPipeDesktopParameterEditorUI e) ? e.createHeaderControls() : null;
+                addToFormStacked(wrappedUI, labelPanel, documentation, headerControls);
                 uiComponents.add(labelPanel);
             }
 

@@ -187,6 +187,17 @@ public abstract class JIPipeDesktopParameterEditorUI<T> extends JIPipeDesktopWor
     }
 
     /**
+     * Optional controls rendered on the stacked row's name line, in the content
+     * column (left of the options/properties cell). Editors that need row-level
+     * chrome (the list editors' Add/count/menu) override this; most return null.
+     *
+     * @return the header controls component, or null for a plain name line
+     */
+    public JComponent createHeaderControls() {
+        return null;
+    }
+
+    /**
      * If true, the {@link JIPipeDesktopParameterFormPanel} will render an "important" label if the parameter is marked as important.
      *
      * @return if an automatically generated "important" label should be displayed

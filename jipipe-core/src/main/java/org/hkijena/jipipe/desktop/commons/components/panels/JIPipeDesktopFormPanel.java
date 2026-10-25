@@ -368,14 +368,33 @@ public class JIPipeDesktopFormPanel extends JPanel {
      * @return The component
      */
     public <T extends Component> T addToFormStacked(T component, Component description, MarkdownText documentation) {
+        return addToFormStacked(component, description, documentation, null);
+    }
+
+    /**
+     * Adds a component as a <em>stacked</em> row with optional header controls:
+     * the label (description) sits on a top line next to {@code headerControls}
+     * (in the content column, left of the options cell), and the component
+     * itself spans the full content width on the line below.
+     *
+     * @param component      The component
+     * @param description    A label/description component for the top line (may be null)
+     * @param documentation  Optional documentation. Can be null.
+     * @param headerControls Optional controls on the top line, in the content column (may be null)
+     * @param <T>            Component type
+     * @return The component
+     */
+    public <T extends Component> T addToFormStacked(T component, Component description, MarkdownText documentation, JComponent headerControls) {
         int labelRow = numRows;
 
         if (description != null) {
             GridBagConstraints labelPosition = new GridBagConstraints() {
                 {
                     anchor = GridBagConstraints.WEST;
+                    // With header controls the label stays in the label column only;
+                    // without, it spans into the content column (existing behavior).
                     gridx = COLUMN_LABEL_OR_WIDE_CONTENT;
-                    gridwidth = 2;
+                    gridwidth = (headerControls != null) ? 1 : 2;
                     gridy = labelRow;
                     insets = UI_PADDING;
                     fill = GridBagConstraints.HORIZONTAL;
@@ -384,12 +403,27 @@ public class JIPipeDesktopFormPanel extends JPanel {
             contentPanel.add(description, labelPosition);
         }
 
-        // Options/help on the label line, right-aligned (same column as inline rows).
+        if (headerControls != null) {
+            GridBagConstraints hc = new GridBagConstraints() {
+                {
+                    anchor = GridBagConstraints.WEST;
+                    gridx = COLUMN_LABELLED_CONTENT;
+                    gridwidth = 1;
+                    gridy = labelRow;
+                    insets = UI_PADDING;
+                    fill = GridBagConstraints.HORIZONTAL;
+                    weightx = 1;
+                }
+            };
+            contentPanel.add(headerControls, hc);
+        }
+
+        // Options/help on the label line, right-aligned (unchanged).
         Component propertiesComponent = null;
         if (withDocumentation)
             propertiesComponent = createAndAddEntryPropertiesComponent(component, description, labelRow, documentation);
 
-        // The editor spans the full content width on the next line.
+        // The editor spans the full content width on the next line (unchanged).
         GridBagConstraints bodyPosition = new GridBagConstraints() {
             {
                 anchor = GridBagConstraints.WEST;
