@@ -143,6 +143,15 @@ public class JIPipeService extends AbstractService implements JIPipeValidatable 
                 getLogService().log(LogLevel.ERROR, "Failed to unload plugin " + activatedPluginId, e);
             }
         }
+
+        // Dispose all services
+        for (JIPipeServiceComponent component : components) {
+            try {
+                component.dispose();
+            } catch (Throwable e) {
+                getLogService().log(LogLevel.ERROR, "Failed to dispose service component", e);
+            }
+        }
     }
 
     public JIPipeServiceState getState() {
