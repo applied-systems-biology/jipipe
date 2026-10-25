@@ -48,6 +48,10 @@ public class JIPipeDesktopSwitch extends JToggleButton {
 
     private void initialize() {
         setPreferredSize(new Dimension(TRACK_WIDTH, TRACK_HEIGHT));
+        // A fixed-size control: must not shrink below the track. Without this,
+        // a form-panel cell (GridBagLayout, fill=HORIZONTAL) may collapse the
+        // component to 0x0 because JButton descendants report a 0x0 minimum.
+        setMinimumSize(new Dimension(TRACK_WIDTH, TRACK_HEIGHT));
         setMargin(new Insets(0, 0, 0, 0));
         setFocusPainted(false);
         setRolloverEnabled(false);
@@ -57,11 +61,6 @@ public class JIPipeDesktopSwitch extends JToggleButton {
         // the track is painted on top.
         setOpaque(true);
         addChangeListener(e -> repaint());
-    }
-
-    @Override
-    public Dimension getPreferredSize() {
-        return new Dimension(TRACK_WIDTH, TRACK_HEIGHT);
     }
 
     @Override
@@ -75,7 +74,11 @@ public class JIPipeDesktopSwitch extends JToggleButton {
         g2.setColor(background);
         g2.fillRect(0, 0, getWidth(), getHeight());
 
-        int trackX = (getWidth() - TRACK_WIDTH) / 2;
+        // The track is left-aligned so the compact pill sits at the start of
+        // the control cell (next to the label column), matching the other
+        // inline controls' left edge, and does not float in the middle when
+        // the cell is stretched by fill=HORIZONTAL.
+        int trackX = 0;
         int trackY = (getHeight() - TRACK_HEIGHT) / 2;
         boolean selected = isSelected();
 

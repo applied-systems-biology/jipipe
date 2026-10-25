@@ -14,17 +14,24 @@
 package org.hkijena.jipipe.plugins.parameters.ui.library;
 
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
+import org.hkijena.jipipe.desktop.commons.components.toggle.JIPipeDesktopSwitch;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.BooleanParameterSettings;
 
 import javax.swing.*;
 import java.awt.*;
 
 /**
- * Parameter editor for boolean data
+ * Parameter editor for boolean data.
+ * <p>
+ * The parameter name is provided by the form panel's label column (#1339).
+ * The default mode renders a compact on/off {@link JIPipeDesktopSwitch};
+ * booleans annotated with {@code @BooleanParameterSettings(comboBoxStyle = true)}
+ * (whose two states carry different meanings via {@code trueLabel}/{@code falseLabel})
+ * keep a two-value combo box.
  */
 public class JIPipeDesktopBooleanParameterEditorUI extends JIPipeDesktopParameterEditorUI<Boolean> {
 
-    private JCheckBox checkBox;
+    private JIPipeDesktopSwitch checkBox;
     private JComboBox<Boolean> comboBox;
     private boolean isInComboBoxMode;
     private boolean skipNextReload = false;
@@ -33,11 +40,6 @@ public class JIPipeDesktopBooleanParameterEditorUI extends JIPipeDesktopParamete
     public JIPipeDesktopBooleanParameterEditorUI(InitializationParameters parameters) {
         super(Boolean.class, parameters);
         initialize();
-    }
-
-    @Override
-    public boolean isUILabelEnabled() {
-        return isInComboBoxMode;
     }
 
     @Override
@@ -76,7 +78,8 @@ public class JIPipeDesktopBooleanParameterEditorUI extends JIPipeDesktopParamete
             }
         });
 
-        checkBox = new JCheckBox(getParameterAccess().getName());
+        // The name comes from the form panel's label column, so the switch carries no text.
+        checkBox = new JIPipeDesktopSwitch();
         checkBox.addActionListener(e -> {
             if (!isReloading) {
                 skipNextReload = true;
