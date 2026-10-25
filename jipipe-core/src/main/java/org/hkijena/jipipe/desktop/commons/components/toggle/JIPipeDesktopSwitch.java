@@ -83,7 +83,7 @@ public class JIPipeDesktopSwitch extends JToggleButton {
         boolean selected = isSelected();
 
         // Track
-        Color trackColor = selected ? style.getSuccessColor() : style.getBorderColor();
+        Color trackColor = selected ? style.getPrimaryColor() : style.getBorderColor();
         g2.setColor(trackColor);
         g2.fillRoundRect(trackX, trackY, TRACK_WIDTH, TRACK_HEIGHT, TRACK_HEIGHT, TRACK_HEIGHT);
 
