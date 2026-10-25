@@ -14,7 +14,7 @@ Eight concrete items (S1–S7) plus one audit task (S8, executed last, still par
 | S2 | List editors: controls into the name row, compact-but-editable inline rows, load-more, modal bulk editor, grip menu + caret icons | rework (2 editors + 1 new dialog) |
 | S3 | `JIPipeDesktopRichSelectionBox`: keyboard navigation + left-aligned value | shared component |
 | S4 | Font popout: size field width, column alignment | small fix |
-| S5 | Color dialog: pill tabs, palette layout, 16 pure colors, label alignment, tooltips with RGB/HSB/LAB, rail hit-target | rework (1 dialog) |
+| S5 | Color dialog: pill tabs, palette layout, 16 pure colors, label alignment, tooltips with RGB/HSB/LAB, rail/well input + state-sync fix | rework (1 dialog) |
 | S6 | Number parameter: new opt-in **slider** style (GIMP-like, value editable in the control) | net-new (annotation enum + shared control + editor branch) |
 | S7 | HTMLText: form-contract normalization + `JIPipeDesktopHTMLEditor` widget modernization | rework (shared widget) |
 | S8 | Render out **each** registered parameter editor, VLM-judge, fold agreed findings in | audit task (after S7 verified) |
@@ -39,12 +39,12 @@ The list editor stays `isUIInline() = false` (stacked: name row on top, body bel
 ```
 Files          [＋ Add] [Edit]   10 items            [⋯]
 ┌─────────────────────────────────────────────────────┐
-│ ≡  item 1 (fully editable inline)             ✕(hover) │
-│ ≡  item 2                                                │
-│ ≡  item 3                                                │
-│ ≡  item 4                                                │
-│ ≡  item 5                                                │
-│              [ +5 more ]        (only if n > 5)          │
+│ ≡  item 1 (fully editable inline)                    │
+│ ≡  item 2                                            │
+│ ≡  item 3                                            │
+│ ≡  item 4                                            │
+│ ≡  item 5                                            │
+│              [ +5 more ]        (only if n > 5)       │
 └─────────────────────────────────────────────────────┘
 ```
 
@@ -52,7 +52,7 @@ Files          [＋ Add] [Edit]   10 items            [⋯]
 - **Inline rows are fully editable** (user ruling: "because lists pass a parameter, users need to be able to edit the items — otherwise the UX is shit"). Each row = grip + the same per-item editor as today (single-value editors) or the same nested mini form panel (collection lists), + hover **×** delete.
 - **Load-more pagination:** up to **5** rows visible by default; when `n > 5`, a footer button `+k more` (k = n − visible) reveals the next 5 each click, until all are shown; a **Show less** button collapses back to 5. No scroll pane in the inline body. `@ListParameterSettings.withScrollBar` (fixed-height scrolling) is **kept** as an override: when set, the body scrolls at the fixed height and no pagination is applied (some lists are long and heterogeneous; this preserves the old escape hatch).
 - **Grip:** small **vertical** grip icon (`actions/grip-lines-vertical.png`). **Left click opens the per-row context menu** (Delete / Move up / Move down) — this replaces pass-1's click-to-select on the grip, since bulk selection now lives in the modal (§3.3). **Drag** still reorders (keep the pass-1 `TransferHandler`). Move up/down icons → centered **caret** icons: `actions/go-up.png` / `actions/go-down.png` if present, else draw a 12px caret via `UIUtils` (no new icon files unless a suitable one is missing).
-- **Hover delete:** the × is revealed by hovering the **row's left gutter area** (grip + a ~16px zone around it), not only the 25×25 button — fixes the "very finicky" hit target.
+- **No hover-delete button** (user ruling): pass-1's finicky hover-× is removed entirely; per-row deletion goes through the grip menu (Delete) or the modal (Remove selected / row menu). The row's left gutter therefore only contains the grip.
 - **⋯ menu (inline):** Clear list only. (Add and Edit are buttons on the name row; Select all / Invert live in the modal, §3.3.)
 
 ### 3.2 Implementation note (name-row controls)
@@ -63,13 +63,13 @@ The extension point: `JIPipeDesktopParameterEditorUI` gains `protected JComponen
 
 ### 3.3 Edit modal (`JIPipeDesktopListEditorDialog`, new)
 
-A modal `JDialog` (`show(...) → boolean` contract, OK/Cancel, app-modal) that hosts the **full** editor for the same list instance:
+A modal `JDialog` (app-modal) that hosts the **full** editor for the same list instance. It has **no OK/Cancel** (user ruling): changes are applied to the parameter immediately, so the only button is **Close** (and the window X / Esc close it the same way).
 
 - Unlimited rows (no pagination), each fully editable exactly like the inline rows.
 - **Bulk operations** (the selection machinery now lives here): **Select all / Invert selection / Clear selection** + **Remove selected** + **Clear list**. Selection is grip-based exactly as in pass 1 (grip click selects, Ctrl toggles, Shift ranges; row content clicks edit, not select), with the existing background highlight. Right-click on grip/row → the per-row menu (Delete / Move up / Move down); drag reorders.
 - **Search/filter box** (list editor only, where items are strings/paths — collection lists get it too, filtering by each item's short description text); filtering hides non-matching rows (selection state preserved).
 - Drag-reorder via the grips (same transfer handler as inline).
-- Edits the **same** `JIPipeListParameter` instance in place and live (no copy/OK-commit needed for content; OK closes, Cancel closes — changes are already in the parameter; Cancel therefore only matters for *structural* ops like Clear, which are kept **live** too, matching pass-1 behavior. The dialog is a window, not a transaction.)
+- Edits the **same** `JIPipeListParameter` instance in place and live — no copy, no commit step: every edit (including structural ops like Remove selected / Clear list) is applied to the parameter immediately, matching pass-1 behavior. The dialog is a window, not a transaction, so there is nothing to confirm or discard (hence Close-only, above).
 - Fixed size ~640×520, resizable.
 
 After any change, the inline compact view refreshes (row editors publish `setParameter(..., true)` as today → the form panel's structure/UI events already trigger `reload()`).
@@ -101,8 +101,9 @@ This is shared plumbing: a small `PopupKeyModel` (or the equivalent inline) insi
 
 `JIPipeDesktopFontParameterEditorUI` (pass-1 Task 9):
 
-- **Size field width:** the size spinner gets a fixed comfortable width (min 64px field + arrows, total ~80px) so 3-digit sizes render without clipping (screenshot showed a cramped field).
-- **Column alignment:** the preview band, family box, size spinner, B/I toggles, and color section all align their control start to one shared left inset (the label column is fixed 42px + 6px gap); the VLM noted the top two rows shifted left relative to the rows below — fix by giving every row the same label-cell dimension (rows without a label use an empty cell of the same width).
+- **Size field width *and* height** (user ruling — the screenshot's size field clipped text vertically too): the spinner currently pins `preferredSize(60, 22)` — 22px is shorter than the theme font's line height, so the digits get cut off. Fix both dimensions: fixed comfortable width (min 64px field + arrows, total ~80px) for 3-digit sizes, and a height that fits the content — derive it from the spinner editor's own default preferred height (i.e. don't override the height at all, or use `getPreferredSize().height` before sizing width) instead of the hardcoded 22.
+- **No clipped control heights anywhere in the popout:** the same 22px-pin problem applies to the B/I toggle buttons (`28×22`). Rule for every fixed-size control in the popout (spinner, toggles, label cells): width may be pinned for layout, but height must be the control's natural default preferred height (or larger) under the active theme — never a hardcoded value that undercuts the theme font's line height.
+- **Column alignment:** the preview band, family box, size spinner, B/I toggles, and color section all align their control start to one shared left inset. Use the **form panel system** for the popout's rows (user ruling: "just use the form panel system which was designed for that") — `JIPipeDesktopFormPanel` (`addToForm`) — instead of the hand-rolled `fieldRow` label cells: its GridBagLayout automatically sizes the label column to the widest label under the active theme font (font-dependent), which also fixes the VLM-noted left-shift of the top two rows. Rows without a label use an empty label cell of the same column.
 - Keep the embedded color section and the popout-hides-before-custom-dialog behavior as-is.
 
 ## 6. S5 — Color dialog
@@ -112,7 +113,7 @@ This is shared plumbing: a small `PopupKeyModel` (or the equivalent inline) insi
 1. **No horizontal scrollbar in the palette area.** The palette panel (`buildPalettes`) currently can exceed the dialog width (GNOME HIG 9×5 row). Change swatch rows to **wrap** (flow layout with wrapping: a `JPanel` per row of ≤ N swatches where N fits the dialog width at 18px swatches + gaps), so only vertical scrolling occurs. Palette scroll pane: `HORIZONTAL_SCROLLBAR_NEVER`.
 2. **Pill tabs.** Apply the existing `JIPipeDesktopModernPillTabbedPaneUI` to `spaceTabs` when the modern theme is active (mirror how `JIPipeDesktopTabPane` does it; fall back to the default UI for the classic theme). The tab area shrinks accordingly (the pill UI has its own preferred size).
 3. **RGB label alignment.** The three labels left-align but right-edges are ragged ("Green" widest). Change `railRow` label cells to a **fixed width** (e.g. 34px, `setPreferredSize`) right-aligned, so the rails all start at the same x and the labels form a clean column. Applies to all three tabs (RGB R/G/B/α, HSB H/S/B/α, LAB L/a/b/α) — single shared `railRow`.
-4. **Rail hit target + regression test.** The rails are 14px tall and felt "noop" in the real app, though programmatic drags work (verified RGB/HSB/LAB rails + both wells all change the color). Changes: rail visual height stays ~12px but the **row's clickable area** grows — the whole rail row (label + rail + inset, ~22px tall) forwards press/drag to the rail (mouse listener on the row panel converting x to the rail's span). This fixes thin-target misses. **Regression test** (headless, non-Swing-structure): instantiate the dialog, for each of the 9 rails + 2 wells dispatch a synthetic press at a distinct x and assert `currentColor` changed (this test passes on current code too — it guards against the input plumbing regressing again; the hit-target change is covered by the same test driving through the *row* component).
+4. **Rail/well input + state-sync bug** (user-confirmed symptoms: sliders worked, 2D areas did not; and regardless of rail changes, the color preview and hex field did not update). Root cause found in code (supersedes pass-1's thin-hit-target theory): **`refresh()` is dead code from `setColor()`** — `setColor` sets `updating = true` then calls `refresh()`, whose first line is `if (updating) return;`, so the body never runs. Rails merely *look* alive because their own `setValue → repaint` moves the thumb; the wells and the hex/preview never repaint. Fix: keep the re-entrancy guard (it exists for the real cycle `refresh → rail.setValue → listener → setColor → refresh`), but move it so it guards *recursion*, not the top-level call: `setColor` only assigns `currentColor` and calls `refresh()`; `refresh` checks-and-sets the `updating` flag around its body — a nested `refresh` (from a rail listener mid-update) returns early, but the outer call runs to completion and updates rails, wells, hex field, and preview swatch. **Regression test** (headless, non-Swing-structure): instantiate the dialog, dispatch a synthetic press on each rail/well and assert the hex field text updates (i.e. `refresh()` ran) — fails on current code (the bug), passes after the fix; keep the rail-row hit-target widening (whole row ~22px forwards presses to the rail) as an additional usability fix, as the rails are also genuinely thin.
 5. **Pure colors → all 16 4-bit colors** (user ruling). Replace the 9-entry set with the 16×16×16 palette: `#000000, #550000, #AA0000, #FF0000, #005500, #00AA00, #00FF00, #555500, #AAAA00, #FFFF00, #000055, #0000AA, #0000FF, #550055, #AA00AA, #FF00FF` (standard 4-bit cube order: B, G, R planes). Each swatch tooltip shows the hex + RGB/HSB/LAB (item 8).
 6. **Swatch/title alignment.** One shared left margin for section titles and swatch rows; swatch cells a uniform 18×18 with 4px gap; the "Saved" row's star button aligns to the same right edge as section titles.
 7. **Merge "Pure colors" + "GNOME HIG" into one untitled block.** The two render consecutively with no section titles (they're not user-relevant names); a single 8px gap separates them. "Last selected" and "Saved" keep their titles.
@@ -133,7 +134,7 @@ Nodes opt in per-parameter, e.g. opacity: `@NumberParameterSettings(min = 0, max
 
 ### 7.2 Control: `JIPipeDesktopNumberSlider` (new, shared)
 
-A single-control GIMP-style slider+editor in one component (theme-aware, custom-painted):
+A single-control GIMP-style slider+editor in one component (theme-aware, custom-painted). **Design is VLM-driven** (user ruling: "heavily suggest usage of vlm to properly design the control properly"): iterate the visual design by rendering the control (screenshot harness, as in pass 1) and running VLM critiques (state, hit targets, thumb affordance, theme fit, disabled state, focus ring, alignment with the other editors) until the design is approved — the spec's bullet list below is the *functional* baseline; the visual proportions/affordances come out of that loop.
 
 - **Track**: horizontal bar (~6px) with a filled portion up to the value (primary color), a **thumb** (circle ~12px), drawn over the control's background; min/max labels are *not* shown (they live in the tooltip / docs).
 - **Direct manipulation**: press/drag anywhere on the track sets the value (`x → value`), with **step snapping** (round to `step`, clamp to min/max). Shift-drag = fine (step/10). Arrow keys ±step (component is focusable; Left/Down −, Right/Up +, Home/End = min/max).
