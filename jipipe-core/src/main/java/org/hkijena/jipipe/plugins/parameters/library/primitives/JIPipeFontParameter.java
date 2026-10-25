@@ -15,6 +15,8 @@ package org.hkijena.jipipe.plugins.parameters.library.primitives;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.databind.JsonNode;
+import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -73,6 +75,98 @@ public class JIPipeFontParameter {
         this.size = size;
         this.style = style;
         this.color = color != null ? color : Color.WHITE;
+    }
+
+    // ------------------------------------------------------------------
+    // Legacy migration helpers (#1339, Task 10)
+    // ------------------------------------------------------------------
+
+    /**
+     * The legacy font-style enum name used by the old split parameters
+     * (e.g. {@code "Bold"}), mapped to its {@link Font} bit flags.
+     *
+     * @param styleName the legacy enum name (nullable)
+     * @return the style flags, or {@link Font#PLAIN} when absent/unrecognized
+     */
+    public static int styleNameToFlags(String styleName) {
+        if (styleName == null) {
+            return Font.PLAIN;
+        }
+        switch (styleName) {
+            case "Bold":
+                return Font.BOLD;
+            case "Italic":
+                return Font.ITALIC;
+            case "BoldItalic":
+                return Font.BOLD + Font.ITALIC;
+            default:
+                return Font.PLAIN;
+        }
+    }
+
+    /**
+     * Reads a legacy hex color value (a textual JSON node like
+     * {@code "#FF0000"}) into a {@link Color}, or {@code null} when absent.
+     */
+    public static Color legacyColor(JsonNode colorNode) {
+        if (colorNode == null || colorNode.isMissingNode() || colorNode.isNull()) {
+            return null;
+        }
+        try {
+            if (colorNode.isTextual()) {
+                return JsonUtils.getObjectMapper().readerFor(Color.class).readValue(colorNode);
+            }
+            // A legacy OptionalColorParameter serializes as {content, enabled}.
+            if (colorNode.isObject() && colorNode.has("content")) {
+                return JsonUtils.getObjectMapper().readerFor(Color.class).readValue(colorNode.get("content"));
+            }
+        } catch (Exception e) {
+            return null;
+        }
+        return null;
+    }
+
+    /**
+     * Composes the legacy split font fields (from a raw node/collection JSON
+     * object) into a single {@link JIPipeFontParameter} for a given set of
+     * parameter keys. Absent keys fall back to defaults (family, 12, plain,
+     * white). This is the idempotent migration path: a node's
+     * {@code onDeserialized} calls this when the legacy keys are still present
+     * in the loaded JSON (a project saved before the migration).
+     *
+     * @param json       the raw JSON object that holds the parameters
+     * @param familyKey  the legacy family key (a textual node, e.g. {@code "font-family"})
+     * @param sizeKey    the legacy size key (a number, e.g. {@code "font-size"})
+     * @param styleKey   the legacy style key (a textual node, e.g. {@code "font-style"}); may be null
+     * @param colorKey   the legacy color key (a hex/OptionalColor node); may be null
+     * @return the composed font parameter
+     */
+    public static JIPipeFontParameter composeFromLegacy(JsonNode json,
+                                                        String familyKey, String sizeKey,
+                                                        String styleKey, String colorKey) {
+        JIPipeFontParameter result = new JIPipeFontParameter();
+        String family = null;
+        int size = 12;
+        int style = Font.PLAIN;
+        Color color = Color.WHITE;
+
+        if (familyKey != null && json.has(familyKey) && json.get(familyKey).isTextual()) {
+            family = json.get(familyKey).textValue();
+        }
+        if (sizeKey != null && json.has(sizeKey)) {
+            size = json.get(sizeKey).asInt(12);
+        }
+        if (styleKey != null && json.has(styleKey) && json.get(styleKey).isTextual()) {
+            style = styleNameToFlags(json.get(styleKey).textValue());
+        }
+        if (colorKey != null && json.has(colorKey)) {
+            Color c = legacyColor(json.get(colorKey));
+            if (c != null) {
+                color = c;
+            }
+        }
+        result.migrateFrom(family, size, style, color);
+        return result;
     }
 
     /**

@@ -38,10 +38,13 @@ import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExp
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
-import org.hkijena.jipipe.plugins.parameters.library.primitives.FontFamilyParameter;
-import org.hkijena.jipipe.plugins.parameters.library.primitives.FontStyleParameter;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.JIPipeFontParameter;
 import org.hkijena.jipipe.plugins.parameters.library.roi.FixedMargin;
 import org.hkijena.jipipe.plugins.parameters.library.roi.InnerMargin;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
@@ -58,10 +61,7 @@ public class DrawTextRoiAlgorithm extends JIPipeIteratingAlgorithm {
 
     private FixedMargin location = new FixedMargin();
     private boolean center = false;
-    private FontFamilyParameter fontFamily = new FontFamilyParameter();
-
-    private FontStyleParameter fontStyle = FontStyleParameter.Plain;
-    private int fontSize = 12;
+    private JIPipeFontParameter font = new JIPipeFontParameter();
     private double angle = 0;
 
     private boolean antialiased = true;
@@ -80,9 +80,7 @@ public class DrawTextRoiAlgorithm extends JIPipeIteratingAlgorithm {
         super(other);
         this.roiProperties = new VisualLocationROIProperties(other.roiProperties);
         registerSubParameter(roiProperties);
-        this.fontFamily = new FontFamilyParameter(other.fontFamily);
-        this.fontSize = other.fontSize;
-        this.fontStyle = other.fontStyle;
+        this.font = new JIPipeFontParameter(other.font);
         this.location = new FixedMargin(other.location);
         this.center = other.center;
         this.angle = other.angle;
@@ -114,11 +112,11 @@ public class DrawTextRoiAlgorithm extends JIPipeIteratingAlgorithm {
         }
 
         String finalText = text.evaluateToString(variables);
-        Font font = fontStyle.toFont(fontFamily, fontSize);
+        Font font2 = font.toFont();
 
         // Calculate font metrics
         Canvas canvas = new Canvas();
-        FontMetrics fontMetrics = canvas.getFontMetrics(font);
+        FontMetrics fontMetrics = canvas.getFontMetrics(font2);
         Rectangle2D stringBounds = fontMetrics.getStringBounds(finalText, canvas.getGraphics());
 
         // Generate location
@@ -145,7 +143,7 @@ public class DrawTextRoiAlgorithm extends JIPipeIteratingAlgorithm {
         }
 
         // Generate items
-        TextRoi textRoi = new TextRoi(finalLocation.x, finalLocation.y, finalLocation.width, finalLocation.height, finalText, font);
+        TextRoi textRoi = new TextRoi(finalLocation.x, finalLocation.y, finalLocation.width, finalLocation.height, finalText, font2);
         textRoi.setAngle(angle);
         textRoi.setAntialiased(antialiased);
         roiProperties.applyTo(textRoi, variables);
@@ -186,15 +184,15 @@ public class DrawTextRoiAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
 
-    @SetJIPipeDocumentation(name = "Font family", description = "The font of the text")
-    @JIPipeParameter("font-family")
-    public FontFamilyParameter getFontFamily() {
-        return fontFamily;
+    @SetJIPipeDocumentation(name = "Font", description = "The font (family, size, style and color) of the text")
+    @JIPipeParameter("font")
+    public JIPipeFontParameter getFont() {
+        return font;
     }
 
-    @JIPipeParameter("font-family")
-    public void setFontFamily(FontFamilyParameter fontFamily) {
-        this.fontFamily = fontFamily;
+    @JIPipeParameter("font")
+    public void setFont(JIPipeFontParameter font) {
+        this.font = font;
     }
 
     @SetJIPipeDocumentation(name = "Text", description = "Expression that generates the text")
@@ -207,28 +205,6 @@ public class DrawTextRoiAlgorithm extends JIPipeIteratingAlgorithm {
     @JIPipeParameter("text")
     public void setText(JIPipeExpressionParameter text) {
         this.text = text;
-    }
-
-    @SetJIPipeDocumentation(name = "Font size", description = "The size of the text")
-    @JIPipeParameter("font-size")
-    public int getFontSize() {
-        return fontSize;
-    }
-
-    @JIPipeParameter("font-size")
-    public void setFontSize(int fontSize) {
-        this.fontSize = fontSize;
-    }
-
-    @SetJIPipeDocumentation(name = "Font style", description = "The style of the text")
-    @JIPipeParameter("font-style")
-    public FontStyleParameter getFontStyle() {
-        return fontStyle;
-    }
-
-    @JIPipeParameter("font-style")
-    public void setFontStyle(FontStyleParameter fontStyle) {
-        this.fontStyle = fontStyle;
     }
 
     @SetJIPipeDocumentation(name = "Location", description = "Determines the location of the text relative to the reference image/bounds of existing ROI")
@@ -273,5 +249,19 @@ public class DrawTextRoiAlgorithm extends JIPipeIteratingAlgorithm {
     @JIPipeParameter("antialiased")
     public void setAntialiased(boolean antialiased) {
         this.antialiased = antialiased;
+    }
+
+    /**
+     * #1339: migrate the legacy split font parameters (family/size/style) into
+     * the single {@code font} parameter when a pre-migration project is loaded.
+     * The text color is the ROI line color (see {@code roi-properties}), not a
+     * font-specific field, so it is left at the parameter default. Idempotent:
+     * after the next save the legacy keys are gone.
+     */
+    @Override
+    protected void onDeserialized(JsonNode node, JIPipeValidationReport issues, JIPipeNotificationInbox notifications) {
+        if (node.has("font-family") || node.has("font-size") || node.has("font-style")) {
+            this.font = JIPipeFontParameter.composeFromLegacy(node, "font-family", "font-size", "font-style", null);
+        }
     }
 }
