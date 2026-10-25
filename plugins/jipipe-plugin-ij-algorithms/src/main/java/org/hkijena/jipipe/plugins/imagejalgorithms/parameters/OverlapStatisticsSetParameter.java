@@ -27,7 +27,6 @@ import java.util.Set;
 public class OverlapStatisticsSetParameter extends JIPipeDynamicSetParameter<OverlapStatistics> {
     public OverlapStatisticsSetParameter() {
         super(new HashSet<>(Arrays.asList(OverlapStatistics.values())));
-        setCollapsed(true);
         initialize();
     }
 

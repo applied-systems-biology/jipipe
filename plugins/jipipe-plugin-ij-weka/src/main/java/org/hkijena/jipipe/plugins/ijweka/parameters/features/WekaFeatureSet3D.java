@@ -39,7 +39,6 @@ public class WekaFeatureSet3D extends JIPipeDynamicSetParameter<WekaFeature3D> {
         // Default features
         setValues(Sets.newHashSet(WekaFeature3D.Mean,
                 WekaFeature3D.Variance));
-        setCollapsed(true);
     }
 
     public WekaFeatureSet3D(WekaFeatureSet3D other) {

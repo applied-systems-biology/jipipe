@@ -143,6 +143,17 @@ public class JIPipeDesktopRichSelectionBox extends JButton {
     private final JTextField searchField = new JTextField();
     /** Resets the selection to empty ("show all"); sits right of the search bar. */
     private final JButton clearButton = new JButton("Clear");
+    /** (Optional) selects all current options; sits left of the Clear button. Enabled only when {@link #setHasSelectAll(boolean)}. */
+    private final JButton selectAllButton = new JButton("Select all");
+    /** Whether the popup header shows the "Select all" button (see {@link #setHasSelectAll(boolean)}). */
+    private boolean hasSelectAll = false;
+    /**
+     * When true, the button shows a compact count ("n selected") instead of the
+     * selected option texts / summary label. Used by editors that already show
+     * the parameter name in a separate label column, so the button must not
+     * repeat it (#1339).
+     */
+    private boolean countOnly = false;
     /** One per distinct group (two-pane mode) or a single list (list mode). */
     private final List<JList<Option<?>>> paneLists = new ArrayList<>();
     private final List<DefaultListModel<Option<?>>> paneModels = new ArrayList<>();
@@ -243,6 +254,42 @@ public class JIPipeDesktopRichSelectionBox extends JButton {
             fireSelectionChanged();
             refreshListSelection();
         });
+
+        // The popup's "Select all" button (selects every current option). Only
+        // shown when {@link #setHasSelectAll(boolean)} is true. Wired here —
+        // not in showPopup, which runs on every open and would accumulate
+        // listeners on the reused button.
+        selectAllButton.setToolTipText("Select all options");
+        selectAllButton.setFocusable(false);
+        selectAllButton.addActionListener(e -> {
+            for (Option<?> option : currentOptions) {
+                if (!isGroupHeader(option)) {
+                    selectedValues.add(option.getValue());
+                }
+            }
+            fireSelectionChanged();
+            refreshListSelection();
+        });
+    }
+
+    /**
+     * Shows a "Select all" button next to the popup's "Clear" button when
+     * {@code true} (it selects every current option through the normal
+     * selection-change path). Default {@code false}.
+     */
+    public void setHasSelectAll(boolean hasSelectAll) {
+        this.hasSelectAll = hasSelectAll;
+    }
+
+    /**
+     * Makes the button show a compact count ("n selected" when non-empty,
+     * {@code baseLabel} when empty) instead of the selected option texts. Use
+     * this when the surrounding form already provides the parameter's name, so
+     * the button does not repeat it (#1339).
+     */
+    public void setCountOnly(boolean countOnly) {
+        this.countOnly = countOnly;
+        updateText();
     }
 
     /**
@@ -334,7 +381,15 @@ public class JIPipeDesktopRichSelectionBox extends JButton {
         // again here would accumulate one listener per popup open.
         JPanel header = new JPanel(new BorderLayout(4, 0));
         header.add(searchField, BorderLayout.CENTER);
-        header.add(clearButton, BorderLayout.EAST);
+        if (hasSelectAll) {
+            JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT, 4, 0));
+            buttons.setOpaque(false);
+            buttons.add(selectAllButton);
+            buttons.add(clearButton);
+            header.add(buttons, BorderLayout.EAST);
+        } else {
+            header.add(clearButton, BorderLayout.EAST);
+        }
         panel.add(header, BorderLayout.NORTH);
         panel.add(panesPanel, BorderLayout.CENTER);
 
@@ -491,6 +546,17 @@ public class JIPipeDesktopRichSelectionBox extends JButton {
     }
 
     private void updateText() {
+        if (countOnly) {
+            if (selectedValues.isEmpty()) {
+                setText(baseLabel);
+                setFont(baseFont);
+            } else {
+                setText(selectedValues.size() + " selected");
+                setFont(baseFont.deriveFont(Font.BOLD));
+            }
+            setIcon(null);
+            return;
+        }
         if (selectedValues.isEmpty()) {
             setText(baseLabel);
             setFont(baseFont);

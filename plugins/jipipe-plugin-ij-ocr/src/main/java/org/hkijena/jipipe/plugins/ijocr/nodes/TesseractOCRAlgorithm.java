@@ -76,7 +76,6 @@ public class TesseractOCRAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public TesseractOCRAlgorithm(JIPipeNodeInfo info) {
         super(info);
         languages.setValues(Collections.singleton("eng"));
-        languages.setCollapsed(true);
     }
 
     public TesseractOCRAlgorithm(TesseractOCRAlgorithm other) {
