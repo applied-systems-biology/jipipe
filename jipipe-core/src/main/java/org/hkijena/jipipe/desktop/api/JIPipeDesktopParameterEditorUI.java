@@ -162,12 +162,29 @@ public abstract class JIPipeDesktopParameterEditorUI<T> extends JIPipeDesktopWor
     }
 
     /**
-     * If true, the {@link JIPipeDesktopParameterFormPanel} will display a label with the parameter
-     * name next to this UI.
+     * The form panel always provides the parameter's name label; editors must
+     * never draw the name themselves. Retained (always {@code true}) for
+     * compatibility with code that branches on it.
      *
-     * @return if label should be shown
+     * @return always {@code true}
      */
-    public abstract boolean isUILabelEnabled();
+    public boolean isUILabelEnabled() {
+        return true;
+    }
+
+    /**
+     * If true, the editor is rendered on a compact inline row
+     * (label … control … options). If false, it is rendered as a stacked row:
+     * the label (and options) on one line, the editor full-width below.
+     * <p>
+     * Use {@code false} for compound editors (lists, collections, matrices,
+     * margins, scripts) whose content needs the full row width.
+     *
+     * @return the row shape for this editor (default: inline)
+     */
+    public boolean isUIInline() {
+        return true;
+    }
 
     /**
      * If true, the {@link JIPipeDesktopParameterFormPanel} will render an "important" label if the parameter is marked as important.
@@ -182,7 +199,6 @@ public abstract class JIPipeDesktopParameterEditorUI<T> extends JIPipeDesktopWor
      * Returns the "style" of the control.
      * This is only utilized for the automated ordering within {@link JIPipeDesktopParameterFormPanel}
      * Controls with the same style are grouped together to ensure a consistent visual style (reduce clutter)
-     * Please note that the grouping enforced by isUILabelEnabled() has precedence
      *
      * @return the UI control style for {@link JIPipeDesktopParameterFormPanel} (sorting only)
      */

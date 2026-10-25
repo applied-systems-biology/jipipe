@@ -42,8 +42,6 @@ public class JIPipeDesktopMatrix2DParameterEditorUI extends JIPipeDesktopParamet
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
 
-        toolBar.add(new JLabel(getParameterAccess().getName()));
-
         toolBar.add(Box.createHorizontalGlue());
 
         JButton addRowButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/edit-table-insert-row-below.png"));
@@ -103,7 +101,7 @@ public class JIPipeDesktopMatrix2DParameterEditorUI extends JIPipeDesktopParamet
     }
 
     @Override
-    public boolean isUILabelEnabled() {
+    public boolean isUIInline() {
         return false;
     }
 

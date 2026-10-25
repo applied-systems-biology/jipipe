@@ -355,6 +355,59 @@ public class JIPipeDesktopFormPanel extends JPanel {
         return component;
     }
 
+    /**
+     * Adds a component as a <em>stacked</em> row: the label (description) and
+     * the options component share a top line, and the component itself spans
+     * the full content width on the line below. Used for compound parameter
+     * editors (lists, matrices, margins, scripts) that need the row width.
+     *
+     * @param component     The component
+     * @param description   A label/description component for the top line (may be null)
+     * @param documentation Optional documentation. Can be null.
+     * @param <T>           Component type
+     * @return The component
+     */
+    public <T extends Component> T addToFormStacked(T component, Component description, MarkdownText documentation) {
+        int labelRow = numRows;
+
+        if (description != null) {
+            GridBagConstraints labelPosition = new GridBagConstraints() {
+                {
+                    anchor = GridBagConstraints.WEST;
+                    gridx = COLUMN_LABEL_OR_WIDE_CONTENT;
+                    gridwidth = 2;
+                    gridy = labelRow;
+                    insets = UI_PADDING;
+                    fill = GridBagConstraints.HORIZONTAL;
+                }
+            };
+            contentPanel.add(description, labelPosition);
+        }
+
+        // Options/help on the label line, right-aligned (same column as inline rows).
+        Component propertiesComponent = null;
+        if (withDocumentation)
+            propertiesComponent = createAndAddEntryPropertiesComponent(component, description, labelRow, documentation);
+
+        // The editor spans the full content width on the next line.
+        GridBagConstraints bodyPosition = new GridBagConstraints() {
+            {
+                anchor = GridBagConstraints.WEST;
+                gridx = COLUMN_LABEL_OR_WIDE_CONTENT;
+                gridwidth = 2;
+                gridy = labelRow + 1;
+                insets = UI_PADDING;
+                fill = GridBagConstraints.HORIZONTAL;
+                weightx = 1;
+            }
+        };
+        contentPanel.add(component, bodyPosition);
+
+        entries.add(new FormPanelEntry(labelRow, description, component, propertiesComponent, true));
+        numRows = labelRow + 2;
+        return component;
+    }
+
     private Component createAndAddEntryPropertiesComponent(Component component, Component description, int row, MarkdownText documentation) {
         Component newComponent = createEntryPropertiesComponent(component, description, row, documentation);
         if (newComponent != null) {

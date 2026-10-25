@@ -57,11 +57,6 @@ public class JIPipeDesktopListParameterEditorUI extends JIPipeDesktopParameterEd
         toolBar.setFloatable(false);
 
         toolBar.add(Box.createHorizontalStrut(4));
-        JLabel nameLabel = new JLabel(getParameterAccess().getName());
-        if (getParameterAccess().isImportant()) {
-            nameLabel.setIcon(JIPipe.RESOURCES.getIcon16("emblems/important.png"));
-        }
-        toolBar.add(nameLabel);
 
         toolBar.add(Box.createHorizontalGlue());
 
@@ -181,7 +176,7 @@ public class JIPipeDesktopListParameterEditorUI extends JIPipeDesktopParameterEd
     }
 
     @Override
-    public boolean isUILabelEnabled() {
+    public boolean isUIInline() {
         return false;
     }
 

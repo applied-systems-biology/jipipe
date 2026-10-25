@@ -43,11 +43,6 @@ public class JIPipeDesktopDynamicSetParameterEditorUI extends JIPipeDesktopParam
     }
 
     @Override
-    public boolean isUILabelEnabled() {
-        return false;
-    }
-
-    @Override
     public boolean isUIImportantLabelEnabled() {
         return false;
     }
@@ -129,12 +124,6 @@ public class JIPipeDesktopDynamicSetParameterEditorUI extends JIPipeDesktopParam
 
         JToolBar toolBar = new JToolBar();
         toolBar.add(Box.createHorizontalStrut(4));
-
-        JLabel nameLabel = new JLabel(getParameterAccess().getName());
-        if (getParameterAccess().isImportant()) {
-            nameLabel.setIcon(JIPipe.RESOURCES.getIcon16("emblems/important.png"));
-        }
-        toolBar.add(nameLabel);
         toolBar.add(Box.createHorizontalGlue());
 
         collapseToggle = new JToggleButton("Collapse",

@@ -52,7 +52,6 @@ public final class ScreenshotRenderer {
     public static void renderComponent(Component c, int width, Path outPng) throws IOException {
         renderFixed(c, width, -1, outPng);
     }
-
     /**
      * Captures the component at a fixed width, and (if {@code height > 0}) a
      * fixed height; otherwise at the component's full realized height.

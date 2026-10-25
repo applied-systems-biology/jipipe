@@ -47,12 +47,6 @@ public class JIPipeDesktopMarginParameterEditorUI extends JIPipeDesktopParameter
         setLayout(new BorderLayout());
         setBorder(UIUtils.createControlBorder());
 
-        JToolBar toolBar = new JToolBar();
-        toolBar.setFloatable(false);
-        add(toolBar, BorderLayout.NORTH);
-
-        toolBar.add(new JLabel(getParameterAccess().getName()));
-
         JPanel content = new JPanel(new BorderLayout());
         initializeAnchorSelection(content);
 
@@ -138,7 +132,7 @@ public class JIPipeDesktopMarginParameterEditorUI extends JIPipeDesktopParameter
     }
 
     @Override
-    public boolean isUILabelEnabled() {
+    public boolean isUIInline() {
         return false;
     }
 
