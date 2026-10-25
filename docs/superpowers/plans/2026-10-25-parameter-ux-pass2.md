@@ -1059,3 +1059,31 @@ git add jipipe-launcher/src/main/java/org/hkijena/jipipe/launcher/commands/Scree
 git commit -m "test(launcher): per-editor screenshot showcase for the S8 render-out audit (#1339)"
 ```
 (Plus separate `(#1339)` commits for each nit fixed in Step 4.)
+
+---
+
+## Execution State — Handoff 2026-10-26 (work moved to another machine)
+
+Subagent-driven execution (SDD). The per-task ledger lives in the gitignored `.superpowers/sdd/2026-10-25-parameter-ux-pass2/progress.md` (machine-local); this section is the durable record.
+
+**DONE (committed, task-reviewed, VLM-verified):**
+- **Task 1 (S1)** — `02d30ea`. Switch ON-track → primary. Review clean. VLM PASS (blue track, white knob; no regression).
+- **Task 2 (S2a)** — `b24eadb`. `createHeaderControls()` extension point + list Add/count/⋯ on the name row (additive; footer still present in this intermediate state). Review clean. VLM PASS. Deviations accepted: base method is `public` (cross-package call site); header ⋯ menu uses the full pass-1 item set (ruling).
+- **Task 3 (S2b)** — `f1a3aa5` + fix `3a2527a`. Shared base `JIPipeListParameterEditorUI`; inline pagination (`+k more`/`Show less`, 5/page, `withScrollBar` override); vertical grip + per-row menu (Delete/Move up/Move down, go-up/go-down icons); hover-× removed; footer removed; selection machinery excised from inline (modal-local in Task 4). `ListPaginationModelTest` 4/4 TDD; `ListReorderMoveTest` 6/6 untouched; full core suite green. Fix round 1 (Important: drag index resolution now against the caller's row list — `buildListRow(index, RowGripBehavior, ListRowCallbacks, List<EntryComponents> rows)`) re-reviewed clean. VLM PASS via controller-added `panel-list-populated`/`panel-list-empty` harness showcases (8 items → 5 rows + "+3 more"; empty → hint only).
+- **Task 4 (S2c)** — `3e09f77`. `JIPipeDesktopListEditorDialog` (same package as the base) — Close-only (Close button + X + Esc, NO OK/Cancel), search box (hide-not-remove, selection preserved), 5-button toolbar (Select all/Invert/Clear selection/Remove selected/Clear list), all-rows body with modal-local grip selection (pass-1 range/toggle re-implementation), descending-order removal, live edits on the same `JIPipeListParameter`. Edit button wired into the base `createHeaderControls()` (text-only — no `edit-list.png` icon exists). Harness showcases `dialog-list-editor`/`dialog-list-collection` added. Load-bearing base fix included (reviewer-verified): row-menu Move up/down previously mutated without `setParameter` (inline never reloaded) → now routes through `moveEntryTo`. Review clean. VLM PASS (both dialogs: search, toolbar, grip rows, single Close; collection rows are nested mini-forms).
+
+**IN FLIGHT:**
+- **Task 5 (S3)** — `8c0c29c` + fix `ed8602a`. `PopupKeyModel` (headless, package-private, in `JIPipeDesktopRichSelectionBox`) implements the full spec §4 key matrix (24 tests, TDD red→green, full core suite 608 green); value left-aligned (`setHorizontalAlignment(LEADING)`). Review found 1 Important → **fixed in round 1** (`ed8602a`: dropped `searchField.selectAll()` on keyboard focus return — ruling: no silent new interactions in a UX project). **REMAINING: (a) scoped re-review of `8c0c29c..ed8602a` (expect clean — one-line deletion, tests re-run green); (b) VLM-verify left-aligned values on `panel-enum-box`, `panel-roi3d-statistics`, `panel-font`.** Then mark complete.
+
+**NOT STARTED:** Tasks 6–10 (S4 font popout, S5 color dialog, S6 number slider, S7 HTMLText, S8 audit). S8 gates the MR.
+
+**Deferred minors (triage at the final whole-branch review):** T2 `headerCountLabel.setForeground` re-applied per render; T4 boundary Move (index 0/last) still fires `setParameter`+rebuild, empty-selection Remove still writes, dialog `flatButton` duplicates the base's private `applyFlatHeaderButton`; T5 dead `twoPane` ctor param, multi-Enter-in-search fires handler with unchanged selection (idempotent; Enter/Esc asymmetric), missing test for single-Enter-in-search on empty filtered list.
+
+**Rulings made (controller):** drag-index resolution via caller's row list (Task 3 fix); `shouldUseSlider` decision test belongs in the editor package (`NumberSliderStyleTest`), slider math in `NumberSliderMathTest` (Task 8 preflight); `EntryComponents` package-visible + `buildListRow` returns it (Task 3/4 seam); collection `itemDescription` = full `getTextDescriptionOf` (Task 3); row-menu `setParameter` base fix accepted inside Task 4 (Task 4); drop `selectAll()` on search-field focus return (Task 5).
+
+**Environment notes for the resuming machine:**
+- Branch `1339-parameter-ux-overhaul` — everything above is pushed. No merge request (GitLab flow: MR only after the user confirms S8).
+- Screenshot harness: `/tmp/opencode/1339/` is machine-local. If missing, recreate `run.sh` (classpath = `jipipe-launcher/target/classes` + `mvn -pl jipipe-launcher dependency:build-classpath` output; `--add-opens` for `java.base/java.lang`, `java.desktop/javax.swing`, `java.desktop/sun.font`; `-Djava.awt.headless=false`; main `org.hkijena.jipipe.launcher.JIPipeLauncher`) and run `mvn -q install -DskipTests` first. The plan's Global Constraints carry the canonical command. Before-baselines (`/tmp/opencode/1339/before/`) are NOT pushed — re-render from a `master` worktree if before/after pairs are needed.
+- Model tiers that work on the gateway: `asb-hki/vllm/small`, `asb-hki/vllm/frontier#medium`, `asb-hki/vllm/frontier` (bare = top). `frontier#high` / `frontier#xhigh` are REJECTED (variant/effort whitelist mismatch) — do not dispatch with those.
+- VLM division of labor: implementers do code + `mvn -q -pl jipipe-core compile` + the task's unit tests + commit + report; the controller runs the harness renders + `da_describe_image` and records verdicts.
+- Maven output is German-locale ("Fehler" = error, "Symbol nicht gefunden" = symbol not found). Harness log noise ("Invalid color format…") is pre-existing and harmless.
