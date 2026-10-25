@@ -66,6 +66,7 @@ public class JIPipeService extends AbstractService implements JIPipeValidatable 
     private final JIPipeAccelerationServiceComponent acceleration;
     private final JIPipeCleanupServiceComponent cleanup;
     private final JIPipeProjectBackupServiceComponent projectBackup;
+    private final JIPipeMemoryMonitorServiceComponent memoryMonitor;
     private final JIPipeAIServiceComponent aiService;
     private final JIPipeServerServiceComponent serverService;
     private final JIPipeStatisticsServiceComponent statistics;
@@ -110,6 +111,7 @@ public class JIPipeService extends AbstractService implements JIPipeValidatable 
         acceleration = new JIPipeAccelerationServiceComponent(this);
         cleanup = new JIPipeCleanupServiceComponent(this);
         projectBackup = new JIPipeProjectBackupServiceComponent(this);
+        memoryMonitor = new JIPipeMemoryMonitorServiceComponent(this);
         aiService = new JIPipeAIServiceComponent(this);
         serverService = new JIPipeServerServiceComponent(this);
         statistics = new JIPipeStatisticsServiceComponent(this);
@@ -118,7 +120,7 @@ public class JIPipeService extends AbstractService implements JIPipeValidatable 
         // Add into components list so we can later postprocess them
         this.components = new JIPipeServiceComponent[] {
                 recentProjects, nodeTaxonomy, nodes, dataTypes, imageJDataAdapters, customMenuItems, parameterTypes, applicationSettings, projectSettings, expressionFunctions, utilityClasses,
-                environments, plugins, projectTemplates, artifacts, nodeTemplates, acceleration, cleanup, projectBackup, aiService, serverService, statistics, instrumentation
+                environments, plugins, projectTemplates, artifacts, nodeTemplates, acceleration, cleanup, projectBackup, memoryMonitor, aiService, serverService, statistics, instrumentation
         };
     }
 
@@ -373,6 +375,10 @@ public class JIPipeService extends AbstractService implements JIPipeValidatable 
 
     public JIPipeProjectBackupServiceComponent getProjectBackup() {
         return projectBackup;
+    }
+
+    public JIPipeMemoryMonitorServiceComponent getMemoryMonitor() {
+        return memoryMonitor;
     }
 
     public JIPipeServiceComponent[] getComponents() {

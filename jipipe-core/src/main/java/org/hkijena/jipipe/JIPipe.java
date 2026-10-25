@@ -530,6 +530,13 @@ public final class JIPipe {
         return getInstance().getEnvironments();
     }
 
+    /**
+     * @return The memory monitor service component
+     */
+    public static JIPipeMemoryMonitorServiceComponent getMemoryMonitor() {
+        return getInstance().getMemoryMonitor();
+    }
+
     public static JIPipeInstrumentationServiceComponent getInstrumentation() {
         return instance.getInstrumentation();
     }
