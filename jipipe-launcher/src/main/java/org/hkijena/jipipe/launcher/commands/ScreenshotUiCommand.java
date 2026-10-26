@@ -29,10 +29,21 @@ import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopPar
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.launcher.commands.screenshotui.ScreenshotRenderer;
 import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeParameterCollectionList;
+import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
 import org.hkijena.jipipe.plugins.parameters.library.filesystem.PathList;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
+import org.hkijena.jipipe.plugins.parameters.library.matrix.Matrix2DFloat;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.DynamicStringEnumParameter;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.DynamicStringSetParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.JIPipeFontParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.NumberParameterSettings;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.StringOrDouble;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.list.IntegerList;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalBooleanParameter;
+import org.hkijena.jipipe.plugins.parameters.library.roi.FixedMargin;
+import org.hkijena.jipipe.plugins.parameters.library.roi.InnerMargin;
+import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
+import org.hkijena.jipipe.api.runtimepartitioning.RuntimePartitionReferenceParameter;
 import org.hkijena.jipipe.plugins.parameters.ui.api.JIPipeDesktopListEditorDialog;
 import org.hkijena.jipipe.plugins.parameters.ui.api.JIPipeListParameterEditorUI;
 import org.hkijena.jipipe.plugins.parameters.ui.library.JIPipeDesktopFontParameterEditorUI;
@@ -101,6 +112,36 @@ public class ScreenshotUiCommand {
         SHOWCASE.put("panel-html-text", "<html-text>");
     }
 
+    /**
+     * S8 render-out audit (#1339 pass 2): a per-editor showcase set. For every
+     * parameter editor without a dedicated node showcase, a synthetic
+     * one-parameter collection ({@code <editor-...>} → field class) rendered
+     * at the standard panel width. The sweep checks the pass-1 form contract
+     * per editor: border present, consistent height family, left-aligned
+     * value, options/properties column, no self-drawn name, no clipping.
+     */
+    private static final Map<String, Class<?>> PER_EDITOR = new LinkedHashMap<>();
+
+    static {
+        PER_EDITOR.put("editor-boolean", Boolean.class);
+        PER_EDITOR.put("editor-number-field", Double.class);
+        PER_EDITOR.put("editor-integer-list", IntegerList.class);
+        PER_EDITOR.put("editor-string", String.class);
+        PER_EDITOR.put("editor-string-or-double", StringOrDouble.class);
+        PER_EDITOR.put("editor-dynamic-enum", DynamicStringEnumParameter.class);
+        PER_EDITOR.put("editor-dynamic-set", DynamicStringSetParameter.class);
+        PER_EDITOR.put("editor-path-list", PathList.class);
+        PER_EDITOR.put("editor-collection-list", JIPipeParameterCollectionList.class);
+        PER_EDITOR.put("editor-matrix", Matrix2DFloat.class);
+        PER_EDITOR.put("editor-margin-fixed", FixedMargin.class);
+        PER_EDITOR.put("editor-margin-inner", InnerMargin.class);
+        PER_EDITOR.put("editor-color", Color.class);
+        PER_EDITOR.put("editor-optional-boolean", OptionalBooleanParameter.class);
+        PER_EDITOR.put("editor-optional-color", OptionalColorParameter.class);
+        PER_EDITOR.put("editor-expression", JIPipeExpressionParameter.class);
+        PER_EDITOR.put("editor-runtime-partition-ref", RuntimePartitionReferenceParameter.class);
+    }
+
     private static final int PANEL_WIDTH = 480;
     private static final int DIALOG_WIDTH = 380;
     private static final int DIALOG_HEIGHT = 560;
@@ -144,6 +185,7 @@ public class ScreenshotUiCommand {
         SwingUtilities.invokeLater(() -> {
             try {
                 renderNodePanels(workbench, outDir, only, rendered);
+                renderPerEditor(workbench, outDir, only, rendered);
                 renderFontPopout(workbench, outDir, only, rendered);
                 renderHtmlEditorViews(workbench, outDir, only, rendered);
                 renderColorDialog(outDir, only, rendered);
@@ -192,6 +234,24 @@ public class ScreenshotUiCommand {
                 panel = new JIPipeDesktopParameterFormPanel(
                         workbench, node, TooltipUtils.getAlgorithmDocumentation(node), PANEL_FLAGS);
             }
+            ScreenshotRenderer.renderComponent(panel, PANEL_WIDTH, outDir.resolve(name + ".png"));
+            rendered.add(name);
+        }
+    }
+
+    /**
+     * S8 render-out audit: renders one synthetic one-parameter collection per
+     * parameter editor in {@link #PER_EDITOR} at the standard panel width, so
+     * the whole editor family is swept (not just the node showcases).
+     */
+    private static void renderPerEditor(JIPipeDesktopDummyWorkbench workbench, Path outDir, List<String> only, List<String> rendered) throws Exception {
+        for (Map.Entry<String, Class<?>> e : PER_EDITOR.entrySet()) {
+            String name = e.getKey();
+            if (!only.isEmpty() && !only.contains(name))
+                continue;
+            JIPipeDynamicParameterCollection root = new JIPipeDynamicParameterCollection();
+            root.addParameter("value", e.getValue(), name.substring("editor-".length()).replace('-', ' '), "S8 per-editor audit");
+            JIPipeDesktopParameterFormPanel panel = new JIPipeDesktopParameterFormPanel(workbench, root, null, PANEL_FLAGS);
             ScreenshotRenderer.renderComponent(panel, PANEL_WIDTH, outDir.resolve(name + ".png"));
             rendered.add(name);
         }
