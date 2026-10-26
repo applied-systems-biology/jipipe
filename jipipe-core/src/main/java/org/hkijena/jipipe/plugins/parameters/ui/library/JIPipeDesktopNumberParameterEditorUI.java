@@ -16,12 +16,15 @@ package org.hkijena.jipipe.plugins.parameters.ui.library;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
+import org.hkijena.jipipe.desktop.commons.components.slider.JIPipeDesktopNumberSlider;
 import org.hkijena.jipipe.desktop.commons.components.textfield.JIPipeDesktopDocumentChangeListener;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.NumberParameterSettings;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -33,12 +36,28 @@ import java.util.Objects;
  * Editor for any numeric parameter (this is why T is Object)
  */
 public class JIPipeDesktopNumberParameterEditorUI extends JIPipeDesktopParameterEditorUI<Object> {
+    private static final Logger log = LoggerFactory.getLogger(JIPipeDesktopNumberParameterEditorUI.class);
+
     private JTextField numberField;
+    private JIPipeDesktopNumberSlider slider;
+    private boolean sliderFallbackWarningLogged;
 
     public JIPipeDesktopNumberParameterEditorUI(InitializationParameters parameters) {
         super(Object.class, parameters);
         initialize();
         reload();
+    }
+
+    /**
+     * True iff this parameter should render the slider (spec §7.3: a bounded
+     * range annotated with {@link NumberParameterSettings.Style#SLIDER}).
+     * Pure — no JIPipe/Swing state, so it is unit-testable headlessly.
+     */
+    static boolean shouldUseSlider(NumberParameterSettings settings, double min, double max) {
+        return settings != null
+                && settings.style() == NumberParameterSettings.Style.SLIDER
+                && max > min
+                && !Double.isInfinite(min) && !Double.isInfinite(max);
     }
 
     public static String formatNumber(double number) {
@@ -56,6 +75,12 @@ public class JIPipeDesktopNumberParameterEditorUI extends JIPipeDesktopParameter
 
     @Override
     public void reload() {
+        if (slider != null) {
+            // Sync programmatic updates into the slider; the slider ignores
+            // identical values, so this cannot feed back into the parameter.
+            slider.setValue(getCurrentValue());
+            return;
+        }
         String s = formatNumber(getCurrentValue());
         if (!Objects.equals(s, numberField.getText()) && !numberField.hasFocus())
             numberField.setText(s);
@@ -137,6 +162,15 @@ public class JIPipeDesktopNumberParameterEditorUI extends JIPipeDesktopParameter
         return 1;
     }
 
+    /** Decimals for the slider's inline editor/tooltip: 0 for integral types, 2 for floating point. */
+    private int valuePrecision() {
+        Class<?> f = getParameterAccess().getFieldClass();
+        if (f == float.class || f == Float.class || f == double.class || f == Double.class) {
+            return 2;
+        }
+        return 0;
+    }
+
     private boolean setCurrentValue(Number number) {
         if (getParameterAccess().getFieldClass() == byte.class || getParameterAccess().getFieldClass() == Byte.class) {
             return setParameter(number.byteValue(), false);
@@ -186,6 +220,31 @@ public class JIPipeDesktopNumberParameterEditorUI extends JIPipeDesktopParameter
 
     private void initialize() {
         setLayout(new BorderLayout());
+
+        // SLIDER style: a single custom-painted slider replaces the text
+        // field + spinners. The slider carries its own chrome (no outer
+        // control border — it paints its own track/thumb).
+        NumberParameterSettings settings = getParameterAccess().getAnnotationOfType(NumberParameterSettings.class);
+        double min = getMinimumValue();
+        double max = getMaximumValue();
+        if (shouldUseSlider(settings, min, max)) {
+            slider = new JIPipeDesktopNumberSlider();
+            slider.setRange(min, max, getStep());
+            slider.setPrecision(valuePrecision());
+            slider.setValue(getCurrentValue());
+            slider.addChangeListener(e -> setCurrentValue((double) slider.getValue()));
+            add(slider, BorderLayout.CENTER);
+            return;
+        }
+        if (settings != null && settings.style() == NumberParameterSettings.Style.SLIDER && !sliderFallbackWarningLogged) {
+            // Review Focus #2: SLIDER was requested but the range is unbounded —
+            // fall back to the field and say so once.
+            log.warn("Number parameter '{}' is annotated style=SLIDER but its range is unbounded ({} - {}); using the text-field editor instead.",
+                    getParameterAccess().getName(), min, max);
+            sliderFallbackWarningLogged = true;
+        }
+
+        // FIELD path (default): text field + up/down spinners.
         setBackground(UIManager.getColor("TextField.background"));
         setBorder(UIUtils.createControlBorder());
         numberField = new JTextField();

@@ -30,6 +30,7 @@ import org.hkijena.jipipe.launcher.commands.screenshotui.ScreenshotRenderer;
 import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeParameterCollectionList;
 import org.hkijena.jipipe.plugins.parameters.library.filesystem.PathList;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.JIPipeFontParameter;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.NumberParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.ui.api.JIPipeDesktopListEditorDialog;
 import org.hkijena.jipipe.plugins.parameters.ui.api.JIPipeListParameterEditorUI;
 import org.hkijena.jipipe.plugins.parameters.ui.library.JIPipeDesktopFontParameterEditorUI;
@@ -40,6 +41,7 @@ import org.hkijena.jipipe.utils.TooltipUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.lang.annotation.Annotation;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -87,6 +89,10 @@ public class ScreenshotUiCommand {
         SHOWCASE.put("panel-list-populated", "<list-populated>");
         // Synthetic: an empty file list (S2 empty state: hint, no rows, no footer).
         SHOWCASE.put("panel-list-empty", "<list-empty>");
+        // Synthetic: a bounded 0-1 double annotated style=SLIDER at runtime
+        // (#1339 pass 2, S6) — the number editor renders a slider, not a
+        // text field + spinners.
+        SHOWCASE.put("panel-number-slider", "<number-slider>");
     }
 
     private static final int PANEL_WIDTH = 480;
@@ -163,6 +169,11 @@ public class ScreenshotUiCommand {
                 // hint-only empty state.
                 ListShowcase root = new ListShowcase("<list-empty>".equals(nodeId) ? 0 : 8);
                 panel = new JIPipeDesktopParameterFormPanel(workbench, root, null, PANEL_FLAGS);
+            } else if ("<number-slider>".equals(nodeId)) {
+                // Synthetic bounded 0-1 double annotated style=SLIDER at runtime
+                // (#1339 pass 2, S6).
+                NumberSliderShowcase root = new NumberSliderShowcase();
+                panel = new JIPipeDesktopParameterFormPanel(workbench, root, null, PANEL_FLAGS);
             } else {
                 JIPipeGraphNode node = JIPipe.createNode(nodeId);
                 panel = new JIPipeDesktopParameterFormPanel(
@@ -197,6 +208,76 @@ public class ScreenshotUiCommand {
             for (int i = 1; i <= itemCount; i++) {
                 list.add(Paths.get("/data/sample" + i + ".tif"));
             }
+        }
+    }
+
+    /**
+     * A minimal parameter collection exposing a bounded (0–1) double annotated
+     * {@code style = SLIDER} at runtime (#1339 pass 2, S6). The proven pattern
+     * for a runtime annotation instance is {@code addParameter(..., annotations)}.
+     * The value is set to 0.5 so the slider thumb is visibly centered — the VLM
+     * verifies the thumb position matches the value.
+     */
+    private static class NumberSliderShowcase extends JIPipeDynamicParameterCollection {
+        NumberSliderShowcase() {
+            JIPipeMutableParameterAccess access = addParameter("opacity", Double.class, "Opacity", "A 0-1 opacity",
+                    new NumberParameterSettings() {
+                        @Override
+                        public Class<? extends Annotation> annotationType() {
+                            return NumberParameterSettings.class;
+                        }
+
+                        @Override
+                        public double min() {
+                            return 0;
+                        }
+
+                        @Override
+                        public double max() {
+                            return 1;
+                        }
+
+                        @Override
+                        public double step() {
+                            return 0.01;
+                        }
+
+                        @Override
+                        public NumberParameterSettings.Style style() {
+                            return NumberParameterSettings.Style.SLIDER;
+                        }
+                    });
+            access.set(0.5);
+            // A second, clearly-different value so a VLM can confirm the thumb
+            // position tracks the value (0.2 should sit well left of 0.5).
+            JIPipeMutableParameterAccess low = addParameter("low", Double.class, "Low", "A 0-1 opacity (verification)",
+                    new NumberParameterSettings() {
+                        @Override
+                        public Class<? extends Annotation> annotationType() {
+                            return NumberParameterSettings.class;
+                        }
+
+                        @Override
+                        public double min() {
+                            return 0;
+                        }
+
+                        @Override
+                        public double max() {
+                            return 1;
+                        }
+
+                        @Override
+                        public double step() {
+                            return 0.01;
+                        }
+
+                        @Override
+                        public NumberParameterSettings.Style style() {
+                            return NumberParameterSettings.Style.SLIDER;
+                        }
+                    });
+            low.set(0.2);
         }
     }
 
