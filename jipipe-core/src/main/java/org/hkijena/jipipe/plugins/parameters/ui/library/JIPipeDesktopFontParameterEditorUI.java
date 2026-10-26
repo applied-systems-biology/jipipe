@@ -321,6 +321,43 @@ public class JIPipeDesktopFontParameterEditorUI extends JIPipeDesktopParameterEd
     // Preview painting
     // ------------------------------------------------------------------
 
+    /**
+     * The two checkerboard tones for the font preview, derived from the theme
+     * surface color (spec: the preview background must be theme-derived so it
+     * works in light AND dark themes). The surface tone is the theme's panel
+     * background; the alternate tone is a fixed mid-gray that is clearly
+     * distinct from near-white and near-black surfaces. The mid tone guarantees
+     * that font colors matching the surface (white text on a light theme, black
+     * text on a dark theme) still remain visible — fixing the blank font
+     * preview (#1339 S8). Pure, no Swing state, headless-testable.
+     *
+     * @param surface the theme's panel background color
+     * @return {@code {surfaceTone, alternateTone}}
+     */
+    static Color[] checkerColors(Color surface) {
+        // A mid-gray that contrasts against both near-white and near-black
+        // surfaces while staying clearly distinct from them (gap >= 0.15 in
+        // relative luminance — pinned by FontPreviewCheckerTest).
+        Color mid = new Color(0x8a, 0x8a, 0x8a);
+        return new Color[]{surface, mid};
+    }
+
+    /**
+     * Paints a {@code sq}×{@code sq} checkerboard across the component using
+     * {@link #checkerColors(Color)} derived from the theme surface.
+     */
+    private static void paintCheckerboard(Graphics2D g, JComponent c, int sq) {
+        Color[] tones = checkerColors(UIManager.getColor("Panel.background"));
+        int w = c.getWidth(), h = c.getHeight();
+        for (int y = 0; y < h; y += sq) {
+            for (int x = 0; x < w; x += sq) {
+                boolean light = ((x / sq + y / sq) & 1) == 0;
+                g.setColor(light ? tones[0] : tones[1]);
+                g.fillRect(x, y, Math.min(sq, w - x), Math.min(sq, h - y));
+            }
+        }
+    }
+
     /** The inline preview: sample text in the current font, scaled to the row. */
     private class FontPreviewControl extends JComponent {
         FontPreviewControl() {
@@ -337,6 +374,9 @@ public class JIPipeDesktopFontParameterEditorUI extends JIPipeDesktopParameterEd
             JIPipeFontParameter parameter = getParameter();
             Graphics2D g2 = (Graphics2D) g.create();
             g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+            // Theme-derived checkerboard so light AND dark font colors are
+            // visible (a flat panel background hid the default white text).
+            paintCheckerboard(g2, this, 6);
             Font font = parameter.toFont();
             float maxH = getHeight() * 0.78f;
             Font render = font.getSize2D() > maxH ? font.deriveFont(maxH) : font;
@@ -357,6 +397,7 @@ public class JIPipeDesktopFontParameterEditorUI extends JIPipeDesktopParameterEd
             JIPipeFontParameter parameter = getParameter();
             Graphics2D g2 = (Graphics2D) g.create();
             g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+            paintCheckerboard(g2, this, 6);
             Font font = parameter.toFont();
             g2.setFont(font);
             FontMetrics fm = g2.getFontMetrics();
