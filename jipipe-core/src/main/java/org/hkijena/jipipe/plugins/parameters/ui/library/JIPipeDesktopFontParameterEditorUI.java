@@ -16,6 +16,7 @@ package org.hkijena.jipipe.plugins.parameters.ui.library;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.color.JIPipeColorHistory;
 import org.hkijena.jipipe.desktop.commons.components.color.NamedColor;
+import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.selection.JIPipeDesktopRichSelectionBox;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.JIPipeFontParameter;
 import org.hkijena.jipipe.utils.ColorUtils;
@@ -90,40 +91,31 @@ public class JIPipeDesktopFontParameterEditorUI extends JIPipeDesktopParameterEd
             return;
         }
         popup = new JPopupMenu();
-        JPanel content = new JPanel(new GridBagLayout());
-        content.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
-        GridBagConstraints c = new GridBagConstraints();
-        c.gridx = 0;
-        c.gridy = 0;
-        c.fill = GridBagConstraints.HORIZONTAL;
-        c.weightx = 1;
-        c.insets = new Insets(0, 0, 8, 0);
-        content.add(buildPreviewBand(), c);
-        c.gridy++;
-
-        c.insets = new Insets(0, 0, 8, 0);
-        content.add(fieldRow("Family", buildFamilyBox()), c);
-        c.gridy++;
-
-        c.insets = new Insets(0, 0, 8, 0);
-        content.add(fieldRow("Size", buildSizeSpinner()), c);
-        c.gridy++;
-
-        c.insets = new Insets(0, 0, 8, 0);
-        content.add(fieldRow("Style", buildStyleToggles()), c);
-        c.gridy++;
-
-        c.insets = new Insets(0, 0, 0, 0);
-        content.add(buildColorSection(), c);
-        c.gridy++;
-
-        JPanel wrap = new JPanel(new BorderLayout());
-        wrap.add(content, BorderLayout.NORTH);
-        popup.add(wrap);
+        popup.add(getPopoutContent());
         // The popup auto-sizes to the content's preferred size; the preview
         // band's fixed width (see buildPreviewBand) drives the column width.
         popup.show(preview, 0, preview.getHeight() + 2);
         preview.repaint();
+    }
+
+    /**
+     * Builds the popout's content panel. Extracted as a public seam so the
+     * screenshot harness (the #1339 VLM loop) can render the popout's content
+     * directly — a shown {@link JPopupMenu} can't be captured, but its content
+     * panel can. The form panel's GridBagLayout sizes the label column to the
+     * widest label under the active theme font, which keeps all controls
+     * left-aligned to one shared inset (spec §5).
+     */
+    public JComponent getPopoutContent() {
+        JIPipeDesktopFormPanel form = new JIPipeDesktopFormPanel(null, JIPipeDesktopFormPanel.NONE);
+        form.addToForm(buildPreviewBand(), new JLabel(""));
+        form.addToForm(buildFamilyBox(), new JLabel("Family"));
+        form.addToForm(buildSizeSpinner(), new JLabel("Size"));
+        form.addToForm(buildStyleToggles(), new JLabel("Style"));
+        form.addToForm(buildColorSection(), new JLabel("Color"));
+        JPanel wrap = new JPanel(new BorderLayout());
+        wrap.add(form, BorderLayout.NORTH);
+        return wrap;
     }
 
     private JComponent buildPreviewBand() {
@@ -133,15 +125,6 @@ public class JIPipeDesktopFontParameterEditorUI extends JIPipeDesktopParameterEd
         band.setPreferredSize(new Dimension(300, 56));
         band.setMinimumSize(new Dimension(0, 56));
         return band;
-    }
-
-    private JComponent fieldRow(String label, JComponent control) {
-        JPanel row = new JPanel(new BorderLayout(6, 0));
-        JLabel l = new JLabel(label, SwingConstants.RIGHT);
-        l.setPreferredSize(new Dimension(42, 20));
-        row.add(l, BorderLayout.WEST);
-        row.add(control, BorderLayout.CENTER);
-        return row;
     }
 
     private JComponent buildFamilyBox() {
@@ -207,7 +190,11 @@ public class JIPipeDesktopFontParameterEditorUI extends JIPipeDesktopParameterEd
             parameter.setSize((Integer) spinner.getValue());
             setParameter(parameter, false);
         });
-        spinner.setPreferredSize(new Dimension(60, 22));
+        // Pin the width for a 3-digit value + arrows; take the height from the
+        // spinner's natural default (never a flat 22px that undercuts the
+        // theme font's line height — spec §5).
+        Dimension d = spinner.getPreferredSize();
+        spinner.setPreferredSize(new Dimension(80, Math.max(d.height, 24)));
         return spinner;
     }
 
@@ -219,12 +206,14 @@ public class JIPipeDesktopFontParameterEditorUI extends JIPipeDesktopParameterEd
         bold.setOpaque(false);
         bold.setFont(bold.getFont().deriveFont(Font.BOLD));
         bold.setFocusable(false);
-        bold.setPreferredSize(new Dimension(28, 22));
+        Dimension boldDim = bold.getPreferredSize();
+        bold.setPreferredSize(new Dimension(28, Math.max(boldDim.height, 24)));
         JButton italic = new JButton("I");
         italic.setOpaque(false);
         italic.setFont(italic.getFont().deriveFont(Font.ITALIC));
         italic.setFocusable(false);
-        italic.setPreferredSize(new Dimension(28, 22));
+        Dimension italicDim = italic.getPreferredSize();
+        italic.setPreferredSize(new Dimension(28, Math.max(italicDim.height, 24)));
         bold.setSelected((parameter.getStyle() & Font.BOLD) != 0);
         italic.setSelected((parameter.getStyle() & Font.ITALIC) != 0);
         bold.addActionListener(e -> {

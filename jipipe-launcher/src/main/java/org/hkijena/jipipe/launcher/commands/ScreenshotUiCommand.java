@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.service.JIPipeServiceInitializationSettings;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopDummyWorkbench;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.color.JIPipeDesktopColorChooserDialog;
 import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterFormPanel;
@@ -31,6 +32,7 @@ import org.hkijena.jipipe.plugins.parameters.library.filesystem.PathList;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.JIPipeFontParameter;
 import org.hkijena.jipipe.plugins.parameters.ui.api.JIPipeDesktopListEditorDialog;
 import org.hkijena.jipipe.plugins.parameters.ui.api.JIPipeListParameterEditorUI;
+import org.hkijena.jipipe.plugins.parameters.ui.library.JIPipeDesktopFontParameterEditorUI;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeExtensionApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeGeneralUIApplicationSettings;
 import org.hkijena.jipipe.utils.ThemeUtils;
@@ -130,6 +132,7 @@ public class ScreenshotUiCommand {
         SwingUtilities.invokeLater(() -> {
             try {
                 renderNodePanels(workbench, outDir, only, rendered);
+                renderFontPopout(workbench, outDir, only, rendered);
                 renderColorDialog(outDir, only, rendered);
                 renderListEditorDialogs(workbench, outDir, only, rendered);
                 renderSettingsSheet(workbench, outDir, only, rendered);
@@ -280,6 +283,27 @@ public class ScreenshotUiCommand {
     private static JIPipeListParameterEditorUI listEditorInstance(JIPipeDesktopDummyWorkbench workbench, JIPipeMutableParameterAccess access) {
         return (JIPipeListParameterEditorUI) JIPipe.getParameterTypes().createEditorInstance(
                 access, workbench, new JIPipeParameterTree(access), null);
+    }
+
+    /**
+     * The font popout showcase (#1339 pass 2, S4). The popout is a
+     * {@link JPopupMenu}, which the harness can't capture while shown — but
+     * its content panel can: build a font editor instance and render
+     * {@code getPopoutContent()}. The form panel sizes the label column to
+     * the widest label automatically; the preview band's fixed preferred
+     * width (300px) drives the content column. Render at at least the brief's
+     * 320px, widened to the content's natural preferred width so the band
+     * (which drives that width) is not itself clipped by the capture.
+     */
+    private static void renderFontPopout(JIPipeDesktopWorkbench workbench, Path outDir, List<String> only, List<String> rendered) throws Exception {
+        if (!only.isEmpty() && !only.contains("popup-font"))
+            return;
+        JIPipeDesktopFontParameterEditorUI fontEditor = (JIPipeDesktopFontParameterEditorUI)
+                JIPipe.getParameterTypes().createEditorInstanceWithEmbeddedValue(workbench, JIPipeFontParameter.class);
+        JComponent content = (JComponent) fontEditor.getPopoutContent();
+        int width = Math.max(320, content.getPreferredSize().width);
+        ScreenshotRenderer.renderComponent(content, width, outDir.resolve("popup-font.png"));
+        rendered.add("popup-font");
     }
 
     private static void renderSettingsSheet(JIPipeDesktopDummyWorkbench workbench, Path outDir, List<String> only, List<String> rendered) throws Exception {
