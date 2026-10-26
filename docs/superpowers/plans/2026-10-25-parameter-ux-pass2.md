@@ -1087,3 +1087,25 @@ Subagent-driven execution (SDD). The per-task ledger lives in the gitignored `.s
 - Model tiers that work on the gateway: `asb-hki/vllm/small`, `asb-hki/vllm/frontier#medium`, `asb-hki/vllm/frontier` (bare = top). `frontier#high` / `frontier#xhigh` are REJECTED (variant/effort whitelist mismatch) — do not dispatch with those.
 - VLM division of labor: implementers do code + `mvn -q -pl jipipe-core compile` + the task's unit tests + commit + report; the controller runs the harness renders + `da_describe_image` and records verdicts.
 - Maven output is German-locale ("Fehler" = error, "Symbol nicht gefunden" = symbol not found). Harness log noise ("Invalid color format…") is pre-existing and harmless.
+
+---
+
+## Execution State — FINAL (2026-10-26) — all tasks done, final review complete
+
+This section **supersedes** the mid-flight handoff above (accurate as of `c8845ef3ef`). Resumed on the new machine, finished Tasks 5–10 inline, ran the final whole-branch review. Full per-task detail + rulings + re-grade reasoning: gitignored ledger `.superpowers/sdd/2026-10-25-parameter-ux-pass2/progress.md`.
+
+**ALL 10 TASKS COMPLETE** (S1–S8), committed, unit-tested, VLM-verified:
+- Task 5 (S3) — `8c0c29c` + fix `ed8602a`. Scoped re-review of the fix CLEAN (fresh reviewer); VLM PASS (left-aligned values on `panel-enum-box` "Viridis" + `panel-roi3d-statistics` "Default"/"16 selected"). (`panel-font`'s value is the custom-painted font preview, not a RichSelectionBox — see the S8 finding.)
+- Task 6 (S4) — `2fe86ca`. Font popout onto form-panel rows + `getPopoutContent()` seam; size spinner 80px/natural-height; B/I natural-height; `popup-font` showcase. VLM PASS.
+- Task 7 (S5) — `6bbf674`. Color dialog `refresh()` re-entrancy fix (TDD `#000000→#000000` RED→GREEN) + pill tabs + palette wrap (no h-scrollbar) + 16 4-bit colors + merged untitled block + 34px right-aligned label column + rail hit-target widening + rich swatch tooltips. VLM PASS (both dialogs).
+- Task 8 (S6) — `1498dd9`. `NumberParameterSettings.Style` enum + `JIPipeDesktopNumberSlider` (static math + custom control + inline edit) + editor `shouldUseSlider` branch + one-time unbounded warning. Math 5/5 + decision 2/7 TDD. VLM PASS (two-value ratio proved the thumb tracks the value). **No example adoption** (no node has a bounded annotation).
+- Task 9 (S7) — `c06b349`. HTML editor compact 24px icon toolbar + WYSIWYG/Preview/Source 3-state view + density toggle (replaces the mode popup) + control border on the widget + parameter editor stacked + redundant border dropped; legacy `Mode` API stable. VLM PASS (all three views).
+- Task 10 (S8) — `6cc49d4` + `bc9c800`. Per-editor showcase set (17 editors) + full 35-render VLM sweep. **One finding, user-triaged and fixed in-branch (TDD):** font preview rendered blank (white default font color on the light panel) → theme-derived checkerboard preview background (`FontPreviewCheckerTest` pins the light+dark contrast contract).
+
+**Final whole-branch review** (fresh reviewer, `asb-hki/vllm/frontier`, `29f80d5b20..bc9c80047b`): **0 Critical.** Two Important findings **re-graded to Minor by effect** (the re-grade is the gate, not the label): (1) slider `setValue()` clamps a stored *out-of-range* value on display, but fires no listeners and writes nothing — only an already-invalid value (typed beyond bounds via the FIELD path) is shown clamped/normalized on the next explicit slider use; in-range unaffected; (2) modal `rebuildRows()` could drop uncommitted caret text of a sibling row, but this codebase's editors commit via live `DocumentListener` so a sibling's text is already in the shared parameter before any rebuild. Both **deferred**. 8 Minor items deferred to the user; 4 reviewer "declined-to-judge" lines accepted as-is. **Fix pass: empty** (no standing Critical/Important).
+
+**Full core suite: 619 tests, 0 failures, 1 skipped (headless AWT), green.**
+
+**Branch state:** tip `bc9c80047b` on `1339-parameter-ux-overhaul`, clean tree. **NOT yet pushed; NO merge request** — standing GitLab flow: push the branch only, open the MR only after the user confirms the feature is finished.
+
+**User still to eyeball (project policy — no Swing-structure tests; user is the final UI judge):** the new font-preview checkerboard (esp. white sample text on the light-theme checker), the number slider's proportions, and the HTML editor's compact toolbar + view toggle, in the running app.
