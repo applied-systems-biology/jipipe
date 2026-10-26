@@ -24,11 +24,13 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopDummyWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.color.JIPipeDesktopColorChooserDialog;
+import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopHTMLEditor;
 import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.launcher.commands.screenshotui.ScreenshotRenderer;
 import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeParameterCollectionList;
 import org.hkijena.jipipe.plugins.parameters.library.filesystem.PathList;
+import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.JIPipeFontParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.NumberParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.ui.api.JIPipeDesktopListEditorDialog;
@@ -93,6 +95,10 @@ public class ScreenshotUiCommand {
         // (#1339 pass 2, S6) — the number editor renders a slider, not a
         // text field + spinners.
         SHOWCASE.put("panel-number-slider", "<number-slider>");
+        // Synthetic: an HTMLText field (#1339 pass 2, S7) — the modernized
+        // compact-toolbar HTML widget (B/I/U, color, image, |, view toggle,
+        // density toggle, edit-in-dialog).
+        SHOWCASE.put("panel-html-text", "<html-text>");
     }
 
     private static final int PANEL_WIDTH = 480;
@@ -139,6 +145,7 @@ public class ScreenshotUiCommand {
             try {
                 renderNodePanels(workbench, outDir, only, rendered);
                 renderFontPopout(workbench, outDir, only, rendered);
+                renderHtmlEditorViews(workbench, outDir, only, rendered);
                 renderColorDialog(outDir, only, rendered);
                 renderListEditorDialogs(workbench, outDir, only, rendered);
                 renderSettingsSheet(workbench, outDir, only, rendered);
@@ -173,6 +180,12 @@ public class ScreenshotUiCommand {
                 // Synthetic bounded 0-1 double annotated style=SLIDER at runtime
                 // (#1339 pass 2, S6).
                 NumberSliderShowcase root = new NumberSliderShowcase();
+                panel = new JIPipeDesktopParameterFormPanel(workbench, root, null, PANEL_FLAGS);
+            } else if ("<html-text>".equals(nodeId)) {
+                // Synthetic HTMLText field with sample rich content (#1339
+                // pass 2, S7) so the modernized widget's toolbar + body are
+                // visible in the capture.
+                HtmlTextShowcase root = new HtmlTextShowcase();
                 panel = new JIPipeDesktopParameterFormPanel(workbench, root, null, PANEL_FLAGS);
             } else {
                 JIPipeGraphNode node = JIPipe.createNode(nodeId);
@@ -279,6 +292,47 @@ public class ScreenshotUiCommand {
                     });
             low.set(0.2);
         }
+    }
+
+    /**
+     * A minimal parameter collection exposing a single {@link HTMLText} with
+     * sample rich content (#1339 pass 2, S7) — the modernized compact-toolbar
+     * HTML widget has no node showcase in the default set, so a synthetic one
+     * renders it for the VLM loop.
+     */
+    private static class HtmlTextShowcase extends JIPipeDynamicParameterCollection {
+        HtmlTextShowcase() {
+            JIPipeMutableParameterAccess access = addParameter("description", HTMLText.class, "Description", "An HTML description");
+            access.set(new HTMLText("<html><body><p>Hello <b>world</b>, this is a <i>rich</i> description.</p></body></html>"));
+        }
+    }
+
+    /**
+     * The HTML editor 3-state view showcase (#1339 pass 2, S7). The view
+     * toggle (WYSIWYG / Preview / Source) can't be exercised in a static node
+     * panel (it's a click interaction), so the widget is rendered directly —
+     * one capture per view state — to verify the brief's claim that Preview
+     * renders the HTML read-only and Source shows the raw markup.
+     */
+    private static void renderHtmlEditorViews(JIPipeDesktopWorkbench workbench, Path outDir, List<String> only, List<String> rendered) throws Exception {
+        if (!only.isEmpty() && !only.contains("html-editor-views"))
+            return;
+        String sample = "<html><body><p>Hello <b>world</b>, this is a <i>rich</i> description.</p></body></html>";
+        JIPipeDesktopHTMLEditor editor =
+                new JIPipeDesktopHTMLEditor(workbench, JIPipeDesktopHTMLEditor.Mode.Compact, JIPipeDesktopHTMLEditor.WITH_DIALOG_EDITOR_BUTTON);
+        editor.setText(sample);
+        int width = Math.max(360, editor.getPreferredSize().width);
+
+        // WYSIWYG (default)
+        editor.setView(JIPipeDesktopHTMLEditor.View.WYSIWYG);
+        ScreenshotRenderer.renderFixed(editor, width, 200, outDir.resolve("html-editor-wysiwyg.png"));
+        // Preview (read-only render)
+        editor.setView(JIPipeDesktopHTMLEditor.View.PREVIEW);
+        ScreenshotRenderer.renderFixed(editor, width, 200, outDir.resolve("html-editor-preview.png"));
+        // Source (raw markup)
+        editor.setView(JIPipeDesktopHTMLEditor.View.SOURCE);
+        ScreenshotRenderer.renderFixed(editor, width, 200, outDir.resolve("html-editor-source.png"));
+        rendered.add("html-editor-views");
     }
 
     private static void renderColorDialog(Path outDir, List<String> only, List<String> rendered) throws Exception {

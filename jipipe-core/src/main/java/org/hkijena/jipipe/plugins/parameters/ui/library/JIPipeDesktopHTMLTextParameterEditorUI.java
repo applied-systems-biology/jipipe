@@ -17,7 +17,6 @@ import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopHTMLEditor;
 import org.hkijena.jipipe.desktop.commons.components.textfield.JIPipeDesktopDocumentChangeListener;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
-import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -48,7 +47,8 @@ public class JIPipeDesktopHTMLTextParameterEditorUI extends JIPipeDesktopParamet
         if (value != null) {
             stringValue = "" + value;
         }
-        editor.setBorder(UIUtils.createControlBorder());
+        // The editor carries its own control border (spec §8.2); no redundant
+        // outer border here.
         editor.setText(stringValue);
         add(editor, BorderLayout.CENTER);
 
@@ -67,6 +67,15 @@ public class JIPipeDesktopHTMLTextParameterEditorUI extends JIPipeDesktopParamet
                 }
             }
         });
+    }
+
+    /**
+     * Stacked — the HTML editor is a compound control (toolbar + body) that
+     * needs the full row width (spec §8.1). The name sits above the widget.
+     */
+    @Override
+    public boolean isUIInline() {
+        return false;
     }
 
 
