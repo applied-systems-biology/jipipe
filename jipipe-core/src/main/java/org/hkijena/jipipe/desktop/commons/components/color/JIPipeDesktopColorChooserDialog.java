@@ -13,6 +13,8 @@
 
 package org.hkijena.jipipe.desktop.commons.components.color;
 
+import org.hkijena.jipipe.desktop.commons.theme.ui.JIPipeDesktopModernPillTabbedPaneUI;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.color.ColorSpaces;
 
 import javax.swing.*;
@@ -110,12 +112,17 @@ public class JIPipeDesktopColorChooserDialog extends JDialog {
         body.add(buildHexRow(), BorderLayout.SOUTH);
 
         savedRow = new JPanel();
-        savedRow.setLayout(new BoxLayout(savedRow, BoxLayout.X_AXIS));
+        // Item 6: the saved swatches wrap like the other palette rows
+        // (item 1: never a horizontal scrollbar).
+        savedRow.setLayout(new FlowLayout(FlowLayout.LEFT, 4, 4));
         savedRow.setAlignmentX(0f);
 
         JPanel palettes = buildPalettes();
         JScrollPane paletteScroll = new JScrollPane(palettes);
         paletteScroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+        // Item 1: swatch rows wrap (FlowLayout), so only vertical scrolling is
+        // ever needed — no horizontal scrollbar in the palette area.
+        paletteScroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         paletteScroll.setBorder(BorderFactory.createEmptyBorder());
         paletteScroll.setPreferredSize(new Dimension(0, 200));
 
@@ -139,6 +146,23 @@ public class JIPipeDesktopColorChooserDialog extends JDialog {
         refresh();
     }
 
+    // ------------------------------------------------------------------
+    // Test seams (package-private; drive the input plumbing without
+    // Swing-structure assertions — see ColorChooserDialogRefreshTest).
+    // ------------------------------------------------------------------
+
+    String getHexText() {
+        return hexField.getText();
+    }
+
+    JComponent getRedRail() {
+        return rRail;
+    }
+
+    JComponent getHsbWell() {
+        return hsbWell;
+    }
+
     private JComponent buildTop() {
         currentSwatch = new CheckerSwatch(44, 26);
         JPanel header = new JPanel(new BorderLayout());
@@ -152,6 +176,11 @@ public class JIPipeDesktopColorChooserDialog extends JDialog {
         spaceTabs.addTab("RGB", buildRgbPanel());
         spaceTabs.addTab("HSB", buildHsbPanel());
         spaceTabs.addTab("LAB", buildLabPanel());
+        // Item 2: pill tabs under the modern theme (mirrors JIPipeDesktopTabPane);
+        // the default UI under the classic theme.
+        if (ThemeUtils.isUsingModernTheme()) {
+            spaceTabs.setUI(new JIPipeDesktopModernPillTabbedPaneUI());
+        }
         return spaceTabs;
     }
 
@@ -264,16 +293,20 @@ public class JIPipeDesktopColorChooserDialog extends JDialog {
     private JPanel buildPalettes() {
         JPanel p = new JPanel();
         p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
-        p.add(sectionLabel("Pure colors"));
+        // Items 5/7: the 16 pure (4-bit) colors and the GNOME HIG palette
+        // render as ONE untitled block — no section titles, a single 8px gap
+        // between the two groups.
         p.add(swatchesRow(pureColors()));
-        p.add(sectionLabel("GNOME HIG"));
+        p.add(Box.createVerticalStrut(8));
         p.add(swatchesRow(gnomeHig()));
         p.add(sectionLabel("Last selected"));
         p.add(swatchesRow(JIPipeColorHistory.get().getRecent()));
 
-        JPanel savedHeader = new JPanel(new BorderLayout());
+        // Item 6: the star (save) button right-aligns to the edge of the
+        // "Saved" section title — not the far dialog edge.
+        JPanel savedHeader = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
         savedHeader.setOpaque(false);
-        savedHeader.add(sectionLabel("Saved"), BorderLayout.CENTER);
+        savedHeader.add(sectionLabel("Saved"));
         JButton star = new JButton("☆");
         star.setToolTipText("Save the current color");
         star.setFocusable(false);
@@ -281,7 +314,7 @@ public class JIPipeDesktopColorChooserDialog extends JDialog {
             JIPipeColorHistory.get().save(new NamedColor(currentColor, null));
             fillSavedRow();
         });
-        savedHeader.add(star, BorderLayout.EAST);
+        savedHeader.add(star);
         p.add(savedHeader);
         fillSavedRow();
         p.add(savedRow);
@@ -289,10 +322,11 @@ public class JIPipeDesktopColorChooserDialog extends JDialog {
     }
 
     private void fillSavedRow() {
+        // Item 6: the saved swatches wrap like the other rows (item 1:
+        // never a horizontal scrollbar).
         savedRow.removeAll();
         for (NamedColor c : JIPipeColorHistory.get().getSaved()) {
-            JButton b = swatchButton(c.getColor(),
-                    c.getName() != null ? c.getName() : ColorSpaces.toHex(c.getColor()));
+            JButton b = swatchButton(c);
             b.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
@@ -319,35 +353,56 @@ public class JIPipeDesktopColorChooserDialog extends JDialog {
         return l;
     }
 
+    /**
+     * Item 6: one shared left margin for swatch rows and section titles
+     * (the titles are bare, the rows carry a matching left inset); swatch
+     * cells uniform 18×18 with a 4px gap. Item 1: rows WRAP so the palette
+     * area never needs a horizontal scrollbar (only vertical).
+     */
     private JPanel swatchesRow(List<NamedColor> colors) {
         JPanel p = new JPanel();
-        p.setLayout(new BoxLayout(p, BoxLayout.X_AXIS));
+        p.setLayout(new FlowLayout(FlowLayout.LEFT, 4, 4));
+        p.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         p.setAlignmentX(0f);
         p.setOpaque(false);
         for (NamedColor c : colors) {
-            p.add(swatchButtonAction(c.getColor(),
-                    c.getName() != null ? c.getName() : ColorSpaces.toHex(c.getColor())));
+            JButton b = swatchButton(c);
+            // Left-click sets the color (right-click on the Saved row deletes
+            // — wired by fillSavedRow).
+            b.addActionListener(e -> setColor(c.getColor()));
+            p.add(b);
         }
         return p;
     }
 
-    private static JButton swatchButton(Color c, String tooltip) {
+    /**
+     * Item 8: the full swatch tooltip — name (if any), {@code #RRGGBB},
+     * {@code RGB(r, g, b)}, {@code HSB(h°, s%, b%)}, {@code L*a*b*(L, a, b)}.
+     * Shared by every swatch source (pure, HIG, last selected, saved) and the
+     * current-swatch header, so the format stays in one place.
+     */
+    private static String colorTooltip(NamedColor c) {
+        Color color = c.getColor();
+        double[] hsb = ColorSpaces.toHsb(color);
+        double[] lab = ColorSpaces.toLab(color);
+        return String.join(System.lineSeparator(),
+                c.getName() != null ? c.getName() : " (unnamed)",
+                ColorSpaces.toHex(color),
+                String.format("RGB(%d, %d, %d)", color.getRed(), color.getGreen(), color.getBlue()),
+                String.format("HSB(%.0f°, %.0f%%, %.0f%%)", hsb[0], hsb[1], hsb[2]),
+                String.format("L*a*b*(%.1f, %.1f, %.1f)", lab[0], lab[1], lab[2]));
+    }
+
+    private static JButton swatchButton(NamedColor c) {
         JButton b = new JButton();
         b.setPreferredSize(new Dimension(18, 18));
         b.setMaximumSize(new Dimension(18, 18));
         b.setMinimumSize(new Dimension(18, 18));
         b.setBorder(BorderFactory.createLineBorder(new Color(110, 110, 110), 1, true));
-        b.setBackground(c);
+        b.setBackground(c.getColor());
         b.setContentAreaFilled(true);
         b.setFocusable(false);
-        b.setToolTipText(tooltip + "  " + ColorSpaces.toHex(c));
-        return b;
-    }
-
-    /** Returns a swatch button that, when left-clicked, sets the color. */
-    private JButton swatchButtonAction(Color c, String tooltip) {
-        JButton b = swatchButton(c, tooltip);
-        b.addActionListener(e -> setColor(c));
+        b.setToolTipText(colorTooltip(c));
         return b;
     }
 
@@ -365,22 +420,18 @@ public class JIPipeDesktopColorChooserDialog extends JDialog {
     }
 
     private void setColor(Color c) {
-        if (updating) {
-            return;
-        }
-        updating = true;
-        try {
-            currentColor = c;
-            refresh();
-        } finally {
-            updating = false;
-        }
+        currentColor = c;
+        refresh();
     }
 
     private void refresh() {
         if (updating) {
             return;
         }
+        // Re-entrancy guard for the real cycle: refresh -> rail.setValue ->
+        // listener -> setColor -> refresh. A nested refresh returns early, but
+        // the top-level call runs to completion and updates the rails, wells,
+        // hex field, and preview swatch.
         updating = true;
         try {
             int rgb = currentColor.getRGB();
@@ -412,6 +463,9 @@ public class JIPipeDesktopColorChooserDialog extends JDialog {
             }
             if (currentSwatch != null) {
                 currentSwatch.setColor(currentColor);
+                // Item 8: the current-swatch header tooltip carries the same
+                // name/hex/RGB/HSB/L*a*b* detail as every palette swatch.
+                currentSwatch.setToolTipText(colorTooltip(new NamedColor(currentColor, null)));
                 currentSwatch.repaint();
             }
         } finally {
@@ -447,11 +501,19 @@ public class JIPipeDesktopColorChooserDialog extends JDialog {
         // EAST and would starve the rail (CENTER) of its width.
         JPanel row = new JPanel(new GridBagLayout());
         row.setOpaque(false);
-        row.setMaximumSize(new Dimension(Integer.MAX_VALUE, 18));
+        row.setMaximumSize(new Dimension(Integer.MAX_VALUE, 22));
+        // Item 3: a fixed-width, right-aligned label cell so every rail
+        // (RGB/HSB/LAB incl. α) starts at the same x and the labels form a
+        // clean column.
         JLabel l = new JLabel(label, SwingConstants.RIGHT);
         l.setOpaque(false);
-        rail.setMaximumSize(new Dimension(Integer.MAX_VALUE, 14));
-        rail.setMinimumSize(new Dimension(120, 14));
+        l.setPreferredSize(new Dimension(34, l.getPreferredSize().height));
+        // Item 4: the rail keeps its ~12px visual height, but the whole row
+        // (~22px) is the clickable area — press/drag anywhere on the row
+        // (including the label) drives the rail, with x converted to the
+        // rail's span.
+        rail.setMaximumSize(new Dimension(Integer.MAX_VALUE, 12));
+        rail.setMinimumSize(new Dimension(120, 12));
         rail.addChangeListener(onChange::accept);
         GridBagConstraints c = new GridBagConstraints();
         c.gridx = 0;
@@ -463,7 +525,44 @@ public class JIPipeDesktopColorChooserDialog extends JDialog {
         c.weightx = 1;
         c.fill = GridBagConstraints.HORIZONTAL;
         row.add(rail, c);
+        MouseAdapter rowForwarder = new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                forwardToRail(e, rail, row, true);
+            }
+
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                forwardToRail(e, rail, row, false);
+            }
+        };
+        row.addMouseListener(rowForwarder);
+        row.addMouseMotionListener(rowForwarder);
         return row;
+    }
+
+    /**
+     * Converts a press/drag on the row into the rail's value (item 4): the
+     * x coordinate is clamped to the rail's horizontal span within the row.
+     * The rail's own listener still fires — this is a widening of the hit
+     * target, not a replacement.
+     */
+    private void forwardToRail(MouseEvent e, ColorRail rail, JPanel row, boolean press) {
+        if (e.getComponent() == rail) {
+            return; // the rail handles its own events
+        }
+        Point railOrigin = rail.getLocationOnScreen();
+        Point point = e.getLocationOnScreen();
+        if (point.x < railOrigin.x || point.x >= railOrigin.x + rail.getWidth()) {
+            return; // outside the rail's span (the label cell)
+        }
+        int xInRail = point.x - railOrigin.x;
+        int yInRail = Math.max(0, Math.min(rail.getHeight() - 1, point.y - railOrigin.y));
+        if (press) {
+            rail.dispatchEvent(new MouseEvent(rail, MouseEvent.MOUSE_PRESSED, e.getWhen(), e.getModifiersEx(), xInRail, yInRail, e.getClickCount(), false));
+        } else {
+            rail.dispatchEvent(new MouseEvent(rail, MouseEvent.MOUSE_DRAGGED, e.getWhen(), e.getModifiersEx(), xInRail, yInRail, e.getClickCount(), false));
+        }
     }
 
     /** An alpha rail: fully transparent (left, 0) → opaque (right, 255) over a checkerboard. */
@@ -475,15 +574,20 @@ public class JIPipeDesktopColorChooserDialog extends JDialog {
     // Palette data
     // ------------------------------------------------------------------
 
+    /**
+     * Item 5: the 16 4-bit colors (standard 4-bit cube order: B, G, R planes),
+     * rendered untitled alongside the GNOME HIG palette.
+     */
     private static List<NamedColor> pureColors() {
-        String[][] data = {
-                {"Black", "000000"}, {"White", "FFFFFF"}, {"Grey", "808080"},
-                {"Red", "FF0000"}, {"Orange", "FF8800"}, {"Yellow", "EEEE00"},
-                {"Green", "00CC00"}, {"Blue", "0066FF"}, {"Purple", "8800CC"},
+        String[] data = {
+                "000000", "550000", "AA0000", "FF0000",
+                "005500", "00AA00", "00FF00", "555500",
+                "AAAA00", "FFFF00", "000055", "0000AA",
+                "0000FF", "550055", "AA00AA", "FF00FF",
         };
         List<NamedColor> out = new ArrayList<>();
-        for (String[] d : data) {
-            out.add(new NamedColor(ColorSpaces.fromHex("#" + d[1]), d[0]));
+        for (String hex : data) {
+            out.add(new NamedColor(ColorSpaces.fromHex("#" + hex), null));
         }
         return out;
     }
