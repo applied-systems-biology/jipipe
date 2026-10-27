@@ -14,6 +14,8 @@
 package org.hkijena.jipipe.utils.threshold;
 
 import ij.process.AutoThresholder;
+import org.hkijena.jipipe.ImageJHeadlessLogListener;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.util.Random;
@@ -23,6 +25,17 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class NBinsAutoThresholderTest {
+
+    /**
+     * ImageJ1's {@code AutoThresholder} logs non-converging iterations (e.g.
+     * {@code MinError}) via {@code IJ.log}, which opens the GUI "Log" window on
+     * first use — swallow it into a headless panel (belt & braces on top of the
+     * session listener).
+     */
+    @BeforeAll
+    static void installHeadlessImageJLogSink() {
+        ImageJHeadlessLogListener.installHeadlessLogSink();
+    }
 
     /**
      * On 256-bin histograms every method must return exactly what ImageJ's
