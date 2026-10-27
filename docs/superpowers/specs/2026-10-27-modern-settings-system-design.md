@@ -15,7 +15,7 @@ Today, application settings are handled by three independent systems:
 
 Confirmed defects in the current code:
 
-- **Fragile across versions.** The profile directory is `<base>/<version>/` (`PathUtils.getJIPipeUserDir`). Every new JIPipe release starts in an **empty** profile dir — there is no profile migration/copy code anywhere. Only the theme is read from the newest old profile (`ThemeUtils`). On save, `settings.json` is rewritten from the *registered* sheets only: unknown sheet IDs (e.g. written by a newer or parallel version) are silently dropped.
+- **Fragile across versions.** The profile directory is `<base>/<version>/` (`PathUtils.getJIPipeUserDir`). Profile carry-over *does* exist: `JIPipeServiceInitializer.applyProfileUpgrades()` copies the newest older profile dir into the empty current one on first launch (upgrades only, skipped once the current dir is non-empty). But: (a) dev builds and releases share a version string (`VersionUtils.getJIPipeVersion()` strips `-SNAPSHOT`), so they write to the **same** profile dir — when the user then runs the release (a downgrade relative to the dev build), `settings.json` is rewritten from the *registered* sheets only on save and blocks written by the dev build are **silently cleared**; (b) the copy is a whole-directory move that conflates settings with caches/templates; (c) there is no reverse migration, so settings changed while running an older version are lost when the newer version is run again (the newer profile dir is non-empty, so no copy happens).
 - **Three systems, no shared semantics.** Different file formats, different save triggers, different (or missing) change events. UI reads registry settings once at component init and never learns about later changes: e.g. `JIPipeDesktopGraphEditorUI` reads `any/dock/show-labels` once (`:225`) and writes it back on change (`:228`), so a second open graph editor is desynced.
 - **In-memory-til-Save UX.** Sheet edits live in the sheet object until the settings dialog's *Save* is pressed; *Reset/Cancel* re-read the file. A crash or window close loses the session's settings work.
 - **No multi-instance story.** Multiple JIPipe processes share the same file; last writer wins, no notification, no safe write (direct `FileWriter`, not atomic).
@@ -77,11 +77,15 @@ Scope is a first-class argument in the API, not a special case.
 - `$meta` carries conflict-detection info only; it is never a gate for loading (a document written by a newer version still loads).
 - **Atomic writes:** serialize to `settings.json.tmp.<writer-id>`, then `Files.move(..., ATOMIC_MOVE)` (fallback: non-atomic move + size/mtime verify for filesystems without atomic rename). Orphan tmp files are cleaned at startup. A corrupt target is backed up as `settings.json.bad-<timestamp>` and defaults take over (with a notification), never a hard failure.
 
-### 3.3 Profile seeding across versions
+### 3.3 Profile carry-over across versions
 
-Because profile dirs remain per-version (the directory layout itself is out of scope to change — other state like caches and artifacts already assume it), startup does an explicit **seed**: if the current version's `settings.json` does not exist and another profile dir does, the newest one's `settings.json` is copied into the current profile dir before load. Pass-through keeps the rest. A setting can opt out of seeding (`migrate: false` in key registration) for values that must reset per version.
+Profile dirs remain per-version (the directory layout is out of scope — other state like caches and artifacts already assume it). The existing whole-directory carry-over (`JIPipeServiceInitializer.applyProfileUpgrades()`) is **kept as-is** for caches, templates, and the rest of the profile. On top of it, the new system adds a targeted **settings migration** that runs when the copy produces a file in the old layout, or when a profile dir already exists but its `settings.json` was written by a *different* JIPipe version:
 
-This replaces the accidental "every upgrade starts blank" behavior with an explicit, testable migration step, and works for both upgrade and downgrade (newest-other-profile, not just newest-older).
+1. Old-layout detection (`$schema` missing) → the §6 migration transforms it in place (sheet prefixes, registry blocks, recent projects, `$meta`).
+2. **Reverse/recovery merge.** When the running version's profile has a `settings.json` but a *newer* version's profile contains blocks this version does not know, those **unknown** blocks are merged in from the newest other profile as pass-through — recovering data without letting a dev build's experimental *registered* values flow into the release. Registered (known) blocks always keep the local version's value: no cross-version override of real settings. This is the reverse-migration case the current code cannot handle, and it is conservative by construction: pass-through blocks have zero runtime effect in this version and are fully visible/deletable in the raw editor.
+3. A key can opt out of merge-in via `migrate: false` in its registration for values that must reset per version.
+
+The whole-directory copy remains the fast path (first launch on a new version); the settings-level merge is the safety net for the shared-version-string and downgrade cases, and it is explicit, testable, and idempotent.
 
 ## 4. Java API
 
