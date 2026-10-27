@@ -1109,3 +1109,54 @@ This section **supersedes** the mid-flight handoff above (accurate as of `c8845e
 **Branch state:** tip `bc9c80047b` on `1339-parameter-ux-overhaul`, clean tree. **NOT yet pushed; NO merge request** — standing GitLab flow: push the branch only, open the MR only after the user confirms the feature is finished.
 
 **User still to eyeball (project policy — no Swing-structure tests; user is the final UI judge):** the new font-preview checkerboard (esp. white sample text on the light-theme checker), the number slider's proportions, and the HTML editor's compact toolbar + view toggle, in the running app.
+
+## Execution State — FOLLOW-UP ROUND (2026-10-27) — user review refinements, all 9 items done
+
+The user eyeballed the running app and returned 9 follow-up change requests. All were
+scoped as **bounded** refinements to the pass-2 flows (no new subsystem) and implemented
+inline with VLM verification. Branch `1339-parameter-ux-overhaul`; commit suffix `(#1339)`.
+
+**4 commits, each verified (compile + full 621-test suite green + VLM screenshot):**
+
+- `e3adf6a` **A — modern compound-editor chrome.** `UIUtils.createLeftAccentBorder()`
+  (3px left-only bar, `getNodeHighlightBorder()` gray — the faint `getBorderColor()` was
+  too subtle, so the node-highlight gray is used so it reads in light+dark);
+  `UIUtils.createEditInDialogButton()` (shared `actions/edit.png` Edit button). List header
+  reworked (item 3, 9): right-aligned `[n items] [Add] [Edit]`, Add green-bordered, ⋯ menu
+  dropped (bulk actions live in the dialog).
+- `b2b7f5e` **B — font preview (item 1, 2).** The rejected checkerboard is gone:
+  `previewBackground(fontColor)` auto-picks the flat tone that **maximizes WCAG contrast**
+  against the font color (direct contrast comparison, not a `luminance>0.5` split — that
+  misplaces mid-tones like olive). `FontPreviewBackgroundTest` (4 cases incl. the olive
+  mid-tone trap) replaces `FontPreviewCheckerTest`. Popout controls now `setParameter(p, true)`
+  (was `false`) so family/size/style/color apply live; `reload()` repaints the open popout band.
+- `c2c280e` **C — list edit dialog (item 4, 5).** Symbol toolbar: 24×24 flat icon buttons
+  (Add/Select all/Invert/Clear selection/Remove selected/Clear list) replace 5 text buttons,
+  green-bordered Add adds an item live. Rows pack to the TOP (`alignmentY=0f`) — no longer
+  floating centered. Dialog positioned `setLocationRelativeTo(owner)` (the workbench window).
+- `03b184c` **D — HTML (item 6, 7, 8).** Each `JToolBar` sets `alignmentX=0f` so the compact
+  and both expanded rows are left-aligned (was centered by BoxLayout default). The font/size
+  combos are **editable**, so focusing one selects all its text and the unthemed Metal
+  selection highlight drew the "black bars" — `themeEditableComboSelection()` themes the field
+  + popup selection. New `NO_TOOLBAR` flag: the embedded param view is an editable body only
+  (no inline formatting toolbar) with the left accent border; the standalone full dialog
+  carries no border. The HTML param editor gains the name-row Edit button (item 8) that opens
+  the full dialog. Harness: new `html-editor-full` showcase renders the two-row Full state
+  (the one the user's dialog screenshot captured).
+
+**Verification:** `mvn -pl jipipe-core test` → **621 tests, 0 failures, 1 skipped (headless
+AWT), green.** VLM confirmed: font preview flat auto-contrast bg (white text on dark, no
+checker); HTML param = no toolbar + Edit(pencil) in name row + left accent; list header =
+right-aligned count/green-Add/pencil-Edit, no ⋯; list dialog = icon toolbar + green Add +
+top-packed rows; HTML Full = both toolbar rows left-aligned, combos clean (white bg, no black
+bands). **The 3 screenshots the user referenced** (list-dialog centering, HTML param toolbar
+centering, HTML dialog centered row-2 + combo black bars) were reproduced in the before-set and
+confirmed resolved in the after-set.
+
+**Branch state:** tip `03b184cf49` on `1339-parameter-ux-overhaul`, clean tree, pushed
+`cfe20c91c8..03b184cf49`. **NO merge request** — standing flow: push branch only, open the MR
+after the user confirms the feature is finished.
+
+**User still to eyeball (final UI judge):** the font preview's new flat auto-contrast
+background in the running app (esp. a mid-tone font color), the list edit dialog's position
+relative to the workbench, and the HTML full-mode toolbar alignment + combos.
