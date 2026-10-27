@@ -72,6 +72,14 @@ import java.util.function.Consumer;
  * A fresh document without the block is seeded from the sheet's current
  * (default) values by {@link #attach()}, so a first-run profile behaves like
  * the old built-in defaults.
+ * <p>
+ * <b>Nested sub-collections:</b> parameters of a child parameter collection
+ * are addressed by composite keys ({@code "group/inner"}) that the flat
+ * {@link SettingsDocument#get(String, String)} block addressing does not use,
+ * so document→sheet sync silently skips such nested keys. In the other
+ * direction, {@link #flushToDocument()} serializes the whole group object, so
+ * sub-keys unknown to the sheet <em>inside</em> a known group are replaced on
+ * a sheet round-trip, while unknown top-level keys still survive.
  */
 public final class SettingsSheetBridge {
     private static final Logger logger = LoggerFactory.getLogger(SettingsSheetBridge.class);
@@ -205,31 +213,36 @@ public final class SettingsSheetBridge {
         applying = true;
         try {
             for (Map.Entry<String, JIPipeParameterAccess> entry : parameters.entrySet()) {
-                JsonNode stored = filtered.get(entry.getKey());
-                if (stored == null || stored.isMissingNode()) {
-                    continue;
-                }
-                JsonNode current = serializeValue(entry.getValue().get(Object.class));
-                if (current.equals(stored)) {
-                    continue;
-                }
-                Object value;
-                try {
-                    value = JsonUtils.getObjectMapper().readerFor(entry.getValue().getFieldClass()).readValue(stored);
-                } catch (Exception | Error e) {
-                    logger.warn("Could not apply value of '{}' from {} to sheet {}: keeping the current value",
-                            entry.getKey(), blockPath, sheet.getClass().getName(), e);
-                    continue;
-                }
-                try {
-                    entry.getValue().set(value);
-                } catch (Exception | Error e) {
-                    logger.warn("Could not set parameter '{}' of sheet {}: keeping the current value",
-                            entry.getKey(), sheet.getClass().getName(), e);
-                }
+                applyKey(entry.getKey(), entry.getValue(), filtered);
             }
         } finally {
             applying = false;
+        }
+    }
+
+    /**
+     * Applies one parameter of the block to the sheet, or leaves the sheet
+     * untouched. The whole per-key body — reading the current value for the
+     * comparison, converting the stored value, and setting it — is inside a
+     * single error net, so a getter that throws or a value the mapper cannot
+     * serialize cannot abort the remaining keys: one malformed knob cannot
+     * block the rest.
+     */
+    private void applyKey(String key, JIPipeParameterAccess access, ObjectNode filtered) {
+        try {
+            JsonNode stored = filtered.get(key);
+            if (stored == null || stored.isMissingNode()) {
+                return;
+            }
+            JsonNode current = serializeValue(access.get(Object.class));
+            if (current.equals(stored)) {
+                return;
+            }
+            Object value = JsonUtils.getObjectMapper().readerFor(access.getFieldClass()).readValue(stored);
+            access.set(value);
+        } catch (Exception | Error e) {
+            logger.warn("Could not apply '{}' from {} to sheet {}: keeping the current value",
+                    key, blockPath, sheet.getClass().getName(), e);
         }
     }
 

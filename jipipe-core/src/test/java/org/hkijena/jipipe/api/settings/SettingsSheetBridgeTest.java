@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.node.IntNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.junit.jupiter.api.Test;
 
 import javax.swing.*;
@@ -41,6 +42,27 @@ class SettingsSheetBridgeTest {
         }
 
         private String theme = "Modern";
+
+        // Array parameter: the access layer's value equality
+        // (JIPipeReflectionParameterAccess.set) is reference-based for
+        // arrays, so a freshly deserialized array can never short-circuit
+        // there. Only the bridge's own serialized-value comparison can
+        // keep a second applyFromDocument() from invoking this setter —
+        // which is exactly what the regression test pins.
+        @JIPipeParameter("tags")
+        public String[] getTags() {
+            return tags;
+        }
+
+        @JIPipeParameter("tags")
+        public void setTags(String[] tags) {
+            this.tags = tags;
+            tagSettersInvoked++;
+            emitParameterChangedEvent("tags");
+        }
+
+        private String[] tags = {"a", "b"};
+        int tagSettersInvoked;
 
         @Override
         public String getId() {
@@ -159,6 +181,36 @@ class SettingsSheetBridgeTest {
         assertEquals(List.of(), documentWrites, "re-applying an unchanged block must not write back");
         assertEquals(List.of(), parameterEvents,
                 "re-applying an unchanged block must fire no parameter events");
+    }
+
+    /**
+     * Pins the bridge's serialized-value comparison itself. The tags setter
+     * always emits and can never be short-circuited by the access layer's
+     * reference-based array equality, so only the comparison can stop a
+     * second applyFromDocument() from invoking setters. If the comparison
+     * were deleted, apply #2 would re-set both parameters.
+     */
+    @Test void secondApplyIsInertBecauseOfValueComparison() {
+        SettingsDocument d = new SettingsDocument(SettingsScope.APPLICATION);
+        d.set("sheet:test-sheet", "theme", TextNode.valueOf("Dark"));
+        d.set("sheet:test-sheet", "tags", JsonUtils.toJsonNode(List.of("x", "y")));
+        ProbeSheet sheet = new ProbeSheet();
+        SettingsSheetBridge bridge = new SettingsSheetBridge(d, "test-sheet", sheet);
+        bridge.attach();
+        List<String> parameterEvents = new ArrayList<>();
+        sheet.getParameterChangedEventEmitter().subscribeLambda((emitter, event) -> parameterEvents.add(event.getKey()));
+
+        bridge.applyFromDocument();
+        assertEquals("Dark", sheet.getTheme());
+        assertEquals(1, sheet.tagSettersInvoked, "first apply must set the tags");
+
+        sheet.tagSettersInvoked = 0;
+        parameterEvents.clear();
+        bridge.applyFromDocument();
+        assertEquals(0, sheet.tagSettersInvoked,
+                "an unchanged block must not re-invoke the tags setter; only the bridge's comparison can prevent that");
+        assertEquals(List.of(), parameterEvents,
+                "an unchanged block must not fire any parameter events");
     }
 
     /**
