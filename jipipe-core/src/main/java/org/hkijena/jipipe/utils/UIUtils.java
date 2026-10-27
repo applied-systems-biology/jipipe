@@ -228,6 +228,34 @@ public class UIUtils {
                 new RoundedLineBorder(color, 1, 5));
     }
 
+    /**
+     * A modern left-only accent border: a 3px bar on the left edge, nothing on
+     * the other sides (no enclosing box). Used for compound parameter editors
+     * (lists, the HTML editor) where a full box reads as heavy — #1339. The bar
+     * uses the node-highlight gray (not the faint form border color) so it is
+     * actually visible against both light and dark panel backgrounds.
+     */
+    public static Border createLeftAccentBorder() {
+        return BorderFactory.createMatteBorder(0, 3, 0, 0, ThemeUtils.getCurrentStyle().getNodeHighlightBorder());
+    }
+
+    /**
+     * Builds the name-row **Edit** button that opens a parameter's full editor
+     * in a dialog (the modern compound-editor pattern, #1339). Consistent across
+     * editors: flat, the {@code actions/edit.png} icon, a tooltip, and the given
+     * action.
+     */
+    public static JButton createEditInDialogButton(String tooltip, ActionListener action) {
+        JButton b = new JButton("Edit", JIPipe.RESOURCES.getIcon16("actions/edit.png"));
+        b.setOpaque(false);
+        b.setContentAreaFilled(false);
+        b.setFocusable(false);
+        b.setBorder(BorderFactory.createEmptyBorder(0, 4, 0, 4));
+        b.setToolTipText(tooltip);
+        b.addActionListener(action);
+        return b;
+    }
+
     public static void addToStatusBarWithSeparator(JComponent target, JComponent control) {
         if (target.getComponentCount() > 0) {
             target.add(Box.createHorizontalStrut(4));

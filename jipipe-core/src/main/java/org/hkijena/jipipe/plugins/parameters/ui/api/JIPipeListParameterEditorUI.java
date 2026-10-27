@@ -20,8 +20,8 @@ import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPan
 import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeListParameter;
 import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeListParameterItemParameterAccess;
 import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameterSettings;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 
 import javax.swing.*;
 import java.awt.*;
@@ -90,7 +90,9 @@ public abstract class JIPipeListParameterEditorUI extends JIPipeDesktopParameter
      */
     protected void initializeBase() {
         setLayout(new BorderLayout());
-        setBorder(new RoundedLineBorder(UIManager.getColor("Button.borderColor"), 1, 2));
+        // Modern compound-editor chrome (#1339): a left accent bar only, not a
+        // full box.
+        setBorder(UIUtils.createLeftAccentBorder());
 
         JIPipeParameterAccess parameterAccess = getParameterAccess();
         int flags;
@@ -132,41 +134,37 @@ public abstract class JIPipeListParameterEditorUI extends JIPipeDesktopParameter
     }
 
     /**
-     * Row-level chrome on the stacked row's name line — Add button,
-     * item count, ⋯ menu (Clear list only; the per-row operations live in
-     * the grip menu, #1339 pass 2).
+     * Row-level chrome on the stacked row's name line (#1339): a right-aligned
+     * group — the muted item count, a green-highlighted **Add**, and the
+     * **Edit** button (icon {@code actions/edit.png}) that opens the modal. The
+     * old ⋯ "Clear list" menu is gone: bulk operations (Clear list, Remove
+     * selected) live in the edit dialog. Per-row operations (Delete / Move)
+     * live in the grip menu.
      */
     @Override
     public JComponent createHeaderControls() {
-        JPanel controls = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
+        JPanel controls = new JPanel(new FlowLayout(FlowLayout.RIGHT, 4, 0));
         controls.setOpaque(false);
-
-        JButton addButton = new JButton("Add", JIPipe.RESOURCES.getIcon16("actions/list-add.png"));
-        applyFlatHeaderButton(addButton);
-        addButton.addActionListener(e -> addNewEntry());
-        controls.add(addButton);
-
-        JButton editButton = new JButton("Edit");
-        applyFlatHeaderButton(editButton);
-        editButton.setToolTipText("Open the list in a dialog with selection, search and bulk operations");
-        editButton.addActionListener(e -> {
-            Window window = SwingUtilities.getWindowAncestor(this);
-            new JIPipeDesktopListEditorDialog(window, this).setVisible(true);
-        });
-        controls.add(editButton);
 
         countLabel.setForeground(UIManager.getColor("Label.disabledForeground"));
         controls.add(countLabel);
 
-        JButton menuButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/hamburger-menu.png"));
-        applyFlatHeaderButton(menuButton);
-        menuButton.setToolTipText("List options");
-        JPopupMenu menu = UIUtils.addPopupMenuToButton(menuButton);
-        JMenuItem clearItem = new JMenuItem("Clear list", JIPipe.RESOURCES.getIcon16("actions/clear-brush.png"));
-        clearItem.setToolTipText("Removes all items");
-        clearItem.addActionListener(e -> clearList());
-        menu.add(clearItem);
-        controls.add(menuButton);
+        JButton addButton = new JButton("Add", JIPipe.RESOURCES.getIcon16("actions/list-add.png"));
+        applyFlatHeaderButton(addButton);
+        // Highlight the primary action (Add) with a success (green) border.
+        addButton.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(ThemeUtils.getCurrentStyle().getSuccessColor(), 1, true),
+                BorderFactory.createEmptyBorder(2, 6, 2, 6)));
+        addButton.addActionListener(e -> addNewEntry());
+        controls.add(addButton);
+
+        JButton editButton = UIUtils.createEditInDialogButton(
+                "Open the list in a dialog with selection, search and bulk operations",
+                e -> {
+                    Window window = SwingUtilities.getWindowAncestor(this);
+                    new JIPipeDesktopListEditorDialog(window, this).setVisible(true);
+                });
+        controls.add(editButton);
 
         return controls;
     }
