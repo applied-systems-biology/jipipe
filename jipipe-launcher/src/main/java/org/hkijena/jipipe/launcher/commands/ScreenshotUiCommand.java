@@ -188,6 +188,7 @@ public class ScreenshotUiCommand {
                 renderPerEditor(workbench, outDir, only, rendered);
                 renderFontPopout(workbench, outDir, only, rendered);
                 renderHtmlEditorViews(workbench, outDir, only, rendered);
+                renderHtmlEditorFull(workbench, outDir, only, rendered);
                 renderColorDialog(outDir, only, rendered);
                 renderListEditorDialogs(workbench, outDir, only, rendered);
                 renderSettingsSheet(workbench, outDir, only, rendered);
@@ -393,6 +394,24 @@ public class ScreenshotUiCommand {
         editor.setView(JIPipeDesktopHTMLEditor.View.SOURCE);
         ScreenshotRenderer.renderFixed(editor, width, 200, outDir.resolve("html-editor-source.png"));
         rendered.add("html-editor-views");
+    }
+
+    /**
+     * The HTML editor in FULL (expanded) mode — the state with the two-row
+     * toolbar (font/size combos on row 1, formatting/alignment on row 2).
+     * This is the state the user's dialog screenshot captured, so it is the
+     * one to verify the toolbar left-alignment and the combo selection
+     * theming (#1339).
+     */
+    private static void renderHtmlEditorFull(JIPipeDesktopWorkbench workbench, Path outDir, List<String> only, List<String> rendered) throws Exception {
+        if (!only.isEmpty() && !only.contains("html-editor-full"))
+            return;
+        String sample = "<html><body><p>Hello <b>world</b>, this is a <i>rich</i> description.</p></body></html>";
+        JIPipeDesktopHTMLEditor editor =
+                new JIPipeDesktopHTMLEditor(workbench, JIPipeDesktopHTMLEditor.Mode.Full, JIPipeDesktopHTMLEditor.WITH_SCROLL_BAR);
+        editor.setText(sample);
+        ScreenshotRenderer.renderFixed(editor, 720, 260, outDir.resolve("html-editor-full.png"));
+        rendered.add("html-editor-full");
     }
 
     private static void renderColorDialog(Path outDir, List<String> only, List<String> rendered) throws Exception {

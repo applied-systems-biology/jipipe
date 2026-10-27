@@ -54,9 +54,11 @@ public class JIPipeDesktopHTMLEditor extends JIPipeDesktopWorkbenchPanel {
     public static final int NONE = 0;
     public static final int WITH_SCROLL_BAR = 1;
     public static final int WITH_DIALOG_EDITOR_BUTTON = 2;
+    public static final int NO_TOOLBAR = 4;
     private final Set<String> availableFonts = new HashSet<>(Arrays.asList(GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames()));
     private final Map<String, Action> availableEditorKitActions = new HashMap<>();
     private final boolean enableDialogEditor;
+    private final boolean showToolBar;
     private final Map<JToggleButton, BooleanSupplier> updatedButtons = new HashMap<>();
     private JTextPane wysiwygEditorPane;
     private JEditorPane previewPane;
@@ -92,6 +94,7 @@ public class JIPipeDesktopHTMLEditor extends JIPipeDesktopWorkbenchPanel {
     public JIPipeDesktopHTMLEditor(JIPipeDesktopWorkbench workbench, Mode mode, int flags) {
         super(workbench);
         this.enableDialogEditor = (flags & WITH_DIALOG_EDITOR_BUTTON) == WITH_DIALOG_EDITOR_BUTTON;
+        this.showToolBar = (flags & NO_TOOLBAR) == 0;
         initialize(flags);
         setMode(mode);
         initializeEvents();
@@ -267,6 +270,14 @@ public class JIPipeDesktopHTMLEditor extends JIPipeDesktopWorkbenchPanel {
 
     private void reloadToolbar() {
         toolBarContainer.removeAll();
+        if (!showToolBar) {
+            // No toolbar at all (the embedded parameter view, #1339): the body is
+            // editable, but the formatting controls live in the full dialog
+            // opened from the name-row "Edit" button.
+            revalidate();
+            repaint();
+            return;
+        }
         if (!expanded) {
             // Compact: a single 24px icon-only row (spec §8.2). B, I, U, color,
             // image, |, view toggle, density toggle, Edit-in-dialog.
@@ -276,6 +287,7 @@ public class JIPipeDesktopHTMLEditor extends JIPipeDesktopWorkbenchPanel {
             // Expanded: the former Full toolbars (font/size/color, formatting,
             // alignment, insert), plus the view + density toggles.
             JToolBar toolBar1 = new JToolBar();
+            toolBar1.setAlignmentX(0f);
             toolBar1.add(fontSelection);
             toolBar1.add(sizeSelection);
             toolBar1.addSeparator();
@@ -306,6 +318,7 @@ public class JIPipeDesktopHTMLEditor extends JIPipeDesktopWorkbenchPanel {
                 toolBar1.add(editInDialogButton);
 
             JToolBar toolBar2 = new JToolBar();
+            toolBar2.setAlignmentX(0f);
             toolBar2.add(createFormatActionButton(new SubscriptAction(),
                     this::selectionIsSubscript,
                     "Format as sub-script",
@@ -341,6 +354,7 @@ public class JIPipeDesktopHTMLEditor extends JIPipeDesktopWorkbenchPanel {
 
     private JToolBar createCompactToolBar() {
         JToolBar toolBar = new JToolBar();
+        toolBar.setAlignmentX(0f);
         toolBar.add(createFormatActionButton(new StyledEditorKit.BoldAction(),
                 this::selectionIsBold,
                 "Format bold",
@@ -436,9 +450,11 @@ public class JIPipeDesktopHTMLEditor extends JIPipeDesktopWorkbenchPanel {
         initializeToolBarComponents();
         updateViewButton();
         updateDensityButton();
-        // Consistent chrome (spec §8.2): the widget carries its own control
-        // border; the parameter editor no longer adds one.
-        setBorder(UIUtils.createControlBorder());
+        // Chrome (spec §8.2): the embedded parameter view (which carries the
+        // name-row "Edit" button that opens the dialog) uses a modern
+        // left-accent bar (#1339); the standalone full dialog carries none —
+        // its own window is the frame.
+        setBorder(enableDialogEditor ? UIUtils.createLeftAccentBorder() : BorderFactory.createEmptyBorder());
         reloadToolbar();
         reloadEditor();
     }
@@ -479,6 +495,12 @@ public class JIPipeDesktopHTMLEditor extends JIPipeDesktopWorkbenchPanel {
                 wysiwygEditorPane.requestFocusInWindow();
             }
         });
+        // The font/size combos are editable, so focusing one selects all its
+        // text — and the unthemed Metal selection highlight draws a dark bar
+        // across the field / the popup (the "black bars", #1339). Theme the
+        // field + popup selection to follow the JIPipe palette.
+        themeEditableComboSelection(fontSelection);
+        themeEditableComboSelection(sizeSelection);
 
         // Color selection
         foregroundColorButton = new JIPipeDesktopColorChooserButton("");
@@ -838,6 +860,48 @@ public class JIPipeDesktopHTMLEditor extends JIPipeDesktopWorkbenchPanel {
         makeToolbarButton24(button);
         updatedButtons.put(button, toggled);
         return button;
+    }
+
+    /**
+     * Themes an editable combo's selection highlight: the combo's own field
+     * text selection plus the dropdown popup's item selection. Both fall back
+     * to unthemed Metal defaults, which draw dark bars when the field selects
+     * all its text on focus — the "black bars" in the font/size combos (#1339).
+     */
+    private static void themeEditableComboSelection(JComboBox<?> combo) {
+        Color selBg = ThemeUtils.getCurrentStyle().getSelectionBackground();
+        Color selFg = ThemeUtils.getCurrentStyle().getTextForeground();
+        // The combo's editable field: find the underlying JTextComponent (the
+        // Swing combo editor is not a public interface).
+        for (Component c : combo.getComponents()) {
+            JTextComponent tc = findTextComponent(c);
+            if (tc != null) {
+                tc.setSelectionColor(selBg);
+                tc.setSelectedTextColor(selFg);
+            }
+        }
+        // The dropdown popup's item selection (opaque renderer).
+        combo.setRenderer((list, value, index, isSelected, cellHasFocus) -> {
+            JLabel label = new JLabel(value == null ? "" : value.toString());
+            label.setOpaque(true);
+            label.setBackground(isSelected ? selBg : ThemeUtils.getCurrentStyle().getFormBackground());
+            label.setForeground(selFg);
+            return label;
+        });
+    }
+
+    /** Finds the first descendant {@link JTextComponent} (null if none). */
+    private static JTextComponent findTextComponent(Component c) {
+        if (c instanceof JTextComponent)
+            return (JTextComponent) c;
+        if (c instanceof Container container) {
+            for (Component child : container.getComponents()) {
+                JTextComponent found = findTextComponent(child);
+                if (found != null)
+                    return found;
+            }
+        }
+        return null;
     }
 
     /**
