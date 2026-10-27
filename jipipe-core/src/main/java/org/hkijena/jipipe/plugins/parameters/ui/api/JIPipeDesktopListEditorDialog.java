@@ -13,8 +13,10 @@
 
 package org.hkijena.jipipe.plugins.parameters.ui.api;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeListParameter;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.scijava.Disposable;
 
 import javax.swing.*;
@@ -115,11 +117,14 @@ public final class JIPipeDesktopListEditorDialog extends JDialog {
         // The dialog's own rows must reflect structural changes that go
         // through the base (row menu Delete / Move up / Move down, grip
         // drag-reorder): the parameter write reloads the *inline* view, but
-        // the dialog keeps its own row list. There is no Add in the modal
-        // (it lives on the inline header row), and the app-modal dialog
-        // blocks it, so no add hook is needed.
+        // the dialog keeps its own row list.
         listEditor.setAfterRowOrderChanged(this::rebuildRows);
         rebuildRows();
+
+        // Center on the workbench window (the owner), not the screen (#1339).
+        if (owner != null) {
+            setLocationRelativeTo(owner);
+        }
     }
 
     /**
@@ -149,10 +154,15 @@ public final class JIPipeDesktopListEditorDialog extends JDialog {
         lastClickedIndex = -1;
         disposeDescendants(body);
         for (int i = 0; i < parameter.size(); ++i) {
-            body.add(listEditor.buildListRow(i,
+            JPanel row = (JPanel) listEditor.buildListRow(i,
                     JIPipeListParameterEditorUI.RowGripBehavior.SELECT,
                     this::handleSelection,
-                    rows).entryPanel, 0);
+                    rows).entryPanel;
+            // Top-align the row within the vertical BoxLayout (default
+            // alignmentY=0.5 centers each row, floating it in the viewport —
+            // #1339: rows must pack to the top).
+            row.setAlignmentY(0f);
+            body.add(row, 0);
         }
         body.revalidate();
         body.repaint();
@@ -238,7 +248,7 @@ public final class JIPipeDesktopListEditorDialog extends JDialog {
         rebuildRows();
     }
 
-    /** Top bar: the search field above the five bulk-operation buttons. */
+    /** Top bar: the search field above the icon toolbar (Add + bulk ops). */
     private JComponent buildToolbar() {
         JPanel toolbar = new JPanel(new GridBagLayout());
         toolbar.setOpaque(false);
@@ -260,13 +270,26 @@ public final class JIPipeDesktopListEditorDialog extends JDialog {
 
         JPanel buttonsRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
         buttonsRow.setOpaque(false);
-        buttonsRow.add(flatButton("Select all", e -> {
+        // Primary action — add an item (the modal edits the shared parameter
+        // live, so the new row appears immediately). Green border, matching
+        // the inline header's Add (#1339).
+        JButton add = iconButton("actions/list-add.png", "Add item");
+        add.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(ThemeUtils.getCurrentStyle().getSuccessColor(), 1, true),
+                BorderFactory.createEmptyBorder(2, 4, 2, 4)));
+        add.addActionListener(e -> {
+            listEditor.addNewEntry();
+            rebuildRows();
+        });
+        buttonsRow.add(add);
+
+        buttonsRow.add(iconButton("actions/edit-select-all.png", "Select all", e -> {
             selected.clear();
             selected.addAll(rows);
             lastClickedIndex = -1;
             updateSelectionVisualizations();
         }));
-        buttonsRow.add(flatButton("Invert selection", e -> {
+        buttonsRow.add(iconButton("actions/edit-select-invert.png", "Invert selection", e -> {
             Set<JIPipeListParameterEditorUI.EntryComponents> toSelect = new HashSet<>();
             for (JIPipeListParameterEditorUI.EntryComponents row : rows) {
                 if (!selected.contains(row)) {
@@ -277,13 +300,13 @@ public final class JIPipeDesktopListEditorDialog extends JDialog {
             selected.addAll(toSelect);
             updateSelectionVisualizations();
         }));
-        buttonsRow.add(flatButton("Clear selection", e -> {
+        buttonsRow.add(iconButton("actions/edit-select-none.png", "Clear selection", e -> {
             selected.clear();
             lastClickedIndex = -1;
             updateSelectionVisualizations();
         }));
-        buttonsRow.add(flatButton("Remove selected", e -> removeSelectedEntries()));
-        buttonsRow.add(flatButton("Clear list", e -> {
+        buttonsRow.add(iconButton("actions/remove.png", "Remove selected", e -> removeSelectedEntries()));
+        buttonsRow.add(iconButton("actions/clear-brush.png", "Clear list", e -> {
             listEditor.clearList();
             rebuildRows();
         }));
@@ -292,17 +315,26 @@ public final class JIPipeDesktopListEditorDialog extends JDialog {
     }
 
     /**
-     * Compact flat text button, consistent with the inline header style
-     * (the base's private {@code applyFlatHeaderButton} recipe).
+     * A flat, 24×24 icon-only toolbar button (the symbol toolbar, #1339) —
+     * replaces the earlier text-only buttons. The tooltip carries the label.
      */
-    private static JButton flatButton(String text, ActionListener action) {
-        JButton b = new JButton(text);
+    private static JButton iconButton(String icon, String tooltip, ActionListener action) {
+        JButton b = new JButton(JIPipe.RESOURCES.getIcon16(icon));
         b.setOpaque(false);
         b.setContentAreaFilled(false);
-        b.setBorder(BorderFactory.createEmptyBorder(0, 4, 0, 4));
         b.setFocusable(false);
+        b.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 2));
+        b.setToolTipText(tooltip);
+        b.setPreferredSize(new Dimension(24, 24));
+        b.setMinimumSize(new Dimension(24, 24));
+        b.setMaximumSize(new Dimension(24, 24));
         b.addActionListener(action);
         return b;
+    }
+
+    private static JButton iconButton(String icon, String tooltip) {
+        return iconButton(icon, tooltip, e -> {
+        });
     }
 
     /** The single Close button, bottom-right (Close-only — no OK/Cancel). */
