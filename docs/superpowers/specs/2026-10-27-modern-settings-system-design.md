@@ -1,8 +1,8 @@
 # Modernized Application Settings System — Design
 
 **Work item:** [#1345](https://asb-git.hki-jena.de/RGerst/jipipe/-/work_items/1345)
-**Related:** #1346 (keyboard shortcuts — plugs in as a settings section), #1102 (runtime & cache server — the `server` scope), #701 (live collaboration — same sync mechanism)
-**Status:** approved design, 2026-10-27
+**Related:** #1346 (keyboard shortcuts — plugs in as a settings section), #1102 (runtime & cache server — advances the `runtime` scope), #701 (live collaboration — same sync mechanism)
+**Status:** approved design, 2026-10-27 (rev. 2 — three live scopes: application, project, runtime)
 **Breaking-change window:** 6.0.0 is in development; 5.3.0 is the last stable. The UI and the on-disk format may change without back-compat to 5.x *profiles* (old profiles are still readable/migratable; see §8).
 
 ## 1. Problem
@@ -19,7 +19,7 @@ Confirmed defects in the current code:
 - **Three systems, no shared semantics.** Different file formats, different save triggers, different (or missing) change events. UI reads registry settings once at component init and never learns about later changes: e.g. `JIPipeDesktopGraphEditorUI` reads `any/dock/show-labels` once (`:225`) and writes it back on change (`:228`), so a second open graph editor is desynced.
 - **In-memory-til-Save UX.** Sheet edits live in the sheet object until the settings dialog's *Save* is pressed; *Reset/Cancel* re-read the file. A crash or window close loses the session's settings work.
 - **No multi-instance story.** Multiple JIPipe processes share the same file; last writer wins, no notification, no safe write (direct `FileWriter`, not atomic).
-- **Not ready for server offloading** (#1102): settings are an inseparable tangle of sheets, registry, and ad-hoc files with no scoped, transferable document.
+- **Not ready for runtime isolation** (#1102): settings are an inseparable tangle of sheets, registry, and ad-hoc files with no scoped, transferable document — there is no clean boundary between user-interface, project, and execution configuration, so a future runtime process would have to be handed the whole settings blob (including UI state and recent projects).
 - **No reset-to-defaults** for any setting or section (only "re-read saved file").
 - **Settings are hard to find** (modal dialog, tree of 35 sheets, plus a second "Customize JIPipe" modal for theme/accessibility, plus project settings in a third place).
 
@@ -30,15 +30,15 @@ Confirmed defects in the current code:
 - One unified, scoped settings **document** with one API, one event bus, one storage format — replacing all three systems.
 - **Stable across versions:** unknown keys/IDs are passed through byte-for-byte; upgrading or downgrading never silently clears settings.
 - **Multi-instance safe:** two or more JIPipe processes on one machine see each other's changes live, without corruption.
-- **Server-offload ready:** a scope is a self-contained document that can be shipped to / observed by a future runtime server.
-- **Live bindings:** any feature (graph editor, dock panel, node browser) observes a setting and updates when it changes *anywhere* — same process, other process, future server.
+- **Runtime-ready:** application, project, and runtime configuration are three live scopes today; isolating the runtime into its own process (#1102 step 1) and later onto a remote pool (step 2) moves *where* the runtime document lives, not how settings are defined, scoped, observed, or gated.
+- **Live bindings:** any feature (graph editor, dock panel, node browser) observes a setting and updates when it changes *anywhere* — same process, other process, future remote runtime.
 - **Modern UI:** non-modal settings tab, global search, merged "Customize JIPipe" + application settings + project settings, per-key/per-section reset, and a raw `about:config`-style editor.
 
 **Non-goals (this work item)**
 
 - Remote/cloud sync across *machines* (the multi-instance requirement is per-machine, multiple processes). VS-Code-style account sync can reuse this document later.
 - The keyboard-shortcut feature itself (#1346) — this work only guarantees the settings system can host it (a registered section + keys).
-- Runtime server transfer implementation (#1102) — this work only guarantees the model is shaped for it.
+- The runtime *process split* itself (#1102) — this work makes `runtime` a live scope and shapes it for the split; hosting it in another process and permission-gated remote pools come with #1102.
 - Project *file* format changes beyond the settings block (the `.jip`/`.jipx` structure stays).
 
 ## 3. Data model & file format
@@ -49,9 +49,25 @@ A **scope** is a self-contained settings document:
 
 | Scope | Location | Notes |
 |---|---|---|
-| `global` | profile dir: `<profile>/settings.json` | per user; shared by all processes of that profile |
+| `application` | profile dir: `<profile>/settings.json` | user-interface / user-preference state; per user; shared by all processes of that profile |
 | `project` | inside the project file (`"settings"` member, position unchanged) | per project; embedded in `.jip`/`.jipx` |
-| `server` (future) | server-side copy of the document | added by #1102 without touching this design |
+| `runtime` | profile dir: `<profile>/runtime-settings.json` (own file) | execution state: threads, environments, temp/cache dirs, acceleration; per machine and per JIPipe install, not part of the project |
+
+All three are **live from day one** — `runtime` is not a placeholder for a future server. Today it is a separate document in the same profile, loaded and saved by the same engine; the future split (#1102) changes only *where the document is materialized* and *who is allowed to change it*, never its shape or its API:
+
+- **Step 1 (planned):** the runtime is hosted in its own process; its scope document is transferred over the local connection at startup and observed/diffed with the same change-event stream (§4.4). Client-side UI for runtime settings becomes a *view* onto the runtime document; the runtime process owns the writer for it.
+- **Step 2 (further future):** a remote runtime pool. This is where **permission gating** comes in: runtime-relevant settings are declared with an access policy on the key (`user-editable`, `runtime-admin`, `read-only`), so the UI can show an administrator-managed runtime's settings as read-only (or hide them) and a remote pool can grant or deny writes per key. The key registry carries that policy from the start, so no second redesign is needed when the pool arrives.
+
+The three scopes separate cleanly by **who owns the value**:
+
+| | `application` | `project` | `runtime` |
+|---|---|---|---|
+| travels with a project? | no | yes | no |
+| meaningful on a remote machine? | only via the user's profile | yes (shipped with the project) | yes (it *is* the machine's execution config) |
+| typical content | theme, UI behaviour, file chooser, node browser pins, recent projects | project IO format, project authors, per-project environments | thread pool, temp/cache dirs, environment installations, hardware acceleration, artifact dirs |
+| owner | user's JIPipe instance | the project | the runtime hosting execution |
+
+Today's split is murky: `JIPipeRuntimeApplicationSettings` (threads, temp dir, cache) lives in `application` sheets although it is machine/execution config, and `JIPipeDefaultEnvironmentsApplicationSettings` mixes *installed* environments (machine) with *default* environments (project creation). The redesign assigns each existing setting to exactly one scope — the mapping is enumerated during implementation, key by key.
 
 Scope is a first-class argument in the API, not a special case.
 
@@ -75,7 +91,7 @@ Scope is a first-class argument in the API, not a special case.
 - **Unknown-key pass-through.** On load, any top-level key whose `kind` is unknown, or whose ID is not registered, is kept as a raw `JsonNode` in a pass-through map and re-serialized **verbatim** on save. Same rule inside project files (unknown project-settings sheets). This directly fixes "downgrade clears settings" and "parallel versions trash each other's unknown sheets".
 - **Defaults are not stored.** A key that equals its default (or was never set) is absent from the document. The document contains *user changes*, not a snapshot of all settings.
 - `$meta` carries conflict-detection info only; it is never a gate for loading (a document written by a newer version still loads).
-- **Atomic writes:** serialize to `settings.json.tmp.<writer-id>`, then `Files.move(..., ATOMIC_MOVE)` (fallback: non-atomic move + size/mtime verify for filesystems without atomic rename). Orphan tmp files are cleaned at startup. A corrupt target is backed up as `settings.json.bad-<timestamp>` and defaults take over (with a notification), never a hard failure.
+- **Atomic writes:** serialize to `<file>.tmp.<writer-id>`, then `Files.move(..., ATOMIC_MOVE)` (fallback: non-atomic move + size/mtime verify for filesystems without atomic rename). Orphan tmp files are cleaned at startup. A corrupt target is backed up as `<file>.bad-<timestamp>` and defaults take over (with a notification), never a hard failure. The same rules apply to the runtime document.
 
 ### 3.3 Profile carry-over across versions
 
@@ -103,11 +119,12 @@ One component replaces the current `JIPipeApplicationSettingsServiceComponent` +
 JIPipeSettingKey<Boolean> SHOW_DOCK_LABELS =
     JIPipeSettingKey.bool("registry", "ui-graph-editor", "any/dock/show-labels")
         .defaultValue(true)
-        .scope(SettingsScope.GLOBAL)
+        .scope(SettingsScope.APPLICATION)
+        .access(AccessPolicy.USER_EDITABLE)
         .description("Show labels in graph editor dock toolbars");
 ```
 
-A key declares: kind + id + path, value type, default, scope(s), doc metadata (name/description), and optional `migrate: false`. Keys are **stable string literals** (project rule for registered IDs). The existing registry constants (`NodeEntryKind.SETTINGS_DATABASE`, `key(...)`) become key objects; the old `putIntoRegistry` etc. are deprecated delegates that route through the same document.
+A key declares: kind + id + path, value type, default, scope, **access policy** (`USER_EDITABLE`, `RUNTIME_ADMIN`, `READ_ONLY` — the hook for permission-gated remote runtimes), doc metadata (name/description), and optional `migrate: false`. Keys are **stable string literals** (project rule for registered IDs). The existing registry constants (`NodeEntryKind.SETTINGS_DATABASE`, `key(...)`) become key objects; the old `putIntoRegistry` etc. are deprecated delegates that route through the same document.
 
 ### 4.3 Bindings — the live adapter
 
@@ -125,7 +142,7 @@ A `SettingsBinding` is the settings analogue of `JIPipeParameterAccess`: a typed
 - another component in this process (graph editor B learns editor A's toggle),
 - the settings tab or raw editor,
 - another JIPipe process (via the file watcher, §5),
-- a future server scope push.
+- a future remote-runtime push (the runtime process or pool is the writer; the client observes).
 
 Subscribers get a re-entrancy guard: a write that round-trips through the binding (value unchanged) does not re-fire.
 
@@ -138,7 +155,7 @@ This makes the existing 35-sheet migration mechanical: no sheet class needs its 
 
 ### 4.4 Event bus
 
-One emitter on the component: **per-path change events** `SettingsChangedEvent(scope, keyPath, oldValue, newValue, origin)` where `origin ∈ {local-edit, local-programmatic, external-file, external-process, seed, reset, raw-edit}`. The old coarse `ChangedEvent` ("settings changed") is kept as an aggregate (any path) for compatibility with current subscribers. This single stream is also what the future server transfer and instrumentation API will expose.
+One emitter on the component: **per-path change events** `SettingsChangedEvent(scope, keyPath, oldValue, newValue, origin)` where `origin ∈ {local-edit, local-programmatic, external-file, external-process, carry-over, reset, raw-edit}`. The old coarse `ChangedEvent` ("settings changed") is kept as an aggregate (any path) for compatibility with current subscribers. This single stream is also what the future runtime split and the instrumentation API will expose.
 
 ### 4.5 Raw access
 
@@ -146,15 +163,15 @@ The document exposes `raw(path)` / `setRaw(path, JsonNode)` for the raw editor, 
 
 ## 5. Multi-instance sync
 
-**Model: watched file + atomic replace + per-block merge.** (Research: VS Code uses file watching + atomic writes; KDE's KConfigWatcher uses D-Bus broadcast on Linux with a file-watch fallback; GSettings/dconf uses a BLOB service. The portable, headless-safe foundation for us is the file itself; no IPC dependency.)
+**Model: watched file + atomic replace + per-block merge.** (Research: VS Code uses file watching + atomic writes; KDE's KConfigWatcher uses D-Bus broadcast on Linux with a file-watch fallback; GSettings/dconf uses a BLOB service. The portable, headless-safe foundation for us is the file itself; no IPC dependency.) The sync engine is scope-agnostic and runs per scope **document** that is file-backed: `application` (`settings.json`) and `runtime` (`runtime-settings.json`) each get their own document, writer, fingerprint, and watcher registration. `project` scope syncs through the project file's existing save/merge path plus the same change-event stream.
 
-Write side (per process):
+Write side (per process, per document):
 
 1. All edits mutate the in-memory document only (single in-process authority; EDT for UI-driven edits).
-2. Debounced save job (off-EDT): serialize → `settings.json.tmp.<writer-id>` → atomic `Files.move`.
+2. Debounced save job (off-EDT): serialize → `<file>.tmp.<writer-id>` → atomic `Files.move`.
 3. After a successful write, the process records the resulting (size, last-modified-time) fingerprint; its own watcher events matching that fingerprint are ignored.
 
-Read side (per process):
+Read side (per process, per document):
 
 1. A watcher (NIO `WatchService` on the profile dir + a ~2 s poll fallback comparing fingerprints; the dual pattern already exists in the script-editor UI) fires on any settings-file change.
 2. On a foreign fingerprint: parse the new file. Per `kind:<id>` **block** compare with ours:
@@ -174,8 +191,9 @@ One-time, on first load of a profile that has the old layout:
 1. Old `settings.json` (top-level = sheet IDs, no prefix) → prefix each registered sheet ID with `sheet:`; unregistered sheet IDs → keep as `sheet:<id>` in the pass-through map (not dropped — they stay loadable by newer versions and visible in the raw editor).
 2. Each `settings-db-<key>.json` → its content becomes the `registry:<key>` block in `settings.json`.
 3. `recent-projects.txt` → `state:recent-projects` array.
-4. Write the unified file (atomic), then **move** the old files to `settings-migration-backup/` inside the profile dir (not delete; visible to the user, safe to remove).
-5. Add `$meta` and bump to `$schema: 2`. Old-format detection: no `$schema` field.
+4. **Scope split:** each resulting block is routed to `application` or `runtime` according to the key/scope registry (§3.1). Blocks whose scope is not yet decided default to `application` (the safe choice — nothing about a user's UI is lost), and the runtime document (`runtime-settings.json`) is created for the blocks that move there. Blocks not covered by any key declaration (e.g. sheet parameters of an unregistered extension) stay in `application` as pass-through.
+5. Write the unified files (atomic), then **move** the old files to `settings-migration-backup/` inside the profile dir (not delete; visible to the user, safe to remove).
+6. Add `$meta` and bump to `$schema: 2`. Old-format detection: no `$schema` field.
 
 Migration runs before any sheet is loaded (replacing the current `migrateFromLegacy` recent-projects hook), is idempotent, and is covered by tests over fixture profiles.
 
@@ -185,14 +203,15 @@ Shell: a **workbench-level tab** (beside the Welcome tab) — non-modal, multipl
 
 Layout:
 
-- **Top:** search bar (filters tree + content; matches names, descriptions, raw key paths) and a **scope switcher** `Global | Project`.
+- **Top:** search bar (filters tree + content; matches names, descriptions, raw key paths) and a **scope switcher** `Application | Project | Runtime`.
 - **Left:** category tree (existing categories, reorganized):
-  - *General → Appearance* (merged: theme, theme style, UI scale, reduced motion, file chooser type + fallback, **with the live preview panel from Customize JIPipe**)
-  - *General → Accessibility* (reduced motion, UI scale, future a11y settings)
-  - *General → Keyboard* (placeholder section — empty state "shortcut profiles coming"; this is where #1346 registers)
+  - *General → Appearance* (merged: theme, theme style, UI scale, reduced motion, file chooser type + fallback, **with the live preview panel from Customize JIPipe**) — application scope
+  - *General → Accessibility* (reduced motion, UI scale, future a11y settings) — application scope
+  - *General → Keyboard* (placeholder section — empty state "shortcut profiles coming"; this is where #1346 registers) — application scope
+  - *Runtime* category (threads, temp/cache directories, environment installations, hardware acceleration, artifact dirs) — runtime scope, presented alongside the rest
   - remaining sheets map to sections under their categories; small sheets are grouped into their category page.
 - **Right:** content pane reusing `JIPipeDesktopParameterFormPanel` (all existing parameter editors work unchanged), with per-section header: description, **modified** badge, **Reset to defaults** button.
-- **Project scope:** same tree, project document; global-only sections disabled with tooltip, project-only ones marked.
+- **Scope behavior:** the tree always shows all sections; each section belongs to exactly one scope, and sections of a different scope than the switcher are shown dimmed and read-only with a "belongs to &lt;scope&gt;" hint, so users can *find* a setting without knowing its scope. The switcher makes that scope's sections editable. Project-only sections are unavailable when no project is open; runtime sections are `RUNTIME_ADMIN`/`READ_ONLY`-gated once the runtime is remote.
 - **Advanced → Raw settings** (`about:config`): tree of every key in the active-scope document — documented keys with metadata, pass-through keys marked "managed by another version", typed value editing dialog, per-key reset, warning banner. Edits the same API as the typed UI.
 - **Advanced → About:** version, profile dir, "open profile folder".
 
@@ -214,7 +233,7 @@ Behavior:
 ## 9. Extension points for future work items
 
 - **#1346 (shortcuts):** register a `Keyboard` section + keys (`state:keyboard-shortcuts` or `sheet:...`); the UI placeholder already exists; key-capture dialogs are a separate #1341 concern.
-- **#1102 (runtime & cache server):** add `SettingsScope.SERVER` documents — the same `SettingsDocument` type, shipped over the server connection, observed via the same change-event stream. Client/server *split* of which keys live where is expressed by key `scope` declarations (a key can be `GLOBAL`, `PROJECT`, `SERVER`, or any subset).
+- **#1102 (runtime & cache server):** the `runtime` scope already exists and is live; #1102 moves its document into a separate process (step 1) and later onto a remote, permission-gated runtime pool (step 2). Nothing in the settings shape changes — the runtime process becomes the writer for the runtime document, the client observes it through the same change-event stream, and remote pools enforce the key `access` policies.
 - **#701 (live collaboration):** the per-path change stream with `origin` is the wire format for collaboration broadcasts.
 - **Instrumentation:** raw access + change events map directly to new instrumentation operations (`get_setting`, `set_setting`, `list_settings`).
 
@@ -235,4 +254,5 @@ Behavior:
 3. Toggle "show toolbar labels" in one open graph editor → every other open graph editor updates without reopening (binding test).
 4. All 35 sheets and the 4 Customize-JIPipe controls are reachable in the new tab; search finds any setting by name or key path; raw editor can list and edit every stored key including pass-through ones.
 5. No feature depends on "save-on-shutdown" for correctness: killing the process mid-session loses ≤ the last debounced window of edits.
-6. A `server` scope document can be created, written, and observed using only the public API (shape test, no server implementation).
+6. All three scopes (`application`, `project`, `runtime`) exist, are loaded and saved by the same engine, and every current setting has been assigned to exactly one of them; a `runtime` document can be created, written, observed, and access-checked using only the public API (shape test, no process split).
+7. The runtime document can be exported and re-imported into a fresh service instance without loss (transferability test — the prerequisite for the #1102 process split).
