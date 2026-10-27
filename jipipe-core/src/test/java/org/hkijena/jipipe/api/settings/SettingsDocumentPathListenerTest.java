@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -91,5 +92,23 @@ class SettingsDocumentPathListenerTest {
         d.removePathListener(PATH, listener);
         d.set(BLOCK, "any/dock/show-labels", BooleanNode.TRUE);
         assertTrue(seen.isEmpty());
+    }
+
+    @Test void addingAndRemovingListenersDuringDispatchDoesNotThrow() {
+        SettingsDocument d = new SettingsDocument(SettingsScope.APPLICATION);
+        Consumer<JsonNode> outer = node -> {
+            Consumer<JsonNode> inner = n -> {
+            };
+            d.addPathListener(PATH, inner);
+            d.removePathListener(PATH, inner);
+        };
+        d.addPathListener(PATH, outer);
+        assertDoesNotThrow(() -> d.set(BLOCK, "any/dock/show-labels", BooleanNode.TRUE));
+    }
+
+    @Test void removingAnUnregisteredListenerIsANoOp() {
+        SettingsDocument d = new SettingsDocument(SettingsScope.APPLICATION);
+        assertDoesNotThrow(() -> d.removePathListener(PATH, node -> {
+        }));
     }
 }

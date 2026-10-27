@@ -36,7 +36,7 @@ import java.util.function.Consumer;
  * bindings over the same document, raw document edits, and document-level
  * replacements such as an external reload.
  * <p>
- * Two guarantees:
+ * Guarantees:
  * <ul>
  * <li><b>Defaults are never materialized.</b> Writing a value that equals
  * the key's default removes the sub-path from the document instead of
@@ -45,9 +45,24 @@ import java.util.function.Consumer;
  * value changes: a {@code set(x)} whose value already equals {@code x} fires
  * nothing, and an incoming event whose new effective value equals the last
  * effective value seen at the path is not delivered.</li>
+ * <li><b>Subscribers cannot break each other or the writer.</b> A subscriber
+ * that throws is caught and logged; the remaining subscribers still fire and
+ * the original mutation (e.g. the caller's {@code set()}) completes normally.</li>
+ * <li><b>{@link #get()} never throws.</b> Absent and malformed values —
+ * including a stored JSON {@code null} — fall back to the key's default.</li>
  * </ul>
- *
- * @param <T> the type of the setting's value, as declared by the key
+ * <p>
+ * Keys of type {@code JsonNode} ({@code object(...)} keys) hand out the
+ * <em>live, externally-mutable</em> node that is stored in the document:
+ * mutating it changes the document's content directly and does <em>not</em>
+ * fire listeners; use {@link #set(Object)} (or the document's {@code set})
+ * for observable changes.
+ * <p>
+ * A binding is <em>attached</em> to its document while it lives: it registers
+ * a path listener in its constructor. Owners that create short-lived
+ * bindings over a long-lived document (a feature that observes a value
+ * while a panel is open) must call {@link #close()} when done, so the
+ * document releases the listener, the binding, and its subscribers.
  */
 public final class SettingsBinding<T> {
     private static final Logger logger = LoggerFactory.getLogger(SettingsBinding.class);
@@ -58,8 +73,7 @@ public final class SettingsBinding<T> {
     private final List<Consumer<T>> subscribers;
     /**
      * The listener registered on the document for this binding's path. Held
-     * as a field so the document's reference can be removed from outside
-     * when the binding's owner decides the binding is no longer needed.
+     * as a field so {@link #close()} can remove it again from the document.
      */
     private final Consumer<JsonNode> listener;
     /**
@@ -71,11 +85,17 @@ public final class SettingsBinding<T> {
      * re-entrancy guard.
      */
     private volatile T lastKnown;
+    /**
+     * Whether {@link #close()} has been called; closed bindings detach their
+     * listener and receive no further events.
+     */
+    private volatile boolean closed;
 
     /**
      * Creates a binding for the given key over the given document. The
-     * binding immediately registers a path listener on the document for
-     * {@code key.blockPath() + "/" + key.subPath()}.
+     * binding immediately registers a path listener on the document for its
+     * (normalized) key path. Call {@link #close()} when the binding is no
+     * longer needed and the document may outlive it.
      *
      * @param document the settings document to read from and write to
      * @param key the typed key of the setting
@@ -83,7 +103,7 @@ public final class SettingsBinding<T> {
     public SettingsBinding(SettingsDocument document, JIPipeSettingKey<T> key) {
         this.document = Objects.requireNonNull(document, "document");
         this.key = Objects.requireNonNull(key, "key");
-        this.pathWithSubPath = key.blockPath() + "/" + key.subPath();
+        this.pathWithSubPath = SettingsDocument.listenerPath(key.blockPath(), key.subPath());
         this.subscribers = new CopyOnWriteArrayList<>();
         this.listener = this::handleDocumentChange;
         this.lastKnown = get();
@@ -92,8 +112,9 @@ public final class SettingsBinding<T> {
 
     /**
      * @return the current effective value: the stored value converted to the
-     * key's type, or the key's default when the sub-path is absent or the
-     * stored value cannot be converted to the type. This method never throws.
+     * key's type, or the key's default when the sub-path is absent, holds a
+     * JSON {@code null}, or cannot be converted to the type. This method
+     * never throws. A closed binding still reads through to the document.
      */
     public T get() {
         JsonNode node = document.get(key.blockPath(), key.subPath());
@@ -107,22 +128,34 @@ public final class SettingsBinding<T> {
      * Writes the value to the document. A value that equals the key's
      * default removes the sub-path instead of storing it, so defaults are
      * never materialized. Subscribers (including those of other bindings for
-     * the same key) fire only when the effective value changes.
+     * the same key) fire only when the effective value changes. A closed
+     * binding still writes through to the document.
+     * <p>
+     * Keys whose default is {@code null} (e.g. {@code object(...)} keys) are
+     * the only ones for which {@code set(null)} is meaningful: it stores a
+     * JSON {@code null}, and {@link #get()} then falls back to that
+     * {@code null} default. For keys with a non-null default,
+     * {@code set(null)} is rejected with a {@link NullPointerException}.
      *
      * @param value the value to store
      */
     public void set(T value) {
-        Objects.requireNonNull(value, "value");
+        if (value == null && !Objects.equals(key.defaultValue(), null)) {
+            throw new NullPointerException(
+                    "Cannot set a null value for " + pathWithSubPath
+                            + ": its default is non-null, so null cannot be distinguished from \"reset\"");
+        }
         if (Objects.equals(value, key.defaultValue())) {
             document.remove(key.blockPath(), key.subPath());
         } else {
-            document.set(key.blockPath(), key.subPath(), valueToTree(value));
+            document.set(key.blockPath(), key.subPath(), value == null ? null : valueToTree(value));
         }
     }
 
     /**
      * Removes the sub-path from the document, so the setting reads its
      * default again. Subscribers fire when the effective value changes.
+     * Works on closed bindings too (it never touched the listener).
      */
     public void reset() {
         document.remove(key.blockPath(), key.subPath());
@@ -130,7 +163,8 @@ public final class SettingsBinding<T> {
 
     /**
      * @return whether a value is present in the document for this key, i.e.
-     * whether the setting deviates from its default
+     * whether the setting deviates from its default. Works on closed
+     * bindings too.
      */
     public boolean isModified() {
         return document.has(key.blockPath(), key.subPath());
@@ -142,6 +176,9 @@ public final class SettingsBinding<T> {
      * change, and only when the effective value actually changes (re-entrancy
      * guard). A subscriber is registered at most once: re-subscribing one
      * whose {@code equals()} matches an existing registration is a no-op.
+     * <p>
+     * Subscribing a <em>closed</em> binding is allowed, but the binding stays
+     * detached from the document: the subscriber will never fire.
      *
      * @param subscriber the callback, receiving the new effective value
      */
@@ -166,6 +203,24 @@ public final class SettingsBinding<T> {
     }
 
     /**
+     * Detaches this binding from its document: the path listener is removed
+     * and the subscriber list is cleared. This method is idempotent.
+     * <p>
+     * After closing, the binding no longer receives change events; late
+     * {@link #subscribe(Consumer)} calls are accepted but never fire.
+     * {@link #get()}, {@link #set(Object)}, {@link #reset()} and
+     * {@link #isModified()} keep working against the document.
+     */
+    public void close() {
+        if (closed) {
+            return;
+        }
+        closed = true;
+        document.removePathListener(pathWithSubPath, listener);
+        subscribers.clear();
+    }
+
+    /**
      * @return the key this binding reads and writes
      */
     public JIPipeSettingKey<T> key() {
@@ -178,8 +233,15 @@ public final class SettingsBinding<T> {
             return;
         }
         lastKnown = value;
-        for (Consumer<T> subscriber : subscribers) {
-            subscriber.accept(value);
+        // Iterate a snapshot: a subscriber may register or remove subscribers
+        // (or bindings with their own document listeners) during dispatch.
+        for (Consumer<T> subscriber : List.copyOf(subscribers)) {
+            try {
+                subscriber.accept(value);
+            } catch (Exception e) {
+                logger.warn("Settings subscriber for {} threw; other subscribers were still notified",
+                        pathWithSubPath, e);
+            }
         }
     }
 
@@ -189,7 +251,14 @@ public final class SettingsBinding<T> {
                 @SuppressWarnings("unchecked") T asNode = (T) node;
                 return asNode;
             }
-            return JsonUtils.getObjectMapper().treeToValue(node, key.type());
+            T value = JsonUtils.getObjectMapper().treeToValue(node, key.type());
+            if (value == null) {
+                // A stored JSON null converts to null; treat that as
+                // malformed so callers never receive a surprise null.
+                logger.warn("Stored value of setting {} is JSON null; falling back to the default", pathWithSubPath);
+                return key.defaultValue();
+            }
+            return value;
         } catch (Exception e) {
             logger.warn("Could not convert stored value of setting {} ({}) to {}: falling back to the default",
                     pathWithSubPath, node, key.type(), e);

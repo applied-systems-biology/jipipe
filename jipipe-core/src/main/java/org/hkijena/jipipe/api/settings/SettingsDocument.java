@@ -382,7 +382,19 @@ public final class SettingsDocument {
         return segments;
     }
 
-    private String listenerPath(String blockPath, String subPath) {
+    /**
+     * Normalizes a block path plus sub-path into the listener key form
+     * {@code "<blockPath>/<subPath>"}, dropping empty sub-path segments, so
+     * {@code ("a:b", "x//y")} yields {@code "a:b/x/y"}. An empty or
+     * {@code null} sub-path addresses the whole block and yields the block
+     * path itself. Package-visible so {@link SettingsBinding} registers its
+     * listener under the exact same key the document uses for dispatch.
+     *
+     * @param blockPath the canonical block path
+     * @param subPath the slash-separated sub-path, or {@code null}
+     * @return the normalized listener path
+     */
+    static String listenerPath(String blockPath, String subPath) {
         StringBuilder normalized = new StringBuilder(Objects.requireNonNull(blockPath, "blockPath"));
         if (subPath != null) {
             for (String segment : subPath.split("/")) {
@@ -413,7 +425,10 @@ public final class SettingsDocument {
         String blockPath = slash > 0 ? pathWithSubPath.substring(0, slash) : pathWithSubPath;
         String subPath = slash > 0 ? pathWithSubPath.substring(slash + 1) : "";
         JsonNode value = get(blockPath, subPath);
-        for (Consumer<JsonNode> listener : listeners) {
+        // Iterate a snapshot: listeners may add or remove listeners for the
+        // same path while they are being notified (e.g. a subscriber that
+        // creates another binding on the same key).
+        for (Consumer<JsonNode> listener : new ArrayList<>(listeners)) {
             listener.accept(value);
         }
     }

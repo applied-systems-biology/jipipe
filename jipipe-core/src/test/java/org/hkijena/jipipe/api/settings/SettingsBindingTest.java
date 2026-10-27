@@ -14,6 +14,8 @@
 package org.hkijena.jipipe.api.settings;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.BooleanNode;
+import com.fasterxml.jackson.databind.node.NullNode;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.junit.jupiter.api.Test;
 
@@ -21,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -113,5 +116,57 @@ class SettingsBindingTest {
         binding.set(JsonUtils.toJsonNode(Map.of("columns", 7)));
         assertEquals(JsonUtils.toJsonNode(Map.of("columns", 7)), binding.get());
         assertTrue(binding.isModified());
+    }
+
+    @Test void closedBindingDoesNotReceiveEvents() {
+        SettingsDocument d = new SettingsDocument(SettingsScope.APPLICATION);
+        SettingsBinding<Boolean> b = new SettingsBinding<>(d, key());
+        List<Boolean> seen = new ArrayList<>();
+        b.subscribe(seen::add);
+        b.close();
+        assertDoesNotThrow(b::close, "close must be idempotent");
+        // A closed binding may still read and write through to the document...
+        assertTrue(b.get());
+        assertFalse(b.isModified());
+        b.set(false);
+        assertFalse(d.get("registry:ui-graph-editor", "any/dock/show-labels").isMissingNode());
+        // ...and late subscriptions stay detached: writes must not notify them
+        b.subscribe(seen::add);
+        d.set("registry:ui-graph-editor", "any/dock/show-labels", BooleanNode.TRUE);
+        assertTrue(seen.isEmpty(), "a closed binding must not receive events");
+    }
+
+    @Test void subscriberThrowingDoesNotBreakOtherSubscribersOrWriter() {
+        SettingsDocument d = new SettingsDocument(SettingsScope.APPLICATION);
+        SettingsBinding<Boolean> b = new SettingsBinding<>(d, key());
+        List<Boolean> healthy = new ArrayList<>();
+        b.subscribe(v -> {
+            throw new IllegalStateException("boom");
+        });
+        b.subscribe(healthy::add);
+        assertDoesNotThrow(() -> b.set(false), "a throwing subscriber must not propagate out of set()");
+        assertEquals(List.of(false), healthy, "other subscribers must still be notified");
+    }
+
+    @Test void storedNullFallsBackToDefault() {
+        SettingsDocument d = new SettingsDocument(SettingsScope.APPLICATION);
+        SettingsBinding<String> binding = new SettingsBinding<>(d,
+                JIPipeSettingKey.string("registry:ui-graph-editor", "any/dock/title", String.class)
+                        .defaultValue("Fallback"));
+        d.set("registry:ui-graph-editor", "any/dock/title", NullNode.getInstance());
+        assertEquals("Fallback", binding.get());
+        assertTrue(binding.isModified());
+    }
+
+    @Test void doubleSlashSubPathStillReceivesNotifications() {
+        SettingsDocument d = new SettingsDocument(SettingsScope.APPLICATION);
+        SettingsBinding<String> b = new SettingsBinding<>(d,
+                JIPipeSettingKey.string("registry:ui-graph-editor", "any//dock//title", String.class)
+                        .defaultValue("Fallback"));
+        List<String> seen = new ArrayList<>();
+        b.subscribe(seen::add);
+        b.set("stored");
+        assertEquals(List.of("stored"), seen);
+        assertTrue(d.has("registry:ui-graph-editor", "any/dock/title"), "empty segments must be dropped");
     }
 }
