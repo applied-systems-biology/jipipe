@@ -32,6 +32,8 @@
   "button-background" : "#1A1B1D",
   "button-disabled-background" : "#1D1E20",
   "button-toggled" : "#48494F",
+  "parameter-action-background" : "#26282B",
+  "parameter-action-highlighted-background" : "#124C8C",
   "form-background" : "#191A1C",
   "form-disabled-background" : "#1D1E20",
   "form-foreground" : "#CED0D6",

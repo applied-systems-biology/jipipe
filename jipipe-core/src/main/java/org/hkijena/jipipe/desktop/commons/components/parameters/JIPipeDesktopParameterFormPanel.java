@@ -445,12 +445,13 @@ public class JIPipeDesktopParameterFormPanel extends JIPipeDesktopFormPanel impl
 
                 if (node != null) {
                     for (JIPipeParameterCollectionContextAction action : node.getActions()) {
-                        // Group-header buttons: primary fill; highlighted
-                        // actions use the success-styled variant.
+                        // Group-header buttons: highlighted parameter-action
+                        // fill; highlighted actions keep the success-styled
+                        // variant.
                         JButton actionButton = action.isHighlighted()
                                 ? UIUtils.createPrimaryParameterButton(action.getName(), action.getIcon(), e -> action.accept(desktopWorkbench))
                                 : UIUtils.createParameterButton(action.getName(), action.getIcon(),
-                                ThemeUtils.getCurrentStyle().getPrimaryColor(), e -> action.accept(desktopWorkbench));
+                                ThemeUtils.getCurrentStyle().getParameterActionHighlightedBackground(), e -> action.accept(desktopWorkbench));
                         actionButton.setToolTipText(action.getDescription());
                         groupHeaderPanel.addToEndOfTitlePanel(actionButton);
                     }
@@ -458,7 +459,7 @@ public class JIPipeDesktopParameterFormPanel extends JIPipeDesktopFormPanel impl
 
                 if (isModifiable) {
                     JButton addButton = UIUtils.createParameterButton("Edit", JIPipe.RESOURCES.getIcon16("actions/edit.png"),
-                            ThemeUtils.getCurrentStyle().getPrimaryColor(), e -> {
+                            ThemeUtils.getCurrentStyle().getParameterActionHighlightedBackground(), e -> {
                         JIPipeDesktopDynamicParameterEditorDialog dialog = new JIPipeDesktopDynamicParameterEditorDialog(SwingUtilities.getWindowAncestor(this), desktopWorkbench, (JIPipeDynamicParameterCollection) parameterCollection);
                         dialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(this));
                         dialog.setModal(true);

@@ -256,11 +256,13 @@ public class UIUtils {
      * (expression/script "Edit", path "Select", environment "Configure",
      * {@code *Ref} "Edit", list/HTML header actions, pagination).
      * <p>
-     * Default fill: the <em>window background</em>. A rounded rectangle whose
-     * outline follows the fill, at the standard button height, with a real
-     * pressed/rollover state. For emphasized placements pass an explicit fill
-     * via the overload — the theme's primary color for group headers, the
-     * success color for the primary action.
+     * Default fill: the theme's <em>parameter action background</em> color
+     * (copies the window background in the standard themes). A rounded
+     * rectangle whose outline follows the fill, at the standard button
+     * height, with a real pressed/rollover state. For emphasized placements
+     * pass an explicit fill via the overload — the theme's highlighted
+     * parameter action color for group headers, the success color for the
+     * primary action.
      *
      * @param text   the button label
      * @param icon   the icon (may be null)
@@ -268,15 +270,15 @@ public class UIUtils {
      * @return the standardized button
      */
     public static JButton createParameterButton(String text, Icon icon, ActionListener action) {
-        return createParameterButton(text, icon, ThemeUtils.getCurrentStyle().getWindowBackground(), action);
+        return createParameterButton(text, icon, ThemeUtils.getCurrentStyle().getParameterActionBackground(), action);
     }
 
     /**
      * {@link #createParameterButton(String, Icon, ActionListener)} with an
      * explicit fill color — the background <em>and</em> the rounded outline
      * follow it. Use the theme's accent colors for emphasized placements (the
-     * primary color for group-header buttons, the success color for the
-     * success-styled primary action).
+     * highlighted parameter action color for group-header buttons, the
+     * success color for the success-styled primary action).
      *
      * @param text   the button label
      * @param icon   the icon (may be null)
@@ -316,7 +318,7 @@ public class UIUtils {
      * action buttons are icon buttons with a hover hint).
      */
     public static JButton createParameterIconButton(Icon icon, String tooltip, ActionListener action) {
-        return createParameterIconButton(icon, tooltip, ThemeUtils.getCurrentStyle().getWindowBackground(), action);
+        return createParameterIconButton(icon, tooltip, ThemeUtils.getCurrentStyle().getParameterActionBackground(), action);
     }
 
     /** Icon-only variant with an explicit fill (see {@link #createParameterButton}). */
@@ -327,9 +329,9 @@ public class UIUtils {
     }
 
     /**
-     * Success-styled variant of {@link #createParameterButton(String, Icon,
+     * Primary-styled variant of {@link #createParameterButton(String, Icon,
      * ActionListener)} — the primary action of a parameter row (the list
-     * editors' "Add"): filled with the theme's success color.
+     * editors' "Add"): filled with the theme's primary color.
      */
     public static JButton createPrimaryParameterButton(String text, Icon icon, ActionListener action) {
         return createParameterButton(text, icon, ThemeUtils.getCurrentStyle().getPrimaryColor(), action);

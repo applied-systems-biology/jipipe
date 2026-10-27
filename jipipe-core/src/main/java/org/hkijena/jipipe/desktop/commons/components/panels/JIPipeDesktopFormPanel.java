@@ -877,11 +877,15 @@ public class JIPipeDesktopFormPanel extends JPanel {
         }
 
         /**
-         * Adds a component on the right hand side
+         * Adds a component on the right hand side (a small horizontal gap is
+         * inserted before it so consecutive buttons do not touch).
          *
          * @param component the component
          */
         public void addToEndOfTitlePanel(Component component) {
+            if (titlePanel.getComponentCount() > 0) {
+                titlePanel.add(Box.createHorizontalStrut(4));
+            }
             titlePanel.add(component);
         }
 
