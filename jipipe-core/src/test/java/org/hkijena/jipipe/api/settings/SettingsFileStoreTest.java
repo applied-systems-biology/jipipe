@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.api.settings;
 
 import com.fasterxml.jackson.databind.node.BooleanNode;
+import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -90,6 +91,21 @@ class SettingsFileStoreTest {
         try (var s = Files.list(tempDir)) {
             assertFalse(s.anyMatch(p -> p.getFileName().toString().contains(".tmp.")), "no tmp file may remain");
         }
+    }
+
+    @Test void savedDocumentSurvivesAReloadRoundTrip() throws Exception {
+        Path f = tempDir.resolve("settings.json");
+        SettingsFileStore store = new SettingsFileStore(f, SettingsScope.APPLICATION, p -> true);
+        SettingsDocument doc = store.load();
+        doc.set("registry:x", "a", BooleanNode.TRUE);
+        doc.setBlock("state:recent-projects", JsonUtils.getObjectMapper().valueToTree(List.of("/a/b.jip")));
+        store.save(doc);
+
+        SettingsDocument reloaded = new SettingsFileStore(f, SettingsScope.APPLICATION, p -> true).load();
+        assertEquals(BooleanNode.TRUE, reloaded.get("registry:x", "a"),
+                "the block saved through the tmp+move path must be readable again, fully intact");
+        assertEquals(doc.getBlock("state:recent-projects"), reloaded.getBlock("state:recent-projects"));
+        assertEquals(doc.schemaVersion(), reloaded.schemaVersion());
     }
 
     @Test void fingerprintChangesAfterSave() throws Exception {
