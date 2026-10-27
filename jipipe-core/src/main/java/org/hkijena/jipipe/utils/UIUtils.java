@@ -41,6 +41,7 @@ import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeGeneralDataApplicationSettings;
 import org.hkijena.jipipe.utils.ui.ListSelectionMode;
+import org.hkijena.jipipe.desktop.commons.theme.ui.JIPipeDesktopRoundedButtonUI;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 import org.jdesktop.swingx.JXTable;
 import org.scijava.Disposable;
@@ -239,6 +240,84 @@ public class UIUtils {
         return BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0,16,0,0),
                 BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, ThemeUtils.getCurrentStyle().getBorderColor()),
                         BorderFactory.createEmptyBorder(0,8,0,0)));
+    }
+
+    /**
+     * Height of a standard JIPipe button (see {@link #createParameterButton}),
+     * measured from the theme's {@code Button.font} + {@code Button.border}.
+     * Parameter header rows are raised to at least this height so the row
+     * action buttons line up across all editors (#1339).
+     */
+    public static final int STANDARD_BUTTON_HEIGHT = 27;
+
+    /**
+     * The standardized **parameter action button** (#1339): used by every
+     * parameter control whose action opens a modal dialog or an edit menu
+     * (expression/script "Edit", path "Select", environment "Configure",
+     * {@code *Ref} "Edit", list/HTML header actions, pagination).
+     * <p>
+     * Design: a rounded rectangle (the theme's border color) <em>filled with the
+     * window background</em>, at the standard button height, with a real
+     * pressed/rollover state. Replaces the previous mix of flat/white/borderless
+     * parameter buttons, none of which had a pressed state.
+     *
+     * @param text   the button label
+     * @param icon   the icon (may be null)
+     * @param action the action (may be null)
+     * @return the standardized button
+     */
+    public static JButton createParameterButton(String text, Icon icon, ActionListener action) {
+        JButton b = new JButton(text, icon);
+        b.setFocusable(false);
+        // contentAreaFilled=false stops BasicButtonUI from painting its own
+        // rectangular fill; the custom UI (below) draws the rounded
+        // windowBackground fill with pressed/rollover states, and the border
+        // paints the rounded outline.
+        b.setOpaque(true);
+        b.setContentAreaFilled(false);
+        b.setBackground(ThemeUtils.getCurrentStyle().getWindowBackground());
+        Color base = ThemeUtils.getCurrentStyle().getWindowBackground();
+        b.setUI(new JIPipeDesktopRoundedButtonUI(5, base.darker(), base.darker().darker()));
+        // The rounded outline (theme border color) + the standard button height.
+        b.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createEmptyBorder(1, 1, 1, 1),
+                BorderFactory.createCompoundBorder(
+                        new RoundedLineBorder(ThemeUtils.getCurrentStyle().getBorderColor(), 1, 5),
+                        BorderFactory.createEmptyBorder(1, 6, 1, 6))));
+        b.setToolTipText(text);
+        if (action != null) {
+            b.addActionListener(action);
+        }
+        // The standard button height (theme Button.font + padding) — parameter
+        // header rows take their min height from this (#1339).
+        b.setPreferredSize(new Dimension(b.getPreferredSize().width, STANDARD_BUTTON_HEIGHT));
+        b.setMinimumSize(new Dimension(b.getMinimumSize().width, STANDARD_BUTTON_HEIGHT));
+        return b;
+    }
+
+    /**
+     * Icon-only variant of {@link #createParameterButton} where the tooltip is
+     * set explicitly (the parameter action buttons are icon buttons with a
+     * hover hint).
+     */
+    public static JButton createParameterIconButton(Icon icon, String tooltip, ActionListener action) {
+        JButton b = createParameterButton("", icon, action);
+        b.setToolTipText(tooltip);
+        return b;
+    }
+
+    /**
+     * Green-bordered variant of {@link #createParameterButton} for the primary
+     * action of a parameter row (the list editors' "Add").
+     */
+    public static JButton createPrimaryParameterButton(String text, Icon icon, ActionListener action) {
+        JButton b = createParameterButton(text, icon, action);
+        b.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createEmptyBorder(1, 1, 1, 1),
+                BorderFactory.createCompoundBorder(
+                        new RoundedLineBorder(ThemeUtils.getCurrentStyle().getSuccessColor(), 1, 5),
+                        BorderFactory.createEmptyBorder(2, 6, 2, 6))));
+        return b;
     }
 
     /**

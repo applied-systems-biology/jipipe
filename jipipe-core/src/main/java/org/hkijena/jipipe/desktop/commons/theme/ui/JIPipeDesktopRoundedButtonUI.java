@@ -31,21 +31,31 @@ public class JIPipeDesktopRoundedButtonUI extends BasicButtonUI {
     }
 
     @Override
+    protected void installDefaults(AbstractButton b) {
+        super.installDefaults(b);
+        // The button is always painted as a filled rounded rectangle by
+        // update(); make the component opaque so the background actually shows
+        // (Metal's installDefaults would otherwise keep it non-opaque).
+        b.setOpaque(true);
+    }
+
+    @Override
     public void update(Graphics g, JComponent c) {
         Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        if (c.isOpaque()) {
-            Color fillColor = c.getBackground();
-
-            AbstractButton button = (AbstractButton) c;
+        // Paint the rounded fill unconditionally: the fill color carries the
+        // hover/pressed states, and this component is always a filled rounded
+        // rectangle.
+        if (c instanceof AbstractButton button) {
+            Color fillColor = button.getBackground();
             ButtonModel model = button.getModel();
-
-            if (model.isPressed()) {
+            if (!button.isEnabled()) {
+                fillColor = button.getBackground().darker();
+            } else if (model.isPressed()) {
                 fillColor = backgroundPressed;
             } else if (model.isRollover()) {
                 fillColor = backgroundHover;
             }
-
             g.setColor(fillColor);
             g.fillRoundRect(0, 0, c.getWidth(), c.getHeight(), cornerSize, cornerSize);
         }
