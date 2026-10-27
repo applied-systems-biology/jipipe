@@ -256,10 +256,11 @@ public class UIUtils {
      * (expression/script "Edit", path "Select", environment "Configure",
      * {@code *Ref} "Edit", list/HTML header actions, pagination).
      * <p>
-     * Design: a rounded rectangle (the theme's border color) <em>filled with the
-     * window background</em>, at the standard button height, with a real
-     * pressed/rollover state. Replaces the previous mix of flat/white/borderless
-     * parameter buttons, none of which had a pressed state.
+     * Default fill: the <em>window background</em>. A rounded rectangle whose
+     * outline follows the fill, at the standard button height, with a real
+     * pressed/rollover state. For emphasized placements pass an explicit fill
+     * via the overload — the theme's primary color for group headers, the
+     * success color for the primary action.
      *
      * @param text   the button label
      * @param icon   the icon (may be null)
@@ -267,22 +268,36 @@ public class UIUtils {
      * @return the standardized button
      */
     public static JButton createParameterButton(String text, Icon icon, ActionListener action) {
+        return createParameterButton(text, icon, ThemeUtils.getCurrentStyle().getWindowBackground(), action);
+    }
+
+    /**
+     * {@link #createParameterButton(String, Icon, ActionListener)} with an
+     * explicit fill color — the background <em>and</em> the rounded outline
+     * follow it. Use the theme's accent colors for emphasized placements (the
+     * primary color for group-header buttons, the success color for the
+     * success-styled primary action).
+     *
+     * @param text   the button label
+     * @param icon   the icon (may be null)
+     * @param fill   the background (and outline) fill
+     * @param action the action (may be null)
+     * @return the standardized button
+     */
+    public static JButton createParameterButton(String text, Icon icon, Color fill, ActionListener action) {
         JButton b = new JButton(text, icon);
         b.setFocusable(false);
         // contentAreaFilled=false stops BasicButtonUI from painting its own
-        // rectangular fill; the custom UI (below) draws the rounded
-        // windowBackground fill with pressed/rollover states, and the border
-        // paints the rounded outline.
+        // rectangular fill; the custom UI (below) draws the rounded fill with
+        // pressed/rollover states, and the border paints the rounded outline.
         b.setOpaque(true);
         b.setContentAreaFilled(false);
-        b.setBackground(ThemeUtils.getCurrentStyle().getWindowBackground());
-        Color base = ThemeUtils.getCurrentStyle().getWindowBackground();
-        b.setUI(new JIPipeDesktopRoundedButtonUI(5, base.darker(), base.darker().darker()));
-        // The rounded outline (theme border color) + the standard button height.
+        b.setBackground(fill);
+        b.setUI(new JIPipeDesktopRoundedButtonUI(5, fill.darker(), fill.darker().darker()));
         b.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createEmptyBorder(1, 1, 1, 1),
                 BorderFactory.createCompoundBorder(
-                        new RoundedLineBorder(ThemeUtils.getCurrentStyle().getBorderColor(), 1, 5),
+                        new RoundedLineBorder(fill, 1, 5),
                         BorderFactory.createEmptyBorder(1, 6, 1, 6))));
         b.setToolTipText(text);
         if (action != null) {
@@ -296,28 +311,28 @@ public class UIUtils {
     }
 
     /**
-     * Icon-only variant of {@link #createParameterButton} where the tooltip is
-     * set explicitly (the parameter action buttons are icon buttons with a
-     * hover hint).
+     * Icon-only variant of {@link #createParameterButton(String, Icon,
+     * ActionListener)} where the tooltip is set explicitly (the parameter
+     * action buttons are icon buttons with a hover hint).
      */
     public static JButton createParameterIconButton(Icon icon, String tooltip, ActionListener action) {
-        JButton b = createParameterButton("", icon, action);
+        return createParameterIconButton(icon, tooltip, ThemeUtils.getCurrentStyle().getWindowBackground(), action);
+    }
+
+    /** Icon-only variant with an explicit fill (see {@link #createParameterButton}). */
+    public static JButton createParameterIconButton(Icon icon, String tooltip, Color fill, ActionListener action) {
+        JButton b = createParameterButton("", icon, fill, action);
         b.setToolTipText(tooltip);
         return b;
     }
 
     /**
-     * Green-bordered variant of {@link #createParameterButton} for the primary
-     * action of a parameter row (the list editors' "Add").
+     * Success-styled variant of {@link #createParameterButton(String, Icon,
+     * ActionListener)} — the primary action of a parameter row (the list
+     * editors' "Add"): filled with the theme's success color.
      */
     public static JButton createPrimaryParameterButton(String text, Icon icon, ActionListener action) {
-        JButton b = createParameterButton(text, icon, action);
-        b.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createEmptyBorder(1, 1, 1, 1),
-                BorderFactory.createCompoundBorder(
-                        new RoundedLineBorder(ThemeUtils.getCurrentStyle().getSuccessColor(), 1, 5),
-                        BorderFactory.createEmptyBorder(2, 6, 2, 6))));
-        return b;
+        return createParameterButton(text, icon, ThemeUtils.getCurrentStyle().getSuccessColor(), action);
     }
 
     /**
