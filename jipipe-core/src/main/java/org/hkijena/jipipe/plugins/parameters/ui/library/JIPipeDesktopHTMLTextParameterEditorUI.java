@@ -121,7 +121,11 @@ public class JIPipeDesktopHTMLTextParameterEditorUI extends JIPipeDesktopParamet
                         setTextFromDialog(result.getHtml());
                     }
                 });
-        JPanel controls = new JPanel();
+        // Right-align on the name row (the header cell stretches to full width,
+        // so a plain panel would center the button) — consistent with the list
+        // editor's header (#1339).
+        JPanel controls = new JPanel(new FlowLayout(FlowLayout.RIGHT, 4, 0));
+        controls.setOpaque(false);
         controls.add(editButton);
         return controls;
     }
