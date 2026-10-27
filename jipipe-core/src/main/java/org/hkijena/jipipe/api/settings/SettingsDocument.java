@@ -21,9 +21,12 @@ import org.hkijena.jipipe.utils.json.JsonUtils;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 /**
@@ -52,8 +55,12 @@ import java.util.function.Predicate;
  * canonical block path; by default a block is pass-through exactly when its
  * kind is unknown.
  * <p>
- * This class is a pure data structure: it performs no IO and fires no events,
- * and the {@code $meta} values are interpolated by the caller.
+ * This class is a pure data structure: it performs no IO and the
+ * {@code $meta} values are interpolated by the caller. The only form of
+ * notification is the per-path listener API ({@link #addPathListener},
+ * {@link #removePathListener}), which lets in-process observers (such as
+ * {@link SettingsBinding}s) be told when the value at a specific path
+ * changes.
  */
 public final class SettingsDocument {
     private static final String SCHEMA_FIELD = "$schema";
@@ -64,6 +71,7 @@ public final class SettingsDocument {
     private final ObjectNode root;
     private final String writerId;
     private final Predicate<String> registeredBlock;
+    private final Map<String, List<Consumer<JsonNode>>> pathListeners;
 
     /**
      * Creates a document with the default registration check, which treats a
@@ -90,6 +98,47 @@ public final class SettingsDocument {
         this.root.put(SCHEMA_FIELD, DEFAULT_SCHEMA_VERSION);
         this.root.putObject(META_FIELD);
         this.writerId = UUID.randomUUID().toString().replace("-", "");
+        this.pathListeners = new ConcurrentHashMap<>();
+    }
+
+    /**
+     * Registers a listener that is notified whenever the value at the given
+     * path changes. The listener receives the new value at that location, or
+     * a {@link MissingNode} when the location is absent after the mutation.
+     * <p>
+     * {@code pathWithSubPath} is {@code "<blockPath>/<subPath>"}, using the
+     * same sub-path normalization as {@link #get(String, String)} (empty
+     * segments are dropped); a block path without a sub-path addresses the
+     * whole block. Notifications are sent by {@link #set}, {@link #remove},
+     * {@link #setBlock}, and {@link #removeBlock}: listeners registered for
+     * the mutated path are always notified, and a listener registered under a
+     * block whose <em>whole block</em> was replaced or removed is notified as
+     * well, with the value at its location in the new block (or a
+     * {@link MissingNode} when its location no longer exists). Listeners are
+     * invoked synchronously on the mutating thread, after the mutation is
+     * applied.
+     *
+     * @param pathWithSubPath the path to observe
+     * @param listener the listener to fire with the new value at the path
+     */
+    public void addPathListener(String pathWithSubPath, Consumer<JsonNode> listener) {
+        pathListeners
+                .computeIfAbsent(Objects.requireNonNull(pathWithSubPath, "pathWithSubPath"), p -> new ArrayList<>())
+                .add(Objects.requireNonNull(listener, "listener"));
+    }
+
+    /**
+     * Removes a listener previously registered with {@link #addPathListener}.
+     * Removing a listener that is not registered is a no-op.
+     *
+     * @param pathWithSubPath the path the listener was registered for
+     * @param listener the listener to remove
+     */
+    public void removePathListener(String pathWithSubPath, Consumer<JsonNode> listener) {
+        List<Consumer<JsonNode>> listeners = pathListeners.get(pathWithSubPath);
+        if (listeners != null) {
+            listeners.remove(listener);
+        }
     }
 
     /**
@@ -134,6 +183,7 @@ public final class SettingsDocument {
         } else {
             root.set(blockPath, value);
         }
+        notifyBlockAndDescendants(blockPath);
     }
 
     /**
@@ -180,10 +230,15 @@ public final class SettingsDocument {
         List<String> segments = subSegments(blockPath, subPath);
         if (value == null || value.isMissingNode()) {
             removeAt(segments);
-            return;
+        } else {
+            ObjectNode parent = objectAt(segments, segments.size() - 1);
+            parent.set(segments.get(segments.size() - 1), value);
         }
-        ObjectNode parent = objectAt(segments, segments.size() - 1);
-        parent.set(segments.get(segments.size() - 1), value);
+        if (segments.size() == 1) {
+            notifyBlockAndDescendants(blockPath);
+        } else {
+            notifyPathListener(listenerPath(blockPath, subPath));
+        }
     }
 
     /**
@@ -204,7 +259,13 @@ public final class SettingsDocument {
      * @param subPath slash-separated sub-path within the block, or empty for the whole block
      */
     public void remove(String blockPath, String subPath) {
+        String path = listenerPath(blockPath, subPath);
         removeAt(subSegments(blockPath, subPath));
+        if (path.equals(blockPath)) {
+            notifyBlockAndDescendants(blockPath);
+        } else {
+            notifyPathListener(path);
+        }
     }
 
     /**
@@ -214,6 +275,7 @@ public final class SettingsDocument {
      */
     public void removeBlock(String blockPath) {
         root.remove(Objects.requireNonNull(blockPath, "blockPath"));
+        notifyBlockAndDescendants(blockPath);
     }
 
     /**
@@ -318,6 +380,42 @@ public final class SettingsDocument {
             }
         }
         return segments;
+    }
+
+    private String listenerPath(String blockPath, String subPath) {
+        StringBuilder normalized = new StringBuilder(Objects.requireNonNull(blockPath, "blockPath"));
+        if (subPath != null) {
+            for (String segment : subPath.split("/")) {
+                if (!segment.isEmpty()) {
+                    normalized.append('/').append(segment);
+                }
+            }
+        }
+        return normalized.toString();
+    }
+
+    private void notifyBlockAndDescendants(String blockPath) {
+        String prefix = blockPath + "/";
+        notifyPathListener(blockPath);
+        for (String path : pathListeners.keySet()) {
+            if (path.startsWith(prefix)) {
+                notifyPathListener(path);
+            }
+        }
+    }
+
+    private void notifyPathListener(String pathWithSubPath) {
+        List<Consumer<JsonNode>> listeners = pathListeners.get(pathWithSubPath);
+        if (listeners == null) {
+            return;
+        }
+        int slash = pathWithSubPath.indexOf('/');
+        String blockPath = slash > 0 ? pathWithSubPath.substring(0, slash) : pathWithSubPath;
+        String subPath = slash > 0 ? pathWithSubPath.substring(slash + 1) : "";
+        JsonNode value = get(blockPath, subPath);
+        for (Consumer<JsonNode> listener : listeners) {
+            listener.accept(value);
+        }
     }
 
     private void collectSubPaths(JsonNode value, String prefix, Set<String> result) {
