@@ -236,7 +236,9 @@ public class UIUtils {
      * actually visible against both light and dark panel backgrounds.
      */
     public static Border createLeftAccentBorder() {
-        return BorderFactory.createMatteBorder(0, 3, 0, 0, ThemeUtils.getCurrentStyle().getNodeHighlightBorder());
+        return BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0,16,0,0),
+                BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, ThemeUtils.getCurrentStyle().getBorderColor()),
+                        BorderFactory.createEmptyBorder(0,8,0,0)));
     }
 
     /**
