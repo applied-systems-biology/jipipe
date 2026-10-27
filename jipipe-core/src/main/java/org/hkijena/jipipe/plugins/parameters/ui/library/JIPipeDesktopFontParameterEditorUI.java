@@ -60,6 +60,12 @@ public class JIPipeDesktopFontParameterEditorUI extends JIPipeDesktopParameterEd
     public void reload() {
         JIPipeFontParameter parameter = getParameter();
         preview.updateFrom(parameter);
+        // The popout's own preview band must live-update with the inline one
+        // (family/size/style/color apply while the popout is open — #1339).
+        if (popup != null && popup.isVisible()) {
+            popup.revalidate();
+            popup.repaint();
+        }
     }
 
     private void initialize() {
@@ -146,7 +152,7 @@ public class JIPipeDesktopFontParameterEditorUI extends JIPipeDesktopParameterEd
                         return;
                     }
                     parameter.setFamily((String) selected.get(0).getValue());
-                    setParameter(parameter, false);
+                    setParameter(parameter, true);
                 });
         box.setSelectedValues(List.of(parameter.getFamily()));
         box.refreshDisplay();
@@ -188,7 +194,7 @@ public class JIPipeDesktopFontParameterEditorUI extends JIPipeDesktopParameterEd
         JSpinner spinner = new JSpinner(new SpinnerNumberModel(parameter.getSize(), 1, 999, 1));
         spinner.addChangeListener(e -> {
             parameter.setSize((Integer) spinner.getValue());
-            setParameter(parameter, false);
+            setParameter(parameter, true);
         });
         // Pin the width for a 3-digit value + arrows; take the height from the
         // spinner's natural default (never a flat 22px that undercuts the
@@ -219,12 +225,12 @@ public class JIPipeDesktopFontParameterEditorUI extends JIPipeDesktopParameterEd
         bold.addActionListener(e -> {
             int style = bold.isSelected() ? parameter.getStyle() | Font.BOLD : parameter.getStyle() & ~Font.BOLD;
             parameter.setStyle(style);
-            setParameter(parameter, false);
+            setParameter(parameter, true);
         });
         italic.addActionListener(e -> {
             int style = italic.isSelected() ? parameter.getStyle() | Font.ITALIC : parameter.getStyle() & ~Font.ITALIC;
             parameter.setStyle(style);
-            setParameter(parameter, false);
+            setParameter(parameter, true);
         });
         p.add(bold);
         p.add(italic);
@@ -295,7 +301,7 @@ public class JIPipeDesktopFontParameterEditorUI extends JIPipeDesktopParameterEd
         b.setToolTipText(tooltip);
         b.addActionListener(e -> {
             parameter.setColor(color);
-            setParameter(parameter, false);
+            setParameter(parameter, true);
         });
         return b;
     }
@@ -312,7 +318,7 @@ public class JIPipeDesktopFontParameterEditorUI extends JIPipeDesktopParameterEd
         Color chosen = UIUtils.selectColor(preview, "Select color", parameter.getColor(), false);
         if (chosen != null) {
             parameter.setColor(chosen);
-            setParameter(parameter, false);
+            setParameter(parameter, true);
         }
         preview.repaint();
     }
@@ -322,40 +328,45 @@ public class JIPipeDesktopFontParameterEditorUI extends JIPipeDesktopParameterEd
     // ------------------------------------------------------------------
 
     /**
-     * The two checkerboard tones for the font preview, derived from the theme
-     * surface color (spec: the preview background must be theme-derived so it
-     * works in light AND dark themes). The surface tone is the theme's panel
-     * background; the alternate tone is a fixed mid-gray that is clearly
-     * distinct from near-white and near-black surfaces. The mid tone guarantees
-     * that font colors matching the surface (white text on a light theme, black
-     * text on a dark theme) still remain visible — fixing the blank font
-     * preview (#1339 S8). Pure, no Swing state, headless-testable.
+     * The font preview's background, auto-selected so the font color is always
+     * readable (#1339): picks the theme tone (light or dark) that maximizes the
+     * contrast against the font color — light fonts get a dark background, dark
+     * fonts a light one. No more checkerboard; the background simply follows
+     * the text color. Pure (no Swing state), headless-testable.
      *
-     * @param surface the theme's panel background color
-     * @return {@code {surfaceTone, alternateTone}}
+     * @param fontColor the font color that will be painted on top
+     * @return a background color with a guaranteed contrast against it
      */
-    static Color[] checkerColors(Color surface) {
-        // A mid-gray that contrasts against both near-white and near-black
-        // surfaces while staying clearly distinct from them (gap >= 0.15 in
-        // relative luminance — pinned by FontPreviewCheckerTest).
-        Color mid = new Color(0x8a, 0x8a, 0x8a);
-        return new Color[]{surface, mid};
+    static Color previewBackground(Color fontColor) {
+        // Auto-contrast rule: pick whichever of the two fixed tones maximizes
+        // the WCAG contrast against the font color. A plain luminance > 0.5
+        // split would misplace mid-tone colors (e.g. olive, luminance ~0.49,
+        // where the dark tone gives ~7:1 but the light one only ~1.7:1); the
+        // direct contrast comparison always lands on the more readable tone.
+        double onDark = contrast(fontColor, PREVIEW_DARK);
+        double onLight = contrast(fontColor, PREVIEW_LIGHT);
+        return onDark >= onLight ? PREVIEW_DARK : PREVIEW_LIGHT;
     }
 
-    /**
-     * Paints a {@code sq}×{@code sq} checkerboard across the component using
-     * {@link #checkerColors(Color)} derived from the theme surface.
-     */
-    private static void paintCheckerboard(Graphics2D g, JComponent c, int sq) {
-        Color[] tones = checkerColors(UIManager.getColor("Panel.background"));
-        int w = c.getWidth(), h = c.getHeight();
-        for (int y = 0; y < h; y += sq) {
-            for (int x = 0; x < w; x += sq) {
-                boolean light = ((x / sq + y / sq) & 1) == 0;
-                g.setColor(light ? tones[0] : tones[1]);
-                g.fillRect(x, y, Math.min(sq, w - x), Math.min(sq, h - y));
-            }
-        }
+    /** WCAG contrast ratio (1..21) between two colors. */
+    private static double contrast(Color a, Color b) {
+        double hi = Math.max(relLuminance(a), relLuminance(b));
+        double lo = Math.min(relLuminance(a), relLuminance(b));
+        return (hi + 0.05) / (lo + 0.05);
+    }
+
+    /** The dark preview tone. */
+    private static final Color PREVIEW_DARK = new Color(0x20, 0x24, 0x29);
+    /** The light preview tone. */
+    private static final Color PREVIEW_LIGHT = new Color(0xF2, 0xF2, 0xF2);
+
+    /** WCAG relative luminance of a color (0..1). */
+    private static double relLuminance(Color c) {
+        double r = c.getRed() / 255.0, g = c.getGreen() / 255.0, b = c.getBlue() / 255.0;
+        r = r <= 0.03928 ? r / 12.92 : Math.pow((r + 0.055) / 1.055, 2.4);
+        g = g <= 0.03928 ? g / 12.92 : Math.pow((g + 0.055) / 1.055, 2.4);
+        b = b <= 0.03928 ? b / 12.92 : Math.pow((b + 0.055) / 1.055, 2.4);
+        return 0.2126 * r + 0.7152 * g + 0.0722 * b;
     }
 
     /** The inline preview: sample text in the current font, scaled to the row. */
@@ -374,9 +385,11 @@ public class JIPipeDesktopFontParameterEditorUI extends JIPipeDesktopParameterEd
             JIPipeFontParameter parameter = getParameter();
             Graphics2D g2 = (Graphics2D) g.create();
             g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-            // Theme-derived checkerboard so light AND dark font colors are
-            // visible (a flat panel background hid the default white text).
-            paintCheckerboard(g2, this, 6);
+            // Auto-contrast background: the flat panel background hid the
+            // default WHITE text; previewBackground() follows the font color
+            // instead (light text → dark bg, dark text → light bg, #1339).
+            g2.setColor(previewBackground(parameter.getColor()));
+            g2.fillRect(0, 0, getWidth(), getHeight());
             Font font = parameter.toFont();
             float maxH = getHeight() * 0.78f;
             Font render = font.getSize2D() > maxH ? font.deriveFont(maxH) : font;
@@ -397,7 +410,8 @@ public class JIPipeDesktopFontParameterEditorUI extends JIPipeDesktopParameterEd
             JIPipeFontParameter parameter = getParameter();
             Graphics2D g2 = (Graphics2D) g.create();
             g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-            paintCheckerboard(g2, this, 6);
+            g2.setColor(previewBackground(parameter.getColor()));
+            g2.fillRect(0, 0, getWidth(), getHeight());
             Font font = parameter.toFont();
             g2.setFont(font);
             FontMetrics fm = g2.getFontMetrics();
