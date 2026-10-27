@@ -14,10 +14,12 @@
 package org.hkijena.jipipe.api.settings;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SettingsDocumentIOTest {
@@ -52,5 +54,29 @@ class SettingsDocumentIOTest {
         JsonNode once = SettingsDocumentIO.toJson(SettingsDocumentIO.fromJson(SettingsScope.APPLICATION, in, p -> true));
         JsonNode twice = SettingsDocumentIO.toJson(SettingsDocumentIO.fromJson(SettingsScope.APPLICATION, once, p -> true));
         assertEquals(once, twice);
+    }
+
+    @Test void inputAndSerializedTreesAreIsolatedFromDocument() throws Exception {
+        ObjectNode input = (ObjectNode) JsonUtils.getObjectMapper().readTree("""
+                {
+                  "sheet:x": { "a": 1 }
+                }
+                """);
+        SettingsDocument d = SettingsDocumentIO.fromJson(SettingsScope.APPLICATION, input, p -> true);
+
+        // mutating the input tree must not affect the document
+        ((ObjectNode) input.get("sheet:x")).put("changed-from-input", 1);
+        assertTrue(d.get("sheet:x", "changed-from-input").isMissingNode());
+        assertEquals(1, d.get("sheet:x", "a").asInt());
+
+        // mutating the document must not affect the input tree
+        ((ObjectNode) d.getBlock("sheet:x")).put("changed-from-doc", 2);
+        assertFalse(((ObjectNode) input.get("sheet:x")).has("changed-from-doc"));
+
+        // mutating the serialized tree must not affect the live document
+        ObjectNode out = SettingsDocumentIO.toJson(d);
+        ((ObjectNode) out.get("sheet:x")).put("changed-from-output", 3);
+        assertTrue(d.get("sheet:x", "changed-from-output").isMissingNode());
+        assertEquals(2, d.get("sheet:x", "changed-from-doc").asInt());
     }
 }

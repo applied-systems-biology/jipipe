@@ -83,18 +83,20 @@ public final class SettingsDocumentIO {
             throw new IllegalArgumentException("A settings document must be a JSON object, but got: " + node.getNodeType());
         }
         ObjectNode source = (ObjectNode) node;
-        SettingsDocument document = new SettingsDocument(scope, path ->
-                new SettingsBlockPath(path).kind() != null && registeredBlock.test(new SettingsBlockPath(path).path()));
+        SettingsDocument document = new SettingsDocument(scope, path -> {
+            SettingsBlockPath blockPath = new SettingsBlockPath(path);
+            return blockPath.kind() != null && registeredBlock.test(blockPath.path());
+        });
         JsonNode schema = source.get(SCHEMA_FIELD);
         document.setSchemaVersion(schema == null ? DEFAULT_SCHEMA_VERSION : schema.asInt(DEFAULT_SCHEMA_VERSION));
         JsonNode meta = source.get(META_FIELD);
         if (meta != null) {
-            document.setBlock(META_FIELD, meta);
+            document.setBlock(META_FIELD, meta.deepCopy());
         }
         source.fields().forEachRemaining(entry -> {
             String field = entry.getKey();
             if (!field.equals(SCHEMA_FIELD) && !field.equals(META_FIELD)) {
-                document.setBlock(field, entry.getValue());
+                document.setBlock(field, entry.getValue().deepCopy());
             }
         });
         return document;
