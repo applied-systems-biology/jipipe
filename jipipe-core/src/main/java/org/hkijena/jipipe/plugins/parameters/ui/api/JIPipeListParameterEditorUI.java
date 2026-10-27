@@ -148,7 +148,7 @@ public abstract class JIPipeListParameterEditorUI extends JIPipeDesktopParameter
 
         countLabel.setForeground(UIManager.getColor("Label.disabledForeground"));
         controls.add(countLabel);
-
+        controls.add(Box.createHorizontalStrut(4));
         JButton addButton = UIUtils.createPrimaryParameterButton("Add", JIPipe.RESOURCES.getIcon16("actions/list-add.png"), e -> addNewEntry());
         controls.add(addButton);
 
