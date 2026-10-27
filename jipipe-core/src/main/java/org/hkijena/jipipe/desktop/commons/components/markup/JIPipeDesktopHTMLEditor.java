@@ -32,6 +32,7 @@ import org.hkijena.jipipe.utils.scripting.ScriptUtils;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.border.Border;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.text.*;
@@ -344,6 +345,11 @@ public class JIPipeDesktopHTMLEditor extends JIPipeDesktopWorkbenchPanel {
                     this::selectionIsAlignJustified,
                     "Align justified",
                     "actions/format-justify-fill.png"));
+            // A trailing glue (like toolBar1's) makes this row's max width
+            // unbounded, so the BoxLayout stretches it to the full editor width
+            // — otherwise the row (and its bottom border line) stops at the last
+            // icon (#1339).
+            toolBar2.add(Box.createHorizontalGlue());
 
             toolBarContainer.add(toolBar1);
             toolBarContainer.add(toolBar2);
@@ -496,11 +502,11 @@ public class JIPipeDesktopHTMLEditor extends JIPipeDesktopWorkbenchPanel {
             }
         });
         // The font/size combos are editable, so focusing one selects all its
-        // text — and the unthemed Metal selection highlight draws a dark bar
-        // across the field / the popup (the "black bars", #1339). Theme the
-        // field + popup selection to follow the JIPipe palette.
-        themeEditableComboSelection(fontSelection);
-        themeEditableComboSelection(sizeSelection);
+        // text — and the unthemed Metal bevels/selection draw the dark
+        // outlines in the font/size combos (the "weird combobox" design,
+        // #1339). Theme the whole combo to the JIPipe look.
+        themeEditableComboBox(fontSelection);
+        themeEditableComboBox(sizeSelection);
 
         // Color selection
         foregroundColorButton = new JIPipeDesktopColorChooserButton("");
@@ -863,21 +869,46 @@ public class JIPipeDesktopHTMLEditor extends JIPipeDesktopWorkbenchPanel {
     }
 
     /**
-     * Themes an editable combo's selection highlight: the combo's own field
-     * text selection plus the dropdown popup's item selection. Both fall back
-     * to unthemed Metal defaults, which draw dark bars when the field selects
-     * all its text on focus — the "black bars" in the font/size combos (#1339).
+     * Themes an editable combo to the JIPipe look (#1339): one rounded
+     * themed outline around the whole box, a flat (unbeveled) field, a flat
+     * arrow inside the same box, and a themed selection highlight. Without
+     * this, the editable font/size combos fall back to Metal's unthemed
+     * bevels — the dark outline around the field and the separate
+     * full-bordered arrow button the user reported.
      */
-    private static void themeEditableComboSelection(JComboBox<?> combo) {
+    private static void themeEditableComboBox(JComboBox<?> combo) {
+        // Force the (Metal) UI delegate to be installed so the editable field
+        // and the dropdown arrow button exist as child components — they are
+        // created lazily by the UI, not by the JComboBox constructor.
+        combo.getUI();
         Color selBg = ThemeUtils.getCurrentStyle().getSelectionBackground();
         Color selFg = ThemeUtils.getCurrentStyle().getTextForeground();
-        // The combo's editable field: find the underlying JTextComponent (the
-        // Swing combo editor is not a public interface).
+        // One themed rounded outline around the whole combo (the theme sets
+        // ComboBox.background but not ComboBox.border, so Metal's bevel
+        // "EditorBorder" was drawn by the field instead — the dark outline).
+        Border fieldBorder = UIManager.getBorder("TextField.border");
+        combo.setBorder(fieldBorder);
+
+        // The combo's editable field + dropdown arrow (both created by the
+        // Metal UI): flatten them so they sit inside the single rounded box.
         for (Component c : combo.getComponents()) {
             JTextComponent tc = findTextComponent(c);
             if (tc != null) {
+                tc.setBackground(ThemeUtils.getCurrentStyle().getFormBackground());
+                // Drop the Metal bevel, keep the themed field padding.
+                tc.setBorder(BorderFactory.createEmptyBorder(1, 2, 1, 2));
                 tc.setSelectionColor(selBg);
                 tc.setSelectedTextColor(selFg);
+            }
+            if (c instanceof JButton && c.getClass().getName().endsWith("ComboBoxButton")) {
+                // The opaque, beveled MetalComboBoxButton → flat arrow with no
+                // separate button frame.
+                JButton arrow = (JButton) c;
+                arrow.setOpaque(false);
+                arrow.setContentAreaFilled(false);
+                arrow.setBorderPainted(false);
+                arrow.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 4));
+                arrow.setFocusable(false);
             }
         }
         // The dropdown popup's item selection (opaque renderer).
