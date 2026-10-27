@@ -332,7 +332,7 @@ public class UIUtils {
      * editors' "Add"): filled with the theme's success color.
      */
     public static JButton createPrimaryParameterButton(String text, Icon icon, ActionListener action) {
-        return createParameterButton(text, icon, ThemeUtils.getCurrentStyle().getSuccessColor(), action);
+        return createParameterButton(text, icon, ThemeUtils.getCurrentStyle().getPrimaryColor(), action);
     }
 
     /**
