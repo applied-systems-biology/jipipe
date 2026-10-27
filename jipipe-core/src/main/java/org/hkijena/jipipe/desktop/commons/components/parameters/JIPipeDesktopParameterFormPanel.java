@@ -445,27 +445,22 @@ public class JIPipeDesktopParameterFormPanel extends JIPipeDesktopFormPanel impl
 
                 if (node != null) {
                     for (JIPipeParameterCollectionContextAction action : node.getActions()) {
-                        JButton actionButton = new JButton(action.getName(), action.getIcon());
+                        JButton actionButton = action.isHighlighted()
+                                ? UIUtils.createPrimaryParameterButton(action.getName(), action.getIcon(), e -> action.accept(desktopWorkbench))
+                                : UIUtils.createParameterButton(action.getName(), action.getIcon(), e -> action.accept(desktopWorkbench));
                         actionButton.setToolTipText(action.getDescription());
-                        actionButton.addActionListener(e -> action.accept(desktopWorkbench));
-                        UIUtils.setStandardButtonBorder(actionButton);
-                        if (action.isHighlighted()) {
-                            UIUtils.makeButtonHighlightedSuccess(actionButton);
-                        }
                         groupHeaderPanel.addToEndOfTitlePanel(actionButton);
                     }
                 }
 
                 if (isModifiable) {
-                    JButton addButton = new JButton("Edit", JIPipe.RESOURCES.getIcon16("actions/edit.png"));
-                    addButton.addActionListener(e -> {
+                    JButton addButton = UIUtils.createParameterButton("Edit", JIPipe.RESOURCES.getIcon16("actions/edit.png"), e -> {
                         JIPipeDesktopDynamicParameterEditorDialog dialog = new JIPipeDesktopDynamicParameterEditorDialog(SwingUtilities.getWindowAncestor(this), desktopWorkbench, (JIPipeDynamicParameterCollection) parameterCollection);
                         dialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(this));
                         dialog.setModal(true);
                         dialog.setVisible(true);
                     });
                     addButton.setToolTipText("Allows to add/remove parameters in this group");
-                    UIUtils.setStandardButtonBorder(addButton);
                     groupHeaderPanel.addToEndOfTitlePanel(addButton);
                 }
 

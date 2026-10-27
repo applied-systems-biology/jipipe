@@ -61,14 +61,13 @@ public class JIPipeDesktopTaxonomyFunctionRefParameterEditorUI extends JIPipeDes
         setLayout(new BorderLayout());
 
         currentlyDisplayed = new JButton();
+        currentlyDisplayed.setHorizontalAlignment(SwingConstants.LEFT);
         currentlyDisplayed.addActionListener(e -> openPicker());
         UIUtils.setStandardButtonBorder(currentlyDisplayed);
         add(currentlyDisplayed, BorderLayout.CENTER);
 
-        JButton browseButton = new JButton("Browse…", JIPipe.RESOURCES.getIcon16("actions/edit.png"));
-        UIUtils.setStandardButtonBorder(browseButton);
+        JButton browseButton = UIUtils.createParameterButton("Browse", JIPipe.RESOURCES.getIcon16("actions/edit.png"), e -> openPicker());
         browseButton.setToolTipText("Select the taxonomy function");
-        browseButton.addActionListener(e -> openPicker());
         add(browseButton, BorderLayout.EAST);
     }
 

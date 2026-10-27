@@ -40,14 +40,12 @@ public class JIPipeDesktopColorParameterEditorUI extends JIPipeDesktopParameterE
     private void initialize() {
         setLayout(new BorderLayout());
         currentlyDisplayed = new JButton(icon);
+        currentlyDisplayed.setHorizontalAlignment(SwingConstants.LEFT);
         currentlyDisplayed.addActionListener(e -> pickColor());
         UIUtils.setStandardButtonBorder(currentlyDisplayed);
         add(currentlyDisplayed, BorderLayout.CENTER);
 
-        JButton selectButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/edit.png"));
-        UIUtils.setStandardButtonBorder(selectButton);
-        selectButton.setToolTipText("Select color");
-        selectButton.addActionListener(e -> pickColor());
+        JButton selectButton = UIUtils.createParameterIconButton(JIPipe.RESOURCES.getIcon16("actions/edit.png"), "Select color", e -> pickColor());
         add(selectButton, BorderLayout.EAST);
     }
 

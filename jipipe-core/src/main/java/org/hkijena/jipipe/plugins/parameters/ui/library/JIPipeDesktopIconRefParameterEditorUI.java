@@ -62,10 +62,7 @@ public class JIPipeDesktopIconRefParameterEditorUI extends JIPipeDesktopParamete
         UIUtils.setStandardButtonBorder(currentlyDisplayed);
         add(currentlyDisplayed, BorderLayout.CENTER);
 
-        JButton selectButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/edit.png"));
-        UIUtils.setStandardButtonBorder(selectButton);
-        selectButton.setToolTipText("Select icon");
-        selectButton.addActionListener(e -> pickIcon());
+        JButton selectButton = UIUtils.createParameterIconButton(JIPipe.RESOURCES.getIcon16("actions/edit.png"), "Select icon", e -> pickIcon());
         add(selectButton, BorderLayout.EAST);
     }
 

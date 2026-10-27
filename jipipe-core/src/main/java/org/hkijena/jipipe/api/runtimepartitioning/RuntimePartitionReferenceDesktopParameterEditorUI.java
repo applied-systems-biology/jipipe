@@ -58,12 +58,7 @@ public class RuntimePartitionReferenceDesktopParameterEditorUI extends JIPipeDes
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
         add(buttonPanel, BorderLayout.EAST);
 
-        JButton configureButton = new JButton("Configure ...", JIPipe.RESOURCES.getIcon16("actions/configure.png"));
-        configureButton.setBackground(getBackground());
-        configureButton.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0, 1, 0, 0,
-                        UIManager.getColor("Separator.foreground")),
-                BorderFactory.createEmptyBorder(4, 3, 4, 3)));
-        configureButton.setOpaque(true);
+        JButton configureButton = UIUtils.createParameterButton("Configure", JIPipe.RESOURCES.getIcon16("actions/configure.png"), null);
         configureButton.setToolTipText("Edit/select/install partition");
         UIUtils.addReloadablePopupMenuToButton(configureButton, configureMenu, this::reloadConfigMenu);
         buttonPanel.add(configureButton);

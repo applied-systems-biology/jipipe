@@ -46,14 +46,12 @@ public class JIPipeDesktopNodeInfoRefParameterEditorUI extends JIPipeDesktopPara
         setLayout(new BorderLayout());
 
         currentlyDisplayed = new JButton();
+        currentlyDisplayed.setHorizontalAlignment(SwingConstants.LEFT);
         currentlyDisplayed.addActionListener(e -> pickNodeInfo());
         UIUtils.setStandardButtonBorder(currentlyDisplayed);
         add(currentlyDisplayed, BorderLayout.CENTER);
 
-        JButton selectButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/edit.png"));
-        UIUtils.setStandardButtonBorder(selectButton);
-        selectButton.setToolTipText("Select algorithm type");
-        selectButton.addActionListener(e -> pickNodeInfo());
+        JButton selectButton = UIUtils.createParameterIconButton(JIPipe.RESOURCES.getIcon16("actions/edit.png"), "Select algorithm type", e -> pickNodeInfo());
         add(selectButton, BorderLayout.EAST);
 
         initializePicker();

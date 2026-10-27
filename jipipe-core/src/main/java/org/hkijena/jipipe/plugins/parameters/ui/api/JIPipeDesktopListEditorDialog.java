@@ -16,7 +16,7 @@ package org.hkijena.jipipe.plugins.parameters.ui.api;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeListParameter;
-import org.hkijena.jipipe.utils.ThemeUtils;
+import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Disposable;
 
 import javax.swing.*;
@@ -273,14 +273,11 @@ public final class JIPipeDesktopListEditorDialog extends JDialog {
         // Primary action — add an item (the modal edits the shared parameter
         // live, so the new row appears immediately). Green border, matching
         // the inline header's Add (#1339).
-        JButton add = iconButton("actions/list-add.png", "Add item");
-        add.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(ThemeUtils.getCurrentStyle().getSuccessColor(), 1, true),
-                BorderFactory.createEmptyBorder(2, 4, 2, 4)));
-        add.addActionListener(e -> {
+        JButton add = UIUtils.createPrimaryParameterButton("", JIPipe.RESOURCES.getIcon16("actions/list-add.png"), e -> {
             listEditor.addNewEntry();
             rebuildRows();
         });
+        add.setToolTipText("Add item");
         buttonsRow.add(add);
 
         buttonsRow.add(iconButton("actions/edit-select-all.png", "Select all", e -> {
@@ -315,21 +312,11 @@ public final class JIPipeDesktopListEditorDialog extends JDialog {
     }
 
     /**
-     * A flat, 24×24 icon-only toolbar button (the symbol toolbar, #1339) —
-     * replaces the earlier text-only buttons. The tooltip carries the label.
+     * An icon-only parameter action button in the dialog's symbol toolbar
+     * (#1339) — the standardized filled rounded button.
      */
     private static JButton iconButton(String icon, String tooltip, ActionListener action) {
-        JButton b = new JButton(JIPipe.RESOURCES.getIcon16(icon));
-        b.setOpaque(false);
-        b.setContentAreaFilled(false);
-        b.setFocusable(false);
-        b.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 2));
-        b.setToolTipText(tooltip);
-        b.setPreferredSize(new Dimension(24, 24));
-        b.setMinimumSize(new Dimension(24, 24));
-        b.setMaximumSize(new Dimension(24, 24));
-        b.addActionListener(action);
-        return b;
+        return UIUtils.createParameterIconButton(JIPipe.RESOURCES.getIcon16(icon), tooltip, action);
     }
 
     private static JButton iconButton(String icon, String tooltip) {

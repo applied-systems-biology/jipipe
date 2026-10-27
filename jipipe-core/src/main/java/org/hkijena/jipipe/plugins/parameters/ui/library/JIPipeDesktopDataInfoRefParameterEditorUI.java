@@ -52,14 +52,12 @@ public class JIPipeDesktopDataInfoRefParameterEditorUI extends JIPipeDesktopPara
         setLayout(new BorderLayout());
 
         currentlyDisplayed = new JButton();
+        currentlyDisplayed.setHorizontalAlignment(SwingConstants.LEFT);
         currentlyDisplayed.addActionListener(e -> pickDataInfo());
         UIUtils.setStandardButtonBorder(currentlyDisplayed);
         add(currentlyDisplayed, BorderLayout.CENTER);
 
-        JButton selectButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/edit.png"));
-        UIUtils.setStandardButtonBorder(selectButton);
-        selectButton.setToolTipText("Select data type");
-        selectButton.addActionListener(e -> pickDataInfo());
+        JButton selectButton = UIUtils.createParameterIconButton(JIPipe.RESOURCES.getIcon16("actions/edit.png"), "Select data type", e -> pickDataInfo());
         add(selectButton, BorderLayout.EAST);
 
         initializePicker();

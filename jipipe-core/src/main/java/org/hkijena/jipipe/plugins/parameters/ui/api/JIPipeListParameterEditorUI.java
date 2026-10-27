@@ -149,31 +149,18 @@ public abstract class JIPipeListParameterEditorUI extends JIPipeDesktopParameter
         countLabel.setForeground(UIManager.getColor("Label.disabledForeground"));
         controls.add(countLabel);
 
-        JButton addButton = new JButton("Add", JIPipe.RESOURCES.getIcon16("actions/list-add.png"));
-        applyFlatHeaderButton(addButton);
-        // Highlight the primary action (Add) with a success (green) border.
-        addButton.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(ThemeUtils.getCurrentStyle().getSuccessColor(), 1, true),
-                BorderFactory.createEmptyBorder(2, 6, 2, 6)));
-        addButton.addActionListener(e -> addNewEntry());
+        JButton addButton = UIUtils.createPrimaryParameterButton("Add", JIPipe.RESOURCES.getIcon16("actions/list-add.png"), e -> addNewEntry());
         controls.add(addButton);
 
-        JButton editButton = UIUtils.createEditInDialogButton(
-                "Open the list in a dialog with selection, search and bulk operations",
+        JButton editButton = UIUtils.createParameterButton("Edit", JIPipe.RESOURCES.getIcon16("actions/edit.png"),
                 e -> {
                     Window window = SwingUtilities.getWindowAncestor(this);
                     new JIPipeDesktopListEditorDialog(window, this).setVisible(true);
                 });
+        editButton.setToolTipText("Open the list in a dialog with selection, search and bulk operations");
         controls.add(editButton);
 
         return controls;
-    }
-
-    private static void applyFlatHeaderButton(JButton b) {
-        b.setOpaque(false);
-        b.setContentAreaFilled(false);
-        b.setBorder(BorderFactory.createEmptyBorder(0, 4, 0, 4));
-        b.setFocusable(false);
     }
 
     private void updateCountLabel() {
@@ -252,18 +239,15 @@ public abstract class JIPipeListParameterEditorUI extends JIPipeDesktopParameter
         JPanel footer = new JPanel(new FlowLayout(FlowLayout.CENTER, 4, 0));
         footer.setOpaque(false);
         if (pagination.showLoadMore()) {
-            JButton loadMoreButton = new JButton("+" + pagination.loadMoreRemaining() + " more", JIPipe.RESOURCES.getIcon16("actions/list-add.png"));
-            applyFlatHeaderButton(loadMoreButton);
-            loadMoreButton.addActionListener(e -> {
-                pagination.loadMore();
-                reload();
-            });
+            JButton loadMoreButton = UIUtils.createParameterButton("+" + pagination.loadMoreRemaining() + " more",
+                    JIPipe.RESOURCES.getIcon16("actions/list-add.png"), e -> {
+                        pagination.loadMore();
+                        reload();
+                    });
             footer.add(loadMoreButton);
         }
         if (pagination.showShowLess()) {
-            JButton showLessButton = new JButton("Show less");
-            applyFlatHeaderButton(showLessButton);
-            showLessButton.addActionListener(e -> {
+            JButton showLessButton = UIUtils.createParameterButton("Show less", null, e -> {
                 pagination.showLess();
                 reload();
             });

@@ -45,14 +45,12 @@ public class JIPipeDesktopImageJDataImporterRefParameterEditorUI extends JIPipeD
         setLayout(new BorderLayout());
 
         currentlyDisplayed = new JButton();
+        currentlyDisplayed.setHorizontalAlignment(SwingConstants.LEFT);
         currentlyDisplayed.addActionListener(e -> pick());
         UIUtils.setStandardButtonBorder(currentlyDisplayed);
         add(currentlyDisplayed, BorderLayout.CENTER);
 
-        JButton selectButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/edit.png"));
-        UIUtils.setStandardButtonBorder(selectButton);
-        selectButton.setToolTipText("Select algorithm type");
-        selectButton.addActionListener(e -> pick());
+        JButton selectButton = UIUtils.createParameterIconButton(JIPipe.RESOURCES.getIcon16("actions/edit.png"), "Select algorithm type", e -> pick());
         add(selectButton, BorderLayout.EAST);
 
         picker = new JIPipeDesktopImageJDataImporterPicker(getDesktopWorkbench().getWindow());

@@ -48,6 +48,7 @@ public class JIPipeDesktopImageJDataExportOperationRefParameterEditorUI extends 
         setBorder(UIUtils.createControlBorder());
 
         currentlyDisplayed = new JButton();
+        currentlyDisplayed.setHorizontalAlignment(SwingConstants.LEFT);
         currentlyDisplayed.addActionListener(e -> pick());
         UIUtils.setStandardButtonBorder(currentlyDisplayed);
         add(currentlyDisplayed, BorderLayout.CENTER);
@@ -55,16 +56,10 @@ public class JIPipeDesktopImageJDataExportOperationRefParameterEditorUI extends 
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
 
-        JButton selectButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/edit.png"));
-        UIUtils.setStandardButtonBorder(selectButton);
-        selectButton.setToolTipText("Select algorithm type");
-        selectButton.addActionListener(e -> pick());
+        JButton selectButton = UIUtils.createParameterIconButton(JIPipe.RESOURCES.getIcon16("actions/edit.png"), "Select algorithm type", e -> pick());
         buttonPanel.add(selectButton);
 
-        JButton configureButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/configure.png"));
-        UIUtils.setStandardButtonBorder(configureButton);
-        configureButton.setToolTipText("Configure the exporter");
-        configureButton.addActionListener(e -> configure());
+        JButton configureButton = UIUtils.createParameterIconButton(JIPipe.RESOURCES.getIcon16("actions/configure.png"), "Configure the exporter", e -> configure());
         buttonPanel.add(configureButton);
 
         add(buttonPanel, BorderLayout.EAST);

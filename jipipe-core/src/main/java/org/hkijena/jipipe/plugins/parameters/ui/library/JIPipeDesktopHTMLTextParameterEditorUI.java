@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.plugins.parameters.ui.library;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopHTMLEditor;
 import org.hkijena.jipipe.desktop.commons.components.textfield.JIPipeDesktopDocumentChangeListener;
@@ -112,8 +113,7 @@ public class JIPipeDesktopHTMLTextParameterEditorUI extends JIPipeDesktopParamet
      */
     @Override
     public JComponent createHeaderControls() {
-        JButton editButton = UIUtils.createEditInDialogButton(
-                "Edit this HTML text in a dedicated window",
+        JButton editButton = UIUtils.createParameterButton("Edit", JIPipe.RESOURCES.getIcon16("actions/edit.png"),
                 e -> {
                     HTMLText result = UIUtils.getHTMLByDialog(getDesktopWorkbench(), this, "Edit", null,
                             new HTMLText(editor.getHTML()));
@@ -121,6 +121,7 @@ public class JIPipeDesktopHTMLTextParameterEditorUI extends JIPipeDesktopParamet
                         setTextFromDialog(result.getHtml());
                     }
                 });
+        editButton.setToolTipText("Edit this HTML text in a dedicated window");
         // Right-align on the name row (the header cell stretches to full width,
         // so a plain panel would center the button) — consistent with the list
         // editor's header (#1339).

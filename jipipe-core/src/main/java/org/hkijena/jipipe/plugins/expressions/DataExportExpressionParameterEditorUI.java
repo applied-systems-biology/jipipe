@@ -17,11 +17,8 @@ public class DataExportExpressionParameterEditorUI extends JIPipeExpressionDeskt
     }
 
     private void initialize() {
-        JButton setPathButton = new JButton("Build", JIPipe.RESOURCES.getIcon16("actions/wand-magic-sparkles.png"));
-        setPathButton.setBorder(UIUtils.createSuccessBorder());
-        setPathButton.addActionListener(e -> {
-            buildPath();
-        });
+        JButton setPathButton = UIUtils.createParameterButton("Build", JIPipe.RESOURCES.getIcon16("actions/wand-magic-sparkles.png"), e -> buildPath());
+        setPathButton.setToolTipText("Build the export path in the path chooser");
         getEditPanel().add(setPathButton);
     }
 
