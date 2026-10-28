@@ -42,7 +42,7 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.calibration.ScaleBarGen
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
-import org.hkijena.jipipe.plugins.parameters.library.primitives.JIPipeFontParameter;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.JIPipeFontFamilySizeStyleColorParameter;
 import org.hkijena.jipipe.plugins.parameters.library.quantities.OptionalQuantity;
 import org.hkijena.jipipe.plugins.parameters.library.quantities.Quantity;
 
@@ -250,14 +250,14 @@ public class DrawScaleBarRoiAlgorithm extends JIPipeIteratingAlgorithm {
     protected void onDeserialized(JsonNode node, JIPipeValidationReport issues, JIPipeNotificationInbox notifications) {
         if (node.has("text-settings/text-font") || node.has("text-settings/text-font-size")
                 || node.has("text-settings/font-style") || node.has("text-settings/text-color")) {
-            textSettings.setFont(JIPipeFontParameter.composeFromLegacy(node,
+            textSettings.setFont(JIPipeFontFamilySizeStyleColorParameter.fromLegacyKeys(node,
                     "text-settings/text-font", "text-settings/text-font-size",
                     "text-settings/font-style", "text-settings/text-color", 12));
         }
     }
 
     public static class TextSettings extends AbstractJIPipeParameterCollection {
-        private JIPipeFontParameter font = new JIPipeFontParameter();
+        private JIPipeFontFamilySizeStyleColorParameter font = new JIPipeFontFamilySizeStyleColorParameter();
         private JIPipeExpressionParameter horizontalLabel = new JIPipeExpressionParameter("D2S(value, 0) + \" \" + unit");
 
         private JIPipeExpressionParameter verticalLabel = new JIPipeExpressionParameter("D2S(value, 0) + \" \" + unit");
@@ -265,11 +265,11 @@ public class DrawScaleBarRoiAlgorithm extends JIPipeIteratingAlgorithm {
         private boolean hideLabels = false;
 
         public TextSettings() {
-            font.migrateFrom(JIPipeFontParameter.defaultFamily(), 12, Font.BOLD, Color.WHITE);
+            font.migrateFrom(JIPipeFontFamilySizeStyleColorParameter.defaultFamily(), 12, Font.BOLD, Color.WHITE);
         }
 
         public TextSettings(TextSettings other) {
-            this.font = new JIPipeFontParameter(other.font);
+            this.font = new JIPipeFontFamilySizeStyleColorParameter(other.font);
             this.horizontalLabel = new JIPipeExpressionParameter(other.horizontalLabel);
             this.verticalLabel = new JIPipeExpressionParameter(other.verticalLabel);
             this.hideLabels = other.hideLabels;
@@ -316,12 +316,12 @@ public class DrawScaleBarRoiAlgorithm extends JIPipeIteratingAlgorithm {
 
         @SetJIPipeDocumentation(name = "Font", description = "Font (family, size, style and color) of the text")
         @JIPipeParameter("font")
-        public JIPipeFontParameter getFont() {
+        public JIPipeFontFamilySizeStyleColorParameter getFont() {
             return font;
         }
 
         @JIPipeParameter("font")
-        public void setFont(JIPipeFontParameter font) {
+        public void setFont(JIPipeFontFamilySizeStyleColorParameter font) {
             this.font = font;
         }
     }
