@@ -19,7 +19,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
-import org.hkijena.jipipe.plugins.parameters.library.primitives.JIPipeFontParameter;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.JIPipeFontFamilySizeStyleParameter;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -42,9 +42,9 @@ class DrawTextRoiFontMigrationTest {
         JIPipe.ensureInstance();
     }
 
-    private static JIPipeFontParameter compose(int size, int style, String family) {
-        JIPipeFontParameter f = new JIPipeFontParameter();
-        f.migrateFrom(family, size, style, null);
+    private static JIPipeFontFamilySizeStyleParameter compose(int size, int style, String family) {
+        JIPipeFontFamilySizeStyleParameter f = new JIPipeFontFamilySizeStyleParameter();
+        f.migrateFrom(family, size, style);
         return f;
     }
 
@@ -118,8 +118,31 @@ class DrawTextRoiFontMigrationTest {
         json.put("font-style", "Bold");
 
         DrawTextRoiAlgorithm loaded = loadFrom(json);
-        assertEquals(JIPipeFontParameter.defaultFamily(), loaded.getFont().getFamily());
+        assertEquals(JIPipeFontFamilySizeStyleParameter.defaultFamily(), loaded.getFont().getFamily());
         assertEquals(12, loaded.getFont().getSize());
         assertEquals(Font.BOLD, loaded.getFont().getStyle());
+    }
+
+    @Test
+    void migratedFontHasNoColorField() {
+        // These nodes take the text color from the ROI line color, so the
+        // font parameter must not carry (and must not serialize) a color
+        // field (Review Focus #5 / the spec's core contract).
+        DrawTextRoiAlgorithm node = (DrawTextRoiAlgorithm) JIPipe.createNode(DrawTextRoiAlgorithm.class);
+        node.setFont(compose(24, Font.BOLD, "DejaVu Sans"));
+        ObjectNode json = (ObjectNode) serialize(node);
+
+        // Simulate a pre-migration project (split keys), then load it.
+        JsonNode fontNode = json.get("font");
+        json.remove("font");
+        json.put("font-family", fontNode.get("family").textValue());
+        json.put("font-size", fontNode.get("size").asInt());
+        json.put("font-style", legacyStyleName(fontNode.get("style").asInt()));
+
+        DrawTextRoiAlgorithm loaded = loadFrom(json);
+        JsonNode fontJson = JsonUtils.getObjectMapper().readTree(JsonUtils.toJsonString(loaded.getFont()));
+        assertFalse(fontJson.has("color"), "The migrated font must not contain a color field: " + fontJson);
+        assertTrue(fontJson.has("family") && fontJson.has("size") && fontJson.has("style"),
+                "The migrated font must contain family/size/style: " + fontJson);
     }
 }

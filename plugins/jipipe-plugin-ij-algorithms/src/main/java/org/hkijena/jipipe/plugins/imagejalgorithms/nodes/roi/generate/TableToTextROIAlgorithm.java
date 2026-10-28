@@ -37,7 +37,7 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.draw.VisualROIPrope
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJROIUtils;
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
-import org.hkijena.jipipe.plugins.parameters.library.primitives.JIPipeFontParameter;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.JIPipeFontFamilySizeStyleParameter;
 import org.hkijena.jipipe.plugins.parameters.library.roi.InnerMargin;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
@@ -69,7 +69,7 @@ public class TableToTextROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private boolean oneBasedPositions = true;
     private boolean centerX = false;
     private boolean centerY = false;
-    private JIPipeFontParameter font = new JIPipeFontParameter();
+    private JIPipeFontFamilySizeStyleParameter font = new JIPipeFontFamilySizeStyleParameter();
     private double angle = 0;
     private boolean antialiased = true;
     private OptionalColorParameter backgroundColor = new OptionalColorParameter(Color.BLACK, false);
@@ -103,7 +103,7 @@ public class TableToTextROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.columnZ = new TableColumnSourceExpressionParameter(other.columnZ);
         this.columnT = new TableColumnSourceExpressionParameter(other.columnT);
         this.oneBasedPositions = other.oneBasedPositions;
-        this.font = new JIPipeFontParameter(other.font);
+        this.font = new JIPipeFontFamilySizeStyleParameter(other.font);
         this.centerX = other.centerX;
         this.centerY = other.centerY;
         this.angle = other.angle;
@@ -359,12 +359,12 @@ public class TableToTextROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @SetJIPipeDocumentation(name = "Font", description = "The font (family, size, style and color) of the text")
     @JIPipeParameter("font")
-    public JIPipeFontParameter getFont() {
+    public JIPipeFontFamilySizeStyleParameter getFont() {
         return font;
     }
 
     @JIPipeParameter("font")
-    public void setFont(JIPipeFontParameter font) {
+    public void setFont(JIPipeFontFamilySizeStyleParameter font) {
         this.font = font;
     }
 
@@ -400,7 +400,7 @@ public class TableToTextROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void onDeserialized(JsonNode node, JIPipeValidationReport issues, JIPipeNotificationInbox notifications) {
         if (node.has("font-family") || node.has("font-size") || node.has("font-style")) {
-            this.font = JIPipeFontParameter.composeFromLegacy(node, "font-family", "font-size", "font-style", null);
+            this.font = JIPipeFontFamilySizeStyleParameter.fromLegacyKeys(node, "font-family", "font-size", "font-style", null, 12);
         }
     }
 

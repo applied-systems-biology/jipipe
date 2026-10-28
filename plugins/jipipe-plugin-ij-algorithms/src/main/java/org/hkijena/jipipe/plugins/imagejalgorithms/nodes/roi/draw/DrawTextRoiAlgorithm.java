@@ -38,7 +38,7 @@ import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExp
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
-import org.hkijena.jipipe.plugins.parameters.library.primitives.JIPipeFontParameter;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.JIPipeFontFamilySizeStyleParameter;
 import org.hkijena.jipipe.plugins.parameters.library.roi.FixedMargin;
 import org.hkijena.jipipe.plugins.parameters.library.roi.InnerMargin;
 
@@ -61,7 +61,7 @@ public class DrawTextRoiAlgorithm extends JIPipeIteratingAlgorithm {
 
     private FixedMargin location = new FixedMargin();
     private boolean center = false;
-    private JIPipeFontParameter font = new JIPipeFontParameter();
+    private JIPipeFontFamilySizeStyleParameter font = new JIPipeFontFamilySizeStyleParameter();
     private double angle = 0;
 
     private boolean antialiased = true;
@@ -80,7 +80,7 @@ public class DrawTextRoiAlgorithm extends JIPipeIteratingAlgorithm {
         super(other);
         this.roiProperties = new VisualLocationROIProperties(other.roiProperties);
         registerSubParameter(roiProperties);
-        this.font = new JIPipeFontParameter(other.font);
+        this.font = new JIPipeFontFamilySizeStyleParameter(other.font);
         this.location = new FixedMargin(other.location);
         this.center = other.center;
         this.angle = other.angle;
@@ -186,12 +186,12 @@ public class DrawTextRoiAlgorithm extends JIPipeIteratingAlgorithm {
 
     @SetJIPipeDocumentation(name = "Font", description = "The font (family, size, style and color) of the text")
     @JIPipeParameter("font")
-    public JIPipeFontParameter getFont() {
+    public JIPipeFontFamilySizeStyleParameter getFont() {
         return font;
     }
 
     @JIPipeParameter("font")
-    public void setFont(JIPipeFontParameter font) {
+    public void setFont(JIPipeFontFamilySizeStyleParameter font) {
         this.font = font;
     }
 
@@ -261,7 +261,7 @@ public class DrawTextRoiAlgorithm extends JIPipeIteratingAlgorithm {
     @Override
     protected void onDeserialized(JsonNode node, JIPipeValidationReport issues, JIPipeNotificationInbox notifications) {
         if (node.has("font-family") || node.has("font-size") || node.has("font-style")) {
-            this.font = JIPipeFontParameter.composeFromLegacy(node, "font-family", "font-size", "font-style", null);
+            this.font = JIPipeFontFamilySizeStyleParameter.fromLegacyKeys(node, "font-family", "font-size", "font-style", null, 12);
         }
     }
 }
