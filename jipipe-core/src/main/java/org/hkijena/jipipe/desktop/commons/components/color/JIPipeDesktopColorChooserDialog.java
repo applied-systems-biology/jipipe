@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.desktop.commons.components.color;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.commons.theme.ui.JIPipeDesktopModernPillTabbedPaneUI;
 import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.color.ColorSpaces;
@@ -163,6 +164,19 @@ public class JIPipeDesktopColorChooserDialog extends JDialog {
         return hsbWell;
     }
 
+    JComponent getLabWell() {
+        return labWell;
+    }
+
+    /**
+     * The a/b position the LAB marker is drawn at (package-private test seam):
+     * the raw pointer coordinates when a drag happened, otherwise the current
+     * color's own a/b. See {@code ColorChooserDialogLabMarkerTest}.
+     */
+    double[] getLabMarkerAb() {
+        return labWell == null ? null : labWell.markerAb();
+    }
+
     private JComponent buildTop() {
         currentSwatch = new CheckerSwatch(44, 26);
         JPanel header = new JPanel(new BorderLayout());
@@ -181,7 +195,28 @@ public class JIPipeDesktopColorChooserDialog extends JDialog {
         if (ThemeUtils.isUsingModernTheme()) {
             spaceTabs.setUI(new JIPipeDesktopModernPillTabbedPaneUI());
         }
+        // The pill UI inherits Metal's compact tabInsets, so bare addTab() labels
+        // render as small pills. The rest of JIPipe gets comfortable pills from
+        // JIPipeDesktopTabPane's padded tab components (a JPanel with the
+        // standard tab border). Give each tab the same padded component so the
+        // RGB/HSB/LAB pills match "the design as usual" (#1339).
+        for (int i = 0; i < spaceTabs.getTabCount(); i++) {
+            spaceTabs.setTabComponentAt(i, createPaddedTabComponent(spaceTabs.getTitleAt(i)));
+        }
         return spaceTabs;
+    }
+
+    /**
+     * A tab component with the standard JIPipe tab padding (the same border
+     * {@link JIPipeDesktopTabPane} applies to its document tabs), so the pill is
+     * comfortably sized instead of hugging the label text (#1339).
+     */
+    private static JComponent createPaddedTabComponent(String title) {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setOpaque(false);
+        panel.setBorder(BorderFactory.createEmptyBorder(4, 6, 4, 6));
+        panel.add(new JLabel(title), BorderLayout.CENTER);
+        return panel;
     }
 
     private JPanel buildRgbPanel() {
@@ -271,18 +306,22 @@ public class JIPipeDesktopColorChooserDialog extends JDialog {
     }
 
     private JComponent buildButtons() {
-        JButton ok = new JButton("OK");
-        JButton cancel = new JButton("Cancel");
+        // JIPipe dialog convention (#1339): Cancel on the left, OK on the right
+        // (rightmost = confirm), both with the standard dialog icons. The
+        // earlier version had OK on the left, which every other JIPipe dialog
+        // reverses.
+        JButton cancel = new JButton("Cancel", JIPipe.RESOURCES.getIcon16("actions/dialog-cancel.png"));
+        cancel.addActionListener(e -> setVisible(false));
+        JButton ok = new JButton("OK", JIPipe.RESOURCES.getIcon16("actions/dialog-ok.png"));
         ok.addActionListener(e -> {
             result = currentColor;
             JIPipeColorHistory.get().remember(currentColor);
             setVisible(false);
         });
-        cancel.addActionListener(e -> setVisible(false));
         JPanel p = new JPanel(new FlowLayout(FlowLayout.RIGHT, 6, 0));
         p.setOpaque(false);
-        p.add(ok);
         p.add(cancel);
+        p.add(ok);
         return p;
     }
 
@@ -291,8 +330,15 @@ public class JIPipeDesktopColorChooserDialog extends JDialog {
     // ------------------------------------------------------------------
 
     private JPanel buildPalettes() {
-        JPanel p = new JPanel();
+        // A viewport-width-tracking panel: its preferred width follows the
+        // scroll viewport, so the FlowLayout rows below actually WRAP to a new
+        // line instead of overflowing to the right and being clipped (#1339).
+        // (A plain BoxLayout/FlowLayout panel reports a preferred width as wide
+        // as its longest row, which the scroll pane then clips.)
+        JPanel p = new ScrollablePalettePanel();
         p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
+        p.setOpaque(true);
+        p.setBackground(UIManager.getColor("Panel.background"));
         // Items 5/7: the 16 pure (4-bit) colors and the GNOME HIG palette
         // render as ONE untitled block — no section titles, a single 8px gap
         // between the two groups.
@@ -319,6 +365,40 @@ public class JIPipeDesktopColorChooserDialog extends JDialog {
         fillSavedRow();
         p.add(savedRow);
         return p;
+    }
+
+    /**
+     * A palette container whose preferred/minimum width follow the enclosing
+     * scroll viewport (#1339). Without this, the swatch rows keep their
+     * unwrapped preferred width and the scroll pane clips them at the right
+     * edge instead of wrapping them onto the next line.
+     */
+    private class ScrollablePalettePanel extends JPanel implements Scrollable {
+        @Override
+        public Dimension getPreferredScrollableViewportSize() {
+            return new Dimension(0, 200);
+        }
+
+        @Override
+        public int getScrollableUnitIncrement(Rectangle visibleRect, int orientation, int direction) {
+            return 16;
+        }
+
+        @Override
+        public int getScrollableBlockIncrement(Rectangle visibleRect, int orientation, int direction) {
+            return 80;
+        }
+
+        @Override
+        public boolean getScrollableTracksViewportWidth() {
+            // Force the width to the viewport width → the FlowLayout rows wrap.
+            return true;
+        }
+
+        @Override
+        public boolean getScrollableTracksViewportHeight() {
+            return false;
+        }
     }
 
     private void fillSavedRow() {
@@ -443,16 +523,18 @@ public class JIPipeDesktopColorChooserDialog extends JDialog {
             hueRail.setValue(hsb[0]);
             satRail.setValue(hsb[1]);
             briRail.setValue(hsb[2]);
-            hueRail.repaintGradient(i -> ColorSpaces.fromHsb(i, 100, 100));
-            satRail.repaintGradient(i -> ColorSpaces.fromHsb(hsb[0], i, 100));
-            briRail.repaintGradient(i -> ColorSpaces.fromHsb(hsb[0], hsb[1], i));
+            // Gradient keys: only rebuild a rail's image when its inputs changed
+            // (see updateGradient — #1339 lag fix).
+            hueRail.updateGradient(null, i -> ColorSpaces.fromHsb(i, 100, 100));
+            satRail.updateGradient(new double[]{hsb[0]}, i -> ColorSpaces.fromHsb(hsb[0], i, 100));
+            briRail.updateGradient(new double[]{hsb[0], hsb[1]}, i -> ColorSpaces.fromHsb(hsb[0], hsb[1], i));
 
             double[] lab = ColorSpaces.toLab(currentColor);
             lRail.setValue(lab[0]);
             aRail.setValue(lab[1]);
             blueRailLab.setValue(lab[2]);
-            aRail.repaintGradient(i -> ColorSpaces.fromLab(lab[0], i, lab[2]));
-            blueRailLab.repaintGradient(i -> ColorSpaces.fromLab(lab[0], lab[1], i));
+            aRail.updateGradient(new double[]{lab[0], lab[2]}, i -> ColorSpaces.fromLab(lab[0], i, lab[2]));
+            blueRailLab.updateGradient(new double[]{lab[0], lab[1]}, i -> ColorSpaces.fromLab(lab[0], lab[1], i));
 
             hexField.setText(ColorSpaces.toHex(currentColor));
             if (hsbWell != null) {
@@ -709,6 +791,23 @@ public class JIPipeDesktopColorChooserDialog extends JDialog {
             repaint();
         }
 
+        /**
+         * Like {@link #repaintGradient} but skips the work when the controlling
+         * inputs are unchanged (#1339). During an a/b drag on the LAB well only
+         * one channel changes, so the other rails keep their cached gradient
+         * image instead of rebuilding a {@link BufferedImage} per frame — the
+         * main cause of the drag lag.
+         */
+        void updateGradient(double[] key, IntFunction<Color> newGradient) {
+            if (key != null && java.util.Arrays.equals(key, gradientKey)) {
+                return;
+            }
+            gradientKey = key != null ? key.clone() : null;
+            repaintGradient(newGradient);
+        }
+
+        private double[] gradientKey;
+
         private void ensureImage() {
             if (!gradientDirty) {
                 return;
@@ -837,6 +936,13 @@ public class JIPipeDesktopColorChooserDialog extends JDialog {
     private class LabWell extends JComponent {
         private BufferedImage bg;
         private double bgL = Double.NaN;
+        // The last pointer position in a/b, in *unclamped* LAB coordinates. The
+        // marker is drawn here (not from toLab(currentColor)) so it follows the
+        // cursor even when the picked color is out of the sRGB gamut and
+        // ColorSpaces.fromLab clamped it — the circle no longer "sticks" at the
+        // clamped position (#1339).
+        private double pointerA = Double.NaN;
+        private double pointerB = Double.NaN;
 
         LabWell() {
             setPreferredSize(new Dimension(160, 160));
@@ -859,8 +965,19 @@ public class JIPipeDesktopColorChooserDialog extends JDialog {
         private void update(MouseEvent e) {
             double a = (e.getX() / (double) Math.max(1, getWidth()) * 2 - 1) * 128;
             double b = (1 - e.getY() / (double) Math.max(1, getHeight()) * 2 + 1) * 128;
+            pointerA = a;
+            pointerB = b;
             double L = ColorSpaces.toLab(currentColor)[0];
             setColor(ColorSpaces.fromLab(L, a, b));
+        }
+
+        /** @return the a/b the marker is drawn at (pointer position or color's own). */
+        double[] markerAb() {
+            if (Double.isNaN(pointerA) || Double.isNaN(pointerB)) {
+                double[] lab = ColorSpaces.toLab(currentColor);
+                return new double[]{lab[1], lab[2]};
+            }
+            return new double[]{pointerA, pointerB};
         }
 
         @Override
@@ -883,10 +1000,14 @@ public class JIPipeDesktopColorChooserDialog extends JDialog {
             g2.drawString("+a", w - 16, 10);
             g2.drawString("+b", 2, 10);
             g2.drawString("-b", w - 16, h - 3);
-            // marker
+            // marker: prefer the raw pointer position (follows the cursor even
+            // when the color was gamut-clamped); fall back to the color's own
+            // a/b when there is no pointer yet (e.g. externally-set color).
             double[] lab = ColorSpaces.toLab(currentColor);
-            int x = (int) ((lab[1] + 128) / 256 * (w - 1));
-            int y = (int) ((128 - lab[2]) / 256 * (h - 1));
+            double a = Double.isNaN(pointerA) ? lab[1] : pointerA;
+            double b = Double.isNaN(pointerB) ? lab[2] : pointerB;
+            int x = (int) ((a + 128) / 256 * (w - 1));
+            int y = (int) ((128 - b) / 256 * (h - 1));
             g2.setColor(Color.WHITE);
             g2.drawOval(x - 5, y - 5, 10, 10);
             g2.setColor(Color.BLACK);
