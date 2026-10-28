@@ -46,16 +46,26 @@ code-derived).
 | `JIPipeFontFamilySizeParameter` | family, size | `jipipe:font-family-size` |
 | `JIPipeFontFamilySizeStyleParameter` | family, size, style | `jipipe:font-family-size-style` |
 | `JIPipeFontFamilySizeColorParameter` | family, size, color | `jipipe:font-family-size-color` |
-| `JIPipeFontFamilySizeStyleColorParameter` | family, size, style, color | `jipipe:font` (existing ID) |
+| `JIPipeFontFamilySizeStyleColorParameter` | family, size, style, color | `jipipe:font-family-size-style-color` |
 
 **Naming rationale:** the base `FontFamilySize` makes explicit that the *family* is
 always part of the value (a bare `FontSizeParameter` would read as "a font size
 number"); `Style` / `Color` are appended only for the combinations that carry
-them. The full combination is the type already registered under `jipipe:font` in
-this (unmerged) branch, so it **keeps that ID** (the class is renamed
-`JIPipeFontParameter` → `JIPipeFontFamilySizeStyleColorParameter`; a pure
-refactor — JIPipe resolves parameter types by ID, not class name, so saved
-projects are unaffected). The other three are new classes with the new IDs above.
+them. **All four registration IDs are new and consistent** — the branch is
+unmerged, so the earlier development ID `jipipe:font` is simply replaced (user
+ruling). The existing class is renamed `JIPipeFontParameter` →
+`JIPipeFontFamilySizeStyleColorParameter`.
+
+**Persistence note:** a parameter access is persisted as `field-class-id` = the
+parameter type's **registration ID** (`JIPipeMutableParameterAccess`), and on load
+resolved via `JIPipe.getParameterTypes().getInfoById(...)` — which throws
+`Unknown parameter type ID` for an id that no longer exists. So changing the ID
+means projects saved *during this branch's development* (carrying
+`field-class-id: "jipipe:font"`) fail to load until re-saved. Accepted consequence
+(branch unmerged, per user ruling). **Pre-#1339 legacy projects are unaffected**:
+they contain no `label-font`/`font` access at all — only the split legacy keys
+(`label-font-family`, `label-size`, …), which the per-node `onDeserialized`
+migration reads directly from the raw JSON.
 
 **Common abstraction** so the adaptive editor and `toFont()` callers depend on one
 type:
@@ -174,8 +184,9 @@ The branch is unmerged, so the only real-world projects are **pre-#1339 legacy**
 
 **Modified (jipipe-core):**
 - `JIPipeDesktopFontParameterEditorUI` → generic adaptive base + 4 thin subclasses
-- `StandardParametersPlugin` → register the 4 types (keep `jipipe:font`; add the 3
-  new IDs)
+- `StandardParametersPlugin` → register the 4 types under the 4 new IDs
+  (`jipipe:font-family-size[-style][-color]`); the development-only `jipipe:font`
+  registration is replaced
 - `DefaultTextBoxGraphCanvasNote` → remap ×2 to the full type + migration
 - tests: `JIPipeFontParameterTest` / `FontParameterMigrationTest` follow the rename;
   round-trip tests added for the 3 new classes
@@ -208,13 +219,14 @@ The branch is unmerged, so the only real-world projects are **pre-#1339 legacy**
 
 ## Open decisions (confirm before implementation)
 
-1. **Rename** `JIPipeFontParameter` → `JIPipeFontFamilySizeStyleColorParameter` while
-   keeping the `jipipe:font` ID. (Recommend yes — explicit naming as requested; the
-   ID keeps saved projects loading. Alternative: keep the class name, add only the
-   3 lighter types.)
-2. **`JIPipeFontFamilySizeParameter` (bare font)** and **`JIPipeFontFamilySizeColorParameter`** are
-   defined but unused by any node today. Include both to complete the 4-combination
-   set (recommend yes, per "all combinations"), or defer `font` (bare) only?
+1. ~~Rename + ID~~ **Resolved:** rename `JIPipeFontParameter` →
+   `JIPipeFontFamilySizeStyleColorParameter` and move it to the new
+   `jipipe:font-family-size-style-color` ID (the development `jipipe:font` ID is
+   dropped — branch unmerged, per user ruling).
+2. **`JIPipeFontFamilySizeParameter` (bare font)** and
+   **`JIPipeFontFamilySizeColorParameter`** are defined but unused by any node
+   today. Include both to complete the 4-combination set (recommend yes, per "all
+   combinations"), or defer `font` (bare) only?
 3. **`RoiToRGBAlgorithm` fresh-node default** = label follows the ROI line color
    (new behavior), overridable by the new `labelColor`. (This is the whole point;
    flagged because it changes fresh-node output vs. the current white default.)
