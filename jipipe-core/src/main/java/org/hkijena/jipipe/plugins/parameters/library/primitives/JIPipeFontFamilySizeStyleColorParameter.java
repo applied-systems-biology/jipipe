@@ -16,7 +16,6 @@ package org.hkijena.jipipe.plugins.parameters.library.primitives;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.databind.JsonNode;
-import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -26,26 +25,52 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * A dedicated font parameter (#1339): family + size + style + color in one
- * value, so a text-rendering node exposes a single coherent "font" instead of
- * three separate parameters.
+ * The full font parameter (#1339, Task 2): family + size + style + color in
+ * one value, so a text-rendering node exposes a single coherent "font" instead
+ * of three separate parameters. The heaviest member of the font family — it
+ * carries every capability, so the adaptive editor shows all four sections for
+ * it.
  * <p>
  * All four fields are always present (never null) — missing JSON keys fall
  * back to defaults on deserialization, which keeps old projects (that stored
  * the fields separately, if at all) loadable. The {@code Color} field uses the
  * mapper's standard hex-string codec, like the {@code color} parameter type.
+ * <p>
+ * The family's shared statics ({@link #defaultFamily()},
+ * {@link #styleNameToFlags(String)}, {@link #legacyColor(JsonNode)}) live in
+ * {@link JIPipeFontFamilySizeStyleParameter}; this class delegates to them
+ * (the earlier duplicated copies were removed in Task 2).
  */
-public class JIPipeFontParameter {
+public class JIPipeFontFamilySizeStyleColorParameter implements JIPipeFontValue, JIPipeFontStyleCapable, JIPipeFontColorCapable {
 
     /**
-     * @return the default font family — the logical "Dialog" family resolved
-     * to its concrete name (stable per platform, valid for {@link Font}).
+     * @return the default font family — the family's shared static, owned by
+     * {@link JIPipeFontFamilySizeStyleParameter} (Task 2 removed the duplicated
+     * logic here in favor of delegation).
      */
     public static String defaultFamily() {
-        return new Font("Dialog", Font.PLAIN, 12).getFamily();
+        return JIPipeFontFamilySizeStyleParameter.defaultFamily();
     }
 
-    private String family = defaultFamily();
+    /**
+     * Maps a legacy font-style enum name to its {@link Font} bit flags — the
+     * family's shared static, owned by {@link JIPipeFontFamilySizeStyleParameter}
+     * (delegated since Task 2).
+     */
+    public static int styleNameToFlags(String styleName) {
+        return JIPipeFontFamilySizeStyleParameter.styleNameToFlags(styleName);
+    }
+
+    /**
+     * Reads a legacy hex/OptionalColor node into a {@link Color} — the family's
+     * shared static, owned by {@link JIPipeFontFamilySizeStyleParameter}
+     * (delegated since Task 2).
+     */
+    public static Color legacyColor(JsonNode colorNode) {
+        return JIPipeFontFamilySizeStyleParameter.legacyColor(colorNode);
+    }
+
+    private String family = JIPipeFontFamilySizeStyleParameter.defaultFamily();
     private int size = 12;
     private int style = Font.PLAIN;
     private Color color = Color.WHITE;
@@ -53,13 +78,13 @@ public class JIPipeFontParameter {
     /**
      * Creates a new instance with the default font.
      */
-    public JIPipeFontParameter() {
+    public JIPipeFontFamilySizeStyleColorParameter() {
     }
 
     /**
      * Copies another font parameter.
      */
-    public JIPipeFontParameter(JIPipeFontParameter other) {
+    public JIPipeFontFamilySizeStyleColorParameter(JIPipeFontFamilySizeStyleColorParameter other) {
         this.family = other.family;
         this.size = other.size;
         this.style = other.style;
@@ -71,88 +96,18 @@ public class JIPipeFontParameter {
      * a node's former separate family/size/style/color parameters into one.
      */
     public void migrateFrom(String family, int size, int style, Color color) {
-        this.family = family != null ? family : defaultFamily();
+        this.family = family != null ? family : JIPipeFontFamilySizeStyleParameter.defaultFamily();
         this.size = size;
         this.style = style;
         this.color = color != null ? color : Color.WHITE;
     }
 
-    // ------------------------------------------------------------------
-    // Legacy migration helpers (#1339, Task 10)
-    // ------------------------------------------------------------------
-
-    /**
-     * The legacy font-style enum name used by the old split parameters
-     * (e.g. {@code "Bold"}), mapped to its {@link Font} bit flags.
-     *
-     * @param styleName the legacy enum name (nullable)
-     * @return the style flags, or {@link Font#PLAIN} when absent/unrecognized
-     */
-    public static int styleNameToFlags(String styleName) {
-        if (styleName == null) {
-            return Font.PLAIN;
-        }
-        switch (styleName) {
-            case "Bold":
-                return Font.BOLD;
-            case "Italic":
-                return Font.ITALIC;
-            case "BoldItalic":
-                return Font.BOLD + Font.ITALIC;
-            default:
-                return Font.PLAIN;
-        }
-    }
-
-    /**
-     * Reads a legacy hex color value (a textual JSON node like
-     * {@code "#FF0000"}) into a {@link Color}, or {@code null} when absent.
-     */
-    public static Color legacyColor(JsonNode colorNode) {
-        if (colorNode == null || colorNode.isMissingNode() || colorNode.isNull()) {
-            return null;
-        }
-        try {
-            if (colorNode.isTextual()) {
-                return JsonUtils.getObjectMapper().readerFor(Color.class).readValue(colorNode);
-            }
-            // A legacy OptionalColorParameter serializes as {content, enabled}.
-            if (colorNode.isObject() && colorNode.has("content")) {
-                return JsonUtils.getObjectMapper().readerFor(Color.class).readValue(colorNode.get("content"));
-            }
-        } catch (Exception e) {
-            return null;
-        }
-        return null;
-    }
-
     /**
      * Composes the legacy split font fields (from a raw node/collection JSON
-     * object) into a single {@link JIPipeFontParameter} for a given set of
-     * parameter keys. Absent keys fall back to defaults (family, 12, plain,
-     * white). This is the idempotent migration path: a node's
-     * {@code onDeserialized} calls this when the legacy keys are still present
-     * in the loaded JSON (a project saved before the migration).
-     *
-     * @param json       the raw JSON object that holds the parameters
-     * @param familyKey  the legacy family key (a textual node, e.g. {@code "font-family"})
-     * @param sizeKey    the legacy size key (a number, e.g. {@code "font-size"})
-     * @param styleKey   the legacy style key (a textual node, e.g. {@code "font-style"}); may be null
-     * @param colorKey   the legacy color key (a hex/OptionalColor node); may be null
-     * @return the composed font parameter
-     */
-    public static JIPipeFontParameter composeFromLegacy(JsonNode json,
-                                                        String familyKey, String sizeKey,
-                                                        String styleKey, String colorKey) {
-        return composeFromLegacy(json, familyKey, sizeKey, styleKey, colorKey, 12);
-    }
-
-    /**
-     * Composes the legacy split font fields (from a raw node/collection JSON
-     * object) into a single {@link JIPipeFontParameter} for a given set of
-     * parameter keys. Absent keys fall back to defaults (family,
-     * {@code defaultSize}, plain, white). This is the idempotent migration
-     * path: a node's {@code onDeserialized} (or a nested collection's
+     * object) into a single {@link JIPipeFontFamilySizeStyleColorParameter}
+     * for a given set of parameter keys. Absent keys fall back to defaults
+     * (family, {@code defaultSize}, plain, white). This is the idempotent
+     * migration path: a node's {@code onDeserialized} (or a nested collection's
      * {@code fromJson}) calls this when the legacy keys are still present in
      * the loaded JSON (a project saved before the migration).
      *
@@ -164,11 +119,11 @@ public class JIPipeFontParameter {
      * @param defaultSize the size to use when {@code sizeKey} is absent
      * @return the composed font parameter
      */
-    public static JIPipeFontParameter composeFromLegacy(JsonNode json,
-                                                        String familyKey, String sizeKey,
-                                                        String styleKey, String colorKey,
-                                                        int defaultSize) {
-        JIPipeFontParameter result = new JIPipeFontParameter();
+    public static JIPipeFontFamilySizeStyleColorParameter fromLegacyKeys(JsonNode json,
+                                                                         String familyKey, String sizeKey,
+                                                                         String styleKey, String colorKey,
+                                                                         int defaultSize) {
+        JIPipeFontFamilySizeStyleColorParameter result = new JIPipeFontFamilySizeStyleColorParameter();
         String family = null;
         int size = defaultSize;
         int style = Font.PLAIN;
@@ -181,10 +136,10 @@ public class JIPipeFontParameter {
             size = json.get(sizeKey).asInt(defaultSize);
         }
         if (styleKey != null && json.has(styleKey) && json.get(styleKey).isTextual()) {
-            style = styleNameToFlags(json.get(styleKey).textValue());
+            style = JIPipeFontFamilySizeStyleParameter.styleNameToFlags(json.get(styleKey).textValue());
         }
         if (colorKey != null && json.has(colorKey)) {
-            Color c = legacyColor(json.get(colorKey));
+            Color c = JIPipeFontFamilySizeStyleParameter.legacyColor(json.get(colorKey));
             if (c != null) {
                 color = c;
             }
@@ -200,9 +155,9 @@ public class JIPipeFontParameter {
     public Font toFont() {
         String f = family;
         if (f == null) {
-            f = defaultFamily();
+            f = JIPipeFontFamilySizeStyleParameter.defaultFamily();
         } else if (!availableFamilies().contains(f)) {
-            f = defaultFamily();
+            f = JIPipeFontFamilySizeStyleParameter.defaultFamily();
         }
         return new Font(f, style, size);
     }
@@ -215,8 +170,9 @@ public class JIPipeFontParameter {
         }
     }
 
-    public JIPipeFontParameter copy() {
-        return new JIPipeFontParameter(this);
+    @Override
+    public JIPipeFontValue copy() {
+        return new JIPipeFontFamilySizeStyleColorParameter(this);
     }
 
     @JsonGetter("family")
@@ -227,7 +183,7 @@ public class JIPipeFontParameter {
     /** @param family the font family name (null resets to the default family) */
     @JsonSetter("family")
     public void setFamily(String family) {
-        this.family = family != null ? family : defaultFamily();
+        this.family = family != null ? family : JIPipeFontFamilySizeStyleParameter.defaultFamily();
     }
 
     @JsonGetter("size")
@@ -245,6 +201,7 @@ public class JIPipeFontParameter {
         return style;
     }
 
+    /** @param style the {@link Font} style bit flags */
     @JsonSetter("style")
     public void setStyle(int style) {
         this.style = style;
@@ -269,7 +226,7 @@ public class JIPipeFontParameter {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        JIPipeFontParameter that = (JIPipeFontParameter) o;
+        JIPipeFontFamilySizeStyleColorParameter that = (JIPipeFontFamilySizeStyleColorParameter) o;
         return size == that.size
                 && style == that.style
                 && Objects.equals(family, that.family)

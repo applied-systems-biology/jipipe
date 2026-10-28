@@ -35,7 +35,7 @@ import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.matrix.Matrix2DFloat;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.DynamicStringEnumParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.DynamicStringSetParameter;
-import org.hkijena.jipipe.plugins.parameters.library.primitives.JIPipeFontParameter;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.JIPipeFontFamilySizeStyleColorParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.NumberParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringOrDouble;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.IntegerList;
@@ -51,7 +51,7 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.api.runtimepartitioning.RuntimePartitionReferenceParameter;
 import org.hkijena.jipipe.plugins.parameters.ui.api.JIPipeDesktopListEditorDialog;
 import org.hkijena.jipipe.plugins.parameters.ui.api.JIPipeListParameterEditorUI;
-import org.hkijena.jipipe.plugins.parameters.ui.library.JIPipeDesktopFontParameterEditorUI;
+import org.hkijena.jipipe.plugins.parameters.ui.library.JIPipeDesktopFontFamilySizeStyleColorParameterEditorUI;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeExtensionApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeGeneralUIApplicationSettings;
 import org.hkijena.jipipe.utils.ThemeUtils;
@@ -98,7 +98,7 @@ public class ScreenshotUiCommand {
         SHOWCASE.put("panel-enum-box", "ij1-set-lut-from-color-map");
         // #1339 font migration: the split font rows are now one "Font" preview row.
         SHOWCASE.put("panel-draw-text-roi", "ij1-roi-draw-text");
-        // Synthetic: a parameter collection with one JIPipeFontParameter (the
+        // Synthetic: a parameter collection with one JIPipeFontFamilySizeStyleColorParameter (the
         // font editor has no node consumer until the Task 10 migration).
         SHOWCASE.put("panel-font", "<font-parameter>");
         // Synthetic: a populated file list (8 items > page size 5) so the
@@ -222,7 +222,7 @@ public class ScreenshotUiCommand {
             String nodeId = e.getValue();
             JIPipeDesktopParameterFormPanel panel;
             if ("<font-parameter>".equals(nodeId)) {
-                // Synthetic: one JIPipeFontParameter (no node uses it yet — the
+                // Synthetic: one JIPipeFontFamilySizeStyleColorParameter (no node uses it yet — the
                 // migration lands in Task 10).
                 FontParameterShowcase root = new FontParameterShowcase();
                 panel = new JIPipeDesktopParameterFormPanel(workbench, root, null, PANEL_FLAGS);
@@ -272,17 +272,17 @@ public class ScreenshotUiCommand {
     }
 
     /**
-     * A minimal parameter collection exposing a single {@link JIPipeFontParameter}
+     * A minimal parameter collection exposing a single {@link JIPipeFontFamilySizeStyleColorParameter}
      * (harness-only, #1339 — no node uses the font parameter until the Task 10
      * migration). {@link JIPipeDynamicParameterCollection} instantiates the
      * registered type automatically.
      */
     private static class FontParameterShowcase extends JIPipeDynamicParameterCollection {
         FontParameterShowcase() {
-            addParameter("font", JIPipeFontParameter.class, "Label font", "A font with family, size, style and text color");
+            addParameter("font", JIPipeFontFamilySizeStyleColorParameter.class, "Label font", "A font with family, size, style and text color");
             // #1339 item 7: a non-default size proves the preview's trailing
             // number tracks the parameter's size (not a hardcoded "12").
-            JIPipeFontParameter font = getValue("font", JIPipeFontParameter.class);
+            JIPipeFontFamilySizeStyleColorParameter font = getValue("font", JIPipeFontFamilySizeStyleColorParameter.class);
             font.setSize(24);
         }
     }
@@ -529,8 +529,8 @@ public class ScreenshotUiCommand {
     private static void renderFontPopout(JIPipeDesktopWorkbench workbench, Path outDir, List<String> only, List<String> rendered) throws Exception {
         if (!only.isEmpty() && !only.contains("popup-font"))
             return;
-        JIPipeDesktopFontParameterEditorUI fontEditor = (JIPipeDesktopFontParameterEditorUI)
-                JIPipe.getParameterTypes().createEditorInstanceWithEmbeddedValue(workbench, JIPipeFontParameter.class);
+        JIPipeDesktopFontFamilySizeStyleColorParameterEditorUI fontEditor = (JIPipeDesktopFontFamilySizeStyleColorParameterEditorUI)
+                JIPipe.getParameterTypes().createEditorInstanceWithEmbeddedValue(workbench, JIPipeFontFamilySizeStyleColorParameter.class);
         JComponent content = (JComponent) fontEditor.getPopoutContent();
         int width = Math.max(320, content.getPreferredSize().width);
         ScreenshotRenderer.renderComponent(content, width, outDir.resolve("popup-font.png"));

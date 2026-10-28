@@ -18,7 +18,9 @@ import org.hkijena.jipipe.desktop.commons.components.color.JIPipeColorHistory;
 import org.hkijena.jipipe.desktop.commons.components.color.NamedColor;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.selection.JIPipeDesktopRichSelectionBox;
-import org.hkijena.jipipe.plugins.parameters.library.primitives.JIPipeFontParameter;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.JIPipeFontColorCapable;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.JIPipeFontStyleCapable;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.JIPipeFontValue;
 import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -31,14 +33,26 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 /**
- * Editor for the dedicated {@link JIPipeFontParameter} (#1339): a compact
+ * The adaptive editor for the font parameter family (#1339, Task 2): a compact
  * inline preview row (sample text rendered in the current font) that opens a
- * popout with family (searchable box), size, style and an <em>embedded</em>
- * color section (swatch, pure colors, recents, Custom…) — no popup-over-popup.
- * Custom color selection hides the popout first, then shows the modal color
- * dialog; the value is applied live and the inline preview updates on return.
+ * popout with family (searchable box), size, and — <em>only when the concrete
+ * value carries that capability</em> — a style section and an <em>embedded</em>
+ * color section (swatch, pure colors, recents, Custom…). Custom color selection
+ * hides the popout first, then shows the modal color dialog; the value is
+ * applied live and the inline preview updates on return.
+ * <p>
+ * The sections are gated by {@code instanceof} on {@link JIPipeFontStyleCapable}
+ * (Style) and {@link JIPipeFontColorCapable} (Color), so the same base serves all
+ * four family types. The full type
+ * ({@link org.hkijena.jipipe.plugins.parameters.library.primitives.JIPipeFontFamilySizeStyleColorParameter})
+ * shows all four rows; the lighter members omit the sections for fields they
+ * don't carry. Thin one-constructor subclasses register one per type.
+ * <p>
+ * The {@code public JComponent getPopoutContent()} seam is preserved on the base
+ * (and therefore on the full-type thin subclass) so the screenshot harness
+ * (the #1339 VLM loop) can render the popout's content directly.
  */
-public class JIPipeDesktopFontParameterEditorUI extends JIPipeDesktopParameterEditorUI<JIPipeFontParameter> {
+public class JIPipeDesktopFontParameterEditorUI<T extends JIPipeFontValue> extends JIPipeDesktopParameterEditorUI<T> {
 
     /**
      * The sample text rendered in the preview: the trailing number is the font's
@@ -55,14 +69,14 @@ public class JIPipeDesktopFontParameterEditorUI extends JIPipeDesktopParameterEd
     private FontPreviewControl preview;
     private JPopupMenu popup;
 
-    public JIPipeDesktopFontParameterEditorUI(InitializationParameters parameters) {
-        super(JIPipeFontParameter.class, parameters);
+    protected JIPipeDesktopFontParameterEditorUI(Class<T> clazz, InitializationParameters parameters) {
+        super(clazz, parameters);
         initialize();
     }
 
     @Override
     public void reload() {
-        JIPipeFontParameter parameter = getParameter();
+        JIPipeFontValue parameter = getParameter();
         preview.updateFrom(parameter);
         // The popout's own preview band must live-update with the inline one
         // (family/size/style/color apply while the popout is open — #1339).
@@ -115,14 +129,23 @@ public class JIPipeDesktopFontParameterEditorUI extends JIPipeDesktopParameterEd
      * panel can. The form panel's GridBagLayout sizes the label column to the
      * widest label under the active theme font, which keeps all controls
      * left-aligned to one shared inset (spec §5).
+     * <p>
+     * The Style and Color rows are adaptive: they appear only when the concrete
+     * font value carries that capability (Task 2, Review Focus #5).
      */
     public JComponent getPopoutContent() {
         JIPipeDesktopFormPanel form = new JIPipeDesktopFormPanel(null, JIPipeDesktopFormPanel.NONE);
         form.addToForm(buildPreviewBand(), new JLabel(""));
         form.addToForm(buildFamilyBox(), new JLabel("Family"));
         form.addToForm(buildSizeSpinner(), new JLabel("Size"));
-        form.addToForm(buildStyleToggles(), new JLabel("Style"));
-        form.addToForm(buildColorSection(), new JLabel("Color"));
+        boolean hasStyle = getParameter() instanceof JIPipeFontStyleCapable;
+        boolean hasColor = getParameter() instanceof JIPipeFontColorCapable;
+        if (hasStyle) {
+            form.addToForm(buildStyleToggles(), new JLabel("Style"));
+        }
+        if (hasColor) {
+            form.addToForm(buildColorSection(), new JLabel("Color"));
+        }
         JPanel wrap = new JPanel(new BorderLayout());
         wrap.add(form, BorderLayout.NORTH);
         return wrap;
@@ -138,7 +161,7 @@ public class JIPipeDesktopFontParameterEditorUI extends JIPipeDesktopParameterEd
     }
 
     private JComponent buildFamilyBox() {
-        JIPipeFontParameter parameter = getParameter();
+        JIPipeFontValue parameter = getParameter();
         List<String> baseFamilies = fontFamilies();
         // Include a family that is not in the system list (e.g. from an old
         // project) so the current value is selectable.
@@ -194,7 +217,7 @@ public class JIPipeDesktopFontParameterEditorUI extends JIPipeDesktopParameterEd
     }
 
     private JComponent buildSizeSpinner() {
-        JIPipeFontParameter parameter = getParameter();
+        JIPipeFontValue parameter = getParameter();
         JSpinner spinner = new JSpinner(new SpinnerNumberModel(parameter.getSize(), 1, 999, 1));
         spinner.addChangeListener(e -> {
             parameter.setSize((Integer) spinner.getValue());
@@ -209,7 +232,7 @@ public class JIPipeDesktopFontParameterEditorUI extends JIPipeDesktopParameterEd
     }
 
     private JComponent buildStyleToggles() {
-        JIPipeFontParameter parameter = getParameter();
+        JIPipeFontStyleCapable parameter = (JIPipeFontStyleCapable) getParameter();
         JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
         p.setOpaque(false);
         JButton bold = new JButton("B");
@@ -242,7 +265,7 @@ public class JIPipeDesktopFontParameterEditorUI extends JIPipeDesktopParameterEd
     }
 
     private JComponent buildColorSection() {
-        JIPipeFontParameter parameter = getParameter();
+        JIPipeFontColorCapable parameter = (JIPipeFontColorCapable) getParameter();
         JPanel p = new JPanel();
         p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
         p.setOpaque(false);
@@ -295,7 +318,7 @@ public class JIPipeDesktopFontParameterEditorUI extends JIPipeDesktopParameterEd
         return p;
     }
 
-    private JButton colorDot(Color color, String tooltip, JIPipeFontParameter parameter) {
+    private JButton colorDot(Color color, String tooltip, JIPipeFontColorCapable parameter) {
         JButton b = new JButton();
         b.setPreferredSize(new Dimension(16, 16));
         b.setMinimumSize(new Dimension(16, 16));
@@ -317,7 +340,7 @@ public class JIPipeDesktopFontParameterEditorUI extends JIPipeDesktopParameterEd
      * applied live, and the inline preview is updated on return (no stacked
      * popups; #1339).
      */
-    private void pickCustomColor(JIPipeFontParameter parameter) {
+    private void pickCustomColor(JIPipeFontColorCapable parameter) {
         if (popup != null && popup.isVisible()) {
             popup.setVisible(false);
         }
@@ -375,6 +398,18 @@ public class JIPipeDesktopFontParameterEditorUI extends JIPipeDesktopParameterEd
         return 0.2126 * r + 0.7152 * g + 0.0722 * b;
     }
 
+    /**
+     * @return the color to paint the preview text with: the value's color when
+     * it carries one, otherwise black (the no-color family members render
+     * black text, #1339 Task 2).
+     */
+    private Color previewText() {
+        JIPipeFontValue parameter = getParameter();
+        return (parameter instanceof JIPipeFontColorCapable)
+                ? ((JIPipeFontColorCapable) parameter).getColor()
+                : Color.BLACK;
+    }
+
     /** The inline preview: sample text in the current font, scaled to the row. */
     private class FontPreviewControl extends JComponent {
         FontPreviewControl() {
@@ -382,26 +417,27 @@ public class JIPipeDesktopFontParameterEditorUI extends JIPipeDesktopParameterEd
             addHierarchyListener(e -> repaint());
         }
 
-        void updateFrom(JIPipeFontParameter parameter) {
+        void updateFrom(JIPipeFontValue parameter) {
             repaint();
         }
 
         @Override
         protected void paintComponent(Graphics g) {
-            JIPipeFontParameter parameter = getParameter();
+            JIPipeFontValue parameter = getParameter();
+            Color color = previewText();
             Graphics2D g2 = (Graphics2D) g.create();
             g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
             // Auto-contrast background: the flat panel background hid the
             // default WHITE text; previewBackground() follows the font color
             // instead (light text → dark bg, dark text → light bg, #1339).
-            g2.setColor(previewBackground(parameter.getColor()));
+            g2.setColor(previewBackground(color));
             g2.fillRect(0, 0, getWidth(), getHeight());
             Font font = parameter.toFont();
             float maxH = getHeight() * 0.78f;
             Font render = font.getSize2D() > maxH ? font.deriveFont(maxH) : font;
             g2.setFont(render);
             FontMetrics fm = g2.getFontMetrics();
-            g2.setColor(parameter.getColor());
+            g2.setColor(color);
             // #1339 item 7: the trailing number is the font's current size.
             g2.drawString(SAMPLE_TEXT_PREFIX + parameter.getSize(), 6, (getHeight() - fm.getHeight()) / 2 + fm.getAscent());
             g2.setColor(new Color(110, 110, 110, 90));
@@ -414,15 +450,16 @@ public class JIPipeDesktopFontParameterEditorUI extends JIPipeDesktopParameterEd
     private class FontPreviewBand extends JComponent {
         @Override
         protected void paintComponent(Graphics g) {
-            JIPipeFontParameter parameter = getParameter();
+            JIPipeFontValue parameter = getParameter();
+            Color color = previewText();
             Graphics2D g2 = (Graphics2D) g.create();
             g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-            g2.setColor(previewBackground(parameter.getColor()));
+            g2.setColor(previewBackground(color));
             g2.fillRect(0, 0, getWidth(), getHeight());
             Font font = parameter.toFont();
             g2.setFont(font);
             FontMetrics fm = g2.getFontMetrics();
-            g2.setColor(parameter.getColor());
+            g2.setColor(color);
             // #1339 item 7: the trailing number is the font's current size.
             g2.drawString(SAMPLE_TEXT_PREFIX + parameter.getSize(), 8, Math.min((getHeight() - fm.getHeight()) / 2 + fm.getAscent(), getHeight() - 4));
             g2.setColor(new Color(110, 110, 110, 90));

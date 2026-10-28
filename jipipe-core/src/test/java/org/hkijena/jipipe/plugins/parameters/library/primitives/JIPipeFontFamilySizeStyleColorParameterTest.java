@@ -22,19 +22,20 @@ import java.awt.Font;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * #1339: the dedicated font parameter model — serialization round-trip,
- * lenient deserialization of missing keys (defaults), and toFont().
+ * #1339, Task 2: the full font parameter model ({@link
+ * JIPipeFontFamilySizeStyleColorParameter}) — serialization round-trip,
+ * lenient deserialization of missing keys (defaults), and {@code toFont()}.
  */
-class JIPipeFontParameterTest {
+class JIPipeFontFamilySizeStyleColorParameterTest {
 
     @Test
     void roundTrip() throws Exception {
-        JIPipeFontParameter p = new JIPipeFontParameter();
+        JIPipeFontFamilySizeStyleColorParameter p = new JIPipeFontFamilySizeStyleColorParameter();
         p.migrateFrom("DejaVu Sans", 24, Font.BOLD + Font.ITALIC, new Color(0x3b, 0x9d, 0xff));
 
         String json = JsonUtils.getObjectMapper().writeValueAsString(p);
-        JIPipeFontParameter back =
-                JsonUtils.getObjectMapper().readerFor(JIPipeFontParameter.class).readValue(json);
+        JIPipeFontFamilySizeStyleColorParameter back =
+                JsonUtils.getObjectMapper().readerFor(JIPipeFontFamilySizeStyleColorParameter.class).readValue(json);
 
         assertEquals(p, back);
         assertEquals("DejaVu Sans", back.getFamily());
@@ -46,10 +47,10 @@ class JIPipeFontParameterTest {
     @Test
     void missingKeysFallBackToDefaults() throws Exception {
         // Only color present — family/size/style must default, no NPE
-        JIPipeFontParameter p =
-                JsonUtils.getObjectMapper().readerFor(JIPipeFontParameter.class)
+        JIPipeFontFamilySizeStyleColorParameter p =
+                JsonUtils.getObjectMapper().readerFor(JIPipeFontFamilySizeStyleColorParameter.class)
                         .readValue("{\"color\":\"#FF0000\"}");
-        assertEquals(JIPipeFontParameter.defaultFamily(), p.getFamily());
+        assertEquals(JIPipeFontFamilySizeStyleColorParameter.defaultFamily(), p.getFamily());
         assertEquals(12, p.getSize());
         assertEquals(Font.PLAIN, p.getStyle());
         assertEquals(new Color(0xff, 0, 0).getRGB(), p.getColor().getRGB());
@@ -57,7 +58,7 @@ class JIPipeFontParameterTest {
 
     @Test
     void toFontReflectsFields() {
-        JIPipeFontParameter p = new JIPipeFontParameter();
+        JIPipeFontFamilySizeStyleColorParameter p = new JIPipeFontFamilySizeStyleColorParameter();
         p.migrateFrom("Dialog", 30, Font.ITALIC, Color.WHITE);
         Font f = p.toFont();
         assertEquals(30, f.getSize());
@@ -67,9 +68,9 @@ class JIPipeFontParameterTest {
 
     @Test
     void copyIsIndependent() {
-        JIPipeFontParameter p = new JIPipeFontParameter();
+        JIPipeFontFamilySizeStyleColorParameter p = new JIPipeFontFamilySizeStyleColorParameter();
         p.migrateFrom("Dialog", 20, Font.BOLD, Color.RED);
-        JIPipeFontParameter c = p.copy();
+        JIPipeFontFamilySizeStyleColorParameter c = (JIPipeFontFamilySizeStyleColorParameter) p.copy();
         assertEquals(p, c);
         c.migrateFrom("Dialog", 99, Font.PLAIN, Color.BLUE);
         assertEquals(20, p.getSize());
