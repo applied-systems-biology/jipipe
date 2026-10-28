@@ -32,13 +32,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * Tests for {@link SettingsFileWatcher}.
  * <p>
  * The two tests from the task brief are kept verbatim except that the mtime
- * pinning on the simulated foreign write was dropped: the pin can lag the
- * write by less than a millisecond, in which case the (size, mtime)
- * fingerprint of the "foreign" write equals the one the test recorded as
- * {@code setOwnFingerprint(...)}, and the suppression under test is correct
- * behavior — the change <em>is</em> the one the process just wrote. The
- * brief's {@code Thread.sleep(2600)} is kept as-is; it waits out one
- * 2-second poll interval.
+ * pinning on the simulated foreign write was dropped: the pin is a second
+ * transient file state on top of the write, so write+pin is two distinct
+ * (size, mtime) states that a naive watcher could deliver as two callbacks.
+ * (The watcher's settle step folds the transient pair into one state, but
+ * the point of the test is the exactly-once contract, which should not
+ * depend on that implementation detail.) Without the pin the single write
+ * is a size difference from the baseline, which always makes the
+ * fingerprints differ. The brief's {@code Thread.sleep(2600)} is kept
+ * as-is; it waits out one 2-second poll interval.
  */
 class SettingsFileWatcherTest {
     @TempDir Path tempDir;

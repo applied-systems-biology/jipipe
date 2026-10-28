@@ -71,15 +71,46 @@ import java.util.function.Consumer;
  * guarded: a throwing consumer can never kill the polling. {@link #close()}
  * is idempotent and safe to call before {@link #start()}.
  * <p>
- * Known residual race: if another process writes the file between this
- * process performing a save and recording
- * {@link #setOwnFingerprint(FileFingerprint)}, that one write may be
- * reported once as foreign before the own fingerprint is in place. The
- * window is a few instructions wide; a missed foreign change would be far
- * worse, so the design prefers the (harmless) extra report over dropping a
- * real change.
+ * <b>Callback threading:</b> the consumer is invoked while holding this
+ * watcher's instance monitor, so a slow consumer blocks {@link #close()}
+ * and the other worker thread for the whole callback duration. The consumer
+ * must not perform heavy I/O or long-running work inside it; it is expected
+ * to be a cheap hand-off (e.g. publishing an event) that defers the real
+ * merge/reload to another thread.
+ * <p>
+ * <b>Terminal deletion is not reported:</b> a file that is removed and
+ * never recreated produces no callback — a {@link FileFingerprint} cannot
+ * represent absence, and an absent file simply cannot be fingerprinted.
+ * Delete-then-recreate <em>is</em> reported (the recreated file is a new
+ * state). The caller must treat "file missing at reload time" as its own
+ * failure mode, not expect a watcher event for it.
+ * <p>
+ * <b>Known suppression window (false negative — read before wiring the
+ * caller in):</b> the own fingerprint is caller-supplied, and the watcher
+ * cannot tell what content this process actually wrote. If a foreign
+ * process writes the file after this process's save but <em>before</em> the
+ * caller's own-fingerprint read, the caller records the <em>foreign</em>
+ * state as its own fingerprint, and the watcher suppresses it: the foreign
+ * change is never reported, and the caller's in-memory state silently
+ * diverges from disk with no event to reconcile it. In the mandated call
+ * pattern (save, then read the fingerprint immediately), the caller's read
+ * lands microseconds after its own write — far inside the watcher's 50 ms
+ * settle window — so this suppression is the realistic outcome of the
+ * race; the opposite outcome (the foreign write being reported once as
+ * extra before the own fingerprint is in place) is effectively
+ * unreachable, because delivery only happens after the settle completes.
+ * This is inherent to the caller-supplied-fingerprint API shape.
+ * <p>
+ * <b>Mitigation the caller must implement:</b> after each save, the store
+ * owner must verify its own write — read the file back and compare it
+ * against the serialized content it intended to write (the owner already
+ * has those bytes). A mismatch means a foreign write raced with the save;
+ * the owner must then treat the file as foreign-modified itself (reload /
+ * merge) instead of relying on the watcher, which cannot detect this case
+ * because the recorded "own" fingerprint genuinely describes the current
+ * file.
  */
-public final class SettingsFileWatcher implements AutoCloseable {
+final class SettingsFileWatcher implements AutoCloseable {
     /**
      * The default poll interval. The poll thread re-checks the file's
      * fingerprint at this interval. This poll is the correctness floor of
@@ -130,8 +161,11 @@ public final class SettingsFileWatcher implements AutoCloseable {
      *                        the file changes on disk due to a write this
      *                        process did not perform and did not record via
      *                        {@link #setOwnFingerprint(FileFingerprint)}.
-     *                        It is invoked on the poll or watch thread; it
-     *                        must not block for long.
+     *                        It is invoked on the poll or watch thread while
+     *                        holding this watcher's instance monitor, so it
+     *                        must not perform heavy I/O or block for long —
+     *                        a slow callback blocks {@link #close()} and the
+     *                        other worker thread for its whole duration.
      */
     public SettingsFileWatcher(Path file, Consumer<FileFingerprint> onForeignChange) {
         this(file, onForeignChange, POLL_INTERVAL_MILLIS, true);
@@ -207,6 +241,11 @@ public final class SettingsFileWatcher implements AutoCloseable {
      * Records the fingerprint this process just wrote to the file. An
      * observed change whose fingerprint equals this one is a self-write and
      * fires no callback.
+     * <p>
+     * Note: an absent file cannot be fingerprinted and therefore cannot be
+     * recorded; a file that is deleted (and never recreated) fires no
+     * callback at all — see the class Javadoc for the caller's
+     * responsibility.
      *
      * @param ownFingerprint the fingerprint of the file after this process's
      *                       last save, or {@code null} to clear the record
