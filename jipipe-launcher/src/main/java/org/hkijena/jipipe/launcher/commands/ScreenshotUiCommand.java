@@ -36,6 +36,7 @@ import org.hkijena.jipipe.plugins.parameters.library.matrix.Matrix2DFloat;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.DynamicStringEnumParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.DynamicStringSetParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.JIPipeFontFamilySizeStyleColorParameter;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.JIPipeFontFamilySizeStyleParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.NumberParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringOrDouble;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.IntegerList;
@@ -52,6 +53,7 @@ import org.hkijena.jipipe.api.runtimepartitioning.RuntimePartitionReferenceParam
 import org.hkijena.jipipe.plugins.parameters.ui.api.JIPipeDesktopListEditorDialog;
 import org.hkijena.jipipe.plugins.parameters.ui.api.JIPipeListParameterEditorUI;
 import org.hkijena.jipipe.plugins.parameters.ui.library.JIPipeDesktopFontFamilySizeStyleColorParameterEditorUI;
+import org.hkijena.jipipe.plugins.parameters.ui.library.JIPipeDesktopFontFamilySizeStyleParameterEditorUI;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeExtensionApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeGeneralUIApplicationSettings;
 import org.hkijena.jipipe.utils.ThemeUtils;
@@ -98,6 +100,10 @@ public class ScreenshotUiCommand {
         SHOWCASE.put("panel-enum-box", "ij1-set-lut-from-color-map");
         // #1339 font migration: the split font rows are now one "Font" preview row.
         SHOWCASE.put("panel-draw-text-roi", "ij1-roi-draw-text");
+        // #1339 font family: the node with the color-less "Label font" row
+        // (adaptive editor: family/size/style, no color section) plus the
+        // separate optional "Label color" row.
+        SHOWCASE.put("panel-convert-2d-roi-to-rgb", "ij1-roi-to-rgb");
         // Synthetic: a parameter collection with one JIPipeFontFamilySizeStyleColorParameter (the
         // font editor has no node consumer until the Task 10 migration).
         SHOWCASE.put("panel-font", "<font-parameter>");
@@ -153,6 +159,9 @@ public class ScreenshotUiCommand {
         PER_EDITOR.put("editor-parameter-type-info-ref", JIPipeParameterTypeInfoRef.class);
         PER_EDITOR.put("editor-artifact-query", JIPipeArtifactQueryParameter.class);
         PER_EDITOR.put("editor-icon-ref", IconRef.class);
+        // #1339 font family: the size-style type — the adaptive editor must
+        // render family + size + style with NO color section.
+        PER_EDITOR.put("editor-font-family-size-style", JIPipeFontFamilySizeStyleParameter.class);
     }
 
     private static final int PANEL_WIDTH = 480;
@@ -527,14 +536,27 @@ public class ScreenshotUiCommand {
      * (which drives that width) is not itself clipped by the capture.
      */
     private static void renderFontPopout(JIPipeDesktopWorkbench workbench, Path outDir, List<String> only, List<String> rendered) throws Exception {
-        if (!only.isEmpty() && !only.contains("popup-font"))
+        if (!only.isEmpty() && !only.contains("popup-font") && !only.contains("popup-font-size-style"))
             return;
-        JIPipeDesktopFontFamilySizeStyleColorParameterEditorUI fontEditor = (JIPipeDesktopFontFamilySizeStyleColorParameterEditorUI)
-                JIPipe.getParameterTypes().createEditorInstanceWithEmbeddedValue(workbench, JIPipeFontFamilySizeStyleColorParameter.class);
-        JComponent content = (JComponent) fontEditor.getPopoutContent();
-        int width = Math.max(320, content.getPreferredSize().width);
-        ScreenshotRenderer.renderComponent(content, width, outDir.resolve("popup-font.png"));
-        rendered.add("popup-font");
+        if (only.isEmpty() || only.contains("popup-font")) {
+            JIPipeDesktopFontFamilySizeStyleColorParameterEditorUI fontEditor = (JIPipeDesktopFontFamilySizeStyleColorParameterEditorUI)
+                    JIPipe.getParameterTypes().createEditorInstanceWithEmbeddedValue(workbench, JIPipeFontFamilySizeStyleColorParameter.class);
+            JComponent content = (JComponent) fontEditor.getPopoutContent();
+            int width = Math.max(320, content.getPreferredSize().width);
+            ScreenshotRenderer.renderComponent(content, width, outDir.resolve("popup-font.png"));
+            rendered.add("popup-font");
+        }
+        if (only.isEmpty() || only.contains("popup-font-size-style")) {
+            // The color-less variant (Task 8/9): the same factory mechanism as
+            // popup-font, cast to the size-style thin editor — its popout must
+            // show family + size + style and NO color section (Review Focus #5).
+            JIPipeDesktopFontFamilySizeStyleParameterEditorUI fontEditor = (JIPipeDesktopFontFamilySizeStyleParameterEditorUI)
+                    JIPipe.getParameterTypes().createEditorInstanceWithEmbeddedValue(workbench, JIPipeFontFamilySizeStyleParameter.class);
+            JComponent content = (JComponent) fontEditor.getPopoutContent();
+            int width = Math.max(320, content.getPreferredSize().width);
+            ScreenshotRenderer.renderComponent(content, width, outDir.resolve("popup-font-size-style.png"));
+            rendered.add("popup-font-size-style");
+        }
     }
 
     private static void renderSettingsSheet(JIPipeDesktopDummyWorkbench workbench, Path outDir, List<String> only, List<String> rendered) throws Exception {
