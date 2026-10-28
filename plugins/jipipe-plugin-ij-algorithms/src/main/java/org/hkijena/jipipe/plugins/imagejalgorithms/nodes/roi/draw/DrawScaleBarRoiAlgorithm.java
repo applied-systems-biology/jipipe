@@ -43,6 +43,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.JIPipeFontFamilySizeStyleColorParameter;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.JIPipeFontFamilySizeStyleParameter;
 import org.hkijena.jipipe.plugins.parameters.library.quantities.OptionalQuantity;
 import org.hkijena.jipipe.plugins.parameters.library.quantities.Quantity;
 
@@ -265,7 +266,7 @@ public class DrawScaleBarRoiAlgorithm extends JIPipeIteratingAlgorithm {
         private boolean hideLabels = false;
 
         public TextSettings() {
-            font.migrateFrom(JIPipeFontFamilySizeStyleColorParameter.defaultFamily(), 12, Font.BOLD, Color.WHITE);
+            font.migrateFrom(JIPipeFontFamilySizeStyleParameter.defaultFamily(), 12, Font.BOLD, Color.WHITE);
         }
 
         public TextSettings(TextSettings other) {

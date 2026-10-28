@@ -50,7 +50,7 @@ class JIPipeFontFamilySizeStyleColorParameterTest {
         JIPipeFontFamilySizeStyleColorParameter p =
                 JsonUtils.getObjectMapper().readerFor(JIPipeFontFamilySizeStyleColorParameter.class)
                         .readValue("{\"color\":\"#FF0000\"}");
-        assertEquals(JIPipeFontFamilySizeStyleColorParameter.defaultFamily(), p.getFamily());
+        assertEquals(JIPipeFontFamilySizeStyleParameter.defaultFamily(), p.getFamily());
         assertEquals(12, p.getSize());
         assertEquals(Font.PLAIN, p.getStyle());
         assertEquals(new Color(0xff, 0, 0).getRGB(), p.getColor().getRGB());

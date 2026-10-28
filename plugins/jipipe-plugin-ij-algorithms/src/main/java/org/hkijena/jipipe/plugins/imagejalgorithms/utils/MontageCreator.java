@@ -33,6 +33,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.JIPipeFontFamilySizeStyleColorParameter;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.JIPipeFontFamilySizeStyleParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalIntegerParameter;
 import org.hkijena.jipipe.plugins.parameters.library.roi.Anchor;
 import org.hkijena.jipipe.utils.ColorUtils;
@@ -499,7 +500,7 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
         private OptionalColorParameter labelBackground = new OptionalColorParameter(Color.BLACK, true);
 
         public LabelParameters() {
-            labelFont.migrateFrom(JIPipeFontFamilySizeStyleColorParameter.defaultFamily(), 12, Font.PLAIN, Color.WHITE);
+            labelFont.migrateFrom(JIPipeFontFamilySizeStyleParameter.defaultFamily(), 12, Font.PLAIN, Color.WHITE);
         }
 
         public LabelParameters(LabelParameters other) {

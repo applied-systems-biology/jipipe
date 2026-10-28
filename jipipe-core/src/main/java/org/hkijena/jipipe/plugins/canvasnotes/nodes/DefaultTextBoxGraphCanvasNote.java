@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopAnnotationGraphNodeUI;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.JIPipeFontFamilySizeStyleColorParameter;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.JIPipeFontFamilySizeStyleParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
@@ -374,7 +375,7 @@ public abstract class DefaultTextBoxGraphCanvasNote extends JIPipeGraphCanvasNot
      */
     private static JIPipeFontFamilySizeStyleColorParameter titleFontWithSize(int size) {
         JIPipeFontFamilySizeStyleColorParameter f = new JIPipeFontFamilySizeStyleColorParameter();
-        f.migrateFrom(JIPipeFontFamilySizeStyleColorParameter.defaultFamily(), size, Font.PLAIN, Color.BLACK);
+        f.migrateFrom(JIPipeFontFamilySizeStyleParameter.defaultFamily(), size, Font.PLAIN, Color.BLACK);
         return f;
     }
 
@@ -485,7 +486,7 @@ public abstract class DefaultTextBoxGraphCanvasNote extends JIPipeGraphCanvasNot
         private JIPipeFontFamilySizeStyleColorParameter font = new JIPipeFontFamilySizeStyleColorParameter();
 
         public TextRenderParameters() {
-            font.migrateFrom(JIPipeFontFamilySizeStyleColorParameter.defaultFamily(), 12, Font.PLAIN, Color.BLACK);
+            font.migrateFrom(JIPipeFontFamilySizeStyleParameter.defaultFamily(), 12, Font.PLAIN, Color.BLACK);
         }
 
         public TextRenderParameters(TextRenderParameters other) {

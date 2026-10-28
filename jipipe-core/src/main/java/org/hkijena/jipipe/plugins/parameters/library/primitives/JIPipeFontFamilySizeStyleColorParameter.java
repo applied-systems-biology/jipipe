@@ -36,39 +36,13 @@ import java.util.Objects;
  * the fields separately, if at all) loadable. The {@code Color} field uses the
  * mapper's standard hex-string codec, like the {@code color} parameter type.
  * <p>
- * The family's shared statics ({@link #defaultFamily()},
- * {@link #styleNameToFlags(String)}, {@link #legacyColor(JsonNode)}) live in
- * {@link JIPipeFontFamilySizeStyleParameter}; this class delegates to them
- * (the earlier duplicated copies were removed in Task 2).
+ * The family's shared statics ({@code defaultFamily()},
+ * {@code styleNameToFlags(String)}, {@code legacyColor(JsonNode)}) live in
+ * {@link JIPipeFontFamilySizeStyleParameter}; call sites reference them there
+ * directly (the earlier delegating statics were removed in the family
+ * cleanup).
  */
 public class JIPipeFontFamilySizeStyleColorParameter implements JIPipeFontValue, JIPipeFontStyleCapable, JIPipeFontColorCapable {
-
-    /**
-     * @return the default font family — the family's shared static, owned by
-     * {@link JIPipeFontFamilySizeStyleParameter} (Task 2 removed the duplicated
-     * logic here in favor of delegation).
-     */
-    public static String defaultFamily() {
-        return JIPipeFontFamilySizeStyleParameter.defaultFamily();
-    }
-
-    /**
-     * Maps a legacy font-style enum name to its {@link Font} bit flags — the
-     * family's shared static, owned by {@link JIPipeFontFamilySizeStyleParameter}
-     * (delegated since Task 2).
-     */
-    public static int styleNameToFlags(String styleName) {
-        return JIPipeFontFamilySizeStyleParameter.styleNameToFlags(styleName);
-    }
-
-    /**
-     * Reads a legacy hex/OptionalColor node into a {@link Color} — the family's
-     * shared static, owned by {@link JIPipeFontFamilySizeStyleParameter}
-     * (delegated since Task 2).
-     */
-    public static Color legacyColor(JsonNode colorNode) {
-        return JIPipeFontFamilySizeStyleParameter.legacyColor(colorNode);
-    }
 
     private String family = JIPipeFontFamilySizeStyleParameter.defaultFamily();
     private int size = 12;

@@ -41,6 +41,7 @@ import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExp
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.JIPipeFontFamilySizeStyleColorParameter;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.JIPipeFontFamilySizeStyleParameter;
 import org.hkijena.jipipe.plugins.parameters.library.quantities.OptionalQuantity;
 import org.hkijena.jipipe.plugins.parameters.library.quantities.Quantity;
 
@@ -264,7 +265,7 @@ public class DrawScaleBarAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
         public TextSettings() {
             // The default scale-bar text is bold white (legacy default).
-            font.migrateFrom(JIPipeFontFamilySizeStyleColorParameter.defaultFamily(), 12, java.awt.Font.BOLD, Color.WHITE);
+            font.migrateFrom(JIPipeFontFamilySizeStyleParameter.defaultFamily(), 12, java.awt.Font.BOLD, Color.WHITE);
         }
 
         public TextSettings(TextSettings other) {
