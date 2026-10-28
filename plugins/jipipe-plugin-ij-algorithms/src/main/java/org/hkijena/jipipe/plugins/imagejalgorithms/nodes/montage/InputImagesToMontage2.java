@@ -33,7 +33,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.MontageCreator;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.parameters.library.primitives.JIPipeFontParameter;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.JIPipeFontFamilySizeStyleColorParameter;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import java.util.ArrayList;
@@ -93,7 +93,7 @@ public class InputImagesToMontage2 extends JIPipeMergingAlgorithm {
     protected void onDeserialized(JsonNode node, JIPipeValidationReport issues, JIPipeNotificationInbox notifications) {
         String p = "montage-parameters/label-parameters/";
         if (node.has(p + "label-font-family") || node.has(p + "label-font-size") || node.has(p + "label-foreground")) {
-            montageCreator.getLabelParameters().setLabelFont(JIPipeFontParameter.composeFromLegacy(node,
+            montageCreator.getLabelParameters().setLabelFont(JIPipeFontFamilySizeStyleColorParameter.fromLegacyKeys(node,
                     p + "label-font-family", p + "label-font-size", null, p + "label-foreground", 12));
         }
     }

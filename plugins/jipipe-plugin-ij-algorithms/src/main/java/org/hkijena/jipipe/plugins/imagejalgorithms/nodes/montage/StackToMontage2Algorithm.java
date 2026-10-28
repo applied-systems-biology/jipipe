@@ -30,7 +30,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
-import org.hkijena.jipipe.plugins.parameters.library.primitives.JIPipeFontParameter;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.JIPipeFontFamilySizeStyleColorParameter;
 import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
@@ -127,7 +127,7 @@ public class StackToMontage2Algorithm extends JIPipeIteratingAlgorithm {
     protected void onDeserialized(JsonNode node, JIPipeValidationReport issues, JIPipeNotificationInbox notifications) {
         String p = "montage-parameters/label-parameters/";
         if (node.has(p + "label-font-family") || node.has(p + "label-font-size") || node.has(p + "label-foreground")) {
-            montageCreator.getLabelParameters().setLabelFont(JIPipeFontParameter.composeFromLegacy(node,
+            montageCreator.getLabelParameters().setLabelFont(JIPipeFontFamilySizeStyleColorParameter.fromLegacyKeys(node,
                     p + "label-font-family", p + "label-font-size", null, p + "label-foreground", 12));
         }
     }

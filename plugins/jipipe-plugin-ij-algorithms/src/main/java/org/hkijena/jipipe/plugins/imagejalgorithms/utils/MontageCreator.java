@@ -32,7 +32,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
-import org.hkijena.jipipe.plugins.parameters.library.primitives.JIPipeFontParameter;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.JIPipeFontFamilySizeStyleColorParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalIntegerParameter;
 import org.hkijena.jipipe.plugins.parameters.library.roi.Anchor;
 import org.hkijena.jipipe.utils.ColorUtils;
@@ -491,7 +491,7 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
     public static class LabelParameters extends AbstractJIPipeParameterCollection {
         private boolean drawLabel = true;
         // #1339: label foreground + font family + size folded into one font param.
-        private JIPipeFontParameter labelFont = new JIPipeFontParameter();
+        private JIPipeFontFamilySizeStyleColorParameter labelFont = new JIPipeFontFamilySizeStyleColorParameter();
         private Anchor labelLocation = Anchor.BottomCenter;
         private boolean avoidLabelOnImage = true;
         private boolean limitWithEllipsis = true;
@@ -499,12 +499,12 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
         private OptionalColorParameter labelBackground = new OptionalColorParameter(Color.BLACK, true);
 
         public LabelParameters() {
-            labelFont.migrateFrom(JIPipeFontParameter.defaultFamily(), 12, Font.PLAIN, Color.WHITE);
+            labelFont.migrateFrom(JIPipeFontFamilySizeStyleColorParameter.defaultFamily(), 12, Font.PLAIN, Color.WHITE);
         }
 
         public LabelParameters(LabelParameters other) {
             this.drawLabel = other.drawLabel;
-            this.labelFont = new JIPipeFontParameter(other.labelFont);
+            this.labelFont = new JIPipeFontFamilySizeStyleColorParameter(other.labelFont);
             this.labelLocation = other.labelLocation;
             this.avoidLabelOnImage = other.avoidLabelOnImage;
             this.labelBackground = new OptionalColorParameter(other.labelBackground);
@@ -557,12 +557,12 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
 
         @SetJIPipeDocumentation(name = "Label font", description = "The font (family, size, style and color) of the label")
         @JIPipeParameter("label-font")
-        public JIPipeFontParameter getLabelFont() {
+        public JIPipeFontFamilySizeStyleColorParameter getLabelFont() {
             return labelFont;
         }
 
         @JIPipeParameter("label-font")
-        public void setLabelFont(JIPipeFontParameter labelFont) {
+        public void setLabelFont(JIPipeFontFamilySizeStyleColorParameter labelFont) {
             this.labelFont = labelFont;
         }
 
