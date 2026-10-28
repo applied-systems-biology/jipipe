@@ -295,7 +295,7 @@ public class UIUtils {
         b.setOpaque(true);
         b.setContentAreaFilled(false);
         b.setBackground(fill);
-        b.setUI(new JIPipeDesktopRoundedButtonUI(5, fill.darker(), fill.darker().darker()));
+        b.setUI(new JIPipeDesktopRoundedButtonUI(5, fill, fill.darker()));
         b.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createEmptyBorder(1, 1, 1, 1),
                 BorderFactory.createCompoundBorder(
