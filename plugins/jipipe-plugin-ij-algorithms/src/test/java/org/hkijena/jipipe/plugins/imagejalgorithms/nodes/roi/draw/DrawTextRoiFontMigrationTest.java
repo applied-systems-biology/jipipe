@@ -140,7 +140,7 @@ class DrawTextRoiFontMigrationTest {
         json.put("font-style", legacyStyleName(fontNode.get("style").asInt()));
 
         DrawTextRoiAlgorithm loaded = loadFrom(json);
-        JsonNode fontJson = JsonUtils.getObjectMapper().readTree(JsonUtils.toJsonString(loaded.getFont()));
+        JsonNode fontJson = JsonUtils.toJsonNode(loaded.getFont());
         assertFalse(fontJson.has("color"), "The migrated font must not contain a color field: " + fontJson);
         assertTrue(fontJson.has("family") && fontJson.has("size") && fontJson.has("style"),
                 "The migrated font must contain family/size/style: " + fontJson);
