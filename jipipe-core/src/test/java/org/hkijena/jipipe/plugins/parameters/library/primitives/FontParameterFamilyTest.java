@@ -131,4 +131,22 @@ class FontParameterFamilyTest {
         assertEquals(24, p.getSize());
         assertEquals(new Color(0x3b, 0x9d, 0xff).getRGB(), p.getColor().getRGB());
     }
+
+    @Test
+    void canvasNoteStyleMigratesPrefixedKeys() throws Exception {
+        // #1339 pin: the exact key set + prefix DefaultTextBoxGraphCanvasNote.onDeserialized
+        // uses for the title style (the nested collection is loaded via flat slash-keys),
+        // plus the title's default size (18). If the node's keys ever drift, this input
+        // records what they were. All keys belong to the title prefix — the node composes
+        // each style from its own prefix.
+        JsonNode n = json("{\"title-style/font-family\":\"Dialog\",\"title-style/font-size\":18,\"title-style/color\":\"#000000\"}");
+        JIPipeFontFamilySizeStyleColorParameter p =
+                JIPipeFontFamilySizeStyleColorParameter.fromLegacyKeys(n,
+                        "title-style/font-family", "title-style/font-size",
+                        "title-style/font-style", "title-style/color", 18);
+        assertEquals("Dialog", p.getFamily());
+        assertEquals(18, p.getSize());
+        assertEquals(Color.BLACK.getRGB(), p.getColor().getRGB());
+        assertEquals(Font.PLAIN, p.getStyle());
+    }
 }
