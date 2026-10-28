@@ -217,16 +217,15 @@ The branch is unmerged, so the only real-world projects are **pre-#1339 legacy**
   (color section present) and the size-style type (color section absent) through a
   synthetic showcase; VLM-confirmed.
 
-## Open decisions (confirm before implementation)
+## Decisions (all resolved — approved for implementation)
 
-1. ~~Rename + ID~~ **Resolved:** rename `JIPipeFontParameter` →
+1. **Resolved (2026-10-28):** rename `JIPipeFontParameter` →
    `JIPipeFontFamilySizeStyleColorParameter` and move it to the new
    `jipipe:font-family-size-style-color` ID (the development `jipipe:font` ID is
    dropped — branch unmerged, per user ruling).
-2. **`JIPipeFontFamilySizeParameter` (bare font)** and
-   **`JIPipeFontFamilySizeColorParameter`** are defined but unused by any node
-   today. Include both to complete the 4-combination set (recommend yes, per "all
-   combinations"), or defer `font` (bare) only?
-3. **`RoiToRGBAlgorithm` fresh-node default** = label follows the ROI line color
-   (new behavior), overridable by the new `labelColor`. (This is the whole point;
-   flagged because it changes fresh-node output vs. the current white default.)
+2. **Resolved (2026-10-28):** include **all four** classes now — including the two
+   currently unused (`JIPipeFontFamilySizeParameter`,
+   `JIPipeFontFamilySizeColorParameter`) — to complete the combination set.
+3. **Resolved (2026-10-28):** `RoiToRGBAlgorithm` fresh-node default = label
+   follows the ROI line color, overridable by the new `labelColor`. Confirmed by
+   the user.
