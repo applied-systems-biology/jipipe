@@ -72,8 +72,8 @@ import java.util.concurrent.TimeUnit;
  * <li><b>Sheet projection.</b> {@link #attachSheet(JIPipeApplicationSettingsSheet)}
  * registers a loop-safe {@link SettingsSheetBridge} for the sheet's
  * {@code "sheet:<id>"} block against the APPLICATION document. Attaching is
- * safe before the document exists: the bridge is attached as soon as the
- * document is materialized.</li>
+ * safe before the document exists: the document is materialized (lazily) on
+ * demand.</li>
  * <li><b>Persistence.</b> {@link #save()} flushes all attached sheet bridges
  * into the document and then atomically writes every file-backed document.
  * {@link #saveLater()} coalesces rapid changes into one save after a 250 ms
@@ -134,13 +134,9 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
     private final Set<SettingsBinding<?>> trackedBindings = new LinkedHashSet<>();
     /**
      * Sheet bridges attached to the current APPLICATION document, keyed by
-     * sheet. Re-attached after a reload of the APPLICATION document.
+     * sheet. Re-created after a reload of the APPLICATION document.
      */
     private final Map<JIPipeApplicationSettingsSheet, SettingsSheetBridge> attachedBridges = new LinkedHashMap<>();
-    /**
-     * Bridges queued for a document that has not been materialized yet.
-     */
-    private final Map<JIPipeApplicationSettingsSheet, SettingsSheetBridge> pendingBridges = new LinkedHashMap<>();
 
     private final Timer swingSaveLaterTimer;
     private final ScheduledExecutorService executorSaveLater;
@@ -258,11 +254,6 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
             }
             documents.put(scope, doc);
             attachPathListeners(doc);
-            if (scope == SettingsScope.APPLICATION) {
-                // Attach sheet bridges that were queued before the APPLICATION
-                // document existed (e.g. attachSheet called at registration time).
-                attachPendingBridgesFor(SettingsScope.APPLICATION);
-            }
         }
         return doc;
     }
@@ -317,8 +308,14 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
      */
     public synchronized <T> SettingsBinding<T> bind(JIPipeSettingKey<T> key) {
         Objects.requireNonNull(key, "key");
+        // Materialize the document first, then register: registerKey makes the
+        // key's block and sub-path observable, which must happen on a
+        // materialized document — otherwise the first write of a new setting
+        // (block absent at bind time, the common case) would fire no change
+        // event at all.
+        SettingsDocument doc = document(key.scope());
         registerKey(key);
-        SettingsBinding<T> binding = new SettingsBinding<>(document(key.scope()), key);
+        SettingsBinding<T> binding = new SettingsBinding<>(doc, key);
         trackedBindings.add(binding);
         return binding;
     }
@@ -326,16 +323,32 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
     /**
      * Registers a loop-safe bridge projecting the given application settings
      * sheet onto the {@code "sheet:<id>"} block of the APPLICATION document.
-     * Safe to call before the document exists: the bridge is queued and
-     * attached as soon as the document is materialized.
+     * Safe to call before the document exists: the document is materialized
+     * (lazily) on demand.
      *
      * @param sheet the sheet to bridge
      */
     public synchronized void attachSheet(JIPipeApplicationSettingsSheet sheet) {
         Objects.requireNonNull(sheet, "sheet");
-        pendingBridges.computeIfAbsent(sheet, s -> new SettingsSheetBridge(
-                document(SettingsScope.APPLICATION), s.getId(), s));
-        attachPendingBridgesFor(SettingsScope.APPLICATION);
+        // Materializing the document is lazy and idempotent, so this is safe
+        // to call before the document exists (e.g. at sheet registration
+        // time): the bridge is created against the fresh, loaded document.
+        SettingsSheetBridge bridge = attachBridge(document(SettingsScope.APPLICATION), sheet);
+        attachedBridges.put(sheet, bridge);
+    }
+
+    /**
+     * Creates, attaches, and aligns a bridge for one sheet: after
+     * {@link SettingsSheetBridge#attach()} (which seeds an absent block from
+     * the sheet's current values), the block's stored values are applied into
+     * the sheet, so a pre-existing file's content reaches the sheet — matching
+     * today's reload-after-registration sequence.
+     */
+    private SettingsSheetBridge attachBridge(SettingsDocument app, JIPipeApplicationSettingsSheet sheet) {
+        SettingsSheetBridge bridge = new SettingsSheetBridge(app, sheet.getId(), sheet);
+        bridge.attach();
+        bridge.applyFromDocument();
+        return bridge;
     }
 
     /**
@@ -362,13 +375,10 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
                         logger.warn("Could not detach settings sheet bridge during reload", e);
                     }
                 }
-                // Remember which sheets were bridged (and the queued ones),
-                // then clear both maps so they are rebuilt below.
-                bridgedSheets = new LinkedHashSet<>();
-                bridgedSheets.addAll(attachedBridges.keySet());
-                bridgedSheets.addAll(pendingBridges.keySet());
+                // Remember which sheets were bridged, then clear the map so it
+                // is rebuilt below against the fresh document.
+                bridgedSheets = new LinkedHashSet<>(attachedBridges.keySet());
                 attachedBridges.clear();
-                pendingBridges.clear();
             }
             SettingsDocument old = documents.get(scope);
             SettingsDocument fresh = store.load();
@@ -384,9 +394,7 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
             if (scope == SettingsScope.APPLICATION) {
                 // Re-create every bridge on the fresh document and attach it.
                 for (JIPipeApplicationSettingsSheet sheet : bridgedSheets) {
-                    SettingsSheetBridge bridge = new SettingsSheetBridge(fresh, sheet.getId(), sheet);
-                    bridge.attach();
-                    attachedBridges.put(sheet, bridge);
+                    attachedBridges.put(sheet, attachBridge(fresh, sheet));
                 }
             }
         }
@@ -601,7 +609,6 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
             }
         }
         attachedBridges.clear();
-        pendingBridges.clear();
         for (SettingsBinding<?> binding : trackedBindings) {
             try {
                 binding.close();
@@ -716,20 +723,6 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
                     doc.scope(), path, oldValue, newValue, ChangeOrigin.LOCAL_PROGRAMMATIC));
             legacyChangedEventEmitter.emit(new LegacyChangedEvent());
         }
-    }
-
-    /**
-     * Attaches any queued bridges whose document (APPLICATION) now exists.
-     */
-    private void attachPendingBridgesFor(SettingsScope scope) {
-        if (scope != SettingsScope.APPLICATION) {
-            return;
-        }
-        for (Map.Entry<JIPipeApplicationSettingsSheet, SettingsSheetBridge> entry : pendingBridges.entrySet()) {
-            entry.getValue().attach();
-            attachedBridges.put(entry.getKey(), entry.getValue());
-        }
-        pendingBridges.clear();
     }
 
     /**

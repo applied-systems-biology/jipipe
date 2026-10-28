@@ -13,14 +13,22 @@
 
 package org.hkijena.jipipe.api.service;
 
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
+import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.service.components.JIPipeSettingsServiceComponent;
+import org.hkijena.jipipe.api.settings.JIPipeApplicationSettingsSheet;
 import org.hkijena.jipipe.api.settings.JIPipeSettingKey;
 import org.hkijena.jipipe.api.settings.SettingsBinding;
+import org.hkijena.jipipe.api.settings.SettingsDocument;
 import org.hkijena.jipipe.api.settings.SettingsScope;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import javax.swing.Icon;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -78,5 +86,142 @@ class JIPipeSettingsServiceComponentTest {
         assertEquals(tempDir.resolve("settings.json"), c.fileFor(SettingsScope.APPLICATION));
         assertEquals(tempDir.resolve("runtime-settings.json"), c.fileFor(SettingsScope.RUNTIME));
         assertNull(c.fileFor(SettingsScope.PROJECT));
+    }
+
+    @Test void changeEventsAreEmittedWithOldAndNewValues() {
+        JIPipeSettingsServiceComponent c = JIPipeSettingsServiceComponent.forTesting(tempDir);
+        JIPipeSettingKey<String> key = JIPipeSettingKey.string("registry:events", "name", String.class).defaultValue("default");
+        List<JIPipeSettingsServiceComponent.SettingsChangedEvent> events = new ArrayList<>();
+        List<JIPipeSettingsServiceComponent.LegacyChangedEvent> legacy = new ArrayList<>();
+        c.getChangedEventEmitter().subscribeLambda((emitter, event) -> events.add(event));
+        c.getLegacyChangedEventEmitter().subscribeLambda((emitter, event) -> legacy.add(event));
+
+        SettingsBinding<String> b = c.bind(key);
+        b.set("one");
+        b.set("two");
+        b.set("one"); // effective value changed again
+
+        assertEquals(3, events.size(), "one event per effective change: " + events);
+        assertEquals("registry:events/name", events.get(0).getPath());
+        assertEquals(SettingsScope.APPLICATION, events.get(0).getScope());
+        // The first change of an absent setting reports MissingNode as the
+        // old value (the document never materializes defaults; the key
+        // registry resolves them for display).
+        assertTrue(events.get(0).getOldValue().isMissingNode());
+        assertEquals("one", events.get(0).getNewValue().asText());
+        assertEquals(JIPipeSettingsServiceComponent.ChangeOrigin.LOCAL_PROGRAMMATIC, events.get(0).getOrigin());
+        assertEquals("one", events.get(1).getOldValue().asText());
+        assertEquals("two", events.get(1).getNewValue().asText());
+        assertEquals("two", events.get(2).getOldValue().asText());
+        assertEquals("one", events.get(2).getNewValue().asText());
+        assertEquals(3, legacy.size(), "the legacy aggregate fires on every change");
+    }
+
+    @Test void disposeClosesTrackedBindingsAndEarlyCloseStaysIdempotent() {
+        JIPipeSettingsServiceComponent c = JIPipeSettingsServiceComponent.forTesting(tempDir);
+        JIPipeSettingKey<String> key = JIPipeSettingKey.string("registry:leak", "x", String.class).defaultValue("d");
+        SettingsBinding<String> b = c.bind(key);
+        SettingsDocument doc = c.document(SettingsScope.APPLICATION);
+        List<String> seen = new ArrayList<>();
+        b.subscribe(seen::add);
+        b.set("one");
+        assertEquals(List.of("one"), seen);
+        c.dispose(); // must close the tracked binding
+        b.set("two"); // a closed binding still writes through to the document
+        assertEquals("two", doc.get("registry:leak", "x").asText());
+        assertEquals(List.of("one"), seen, "dispose closed the binding: subscribers no longer fire");
+
+        // A binding the caller closed early must not break the component's
+        // later (idempotent) close on dispose.
+        JIPipeSettingsServiceComponent c2 = JIPipeSettingsServiceComponent.forTesting(tempDir);
+        JIPipeSettingKey<String> key2 = JIPipeSettingKey.string("registry:early", "y", String.class).defaultValue("d");
+        SettingsBinding<String> b2 = c2.bind(key2);
+        b2.close();
+        assertDoesNotThrow(c2::dispose);
+    }
+
+    @Test void attachedSheetIsFlushedOnSaveAndReattachedOnReload() throws Exception {
+        // A stored settings file from a "previous run" (the sheet's default
+        // theme is "Modern"; the file says "Light").
+        Files.writeString(tempDir.resolve("settings.json"),
+                "{ \"$schema\": 2, \"sheet:probe-sheet\": { \"theme\": \"Light\" } }");
+        JIPipeSettingsServiceComponent c = JIPipeSettingsServiceComponent.forTesting(tempDir);
+        ProbeSheet sheet = new ProbeSheet();
+        c.attachSheet(sheet);
+
+        // Attach must apply the stored file content into the sheet, matching
+        // today's reload-after-registration sequence.
+        assertEquals("Light", sheet.getTheme(), "attach applies the stored file content to the sheet");
+        SettingsDocument app = c.document(SettingsScope.APPLICATION);
+        assertTrue(app.hasBlock("sheet:probe-sheet"), "the sheet block is present");
+
+        sheet.setTheme("Dark");
+        c.save();
+        // The sheet change flushed into the document and was persisted.
+        assertEquals("Dark", app.get("sheet:probe-sheet", "theme").asText());
+
+        // Reload: the document is replaced, and the bridge must be re-created
+        // against the fresh one (file content reaches the sheet again, and
+        // sheet changes keep flushing into the fresh document).
+        c.reload();
+        SettingsDocument fresh = c.document(SettingsScope.APPLICATION);
+        assertNotSame(app, fresh, "reload replaces the document");
+        assertEquals("Dark", fresh.get("sheet:probe-sheet", "theme").asText(), "value survived the reload from disk");
+        assertEquals("Dark", sheet.getTheme(), "reload applies the re-read file content to the sheet");
+        sheet.setTheme("Midnight");
+        c.save();
+        c.reload();
+        assertEquals("Midnight", c.document(SettingsScope.APPLICATION).get("sheet:probe-sheet", "theme").asText(),
+                "the re-attached bridge still flushes sheet changes into the fresh document");
+        assertEquals("Midnight", sheet.getTheme(), "and applies it back to the sheet");
+    }
+
+    /**
+     * Minimal application settings sheet mirroring the shape of the real ones:
+     * one serialized parameter, change events on set.
+     */
+    public static class ProbeSheet extends AbstractJIPipeParameterCollection implements JIPipeApplicationSettingsSheet {
+        @JIPipeParameter("theme")
+        public String getTheme() {
+            return theme;
+        }
+
+        @JIPipeParameter("theme")
+        public void setTheme(String theme) {
+            this.theme = theme;
+            emitParameterChangedEvent("theme");
+        }
+
+        private String theme = "Modern";
+
+        @Override
+        public String getId() {
+            return "probe-sheet";
+        }
+
+        @Override
+        public Icon getIcon() {
+            return null;
+        }
+
+        @Override
+        public String getName() {
+            return "Probe";
+        }
+
+        @Override
+        public String getCategory() {
+            return "Test";
+        }
+
+        @Override
+        public Icon getCategoryIcon() {
+            return null;
+        }
+
+        @Override
+        public String getDescription() {
+            return "A probe sheet for testing";
+        }
     }
 }
