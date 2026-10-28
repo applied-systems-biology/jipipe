@@ -256,7 +256,7 @@ public RoiLabelColorMode getLabelColorMode();
 Color effectiveLabelForeground(Roi roi);
 ```
 
-`effectiveLabelForeground(roi)` returns `labelForeground` when `mode == FIXED`, else the effective line color — the **same expression** the outline already uses: `(overrideLineColor.isEnabled() || roi.getStrokeColor() == null) ? overrideLineColor.getContent() : roi.getStrokeColor()`. Copy-constructor copies the new field.
+`effectiveLabelForeground(roi)` returns `labelForeground` when `mode == FIXED`, else the effective line color — the **same expression** the outline already uses: `(overrideLineColor.isEnabled() || roi.getStrokeColor() == null) ? overrideLineColor.getContent() : roi.getStrokeColor()`. Copy-constructor copies the new field. **There are exactly THREE per-ROI label call sites** in `RoiDrawer`, each already in a loop with `roi` in scope and the effective line-color expression computed nearby: the `drawResult` per-ROI loop (~line 390), `drawRoiOnProcessor` (~line 516), and `drawRoiOnGraphics` (~line 676). Replace `labelForeground` with `effectiveLabelForeground(roi)` in ALL three.
 
 - [ ] **Step 1 (TDD): write the failing test** — build a `RoiDrawer` and real `ij.gui.Roi`s (the module's test infra handles the ImageJ patcher):
   - `fromRoiLineUsesTheRoisOwnLineColor` (Review Focus #4): two ROIs, stroke RED and stroke GREEN, `overrideLineColor` disabled, mode `FROM_ROI_LINE` → `effectiveLabelForeground(roiRed) == RED` and `effectiveLabelForeground(roiGreen) == GREEN` — a *single fixed* color would fail this.
@@ -266,7 +266,7 @@ Color effectiveLabelForeground(Roi roi);
 
 - [ ] **Step 2: Run** `mvn -pl plugins/jipipe-plugin-ij test -Dtest=RoiDrawerLabelColorModeTest` → FAIL (method missing).
 
-- [ ] **Step 3: Implement** the enum, field, setter/getter, copy, and `effectiveLabelForeground`; replace the two `labelForeground` usages in `drawResult` (the per-ROI loop) and `drawRoiOnProcessor` with `effectiveLabelForeground(roi)`.
+- [ ] **Step 3: Implement** the enum, field, setter/getter, copy, and `effectiveLabelForeground`; replace the per-ROI `labelForeground` usages with `effectiveLabelForeground(roi)` in ALL THREE call sites: the `drawResult` per-ROI loop (~line 390), `drawRoiOnProcessor` (~line 516), and `drawRoiOnGraphics` (~line 676) — see the Interfaces note above.
 
 - [ ] **Step 4: Run** same command → PASS; then `mvn -pl plugins/jipipe-plugin-ij test` → whole module green.
 
