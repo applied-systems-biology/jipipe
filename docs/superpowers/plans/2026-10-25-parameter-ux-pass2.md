@@ -1160,3 +1160,57 @@ after the user confirms the feature is finished.
 **User still to eyeball (final UI judge):** the font preview's new flat auto-contrast
 background in the running app (esp. a mid-tone font color), the list edit dialog's position
 relative to the workbench, and the HTML full-mode toolbar alignment + combos.
+
+---
+
+## Follow-up round 3 (2026-10-28) — 9 user review items
+
+**DONE (3 commits):**
+- `1ece38cd25` Color chooser (items 2-5): padded pill tabs (tab components,
+  JIPipeDesktopTabPane-style insets), palette wraps (ScrollablePalettePanel
+  tracks viewport width; HIG row was clipped), Cancel(left, dialog-cancel.png)/
+  OK(right, dialog-ok.png) custom footer, LAB marker follows RAW pointer (was
+  re-derived from gamut-clamped color) + rail gradient cache keyed by inputs
+  (lag fix). New TDD ColorChooserDialogLabMarkerTest (marker != clamped a/b).
+- `4041080f91` Redundant icon-only Edit buttons removed (item 6): Color, IconRef,
+  GraphNodeReference, ImageJ importer/exporter refs, both ImageJ operation refs
+  (Configure KEPT — distinct action), Taxonomy "Browse". Tooltip -> display button.
+- `2cb68fa856` Item 1 (ref -> RichSelectionBox combobox): DataInfoRef (grouped by
+  menu path), NodeInfoRef, ParameterTypeInfoRef (honors ui-allowed restriction),
+  ArtifactQueryParameter (stores fullId; matched back). LEFT: IconRef (grid),
+  GraphNodeReference (project modal), ImageJ refs (dynamic scope). Item 7: font
+  preview sample text trailing number = LIVE size (SAMPLE_TEXT_PREFIX +
+  getSize(); showcase uses size 24 to pin). Item 8: inner duplicate "Color"
+  label dropped (one "Color" + Custom…). Harness: 5 new PER_EDITOR showcases +
+  font showcase size 24.
+
+**ITEM 9 (architectural) — spec written, awaiting approval:**
+`docs/superpowers/specs/2026-10-28-font-parameter-family-design.md`
+(commits 0c6ece34ed, dcdb9b1bbf). Font FAMILY of 4 classes, Family-emphasized
+names (user: "FontSizeParameter may imply it's a font size — add Family"):
+- JIPipeFontFamilySizeParameter            jipipe:font-family-size
+- JIPipeFontFamilySizeStyleParameter       jipipe:font-family-size-style
+- JIPipeFontFamilySizeColorParameter       jipipe:font-family-size-color
+- JIPipeFontFamilySizeStyleColorParameter  jipipe:font-family-size-style-color
+  (renamed JIPipeFontParameter; dev ID jipipe:font DROPPED — user: unmerged branch,
+  IDs may change; field-class-id=registration ID, unknown -> throw, so only
+  branch-era dev saves need re-saving; pre-#1339 legacy unaffected)
+Investigation (user asked "how is the label text color even derived"):
+- DrawTextRoi/TableToTextROI: color NOT from font — from
+  VisualLocationROIProperties.lineColor (OptionalColorParameter). font.getColor()
+  never called. -> become family-size-style.
+- RoiToRGB ("Convert 2D ROI to RGB"): label foreground = labelFont.getColor()
+  today; node already computes effective line color per ROI (overrideLineColor or
+  roi.getStrokeColor()). -> family-size-style + new OptionalColorParameter
+  labelColor (default disabled); RoiDrawer gains RoiLabelColorMode {FIXED,
+  FROM_ROI_LINE} (default FIXED so image-viewer/ROI-manager RoiDrawer usages
+  unchanged). Legacy label-foreground migrates into labelColor ENABLED.
+- ScaleBar x2, MontageCreator.LabelParameters, CanvasNote x2: genuinely
+  family+size+style+color -> full type.
+- Bare family-size + family-size-color classes: defined for completeness, unused.
+- ONE adaptive editor: generic JIPipeDesktopFontParameterEditorUI<T extends
+  JIPipeFontValue>, gates style (JIPipeFontStyleCapable) / color
+  (JIPipeFontColorCapable) sections via instanceof; 4 thin subclass registrations.
+Open decisions left for user: (2) include both unused classes now? (3) confirm
+RoiToRGB fresh-node label-follows-ROI-line behavior. After approval:
+writing-plans, then implement on this branch.
