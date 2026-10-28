@@ -27,10 +27,11 @@ public class JIPipeDesktopGraphNodeReferenceParameterEditorUI extends JIPipeDesk
     private void initialize() {
         selectButton.addActionListener(e -> selectNode());
         selectButton.setHorizontalAlignment(SwingConstants.LEFT);
+        selectButton.setToolTipText("Select node");
 
         setLayout(new BorderLayout());
+        // #1339 item 6: the display button already opens the same picker.
         add(selectButton, BorderLayout.CENTER);
-        add(UIUtils.createParameterIconButton(JIPipe.RESOURCES.getIcon16("actions/edit.png"), "Select node", e -> selectNode()), BorderLayout.EAST);
     }
 
     private void selectNode() {

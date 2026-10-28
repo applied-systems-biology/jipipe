@@ -63,12 +63,11 @@ public class JIPipeDesktopTaxonomyFunctionRefParameterEditorUI extends JIPipeDes
         currentlyDisplayed = new JButton();
         currentlyDisplayed.setHorizontalAlignment(SwingConstants.LEFT);
         currentlyDisplayed.addActionListener(e -> openPicker());
+        currentlyDisplayed.setToolTipText("Select the taxonomy function");
         UIUtils.setStandardButtonBorder(currentlyDisplayed);
+        // #1339 item 6: no separate "Browse" button — the display button opens
+        // the same picker.
         add(currentlyDisplayed, BorderLayout.CENTER);
-
-        JButton browseButton = UIUtils.createParameterButton("Browse", JIPipe.RESOURCES.getIcon16("actions/edit.png"), e -> openPicker());
-        browseButton.setToolTipText("Select the taxonomy function");
-        add(browseButton, BorderLayout.EAST);
     }
 
     @Override

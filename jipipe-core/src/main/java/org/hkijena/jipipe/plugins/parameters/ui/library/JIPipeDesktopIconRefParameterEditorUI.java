@@ -59,11 +59,11 @@ public class JIPipeDesktopIconRefParameterEditorUI extends JIPipeDesktopParamete
         currentlyDisplayed = new JButton();
         currentlyDisplayed.setHorizontalAlignment(SwingConstants.LEFT);
         currentlyDisplayed.addActionListener(e -> pickIcon());
+        currentlyDisplayed.setToolTipText("Select icon");
         UIUtils.setStandardButtonBorder(currentlyDisplayed);
+        // #1339 item 6: the display button already opens the same picker, so the
+        // separate icon-only "Edit" button is gone.
         add(currentlyDisplayed, BorderLayout.CENTER);
-
-        JButton selectButton = UIUtils.createParameterIconButton(JIPipe.RESOURCES.getIcon16("actions/edit.png"), "Select icon", e -> pickIcon());
-        add(selectButton, BorderLayout.EAST);
     }
 
     private void pickIcon() {
