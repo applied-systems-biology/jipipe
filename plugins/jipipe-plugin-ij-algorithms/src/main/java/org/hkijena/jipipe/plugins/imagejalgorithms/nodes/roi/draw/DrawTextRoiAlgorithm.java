@@ -184,7 +184,7 @@ public class DrawTextRoiAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
 
-    @SetJIPipeDocumentation(name = "Font", description = "The font (family, size, style and color) of the text")
+    @SetJIPipeDocumentation(name = "Font", description = "The font (family, size and style) of the text")
     @JIPipeParameter("font")
     public JIPipeFontFamilySizeStyleParameter getFont() {
         return font;
