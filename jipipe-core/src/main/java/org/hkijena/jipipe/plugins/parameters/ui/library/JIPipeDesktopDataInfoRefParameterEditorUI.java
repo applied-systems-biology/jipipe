@@ -17,30 +17,34 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
-import org.hkijena.jipipe.desktop.commons.components.pickers.JIPipeDesktopDataTypePicker;
+import org.hkijena.jipipe.desktop.commons.components.selection.JIPipeDesktopRichSelectionBox;
 import org.hkijena.jipipe.plugins.parameters.library.references.JIPipeDataInfoRef;
 import org.hkijena.jipipe.plugins.parameters.library.references.JIPipeDataParameterSettings;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.TooltipUtils;
-import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.classfilters.AnyClassFilter;
 import org.hkijena.jipipe.utils.classfilters.ClassFilter;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
- * Parameter for {@link JIPipeDataInfoRef}
+ * Parameter for {@link JIPipeDataInfoRef}.
+ * <p>
+ * #1339 item 1: the flat data-type picker is now a
+ * {@link JIPipeDesktopRichSelectionBox} — the searchable "new combobox" used by
+ * the enum/dynamic-set editors — instead of a display button + modal picker
+ * window. The box's dropdown groups by type category and filters as you type.
  */
-public class JIPipeDesktopDataInfoRefParameterEditorUI extends JIPipeDesktopParameterEditorUI<JIPipeDataInfoRef> implements JIPipeDesktopDataTypePicker.SelectedDataTypesChangedEventListener {
+public class JIPipeDesktopDataInfoRefParameterEditorUI extends JIPipeDesktopParameterEditorUI<JIPipeDataInfoRef> {
 
-    private JIPipeDesktopDataTypePicker picker;
-    private JButton currentlyDisplayed;
-    private JDialog pickerDialog;
-    private boolean isReloading = false;
+    private JIPipeDesktopRichSelectionBox selectionBox;
+    private List<JIPipeDataInfo> availableInfos = new ArrayList<>();
 
     public JIPipeDesktopDataInfoRefParameterEditorUI(InitializationParameters parameters) {
         super(JIPipeDataInfoRef.class, parameters);
@@ -50,55 +54,24 @@ public class JIPipeDesktopDataInfoRefParameterEditorUI extends JIPipeDesktopPara
 
     private void initialize() {
         setLayout(new BorderLayout());
+        collectAvailableInfos();
+        availableInfos.sort(Comparator.comparing(JIPipeDataInfo::getName, String.CASE_INSENSITIVE_ORDER));
 
-        currentlyDisplayed = new JButton();
-        currentlyDisplayed.setHorizontalAlignment(SwingConstants.LEFT);
-        currentlyDisplayed.addActionListener(e -> pickDataInfo());
-        UIUtils.setStandardButtonBorder(currentlyDisplayed);
-        add(currentlyDisplayed, BorderLayout.CENTER);
-
-        JButton selectButton = UIUtils.createParameterIconButton(JIPipe.RESOURCES.getIcon16("actions/edit.png"), "Select data type", e -> pickDataInfo());
-        add(selectButton, BorderLayout.EAST);
-
-        initializePicker();
-        initializePickerDialog();
+        selectionBox = new JIPipeDesktopRichSelectionBox("Select data type", false,
+                this::options,
+                selected -> {
+                    if (selected.isEmpty()) {
+                        JIPipeDataInfoRef ref = new JIPipeDataInfoRef();
+                        setParameter(ref, true);
+                    } else {
+                        setParameter(new JIPipeDataInfoRef((JIPipeDataInfo) selected.get(0).getValue()), true);
+                    }
+                });
+        add(selectionBox, BorderLayout.CENTER);
     }
 
-    private void initializePickerDialog() {
-        pickerDialog = new JDialog();
-        pickerDialog.setTitle("Select data type");
-        pickerDialog.setContentPane(picker);
-        pickerDialog.setModal(false);
-    }
-
-    @Override
-    public void reload() {
-        if (isReloading)
-            return;
-        isReloading = true;
-        JIPipeDataInfo info;
-        try {
-            JIPipeDataInfoRef infoRef = getParameter();
-            info = infoRef.getInfo();
-        } catch (NullPointerException ignored) {
-            info = null;
-        }
-        if (info != null) {
-            currentlyDisplayed.setText(info.getName());
-            currentlyDisplayed.setToolTipText(TooltipUtils.getDataTooltip(info));
-            currentlyDisplayed.setIcon(JIPipe.getDataTypes().getIconFor(info.getDataClass()));
-            if (!pickerDialog.isVisible())
-                picker.setSelectedDataTypes(Collections.singleton(info));
-        } else {
-            currentlyDisplayed.setText("None selected");
-            currentlyDisplayed.setIcon(JIPipe.RESOURCES.getIcon16("emblems/vcs-conflicting.png"));
-            if (!pickerDialog.isVisible())
-                picker.setSelectedDataTypes(Collections.emptySet());
-        }
-        isReloading = false;
-    }
-
-    private void initializePicker() {
+    private void collectAvailableInfos() {
+        availableInfos = new ArrayList<>();
         Class<? extends JIPipeData> baseClass = JIPipeData.class;
         ClassFilter classFilter = new AnyClassFilter();
         boolean showHidden = false;
@@ -109,38 +82,51 @@ public class JIPipeDesktopDataInfoRefParameterEditorUI extends JIPipeDesktopPara
             classFilter = (ClassFilter) ReflectionUtils.newInstance(settings.dataClassFilter());
         }
 
-        Set<JIPipeDataInfo> availableInfos = new HashSet<>();
+        Set<JIPipeDataInfo> unique = new HashSet<>();
         for (Class<? extends JIPipeData> klass : JIPipe.getDataTypes().getRegisteredDataTypes().values()) {
             JIPipeDataInfo info = JIPipeDataInfo.getInstance(klass);
             if (info.isHidden() && !showHidden)
                 continue;
             if (baseClass.isAssignableFrom(info.getDataClass()) && classFilter.test(info.getDataClass())) {
-                availableInfos.add(info);
+                unique.add(info);
             }
         }
-
-        picker = new JIPipeDesktopDataTypePicker(JIPipeDesktopDataTypePicker.Mode.Single, availableInfos);
-        picker.getSelectedDataTypesChangedEventEmitter().subscribe(this);
+        availableInfos.addAll(unique);
     }
 
-    private void pickDataInfo() {
-        pickerDialog.pack();
-        pickerDialog.setSize(new Dimension(500, 400));
-        pickerDialog.setLocationRelativeTo(this);
-        pickerDialog.setVisible(true);
+    private List<JIPipeDesktopRichSelectionBox.Option<?>> options() {
+        List<JIPipeDesktopRichSelectionBox.Option<?>> result = new ArrayList<>();
+        for (JIPipeDataInfo info : availableInfos) {
+            result.add(new JIPipeDesktopRichSelectionBox.Option<>(info,
+                    info.getName(),
+                    JIPipe.getDataTypes().getIconFor(info.getDataClass()),
+                    info.getMenuPath(),
+                    TooltipUtils.getDataTooltip(info)));
+        }
+        return result;
+    }
+
+    @Override
+    public void reload() {
+        if (selectionBox == null) {
+            return;
+        }
+        JIPipeDataInfo info;
+        try {
+            info = getParameter().getInfo();
+        } catch (NullPointerException ignored) {
+            info = null;
+        }
+        if (info != null) {
+            selectionBox.setSelectedValues(List.of(info));
+        } else {
+            selectionBox.setSelectedValues(List.of());
+        }
+        selectionBox.refreshDisplay();
     }
 
     @Override
     public boolean isUILabelEnabled() {
         return true;
-    }
-
-    @Override
-    public void onDataTypePickerSelectedDataTypesChanged(JIPipeDesktopDataTypePicker.SelectedDataTypesChangedEvent event) {
-        if (pickerDialog.isVisible()) {
-            pickerDialog.setVisible(false);
-            JIPipeDataInfoRef infoRef = new JIPipeDataInfoRef(picker.getSelectedDataTypes().isEmpty() ? null : picker.getSelectedDataTypes().iterator().next());
-            setParameter(infoRef, true);
-        }
     }
 }

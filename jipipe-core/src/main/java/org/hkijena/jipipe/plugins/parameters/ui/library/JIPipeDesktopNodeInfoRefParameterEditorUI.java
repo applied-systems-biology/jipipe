@@ -16,7 +16,7 @@ package org.hkijena.jipipe.plugins.parameters.ui.library;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
-import org.hkijena.jipipe.desktop.commons.components.pickers.JIPipeDesktopNodeInfoPicker;
+import org.hkijena.jipipe.desktop.commons.components.selection.JIPipeDesktopRichSelectionBox;
 import org.hkijena.jipipe.plugins.parameters.library.references.JIPipeNodeInfoRef;
 import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.TooltipUtils;
@@ -24,17 +24,23 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Parameter for {@link JIPipeNodeInfoRef}
+ * Parameter for {@link JIPipeNodeInfoRef}.
+ * <p>
+ * #1339 item 1: the flat algorithm picker is now a
+ * {@link JIPipeDesktopRichSelectionBox} — the searchable "new combobox" used by
+ * the enum/dynamic-set editors — instead of a display button + modal picker
+ * window.
  */
-public class JIPipeDesktopNodeInfoRefParameterEditorUI extends JIPipeDesktopParameterEditorUI<JIPipeNodeInfoRef> implements JIPipeDesktopNodeInfoPicker.NodeInfoSelectedEventListener {
+public class JIPipeDesktopNodeInfoRefParameterEditorUI extends JIPipeDesktopParameterEditorUI<JIPipeNodeInfoRef> {
 
-    private JIPipeDesktopNodeInfoPicker picker;
-    private JButton currentlyDisplayed;
-    private JDialog pickerDialog;
+    private JIPipeDesktopRichSelectionBox selectionBox;
+    private List<JIPipeNodeInfo> availableInfos = new ArrayList<>();
 
     public JIPipeDesktopNodeInfoRefParameterEditorUI(InitializationParameters parameters) {
         super(JIPipeNodeInfoRef.class, parameters);
@@ -44,68 +50,50 @@ public class JIPipeDesktopNodeInfoRefParameterEditorUI extends JIPipeDesktopPara
 
     private void initialize() {
         setLayout(new BorderLayout());
+        availableInfos = JIPipe.getNodes().getRegisteredNodeInfos().values().stream()
+                .filter(d -> !d.isHidden())
+                .sorted(Comparator.comparing(JIPipeNodeInfo::getName, String.CASE_INSENSITIVE_ORDER))
+                .collect(Collectors.toList());
 
-        currentlyDisplayed = new JButton();
-        currentlyDisplayed.setHorizontalAlignment(SwingConstants.LEFT);
-        currentlyDisplayed.addActionListener(e -> pickNodeInfo());
-        UIUtils.setStandardButtonBorder(currentlyDisplayed);
-        add(currentlyDisplayed, BorderLayout.CENTER);
-
-        JButton selectButton = UIUtils.createParameterIconButton(JIPipe.RESOURCES.getIcon16("actions/edit.png"), "Select algorithm type", e -> pickNodeInfo());
-        add(selectButton, BorderLayout.EAST);
-
-        initializePicker();
-        initializePickerDialog();
+        selectionBox = new JIPipeDesktopRichSelectionBox("Select algorithm type", false,
+                this::options,
+                selected -> {
+                    if (selected.isEmpty()) {
+                        JIPipeNodeInfoRef ref = new JIPipeNodeInfoRef();
+                        setParameter(ref, true);
+                    } else {
+                        JIPipeNodeInfoRef ref = getParameter();
+                        ref.setInfo((JIPipeNodeInfo) selected.get(0).getValue());
+                        setParameter(ref, true);
+                    }
+                });
+        add(selectionBox, BorderLayout.CENTER);
     }
 
-    private void initializePickerDialog() {
-        pickerDialog = new JDialog();
-        pickerDialog.setTitle("Select algorithm type");
-        pickerDialog.setContentPane(picker);
-        pickerDialog.setModal(false);
+    private List<JIPipeDesktopRichSelectionBox.Option<?>> options() {
+        List<JIPipeDesktopRichSelectionBox.Option<?>> result = new ArrayList<>();
+        for (JIPipeNodeInfo info : availableInfos) {
+            result.add(new JIPipeDesktopRichSelectionBox.Option<>(info,
+                    info.getName(),
+                    UIUtils.getIconFromColor(ThemeUtils.getNodeFillColor(info)),
+                    null,
+                    TooltipUtils.getAlgorithmTooltip(info)));
+        }
+        return result;
     }
 
     @Override
     public void reload() {
-        JIPipeNodeInfoRef infoRef = getParameter();
-        JIPipeNodeInfo info = infoRef.getInfo();
-        if (info != null) {
-            currentlyDisplayed.setText(info.getName());
-            currentlyDisplayed.setToolTipText(TooltipUtils.getAlgorithmTooltip(info));
-            currentlyDisplayed.setIcon(UIUtils.getIconFromColor(ThemeUtils.getNodeFillColor(info)));
-            picker.setSelectedInfos(Collections.singleton(info));
-        } else {
-            currentlyDisplayed.setText("None selected");
-            currentlyDisplayed.setIcon(JIPipe.RESOURCES.getIcon16("emblems/vcs-conflicting.png"));
-            picker.setSelectedInfos(Collections.emptySet());
+        if (selectionBox == null) {
+            return;
         }
-    }
-
-    private void initializePicker() {
-        picker = new JIPipeDesktopNodeInfoPicker(JIPipeDesktopNodeInfoPicker.Mode.Single, JIPipe.getNodes().getRegisteredNodeInfos().values().stream()
-                .filter(d -> !d.isHidden()).collect(Collectors.toSet()));
-        picker.getNodeInfoSelectedEventEmitter().subscribe(this);
-    }
-
-    private void pickNodeInfo() {
-        pickerDialog.pack();
-        pickerDialog.setSize(new Dimension(500, 400));
-        pickerDialog.setLocationRelativeTo(this);
-        pickerDialog.setVisible(true);
+        JIPipeNodeInfo info = getParameter().getInfo();
+        selectionBox.setSelectedValues(info == null ? List.of() : List.of(info));
+        selectionBox.refreshDisplay();
     }
 
     @Override
     public boolean isUILabelEnabled() {
         return true;
-    }
-
-    @Override
-    public void onNodeInfoPickerNodeInfoSelectedEvent(JIPipeDesktopNodeInfoPicker.NodeInfoSelectedEvent event) {
-        if (pickerDialog.isVisible()) {
-            pickerDialog.setVisible(false);
-            JIPipeNodeInfoRef infoRef = getParameter();
-            infoRef.setInfo(event.getInfo());
-            setParameter(infoRef, true);
-        }
     }
 }

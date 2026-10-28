@@ -40,8 +40,12 @@ import java.util.regex.Pattern;
  */
 public class JIPipeDesktopFontParameterEditorUI extends JIPipeDesktopParameterEditorUI<JIPipeFontParameter> {
 
-    /** The sample text rendered in the preview. */
-    private static final String SAMPLE_TEXT = "Aa Label text 12";
+    /**
+     * The sample text rendered in the preview: the trailing number is the font's
+     * <em>current size</em> (the paint methods substitute it live — #1339 item
+     * 7: "'12' in the example text should be the font size").
+     */
+    private static final String SAMPLE_TEXT_PREFIX = "Aa Label text ";
 
     private static final Pattern MONO_PATTERN =
             Pattern.compile("mono|courier|consolas|menlo|dejavu sans mono|liberation mono|source code|fira code|jetbrains|inconsolata|ubunto? mono", Pattern.CASE_INSENSITIVE);
@@ -243,13 +247,15 @@ public class JIPipeDesktopFontParameterEditorUI extends JIPipeDesktopParameterEd
         p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
         p.setOpaque(false);
 
-        JPanel header = new JPanel(new BorderLayout());
+        // #1339 item 8: no inner "Color" label here — the form row already
+        // labels the section "Color" (the duplication was "Color → Color →
+        // Custom"). Only the "Custom…" button sits on the row now.
+        JPanel header = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
         header.setOpaque(false);
-        header.add(new JLabel("Color"), BorderLayout.WEST);
         JButton custom = new JButton("Custom…");
         custom.setFocusable(false);
         custom.addActionListener(e -> pickCustomColor(parameter));
-        header.add(custom, BorderLayout.EAST);
+        header.add(custom);
         p.add(header);
 
         JPanel row = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
@@ -396,7 +402,8 @@ public class JIPipeDesktopFontParameterEditorUI extends JIPipeDesktopParameterEd
             g2.setFont(render);
             FontMetrics fm = g2.getFontMetrics();
             g2.setColor(parameter.getColor());
-            g2.drawString(SAMPLE_TEXT, 6, (getHeight() - fm.getHeight()) / 2 + fm.getAscent());
+            // #1339 item 7: the trailing number is the font's current size.
+            g2.drawString(SAMPLE_TEXT_PREFIX + parameter.getSize(), 6, (getHeight() - fm.getHeight()) / 2 + fm.getAscent());
             g2.setColor(new Color(110, 110, 110, 90));
             g2.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
             g2.dispose();
@@ -416,7 +423,8 @@ public class JIPipeDesktopFontParameterEditorUI extends JIPipeDesktopParameterEd
             g2.setFont(font);
             FontMetrics fm = g2.getFontMetrics();
             g2.setColor(parameter.getColor());
-            g2.drawString(SAMPLE_TEXT, 8, Math.min((getHeight() - fm.getHeight()) / 2 + fm.getAscent(), getHeight() - 4));
+            // #1339 item 7: the trailing number is the font's current size.
+            g2.drawString(SAMPLE_TEXT_PREFIX + parameter.getSize(), 8, Math.min((getHeight() - fm.getHeight()) / 2 + fm.getAscent(), getHeight() - 4));
             g2.setColor(new Color(110, 110, 110, 90));
             g2.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
             g2.dispose();

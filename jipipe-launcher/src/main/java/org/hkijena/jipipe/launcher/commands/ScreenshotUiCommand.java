@@ -40,6 +40,11 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.NumberParameterS
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringOrDouble;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.IntegerList;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalBooleanParameter;
+import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeArtifactQueryParameter;
+import org.hkijena.jipipe.plugins.parameters.library.references.IconRef;
+import org.hkijena.jipipe.plugins.parameters.library.references.JIPipeDataInfoRef;
+import org.hkijena.jipipe.plugins.parameters.library.references.JIPipeNodeInfoRef;
+import org.hkijena.jipipe.plugins.parameters.library.references.JIPipeParameterTypeInfoRef;
 import org.hkijena.jipipe.plugins.parameters.library.roi.FixedMargin;
 import org.hkijena.jipipe.plugins.parameters.library.roi.InnerMargin;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
@@ -140,6 +145,14 @@ public class ScreenshotUiCommand {
         PER_EDITOR.put("editor-optional-color", OptionalColorParameter.class);
         PER_EDITOR.put("editor-expression", JIPipeExpressionParameter.class);
         PER_EDITOR.put("editor-runtime-partition-ref", RuntimePartitionReferenceParameter.class);
+        // #1339 item 1/6: the ref editors that switched to the searchable
+        // RichSelectionBox comboboxes (and the icon ref whose redundant Edit
+        // button was removed) — per-editor renders for the VLM loop.
+        PER_EDITOR.put("editor-data-info-ref", JIPipeDataInfoRef.class);
+        PER_EDITOR.put("editor-node-info-ref", JIPipeNodeInfoRef.class);
+        PER_EDITOR.put("editor-parameter-type-info-ref", JIPipeParameterTypeInfoRef.class);
+        PER_EDITOR.put("editor-artifact-query", JIPipeArtifactQueryParameter.class);
+        PER_EDITOR.put("editor-icon-ref", IconRef.class);
     }
 
     private static final int PANEL_WIDTH = 480;
@@ -267,6 +280,10 @@ public class ScreenshotUiCommand {
     private static class FontParameterShowcase extends JIPipeDynamicParameterCollection {
         FontParameterShowcase() {
             addParameter("font", JIPipeFontParameter.class, "Label font", "A font with family, size, style and text color");
+            // #1339 item 7: a non-default size proves the preview's trailing
+            // number tracks the parameter's size (not a hardcoded "12").
+            JIPipeFontParameter font = getValue("font", JIPipeFontParameter.class);
+            font.setSize(24);
         }
     }
 
