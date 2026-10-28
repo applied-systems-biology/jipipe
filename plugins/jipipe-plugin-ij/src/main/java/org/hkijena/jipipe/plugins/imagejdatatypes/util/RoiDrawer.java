@@ -56,13 +56,24 @@ public class RoiDrawer extends AbstractJIPipeParameterCollection {
     /**
      * An explicit label font (when set, it replaces the family/size pair).
      * Additive API for consumers that manage the label font as one value
-     * (e.g. {@code JIPipeFontParameter}, #1339).
+     * (e.g. {@code JIPipeFontFamilySizeStyleColorParameter}, #1339).
      */
     private Font labelFontOverride = null;
     private double opacity = 1.0;
     private boolean ignoreZ = false;
     private boolean ignoreC = false;
     private boolean ignoreT = false;
+    private RoiLabelColorMode labelColorMode = RoiLabelColorMode.FIXED;
+
+    /**
+     * Determines the label foreground per ROI.
+     */
+    public enum RoiLabelColorMode {
+        /** Use the explicit {@code labelForeground} for all labels. */
+        FIXED,
+        /** Use each ROI's effective line color as the label foreground. */
+        FROM_ROI_LINE;
+    }
 
     public RoiDrawer() {
     }
@@ -117,6 +128,7 @@ public class RoiDrawer extends AbstractJIPipeParameterCollection {
         this.ignoreC = other.ignoreC;
         this.ignoreZ = other.ignoreZ;
         this.ignoreT = other.ignoreT;
+        this.labelColorMode = other.labelColorMode;
     }
 
     @SetJIPipeDocumentation(name = "Opacity", description = "Opacity of the added ROI and labels. If zero, they are not visible. If set to one, they are fully visible.")
@@ -184,6 +196,34 @@ public class RoiDrawer extends AbstractJIPipeParameterCollection {
             return labelFontOverride;
         }
         return labelFontFamily.toFont(Font.PLAIN, labelSize);
+    }
+
+    /**
+     * The label foreground mode. This is a rendering mode set by the consumer
+     * node (e.g. {@code RoiToRGB}), not a user-facing parameter.
+     */
+    public void setLabelColorMode(RoiLabelColorMode mode) {
+        this.labelColorMode = mode;
+    }
+
+    /**
+     * @return the label foreground mode (default {@link RoiLabelColorMode#FIXED})
+     */
+    public RoiLabelColorMode getLabelColorMode() {
+        return labelColorMode;
+    }
+
+    /**
+     * The effective label foreground for a specific ROI: the explicit
+     * {@code labelForeground} in {@link RoiLabelColorMode#FIXED} mode, or the
+     * effective line color of the ROI in {@link RoiLabelColorMode#FROM_ROI_LINE}
+     * mode — the same expression the outline uses.
+     */
+    Color effectiveLabelForeground(Roi roi) {
+        if (labelColorMode == RoiLabelColorMode.FIXED) {
+            return labelForeground;
+        }
+        return (overrideLineColor.isEnabled() || roi.getStrokeColor() == null) ? overrideLineColor.getContent() : roi.getStrokeColor();
     }
 
     @SetJIPipeDocumentation(name = "Draw labels", description = "Allows to draw labels on top of ROI.")
@@ -387,7 +427,7 @@ public class RoiDrawer extends AbstractJIPipeParameterCollection {
                                     roi,
                                     roiIndices.get(roi),
                                     new Rectangle(centroid.x, centroid.y, 0, 0),
-                                    labelForeground,
+                                    effectiveLabelForeground(roi),
                                     labelBackground.getContent(),
                                     labelFont,
                                     labelBackground.isEnabled());
@@ -513,7 +553,7 @@ public class RoiDrawer extends AbstractJIPipeParameterCollection {
                     roi,
                     roiIndices.get(roi),
                     new Rectangle(centroid.x, centroid.y, 0, 0),
-                    labelForeground,
+                    effectiveLabelForeground(roi),
                     labelBackground.getContent(),
                     labelFont,
                     labelBackground.isEnabled());
@@ -673,7 +713,7 @@ public class RoiDrawer extends AbstractJIPipeParameterCollection {
                     roiIndices.get(roi),
                     centroid,
                     magnification,
-                    labelForeground,
+                    effectiveLabelForeground(roi),
                     labelBackground.getContent(),
                     labelFont,
                     labelBackground.isEnabled());
