@@ -75,6 +75,14 @@ public class ColorRail extends JComponent {
         return value;
     }
 
+    public double getMin() {
+        return min;
+    }
+
+    public double getMax() {
+        return max;
+    }
+
     public void setValue(double v) {
         v = Math.max(min, Math.min(max, v));
         if (v == value) {

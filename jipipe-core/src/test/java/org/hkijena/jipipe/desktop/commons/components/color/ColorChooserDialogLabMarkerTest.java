@@ -22,24 +22,31 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Regression test for the LAB well's marker-follow behavior (#1339, item 5).
+ * Regression test for the LAB well's click geometry (#1339).
  * <p>
- * The marker was previously derived from {@code toLab(currentColor)}, but the
- * picked color passes through {@code ColorSpaces.fromLab} which clamps
- * out-of-gamut a/b values to the sRGB gamut - so the circle "stuck" at the
- * clamped position instead of following the cursor. The fix records the raw
- * pointer a/b. This test presses an out-of-gamut corner of the a/b plane and
- * asserts the marker lands on the pressed (unclamped) coordinates, not on the
- * clamped color's coordinates.
+ * The a/b plane spans a, b ∈ [-128, +128] (the well's background image and the
+ * marker's draw math both use that range). A click at pixel (x, y) must therefore
+ * map to a = (x/w*2 - 1) * 128 and b = (1 - y/h*2) * 128 - i.e. the well CENTER
+ * is the neutral axis (a=b=0), TOP-RIGHT is (+128, +128), BOTTOM-LEFT is
+ * (-128, -128).
  * <p>
- * AWT-backed (drives a synthetic mouse press with real geometry); skips when
+ * The previous version of this test asserted the marker against the click
+ * handler's OWN (buggy) formula, so it passed while the well misbehaved: a
+ * stray term shifted every clicked b by +128, so the selected color got the
+ * wrong b and the marker was drawn in the top half (or above the component,
+ * hence "sometimes appears").
+ * <p>
+ * AWT-backed (drives synthetic mouse presses with real geometry); skips when
  * headless, mirroring {@code ColorChooserDialogRefreshTest}.
  */
 class ColorChooserDialogLabMarkerTest {
+
+    private static final double TOL = 1.5;
 
     @BeforeAll
     static void boot() {
@@ -53,47 +60,82 @@ class ColorChooserDialogLabMarkerTest {
         JIPipe.ensureInstance();
     }
 
-    /**
-     * The dialog's current color via its hex field (package-private seam).
-     */
-    private static Color dialogColor(JIPipeDesktopColorChooserDialog d) {
-        return org.hkijena.jipipe.utils.color.ColorSpaces.fromHex(d.getHexText());
-    }
-
-    @Test
-    void labMarkerFollowsRawPointerEvenWhenColorIsGamutClamped() {
+    private static JIPipeDesktopColorChooserDialog dialogWithLabTab() {
         JIPipeDesktopColorChooserDialog d =
                 new JIPipeDesktopColorChooserDialog(null, "t", new Color(128, 128, 128), false);
         d.showLabTab();
         JComponent lab = d.getLabWell();
         assertNotNull(lab, "LAB well must exist after the LAB tab is built");
+        return d;
+    }
 
+    private static void press(JComponent c, int x, int y) {
+        c.dispatchEvent(new MouseEvent(c, MouseEvent.MOUSE_PRESSED, 0L, 0, x, y, 1, false));
+    }
+
+    @Test
+    void clickAtWellCenterSelectsNeutralAndMarkerSitsAtCenter() {
+        JIPipeDesktopColorChooserDialog d = dialogWithLabTab();
+        JComponent lab = d.getLabWell();
         int w = Math.max(2, lab.getWidth());
         int h = Math.max(2, lab.getHeight());
-        // Press the bottom-left corner: a ~ -128, b ~ -128 - far outside the
-        // sRGB gamut for any L, so fromLab clamps and the old marker would have
-        // moved back toward the gamut center.
-        int x = 0;
-        int y = h - 1;
-        lab.dispatchEvent(new MouseEvent(lab, MouseEvent.MOUSE_PRESSED, 0L, 0, x, y, 1, false));
+
+        press(lab, w / 2, h / 2);
+
+        // The marker must sit at the neutral axis (0, 0) - a center click.
+        double[] marker = d.getLabMarkerAb();
+        assertNotNull(marker);
+        assertEquals(0.0, marker[0], TOL, "center click: marker a must be ~0");
+        assertEquals(0.0, marker[1], TOL, "center click: marker b must be ~0");
+
+        // And the SELECTED color must be neutral too (a=b=0 at the current L) -
+        // the center of the plane is the gray axis, not some shifted hue.
+        double[] picked = org.hkijena.jipipe.utils.color.ColorSpaces.toLab(
+                org.hkijena.jipipe.utils.color.ColorSpaces.fromHex(d.getHexText()));
+        assertEquals(0.0, picked[1], 1.0, "center click: selected color a must be ~0");
+        assertEquals(0.0, picked[2], 1.0, "center click: selected color b must be ~0");
+    }
+
+    @Test
+    void clickAtTopRightCornerMapsToPositiveAb() {
+        JIPipeDesktopColorChooserDialog d = dialogWithLabTab();
+        JComponent lab = d.getLabWell();
+        int w = Math.max(2, lab.getWidth());
+        int h = Math.max(2, lab.getHeight());
+
+        press(lab, w - 1, 0);
 
         double[] marker = d.getLabMarkerAb();
-        assertNotNull(marker, "marker coordinates must be available");
-        double expectedA = (x / (double) w * 2 - 1) * 128;
-        double expectedB = (1 - y / (double) h * 2 + 1) * 128;
-        assertTrue(Math.abs(marker[0] - expectedA) < 0.5 && Math.abs(marker[1] - expectedB) < 0.5,
-                "marker must sit at the raw pointer a/b (" + expectedA + ", " + expectedB
-                        + ") but was (" + marker[0] + ", " + marker[1] + ")");
+        assertNotNull(marker);
+        assertEquals(128.0, marker[0], 2.0, "top-right click: marker a must be ~+128");
+        assertEquals(128.0, marker[1], 2.0, "top-right click: marker b must be ~+128");
+    }
 
-        // And it must NOT equal the (gamut-clamped) color's own a/b - that was
-        // exactly the bug (marker pinned to the clamped position).
-        double[] clamped = org.hkijena.jipipe.utils.color.ColorSpaces.toLab(new Color(128, 128, 128));
-        Color picked = dialogColor(d);
-        double[] pickedLab = org.hkijena.jipipe.utils.color.ColorSpaces.toLab(picked);
-        boolean differsFromPicked = Math.abs(pickedLab[1] - marker[0]) > 1.0
-                || Math.abs(pickedLab[2] - marker[1]) > 1.0;
-        assertTrue(differsFromPicked,
-                "the marker must differ from the picked color's clamped a/b (the old bug): marker=("
-                        + marker[0] + ", " + marker[1] + ") pickedLab=(" + pickedLab[1] + ", " + pickedLab[2] + ")");
+    @Test
+    void clickOutOfGamutMarkerFollowsPointerNotClampedColor() {
+        JIPipeDesktopColorChooserDialog d = dialogWithLabTab();
+        JComponent lab = d.getLabWell();
+        int w = Math.max(2, lab.getWidth());
+        int h = Math.max(2, lab.getHeight());
+
+        // Bottom-left: a ~ -128, b ~ -128 - far outside the sRGB gamut at this
+        // L, so fromLab clamps the color while the marker must stay where the
+        // user clicked.
+        press(lab, 0, h - 1);
+
+        double[] marker = d.getLabMarkerAb();
+        assertNotNull(marker);
+        assertEquals(-128.0, marker[0], 2.0, "bottom-left click: marker a must be ~-128");
+        assertEquals(-128.0, marker[1], 2.0, "bottom-left click: marker b must be ~-128");
+
+        // The picked color is gamut-clamped, so its a/b differ from the raw
+        // pointer by more than the tolerance in at least one channel.
+        double[] picked = org.hkijena.jipipe.utils.color.ColorSpaces.toLab(
+                org.hkijena.jipipe.utils.color.ColorSpaces.fromHex(d.getHexText()));
+        boolean differs = Math.abs(picked[1] - marker[0]) > 1.0
+                || Math.abs(picked[2] - marker[1]) > 1.0;
+        assertTrue(differs,
+                "the marker must differ from the picked color's clamped a/b: marker=("
+                        + marker[0] + ", " + marker[1] + ") picked=(" + picked[1] + ", " + picked[2] + ")");
     }
 }

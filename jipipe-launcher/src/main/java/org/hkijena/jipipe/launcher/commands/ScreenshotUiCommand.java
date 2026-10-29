@@ -325,6 +325,7 @@ public class ScreenshotUiCommand {
         if (only.isEmpty() || only.contains("dialog-color")) {
             JIPipeDesktopColorChooserDialog dialog =
                     new JIPipeDesktopColorChooserDialog(null, "Select color", initial, true);
+            dialog.showTab("RGB"); // the channel rails + numeric spinners (#1339)
             ScreenshotRenderer.renderFixed(dialog.getContentPane(), DIALOG_WIDTH, DIALOG_HEIGHT, outDir.resolve("dialog-color.png"));
             rendered.add("dialog-color");
         }

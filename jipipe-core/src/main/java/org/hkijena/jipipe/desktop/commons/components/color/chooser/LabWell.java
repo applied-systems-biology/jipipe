@@ -44,8 +44,15 @@ public class LabWell extends JComponent {
     }
 
     private void update(MouseEvent e) {
+        // Same a/b range as the background image and the marker draw math
+        // below: the plane spans [-128, +128] in both axes, so the well CENTER
+        // is the neutral axis (a=b=0). The previous b formula had a stray
+        // "+ 1" that shifted every clicked b by +128 - a center click
+        // selected b=128 instead of 0, and the marker was drawn in the top
+        // half or above the component (hence "goes somewhere / sometimes
+        // appears"). (#1339)
         double a = (e.getX() / (double) Math.max(1, getWidth()) * 2 - 1) * 128;
-        double b = (1 - e.getY() / (double) Math.max(1, getHeight()) * 2 + 1) * 128;
+        double b = (1 - e.getY() / (double) Math.max(1, getHeight()) * 2) * 128;
         pointerA = a;
         pointerB = b;
         double L = ColorSpaces.toLab(jiPipeDesktopColorChooserDialog.getCurrentColor())[0];

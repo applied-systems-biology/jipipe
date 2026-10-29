@@ -77,6 +77,10 @@ public class JIPipeDesktopColorChooserDialog extends JDialog {
     private ColorRail blueRailLab;
 
     private CheckerSwatch currentSwatch;
+    // Test seams for the numeric spinners (#1339); see ColorChooserDialogSpinnerTest.
+    private JSpinner rSpinner;
+    private JSpinner labBSpinner;
+    private final java.util.IdentityHashMap<ColorRail, JSpinner> railSpinners = new java.util.IdentityHashMap<>();
     /**
      * Creates the dialog (owner may be null; the dialog is not shown by this
      * constructor - use {@link #show} or {@code setVisible(true)}).
@@ -237,11 +241,26 @@ public class JIPipeDesktopColorChooserDialog extends JDialog {
     }
 
     /**
-     * Shows the LAB tab (used by the screenshot harness).
+     * Shows the named space tab by TITLE (used by the screenshot harness).
+     * Title-based because the tab order changed with the redesign
+     * (a Palette tab was added at index 0) - a hardcoded index silently
+     * selected the wrong tab (#1339).
+     */
+    public void showTab(String title) {
+        for (int i = 0; i < spaceTabs.getTabCount(); i++) {
+            if (title.equals(spaceTabs.getTitleAt(i))) {
+                spaceTabs.setSelectedIndex(i);
+                refresh();
+                return;
+            }
+        }
+    }
+
+    /**
+     * Shows the LAB tab (used by the screenshot harness + tests).
      */
     public void showLabTab() {
-        spaceTabs.setSelectedIndex(2);
-        refresh();
+        showTab("LAB");
     }
 
     String getHexText() {
@@ -250,6 +269,22 @@ public class JIPipeDesktopColorChooserDialog extends JDialog {
 
     JComponent getRedRail() {
         return rRail;
+    }
+
+    /**
+     * The Red channel's numeric spinner (package-private test seam).
+     * See {@code ColorChooserDialogSpinnerTest}.
+     */
+    JComponent getRedSpinner() {
+        return rSpinner;
+    }
+
+    /**
+     * The LAB b* channel's numeric spinner (package-private test seam).
+     * See {@code ColorChooserDialogSpinnerTest}.
+     */
+    JComponent getLabBSpinner() {
+        return labBSpinner;
     }
 
     JComponent getHsbWell() {
@@ -319,20 +354,20 @@ public class JIPipeDesktopColorChooserDialog extends JDialog {
 
     private JPanel buildRgbPanel() {
         JIPipeDesktopFormPanel p = new JIPipeDesktopFormPanel(JIPipeDesktopFormPanel.TRANSPARENT_BACKGROUND);
-        p.addToForm(createRail(rRail, v -> {
+        p.addToForm(createRailWithSpinner(rRail, v -> {
             int rgb = getCurrentColor().getRGB();
             setCurrentColor(new Color((int) v, ((rgb >> 8) & 0xFF), ((rgb & 0xFF)), ((rgb >> 24) & 0xFF)));
         }), new JLabel("Red"));
-        p.addToForm(createRail(gRail, v -> {
+        p.addToForm(createRailWithSpinner(gRail, v -> {
             int rgb = getCurrentColor().getRGB();
             setCurrentColor(new Color(((rgb >> 16) & 0xFF), (int) v, ((rgb & 0xFF)), ((rgb >> 24) & 0xFF)));
         }),  new JLabel("Green"));
-        p.addToForm(createRail(blueRail, v -> {
+        p.addToForm(createRailWithSpinner(blueRail, v -> {
             int rgb = getCurrentColor().getRGB();
             setCurrentColor(new Color(((rgb >> 16) & 0xFF), ((rgb >> 8) & 0xFF), (int) v, ((rgb >> 24) & 0xFF)));
         }),   new JLabel("Blue"));
         if (withTransparency) {
-            p.addToForm(createRail(alphaRail(), v -> setColorAlpha((int) v)), new  JLabel("Alpha"));
+            p.addToForm(createRailWithSpinner(alphaRail(), v -> setColorAlpha((int) v)), new  JLabel("Alpha"));
         }
         hexField.setFont(new Font(Font.MONOSPACED, Font.PLAIN, hexField.getFont().getSize()));
         hexField.addActionListener(e -> commitHex());
@@ -356,20 +391,20 @@ public class JIPipeDesktopColorChooserDialog extends JDialog {
         hueRail = new ColorRail(0, 360, null);
         satRail = new ColorRail(0, 100, null);
         briRail = new ColorRail(0, 100, null);
-        rails.addToForm(createRail(hueRail, v -> {
+        rails.addToForm(createRailWithSpinner(hueRail, v -> {
             double[] hsb = ColorSpaces.toHsb(getCurrentColor());
             setCurrentColor(ColorSpaces.fromHsb(v, hsb[1], hsb[2]));
         }), new JLabel("Hue"));
-        rails.addToForm(createRail(satRail, v -> {
+        rails.addToForm(createRailWithSpinner(satRail, v -> {
             double[] hsb = ColorSpaces.toHsb(getCurrentColor());
             setCurrentColor(ColorSpaces.fromHsb(hsb[0], v, hsb[2]));
         }),  new JLabel("Sat"));
-        rails.addToForm(createRail(briRail, v -> {
+        rails.addToForm(createRailWithSpinner(briRail, v -> {
             double[] hsb = ColorSpaces.toHsb(getCurrentColor());
             setCurrentColor(ColorSpaces.fromHsb(hsb[0], hsb[1], v));
         }),   new JLabel("Bri"));
         if (withTransparency) {
-            rails.addToForm(createRail(alphaRail(), v -> setColorAlpha((int) v)),
+            rails.addToForm(createRailWithSpinner(alphaRail(), v -> setColorAlpha((int) v)),
                     new JLabel("Alpha"));
         }
         p.add(rails, BorderLayout.EAST);
@@ -386,11 +421,11 @@ public class JIPipeDesktopColorChooserDialog extends JDialog {
         lRail = new ColorRail(0, 100, i -> new Color((int) i, (int) i, (int) i));
         aRail = new ColorRail(-128, 127, null);
         blueRailLab = new ColorRail(-128, 127, null);
-        rails.addToForm(createRail(lRail, v -> setColorLab(v, aRail.getValue(), blueRailLab.getValue())), new  JLabel("L*"));
-        rails.addToForm(createRail(aRail, v -> setColorLab(lRail.getValue(), v, blueRailLab.getValue())), new JLabel("a*"));
-        rails.addToForm(createRail(blueRailLab, v -> setColorLab(lRail.getValue(), aRail.getValue(), v)), new  JLabel("b*"));
+        rails.addToForm(createRailWithSpinner(lRail, v -> setColorLab(v, aRail.getValue(), blueRailLab.getValue())), new  JLabel("L*"));
+        rails.addToForm(createRailWithSpinner(aRail, v -> setColorLab(lRail.getValue(), v, blueRailLab.getValue())), new JLabel("a*"));
+        rails.addToForm(createRailWithSpinner(blueRailLab, v -> setColorLab(lRail.getValue(), aRail.getValue(), v)), new  JLabel("b*"));
         if (withTransparency) {
-            rails.addToForm(createRail(alphaRail(), v -> setColorAlpha((int) v)), new JLabel("Alpha"));
+            rails.addToForm(createRailWithSpinner(alphaRail(), v -> setColorAlpha((int) v)), new JLabel("Alpha"));
         }
         p.add(rails, BorderLayout.EAST);
         return p;
@@ -562,6 +597,12 @@ public class JIPipeDesktopColorChooserDialog extends JDialog {
                 currentSwatch.setToolTipText(colorTooltip(new NamedColor(getCurrentColor(), null)));
                 currentSwatch.repaint();
             }
+            // #1339: keep the numeric spinners in lockstep with the rails
+            // (no-op when unchanged, so the spinner<->rail feedback loop
+            // terminates).
+            for (java.util.Map.Entry<ColorRail, JSpinner> e : railSpinners.entrySet()) {
+                e.getValue().setValue(e.getKey().getValue());
+            }
         } finally {
             updating = false;
         }
@@ -579,13 +620,22 @@ public class JIPipeDesktopColorChooserDialog extends JDialog {
         }
     }
 
-    private JPanel createRail(ColorRail rail, DoubleConsumer onChange) {
+    private JPanel createRailWithSpinner(ColorRail rail, DoubleConsumer onChange) {
         // GridBag (not BorderLayout): a bare add() into a BorderLayout lands in
         // EAST and would starve the rail (CENTER) of its width.
         JPanel row = new JPanel(new BorderLayout());
         row.setOpaque(false);
         rail.addChangeListener(onChange::accept);
         row.add(rail, BorderLayout.CENTER);
+        // #1339: Krita-style numeric editing - a spinner next to every rail.
+        JSpinner spinner = createChannelSpinner(rail);
+        row.add(spinner, BorderLayout.EAST);
+        if (rail == rRail) {
+            rSpinner = spinner; // test seam
+        } else if (rail == blueRailLab) {
+            labBSpinner = spinner; // test seam
+        }
+        railSpinners.put(rail, spinner);
         MouseAdapter rowForwarder = new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
@@ -600,6 +650,39 @@ public class JIPipeDesktopColorChooserDialog extends JDialog {
         row.addMouseListener(rowForwarder);
         row.addMouseMotionListener(rowForwarder);
         return row;
+    }
+
+    /**
+     * A Krita-style numeric spinner for a channel rail (#1339). Range mirrors
+     * the rail; 8-bit channels (RGB, alpha) use integer steps, the LAB/HSB
+     * axes use 0.1 steps. Typing or using the up/down buttons drives the rail
+     * (and thus the color) through the SAME listener the mouse uses; the
+     * rail guards on value equality, so the rail<->spinner feedback loop that
+     * {@code refresh()} creates terminates naturally.
+     */
+    private JSpinner createChannelSpinner(ColorRail rail) {
+        double min = rail.getMin();
+        double max = rail.getMax();
+        boolean integer = max <= 255 && min >= 0; // RGB 0-255, alpha 0-255
+        double step = integer ? 1 : 0.1;
+        SpinnerModel model = integer
+                ? new SpinnerNumberModel((int) min, min, max, 1)
+                : new SpinnerNumberModel(min, min, max, step);
+        String format = integer ? "0" : "0.0";
+        JSpinner spinner = new JSpinner(model);
+        JSpinner.NumberEditor editor = new JSpinner.NumberEditor(spinner, format);
+        // Size the editor's text field for the full range ("-128", "255",
+        // "127.0") and right-align the value like Krita's channel fields.
+        editor.getTextField().setColumns(integer ? 3 : 5);
+        editor.getTextField().setHorizontalAlignment(JTextField.RIGHT);
+        spinner.setEditor(editor);
+        // Height 32 (a 20px spinner clipped the text vertically); width leaves
+        // room for the value plus the up/down arrows.
+        spinner.setPreferredSize(new Dimension(integer ? 64 : 74, 32));
+        spinner.getEditor().setToolTipText("Type the value or use the up/down buttons");
+        spinner.addChangeListener(e ->
+                rail.setValue(((Number) spinner.getValue()).doubleValue()));
+        return spinner;
     }
 
     /**
