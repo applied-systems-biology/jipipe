@@ -291,19 +291,6 @@ public class JIPipeDesktopColorChooserDialog extends JDialog {
         return hsbWell;
     }
 
-    JComponent getLabWell() {
-        return labWell;
-    }
-
-    /**
-     * The a/b position the LAB marker is drawn at (package-private test seam):
-     * the raw pointer coordinates when a drag happened, otherwise the current
-     * color's own a/b. See {@code ColorChooserDialogLabMarkerTest}.
-     */
-    double[] getLabMarkerAb() {
-        return labWell == null ? null : labWell.markerAb();
-    }
-
     private JComponent buildPreviewPanel() {
         currentSwatch = new CheckerSwatch();
         return currentSwatch;

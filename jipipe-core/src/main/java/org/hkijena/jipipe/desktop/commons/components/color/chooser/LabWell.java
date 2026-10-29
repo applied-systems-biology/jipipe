@@ -59,17 +59,6 @@ public class LabWell extends JComponent {
         jiPipeDesktopColorChooserDialog.setCurrentColor(ColorSpaces.fromLab(L, a, b));
     }
 
-    /**
-     * @return the a/b the marker is drawn at (pointer position or color's own).
-     */
-    public double[] markerAb() {
-        if (Double.isNaN(pointerA) || Double.isNaN(pointerB)) {
-            double[] lab = ColorSpaces.toLab(jiPipeDesktopColorChooserDialog.getCurrentColor());
-            return new double[]{lab[1], lab[2]};
-        }
-        return new double[]{pointerA, pointerB};
-    }
-
     @Override
     protected void paintComponent(Graphics g) {
         ensureBg();
