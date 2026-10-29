@@ -68,7 +68,7 @@ public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
      * immutable index that is never mutated in place: invalidation swaps the
      * reference to {@code null}, and a build publishes a fresh snapshot. A
      * concurrent build may discard another thread's just-published snapshot
-     * — acceptable for a best-effort cache (at worst a momentarily stale or
+     * - acceptable for a best-effort cache (at worst a momentarily stale or
      * recomputed result; correctness never depends on it). Every thread sees
      * either the pre-swap or the post-swap index, never a half-built one.
      */
@@ -145,13 +145,13 @@ public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
      * <p>
      * The result bundles three disjoint, per-list-capped lists:
      * <ul>
-     * <li><b>{@link NodeRelations#next next}</b> — the entries that run
+     * <li><b>{@link NodeRelations#next next}</b> - the entries that run
      * <em>after</em> this one in a workflow (family successors ∪ template
      * edges pointing out of it), from the cached {@link NodeRelationIndex};</li>
-     * <li><b>{@link NodeRelations#previous previous}</b> — the entries that
+     * <li><b>{@link NodeRelations#previous previous}</b> - the entries that
      * run <em>before</em> this one (family predecessors ∪ template edges
      * pointing into it), from the index; and</li>
-     * <li><b>{@link NodeRelations#similar similar}</b> — entries that do the
+     * <li><b>{@link NodeRelations#similar similar}</b> - entries that do the
      * same kind of thing as this one, ranked by taxonomy tiers
      * (same function → same framework → shared tags), with any entry that is
      * also a {@code previous}/{@code next} neighbor <em>excluded</em> so the
@@ -215,7 +215,7 @@ public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
      * Publishes a computed {@link #relations(JIPipeNodeDatabaseEntry, int)}
      * result into the per-entry cache by swapping in a copy of the current
      * map plus the new entry (copy-on-write; see the {@link #relationsCache}
-     * concurrency contract — a concurrent publish may lose one of the two
+     * concurrency contract - a concurrent publish may lose one of the two
      * entries, which is harmless for a best-effort cache).
      */
     private void cacheRelations(String cacheKey, NodeRelations result) {
@@ -254,7 +254,7 @@ public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
      * {@code max}.
      * <p>
      * Unlike the old {@code related}, the first tier (same-family siblings
-     * minus follow-ups — the workflow neighborhood) is gone: those nodes are
+     * minus follow-ups - the workflow neighborhood) is gone: those nodes are
      * now surfaced by {@link NodeRelations#previous()}/{@link NodeRelations#next()}.
      * Candidates that are also in {@code neighborIds} (i.e. already a
      * previous/next neighbor) are excluded so the three lists stay disjoint.
@@ -277,7 +277,7 @@ public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
                         || (entry.getOriginNodeId() != null && neighborIds.contains(entry.getOriginNodeId()));
         Set<String> added = new LinkedHashSet<>();
 
-        // Tier 1: same function — entries that appear under at least one of
+        // Tier 1: same function - entries that appear under at least one of
         // the entry's function leaves (an exact shared function id). Ranking
         // shared functionality above framework is what keeps the suggestions
         // distinct for functionally different nodes that share a large
@@ -368,7 +368,7 @@ public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
      * eagerly on the first query after the cache was invalidated (i.e. after
      * {@link #rebuildImmediately()} or {@link #setEntries(List)}). The build
      * is guarded so that concurrent first queries do not each re-mine the
-     * sources (a lost build is harmless — it is a best-effort cache; see the
+     * sources (a lost build is harmless - it is a best-effort cache; see the
      * {@link #relationIndex} concurrency contract).
      */
     private NodeRelationIndex relationIndex() {
@@ -393,7 +393,7 @@ public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
      * <p>
      * The source list is the pluggable seam (spec §10.2): a future source
      * (starter patterns, #1333 repository templates, ...) attaches by adding
-     * one entry here — no change to the index or to {@link #relations}.
+     * one entry here - no change to the index or to {@link #relations}.
      */
     private NodeRelationIndex buildRelationIndex() {
         List<NodeRelationSource> sources = List.of(

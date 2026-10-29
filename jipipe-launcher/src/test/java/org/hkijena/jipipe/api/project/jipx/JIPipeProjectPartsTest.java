@@ -93,7 +93,7 @@ class JIPipeProjectPartsTest {
         // load would make the mapping comparison vacuous).
         Set<UUID> nodeUuids = load.getGraph().getGraphNodeUUIDs();
         assertTrue(!nodeUuids.isEmpty(),
-                "Fixture loaded 0 nodes — table-add-columns-generate not resolved; test would be vacuous");
+                "Fixture loaded 0 nodes - table-add-columns-generate not resolved; test would be vacuous");
 
         Map<String, JsonNode> parts = JIPipeProjectParts.sliceParts(load);
         JsonNode monolith = JsonUtils.getObjectMapper()
@@ -108,7 +108,7 @@ class JIPipeProjectPartsTest {
                     // The monolith's dependencies array is serialized from a
                     // HashSet of identity-hashed JIPipeDependency instances
                     // (getSimplifiedMinimalDependencies), so its element order
-                    // is non-deterministic across serializations — an existing
+                    // is non-deterministic across serializations - an existing
                     // production quirk. Compare order-insensitively (by
                     // dependency id), everything else byte-exact.
                     assertEquals(sortByDependencyId(monolith.get("dependencies")),

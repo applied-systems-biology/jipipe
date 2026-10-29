@@ -68,6 +68,6 @@ Project: `AIAgentTests/03-ExampleWorkflows/Clara_08_feet.jip` (relative to `/dat
 Proposed name `Annotate with file/directory name -> List subfolders -> Annotate with file/directory name -> List files`,
 menu path
 `Patterns/Annotations/Annotate with file/directory name -> List subfolders -> Annotate with file/directory name -> List files`
-(proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+(proposal only - not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/chain-4-path-to-annotation-simple-folder-list-subfolders-path-to-annotation-simple-folder-list-files.json`.
 

@@ -62,7 +62,7 @@ Project: `AIAgentTests/03-ExampleWorkflows/CellposeTraining.jip` (relative to `/
 ## Template
 
 Proposed name `Import image -> Annotate with data -> other`, menu path
-`Patterns/Data Sources/Import image -> Annotate with data -> other` (proposal only — not registered). `data` = the
+`Patterns/Data Sources/Import image -> Annotate with data -> other` (proposal only - not registered). `data` = the
 minimal JIPipeGraph JSON; the full object is written to
 `templates/annotation-sandwich-import-imagej-imgplus-from-file-annotate-with-data-other.json`.
 

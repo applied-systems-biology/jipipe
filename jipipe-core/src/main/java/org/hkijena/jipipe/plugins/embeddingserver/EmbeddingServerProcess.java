@@ -153,7 +153,7 @@ public class EmbeddingServerProcess {
                     break;
                 }
                 if (!ProcessHandle.of(parentPid).isPresent()) {
-                    // Parent process is gone — self-terminate
+                    // Parent process is gone - self-terminate
                     System.exit(0);
                 }
             }

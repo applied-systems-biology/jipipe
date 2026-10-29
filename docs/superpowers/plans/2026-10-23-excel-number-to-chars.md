@@ -43,7 +43,7 @@ pinned to a test in Task 1.
   produces `AZ`/`BA` off-by-one. Pin `26 → Z` and `27 → AA`.
 - **Double-letter wrap (52/53):** a person converting 52 expects `AZ`, 53 expects `BA`. This catches wrong carry
   behavior. Pin `52 → AZ`, `53 → BA`.
-- **Triple-letter (702/703):** 702 expects `ZZ`, 703 expects `AAA`. Pin both — this catches a loop that drops the final
+- **Triple-letter (702/703):** 702 expects `ZZ`, 703 expects `AAA`. Pin both - this catches a loop that drops the final
   carry.
 - **`start` offset correctness:** a person passing `start = 0` expects 0→A, 25→Z, 26→AA (the 0-indexed variant). A wrong
   offset silently shifts every label. Pin the `start = 0` triple.
@@ -102,7 +102,7 @@ Tests to include (use `org.junit.jupiter.api.Test`, `Assertions.assertEquals` / 
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `mvn test -pl jipipe-core -Dtest=NumToLettersFunctionTest`
-Expected: FAIL — compile error, `NumToLettersFunction` does not exist yet (the test cannot compile). (If the build first
+Expected: FAIL - compile error, `NumToLettersFunction` does not exist yet (the test cannot compile). (If the build first
 reports the sibling `jipipe-ro-crate-java` module unresolved, install it per the Build constraint in Global
 Constraints.)
 
@@ -118,7 +118,7 @@ Class shape (write the surrounding boilerplate; the two bodies below are the pin
 @SetJIPipeDocumentation(
     name = "Number to letters",
     description = "Converts a number to a string of letters, like spreadsheet column labels " +
-            "(1 = A, 2 = B, …, 26 = Z, 27 = AA, 702 = ZZ, 703 = AAA, …) — bijective base-26. " +
+            "(1 = A, 2 = B, …, 26 = Z, 27 = AA, 702 = ZZ, 703 = AAA, …) - bijective base-26. " +
             "The optional start parameter is the number that maps to the first letter (A); default 1.")
 public class NumToLettersFunction extends ExpressionFunction {
     public NumToLettersFunction() {
@@ -188,12 +188,12 @@ Imports: `org.hkijena.jipipe.api.SetJIPipeDocumentation`, `org.hkijena.jipipe.pl
 - [ ] **Step 4: Run test to verify it passes**
 
 Run: `mvn test -pl jipipe-core -Dtest=NumToLettersFunctionTest`
-Expected: PASS — all tests green.
+Expected: PASS - all tests green.
 
 - [ ] **Step 5: Register the function in `ExpressionPlugin`**
 
 In `jipipe-core/src/main/java/org/hkijena/jipipe/plugins/expressions/ExpressionPlugin.java`, in the `register(...)`
-method, add `registerExpressionFunction(new NumToLettersFunction());` inside the `convert` block — directly after the
+method, add `registerExpressionFunction(new NumToLettersFunction());` inside the `convert` block - directly after the
 line `registerExpressionFunction(new ToBooleanFunction());` (currently line 187). The `convert.*` wildcard import (line
 25) already covers the new class, so no import edit is needed.
 

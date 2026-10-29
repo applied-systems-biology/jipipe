@@ -769,7 +769,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
     /**
      * Recomputes the publish button's static FAIR badge (feature #753): the
      * normal share icon when the project is FAIR-complete (license + summary
-     * + at least one author), the warning emblem when it is missing items —
+     * + at least one author), the warning emblem when it is missing items -
      * i.e. user interaction is needed. The tooltip names the missing items.
      * Must be called on the EDT. No-op if the publish button was not created
      * (the publish menu was empty).
@@ -791,7 +791,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
     /**
      * Opens the NON-MODAL "FAIR checker" dialog (feature #753). Lists the
      * metadata items the project is still missing for FAIR sharing, or
-     * "All good — the project is FAIR-ready".
+     * "All good - the project is FAIR-ready".
      */
     private void openFairCheckerDialog() {
         List<String> missing = JIPipeProjectFairCheck.missing(getProject());
@@ -803,7 +803,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
 
         JLabel header;
         if (missing.isEmpty()) {
-            header = UIUtils.createJLabel("All good — the project is FAIR-ready.", 14);
+            header = UIUtils.createJLabel("All good - the project is FAIR-ready.", 14);
             header.setIcon(JIPipe.RESOURCES.getIcon16("actions/circle-check.png"));
             header.putClientProperty("swing.iconTextGap", 8);
         } else {

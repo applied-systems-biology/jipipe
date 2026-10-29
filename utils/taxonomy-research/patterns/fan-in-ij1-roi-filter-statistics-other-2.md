@@ -58,7 +58,7 @@ Project: `AIAgentTests/02-AdvancedPipelines/Cryogels_01.jip` (relative to `/data
 ## Template
 
 Proposed name `Filter 2D ROI by statistics fans in from 14 source ids (roles: other)`, menu path
-`Patterns/ROIs/Filter 2D ROI by statistics fans in from 14 source ids (roles: other)` (proposal only — not registered).
+`Patterns/ROIs/Filter 2D ROI by statistics fans in from 14 source ids (roles: other)` (proposal only - not registered).
 `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/fan-in-ij1-roi-filter-statistics-other-2.json`.
 

@@ -1,8 +1,8 @@
-# JIPX — New JIPipe project format (work item #753)
+# JIPX - New JIPipe project format (work item #753)
 
 **Status:** Approved design · **Date:** 2026-10-23 · **Target milestone:** 6.0.0
 **Issue:** https://asb-git.hki-jena.de/RGerst/jipipe/-/work_items/753
-**Related:** #1147 (Interactive JIPipe — multiple graphs), #1332 (history system)
+**Related:** #1147 (Interactive JIPipe - multiple graphs), #1332 (history system)
 
 ## 1. Motivation
 
@@ -67,7 +67,7 @@ This ensures `.jip` remains readable for compatibility.
   output-folder convention (`project.jip` + `log.txt`), post-run re-save in
   `JIPipeGraphRun`.
 
-## 3. Phase 0 — dedicated `.jip` reader/writer + corpus verification
+## 3. Phase 0 - dedicated `.jip` reader/writer + corpus verification
 
 New package `org.hkijena.jipipe.api.project.io` in jipipe-core.
 
@@ -91,29 +91,29 @@ public interface JIPipeProjectWriter extends JIPipeProjectIO {
 }
 ```
 
-- **`JIPipeLegacyProjectReader`** — the exact logic of the current
+- **`JIPipeLegacyProjectReader`** - the exact logic of the current
   `JIPipeProject.loadProject(Path,…)`: `JsonUtils.getObjectMapper().readValue`
   → `fromJson` → `setWorkDirectory(parent)` → `validateUserPaths` →
   setting-gated `fixBrokenEnvironments` → `projectFile = path`. (From Phase 1
-  on, the reader also materializes the project workspace, §5.1 — the legacy
+  on, the reader also materializes the project workspace, §5.1 - the legacy
   reader's load semantics themselves stay unchanged.)
-- **`JIPipeLegacyProjectWriter`** — the exact logic of the current
+- **`JIPipeLegacyProjectWriter`** - the exact logic of the current
   `saveProject`: authors merge (`addAuthorsFromGlobalList`) → pretty-print
   via the global mapper. Writer/OutputStream variants stay as overloads.
 - **`JIPipeProjectIOs`** (static dispatcher, utils convention):
-    - `readerFromPath(Path)` — **content first**: ZIP magic bytes (`ArchiveUtils.isZipFile`) → JIPX/crate reader in
+    - `readerFromPath(Path)` - **content first**: ZIP magic bytes (`ArchiveUtils.isZipFile`) → JIPX/crate reader in
       Phase 1; otherwise
       JSON → legacy reader. Extension is a hint, not the gate (a `.jip` with
       ZIP content is a mislabeled crate and is treated as such).
-    - `writerFromPath(Path)` — extension-driven: `.jipx` → JIPX writer,
+    - `writerFromPath(Path)` - extension-driven: `.jipx` → JIPX writer,
       `.jip` → legacy writer.
-    - `readerFromURI(URI)` / `writerFromURI(URI)` — later: download to temp →
+    - `readerFromURI(URI)` / `writerFromURI(URI)` - later: download to temp →
       `readerFromPath` (covers the GUI `importURL` flow); remote writers later.
 - `JIPipeProject.loadProject/saveProject` become thin delegates to the
   legacy pair (all ~15 external call sites keep working unchanged; they
   migrate to the dispatcher gradually).
 - GUI peek reads (dependency/metadata check before open) move behind
-  `JIPipeProjectIOs.peek(Path)` helpers — parse only what is needed, no full
+  `JIPipeProjectIOs.peek(Path)` helpers - parse only what is needed, no full
   load, one place that knows all formats.
 
 Design intent: folder-based IO (`supports(dir)` with `project.jip` /
@@ -125,7 +125,7 @@ implementations that slot in without touching call sites.
 `fromJson` deliberately applies legacy conversions, so original → first
 re-save can legitimately differ. The invariant is:
 
-1. `load(P) → save → S1`, then `load(S1) → save → S2` — **S1 and S2 must be
+1. `load(P) → save → S1`, then `load(S1) → save → S2` - **S1 and S2 must be
    semantically identical** (canonical JSON tree comparison: Jackson
    `ObjectNode` with sorted keys; byte-level equality is not required).
 2. `P → S1` diffs are bucketed: expected upgrades (known legacy fixes) vs.
@@ -138,14 +138,14 @@ projects)**; run locally over the full corpus. The same harness doubles as
 the JIPX verification in Phase 1: `load(.jip) → write(.jipx) → read(.jipx)`
 must equal the JIP fixpoint.
 
-## 4. Phase 1 — JIPX container layout
+## 4. Phase 1 - JIPX container layout
 
 ```
 project.jipx                              (ZIP; ro-crate-metadata.json at root ⇒ the ZIP is the RO-Crate)
 ├── ro-crate-metadata.json                RO-Crate metadata (auto-generated on save)
 ├── jipx.json                             JIPX manifest (mechanical: versions, part table, main graph)
 ├── README.md                             generated from project metadata (profile SHOULD)
-├── project/                              split project parts — each is the JSON the monolith had as one top-level field
+├── project/                              split project parts - each is the JSON the monolith had as one top-level field
 │   ├── metadata.json                     ← "metadata"
 │   ├── dependencies.json                 ← "dependencies"
 │   ├── runtime-partitions.json           ← "runtime-partitions"
@@ -173,7 +173,7 @@ Decisions:
   semantic (auto-regenerated); `jipx.json` is structural (what parts exist,
   in which version). RO-Crate tooling ignores the manifest; JIPipe reads it
   first.
-- `external-environments` is **dropped** from JIPX — write-only cache, fully
+- `external-environments` is **dropped** from JIPX - write-only cache, fully
   derivable from node parameters, never read.
 - **Load semantics unchanged**: the reader reassembles part files into the
   exact tree `fromJson` consumes today; the entire upgrade machinery (`JIPipeProjectUpgradable` fan-out + in-`fromJson`
@@ -188,13 +188,13 @@ Decisions:
 
 ### 5.1 Project workspace (always-on)
 
-When a project is open there is **always** a workspace directory — a real
+When a project is open there is **always** a workspace directory - a real
 directory inside the project's existing locked temporary base directory (`<tempbase>/jipx-workspace`), covered by the
 existing `FileLocker` and
 `close()`/cleanup lifecycle (orphaned workspaces die with the existing
 tmp-dir cleanup service).
 
-- `.jipx` open: the ZIP is extracted into the workspace once — parts,
+- `.jipx` open: the ZIP is extracted into the workspace once - parts,
   manifest, README, `data/`. No re-serialization on open.
 - `.jip` open: the workspace is created and the parts materialized once
   from the loaded model ("on importing the old format the tmp folder is
@@ -206,7 +206,7 @@ tmp-dir cleanup service).
 1. Refresh `project.getProjectFile()` + authors merge (as legacy save does).
 2. Re-serialize the JSON parts into the workspace by delegating to per-part
    serialization extracted from the monolith `toJson` (each part's JSON
-   output is identical to the monolith's corresponding top-level field —
+   output is identical to the monolith's corresponding top-level field -
    the extraction is a code refactor, not a format change); update
    `jipx.json`; regenerate `README.md`; rebuild `ro-crate-metadata.json`
    with the contrib RO-Crate library (`RoCrateBuilder`).
@@ -221,13 +221,13 @@ tmp-dir cleanup service).
    warning (list + "Save anyway").
 
 Payload entries (`data/`, future `graphs/`, `history/`) are **never
-regenerated** — they exist as files in the workspace and are compressed
+regenerated** - they exist as files in the workspace and are compressed
 as-is. Adding project data in the future = `Files.copy` into the workspace;
 a save just zips it. The heavy part of a save scales with archive size, not
 project complexity. (Optional later optimization: event-driven dirty-part
 tracking to skip even the JSON re-serialization.)
 
-Crash safety: the workspace is scratch — the ZIP on disk is the artifact,
+Crash safety: the workspace is scratch - the ZIP on disk is the artifact,
 saves are atomic moves.
 
 ### 5.3 Read path (`JIPipeXProjectReader`)
@@ -242,7 +242,7 @@ saves are atomic moves.
 ### 5.4 VFS seam
 
 `JIPipeProject` interacts with the workspace only through a
-`JIPipeProjectWorkspace` interface — v1 implemented by the local workspace
+`JIPipeProjectWorkspace` interface - v1 implemented by the local workspace
 directory, deliberately shaped after the existing
 `JIPipeReadDataStorage`/`JIPipeWriteDataStorage` abstraction. Remote formats
 later (project data lives remote, JSON parts still materialized locally) =
@@ -255,13 +255,13 @@ history snapshots (#1332).
 v1 ships the hooks for an Office-style automated **project recovery**
 system: each workspace carries a `workspace.json` state file (origin
 project path, origin format, last-save timestamp, dirty flag; clean close
-removes the workspace). The full crash-recovery assistant — on startup,
-scan for leftover workspaces and offer restore — is a flagged follow-up;
+removes the workspace). The full crash-recovery assistant - on startup,
+scan for leftover workspaces and offer restore - is a flagged follow-up;
 full unsaved-edit recovery additionally needs periodic in-memory snapshots,
 which ties into the `history/` machinery of #1332.
 
 Rejected alternatives (for the record): ZIP FileSystem provider (in-place
-mutation of the artifact — no atomic save, no real `Path`s for
+mutation of the artifact - no atomic save, no real `Path`s for
 ImageJ/native interop, no locking); in-memory FS like JimFS (defeats the
 `Files.copy` data story, doubles memory); a bespoke new VFS interface (the existing storage abstraction already provides
 the right shape).
@@ -269,7 +269,7 @@ the right shape).
 ### 5.6 GUI threading
 
 Save runs in a Swing worker (existing background-runner pattern) with a
-progress overlay during zip — no EDT hang. Non-GUI call sites (CLI run,
+progress overlay during zip - no EDT hang. Non-GUI call sites (CLI run,
 node-based loaders, archive runs, templates, backups) call the same
 reader/writer synchronously.
 
@@ -279,7 +279,7 @@ v1 conforms to base RO-Crate 1.1-DRAFT + Workflow RO-Crate profile 1.0
 (https://w3id.org/workflowhub/workflow-ro-crate/1.0):
 
 - Root `./` Dataset: `name`, `description` (from project metadata),
-  `license` (**auto-filled if missing** — the profile's only hard MUST),
+  `license` (**auto-filled if missing** - the profile's only hard MUST),
   `keywords` (`["JIPipe"]` + metadata categories), `conformsTo` → base
   RO-Crate + workflow-ro-crate/1.0.
 - `mainEntity` → `project/graph.json` as
@@ -290,7 +290,7 @@ v1 conforms to base RO-Crate 1.1-DRAFT + Workflow RO-Crate profile 1.0
   metadata.
 - `workflow.cwl` generation stays in the RO-Crate **publisher** (publish-time
   enrichment for execution crates, Docker settings, ORCID, `inputs/`
-  staging) — the everyday save stays fast and does not carry CWL.
+  staging) - the everyday save stays fast and does not carry CWL.
 - Reserved dirs become `hasPart` Dataset entities when non-empty.
 - Validation = contrib library validator + the profile checks above;
   failures surface in the save-time warning.
@@ -305,7 +305,7 @@ v1 conforms to base RO-Crate 1.1-DRAFT + Workflow RO-Crate profile 1.0
 | Surface                                             | Behavior                                                                                                                                                                                                                                                                                               |
 |-----------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | New project                                         | Always `.jipx` (Save As filter order: jipx, jip)                                                                                                                                                                                                                                                       |
-| Save existing `.jip` (Ctrl+S / menu)                | Office-style prompt **on save**: "Save as `.jipx` (recommended) / keep `.jip` / cancel" — per-save choice; choosing `.jipx` writes `<same-dir>/<same-name>.jipx`, updates the project's tracked file to it, and **leaves the old `.jip` untouched** on disk (no deletion); `.jip` keeps round-tripping |
+| Save existing `.jip` (Ctrl+S / menu)                | Office-style prompt **on save**: "Save as `.jipx` (recommended) / keep `.jip` / cancel" - per-save choice; choosing `.jipx` writes `<same-dir>/<same-name>.jipx`, updates the project's tracked file to it, and **leaves the old `.jip` untouched** on disk (no deletion); `.jip` keeps round-tripping |
 | Open                                                | `readerFromPath` content sniff: `.jip` → legacy; `.jipx`/crate ZIP → JIPX; older projects keep opening                                                                                                                                                                                                 |
 | CLI `run`, node loaders, templates                  | Accept both; template ZIPs (`.jip` inside) keep working                                                                                                                                                                                                                                                |
 | Backups                                             | New backups of `.jipx` projects are `.jipx`                                                                                                                                                                                                                                                            |
@@ -316,7 +316,7 @@ v1 conforms to base RO-Crate 1.1-DRAFT + Workflow RO-Crate profile 1.0
 ## 8. Testing strategy
 
 - **Phase 0 harness**: corpus round-trip fixpoint test (system-property
-  gated, §3.2) — the primary safety net for "jip still reads".
+  gated, §3.2) - the primary safety net for "jip still reads".
 - **Unit tests (non-trivial contracts only)**: part reassembly equality (monolith JSON ⇄ split parts, canonical-tree
   comparison); manifest
   unknown-part preservation; ZIP self-verify failure path; reader sniff
@@ -333,11 +333,11 @@ v1 conforms to base RO-Crate 1.1-DRAFT + Workflow RO-Crate profile 1.0
 
 ## 9. Out of scope (v1)
 
-- Multi-graph payloads in `graphs/` (#1147) — slot reserved only.
-- History snapshots in `history/` (#1332) — slot reserved only.
-- Carried data in `data/` — slot reserved only (the workspace + VFS seam is
+- Multi-graph payloads in `graphs/` (#1147) - slot reserved only.
+- History snapshots in `history/` (#1332) - slot reserved only.
+- Carried data in `data/` - slot reserved only (the workspace + VFS seam is
   the anchor it plugs into).
-- Full crash-recovery assistant (§5.5) — v1 ships the `workspace.json`
+- Full crash-recovery assistant (§5.5) - v1 ships the `workspace.json`
   hooks only.
 - Formal published profile page/Profile Crate at jipipe.org (follow-up work
   item; URI reserved here).
@@ -347,11 +347,11 @@ v1 conforms to base RO-Crate 1.1-DRAFT + Workflow RO-Crate profile 1.0
 
 ## 10. Implementation phases (summary)
 
-1. **Phase 0** — extract `JIPipeLegacyProjectReader/Writer`, add
+1. **Phase 0** - extract `JIPipeLegacyProjectReader/Writer`, add
    `JIPipeProjectIOs`, delegate `loadProject/saveProject`, move GUI peeks
    behind the dispatcher, build the corpus round-trip harness, run it over
    the local corpus until the fixpoint holds for every project.
-2. **Phase 1** — JIPX container (`JIPipeXProjectReader/Writer`, manifest,
+2. **Phase 1** - JIPX container (`JIPipeXProjectReader/Writer`, manifest,
    part (de)serialization, project workspace + VFS seam, only-compress
    saves + self-verify, Swing-worker save), RO-Crate generation +
    auto-fill + validation, save prompt + migration UX, `workspace.json`

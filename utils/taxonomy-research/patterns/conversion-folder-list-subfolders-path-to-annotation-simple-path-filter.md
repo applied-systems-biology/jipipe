@@ -62,7 +62,7 @@ Project: `AIAgentTests/03-ExampleWorkflows/Angela_Roots_38.jip` (relative to `/d
 ## Template
 
 Proposed name `List subfolders -> Annotate with file/directory name -> Filter paths`, menu path
-`Patterns/Data Sources/List subfolders -> Annotate with file/directory name -> Filter paths` (proposal only — not
+`Patterns/Data Sources/List subfolders -> Annotate with file/directory name -> Filter paths` (proposal only - not
 registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/conversion-folder-list-subfolders-path-to-annotation-simple-path-filter.json`.
 

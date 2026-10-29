@@ -63,7 +63,7 @@ public class JIPipeDesktopTaxonomyFunctionRefParameterEditorUI extends JIPipeDes
     /**
      * The icon for a resolved function: the function's own icon, or the
      * icon of its closest ancestor that carries one (leaf functions have no
-     * icon of their own — falling back to the branch icon instead of the
+     * icon of their own - falling back to the branch icon instead of the
      * "not set" emblem, which wrongly signalled an error for a selected
      * function).
      */
@@ -121,7 +121,7 @@ public class JIPipeDesktopTaxonomyFunctionRefParameterEditorUI extends JIPipeDes
         currentlyDisplayed.addActionListener(e -> openPicker());
         currentlyDisplayed.setToolTipText("Select the taxonomy function");
         UIUtils.setStandardButtonBorder(currentlyDisplayed);
-        // #1339 item 6: no separate "Browse" button — the display button opens
+        // #1339 item 6: no separate "Browse" button - the display button opens
         // the same picker.
         add(currentlyDisplayed, BorderLayout.CENTER);
     }
@@ -206,7 +206,7 @@ public class JIPipeDesktopTaxonomyFunctionRefParameterEditorUI extends JIPipeDes
         UIUtils.setStandardButtonBorder(cancelButton);
         cancelButton.addActionListener(e -> closePicker());
 
-        // [Reset] ←glue→ [Cancel][Select] — the standard dialog button order
+        // [Reset] ←glue→ [Cancel][Select] - the standard dialog button order
         // (reset separated; affirmative last, nearest the corner).
         JPanel buttonBar = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttonBar.add(resetButton);

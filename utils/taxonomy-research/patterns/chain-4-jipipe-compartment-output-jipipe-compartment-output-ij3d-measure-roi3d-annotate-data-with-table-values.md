@@ -70,6 +70,6 @@ Project: `AIAgentTests/03-ExampleWorkflows/Annamaria_12.jip` (relative to `/data
 Proposed name
 `Compartment output -> Compartment output -> Extract IJ3D ROI statistics -> Annotate data with table values`, menu path
 `Patterns/Graph / Project/Compartment output -> Compartment output -> Extract IJ3D ROI statistics -> Annotate data with table values`
-(proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+(proposal only - not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/chain-4-jipipe-compartment-output-jipipe-compartment-output-ij3d-measure-roi3d-annotate-data-with-table-values.json`.
 

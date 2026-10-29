@@ -61,7 +61,7 @@ Project: `AIAgentTests/03-ExampleWorkflows/CellposeTraining.jip` (relative to `/
 ## Template
 
 Proposed name `Convert 2D ROI to mask -> Morphological operation 2D -> Annotate with data`, menu path
-`Patterns/ROIs/Convert 2D ROI to mask -> Morphological operation 2D -> Annotate with data` (proposal only — not
+`Patterns/ROIs/Convert 2D ROI to mask -> Morphological operation 2D -> Annotate with data` (proposal only - not
 registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/chain-3-ij1-roi-to-mask-ij1-morph-operation2d-annotate-with-data.json`.
 

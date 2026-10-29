@@ -518,7 +518,7 @@ public class JIPipeDesktopParameterFormPanel extends JIPipeDesktopFormPanel impl
             JPanel labelPanel = new JPanel(new BorderLayout());
             MarkdownText documentation = generateParameterDocumentation(parameterAccess, tree);
 
-            // Label panel — the form panel always supplies the parameter name
+            // Label panel - the form panel always supplies the parameter name
             // (editers must not draw it themselves; #1339).
             JLabel label = new JLabel(parameterAccess.getName());
             if (parameterAccess.isImportant())
@@ -549,7 +549,7 @@ public class JIPipeDesktopParameterFormPanel extends JIPipeDesktopFormPanel impl
                 uiComponents.add(labelPanel);
             }
 
-            // Get the entry (last appended — a stacked row consumes two grid rows,
+            // Get the entry (last appended - a stacked row consumes two grid rows,
             // so the row number is not the list index)
             List<FormPanelEntry> currentEntries = getEntries();
             FormPanelEntry entry = currentEntries.get(currentEntries.size() - 1);

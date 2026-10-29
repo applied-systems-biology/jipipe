@@ -123,14 +123,14 @@ public class CreateNewNodeByInfoDatabaseEntry extends DefaultJIPipeNodeDatabaseE
      *     {@link WeightedTokens#WEIGHT_FUNCTION_LEAF} − 2 × depth, floored
      *     at {@link WeightedTokens#WEIGHT_FUNCTION_TOP}. Secondary
      *     functions (alternate locations the node is listed under) add
-     *     their own name at the leaf weight only — their ancestor chains
+     *     their own name at the leaf weight only - their ancestor chains
      *     are deliberately NOT walked, because the shared ancestors
      *     (e.g. the top-level branch) would otherwise be added again on
      *     top of the primary path's contribution;</li>
      * <li><b>Framework:</b> the display name at
      *     {@link WeightedTokens#WEIGHT_FRAMEWORK} and the abbreviation at
-     *     {@link WeightedTokens#WEIGHT_FRAMEWORK_ABBREV} — skipped for
-     *     {@link NoFramework}, whose "—"/"—" values would be search noise
+     *     {@link WeightedTokens#WEIGHT_FRAMEWORK_ABBREV} - skipped for
+     *     {@link NoFramework}, whose "-"/"-" values would be search noise
      *     on every unconverted node;</li>
      * <li><b>Tags:</b> each merged tag at {@link WeightedTokens#WEIGHT_TAG}.</li>
      * </ul>
@@ -156,7 +156,7 @@ public class CreateNewNodeByInfoDatabaseEntry extends DefaultJIPipeNodeDatabaseE
                 }
             }
         }
-        // Framework: skip the NoFramework sentinel ("—" would be search noise)
+        // Framework: skip the NoFramework sentinel ("-" would be search noise)
         JIPipeNodeTaxonomyFramework framework = nodeInfo.getFramework();
         if (framework != null && !NoFramework.ID.equals(framework.getId())) {
             tokens.add(framework.getName(), WeightedTokens.WEIGHT_FRAMEWORK);
@@ -187,11 +187,11 @@ public class CreateNewNodeByInfoDatabaseEntry extends DefaultJIPipeNodeDatabaseE
      * Populates {@link #locationInfos} from the node's taxonomy (Task 26a).
      * <p>
      * The primary function contributes the function chain root→leaf,
-     * {@code \n}-joined, no node name — e.g. {@code "Data Sources\nImage data"}.
+     * {@code \n}-joined, no node name - e.g. {@code "Data Sources\nImage data"}.
      * The 21b node-finder + entry-list renderers do {@code .replace("\n", " > ")},
      * and the search/embedding consume the raw form. Secondary functions each
      * contribute their own chain (they replace the removed alias location
-     * entries). A node with no primary function contributes nothing — it
+     * entries). A node with no primary function contributes nothing - it
      * should not exist post-conversion; do NOT read the legacy category.
      */
     private void initializeLocationInfos() {

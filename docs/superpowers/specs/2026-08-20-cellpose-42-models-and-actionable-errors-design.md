@@ -10,13 +10,13 @@ to auto-update their Cellpose environment from within error messages.
 
 Five parts:
 
-1. **Error system extension** — Add `JIPipeNotificationAction` support to `JIPipeValidationReportEntry` and render
+1. **Error system extension** - Add `JIPipeNotificationAction` support to `JIPipeValidationReportEntry` and render
    action buttons in the error UI
-2. **Cellpose 4 model updates** — Add new models, change default to `cpsam_v2`, add conditional `bsize` parameter for
+2. **Cellpose 4 model updates** - Add new models, change default to `cpsam_v2`, add conditional `bsize` parameter for
    DINO models
-3. **Training node update** — New training node with Cellpose 4.2 defaults; old node deprecated (not hidden)
-4. **Version check & auto-update** — Hybrid validation warning + runtime guard with actionable "Update Cellpose" button
-5. **Registration** — Register new training node type; no project upgrade logic needed (JIPipe 6 is unreleased)
+3. **Training node update** - New training node with Cellpose 4.2 defaults; old node deprecated (not hidden)
+4. **Version check & auto-update** - Hybrid validation warning + runtime guard with actionable "Update Cellpose" button
+5. **Registration** - Register new training node type; no project upgrade logic needed (JIPipe 6 is unreleased)
 
 ## Part 1: Error System Extension
 
@@ -144,7 +144,7 @@ CLI argument generation in `runCellpose()`:
 **File**:
 `plugins/jipipe-plugin-cellpose/src/main/java/org/hkijena/jipipe/plugins/cellpose/algorithms/cp4/ImportPretrainedCellpose4SegmentationModelAlgorithm.java`
 
-No changes needed — it iterates the enum, so new models are included automatically.
+No changes needed - it iterates the enum, so new models are included automatically.
 
 ## Part 3: Training Node Update
 
@@ -194,7 +194,7 @@ Enforcement in the new training node:
 
 - Annotate with `@Deprecated`
 - Rename node display name to `"Cellpose segmentation training 4.x (old)"` via `@SetJIPipeDocumentation(name = ...)`
-- Not hidden — existing workflows remain functional
+- Not hidden - existing workflows remain functional
 - No changes to its behavior or parameters
 
 ## Part 4: Version Check & Auto-Update
@@ -258,7 +258,7 @@ In the algorithm's execution path (before invoking Cellpose via `runCellpose()` 
 1. Re-check the version (same logic as validation)
 2. If version < 4.2 and a >= 4.2 model is selected:
     - Find available upgrades
-    - Throw `JIPipeValidationRuntimeException` with `GraphNodeValidationReportContext` (navigable — enables "Go to"
+    - Throw `JIPipeValidationRuntimeException` with `GraphNodeValidationReportContext` (navigable - enables "Go to"
       button)
     - Attach actions (including "Update Cellpose" if upgrades are available)
     - Title: "Cellpose version too old for selected model"
@@ -284,7 +284,7 @@ is assumed to know what they are doing.
       Cellpose4SegmentationTraining2Algorithm.class, ...);
   ```
 - Existing training node registration stays unchanged (deprecated, not hidden)
-- No new inference node — the existing `Cellpose4SegmentationInferenceAlgorithm` is updated in-place
+- No new inference node - the existing `Cellpose4SegmentationInferenceAlgorithm` is updated in-place
 
 ### Project Upgrade
 

@@ -30,20 +30,20 @@ import java.util.*;
  * <b>origin</b>, so users can hide the system-provided entries while still
  * seeing their own and downloaded ones:
  * <ul>
- * <li>{@link #NODES} — plain node types
+ * <li>{@link #NODES} - plain node types
  * ({@link CreateNewNodeByInfoDatabaseEntry});</li>
- * <li>{@link #EXAMPLES} — node types offered with a sample configuration
+ * <li>{@link #EXAMPLES} - node types offered with a sample configuration
  * ({@link CreateNewNodeByExampleDatabaseEntry});</li>
- * <li>{@link #PATTERNS_SYSTEM} / {@link #PATTERNS_USER} — multi-node
+ * <li>{@link #PATTERNS_SYSTEM} / {@link #PATTERNS_USER} - multi-node
  * template graphs (badge "Pattern", see
  * {@link CreateNewNodesByTemplateDatabaseEntry#getBadge()}), split by
  * origin (system-bundled vs. user-created / downloaded);</li>
- * <li>{@link #CUSTOM_SYSTEM} / {@link #CUSTOM_USER} — single-node
+ * <li>{@link #CUSTOM_SYSTEM} / {@link #CUSTOM_USER} - single-node
  * templates (badge "Custom"), split by origin.</li>
  * </ul>
  * Entries that do not belong to any kind (existing nodes / compartments,
  * new compartments) return {@code null} from {@link #of} and therefore
- * bypass the kind filter entirely — their visibility is governed by other
+ * bypass the kind filter entirely - their visibility is governed by other
  * mechanisms (the finder dialog's "Find existing" toggle).
  * <p>
  * This enum is free of any Swing and {@code JIPipe} instance dependency in
@@ -146,7 +146,7 @@ public enum NodeEntryKind {
         }
         NodeEntryKind kind = of(entry);
         // Kindless entries (existing nodes / compartments, new compartments)
-        // always pass — their visibility is governed by other mechanisms.
+        // always pass - their visibility is governed by other mechanisms.
         return kind == null || kinds.contains(kind);
     }
 
@@ -164,7 +164,7 @@ public enum NodeEntryKind {
             try {
                 kinds.add(NodeEntryKind.valueOf(name));
             } catch (IllegalArgumentException ignored) {
-                // A stored name this version does not know — skip it.
+                // A stored name this version does not know - skip it.
             }
         }
         return Collections.unmodifiableSet(kinds);

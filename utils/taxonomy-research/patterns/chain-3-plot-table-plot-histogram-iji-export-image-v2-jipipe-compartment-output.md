@@ -62,7 +62,7 @@ Project: `AIAgentTests/02-AdvancedPipelines/CellTracking_01.jip` (relative to `/
 ## Template
 
 Proposed name `JFreeChart Histogram plot -> Export image -> Compartment output`, menu path
-`Patterns/Plotting/JFreeChart Histogram plot -> Export image -> Compartment output` (proposal only — not registered).
+`Patterns/Plotting/JFreeChart Histogram plot -> Export image -> Compartment output` (proposal only - not registered).
 `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/chain-3-plot-table-plot-histogram-iji-export-image-v2-jipipe-compartment-output.json`.
 

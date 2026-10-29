@@ -58,7 +58,7 @@ compartment `Segmentation and colocalization`.
 ## Template
 
 Proposed name `Auto threshold 2D (8-bit) fans in from 6 source ids (roles: other)`, menu path
-`Patterns/Images/Auto threshold 2D (8-bit) fans in from 6 source ids (roles: other)` (proposal only — not registered).
+`Patterns/Images/Auto threshold 2D (8-bit) fans in from 6 source ids (roles: other)` (proposal only - not registered).
 `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/fan-in-ij1-threshold-auto2d-other-2.json`.
 

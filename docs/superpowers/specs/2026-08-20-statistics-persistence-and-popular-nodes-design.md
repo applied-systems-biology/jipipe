@@ -112,7 +112,7 @@ private void onWindowClosed(WindowClosedEvent event) {
 **File:** `jipipe-core/src/main/java/org/hkijena/jipipe/api/service/components/JIPipeStatisticsServiceComponent.java`
 
 **Problem:** `JIPipeService.dispose()` does not call `statistics.save()` before shutting down. The `saveLaterTimer` has
-a 250ms debounce — if the application exits within 250ms of the last `saveLater()` call, pending changes are lost.
+a 250ms debounce - if the application exits within 250ms of the last `saveLater()` call, pending changes are lost.
 
 **Fix:** Add a `shutdown()` method that stops timers and performs a final save. Call it from `JIPipeService.dispose()`.
 
@@ -163,12 +163,12 @@ are added. If the intent is to sample at open time, document this.
 
 The following bugs were found but are out of scope for this work item:
 
-- **`JIPipeEventEmitter.unsubscribe()` is broken** — the `listenerSubscriberMap` is never populated, making
+- **`JIPipeEventEmitter.unsubscribe()` is broken** - the `listenerSubscriberMap` is never populated, making
   `unsubscribe()` a no-op. This affects the entire codebase, not just statistics. Should be fixed in a separate work
   item.
-- **`TotalRamStatisticsItem` marked as time-tracked but value never changes** — wastes storage with redundant history
+- **`TotalRamStatisticsItem` marked as time-tracked but value never changes** - wastes storage with redundant history
   entries. Design decision, not a bug.
-- **Static accumulators in `NodeMoveDistanceStatisticsItem` and `LongestNodeWidthStatisticsItem` lost on crash** —
+- **Static accumulators in `NodeMoveDistanceStatisticsItem` and `LongestNodeWidthStatisticsItem` lost on crash** -
   consequence of Fix 1. Fixed once `save()` calls `serialize()`.
 
 ## Testing

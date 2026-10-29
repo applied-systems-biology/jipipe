@@ -101,7 +101,7 @@ public class JIPipeAIServiceComponent extends JIPipeServiceComponent {
     }
 
     /**
-     * Asynchronous embed. Must not be called from the EDT — blocks until the model is ready.
+     * Asynchronous embed. Must not be called from the EDT - blocks until the model is ready.
      * Enqueues an embed task and returns a CompletableFuture.
      * If no model is loaded, auto-starts it first (blocking).
      * Returns null if AI is disabled in settings.
@@ -115,7 +115,7 @@ public class JIPipeAIServiceComponent extends JIPipeServiceComponent {
             return null;
         }
 
-        // If model is not ready, start it first (blocking — caller should be off-EDT)
+        // If model is not ready, start it first (blocking - caller should be off-EDT)
         if (!embeddingModelService.isReady()) {
             embeddingModelService.start();
         }

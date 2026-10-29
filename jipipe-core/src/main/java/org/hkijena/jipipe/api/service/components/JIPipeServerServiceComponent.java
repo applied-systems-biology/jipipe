@@ -183,7 +183,7 @@ public class JIPipeServerServiceComponent extends JIPipeServiceComponent {
 
         int newCount = managedEntry.release();
         if (newCount <= 0) {
-            // No more leases — update state detail to idle
+            // No more leases - update state detail to idle
             instance.updateStateDetail("Idle (port " + instance.getPort() + ")");
         }
     }

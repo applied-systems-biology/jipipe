@@ -1,4 +1,4 @@
-# Node Pattern Rendering (Phase 2, revised) — Design
+# Node Pattern Rendering (Phase 2, revised) - Design
 
 **Date:** 2026-10-20 **Work item:** 1324 (node taxonomy & design)
 **Supersedes:** the "Node rendering (Phase 2)" section of
@@ -20,7 +20,7 @@ DiceBear identicon engine** (contrib module + SVG + Batik rasterization).
 Evaluation of the real DiceBear 9.x/10.x output rejected that path:
 
 - Several styles are **centered motifs, not plane-fillers** (`constellation`,
-  `blobs`) — they do not extend beyond the node body, which the user flagged
+  `blobs`) - they do not extend beyond the node body, which the user flagged
   explicitly ("not infinitely expanding").
 - Every style **bakes in its own palette**; making them color-neutral requires
   stripping and recoloring the generated SVG.
@@ -30,7 +30,7 @@ Evaluation of the real DiceBear 9.x/10.x output rejected that path:
   heaviest part of the original plan, for a feature that is ultimately
   "a monochrome tile drawn behind the node text".
 
-The approved pivot: a small **Java2D formula engine** — each style is a pure
+The approved pivot: a small **Java2D formula engine** - each style is a pure
 `paint(Graphics2D, w, h, Random)` formula (Vanta/KDE-structural inspiration:
 isocurves, voronoi membranes, kNN nets, hex tiling, wavy strata, space-filling
 curves, recursive subdivision). Color-neutrality and plane-filling are then **properties of the pipeline, not
@@ -40,7 +40,7 @@ post-processing**, and are testable.
 
 1. Every algorithm node on a framework (Cellpose, TrackMate, cLij, ImageJ,
    OpenCV, …) carries that framework's **signature pattern** as a low-opacity
-   background over the whole node body — recognizable at a glance and at
+   background over the whole node body - recognizable at a glance and at
    zoomed-out distance (minimap reuses it).
 2. Patterns are **color-neutral** (a white alpha mask) so the theme can recolor
    them freely; the function hue stays the node's primary color.
@@ -79,9 +79,9 @@ Contract for every family (enforced by tests, §Testing):
 
 - draws only with the current paint (white) onto a transparent canvas;
 - reaches all four borders (overshoots the frame where the geometry is
-  grid-based — one row/col of elements past each edge — so the motif is
+  grid-based - one row/col of elements past each edge - so the motif is
   clipped by the node body exactly like an infinitely continuing texture);
-- is a pure function of `(w, h, rng)` — no wall clock, no `Math.random`.
+- is a pure function of `(w, h, rng)` - no wall clock, no `Math.random`.
 
 ```java
 /** Registry of the bundled styles. Ids are stable string literals. */
@@ -105,11 +105,11 @@ public final class NodePatternRenderer {
 }
 ```
 
-- **Mask caching** is keyed by `(styleId, seed, width/8, height/8)` — node
+- **Mask caching** is keyed by `(styleId, seed, width/8, height/8)` - node
   sizes cluster, so a handful of tiles per (style, framework) serve all zoom
   levels; larger nodes scale the tile up via `drawImage` (a low-opacity
   texture tolerates the interpolation). Mask cap 512×512.
-- The mask is **theme-independent** by construction (white ink) — changing
+- The mask is **theme-independent** by construction (white ink) - changing
   ink color/opacity only changes the draw call, never the cache.
 - **Seed:** `new Random(seed.hashCode())` with `seed` = the framework id (`String.hashCode()` is JLS-specified, `Random`
   's LCG is fixed ⇒
@@ -132,11 +132,11 @@ public final class NodePatternRenderer {
 | `dots`      | dot grid, radius modulated by a periodic field, centers on the border grid                        | Ilastik          |
 | `landscape` | stacked wavy strata drawn as **bands between consecutive curves** (no alpha stacking)             | R                |
 | `carpet`    | Sierpinski carpet (space-filling fractal)                                                         | JIPipeDL         |
-| `loops`     | open arc loops on a jittered grid — *spare*                                                       | —                |
-| `disco`     | confetti polygons (3–5 sides) on a jittered grid — *spare*                                        | —                |
-| `hilbert`   | space-filling Hilbert curve, order 6 (canonical inside-out `d2xy`) — *spare*                      | —                |
-| `ripple`    | radial fan + concentric circles from an interior point (Vanta *ripple*) — *spare*                 | —                |
-| `flow`      | flow-field line segments (Vanta *topology*) — *spare*                                             | —                |
+| `loops`     | open arc loops on a jittered grid - *spare*                                                       | -                |
+| `disco`     | confetti polygons (3–5 sides) on a jittered grid - *spare*                                        | -                |
+| `hilbert`   | space-filling Hilbert curve, order 6 (canonical inside-out `d2xy`) - *spare*                      | -                |
+| `ripple`    | radial fan + concentric circles from an interior point (Vanta *ripple*) - *spare*                 | -                |
+| `flow`      | flow-field line segments (Vanta *topology*) - *spare*                                             | -                |
 
 Replaced/removed vs. the previous `getPatternStyleId()` values:
 `constellation` (sparse, rejected) → `net`; `shape-grid` → `waves`/`carpet`;
@@ -172,7 +172,7 @@ signature.
 ### Node UI integration (`JIPipeDesktopGraphNodeUI`)
 
 `paintNode`, after the body fill and **before** the disabled/pass-through
-hatch (the hatch therefore covers the pattern — the spec'd "suppressed where
+hatch (the hatch therefore covers the pattern - the spec'd "suppressed where
 hatching paints" falls out of the paint order):
 
 ```java
@@ -198,7 +198,7 @@ if (style.isShowNodeFrameworkPattern() && fw != null
 
 ### Theme settings
 
-`JIPipeDesktopModernThemeStyle` (persisted theme document, Jackson — new
+`JIPipeDesktopModernThemeStyle` (persisted theme document, Jackson - new
 fields deserialize with defaults, old theme files unaffected):
 
 | Setting                    | Default                                                                                     |
@@ -218,34 +218,34 @@ opacity slider + color picker). All off ⇒ today's look, per goal 6.
   this for shipped frameworks).
 - `NoFramework` ⇒ no pattern, no badge.
 - Node smaller than one mask bucket ⇒ smallest bucket scaled down.
-- Pattern paint cost: one cached `drawImage` per node paint — the issue's
+- Pattern paint cost: one cached `drawImage` per node paint - the issue's
   caching/performance requirement.
 
-## Testing (per the "do not test trivial things" policy — 4 contracts)
+## Testing (per the "do not test trivial things" policy - 4 contracts)
 
 All tests headless (`BufferedImage` only, no Swing interaction; no display
 needed), in `jipipe-core/src/test/.../nodepatterns/`
 (`NodePatternEngineTest`, no JIPipe boot required):
 
-1. **Determinism** — `mask(style, seed, size)` is byte-identical across two
+1. **Determinism** - `mask(style, seed, size)` is byte-identical across two
    independent renderer invocations (fresh `Random` from the same seed), for
    all 17 styles at 3 sizes. Plus one **golden mask** (a small PNG checked in
    as a test resource, seed `jipipe:framework:trackmate`, style `net`,
-   128×128) pinned pixel-exactly — the byte-stable idempotency-pin pattern
+   128×128) pinned pixel-exactly - the byte-stable idempotency-pin pattern
    the generators already use.
-2. **Plane-filling** — for every family, at 3 sizes × 2 seeds: ink coverage
+2. **Plane-filling** - for every family, at 3 sizes × 2 seeds: ink coverage
    in the 6px band of **all four** borders ≥ 4%. This is the regression guard
    for the centered-motif defects (constellation/sierpinski/koch class).
-3. **Color-neutral** — for every family at one size: every non-transparent
-   mask pixel has white color channels (`r==g==b==255`; alpha may vary —
+3. **Color-neutral** - for every family at one size: every non-transparent
+   mask pixel has white color channels (`r==g==b==255`; alpha may vary -
    some styles use translucent fills). Recolorability is structural: the
    mask can be drawn with any tint via `AlphaComposite`.
-4. **Registry** — every framework in `JIPipe.getNodes().getFrameworks().all()`
+4. **Registry** - every framework in `JIPipe.getNodes().getFrameworks().all()`
    except `NoFramework` resolves to a non-null style id that `NodePatternStyles`
    knows; `NoFramework` returns null; all 15 mapped framework→style pairs from
    the table above hold (the mapping is the ship contract).
 
-Visual appearance (subtlety, per-hue legibility) is **not** tested — it is
+Visual appearance (subtlety, per-hue legibility) is **not** tested - it is
 reviewed in the app, per the standing test policy.
 
 ## Migration & compatibility
@@ -258,7 +258,7 @@ reviewed in the app, per the standing test policy.
 
 ## Branching & commits
 
-Continue on **`1324-node-taxonomy-core`** (MR !168) — the original plan's
+Continue on **`1324-node-taxonomy-core`** (MR !168) - the original plan's
 "one branch per phase" is dropped for practicality while the whole 1324
 feature set lands in a single MR. (Confirm at spec review.)
 
@@ -274,7 +274,7 @@ Suggested commit shape:
 | Risk                                                                                 | Mitigation                                                                                                                                                                                                                       |
 |--------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | A family looks bad at some node size/zoom                                            | Mask buckets + `drawImage` scaling; the family formulas are size-parametric (grid counts derive from `w`/`h`), re-tune parameters in one class                                                                                   |
-| `String.hashCode()` seed distribution gives an unlucky realization for one framework | Per-framework seed salt (one-line constant) — deterministic, still stable                                                                                                                                                        |
+| `String.hashCode()` seed distribution gives an unlucky realization for one framework | Per-framework seed salt (one-line constant) - deterministic, still stable                                                                                                                                                        |
 | Pattern hurts node text legibility                                                   | Default opacity 0.4 on light / 0.15 on dark (live-tuned via the theme editor preview; pinned per theme, see `NodePatternThemeSettingsTest.shippedThemesPinPatternOpacity`); theme slider; the title band paints over the pattern |
 | 17 families is too much code to maintain                                             | ~40–80 lines each, pure Java2D, no shared mutable state; the 4 contract tests keep them honest without per-pixel test bloat                                                                                                      |
 
@@ -293,7 +293,7 @@ Suggested commit shape:
 6. **Fractal sources** covered by `carpet` (Sierpinski carpet) + `hilbert`
    (space-filling curve); bounded-motif fractals (Sierpinski *triangle*, Koch *snowflake*) excluded for the same reason
    as `constellation`.
-7. **Mapping table** as above — approved.
-8. **Badge included** in this phase — approved.
-9. **No contrib module, no Batik, no dist changes** — consequence of (1).
-10. **`NoFramework` loses its pattern** (null style id) — deliberate.
+7. **Mapping table** as above - approved.
+8. **Badge included** in this phase - approved.
+9. **No contrib module, no Batik, no dist changes** - consequence of (1).
+10. **`NoFramework` loses its pattern** (null style id) - deliberate.

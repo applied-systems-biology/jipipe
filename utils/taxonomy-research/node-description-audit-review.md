@@ -1,4 +1,4 @@
-# Node-Description Audit — Before/After (pattern-relevant slice, decision 3)
+# Node-Description Audit - Before/After (pattern-relevant slice, decision 3)
 
 Work item 1324 · 2026-10-17 · 70 editable node types of the 320 the shipped patterns use
 
@@ -11,7 +11,7 @@ and the core/launcher test suites pass at their baselines.
 Buckets: **wrong** = the text described a sibling node (copy-paste), **missing**
 = empty, **thin** = present but <50 chars. The 22 `not_editable_here` (third-party CLIJ
 kernels, runtime-dynamic plot/trackmate variants, the absent jipipe2ai plugin,
-stale IDs that get remapped in (D)) have no JIPipe annotation to fix — the
+stale IDs that get remapped in (D)) have no JIPipe annotation to fix - the
 remaining ~1440 registry nodes are the follow-up pass.
 
 ## Wrong (described a sibling node)

@@ -62,6 +62,6 @@ Project: `AIAgentTests/02-AdvancedPipelines/Paco_06.jip` (relative to `/data/JIP
 
 Proposed name `Cellpose segmentation (3.x) -> Filter 2D ROI by statistics -> Compartment output`, menu path
 `Patterns/Machine learning/Cellpose segmentation (3.x) -> Filter 2D ROI by statistics -> Compartment output` (proposal
-only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+only - not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/chain-3-cellpose-segmentation-inference-3-x-ij1-roi-filter-statistics-jipipe-compartment-output.json`.
 

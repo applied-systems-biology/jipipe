@@ -34,7 +34,7 @@ import java.util.function.Supplier;
  * <p>
  * Intended use cases: the node browser's tag filter (hundreds of string
  * options), the input/output data-type filter (grouped, icon-bearing, with
- * the two-pane "Input | Output" layout), and — planned — parameter editors
+ * the two-pane "Input | Output" layout), and - planned - parameter editors
  * for enum-like and selection-type parameters (e.g.
  * {@code JIPipeDynamicSetParameter}), which currently have clunky UIs.
  * <p>
@@ -211,13 +211,13 @@ public class JIPipeDesktopRichSelectionBox extends JButton {
 
         // The popup's keyboard model (arrow / Enter / Tab / Esc) on the search
         // field. The search field is a REUSED instance (the popup panel is
-        // rebuilt on every show), so its listener is wired here — not in
+        // rebuilt on every show), so its listener is wired here - not in
         // showPopup, which would accumulate one listener per open.
         searchField.addKeyListener(popupKeyListener);
 
         // The popup's "Clear" button (resets the selection to empty =
-        // "show all"). Wired here — not in showPopup, which runs on every
-        // open and would accumulate listeners on the reused button — so the
+        // "show all"). Wired here - not in showPopup, which runs on every
+        // open and would accumulate listeners on the reused button - so the
         // clear goes through the same path as a user toggle (handler +
         // updateText) and callers persist/refresh exactly as for any other
         // selection change.
@@ -233,7 +233,7 @@ public class JIPipeDesktopRichSelectionBox extends JButton {
         });
 
         // The popup's "Select all" button (selects every current option). Only
-        // shown when {@link #setHasSelectAll(boolean)} is true. Wired here —
+        // shown when {@link #setHasSelectAll(boolean)} is true. Wired here -
         // not in showPopup, which runs on every open and would accumulate
         // listeners on the reused button.
         selectAllButton.setToolTipText("Select all options");
@@ -373,7 +373,7 @@ public class JIPipeDesktopRichSelectionBox extends JButton {
      * to reflect the current selection, <em>without</em> showing the popup.
      * Call this after construction (and whenever the underlying value changes)
      * so the button shows the selected option's display text and icon instead
-     * of the raw value — the option index is only built on the first popup
+     * of the raw value - the option index is only built on the first popup
      * open otherwise.
      */
     public void refreshDisplay() {
@@ -431,7 +431,7 @@ public class JIPipeDesktopRichSelectionBox extends JButton {
         // user toggle (handler + updateText), so callers persist/refresh
         // exactly as they do for any other selection change. The button is a
         // REUSED instance (the popup panel is rebuilt on every show), so its
-        // listener is wired up exactly once in the constructor — adding it
+        // listener is wired up exactly once in the constructor - adding it
         // again here would accumulate one listener per popup open.
         JPanel header = new JPanel(new BorderLayout(4, 0));
         header.add(searchField, BorderLayout.CENTER);
@@ -599,7 +599,7 @@ public class JIPipeDesktopRichSelectionBox extends JButton {
                 // The list UI's own (earlier-registered) selection handler
                 // collapses a multi-selection to the pressed row on mouse
                 // press. Restoring the SAVED selection in the same event
-                // dispatch makes the list paint once, in its final state —
+                // dispatch makes the list paint once, in its final state -
                 // without this, the collapsed ("all off") state was painted
                 // for the few frames between press and click (the flicker).
                 if (multiSelect) {
@@ -737,7 +737,7 @@ public class JIPipeDesktopRichSelectionBox extends JButton {
             return;
         }
         if (summaryLabel != null) {
-            // Compact: "Data (3)" / "Tags (7)" — the button width stays
+            // Compact: "Data (3)" / "Tags (7)" - the button width stays
             // bounded no matter how many options are selected.
             setText(summaryLabel + " (" + selectedValues.size() + ")");
             setFont(baseFont.deriveFont(Font.BOLD));
@@ -858,7 +858,7 @@ public class JIPipeDesktopRichSelectionBox extends JButton {
      * every focus move, filter change, and list selection change;
      * {@link #onKey(int, boolean)} returns the {@link KeyAction} to apply.
      * <p>
-     * The model knows the pane models as {@link Option} lists — including the
+     * The model knows the pane models as {@link Option} lists - including the
      * non-option group-header rows of the single-pane list mode, which are
      * marked via {@code headerRows} (one boolean per row of pane 0). Header
      * rows are skipped by arrow navigation and Enter on one is a no-op.
@@ -927,7 +927,7 @@ public class JIPipeDesktopRichSelectionBox extends JButton {
          * headless test calls it to position the cursor):
          * <ul>
          *   <li>{@code LIST} at the given pane + row (the list's selected row);</li>
-         *   <li>{@code SEARCH} — the search field has focus. If {@code row >= 0},
+         *   <li>{@code SEARCH} - the search field has focus. If {@code row >= 0},
          *       that (pane, row) is the match row a single-select Enter should
          *       confirm (the box reports the first filtered match here); if
          *       {@code row < 0}, no specific row is pending and Enter confirms
@@ -1256,7 +1256,7 @@ public class JIPipeDesktopRichSelectionBox extends JButton {
 
     /**
      * A plain-data snapshot of the current pane models: each pane's visible
-     * options in display order, plus per-row (pane 0) header flags — the input
+     * options in display order, plus per-row (pane 0) header flags - the input
      * the key model needs (it must not hold the live {@link DefaultListModel}s).
      */
     private record KeyModelSnapshot(List<List<Option<?>>> paneViews, List<Boolean> headerRows) {

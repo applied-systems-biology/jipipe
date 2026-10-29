@@ -17,7 +17,7 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.JIPipeFontFamily
 
 /**
  * Thin editor for the full {@link JIPipeFontFamilySizeStyleColorParameter}
- * (family + size + style + color) — the adaptive base shows all four rows
+ * (family + size + style + color) - the adaptive base shows all four rows
  * (#1339 Task 2). The {@link #getPopoutContent()} seam is inherited from
  * {@link JIPipeDesktopFontParameterEditorUI}; the screenshot harness casts to
  * this class and renders that content directly.

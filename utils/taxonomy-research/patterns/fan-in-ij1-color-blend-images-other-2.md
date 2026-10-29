@@ -58,6 +58,6 @@ compartment `Mask`.
 ## Template
 
 Proposed name `Blend images fans in from 13 source ids (roles: other)`, menu path
-`Patterns/Images/Blend images fans in from 13 source ids (roles: other)` (proposal only — not registered). `data` = the
+`Patterns/Images/Blend images fans in from 13 source ids (roles: other)` (proposal only - not registered). `data` = the
 minimal JIPipeGraph JSON; the full object is written to `templates/fan-in-ij1-color-blend-images-other-2.json`.
 

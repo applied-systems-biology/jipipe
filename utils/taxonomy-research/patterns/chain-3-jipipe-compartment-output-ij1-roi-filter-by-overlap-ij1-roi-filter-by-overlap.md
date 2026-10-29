@@ -63,6 +63,6 @@ Project: `AIAgentTests/03-ExampleWorkflows/Clara_08_feet.jip` (relative to `/dat
 
 Proposed name `Compartment output -> Filter 2D ROI by overlap (old) -> Filter 2D ROI by overlap (old)`, menu path
 `Patterns/Graph / Project/Compartment output -> Filter 2D ROI by overlap (old) -> Filter 2D ROI by overlap (old)`
-(proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+(proposal only - not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/chain-3-jipipe-compartment-output-ij1-roi-filter-by-overlap-ij1-roi-filter-by-overlap.json`.
 

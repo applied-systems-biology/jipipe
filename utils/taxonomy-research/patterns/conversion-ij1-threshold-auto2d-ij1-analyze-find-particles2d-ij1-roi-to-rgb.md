@@ -62,7 +62,7 @@ Project: `AIAgentTests/01-BasicWorkshop/JSC_2025_02_Blobs_Single/blobs.jip` (rel
 ## Template
 
 Proposed name `Auto threshold 2D (8-bit) -> Find particles 2D -> Convert 2D ROI to RGB`, menu path
-`Patterns/Images/Auto threshold 2D (8-bit) -> Find particles 2D -> Convert 2D ROI to RGB` (proposal only — not
+`Patterns/Images/Auto threshold 2D (8-bit) -> Find particles 2D -> Convert 2D ROI to RGB` (proposal only - not
 registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/conversion-ij1-threshold-auto2d-ij1-analyze-find-particles2d-ij1-roi-to-rgb.json`.
 

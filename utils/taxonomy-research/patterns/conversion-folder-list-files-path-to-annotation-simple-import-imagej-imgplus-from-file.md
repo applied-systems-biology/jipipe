@@ -61,7 +61,7 @@ Project: `AIAgentTests/01-BasicWorkshop/lecture_06.jip` (relative to `/data/JIPi
 ## Template
 
 Proposed name `List files -> Annotate with file/directory name -> Import image`, menu path
-`Patterns/Data Sources/List files -> Annotate with file/directory name -> Import image` (proposal only — not
+`Patterns/Data Sources/List files -> Annotate with file/directory name -> Import image` (proposal only - not
 registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/conversion-folder-list-files-path-to-annotation-simple-import-imagej-imgplus-from-file.json`.
 

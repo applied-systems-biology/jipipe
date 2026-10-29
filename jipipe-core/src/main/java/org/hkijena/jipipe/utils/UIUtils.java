@@ -237,7 +237,7 @@ public class UIUtils {
     /**
      * A modern left-only accent border: a 3px bar on the left edge, nothing on
      * the other sides (no enclosing box). Used for compound parameter editors
-     * (lists, the HTML editor) where a full box reads as heavy — #1339. The bar
+     * (lists, the HTML editor) where a full box reads as heavy - #1339. The bar
      * uses the node-highlight gray (not the faint form border color) so it is
      * actually visible against both light and dark panel backgrounds.
      */
@@ -257,7 +257,7 @@ public class UIUtils {
      * (copies the window background in the standard themes). A rounded
      * rectangle whose outline follows the fill, at the standard button
      * height, with a real pressed/rollover state. For emphasized placements
-     * pass an explicit fill via the overload — the theme's highlighted
+     * pass an explicit fill via the overload - the theme's highlighted
      * parameter action color for group headers, the success color for the
      * primary action.
      *
@@ -272,7 +272,7 @@ public class UIUtils {
 
     /**
      * {@link #createParameterButton(String, Icon, ActionListener)} with an
-     * explicit fill color — the background <em>and</em> the rounded outline
+     * explicit fill color - the background <em>and</em> the rounded outline
      * follow it. Use the theme's accent colors for emphasized placements (the
      * highlighted parameter action color for group-header buttons, the
      * success color for the success-styled primary action).
@@ -302,7 +302,7 @@ public class UIUtils {
         if (action != null) {
             b.addActionListener(action);
         }
-        // The standard button height (theme Button.font + padding) — parameter
+        // The standard button height (theme Button.font + padding) - parameter
         // header rows take their min height from this (#1339).
         b.setPreferredSize(new Dimension(b.getPreferredSize().width, STANDARD_BUTTON_HEIGHT));
         b.setMinimumSize(new Dimension(b.getMinimumSize().width, STANDARD_BUTTON_HEIGHT));
@@ -329,7 +329,7 @@ public class UIUtils {
 
     /**
      * Primary-styled variant of {@link #createParameterButton(String, Icon,
-     * ActionListener)} — the primary action of a parameter row (the list
+     * ActionListener)} - the primary action of a parameter row (the list
      * editors' "Add"): filled with the theme's primary color.
      */
     public static JButton createPrimaryParameterButton(String text, Icon icon, ActionListener action) {

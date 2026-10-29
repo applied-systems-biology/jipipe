@@ -19,11 +19,11 @@ import java.util.List;
 
 /**
  * The three generalized workflow relations of a node database entry
- * (spec §10.1) — the replacement for the removed
+ * (spec §10.1) - the replacement for the removed
  * {@code JIPipeNodeDatabase.followUps(entry)} /
  * {@code related(entry, max)} API pair.
  *
- * @param similar  entries that do the same kind of thing as the entry —
+ * @param similar  entries that do the same kind of thing as the entry -
  *                 ranked by taxonomy tiers (same function → same framework →
  *                 shared tags), with any entry that is also a
  *                 {@link #previous()} or {@link #next()} neighbor excluded so

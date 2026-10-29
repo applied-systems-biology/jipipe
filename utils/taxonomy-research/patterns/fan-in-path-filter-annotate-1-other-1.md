@@ -58,7 +58,7 @@ Project: `AIAgentTests/03-ExampleWorkflows/Clara_08_feet.jip` (relative to `/dat
 ## Template
 
 Proposed name `Filter paths fans in from 3 source ids (roles: annotate, other)`, menu path
-`Patterns/Data Sources/Filter paths fans in from 3 source ids (roles: annotate, other)` (proposal only — not
+`Patterns/Data Sources/Filter paths fans in from 3 source ids (roles: annotate, other)` (proposal only - not
 registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/fan-in-path-filter-annotate-1-other-1.json`.
 

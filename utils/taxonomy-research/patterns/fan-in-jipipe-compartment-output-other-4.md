@@ -64,7 +64,7 @@ Project: `AIAgentTests/02-AdvancedPipelines/Cryogels_01.jip` (relative to `/data
 ## Template
 
 Proposed name `Compartment output fans in from 23 source ids (roles: other)`, menu path
-`Patterns/Graph / Project/Compartment output fans in from 23 source ids (roles: other)` (proposal only — not
+`Patterns/Graph / Project/Compartment output fans in from 23 source ids (roles: other)` (proposal only - not
 registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/fan-in-jipipe-compartment-output-other-4.json`.
 

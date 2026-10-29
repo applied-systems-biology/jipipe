@@ -43,7 +43,7 @@ public class JIPipeDesktopColorParameterEditorUI extends JIPipeDesktopParameterE
         currentlyDisplayed.addActionListener(e -> pickColor());
         currentlyDisplayed.setToolTipText("Select color");
         UIUtils.setStandardButtonBorder(currentlyDisplayed);
-        // #1339 item 6: no separate icon-only "Edit" button — the display
+        // #1339 item 6: no separate icon-only "Edit" button - the display
         // button above is already wired to the same picker.
         add(currentlyDisplayed, BorderLayout.CENTER);
     }

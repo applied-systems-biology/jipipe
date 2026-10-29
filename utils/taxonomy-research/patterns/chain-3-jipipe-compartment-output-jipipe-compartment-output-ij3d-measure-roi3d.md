@@ -62,7 +62,7 @@ Project: `AIAgentTests/03-ExampleWorkflows/Annamaria_12.jip` (relative to `/data
 ## Template
 
 Proposed name `Compartment output -> Compartment output -> Extract IJ3D ROI statistics`, menu path
-`Patterns/Graph / Project/Compartment output -> Compartment output -> Extract IJ3D ROI statistics` (proposal only — not
+`Patterns/Graph / Project/Compartment output -> Compartment output -> Extract IJ3D ROI statistics` (proposal only - not
 registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/chain-3-jipipe-compartment-output-jipipe-compartment-output-ij3d-measure-roi3d.json`.
 

@@ -76,6 +76,6 @@ Proposed name
 `Annotate with file/directory name -> Import ROI -> Convert 2D ROI to mask -> Morphological operation 2D -> Compartment output`,
 menu path
 `Patterns/Annotations/Annotate with file/directory name -> Import ROI -> Convert 2D ROI to mask -> Morphological operation 2D -> Compartment output`
-(proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+(proposal only - not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/chain-5-path-to-annotation-simple-import-imagej-roi-from-file-ij1-roi-to-mask-ij1-morph-operation2d-jipipe-compartment-output.json`.
 

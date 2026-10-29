@@ -37,13 +37,13 @@ import java.util.*;
  * The state splits into three independent groups, none of which resets
  * the others:
  * <ul>
- * <li><b>search text</b> — a non-empty search ({@link #isSearchActive()})
+ * <li><b>search text</b> - a non-empty search ({@link #isSearchActive()})
  * re-queries the list and highlights the matching tree leafs (the layout
  * itself never changes: tree + list are always shown);</li>
  * <li><b>the taxonomy facets</b> (framework / input+output data types /
- * tags) — the shared filter predicate {@link #matches(JIPipeNodeDatabaseEntry)};</li>
- * <li><b>the tree path and view toggles</b> (selected function path —
- * mutually exclusive with a selected template scope — pinned-only,
+ * tags) - the shared filter predicate {@link #matches(JIPipeNodeDatabaseEntry)};</li>
+ * <li><b>the tree path and view toggles</b> (selected function path -
+ * mutually exclusive with a selected template scope - pinned-only,
  * selection-only).</li>
  * </ul>
  */
@@ -87,7 +87,7 @@ public class NodeBrowserModel {
     private TemplateScope selectedScope;
     /**
      * The taxonomy function whose synthetic {@code <function>/Patterns} row
-     * is selected (the per-function template grouping — the row lists the
+     * is selected (the per-function template grouping - the row lists the
      * template entries filed under that function). MUTUALLY EXCLUSIVE with
      * {@link #treePath} and {@link #selectedScope} (setting one clears the
      * other two). {@code null} = no Patterns row selected.
@@ -146,7 +146,7 @@ public class NodeBrowserModel {
 
     /**
      * The ids of every taxonomy function under which at least one of the
-     * given node infos has a node — used to prune the function tree so it
+     * given node infos has a node - used to prune the function tree so it
      * never shows empty categories (e.g. a plot sub-leaf no node is
      * assigned to, or an entire branch with no nodes).
      * <p>
@@ -155,7 +155,7 @@ public class NodeBrowserModel {
      * still be empty when a tree is first rendered, while the registered
      * infos are complete as soon as the plugins are registered. A node is
      * counted only when it is visible for the given database role, so a
-     * function whose only nodes are hidden in this editor is pruned too —
+     * function whose only nodes are hidden in this editor is pruned too -
      * matching what the browser's query would show under it.
      * <p>
      * For each counted node the primary <em>and</em> all secondary function
@@ -359,7 +359,7 @@ public class NodeBrowserModel {
         }
         // Data-type facets: the entry passes the input filter iff at least
         // one of its input slots produces one of the selected types (a
-        // slot's own type or a convertible type counts — the slot's data
+        // slot's own type or a convertible type counts - the slot's data
         // class IS what the node accepts), and symmetrically for outputs.
         // An empty selection disables the respective check.
         if (!inputDataTypes.isEmpty()) {
@@ -465,7 +465,7 @@ public class NodeBrowserModel {
     /**
      * The shared SELECTION predicate with an explicitly supplied function
      * registry (spec §7.2): whether the given entry belongs in the results
-     * list given the current tree selection — a template scope, a
+     * list given the current tree selection - a template scope, a
      * {@code <function>/Patterns} row, else a function tree path, else the
      * root (all entries).
      * <p>
@@ -563,7 +563,7 @@ public class NodeBrowserModel {
     /**
      * The shared kind-filter predicate (1340): whether the given entry
      * passes the currently selected result kinds. Delegates to
-     * {@link NodeEntryKind#matches(JIPipeNodeDatabaseEntry, Set)} — entries
+     * {@link NodeEntryKind#matches(JIPipeNodeDatabaseEntry, Set)} - entries
      * without a kind (existing nodes / compartments, new compartments)
      * always pass, and an empty selection matches everything. Both node
      * browser surfaces (the docked {@link JIPipeDesktopNodeBrowser} and the

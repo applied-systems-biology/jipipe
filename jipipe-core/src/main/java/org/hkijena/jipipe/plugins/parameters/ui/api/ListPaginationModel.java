@@ -19,10 +19,10 @@ package org.hkijena.jipipe.plugins.parameters.ui.api;
  * A list with more than {@code pageSize} items shows the first page only;
  * a "+k more" button reveals another page each click, and "Show less"
  * collapses the list back to a single page. Lists rendered with a scroll bar
- * (the {@code withScrollBar} setting) show all rows at once — pagination is
+ * (the {@code withScrollBar} setting) show all rows at once - pagination is
  * disabled for them.
  * <p>
- * Pure state, no Swing — headless-testable.
+ * Pure state, no Swing - headless-testable.
  */
 public final class ListPaginationModel {
     private final int total;

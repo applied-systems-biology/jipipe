@@ -68,7 +68,7 @@ Project: `AIAgentTests/03-ExampleWorkflows/Annamaria_12.jip` (relative to `/data
 ## Template
 
 Proposed name `Set LUT (color map) -> Compartment output -> Compartment output -> Compartment output`, menu path
-`Patterns/Images/Set LUT (color map) -> Compartment output -> Compartment output -> Compartment output` (proposal only —
+`Patterns/Images/Set LUT (color map) -> Compartment output -> Compartment output -> Compartment output` (proposal only -
 not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/chain-4-ij1-set-lut-from-color-map-jipipe-compartment-output-jipipe-compartment-output-jipipe-compartment-output.json`.
 

@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * The keyboard decision matrix of the rich selection box's popup
- * ({@link PopupKeyModel} — a headless, Swing-free state machine, see #1339):
+ * ({@link PopupKeyModel} - a headless, Swing-free state machine, see #1339):
  * Enter/Esc/arrow/Tab behavior in single- vs multi-select and single- vs
  * two-pane mode, including the single-pane grouped header rows, which are
  * non-option rows that arrow navigation must skip and Enter must treat as a

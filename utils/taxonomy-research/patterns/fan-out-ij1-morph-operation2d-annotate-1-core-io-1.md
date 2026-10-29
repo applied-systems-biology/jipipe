@@ -59,7 +59,7 @@ Project: `AIAgentTests/03-ExampleWorkflows/CellposeTraining.jip` (relative to `/
 ## Template
 
 Proposed name `Morphological operation 2D fans out to 2 target ids (roles: annotate, core-io)`, menu path
-`Patterns/Images/Morphological operation 2D fans out to 2 target ids (roles: annotate, core-io)` (proposal only — not
+`Patterns/Images/Morphological operation 2D fans out to 2 target ids (roles: annotate, core-io)` (proposal only - not
 registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/fan-out-ij1-morph-operation2d-annotate-1-core-io-1.json`.
 

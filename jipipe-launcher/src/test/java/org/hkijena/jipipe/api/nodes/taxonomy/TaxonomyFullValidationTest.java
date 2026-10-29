@@ -27,7 +27,7 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Full-registry taxonomy validation gate — the branch gate of the node
+ * Full-registry taxonomy validation gate - the branch gate of the node
  * taxonomy redesign (phase 1b, task 22).
  * <p>
  * <b>Scope: the entire node registry.</b> This test lives in
@@ -38,21 +38,21 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * vice versa, so core's own classpath cannot see the plugin nodes.
  * <p>
  * <b>Production parity.</b> The test runs the 5-argument
- * {@link TaxonomyValidationReport#run} overload — the exact entry point
+ * {@link TaxonomyValidationReport#run} overload - the exact entry point
  * that {@link JIPipeNodesServiceComponent#postprocess} invokes as the final
- * pass of every JIPipe initialization — over the live registries: the
+ * pass of every JIPipe initialization - over the live registries: the
  * curated function tree, the framework set, the family steps (via the
  * {@link FamilyAssembler}), and the node → function/framework membership of
  * the whole registry.
  * <p>
  * <b>Assertions.</b>
  * <ol>
- * <li>{@code report.ok()} — no validation errors (broken function tree,
+ * <li>{@code report.ok()} - no validation errors (broken function tree,
  * dangling framework/function references, family steps referencing node ids
  * that no longer resolve). NOTE: {@code ok()} ignores unassigned nodes by
  * design (they are the expected state during conversion), so it is not the
  * conversion-complete check itself.</li>
- * <li><b>The branch gate:</b> {@code report.unassignedNodeIds()} is empty —
+ * <li><b>The branch gate:</b> {@code report.unassignedNodeIds()} is empty -
  * every registered node has a non-{@code null} primary taxonomy function.
  * This is the proof that the ~945-annotated + dynamic-node conversion
  * (tasks 19.1–20) is complete across the entire product.</li>
@@ -60,7 +60,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * <p>
  * This gate is intentionally ungated (no system-property switch): once the
  * conversion is complete it must stay green for every change to the node
- * registry — a node registered without a taxonomy function vanishes from
+ * registry - a node registered without a taxonomy function vanishes from
  * the function-based browser and fails this test.
  */
 class TaxonomyFullValidationTest {
@@ -96,7 +96,7 @@ class TaxonomyFullValidationTest {
         assertTrue(report.ok(), "Taxonomy validation errors:\n" + String.join("\n", report.errors()));
 
         // (2) THE BRANCH GATE: every registered node has a non-null primary
-        // taxonomy function — the 19.1-20 conversion is complete.
+        // taxonomy function - the 19.1-20 conversion is complete.
         List<String> unassigned = new ArrayList<>(report.unassignedNodeIds());
         Collections.sort(unassigned);
         assertTrue(unassigned.isEmpty(),

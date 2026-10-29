@@ -1,4 +1,4 @@
-# Mirror Snapshots to GitHub Prereleases — Implementation Plan
+# Mirror Snapshots to GitHub Prereleases - Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:
 > executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
@@ -188,7 +188,7 @@ Run: `python3 -c "import yaml,sys; yaml.safe_load(open('.gitlab-ci.yml')); print
 - [ ] **Step 4: Double-check job placement & rules are unchanged elsewhere**
 
 Verify the diff only ADDS the `upload_to_github_prerelease` job and does not modify any other job block. Run:
-`git diff .gitlab-ci.yml | grep -E '^[-+]' | grep -viE 'hardens of|^-   -|^- ' ` — confirm the only additions are under
+`git diff .gitlab-ci.yml | grep -E '^[-+]' | grep -viE 'hardens of|^-   -|^- ' ` - confirm the only additions are under
 the new job and that no existing job lines are removed.
 
 - [ ] **Step 5: Commit**

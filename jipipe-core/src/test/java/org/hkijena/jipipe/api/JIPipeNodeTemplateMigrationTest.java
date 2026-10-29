@@ -183,7 +183,7 @@ class JIPipeNodeTemplateMigrationTest {
         assertThat(JIPipe.getNodeTemplates().addToProject(t, project)).isTrue();
 
         // Trigger the database build. rebuildImmediately() enqueues the builder
-        // run ASYNCHRONOUSLY (SwingWorker), so — like NodeDatabaseTaxonomyTest —
+        // run ASYNCHRONOUSLY (SwingWorker), so - like NodeDatabaseTaxonomyTest -
         // we use a database whose virtual rebuildImmediately() is a no-op and
         // run the builder synchronously to assert its effect deterministically.
         // The database must hold the SAME project, because the builder's

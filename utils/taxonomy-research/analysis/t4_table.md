@@ -1,4 +1,4 @@
-# Task 4 — raw tables (workflow chains & branch fragmentation)
+# Task 4 - raw tables (workflow chains & branch fragmentation)
 
 |  # | node id                           | name                           | distinct projects | node instances |
 |---:|-----------------------------------|--------------------------------|------------------:|---------------:|

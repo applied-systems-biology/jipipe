@@ -57,6 +57,6 @@ Project: `AIAgentTests/01-BasicWorkshop/lecture_03.jip` (relative to `/data/JIPi
 ## Template
 
 Proposed name `Convert 2D ROI to RGB fans in from 27 source ids (roles: other)`, menu path
-`Patterns/ROIs/Convert 2D ROI to RGB fans in from 27 source ids (roles: other)` (proposal only — not registered).
+`Patterns/ROIs/Convert 2D ROI to RGB fans in from 27 source ids (roles: other)` (proposal only - not registered).
 `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/fan-in-ij1-roi-to-rgb-other-2.json`.
 

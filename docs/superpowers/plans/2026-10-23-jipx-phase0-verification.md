@@ -1,4 +1,4 @@
-# JIPX Phase 0 — Corpus Verification Record (Task 6, #753)
+# JIPX Phase 0 - Corpus Verification Record (Task 6, #753)
 
 **Date:** 2026-10-23 **Branch:** `753-jipx-project-format` (worktree `.worktrees/753-jipx-project-format`)
 **Scope of proof:** the Tasks 2–5 extraction of `.jip` read/write behind
@@ -9,15 +9,15 @@ behavior-preserving against the baseline captured on the unrefactored code (Task
 
 ## 1. Method
 
-**Corpus:** `/data/JIPipe` — **367** `.jip` files (142 top-level, recursive; versions
+**Corpus:** `/data/JIPipe` - **367** `.jip` files (142 top-level, recursive; versions
 1.0.0–6.0.0 incl. Development builds). The corpus is read-only for this verification:
 the harness round-trips temp *copies* (Task 1's pollution guard asserts the top-level
-`*.jip` count is unchanged; the after-run passed it — `Tests run: 1, Failures: 0`).
+`*.jip` count is unchanged; the after-run passed it - `Tests run: 1, Failures: 0`).
 
 **Instrument:** `CorpusRoundTripFixpointTest` (jipipe-launcher), **unchanged since the
 baseline capture** (`git diff c7f5cbc7b2..7aac99317b -- <harness>` is empty). Per file:
 load → save S1 → load S1 → save S2; records `outcome`, `s1vs2SemanticallyEqual`
-(canonical JSON equality — recursively sorted objects/arrays, per the Task 1 canonical
+(canonical JSON equality - recursively sorted objects/arrays, per the Task 1 canonical
 ruling), `pvs1TopLevelChangedKeys` (top-level keys whose canonical value differs between
 the original P and S1; diagnostic), `loadedNodesS1/S2`, `error` (diagnostic only).
 
@@ -33,7 +33,7 @@ the original P and S1; diagnostic), `loadedNodesS1/S2`, `error` (diagnostic only
 counts; per entry (matched by `file`, same order): `outcome`,
 `s1vs2SemanticallyEqual`, `pvs1TopLevelChangedKeys`, `loadedNodesS1`, `loadedNodesS2`.
 The `error` diagnostic field is **redacted** from the comparison (JDK NPE
-helpful-message elision flaps across JVMs — proven JDK-side in Task 1).
+helpful-message elision flaps across JVMs - proven JDK-side in Task 1).
 Comparison script: `compare-reports.py` in the SDD workspace (working artifact, not
 committed).
 
@@ -59,7 +59,7 @@ Non-empty for all 356 OK files. Key frequency across OK files:
 |---------------------------------|-------|-----------------------------------------------------------------|
 | `jipipe:doc:parameters`         | 354   | regenerated parameter-doc cache                                 |
 | `graph`                         | 353   | graph re-serialization (incl. doc cache, order-normalized away) |
-| `dependencies`                  | 350   | see §5 — membership-sensitive in a handful of files             |
+| `dependencies`                  | 350   | see §5 - membership-sensitive in a handful of files             |
 | `metadata`                      | 335   | authors merge / default metadata fields                         |
 | `settings`                      | 287   | settings sheet regenerated with current defaults                |
 | `compartments`                  | 286   | regenerated compartments array                                  |
@@ -76,7 +76,7 @@ confirmed).
 ## 4. Fixpoint violations found in Task 1 and their triage (carried forward)
 
 - **~280 ordering-only** S1≠S2 files: `HashSet<JIPipeMutableDependency>` iteration order (no value-based `equals`/
-  `hashCode`; fresh set per save) — **erased by the canonical
+  `hashCode`; fresh set per save) - **erased by the canonical
   comparison** (Task 1 ruling 1); no longer violations (the 284 true count includes them).
 - **72 real-content-churn files** (deterministic, stable across all 8 runs): three
   pre-existing bugs, unchanged by the extraction:
@@ -84,8 +84,8 @@ confirmed).
     2. slot `custom-name` `null` → `""` (5 files);
     3. auto-generated parameter doc drops `important: true` (1 file, tutorial-project-test.jip).
 - **11 LOAD_FAILED** old-format files (4 legacy `algorithm-graph`, 5 missing required
-  sub-field, 2 unregistered `IOInterfaceAlgorithm`) — expected; same set in all runs.
-- **Warmup-sensitive dependency membership** — flagged in Task 1 ("one early outlier saw
+  sub-field, 2 unregistered `IOInterfaceAlgorithm`) - expected; same set in all runs.
+- **Warmup-sensitive dependency membership** - flagged in Task 1 ("one early outlier saw
   9 vs 10 … membership can be warmup-sensitive in edge cases"). **This is what §5
   proves is still live.**
 
@@ -117,13 +117,13 @@ PARITY FAILED: 6 differences across 367 entries:
 
 Exit code 1. **All 6 differences are in the single field
 `pvs1TopLevelChangedKeys`, all in the membership of the `dependencies` key**
-(4 files: key present in baseline, absent after; 2 files: the reverse — mixed
+(4 files: key present in baseline, absent after; 2 files: the reverse - mixed
 direction). No other ruling-scoped field differs anywhere: `outcome`,
 `s1vs2SemanticallyEqual` (incl. the 72-churn set), `loadedNodesS1/S2`, `totalFiles`,
 `outcomes` are byte-identical across all three reports.
 
 **Reproducibility:** refactored-code run 2 (after2) is field-identical to run 1:
-`PARITY: 367 entries, 0 differences` (exit 0) — the 6-difference set is stable across
+`PARITY: 367 entries, 0 differences` (exit 0) - the 6-difference set is stable across
 refactored runs in this environment.
 
 **Control experiment (decisive):** the **unrefactored** harness + **unrefactored** core (run 18:16–18:19, after the
@@ -132,7 +132,7 @@ in the **same field and mechanism** on a **disjoint file set (9 files**:
 `Lecture_Data/JSC_2025_05_Batch_Processing_Blobs/blobs.jip`, `blobs-test.jip`,
 `blobs-tunnel.jip`, `cellpose-test.jip`, `cellpose.jip`,
 `jsc2025_example_blobs_batch_processing.crate/project.jip`, `kidney-test.jip`,
-`project-dirs-with-files.jip`, `test123456.crate/project.jip` — all with
+`project-dirs-with-files.jip`, `test123456.crate/project.jip` - all with
 `dependencies` dropped from the changed set). Zero overlap with the refactored run's set.
 
 **Interpretation:** the `dependencies` entry of `pvs1TopLevelChangedKeys` reflects
@@ -145,18 +145,18 @@ after/control runs (18:0x): a live JIPipe GUI instance (started 18:01) shares th
 `/home/ruman/.local/share/JIPipe` profile and rewrote the profile's node-db/settings
 state at 18:02:23 *during* the after-run, and concurrent `mvn install` activity in the
 main worktree touched the shared `~/.m2` snapshot artifacts. The refactored and
-unrefactored codes landed in different-but-each-its-own membership states — hence the
+unrefactored codes landed in different-but-each-its-own membership states - hence the
 disjoint, mixed-direction flip sets. **The extraction itself is not the cause:** the
 identical difference class is produced by the unrefactored code under the same
 environment drift.
 
-**Error-field differences (redacted, recorded per ruling 2):** exactly 1 —
+**Error-field differences (redacted, recorded per ruling 2):** exactly 1 -
 `ometest.jip`: baseline `java.lang.NullPointerException: java.lang.NullPointerException`
 vs. after
-`java.lang.NullPointerException: Cannot invoke "com.fasterxml.jackson.databind.JsonNode.asText()" because the return value of "com.fasterxml.jackson.databind.JsonNode.get(String)" is null` —
+`java.lang.NullPointerException: Cannot invoke "com.fasterxml.jackson.databind.JsonNode.asText()" because the return value of "com.fasterxml.jackson.databind.JsonNode.get(String)" is null` -
 the documented JDK-21 helpful-message elision flap; outcome and stage identical.
 
-**Verdict on the gate as run today:** the after-run does **not** satisfy exact parity —
+**Verdict on the gate as run today:** the after-run does **not** satisfy exact parity -
 6 ruling-scoped-field entries differ. Per the Task 6 constraint this is reported, not
 weakened. However, the control experiment shows the gate's *baseline* (captured 17:02 in
 a quiet environment) is not a valid reference in the current environment: **the same
@@ -171,7 +171,7 @@ regressive.
 - Fixpoint parity under canonical semantics: identical 284/72 split, identical 72-file
   churn set.
 - Load parity: identical `loadedNodesS1/S2` for all 367 files (no silent node loss or
-  gain in the extraction — the review-focus #1 contract).
+  gain in the extraction - the review-focus #1 contract).
 - No corpus pollution (built-in guard passed in every run).
 - All 6+9+0 flip entries differ *only* in the `dependencies` membership diagnostic; in
   none of them does any other key, value, node count, or outcome change.
@@ -183,7 +183,7 @@ regressive.
   membership state is unreproducible in the current environment (proven by the control
   run). A **re-capture of the baseline in a controlled environment** (no live GUI
   instance writing the shared profile; no concurrent `mvn install` of jipipe-core
-  into the shared `~/.m2`) — followed by a fresh after-run under the same conditions —
+  into the shared `~/.m2`) - followed by a fresh after-run under the same conditions -
   is required to close the gate formally. Given the control evidence, the expected
   outcome of that re-run is parity on all ruling-scoped fields.
 
@@ -209,7 +209,7 @@ profile if a GUI-free window is not available.
 
 ## 7. Regression result
 
-`mvn -pl jipipe-core,jipipe-launcher test` — **BUILD SUCCESS**, 2026-10-23 18:25 (log:
+`mvn -pl jipipe-core,jipipe-launcher test` - **BUILD SUCCESS**, 2026-10-23 18:25 (log:
 `/tmp/opencode/jipx-task6-regression.log`):
 
 | module          | Tests run | Failures | Errors | Skipped |
@@ -218,7 +218,7 @@ profile if a GUI-free window is not available.
 | jipipe-launcher | 28        | 0        | 0      | 1       |
 
 Both skips are pre-existing gated tests (jipipe-launcher's skip is
-`CorpusRoundTripFixpointTest` itself — `assumeTrue` on the corpus property, skipped by
+`CorpusRoundTripFixpointTest` itself - `assumeTrue` on the corpus property, skipped by
 design outside a gate run; verified identical to the Tasks 2–5 baseline behavior).
 Run against the refactored core `7aac99317b` (reinstalled to `~/.m2` immediately before
 the run; md5-verified). The full IO suite is green: `ProjectIOsDispatchTest` 5/5,
@@ -240,7 +240,7 @@ identical difference class on the unrefactored code under the same environment d
 `~/.m2` contended during the run window), so the
 extraction is exonerated and the remaining gap is a re-capture under controlled
 conditions, not a code fix. That re-capture was requested as follow-up but is **blocked pending the live GUI instance
-being closed** (see §5.1 — not performed,
+being closed** (see §5.1 - not performed,
 not faked); it is staged to complete in one ~8-minute paired run. On the basis of
 this record, `.jip` read/write is confirmed behavior-preserving on every stable,
 semantically meaningful dimension, and Phase 1 (`.jipx` reader/writer) may proceed

@@ -115,7 +115,7 @@ class JIPipeXManifestTest {
     @Test
     void materializationIsIdempotentAndNeverDeletesPayloads(@TempDir Path workDir) throws IOException, URISyntaxException {
         // Load the fixture as a project with a work directory (the temp
-        // base — and thus the workspace — must live under it, per the
+        // base - and thus the workspace - must live under it, per the
         // getTemporaryBaseDirectory() memoization ruling).
         UnspecifiedValidationReportContext ctx = new UnspecifiedValidationReportContext();
         Path path = Path.of(JIPipeXManifestTest.class.getResource(FIXTURE).toURI());
@@ -126,14 +126,14 @@ class JIPipeXManifestTest {
         // Non-vacuity: the loaded graph must have 1+ nodes.
         Set<UUID> nodeUuids = project.getGraph().getGraphNodeUUIDs();
         assertFalse(nodeUuids.isEmpty(),
-                "Fixture loaded 0 nodes — table-add-columns-generate not resolved; test would be vacuous");
+                "Fixture loaded 0 nodes - table-add-columns-generate not resolved; test would be vacuous");
 
         JIPipeProjectWorkspace workspace = project.getWorkspace();
         assertTrue(Files.exists(workspace.getBaseDirectory()), "getWorkspace() must create the base directory");
 
         // First materialization: jipx.json + every listed part file exist.
         // The manifest lists exactly the parts present in the project's
-        // slice — a bare project without optional parts (this fixture has
+        // slice - a bare project without optional parts (this fixture has
         // no additional metadata) materializes fewer files than the full
         // 9-part default.
         workspace.materializeFromModel(JIPipeProgressInfo.SILENT);
@@ -201,7 +201,7 @@ class JIPipeXManifestTest {
         // round-trip." A foreign/future .jipx carrying custom entries is
         // extracted into the workspace; a re-save re-materializes the
         // model. The payload files survive (only-compress), but their
-        // manifest registration must survive too — otherwise they become
+        // manifest registration must survive too - otherwise they become
         // unlisted duplicates in the re-saved container.
         UnspecifiedValidationReportContext ctx = new UnspecifiedValidationReportContext();
         Path path = Path.of(JIPipeXManifestTest.class.getResource(FIXTURE).toURI());

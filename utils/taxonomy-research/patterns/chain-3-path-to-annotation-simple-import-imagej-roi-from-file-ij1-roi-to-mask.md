@@ -62,7 +62,7 @@ Project: `AIAgentTests/03-ExampleWorkflows/Angela_Roots_38.jip` (relative to `/d
 ## Template
 
 Proposed name `Annotate with file/directory name -> Import ROI -> Convert 2D ROI to mask`, menu path
-`Patterns/Annotations/Annotate with file/directory name -> Import ROI -> Convert 2D ROI to mask` (proposal only — not
+`Patterns/Annotations/Annotate with file/directory name -> Import ROI -> Convert 2D ROI to mask` (proposal only - not
 registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/chain-3-path-to-annotation-simple-import-imagej-roi-from-file-ij1-roi-to-mask.json`.
 

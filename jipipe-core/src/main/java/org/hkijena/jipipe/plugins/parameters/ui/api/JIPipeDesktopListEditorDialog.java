@@ -29,33 +29,33 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * The list editor modal (#1339 pass 2, S2c) — opened by the list editors'
+ * The list editor modal (#1339 pass 2, S2c) - opened by the list editors'
  * **Edit** button. Close-only ({@code APPLICATION_MODAL}; the Close button,
- * the window X, and Esc all dispose — no OK/Cancel, because every row edit
+ * the window X, and Esc all dispose - no OK/Cancel, because every row edit
  * and structural operation writes to the shared parameter live).
  * <p>
  * The dialog hosts the FULL list (all rows, no pagination) and re-implements
- * the pass-1 grip selection over its own modal-local state — the base
+ * the pass-1 grip selection over its own modal-local state - the base
  * {@link JIPipeListParameterEditorUI} deliberately holds no row state:
  * <ul>
- * <li><b>Rows</b> — one {@link JIPipeListParameterEditorUI.EntryComponents}
+ * <li><b>Rows</b> - one {@link JIPipeListParameterEditorUI.EntryComponents}
  * per item, built via
  * {@code buildListRow(i, SELECT, callbacks, rows)} so the grip drag-reorder
  * resolves indices against the dialog's own row list.</li>
- * <li><b>Selection</b> — plain click selects only this row, Ctrl toggles,
+ * <li><b>Selection</b> - plain click selects only this row, Ctrl toggles,
  * Shift selects the range from the last clicked row; the highlight is the
  * theme's {@code List.selectionBackground} on the row panel (the pass-1
  * style).</li>
- * <li><b>Search</b> — a text filter that HIDES (does not remove) rows whose
+ * <li><b>Search</b> - a text filter that HIDES (does not remove) rows whose
  * {@code itemDescription(i)} does not contain the needle,
  * case-insensitively; selection is preserved for hidden rows, and the bulk
  * selection ops act on all rows regardless of visibility.</li>
- * <li><b>Bulk ops</b> — Select all / Invert selection / Clear selection /
+ * <li><b>Bulk ops</b> - Select all / Invert selection / Clear selection /
  * Remove selected (descending index order) / Clear list, all over the
  * dialog's own state.</li>
  * </ul>
  * Value edits in a modal row need no modal re-render (the row's own editor
- * displays the value), and the owner's inline view refreshes itself — it is a
+ * displays the value), and the owner's inline view refreshes itself - it is a
  * displayed editor subscribed to the parameter-change emitter, and every row
  * write goes through {@code setParameter(parameter, true)}. The dialog
  * re-renders its rows explicitly after its own structural operations
@@ -88,13 +88,13 @@ public final class JIPipeDesktopListEditorDialog extends JDialog {
 
     /**
      * Creates the modal for the given list editor. The parameter is edited
-     * in place — there is no copy.
+     * in place - there is no copy.
      *
      * @param owner      the owner window (may be null)
      * @param listEditor the list parameter editor whose parameter to edit
      */
     public JIPipeDesktopListEditorDialog(Window owner, JIPipeListParameterEditorUI listEditor) {
-        super(owner, listEditor.getParameterAccess().getName() + " — Edit", ModalityType.APPLICATION_MODAL);
+        super(owner, listEditor.getParameterAccess().getName() + " - Edit", ModalityType.APPLICATION_MODAL);
         this.listEditor = listEditor;
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setSize(WIDTH, HEIGHT);
@@ -134,7 +134,7 @@ public final class JIPipeDesktopListEditorDialog extends JDialog {
 
     /**
      * An icon-only parameter action button in the dialog's symbol toolbar
-     * (#1339) — the standardized filled rounded button.
+     * (#1339) - the standardized filled rounded button.
      */
     private static JButton iconButton(String icon, String tooltip, ActionListener action) {
         return UIUtils.createParameterIconButton(JIPipe.RESOURCES.getIcon16(icon), tooltip, action);
@@ -148,7 +148,7 @@ public final class JIPipeDesktopListEditorDialog extends JDialog {
     /**
      * Disposes every {@link Disposable} below the component (depth first,
      * bottom up), then removes all children. The row panels hold nested
-     * editors (one per item) that must be released on rebuild — the
+     * editors (one per item) that must be released on rebuild - the
      * shallow-dispose helpers would leak them.
      */
     private static void disposeDescendants(Container container) {
@@ -169,7 +169,7 @@ public final class JIPipeDesktopListEditorDialog extends JDialog {
      * Clears the post-reorder hook on the (shared) base so that, once the
      * modal is closed, inline reorder / delete operations no longer fire the
      * dead dialog's {@link #rebuildRows}, and disposes the nested row editors
-     * (one per item) that the dialog built — {@code JDialog.dispose()} does not
+     * (one per item) that the dialog built - {@code JDialog.dispose()} does not
      * dispose child {@link Disposable}s. The inline view reloads itself via
      * the parameter-change emitter, so it needs no hook.
      */
@@ -197,7 +197,7 @@ public final class JIPipeDesktopListEditorDialog extends JDialog {
                     this::handleSelection,
                     rows).entryPanel;
             // Top-align the row within the vertical BoxLayout (default
-            // alignmentY=0.5 centers each row, floating it in the viewport —
+            // alignmentY=0.5 centers each row, floating it in the viewport -
             // #1339: rows must pack to the top).
             row.setAlignmentY(0f);
             body.add(row, 0);
@@ -208,7 +208,7 @@ public final class JIPipeDesktopListEditorDialog extends JDialog {
     }
 
     /**
-     * The grip's left click (SELECT behavior) — the pass-1 range/toggle
+     * The grip's left click (SELECT behavior) - the pass-1 range/toggle
      * selection logic over the dialog's own state.
      */
     private void handleSelection(int entryIndex, boolean shiftPressed, boolean ctrlPressed) {
@@ -258,7 +258,7 @@ public final class JIPipeDesktopListEditorDialog extends JDialog {
     /**
      * The search filter: hides (does not remove) rows whose
      * {@code itemDescription(i)} does not contain the needle,
-     * case-insensitively. Selection is preserved — hidden-but-selected rows
+     * case-insensitively. Selection is preserved - hidden-but-selected rows
      * stay selected.
      */
     private void updateSearchFilter() {
@@ -310,7 +310,7 @@ public final class JIPipeDesktopListEditorDialog extends JDialog {
 
         JPanel buttonsRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
         buttonsRow.setOpaque(false);
-        // Primary action — add an item (the modal edits the shared parameter
+        // Primary action - add an item (the modal edits the shared parameter
         // live, so the new row appears immediately). Green border, matching
         // the inline header's Add (#1339).
         JButton add = UIUtils.createPrimaryParameterButton("", JIPipe.RESOURCES.getIcon16("actions/list-add.png"), e -> {
@@ -352,7 +352,7 @@ public final class JIPipeDesktopListEditorDialog extends JDialog {
     }
 
     /**
-     * The single Close button, bottom-right (Close-only — no OK/Cancel).
+     * The single Close button, bottom-right (Close-only - no OK/Cancel).
      */
     private JComponent buildCloseRow() {
         JPanel closeRow = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));

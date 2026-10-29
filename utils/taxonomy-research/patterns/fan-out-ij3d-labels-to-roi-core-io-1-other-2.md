@@ -60,7 +60,7 @@ Project: `AIAgentTests/03-ExampleWorkflows/Annamaria_12.jip` (relative to `/data
 ## Template
 
 Proposed name `IJ3D Labels to 3D ROI fans out to 7 target ids (roles: core-io, other)`, menu path
-`Patterns/Images/IJ3D Labels to 3D ROI fans out to 7 target ids (roles: core-io, other)` (proposal only — not
+`Patterns/Images/IJ3D Labels to 3D ROI fans out to 7 target ids (roles: core-io, other)` (proposal only - not
 registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/fan-out-ij3d-labels-to-roi-core-io-1-other-2.json`.
 

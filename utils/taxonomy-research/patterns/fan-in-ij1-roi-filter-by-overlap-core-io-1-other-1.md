@@ -61,7 +61,7 @@ Project: `AIAgentTests/03-ExampleWorkflows/Clara_08_feet.jip` (relative to `/dat
 ## Template
 
 Proposed name `Filter 2D ROI by overlap (old) fans in from 7 source ids (roles: core-io, other)`, menu path
-`Patterns/ROIs/Filter 2D ROI by overlap (old) fans in from 7 source ids (roles: core-io, other)` (proposal only — not
+`Patterns/ROIs/Filter 2D ROI by overlap (old) fans in from 7 source ids (roles: core-io, other)` (proposal only - not
 registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/fan-in-ij1-roi-filter-by-overlap-core-io-1-other-1.json`.
 

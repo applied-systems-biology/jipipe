@@ -28,7 +28,7 @@ import java.awt.event.ComponentEvent;
 import java.util.Map;
 
 /**
- * Generic parameter editor for {@link JIPipeParameterCollectionList} — the
+ * Generic parameter editor for {@link JIPipeParameterCollectionList} - the
  * thin subclass of the shared list editor base: each item is rendered as a
  * nested mini form panel, and the template is re-created from the
  * {@link ParameterCollectionListTemplate} annotation on every reload.

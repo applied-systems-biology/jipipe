@@ -10,13 +10,13 @@ The AI search freeze (issue #1322) exposed a fundamental architectural flaw: the
 single `JIPipeQueuedRunnableExecutor` for **both** lifecycle management (load/unload model) **and** work execution
 (embed text). This conflation causes:
 
-1. **Queue flooding** — `ensureEmbeddingsForEntries()` enqueues individual embed tasks alongside lifecycle tasks. 200
+1. **Queue flooding** - `ensureEmbeddingsForEntries()` enqueues individual embed tasks alongside lifecycle tasks. 200
    entries = 200 tasks clogging the serial queue.
-2. **Deadlock risk** — Workarounds like `submitEmbedFunction` check model status inside a task but cannot trigger a load
+2. **Deadlock risk** - Workarounds like `submitEmbedFunction` check model status inside a task but cannot trigger a load
    (that would enqueue behind itself on the serial queue).
-3. **No selective cancellation** — When the ephemeral executor cancels the search worker, orphan embed tasks remain on
+3. **No selective cancellation** - When the ephemeral executor cancels the search worker, orphan embed tasks remain on
    the AI queue.
-4. **Blocking on unstarted work** — An embed task can be dequeued before the model is loaded, forcing it to either fail
+4. **Blocking on unstarted work** - An embed task can be dequeued before the model is loaded, forcing it to either fail
    or block the entire queue while polling.
 
 The server service (`JIPipeServerServiceComponent`) has similar lifecycle patterns with its own state enum
@@ -29,7 +29,7 @@ A general microservice lifecycle framework that separates infrastructure lifecyc
 - **Microservices** manage their own lifecycle (start/stop) with a generic state model
 - **Dependencies** between microservices are declared for lifecycle ordering
 - **Service-aware executors** gate work dispatch on microservice readiness
-- **No registry** — the framework is a library of interfaces and classes; calling code manages instances
+- **No registry** - the framework is a library of interfaces and classes; calling code manages instances
 
 ## Design
 
@@ -101,7 +101,7 @@ public abstract class AbstractMicroservice implements Microservice {
     private final List<Microservice> dependencies = new CopyOnWriteArrayList<>();
     private final MicroserviceStateChangeEventEmitter emitter = ...;
 
-    // Public lifecycle — orchestrates state transitions
+    // Public lifecycle - orchestrates state transitions
     public final synchronized void start() {
         // 1. If state is Starting or Ready, no-op
         // 2. Set state to Starting, fire event
@@ -109,14 +109,14 @@ public abstract class AbstractMicroservice implements Microservice {
         //    (dependency start failures → set Failed)
         //    If a dependency is Starting, wait for it to reach Ready or Failed
         //    (polling with timeout)
-        // 4. Call onStart() — subclass does the actual work
+        // 4. Call onStart() - subclass does the actual work
         // 5. On success → set Ready, fire event; on failure → set Failed, fire event
     }
 
     public final synchronized void stop() {
         // 1. If state is Stopped or Stopping, no-op
         // 2. Set state to Stopping, fire event
-        // 3. Call onStop() — subclass releases resources
+        // 3. Call onStop() - subclass releases resources
         // 4. Set state to Stopped, fire event
     }
 
@@ -138,16 +138,16 @@ public abstract class AbstractMicroservice implements Microservice {
 
 Key design decisions:
 
-1. **`start()` and `stop()` are `final`** — they orchestrate state transitions and dependency resolution. Subclasses
+1. **`start()` and `stop()` are `final`** - they orchestrate state transitions and dependency resolution. Subclasses
    only implement `onStart()`/`onStop()`.
 2. **Dependencies are started transitively.** When `aiService.start()` is called, it starts `serverService` and
    `artifactsService` first if they aren't Ready.
-3. **`onStart()` throws Exception** — the base class catches it and sets `Failed`. No try/catch boilerplate in
+3. **`onStart()` throws Exception** - the base class catches it and sets `Failed`. No try/catch boilerplate in
    subclasses.
-4. **`markFailed()`** — allows subclasses to report runtime failures (e.g., model crashes mid-operation).
-5. **Thread safety** — state is `volatile`, dependencies use `CopyOnWriteArrayList`, `start()`/`stop()` are
+4. **`markFailed()`** - allows subclasses to report runtime failures (e.g., model crashes mid-operation).
+5. **Thread safety** - state is `volatile`, dependencies use `CopyOnWriteArrayList`, `start()`/`stop()` are
    `synchronized`.
-6. **Circular dependency detection** — `addDependency()` checks for cycles and rejects them.
+6. **Circular dependency detection** - `addDependency()` checks for cycles and rejects them.
 
 ### MicroserviceStateChangeEvent System
 
@@ -183,7 +183,7 @@ public class ServiceAwareQueuedExecutor implements JIPipeRunnableExecutor {
     private void tryDequeue() {
         if (currentlyRunningWorker == null && !queue.isEmpty()) {
             if (!service.isReady()) {
-                // Don't dispatch — subscribe to state changes;
+                // Don't dispatch - subscribe to state changes;
                 // when service becomes Ready, tryDequeue() is called again
                 return;
             }
@@ -216,11 +216,11 @@ public class ServiceAwareQueuedExecutor implements JIPipeRunnableExecutor {
 
 Key behaviors:
 
-1. **Readiness gating** — `tryDequeue()` only dispatches when `service.isReady()`. If `Starting`, tasks pile up
+1. **Readiness gating** - `tryDequeue()` only dispatches when `service.isReady()`. If `Starting`, tasks pile up
    harmlessly. When service transitions to `Ready`, the state-change listener triggers `tryDequeue()`.
-2. **No lifecycle tasks in the queue** — Load/unload are `Microservice.start()`/`stop()`, not queue tasks.
-3. **Clean cancellation** — `cancelAll()` removes pending tasks before they start. No orphan tasks.
-4. **Service goes down while work queued** — Tasks stay in queue. When service returns to `Ready`, they dispatch.
+2. **No lifecycle tasks in the queue** - Load/unload are `Microservice.start()`/`stop()`, not queue tasks.
+3. **Clean cancellation** - `cancelAll()` removes pending tasks before they start. No orphan tasks.
+4. **Service goes down while work queued** - Tasks stay in queue. When service returns to `Ready`, they dispatch.
 
 ### ServiceAwareEphemeralExecutor
 
@@ -236,7 +236,7 @@ public class ServiceAwareEphemeralExecutor implements JIPipeRunnableExecutor {
         // 1. Cancel previous worker if running
         // 2. Set new worker as current
         // 3. If service.isReady(), execute immediately
-        // 4. If not Ready, hold the worker — executes when service becomes Ready
+        // 4. If not Ready, hold the worker - executes when service becomes Ready
         return worker;
     }
 
@@ -357,7 +357,7 @@ public class EmbeddingModelService extends AbstractMicroservice {
 
 | Removed                                                                           | Why                                                          |
 |-----------------------------------------------------------------------------------|--------------------------------------------------------------|
-| `submitEmbedFunction()`                                                           | Workaround — executors handle readiness gating               |
+| `submitEmbedFunction()`                                                           | Workaround - executors handle readiness gating               |
 | `EmbedFunctionTask<T>`                                                            | Inner class for the workaround                               |
 | `LoadEmbeddingModelTask`                                                          | Lifecycle is `microservice.start()`                          |
 | `UnloadEmbeddingModelTask`                                                        | Lifecycle is `microservice.stop()`                           |
@@ -376,7 +376,7 @@ public class EmbeddingModelService extends AbstractMicroservice {
 | `embedNow(text)`                                       | Delegates to `EmbeddingModelService.embedNow()`                           |
 | `tryStartEmbeddingModel()` / `tryStopEmbeddingModel()` | Delegate to `microservice.start()` / `stop()`                             |
 | `getEmbeddingModelStatus()`                            | Returns `MicroserviceState`                                               |
-| `hasConfiguredAndReadyEmbeddingModel()`                | Unchanged — checks settings                                               |
+| `hasConfiguredAndReadyEmbeddingModel()`                | Unchanged - checks settings                                               |
 
 ## Server Service Migration
 
@@ -425,7 +425,7 @@ public abstract class JIPipeServerInstance<TEnv extends JIPipeEnvironment>
     @Override
     protected void onStart() throws Exception {
         setStateDetail("Starting on port " + port + "...");
-        start();  // existing method — spawns process
+        start();  // existing method - spawns process
         setStateDetail("Waiting for health check...");
         if (!waitForHealth()) {
             throw new ServerStartException(Reason.HealthCheckFailed, ...);
@@ -436,7 +436,7 @@ public abstract class JIPipeServerInstance<TEnv extends JIPipeEnvironment>
     @Override
     protected void onStop() throws Exception {
         setStateDetail("Stopping...");
-        stop();  // existing method — kills process
+        stop();  // existing method - kills process
     }
 
     // Existing abstract methods stay:
@@ -447,7 +447,7 @@ public abstract class JIPipeServerInstance<TEnv extends JIPipeEnvironment>
 }
 ```
 
-Note: There is a naming conflict — the existing `start()` and `stop()` methods on `JIPipeServerInstance` clash with
+Note: There is a naming conflict - the existing `start()` and `stop()` methods on `JIPipeServerInstance` clash with
 `Microservice.start()` and `Microservice.stop()` (which are `final` on `AbstractMicroservice`). The existing methods
 will be renamed to `startProcess()` and `stopProcess()` (or similar), called from `onStart()` and `onStop()`.
 
@@ -464,7 +464,7 @@ will be renamed to `startProcess()` and `stopProcess()` (or similar), called fro
 
 | Kept                                                     | Why                                         |
 |----------------------------------------------------------|---------------------------------------------|
-| `JIPipeServerLease`                                      | Unchanged — ref-counted AutoCloseable lease |
+| `JIPipeServerLease`                                      | Unchanged - ref-counted AutoCloseable lease |
 | `JIPipeServerInstanceManager` / `JIPipeServerLeaseScope` | Unchanged                                   |
 | `PortManager`                                            | Unchanged                                   |
 | `ProcessSupervisor`                                      | Unchanged                                   |
@@ -485,7 +485,7 @@ jipipe-core/src/test/java/org/hkijena/jipipe/api/microservice/
 
 ### Test cases
 
-**AbstractMicroserviceTest** — lifecycle correctness:
+**AbstractMicroserviceTest** - lifecycle correctness:
 
 - `start()` transitions Stopped → Starting → Ready
 - `start()` with failing `onStart()` transitions to Failed
@@ -498,7 +498,7 @@ jipipe-core/src/test/java/org/hkijena/jipipe/api/microservice/
 - State change events are fired for every transition
 - Concurrent `start()` from multiple threads is safe (only one wins)
 
-**MicroserviceDependencyTest** — dependency resolution:
+**MicroserviceDependencyTest** - dependency resolution:
 
 - `start()` starts dependencies first (transitive)
 - If a dependency fails, the dependent goes to Failed
@@ -507,7 +507,7 @@ jipipe-core/src/test/java/org/hkijena/jipipe/api/microservice/
 - `stop()` does NOT stop dependencies (they may have other dependents)
 - Circular dependencies are detected and rejected at `addDependency()` time
 
-**ServiceAwareQueuedExecutorTest** — readiness gating:
+**ServiceAwareQueuedExecutorTest** - readiness gating:
 
 - Tasks enqueue immediately but don't execute when service is not Ready
 - Tasks execute when service transitions to Ready
@@ -521,7 +521,7 @@ jipipe-core/src/test/java/org/hkijena/jipipe/api/microservice/
 - Events (started, finished, interrupted, progress, enqueued) fire correctly
 - Multiple tasks queued while service is Starting → all dispatch in order when Ready
 
-**ServiceAwareEphemeralExecutorTest** — latest-wins + readiness:
+**ServiceAwareEphemeralExecutorTest** - latest-wins + readiness:
 
 - New task cancels previous running task
 - Task doesn't execute when service is not Ready
@@ -532,7 +532,7 @@ jipipe-core/src/test/java/org/hkijena/jipipe/api/microservice/
 
 ### Test infrastructure
 
-Tests use plain JUnit 5 with no JIPipe initialization needed — the microservice framework has no dependency on
+Tests use plain JUnit 5 with no JIPipe initialization needed - the microservice framework has no dependency on
 `JIPipe.getInstance()` or SciJava context. A simple `TestService` inner class extends `AbstractMicroservice` with
 controllable behavior.
 
@@ -583,37 +583,37 @@ JIPipeAIModelRunnerStatus.java
 
 ### Modified files
 
-- `jipipe-core/pom.xml` — add JUnit 5
-- `JIPipeAIServiceComponent.java` — replace mixed queue with microservice + service-aware executors
-- `JIPipeAINodeDatabaseSearch.java` — remove workarounds, use service-aware ephemeral executor
-- `JIPipeServerInstance.java` — extend `AbstractMicroservice`
-- `EmbeddingServerInstance.java` — rename `start()`/`stop()` to avoid clash with final lifecycle methods
-- `JIPipeServerServiceComponent.java` — use `Microservice.start()`/`stop()`
-- All AI monitor UI components — update to `MicroserviceStateChangeEvent`
+- `jipipe-core/pom.xml` - add JUnit 5
+- `JIPipeAIServiceComponent.java` - replace mixed queue with microservice + service-aware executors
+- `JIPipeAINodeDatabaseSearch.java` - remove workarounds, use service-aware ephemeral executor
+- `JIPipeServerInstance.java` - extend `AbstractMicroservice`
+- `EmbeddingServerInstance.java` - rename `start()`/`stop()` to avoid clash with final lifecycle methods
+- `JIPipeServerServiceComponent.java` - use `Microservice.start()`/`stop()`
+- All AI monitor UI components - update to `MicroserviceStateChangeEvent`
 - Any file referencing `JIPipeAIModelRunnerStatus` or `JIPipeServerState`
 
 ## Implementation Phases
 
-1. **Framework + tests** — Create microservice interfaces, base class, executors, and tests. No existing code changes.
+1. **Framework + tests** - Create microservice interfaces, base class, executors, and tests. No existing code changes.
    Verify tests pass.
 
-2. **Server service migration** — Migrate `JIPipeServerInstance` to extend `AbstractMicroservice`. Delete
+2. **Server service migration** - Migrate `JIPipeServerInstance` to extend `AbstractMicroservice`. Delete
    `JIPipeServerState` and related event classes. Update `JIPipeServerServiceComponent`. Compile and verify.
 
-3. **AI service migration** — Create `EmbeddingModelService`. Replace mixed queue with service-aware executors. Delete
+3. **AI service migration** - Create `EmbeddingModelService`. Replace mixed queue with service-aware executors. Delete
    old task classes and `JIPipeAIModelRunnerStatus`. Update AI monitor UI components. Compile and verify.
 
-4. **AI search migration** — Refactor `JIPipeAINodeDatabaseSearch` to use `ServiceAwareEphemeralExecutor`. Remove
+4. **AI search migration** - Refactor `JIPipeAINodeDatabaseSearch` to use `ServiceAwareEphemeralExecutor`. Remove
    `submitEmbedFunction` workaround and single-task pattern. Compile and verify.
 
-5. **Cleanup** — Remove dead code, verify no remaining references to deleted types. Full `mvn compile` and `mvn test`.
+5. **Cleanup** - Remove dead code, verify no remaining references to deleted types. Full `mvn compile` and `mvn test`.
 
 ## Relationship to SciJava
 
 The framework is plain Java with no SciJava annotations or dependencies. SciJava remains the outer layer for plugin
-discovery and dependency injection. `JIPipeService` (a SciJava service) uses the framework internally — service
+discovery and dependency injection. `JIPipeService` (a SciJava service) uses the framework internally - service
 components that need lifecycle management wrap `Microservice` instances. The framework does not register itself with
 SciJava or expose SciJava services.
 
-Node-local services (created during pipeline runs) use the framework without any registration — the calling code (the
+Node-local services (created during pipeline runs) use the framework without any registration - the calling code (the
 node's `run()` method) creates and manages the `Microservice` instance directly.

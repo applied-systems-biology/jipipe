@@ -37,8 +37,8 @@ import static org.junit.jupiter.api.Assertions.*;
  * Migration fixtures for the node taxonomy redesign (phase 1b, task 23).
  * <p>
  * These hand-written, minimal 5.3.0-format project files prove the
- * <b>"projects unaffected"</b> guarantee: a project saved by JIPipe 5.3.0 —
- * which stores only node <i>ids</i> and no taxonomy information — loads
+ * <b>"projects unaffected"</b> guarantee: a project saved by JIPipe 5.3.0 -
+ * which stores only node <i>ids</i> and no taxonomy information - loads
  * unchanged after the taxonomy conversion, every loaded node resolves to a
  * node type with a non-{@code null} primary taxonomy function, and the
  * project round-trips (save → reload → same nodes).
@@ -126,7 +126,7 @@ class FixtureProjectsLoadTest {
         assertEquals(expectedNodeCount, nodes.size(),
                 "Expected " + expectedNodeCount + " loaded nodes for " + fileName
                         + " but got " + nodes.size()
-                        + " — nodes silently skipped (unknown id or missing compartment?)");
+                        + " - nodes silently skipped (unknown id or missing compartment?)");
 
         // (2b) The exact expected node ids are present.
         Map<String, Integer> infoIdCounts = new HashMap<>();
@@ -148,14 +148,14 @@ class FixtureProjectsLoadTest {
         }
 
         // (4) The load reported no validation issues. (Node-level load
-        // errors are not forwarded to this report by the loader — the
-        // count assertion above is the real guard — but compartment and
+        // errors are not forwarded to this report by the loader - the
+        // count assertion above is the real guard - but compartment and
         // edge issues are, so a clean load must be issue-free.)
         assertTrue(report.isEmpty(), "Load issues: " + report);
 
         // (5) Round-trip: save → reload → identical uuid → node-info-id
         // mapping (same nodes, same identities, no lost or added nodes).
-        // The round-trip target uses the canonical legacy .jip extension —
+        // The round-trip target uses the canonical legacy .jip extension -
         // in 6.0, write dispatch is extension-driven (.jip → legacy
         // writer, .jipx → container writer), and the fixture's historical
         // .jipipe name is a 5.x-era extension the 6.0 writers do not

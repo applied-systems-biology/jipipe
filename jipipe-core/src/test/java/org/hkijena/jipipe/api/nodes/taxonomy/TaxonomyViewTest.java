@@ -115,7 +115,7 @@ class TaxonomyViewTest {
 
     @Test
     void behaviorFlagsUnconvertedFallsBackToSafeDefaults() {
-        // fn-null defensive state: the safe defaults (all true) — the
+        // fn-null defensive state: the safe defaults (all true) - the
         // 21a null-category default. canExtract / isRunnable mirror the
         // taxonomy defaults; the two visibility flags are permissive true.
         BehaviorFlags flags = TaxonomyView.behaviorFlags(unconvertedInfo());
@@ -137,7 +137,7 @@ class TaxonomyViewTest {
 
     @Test
     void searchIdsUnconvertedIsEmpty() {
-        // fn-null defensive state: no legacy category id — the search ids are
+        // fn-null defensive state: no legacy category id - the search ids are
         // empty (the new defensive default).
         Set<String> ids = TaxonomyView.searchIds(unconvertedInfo());
         assertTrue(ids.isEmpty());

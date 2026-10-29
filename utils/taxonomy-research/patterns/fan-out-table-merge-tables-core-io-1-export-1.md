@@ -59,7 +59,7 @@ Project: `AIAgentTests/03-ExampleWorkflows/Angela_Roots_38.jip` (relative to `/d
 ## Template
 
 Proposed name `Merge table rows fans out to 4 target ids (roles: core-io, export)`, menu path
-`Patterns/Tables/Merge table rows fans out to 4 target ids (roles: core-io, export)` (proposal only — not registered).
+`Patterns/Tables/Merge table rows fans out to 4 target ids (roles: core-io, export)` (proposal only - not registered).
 `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/fan-out-table-merge-tables-core-io-1-export-1.json`.
 

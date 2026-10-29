@@ -163,7 +163,7 @@ public class JIPipeProjectBackupServiceComponent extends JIPipeServiceComponent 
 
                 String baseName = finalName + "_" + dateTimeFormatted.replace(':', '-');
                 baseName = StringUtils.makeFilesystemCompatible(baseName);
-                // Backups follow the project's current format — the
+                // Backups follow the project's current format - the
                 // saveProject dispatch writes the right container
                 boolean projectIsJipx = PathUtils.isJipxPath(window.getProjectSavePath());
                 Path targetFile = directory.resolve(baseName + (projectIsJipx ? ".jipx" : ".jip"));

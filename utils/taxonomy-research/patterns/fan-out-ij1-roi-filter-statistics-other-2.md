@@ -58,7 +58,7 @@ Project: `AIAgentTests/03-ExampleWorkflows/BacteriaOnAgarPad_Kerstin_26.jip` (re
 ## Template
 
 Proposed name `Filter 2D ROI by statistics fans out to 5 target ids (roles: other)`, menu path
-`Patterns/ROIs/Filter 2D ROI by statistics fans out to 5 target ids (roles: other)` (proposal only — not registered).
+`Patterns/ROIs/Filter 2D ROI by statistics fans out to 5 target ids (roles: other)` (proposal only - not registered).
 `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/fan-out-ij1-roi-filter-statistics-other-2.json`.
 

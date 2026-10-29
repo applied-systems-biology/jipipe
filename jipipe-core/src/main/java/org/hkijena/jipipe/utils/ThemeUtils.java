@@ -89,8 +89,8 @@ public class ThemeUtils {
      * Installs the global reduced-motion caret policy: a single "focusOwner" listener on the
      * current keyboard focus manager re-applies {@link #applyCaretMotion(JTextComponent, boolean)}
      * to whatever text component gains focus. A caret can only blink while its component is
-     * focused, so applying the policy on every focus change covers every text component —
-     * including ones created later by plugins — without per-component wiring.
+     * focused, so applying the policy on every focus change covers every text component -
+     * including ones created later by plugins - without per-component wiring.
      * <p>
      * The setting is read on every focus change rather than captured at install time: this
      * policy is installed from {@link #applyThemeFromSettings()}, which runs before the JIPipe
@@ -115,7 +115,7 @@ public class ThemeUtils {
 
     public static void applyThemeFromSettings() {
 
-        // Global reduced-motion caret policy — must be in place before any window can receive focus
+        // Global reduced-motion caret policy - must be in place before any window can receive focus
         installCaretMotionPolicy();
 
         // Fix for macOS
@@ -466,13 +466,13 @@ public class ThemeUtils {
      * Resolves the base hue and shading depth for a function, handling the
      * three edge cases:
      * <ul>
-     * <li><b>Transparent</b> — the chain's root has a null hue: render with
+     * <li><b>Transparent</b> - the chain's root has a null hue: render with
      * the theme's panel background / highlight border (the legacy negative-hue
      * channels).</li>
-     * <li><b>Broken</b> — a true cycle (or any {@code IllegalStateException}
+     * <li><b>Broken</b> - a true cycle (or any {@code IllegalStateException}
      * from the registry that is not a transparent root): fall back to base
      * hue 0.5 at depth 0, and log a WARN once with the function id.</li>
-     * <li><b>Normal</b> — the nearest non-null hue in the chain, shaded by the
+     * <li><b>Normal</b> - the nearest non-null hue in the chain, shaded by the
      * number of edges below it.</li>
      * </ul>
      * The transparent root is detected by re-walking the parent chain (with a

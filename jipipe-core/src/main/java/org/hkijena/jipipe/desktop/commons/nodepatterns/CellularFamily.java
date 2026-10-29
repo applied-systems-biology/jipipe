@@ -18,7 +18,7 @@ import java.awt.geom.Path2D;
 import java.util.Random;
 
 /**
- * Organic voronoi — each cell as one smooth wobbly closed membrane
+ * Organic voronoi - each cell as one smooth wobbly closed membrane
  * (KDE 'Cluster' / Vanta 'cells' look). Border sites just outside the frame
  * make the cells clip at all four edges.
  */

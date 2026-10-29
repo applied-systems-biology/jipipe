@@ -76,6 +76,6 @@ Proposed name
 `Annotate with file/directory name -> List files -> Annotate with file/directory name -> Filter paths -> Import image`,
 menu path
 `Patterns/Annotations/Annotate with file/directory name -> List files -> Annotate with file/directory name -> Filter paths -> Import image`
-(proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+(proposal only - not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/chain-5-path-to-annotation-simple-folder-list-files-path-to-annotation-simple-path-filter-import-imagej-imgplus-from-file.json`.
 

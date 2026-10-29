@@ -76,6 +76,6 @@ Proposed name
 `List subfolders -> Annotate with file/directory name -> List files -> Annotate with file/directory name -> Filter paths`,
 menu path
 `Patterns/Data Sources/List subfolders -> Annotate with file/directory name -> List files -> Annotate with file/directory name -> Filter paths`
-(proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+(proposal only - not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/chain-5-folder-list-subfolders-path-to-annotation-simple-folder-list-files-path-to-annotation-simple-path-filter.json`.
 

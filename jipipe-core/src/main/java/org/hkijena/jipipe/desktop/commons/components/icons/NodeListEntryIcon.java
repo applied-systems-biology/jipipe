@@ -29,7 +29,7 @@ import java.awt.image.BufferedImage;
  * carrying the node's framework signature pattern, with the node icon drawn in
  * the upper region.
  * <p>
- * Width is {@link #WIDTH} (22px — a little more than the 16px node icons, so
+ * Width is {@link #WIDTH} (22px - a little more than the 16px node icons, so
  * the icon sits with spacing in the bar); the height is set by the caller
  * (the row height: ~50px in the node browser, the full card height in the
  * find-node dialog). The framework pattern is painted at node scale (a crop of
@@ -121,8 +121,8 @@ public class NodeListEntryIcon implements Icon {
         // area), so the rounded corners land on the true top/bottom edges.
         // The host (a JLabel sized by GridBag to the row/card height) can be
         // TALLER or SHORTER than this icon's preferred height. If we drew a
-        // fixed-height bar, a shorter label would center-crop it — slicing off
-        // the rounded corners and leaving square edges — so we adapt to the
+        // fixed-height bar, a shorter label would center-crop it - slicing off
+        // the rounded corners and leaving square edges - so we adapt to the
         // real size instead.
         int ox = x;
         int oy = y;
@@ -148,7 +148,7 @@ public class NodeListEntryIcon implements Icon {
             g2d.setColor(background);
             g2d.fill(bar);
 
-            // Framework signature pattern over the fill, clipped to the bar —
+            // Framework signature pattern over the fill, clipped to the bar -
             // same gating as a canvas node.
             JIPipeDesktopModernThemeStyle style = ThemeUtils.getCurrentStyle();
             if (isPatternEnabled(style)) {

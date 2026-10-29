@@ -4,7 +4,7 @@
 
 Consumes step (B)'s ``utils/taxonomy-research/dag-clusters.json`` and asks
 the LLM (``vllm/frontier`` via the asb-llm OpenAI-compatible
-``/chat/completions`` endpoint; a reasoning model — the answer is the
+``/chat/completions`` endpoint; a reasoning model - the answer is the
 ``content`` after ``reasoning_content``, with the plugin's
 ``content or reasoning_content`` fallback) ONE structured-JSON question per
 cluster:
@@ -14,14 +14,14 @@ cluster:
      "name": "short general name" | "",
      "description": "1-2 general sentences" | ""}
 
-* **gate** — the enforceable form of plan §1 (a pattern is a reusable,
+* **gate** - the enforceable form of plan §1 (a pattern is a reusable,
   general subgraph with a proper derivable name): high support (authored in
   many independent projects) and a non-generic task-describing title are
   strong evidence for ``general_pattern``; bespoke one-project arrangements
   and generic titles ("Analysis", "File handling for X") are plumbing.
-* **function** — the 13 top-level taxonomy branches (replaces the
+* **function** - the 13 top-level taxonomy branches (replaces the
   most-common-ancestor heuristic for DAGs where it is ill-defined).
-* **name + description** — the sidecar fields step (D) ships; an empty name
+* **name + description** - the sidecar fields step (D) ships; an empty name
   ⇒ reject (the §1 rule: unnameable ⇒ noise).
 
 Design history: step (C) was first built on the imajev MCQ readout (the
@@ -147,7 +147,7 @@ def node_name_of(v: dict, registry_names):
 
 def roi_dimension(node_info_id: str):
     """The spatial dimension of an ROI node, from its id: ``ij1-roi*``/
-    ``ij1-...2d`` operate on 2D ROIs, ``ij3d-...roi3d*`` on 3D ROIs — two
+    ``ij1-...2d`` operate on 2D ROIs, ``ij3d-...roi3d*`` on 3D ROIs - two
     DIFFERENT data types (the (C) review: they must not be conflated).
     None for non-ROI nodes."""
     i = node_info_id
@@ -226,7 +226,7 @@ For the pattern described in the JSON below, answer with ONE JSON object only:
  "description": "1-2 sentences describing what this pattern does, in general terms" | ""}}
 
 The pattern's nodes list each step's real description (what that step does).
-Use it — it tells you what the pattern actually accomplishes, which short step
+Use it - it tells you what the pattern actually accomplishes, which short step
 names alone do not.
 
 Gating rules:
@@ -235,7 +235,7 @@ Gating rules:
 - gate "noise" if scratch/ad-hoc with no clear purpose.
 - function: the primary purpose of the pattern. Options: {branches}.
 
-NAMING rules (these patterns are browsed by TWO audiences — bioinformaticians
+NAMING rules (these patterns are browsed by TWO audiences - bioinformaticians
 who know image-analysis tools AND biologists who do not; the name must work for
 both, and the description must let a biologist see what it does):
 - The NAME names the OUTCOME in plain terms, not the JIPipe mechanism. Never
@@ -253,7 +253,7 @@ both, and the description must let a biologist see what it does):
   the outcome in plain terms for a biologist, then the technical specifics.
 - TERMINOLOGY: use the field's correct terms, not colloquial ones. Applying a
   color map / LUT to render an image is "false coloring" (say "apply false
-  colors to …" / "false-color … image") — never "colorize"/"colorized".
+  colors to …" / "false-color … image") - never "colorize"/"colorized".
 - name must be GENERAL (usable in another project); use the observed titles as
   inspiration but generalize them (drop project-specific terms). Empty string
   if you cannot name it generally. description: empty string when the gate is
@@ -297,7 +297,7 @@ def fetch_verdict(complete, cache, prompt):
     """Cache lookup + one completion, with a single concise retry.
 
     ``complete``: callable(prompt) -> raw model text (the LLMClient method).
-    ``cache``: {prompt-sha256: raw text} — a hit returns the verdict without
+    ``cache``: {prompt-sha256: raw text} - a hit returns the verdict without
     calling the model; a new response is stored. When the model spends its
     whole budget on reasoning_content and emits no JSON verdict, ONE retry is
     made with an explicit "output only the JSON" suffix (see
@@ -338,7 +338,7 @@ def judge_cluster(cluster: dict, llm, registry_names=None, node_descs=None) -> d
     prompt = build_prompt(cluster, state)
     verdict = llm(prompt + json.dumps(state, ensure_ascii=False))
     if isinstance(verdict, str):
-        # the raw LLM output (tests + the endpoint client return text) —
+        # the raw LLM output (tests + the endpoint client return text) -
         # extract the JSON verdict object from it
         verdict = parse_verdict(verdict)
 
@@ -439,7 +439,7 @@ class LLMClient:
                 msg = data["choices"][0]["message"]
                 return (msg.get("content") or msg.get("reasoning_content")
                         or "")
-            except Exception as e:  # noqa: BLE001 — retried below
+            except Exception as e:  # noqa: BLE001 - retried below
                 last = e
                 if attempt == 2:
                     break

@@ -48,7 +48,7 @@ import java.util.zip.ZipFile;
  * from the file extension: {@code .jip} →
  * {@link JIPipeLegacyProjectWriter}, {@code .jipx} →
  * {@link JIPipeXProjectWriter}, anything else → rejected. (Unlike
- * reads, the target's content plays no role — a save target may not
+ * reads, the target's content plays no role - a save target may not
  * exist yet.)</li>
  * </ul>
  */
@@ -60,7 +60,7 @@ public final class JIPipeProjectIOs {
     /**
      * Resolves the project reader for the given file.
      * <p>
-     * Only dispatches — the file is not read by this method (the returned
+     * Only dispatches - the file is not read by this method (the returned
      * reader's {@link JIPipeProjectReader#read} performs the actual load).
      * Reads are content-first: a file with ZIP magic is handed to the
      * {@link JIPipeXProjectReader} (which rejects non-JIPX ZIP contents
@@ -110,7 +110,7 @@ public final class JIPipeProjectIOs {
      * @throws IOException                   triggered by the JSON parser
      * @throws UnsupportedOperationException if the file is a ZIP that is not
      *                                       a JIPX container (no
-     *                                       {@code jipx.json} entry) — the
+     *                                       {@code jipx.json} entry) - the
      *                                       {@code .crate.zip} import path
      *                                       is handled by the GUI layer and
      *                                       never reaches {@code peek}
@@ -146,7 +146,7 @@ public final class JIPipeProjectIOs {
             JsonNode dependenciesPart = readZipEntryAsJson(zip, "project/dependencies.json");
             // The container parts are the monolith's top-level fields
             // themselves (the JIPipeProjectParts fidelity contract), while
-            // the loaders below expect the monolith root — re-wrap the
+            // the loaders below expect the monolith root - re-wrap the
             // parts under their part keys. Absent parts yield the loaders'
             // defaults (empty dependency set / empty metadata).
             ObjectNode root = JsonUtils.getObjectMapper().createObjectNode();
@@ -178,7 +178,7 @@ public final class JIPipeProjectIOs {
 
     /**
      * Opens a ZIP for peeking; a ZIP that cannot be opened at all (invalid
-     * or truncated archive — including files that only carry the ZIP magic
+     * or truncated archive - including files that only carry the ZIP magic
      * bytes) is reported as not a JIPipe 6 project.
      */
     private static ZipFile openZipForPeek(Path path) throws IOException {

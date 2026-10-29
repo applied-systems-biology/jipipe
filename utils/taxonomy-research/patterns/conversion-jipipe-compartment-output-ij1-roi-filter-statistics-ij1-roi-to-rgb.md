@@ -62,7 +62,7 @@ Project: `AIAgentTests/03-ExampleWorkflows/Angela_Roots_38.jip` (relative to `/d
 ## Template
 
 Proposed name `Compartment output -> Filter 2D ROI by statistics -> Convert 2D ROI to RGB`, menu path
-`Patterns/Graph / Project/Compartment output -> Filter 2D ROI by statistics -> Convert 2D ROI to RGB` (proposal only —
+`Patterns/Graph / Project/Compartment output -> Filter 2D ROI by statistics -> Convert 2D ROI to RGB` (proposal only -
 not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/conversion-jipipe-compartment-output-ij1-roi-filter-statistics-ij1-roi-to-rgb.json`.
 

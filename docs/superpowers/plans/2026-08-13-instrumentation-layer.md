@@ -7,7 +7,7 @@
 execution, modifications, search) for external automation tools, with a typed Java API that the AI agent will later
 delegate to.
 
-**Architecture:** Hybrid approach — a typed `InstrumentationAPI` Java facade provides built-in operations; an
+**Architecture:** Hybrid approach - a typed `InstrumentationAPI` Java facade provides built-in operations; an
 `InstrumentationOperation` interface enables plugin-registered WebSocket commands. An `InstrumentationEventBus`
 distributes project change events; an `InstrumentationJobManager` tracks async pipeline runs. A `InstrumentationServer`
 (WebSocket, localhost) dispatches commands to the operation registry and broadcasts events to clients.
@@ -86,11 +86,11 @@ src/test/java/org/hkijena/jipipe/api/instrumentation/
 
 ### Modified files
 
-- `jipipe-core/pom.xml` — add java-websocket, mockito-core
-- `jipipe-core/src/main/java/org/hkijena/jipipe/api/service/JIPipeService.java` — add instrumentation service component
-- `jipipe-core/src/main/java/org/hkijena/jipipe/JIPipe.java` — add `getInstrumentation()`
-- `jipipe-core/src/main/java/org/hkijena/jipipe/JIPipeDefaultJavaPlugin.java` — add `registerInstrumentationOperation()`
-- `jipipe-launcher/src/main/java/org/hkijena/jipipe/launcher/commands/GuiCommand.java` — add `--instrumentation` flag
+- `jipipe-core/pom.xml` - add java-websocket, mockito-core
+- `jipipe-core/src/main/java/org/hkijena/jipipe/api/service/JIPipeService.java` - add instrumentation service component
+- `jipipe-core/src/main/java/org/hkijena/jipipe/JIPipe.java` - add `getInstrumentation()`
+- `jipipe-core/src/main/java/org/hkijena/jipipe/JIPipeDefaultJavaPlugin.java` - add `registerInstrumentationOperation()`
+- `jipipe-launcher/src/main/java/org/hkijena/jipipe/launcher/commands/GuiCommand.java` - add `--instrumentation` flag
 
 ---
 
@@ -109,7 +109,7 @@ src/test/java/org/hkijena/jipipe/api/instrumentation/
 
 - Produces: `JIPipeInstrumentationServiceComponent` with `getOperationRegistry()` method, `JIPipe.getInstrumentation()`
   static accessor, `JIPipeDefaultJavaPlugin.registerInstrumentationOperation(String, InstrumentationOperation)`
-  convenience method. (Note: `InstrumentationOperation` and `InstrumentationOperationRegistry` are created in Task 4 —
+  convenience method. (Note: `InstrumentationOperation` and `InstrumentationOperationRegistry` are created in Task 4 -
   this task creates a minimal placeholder interface so the service component compiles.)
 
 - [ ] **Step 1: Add dependencies to jipipe-core/pom.xml**
@@ -1662,7 +1662,7 @@ git commit -m "Add run mode enum and run engine (#1305)"
 - Consumes: `InstrumentationContext` (Task 3), `InstrumentationRunEngine` (Task 6), `InstrumentationJob` (Task 3),
   `RunMode` (Task 6), `PipelineMap` (Task 5), existing JIPipe core classes (`JIPipeProject`, `JIPipeGraph`,
   `JIPipeGraphNode`, `JIPipeDataSlot`, `JIPipeParameterAccess`, `JIPipeParameterTree`, `JIPipeNodeInfo`)
-- Produces: `InstrumentationAPI` — stateless service with typed methods for all built-in operations. Each method takes
+- Produces: `InstrumentationAPI` - stateless service with typed methods for all built-in operations. Each method takes
   an `InstrumentationContext`.
 
 - [ ] **Step 1: Write the failing test**
@@ -2513,7 +2513,7 @@ git commit -m "Add built-in instrumentation operations (#1305)"
 
 - Consumes: All operation classes from Task 8, `JIPipePrepackagedDefaultJavaPlugin` (existing),
   `registerInstrumentationOperation()` from Task 1
-- Produces: `InstrumentationPlugin` — a SciJava `@Plugin` annotated class that registers all built-in operations during
+- Produces: `InstrumentationPlugin` - a SciJava `@Plugin` annotated class that registers all built-in operations during
   `register()`.
 
 - [ ] **Step 1: Create InstrumentationPlugin**

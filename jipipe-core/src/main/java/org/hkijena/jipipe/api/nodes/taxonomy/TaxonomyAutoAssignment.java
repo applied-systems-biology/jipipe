@@ -29,7 +29,7 @@ import java.util.function.Function;
  * resource mapping to a stable function id first, then weighted name
  * inference ({@code JIPipeNodeTaxonomyServiceComponent#inferFunction}) as
  * the fallback. This class keeps the mapping/tag resources and the spatial
- * dimensions, which are <em>derived</em> from the node's input profile — an
+ * dimensions, which are <em>derived</em> from the node's input profile - an
  * unconstrained image input ({@link JIPipeNodeTaxonomyInputProfile#ANY})
  * yields both 2D and 3D. The framework is decided by the calling
  * {@link JIPipeNodeInfo} (ImageJ2 / CLIJ); this helper does not set it.
@@ -128,7 +128,7 @@ public final class TaxonomyAutoAssignment {
      * <p>
      * The mapping is loaded lazily once per resource and cached; a missing or
      * unreadable resource yields an <em>empty</em> mapping (never an
-     * exception — auto-discovered registration must not crash the startup),
+     * exception - auto-discovered registration must not crash the startup),
      * and lookups then simply miss.
      * <p>
      * The values are function <em>ids</em> (stable string literals, the
@@ -164,7 +164,7 @@ public final class TaxonomyAutoAssignment {
          * Loads a flat {@code key -> function-id} mapping from the JSON
          * resource at the given location, resolved <em>relative to the
          * supplied class's package</em> (Java's {@link Class#getResource}
-         * semantics without a leading slash — e.g.
+         * semantics without a leading slash - e.g.
          * {@code ImageJ2Plugin.class} with {@code "taxonomy/ij2-op-ids.json"}
          * loads {@code .../imagej2/taxonomy/ij2-op-ids.json}). Missing or
          * invalid resources yield an empty mapping.
@@ -296,8 +296,8 @@ public final class TaxonomyAutoAssignment {
      * embedding-based compression into a canonical vocabulary).
      * <p>
      * The tags are merged in by the tag enrichment
-     * ({@code TaxonomyResolver.enrichNodeInfos}) so every registered node —
-     * not only the annotated ones — carries its audited tags.
+     * ({@code TaxonomyResolver.enrichNodeInfos}) so every registered node -
+     * not only the annotated ones - carries its audited tags.
      */
     public static final class CuratedNodeTags {
 

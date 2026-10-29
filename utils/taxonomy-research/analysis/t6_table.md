@@ -1,6 +1,6 @@
-# Task 6 — raw tables (function-tree fit & secondary-function value)
+# Task 6 - raw tables (function-tree fit & secondary-function value)
 
-## 4a — leaf occupancy (primary function id): all non-empty
+## 4a - leaf occupancy (primary function id): all non-empty
 
 | function id                   | name                        | nodes (primary) |
 |-------------------------------|-----------------------------|----------------:|
@@ -74,11 +74,11 @@
 | `plot-scatter`                | Scatter plot                |               1 |
 | `scripting-expression`        | Expressions                 |               1 |
 
-## 4b — reading (i) catch-all only (primary == `misc`)
+## 4b - reading (i) catch-all only (primary == `misc`)
 
 (none)
 
-## 4b — reading (ii) whole misc branch (primary function in misc subtree)
+## 4b - reading (ii) whole misc branch (primary function in misc subtree)
 
 | node id                    | name                             | primary function         |
 |----------------------------|----------------------------------|--------------------------|
@@ -92,7 +92,7 @@
 | `tesseract-ocr`            | Find text (Tesseract OCR)        | `text-markup`            |
 | `xml-prettify`             | Prettify XML                     | `text-markup`            |
 
-## 4b — reading (ii), ruling's literal set {misc, data-utilities, scripting, text-markup}
+## 4b - reading (ii), ruling's literal set {misc, data-utilities, scripting, text-markup}
 
 | node id                   | name                             | primary function |
 |---------------------------|----------------------------------|------------------|
@@ -104,7 +104,7 @@
 | `tesseract-ocr`           | Find text (Tesseract OCR)        | `text-markup`    |
 | `xml-prettify`            | Prettify XML                     | `text-markup`    |
 
-## 4c — top-level branches: distinct corpus-USED node ids (primary branch)
+## 4c - top-level branches: distinct corpus-USED node ids (primary branch)
 
 | branch             | name             | distinct corpus-USED node ids (primary branch) | flag                                        |
 |--------------------|------------------|-----------------------------------------------:|---------------------------------------------|
@@ -120,9 +120,9 @@
 | `export`           | Export           |                                              7 |                                             |
 | `plotting`         | Plotting         |                                              7 |                                             |
 | `graph`            | Graph / Project  |                                              5 |                                             |
-| `statistics`       | Statistics       |                                              0 | 0 used — strongest merge/demotion candidate |
+| `statistics`       | Statistics       |                                              0 | 0 used - strongest merge/demotion candidate |
 
-## 4d — secondary-value candidates (all)
+## 4d - secondary-value candidates (all)
 
 | # | node id                      | name                        | primary branch | best secondary branch | primaryMass | secondaryMass | known-branch neighbor endpoints |
 |--:|------------------------------|-----------------------------|----------------|-----------------------|------------:|--------------:|--------------------------------:|

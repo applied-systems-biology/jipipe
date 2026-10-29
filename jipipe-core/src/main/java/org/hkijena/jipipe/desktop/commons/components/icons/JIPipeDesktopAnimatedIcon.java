@@ -43,7 +43,7 @@ public class JIPipeDesktopAnimatedIcon implements Icon, JIPipeApplicationSetting
         try {
             JIPipe.getSettings().getChangedEventEmitter().subscribeWeak(this);
         } catch (Throwable ignored) {
-            // JIPipe not initialized (headless/test) — no live re-apply needed.
+            // JIPipe not initialized (headless/test) - no live re-apply needed.
         }
     }
 

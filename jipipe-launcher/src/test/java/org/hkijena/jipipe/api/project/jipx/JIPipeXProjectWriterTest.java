@@ -53,7 +53,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * <p>
  * Fixture: {@code /projects/5.3.0-taxonomy-fixtures/basic-images.jipipe}
  * (1 node, {@code ij1-blur-gaussian2d}), loaded via
- * {@link JIPipeProject#loadProject} — the same content-first read dispatch
+ * {@link JIPipeProject#loadProject} - the same content-first read dispatch
  * the whole code base uses. The writer is exercised through both its own
  * seam ({@link JIPipeXProjectWriter#write} / {@code writeWithViolations})
  * and the legacy API ({@link JIPipeProject#saveProject(Path, boolean)} →
@@ -64,7 +64,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * same reason as {@code FixtureProjectsLoadTest}).
  * <p>
  * <b>ZIP contract under test (spec §6):</b> the production writer uses
- * {@code java.util.zip} only — the first entry is
+ * {@code java.util.zip} only - the first entry is
  * {@code ro-crate-metadata.json} (Workflow RO-Crate root convention),
  * then {@code jipx.json}, then {@code README.md}, then the part files in
  * manifest parts-table order, then any unknown/payload entries sorted by
@@ -277,7 +277,7 @@ class JIPipeXProjectWriterTest {
         JsonNode root = entityWithId(graph, "./");
         assertNotNull(root, "The root './' entity must be present");
         // conformsTo lives on the JsonDescriptor entity (the
-        // ro-crate-metadata.json node), not on the root data entity —
+        // ro-crate-metadata.json node), not on the root data entity -
         // it may be a single object or an array of objects.
         JsonNode descriptor = entityWithId(graph, "ro-crate-metadata.json");
         assertNotNull(descriptor, "The JsonDescriptor entity ro-crate-metadata.json must be present");
@@ -461,7 +461,7 @@ class JIPipeXProjectWriterTest {
         // Deterministic failure simulation: the target path is a
         // NON-EMPTY EXISTING DIRECTORY. A POSIX rename() onto an empty
         // directory would silently succeed (replacing it), but onto a
-        // non-empty one it fails after the self-verify passed — exactly
+        // non-empty one it fails after the self-verify passed - exactly
         // the atomic-replace failure path under test. (The brief's
         // read-only-directory variant is skipped: this suite runs as
         // root, where the read-only bit is ignored.)

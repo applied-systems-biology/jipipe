@@ -29,7 +29,7 @@ import java.util.Map;
  * and reassembles them for {@link JIPipeProject#fromJson}.
  * <p>
  * <b>Fidelity contract:</b> a part is <i>byte-for-byte</i> the monolith's
- * corresponding top-level field — an identity projection, not a
+ * corresponding top-level field - an identity projection, not a
  * re-serialization. {@link #sliceParts(JIPipeProject)} serializes the whole
  * project through the global Jackson mapper
  * ({@link JsonUtils#getObjectMapper()}) with the pretty-printing writer the
@@ -40,10 +40,10 @@ import java.util.Map;
  * individually would violate this contract.)
  * <p>
  * <b>Dropped fields (spec §4):</b> {@code external-environments} is never
- * sliced — it is dropped in JIPX (environments are re-derived at load time).
+ * sliced - it is dropped in JIPX (environments are re-derived at load time).
  * The container-level fields {@code jipipe:project-type},
  * {@code jipipe:project-format-version}, and {@code jipipe:project-jipipe-version}
- * are also never sliced — they are derived values of the JIPX container
+ * are also never sliced - they are derived values of the JIPX container
  * format, not project parts.
  */
 public final class JIPipeProjectParts {

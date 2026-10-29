@@ -23,7 +23,7 @@ import java.util.Set;
 
 /**
  * Seed leaf of the ROIs branch: <em>editing</em> ROI properties and
- * metadata — setting a property or an associated image on the ROI, and
+ * metadata - setting a property or an associated image on the ROI, and
  * reading/extracting ROI properties or metadata (into a table, or
  * back-and-forth with the data).
  * <p>
@@ -31,7 +31,7 @@ import java.util.Set;
  * "select which ROIs <em>survive</em>" nodes of
  * {@link RoiFiltersFunction}. The former had no dedicated leaf (the ROI
  * branch's seed tree pre-dated the audit), so they were misfiled under
- * "ROI filters" — e.g. "Set 2D ROI properties" is not a filter, and neither
+ * "ROI filters" - e.g. "Set 2D ROI properties" is not a filter, and neither
  * is "Clear 2D ROI image".
  */
 public final class RoiPropertiesFunction implements JIPipeNodeTaxonomyFunction {

@@ -31,7 +31,7 @@ import java.util.List;
  * Parameter editor for {@link JIPipeArtifactQueryParameter}.
  * <p>
  * #1339 item 1: the flat artifact picker is now a
- * {@link JIPipeDesktopRichSelectionBox} — the searchable "new combobox" —
+ * {@link JIPipeDesktopRichSelectionBox} - the searchable "new combobox" -
  * instead of a display button + modal enum-pick dialog. The parameter still
  * stores the artifact's full id; the box matches it back to a
  * {@link JIPipeArtifact} for display.

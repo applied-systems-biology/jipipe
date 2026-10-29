@@ -62,7 +62,7 @@ Project: `AIAgentTests/03-ExampleWorkflows/Annamaria_12.jip` (relative to `/data
 ## Template
 
 Proposed name `Compartment output -> Compartment output -> Compartment output`, menu path
-`Patterns/Graph / Project/Compartment output -> Compartment output -> Compartment output` (proposal only — not
+`Patterns/Graph / Project/Compartment output -> Compartment output -> Compartment output` (proposal only - not
 registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/conversion-jipipe-compartment-output-jipipe-compartment-output-jipipe-compartment-output.json`.
 

@@ -28,7 +28,7 @@ import java.util.Objects;
  * shared statics live in {@link JIPipeFontFamilySizeStyleParameter}; the
  * {@link #toFont()} of this class always renders with {@link Font#PLAIN}.
  * <p>
- * All three fields are always present (never null) — missing JSON keys fall
+ * All three fields are always present (never null) - missing JSON keys fall
  * back to defaults on deserialization, which keeps old projects (that stored
  * the fields separately, if at all) loadable. The {@code Color} field uses
  * the mapper's standard hex-string codec, like the {@code color} parameter
@@ -95,7 +95,7 @@ public class JIPipeFontFamilySizeColorParameter implements JIPipeFontValue, JIPi
                 color = c;
             }
         }
-        // styleKey is not a field of this class — intentionally ignored
+        // styleKey is not a field of this class - intentionally ignored
 
         result.setFamily(family);
         result.setSize(size);
@@ -114,7 +114,7 @@ public class JIPipeFontFamilySizeColorParameter implements JIPipeFontValue, JIPi
     /**
      * @return the font as an {@link Font} with {@link Font#PLAIN} style
      * (unavailable families fall back to the default family; the color is
-     * <em>not</em> part of a {@link Font} — use {@link #getColor()} for it).
+     * <em>not</em> part of a {@link Font} - use {@link #getColor()} for it).
      */
     public Font toFont() {
         String f = family;

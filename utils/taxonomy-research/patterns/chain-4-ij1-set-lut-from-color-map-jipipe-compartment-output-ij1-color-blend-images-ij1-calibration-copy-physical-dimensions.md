@@ -68,7 +68,7 @@ Project: `AIAgentTests/03-ExampleWorkflows/Annamaria_12.jip` (relative to `/data
 ## Template
 
 Proposed name `Set LUT (color map) -> Compartment output -> Blend images -> Copy physical dimensions`, menu path
-`Patterns/Images/Set LUT (color map) -> Compartment output -> Blend images -> Copy physical dimensions` (proposal only —
+`Patterns/Images/Set LUT (color map) -> Compartment output -> Blend images -> Copy physical dimensions` (proposal only -
 not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/chain-4-ij1-set-lut-from-color-map-jipipe-compartment-output-ij1-color-blend-images-ij1-calibration-copy-physical-dimensions.json`.
 

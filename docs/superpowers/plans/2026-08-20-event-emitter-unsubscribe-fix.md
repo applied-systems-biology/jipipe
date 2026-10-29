@@ -15,9 +15,9 @@ by identity comparison. Remove dead fields (`emittingDepth`, `copyOnWriteActive`
 ## Global Constraints
 
 - All changes are in `jipipe-core` module
-- The `Subscriber` interface is public and nested in `JIPipeEventEmitter` — adding a method is a breaking API change,
+- The `Subscriber` interface is public and nested in `JIPipeEventEmitter` - adding a method is a breaking API change,
   but all implementations are nested classes in the same file
-- Thread safety via `StampedLock` must be preserved — `unsubscribe()` must acquire the write lock
+- Thread safety via `StampedLock` must be preserved - `unsubscribe()` must acquire the write lock
 - Identity comparison (`==`) must be used for listener matching, consistent with the original `IdentityHashMap` design
 - No external dependencies may be added
 - Existing callers of `unsubscribe()` must work without modification
@@ -34,7 +34,7 @@ by identity comparison. Remove dead fields (`emittingDepth`, `copyOnWriteActive`
 **Interfaces:**
 
 - Consumes: `JIPipeEventEmitter` (abstract class), `JIPipeEvent` (marker interface), `Subscriber` (nested interface)
-- Produces: `JIPipeEventEmitterTest` — test class that validates subscribe/unsubscribe/emit behavior
+- Produces: `JIPipeEventEmitterTest` - test class that validates subscribe/unsubscribe/emit behavior
 
 - [ ] **Step 1: Write the failing tests**
 
@@ -298,7 +298,7 @@ public void unsubscribe(Listener listener) {
 }
 ```
 
-**Update `dispose()` (lines 138-142) — remove `listenerSubscriberMap.clear()`:**
+**Update `dispose()` (lines 138-142) - remove `listenerSubscriberMap.clear()`:**
 
 ```java
 @Override

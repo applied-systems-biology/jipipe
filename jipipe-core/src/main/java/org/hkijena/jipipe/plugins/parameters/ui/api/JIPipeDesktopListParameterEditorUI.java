@@ -23,7 +23,7 @@ import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeListParameter
 import javax.swing.*;
 
 /**
- * Generic parameter editor for {@link JIPipeListParameter} — the thin subclass
+ * Generic parameter editor for {@link JIPipeListParameter} - the thin subclass
  * of the shared list editor base: each item is rendered by its own parameter
  * type's editor UI.
  */

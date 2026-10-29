@@ -31,8 +31,8 @@ import java.util.stream.Collectors;
  * Parameter for {@link JIPipeParameterTypeInfoRef}.
  * <p>
  * #1339 item 1: the flat parameter-type picker is now a
- * {@link JIPipeDesktopRichSelectionBox} — the searchable "new combobox" used by
- * the enum/dynamic-set editors — instead of a display button + modal picker.
+ * {@link JIPipeDesktopRichSelectionBox} - the searchable "new combobox" used by
+ * the enum/dynamic-set editors - instead of a display button + modal picker.
  */
 public class JIPipeDesktopParameterTypeInfoRefParameterEditorUI extends JIPipeDesktopParameterEditorUI<JIPipeParameterTypeInfoRef> {
 

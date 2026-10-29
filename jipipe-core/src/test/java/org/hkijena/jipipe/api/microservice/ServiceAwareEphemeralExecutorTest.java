@@ -54,7 +54,7 @@ class ServiceAwareEphemeralExecutorTest {
 
         assertTrue(firstStarted.await(2, TimeUnit.SECONDS));
 
-        // Enqueue second task — should cancel the first
+        // Enqueue second task - should cancel the first
         CountDownLatch secondDone = new CountDownLatch(1);
         exec.enqueue(new DefaultJIPipeRunnable() {
             @Override

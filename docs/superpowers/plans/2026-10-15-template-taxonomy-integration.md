@@ -1,4 +1,4 @@
-# Template-Taxonomy Integration — Implementation Plan
+# Template-Taxonomy Integration - Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:
 > executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
@@ -16,18 +16,18 @@ replacing the fragmented `followUps`/`related` API. The 185 pattern JSONs ship a
 **Tech Stack:** Java 21, Jackson (parameter/template serialization), Swing (browser/finder/rail/modal), JUnit 5
 (jipipe-core unit tests; jipipe-launcher full-registry integration tests).
 
-**Spec:** `docs/superpowers/specs/2026-10-15-template-taxonomy-integration-design.md` — this plan implements it. The
+**Spec:** `docs/superpowers/specs/2026-10-15-template-taxonomy-integration-design.md` - this plan implements it. The
 spec's §1–§13 map to the tasks below; re-read the spec section a task cites before implementing it.
 
 ## Global Constraints
 
 - **Stable-ID rule:** every registered id is a stable string literal, never code-derived. New ids introduced here:
   `jipipe:taxonomy-function` (param type), `jipipe:function:templates` (catch-all leaf). Both are literals.
-- **Value type rule:** `taxonomyFunction` is `JIPipeTaxonomyFunctionRef`, NOT a `String` — a bare string would present
+- **Value type rule:** `taxonomyFunction` is `JIPipeTaxonomyFunctionRef`, NOT a `String` - a bare string would present
   the default string editor. (Spec §6.)
 - **Scope is storage location, not a field:** System = bundled resources registered at init; Global = user dir;
   Project = project metadata. (Spec §5.)
-- **No explicit template ordering** anywhere — name-sorted in every placement. (Spec, user decision.)
+- **No explicit template ordering** anywhere - name-sorted in every placement. (Spec, user decision.)
 - **Badges computed, not stored:** `Pattern` = template graph ≥ 2 nodes; `Custom` = 1 node. (Spec §5.)
 - **Mining scope for relations:** family steps (all families) + **all** template scopes (System+Global+Project). (Spec
   §10.2, user: "mine the full extent from the templates".)
@@ -36,28 +36,28 @@ spec's §1–§13 map to the tasks below; re-read the spec section a task cites 
 - **Read-only references:** `/data/src/jipipe-2` and the corpus are never written; the 185 pattern JSONs are *copied*
   from `utils/taxonomy-research/patterns/templates/` into bundled resources (the research dir stays a study artifact).
 - **Offline build:** `mvn -o`. Core suite baseline is 384 tests / 1 skipped (must stay green, with the expected
-  additions). Launcher tests need the ImageJ patcher protection already in place — do not add listeners/`--add-opens`.
+  additions). Launcher tests need the ImageJ patcher protection already in place - do not add listeners/`--add-opens`.
 - **6.0.0 unreleased:** removing `JIPipeNodeDatabase.followUps(entry)`/`related(entry, max)` and
   `JIPipeNodeTemplate.menuPath` is allowed; update all in-tree consumers, none are deleted.
 - **Commits:** continue the `(N)` sequence. The plan doc is **(49)**; tasks are **(50)– (58)** below. (If execution
-  opens a fresh branch/worktree, the sequence restarts from that branch's base — keep the same subjects.)
+  opens a fresh branch/worktree, the sequence restarts from that branch's base - keep the same subjects.)
 
 ## Review Focus
 
-Five input classes/failure modes the spec implies but a naive implementation breaks — each is pinned by a test in the
+Five input classes/failure modes the spec implies but a naive implementation breaks - each is pinned by a test in the
 owning task:
 
-1. **Stale function id** — a template whose `taxonomyFunction` id no longer resolves (a function was removed by an
+1. **Stale function id** - a template whose `taxonomyFunction` id no longer resolves (a function was removed by an
    upgrade). Expect: no throw, `isResolved()==false`, `getFunction()==null`, and tree placement in the
    `jipipe:function:templates` catch-all. → Task 1 (ref) + Task 4 (entry `getFunctionIds()`).
-2. **Stale template edge** — a template graph containing a node id no longer in the registry. Expect:
+2. **Stale template edge** - a template graph containing a node id no longer in the registry. Expect:
    `TemplateRelationSource` logs a warning and skips that edge; startup and `relations()` never fail. → Task 5.
-3. **Single-node, zero-edge template** — a `Custom` template with no edges. Expect: `Custom` badge, empty previous/next,
+3. **Single-node, zero-edge template** - a `Custom` template with no edges. Expect: `Custom` badge, empty previous/next,
    still listed under its function AND under `Templates/<scope>`. → Task 4 (entry).
-4. **Compact (1-pane) mode context menu** — the tree takes over the node-list role below 380 px but its leaves currently
+4. **Compact (1-pane) mode context menu** - the tree takes over the node-list role below 380 px but its leaves currently
    have no menu. Expect: the tree-leaf menu and the list menu produce **identical** items for the same entry (the named
    parity bug). → Task 7.
-5. **De-duplication in the node list** — a template visible under both its function subtree and its scope group in the
+5. **De-duplication in the node list** - a template visible under both its function subtree and its scope group in the
    same query. Expect: it appears **once** in the list (deduped by entry id). → Task 6.
 
 ---
@@ -79,7 +79,7 @@ owning task:
 
 **Interfaces:**
 
-- Produces: `JIPipeTaxonomyFunctionRef` — `JIPipeTaxonomyFunctionRef()` (unset), `JIPipeTaxonomyFunctionRef(String id)`,
+- Produces: `JIPipeTaxonomyFunctionRef` - `JIPipeTaxonomyFunctionRef()` (unset), `JIPipeTaxonomyFunctionRef(String id)`,
   `JIPipeTaxonomyFunctionRef(JIPipeTaxonomyFunctionRef other)`; `String getId()` (null when unset);
   `JIPipeNodeTaxonomyFunction getFunction()` (null when unset or unresolved); `boolean isResolved()`; custom
   `@JsonSerialize`/`@JsonDeserialize` writing/reading the id string or `null`; `equals`/`hashCode` on the id. Registered
@@ -117,7 +117,7 @@ class JIPipeTaxonomyFunctionRefTest {
 ```
 
 Note: `unresolvedIdDoesNotThrow` relies on the ref **not** calling `JIPipe.getInstance()` when the JIPipe singleton is
-absent — guard with `JIPipe.getInstance() != null` so unit tests (no boot) resolve to `isResolved()==false`. Confirm the
+absent - guard with `JIPipe.getInstance() != null` so unit tests (no boot) resolve to `isResolved()==false`. Confirm the
 guard in the test that `new JIPipeTaxonomyFunctionRef("…")` never throws.
 
 - [ ] **Step 2: Run test to verify it fails**
@@ -132,7 +132,7 @@ Expected: compile failure (class does not exist).
   `Deserializer` reads `p.getValueAsString()` → `new JIPipeTaxonomyFunctionRef(str)`, or
   `new JIPipeTaxonomyFunctionRef()` on `p.getNullValue()`/empty. `equals`/`hashCode` on `id`. Implement
   `JIPipeValidatable` with `reportValidity` that, when set-but-unresolved, reports an (informational) issue rather than
-  throwing — consistent with `JIPipeDataInfoRef`.
+  throwing - consistent with `JIPipeDataInfoRef`.
 
 - [ ] **Step 4: Implement the editor UI**
   `JIPipeDesktopTaxonomyFunctionRefParameterEditorUI extends JIPipeDesktopParameterEditorUI<JIPipeTaxonomyFunctionRef>`
@@ -208,20 +208,20 @@ class TemplatesFunctionTest {
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `mvn -o -pl jipipe-launcher -am test -Dtest='TemplatesFunctionTest' -Dsurefire.failIfNoSpecifiedTests=false`
-Expected: FAIL (`byId` returns null — not yet registered).
+Expected: FAIL (`byId` returns null - not yet registered).
 
 - [ ] **Step 3: Implement `TemplatesFunction`** mirroring `MiscDataFunction`/`FileSystemFunction` (a leaf): `getId()`
   literal `jipipe:function:templates`, `getName()` `Templates`, `getParent()` `new MiscellaneousFunction()`,
   `getColorHue()` a fixed hue, `getDescription()`, `getIcon()` (a templates-ish icon from `JIPipe.RESOURCES`),
   `getTags()` empty, `isVisibleInPipeline()/isVisibleInCompartments()` `true`.
 
-- [ ] **Step 4: Register it** in `TaxonomyPlugin` — add `new TemplatesFunction()` to the `leaves` array (anywhere in the
+- [ ] **Step 4: Register it** in `TaxonomyPlugin` - add `new TemplatesFunction()` to the `leaves` array (anywhere in the
   misc group).
 
 - [ ] **Step 5: Run test to verify it passes**
 
 Run: `mvn -o -pl jipipe-launcher -am test -Dtest='TemplatesFunctionTest' -Dsurefire.failIfNoSpecifiedTests=false`
-Expected: PASS. Then confirm `TaxonomyFullValidationTest` still green (the new leaf has no required node assignments —
+Expected: PASS. Then confirm `TaxonomyFullValidationTest` still green (the new leaf has no required node assignments -
 it is a catch-all, like `misc`).
 
 Run:
@@ -246,7 +246,7 @@ git commit -m "feat: register jipipe:function:templates catch-all leaf under Mis
 **Files:**
 
 - Modify: `jipipe-core/src/main/java/org/hkijena/jipipe/api/JIPipeNodeTemplate.java` (add `taxonomyFunction` ref +
-  `migrateLegacyMenuPath()`; `menuPath` becomes a transient legacy capture — keep `@JsonSetter`, drop `@JsonGetter` +
+  `migrateLegacyMenuPath()`; `menuPath` becomes a transient legacy capture - keep `@JsonSetter`, drop `@JsonGetter` +
   `@JIPipeParameter`)
 - Modify: `jipipe-core/src/main/java/org/hkijena/jipipe/api/service/components/JIPipeNodeTemplatesServiceComponent.java`
   (call `migrateLegacyMenuPath()` in `reloadGlobalTemplates()` after each read)
@@ -259,15 +259,15 @@ git commit -m "feat: register jipipe:function:templates catch-all leaf under Mis
 - Produces: `JIPipeNodeTemplate.getTaxonomyFunction()` / `setTaxonomyFunction(JIPipeTaxonomyFunctionRef)` (field
   `taxonomyFunction`, `@JIPipeParameter("taxonomy-function", uiOrder = -70)`, `@JsonGetter("taxonomy-function")`/
   `@JsonSetter("taxonomy-function")`). `JIPipeNodeTemplate.migrateLegacyMenuPath()` (public, **idempotent**,
-  order-safe — see mechanism below).
+  order-safe - see mechanism below).
   `JIPipeNodeTemplateMigration.migrate(String firstMenuSegment) -> JIPipeTaxonomyFunctionRef` (pure-ish: needs the
   booted `FunctionRegistry` for the name→id match; returns the ref or an unset ref) +
   `appendPreviouslyFooter(HTMLText desc, String oldPath) -> HTMLText`.
-- **The legacy `menu-path` mechanism (R7 — supersedes the plan's earlier "ignore on read" wording):**
+- **The legacy `menu-path` mechanism (R7 - supersedes the plan's earlier "ignore on read" wording):**
   `JIPipeNodeTemplate` is a Jackson *bean* (explicit `@JsonGetter`/`@JsonSetter` pairs; no class-level deserializer)
   loaded via `JsonUtils.readFromFile(..., JIPipeNodeTemplate.class)`. Simply dropping `menu-path` would make the lenient
-  mapper silently ignore the key — LOSING the value the migration must map + footer. Instead: keep the `menuPath` field
-  as a **transient legacy capture** — keep `@JsonSetter("menu-path")` (captured on read) but **remove
+  mapper silently ignore the key - LOSING the value the migration must map + footer. Instead: keep the `menuPath` field
+  as a **transient legacy capture** - keep `@JsonSetter("menu-path")` (captured on read) but **remove
   `@JsonGetter("menu-path")`** (never written → "gone after one save cycle" for free). `migrateLegacyMenuPath()`: if
   `menuPath` non-empty AND `taxonomyFunction.getId()==null` → `taxonomyFunction = migrate(firstSegment)`;
   `description = appendPreviouslyFooter(description, oldPath)`; then empty `menuPath`. The `getId()==null` guard makes
@@ -275,7 +275,7 @@ git commit -m "feat: register jipipe:function:templates catch-all leaf under Mis
   the guard is false → no-op, existing function preserved) and **idempotent** (second call: `menuPath` empty → no-op).
 - **Call sites for `migrateLegacyMenuPath()`** (post-deserialization, both load paths): (a)
   `JIPipeNodeTemplatesServiceComponent.reloadGlobalTemplates()` after each `readFromFile` (global); (b)
-  `JIPipeNodeDatabaseBuilderRun` before building each template entry (Task 4 — covers the project-metadata path
+  `JIPipeNodeDatabaseBuilderRun` before building each template entry (Task 4 - covers the project-metadata path
   uniformly; idempotent so double-calling is harmless). This is the faithful reading of the spec's "at deserialization
   time" (no arbitrary logic can run during Jackson bean construction without a custom deserializer, and spec §9.5
   requires the key to vanish after one save, which the no-getter transient capture gives).
@@ -291,7 +291,7 @@ class JIPipeNodeTemplateMigrationTest {
     // --- the name→id matcher (R7b: a name tie resolves to the TOP-LEVEL branch before a leaf) ---
     @Test void imageSegmentMapsToTopLevelBranchNotExportLeaf() {
         // the registry has a childless leaf "Images" (export-images) AND the 18-child
-        // top-level "Images" branch — R7b must pick the branch.
+        // top-level "Images" branch - R7b must pick the branch.
         JIPipeTaxonomyFunctionRef ref = JIPipeNodeTemplateMigration.migrate("Image");
         assertThat(ref.getId()).isEqualTo("jipipe:function:images");
     }
@@ -345,7 +345,7 @@ class JIPipeNodeTemplateMigrationTest {
 ```
 
 (If `JIPipeNodeTemplate` requires a non-null `data` field to construct, give each JSON a minimal valid `data` graph
-string — the point is the migration behavior, not the graph.)
+string - the point is the migration behavior, not the graph.)
 
 - [ ] **Step 2: Run test to verify it fails**
 
@@ -362,18 +362,18 @@ Expected: compile failure (no `migrate` / no `taxonomyFunction`).
     - Add `public void migrateLegacyMenuPath()` per the R7 interface (the `getId()==null` guard + footer + clear
       `menuPath`).
     - Update the copy constructor + `getLocationInfo()` to use `taxonomyFunction` (the old `locationInfo` menu-path
-      rendering becomes the scoped string — Task 4 finalizes the entry's `locationInfo`, so here just make it compile
+      rendering becomes the scoped string - Task 4 finalizes the entry's `locationInfo`, so here just make it compile
       and not reference the removed getter).
 
 - [ ] **Step 4: Implement `JIPipeNodeTemplateMigration`**:
     - `migrate(String firstSegment)`: if blank → unset ref. Else normalize via the abbreviation table (Image→Images,
       Table→Tables, Track→Tracking, Roi→ROIs, Plot→Plotting, Annotation→Annotations, Export→Export, Data→"Data
       Sources"), then match case-insensitively against function display names from
-      `JIPipe.getNodes().getFunctions().all()` — **a name tie resolves to the TOP-LEVEL branch (parent==null) before a
+      `JIPipe.getNodes().getFunctions().all()` - **a name tie resolves to the TOP-LEVEL branch (parent==null) before a
       leaf** (R7b), then to a leaf. On match `new JIPipeTaxonomyFunctionRef(matchedId)`, else unset. **R7b rationale:**
       the registry has childless export sub-leaves literally named "Images"/"Tables" (`jipipe:function:export-images`/
       `export-tables`) that would shadow the 18-child top-level `Images` branch / `Tables` branch under a naive
-      leaf-first pass — but legacy menuPath first-segments are top-level menu categories, so "Image" must map to
+      leaf-first pass - but legacy menuPath first-segments are top-level menu categories, so "Image" must map to
       `jipipe:function:images` and "Table" to `jipipe:function:tables`. (Unresolved = unset; the catch-all is applied by
       the entry in Task 4, never here.)
     - `appendPreviouslyFooter(HTMLText desc, String oldPath) -> HTMLText`: appends
@@ -393,7 +393,7 @@ Run: `grep -rn "getMenuPath\|menuPath\|setMenuPath" --include=*.java jipipe-core
 fix/compile.
 Run: `mvn -o -pl jipipe-core test`
 Expected: BUILD SUCCESS, all green (baseline 389 from Tasks 1–2 + the 7 new migration tests). (Update any in-tree
-`getMenuPath()` reference the grep surfaces — e.g. `CreateNewNodesByTemplateDatabaseEntry`'s `locationInfo` — to a
+`getMenuPath()` reference the grep surfaces - e.g. `CreateNewNodesByTemplateDatabaseEntry`'s `locationInfo` - to a
 minimal compile fix; that file is fully reworked in Task 4.)
 
 - [ ] **Step 7: Commit**
@@ -415,7 +415,7 @@ git commit -m "feat: JIPipeNodeTemplate taxonomyFunction (ref) + menu-path migra
 - Modify:
   `jipipe-core/src/main/java/org/hkijena/jipipe/api/nodes/database/entries/CreateNewNodesByTemplateDatabaseEntry.java`
 - Modify: `jipipe-core/src/main/java/org/hkijena/jipipe/api/nodes/database/JIPipeNodeDatabaseBuilderRun.java` (pass
-  scope when building template entries — where `getAllTemplates`/`isPluginTemplate` are used)
+  scope when building template entries - where `getAllTemplates`/`isPluginTemplate` are used)
 - Test:
   `jipipe-core/src/test/java/org/hkijena/jipipe/api/nodes/database/entries/CreateNewNodesByTemplateDatabaseEntryTest.java`
 
@@ -470,7 +470,7 @@ Expected: compile failure (no `TemplateScope` constructor arg / `getBadge`).
   `(JIPipeNodeTemplate)` delegating to `Global` for source compat. Update `initializeTokens()` to add the scope word +
   badge to search tokens.
 
-- [ ] **Step 4: Wire the scope in the builder** — in `JIPipeNodeDatabaseBuilderRun` where template entries are created
+- [ ] **Step 4: Wire the scope in the builder** - in `JIPipeNodeDatabaseBuilderRun` where template entries are created
   (the `getAllTemplates` loop at ~line 99), determine scope: `isPluginTemplate(t)` → System, else (in
   `getGlobalTemplates()`) → Global, else (project metadata) → Project, and pass it to the constructor.
 
@@ -494,7 +494,7 @@ git commit -m "feat: TemplateScope + template database entry (function ids, badg
 
 ---
 
-### Task 5: Relations — Similar / Previous / Next
+### Task 5: Relations - Similar / Previous / Next
 
 **Spec:** §10 (the relation model + sources + UI).
 
@@ -528,7 +528,7 @@ git commit -m "feat: TemplateScope + template database entry (function ids, badg
   not in `knownIds`), `List<String> next(String)`, `List<String> previous(String)` (support-desc then name).
   `NodeRelationSource` = `void contribute(Consumer<Edge> sink)`; the **production** sources resolve against the registry
   (skip + `logger.warn` unresolved) before calling `sink.accept(edge)`; `Edge(String from, String to)`.
-- `FamilyRelationSource`: emits each family's resolved after-edges (reuse `FamilyAssembler`'s step graphs — successors
+- `FamilyRelationSource`: emits each family's resolved after-edges (reuse `FamilyAssembler`'s step graphs - successors
   AND predecessors). `TemplateRelationSource`: for every loaded template graph (all scopes), emit an `Edge` per in-graph
   connection (by node info id); skip+warn edges whose node id no longer resolves.
 - Consumes: `FamilyAssembler` (existing), `JIPipe.getNodeTemplates().getAllTemplates(project)` (all scopes),
@@ -585,15 +585,15 @@ Expected: compile failure (no `NodeRelationIndex`).
   neighbors** (Review Focus #3): pick two nodes in the *same* function that are connected by a template edge; assert the
   target appears in `next()` but NOT in `similar()` of the source (the three lists stay disjoint).
 
-- [ ] **Step 5: Wire `relations()` into `JIPipeNodeDatabase`** — build the index on the same triggers as `relatedCache`
+- [ ] **Step 5: Wire `relations()` into `JIPipeNodeDatabase`** - build the index on the same triggers as `relatedCache`
   (registry/template refresh), expose `relations(entry, maxPerList)` returning a `NodeRelations` (map node ids → entries
   via `entryByOriginNodeId`, cap per list at `maxPerList`). **Remove** `followUps(entry)` and `related(entry, max)`;
-  update the in-tree consumers (the rail + browser strip — Task 5's UI step).
+  update the in-tree consumers (the rail + browser strip - Task 5's UI step).
 
-- [ ] **Step 6: Update the rail + browser strip to three sections** — `NodeFinderDetailRail`: replace the
+- [ ] **Step 6: Update the rail + browser strip to three sections** - `NodeFinderDetailRail`: replace the
   Related/Follow-ups lists with **Similar / Previous steps / Next steps** (three `JList`s, distinct icons, same
   click-callback). `JIPipeDesktopNodeBrowser` follow-up strip: render the three groups (next first, as today, then
-  previous, then similar) — keep the "workflow successors first" ordering.
+  previous, then similar) - keep the "workflow successors first" ordering.
 
 - [ ] **Step 7: Run tests to verify they pass**
 
@@ -662,13 +662,13 @@ class NodeBrowserModelTemplateTest {
 Run: `mvn -o -pl jipipe-core test -Dtest='NodeBrowserModelTemplateTest' -Dsurefire.failIfNoSpecifiedTests=false`
 Expected: FAIL (no synthetic branch / no scope placement).
 
-- [ ] **Step 3: Implement the model + tree changes** — add `TemplateScopeTreeNode`; in `NodeBrowserModel`, when building
+- [ ] **Step 3: Implement the model + tree changes** - add `TemplateScopeTreeNode`; in `NodeBrowserModel`, when building
   the visible set, include a template entry if its `functionIds()` intersect the selected function subtree OR its scope
   group is selected; the list query **dedupes by entry id** (a `Set<String>` of seen ids). `NodeBrowserTreeController`:
   append the synthetic `Templates` branch (System/Global/Project children, each a `TemplateScopeTreeNode`) at the end of
   the top-levels.
 
-- [ ] **Step 4: Add badge rendering** — `FunctionTreeCellRenderer` and `JIPipeNodeTemplateListCellRenderer` draw a small
+- [ ] **Step 4: Add badge rendering** - `FunctionTreeCellRenderer` and `JIPipeNodeTemplateListCellRenderer` draw a small
   chip (`Pattern` / `Custom`) when the entry is a `CreateNewNodesByTemplateDatabaseEntry` (read `getBadge()`). Keep the
   template's own icon/hue.
 
@@ -706,7 +706,7 @@ git commit -m "feat: templates in the function tree (synthetic Templates branch,
   `NodeEntryContextMenu.buildJPopupMenu(specs, actions) -> JPopupMenu`.
   `MenuItemSpec(String id, String label, boolean enabled)`. Item ids: `insert-at-cursor`, `pin`/`unpin`, `show-doc`, and
   for template entries `edit`, `copy-to-global`, `copy-to-project`, `delete`, `configure-templates` (Global/Project
-  scope) — System-scope template entries get the read-only subset (no delete/edit).
+  scope) - System-scope template entries get the read-only subset (no delete/edit).
 - Consumes: `CreateNewNodesByTemplateDatabaseEntry.getScope()` (Task 4), pinned set.
 
 - [ ] **Step 1: Write the failing test**:
@@ -745,7 +745,7 @@ Expected: compile failure (no `NodeEntryContextMenu`).
 
 - [ ] **Step 3: Implement `NodeEntryContextMenu`** (the `specs()` logic is the single source of truth; `buildJPopupMenu`
   is a thin Swing wrapper). Refactor the **list** menu in `JIPipeDesktopNodeBrowser` to call it. Then attach the
-  **same** `buildJPopupMenu` to the **tree leaves** in compact mode (and non-compact, for parity) — this is the bug fix:
+  **same** `buildJPopupMenu` to the **tree leaves** in compact mode (and non-compact, for parity) - this is the bug fix:
   the tree leaves now get the list's menu.
 
 - [ ] **Step 4: Run tests to verify they pass**
@@ -771,7 +771,7 @@ git commit -m "fix: node tree context menu parity (shared menu builder; compact-
 - Create: `jipipe-core/src/main/resources/org/hkijena/jipipe/plugins/nodetemplate/patterns/` (copy the 185
   `templates/*.json` from `utils/taxonomy-research/patterns/templates/`)
 - Modify: `jipipe-core/src/main/java/org/hkijena/jipipe/plugins/nodetemplate/NodeTemplateBoxToolPlugin.java` (or a new
-  `SystemTemplatePlugin`) — register the 185 at init
+  `SystemTemplatePlugin`) - register the 185 at init
 - Test: `jipipe-launcher/src/test/java/org/hkijena/jipipe/plugins/nodetemplate/SystemPatternTemplatesTest.java`
 
 **Interfaces:**
@@ -780,8 +780,8 @@ git commit -m "fix: node tree context menu parity (shared menu builder; compact-
   `isPluginTemplate` → true → scope System). Each has `taxonomyFunction` = the pattern's primary function branch
   (deterministic rule below), `name`/`description` from the pattern, `source = "System (corpus-mined)"`, hue derived
   from the function.
-- Consumes: the 185 `templates/<id>.json` files; the 185 `patterns/<id>.md` frontmatter (for `taxonomyFunction` — the
-  `tags` primary branch) — but the source of truth for the function is a **committed mapping**, not parsing markdown at
+- Consumes: the 185 `templates/<id>.json` files; the 185 `patterns/<id>.md` frontmatter (for `taxonomyFunction` - the
+  `tags` primary branch) - but the source of truth for the function is a **committed mapping**, not parsing markdown at
   runtime.
 
 - [ ] **Step 1: Determine each pattern's primary function branch (offline, commit the result)**
@@ -814,7 +814,7 @@ class SystemPatternTemplatesTest {
 }
 ```
 
-- [ ] **Step 3: Copy resources + implement registration** — copy the 185 JSONs into `…/nodetemplate/patterns/` (the
+- [ ] **Step 3: Copy resources + implement registration** - copy the 185 JSONs into `…/nodetemplate/patterns/` (the
   research dir is untouched). In the plugin `register()`, for each bundled JSON: deserialize to `JIPipeNodeTemplate`,
   set `taxonomyFunction` from `functions.json` (via `JIPipeTaxonomyFunctionRef`), set `name`/`description`/`source`/hue,
   then `addFromPlugin(t)` + fire `NodeTemplatesRefreshedEvent`.
@@ -839,7 +839,7 @@ git commit -m "feat: ship the 185 corpus-mined patterns as System templates (6.0
 
 ---
 
-### Task 9: UI consolidation — remove `NodeTemplateBox`, add "Configure templates" modal
+### Task 9: UI consolidation - remove `NodeTemplateBox`, add "Configure templates" modal
 
 **Spec:** §8 (UI consolidation, the modal, the gear button).
 
@@ -861,7 +861,7 @@ git commit -m "feat: ship the 185 corpus-mined patterns as System templates (6.0
   `jipipe-core/src/main/java/org/hkijena/jipipe/desktop/app/grapheditor/addnodepanel/JIPipeDesktopNodeBrowser.java`
   (control-bar gear + "Configure templates" context item)
 - Modify: `jipipe-core/src/main/java/org/hkijena/jipipe/desktop/app/settings/JIPipeDesktopProjectSettingsUI.java`
-  (remove the `node-templates` settings hook — replaced by the modal's Project tab)
+  (remove the `node-templates` settings hook - replaced by the modal's Project tab)
 - Test:
   `jipipe-core/src/test/java/org/hkijena/jipipe/desktop/app/grapheditor/templatemanage/TemplateManagementControllerTest.java`
 
@@ -869,7 +869,7 @@ git commit -m "feat: ship the 185 corpus-mined patterns as System templates (6.0
 
 - Produces: `TemplateManagementController` (non-Swing, testable) with `addFromSelection(scope, templates)`,
   `edit(scope, template, name, desc, function, icon, hue)`, `copyTo(scopeFrom, scopeTo, template)`,
-  `delete(scope, template)`, `export(scope, templates, Path)`, `importTo(scope, Path)` — each operating on the scope's
+  `delete(scope, template)`, `export(scope, templates, Path)`, `importTo(scope, Path)` - each operating on the scope's
   store (`JIPipeNodeTemplatesServiceComponent` for Global, project metadata for Project, read-only for System) and
   firing `NodeTemplatesRefreshedEvent`. `TemplateManagementDialog` is a thin Swing wrapper over it (tabs = scopes;
   Download tab embeds the existing `NodeTemplateDownloaderDialog`).
@@ -893,10 +893,10 @@ class TemplateManagementControllerTest {
 Run: `mvn -o -pl jipipe-core test -Dtest='TemplateManagementControllerTest' -Dsurefire.failIfNoSpecifiedTests=false`
 Expected: compile failure (no controller).
 
-- [ ] **Step 3: Implement the controller + dialog** — the controller delegates to the service component's existing
+- [ ] **Step 3: Implement the controller + dialog** - the controller delegates to the service component's existing
   methods (`addToGlobal`/`addToProject`/`removeFromGlobal`/`removeFromProject`/`editTemplate`) and, for export/import,
   the existing **JSON-array** format (`JsonUtils.toPrettyJsonString(List<JIPipeNodeTemplate>)` to a file; read a JSON
-  array of `JIPipeNodeTemplate` back — mirroring `NodeTemplateBox.exportTemplates`/`importTemplates`, which the lenient
+  array of `JIPipeNodeTemplate` back - mirroring `NodeTemplateBox.exportTemplates`/`importTemplates`, which the lenient
   `menu-path` deserializer from Task 3 keeps working). System-scope actions are no-ops (read-only). Tabs per scope; the
   Download tab embeds the existing `NodeTemplateDownloaderDialog`; the gear button opens the dialog; the "Configure
   templates" context item opens it on the entry's scope tab. Unmount `NodeTemplateBox` from the pipeline dock; remove
@@ -915,7 +915,7 @@ feature set is fully relocated to the controller/modal/context menu).
 
 Run: `mvn -o clean compile`
 Expected: BUILD SUCCESS. (Fix any remaining reference here; if a dangling consumer surfaces in another module, fix it in
-place — it is an in-tree caller of an API this feature removed.)
+place - it is an in-tree caller of an API this feature removed.)
 
 - [ ] **Step 6: Commit**
 
@@ -928,8 +928,8 @@ git commit -m "feat: templates management modal (System/Global/Project/Download)
 
 ## Post-plan verification (controller runs before handoff, not a task)
 
-1. `mvn -o -pl jipipe-core test` — full core suite green.
-2. `mvn -o -pl jipipe-launcher -am test` — full launcher suite green (incl. `TaxonomyFullValidationTest`,
+1. `mvn -o -pl jipipe-core test` - full core suite green.
+2. `mvn -o -pl jipipe-launcher -am test` - full launcher suite green (incl. `TaxonomyFullValidationTest`,
    `TemplateDataDeserializationTest`, `SystemPatternTemplatesTest`, `TemplatesFunctionTest`, `RegistryDumperTest`).
 3. Confirm `registry.json` (via `RegistryDumperTest`) shows `jipipe:function:templates` in `functions[]` and does
    **not** show the virtual `TemplateRelationFamily` in `families[]`.

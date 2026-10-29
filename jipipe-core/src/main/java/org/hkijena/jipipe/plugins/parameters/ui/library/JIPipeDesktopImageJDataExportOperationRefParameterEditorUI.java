@@ -57,7 +57,7 @@ public class JIPipeDesktopImageJDataExportOperationRefParameterEditorUI extends 
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
 
-        // #1339 item 6: no separate "select algorithm type" icon button — the
+        // #1339 item 6: no separate "select algorithm type" icon button - the
         // display button already opens the same picker. Only Configure (a
         // distinct action) remains.
         JButton configureButton = UIUtils.createParameterIconButton(JIPipe.RESOURCES.getIcon16("actions/configure.png"), "Configure the exporter", e -> configure());

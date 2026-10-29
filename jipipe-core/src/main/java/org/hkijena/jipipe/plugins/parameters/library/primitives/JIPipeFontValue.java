@@ -23,7 +23,7 @@ import java.awt.*;
  * {@link JIPipeFontColorCapable} (text color), so a single adaptive editor
  * can gate its sections by {@code instanceof}.
  * <p>
- * All members keep their fields non-null — missing JSON keys fall back to
+ * All members keep their fields non-null - missing JSON keys fall back to
  * defaults on deserialization, which keeps old projects loadable.
  */
 public interface JIPipeFontValue {

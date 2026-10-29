@@ -167,8 +167,8 @@ public class CreateNewNodesByTemplateDatabaseEntry extends DefaultJIPipeNodeData
 
     @Override
     public List<String> getLocationInfos() {
-        // The function chain ("Data Sources > Image data") — the same
-        // location form the node entries use — so a template reads as its
+        // The function chain ("Data Sources > Image data") - the same
+        // location form the node entries use - so a template reads as its
         // function, not as storage bookkeeping. The catch-all case (an
         // unset taxonomy function) falls back to the scope line so there is
         // always a location (the round-2 review: "Templates / System" was
@@ -211,7 +211,7 @@ public class CreateNewNodesByTemplateDatabaseEntry extends DefaultJIPipeNodeData
         // (e.g. the source project's pipeline UUID) in every node's
         // "jipipe:graph-compartment". mergeWith preserves that UUID, so the
         // inserted nodes would land in a phantom compartment that does not
-        // exist on the canvas — isVisibleIn(canvasCompartment) is false for
+        // exist on the canvas - isVisibleIn(canvasCompartment) is false for
         // all of them, the canvas creates no node UIs, and nothing happens
         // (no error, no log; the round-2 "double-click adds no nodes" bug).
         // The drag-and-drop path avoids this because the drop is serialized

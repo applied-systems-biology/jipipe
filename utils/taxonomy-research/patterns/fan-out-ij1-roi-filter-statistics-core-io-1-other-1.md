@@ -58,7 +58,7 @@ Project: `AIAgentTests/03-ExampleWorkflows/Clara_08_feet.jip` (relative to `/dat
 ## Template
 
 Proposed name `Filter 2D ROI by statistics fans out to 3 target ids (roles: core-io, other)`, menu path
-`Patterns/ROIs/Filter 2D ROI by statistics fans out to 3 target ids (roles: core-io, other)` (proposal only — not
+`Patterns/ROIs/Filter 2D ROI by statistics fans out to 3 target ids (roles: core-io, other)` (proposal only - not
 registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/fan-out-ij1-roi-filter-statistics-core-io-1-other-1.json`.
 

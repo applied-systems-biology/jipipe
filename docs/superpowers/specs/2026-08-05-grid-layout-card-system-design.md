@@ -11,7 +11,7 @@ statistics screen. The grid system supports 12 columns, configurable gutters, re
 row nesting, and a fixed/fluid row distinction. The card component supports header/body/footer with contextual color
 variants driven by the theme system.
 
-The statistics screen serves as the implementation leader — the first consumer of the new layout system — but both
+The statistics screen serves as the implementation leader - the first consumer of the new layout system - but both
 systems are designed as general-purpose reusable components.
 
 ## Background
@@ -68,10 +68,10 @@ Specifies how a component should be laid out within the 12-column grid.
 
 **Fields:**
 
-- `int defaultSpan` — column span when no breakpoint override applies (default: 12)
-- `int defaultOffset` — column offset (empty columns before this item, default: 0)
-- `Map<JIPipeDesktopBreakpoint, Integer> spanOverrides` — per-breakpoint span overrides
-- `Map<JIPipeDesktopBreakpoint, Integer> offsetOverrides` — per-breakpoint offset overrides
+- `int defaultSpan` - column span when no breakpoint override applies (default: 12)
+- `int defaultOffset` - column offset (empty columns before this item, default: 0)
+- `Map<JIPipeDesktopBreakpoint, Integer> spanOverrides` - per-breakpoint span overrides
+- `Map<JIPipeDesktopBreakpoint, Integer> offsetOverrides` - per-breakpoint offset overrides
 
 **API:**
 
@@ -202,7 +202,7 @@ row.add(innerRow, new JIPipeDesktopColumnConstraints(12));
 
 | Value       | Theme color getter        | Description                           |
 |-------------|---------------------------|---------------------------------------|
-| `Default`   | (none — panel background) | No header tint                        |
+| `Default`   | (none - panel background) | No header tint                        |
 | `Primary`   | `getPrimaryColor()`       | Blue header tint                      |
 | `Secondary` | `getSecondaryColor()`     | Purple header tint                    |
 | `Success`   | `getSuccessColor()`       | Green header tint                     |
@@ -300,16 +300,16 @@ Update all 4 JSON theme files (`JIPipe Classic Light.json`, `JIPipe Dark.json`, 
 The statistics tab replaces the current `FlowLayout`-based card container with a `JIPipeDesktopFluidRow` inside the
 existing island panel. Statistics items are organized into three tiers:
 
-1. **Small info cards (col-3):** Non-time-tracked hardware/system stats — Machine ID, JIPipe version, OS, Acceleration,
+1. **Small info cards (col-3):** Non-time-tracked hardware/system stats - Machine ID, JIPipe version, OS, Acceleration,
    GPU model, GPU VRAM, Total RAM, Recent projects. Displayed in a 4-per-row grid (3-per-row on LG, 2-per-row on MD,
    1-per-row on SM/XS).
 
-2. **Chart cards (col-6):** Time-tracked usage stats with history charts — Workflow runs, RO-Crates created, Largest
+2. **Chart cards (col-6):** Time-tracked usage stats with history charts - Workflow runs, RO-Crates created, Largest
    project (nodes), Largest project (compartments), Noodle score. Displayed 2-per-row (1-per-row on SM/XS).
 
-3. **Full-width chart card (col-12):** Popular nodes — needs full width for a readable chart with 5 node labels.
+3. **Full-width chart card (col-12):** Popular nodes - needs full width for a readable chart with 5 node labels.
 
-4. **Small metric cards (col-3):** Node move distance, Longest node width — simple numeric values without charts.
+4. **Small metric cards (col-3):** Node move distance, Longest node width - simple numeric values without charts.
 
 ### Responsive column spans
 
@@ -386,7 +386,7 @@ replaces the `FlowLayout` container inside the island panel's scroll pane.
 
 **Theme:**
 
-- `jipipe-core/src/main/java/org/hkijena/jipipe/desktop/commons/theme/JIPipeDesktopModernThemeStyle.java` — add `info`
+- `jipipe-core/src/main/java/org/hkijena/jipipe/desktop/commons/theme/JIPipeDesktopModernThemeStyle.java` - add `info`
   color property
 - `jipipe-core/src/main/resources/org/hkijena/jipipe/styles/JIPipe Classic Light.json`
 - `jipipe-core/src/main/resources/org/hkijena/jipipe/styles/JIPipe Dark.json`
@@ -395,28 +395,28 @@ replaces the `FlowLayout` container inside the island panel's scroll pane.
 
 **Statistics item API:**
 
-- `jipipe-core/src/main/java/org/hkijena/jipipe/plugins/statistics/JIPipeStatisticsItem.java` — add default methods
-- All 16 statistics item classes in `jipipe-core/src/main/java/org/hkijena/jipipe/plugins/statistics/items/` — override
+- `jipipe-core/src/main/java/org/hkijena/jipipe/plugins/statistics/JIPipeStatisticsItem.java` - add default methods
+- All 16 statistics item classes in `jipipe-core/src/main/java/org/hkijena/jipipe/plugins/statistics/items/` - override
   defaults
 
 **Statistics UI:**
 
-- `jipipe-core/src/main/java/org/hkijena/jipipe/plugins/statistics/ui/JIPipeDesktopStatisticsUI.java` — rewrite using
+- `jipipe-core/src/main/java/org/hkijena/jipipe/plugins/statistics/ui/JIPipeDesktopStatisticsUI.java` - rewrite using
   new system
 
 ### Test files
 
 **Layout tests** (`jipipe-core/src/test/java/org/hkijena/jipipe/desktop/commons/components/layouts/`):
 
-- `JIPipeDesktopColumnLayoutTest.java` — column math, wrapping, offsets, breakpoint resolution, nesting
+- `JIPipeDesktopColumnLayoutTest.java` - column math, wrapping, offsets, breakpoint resolution, nesting
 
 **Card tests** (`jipipe-core/src/test/java/org/hkijena/jipipe/desktop/commons/components/cards/`):
 
-- `JIPipeDesktopCardTest.java` — header/body/footer structure, variant coloring, builder API
+- `JIPipeDesktopCardTest.java` - header/body/footer structure, variant coloring, builder API
 
 **Statistics tests:**
 
-- Extend `JIPipeStatisticsRegistryTest.java` — verify each item returns non-null icon, valid variant, reasonable column
+- Extend `JIPipeStatisticsRegistryTest.java` - verify each item returns non-null icon, valid variant, reasonable column
   span
 
 ## Part 5: Implementation Order

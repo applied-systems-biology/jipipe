@@ -59,7 +59,7 @@ Project: `AIAgentTests/02-AdvancedPipelines/Paco_06.jip` (relative to `/data/JIP
 ## Template
 
 Proposed name `Blend images fans in from 8 source ids (roles: core-io, other)`, menu path
-`Patterns/Images/Blend images fans in from 8 source ids (roles: core-io, other)` (proposal only — not registered).
+`Patterns/Images/Blend images fans in from 8 source ids (roles: core-io, other)` (proposal only - not registered).
 `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/fan-in-ij1-color-blend-images-core-io-1-other-1.json`.
 

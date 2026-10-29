@@ -30,16 +30,16 @@ import java.awt.*;
  * Three orthogonal states are surfaced, all read from the entry (so the same
  * helper works in the flat list, the function tree, and the node finder):
  * <ul>
- * <li><b>imported</b> — {@link JIPipeNodeClassification#AutoImport} nodes
+ * <li><b>imported</b> - {@link JIPipeNodeClassification#AutoImport} nodes
  * (the auto-discovered IJ2/CLIJ surface); informational tone;</li>
- * <li><b>unstable</b> — {@link JIPipeNodeDatabaseEntry#isUnstable()} nodes
+ * <li><b>unstable</b> - {@link JIPipeNodeDatabaseEntry#isUnstable()} nodes
  * (the {@code @MarkNodeAsUnstable} / node-info flag); danger tone;</li>
- * <li><b>deprecated</b> — {@link JIPipeNodeDatabaseEntry#isDeprecated()}
+ * <li><b>deprecated</b> - {@link JIPipeNodeDatabaseEntry#isDeprecated()}
  * nodes; warning tone.</li>
  * </ul>
  * The states are generalized node metadata (classification + flags), not
  * node-id heuristics, so any node that declares one of them is labelled the
- * same way and — via {@link #isDownRanked(JIPipeNodeDatabaseEntry)} — ordered
+ * same way and - via {@link #isDownRanked(JIPipeNodeDatabaseEntry)} - ordered
  * below the standard curated nodes.
  */
 public final class JIPipeNodeStateChips {
@@ -53,7 +53,7 @@ public final class JIPipeNodeStateChips {
      * Whether the entry is down-ranked in the result lists (placed after the
      * standard curated nodes): it is an auto-imported or edge-case node, or
      * it is marked deprecated or unstable. This is the single generalized
-     * ordering predicate — no node-id or plugin heuristics.
+     * ordering predicate - no node-id or plugin heuristics.
      *
      * @param entry the entry to classify
      * @return {@code true} when the entry belongs below the standard nodes
@@ -113,7 +113,7 @@ public final class JIPipeNodeStateChips {
     /**
      * The template <em>badge</em> chip (spec §7.2): reads the badge text
      * ({@code Pattern} / {@code Custom}) straight from
-     * {@link CreateNewNodesByTemplateDatabaseEntry#getBadge()} (Task 4 — never
+     * {@link CreateNewNodesByTemplateDatabaseEntry#getBadge()} (Task 4 - never
      * re-derived here) and renders it as the same small filled chip used for
      * the state labels.
      *

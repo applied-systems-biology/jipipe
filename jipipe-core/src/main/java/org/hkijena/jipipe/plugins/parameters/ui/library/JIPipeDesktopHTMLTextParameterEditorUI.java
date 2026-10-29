@@ -37,7 +37,7 @@ public class JIPipeDesktopHTMLTextParameterEditorUI extends JIPipeDesktopParamet
     public JIPipeDesktopHTMLTextParameterEditorUI(InitializationParameters parameters) {
         super(HTMLText.class, parameters);
         // The inline widget keeps the editable body but drops the formatting
-        // toolbar (NO_TOOLBAR, #1339) — the full editing controls live in the
+        // toolbar (NO_TOOLBAR, #1339) - the full editing controls live in the
         // dialog opened from the name-row "Edit" button (see createHeaderControls).
         editor = new JIPipeDesktopHTMLEditor(parameters.getWorkbench(), JIPipeDesktopHTMLEditor.Mode.Compact,
                 JIPipeDesktopHTMLEditor.WITH_DIALOG_EDITOR_BUTTON | JIPipeDesktopHTMLEditor.NO_TOOLBAR);
@@ -76,7 +76,7 @@ public class JIPipeDesktopHTMLTextParameterEditorUI extends JIPipeDesktopParamet
     }
 
     /**
-     * Stacked — the HTML editor is a compound control (toolbar + body) that
+     * Stacked - the HTML editor is a compound control (toolbar + body) that
      * needs the full row width (spec §8.1). The name sits above the widget.
      */
     @Override
@@ -123,7 +123,7 @@ public class JIPipeDesktopHTMLTextParameterEditorUI extends JIPipeDesktopParamet
                 });
         editButton.setToolTipText("Edit this HTML text in a dedicated window");
         // Right-align on the name row (the header cell stretches to full width,
-        // so a plain panel would center the button) — consistent with the list
+        // so a plain panel would center the button) - consistent with the list
         // editor's header (#1339).
         JPanel controls = new JPanel(new FlowLayout(FlowLayout.RIGHT, 4, 0));
         controls.setOpaque(false);

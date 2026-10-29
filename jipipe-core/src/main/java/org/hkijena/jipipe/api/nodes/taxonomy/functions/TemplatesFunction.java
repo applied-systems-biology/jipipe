@@ -35,7 +35,7 @@ import java.util.Set;
  * <p>
  * Note: this leaf is distinct from the synthetic top-level
  * <em>Templates</em> branch of the node browser (a UI-only scope grouping
- * with System/Global/Project children) — see the template-taxonomy
+ * with System/Global/Project children) - see the template-taxonomy
  * integration design spec, §7.2.
  */
 public final class TemplatesFunction implements JIPipeNodeTaxonomyFunction {

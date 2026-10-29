@@ -23,7 +23,7 @@ import java.util.Set;
 
 /**
  * Leaf of the Annotations branch for <em>graph (canvas) annotations</em>:
- * nodes that decorate a graph's canvas rather than operating on data —
+ * nodes that decorate a graph's canvas rather than operating on data -
  * text boxes, arrows, and image boxes
  * ({@code org.hkijena.jipipe.api.nodes.annotation.JIPipeGraphCanvasNote}).
  * <p>

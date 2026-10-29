@@ -1,5 +1,5 @@
 {
-  "_note": "Derived patterns (C'): the 'what next' siblings the mined set under-covers. mechanism=twin-swap entries are deterministic (verified structural equivalent of a shipped pattern — no LLM re-gate); mechanism=what-next entries went through the (C) gate. provenance is recorded here only; they ship as normal patterns in (D). support is 0 (derived, not observed). The graph in state.pattern is in the (A) minimal format with 3.4 locations. Built by merging sharded runs.",
+  "_note": "Derived patterns (C'): the 'what next' siblings the mined set under-covers. mechanism=twin-swap entries are deterministic (verified structural equivalent of a shipped pattern - no LLM re-gate); mechanism=what-next entries went through the (C) gate. provenance is recorded here only; they ship as normal patterns in (D). support is 0 (derived, not observed). The graph in state.pattern is in the (A) minimal format with 3.4 locations. Built by merging sharded runs.",
   "rejected": [
     {
       "derivedFrom": "cluster-0006",

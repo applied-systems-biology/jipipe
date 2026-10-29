@@ -61,7 +61,7 @@ Project: `AIAgentTests/02-AdvancedPipelines/CellTracking_01.jip` (relative to `/
 ## Template
 
 Proposed name `Group -> Bio-Formats importer -> Annotate with image properties`, menu path
-`Patterns/Graph / Project/Group -> Bio-Formats importer -> Annotate with image properties` (proposal only — not
+`Patterns/Graph / Project/Group -> Bio-Formats importer -> Annotate with image properties` (proposal only - not
 registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/chain-3-node-group-import-imagej-bioformats-image-properties-to-annotation.json`.
 

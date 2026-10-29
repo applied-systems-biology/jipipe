@@ -39,7 +39,7 @@ import java.util.function.Consumer;
  * default manifest paths (see {@link JIPipeXManifest#defaultManifest}),
  * the manifest at {@code jipx.json}, and the workspace state (origin
  * information + save/dirty flags) at {@code workspace.json}. Materializing
- * re-derives the part files from the project model and is idempotent —
+ * re-derives the part files from the project model and is idempotent -
  * unknown/payload entries (e.g. {@code data/foo.tiff}) are never deleted
  * or rewritten (spec §5.4, "payload never regenerated" contract), and
  * their {@code unknown} manifest registrations are merged into the new
@@ -95,17 +95,17 @@ public class JIPipeLocalProjectWorkspace implements JIPipeProjectWorkspace {
         ObjectMapper mapper = JsonUtils.getObjectMapper();
 
         // Write the part files (idempotent: only the listed part files are
-        // touched — unknown/payload entries are never deleted or rewritten).
+        // touched - unknown/payload entries are never deleted or rewritten).
         // The manifest lists exactly the parts present in the slice: a
         // project without optional parts (e.g. no additional metadata)
-        // materializes fewer files, and a listed part is always present —
+        // materializes fewer files, and a listed part is always present -
         // a missing listed file means a corrupt container.
         Map<String, JsonNode> parts = JIPipeProjectParts.sliceParts(project);
         progressInfo.log("Materializing workspace parts ...");
         JIPipeXManifest newManifest = JIPipeXManifest.defaultManifest(JIPipe.getJIPipeVersion());
         newManifest.getParts().entrySet().removeIf(e -> !parts.containsKey(e.getValue()));
         // Merge the unknown entries of the EXISTING manifest (spec §4:
-        // "unknown parts are preserved verbatim on round-trip") — e.g. a
+        // "unknown parts are preserved verbatim on round-trip") - e.g. a
         // foreign/future .jipx that was extracted into this workspace
         // carries data/ or custom entries that the current JIPipe does
         // not know. The parts table is the current slice; the unknown map
@@ -118,7 +118,7 @@ public class JIPipeLocalProjectWorkspace implements JIPipeProjectWorkspace {
                 }
             }
         } catch (IOException ignored) {
-            // Fresh workspace without a manifest yet — nothing to merge.
+            // Fresh workspace without a manifest yet - nothing to merge.
         }
         for (Map.Entry<String, JsonNode> entry : parts.entrySet()) {
             Path partFile = baseDirectory.resolve(defaultPartPath(entry.getKey()));
@@ -219,8 +219,8 @@ public class JIPipeLocalProjectWorkspace implements JIPipeProjectWorkspace {
     /**
      * The origin format of this workspace, derived from the project file
      * extension: {@code .jipx} → {@code "jipx"}, {@code .jip} →
-     * {@code "jip"}, and — for projects without a project file yet (e.g.
-     * freshly loaded legacy projects before their first save) — {@code
+     * {@code "jip"}, and - for projects without a project file yet (e.g.
+     * freshly loaded legacy projects before their first save) - {@code
      * "jip"} as the fallback.
      */
     private String deriveOriginFormat() {

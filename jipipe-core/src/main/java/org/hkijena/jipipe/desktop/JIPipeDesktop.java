@@ -1140,7 +1140,7 @@ public class JIPipeDesktop {
                 if (fileName.endsWith(".jip")) {
                     window.openProject(file, true);
                 }
-                // .jipx is a ZIP container — this check MUST precede the
+                // .jipx is a ZIP container - this check MUST precede the
                 // ZIP-magic check below (which would misroute it to the
                 // RO-Crate import)
                 else if (PathUtils.isJipxPath(file)) {

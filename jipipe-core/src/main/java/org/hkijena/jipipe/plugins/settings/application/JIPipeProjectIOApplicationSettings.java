@@ -30,7 +30,7 @@ public class JIPipeProjectIOApplicationSettings extends JIPipeDefaultApplication
 
     /**
      * The stable id of this settings sheet.
-     * Persisted in saved settings — never derive from code.
+     * Persisted in saved settings - never derive from code.
      */
     public static final String ID = "org.hkijena.jipipe:project-io";
 

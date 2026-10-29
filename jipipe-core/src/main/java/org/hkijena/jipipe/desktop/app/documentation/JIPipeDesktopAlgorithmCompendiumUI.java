@@ -60,7 +60,7 @@ public class JIPipeDesktopAlgorithmCompendiumUI extends JIPipeDesktopCompendiumU
      * parameter documentation (grouped per source, in UI order).
      * <p>
      * This is the canonical node documentation used by the compendium and by
-     * any UI that shows "the node documentation" — keep the node finder's
+     * any UI that shows "the node documentation" - keep the node finder's
      * detail rail in sync by reusing this builder rather than re-implementing
      * it.
      *

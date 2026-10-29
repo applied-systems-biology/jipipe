@@ -33,8 +33,8 @@ import java.util.List;
  * Parameter for {@link JIPipeDataInfoRef}.
  * <p>
  * #1339 item 1: the flat data-type picker is now a
- * {@link JIPipeDesktopRichSelectionBox} — the searchable "new combobox" used by
- * the enum/dynamic-set editors — instead of a display button + modal picker
+ * {@link JIPipeDesktopRichSelectionBox} - the searchable "new combobox" used by
+ * the enum/dynamic-set editors - instead of a display button + modal picker
  * window. The box's dropdown groups by type category and filters as you type.
  */
 public class JIPipeDesktopDataInfoRefParameterEditorUI extends JIPipeDesktopParameterEditorUI<JIPipeDataInfoRef> {

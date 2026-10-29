@@ -31,7 +31,7 @@ import java.util.function.Consumer;
  * The {@link NodeRelationSource} backed by node template graphs
  * (spec §10.2, source 2).
  * <p>
- * Mines <b>every</b> loaded template graph — System, Global, and Project
+ * Mines <b>every</b> loaded template graph - System, Global, and Project
  * scope (the user directed "mine the full extent from the templates"; the
  * database already holds all scopes, so relations are per-entry data across
  * the whole set). For each in-template connection {@code A → B} it emits one
@@ -41,7 +41,7 @@ import java.util.function.Consumer;
  * <b>Stale edges.</b> A template's serialized graph can reference a node id
  * that no longer resolves in the registry (the node was removed, or an
  * extension failed to load). Such an edge is skipped with a
- * {@code logger.warn} — never propagated, never thrown — so a stale template
+ * {@code logger.warn} - never propagated, never thrown - so a stale template
  * cannot break the index rebuild or any {@code relations()} call
  * (Review Focus #2).
  */
@@ -85,7 +85,7 @@ public class TemplateRelationSource implements NodeRelationSource {
         for (JIPipeNodeTemplate template : templates) {
             // A single corrupted template (invalid serialized data, a graph
             // that throws on access, ...) must not abort the whole index
-            // build — the same "never fail" intent as the stale-edge case,
+            // build - the same "never fail" intent as the stale-edge case,
             // and consistent with the database builder's own
             // catch (Throwable ignored) around template entry construction.
             try {

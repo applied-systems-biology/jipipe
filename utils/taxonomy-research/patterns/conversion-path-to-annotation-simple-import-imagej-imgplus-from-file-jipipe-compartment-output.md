@@ -62,7 +62,7 @@ compartment `File Handling`.
 ## Template
 
 Proposed name `Annotate with file/directory name -> Import image -> Compartment output`, menu path
-`Patterns/Annotations/Annotate with file/directory name -> Import image -> Compartment output` (proposal only — not
+`Patterns/Annotations/Annotate with file/directory name -> Import image -> Compartment output` (proposal only - not
 registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/conversion-path-to-annotation-simple-import-imagej-imgplus-from-file-jipipe-compartment-output.json`.
 

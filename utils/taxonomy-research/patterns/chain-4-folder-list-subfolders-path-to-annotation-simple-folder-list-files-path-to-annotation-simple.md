@@ -69,6 +69,6 @@ Project: `AIAgentTests/01-BasicWorkshop/JSC_2025_06_Kidney_Exports/kidney.jip` (
 Proposed name `List subfolders -> Annotate with file/directory name -> List files -> Annotate with file/directory name`,
 menu path
 `Patterns/Data Sources/List subfolders -> Annotate with file/directory name -> List files -> Annotate with file/directory name`
-(proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+(proposal only - not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/chain-4-folder-list-subfolders-path-to-annotation-simple-folder-list-files-path-to-annotation-simple.json`.
 

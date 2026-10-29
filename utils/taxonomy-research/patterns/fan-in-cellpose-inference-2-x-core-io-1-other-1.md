@@ -60,6 +60,6 @@ Project: `AIAgentTests/03-ExampleWorkflows/Angela_Roots_38.jip` (relative to `/d
 
 Proposed name `Cellpose segmentation (2.x) fans in from 3 source ids (roles: core-io, other)`, menu path
 `Patterns/Machine learning/Cellpose segmentation (2.x) fans in from 3 source ids (roles: core-io, other)` (proposal
-only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+only - not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/fan-in-cellpose-inference-2-x-core-io-1-other-1.json`.
 

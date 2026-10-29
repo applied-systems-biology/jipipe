@@ -18,7 +18,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * #1339: inline list pagination state — a pure (headless) model of how many
+ * #1339: inline list pagination state - a pure (headless) model of how many
  * rows the inline list view shows, with "+k more" / "Show less" transitions.
  */
 class ListPaginationModelTest {

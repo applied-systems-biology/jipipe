@@ -32,8 +32,8 @@ import java.util.stream.Collectors;
  * Parameter for {@link JIPipeNodeInfoRef}.
  * <p>
  * #1339 item 1: the flat algorithm picker is now a
- * {@link JIPipeDesktopRichSelectionBox} — the searchable "new combobox" used by
- * the enum/dynamic-set editors — instead of a display button + modal picker
+ * {@link JIPipeDesktopRichSelectionBox} - the searchable "new combobox" used by
+ * the enum/dynamic-set editors - instead of a display button + modal picker
  * window.
  */
 public class JIPipeDesktopNodeInfoRefParameterEditorUI extends JIPipeDesktopParameterEditorUI<JIPipeNodeInfoRef> {

@@ -1349,8 +1349,8 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
      * in NATIVE units: the gap (4) plus the chip (abbreviation width in the
      * native tertiary font + 6 padding). Zero when the chip is not shown.
      * <p>
-     * Measured with {@code getNativeTertiaryFont()} — the same font source
-     * {@code updateSize} uses — so all three badge-width sites
+     * Measured with {@code getNativeTertiaryFont()} - the same font source
+     * {@code updateSize} uses - so all three badge-width sites
      * ({@code updateSize}, {@code paintNodeControls},
      * {@code updateWholeNodeActiveAreas}) share one zoom-independent
      * measurement (review ruling 20).

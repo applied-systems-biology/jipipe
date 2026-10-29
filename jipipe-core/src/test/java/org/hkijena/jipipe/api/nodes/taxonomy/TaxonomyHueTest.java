@@ -36,8 +36,8 @@ import static org.junit.jupiter.api.Assertions.*;
  * explicit override wins; leaves always inherit).
  * <p>
  * The Voronoi cells are computed here from the enum's anchors with an
- * independent copy of the cell formula — not from {@link TaxonomyHue}'s
- * helpers — so containment and tiling genuinely cross-check the implementation.
+ * independent copy of the cell formula - not from {@link TaxonomyHue}'s
+ * helpers - so containment and tiling genuinely cross-check the implementation.
  * <p>
  * Tests (8)–(10) are ship-set integration tests over the real function
  * classes (and the booted live service for the last two): the promoted
@@ -233,7 +233,7 @@ class TaxonomyHueTest {
         // Top-level without a category: the default getColorHue() is null (transparent).
         TestFunction transparent = new TestFunction("jipipe:function:transparent", "Transparent", null, null, null);
         assertNull(transparent.getColorHue());
-        // Leaf with a category: still null — leaves never own a hue, they inherit.
+        // Leaf with a category: still null - leaves never own a hue, they inherit.
         TestFunction top = new TestFunction("jipipe:function:top", "Top", null, HueCategory.GEOMETRY, null);
         TestFunction leaf = new TestFunction("jipipe:function:leaf", "Leaf", null, HueCategory.GEOMETRY, top);
         assertNull(leaf.getColorHue());
@@ -267,7 +267,7 @@ class TaxonomyHueTest {
         FunctionRegistry registry = new FunctionRegistry();
         ScriptingFunction scripting = new ScriptingFunction();
         registry.register(scripting);
-        // The four scripting language leaves, unchanged by the migration —
+        // The four scripting language leaves, unchanged by the migration -
         // they already parent to ScriptingFunction.
         JIPipeNodeTaxonomyFunction[] leaves = {
                 new ScriptingPythonFunction(),
@@ -330,7 +330,7 @@ class TaxonomyHueTest {
                 autoPickedIds,
                 "the auto-picked ship-set group must be exactly the six drop-explicit roots plus the promoted Scripting root, got: " + autoPickedIds);
 
-        // Each hue must be inside its own category's Voronoi cell — checked
+        // Each hue must be inside its own category's Voronoi cell - checked
         // with this test's independent cell recomputation (cellStartDeg /
         // cellWidthDeg above), not the implementation's helpers.
         for (JIPipeNodeTaxonomyFunction function : autoPicked) {
@@ -362,7 +362,7 @@ class TaxonomyHueTest {
     @Test
     void noRegisteredTopLevelHueCollides() {
         // The boot-time fail-closed guard over the real ship set: the live
-        // registry's own validation must report no duplicate top-level hue —
+        // registry's own validation must report no duplicate top-level hue -
         // auto-picked AND explicit pins together.
         Set<String> errors = JIPipe.getNodes().getFunctions().validate();
         assertTrue(errors.stream().noneMatch(e -> e.contains("Duplicate top-level color hue")),
@@ -374,7 +374,7 @@ class TaxonomyHueTest {
 
     // ---------------------------------------------------------------------
     // Test-local minimal functions (implement the interface's abstract
-    // methods; the two default methods — getHueCategory() / getColorHue() —
+    // methods; the two default methods - getHueCategory() / getColorHue() -
     // are left to the interface unless the group under test pins one of them)
     // ---------------------------------------------------------------------
 

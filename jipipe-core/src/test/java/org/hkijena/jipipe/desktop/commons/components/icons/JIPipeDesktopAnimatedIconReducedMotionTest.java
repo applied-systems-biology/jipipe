@@ -8,7 +8,7 @@ import java.awt.image.BufferedImage;
 import static org.junit.jupiter.api.Assertions.*;
 
 // Headless. Two 1x1 ImageIcons stand in for the real orange/blue badges. We assert the
-// static-state contract (opacity pinned to full, timer never running) — the actual
+// static-state contract (opacity pinned to full, timer never running) - the actual
 // orange glyph is verified by the user by eye.
 class JIPipeDesktopAnimatedIconReducedMotionTest {
 

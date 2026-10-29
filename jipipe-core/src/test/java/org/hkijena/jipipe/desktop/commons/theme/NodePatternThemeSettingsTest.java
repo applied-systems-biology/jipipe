@@ -19,7 +19,7 @@ class NodePatternThemeSettingsTest {
         }
     }
 
-    // Defaults on a fresh style — the base "JIPipe Light" theme is built from
+    // Defaults on a fresh style - the base "JIPipe Light" theme is built from
     // exactly this, so these defaults ARE the light theme's values
     @Test
     void defaultsMatchSpec() {
@@ -62,7 +62,7 @@ class NodePatternThemeSettingsTest {
     }
 
     // Back-compat: a theme JSON without the new keys deserializes to the defaults
-    // (the light-theme 0.3 — which is why the dark themes pin 0.15 explicitly)
+    // (the light-theme 0.3 - which is why the dark themes pin 0.15 explicitly)
     @Test
     void missingKeysFallBackToDefaults() throws Exception {
         // "brightness" is the JIPipeDesktopUIThemeBrightness enum (values: Light, Dark)
@@ -73,7 +73,7 @@ class NodePatternThemeSettingsTest {
     }
 
     // Ship-set pin: the bundled theme files carry the tuned per-theme opacity.
-    // Guard against "cleanup" of the dark themes' explicit 0.15 — it looks
+    // Guard against "cleanup" of the dark themes' explicit 0.15 - it looks
     // redundant, but deleting it would silently switch them to the light
     // default (0.3), which is far too visible on dark backgrounds.
     @Test

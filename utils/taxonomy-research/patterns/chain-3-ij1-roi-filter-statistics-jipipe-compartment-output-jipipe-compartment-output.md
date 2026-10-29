@@ -62,7 +62,7 @@ Project: `AIAgentTests/02-AdvancedPipelines/Cryogels_01.jip` (relative to `/data
 ## Template
 
 Proposed name `Filter 2D ROI by statistics -> Compartment output -> Compartment output`, menu path
-`Patterns/ROIs/Filter 2D ROI by statistics -> Compartment output -> Compartment output` (proposal only — not
+`Patterns/ROIs/Filter 2D ROI by statistics -> Compartment output -> Compartment output` (proposal only - not
 registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/chain-3-ij1-roi-filter-statistics-jipipe-compartment-output-jipipe-compartment-output.json`.
 

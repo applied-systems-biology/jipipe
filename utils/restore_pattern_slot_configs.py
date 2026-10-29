@@ -16,14 +16,14 @@ that do NOT carry slot configs; the corpus (``/data/JIPipe``, READ-ONLY) is
 reachable only here.
 
 The public API (required by the global-constraints "Restore-script API" bullet
-and the Ruling 10 note — both are used by the generators' width maps):
+and the Ruling 10 note - both are used by the generators' width maps):
 
-  * ``analyze(out_dir, corpus_root, registry) -> dict``  — PURE (no writes).
+  * ``analyze(out_dir, corpus_root, registry) -> dict``  - PURE (no writes).
     Returns, per file, per node key, the EXTRA input/output slot counts the
     restore would add (the node's required set minus its registry STATIC slots
     and any slots its existing ``jipipe:slot-configuration`` already covers).
     The generators build their width maps from this.
-  * ``restore(out_dir, corpus_root, registry)``  — the patching pass. ``main``
+  * ``restore(out_dir, corpus_root, registry)``  - the patching pass. ``main``
     runs it. Idempotent: a node whose required set is already covered by its
     existing config / static slots is skipped, so re-running on already-patched
     files is a no-op.
@@ -32,26 +32,26 @@ Matching rule (deterministic, the global-constraints B1 rule):
   * A node's REQUIRED set = every slot name on a shipped edge endpoint for that
     node (source-end slots, target-end slots), EXCLUDING the ``{Parameters}
     external-parameter slot (that slot is created by the generator's existing
-    (3b) ``has-parameter-slot`` flag on load, not by a slot config — it is the
+    (3b) ``has-parameter-slot`` flag on load, not by a slot config - it is the
     (3b) pass's job, per the copy exclusions below).
   * A node's STATIC set = the registry ``inputSlots``/``outputSlots`` names
     (generator-side approximation; the launcher edge-survival test is the
     authoritative oracle). The proxy is deliberately conservative (it may
-    over-flag — restoring a config whose slots the JVM would create anyway is
+    over-flag - restoring a config whose slots the JVM would create anyway is
     harmless); it never under-flags a needed restore.
   * A node is AFFECTED iff REQUIRED - STATIC - <existing config slots> is
     non-empty on either side.
   * MATCH = a corpus instance (any project under ``corpusRoot``, indexed by
     node type) whose ``jipipe:slot-configuration`` covers the required set
     (source-end required slots ⊆ the instance's ``output`` map; target-end
-    required slots ⊆ its ``input`` map). Match by (type, required-slot-set) —
+    required slots ⊆ its ``input`` map). Match by (type, required-slot-set) -
     NEVER by the shipped compartment UUID (the mined compartment UUIDs are
     synthetic).
   * TIE-BREAK (determinism) = lexicographically-smallest (corpus-relative
     project path, compartment key, node UUID).
 
 Copy (full fidelity): the instance's full ``jipipe:slot-configuration`` (both
-sides — real data types), plus the instance's top-level non-``jipipe:``
+sides - real data types), plus the instance's top-level non-``jipipe:``
 parameter keys VERBATIM (the slot-driving parameters; without them the
 restored slots are never created). EXCLUDED from the copy: everything under
 ``jipipe:`` EXCEPT ``jipipe:slot-configuration`` itself.
@@ -59,7 +59,7 @@ restored slots are never created). EXCLUDED from the copy: everything under
 Fallback (only when no corpus instance matches):
   * dynamic-slot node types (the ``JIPipeIOSlotConfiguration`` ids) → emit
     ``jipipe:data`` mirror slots for the required names (contiguous ``Data 1..N``
-    fill for the "Data k" pattern — a node referencing only "Data 2" gets BOTH
+    fill for the "Data k" pattern - a node referencing only "Data 2" gets BOTH
     "Data 1" and "Data 2");
   * static types with no corpus match → ``fail(...)`` the build (never ship a
     dangling edge silently). The one pre-verified case is handled by the
@@ -85,7 +85,7 @@ REGISTRY_FILE = os.path.join(RESEARCH, "registry.json")
 #: The registry.json inputSlots/outputSlots are the @AddJIPipe*Slot
 #: ANNOTATION slots, but a node whose constructor / parameter-gating logic
 #: adds or removes slots (e.g. the cellpose inference nodes keep only the
-#: parameter-enabled outputs — default "ROI") has a DIFFERENT slot set on a
+#: parameter-enabled outputs - default "ROI") has a DIFFERENT slot set on a
 #: fresh instance. The restore pass must match the required slot set against
 #: the FRESH-node set (the launcher edge test's world view), so the effective
 #: static slots prefer this measurement over the annotation list.
@@ -101,7 +101,7 @@ _EXCLUDED_PREFIXES = ("fiji", "jipipe-release", "tmp", "temp", "documentation")
 #: existing (3b) has-parameter-slot flag on load, NOT by a slot config.
 PARAM_SLOT = "{Parameters}"
 
-#: The ``JIPipeIOSlotConfiguration`` node-type ids (the DYNAMIC slot types —
+#: The ``JIPipeIOSlotConfiguration`` node-type ids (the DYNAMIC slot types -
 #: these create user-defined slots, so with no corpus match they fall back to
 #: generic ``jipipe:data`` slots rather than failing the build). Verified
 #: 2026-10-21 against the registry (the 3 iteration-checker nodes carry
@@ -198,7 +198,7 @@ def _static_slots(nid, registry):
     ``fresh-node-slots.json``) is AUTHORITATIVE when present: it is exactly
     the slot set a fresh instance creates on load, which is the world the
     launcher edge test sees. Types marked ``uninstantiable`` (the
-    version-gated cLij2 kernels, dropped on load — their edges are never
+    version-gated cLij2 kernels, dropped on load - their edges are never
     counted by the edge test) and any type absent from the artifact fall
     back to the registry annotation list (``inputSlots``/``outputSlots``),
     which can differ from the fresh set for parameter-gated nodes. Excludes
@@ -228,7 +228,7 @@ def _existing_config_slots(node):
 
 def _is_affected(nid, req_in, req_out, registry):
     """True iff the node's required set exceeds its STATIC slots on either
-    side (the existing config is NOT considered here — this is the
+    side (the existing config is NOT considered here - this is the
     proxy/analyze notion, which drives the width map)."""
     s_in, s_out = _static_slots(nid, registry)
     return bool((req_in - s_in) or (req_out - s_out))
@@ -236,7 +236,7 @@ def _is_affected(nid, req_in, req_out, registry):
 
 def _covered_by(node, req_in, req_out, registry):
     """True iff the node's required set is fully covered by its existing
-    ``jipipe:slot-configuration`` (if present) OR its static slots — the
+    ``jipipe:slot-configuration`` (if present) OR its static slots - the
     restore pass's idempotence predicate."""
     sc = node.get("jipipe:slot-configuration")
     if isinstance(sc, dict):
@@ -301,7 +301,7 @@ def _match_instance(nid, req_in, req_out, corpus_index):
 
 def _drive_params(node):
     """The instance's top-level non-``jipipe:`` parameter keys (the
-    slot-driving parameters) — copied VERBATIM. Everything under ``jipipe:``
+    slot-driving parameters) - copied VERBATIM. Everything under ``jipipe:``
     except the slot config itself is excluded (the (3b) ``{Parameters}`` flag
     is the generator's existing pass's job)."""
     return {k: v for k, v in node.items()
@@ -340,7 +340,7 @@ def _shipped_files(out_dir):
 
 def extras_for_graph(graph, registry):
     """The per-node EXTRA input/output slot counts (required minus STATIC
-    slots — the existing config is NOT subtracted, so the result is stable
+    slots - the existing config is NOT subtracted, so the result is stable
     for the width map regardless of whether the file has been patched).
     Returns ``{node key: {"input": int, "output": int, "node-info-id": str}}``
     for AFFECTED nodes only. This is the file-local core of :func:`analyze`
@@ -389,7 +389,7 @@ def width_map_for_graph(graph, node_extras, registry):
 
     ``node_extras`` is the per-node mapping for ONE file exactly as
     :func:`analyze` returns it (``{node key: {"input": int, "output": int}}``)
-    — typically ``analyze(out_dir, corpus_root, registry)[this_file]``. Nodes
+    - typically ``analyze(out_dir, corpus_root, registry)[this_file]``. Nodes
     with no entry are un-restored and use their static slot count. A node
     that already carries a ``jipipe:slot-configuration`` counts that config's
     NON-static slots (static ones are already in the registry count).
@@ -451,7 +451,7 @@ def restore(out_dir, corpus_root, registry):
             else:
                 fail(f"{f}: node {k} ({nid}) needs restore for slots "
                      f"in={sorted(req_in)} out={sorted(req_out)} but NO "
-                     "corpus instance covers it and it is a STATIC type — "
+                     "corpus instance covers it and it is a STATIC type - "
                      "refusing to ship a dangling edge (add a documented "
                      "EXCEPTIONS entry or a corpus match)")
             node["jipipe:slot-configuration"] = config
@@ -500,7 +500,7 @@ def main(argv=None):
     for f, k, nid, source, ei, eo, slots in report:
         print(f"   {f} :: {k} [{nid}] <- {source} "
               f"(+{ei}in/+{eo}out: {', '.join(slots)})")
-    print("OK" if report else "OK (0 changes — idempotent no-op)")
+    print("OK" if report else "OK (0 changes - idempotent no-op)")
 
 
 if __name__ == "__main__":

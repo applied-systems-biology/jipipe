@@ -61,7 +61,7 @@ Project: `AIAgentTests/03-ExampleWorkflows/CellposeTraining.jip` (relative to `/
 ## Template
 
 Proposed name `Morphological operation 2D -> Annotate with data -> Split data randomly (percentage)`, menu path
-`Patterns/Images/Morphological operation 2D -> Annotate with data -> Split data randomly (percentage)` (proposal only —
+`Patterns/Images/Morphological operation 2D -> Annotate with data -> Split data randomly (percentage)` (proposal only -
 not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/conversion-ij1-morph-operation2d-annotate-with-data-distribute-data.json`.
 

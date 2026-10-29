@@ -68,6 +68,6 @@ compartment `CellPose+File handler`.
 
 Proposed name `Set LUT (color map) -> Compartment output -> Convert 2D ROI to RGB -> Compartment output`, menu path
 `Patterns/Images/Set LUT (color map) -> Compartment output -> Convert 2D ROI to RGB -> Compartment output` (proposal
-only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+only - not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/chain-4-ij1-set-lut-from-color-map-jipipe-compartment-output-ij1-roi-to-rgb-jipipe-compartment-output.json`.
 

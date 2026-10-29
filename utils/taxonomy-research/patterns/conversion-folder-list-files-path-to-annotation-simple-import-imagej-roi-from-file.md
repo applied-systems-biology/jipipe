@@ -62,7 +62,7 @@ Project: `AIAgentTests/03-ExampleWorkflows/Angela_Roots_38.jip` (relative to `/d
 ## Template
 
 Proposed name `List files -> Annotate with file/directory name -> Import ROI`, menu path
-`Patterns/Data Sources/List files -> Annotate with file/directory name -> Import ROI` (proposal only — not registered).
+`Patterns/Data Sources/List files -> Annotate with file/directory name -> Import ROI` (proposal only - not registered).
 `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/conversion-folder-list-files-path-to-annotation-simple-import-imagej-roi-from-file.json`.
 

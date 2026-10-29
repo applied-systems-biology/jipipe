@@ -103,7 +103,7 @@ public class JIPipeProject implements JIPipeValidatable {
     /**
      * Every temporary base this project ever used (feature #753). The
      * temporary base re-resolves when the work directory changes (e.g.
-     * "Save As" into another directory — the .jipx migration flow): the
+     * "Save As" into another directory - the .jipx migration flow): the
      * old base's lock is released, but its files (including the
      * jipx-workspace with payload data) remain on disk.
      * {@link #close(JIPipeProgressInfo)} deletes them all.
@@ -214,7 +214,7 @@ public class JIPipeProject implements JIPipeValidatable {
      * <p>
      * Format-agnostic: the reader is resolved by
      * {@link JIPipeProjectIOs#readerFromPath(Path)} (content-first
-     * dispatch — the legacy JSON reader for plain files, the JIPX
+     * dispatch - the legacy JSON reader for plain files, the JIPX
      * container reader for ZIP files), so every load site in the code
      * base picks up both project formats.
      *
@@ -365,7 +365,7 @@ public class JIPipeProject implements JIPipeValidatable {
 
         PathUtils.createDirectories(output);
         temporaryBaseDirectory = output;
-        // Track every base this project uses — close() cleans them all
+        // Track every base this project uses - close() cleans them all
         // (the base re-resolves when the work directory changes; the old
         // base holds the jipx-workspace with its payload data).
         usedTemporaryBaseDirectories.add(output);
@@ -388,7 +388,7 @@ public class JIPipeProject implements JIPipeValidatable {
     }
 
     /**
-     * Gets this project's workspace (spec §5.4) — the materialized
+     * Gets this project's workspace (spec §5.4) - the materialized
      * working copy of the project's parts in the project's temporary
      * base directory, at {@code <temp base>/jipx-workspace}.
      * <p>
@@ -401,7 +401,7 @@ public class JIPipeProject implements JIPipeValidatable {
      * <p>
      * The workspace is created lazily (the directory on first call) and
      * cached. Returns {@code null} for disposed projects (the temporary
-     * base directory — and thus the workspace — is deleted on close).
+     * base directory - and thus the workspace - is deleted on close).
      *
      * @return the workspace, or null if this project is disposed
      */
@@ -446,7 +446,7 @@ public class JIPipeProject implements JIPipeValidatable {
      * <p>
      * Format-agnostic: the writer is resolved by
      * {@link JIPipeProjectIOs#writerFromPath(Path)} (extension-driven
-     * dispatch — the legacy JSON writer for {@code .jip}, the JIPX
+     * dispatch - the legacy JSON writer for {@code .jip}, the JIPX
      * container writer for {@code .jipx}), so every save site in the code
      * base picks up both project formats. The writers are self-contained
      * (e.g. the authors merge); this method only applies the
@@ -475,7 +475,7 @@ public class JIPipeProject implements JIPipeValidatable {
         if (settings.isAutomaticallyAddToProjects()) {
             // Feature #753: capture the authors' JSON state before merging so
             // we can fire the authors-changed signal only when the merge
-            // actually changed something — this runs on every auto-save, so
+            // actually changed something - this runs on every auto-save, so
             // the emitter must not spam (recomputing the FAIR badge on every
             // auto-save for no reason).
             String authorsBefore = JsonUtils.toJsonString(metadata.getAuthors());
@@ -514,10 +514,10 @@ public class JIPipeProject implements JIPipeValidatable {
 
         // Clear temporary directories: EVERY base this project ever used.
         // The base re-resolves when the work directory changes (e.g. "Save
-        // As" into another directory — the .jipx migration flow): without
+        // As" into another directory - the .jipx migration flow): without
         // this, the earlier base (holding the jipx-workspace with payload
         // data) would leak on disk. This deliberately does NOT call
-        // getTemporaryBaseDirectory() — that would create and lock a FRESH
+        // getTemporaryBaseDirectory() - that would create and lock a FRESH
         // base just to delete it.
         if (JIPipeRuntimeApplicationSettings.getInstance().isAutoCleanClosedProjectTemporaryDirectories()) {
             progressInfo.log("Clearing temporary directory ...");

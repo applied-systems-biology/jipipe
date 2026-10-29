@@ -28,7 +28,7 @@ import java.util.Objects;
  * family): the lighter member of the family for nodes that style their text
  * but take the color from elsewhere (e.g. the drawn element's line color).
  * <p>
- * All three fields are always present (never null) — missing JSON keys fall
+ * All three fields are always present (never null) - missing JSON keys fall
  * back to defaults on deserialization, which keeps old projects (that stored
  * the fields separately, if at all) loadable. This class also owns the
  * family's shared statics ({@link #defaultFamily()},
@@ -103,7 +103,7 @@ public class JIPipeFontFamilySizeStyleParameter implements JIPipeFontValue, JIPi
     }
 
     /**
-     * @return the default font family — the logical "Dialog" family resolved
+     * @return the default font family - the logical "Dialog" family resolved
      * to its concrete name (stable per platform, valid for {@link Font}).
      */
     public static String defaultFamily() {
@@ -146,7 +146,7 @@ public class JIPipeFontFamilySizeStyleParameter implements JIPipeFontValue, JIPi
         if (styleKey != null && json.has(styleKey) && json.get(styleKey).isTextual()) {
             style = styleNameToFlags(json.get(styleKey).textValue());
         }
-        // colorKey is not a field of this class — intentionally ignored
+        // colorKey is not a field of this class - intentionally ignored
 
         result.migrateFrom(family, size, style);
         return result;

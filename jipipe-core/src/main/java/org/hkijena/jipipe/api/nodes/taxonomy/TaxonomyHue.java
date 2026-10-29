@@ -22,7 +22,7 @@ package org.hkijena.jipipe.api.nodes.taxonomy;
  * order. It maps every id into its category's Voronoi cell, so conceptually
  * similar functions are visually adjacent by construction.
  * <p>
- * Hue is never persisted (not in settings, node database or project JSON) —
+ * Hue is never persisted (not in settings, node database or project JSON) -
  * it is computed live from the function tree.
  */
 public final class TaxonomyHue {

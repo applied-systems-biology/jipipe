@@ -61,7 +61,7 @@ Project: `AIAgentTests/03-ExampleWorkflows/Lukas_CFranke_09.jip` (relative to `/
 ## Template
 
 Proposed name `Compartment output fans out to 8 target ids (roles: annotate, other)`, menu path
-`Patterns/Graph / Project/Compartment output fans out to 8 target ids (roles: annotate, other)` (proposal only — not
+`Patterns/Graph / Project/Compartment output fans out to 8 target ids (roles: annotate, other)` (proposal only - not
 registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/fan-out-jipipe-compartment-output-annotate-1-other-1.json`.
 

@@ -41,17 +41,17 @@ import java.util.List;
  * the copy / delete / edit / export / import operations over the
  * {@link JIPipeNodeTemplatesServiceComponent}:
  * <ul>
- * <li><b>System</b> — bundled / plugin-provided templates. Read-only:
+ * <li><b>System</b> - bundled / plugin-provided templates. Read-only:
  *     {@link #delete}/{@link #edit} are no-ops (return {@code false}) and
  *     {@link #importTemplates} to System is a no-op. System is a valid
  *     <em>source</em> for {@link #copyTo} (the "Copy to Global" escape hatch)
  *     but never a target.</li>
- * <li><b>Global</b> — the user's {@code node-templates/} directory. The
+ * <li><b>Global</b> - the user's {@code node-templates/} directory. The
  *     critical partition detail: {@code getGlobalTemplates()} now INCLUDES the
  *     bundled System templates (R8g), so the Global view filters
  *     {@code !isPluginTemplate}, or the shipped patterns would show up as
  *     user-global templates.</li>
- * <li><b>Project</b> — the current project's {@code node-templates} metadata
+ * <li><b>Project</b> - the current project's {@code node-templates} metadata
  *     (travels with saved projects).</li>
  * </ul>
  * Every mutation delegates to a service-component method that emits
@@ -101,7 +101,7 @@ public class TemplateManagementController {
 
     /**
      * Copies a template from one scope into another (always a <b>copy</b>, never
-     * a move — the original is left in place). The copy is re-stamped with the
+     * a move - the original is left in place). The copy is re-stamped with the
      * user source, so a System template can be "escaped" into Global/Project
      * (its copy becomes a user-owned template that is editable/deletable).
      * <p>
@@ -150,7 +150,7 @@ public class TemplateManagementController {
      * Deletes a template from the given scope. System scope is a no-op
      * (read-only and bundled), returning {@code false}. Downloaded templates
      * CAN be removed (a download is a re-obtainable artifact of the user's
-     * store — the feature-manager "uninstall"), like user-global ones.
+     * store - the feature-manager "uninstall"), like user-global ones.
      * {@code removeFromGlobal} / {@code removeFromProject} emit the refresh
      * event on success, so no explicit emit here (exactly-once, matching
      * {@link #edit}).
@@ -178,7 +178,7 @@ public class TemplateManagementController {
      * Edits a template in place: the live {@code original} is overwritten with
      * the contents of the {@code editedCopy}. System scope is a no-op
      * (read-only and bundled), and Downloaded scope is rejected the same way
-     * (read-only: a downloaded template is a repository artifact — the escape
+     * (read-only: a downloaded template is a repository artifact - the escape
      * hatch is copying it into the user's own templates, where the copy is
      * editable; publishing the local version back is a future feature).
      *

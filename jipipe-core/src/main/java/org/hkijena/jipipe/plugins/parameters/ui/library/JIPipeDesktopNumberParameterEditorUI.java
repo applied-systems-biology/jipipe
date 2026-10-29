@@ -51,7 +51,7 @@ public class JIPipeDesktopNumberParameterEditorUI extends JIPipeDesktopParameter
     /**
      * True iff this parameter should render the slider (spec §7.3: a bounded
      * range annotated with {@link NumberParameterSettings.Style#SLIDER}).
-     * Pure — no JIPipe/Swing state, so it is unit-testable headlessly.
+     * Pure - no JIPipe/Swing state, so it is unit-testable headlessly.
      */
     static boolean shouldUseSlider(NumberParameterSettings settings, double min, double max) {
         return settings != null
@@ -225,7 +225,7 @@ public class JIPipeDesktopNumberParameterEditorUI extends JIPipeDesktopParameter
 
         // SLIDER style: a single custom-painted slider replaces the text
         // field + spinners. The slider carries its own chrome (no outer
-        // control border — it paints its own track/thumb).
+        // control border - it paints its own track/thumb).
         NumberParameterSettings settings = getParameterAccess().getAnnotationOfType(NumberParameterSettings.class);
         double min = getMinimumValue();
         double max = getMaximumValue();
@@ -239,7 +239,7 @@ public class JIPipeDesktopNumberParameterEditorUI extends JIPipeDesktopParameter
             return;
         }
         if (settings != null && settings.style() == NumberParameterSettings.Style.SLIDER && !sliderFallbackWarningLogged) {
-            // Review Focus #2: SLIDER was requested but the range is unbounded —
+            // Review Focus #2: SLIDER was requested but the range is unbounded -
             // fall back to the field and say so once.
             log.warn("Number parameter '{}' is annotated style=SLIDER but its range is unbounded ({} - {}); using the text-field editor instead.",
                     getParameterAccess().getName(), min, max);

@@ -21,13 +21,13 @@ import java.nio.file.Paths;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Contract test for {@link PathUtils#replaceExtension(Path, String, String)} —
+ * Contract test for {@link PathUtils#replaceExtension(Path, String, String)} -
  * the root-cause helper of the JIPX migration prompt bug (#753): the method
  * must replace the extension only when the file name actually ends with
  * {@code oldExtension} (case-insensitive), preserve the base name's original
  * casing, and be null-safe for both the path and a missing file name.
  * <p>
- * Pure path logic — no JIPipe instance required.
+ * Pure path logic - no JIPipe instance required.
  */
 public class PathUtilsReplaceExtensionTest {
 
@@ -48,7 +48,7 @@ public class PathUtilsReplaceExtensionTest {
         // "x.JIP".length() - ".jip".length() = 1, so the last 4 chars
         // (".JIP") are removed and the new extension is appended.
         // Result: base name "x" keeps its casing, the uppercase extension
-        // itself is NOT preserved — the output is fully "x.jipx".
+        // itself is NOT preserved - the output is fully "x.jipx".
         assertEquals(Paths.get("x.jipx"),
                 PathUtils.replaceExtension(Paths.get("x.JIP"), ".jip", ".jipx"));
     }

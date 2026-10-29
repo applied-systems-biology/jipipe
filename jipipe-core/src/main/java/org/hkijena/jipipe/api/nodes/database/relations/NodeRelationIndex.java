@@ -22,13 +22,13 @@ import java.util.*;
  * The index holds the directed workflow edges contributed by the pluggable
  * {@link NodeRelationSource}s and answers the two directional queries:
  * <ul>
- * <li>{@link #next(String)} — the ids that run <em>after</em> the given node
+ * <li>{@link #next(String)} - the ids that run <em>after</em> the given node
  * (its workflow successors);</li>
- * <li>{@link #previous(String)} — the ids that run <em>before</em> the given
+ * <li>{@link #previous(String)} - the ids that run <em>before</em> the given
  * node (its workflow predecessors).</li>
  * </ul>
  * Within each list the ids are ranked by <b>support</b> (the number of times
- * the edge was contributed — i.e. the number of distinct sources/templates
+ * the edge was contributed - i.e. the number of distinct sources/templates
  * carrying it) descending, then by node id ascending, so the ordering is
  * deterministic even for a tie in support.
  * <p>

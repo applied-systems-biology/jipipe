@@ -1,4 +1,4 @@
-# Font parameter family — design (#1339)
+# Font parameter family - design (#1339)
 
 ## Problem
 
@@ -11,7 +11,7 @@ into nodes that only set family/size.
 
 Canonical example: **Convert 2D ROI to RGB** (`RoiToRGBAlgorithm`) has a label *font* (family + size, maybe style) but
 its label *color* belongs to the ROI / an
-optional override — not the font value.
+optional override - not the font value.
 
 ## Investigation: how the label text color is actually derived
 
@@ -19,7 +19,7 @@ Traced every `JIPipeFontParameter` consumer:
 
 | Node (param key)                                                                                              | font fields genuinely used | where the **text color** comes from today                                                                                                                                                                                       |
 |---------------------------------------------------------------------------------------------------------------|----------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `RoiToRGBAlgorithm` (`label-font`)                                                                            | family, size, style        | **`labelFont.getColor()`** (always the font's color). But the node already computes a per-ROI *effective line color* (`overrideLineColor` if enabled, else `roi.getStrokeColor()`) — that is the color the label should follow. |
+| `RoiToRGBAlgorithm` (`label-font`)                                                                            | family, size, style        | **`labelFont.getColor()`** (always the font's color). But the node already computes a per-ROI *effective line color* (`overrideLineColor` if enabled, else `roi.getStrokeColor()`) - that is the color the label should follow. |
 | `DrawTextRoiAlgorithm` (`font`)                                                                               | family, size, style        | **NOT the font.** The `TextRoi`'s color comes from the registered sub-param `VisualLocationROIProperties.lineColor` (`OptionalColorParameter`, default enabled/yellow). `font.getColor()` is never called.                      |
 | `TableToTextROIAlgorithm` (`font`)                                                                            | family, size, style        | **NOT the font.** Same as above (`VisualROIProperties.lineColor`).                                                                                                                                                              |
 | `DrawScaleBarAlgorithm` (`text-settings/font`)                                                                | family, size, style, color | `textSettings.getFont().getColor()` (default BOLD WHITE).                                                                                                                                                                       |
@@ -31,14 +31,14 @@ Consequence: only the scale-bar nodes, the montage nodes, and the canvas note
 truly need **font+style+color**. `RoiToRGB` needs **font+style** (color from ROI /
 optional). `DrawTextRoi`/`TableToTextROI` need **font+style** (color already in
 `VisualLocationROIProperties`). No current node uses exactly font+color or bare
-font — those classes complete the family for future nodes.
+font - those classes complete the family for future nodes.
 
 ## Design
 
 ### 1. The class family (all 4 combinations)
 
 All in `org.hkijena.jipipe.plugins.parameters.library.primitives`. Each class has a
-stable string-literal registration ID (persisted in saved projects — never
+stable string-literal registration ID (persisted in saved projects - never
 code-derived).
 
 | Class                                     | Fields                     | Registration ID                       |
@@ -51,19 +51,19 @@ code-derived).
 **Naming rationale:** the base `FontFamilySize` makes explicit that the *family* is
 always part of the value (a bare `FontSizeParameter` would read as "a font size
 number"); `Style` / `Color` are appended only for the combinations that carry
-them. **All four registration IDs are new and consistent** — the branch is
+them. **All four registration IDs are new and consistent** - the branch is
 unmerged, so the earlier development ID `jipipe:font` is simply replaced (user
 ruling). The existing class is renamed `JIPipeFontParameter` →
 `JIPipeFontFamilySizeStyleColorParameter`.
 
 **Persistence note:** a parameter access is persisted as `field-class-id` = the
 parameter type's **registration ID** (`JIPipeMutableParameterAccess`), and on load
-resolved via `JIPipe.getParameterTypes().getInfoById(...)` — which throws
+resolved via `JIPipe.getParameterTypes().getInfoById(...)` - which throws
 `Unknown parameter type ID` for an id that no longer exists. So changing the ID
 means projects saved *during this branch's development* (carrying
 `field-class-id: "jipipe:font"`) fail to load until re-saved. Accepted consequence (branch unmerged, per user ruling).
 **Pre-#1339 legacy projects are unaffected**:
-they contain no `label-font`/`font` access at all — only the split legacy keys (`label-font-family`, `label-size`, …),
+they contain no `label-font`/`font` access at all - only the split legacy keys (`label-font-family`, `label-size`, …),
 which the per-node `onDeserialized`
 migration reads directly from the raw JSON.
 
@@ -92,11 +92,11 @@ Each class is a plain Jackson-serializable value (as the current
 `JIPipeDesktopFontParameterEditorUI<T extends JIPipeFontValue>` and shows exactly
 the sections the concrete value supports:
 
-- **family** box — always
-- **size** spinner — always (the sample text's trailing number is the live size,
+- **family** box - always
+- **size** spinner - always (the sample text's trailing number is the live size,
   the item-7 fix)
-- **style** B/I toggles — only if the value `instanceof JIPipeFontStyleCapable`
-- **color** section (swatch, pure colors, recents, Custom…) — only if the value
+- **style** B/I toggles - only if the value `instanceof JIPipeFontStyleCapable`
+- **color** section (swatch, pure colors, recents, Custom…) - only if the value
   `instanceof JIPipeFontColorCapable`
 
 `reload()`, `getPopoutContent()` and `previewBackground()` are reused; only the
@@ -114,7 +114,7 @@ concrete value via the access's field class, so the base works unchanged.
 | Node                                              | before                                                                     | after                                                                                                                 |
 |---------------------------------------------------|----------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------|
 | `RoiToRGBAlgorithm`                               | `JIPipeFontParameter labelFont`, label foreground = `labelFont.getColor()` | `JIPipeFontFamilySizeStyleParameter labelFont` + new `OptionalColorParameter labelColor` (default **disabled**)       |
-| `DrawTextRoiAlgorithm`                            | `JIPipeFontParameter font`                                                 | `JIPipeFontFamilySizeStyleParameter font` (color was already from `VisualLocationROIProperties` — no behavior change) |
+| `DrawTextRoiAlgorithm`                            | `JIPipeFontParameter font`                                                 | `JIPipeFontFamilySizeStyleParameter font` (color was already from `VisualLocationROIProperties` - no behavior change) |
 | `TableToTextROIAlgorithm`                         | `JIPipeFontParameter font`                                                 | `JIPipeFontFamilySizeStyleParameter font` (same)                                                                      |
 | `DrawScaleBarAlgorithm` `TextSettings`            | `JIPipeFontParameter font`                                                 | `JIPipeFontFamilySizeStyleColorParameter font`                                                                        |
 | `DrawScaleBarRoiAlgorithm` `TextSettings`         | `JIPipeFontParameter font`                                                 | `JIPipeFontFamilySizeStyleColorParameter font`                                                                        |
@@ -127,7 +127,7 @@ concrete value via the access's field class, so the base works unchanged.
 
 The label foreground becomes: **`labelColor` when enabled, otherwise the ROI's
 effective line color** (i.e. `overrideLineColor` if enabled, else
-`roi.getStrokeColor()` — the exact color the ROI outline is drawn with).
+`roi.getStrokeColor()` - the exact color the ROI outline is drawn with).
 
 `RoiDrawer` today takes one fixed `labelForeground` `Color`. It gains a
 label-color mode:
@@ -222,15 +222,15 @@ The branch is unmerged, so the only real-world projects are **pre-#1339 legacy**
   type (color section absent) through a
   synthetic showcase; VLM-confirmed.
 
-## Decisions (all resolved — approved for implementation)
+## Decisions (all resolved - approved for implementation)
 
 1. **Resolved (2026-10-28):** rename `JIPipeFontParameter` →
    `JIPipeFontFamilySizeStyleColorParameter` and move it to the new
    `jipipe:font-family-size-style-color` ID (the development `jipipe:font` ID is
-   dropped — branch unmerged, per user ruling).
-2. **Resolved (2026-10-28):** include **all four** classes now — including the two
+   dropped - branch unmerged, per user ruling).
+2. **Resolved (2026-10-28):** include **all four** classes now - including the two
    currently unused (`JIPipeFontFamilySizeParameter`,
-   `JIPipeFontFamilySizeColorParameter`) — to complete the combination set.
+   `JIPipeFontFamilySizeColorParameter`) - to complete the combination set.
 3. **Resolved (2026-10-28):** `RoiToRGBAlgorithm` fresh-node default = label
    follows the ROI line color, overridable by the new `labelColor`. Confirmed by
    the user.

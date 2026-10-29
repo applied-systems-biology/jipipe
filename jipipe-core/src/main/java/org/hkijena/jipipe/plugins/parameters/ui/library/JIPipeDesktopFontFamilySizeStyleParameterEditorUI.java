@@ -17,7 +17,7 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.JIPipeFontFamily
 
 /**
  * Thin editor for the {@link JIPipeFontFamilySizeStyleParameter} (family +
- * size + style) — the adaptive base shows the Family, Size and Style rows
+ * size + style) - the adaptive base shows the Family, Size and Style rows
  * (no color section, #1339 Task 2).
  */
 public class JIPipeDesktopFontFamilySizeStyleParameterEditorUI extends JIPipeDesktopFontParameterEditorUI<JIPipeFontFamilySizeStyleParameter> {

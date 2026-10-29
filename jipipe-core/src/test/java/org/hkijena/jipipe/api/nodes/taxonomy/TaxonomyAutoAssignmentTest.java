@@ -38,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * IJ2/CLIJ nodes, plus the behavior-parity corpus of the weighted name
  * inference (now served by the taxonomy service: the display names of the
  * retired {@code functionForName} tests are inferred on the live registry,
- * whose fallback is {@link MiscellaneousUnassignedFunction} — the deliberate
+ * whose fallback is {@link MiscellaneousUnassignedFunction} - the deliberate
  * 6.0.0 behavior change from the old Miscellaneous default).
  */
 class TaxonomyAutoAssignmentTest {

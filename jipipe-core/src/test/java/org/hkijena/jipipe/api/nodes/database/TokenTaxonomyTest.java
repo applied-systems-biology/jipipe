@@ -67,7 +67,7 @@ import static org.junit.jupiter.api.Assertions.*;
  *     parent "Segmentation"'s only word) ⇒ {6, 4}; "images" (top word) ⇒ {2};</li>
  * <li><b>Secondary leaf</b> "ROI measurements" (parent "ROIs", top none):
  *     "roi", "measurements" (leaf words) ⇒ {6}; the parent/top words are
- *     deliberately NOT walked — "rois" must be absent (no ancestor
+ *     deliberately NOT walked - "rois" must be absent (no ancestor
  *     double-add for secondary functions);</li>
  * <li><b>Framework</b> "Cellpose 4" / "CP4": "cellpose", "4" ⇒ {6}, "cp4" ⇒ {5};</li>
  * <li><b>Merged tags</b> "cells" (node-level) + "cell-segmentation"
@@ -121,7 +121,7 @@ class TokenTaxonomyTest {
     /**
      * Every word that the converted test node's taxonomy would contribute
      * (function-name words, function tags, framework words, node-level
-     * tag), lowercased — the set the unconverted node must NOT carry.
+     * tag), lowercased - the set the unconverted node must NOT carry.
      */
     private static Set<String> taxonomyWords() {
         Set<String> words = new HashSet<>();
@@ -291,7 +291,7 @@ class TokenTaxonomyTest {
     /**
      * Brief case 2: an unconverted node (no function) yields the
      * pre-taxonomy token set minus the removed legacy category/menu token
-     * (Task 25) — the legacy name/description tokens are present, the
+     * (Task 25) - the legacy name/description tokens are present, the
      * category/menu token is absent, and NO taxonomy word (function,
      * framework, or tag) appears.
      */
@@ -335,7 +335,7 @@ class TokenTaxonomyTest {
      * {@link SegmentationCellBasedFunction} (the real 3-level path
      * Images &gt; Segmentation &gt; Cell-based) plus the secondary
      * {@link RoiMeasurementsFunction} (a different branch: ROIs &gt; ROI
-     * measurements — its leaf words "roi"/"measurements" are unique to the
+     * measurements - its leaf words "roi"/"measurements" are unique to the
      * leaf level, while its parent word "rois" must NOT appear, proving
      * the secondary ancestor chain is not walked), framework
      * {@link Cellpose4Framework} ("Cellpose 4" / "CP4"), 3D spatial
@@ -369,7 +369,7 @@ class TokenTaxonomyTest {
     }
 
     /**
-     * An unconverted node: no taxonomy fields at all — no function, no
+     * An unconverted node: no taxonomy fields at all - no function, no
      * framework, no tags, no spatial dimensions. Since the legacy
      * node-type-category system was removed (Task 27), this is modeled by
      * an empty {@code @ConfigureJIPipeNode}.

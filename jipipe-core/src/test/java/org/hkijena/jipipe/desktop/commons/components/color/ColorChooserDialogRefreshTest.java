@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * Regression test for the color dialog's input plumbing (#1339 pass 2, S5
  * item 4). The dialog's {@code setColor()} previously set its re-entrancy
  * guard before calling {@code refresh()}, whose first line returned early when
- * the guard was already set — so rail/well input moved the handle but never
+ * the guard was already set - so rail/well input moved the handle but never
  * updated the hex field, the preview swatch, or the other wells. These tests
  * drive a synthetic press on a rail and on a well and assert the hex field
  * changes (i.e. {@code refresh()} ran to completion). They are AWT-backed, so

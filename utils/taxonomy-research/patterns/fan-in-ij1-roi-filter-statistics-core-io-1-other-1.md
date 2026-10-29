@@ -59,7 +59,7 @@ Project: `AIAgentTests/01-BasicWorkshop/JSC_2025_08_ROI_Labels_Filaments/Kidney/
 ## Template
 
 Proposed name `Filter 2D ROI by statistics fans in from 10 source ids (roles: core-io, other)`, menu path
-`Patterns/ROIs/Filter 2D ROI by statistics fans in from 10 source ids (roles: core-io, other)` (proposal only — not
+`Patterns/ROIs/Filter 2D ROI by statistics fans in from 10 source ids (roles: core-io, other)` (proposal only - not
 registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/fan-in-ij1-roi-filter-statistics-core-io-1-other-1.json`.
 

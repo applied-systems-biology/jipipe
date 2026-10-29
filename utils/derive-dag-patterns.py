@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Step C′ — pattern derivation: generate the sibling patterns the corpus
+"""Step C′ - pattern derivation: generate the sibling patterns the corpus
 under-covers (the (C) review's "what next" gap), grounded in the real node
 catalog, and gate them through the same naming rules as the mined set.
 
 Two generators:
 
-1. **Mechanical 2D<->3D twin swap** — a shipped pattern whose dimensioned
+1. **Mechanical 2D<->3D twin swap** - a shipped pattern whose dimensioned
    nodes are ALL in one dimension and each have a verified twin node is
    swappable into the other dimension. A twin pair is verified by
    ``is_twin_pair``: the two nodes' slot DATA-TYPE signatures are exact
@@ -13,7 +13,7 @@ Two generators:
    ``*-2d`` <-> ``*-3d``) and their names normalize to the same concept.
    Never by id guessing. Neutral (no-dimension) nodes pass through.
 
-2. **LLM "what next" sweep** — for each shipped pattern the model gets the
+2. **LLM "what next" sweep** - for each shipped pattern the model gets the
    pattern (name + description + nodes with their audited descriptions) and a
    capability catalog of nodes that could follow it, each with exact slot
    names + data types (extracted from the ``@AddJIPipeInputSlot`` /
@@ -26,7 +26,7 @@ Survivors are gated by a (C)-style judge prompt (no support heuristic, same
 four naming rules) and deduped structurally against the mined set and each
 other. Output: ``dag-derived.json`` in the same entry shape as
 ``dag-judgments.json`` so (D) merges shipped entries from both files.
-Provenance (``derivedFrom``, ``mechanism``) is recorded in the artifact only —
+Provenance (``derivedFrom``, ``mechanism``) is recorded in the artifact only -
 per the review decision, derived patterns ship as normal patterns.
 
 Usage (from the repository root):
@@ -130,7 +130,7 @@ def node_dimension(node: dict) -> str:
 
 def _name_concept(name: str) -> str:
     """Dimension-agnostic concept key of a node name (the ij1/ij3d ROI pairs
-    differ only in the dimension token — strip "ij1"/"ij3d" and bare "2d"/
+    differ only in the dimension token - strip "ij1"/"ij3d" and bare "2d"/
     "3d" tokens before digit removal so both sides normalize identically)."""
     s = (name or "").lower()
     s = s.replace("ij3d", "").replace("ij1", "")
@@ -194,13 +194,13 @@ def mechanical_swap(graph: dict, catalog: list, direction: str,
         return None  # not a pattern of the source dimension
     if any(d not in (None, source_dim) for d in dims):
         return None  # mixed / foreign dimension
-    # slot name lookup per (node id, data type), SEPARATE by direction — a
+    # slot name lookup per (node id, data type), SEPARATE by direction - a
     # source endpoint must resolve to the twin's OUTPUT slot for the swapped
     # data type and a target to its INPUT slot. Merging both directions
     # (inputs first, setdefault) made a source resolve to the twin's input
     # name whenever the twin has an input and an output of the same dimension
     # type with different names (the real ROI-statistics/morph/scale
-    # families: input "ROI", output "Output") — 10 broken edges in the first
+    # families: input "ROI", output "Output") - 10 broken edges in the first
     # full run.
     slot_by_dt_out = {}
     slot_by_dt_in = {}
@@ -251,7 +251,7 @@ def mechanical_swap(graph: dict, catalog: list, direction: str,
             names = slot_by_dt_in.get((t_new, swap_datatype(t_dt)), [])
             if names:
                 t_slot = names[0]
-        # (A) format edge keys are KEBAB-case (source-slot/target-slot) —
+        # (A) format edge keys are KEBAB-case (source-slot/target-slot) -
         # the mined graphs and the (D) deserialization read those. Writing
         # the remap to the snake_case keys silently kept the stale (2D) slot
         # names in the shipped edge (verified: import-roi-3d "Files").
@@ -265,7 +265,7 @@ def mechanical_swap(graph: dict, catalog: list, direction: str,
     # exist on the twin in the swapped graph. The remap only ever touches
     # swapped endpoints (neutral endpoints carry dimension-agnostic data
     # types, so the swap is the identity and the mined names are preserved
-    # verbatim — including on dynamic plot-table:* nodes whose real slot
+    # verbatim - including on dynamic plot-table:* nodes whose real slot
     # names are not source-verifiable, exactly as in the shipped source
     # patterns). A lookup miss on a swapped endpoint would otherwise ship a
     # stale name (verified: import-roi-3d "Files", stat nodes "ROI").
@@ -353,7 +353,7 @@ def validate_proposal(proposal: dict, catalog: dict) -> str:
 # --------------------------------------------------------------------------- #
 
 def structural_signature(graph: dict) -> tuple:
-    """(node-id multiset, canonical edge multiset) — LABEL-AGNOSTIC: node
+    """(node-id multiset, canonical edge multiset) - LABEL-AGNOSTIC: node
     instance labels are canonicalized by BFS from the sources (ties broken by
     node-info-id), so a derived pattern that is structurally the same as a
     mined one (or another derived one) collapses to the same signature even
@@ -432,9 +432,9 @@ def build_catalog(registry: list, source_slots: dict, functions: list = None) ->
     """Join registry.json nodes (slot data types) with slot names + a
     function branch. Slot names come from two trusted sources, in order:
     (1) the source ``@AddJIPipe*Slot`` annotations (``source_slots``: node id
-    -> {inputs: [(name, class)], outputs: [...]}) — authoritative for
+    -> {inputs: [(name, class)], outputs: [...]}) - authoritative for
     statically-registered nodes; (2) the registry dump's per-slot names
-    (``inputSlots``/``outputSlots`` with a ``name`` field) — authoritative
+    (``inputSlots``/``outputSlots`` with a ``name`` field) - authoritative
     for DYNAMICALLY-registered nodes (cLij2/clijx kernels), which have no
     source annotation to parse and cannot be dumped from code (the
     2026-10-19 re-sweep). A node with neither falls back to the class simple
@@ -475,11 +475,11 @@ def build_catalog(registry: list, source_slots: dict, functions: list = None) ->
             return by_dt
 
         if n["id"] in source_slots:
-            # source-verified (static node) — unchanged behavior
+            # source-verified (static node) - unchanged behavior
             in_map, out_map = join("inputs"), join("outputs")
             verified = True
         else:
-            # dynamically-registered (cLij2/clijx) — registry slot names
+            # dynamically-registered (cLij2/clijx) - registry slot names
             in_map, out_map = join_registry("inputs"), join_registry("outputs")
             verified = any((s.get("name") or "")
                            for s in (n.get("inputSlots", [])
@@ -530,7 +530,7 @@ def build_what_next_prompt(state: dict, catalog: list) -> str:
         f"- {n['name']}: {n.get('description', '')}" for n in p["nodes"])
     cat_lines = []
     for n in catalog:
-        cat_lines.append(f"- {n['id']} — {n['name']}")
+        cat_lines.append(f"- {n['id']} - {n['name']}")
         cat_lines.append("    inputs:  " + _slots_line(n, "inputs"))
         cat_lines.append("    outputs: " + _slots_line(n, "outputs"))
     cat = "\n".join(cat_lines)
@@ -544,20 +544,20 @@ Nodes (what each does):
 
 Given this pattern, what would an image analyst or biologist want to do NEXT
 with its output (or with similar data)? Propose up to {MAX_PROPOSALS_PER_PATTERN} NEW
-patterns — short, coherent chains of EXISTING nodes from the catalog below
+patterns - short, coherent chains of EXISTING nodes from the catalog below
 that extend or reuse this one.
 
 Good derivations look like:
 - converting the output to another useful form (e.g. a mask or label image to
   filaments, ROIs to filaments, filaments edited and converted back to ROIs,
   a mask to 2D or 3D filaments);
-- measuring the result and then ANNOTATING the data with the measurements —
+- measuring the result and then ANNOTATING the data with the measurements -
   plus a companion pattern that USES such annotations (filter, plot, split);
 - the same concept with a different plot type or a different bit depth where
   the catalog offers it;
 - a 2D variant of a 3D pattern or vice versa, when the catalog has the twin.
 
-Catalog (node id — name, with exact input/output data types and slot names):
+Catalog (node id - name, with exact input/output data types and slot names):
 {cat}
 
 Rules:
@@ -567,7 +567,7 @@ Rules:
   source -> target with exact slot names; the source's output data type must
   fit the target's input data type).
 - The new pattern must be a coherent, generalizable unit a user would want to
-  run — not an arbitrary chain.
+  run - not an arbitrary chain.
 - "name": plain outcome, two audiences (bioinformaticians AND biologists), no
   JIPipe internals. If it operates on ROIs, say "2D ROI" or "3D ROI".
 - "description": 1-2 sentences, what it takes in / does / produces.
@@ -627,7 +627,7 @@ def build_derived_gate_prompt(state: dict) -> str:
         f"- {n['name']}: {n.get('description', '')}" for n in p["nodes"])
     return f"""You are curating a library of reusable image-analysis pipeline patterns (JIPipe).
 
-The pattern described below was NOT observed in a user project — it was
+The pattern described below was NOT observed in a user project - it was
 DERIVED by a model that, thinking like an image analyst using the related
 patterns, proposed this chain of real, existing nodes. Judge it on the same
 bar as observed patterns.
@@ -650,12 +650,12 @@ Rules:
   that merely converts data type A to data type B with no analysis in between
   is fine ONLY if that conversion is itself a common need; arbitrary chains
   are "noise".
-- NAMING: two audiences — bioinformaticians AND biologists. Name the OUTCOME
+- NAMING: two audiences - bioinformaticians AND biologists. Name the OUTCOME
   in plain terms, never JIPipe internals ("annotated path", "slot", "graph",
   "compartment", "hyperstack").
 - If the pattern operates on ROIs, the name MUST say "2D ROI" or "3D ROI"
   (2D/3D ROIs are different data types, never a bare "ROI").
-- description: what it takes in, what it does, what it produces — plain first,
+- description: what it takes in, what it does, what it produces - plain first,
   technical second. Empty string if gate is "noise".
 """
 
@@ -680,7 +680,7 @@ def mechanical_twin_entry(source_entry: dict, graph: dict, direction: str,
     16/26 verified twins while shipping others. The name/description inherit
     the source's (already (C)-reviewed, dimension-qualified) text with the
     2D/3D tokens swapped. All node names are the canonical registry display
-    names (a derived pattern is assembled fresh — the source pattern's canvas
+    names (a derived pattern is assembled fresh - the source pattern's canvas
     labels do not belong in it). Returns None if not swappable."""
     node_descs = node_descs or {}
     if twins is None:
@@ -763,7 +763,7 @@ def to_pattern_graph(graph: dict, comp: str = "derived") -> dict:
     """Wrap a {nodes:{k:{jipipe:node-info-id}}, edges:[...]} graph into the
     (A) minimal-graph format every shipped pattern carries: a
     jipipe:graph-compartment per node and a location/<compartment>/x|y pair
-    under jipipe:metadata-v1 (plan 3.4 — (D) guards its presence). x is the
+    under jipipe:metadata-v1 (plan 3.4 - (D) guards its presence). x is the
     longest-path depth, y the per-depth order, so the layout is
     deterministic."""
     depth = bfs_depth(graph)
@@ -856,7 +856,7 @@ def merge_derived_outputs(shards: list, fresh_twins: list,
                           mined_sigs: set = None) -> list:
     """Combine the LLM what-next entries from the shards with a FRESH
     recomputation of the deterministic twins (the in-shard twins may have
-    been produced by an older code version — the real incident: the podman
+    been produced by an older code version - the real incident: the podman
     run predates the kebab-case slot-remap fix, so 2 import-roi-3d twins
     carried the stale 2D slot name). One representative per structural
     signature: a mined match is dropped; otherwise prefer a gate-SHIPPED
@@ -891,7 +891,7 @@ def merge_derived_outputs(shards: list, fresh_twins: list,
 def recompute_twins(shipped: list, clusters: dict, catalog: list,
                     node_descs: dict, twins: dict) -> list:
     """The deterministic twin entries for all shipped patterns, both
-    directions (pure function — no LLM — so it is safe to re-run at merge
+    directions (pure function - no LLM - so it is safe to re-run at merge
     time with the current code)."""
     out = []
     seen = set()
@@ -1035,7 +1035,7 @@ def _proposal_to_graph(proposal, cat_by_id: dict = None):
 
 def _pattern_data_types(graph, by_id):
     """The data types flowing OUT of the pattern's nodes (for catalog
-    consumer selection) — plus the ones flowing in, as context."""
+    consumer selection) - plus the ones flowing in, as context."""
     dts = set()
     for v in graph["nodes"].values():
         n = by_id.get(v["jipipe:node-info-id"])
@@ -1091,7 +1091,7 @@ def cmd_run(limit: int, start: int = 0, count: int = 0,
             J.save_cache(cache_path or CACHE, cache)
         return v
 
-    candidates = []  # (cluster-like dict, provenance) — what-next only
+    candidates = []  # (cluster-like dict, provenance) - what-next only
     rejected = []
     results = []
     seen_sigs = set(mined_sigs)
@@ -1108,7 +1108,7 @@ def cmd_run(limit: int, start: int = 0, count: int = 0,
         cand["provenance"] = provenance
         candidates.append(cand)
 
-    # ---- 1. mechanical twin swap (deterministic — the source pattern was
+    # ---- 1. mechanical twin swap (deterministic - the source pattern was
     #         already judged general, so its verified twin ships by
     #         construction; no LLM re-gate, no 16/26 false "noise") ----
     n_mech = 0
@@ -1177,7 +1177,7 @@ def cmd_run(limit: int, start: int = 0, count: int = 0,
     out = {"_note": ("Derived patterns (C'): the 'what next' siblings the mined "
                      "set under-covers. mechanism=twin-swap entries are "
                      "deterministic (verified structural equivalent of a shipped "
-                     "pattern — no LLM re-gate); mechanism=what-next entries "
+                     "pattern - no LLM re-gate); mechanism=what-next entries "
                      "went through the (C) gate. provenance is recorded here "
                      "only; they ship as normal patterns in (D). support is 0 "
                      "(derived, not observed). The graph in state.pattern is "
@@ -1226,7 +1226,7 @@ def selftest():
 def cmd_merge(shard_paths: list) -> int:
     """Merge sharded run outputs into dag-derived.json. The deterministic
     mechanical twins are RECOMPUTED with the current code (the in-shard
-    twins may predate a fix — incident: the podman run predates the
+    twins may predate a fix - incident: the podman run predates the
     kebab-case slot-remap fix, so 2 import-roi-3d twins carried the stale 2D
     slot name "Files"); the LLM what-next entries come from the shards.
     One representative per structural signature, shipped preferred."""
@@ -1263,7 +1263,7 @@ def cmd_merge(shard_paths: list) -> int:
     out = {"_note": ("Derived patterns (C'): the 'what next' siblings the mined "
                      "set under-covers. mechanism=twin-swap entries are "
                      "deterministic (verified structural equivalent of a shipped "
-                     "pattern — no LLM re-gate); mechanism=what-next entries "
+                     "pattern - no LLM re-gate); mechanism=what-next entries "
                      "went through the (C) gate. provenance is recorded here "
                      "only; they ship as normal patterns in (D). support is 0 "
                      "(derived, not observed). The graph in state.pattern is "

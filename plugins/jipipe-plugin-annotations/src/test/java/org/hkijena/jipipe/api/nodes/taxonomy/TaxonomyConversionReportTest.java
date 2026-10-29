@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Per-module conversion gate for the node taxonomy (phase 1b, task 14;
- * Review Focus #6 — "a conversion batch must not leave a node without a
+ * Review Focus #6 - "a conversion batch must not leave a node without a
  * function, or it vanishes from the browser").
  * <p>
  * <b>Gated:</b> this test is skipped unless the system property
@@ -52,7 +52,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *   -Djipipe.taxonomy.report.module=<package-prefix>
  * }</pre>
  * The project's Surefire (3.5.3) forwards user {@code -D} properties into
- * the forked test JVM, so a plain {@code -D} is sufficient — no
+ * the forked test JVM, so a plain {@code -D} is sufficient - no
  * {@code argLine} wiring needed.
  * <p>
  * <b>One prefix per invocation.</b> The gate filters by a single package
@@ -61,20 +61,20 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * and {@code org.hkijena.jipipe.plugins}) is checked with one invocation per
  * prefix.
  * <p>
- * <b>Module boundary — copy this test into plugin modules!</b>
+ * <b>Module boundary - copy this test into plugin modules!</b>
  * {@code JIPipe.ensureInstance()} only initializes plugins on the classpath
  * of the running module. This test lives in jipipe-core, where it gates
  * core's own nodes. Plugin modules depend on core (not vice versa), so
  * {@code mvn test -pl jipipe-core} cannot see their nodes. For each
  * 19.x plugin conversion batch, <b>copy-paste this test file unchanged into
- * the plugin module's test tree</b> (same package, same file name — it is
+ * the plugin module's test tree</b> (same package, same file name - it is
  * deliberately self-contained: only jipipe-core API + JUnit 5 imports) and
  * run the gate with that module's package prefix. Do not re-derive the test
  * per batch; this class is the single source.
  * <p>
  * <b>Registration caveat:</b> the gate only sees nodes that are actually
  * <i>registered</i> in the running module's classpath. A node class with
- * {@code @ConfigureJIPipeNode} is not automatically registered — it must be
+ * {@code @ConfigureJIPipeNode} is not automatically registered - it must be
  * referenced by a plugin's {@code registerNodeType(...)} call (or a
  * registration task). E.g. in jipipe-core the comment node
  * ({@code jipipe:comment}) is registered by the <i>utils</i> plugin, and the
@@ -124,7 +124,7 @@ class TaxonomyConversionReportTest {
 
         // The gate itself: every node of this module must be converted
         // (have a primary function). Filter by instance-class package
-        // prefix — registration path (annotation vs. programmatic) is
+        // prefix - registration path (annotation vs. programmatic) is
         // irrelevant here.
         List<String> unassignedInModule = report.unassignedNodeIds().stream()
                 .filter(nodeId -> {

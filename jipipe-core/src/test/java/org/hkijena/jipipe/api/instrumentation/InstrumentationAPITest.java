@@ -52,7 +52,7 @@ class InstrumentationAPITest {
     @Test
     void queryCompartments_returnsCompartmentsAfterAdd() {
         assumeTrue(hasNodeType("jipipe:project-compartment"),
-                "jipipe:project-compartment node type not registered — skipping");
+                "jipipe:project-compartment node type not registered - skipping");
         JIPipeProject project = new JIPipeProject();
         InstrumentationContext ctx = createContext(project);
 
@@ -107,6 +107,6 @@ class InstrumentationAPITest {
         assertTrue(result.has("results"));
         // Results may be empty in minimal test environments where few plugins are loaded
         assumeTrue(result.get("results").size() > 0,
-                "No node types found for 'data' — minimal test environment");
+                "No node types found for 'data' - minimal test environment");
     }
 }

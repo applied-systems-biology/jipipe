@@ -59,7 +59,7 @@ compartment `Glomeruli`.
 ## Template
 
 Proposed name `Find particles 2D fans out to 5 target ids (roles: core-io, other)`, menu path
-`Patterns/Images/Find particles 2D fans out to 5 target ids (roles: core-io, other)` (proposal only — not registered).
+`Patterns/Images/Find particles 2D fans out to 5 target ids (roles: core-io, other)` (proposal only - not registered).
 `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/fan-out-ij1-analyze-find-particles2d-core-io-1-other-1.json`.
 

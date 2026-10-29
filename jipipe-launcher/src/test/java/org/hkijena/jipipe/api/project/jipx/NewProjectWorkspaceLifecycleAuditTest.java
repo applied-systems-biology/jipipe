@@ -44,11 +44,11 @@ import static org.junit.jupiter.api.Assertions.*;
  *     ride along into every container written afterwards, whatever happens
  *     to the project's work directory.</li>
  *     <li><b>Workspace binding:</b> the workspace binds on first access and
- *     is never re-bound or moved — payload content can never be lost by a
+ *     is never re-bound or moved - payload content can never be lost by a
  *     directory change.</li>
  *     <li><b>Temp-base cleanup:</b> closing the project deletes EVERY
  *     temporary base it ever used. The temp base re-resolves when the work
- *     directory changes (e.g. "Save As" into another directory — the
+ *     directory changes (e.g. "Save As" into another directory - the
  *     migration flow); without tracking, the earlier base (with the
  *     workspace and its payloads) would leak on disk.</li>
  * </ul>
@@ -62,7 +62,7 @@ public class NewProjectWorkspaceLifecycleAuditTest {
 
     /**
      * Lists all jipx-workspace directories under a directory tree
-     * (recursively) — used to detect leaked workspaces.
+     * (recursively) - used to detect leaked workspaces.
      */
     private static List<Path> listWorkspaceDirs(Path root) throws Exception {
         if (!Files.isDirectory(root)) {
@@ -131,8 +131,8 @@ public class NewProjectWorkspaceLifecycleAuditTest {
     /**
      * The migration flow: a .jipx opened in one directory, then saved
      * ("Save As") into ANOTHER directory. The workspace (with its payloads)
-     * stays where it bound — the payloads still ride along into the new
-     * container — and close() must clean BOTH directories' temp trees.
+     * stays where it bound - the payloads still ride along into the new
+     * container - and close() must clean BOTH directories' temp trees.
      */
     @Test
     public void saveAsToOtherDirectoryKeepsPayloadsAndCleansUp(@TempDir Path dir) throws Exception {
@@ -162,7 +162,7 @@ public class NewProjectWorkspaceLifecycleAuditTest {
         Path openedPayload = opened.getWorkspace().getBaseDirectory().resolve("data").resolve("payload.tiff");
         assertTrue(Files.isRegularFile(openedPayload), "the payload must be extracted into the workspace on open");
 
-        // "Save As" into dir2: the work directory changes — the workspace
+        // "Save As" into dir2: the work directory changes - the workspace
         // must NOT re-bind or lose the payload (only-compress).
         Path openedWorkspaceBefore = opened.getWorkspace().getBaseDirectory();
         opened.setWorkDirectory(dir2);
@@ -173,7 +173,7 @@ public class NewProjectWorkspaceLifecycleAuditTest {
         assertTrue(zipContains(target, "data/payload.tiff"), "the payload must ride along into the new container");
         assertEquals("PAYLOAD-CONTENT-2", new String(extractZipEntry(target, "data/payload.tiff"), StandardCharsets.UTF_8));
 
-        // Closing must clean up BOTH directories' temporary trees — the
+        // Closing must clean up BOTH directories' temporary trees - the
         // temp base re-resolved to dir2 when the work directory changed,
         // but the dir1 workspace (with the payload) must not leak.
         opened.close(JIPipeProgressInfo.SILENT);
@@ -207,7 +207,7 @@ public class NewProjectWorkspaceLifecycleAuditTest {
         assertTrue(zipContains(target, "data/payload.tiff"));
 
         // The workspace stays bound to the global base (payloads never
-        // move) — and close() must clean it up.
+        // move) - and close() must clean it up.
         assertEquals(workspaceDir, project.getWorkspace().getBaseDirectory());
         project.close(JIPipeProgressInfo.SILENT);
         assertFalse(Files.exists(workspaceDir), "close() must clean the globally-bound workspace");

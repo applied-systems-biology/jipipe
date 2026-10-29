@@ -48,18 +48,18 @@ import static org.assertj.core.api.Assertions.assertThat;
  * <p>
  * <ul>
  * <li>{@link NodeEntryContextMenu#specs(JIPipeNodeDatabaseEntry, java.util.Set)} is the
- * SINGLE source of truth for which menu items a node-entry row gets, in order —
+ * SINGLE source of truth for which menu items a node-entry row gets, in order -
  * the same method serves the node-list rows AND the compact-mode tree leaves,
  * so both surfaces are structurally in parity;</li>
  * <li>the scope gating of the template quick actions (Global/Project get
  * Edit/Delete, System is read-only);</li>
  * <li>{@link NodeEntryContextMenu#buildJPopupMenu(List, Map)} renders only the
- * items whose actions are actually supplied — the seam Task 9 closes by
+ * items whose actions are actually supplied - the seam Task 9 closes by
  * supplying the template management actions (a spec without an action is
  * SKIPPED, not rendered disabled).</li>
  * </ul>
  * Boots the {@link JIPipe} instance so real entries (a registered stub node +
- * template entries) can be constructed. Never shows a menu — a headless
+ * template entries) can be constructed. Never shows a menu - a headless
  * {@link JPopupMenu} is only built and inspected, never displayed.
  */
 class NodeEntryContextMenuTest {
@@ -104,7 +104,7 @@ class NodeEntryContextMenuTest {
 
     /**
      * A plain (non-template) node database entry built from the registered
-     * stub node — the common case: base items only.
+     * stub node - the common case: base items only.
      */
     private static JIPipeNodeDatabaseEntry anyNodeEntry() {
         return nodeEntry(PLAIN_ENTRY_ID);
@@ -112,7 +112,7 @@ class NodeEntryContextMenuTest {
 
     /**
      * A plain (non-template) node database entry with the given (distinct)
-     * id — needed to build a multi-selection where some entries are pinned
+     * id - needed to build a multi-selection where some entries are pinned
      * and some are not (the mixed pin/unpin display case).
      */
     private static JIPipeNodeDatabaseEntry nodeEntry(String id) {
@@ -137,7 +137,7 @@ class NodeEntryContextMenuTest {
         // The SAME specs() method is the single source of truth for a single
         // entry. The tree leaves call specs(entry, pinned) directly, and the
         // list surface's specsForSelection DELEGATES to specs(first, pinned)
-        // for a single-entry selection — so a single-selection list row and a
+        // for a single-entry selection - so a single-selection list row and a
         // tree leaf of the same entry yield the identical ordered item set.
         JIPipeNodeDatabaseEntry nodeEntry = anyNodeEntry();
         List<NodeEntryContextMenu.MenuItemSpec> treeSpecs = NodeEntryContextMenu.specs(nodeEntry, java.util.Set.of());
@@ -157,7 +157,7 @@ class NodeEntryContextMenuTest {
         // MIXED multi-selection (some pinned, some not). The list surface's
         // specsForSelection must restore that: pin-then-unpin, in the same
         // group, while keeping the other base items in place. (specs() itself
-        // stays single-entry and shows only the first entry's — the tree's
+        // stays single-entry and shows only the first entry's - the tree's
         // source of truth, unchanged.)
         JIPipeNodeDatabaseEntry a = nodeEntry("node-entry-menu-test:plain-node-a");
         JIPipeNodeDatabaseEntry b = nodeEntry("node-entry-menu-test:plain-node-b");
@@ -246,7 +246,7 @@ class NodeEntryContextMenuTest {
     void buildJPopupMenuSkipsUnsuppliedActions() {
         // A template entry's spec includes "edit", but the actions map
         // supplies ONLY the base actions (the Task-7 state): the rendered
-        // menu must omit the unsupplied template items — not render them
+        // menu must omit the unsupplied template items - not render them
         // disabled. This is the seam Task 9 closes by adding its actions.
         CreateNewNodesByTemplateDatabaseEntry t = templateEntry(TemplateScope.Global);
         List<NodeEntryContextMenu.MenuItemSpec> specs = NodeEntryContextMenu.specs(t, java.util.Set.of());

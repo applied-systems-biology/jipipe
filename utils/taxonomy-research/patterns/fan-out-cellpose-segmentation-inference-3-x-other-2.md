@@ -58,7 +58,7 @@ Project: `AIAgentTests/03-ExampleWorkflows/AdrianFeile_VibrioOnChip_04.jip` (rel
 ## Template
 
 Proposed name `Cellpose segmentation (3.x) fans out to 5 target ids (roles: other)`, menu path
-`Patterns/Machine learning/Cellpose segmentation (3.x) fans out to 5 target ids (roles: other)` (proposal only — not
+`Patterns/Machine learning/Cellpose segmentation (3.x) fans out to 5 target ids (roles: other)` (proposal only - not
 registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/fan-out-cellpose-segmentation-inference-3-x-other-2.json`.
 

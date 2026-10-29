@@ -20,12 +20,12 @@ screenshot harness + VLM).
 
 ## Global Constraints
 
-- **Java 21** (`export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64` — the system Java is 25).
-- **Registration IDs are stable string literals** — the exact four, verbatim:
+- **Java 21** (`export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64` - the system Java is 25).
+- **Registration IDs are stable string literals** - the exact four, verbatim:
   `jipipe:font-family-size`, `jipipe:font-family-size-style`, `jipipe:font-family-size-color`,
   `jipipe:font-family-size-style-color`.
   The development ID `jipipe:font` is **deleted** (branch unmerged; user ruling).
-- **No Swing-UI-structure tests** (project policy) — editor behavior is verified through the screenshot harness + VLM;
+- **No Swing-UI-structure tests** (project policy) - editor behavior is verified through the screenshot harness + VLM;
   pure logic (values, migration, drawer mode) gets JUnit tests.
 - **Do not touch** `ImageJLegacyPatcherLauncherSessionListener` registrations; the ij plugin already has JUnit 5 + the
   launcher-listener service file.
@@ -36,22 +36,22 @@ screenshot harness + VLM).
 
 ## Review Focus
 
-1. **Pre-#1339 legacy project load** — a node JSON with split keys (`label-font-family`, `label-size`,
+1. **Pre-#1339 legacy project load** - a node JSON with split keys (`label-font-family`, `label-size`,
    `label-foreground`, `font-family`, `font-style`, `text-settings/text-color`, `title-style/font-family`…) must load
    into the right concrete class, idempotently (second load no-ops). Pinned by the migration tests in Tasks 3 (prefixed
    canvas-note keys), 5 (draw-text keys + no color field), and 8 (RoiToRGB keys + label-foreground → labelColor).
-2. **`field-class-id: "jipipe:font"` (branch-era dev saves)** — loading one must fail with the *registry* error
+2. **`field-class-id: "jipipe:font"` (branch-era dev saves)** - loading one must fail with the *registry* error
    `Unknown parameter type ID`, not a ClassCastException (the type is simply gone). Pinned by Task 2 Step 1
    (`FontRegistrationIdsTest`).
-3. **`RoiDrawer` standalone usages unchanged** — image-viewer settings / ROI manager build a `RoiDrawer` without
+3. **`RoiDrawer` standalone usages unchanged** - image-viewer settings / ROI manager build a `RoiDrawer` without
    touching the new mode; their labels must stay `FIXED`/white. Pinned by Task 7 (`defaultModeIsFixed`) + the existing
    `RoiDrawer` copy-constructor contract.
-4. **Per-ROI label color correctness in `RoiToRGBAlgorithm`** — with `labelColor` disabled and ROIs of different stroke
+4. **Per-ROI label color correctness in `RoiToRGBAlgorithm`** - with `labelColor` disabled and ROIs of different stroke
    colors, each label uses *its own* ROI's line color (override-aware); a single fixed color would be the bug. Pinned by
    Task 7's `fromRoiLineUsesTheRoisOwnLineColor` (two ROIs).
-5. **Adaptive editor must not offer controls a class lacks** — a size-style value must not expose a color section (the
+5. **Adaptive editor must not offer controls a class lacks** - a size-style value must not expose a color section (the
    color would be silently dropped/ignored), a family-size value must not expose style toggles. Pinned by Task 2 Step 7
-   (VLM) — this is the spec's core contract.
+   (VLM) - this is the spec's core contract.
 
 ---
 
@@ -97,9 +97,9 @@ public class JIPipeFontFamilySizeColorParameter implements JIPipeFontValue, JIPi
   `public static String defaultFamily()`,
   `public static int styleNameToFlags(String styleName)`,
   `public static Color legacyColor(com.fasterxml.jackson.databind.JsonNode colorNode)`
-  — **copied** from the current `JIPipeFontParameter` (the old class keeps its own copies until Task 2 deletes it; the 3
+  - **copied** from the current `JIPipeFontParameter` (the old class keeps its own copies until Task 2 deletes it; the 3
   style-less/color-less classes call `JIPipeFontFamilySizeStyleParameter.defaultFamily()`).
-- Migration helper, one **concrete static per class** (no generics — each
+- Migration helper, one **concrete static per class** (no generics - each
   returns its own type; Task 2 gives the renamed full class the same):
   `public static JIPipeFontFamilySizeStyleParameter fromLegacyKeys(JsonNode json, String familyKey, String sizeKey, String styleKey, String colorKey, int defaultSize)`
   (same signature shape on the other classes, each returning its own type).
@@ -108,11 +108,11 @@ public class JIPipeFontFamilySizeColorParameter implements JIPipeFontValue, JIPi
   migration entry every node calls.
 - The size-style class additionally gets the 3-arg
   `public void migrateFrom(String family, int size, int style)` (the no-color
-  variant of the current class's `migrateFrom`) — nodes set their fresh defaults
+  variant of the current class's `migrateFrom`) - nodes set their fresh defaults
   with it. The full (renamed, Task 2) class keeps the existing 4-arg
   `migrateFrom(String family, int size, int style, Color color)`.
 
-- [ ] **Step 1: Write the failing test** — `FontParameterFamilyTest` (same package):
+- [ ] **Step 1: Write the failing test** - `FontParameterFamilyTest` (same package):
     - `sizeStyleRoundTrip()`: `JIPipeFontFamilySizeStyleParameter` with family "DejaVu Sans", size 24, style
       `BOLD|ITALIC` → serialize/deserialize via `JsonUtils.getObjectMapper()` → `assertEquals`; assert the JSON object
       has `family`/`size`/`style` keys and **no `"color"` key**.
@@ -130,7 +130,7 @@ public class JIPipeFontFamilySizeColorParameter implements JIPipeFontValue, JIPi
 
 Run:
 `cd /data/src/jipipe-3 && export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64 && mvn -pl jipipe-core test -Dtest=FontParameterFamilyTest`
-Expected: compile error — classes do not exist yet.
+Expected: compile error - classes do not exist yet.
 
 - [ ] **Step 3: Implement** the 3 interfaces + 3 classes + `fromLegacyKeys` per the Interfaces block. Each class is a
   plain Jackson value: non-null fields with defaults (family = `defaultFamily()`, size 12, style `Font.PLAIN`, color
@@ -142,13 +142,13 @@ Expected: compile error — classes do not exist yet.
 - [ ] **Step 4: Run test to verify it passes, then the full suite**
 
 Run: `mvn -pl jipipe-core test -Dtest=FontParameterFamilyTest` then `mvn -pl jipipe-core test`
-Expected: both green (additive change — nothing else touched).
+Expected: both green (additive change - nothing else touched).
 
 - [ ] **Step 5: Commit**
 
 ```bash
 git add jipipe-core/src
-git commit -m "feat(core): font parameter family — interfaces + family-size / family-size-style / family-size-color classes (#1339)"
+git commit -m "feat(core): font parameter family - interfaces + family-size / family-size-style / family-size-color classes (#1339)"
 ```
 
 ---
@@ -161,7 +161,7 @@ git commit -m "feat(core): font parameter family — interfaces + family-size / 
   `jipipe-core/src/main/java/org/hkijena/jipipe/plugins/parameters/library/primitives/JIPipeFontParameter.java` →
   `JIPipeFontFamilySizeStyleColorParameter.java` (class renamed; implement
   `JIPipeFontValue, JIPipeFontStyleCapable, JIPipeFontColorCapable`; add `fromLegacyKeys` identical to Task 1's pattern;
-  **delete** the now-duplicated `defaultFamily`/`styleNameToFlags`/`legacyColor` — delegate to
+  **delete** the now-duplicated `defaultFamily`/`styleNameToFlags`/`legacyColor` - delegate to
   `JIPipeFontFamilySizeStyleParameter`'s; drop the old `composeFromLegacy` pair in favor of `fromLegacyKeys`)
 - Modify: `jipipe-core/src/main/java/org/hkijena/jipipe/plugins/parameters/StandardParametersPlugin.java:359-365` (the
   `jipipe:font` registration)
@@ -182,16 +182,16 @@ git commit -m "feat(core): font parameter family — interfaces + family-size / 
 - Produces:
     - `StandardParametersPlugin` registers **four** types via the existing
       `registerParameterType(id, clazz, archetype, instanceCreator, copyCreator, name, description, editorUI)`
-      overload — IDs verbatim per Global Constraints, all `JIPipeParameterArchetype.Value`, names "Font (family + size)
+      overload - IDs verbatim per Global Constraints, all `JIPipeParameterArchetype.Value`, names "Font (family + size)
       ", "Font (family + size + style)", "Font (family + size + color)", "Font (family + size + style + color)", each →
       its thin editor. The `jipipe:font` registration is **deleted**.
-    - `JIPipeDesktopFontParameterEditorUI<T extends JIPipeFontValue>` — generic base; constructor
+    - `JIPipeDesktopFontParameterEditorUI<T extends JIPipeFontValue>` - generic base; constructor
       `(Class<T> clazz, InitializationParameters)`; keeps the `public JComponent getPopoutContent()` seam (the harness
       depends on it) and the `previewBackground`/`SAMPLE_TEXT_PREFIX` live-size logic (already on the branch).
     - Four thin editors: `JIPipeDesktopFontFamilySizeParameterEditorUI`, `…SizeStyle…`, `…SizeColor…`,
       `…SizeStyleColor…`, each one constructor.
 
-- [ ] **Step 1: Write the failing test** — `FontRegistrationIdsTest`: after `JIPipe.ensureInstance()`, for each of the 4
+- [ ] **Step 1: Write the failing test** - `FontRegistrationIdsTest`: after `JIPipe.ensureInstance()`, for each of the 4
   IDs assert `JIPipe.getParameterTypes().getInfoById(id) != null` and `getFieldClass()` equals the expected class;
   assert `getInfoById("jipipe:font") == null` (Review Focus #2: the dev ID is gone).
 
@@ -206,11 +206,11 @@ Expected: FAIL (IDs not registered).
 - [ ] **Step 4: Register the 4 types** in `StandardParametersPlugin` (replace the single `jipipe:font` block) with the 4
   thin editors (make the current editor generic + gate: in `getPopoutContent()`,
   `boolean hasStyle = getParameter() instanceof JIPipeFontStyleCapable;` /
-  `boolean hasColor = getParameter() instanceof JIPipeFontColorCapable;` — Style row only when `hasStyle`, Color row
+  `boolean hasColor = getParameter() instanceof JIPipeFontColorCapable;` - Style row only when `hasStyle`, Color row
   only when `hasColor`; the preview auto-contrast color = `((JIPipeFontColorCapable) getParameter()).getColor()` when
   `hasColor`, else `Color.BLACK`).
 
-- [ ] **Step 5: Rename all remaining jipipe-core call sites** — `DefaultTextBoxGraphCanvasNote` (fields,
+- [ ] **Step 5: Rename all remaining jipipe-core call sites** - `DefaultTextBoxGraphCanvasNote` (fields,
   `titleFontWithSize`, its `composeFromLegacy` → `fromLegacyKeys`), the two test files.
   `grep -rn 'JIPipeFontParameter\b' jipipe-core/src/main jipipe-core/src/test` must return nothing.
 
@@ -219,7 +219,7 @@ Expected: FAIL (IDs not registered).
 Run: `mvn -pl jipipe-core test`
 Expected: green (baseline 622 + new `FontRegistrationIdsTest`; renamed tests pass).
 
-- [ ] **Step 7: VLM adaptivity check (Review Focus #5)** — the core editor is generic; verify the full type still
+- [ ] **Step 7: VLM adaptivity check (Review Focus #5)** - the core editor is generic; verify the full type still
   renders all 4 sections: `cd /tmp/opencode/1339 && ./run.sh /tmp/opencode/1339/font9a --only panel-font,popup-font`
   then `da_describe_image`: preview "Aa Label text 24", popout rows Family/Size/Style/Color. (The size-style variant
   showcase comes in Task 9.)
@@ -247,12 +247,12 @@ git commit -m "feat(core): font family registration (4 IDs, drop jipipe:font) + 
 - Consumes: `JIPipeFontFamilySizeStyleColorParameter.fromLegacyKeys` (Task 2).
 - Produces: none beyond the test.
 
-- [ ] **Step 1 (TDD): add `canvasNoteStyleMigratesPrefixedKeys`** to `FontParameterFamilyTest` — a JSON object with
+- [ ] **Step 1 (TDD): add `canvasNoteStyleMigratesPrefixedKeys`** to `FontParameterFamilyTest` - a JSON object with
   `title-style/font-family: "Dialog"`, `title-style/font-size: 18`, `content-style/color: "#000000"` →
   `JIPipeFontFamilySizeStyleColorParameter.fromLegacyKeys(json, "title-style/font-family", "title-style/font-size", "title-style/font-style", "title-style/color", 18)`
   yields family "Dialog", size 18, color black, style PLAIN. (This is the exact key set + prefix the node's
-  `onDeserialized` uses — if the node's keys ever drift, this test's inputs are the record.)
-- [ ] **Step 2: Verify the node's defaults** — read `DefaultTextBoxGraphCanvasNote`: title font must default to size
+  `onDeserialized` uses - if the node's keys ever drift, this test's inputs are the record.)
+- [ ] **Step 2: Verify the node's defaults** - read `DefaultTextBoxGraphCanvasNote`: title font must default to size
   **18** (`titleFontWithSize(18)`) and content to **12**, both black; if Task 2's rename lost either default, restore
   it.
 - [ ] **Step 3:** `mvn -pl jipipe-core test -Dtest=FontParameterFamilyTest` → green.
@@ -312,9 +312,9 @@ git commit -m "refactor(ij-alg): scale bar fonts use the explicit family type (#
 - Produces: none.
 
 - [ ] **Step 1:** `font` field → `JIPipeFontFamilySizeStyleParameter` in both (drop the unused color field entirely; the
-  text color was already `VisualLocationROIProperties.lineColor` — no drawing change). `onDeserialized` keys unchanged
+  text color was already `VisualLocationROIProperties.lineColor` - no drawing change). `onDeserialized` keys unchanged
   (`font-family`, `font-size`, `font-style`, **no color key**, default size 12).
-- [ ] **Step 2 (TDD): update `DrawTextRoiFontMigrationTest`** — its legacy-JSON → `getFont()` assertions now target
+- [ ] **Step 2 (TDD): update `DrawTextRoiFontMigrationTest`** - its legacy-JSON → `getFont()` assertions now target
   `JIPipeFontFamilySizeStyleParameter`; add `migratedFontHasNoColorField`: after migration, serializing the node's
   `font` access yields JSON without a `"color"` key (the spec's core contract for these two nodes).
 - [ ] **Step 3: Run** `mvn -pl plugins/jipipe-plugin-ij-algorithms test -Dtest=DrawTextRoiFontMigrationTest` → green.
@@ -372,11 +372,11 @@ git commit -m "refactor(ij-alg): montage label font uses the explicit family typ
 public enum RoiLabelColorMode { FIXED, FROM_ROI_LINE }
 public void setLabelColorMode(RoiLabelColorMode mode);      // default FIXED
 public RoiLabelColorMode getLabelColorMode();
-// package-private seam for the unit test — the per-ROI foreground the draw loops use:
+// package-private seam for the unit test - the per-ROI foreground the draw loops use:
 Color effectiveLabelForeground(Roi roi);
 ```
 
-`effectiveLabelForeground(roi)` returns `labelForeground` when `mode == FIXED`, else the effective line color — the
+`effectiveLabelForeground(roi)` returns `labelForeground` when `mode == FIXED`, else the effective line color - the
 **same expression** the outline already uses:
 `(overrideLineColor.isEnabled() || roi.getStrokeColor() == null) ? overrideLineColor.getContent() : roi.getStrokeColor()`.
 Copy-constructor copies the new field. **There are exactly THREE per-ROI label call sites** in `RoiDrawer`, each already
@@ -384,11 +384,11 @@ in a loop with `roi` in scope and the effective line-color expression computed n
 line 390), `drawRoiOnProcessor` (~line 516), and `drawRoiOnGraphics` (~line 676). Replace `labelForeground` with
 `effectiveLabelForeground(roi)` in ALL three.
 
-- [ ] **Step 1 (TDD): write the failing test** — build a `RoiDrawer` and real `ij.gui.Roi`s (the module's test infra
+- [ ] **Step 1 (TDD): write the failing test** - build a `RoiDrawer` and real `ij.gui.Roi`s (the module's test infra
   handles the ImageJ patcher):
     - `fromRoiLineUsesTheRoisOwnLineColor` (Review Focus #4): two ROIs, stroke RED and stroke GREEN, `overrideLineColor`
       disabled, mode `FROM_ROI_LINE` → `effectiveLabelForeground(roiRed) == RED` and
-      `effectiveLabelForeground(roiGreen) == GREEN` — a *single fixed* color would fail this.
+      `effectiveLabelForeground(roiGreen) == GREEN` - a *single fixed* color would fail this.
     - `overrideLineWins`: `overrideLineColor` enabled BLUE → `effectiveLabelForeground` BLUE for both ROIs.
     - `fixedModeIgnoresRoi`: mode `FIXED` with `labelForeground` set to MAGENTA → MAGENTA for both ROIs.
     - `defaultModeIsFixed` (Review Focus #3): a fresh `new RoiDrawer()` reports `FIXED`.
@@ -398,7 +398,7 @@ line 390), `drawRoiOnProcessor` (~line 516), and `drawRoiOnGraphics` (~line 676)
 
 - [ ] **Step 3: Implement** the enum, field, setter/getter, copy, and `effectiveLabelForeground`; replace the per-ROI
   `labelForeground` usages with `effectiveLabelForeground(roi)` in ALL THREE call sites: the `drawResult` per-ROI loop
-  (~line 390), `drawRoiOnProcessor` (~line 516), and `drawRoiOnGraphics` (~line 676) — see the Interfaces note above.
+  (~line 390), `drawRoiOnProcessor` (~line 516), and `drawRoiOnGraphics` (~line 676) - see the Interfaces note above.
 
 - [ ] **Step 4: Run** same command → PASS; then `mvn -pl plugins/jipipe-plugin-ij test` → whole module green.
 
@@ -406,12 +406,12 @@ line 390), `drawRoiOnProcessor` (~line 516), and `drawRoiOnGraphics` (~line 676)
 
 ```bash
 git add plugins/jipipe-plugin-ij
-git commit -m "feat(ij): RoiDrawer label color mode — fixed or from the ROI line color (#1339)"
+git commit -m "feat(ij): RoiDrawer label color mode - fixed or from the ROI line color (#1339)"
 ```
 
 ---
 
-### Task 8: RoiToRGBAlgorithm (ij-algorithms) — the user's canonical case
+### Task 8: RoiToRGBAlgorithm (ij-algorithms) - the user's canonical case
 
 **Files:**
 
@@ -444,7 +444,7 @@ git commit -m "feat(ij): RoiDrawer label color mode — fixed or from the ROI li
   font **plus** (Review Focus #1): if `node.has("label-foreground")` set `labelColor` to that color **enabled** (read
   via `JIPipeFontFamilySizeStyleParameter.legacyColor(node.get("label-foreground"))`), else leave it disabled
   (fresh-node default, Review Focus #3).
-- [ ] **Step 4 (TDD): test** `plugins/jipipe-plugin-ij-algorithms/.../RoiToRGBLabelColorTest.java` — deserialize a
+- [ ] **Step 4 (TDD): test** `plugins/jipipe-plugin-ij-algorithms/.../RoiToRGBLabelColorTest.java` - deserialize a
   minimal node JSON (use the node's Jackson path like `DrawTextRoiFontMigrationTest` does): (a) legacy
   `label-foreground: "#FF0000"` → `getLabelColor()` enabled red, `getLabelFont()` is a
   `JIPipeFontFamilySizeStyleParameter`; (b) a fresh `new RoiToRGBAlgorithm(info)` → `getLabelColor()` **disabled**; (c)
@@ -455,7 +455,7 @@ git commit -m "feat(ij): RoiDrawer label color mode — fixed or from the ROI li
 
 ```bash
 git add plugins/jipipe-plugin-ij-algorithms
-git commit -m "feat(ij-alg): Convert 2D ROI to RGB — label font without color, label follows the ROI line color (optional override) (#1339)"
+git commit -m "feat(ij-alg): Convert 2D ROI to RGB - label font without color, label follows the ROI line color (optional override) (#1339)"
 ```
 
 ---
@@ -471,14 +471,14 @@ git commit -m "feat(ij-alg): Convert 2D ROI to RGB — label font without color,
 - Consumes: everything. Produces: final verification evidence.
 
 - [ ] **Step 1:** rename `JIPipeFontParameter` refs in the harness → `JIPipeFontFamilySizeStyleColorParameter`
-  (`FontParameterShowcase`, the `panel-font` showcase, `renderFontPopout`'s cast — the cast target becomes the full-type
+  (`FontParameterShowcase`, the `panel-font` showcase, `renderFontPopout`'s cast - the cast target becomes the full-type
   **thin** editor `JIPipeDesktopFontFamilySizeStyleColorParameterEditorUI`, whose `getPopoutContent()` seam is
   unchanged).
 - [ ] **Step 2:** add showcases:
     - `PER_EDITOR.put("editor-font-family-size-style", JIPipeFontFamilySizeStyleParameter.class)` (adaptivity check: no
       color section)
-    - `SHOWCASE.put("panel-convert-2d-roi-to-rgb", "ij1-roi-to-rgb")` — the `RoiToRGBAlgorithm` node (id verified in
-      `ImageJAlgorithmsPlugin`) — so the VLM can see the node's "Label font" (size-style type) + new "Label color" rows
+    - `SHOWCASE.put("panel-convert-2d-roi-to-rgb", "ij1-roi-to-rgb")` - the `RoiToRGBAlgorithm` node (id verified in
+      `ImageJAlgorithmsPlugin`) - so the VLM can see the node's "Label font" (size-style type) + new "Label color" rows
     - extend `renderFontPopout` with a second id `popup-font-size-style` rendering the size-style editor's
       `getPopoutContent()` (build via
       `JIPipe.getParameterTypes().createEditorInstanceWithEmbeddedValue(workbench, JIPipeFontFamilySizeStyleParameter.class)`
@@ -498,7 +498,7 @@ cd /tmp/opencode/1339 && ./run.sh /tmp/opencode/1339/font9 --only panel-font,pop
     - `popup-font-size-style` / `editor-font-family-size-style`: Family + Size + Style rows, **no Color section**
       (Review Focus #5).
     - `panel-convert-2d-roi-to-rgb`: the node panel has a "Label font" row (adaptive editor, **no color section in its
-      popout** — verify via a crop if needed) and a separate "Label color" row with the optional checkbox.
+      popout** - verify via a crop if needed) and a separate "Label color" row with the optional checkbox.
 - [ ] **Step 5: full suites**
 
 Run:
@@ -516,7 +516,7 @@ Expected: all green (core ≥ 622 + new tests; the two plugin modules green).
 
 ```bash
 git add -A
-git commit -m "test(desktop): font family — harness showcases + full-suite verification (#1339)"
+git commit -m "test(desktop): font family - harness showcases + full-suite verification (#1339)"
 git push origin 1339-parameter-ux-overhaul
 ```
 

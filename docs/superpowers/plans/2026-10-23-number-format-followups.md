@@ -25,7 +25,7 @@ import covers all of them). Each task is TDD with its own test class.
   copyright header (copy from `NumToLettersFunction.java`).
 - `Object` first-arg auto-convert semantics (same as `NUM_TO_LETTERS`): `Number` → direct; `String` → trim + parse;
   anything else → `IllegalArgumentException`. Each class keeps its own private `toLong`/`toDouble` helper
-  (self-contained functions, no shared util — established pattern).
+  (self-contained functions, no shared util - established pattern).
 - Out-of-range / invalid input → `IllegalArgumentException` with a clear message (fail-closed).
 - Branch `1336-num-to-letters`, same MR !173; one commit per task.
 
@@ -33,7 +33,7 @@ import covers all of them). Each task is TDD with its own test class.
 
 The algorithms are simple; the failure modes a reasonable user would actually hit:
 
-- **Exponent normalization edges (SCIENTIFIC_NOTATION):** raw Java format is `0.0E+00` / `1.0E+25` — a naive strip can
+- **Exponent normalization edges (SCIENTIFIC_NOTATION):** raw Java format is `0.0E+00` / `1.0E+25` - a naive strip can
   yield `0.0E` or keep the `+`. Pin `0 → "0.0E0"`, `1e12 → "1.0E12"`, `1500 → "1.5E3"` (no `+`).
 - **BASE_CONVERT number/string asymmetry:** a `Number` arg IS the value (`BASE_CONVERT(255, 16, 10)` → 255, NOT 37);
   only `String` args are parsed in `fromBase`. Pin the string case `"ff", 16 → 255`; the number asymmetry is documented
@@ -43,11 +43,11 @@ The algorithms are simple; the failure modes a reasonable user would actually hi
 - **FROM_ROMAN canonical validation:** must accept valid non-obvious numerals (`"MCMXC"` = 1990, lowercase `"mcmxciv"`)
   and reject non-canonical (`"IIII"`, `"VV"`, `"XM"`, `"IC"`). Pin both sides.
 - **Large inputs:** `TO_ROMAN(1e30)` truncates via `longValue` but the 1–3999 range check converts that to a clear
-  error; `BASE_CONVERT(1e30)` silently truncates (documented limitation, no test — unrealistic input).
+  error; `BASE_CONVERT(1e30)` silently truncates (documented limitation, no test - unrealistic input).
 
 ---
 
-### Task 1: Roman numerals — `TO_ROMAN` and `FROM_ROMAN`
+### Task 1: Roman numerals - `TO_ROMAN` and `FROM_ROMAN`
 
 **Files:**
 
@@ -89,12 +89,12 @@ The algorithms are simple; the failure modes a reasonable user would actually hi
 - [ ] **Step 2: Run tests to verify they fail**
 
 Run: `mvn test -pl jipipe-core -Dtest=ToRomanFunctionTest,FromRomanFunctionTest`
-Expected: FAIL — compile error, `ToRomanFunction` / `FromRomanFunction` do not exist.
+Expected: FAIL - compile error, `ToRomanFunction` / `FromRomanFunction` do not exist.
 
 - [ ] **Step 3: Implement both functions**
 
-`ToRomanFunction` —
-`@SetJIPipeDocumentation(name = "Number to Roman numeral", description = "Converts an integer (1–3999) to a Roman numeral, e.g. 1994 = MCMXCIV. Fractional input is truncated to an integer.")` —
+`ToRomanFunction` -
+`@SetJIPipeDocumentation(name = "Number to Roman numeral", description = "Converts an integer (1–3999) to a Roman numeral, e.g. 1994 = MCMXCIV. Fractional input is truncated to an integer.")` -
 `super("TO_ROMAN", 1)`, signature `TO_ROMAN(number)`, param 0
 `("number", "The integer to convert (1 to 3999).", Object.class)`.
 
@@ -112,8 +112,8 @@ for (int i = 0; i < VALUES.length; i++) {
 return sb.toString();
 ```
 
-`FromRomanFunction` —
-`@SetJIPipeDocumentation(name = "Roman numeral to number", description = "Parses a Roman numeral (standard notation) to its number, e.g. MCMXCIV = 1994. Uppercase and lowercase are accepted; non-canonical numerals are rejected.")` —
+`FromRomanFunction` -
+`@SetJIPipeDocumentation(name = "Roman numeral to number", description = "Parses a Roman numeral (standard notation) to its number, e.g. MCMXCIV = 1994. Uppercase and lowercase are accepted; non-canonical numerals are rejected.")` -
 `super("FROM_ROMAN", 1)`, signature `FROM_ROMAN(text)`, param 0 `("text", "The Roman numeral to parse.", Object.class)`.
 
 Body:
@@ -142,7 +142,7 @@ never exceed 3999.)
 - [ ] **Step 4: Run tests to verify they pass**
 
 Run: `mvn test -pl jipipe-core -Dtest=ToRomanFunctionTest,FromRomanFunctionTest`
-Expected: PASS — all green.
+Expected: PASS - all green.
 
 - [ ] **Step 5: Register both functions in `ExpressionPlugin`**
 
@@ -205,11 +205,11 @@ git commit -m "feat: TO_ROMAN / FROM_ROMAN expression functions (Roman numerals)
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `mvn test -pl jipipe-core -Dtest=ScientificNotationFunctionTest`
-Expected: FAIL — compile error, class does not exist.
+Expected: FAIL - compile error, class does not exist.
 
 - [ ] **Step 3: Implement `ScientificNotationFunction`**
 
-`@SetJIPipeDocumentation(name = "Number to scientific notation", description = "Formats a number as a scientific-notation string (e.g. 0.00012 = 1.2E-4, 1500 = 1.5E3). The exponent is not zero-padded and carries no plus sign. The optional decimals parameter sets the mantissa precision (default 1).")` —
+`@SetJIPipeDocumentation(name = "Number to scientific notation", description = "Formats a number as a scientific-notation string (e.g. 0.00012 = 1.2E-4, 1500 = 1.5E3). The exponent is not zero-padded and carries no plus sign. The optional decimals parameter sets the mantissa precision (default 1).")` -
 `super("SCIENTIFIC_NOTATION", 1, 2)`, signature `SCIENTIFIC_NOTATION(number, decimals)`, params:
 `("number", "The number to format.", Object.class)`,
 `("decimals", "Mantissa precision (whole number ≥ 0). Default 1.", Object.class)`.
@@ -272,7 +272,7 @@ git commit -m "feat: SCIENTIFIC_NOTATION expression function (E-notation string)
 > (target first), with `fromBase` default **10**. This swapped from the original spec sketch
 > (`[fromBase], [toBase]`, fromBase first): for `Number` inputs the leading `fromBase` arg is
 > meaningless (numbers are already values), so the 2-arg form couldn't express a target base and
-> silently no-opped — a fail-open defect. `toBase`-first makes `BASE_CONVERT(8, 2)` → `"1000"`
+> silently no-opped - a fail-open defect. `toBase`-first makes `BASE_CONVERT(8, 2)` → `"1000"`
 > behave as a reasonable person expects; a non-decimal string without an explicit `fromBase`
 > fails closed instead of silently round-tripping in base 16.
 
@@ -307,11 +307,11 @@ git commit -m "feat: SCIENTIFIC_NOTATION expression function (E-notation string)
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `mvn test -pl jipipe-core -Dtest=BaseConvertFunctionTest`
-Expected: FAIL — compile error, class does not exist.
+Expected: FAIL - compile error, class does not exist.
 
 - [ ] **Step 3: Implement `BaseConvertFunction`**
 
-`@SetJIPipeDocumentation(name = "Convert number base", description = "Converts a number between bases 2–36. A number input is the value itself; a string input is parsed in the fromBase (default 10). The result is a string in the toBase (default 16, lowercase), or a number when toBase is 10. Digits a–z are accepted for bases above 10.")` —
+`@SetJIPipeDocumentation(name = "Convert number base", description = "Converts a number between bases 2–36. A number input is the value itself; a string input is parsed in the fromBase (default 10). The result is a string in the toBase (default 16, lowercase), or a number when toBase is 10. Digits a–z are accepted for bases above 10.")` -
 `super("BASE_CONVERT", 1, 3)`, signature `BASE_CONVERT(value, toBase, fromBase)`, params:
 
 - 0:
@@ -391,5 +391,5 @@ git commit --amend --no-edit
 
 - [ ] Update the issue #1336 description (via the GitLab API): replace the follow-up checklist with a "Delivered" note
   listing `NUM_TO_LETTERS`, `TO_ROMAN`/`FROM_ROMAN`, `SCIENTIFIC_NOTATION`, `BASE_CONVERT` and their signatures. (The
-  checklist item named `ROMAN_NUMBER(number, [mode])` becomes the `TO_ROMAN`/`FROM_ROMAN` pair — note the deliberate
+  checklist item named `ROMAN_NUMBER(number, [mode])` becomes the `TO_ROMAN`/`FROM_ROMAN` pair - note the deliberate
   rename.)

@@ -62,7 +62,7 @@ Project: `AIAgentTests/03-ExampleWorkflows/Angela_Roots_38.jip` (relative to `/d
 ## Template
 
 Proposed name `Annotate with file/directory name -> Import ROI -> Compartment output`, menu path
-`Patterns/Annotations/Annotate with file/directory name -> Import ROI -> Compartment output` (proposal only — not
+`Patterns/Annotations/Annotate with file/directory name -> Import ROI -> Compartment output` (proposal only - not
 registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/conversion-path-to-annotation-simple-import-imagej-roi-from-file-jipipe-compartment-output.json`.
 

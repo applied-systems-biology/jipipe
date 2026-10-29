@@ -91,7 +91,7 @@ import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDim
                 "<ul>" +
                 "<li><b>Start from cpsam:</b> Only the built-in <code>cpsam</code> model is recommended as a starting point for fine-tuning. Starting from other models can produce suboptimal results.</li>" +
                 "<li><b>Low learning rate:</b> The default learning rate of 1e-5 is critical. Higher rates can destabilize the pre-trained transformer backbone and lead to poor results.</li>" +
-                "<li><b>Fewer epochs:</b> Transformer models converge in 100 epochs (default), unlike U-Net-based Cellpose 2/3 which typically need 500. Monitor the training loss — if it stops decreasing, fewer epochs are sufficient.</li>" +
+                "<li><b>Fewer epochs:</b> Transformer models converge in 100 epochs (default), unlike U-Net-based Cellpose 2/3 which typically need 500. Monitor the training loss - if it stops decreasing, fewer epochs are sufficient.</li>" +
                 "<li><b>Batch size 1:</b> Transformer models require significant GPU memory. Use a batch size of 1 unless you have a high-memory GPU.</li>" +
                 "<li><b>Weight decay 0.1:</b> Helps prevent overfitting on small datasets, which is especially important for transformer fine-tuning.</li>" +
                 "</ul>" +
@@ -104,7 +104,7 @@ import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDim
                 "<ul>" +
                 "<li>Ensure you are starting from <code>cpsam</code>, not a custom or previously fine-tuned model</li>" +
                 "<li>Verify that your label images have enough masks per image (minimum 5 by default)</li>" +
-                "<li>Check that the learning rate is 1e-5 — higher values can destroy the pre-trained weights</li>" +
+                "<li>Check that the learning rate is 1e-5 - higher values can destroy the pre-trained weights</li>" +
                 "<li>Ensure training images have a similar diameter distribution to what you expect at inference time</li>" +
                 "</ul>")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Training data", create = true)
@@ -620,7 +620,7 @@ public class Cellpose4SegmentationTraining2Algorithm extends JIPipeSingleIterati
 
     @SetJIPipeDocumentation(name = "Epochs", description = "Number of training epochs. Default is 100, which matches the official Cellpose 4.2 recommendation for fine-tuning transformer-based models (cpsam, cpdino). " +
             "Transformer models converge faster than the U-Net-based Cellpose 2/3 (which typically need 500 epochs). " +
-            "Monitor the training loss — if it plateaus before 100 epochs, fewer epochs are sufficient. " +
+            "Monitor the training loss - if it plateaus before 100 epochs, fewer epochs are sufficient. " +
             "Using too many epochs risks overfitting, especially on small datasets.")
     @JIPipeParameter("epochs")
     public int getNumEpochs() {

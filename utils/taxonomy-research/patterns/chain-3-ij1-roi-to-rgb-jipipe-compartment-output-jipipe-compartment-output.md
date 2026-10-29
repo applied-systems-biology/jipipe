@@ -61,7 +61,7 @@ Project: `AIAgentTests/02-AdvancedPipelines/Cryogels_01.jip` (relative to `/data
 ## Template
 
 Proposed name `Convert 2D ROI to RGB -> Compartment output -> Compartment output`, menu path
-`Patterns/ROIs/Convert 2D ROI to RGB -> Compartment output -> Compartment output` (proposal only — not registered).
+`Patterns/ROIs/Convert 2D ROI to RGB -> Compartment output -> Compartment output` (proposal only - not registered).
 `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/chain-3-ij1-roi-to-rgb-jipipe-compartment-output-jipipe-compartment-output.json`.
 

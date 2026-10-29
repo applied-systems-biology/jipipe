@@ -28,7 +28,7 @@ import java.util.Map;
  * A manifest is a stable, versioned description of the container's
  * structure: which parts it contains (zip entry path → part key, see
  * {@link JIPipeProjectParts#PART_KEYS}), which graph is the main graph,
- * and — via the {@code unknown} map — which other entries the container
+ * and - via the {@code unknown} map - which other entries the container
  * holds so that they are preserved verbatim on round-trips. The reserved
  * slots {@code data/}, {@code graphs/}, and {@code history/} appear in
  * {@code unknown} when non-empty.
@@ -83,7 +83,7 @@ public class JIPipeXManifest {
 
     /**
      * Other container entry paths (not parts), preserved verbatim on
-     * round-trip — including the reserved slots {@code data/},
+     * round-trip - including the reserved slots {@code data/},
      * {@code graphs/}, and {@code history/} when non-empty.
      */
     @JsonProperty("unknown")

@@ -61,7 +61,7 @@ Project: `AIAgentTests/03-ExampleWorkflows/AdrianFeile_VibrioOnChip_04.jip` (rel
 ## Template
 
 Proposed name `Copy physical dimensions fans in from 7 source ids (roles: core-io, other)`, menu path
-`Patterns/Images/Copy physical dimensions fans in from 7 source ids (roles: core-io, other)` (proposal only — not
+`Patterns/Images/Copy physical dimensions fans in from 7 source ids (roles: core-io, other)` (proposal only - not
 registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/fan-in-ij1-calibration-copy-physical-dimensions-core-io-1-other-1.json`.
 

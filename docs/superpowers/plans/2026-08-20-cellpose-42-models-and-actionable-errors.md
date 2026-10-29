@@ -106,7 +106,7 @@ public class JIPipeValidationReportEntryTest {
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `cd /data/src/jipipe-4 && mvn test -pl jipipe-core -Dtest=JIPipeValidationReportEntryTest -q`
-Expected: FAIL — no constructor accepting `List<JIPipeNotificationAction>`, no `getActions()` method
+Expected: FAIL - no constructor accepting `List<JIPipeNotificationAction>`, no `getActions()` method
 
 - [ ] **Step 3: Write minimal implementation**
 
@@ -258,7 +258,7 @@ public class ValidationEntryBuilderActionTest {
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `cd /data/src/jipipe-4 && mvn test -pl jipipe-core -Dtest=ValidationEntryBuilderActionTest -q`
-Expected: FAIL — no `.action()` method on builder
+Expected: FAIL - no `.action()` method on builder
 
 - [ ] **Step 3: Write minimal implementation**
 
@@ -364,7 +364,7 @@ public class JIPipeValidationRuntimeExceptionActionsTest {
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `cd /data/src/jipipe-4 && mvn test -pl jipipe-core -Dtest=JIPipeValidationRuntimeExceptionActionsTest -q`
-Expected: FAIL — `JIPipeValidationRuntimeException(JIPipeValidationReportEntry)` constructor does not preserve actions
+Expected: FAIL - `JIPipeValidationRuntimeException(JIPipeValidationReportEntry)` constructor does not preserve actions
 
 - [ ] **Step 3: Write minimal implementation**
 
@@ -405,7 +405,7 @@ case Warning -> {
 ```
 
 The `JIPipeValidationRuntimeException(JIPipeValidationReportEntry entry)` constructor (line 26) already creates a report
-and adds the entry directly — the entry's actions are already on it. The `mergeReport` path is where actions were being
+and adds the entry directly - the entry's actions are already on it. The `mergeReport` path is where actions were being
 lost. This fix ensures they survive.
 
 - [ ] **Step 4: Run test to verify it passes**
@@ -794,7 +794,7 @@ public class CellposeVersionUtilsTest {
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `cd /data/src/jipipe-4 && mvn test -pl plugins/jipipe-plugin-cellpose -Dtest=CellposeVersionUtilsTest -q`
-Expected: FAIL — class does not exist
+Expected: FAIL - class does not exist
 
 - [ ] **Step 3: Write minimal implementation**
 
@@ -1151,7 +1151,7 @@ In `processModel()`, the CLI argument building changes:
 - Add: `--save_every` with value
 - Add: `--model_name_out` if non-empty
 - Update `--learning_rate` default from `tweaksSettings.getLearningRate()` (which defaults to 0.2 in the settings
-  class) — instead, the new algorithm overrides the defaults by setting `tweaksSettings.setLearningRate(0.00001)`,
+  class) - instead, the new algorithm overrides the defaults by setting `tweaksSettings.setLearningRate(0.00001)`,
   `tweaksSettings.setWeightDecay(0.1)`, `tweaksSettings.setBatchSize(1)` in the constructor.
 
 In `runIteration()`, after getting the environment, add aggressive log:

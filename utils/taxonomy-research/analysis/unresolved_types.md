@@ -1,10 +1,10 @@
-# Task 3 — unresolved corpus data-class tokens
+# Task 3 - unresolved corpus data-class tokens
 
 Raw `slot-data-type` tokens on corpus edges that do not resolve against
 `registry.json` (no exact data-type id, no exact class FQN, no simple-name
 match; a simple-name match hitting more than one data type is listed as
 `ambiguous` instead of guessed). These are the corpus-side 'unresolvable'
-tokens of Review Focus #3 — their edges cannot be attributed to a
+tokens of Review Focus #3 - their edges cannot be attributed to a
 registered data type (e.g. a legacy id that no longer exists in 6.0.0).
 
 | raw token                         | kind       | edges | projects | example project                                                             |

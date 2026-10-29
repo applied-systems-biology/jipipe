@@ -158,7 +158,7 @@ class NodeBrowserModelTest {
     }
 
     // ------------------------------------------------------------------
-    // Data-type facet (input / output) — merged "Data" filter
+    // Data-type facet (input / output) - merged "Data" filter
     // ------------------------------------------------------------------
 
     /**
@@ -395,7 +395,7 @@ class NodeBrowserModelTest {
 
         // The generalized down-ranking rule: standard curated nodes rank
         // first; auto-imported, unstable and deprecated nodes rank after
-        // them — no node-id or plugin heuristics involved
+        // them - no node-id or plugin heuristics involved
         assertFalse(JIPipeNodeStateChips.isDownRanked(stable));
         assertTrue(JIPipeNodeStateChips.isDownRanked(unstable));
         assertTrue(JIPipeNodeStateChips.isDownRanked(deprecated));

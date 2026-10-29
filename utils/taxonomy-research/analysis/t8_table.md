@@ -1,4 +1,4 @@
-# Task 8 — raw 6a rows (pattern -> follow-up mapping)
+# Task 8 - raw 6a rows (pattern -> follow-up mapping)
 
 **Total rows: 416** (all curated patterns, all consecutive role pairs; sorted by support desc, then pattern id, then
 role).

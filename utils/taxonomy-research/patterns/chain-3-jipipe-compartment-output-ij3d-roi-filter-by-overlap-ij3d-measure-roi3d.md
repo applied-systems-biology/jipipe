@@ -63,6 +63,6 @@ Project: `AIAgentTests/03-ExampleWorkflows/Annamaria_12.jip` (relative to `/data
 
 Proposed name `Compartment output -> Filter IJ3D ROI by overlap (old) -> Extract IJ3D ROI statistics`, menu path
 `Patterns/Graph / Project/Compartment output -> Filter IJ3D ROI by overlap (old) -> Extract IJ3D ROI statistics`
-(proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+(proposal only - not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/chain-3-jipipe-compartment-output-ij3d-roi-filter-by-overlap-ij3d-measure-roi3d.json`.
 

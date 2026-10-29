@@ -52,15 +52,15 @@ import java.util.Set;
  * renders as a neutral chip with a dash) and the entry's tags,</li>
  * <li>a one-line summary of the spatial dimensions and the input profile
  * (e.g. "Spatial: 2D, 3D · Input: 3D volume"),</li>
- * <li>a tab bar — the shared {@code JIPipeDesktopTabPane} in the AI
+ * <li>a tab bar - the shared {@code JIPipeDesktopTabPane} in the AI
  * monitor's TopPill style, so the tabs stay consistent with the rest of
- * the application — switching between the detail pages:
+ * the application - switching between the detail pages:
  * <ul>
- * <li><b>Documentation</b> (default, help/info icon) — the canonical
+ * <li><b>Documentation</b> (default, help/info icon) - the canonical
  * node documentation: the same markdown the algorithm compendium and
  * the graph editor's node settings show (title, description,
  * input/output slot table, per-parameter documentation);</li>
- * <li><b>Related</b> (link icon) — the
+ * <li><b>Related</b> (link icon) - the
  * {@code database.relations(entry, 6)} lists as three collapsible
  * sections in one scrollable page:
  * {@link org.hkijena.jipipe.api.nodes.database.relations.NodeRelations#similar() Similar}
@@ -70,7 +70,7 @@ import java.util.Set;
  * {@link org.hkijena.jipipe.api.nodes.database.relations.NodeRelations#next() Next steps}
  * (nodes that run after this one). The sections reuse the
  * {@code GroupHeaderPanel} headers of the "Configure node templates"
- * manager, and each section's rows are that manager's rounded cards —
+ * manager, and each section's rows are that manager's rounded cards -
  * adapted from its wrapping grid to a single-column list (icon + bold
  * name + one-line description). Non-empty sections are expanded, empty
  * ones collapse to their header. Clicking a card tells the dialog (via
@@ -80,7 +80,7 @@ import java.util.Set;
  * <p>
  * <b>Follow-up (deferred, see work item comment):</b> the rail previously
  * offered "▶ Insert setup" and "Open example" actions that inserted nodes
- * into the graph. Both were removed from the finder — "Open example"
+ * into the graph. Both were removed from the finder - "Open example"
  * inserting a node is not what users expect there, and both actions are to
  * be reworked into a dedicated feature based on node templates (which
  * support multiple nodes).
@@ -128,7 +128,7 @@ public class NodeFinderDetailRail extends JPanel {
     private final JLabel profileLabel = new JLabel();
     private final JPanel stateChips = new JPanel(new FlowLayout(FlowLayout.LEFT, 3, 0));
     // --- Tabs + pages (the shared tab pane, same component + style as the
-    // AI monitor's tabs — see JIPipeDesktopAIMonitorWindow) ---
+    // AI monitor's tabs - see JIPipeDesktopAIMonitorWindow) ---
     private final JIPipeDesktopTabPane tabPane = new JIPipeDesktopTabPane(true, JIPipeDesktopTabPane.Style.TopPill);
     private final JIPipeDesktopMarkdownReader documentationReader = new JIPipeDesktopMarkdownReader(false);
     private final RelatedSection similarSection =
@@ -193,16 +193,16 @@ public class NodeFinderDetailRail extends JPanel {
         previousList = previousSection.initializeList(this::selectListEntry);
         nextList = nextSection.initializeList(this::selectListEntry);
         // Set the pill border BEFORE the tabs are added: each tab component
-        // captures the pane's border at construction (the AI monitor — the
-        // design reference — does the same order). Setting it after
+        // captures the pane's border at construction (the AI monitor - the
+        // design reference - does the same order). Setting it after
         // initializeTabs() left the pills with the thin default border
-        // (4,0,4,0 — no horizontal padding, pills touching: the
+        // (4,0,4,0 - no horizontal padding, pills touching: the
         // "no padding and margin" report).
         tabPane.setTabPanelBorder(BorderFactory.createEmptyBorder(12, 4, 12, 4));
         initializeTabs();
         contentPanel.add(titleBlock(), BorderLayout.NORTH);
         // Minimum footprint 160 px, grows with the dialog (the tab PAGES
-        // scroll internally — the Documentation reader and the Related form
+        // scroll internally - the Documentation reader and the Related form
         // panel each own their JScrollPane). The header stays fixed above the
         // tab bar; there is deliberately NO outer scroll pane around the card.
         tabPane.setMinimumSize(new Dimension(0, 160));
@@ -280,7 +280,7 @@ public class NodeFinderDetailRail extends JPanel {
         }
         // Section expand/collapse follows the content on every entry change
         // (non-empty sections expanded, empty ones collapsed to their
-        // header) — a manual toggle stays valid until the next entry.
+        // header) - a manual toggle stays valid until the next entry.
         similarSection.applyContentState(similarList.getModel().getSize() > 0);
         previousSection.applyContentState(previousList.getModel().getSize() > 0);
         nextSection.applyContentState(nextList.getModel().getSize() > 0);
@@ -327,8 +327,8 @@ public class NodeFinderDetailRail extends JPanel {
     /**
      * Builds the "Related" tab page: one scrollable form panel (the same
      * {@code WITH_SCROLLING} form machinery the "Configure node templates"
-     * manager uses) holding the three relation sections — {@code Similar},
-     * {@code Previous steps}, {@code Next steps} — each a collapsible
+     * manager uses) holding the three relation sections - {@code Similar},
+     * {@code Previous steps}, {@code Next steps} - each a collapsible
      * {@code GroupHeaderPanel} over a single-column list of the manager's
      * rounded card rows (grid → list).
      * <p>
@@ -347,7 +347,7 @@ public class NodeFinderDetailRail extends JPanel {
     }
 
     /**
-     * Selects the clicked list entry in the center list — guarded so the
+     * Selects the clicked list entry in the center list - guarded so the
      * rail's own programmatic list swaps cannot recurse.
      */
     private void selectListEntry(JIPipeNodeDatabaseEntry entry) {
@@ -365,7 +365,7 @@ public class NodeFinderDetailRail extends JPanel {
         tabPane.addTab("Documentation", JIPipe.RESOURCES.getIcon16("actions/help-info.png"),
                 documentationReader, JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
         // The Similar / Previous steps / Next steps lists are merged into one
-        // "Related" page (three collapsible sections) — the three separate
+        // "Related" page (three collapsible sections) - the three separate
         // tabs cluttered the narrow rail's pill row and hid the groups from
         // each other.
         tabPane.addTab("Related", JIPipe.RESOURCES.getIcon16("actions/link.png"),
@@ -414,7 +414,7 @@ public class NodeFinderDetailRail extends JPanel {
 
     /**
      * The Documentation tab content. For node entries this is the canonical
-     * node documentation — the same markdown the algorithm compendium and
+     * node documentation - the same markdown the algorithm compendium and
      * the graph editor's node settings show (title, description, input/output
      * slot table, parameter documentation). Non-node entries (templates,
      * examples, existing graph nodes) fall back to name + description.
@@ -453,7 +453,7 @@ public class NodeFinderDetailRail extends JPanel {
     /**
      * A section of the "Related" page: the shared {@code GroupHeaderPanel}
      * header (title + icon, the flat collapse caret of the parameter forms
-     * at the start, the live entry count at the end — the "Configure node
+     * at the start, the live entry count at the end - the "Configure node
      * templates" manager's section look) over a single-column list of that
      * manager's rounded card rows.
      * <p>
@@ -483,7 +483,7 @@ public class NodeFinderDetailRail extends JPanel {
 
         /**
          * Creates and configures this section's list (card renderer + click
-         * handler) — called before {@link #buildSectionOn} so the section
+         * handler) - called before {@link #buildSectionOn} so the section
          * can be added to the form afterwards.
          */
         JList<JIPipeNodeDatabaseEntry> initializeList(java.util.function.Consumer<JIPipeNodeDatabaseEntry> onEntryClick) {
@@ -517,7 +517,7 @@ public class NodeFinderDetailRail extends JPanel {
 
         /**
          * Adds this section to the form panel: a full-width group header and
-         * the full-width card list right below it — the same
+         * the full-width card list right below it - the same
          * {@code addGroupHeader} + {@code addWideToForm} pattern and the
          * same collapse mechanism (the form's GridBag skips invisible
          * components) the "Configure node templates" manager uses.
@@ -564,7 +564,7 @@ public class NodeFinderDetailRail extends JPanel {
 
         /**
          * Expands/collapses this section to match its content and refreshes
-         * the header count — called on every entry change, so the expand
+         * the header count - called on every entry change, so the expand
          * state is always "non-empty = expanded" for the new entry (a
          * manual toggle stays valid until the next entry is selected).
          */
@@ -597,7 +597,7 @@ public class NodeFinderDetailRail extends JPanel {
     // ------------------------------------------------------------------
 
     /**
-     * A rounded card row — the "Configure node templates" manager's card
+     * A rounded card row - the "Configure node templates" manager's card
      * ({@code CardRenderer}) adapted to a single-column list: the card is
      * painted inset by a GUTTER within its full-width row, with the entry
      * icon, the bold name and a one-line muted description. The row is

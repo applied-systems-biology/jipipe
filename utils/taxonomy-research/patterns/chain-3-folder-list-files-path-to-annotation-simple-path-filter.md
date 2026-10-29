@@ -61,7 +61,7 @@ Project: `AIAgentTests/01-BasicWorkshop/JSC_2025_06_Kidney_Exports/kidney.jip` (
 ## Template
 
 Proposed name `List files -> Annotate with file/directory name -> Filter paths`, menu path
-`Patterns/Data Sources/List files -> Annotate with file/directory name -> Filter paths` (proposal only — not
+`Patterns/Data Sources/List files -> Annotate with file/directory name -> Filter paths` (proposal only - not
 registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/chain-3-folder-list-files-path-to-annotation-simple-path-filter.json`.
 

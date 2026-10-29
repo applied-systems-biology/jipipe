@@ -1,4 +1,4 @@
-# Linear Pattern Naming — Redesign (policy: name = what it does, no chain/arrows)
+# Linear Pattern Naming - Redesign (policy: name = what it does, no chain/arrows)
 
 Work item 1324 · branch `1324-node-taxonomy-core` · 2026-10-19
 Status: **decision report, awaiting ruling.** Nothing renamed yet.
@@ -9,7 +9,7 @@ Status: **decision report, awaiting ruling.** Nothing renamed yet.
 > No `->`, no `→`, no `⇢`, **no chain separator of any kind** in the name.
 > The mechanism (the node sequence) belongs in the **description**, not the name.
 
-This is exactly the standard the **422 DAG names already meet** — they were
+This is exactly the standard the **422 DAG names already meet** - they were
 LLM-named on the outcome rules in `dag-naming-findings.md`:
 
 - name the *outcome*, not the mechanism;
@@ -25,9 +25,9 @@ The **64 linear patterns** are the old round: their names are verbatim node
 chains (`List files -> Annotate with file/directory name -> Import image`).
 The fix is to give them outcome names in the DAG style. The **description**
 already carries the mechanism (`Sequence: … → …` / `Wiring: …`) and is left as-is
-— the `→` in the description is correct (it's the mechanism, where it belongs).
+- the `→` in the description is correct (it's the mechanism, where it belongs).
 
-## Why a plain rename is not enough — the redundancy finding
+## Why a plain rename is not enough - the redundancy finding
 
 The 64 linear patterns are not 64 distinct workflows. Measured against the
 422 shipped DAG patterns (node-set + edge-set containment on the shipped graph
@@ -54,7 +54,7 @@ identical / near-identical names:
 ```
 
 The `noDuplicateNamesWithSameGraph` test *tolerates* same-name/different-graph,
-so it would not fail — but shipping 4 templates all named "List and filter
+so it would not fail - but shipping 4 templates all named "List and filter
 files from a folder" is exactly the noise the policy is meant to remove.
 
 ### Consequence 2: the 32 sub-paths are already covered by a DAG
@@ -67,9 +67,9 @@ name. Keeping both is redundant.
 
 ### Consequence 3: dropping sub-paths touches the flagship test
 
-The flagship pattern pinned by `SystemPatternTemplatesTest` —
+The flagship pattern pinned by `SystemPatternTemplatesTest` -
 `chain-3-folder-list-files-path-to-annotation-simple-import-imagej-imgplus-from-file`
-(`List files -> Annotate with file/directory name -> Import image`) — **is one of
+(`List files -> Annotate with file/directory name -> Import image`) - **is one of
 the 32 sub-paths** (it is a fragment of the DAG
 `Prepare cropped images and cleaned 2D ROI masks from folders`). Dropping it
 would fail the `flagshipPresent` assertion (which requires a template with *exactly* those 3 nodes). The
@@ -87,7 +87,7 @@ includes a small test edit.
 | **C**  | rename all, **drop the 32 sub-paths + 8 plumbing** | 24          | 446   | most aggressive dedup; cleanest set; requires re-pointing the flagship test                             |
 
 All options keep the **24 unique** patterns with fresh outcome names.
-Option C's surviving 24 are the ones with no DAG equivalent and no plumbing —
+Option C's surviving 24 are the ones with no DAG equivalent and no plumbing -
 the set that most clearly "is about what it does."
 
 ## Recommendation
@@ -96,7 +96,7 @@ the set that most clearly "is about what it does."
 
 1. It fully satisfies the naming policy.
 2. It removes the 32 fragments that are literally contained in already-named
-   DAG patterns (redundancy) and the 8 plumbing patterns (noise) — which is what
+   DAG patterns (redundancy) and the 8 plumbing patterns (noise) - which is what
    "names about what they do, not just chains" is really asking for.
 3. The surviving 24 have distinct outcomes, so no duplicate names.
 4. The cost is small and contained: a name map for 24 + a flagship re-point in
@@ -248,14 +248,14 @@ Format: `current chain name` → `proposed outcome name`  [bucket]
 - `Project user path -> Group -> Bio-Formats importer` → **Import Bio-Formats from the project directory** [plumbing]
 - `Project user path -> Group -> Bio-Formats importer -> Annotate with image properties` → **Import Bio-Formats from the
   project and annotate** [plumbing]
-- `Group -> Bio-Formats importer -> Annotate with image properties` (comment) — see below
+- `Group -> Bio-Formats importer -> Annotate with image properties` (comment) - see below
 - `Comment -> Group -> Bio-Formats importer` → **Import Bio-Formats images** [plumbing]
 - `Group -> Bio-Formats importer -> Annotate with image properties` (group) → **Import Bio-Formats and annotate with
   image properties** [plumbing]
 - `Comment -> Group -> Bio-Formats importer -> Annotate with image properties` → **Import Bio-Formats and annotate with
   image properties** [plumbing]
 
-### Misc plumbing (comment/group) — no general information
+### Misc plumbing (comment/group) - no general information
 
 - `Comment -> Annotate with file/directory name -> List subfolders` → **List subfolders from a folder** [plumbing]
 - `Comment -> Annotate with file/directory name -> List subfolders -> Annotate with file/directory name` → **List
@@ -264,5 +264,5 @@ Format: `current chain name` → `proposed outcome name`  [bucket]
   **Recursively list files from subfolders** [plumbing]
 
 > Note: the plumbing bucket (8) and several "unique" folder-listing chains
-> produce names that collide across buckets — another reason option C
+> produce names that collide across buckets - another reason option C
 > (drop sub-path + plumbing) yields the cleanest, duplicate-free set.

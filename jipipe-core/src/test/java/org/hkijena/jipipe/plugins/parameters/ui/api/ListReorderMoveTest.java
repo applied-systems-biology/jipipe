@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * #1339: the list-editor drag-reorder index math (the one behavior the footer
- * rework actually changes) — moving the item at {@code from} to the drop
+ * rework actually changes) - moving the item at {@code from} to the drop
  * position {@code to} (a row index in the pre-removal list), with the shift
  * from the removal and clamping handled.
  */

@@ -19,7 +19,7 @@ public class LabWell extends JComponent {
     // The last pointer position in a/b, in *unclamped* LAB coordinates. The
     // marker is drawn here (not from toLab(currentColor)) so it follows the
     // cursor even when the picked color is out of the sRGB gamut and
-    // ColorSpaces.fromLab clamped it — the circle no longer "sticks" at the
+    // ColorSpaces.fromLab clamped it - the circle no longer "sticks" at the
     // clamped position (#1339).
     private double pointerA = Double.NaN;
     private double pointerB = Double.NaN;

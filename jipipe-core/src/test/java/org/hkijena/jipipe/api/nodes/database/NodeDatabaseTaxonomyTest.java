@@ -169,7 +169,7 @@ class NodeDatabaseTaxonomyTest {
         // the three synthetic family nodes. TrackMateFamily is a
         // production family class (kept), but the resolver's
         // id→family registry only ever learns about it through node step
-        // annotations, and no jipipe-core node carries TrackMate steps —
+        // annotations, and no jipipe-core node carries TrackMate steps -
         // so the registry entry is ours to remove, keeping the shared
         // family registry clean for other tests.
         nodes.getFamilyAssembler().unregisterStep(SPOT_DETECT_ID, TrackMateFamily.ID);
@@ -216,7 +216,7 @@ class NodeDatabaseTaxonomyTest {
      * {@code null}.
      * <p>
      * Task 26a: the "create node by info alias" entry (and its
-     * menu-location-backed alias data) was removed — aliases
+     * menu-location-backed alias data) was removed - aliases
      * became secondary functions, which the base entry already carries.
      */
     @Test
@@ -277,7 +277,7 @@ class NodeDatabaseTaxonomyTest {
      * returns {@code similar} ranked in tiers: same-function, then
      * same-framework, then shared-tag (≥2 shared before 1), de-duplicated and
      * capped, with auto-import entries down-ranked to the end of their tier.
-     * The workflow-neighbor nodes are NOT in {@code similar} — they are
+     * The workflow-neighbor nodes are NOT in {@code similar} - they are
      * surfaced by {@code next}/{@code previous} instead, so the three lists
      * stay disjoint.
      * <p>
@@ -288,7 +288,7 @@ class NodeDatabaseTaxonomyTest {
      * <ol>
      * <li>{@code similar(detect, 10)} =
      * [{@code sameFunction}, {@code otherFramework}, {@code autoImport},
-     * {@code sharedTagOne}, {@code sharedTagTwo}] — {@code sameFunction}
+     * {@code sharedTagOne}, {@code sharedTagTwo}] - {@code sameFunction}
      * ranks in the function tier (above the same-framework siblings, the
      * "shared functionality outranks a large shared framework" guard), then
      * the framework tier ({@code otherFramework} before the down-ranked

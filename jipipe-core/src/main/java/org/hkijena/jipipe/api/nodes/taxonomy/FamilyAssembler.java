@@ -42,12 +42,12 @@ import java.util.*;
  * node <em>classes</em>, but steps are keyed by node <em>ids</em>. The
  * assembler resolves a class to node ids via an injectable class→node-ids
  * mapping (see {@link #resolveNodeIds(Class)}), applied <em>lazily at
- * query time</em> — a step stores the raw {@code after} classes and
+ * query time</em> - a step stores the raw {@code after} classes and
  * resolves them against the mapping in effect when
  * {@link #graph}, {@link #followUps(String)}, {@link #siblingNodeIds(String)}
  * or {@link #validate(Set)} runs:
  * <ol>
- * <li>the ids registered with the assembler win — production callers build
+ * <li>the ids registered with the assembler win - production callers build
  * the mapping from the real node type registry, where node ids are stable
  * string literals that are generally <em>not</em> the class simple name. A
  * class mapped to several node ids (a shared factory class behind
@@ -357,7 +357,7 @@ public class FamilyAssembler {
      * has in its set of registered node ids, and that every step's
      * resolved {@code after} predecessors refer to node ids of steps that
      * actually exist in the same family (a dangling predecessor means the
-     * edge would silently never fire — e.g. because the predecessor's
+     * edge would silently never fire - e.g. because the predecessor's
      * class does not map to a registered step).
      *
      * @param registeredNodeIds the node ids that exist in the node type

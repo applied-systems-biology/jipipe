@@ -57,6 +57,6 @@ Project: `AIAgentTests/02-AdvancedPipelines/Paco_06.jip` (relative to `/data/JIP
 ## Template
 
 Proposed name `Convert 2D ROI to mask fans in from 14 source ids (roles: other)`, menu path
-`Patterns/ROIs/Convert 2D ROI to mask fans in from 14 source ids (roles: other)` (proposal only — not registered).
+`Patterns/ROIs/Convert 2D ROI to mask fans in from 14 source ids (roles: other)` (proposal only - not registered).
 `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/fan-in-ij1-roi-to-mask-other-2.json`.
 

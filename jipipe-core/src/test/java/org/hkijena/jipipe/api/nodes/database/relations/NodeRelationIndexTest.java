@@ -27,7 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * id and ranked by support (descending) then id.
  * <p>
  * A stale edge (one touching an id that the source did not confirm as known)
- * is dropped, never fatal — the caller resolves and warns.
+ * is dropped, never fatal - the caller resolves and warns.
  */
 class NodeRelationIndexTest {
 
@@ -68,7 +68,7 @@ class NodeRelationIndexTest {
 
     @Test
     void aThirdSourceAttachesWithoutTouchingTheIndex() {
-        // §12 "pluggability via a fake source": the index is source-agnostic —
+        // §12 "pluggability via a fake source": the index is source-agnostic -
         // it consumes ANY NodeRelationSource via source.contribute(index::addEdge)
         // (exactly the JIPipeNodeDatabase.buildRelationIndex loop). A future
         // source (starter patterns, #1333 repository templates, ...) attaches by
@@ -80,7 +80,7 @@ class NodeRelationIndexTest {
             sink.accept(new Edge("f1", "f2"));
             sink.accept(new Edge("f2", "f3"));
         };
-        // The fake "third" source — the whole point: a new contributor that
+        // The fake "third" source - the whole point: a new contributor that
         // requires zero changes to NodeRelationIndex.
         NodeRelationSource futureLike = sink -> {
             sink.accept(new Edge("s1", "f1"));   // links into the familyLike chain

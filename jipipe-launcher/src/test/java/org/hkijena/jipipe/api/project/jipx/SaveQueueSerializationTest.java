@@ -31,9 +31,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * {@link JIPipeQueuedRunnableExecutor} (a per-project queue, NOT the global
  * singleton). The two guarantees this locks in are:
  * <ol>
- *   <li>Runs enqueued on the <b>same</b> executor never overlap — same-project
+ *   <li>Runs enqueued on the <b>same</b> executor never overlap - same-project
  *       saves (manual vs. autosave) serialize.</li>
- *   <li>Runs on <b>different</b> executors are independent — a large save in
+ *   <li>Runs on <b>different</b> executors are independent - a large save in
  *       project A must not stall a save in project B.</li>
  * </ol>
  * The executor is exercised directly (no Swing window), mirroring the
@@ -71,7 +71,7 @@ class SaveQueueSerializationTest {
         CountDownLatch aStarted = new CountDownLatch(1);
         CountDownLatch aFinished = new CountDownLatch(1);
 
-        // A long save on project A (2s) — must NOT block project B.
+        // A long save on project A (2s) - must NOT block project B.
         queueA.enqueue(new TimedRun("save A (long)", 2000, activeA, maxActiveA, aFinished, aStarted));
 
         // Project B's save must START while A is still running, proving the

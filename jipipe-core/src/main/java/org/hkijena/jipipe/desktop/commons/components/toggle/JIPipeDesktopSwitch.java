@@ -27,7 +27,7 @@ import java.awt.*;
  * form panel's label column, and the control itself is a nameless toggle.
  * <p>
  * Plain {@link JToggleButton} semantics (space toggles, arrow keys, focus
- * border) are kept; only the painting is custom — a rounded track whose color
+ * border) are kept; only the painting is custom - a rounded track whose color
  * follows the selection state (off = theme border color, on = theme success
  * color) and a circular knob that slides left/right. State changes are
  * immediate (no animation).

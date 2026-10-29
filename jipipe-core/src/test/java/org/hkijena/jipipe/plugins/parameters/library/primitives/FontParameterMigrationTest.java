@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * #1339: the shared legacy font-migration logic that every migrated node's
- * {@code onDeserialized} relies on — composing the old split
+ * {@code onDeserialized} relies on - composing the old split
  * family/size/style/color parameters into one
  * {@link JIPipeFontFamilySizeStyleColorParameter} (the full family member),
  * with defaults for absent keys (Review Focus #5: old projects load intact).
@@ -51,7 +51,7 @@ class FontParameterMigrationTest {
 
     @Test
     void missingKeysFallBackToDefaultsNoNpe() throws Exception {
-        // Only the family present — size/style/color default
+        // Only the family present - size/style/color default
         JsonNode n = json("{\"font-family\":\"Serif\"}");
         JIPipeFontFamilySizeStyleColorParameter p = JIPipeFontFamilySizeStyleColorParameter.fromLegacyKeys(n, "font-family", "font-size", "font-style", "font-color", 12);
         assertEquals("Serif", p.getFamily());

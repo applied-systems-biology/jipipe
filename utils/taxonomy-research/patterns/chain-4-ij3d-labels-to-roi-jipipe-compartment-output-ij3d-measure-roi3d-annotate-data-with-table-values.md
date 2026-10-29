@@ -70,6 +70,6 @@ Proposed name
 `IJ3D Labels to 3D ROI -> Compartment output -> Extract IJ3D ROI statistics -> Annotate data with table values`, menu
 path
 `Patterns/Images/IJ3D Labels to 3D ROI -> Compartment output -> Extract IJ3D ROI statistics -> Annotate data with table values`
-(proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+(proposal only - not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/chain-4-ij3d-labels-to-roi-jipipe-compartment-output-ij3d-measure-roi3d-annotate-data-with-table-values.json`.
 

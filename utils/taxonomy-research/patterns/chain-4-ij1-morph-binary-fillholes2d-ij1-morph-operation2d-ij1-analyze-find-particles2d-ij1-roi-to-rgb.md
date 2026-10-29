@@ -69,6 +69,6 @@ Project: `AIAgentTests/01-BasicWorkshop/JSC_2025_03_Kidney_Basic/kidney.jip` (re
 Proposed name
 `Morphological hole filling 2D -> Morphological operation 2D -> Find particles 2D -> Convert 2D ROI to RGB`, menu path
 `Patterns/Images/Morphological hole filling 2D -> Morphological operation 2D -> Find particles 2D -> Convert 2D ROI to RGB`
-(proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+(proposal only - not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/chain-4-ij1-morph-binary-fillholes2d-ij1-morph-operation2d-ij1-analyze-find-particles2d-ij1-roi-to-rgb.json`.
 

@@ -29,12 +29,12 @@ import java.nio.file.Path;
  * first filter is {@code .jipx} (so they default to the modern
  * format), and {@code .jipx} projects keep round-tripping in the modern
  * format. Autosaves (the {@code (avoidDialog, updateSavePath)}
- * combination {@code (true, false)}) never prompt — they silently keep
+ * combination {@code (true, false)}) never prompt - they silently keep
  * the project's current format.
  * <p>
  * The compatibility gate ({@link #isLegacyCompatible(JIPipeProject)}):
  * when a project carries state that only the modern format can express,
- * it cannot be saved as {@code .jip} losslessly — the prompt is skipped
+ * it cannot be saved as {@code .jip} losslessly - the prompt is skipped
  * and the project is always saved as {@code .jipx}. No such state exists
  * yet; the gate is in place for when it lands.
  * <p>
@@ -69,14 +69,14 @@ public final class JIPipeProjectSaveTarget {
      * Rules:
      * <ul>
      * <li>{@code false} when {@code currentSavePath} is {@code null}
-     * (untitled project — the save chooser decides the format) or is
+     * (untitled project - the save chooser decides the format) or is
      * already a {@code .jipx} file (it keeps round-tripping);</li>
-     * <li>{@code false} for autosaves — {@code avoidDialog} without
+     * <li>{@code false} for autosaves - {@code avoidDialog} without
      * {@code updateSavePath} ({@code (true, false)}): the prompt must
      * not fire on every autosave interval;</li>
      * <li>{@code true} when {@code currentSavePath} is a legacy
      * {@code .jip} file (Ctrl+S and the chooser path);</li>
-     * <li>{@code false} for any other extension (a misnamed file — the
+     * <li>{@code false} for any other extension (a misnamed file - the
      * write dispatch will reject it later).</li>
      * </ul>
      *
@@ -105,17 +105,17 @@ public final class JIPipeProjectSaveTarget {
      * <p>
      * The save flow uses the answer:
      * <ul>
-     * <li>{@code true} (the default — every project today is expressible
-     * in {@code .jip}) — the normal rules apply: legacy projects get the
+     * <li>{@code true} (the default - every project today is expressible
+     * in {@code .jip}) - the normal rules apply: legacy projects get the
      * format prompt, modern projects save in place;</li>
-     * <li>{@code false} — the project carries state that only the modern
+     * <li>{@code false} - the project carries state that only the modern
      * format ({@code .jipx}) can hold. Saving it as {@code .jip} would
      * lose data, so the prompt is skipped and the project is ALWAYS saved
      * as {@code .jipx}.</li>
      * </ul>
      * No such state exists yet; when a jipx-exclusive feature lands
      * (e.g. the multi-graph or history extensions), it checks the
-     * project here — the save flow and its tests already honor this
+     * project here - the save flow and its tests already honor this
      * decision, no further rewiring.
      * <p>
      * Null-safe: {@code null} returns {@code true} (an unknown project
@@ -140,7 +140,7 @@ public final class JIPipeProjectSaveTarget {
      */
     public enum SaveTarget {
         /**
-         * The current save target is a legacy {@code .jip} file —
+         * The current save target is a legacy {@code .jip} file -
          * show the per-save JIPX migration prompt before saving.
          */
         JIPX_PROMPT,

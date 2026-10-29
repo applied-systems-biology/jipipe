@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 /**
  * #1339, Task 2: the full font parameter model ({@link
- * JIPipeFontFamilySizeStyleColorParameter}) — serialization round-trip,
+ * JIPipeFontFamilySizeStyleColorParameter}) - serialization round-trip,
  * lenient deserialization of missing keys (defaults), and {@code toFont()}.
  */
 class JIPipeFontFamilySizeStyleColorParameterTest {
@@ -46,7 +46,7 @@ class JIPipeFontFamilySizeStyleColorParameterTest {
 
     @Test
     void missingKeysFallBackToDefaults() throws Exception {
-        // Only color present — family/size/style must default, no NPE
+        // Only color present - family/size/style must default, no NPE
         JIPipeFontFamilySizeStyleColorParameter p =
                 JsonUtils.getObjectMapper().readerFor(JIPipeFontFamilySizeStyleColorParameter.class)
                         .readValue("{\"color\":\"#FF0000\"}");

@@ -62,7 +62,7 @@ Project: `AIAgentTests/01-BasicWorkshop/JSC_2025_06_Kidney_Exports/kidney.jip` (
 ## Template
 
 Proposed name `Annotate with file/directory name -> Filter paths -> Import image`, menu path
-`Patterns/Annotations/Annotate with file/directory name -> Filter paths -> Import image` (proposal only — not
+`Patterns/Annotations/Annotate with file/directory name -> Filter paths -> Import image` (proposal only - not
 registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/chain-3-path-to-annotation-simple-path-filter-import-imagej-imgplus-from-file.json`.
 

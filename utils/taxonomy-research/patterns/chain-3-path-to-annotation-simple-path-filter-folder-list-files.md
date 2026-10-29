@@ -61,7 +61,7 @@ Project: `AIAgentTests/03-ExampleWorkflows/Angela_Roots_38.jip` (relative to `/d
 ## Template
 
 Proposed name `Annotate with file/directory name -> Filter paths -> List files`, menu path
-`Patterns/Annotations/Annotate with file/directory name -> Filter paths -> List files` (proposal only — not registered).
+`Patterns/Annotations/Annotate with file/directory name -> Filter paths -> List files` (proposal only - not registered).
 `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/chain-3-path-to-annotation-simple-path-filter-folder-list-files.json`.
 

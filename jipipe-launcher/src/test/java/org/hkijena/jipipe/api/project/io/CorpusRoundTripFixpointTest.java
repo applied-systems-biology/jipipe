@@ -47,13 +47,13 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
  * {@link JIPipeProject#loadProject(Path, org.hkijena.jipipe.api.validation.JIPipeValidationReportContext, JIPipeValidationReport, JIPipeNotificationInbox, JIPipeProgressInfo)}
  * and {@link JIPipeProject#saveProject(Path, boolean)} and captures a
  * baseline behavior report. In phase 0 task 6 it is re-run, unchanged, after
- * the refactor, and the two reports must be <b>exactly equal</b> — the report
+ * the refactor, and the two reports must be <b>exactly equal</b> - the report
  * is therefore deliberately free of timestamps, timings, and absolute
  * temporary paths (the "corpus" field echoes the passed property value).
  * <p>
  * <b>Scope: jipipe-launcher.</b> The corpus references node ids from every
  * plugin (ij-algorithms, trackmate, tables, ...). Like
- * {@code TaxonomyFullValidationTest}, this test must live in the launcher —
+ * {@code TaxonomyFullValidationTest}, this test must live in the launcher -
  * the only module with all plugin modules on its classpath. On jipipe-core's
  * classpath {@code JIPipeGraph.nodesFromJson} would silently skip every node
  * of an unknown plugin and the baseline would be vacuous.
@@ -62,9 +62,9 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
  * <code>jipipe.jip.roundtrip.corpus</code> points at an existing directory, so
  * CI stays green. Optional properties:
  * <ul>
- * <li><code>jipipe.jip.roundtrip.report</code> — report output path
+ * <li><code>jipipe.jip.roundtrip.report</code> - report output path
  * (default: <code>&lt;corpus&gt;/.roundtrip/report.json</code>)</li>
- * <li><code>jipipe.jip.roundtrip.limit</code> — process only the first N
+ * <li><code>jipipe.jip.roundtrip.limit</code> - process only the first N
  * files (smoke runs)</li>
  * </ul>
  * <p>
@@ -72,7 +72,7 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
  * Each project is copied into a fresh working directory and all loading and
  * saving happens on the copies. The test itself only <i>fails</i> on corpus
  * pollution (a change of the top-level <code>*.jip</code> count of the corpus
- * root) or a harness bug — per-project parse/load/save failures are expected
+ * root) or a harness bug - per-project parse/load/save failures are expected
  * (the corpus contains historical files) and are captured as outcomes.
  * <p>
  * <b>Report schema</b> (a single JSON document):
@@ -92,10 +92,10 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
  * </pre>
  * Per project: the file is loaded, saved to S1, reloaded, and saved to S2.
  * <code>s1vs2SemanticallyEqual</code> is the <b>canonical</b> JSON equality
- * of S1 and S2 — the fixpoint property: saving a freshly loaded project must
+ * of S1 and S2 - the fixpoint property: saving a freshly loaded project must
  * be idempotent. <code>pvs1TopLevelChangedKeys</code> is the sorted list of
  * top-level keys that were added, removed, or changed between the original
- * file P and S1 (diagnostic only — expected for version upgrades and
+ * file P and S1 (diagnostic only - expected for version upgrades and
  * regenerated caches, and never a failure).
  * <p>
  * <b>Canonical comparison (design decision, fix round 1).</b> Both the
@@ -109,13 +109,13 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
  * calls {@code JIPipeDependency.simplifyAndMinimize(...)}, which builds a
  * fresh {@code HashSet} of freshly copied {@code JIPipeMutableDependency}
  * instances on every save, and that type has no value-based
- * {@code equals}/{@code hashCode} — so iteration order depends on
+ * {@code equals}/{@code hashCode} - so iteration order depends on
  * {@code identityHashCode} and differs between saves and between JVMs. Raw
  * Jackson equality (key-order-insensitive for objects, but array-order
  * sensitive) therefore flips on an ordering coin flip and the report would
  * not be reproducible; array ordering is provably non-semantic in the
  * current code, so erasing it does not hide any real value change (the
- * deterministic content churn — e.g. {@code null} vs {@code "null"} — is
+ * deterministic content churn - e.g. {@code null} vs {@code "null"} - is
  * still detected, identically, in both runs).
  */
 class CorpusRoundTripFixpointTest {
@@ -330,11 +330,11 @@ class CorpusRoundTripFixpointTest {
             } catch (Exception e) {
                 error = errorLine(e);
                 // Map the failing stage to an outcome:
-                //   PARSE_FAILED — the corpus file could not be read/copied
+                //   PARSE_FAILED - the corpus file could not be read/copied
                 //                  (COPY) or parsed as JSON (start of LOAD1,
                 //                  before the project is loaded);
-                //   LOAD_FAILED  — loadProject/fromJson threw (LOAD1 or LOAD2);
-                //   SAVE_FAILED  — saveProject threw (SAVE1 or SAVE2).
+                //   LOAD_FAILED  - loadProject/fromJson threw (LOAD1 or LOAD2);
+                //   SAVE_FAILED  - saveProject threw (SAVE1 or SAVE2).
                 if (stage.equals("COPY") || (stage.equals("LOAD1") && pTree == null)) {
                     outcome = "PARSE_FAILED";
                 } else if (stage.equals("LOAD1") || stage.equals("LOAD2")) {
@@ -352,7 +352,7 @@ class CorpusRoundTripFixpointTest {
             entry.put("outcome", outcome);
             outcomes.put(outcome, outcomes.get(outcome).asInt() + 1);
             entries.add(entry);
-            System.out.println("[jipx-roundtrip] " + outcome + " " + input + (error == null ? "" : " — " + error));
+            System.out.println("[jipx-roundtrip] " + outcome + " " + input + (error == null ? "" : " - " + error));
         }
 
         // The harness must not have polluted the corpus.

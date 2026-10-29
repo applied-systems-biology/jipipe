@@ -523,7 +523,7 @@ builder.addDataEntity(new FileEntity.FileEntityBuilder()
 - [ ] **Step 6: Add keywords to the root data entity**
 
 In `addROCrateMainEntity()` or in `createROCrateBuilder()`, add keywords. The simplest approach is to add it in
-`createROCrateBuilder()` — but the root data entity is created by the builder. Add after `builder.build()` in `run()`,
+`createROCrateBuilder()` - but the root data entity is created by the builder. Add after `builder.build()` in `run()`,
 before `addROCrateMainEntity()`:
 
 Actually, the root data entity is accessible via `crate.getRootDataEntity()` after build. In `run()`, after
@@ -621,7 +621,7 @@ git commit -m "Add advanced Docker settings to RO-Crate publisher assistant"
 
 ---
 
-## Task 5: Instrumentation Operation — create_ro_crate
+## Task 5: Instrumentation Operation - create_ro_crate
 
 **Files:**
 
@@ -900,7 +900,7 @@ git commit -m "Add Dockerfile and build script for JIPipe Docker image"
 
 ---
 
-## Task 7: CI Jobs — docker_build_push and verify_ro_crate
+## Task 7: CI Jobs - docker_build_push and verify_ro_crate
 
 **Files:**
 

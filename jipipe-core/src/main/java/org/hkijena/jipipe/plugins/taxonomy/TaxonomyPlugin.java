@@ -167,7 +167,7 @@ public class TaxonomyPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                     return new IconRef(name);
                 }
             } catch (Throwable ignored) {
-                // a name that does not resolve to an icon — skip
+                // a name that does not resolve to an icon - skip
             }
         }
         return null;
@@ -245,7 +245,7 @@ public class TaxonomyPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 new RoiDataFunction(),
                 new FilamentDataFunction(),
                 new MiscDataFunction(),
-                // data — full-registry audit leaves (curated nodes previously in
+                // data - full-registry audit leaves (curated nodes previously in
                 // the "Misc. data" catch-all)
                 new FileSystemFunction(),
                 new OmeroFunction(),
@@ -261,7 +261,7 @@ public class TaxonomyPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 new ResamplingFunction(),
                 new MergingSplittingFunction(),
                 new ColorStackFunction(),
-                // images — full-registry audit leaves (auto-discovered IJ2/CLIJ2
+                // images - full-registry audit leaves (auto-discovered IJ2/CLIJ2
                 // nodes + curated strays that previously fell to Miscellaneous)
                 new ImageArithmeticFunction(),
                 new ImageComparisonFunction(),
@@ -313,7 +313,7 @@ public class TaxonomyPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 new PlotBarFunction(),
                 new PlotHeatmapFunction(),
                 new PlotMiscFunction(),
-                // export — organized by WHAT is exported
+                // export - organized by WHAT is exported
                 new ExportImagesFunction(),
                 new ExportTablesFunction(),
                 new ExportRoiFunction(),
@@ -323,15 +323,15 @@ public class TaxonomyPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 new GraphCompartmentOutputsFunction(),
                 new GraphWrappersFunction(),
                 new GraphDebugFunction(),
-                // misc — full-registry audit leaves (curated nodes previously in
+                // misc - full-registry audit leaves (curated nodes previously in
                 // the "Miscellaneous" catch-all)
                 new DataUtilitiesFunction(),
                 new TextMarkupFunction(),
                 new ScriptingFunction(),
                 new MiscellaneousUnassignedFunction(),
-                // misc — templates catch-all (template-taxonomy integration)
+                // misc - templates catch-all (template-taxonomy integration)
                 new TemplatesFunction(),
-                // scripting — language sub-leaves (re-clustering audit: users
+                // scripting - language sub-leaves (re-clustering audit: users
                 // interested in one language get a dedicated branch; the
                 // matching framework facet is the orthogonal filter)
                 new ScriptingPythonFunction(),
@@ -367,7 +367,7 @@ public class TaxonomyPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
         // Name-inference fallback (core policy, set in exactly this one place):
         // discovered nodes whose names match no keyword pattern land in
-        // "Miscellaneous unassigned" — the deliberate 6.0.0 behavior change
+        // "Miscellaneous unassigned" - the deliberate 6.0.0 behavior change
         // from the old Miscellaneous default of TaxonomyAutoAssignment.
         JIPipe.getNodeTaxonomyService().setInferenceFallback(new MiscellaneousUnassignedFunction());
 
@@ -387,15 +387,15 @@ public class TaxonomyPlugin extends JIPipePrepackagedDefaultJavaPlugin {
      * The 64 curated, deduplicated patterns (185 research artifacts: the
      * statistical fan shapes and the compartment-sink patterns are excluded
      * as workflow-specific noise, and the survivors' shape-label duplicates
-     * are collapsed — see {@code utils/generate-system-template-metadata.py})
+     * are collapsed - see {@code utils/generate-system-template-metadata.py})
      * ship as
      * bundled resources under
      * {@code org/hkijena/jipipe/plugins/nodetemplate/patterns/}:
      * <ul>
      *   <li>one raw {@code JIPipeGraph}-shaped JSON per pattern
-     *       ({@code {"nodes": …, "edges": …}}) — the exact shape
+     *       ({@code {"nodes": …, "edges": …}}) - the exact shape
      *       {@link JIPipeNodeTemplate#getGraph()} deserializes;</li>
-     *   <li>{@code system-templates.json} — a committed metadata sidecar
+     *   <li>{@code system-templates.json} - a committed metadata sidecar
      *       mapping pattern id → {@code {name, description, functionId,
      *       file}} (no runtime markdown parsing).</li>
      * </ul>
@@ -404,7 +404,7 @@ public class TaxonomyPlugin extends JIPipePrepackagedDefaultJavaPlugin {
      * {@code taxonomyFunction} is the sidecar's {@code functionId} (a top-level
      * branch, computed by the generator), and its icon/hue are derived from the
      * LIVE function registry at registration time (the top-level branch's
-     * {@code getColorHue()} / {@code getIcon()} — never stored in the sidecar).
+     * {@code getColorHue()} / {@code getIcon()} - never stored in the sidecar).
      * The {@code source} is left at its default: {@code addFromPlugin}
      * force-sets it to {@link JIPipeNodeTemplate#SOURCE_EXTENSION}
      * ("Extension"), which is what makes these System-scoped

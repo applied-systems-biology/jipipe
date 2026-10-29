@@ -29,7 +29,7 @@ import java.util.Set;
  * classification audit, Phase 3) to a first-class top-level branch ("Scripting
  * is turned into a proper function", user ruling): its script/process leaves
  * re-parented to it, and it is the first in-tree user of the deterministic
- * hue auto-picker — its hue is not overridden but derived from the
+ * hue auto-picker - its hue is not overridden but derived from the
  * Intelligence family cell ({@link JIPipeNodeTaxonomyFunction#getColorHue()}
  * default).
  */

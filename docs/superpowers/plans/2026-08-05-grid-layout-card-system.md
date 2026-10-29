@@ -20,7 +20,7 @@ by the theme system. The statistics screen is the first consumer.
 - All new layout code in `org.hkijena.jipipe.desktop.commons.components.layouts`
 - All new card code in `org.hkijena.jipipe.desktop.commons.components.cards`
 - Follow existing code conventions (copyright headers not required for new files unless matching neighboring files)
-- JUnit Jupiter inherited from parent POM — no pom changes needed
+- JUnit Jupiter inherited from parent POM - no pom changes needed
 - No comments in code unless explicitly requested
 
 ---
@@ -31,16 +31,16 @@ by the theme system. The statistics screen is the first consumer.
 
 **Layout system** (`jipipe-core/src/main/java/org/hkijena/jipipe/desktop/commons/components/layouts/`):
 
-- `JIPipeDesktopBreakpoint.java` — enum with pixel thresholds
-- `JIPipeDesktopColumnConstraints.java` — immutable constraint object (span, offset, breakpoint overrides)
-- `JIPipeDesktopColumnLayout.java` — `LayoutManager2` implementation (12-column grid)
-- `JIPipeDesktopRow.java` — `JPanel` with max-width + `JIPipeDesktopColumnLayout`
-- `JIPipeDesktopFluidRow.java` — `JPanel` filling 100% width + `JIPipeDesktopColumnLayout`
+- `JIPipeDesktopBreakpoint.java` - enum with pixel thresholds
+- `JIPipeDesktopColumnConstraints.java` - immutable constraint object (span, offset, breakpoint overrides)
+- `JIPipeDesktopColumnLayout.java` - `LayoutManager2` implementation (12-column grid)
+- `JIPipeDesktopRow.java` - `JPanel` with max-width + `JIPipeDesktopColumnLayout`
+- `JIPipeDesktopFluidRow.java` - `JPanel` filling 100% width + `JIPipeDesktopColumnLayout`
 
 **Card system** (`jipipe-core/src/main/java/org/hkijena/jipipe/desktop/commons/components/cards/`):
 
-- `JIPipeDesktopCardVariant.java` — enum of contextual variants
-- `JIPipeDesktopCard.java` — card component with header/body/footer + builder
+- `JIPipeDesktopCardVariant.java` - enum of contextual variants
+- `JIPipeDesktopCard.java` - card component with header/body/footer + builder
 
 **Test files:**
 
@@ -51,7 +51,7 @@ by the theme system. The statistics screen is the first consumer.
 
 **Theme:**
 
-- `jipipe-core/src/main/java/org/hkijena/jipipe/desktop/commons/theme/JIPipeDesktopModernThemeStyle.java` — add `info`
+- `jipipe-core/src/main/java/org/hkijena/jipipe/desktop/commons/theme/JIPipeDesktopModernThemeStyle.java` - add `info`
   color
 - `jipipe-core/src/main/resources/org/hkijena/jipipe/styles/JIPipe Classic Light.json`
 - `jipipe-core/src/main/resources/org/hkijena/jipipe/styles/JIPipe Dark.json`
@@ -233,7 +233,7 @@ git commit -m "Add JIPipeDesktopBreakpoint enum (#1304)"
 **Interfaces:**
 
 - Consumes: `JIPipeDesktopBreakpoint` from Task 2
-- Produces: `JIPipeDesktopColumnConstraints` — immutable constraint object
+- Produces: `JIPipeDesktopColumnConstraints` - immutable constraint object
 - Produces: `new JIPipeDesktopColumnConstraints(int defaultSpan)`
 - Produces: `withSpan(JIPipeDesktopBreakpoint, int)` → `JIPipeDesktopColumnConstraints` (new instance)
 - Produces: `withOffset(int)` → `JIPipeDesktopColumnConstraints` (new instance)
@@ -319,7 +319,7 @@ class JIPipeDesktopColumnConstraintsTest {
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `mvn test -pl jipipe-core -Dtest=JIPipeDesktopColumnConstraintsTest`
-Expected: FAIL — class not found
+Expected: FAIL - class not found
 
 - [ ] **Step 3: Write the implementation**
 
@@ -398,7 +398,7 @@ public class JIPipeDesktopColumnConstraints {
 - [ ] **Step 4: Run test to verify it passes**
 
 Run: `mvn test -pl jipipe-core -Dtest=JIPipeDesktopColumnConstraintsTest`
-Expected: PASS — 7 tests
+Expected: PASS - 7 tests
 
 - [ ] **Step 5: Commit**
 
@@ -421,7 +421,7 @@ git commit -m "Add JIPipeDesktopColumnConstraints with breakpoint resolution (#1
 **Interfaces:**
 
 - Consumes: `JIPipeDesktopBreakpoint` from Task 2, `JIPipeDesktopColumnConstraints` from Task 3
-- Produces: `new JIPipeDesktopColumnLayout(int gutter)` — `LayoutManager2`
+- Produces: `new JIPipeDesktopColumnLayout(int gutter)` - `LayoutManager2`
 - Produces: Accepts `JIPipeDesktopColumnConstraints` as constraint objects via `addLayoutComponent(Component, Object)`
 
 - [ ] **Step 1: Write the failing test**
@@ -530,7 +530,7 @@ class JIPipeDesktopColumnLayoutTest {
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `mvn test -pl jipipe-core -Dtest=JIPipeDesktopColumnLayoutTest`
-Expected: FAIL — class not found
+Expected: FAIL - class not found
 
 - [ ] **Step 3: Write the implementation**
 
@@ -719,7 +719,7 @@ public class JIPipeDesktopColumnLayout implements LayoutManager2 {
 - [ ] **Step 4: Run test to verify it passes**
 
 Run: `mvn test -pl jipipe-core -Dtest=JIPipeDesktopColumnLayoutTest`
-Expected: PASS — 7 tests
+Expected: PASS - 7 tests
 
 - [ ] **Step 5: Commit**
 
@@ -740,8 +740,8 @@ git commit -m "Add JIPipeDesktopColumnLayout 12-column grid LayoutManager2 (#130
 **Interfaces:**
 
 - Consumes: `JIPipeDesktopColumnLayout` from Task 4
-- Produces: `new JIPipeDesktopRow()` / `new JIPipeDesktopRow(int gutter)` — `JPanel` with max-width 1140px
-- Produces: `new JIPipeDesktopFluidRow()` / `new JIPipeDesktopFluidRow(int gutter)` — `JPanel` filling 100% width
+- Produces: `new JIPipeDesktopRow()` / `new JIPipeDesktopRow(int gutter)` - `JPanel` with max-width 1140px
+- Produces: `new JIPipeDesktopFluidRow()` / `new JIPipeDesktopFluidRow(int gutter)` - `JPanel` filling 100% width
 
 - [ ] **Step 1: Create `JIPipeDesktopRow`**
 
@@ -978,7 +978,7 @@ class JIPipeDesktopCardTest {
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `mvn test -pl jipipe-core -Dtest=JIPipeDesktopCardTest`
-Expected: FAIL — class not found
+Expected: FAIL - class not found
 
 - [ ] **Step 3: Write the implementation**
 
@@ -1210,7 +1210,7 @@ public class JIPipeDesktopCard extends JPanel {
 - [ ] **Step 4: Run test to verify it passes**
 
 Run: `mvn test -pl jipipe-core -Dtest=JIPipeDesktopCardTest`
-Expected: PASS — 8 tests
+Expected: PASS - 8 tests
 
 - [ ] **Step 5: Commit**
 
@@ -1335,7 +1335,7 @@ existing `isTimeTracked()` override):
 ```
 
 Apply the same pattern to all 16 classes using the overrides table above. For classes where variant is `Default` and
-span is `3`, they inherit the defaults — but still override `getIcon32()`.
+span is `3`, they inherit the defaults - but still override `getIcon32()`.
 
 Classes that need ONLY `getIcon32()` override (variant=Default, span=3):
 
@@ -1403,7 +1403,7 @@ Add this test method to `JIPipeStatisticsRegistryTest.java`:
 - [ ] **Step 3: Compile and run tests**
 
 Run: `mvn test -pl jipipe-core -Dtest=JIPipeStatisticsRegistryTest`
-Expected: PASS — 4 tests (3 existing + 1 new)
+Expected: PASS - 4 tests (3 existing + 1 new)
 
 - [ ] **Step 4: Commit**
 

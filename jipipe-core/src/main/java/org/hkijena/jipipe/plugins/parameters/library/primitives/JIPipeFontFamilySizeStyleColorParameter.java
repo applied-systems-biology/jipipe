@@ -25,11 +25,11 @@ import java.util.Objects;
 /**
  * The full font parameter (#1339, Task 2): family + size + style + color in
  * one value, so a text-rendering node exposes a single coherent "font" instead
- * of three separate parameters. The heaviest member of the font family — it
+ * of three separate parameters. The heaviest member of the font family - it
  * carries every capability, so the adaptive editor shows all four sections for
  * it.
  * <p>
- * All four fields are always present (never null) — missing JSON keys fall
+ * All four fields are always present (never null) - missing JSON keys fall
  * back to defaults on deserialization, which keeps old projects (that stored
  * the fields separately, if at all) loadable. The {@code Color} field uses the
  * mapper's standard hex-string codec, like the {@code color} parameter type.
@@ -130,7 +130,7 @@ public class JIPipeFontFamilySizeStyleColorParameter implements JIPipeFontValue,
 
     /**
      * @return the font as an {@link Font} (the color is <em>not</em> part of
-     * a {@link Font} — use {@link #getColor()} for it).
+     * a {@link Font} - use {@link #getColor()} for it).
      */
     public Font toFont() {
         String f = family;

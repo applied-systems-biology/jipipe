@@ -1,6 +1,6 @@
-# Task 5 — raw tables (family coverage & follow-up quality)
+# Task 5 - raw tables (family coverage & follow-up quality)
 
-## 3a — declared after-edges vs corpus wiring
+## 3a - declared after-edges vs corpus wiring
 
 ### `jipipe:family:plotting` declared after-edges
 
@@ -50,7 +50,7 @@
 | `trackmate-visualize-spots` → `trackmate-visualize-tracks`            |           4 |        4 |
 | `trackmate-filter-tracks` → `trackmate-tracks-to-roi`                 |           2 |        2 |
 
-## 3b — same-framework real edges, no declared family relation (all pairs)
+## 3b - same-framework real edges, no declared family relation (all pairs)
 
 | framework                    | A → B                                                                                       | occurrences | projects |
 |------------------------------|---------------------------------------------------------------------------------------------|------------:|---------:|
@@ -862,7 +862,7 @@
 | `jipipe:framework:imagej1`   | `import-imagej-imgplus-from-file` → `ij1-threshold-local-auto2d`                            |           1 |        1 |
 | `jipipe:framework:imagej1`   | `import-imagej-imgplus-from-file` → `ij1-threshold-manual2d-8u`                             |           1 |        1 |
 
-## 3b — per-framework distinct (A, B) pair counts
+## 3b - per-framework distinct (A, B) pair counts
 
 | framework                    | distinct pairs | occurrences |
 |------------------------------|---------------:|------------:|
@@ -874,7 +874,7 @@
 | `jipipe:framework:jipipedl`  |              2 |           4 |
 | `jipipe:framework:cellpose4` |              1 |           6 |
 
-## 3c — low-consumer recompute (all types)
+## 3c - low-consumer recompute (all types)
 
 | data type T                        | distinct corpus consumers | consumer node ids                                                    | producer node ids (registry capability)                                                                                                                                                                                                                                                                                                                       | producer frameworks                                 | classification |
 |------------------------------------|--------------------------:|----------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------|----------------|

@@ -31,7 +31,7 @@ mvn javadoc:javadoc
 # Build with ImageJ integration (recommended for development)
 mvn clean compile
 
-# NOTE: Do NOT use -Dimagej.enabled=true — it is a legacy flag that is not
+# NOTE: Do NOT use -Dimagej.enabled=true - it is a legacy flag that is not
 # applicable for modern SciJava-based ImageJ and is no longer used.
 ```
 
@@ -84,18 +84,18 @@ Since 6.0.0, node categorization no longer uses the legacy `JIPipeNodeTypeCatego
 entirely). Nodes are assigned to a **function tree** + **framework** + **spatial dimensions** + **tags** (see the
 `api/nodes/taxonomy/` package):
 
-- **Functions** — `org.hkijena.jipipe.api.nodes.taxonomy.functions`: a tree of 13 top-level branches (Images, Tables,
+- **Functions** - `org.hkijena.jipipe.api.nodes.taxonomy.functions`: a tree of 13 top-level branches (Images, Tables,
   Data sources, Tracking, …) with 48 leaves. Assign a node with
-  `@ConfigureJIPipeNode(function = {SomeLeafFunction.class, OptionalSecondaryFunction.class})` — the first entry is the
+  `@ConfigureJIPipeNode(function = {SomeLeafFunction.class, OptionalSecondaryFunction.class})` - the first entry is the
   primary function, the rest are secondary (analogous to former menu aliases).
-- **Frameworks** — `org.hkijena.jipipe.api.nodes.taxonomy.frameworks` (e.g. `CoreFramework`):
+- **Frameworks** - `org.hkijena.jipipe.api.nodes.taxonomy.frameworks` (e.g. `CoreFramework`):
   `@ConfigureJIPipeNode(framework = CoreFramework.class)`.
-- **Spatial dimensions / tags** — `@ConfigureJIPipeNode(spatialDimensions = {SPATIAL_2D})` (constants of
+- **Spatial dimensions / tags** - `@ConfigureJIPipeNode(spatialDimensions = {SPATIAL_2D})` (constants of
   `JIPipeNodeTaxonomySpatialDimension`, a closed set: 2D/3D) and `@JIPipeNodeTaxonomyTags("…")`.
 
 Rules:
 
-- Function/framework IDs are registration IDs and are persisted in saved projects — use **stable string literals**,
+- Function/framework IDs are registration IDs and are persisted in saved projects - use **stable string literals**,
   never code-derived values (the same rule as node/data-type IDs, below).
 - Every registered node **must** have a primary function. This is enforced by the branch gate
   `TaxonomyFullValidationTest` (jipipe-launcher; runs the production validation over the entire registry and fails on
@@ -168,20 +168,20 @@ For new modules, add JUnit 5 dependencies and create `src/test/java` structure f
 
 ### Test Policy: Do Not Test Trivial Things (IMPORTANT)
 
-**Tests cover non-trivial behavior and contracts — not the re-verification of
+**Tests cover non-trivial behavior and contracts - not the re-verification of
 obvious code or UI structure** (ruling 2026-10-20; extends the "no Swing
-interaction tests" rule — the user verifies the Swing UI by eye in the app:
+interaction tests" rule - the user verifies the Swing UI by eye in the app:
 "I test it myself", interaction tests were removed as "just messy").
 
 - **Swing UI structure: no tests.** Do NOT assert low-level component
-  structure — tab titles/order, component visibility or enabled toggles,
+  structure - tab titles/order, component visibility or enabled toggles,
   border/padding/insets, section collapse state, cell-renderer details,
   dialog layout. If a UI change looks right in the code, it is done; the
   user checks the running app and reports what is wrong.
 - **Trivial code: no tests.** No tests for getters/setters, pure
-  delegation, simple if/else, or constants — and no test whose assertion
+  delegation, simple if/else, or constants - and no test whose assertion
   just restates the implementation ("set X, assert X == X").
-- **What DOES warrant a test:** non-trivial logic — algorithms, data
+- **What DOES warrant a test:** non-trivial logic - algorithms, data
   transformations, serialization round-trips, ID stability, ordering/
   concurrency contracts, idempotency (generators are byte-stable),
   fail-closed guards, registry/ship-set contracts (e.g.
@@ -198,7 +198,7 @@ aware that plugins contribute to that registry** (ruling 2026-10-22: "All
 tests should be designed aware of plugins").
 
 - **Never pin an exact registry size** for anything a plugin can register
-  into — nodes, datatypes, taxonomy functions/frameworks, expressions,
+  into - nodes, datatypes, taxonomy functions/frameworks, expressions,
   parameters, menu items, ... A test of the form
   `assertEquals(N, JIPipe.getNodes().getFunctions().all().size())` breaks the
   moment any dev adds one taxonomy member through their plugin, even though
@@ -223,7 +223,7 @@ cross-compatibility. **Patching is only possible while the affected classes are 
 - Any test that touches `ij.*` classes (e.g. `new ij.process.AutoThresholder()`, `ShortProcessor`, `IJ.*`) loads them
   **unpatched** if the patcher has not run yet.
 - If a *later* test then creates the SciJava context (`JIPipe.ensureInstance()` → `new net.imagej.ImageJ()`),
-  `LegacyService` fails with `No _hooks field found in ij.IJ` — **an order-dependent failure** (passes locally in one
+  `LegacyService` fails with `No _hooks field found in ij.IJ` - **an order-dependent failure** (passes locally in one
   order, fails in CI in another).
 - **Protection already in place:** [
   `ImageJLegacyPatcherLauncherSessionListener`](jipipe-core/src/test/java/org/hkijena/jipipe/ImageJLegacyPatcherLauncherSessionListener.java)
@@ -231,18 +231,18 @@ cross-compatibility. **Patching is only possible while the affected classes are 
   `LegacyInjector.preinit()` at launcher-session start, before any test class is loaded. Do not remove it or its
   service-file registration.
 - **Rules for new tests:**
-    - Do NOT call `LegacyInjector.preinit()` yourself, and do NOT add `--add-opens`/javaagent workarounds — the listener
+    - Do NOT call `LegacyInjector.preinit()` yourself, and do NOT add `--add-opens`/javaagent workarounds - the listener
       already handles this for the whole suite.
     - If you add a test that initializes ImageJ1 classes *before* any `JIPipe.ensureInstance()` test runs, keep the
       listener intact; if you observe `No _hooks field found in ij.IJ`, the listener registration or ordering is
-      broken — check the service file first.
+      broken - check the service file first.
     - When adding a new module with tests that use `ij.*` or `JIPipe.ensureInstance()`, mirror the jipipe-core setup:
       `junit-platform-launcher` test dependency + a `LauncherSessionListener` service registration (or extend the core
       listener's module).
     - Regression guard: [
       `ImageJ1ClassLoadingOrderTest`](jipipe-core/src/test/java/org/hkijena/jipipe/utils/threshold/ImageJ1ClassLoadingOrderTest.java)
       loads ImageJ1 classes before `JIPipe.ensureInstance()` to catch ordering regressions.
-- **Never "fix" this by excluding the failing test** — the underlying patcher ordering is the actual contract.
+- **Never "fix" this by excluding the failing test** - the underlying patcher ordering is the actual contract.
 
 ## IDE Development
 
@@ -289,7 +289,7 @@ and pipelines** (e.g. as `field-class-id` in project JSON). They must never be d
   ID. A rename/refactor would silently break every saved project that uses the ID.
 - **Always** use an explicit string literal ID (e.g. `"ij1-threshold-local-auto2d-16u:method"`).
 - **Exception:** IDs for third-party features that are integrated automatically (e.g. discovered ImageJ plugins) may be
-  generated from the third-party's own identifiers — never from JIPipe's Java code.
+  generated from the third-party's own identifiers - never from JIPipe's Java code.
 - If you inherit a legacy code-derived ID, freeze its current value as a string literal (projects contain it verbatim)
   and keep it unchanged.
 
@@ -381,7 +381,7 @@ operations. Key commands: `list_projects`, `select_project`, `query_graph`, `que
 ## Distribution Build Scripts
 
 The ZIP build scripts (`dist/zip/build.sh`, `dist/zip/build-release.sh`, `dist/zip/build-no-dependencies.sh`) are
-**generated files** — do not edit them directly.
+**generated files** - do not edit them directly.
 
 ### How to add or update an external dependency
 

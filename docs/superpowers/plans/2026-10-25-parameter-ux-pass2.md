@@ -1,4 +1,4 @@
-# Parameter Editor UX — Pass 2 Implementation Plan
+# Parameter Editor UX - Pass 2 Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:
 > executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
@@ -21,16 +21,16 @@ propagates to the hex field. The number slider is a self-contained custom-painte
 ## Global Constraints
 
 - Java 21, Maven. Build check: `mvn -q -pl jipipe-core compile`. Tests: `mvn -q -pl jipipe-core test -Dtest=<Class>`.
-  Full build: `mvn -q install -DskipTests` (needed before the screenshot harness — its classpath resolves jipipe modules
+  Full build: `mvn -q install -DskipTests` (needed before the screenshot harness - its classpath resolves jipipe modules
   from `~/.m2`).
 - **No new external dependencies.** Swing only.
-- Registration IDs are **stable string literals** — never code-derived (AGENTS.md). No new registered parameter types in
+- Registration IDs are **stable string literals** - never code-derived (AGENTS.md). No new registered parameter types in
   this pass (the slider is an annotation enum on the existing `NumberParameterSettings`).
 - **No Swing UI-structure tests** (tab titles, component visibility, insets, renderer details, dialog layout, button
   enabled-state). UI is verified by the user in the running app; tests only for non-trivial logic (spec §10): list
   pagination index math, RichSelectionBox key model, color-dialog refresh regression, number-slider math.
 - ImageJ legacy patcher constraint (AGENTS.md): do not call `LegacyInjector.preinit()` from tests, do not add
-  `--add-opens` workarounds. Tests that boot `JIPipe.ensureInstance()` are fine — the `LauncherSessionListener` handles
+  `--add-opens` workarounds. Tests that boot `JIPipe.ensureInstance()` are fine - the `LauncherSessionListener` handles
   ordering.
 - AWT-backed tests (any test that shows a `JDialog`/popup) must **skip when headless**
   (`Assumptions.assumeTrue(false, "headless environment")` in `@BeforeAll`, mirroring `TemplateManagementDialogTest`).
@@ -54,35 +54,35 @@ propagates to the hex field. The number slider is a self-contained custom-painte
 
 ## Review Focus
 
-These input classes / failure modes the spec implies but no unit test fully exercises — each gets a check in its owning
+These input classes / failure modes the spec implies but no unit test fully exercises - each gets a check in its owning
 task:
 
-1. **`@ListParameterSettings(withScrollBar=true)` lists** — the fixed-height scrolling escape hatch must keep working
+1. **`@ListParameterSettings(withScrollBar=true)` lists** - the fixed-height scrolling escape hatch must keep working
    and pagination must NOT apply (spec §3.1). A reasonable person expects the old override to still scroll, not
    paginate. → Task 3 (pagination model test: `paginationEnabled()==false` → `visibleCount()==total`,
    `loadMoreRemaining()==0`) + VLM (a `withScrollBar` list, if reachable in the showcase; else manual).
-2. **Unbounded number param annotated `style=SLIDER`** (`max==POSITIVE_INFINITY`) — must fall back to FIELD with a
+2. **Unbounded number param annotated `style=SLIDER`** (`max==POSITIVE_INFINITY`) - must fall back to FIELD with a
    one-time log warning, never render a broken/degenerate slider (spec §7.3). → Task 8 (pure `shouldUseSlider` decision
    test: unbounded → false) + VLM (the `panel-number-slider` showcase shows the slider for a bounded param; an unbounded
-   SLIDER param shows a field — verify by adding an unbounded SLIDER field to the showcase or manual).
-3. **Alpha-capable color dialog after the `refresh()` fix** — dragging a rail must update the hex field *including* the
+   SLIDER param shows a field - verify by adding an unbounded SLIDER field to the showcase or manual).
+3. **Alpha-capable color dialog after the `refresh()` fix** - dragging a rail must update the hex field *including* the
    alpha digits (`#RRGGBBAA`); a non-alpha dialog hides the α rail and 8-digit input normalizes to 6-digit (spec
    §6.4). → Task 7 (refresh regression test drives a rail and asserts the hex field text changes) + VLM
    (`dialog-color.png` shows a changed hex; the pass-1 alpha round-trip still holds).
 4. **Grouped (two-pane) RichSelectionBox keyboard nav** (e.g. the font-family picker's Monospace/Serif/Sans-serif
-   groups) — Tab cycles search → list A → list B and Enter-in-search confirms the first filtered item in multi-mode too
+   groups) - Tab cycles search → list A → list B and Enter-in-search confirms the first filtered item in multi-mode too
    (spec §4). A reasonable person using a grouped picker expects the same keyboard model as the single-pane case. → Task
    5 (key-model test covers the two-pane focus cycle + Enter-in-search).
-5. **Modal editing a *collection* list** (nested mini form panels, not flat strings) — the modal must render
+5. **Modal editing a *collection* list** (nested mini form panels, not flat strings) - the modal must render
    fully-editable nested rows and its search filter matches each item's short description text (spec §3.3). → Task 4
-   (VLM: render a collection-list modal; a plain string list's modal is the easier path — verify both).
-6. **Font popout under a large theme font** — the "no clipped control heights" rule (spec §5) must hold when the active
+   (VLM: render a collection-list modal; a plain string list's modal is the easier path - verify both).
+6. **Font popout under a large theme font** - the "no clipped control heights" rule (spec §5) must hold when the active
    theme font is bigger than the default; the size field must not clip at any theme font size. → Task 6 (VLM: render
    `panel-font` at the default theme; if the user runs a larger-font theme, re-verify manually).
 
 ---
 
-### Task 1: S1 — switch ON-track color → primary
+### Task 1: S1 - switch ON-track color → primary
 
 **Files:**
 
@@ -127,7 +127,7 @@ git commit -m "fix(desktop): boolean switch ON-track uses primary color, not suc
 
 ---
 
-### Task 2: S2a — `createHeaderControls()` extension point + list header controls (additive)
+### Task 2: S2a - `createHeaderControls()` extension point + list header controls (additive)
 
 **Files:**
 
@@ -242,7 +242,7 @@ public <T extends Component> T addToFormStacked(T component, Component descripti
 }
 ```
 
-(`COLUMN_LABELLED_CONTENT == 1` is the content column; `COLUMN_PROPERTIES == 2`, `COLUMN_LABEL_OR_WIDE_CONTENT == 0` —
+(`COLUMN_LABELLED_CONTENT == 1` is the content column; `COLUMN_PROPERTIES == 2`, `COLUMN_LABEL_OR_WIDE_CONTENT == 0` -
 the existing constants in the file.)
 
 - [ ] **Step 3: Pass header controls from the parameter form panel**
@@ -260,7 +260,7 @@ In `JIPipeDesktopParameterFormPanel`'s render loop (around line 545), the stacke
 - [ ] **Step 4: Override `createHeaderControls()` in both list editors (additive)**
 
 In each of `JIPipeDesktopListParameterEditorUI` and `JIPipeDesktopParameterCollectionListEditorUI`, add the override
-(the pass-1 footer and its `addButton`/`menuButton` fields remain untouched in this task — Task 3 consolidates them):
+(the pass-1 footer and its `addButton`/`menuButton` fields remain untouched in this task - Task 3 consolidates them):
 
 ```java
 @Override
@@ -295,7 +295,7 @@ private static void applyFlatHeaderButton(JButton b) {
 ```
 
 If the editors share this exact method, keep a copy in each for now (Task 3 moves it into the shared base). Note: the
-header `countLabel` is the same field the footer uses — both will show the count until Task 3 removes the footer.
+header `countLabel` is the same field the footer uses - both will show the count until Task 3 removes the footer.
 
 - [ ] **Step 5: Compile**
 
@@ -306,7 +306,7 @@ Expected: BUILD SUCCESS.
 
 Run the harness with `--only panel-import-file-list,panel-stack-to-montage`. `da_describe_image`: the list parameter's
 **name row** now carries `Add`, the `n items` count, and the `⋯` button, left-associated with the label. (The old bottom
-footer is still present in this intermediate state — expected, removed in Task 3; `Edit` is also absent until Task 4.)
+footer is still present in this intermediate state - expected, removed in Task 3; `Edit` is also absent until Task 4.)
 No other parameter's name row changed (no non-list editor overrides `createHeaderControls()`).
 
 - [ ] **Step 7: Commit**
@@ -322,22 +322,22 @@ git commit -m "feat(desktop): createHeaderControls() extension point; list Add/c
 
 ---
 
-### Task 3: S2b — shared list-editor base; pagination, grip menu, no hover-×, no footer
+### Task 3: S2b - shared list-editor base; pagination, grip menu, no hover-×, no footer
 
 **Why a base class:** `JIPipeDesktopListParameterEditorUI` (499 lines) and
-`JIPipeDesktopParameterCollectionListEditorUI` (508 lines) are ~95% duplicated chrome — `initialize()`, `reload()`,
+`JIPipeDesktopParameterCollectionListEditorUI` (508 lines) are ~95% duplicated chrome - `initialize()`, `reload()`,
 `EntryComponents`, `GripDragTransferHandler`, `GripTransferable`, `handleSelection`,
 `selectAll/selectNone/invertSelection`, `updateSelectionVisualizations`, `removeSelectedEntries`, `clearList`,
 `addNewEntry`, `updateCountLabel`, `indexByEntry`, `moveEntryUp/Down/To`, and the **static** `moveItem(list, from, to)`.
 The spec says S2 "applies identically" to both, and Task 4's modal must reuse the row builder from a single place. So
 this task extracts a shared base for the **stateless / parameter-level** chrome; the pass-1 *selection* methods are the
-one exception — inline drops them (grip = menu, no selection) and the modal re-implements them over its own state (see
+one exception - inline drops them (grip = menu, no selection) and the modal re-implements them over its own state (see
 the note in the Interfaces block). The concrete classes become thin subclasses.
 
 **Files:**
 
 - Create: `jipipe-core/src/main/java/org/hkijena/jipipe/plugins/parameters/ui/api/JIPipeListParameterEditorUI.java` (the
-  shared base — holds all the chrome)
+  shared base - holds all the chrome)
 - Create: `jipipe-core/src/main/java/org/hkijena/jipipe/plugins/parameters/ui/api/ListPaginationModel.java`
 - Test: `jipipe-core/src/test/java/org/hkijena/jipipe/plugins/parameters/ui/api/ListPaginationModelTest.java`
 - Modify:
@@ -346,7 +346,7 @@ the note in the Interfaces block). The concrete classes become thin subclasses.
 - Modify:
   `jipipe-core/src/main/java/org/hkijena/jipipe/plugins/parameters/ui/api/JIPipeDesktopParameterCollectionListEditorUI.java`
   (thin subclass)
-- (No change to `ListReorderMoveTest` — the static `moveItem` moves to the base, and static members are still reachable
+- (No change to `ListReorderMoveTest` - the static `moveItem` moves to the base, and static members are still reachable
   via the subclass name: `JIPipeDesktopListParameterEditorUI.moveItem(...)` keeps compiling.)
 
 **Interfaces:**
@@ -365,8 +365,8 @@ the note in the Interfaces block). The concrete classes become thin subclasses.
       public void clearList();                         // parameter.clear(); setParameter(p, true)
       public void addNewEntry();                       // parameter.addNewInstance(); setParameter(p, true)
       public static boolean moveItem(JIPipeListParameter<?> list, int from, int to);   // pass-1 reorder math
-      // row + menu factories (pure — the modal reuses them with its OWN state):
-      static class EntryComponents { /* entryPanel, grip, selected flag — moved from the editor */ }
+      // row + menu factories (pure - the modal reuses them with its OWN state):
+      static class EntryComponents { /* entryPanel, grip, selected flag - moved from the editor */ }
       JComponent buildListRow(int index, RowGripBehavior behavior, ListRowCallbacks cbs);  // grip + buildItemContent + drag
       JPopupMenu buildRowMenu(int index);             // Delete / Move up / Move down (per-row)
       // callbacks the caller supplies (so the modal owns its selection state):
@@ -378,11 +378,11 @@ the note in the Interfaces block). The concrete classes become thin subclasses.
       ListPaginationModel pagination;                  // current pagination state (rebuilt in reload())
   }
   ```
-  **Note — selection is NOT in the base.** In pass 2 the inline view has **no selection** (grip = menu, spec §3.1), so
+  **Note - selection is NOT in the base.** In pass 2 the inline view has **no selection** (grip = menu, spec §3.1), so
   the pass-1 selection machinery (`handleSelection`/`selectAll`/`invertSelection`/`selectNone`/
   `updateSelectionVisualizations`/`removeSelectedEntries`/the `selectedEntryComponents` + `entryComponentsList` state)
   is **not** kept as base instance state. It is **re-implemented in the modal** (Task 4), which owns its *own*
-  `List<EntryComponents>` + `Set<EntryComponents>` (the modal is a `JDialog` over the SAME editor instance — it must not
+  `List<EntryComponents>` + `Set<EntryComponents>` (the modal is a `JDialog` over the SAME editor instance - it must not
   touch the inline view's state, and its rows cover the full list whereas the inline shows only the visible page). The
   modal reuses only the stateless pieces above: `buildListRow(i, SELECT, modalCallbacks)`, `buildRowMenu(i)`,
   `moveItem`, `clearList`, and the `EntryComponents` type.
@@ -394,9 +394,9 @@ the note in the Interfaces block). The concrete classes become thin subclasses.
       nested mini form panel (as today); `itemDescription` = the collection item's short description (its first/primary
       field's value, fallback `String.valueOf`); `onBeforeGenerateEntries` = the `ParameterCollectionListTemplate` fixup
       block (moved verbatim from its `reload()`).
-    - **Identical members → base, no override:** `addNewEntry()` (both call `parameter.addNewInstance()` — a
+    - **Identical members → base, no override:** `addNewEntry()` (both call `parameter.addNewInstance()` - a
       `JIPipeListParameter` method), `clearList()`, `updateCountLabel()`, `isUIInline()` (false in both).
-      (`removeSelectedEntries` is **not** a base member — the modal re-implements it over its own selection state.)
+      (`removeSelectedEntries` is **not** a base member - the modal re-implements it over its own selection state.)
 
 - `ListPaginationModel` API (headless-testable):
 
@@ -464,7 +464,7 @@ class ListPaginationModelTest {
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `mvn -q -pl jipipe-core test -Dtest=ListPaginationModelTest`
-Expected: FAIL — `ListPaginationModel` does not exist (compile error / "cannot find symbol").
+Expected: FAIL - `ListPaginationModel` does not exist (compile error / "cannot find symbol").
 
 - [ ] **Step 3: Implement `ListPaginationModel`**
 
@@ -478,14 +478,14 @@ Expected: PASS (4 tests).
 - [ ] **Step 5: Create `JIPipeListParameterEditorUI` and move the chrome**
 
 Create the base class. Move the members listed in the Interfaces block from the two concrete editors into it (from
-`JIPipeDesktopListParameterEditorUI` as the source of truth — the collection editor's copies are deleted, keeping only
+`JIPipeDesktopListParameterEditorUI` as the source of truth - the collection editor's copies are deleted, keeping only
 its deltas: the `onBeforeGenerateEntries()` template-fixup override and the `buildItemContent()` nested-form-panel
 override; `isUIImportantLabelEnabled()` only if it differs). Identical members that are **parameter-level / stateless**
-(`addNewEntry` — both `parameter.addNewInstance()`, `clearList`, `updateCountLabel`, `isUIInline` false, `moveItem`, the
+(`addNewEntry` - both `parameter.addNewInstance()`, `clearList`, `updateCountLabel`, `isUIInline` false, `moveItem`, the
 `EntryComponents` type, the row/menu/drag factories) move to the base once. The concrete classes keep only:
 constructors, the `buildItemContent`/`itemDescription`/`onBeforeGenerateEntries` overrides, and any flag difference.
 
-**Delete (pass-1 selection machinery — inline has no selection in pass 2; the Task-4 modal re-implements it):**
+**Delete (pass-1 selection machinery - inline has no selection in pass 2; the Task-4 modal re-implements it):**
 `handleSelection`, `selectAll`, `selectNone`, `invertSelection`, `removeSelectedEntries` (the instance-state version),
 `updateSelectionVisualizations`, and the `selectedEntryComponents` / `entryComponentsList` / `lastClickedIndex`
 *instance fields*. Keep the `EntryComponents` **type** (the modal reuses it) carrying `entryPanel` + grip + a `selected`
@@ -493,14 +493,14 @@ flag. Remove the inline ⋯ menu's Select-all / Clear-selection / Invert items (
 
 - [ ] **Step 6: Apply the new S2 behavior in the base `reload()` / `buildListRow()`**
 
-In the base (the single place — this is what "applies identically" means):
+In the base (the single place - this is what "applies identically" means):
 
-- **Remove the footer** (the pass-1 `JPanel footer` in `initializeBase()` — Add/count/⋯ live on the name row via
+- **Remove the footer** (the pass-1 `JPanel footer` in `initializeBase()` - Add/count/⋯ live on the name row via
   `createHeaderControls()` from Task 2; move that method into the base and delete the per-editor copies). The inline ⋯
   menu is **Clear list only**.
 - **Pagination:** hold `ListPaginationModel pagination` (rebuilt each `reload()` from `parameter.size()`, `PAGE_SIZE=5`,
   `paginationEnabled = settings == null || !settings.withScrollBar()`). `reload()` iterates
-  `i < pagination.visibleCount()` (only the visible page — the Task-4 modal iterates all). After the rows, a small
+  `i < pagination.visibleCount()` (only the visible page - the Task-4 modal iterates all). After the rows, a small
   centered footer panel holds **up to two** buttons, each shown when its condition holds (they coexist when partially
   expanded): `+k more` when `showLoadMore()` (k = `loadMoreRemaining()`) → `pagination.loadMore(); reload();`, and
   `Show less` when `showShowLess()` → `pagination.showLess(); reload();`. Hide the panel when both are false.
@@ -518,7 +518,7 @@ In the base (the single place — this is what "applies identically" means):
     - **Move up/down icons** → `actions/go-up.png` / `actions/go-down.png` (both exist, light+dark icons-16). Delete
       icon stays `actions/delete.png`.
     - **No hover-×:** remove the pass-1 `deleteButton` and its `mouseEntered`/`mouseExited` visibility listeners
-      entirely (spec §3.1 — deletion is grip-menu / modal only).
+      entirely (spec §3.1 - deletion is grip-menu / modal only).
 - **`buildRowMenu(index)`** (pure, per-row): Delete → remove the single item (`list.remove(index)`) +
   `setParameter(p, true)`; Move up/down → `moveItem(list, index, index±1)` + `setParameter(p, true)`. Parameter-level,
   so the modal reuses it verbatim.
@@ -527,7 +527,7 @@ In the base (the single place — this is what "applies identically" means):
 
 Run: `mvn -q -pl jipipe-core compile` then
 `mvn -q -pl jipipe-core test -Dtest=ListPaginationModelTest,ListReorderMoveTest`
-Expected: BUILD SUCCESS + both pass (`ListReorderMoveTest` unchanged — the static `moveItem` is reachable via the
+Expected: BUILD SUCCESS + both pass (`ListReorderMoveTest` unchanged - the static `moveItem` is reachable via the
 subclass name).
 
 - [ ] **Step 8: VLM-verify**
@@ -551,7 +551,7 @@ git commit -m "refactor(desktop): shared list-editor base; inline pagination, gr
 
 ---
 
-### Task 4: S2c — list editor modal (`JIPipeDesktopListEditorDialog`)
+### Task 4: S2c - list editor modal (`JIPipeDesktopListEditorDialog`)
 
 **Files:**
 
@@ -564,9 +564,9 @@ git commit -m "refactor(desktop): shared list-editor base; inline pagination, gr
 
 **Interfaces:**
 
-- Consumes (from Task 3): the base `JIPipeListParameterEditorUI` —
+- Consumes (from Task 3): the base `JIPipeListParameterEditorUI` -
   `buildListRow(index, RowGripBehavior.SELECT, callbacks)`, `buildRowMenu(index)`, `moveItem(list, from, to)`,
-  `clearList()`, the `EntryComponents` type, and `itemDescription(i)`. (The selection state itself is the modal's own —
+  `clearList()`, the `EntryComponents` type, and `itemDescription(i)`. (The selection state itself is the modal's own -
   see the note in Task 3.)
 - Produces (consumed by the base's header controls):
   ```java
@@ -580,18 +580,18 @@ git commit -m "refactor(desktop): shared list-editor base; inline pagination, gr
 
 `JIPipeDesktopListEditorDialog extends JDialog` (APPLICATION_MODAL):
 
-- Ctor `(Window owner, JIPipeListParameterEditorUI listEditor)`. Title = the list parameter's name + " — Edit". Initial
+- Ctor `(Window owner, JIPipeListParameterEditorUI listEditor)`. Title = the list parameter's name + " - Edit". Initial
   size `640×520`, resizable. `DISPOSE_ON_CLOSE`.
 - **No OK/Cancel.** A single **Close** button (a plain `JButton` wired to `dispose()`). The window X and **Esc** also
-  `dispose()`. (Spec §3.3 — Close-only.)
+  `dispose()`. (Spec §3.3 - Close-only.)
 - **Top bar:** a search/filter `JTextField`. Filtering hides non-matching rows (match `listEditor.itemDescription(i)`
   against the needle, case-insensitive); selection state is preserved (hidden-but-selected rows stay selected).
 - **Toolbar (above the rows):** **Select all** / **Invert selection** / **Clear selection** / **Remove selected** /
-  **Clear list** — modal-local operations over the modal's own `rows`/`selected` state (re-implementing the pass-1
+  **Clear list** - modal-local operations over the modal's own `rows`/`selected` state (re-implementing the pass-1
   grip-selection handlers; **not** owner methods, which Task 3 removed from the base). After each, re-render the modal
   rows and the owner inline view. **Clear list** delegates to `listEditor.clearList()`.
 - **Body:** a `JScrollPane` over a `JPanel` (BoxLayout Y) of **all** rows (no pagination). The modal owns its **own**
-  row + selection state — it must NOT touch the inline view's (the modal and the inline view share the same editor
+  row + selection state - it must NOT touch the inline view's (the modal and the inline view share the same editor
   instance, and the inline only renders the visible page while the modal renders all). Build
   `List<EntryComponents> rows` for every `i in 0..size` via
   `listEditor.buildListRow(i, RowGripBehavior.SELECT, modalCallbacks)`, where
@@ -625,7 +625,7 @@ Run: `mvn -q -pl jipipe-core compile` then
 `mvn -q -pl jipipe-core test -Dtest=ListPaginationModelTest,ListReorderMoveTest`
 Expected: BUILD SUCCESS + both pass (no regression).
 
-- [ ] **Step 4: VLM-verify (off-screen render — the modal is app-modal)**
+- [ ] **Step 4: VLM-verify (off-screen render - the modal is app-modal)**
 
 Add harness showcases `dialog-list-editor` and `dialog-list-collection`: construct a synthetic list (a `PathList` with 8
 items / a `JIPipeParameterCollectionList` with 2 items), get an editor instance for it (via
@@ -642,12 +642,12 @@ Focus #5). The showcases can stay (useful for the S8 audit). Report the verdict.
 git add jipipe-core/src/main/java/org/hkijena/jipipe/plugins/parameters/ui/api/JIPipeDesktopListEditorDialog.java \
         jipipe-core/src/main/java/org/hkijena/jipipe/plugins/parameters/ui/api/JIPipeListParameterEditorUI.java \
         jipipe-launcher/src/main/java/org/hkijena/jipipe/launcher/commands/ScreenshotUiCommand.java
-git commit -m "feat(desktop): list editor modal — Close-only, bulk ops, search, grip selection (#1339)"
+git commit -m "feat(desktop): list editor modal - Close-only, bulk ops, search, grip selection (#1339)"
 ```
 
 ---
 
-### Task 5: S3 — RichSelectionBox keyboard navigation + left-aligned value
+### Task 5: S3 - RichSelectionBox keyboard navigation + left-aligned value
 
 **Files:**
 
@@ -678,7 +678,7 @@ The exact field/method signatures are the implementer's, but the **decision matr
 
 - [ ] **Step 1: Write the failing test**
 
-`RichSelectionBoxKeyModelTest` — drive the model with a fixed visible-option list and assert the action matrix (single-
+`RichSelectionBoxKeyModelTest` - drive the model with a fixed visible-option list and assert the action matrix (single-
 and multi-select, single- and two-pane):
 
 ```java
@@ -720,7 +720,7 @@ The model must be constructible without a shown popup (pure state).
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `mvn -q -pl jipipe-core test -Dtest=RichSelectionBoxKeyModelTest`
-Expected: FAIL — `PopupKeyModel` does not exist.
+Expected: FAIL - `PopupKeyModel` does not exist.
 
 - [ ] **Step 3: Implement `PopupKeyModel`**
 
@@ -761,7 +761,7 @@ Expected: BUILD SUCCESS + all tests green (no regression to the enum/dynamic-set
 - [ ] **Step 7: VLM-verify**
 
 Run the harness with `--only panel-enum-box,panel-roi3d-statistics,panel-font`. `da_describe_image`: the box's value
-text is **left-aligned** (matching the combo boxes), not centered. (Keyboard behavior is not VLM-verifiable — it is
+text is **left-aligned** (matching the combo boxes), not centered. (Keyboard behavior is not VLM-verifiable - it is
 covered by the key-model test.) Report the verdict.
 
 - [ ] **Step 8: Commit**
@@ -774,7 +774,7 @@ git commit -m "feat(desktop): RichSelectionBox keyboard navigation (key model) +
 
 ---
 
-### Task 6: S4 — font popout: form-panel rows, size field W+H, no clipped heights
+### Task 6: S4 - font popout: form-panel rows, size field W+H, no clipped heights
 
 **Files:**
 
@@ -789,7 +789,7 @@ git commit -m "feat(desktop): RichSelectionBox keyboard navigation (key model) +
   `buildStyleToggles()`, `buildColorSection()`, `buildPreviewBand()`.
 - Produces: a **public seam** `JComponent getPopoutContent()` on `JIPipeDesktopFontParameterEditorUI` that builds (or
   returns) the popout's content `JPanel`. `togglePopup()` is refactored to use it, and the screenshot harness (Task 6
-  step 6) renders it directly — a shown `JPopupMenu` can't be captured, but its content panel can.
+  step 6) renders it directly - a shown `JPopupMenu` can't be captured, but its content panel can.
 
 - [ ] **Step 1: Replace the hand-rolled rows with form-panel rows (behind a public seam)**
 
@@ -818,7 +818,7 @@ private void togglePopup() {
 ```
 
 The form panel's GridBagLayout sizes the **label column to the widest label** under the active theme font
-(font-dependent) — this is the alignment fix (spec §5) and removes the `fieldRow` helper. The preview band keeps its
+(font-dependent) - this is the alignment fix (spec §5) and removes the `fieldRow` helper. The preview band keeps its
 fixed preferred **width** (it drives the popout's column width); give it an empty `JLabel` so it shares the label
 column.
 
@@ -832,7 +832,7 @@ Dimension d = spinner.getPreferredSize();
 spinner.setPreferredSize(new Dimension(80, Math.max(d.height, 24)));
 ```
 
-(Width ~80px fits 3-digit sizes + arrows; height is the spinner editor's default or 24px whichever is larger — never a
+(Width ~80px fits 3-digit sizes + arrows; height is the spinner editor's default or 24px whichever is larger - never a
 flat 22.)
 
 - [ ] **Step 3: No clipped control heights anywhere in the popout**
@@ -862,7 +862,7 @@ renders `fontEditor.getPopoutContent()` with
 drives the column width). `da_describe_image` on `popup-font.png`: the **Family / Size / Style / Color** labels form a
 clean left-aligned column (label column auto-sized, top rows no longer shifted left relative to the bottom); the **size
 field** digits are fully visible (not clipped top or bottom) and 3-digit values fit; the B/I toggles are not clipped.
-Report the verdict. (If the user runs a larger-font theme, re-verify — Review Focus #6.) The `popup-font` showcase can
+Report the verdict. (If the user runs a larger-font theme, re-verify - Review Focus #6.) The `popup-font` showcase can
 stay (useful for the S8 audit).
 
 - [ ] **Step 7: Commit**
@@ -875,7 +875,7 @@ git commit -m "fix(desktop): font popout uses form-panel rows; size field width+
 
 ---
 
-### Task 7: S5 — color dialog rework (8 items)
+### Task 7: S5 - color dialog rework (8 items)
 
 **Files:**
 
@@ -943,14 +943,14 @@ class ColorChooserDialogRefreshTest {
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `mvn -q -pl jipipe-core test -Dtest=ColorChooserDialogRefreshTest`
-Expected: FAIL — `getHexText`/`getRedRail` do not exist, and even after adding the seams the assertion fails on current
+Expected: FAIL - `getHexText`/`getRedRail` do not exist, and even after adding the seams the assertion fails on current
 code because `refresh()` is dead from `setColor()` (hex never updates).
 
 - [ ] **Step 3: Fix the `refresh()` re-entrancy bug**
 
 In `JIPipeDesktopColorChooserDialog`:
 
-- `setColor(Color c)` becomes: assign `currentColor = c;` then `refresh();` — **remove** the `updating` guard/set from
+- `setColor(Color c)` becomes: assign `currentColor = c;` then `refresh();` - **remove** the `updating` guard/set from
   `setColor`.
 - `refresh()` becomes:
   ```java
@@ -972,7 +972,7 @@ In `JIPipeDesktopColorChooserDialog`:
 Run: `mvn -q -pl jipipe-core test -Dtest=ColorChooserDialogRefreshTest`
 Expected: PASS (2 tests).
 
-- [ ] **Step 5: Palette area — no horizontal scrollbar, wrap, 16 pure colors, merge, alignment, tooltips**
+- [ ] **Step 5: Palette area - no horizontal scrollbar, wrap, 16 pure colors, merge, alignment, tooltips**
 
 In `buildPalettes()` and the palette scroll setup:
 
@@ -985,7 +985,7 @@ In `buildPalettes()` and the palette scroll setup:
 - **Item 6:** one shared left margin for section titles and swatch rows; swatch cells uniform `18×18` with `4px` gap;
   the "Saved" row's star button right-aligns to the same edge as section titles.
 - **Item 8:** every swatch tooltip (pure, HIG, last selected, saved) and the current-swatch header tooltip shows: name
-  (if any), `#RRGGBB`, `RGB(r, g, b)`, `HSB(h°, s%, b%)`, `L*a*b*(L, a, b)` — via `ColorSpaces.toHsb` / `toLab`.
+  (if any), `#RRGGBB`, `RGB(r, g, b)`, `HSB(h°, s%, b%)`, `L*a*b*(L, a, b)` - via `ColorSpaces.toHsb` / `toLab`.
 
 - [ ] **Step 6: Pill tabs + RGB label alignment + rail hit target**
 
@@ -993,7 +993,7 @@ In `buildPalettes()` and the palette scroll setup:
   `JIPipeDesktopTabPane`); fall back to the default UI for the classic theme.
 - **Item 3:** in `railRow`, give the label cell a **fixed width** (e.g. `34px`, `setPreferredSize`) right-aligned, so
   all rails (RGB/HSB/LAB incl. α) start at the same x and labels form a clean column.
-- **Item 4 (usability part):** keep the rail visual height ~12px but widen the **row's clickable area** — the whole
+- **Item 4 (usability part):** keep the rail visual height ~12px but widen the **row's clickable area** - the whole
   `railRow` (~22px) forwards press/drag to the rail (a mouse listener on the row panel converting x to the rail's span).
   (The actual no-update symptom is fixed in Step 3.)
 
@@ -1007,7 +1007,7 @@ Expected: BUILD SUCCESS + PASS.
 Run the harness with `--only dialog-color,dialog-color-lab`. `da_describe_image` each: (a) the space tabs render as
 **pills** (modern theme); (b) the palette area has **no horizontal scrollbar**, swatches wrap, the 16 pure colors +
 GNOME HIG form one untitled block; (c) the RGB/HSB/LAB rail labels form a clean right-aligned column; (d) swatch
-tooltips carry the hex + RGB/HSB/LAB (verify by hovering a swatch or asserting the tooltip string in code — the harness
+tooltips carry the hex + RGB/HSB/LAB (verify by hovering a swatch or asserting the tooltip string in code - the harness
 can't capture a hover, so **also assert the tooltip text** of one swatch in code or report it as a manual check). Report
 the verdict; note the refresh fix is test-covered, not VLM-covered.
 
@@ -1021,7 +1021,7 @@ git commit -m "fix(desktop): color dialog refresh() re-entrancy bug + pill tabs,
 
 ---
 
-### Task 8: S6 — number slider style (annotation enum + control + editor branch)
+### Task 8: S6 - number slider style (annotation enum + control + editor branch)
 
 **Files:**
 
@@ -1143,7 +1143,7 @@ class NumberSliderMathTest {
 - [ ] **Step 3: Run test to verify it fails**
 
 Run: `mvn -q -pl jipipe-core test -Dtest=NumberSliderMathTest`
-Expected: FAIL — `JIPipeDesktopNumberSlider` and `NumberParameterSettings.Style` do not exist.
+Expected: FAIL - `JIPipeDesktopNumberSlider` and `NumberParameterSettings.Style` do not exist.
 
 - [ ] **Step 4: Implement the static math**
 
@@ -1173,7 +1173,7 @@ proportions. The functional behavior is already pinned by the math test; the loo
 
 - [ ] **Step 7: Editor branch with a pure, testable decision**
 
-Add a **static decision method** on `JIPipeDesktopNumberParameterEditorUI` (pure — no JIPipe/Swing state, so it is
+Add a **static decision method** on `JIPipeDesktopNumberParameterEditorUI` (pure - no JIPipe/Swing state, so it is
 unit-testable headlessly):
 
 ```java
@@ -1210,7 +1210,7 @@ Expected: BUILD SUCCESS + PASS.
 - [ ] **Step 10: VLM-verify**
 
 Add a harness showcase `panel-number-slider`: a synthetic `JIPipeDynamicParameterCollection` (mirror
-`FontParameterShowcase`) with one `Double` field carrying a **runtime annotation instance** — the proven pattern (see
+`FontParameterShowcase`) with one `Double` field carrying a **runtime annotation instance** - the proven pattern (see
 `MaskDrawerPlugin2D:398`):
 
 ```java
@@ -1248,7 +1248,7 @@ git commit -m "feat(desktop): opt-in number slider style (annotation enum + JIPi
 
 ---
 
-### Task 9: S7 — HTMLText editor contract + `JIPipeDesktopHTMLEditor` widget modernization
+### Task 9: S7 - HTMLText editor contract + `JIPipeDesktopHTMLEditor` widget modernization
 
 **Files:**
 
@@ -1279,11 +1279,11 @@ Add a view toggle that cycles **WYSIWYG → Preview → Source**:
 
 - **WYSIWYG** = the existing editable `JTextPane`/`JEditorPane` (current behavior).
 - **Preview** = a non-editable `JEditorPane` rendering the current HTML read-only (same content).
-- **Source** = a plain `JTextArea` with `text/html` (no syntax-highlight dependency — #1124 will replace this later).
+- **Source** = a plain `JTextArea` with `text/html` (no syntax-highlight dependency - #1124 will replace this later).
   Edits in Source update the WYSIWYG/Preview on toggle-back.
   Keep `Mode` for the existing external callers; the internal 3-state is a separate view concern (map the old `Compact`/
-  `Full`/`HTML` modes to the toolbar density + view as needed so existing call sites — the parameter editor and the
-  expression/function-builder contexts — keep working).
+  `Full`/`HTML` modes to the toolbar density + view as needed so existing call sites - the parameter editor and the
+  expression/function-builder contexts - keep working).
 
 - [ ] **Step 3: Consistent chrome**
 
@@ -1294,7 +1294,7 @@ border** the parameter editor adds (the widget now carries it).
 
 In `JIPipeDesktopHTMLTextParameterEditorUI`:
 
-- Set `isUIInline() = false` (stacked — the widget is compound), **or** a compact inline value + **Edit** button if the
+- Set `isUIInline() = false` (stacked - the widget is compound), **or** a compact inline value + **Edit** button if the
   compact widget proves usable (decide in implementation, verify with VLM). The #1124 seam ("editor component + Edit
   button") is preserved either way.
 - Drop the editor's own `setBorder` (the widget carries it per Step 3); keep consistent height/border; no self-drawn
@@ -1324,14 +1324,14 @@ git commit -m "feat(desktop): HTML editor compact toolbar + 3-state view (WYSIWY
 
 ---
 
-### Task 10: S8 — render-out audit (after S7, same branch, gates the MR)
+### Task 10: S8 - render-out audit (after S7, same branch, gates the MR)
 
 **Files:**
 
 - Modify: `jipipe-launcher/src/main/java/org/hkijena/jipipe/launcher/commands/ScreenshotUiCommand.java` (per-editor
   showcase set)
 - Create/modify: synthetic showcase collections as needed (mirror `FontParameterShowcase`)
-- (No new tests — this is a render + VLM sweep + fix agreed nits.)
+- (No new tests - this is a render + VLM sweep + fix agreed nits.)
 
 **Interfaces:**
 
@@ -1382,42 +1382,42 @@ git commit -m "test(launcher): per-editor screenshot showcase for the S8 render-
 
 ---
 
-## Execution State — Handoff 2026-10-26 (work moved to another machine)
+## Execution State - Handoff 2026-10-26 (work moved to another machine)
 
 Subagent-driven execution (SDD). The per-task ledger lives in the gitignored
 `.superpowers/sdd/2026-10-25-parameter-ux-pass2/progress.md` (machine-local); this section is the durable record.
 
 **DONE (committed, task-reviewed, VLM-verified):**
 
-- **Task 1 (S1)** — `02d30ea`. Switch ON-track → primary. Review clean. VLM PASS (blue track, white knob; no
+- **Task 1 (S1)** - `02d30ea`. Switch ON-track → primary. Review clean. VLM PASS (blue track, white knob; no
   regression).
-- **Task 2 (S2a)** — `b24eadb`. `createHeaderControls()` extension point + list Add/count/⋯ on the name row (additive;
+- **Task 2 (S2a)** - `b24eadb`. `createHeaderControls()` extension point + list Add/count/⋯ on the name row (additive;
   footer still present in this intermediate state). Review clean. VLM PASS. Deviations accepted: base method is `public`
   (cross-package call site); header ⋯ menu uses the full pass-1 item set (ruling).
-- **Task 3 (S2b)** — `f1a3aa5` + fix `3a2527a`. Shared base `JIPipeListParameterEditorUI`; inline pagination (`+k more`/
+- **Task 3 (S2b)** - `f1a3aa5` + fix `3a2527a`. Shared base `JIPipeListParameterEditorUI`; inline pagination (`+k more`/
   `Show less`, 5/page, `withScrollBar` override); vertical grip + per-row menu (Delete/Move up/Move down, go-up/go-down
   icons); hover-× removed; footer removed; selection machinery excised from inline (modal-local in Task 4).
   `ListPaginationModelTest` 4/4 TDD; `ListReorderMoveTest` 6/6 untouched; full core suite green. Fix round 1 (Important:
-  drag index resolution now against the caller's row list —
+  drag index resolution now against the caller's row list -
   `buildListRow(index, RowGripBehavior, ListRowCallbacks, List<EntryComponents> rows)`) re-reviewed clean. VLM PASS via
   controller-added `panel-list-populated`/`panel-list-empty` harness showcases (8 items → 5 rows + "+3 more"; empty →
   hint only).
-- **Task 4 (S2c)** — `3e09f77`. `JIPipeDesktopListEditorDialog` (same package as the base) — Close-only (Close button +
+- **Task 4 (S2c)** - `3e09f77`. `JIPipeDesktopListEditorDialog` (same package as the base) - Close-only (Close button +
   X + Esc, NO OK/Cancel), search box (hide-not-remove, selection preserved), 5-button toolbar (Select all/Invert/Clear
   selection/Remove selected/Clear list), all-rows body with modal-local grip selection (pass-1 range/toggle
   re-implementation), descending-order removal, live edits on the same `JIPipeListParameter`. Edit button wired into the
-  base `createHeaderControls()` (text-only — no `edit-list.png` icon exists). Harness showcases `dialog-list-editor`/
+  base `createHeaderControls()` (text-only - no `edit-list.png` icon exists). Harness showcases `dialog-list-editor`/
   `dialog-list-collection` added. Load-bearing base fix included (reviewer-verified): row-menu Move up/down previously
   mutated without `setParameter` (inline never reloaded) → now routes through `moveEntryTo`. Review clean. VLM PASS
   (both dialogs: search, toolbar, grip rows, single Close; collection rows are nested mini-forms).
 
 **IN FLIGHT:**
 
-- **Task 5 (S3)** — `8c0c29c` + fix `ed8602a`. `PopupKeyModel` (headless, package-private, in
+- **Task 5 (S3)** - `8c0c29c` + fix `ed8602a`. `PopupKeyModel` (headless, package-private, in
   `JIPipeDesktopRichSelectionBox`) implements the full spec §4 key matrix (24 tests, TDD red→green, full core suite 608
   green); value left-aligned (`setHorizontalAlignment(LEADING)`). Review found 1 Important → **fixed in round 1**
-  (`ed8602a`: dropped `searchField.selectAll()` on keyboard focus return — ruling: no silent new interactions in a UX
-  project). **REMAINING: (a) scoped re-review of `8c0c29c..ed8602a` (expect clean — one-line deletion, tests re-run
+  (`ed8602a`: dropped `searchField.selectAll()` on keyboard focus return - ruling: no silent new interactions in a UX
+  project). **REMAINING: (a) scoped re-review of `8c0c29c..ed8602a` (expect clean - one-line deletion, tests re-run
   green); (b) VLM-verify left-aligned values on `panel-enum-box`, `panel-roi3d-statistics`, `panel-font`.** Then mark
   complete.
 
@@ -1437,16 +1437,16 @@ search-field focus return (Task 5).
 
 **Environment notes for the resuming machine:**
 
-- Branch `1339-parameter-ux-overhaul` — everything above is pushed. No merge request (GitLab flow: MR only after the
+- Branch `1339-parameter-ux-overhaul` - everything above is pushed. No merge request (GitLab flow: MR only after the
   user confirms S8).
 - Screenshot harness: `/tmp/opencode/1339/` is machine-local. If missing, recreate `run.sh` (classpath =
   `jipipe-launcher/target/classes` + `mvn -pl jipipe-launcher dependency:build-classpath` output; `--add-opens` for
   `java.base/java.lang`, `java.desktop/javax.swing`, `java.desktop/sun.font`; `-Djava.awt.headless=false`; main
   `org.hkijena.jipipe.launcher.JIPipeLauncher`) and run `mvn -q install -DskipTests` first. The plan's Global
-  Constraints carry the canonical command. Before-baselines (`/tmp/opencode/1339/before/`) are NOT pushed — re-render
+  Constraints carry the canonical command. Before-baselines (`/tmp/opencode/1339/before/`) are NOT pushed - re-render
   from a `master` worktree if before/after pairs are needed.
 - Model tiers that work on the gateway: `asb-hki/vllm/small`, `asb-hki/vllm/frontier#medium`, `asb-hki/vllm/frontier`
-  (bare = top). `frontier#high` / `frontier#xhigh` are REJECTED (variant/effort whitelist mismatch) — do not dispatch
+  (bare = top). `frontier#high` / `frontier#xhigh` are REJECTED (variant/effort whitelist mismatch) - do not dispatch
   with those.
 - VLM division of labor: implementers do code + `mvn -q -pl jipipe-core compile` + the task's unit tests + commit +
   report; the controller runs the harness renders + `da_describe_image` and records verdicts.
@@ -1455,7 +1455,7 @@ search-field focus return (Task 5).
 
 ---
 
-## Execution State — FINAL (2026-10-26) — all tasks done, final review complete
+## Execution State - FINAL (2026-10-26) - all tasks done, final review complete
 
 This section **supersedes** the mid-flight handoff above (accurate as of `c8845ef3ef`). Resumed on the new machine,
 finished Tasks 5–10 inline, ran the final whole-branch review. Full per-task detail + rulings + re-grade reasoning:
@@ -1463,28 +1463,28 @@ gitignored ledger `.superpowers/sdd/2026-10-25-parameter-ux-pass2/progress.md`.
 
 **ALL 10 TASKS COMPLETE** (S1–S8), committed, unit-tested, VLM-verified:
 
-- Task 5 (S3) — `8c0c29c` + fix `ed8602a`. Scoped re-review of the fix CLEAN (fresh reviewer); VLM PASS (left-aligned
+- Task 5 (S3) - `8c0c29c` + fix `ed8602a`. Scoped re-review of the fix CLEAN (fresh reviewer); VLM PASS (left-aligned
   values on `panel-enum-box` "Viridis" + `panel-roi3d-statistics` "Default"/"16 selected"). (`panel-font`'s value is the
-  custom-painted font preview, not a RichSelectionBox — see the S8 finding.)
-- Task 6 (S4) — `2fe86ca`. Font popout onto form-panel rows + `getPopoutContent()` seam; size spinner
+  custom-painted font preview, not a RichSelectionBox - see the S8 finding.)
+- Task 6 (S4) - `2fe86ca`. Font popout onto form-panel rows + `getPopoutContent()` seam; size spinner
   80px/natural-height; B/I natural-height; `popup-font` showcase. VLM PASS.
-- Task 7 (S5) — `6bbf674`. Color dialog `refresh()` re-entrancy fix (TDD `#000000→#000000` RED→GREEN) + pill tabs +
+- Task 7 (S5) - `6bbf674`. Color dialog `refresh()` re-entrancy fix (TDD `#000000→#000000` RED→GREEN) + pill tabs +
   palette wrap (no h-scrollbar) + 16 4-bit colors + merged untitled block + 34px right-aligned label column + rail
   hit-target widening + rich swatch tooltips. VLM PASS (both dialogs).
-- Task 8 (S6) — `1498dd9`. `NumberParameterSettings.Style` enum + `JIPipeDesktopNumberSlider` (static math + custom
+- Task 8 (S6) - `1498dd9`. `NumberParameterSettings.Style` enum + `JIPipeDesktopNumberSlider` (static math + custom
   control + inline edit) + editor `shouldUseSlider` branch + one-time unbounded warning. Math 5/5 + decision 2/7 TDD.
   VLM PASS (two-value ratio proved the thumb tracks the value). **No example adoption** (no node has a bounded
   annotation).
-- Task 9 (S7) — `c06b349`. HTML editor compact 24px icon toolbar + WYSIWYG/Preview/Source 3-state view + density toggle
+- Task 9 (S7) - `c06b349`. HTML editor compact 24px icon toolbar + WYSIWYG/Preview/Source 3-state view + density toggle
   (replaces the mode popup) + control border on the widget + parameter editor stacked + redundant border dropped; legacy
   `Mode` API stable. VLM PASS (all three views).
-- Task 10 (S8) — `6cc49d4` + `bc9c800`. Per-editor showcase set (17 editors) + full 35-render VLM sweep. **One finding,
+- Task 10 (S8) - `6cc49d4` + `bc9c800`. Per-editor showcase set (17 editors) + full 35-render VLM sweep. **One finding,
   user-triaged and fixed in-branch (TDD):** font preview rendered blank (white default font color on the light panel) →
   theme-derived checkerboard preview background (`FontPreviewCheckerTest` pins the light+dark contrast contract).
 
 **Final whole-branch review** (fresh reviewer, `asb-hki/vllm/frontier`, `29f80d5b20..bc9c80047b`): **0 Critical.** Two
 Important findings **re-graded to Minor by effect** (the re-grade is the gate, not the label): (1) slider `setValue()`
-clamps a stored *out-of-range* value on display, but fires no listeners and writes nothing — only an already-invalid
+clamps a stored *out-of-range* value on display, but fires no listeners and writes nothing - only an already-invalid
 value (typed beyond bounds via the FIELD path) is shown clamped/normalized on the next explicit slider use; in-range
 unaffected; (2) modal `rebuildRows()` could drop uncommitted caret text of a sibling row, but this codebase's editors
 commit via live `DocumentListener` so a sibling's text is already in the shared parameter before any rebuild. Both
@@ -1493,14 +1493,14 @@ empty** (no standing Critical/Important).
 
 **Full core suite: 619 tests, 0 failures, 1 skipped (headless AWT), green.**
 
-**Branch state:** tip `bc9c80047b` on `1339-parameter-ux-overhaul`, clean tree. **NOT yet pushed; NO merge request** —
+**Branch state:** tip `bc9c80047b` on `1339-parameter-ux-overhaul`, clean tree. **NOT yet pushed; NO merge request** -
 standing GitLab flow: push the branch only, open the MR only after the user confirms the feature is finished.
 
-**User still to eyeball (project policy — no Swing-structure tests; user is the final UI judge):** the new font-preview
+**User still to eyeball (project policy - no Swing-structure tests; user is the final UI judge):** the new font-preview
 checkerboard (esp. white sample text on the light-theme checker), the number slider's proportions, and the HTML editor's
 compact toolbar + view toggle, in the running app.
 
-## Execution State — FOLLOW-UP ROUND (2026-10-27) — user review refinements, all 9 items done
+## Execution State - FOLLOW-UP ROUND (2026-10-27) - user review refinements, all 9 items done
 
 The user eyeballed the running app and returned 9 follow-up change requests. All were
 scoped as **bounded** refinements to the pass-2 flows (no new subsystem) and implemented
@@ -1508,26 +1508,26 @@ inline with VLM verification. Branch `1339-parameter-ux-overhaul`; commit suffix
 
 **4 commits, each verified (compile + full 621-test suite green + VLM screenshot):**
 
-- `e3adf6a` **A — modern compound-editor chrome.** `UIUtils.createLeftAccentBorder()`
-  (3px left-only bar, `getNodeHighlightBorder()` gray — the faint `getBorderColor()` was
+- `e3adf6a` **A - modern compound-editor chrome.** `UIUtils.createLeftAccentBorder()`
+  (3px left-only bar, `getNodeHighlightBorder()` gray - the faint `getBorderColor()` was
   too subtle, so the node-highlight gray is used so it reads in light+dark);
   `UIUtils.createEditInDialogButton()` (shared `actions/edit.png` Edit button). List header
   reworked (item 3, 9): right-aligned `[n items] [Add] [Edit]`, Add green-bordered, ⋯ menu
   dropped (bulk actions live in the dialog).
-- `b2b7f5e` **B — font preview (item 1, 2).** The rejected checkerboard is gone:
+- `b2b7f5e` **B - font preview (item 1, 2).** The rejected checkerboard is gone:
   `previewBackground(fontColor)` auto-picks the flat tone that **maximizes WCAG contrast**
-  against the font color (direct contrast comparison, not a `luminance>0.5` split — that
+  against the font color (direct contrast comparison, not a `luminance>0.5` split - that
   misplaces mid-tones like olive). `FontPreviewBackgroundTest` (4 cases incl. the olive
   mid-tone trap) replaces `FontPreviewCheckerTest`. Popout controls now `setParameter(p, true)`
   (was `false`) so family/size/style/color apply live; `reload()` repaints the open popout band.
-- `c2c280e` **C — list edit dialog (item 4, 5).** Symbol toolbar: 24×24 flat icon buttons (Add/Select all/Invert/Clear
+- `c2c280e` **C - list edit dialog (item 4, 5).** Symbol toolbar: 24×24 flat icon buttons (Add/Select all/Invert/Clear
   selection/Remove selected/Clear list) replace 5 text buttons,
-  green-bordered Add adds an item live. Rows pack to the TOP (`alignmentY=0f`) — no longer
+  green-bordered Add adds an item live. Rows pack to the TOP (`alignmentY=0f`) - no longer
   floating centered. Dialog positioned `setLocationRelativeTo(owner)` (the workbench window).
-- `03b184c` **D — HTML (item 6, 7, 8).** Each `JToolBar` sets `alignmentX=0f` so the compact
+- `03b184c` **D - HTML (item 6, 7, 8).** Each `JToolBar` sets `alignmentX=0f` so the compact
   and both expanded rows are left-aligned (was centered by BoxLayout default). The font/size
   combos are **editable**, so focusing one selects all its text and the unthemed Metal
-  selection highlight drew the "black bars" — `themeEditableComboSelection()` themes the field
+  selection highlight drew the "black bars" - `themeEditableComboSelection()` themes the field
     + popup selection. New `NO_TOOLBAR` flag: the embedded param view is an editable body only (no inline formatting
       toolbar) with the left accent border; the standalone full dialog
       carries no border. The HTML param editor gains the name-row Edit button (item 8) that opens
@@ -1544,7 +1544,7 @@ centering, HTML dialog centered row-2 + combo black bars) were reproduced in the
 confirmed resolved in the after-set.
 
 **Branch state:** tip `03b184cf49` on `1339-parameter-ux-overhaul`, clean tree, pushed
-`cfe20c91c8..03b184cf49`. **NO merge request** — standing flow: push branch only, open the MR
+`cfe20c91c8..03b184cf49`. **NO merge request** - standing flow: push branch only, open the MR
 after the user confirms the feature is finished.
 
 **User still to eyeball (final UI judge):** the font preview's new flat auto-contrast
@@ -1553,7 +1553,7 @@ relative to the workbench, and the HTML full-mode toolbar alignment + combos.
 
 ---
 
-## Follow-up round 3 (2026-10-28) — 9 user review items
+## Follow-up round 3 (2026-10-28) - 9 user review items
 
 **DONE (3 commits):**
 
@@ -1564,7 +1564,7 @@ relative to the workbench, and the HTML full-mode toolbar alignment + combos.
   re-derived from gamut-clamped color) + rail gradient cache keyed by inputs (lag fix). New TDD
   ColorChooserDialogLabMarkerTest (marker != clamped a/b).
 - `4041080f91` Redundant icon-only Edit buttons removed (item 6): Color, IconRef,
-  GraphNodeReference, ImageJ importer/exporter refs, both ImageJ operation refs (Configure KEPT — distinct action),
+  GraphNodeReference, ImageJ importer/exporter refs, both ImageJ operation refs (Configure KEPT - distinct action),
   Taxonomy "Browse". Tooltip -> display button.
 - `2cb68fa856` Item 1 (ref -> RichSelectionBox combobox): DataInfoRef (grouped by
   menu path), NodeInfoRef, ParameterTypeInfoRef (honors ui-allowed restriction),
@@ -1575,20 +1575,20 @@ relative to the workbench, and the HTML full-mode toolbar alignment + combos.
   label dropped (one "Color" + Custom…). Harness: 5 new PER_EDITOR showcases +
   font showcase size 24.
 
-**ITEM 9 (architectural) — spec written, awaiting approval:**
+**ITEM 9 (architectural) - spec written, awaiting approval:**
 `docs/superpowers/specs/2026-10-28-font-parameter-family-design.md`
 (commits 0c6ece34ed, dcdb9b1bbf). Font FAMILY of 4 classes, Family-emphasized
-names (user: "FontSizeParameter may imply it's a font size — add Family"):
+names (user: "FontSizeParameter may imply it's a font size - add Family"):
 
 - JIPipeFontFamilySizeParameter jipipe:font-family-size
 - JIPipeFontFamilySizeStyleParameter jipipe:font-family-size-style
 - JIPipeFontFamilySizeColorParameter jipipe:font-family-size-color
 - JIPipeFontFamilySizeStyleColorParameter jipipe:font-family-size-style-color (renamed JIPipeFontParameter; dev ID
-  jipipe:font DROPPED — user: unmerged branch,
+  jipipe:font DROPPED - user: unmerged branch,
   IDs may change; field-class-id=registration ID, unknown -> throw, so only
   branch-era dev saves need re-saving; pre-#1339 legacy unaffected)
   Investigation (user asked "how is the label text color even derived"):
-- DrawTextRoi/TableToTextROI: color NOT from font — from
+- DrawTextRoi/TableToTextROI: color NOT from font - from
   VisualLocationROIProperties.lineColor (OptionalColorParameter). font.getColor ()
   never called. -> become family-size-style.
 - RoiToRGB ("Convert 2D ROI to RGB"): label foreground = labelFont.getColor ()

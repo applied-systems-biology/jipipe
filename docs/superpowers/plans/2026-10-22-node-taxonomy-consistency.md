@@ -1,9 +1,9 @@
-# Node Taxonomy Consistency — Frameworks + Research-Anchored Hues — Implementation Plan
+# Node Taxonomy Consistency - Frameworks + Research-Anchored Hues - Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:
 > executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Make the taxonomy content coherent — 5 new frameworks for coherent suites (Weka/Filaments/IJ3D/OMERO/Scene3D),
+**Goal:** Make the taxonomy content coherent - 5 new frameworks for coherent suites (Weka/Filaments/IJ3D/OMERO/Scene3D),
 delete the hallucinated CometFramework, reassign ~168 node annotations, and replace the hand-assigned function hues with
 a deterministic auto-pick over 6 research-anchored hue categories (focal hues red/orange/yellow/green/blue/purple).
 
@@ -16,12 +16,12 @@ family cells, Misc hard-coded 50°) and promotes `ScriptingFunction` to top-leve
 
 **Tech Stack:** Java 21, Maven multi-module (27 modules), JUnit 5 (jipipe-core + jipipe-launcher tests).
 
-**Spec:** `docs/superpowers/specs/2026-10-22-node-taxonomy-consistency-design.md` — the plan argues from the spec; read
+**Spec:** `docs/superpowers/specs/2026-10-22-node-taxonomy-consistency-design.md` - the plan argues from the spec; read
 both.
 
 ## Global Constraints
 
-- **Stable-ID rule (AGENTS.md):** framework IDs are frozen string literals — the 5 new IDs are the exact spec A.2 table
+- **Stable-ID rule (AGENTS.md):** framework IDs are frozen string literals - the 5 new IDs are the exact spec A.2 table
   values; NO existing ID changes anywhere.
 - **Framework + hue are never persisted per node/project** (verified in spec): re-annotation and hue moves cannot break
   saved projects. The only persistence-sensitive artifact is the *ship set* (framework classes registered by
@@ -30,16 +30,16 @@ both.
   strings, forms) keep no framework attribute.
 - **JIPipeDLFramework stays registered** but ends with zero node references (it is the unmerged Dhruv-Kathri project's
   home).
-- **Ship-set test vs live-registry test (AGENTS.md):** `FrameworksTest` pins the core ship set — exact counts there are
-  sanctioned (single owner, one generator). `TaxonomyPluginTest` stays presence-based — its `EXPECTED_FRAMEWORK_IDS`
+- **Ship-set test vs live-registry test (AGENTS.md):** `FrameworksTest` pins the core ship set - exact counts there are
+  sanctioned (single owner, one generator). `TaxonomyPluginTest` stays presence-based - its `EXPECTED_FRAMEWORK_IDS`
   list updates 16→20, still no live-count pin.
 - **Test policy (AGENTS.md):** no Swing tests; no trivial tests. Hue tests pin the algorithm's invariants (determinism,
-  cell containment, tiling, spread) — not rendering.
+  cell containment, tiling, spread) - not rendering.
 - **Hue values are normalized 0..1** (the codebase convention `deg/360.0f`); `TaxonomyHue.autoHue` returns normalized
   floats.
 - **Commits:** one per task, message suffix `(6.0.0)`. After any launcher-suite run:
   `git checkout -- utils/taxonomy-research/registry.json utils/fresh-node-slots.json` (known dumper drift, per
-  AGENTS.md) — never commit those files.
+  AGENTS.md) - never commit those files.
 - **Suite commands:** core = `mvn -o -pl jipipe-core clean test`; launcher = `mvn -o -pl jipipe-launcher clean test`;
   whole-repo compile = `mvn -o clean compile -q`. Baseline: core 478/0/0/1, launcher 19/0/0/0. The contract at every
   green step is **0 failures / 0 errors**, not an exact test count.
@@ -57,7 +57,7 @@ both.
   test `scriptingLeavesInheritTheAutoPickedHue` (baseHue resolves for all 4 scripting leaves without exception and
   equals the Scripting root's hue).
 - **Saved projects that reference re-annotated nodes** → load unchanged (framework derives from the class annotation,
-  not the JSON). Pinned: Task 2 Step 4 diff-scope gate — the commit touches ONLY `@ConfigureJIPipeNode` annotation
+  not the JSON). Pinned: Task 2 Step 4 diff-scope gate - the commit touches ONLY `@ConfigureJIPipeNode` annotation
   values + import lines in the 7 plugins, no node IDs, no other code.
 - **Framework abbreviation uniqueness across the 20-framework ship set** (WEKA/FILA/3D/OMRO/S3D vs the 15 existing) →
   `FrameworksTest`'s existing uniqueness assertion covers the enlarged set. Pinned: Task 1 Step 5 (the test's
@@ -65,7 +65,7 @@ both.
 
 ---
 
-### Task 1: Framework ship set — 5 new classes, Comet deleted, registrations + tests
+### Task 1: Framework ship set - 5 new classes, Comet deleted, registrations + tests
 
 **Files:**
 
@@ -87,7 +87,7 @@ both.
 
 - [ ] **Step 1: Create the 5 framework classes**
 
-Each mirrors `IlastikFramework` exactly (same javadoc style — one-line tool description; same constant javadoc).
+Each mirrors `IlastikFramework` exactly (same javadoc style - one-line tool description; same constant javadoc).
 IDs/names/abbreviations/styles from the spec A.2 table verbatim. Javadoc first lines: Weka = "The Weka machine-learning
 toolkit (wrapped via the ImageJ Trainable Weka Filter)."; Filaments = "The JIPipe-exclusive filament skeleton processing
 suite."; IJ3D = "The ImageJ 3D Suite (3D ROIs, 3D viewer, 3D filters)."; OMERO = "The OMERO data platform (remote
@@ -117,7 +117,7 @@ Delete the class file. In `TaxonomyPlugin`: remove the `import …CometFramework
 Remove `"jipipe:framework:comet"`, add the 5 new IDs → 20 literals. Touch nothing else in that test (the function list
 stays 90).
 
-- [ ] **Step 5: Run the core suite — the abbreviation-uniqueness pin runs over all 20**
+- [ ] **Step 5: Run the core suite - the abbreviation-uniqueness pin runs over all 20**
 
 Run: `mvn -o -pl jipipe-core clean test 2>&1 | sed 's/\x1b\[[0-9;]*m//g' | grep -E "Tests run: [0-9]{3},|BUILD"`
 Expected: **0 failures, 0 errors** (BUILD SUCCESS).
@@ -133,15 +133,15 @@ git commit -m "feat: Weka/Filaments/IJ3D/OMERO/Scene3D frameworks; delete halluc
 
 ### Task 2: Node re-annotations (~168 files across 7 plugins)
 
-**Files:** (annotation + import edits only — the diff-scope gate in Step 4 enforces this)
+**Files:** (annotation + import edits only - the diff-scope gate in Step 4 enforces this)
 
-- `plugins/jipipe-plugin-ilastik/src/main/**` — 8 files
-- `plugins/jipipe-plugin-omnipose/src/main/**` — 5 files
-- `plugins/jipipe-plugin-ij-weka/src/main/**` — 9 files
-- `plugins/jipipe-plugin-ij-filaments/src/main/**` — 51 files
-- `plugins/jipipe-plugin-ij-3d/src/main/**` — 62 files
-- `plugins/jipipe-plugin-ij-omero/src/main/**` — 26 files (framework attribute ADDED)
-- `plugins/jipipe-plugin-scene-3d/src/main/**` — 7 files (framework attribute ADDED)
+- `plugins/jipipe-plugin-ilastik/src/main/**` - 8 files
+- `plugins/jipipe-plugin-omnipose/src/main/**` - 5 files
+- `plugins/jipipe-plugin-ij-weka/src/main/**` - 9 files
+- `plugins/jipipe-plugin-ij-filaments/src/main/**` - 51 files
+- `plugins/jipipe-plugin-ij-3d/src/main/**` - 62 files
+- `plugins/jipipe-plugin-ij-omero/src/main/**` - 26 files (framework attribute ADDED)
+- `plugins/jipipe-plugin-scene-3d/src/main/**` - 7 files (framework attribute ADDED)
 
 **Interfaces:**
 
@@ -163,15 +163,15 @@ remains in the file):
 | jipipe-plugin-ij-filaments | `ImageJ1Framework.class`  | `FilamentsFramework.class` |
 | jipipe-plugin-ij-3d        | `ImageJ1Framework.class`  | `IJ3DFramework.class`      |
 
-(If a file's `ImageJ1Framework` import is still used by another annotation in the same file, keep the import — expected:
+(If a file's `ImageJ1Framework` import is still used by another annotation in the same file, keep the import - expected:
 none, the swap is whole-file.)
 
 - [ ] **Step 2: Add the framework attribute to omero + scene-3d**
 
 Every file in `plugins/jipipe-plugin-ij-omero/src/main` and `plugins/jipipe-plugin-scene-3d/src/main` carrying
 `@ConfigureJIPipeNode(...)` gets `, framework = OmeroFramework.class` / `, framework = Scene3DFramework.class` added to
-the annotation (attribute position per the annotation's existing style — after `function =`), plus the import. Gate:
-file-count parity — the number of files containing `@ConfigureJIPipeNode` equals the number containing `framework = ` in
+the annotation (attribute position per the annotation's existing style - after `function =`), plus the import. Gate:
+file-count parity - the number of files containing `@ConfigureJIPipeNode` equals the number containing `framework = ` in
 that plugin (verify with two greps per plugin; expected 26 and 7).
 
 - [ ] **Step 3: Whole-repo compile (catches every import mistake)**
@@ -181,9 +181,9 @@ Expected: no output, exit 0.
 
 - [ ] **Step 4: Diff-scope gate (saved-project safety)**
 
-Run: `git diff --stat` then inspect the changed-file list — every changed file must be under the 7 plugins' `src/main`,
+Run: `git diff --stat` then inspect the changed-file list - every changed file must be under the 7 plugins' `src/main`,
 and within each file only `@ConfigureJIPipeNode` annotation lines + `import` lines may differ. Any other hunk (a node
-ID, a method body) is a defect — fix before committing.
+ID, a method body) is a defect - fix before committing.
 
 - [ ] **Step 5: Grep gates**
 
@@ -199,7 +199,7 @@ failures**.
 
 ```bash
 git add plugins/
-git commit -m "fix: framework annotations — ilastik/omnipose/weka off JIPipeDL; filaments/ij3d off ImageJ1; omero/scene-3d now tracked (6.0.0)"
+git commit -m "fix: framework annotations - ilastik/omnipose/weka off JIPipeDL; filaments/ij3d off ImageJ1; omero/scene-3d now tracked (6.0.0)"
 ```
 
 ---
@@ -217,17 +217,17 @@ git commit -m "fix: framework annotations — ilastik/omnipose/weka off JIPipeDL
 **Interfaces:**
 
 - Consumes: nothing from Tasks 1–2 (independent).
-- Produces (exact — Task 4 builds on these):
+- Produces (exact - Task 4 builds on these):
     -
     `enum HueCategory { GEOMETRY("Geometry", 0f), ANALYSIS("Analysis", 30f), VISUALIZATION("Visualization", 60f), EXCHANGE("Exchange", 120f), DATA("Data", 240f), INTELLIGENCE("Intelligence", 300f) }`
     with a `float anchorDeg` field (deg, 0..360)
     - **Voronoi cell formula (implementation AND test must use exactly this):** sort the enum anchors `a₀…a₅` ascending;
       for anchor `aᵢ` with next-anchor gap `gᵢ = (aᵢ₊₁ − aᵢ) mod 360` and previous-anchor gap
       `gᵢ₋₁ = (aᵢ − aᵢ₋₁) mod 360`: cell = `[aᵢ − gᵢ₋₁/2, aᵢ + gᵢ/2)` (wrap-aware). Result: GEOMETRY [330,15),
-      ANALYSIS [15,45), VISUALIZATION [45,90), EXCHANGE [90,180), DATA [180,270), INTELLIGENCE [270,330) — the test
+      ANALYSIS [15,45), VISUALIZATION [45,90), EXCHANGE [90,180), DATA [180,270), INTELLIGENCE [270,330) - the test
       recomputes this from the enum anchors (independent copy of the formula, not the implementation helper) for its
       containment + tiling assertions.
-    - `static Float TaxonomyHue.autoHue(HueCategory category, String stableId)` — normalized 0..1, per the spec B.3
+    - `static Float TaxonomyHue.autoHue(HueCategory category, String stableId)` - normalized 0..1, per the spec B.3
       algorithm (FNV-1a 64, `SLOTS = 24`, golden fraction `0.381966011250105f`, cell from the formula above,
       wrap-normalized)
     - `static` cell helper on `TaxonomyHue` (e.g. `cellStartDeg(HueCategory)` / `cellWidthDeg(HueCategory)`) so the
@@ -236,7 +236,7 @@ git commit -m "fix: framework annotations — ilastik/omnipose/weka off JIPipeDL
     -
     `default Float getColorHue() { if (getParent() != null || getHueCategory() == null) return null; return TaxonomyHue.autoHue(getHueCategory(), getId()); }`
 
-- [ ] **Step 1: Write the failing test class** — `TaxonomyHueTest`
+- [ ] **Step 1: Write the failing test class** - `TaxonomyHueTest`
 
 ```java
 // Test-local minimal functions (implement the interface's abstract methods;
@@ -244,7 +244,7 @@ git commit -m "fix: framework annotations — ilastik/omnipose/weka off JIPipeDL
 // (1) determinism: autoHue(GEOMETRY, "jipipe:function:x") called twice →
 //     equal; autoHue(GEOMETRY, "a") != autoHue(GEOMETRY, "b")
 // (2) cell containment: for EVERY category and a corpus of ~10 varied ids,
-//     autoHue(category, id) lies inside the category's Voronoi cell —
+//     autoHue(category, id) lies inside the category's Voronoi cell -
 //     cell computed in the test from the enum's anchors (midpoint to
 //     midpoint, wrap-aware), NOT hardcoded angles
 // (3) tiling: the 6 cells are pairwise disjoint and their total span is 360°
@@ -252,7 +252,7 @@ git commit -m "fix: framework annotations — ilastik/omnipose/weka off JIPipeDL
 //     pairwise distinct
 // (5) explicitHueBeatsCategory: test-local top-level with BOTH an explicit
 //     getColorHue() (0.99f) and getHueCategory() → getColorHue() == 0.99f
-//     (i.e. the explicit override wins — the default is not called)
+//     (i.e. the explicit override wins - the default is not called)
 // (6) noCategoryNoHue: test-local top-level, no category, no explicit hue
 //     → getColorHue() == null (transparent); test-local LEAF with a category
 //     → getColorHue() == null (leaves always inherit)
@@ -263,17 +263,17 @@ git commit -m "fix: framework annotations — ilastik/omnipose/weka off JIPipeDL
 
 Run:
 `mvn -o -pl jipipe-core test -Dtest=TaxonomyHueTest 2>&1 | sed 's/\x1b\[[0-9;]*m//g' | grep -E "Tests run:|BUILD|ERROR" | head -5`
-Expected: FAIL (compile error — `HueCategory`/`TaxonomyHue` missing).
+Expected: FAIL (compile error - `HueCategory`/`TaxonomyHue` missing).
 
 - [ ] **Step 2: Implement `HueCategory` + `TaxonomyHue` + the interface defaults**
 
-Per the Produces block (anchors, algorithm, defaults — all fixed by the spec B.2/B.3/B.4; the enum carries the labels as
+Per the Produces block (anchors, algorithm, defaults - all fixed by the spec B.2/B.3/B.4; the enum carries the labels as
 in the table). Interface javadoc: reword the `getColorHue`/hue paragraphs to describe the default path (top-level +
 category → deterministic in-cell hue; no category → transparent; explicit override wins).
 
 Re-run: Expected: PASS (all 7 groups).
 
-- [ ] **Step 3: Full core suite — nothing should have moved**
+- [ ] **Step 3: Full core suite - nothing should have moved**
 
 Run: `mvn -o -pl jipipe-core clean test 2>&1 | sed 's/\x1b\[[0-9;]*m//g' | grep -E "Tests run: [0-9]{3},|BUILD"`
 Expected: **0 failures** (every existing root still has an explicit `getColorHue()`; every leaf's explicit
@@ -283,12 +283,12 @@ Expected: **0 failures** (every existing root still has an explicit `getColorHue
 
 ```bash
 git add jipipe-core/src/main/java/org/hkijena/jipipe/api/nodes/taxonomy/ jipipe-core/src/test
-git commit -m "feat: deterministic hue auto-picking — HueCategory (6 research anchors) + TaxonomyHue + getColorHue default (6.0.0)"
+git commit -m "feat: deterministic hue auto-picking - HueCategory (6 research anchors) + TaxonomyHue + getColorHue default (6.0.0)"
 ```
 
 ---
 
-### Task 4: Function-class migration — categories, hue drops, Scripting promotion, leaf cleanup
+### Task 4: Function-class migration - categories, hue drops, Scripting promotion, leaf cleanup
 
 **Files:**
 
@@ -298,7 +298,7 @@ git commit -m "feat: deterministic hue auto-picking — HueCategory (6 research 
   `GraphFunction`)
 - Modify: `jipipe-core/src/main/java/org/hkijena/jipipe/api/nodes/taxonomy/functions/ScriptingFunction.java` (promoted
   to top-level)
-- Modify: the 77 leaf function classes (delete their `getColorHue` overrides) — the work list is generated, not guessed:
+- Modify: the 77 leaf function classes (delete their `getColorHue` overrides) - the work list is generated, not guessed:
 
 ```bash
 cd /data/src/jipipe-4
@@ -321,7 +321,7 @@ EOF
 **Interfaces:**
 
 - Consumes: Task 3's `HueCategory`/`TaxonomyHue`/defaults.
-- Produces: the final hue layout — the 4 historic pins explicit (Rois 0°, DataSources 136°, Images 186°, Tables 216°,
+- Produces: the final hue layout - the 4 historic pins explicit (Rois 0°, DataSources 136°, Images 186°, Tables 216°,
   Annotations 264°, Misc 50°), the 6 family auto-picks (Filaments→GEOMETRY, Statistics+Tracking→ANALYSIS,
   Plotting→VISUALIZATION, Export→EXCHANGE, MachineLearning→INTELLIGENCE), Scripting top-level with INTELLIGENCE
   auto-pick, Graph transparent.
@@ -331,9 +331,9 @@ EOF
 - Keep-explicit group (add `getHueCategory()` override only): RoisFunction `GEOMETRY` (keep 0°), DataSourcesFunction
   `EXCHANGE` (keep 136°), ImagesFunction `DATA` (keep 186°), TablesFunction `DATA` (keep 216°), AnnotationsFunction
   `INTELLIGENCE` (keep 264°).
-- MiscellaneousFunction: keep the explicit 50°; NO category (default null) — user ruling.
+- MiscellaneousFunction: keep the explicit 50°; NO category (default null) - user ruling.
 - GraphFunction: keep explicit null (transparent); NO category.
-- Drop-explicit group (DELETE the `getColorHue` method entirely — the default takes over — and add the
+- Drop-explicit group (DELETE the `getColorHue` method entirely - the default takes over - and add the
   `getHueCategory()` override): FilamentsFunction `GEOMETRY`, StatisticsFunction `ANALYSIS`, TrackingFunction
   `ANALYSIS`, PlottingFunction `VISUALIZATION`, ExportFunction `EXCHANGE`, MachineLearningFunction `INTELLIGENCE`.
 - Update each touched class's class-javadoc where it describes its hue placement (e.g. Filaments "Leaf of…" wording is
@@ -343,13 +343,13 @@ EOF
 
 `getParent()` → `return null;`; class javadoc: now a top-level branch of the Intelligence family (first in-tree user of
 the auto-picker); add `getHueCategory() { return INTELLIGENCE; }`; delete its `getColorHue` (null) override. The 4
-scripting leaves (`scripting/Scripting{Expression,ImageJMacro,Python,R}Function`) already parent to Scripting — no
+scripting leaves (`scripting/Scripting{Expression,ImageJMacro,Python,R}Function`) already parent to Scripting - no
 change to them.
 
 - [ ] **Step 3: Delete the 77 leaf overrides**
 
 For every file in the generated work list: remove the `getColorHue()` method (its `@Nullable` annotation and javadoc, if
-any). The work list must print exactly 77 files — if it doesn't, stop and report (a miscount means the regex or the tree
+any). The work list must print exactly 77 files - if it doesn't, stop and report (a miscount means the regex or the tree
 changed).
 
 - [ ] **Step 4: Add the ship-set integration tests to `TaxonomyHueTest`**
@@ -360,13 +360,13 @@ changed).
 //     baseHue(ScriptingFunction), no exception; ScriptingFunction is
 //     top-level (getParent() == null)
 // (9) shipSetAutoPicksAreDistinct: on the booted live service
-//     (JIPipe.ensureInstance() in @BeforeAll — the launcher listener
+//     (JIPipe.ensureInstance() in @BeforeAll - the launcher listener
 //     pre-patches ImageJ, safe), collect the hues of every TOP-LEVEL
-//     function that relies on the default — detection: getHueCategory()
+//     function that relies on the default - detection: getHueCategory()
 //     != null AND the class is NOT in the keep-explicit set
 //     {RoisFunction, DataSourcesFunction, ImagesFunction, TablesFunction,
 //      AnnotationsFunction} (spec B.5 "keeps explicit" group; Miscellaneous
-//     and Graph have null category and are excluded automatically) —
+//     and Graph have null category and are excluded automatically) -
 //     expected: exactly {Filaments, Statistics, Tracking, Plotting, Export,
 //     MachineLearning, Scripting}; hues pairwise distinct, each inside its
 //     category's cell (the test's independent cell recomputation)
@@ -378,14 +378,14 @@ changed).
 - [ ] **Step 5: Full core suite**
 
 Run: `mvn -o -pl jipipe-core clean test 2>&1 | sed 's/\x1b\[[0-9;]*m//g' | grep -E "Tests run: [0-9]{3},|BUILD"`
-Expected: **0 failures** — `TaxonomyPluginTest.allCoreTaxonomyRegistered` (presence + `validateFunctions().isEmpty()` +
+Expected: **0 failures** - `TaxonomyPluginTest.allCoreTaxonomyRegistered` (presence + `validateFunctions().isEmpty()` +
 106-ID gate) is the integration proof; its function ID list is unchanged (Scripting keeps its id, only its parent
 moved).
 
 - [ ] **Step 6: Launcher suite (the whole-registry production validation)**
 
 Run: `mvn -o -pl jipipe-launcher clean test 2>&1 | sed 's/\x1b\[[0-9;]*m//g' | grep -E "Tests run: [0-9]+,|BUILD"`
-Expected: **0 failures** (TaxonomyFullValidationTest runs over the entire registered registry — the hue moves +
+Expected: **0 failures** (TaxonomyFullValidationTest runs over the entire registered registry - the hue moves +
 Scripting promotion must pass it). Then:
 `git checkout -- utils/taxonomy-research/registry.json utils/fresh-node-slots.json` (dumper drift).
 
@@ -393,7 +393,7 @@ Scripting promotion must pass it). Then:
 
 ```bash
 git add jipipe-core/src/main/java/org/hkijena/jipipe/api/nodes/taxonomy/functions jipipe-core/src/test
-git commit -m "feat: research-anchored hue families — 6 roots auto-pick, 4 historic pins kept, Scripting promoted to top-level (6.0.0)"
+git commit -m "feat: research-anchored hue families - 6 roots auto-pick, 4 historic pins kept, Scripting promoted to top-level (6.0.0)"
 ```
 
 ---
@@ -405,13 +405,13 @@ git commit -m "feat: research-anchored hue families — 6 roots auto-pick, 4 his
   4; migration order 1→6 → task order 1→4 with the grep gates in Task 2 Step 5 and the launcher gate in Task 4 Step 6.
   No gaps.
 - **Type consistency:** `HueCategory` constants + `anchorDeg`, `TaxonomyHue.autoHue(HueCategory, String)`,
-  `getHueCategory()` default null — identical in Task 3 Produces and Task 4 usage; the 5 framework class names/imports
+  `getHueCategory()` default null - identical in Task 3 Produces and Task 4 usage; the 5 framework class names/imports
   identical in Tasks 1 and 2.
 - **Ordering hazard:** Tasks 1 and 3 are independent (parallel-safe); Task 2 needs Task 1's classes; Task 4 needs Task
   3's defaults. No task reads an unregistered hue: after Task 3 every root still has an explicit hue, so the suite is
   green before any root drops its override.
 - **Known counts:** FrameworksTest 16→20 (ship-set, sanctioned); presence list 16→20; leaf-override deletion work list
-  expected 77 (generator is authoritative — a different count stops the task); re-annotation counts 8/5/9/51/62/26/7
+  expected 77 (generator is authoritative - a different count stops the task); re-annotation counts 8/5/9/51/62/26/7
   (grep gates, not blind).
 - **Proportion:** 4 tasks; the mechanical work (168 annotations, 77 override deletions) is generator-driven with count
   gates, not transcribed.

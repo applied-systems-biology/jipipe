@@ -29,7 +29,7 @@ import java.awt.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * #1339 (Review Focus #5): the reference font migration — a pre-migration
+ * #1339 (Review Focus #5): the reference font migration - a pre-migration
  * project (split font-family/font-size/font-style keys) loads with its font
  * settings intact (composed into the single {@code font} parameter), the new
  * format is idempotent, and a legacy JSON missing keys falls back to defaults
@@ -114,7 +114,7 @@ class DrawTextRoiFontMigrationTest {
         DrawTextRoiAlgorithm node = (DrawTextRoiAlgorithm) JIPipe.createNode(DrawTextRoiAlgorithm.class);
         ObjectNode json = (ObjectNode) serialize(node);
         json.remove("font");
-        // Only a style key is present — family/size must default.
+        // Only a style key is present - family/size must default.
         json.put("font-style", "Bold");
 
         DrawTextRoiAlgorithm loaded = loadFrom(json);

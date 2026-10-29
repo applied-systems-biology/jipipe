@@ -1,11 +1,11 @@
-# Task 7 Report: CI Jobs — docker_build_push and verify_ro_crate
+# Task 7 Report: CI Jobs - docker_build_push and verify_ro_crate
 
 ## What I Implemented
 
-1. **`dist/docker/verify_ro_crate.py`** — Python script that connects to the JIPipe instrumentation WebSocket, opens a
+1. **`dist/docker/verify_ro_crate.py`** - Python script that connects to the JIPipe instrumentation WebSocket, opens a
    project, selects it, sends `create_ro_crate`, then extracts and checks the resulting zip for `workflow.cwl`.
 
-2. **`.gitlab-ci.yml`** — Added two new CI jobs after `upload_to_package_registry`:
+2. **`.gitlab-ci.yml`** - Added two new CI jobs after `upload_to_package_registry`:
     - **`docker_build_push`**: Downloads the Linux64 tar.gz from distribution artifacts, builds the Docker image using
       `dist/docker/Dockerfile`, tags with version + latest, pushes to Docker Hub.
     - **`verify_ro_crate`**: Starts the JIPipe Docker container with `--instrumentation 8780`, runs the Python
@@ -18,13 +18,13 @@
 
 ## Commit
 
-- `8fd31e1d00` — Add CI jobs for Docker build/push and RO-Crate verification
+- `8fd31e1d00` - Add CI jobs for Docker build/push and RO-Crate verification
 
 ## Self-Review Findings
 
 ### YAML Validation
 
-- YAML syntax validated with Python's `yaml.safe_load()` — passes.
+- YAML syntax validated with Python's `yaml.safe_load()` - passes.
 - Both jobs are in the `publish` stage, with correct `needs` dependencies (`upload_to_package_registry` →
   `docker_build_push` → `verify_ro_crate`).
 - Both jobs have `rules: - if: $CI_COMMIT_BRANCH == "master"` matching the existing pattern.
@@ -109,7 +109,7 @@ The following issues identified in the self-review (and by Task 7 review) have b
 - **Fix**: The Python script (running on the CI runner) extracts from `/tmp/jipipe-output/kidney.crate.zip` to
   `/tmp/crate-extracted/`. The CI job then runs `cwltool --validate /tmp/crate-extracted/workflow.cwl` on the CI runner.
 
-### Remaining open items (not fixed — depend on other tasks)
+### Remaining open items (not fixed - depend on other tasks)
 
 - **Test data**: Task 8 creates `dist/docker/test-data/kidney_with_user_dirs.jip`.
 - **Docker Hub credentials**: `$DOCKER_HUB_USERNAME` and `$DOCKER_HUB_TOKEN` must be configured as CI/CD variables.

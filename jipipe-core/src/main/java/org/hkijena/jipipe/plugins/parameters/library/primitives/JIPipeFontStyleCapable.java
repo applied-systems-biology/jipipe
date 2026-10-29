@@ -17,7 +17,7 @@ import java.awt.*;
 
 /**
  * A {@link JIPipeFontValue} that also carries a {@link Font} style
- * (#1339) — the bit flags {@link Font#PLAIN}, {@link Font#BOLD} and
+ * (#1339) - the bit flags {@link Font#PLAIN}, {@link Font#BOLD} and
  * {@link Font#ITALIC}, combined additively.
  */
 public interface JIPipeFontStyleCapable {

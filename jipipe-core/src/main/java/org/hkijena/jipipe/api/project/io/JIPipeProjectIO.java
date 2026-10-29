@@ -25,7 +25,7 @@ public interface JIPipeProjectIO {
 
     /**
      * Gets the id of this format.
-     * The id is a stable string literal — it is persisted in saved
+     * The id is a stable string literal - it is persisted in saved
      * projects and must never be derived from code.
      *
      * @return the format id

@@ -91,19 +91,19 @@ public class JIPipeDesktopHTMLEditor extends JIPipeDesktopWorkbenchPanel {
      * themed outline around the whole box, a flat (unbeveled) field, a flat
      * arrow inside the same box, and a themed selection highlight. Without
      * this, the editable font/size combos fall back to Metal's unthemed
-     * bevels — the dark outline around the field and the separate
+     * bevels - the dark outline around the field and the separate
      * full-bordered arrow button the user reported.
      */
     private static void themeEditableComboBox(JComboBox<?> combo) {
         // Force the (Metal) UI delegate to be installed so the editable field
-        // and the dropdown arrow button exist as child components — they are
+        // and the dropdown arrow button exist as child components - they are
         // created lazily by the UI, not by the JComboBox constructor.
         combo.getUI();
         Color selBg = ThemeUtils.getCurrentStyle().getSelectionBackground();
         Color selFg = ThemeUtils.getCurrentStyle().getTextForeground();
         // One themed rounded outline around the whole combo (the theme sets
         // ComboBox.background but not ComboBox.border, so Metal's bevel
-        // "EditorBorder" was drawn by the field instead — the dark outline).
+        // "EditorBorder" was drawn by the field instead - the dark outline).
         Border fieldBorder = UIManager.getBorder("TextField.border");
         combo.setBorder(fieldBorder);
 
@@ -172,7 +172,7 @@ public class JIPipeDesktopHTMLEditor extends JIPipeDesktopWorkbenchPanel {
 
     /**
      * Returns the legacy {@link Mode} derived from the current view + density
-     * state (spec §8.2: the public API is kept stable for existing callers —
+     * state (spec §8.2: the public API is kept stable for existing callers -
      * the parameter editor, the expression/function-builder contexts).
      */
     public Mode getMode() {
@@ -424,7 +424,7 @@ public class JIPipeDesktopHTMLEditor extends JIPipeDesktopWorkbenchPanel {
                     "actions/format-justify-fill.png"));
             // A trailing glue (like toolBar1's) makes this row's max width
             // unbounded, so the BoxLayout stretches it to the full editor width
-            // — otherwise the row (and its bottom border line) stops at the last
+            // - otherwise the row (and its bottom border line) stops at the last
             // icon (#1339).
             toolBar2.add(Box.createHorizontalGlue());
 
@@ -504,7 +504,7 @@ public class JIPipeDesktopHTMLEditor extends JIPipeDesktopWorkbenchPanel {
         });
 
         // Source view: a plain text area showing the raw HTML markup (no
-        // syntax-highlight dependency — #1124 will replace this later).
+        // syntax-highlight dependency - #1124 will replace this later).
         sourceArea = new JTextArea();
         sourceArea.setFont(new Font(Font.MONOSPACED, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
         sourceArea.setBackground(UIManager.getColor("TextArea.background"));
@@ -535,7 +535,7 @@ public class JIPipeDesktopHTMLEditor extends JIPipeDesktopWorkbenchPanel {
         updateDensityButton();
         // Chrome (spec §8.2): the embedded parameter view (which carries the
         // name-row "Edit" button that opens the dialog) uses a modern
-        // left-accent bar (#1339); the standalone full dialog carries none —
+        // left-accent bar (#1339); the standalone full dialog carries none -
         // its own window is the frame.
         setBorder(enableDialogEditor ? UIUtils.createLeftAccentBorder() : BorderFactory.createEmptyBorder());
         reloadToolbar();
@@ -579,7 +579,7 @@ public class JIPipeDesktopHTMLEditor extends JIPipeDesktopWorkbenchPanel {
             }
         });
         // The font/size combos are editable, so focusing one selects all its
-        // text — and the unthemed Metal bevels/selection draw the dark
+        // text - and the unthemed Metal bevels/selection draw the dark
         // outlines in the font/size combos (the "weird combobox" design,
         // #1339). Theme the whole combo to the JIPipe look.
         themeEditableComboBox(fontSelection);

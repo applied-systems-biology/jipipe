@@ -35,7 +35,7 @@ import java.util.Map;
 /**
  * The shared class of the generated "create spot detector" nodes (one per
  * TrackMate detector factory, e.g. DoG / LoG). Every generated node id
- * becomes a "Detect spots" step of the TrackMate workflow family — the
+ * becomes a "Detect spots" step of the TrackMate workflow family - the
  * step annotation below is looked up on the instance class, and each
  * generated node's own id becomes the step. All detectors therefore link
  * into "Track spots" (see {@link

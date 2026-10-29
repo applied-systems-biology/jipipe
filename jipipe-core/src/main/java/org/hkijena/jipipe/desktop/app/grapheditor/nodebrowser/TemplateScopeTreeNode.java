@@ -35,7 +35,7 @@ public final class TemplateScopeTreeNode {
 
     /**
      * The sentinel {@code userObject} of the synthetic branch's header row
-     * ("Templates"). Its scope is {@code null} — the header only forwards
+     * ("Templates"). Its scope is {@code null} - the header only forwards
      * the leaf-attachment walk to its {@link TemplateScope children}.
      */
     public static final TemplateScopeTreeNode ROOT = new TemplateScopeTreeNode(null);

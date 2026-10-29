@@ -79,7 +79,7 @@ public class JIPipeDesktopColorChooserDialog extends JDialog {
     private CheckerSwatch currentSwatch;
     /**
      * Creates the dialog (owner may be null; the dialog is not shown by this
-     * constructor — use {@link #show} or {@code setVisible(true)}).
+     * constructor - use {@link #show} or {@code setVisible(true)}).
      */
     public JIPipeDesktopColorChooserDialog(Window owner, String title, Color initial, boolean withTransparency) {
         super(owner, title, ModalityType.APPLICATION_MODAL);
@@ -149,7 +149,7 @@ public class JIPipeDesktopColorChooserDialog extends JDialog {
 
     // ------------------------------------------------------------------
     // Test seams (package-private; drive the input plumbing without
-    // Swing-structure assertions — see ColorChooserDialogRefreshTest).
+    // Swing-structure assertions - see ColorChooserDialogRefreshTest).
     // ------------------------------------------------------------------
 
     private static Component sectionLabel(String text) {
@@ -162,7 +162,7 @@ public class JIPipeDesktopColorChooserDialog extends JDialog {
     }
 
     /**
-     * Item 8: the full swatch tooltip — name (if any), {@code #RRGGBB},
+     * Item 8: the full swatch tooltip - name (if any), {@code #RRGGBB},
      * {@code RGB(r, g, b)}, {@code HSB(h°, s%, b%)}, {@code L*a*b*(L, a, b)}.
      * Shared by every swatch source (pure, HIG, last selected, saved) and the
      * current-swatch header, so the format stays in one place.
@@ -427,7 +427,7 @@ public class JIPipeDesktopColorChooserDialog extends JDialog {
         p.setOpaque(true);
         p.setBackground(UIManager.getColor("Panel.background"));
         // Items 5/7: the 16 pure (4-bit) colors and the GNOME HIG palette
-        // render as ONE untitled block — no section titles, a single 8px gap
+        // render as ONE untitled block - no section titles, a single 8px gap
         // between the two groups.
         p.add(buildSwatchesRow(pureColors()));
         p.add(Box.createVerticalStrut(8));
@@ -436,7 +436,7 @@ public class JIPipeDesktopColorChooserDialog extends JDialog {
         p.add(buildSwatchesRow(JIPipeColorHistory.get().getRecent()));
 
         // Item 6: the star (save) button right-aligns to the edge of the
-        // "Saved" section title — not the far dialog edge.
+        // "Saved" section title - not the far dialog edge.
         JPanel savedHeader = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
         savedHeader.setOpaque(false);
         savedHeader.add(sectionLabel("Saved"));
@@ -496,7 +496,7 @@ public class JIPipeDesktopColorChooserDialog extends JDialog {
         for (NamedColor c : colors) {
             JButton b = createSwatchButton(c);
             // Left-click sets the color (right-click on the Saved row deletes
-            // — wired by fillSavedRow).
+            // - wired by fillSavedRow).
             b.addActionListener(e -> setCurrentColor(c.getColor()));
             p.add(b);
         }
@@ -536,7 +536,7 @@ public class JIPipeDesktopColorChooserDialog extends JDialog {
             satRail.setValue(hsb[1]);
             briRail.setValue(hsb[2]);
             // Gradient keys: only rebuild a rail's image when its inputs changed
-            // (see updateGradient — #1339 lag fix).
+            // (see updateGradient - #1339 lag fix).
             hueRail.updateGradient(null, i -> ColorSpaces.fromHsb(i, 100, 100));
             satRail.updateGradient(new double[]{hsb[0]}, i -> ColorSpaces.fromHsb(hsb[0], i, 100));
             briRail.updateGradient(new double[]{hsb[0], hsb[1]}, i -> ColorSpaces.fromHsb(hsb[0], hsb[1], i));
@@ -605,7 +605,7 @@ public class JIPipeDesktopColorChooserDialog extends JDialog {
     /**
      * Converts a press/drag on the row into the rail's value (item 4): the
      * x coordinate is clamped to the rail's horizontal span within the row.
-     * The rail's own listener still fires — this is a widening of the hit
+     * The rail's own listener still fires - this is a widening of the hit
      * target, not a replacement.
      */
     private void forwardToRail(MouseEvent e, ColorRail rail, JPanel row, boolean press) {

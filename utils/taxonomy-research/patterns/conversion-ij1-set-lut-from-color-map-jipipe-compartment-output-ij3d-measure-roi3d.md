@@ -62,7 +62,7 @@ Project: `AIAgentTests/03-ExampleWorkflows/Annamaria_12.jip` (relative to `/data
 ## Template
 
 Proposed name `Set LUT (color map) -> Compartment output -> Extract IJ3D ROI statistics`, menu path
-`Patterns/Images/Set LUT (color map) -> Compartment output -> Extract IJ3D ROI statistics` (proposal only — not
+`Patterns/Images/Set LUT (color map) -> Compartment output -> Extract IJ3D ROI statistics` (proposal only - not
 registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/conversion-ij1-set-lut-from-color-map-jipipe-compartment-output-ij3d-measure-roi3d.json`.
 

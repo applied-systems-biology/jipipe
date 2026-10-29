@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * <p>
  * The marker was previously derived from {@code toLab(currentColor)}, but the
  * picked color passes through {@code ColorSpaces.fromLab} which clamps
- * out-of-gamut a/b values to the sRGB gamut — so the circle "stuck" at the
+ * out-of-gamut a/b values to the sRGB gamut - so the circle "stuck" at the
  * clamped position instead of following the cursor. The fix records the raw
  * pointer a/b. This test presses an out-of-gamut corner of the a/b plane and
  * asserts the marker lands on the pressed (unclamped) coordinates, not on the
@@ -70,7 +70,7 @@ class ColorChooserDialogLabMarkerTest {
 
         int w = Math.max(2, lab.getWidth());
         int h = Math.max(2, lab.getHeight());
-        // Press the bottom-left corner: a ~ -128, b ~ -128 — far outside the
+        // Press the bottom-left corner: a ~ -128, b ~ -128 - far outside the
         // sRGB gamut for any L, so fromLab clamps and the old marker would have
         // moved back toward the gamut center.
         int x = 0;
@@ -85,7 +85,7 @@ class ColorChooserDialogLabMarkerTest {
                 "marker must sit at the raw pointer a/b (" + expectedA + ", " + expectedB
                         + ") but was (" + marker[0] + ", " + marker[1] + ")");
 
-        // And it must NOT equal the (gamut-clamped) color's own a/b — that was
+        // And it must NOT equal the (gamut-clamped) color's own a/b - that was
         // exactly the bug (marker pinned to the clamped position).
         double[] clamped = org.hkijena.jipipe.utils.color.ColorSpaces.toLab(new Color(128, 128, 128));
         Color picked = dialogColor(d);

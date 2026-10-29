@@ -25,13 +25,13 @@ codebase:
 **P1: Environments are configuration, instances are lifecycle.**  
 An *environment* (e.g., [
 `JIPipeEnvironment`](jipipe-core/src/main/java/org/hkijena/jipipe/api/environments/JIPipeEnvironment.java:33)) defines
-*what* to run and *how to configure it* — the executable path, arguments, artifact queries, port preferences. A *server
-instance* is a *live connection* to a running process — it has a port, a PID, a state machine, and it can be closed.
+*what* to run and *how to configure it* - the executable path, arguments, artifact queries, port preferences. A *server
+instance* is a *live connection* to a running process - it has a port, a PID, a state machine, and it can be closed.
 These are fundamentally different concerns and must not be conflated.
 
 **P2: No special server environment base class.**  
 Any existing environment can serve as the configuration input for a server. There is no `JIPipeServerEnvironment` base
-class. Developers implement whatever environment they want — a [
+class. Developers implement whatever environment they want - a [
 `JIPipeProcessArtifactEnvironment`](jipipe-core/src/main/java/org/hkijena/jipipe/api/environments/JIPipeProcessArtifactEnvironment.java:52)
 for a native binary, a custom environment for a Python venv with IPython, or even a plain [
 `JIPipeEnvironment`](jipipe-core/src/main/java/org/hkijena/jipipe/api/environments/JIPipeEnvironment.java:33) subclass.
@@ -40,7 +40,7 @@ environment system with its resolution chain, UI editors, and artifact integrati
 
 **P3: Strongly typed server instances with high-level APIs.**  
 Server instances are generic and typed: `JIPipeServerInstance<TEnv extends JIPipeEnvironment>`. Subclasses add
-domain-specific methods — `IPythonServerInstance.executePython(String code)`,
+domain-specific methods - `IPythonServerInstance.executePython(String code)`,
 `LlamaCppServerInstance.completeCompletion(String prompt)`. This makes the instance the primary developer-facing API,
 not a generic handle with just `getPort()`.
 
@@ -51,7 +51,7 @@ auto-shutdown when all leases are released.
 
 **P5: Flexible lifetime, not strictly bound to runs.**  
 Servers can be instantiated in any code context using `try-with-resources`, not only within pipeline runs. A
-`JIPipeServerInstanceManager` safeguards the lifetime of a multi-server block — it can be used for run-scoped servers,
+`JIPipeServerInstanceManager` safeguards the lifetime of a multi-server block - it can be used for run-scoped servers,
 app-wide servers, or ad-hoc usage in any code.
 
 ### 1.3 Three-Tier Model
@@ -64,12 +64,12 @@ Environment (definition/parameters/settings)
     → Lease (accessor, guards against use-after-free)
 ```
 
-- **Tier 1 — Environment:** User-facing configuration. Resolves through the existing chain: Node → Project →
+- **Tier 1 - Environment:** User-facing configuration. Resolves through the existing chain: Node → Project →
   Application → Fallback via [
   `JIPipeEnvironmentConfigurator`](jipipe-core/src/main/java/org/hkijena/jipipe/api/environments/JIPipeEnvironmentConfigurator.java:46).
-- **Tier 2 — Internal Instance:** The actual running server. Manages process lifecycle, health checks, state
+- **Tier 2 - Internal Instance:** The actual running server. Manages process lifecycle, health checks, state
   transitions. Owned by the service component.
-- **Tier 3 — Lease:** An `AutoCloseable` accessor that wraps the internal instance. Reference-counted. Throws
+- **Tier 3 - Lease:** An `AutoCloseable` accessor that wraps the internal instance. Reference-counted. Throws
   `IllegalStateException` on use after close. Enables future auto-shutdown.
 
 ---
@@ -203,7 +203,7 @@ method on a special environment subclass.
   `JIPipeOptionalParameter<T>`](jipipe-core/src/main/java/org/hkijena/jipipe/plugins/parameters/api/optional/JIPipeOptionalParameter.java)
   wrappers (e.g., `OptionalREnvironment`, `OptionalPythonEnvironment`)
 - Reuses existing UI editors for environment configuration
-- Allows developers to customize environments freely — e.g., a custom IPython environment that points to a specific venv
+- Allows developers to customize environments freely - e.g., a custom IPython environment that points to a specific venv
   rather than an artifact-provided one
 
 ### 3.2 How Environments Configure Servers
@@ -249,7 +249,7 @@ public class IPythonEnvironment extends JIPipeProcessArtifactEnvironment {
 public class IPythonVenvEnvironment extends JIPipeEnvironment {
     private Path venvPath = Paths.get("");
     private OptionalIntegerParameter port = new OptionalIntegerParameter();
-    // No artifact — user points to their own venv
+    // No artifact - user points to their own venv
 }
 ```
 
@@ -501,7 +501,7 @@ the manager is just a scope, and its lifetime is determined by how it's used.
 package org.hkijena.jipipe.api.servers;
 
 /**
- * Manages a block of server instances. AutoCloseable — closing releases all leases.
+ * Manages a block of server instances. AutoCloseable - closing releases all leases.
  * Can be used for run-scoped servers, app-wide servers, or ad-hoc multi-server blocks.
  */
 public class JIPipeServerInstanceManager implements AutoCloseable {
@@ -549,7 +549,7 @@ public class JIPipeServerInstanceManager implements AutoCloseable {
             try {
                 lease.close();
             } catch (Exception e) {
-                // Log, don't throw — best-effort cleanup
+                // Log, don't throw - best-effort cleanup
             }
         }
         activeLeases.clear();
@@ -675,7 +675,7 @@ public class RunIPythonScriptAlgorithm extends JIPipeIteratingAlgorithm {
             Object result = server.executePython(getScriptCode(), getVariables());
             // Process result...
         }
-        // Lease automatically released — server may shut down if no other leases exist
+        // Lease automatically released - server may shut down if no other leases exist
     }
 }
 ```
@@ -1370,7 +1370,7 @@ public class JIPipeDesktopServerMonitorWindow extends JDialog
 
 **Goal:** Implement cross-instance server management using the JIPipe launcher and file-based coordination.
 
-This phase is deferred from the first implementation. The architecture supports it through the three-tier model — the
+This phase is deferred from the first implementation. The architecture supports it through the three-tier model - the
 lease and instance abstractions are independent of whether the server runs in-process or externally. Key future work:
 
 - `ExternalServerManager` for cross-instance lifecycle
@@ -1388,10 +1388,10 @@ lease and instance abstractions are independent of whether the server runs in-pr
 
 | Aspect                 | Previous Plan                                                   | Revised Plan                                                                         | Rationale                                                                                              |
 |------------------------|-----------------------------------------------------------------|--------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------|
-| **Server environment** | `JIPipeServerEnvironment` extending `JIPipeArtifactEnvironment` | No special base class — any `JIPipeEnvironment` works                                | Reuse existing environment system; developers have freedom to implement whatever environment they want |
+| **Server environment** | `JIPipeServerEnvironment` extending `JIPipeArtifactEnvironment` | No special base class - any `JIPipeEnvironment` works                                | Reuse existing environment system; developers have freedom to implement whatever environment they want |
 | **Server handle**      | `JIPipeManagedServer` interface with `getPort()`, `getPid()`    | `JIPipeServerInstance<TEnv>` abstract class with high-level APIs                     | Strongly typed instances enable domain-specific methods like `executePython()`                         |
 | **Access pattern**     | `acquire()`/`release()` on manager                              | `JIPipeServerLease<TInst>` AutoCloseable accessor                                    | Lease pattern provides use-after-free protection and enables future auto-shutdown                      |
-| **Server types**       | Temporary / App-Wide / Cross-Instance as first-class concepts   | `JIPipeServerInstanceManager` as flexible scope — used for runs, app-wide, or ad-hoc | Lifetime is not strictly bound to runs; servers can be instantiated in any code context                |
+| **Server types**       | Temporary / App-Wide / Cross-Instance as first-class concepts   | `JIPipeServerInstanceManager` as flexible scope - used for runs, app-wide, or ad-hoc | Lifetime is not strictly bound to runs; servers can be instantiated in any code context                |
 | **Port config**        | `int port = 0` with magic value                                 | `OptionalIntegerParameter`                                                           | Follows existing JIPipe parameter patterns; explicit enable/disable semantics                          |
 | **Algorithm binding**  | Manual `acquire()`/`release()` calls                            | `@RegisterJIPipeServerUsage` + `getServerInstance()` returning lease                 | Consistent with `@RegisterJIPipeEnvironmentUsage` pattern; lease is AutoCloseable                      |
 | **Cross-instance**     | Full launcher/daemon infrastructure in Phase 2                  | Deferred to Phase 4                                                                  | First implementation focuses on embedded only; JIT spin-up or explicit wake-up                         |
@@ -1415,10 +1415,10 @@ lease and instance abstractions are independent of whether the server runs in-pr
 The previous plan created a dedicated `JIPipeServerEnvironment` that consolidated server-specific configuration
 (ownership, scope, timeouts, restart policy). This revised design removes it because:
 
-- Any environment can configure a server — the factory pattern handles the mapping
+- Any environment can configure a server - the factory pattern handles the mapping
 - Developers should have the freedom to implement custom environments (e.g., a venv-based IPython environment that
   doesn't use artifacts)
-- The existing environment system already provides resolution, validation, and UI — no need to duplicate
+- The existing environment system already provides resolution, validation, and UI - no need to duplicate
 
 **2. `JIPipeServerInstance<TEnv>` instead of `JIPipeManagedServer`**  
 The previous plan's `JIPipeManagedServer` was a generic interface with just `getPort()`, `getPid()`, `getState()`. This
@@ -1433,14 +1433,14 @@ The previous plan used manual `acquire()`/`release()` calls. This revised design
 
 - `AutoCloseable` + `try-with-resources` prevents resource leaks
 - Use-after-free protection catches bugs early
-- Reference counting is implicit — closing the lease decrements the count
+- Reference counting is implicit - closing the lease decrements the count
 - Enables future auto-shutdown when all leases are released
 
 **4. `JIPipeServerInstanceManager` instead of Temporary/AppWide/CrossInstance**  
 The previous plan had three server types as first-class concepts. This revised design uses a flexible manager because:
 
-- Lifetime should not be strictly bound to runs — servers can be used in any code context
-- A manager is just a scope — its lifetime is determined by how it's used
+- Lifetime should not be strictly bound to runs - servers can be used in any code context
+- A manager is just a scope - its lifetime is determined by how it's used
 - The same manager class works for run-scoped, app-wide, and ad-hoc usage
 
 ---
@@ -1455,7 +1455,7 @@ separate ones?
 
 **Current thinking:** The instance key is based on `factoryId + environmentClass + environmentName`. Two environments
 with the same class and name share an instance. Different names get different instances. This is simple but may need
-refinement — for example, two environments with the same artifact but different arguments should probably share the
+refinement - for example, two environments with the same artifact but different arguments should probably share the
 server.
 
 **Resolution needed:** Define the instance key strategy more precisely, possibly with an `equals()`/`hashCode()`
@@ -1492,7 +1492,7 @@ lease. This needs more detailed design.
 **Question:** Who decides whether a server is run-scoped or app-wide? The algorithm? The environment? The user?
 
 **Current thinking:** The environment could include a `JIPipeServerLifetime` parameter (with values like `RunScoped`,
-`AppWide`) that the user can configure. The default depends on the server type — e.g., IPython defaults to `RunScoped`
+`AppWide`) that the user can configure. The default depends on the server type - e.g., IPython defaults to `RunScoped`
 (clean namespace per run), llama.cpp defaults to `AppWide` (expensive to start). The `getServerInstance()` method on
 algorithm nodes would respect this setting when choosing which manager to acquire from.
 

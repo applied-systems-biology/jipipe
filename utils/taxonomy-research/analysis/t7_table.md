@@ -1,4 +1,4 @@
-# Task 7 — raw tables (mined patterns)
+# Task 7 - raw tables (mined patterns)
 
 **Totals (kept, support >= 3):** chain=11,215, fan-out=240, fan-in=158, conversion=1,428, annotation-sandwich=4,
 compartment-boundary=77, compartment-cycle=0; N=13,122.
@@ -167,7 +167,7 @@ compartment-boundary=77, compartment-cycle=0; N=13,122.
 | # | id | shape | support | projects | occurrences | role summary |
 |--:|----|-------|--------:|---------:|------------:|--------------|
 
-## cross-check — per-doc
+## cross-check - per-doc
 
 | doc                                        | extracted ids | in corpus | best overlap | matched pattern                                                                                                                                                                       |
 |--------------------------------------------|--------------:|----------:|-------------:|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -219,7 +219,7 @@ compartment-boundary=77, compartment-cycle=0; N=13,122.
   ij3d-roi-change-properties, ij3d-roi-convert-to-rgb, iji-export-image-v2, iji-export-table-as-xlsx-v2,
   iji-export-table-v2, plot-table:plot-histogram, plot-table:plot-xy-scatter (13 in corpus)
 
-## 5c library gaps (5,390) — support >= 5, no doc match
+## 5c library gaps (5,390) - support >= 5, no doc match
 
 - fan-in-ij1-roi-to-rgb-core-io-1-other-1 (support 71)
 - compartment-boundary-jipipe-compartment-output-ij1-roi-to-rgb (support 70)

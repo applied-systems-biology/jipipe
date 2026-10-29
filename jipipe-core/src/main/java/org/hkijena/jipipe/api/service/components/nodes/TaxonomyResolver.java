@@ -28,10 +28,10 @@ import java.util.*;
  * Resolves the taxonomy views of the node service component:
  * <ul>
  * <li>the {@link FunctionRegistry} (the curated function tree, populated
- * once by the taxonomy plugin) — read from the owning
+ * once by the taxonomy plugin) - read from the owning
  * {@link JIPipeNodeTaxonomyServiceComponent},</li>
  * <li>the {@link FrameworkRegistry} (populated once by the taxonomy
- * plugin) — read from the owning
+ * plugin) - read from the owning
  * {@link JIPipeNodeTaxonomyServiceComponent},</li>
  * <li>the family step graph, assembled from the nodes'
  * {@link JIPipeNodeTaxonomyFamilyStepAnnotation}s via a
@@ -195,7 +195,7 @@ public class TaxonomyResolver {
         }
         this.classToNodeIds = mapping;
         // Keep the existing assembler (its steps survive); only its
-        // class→node-ids mapping is updated — the steps resolve their
+        // class→node-ids mapping is updated - the steps resolve their
         // predecessors lazily against it at query time.
         if (familyAssembler != null) {
             familyAssembler.updateClassToNodeId(mapping);

@@ -151,7 +151,7 @@ class ThemeUtilsFunctionColorTest {
     void fnNullInfoPublicFacadeUsesDefensiveDefaults() {
         // The fn-null defensive state (primary function null; only reachable
         // via JIPipeEmptyNodeInfo, never a registered node): the facades
-        // resolve to the legacy negative-hue transparent channels — the panel
+        // resolve to the legacy negative-hue transparent channels - the panel
         // background fill and the highlight border. This path never calls
         // JIPipe.getNodes(), so the test stays pure.
         TestInfo info = new TestInfo();

@@ -1178,7 +1178,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
                 // "DEFAULT" stays a special case: it is not stored in the legacy map,
                 // so the fallback preserves the previous behavior exactly. A node in the
                 // main canvas serializes its compartment as "" (the default-location key
-                // itself), which is stored in the legacy map but needs no migration — skip
+                // itself), which is stored in the legacy map but needs no migration - skip
                 // it, or clearEntriesWithPathPrefix(location, "") would collapse to
                 // "location" and wipe the node's already-correct stored location.
                 String legacyCompartmentId = nodeLegacyCompartmentIDs.get(nodeUUID);

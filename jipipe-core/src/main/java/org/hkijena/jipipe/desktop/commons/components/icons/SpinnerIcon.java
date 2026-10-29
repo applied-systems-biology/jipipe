@@ -70,7 +70,7 @@ public class SpinnerIcon implements Icon, JIPipeApplicationSettingsServiceCompon
         try {
             JIPipe.getSettings().getChangedEventEmitter().subscribeWeak(this);
         } catch (Throwable ignored) {
-            // JIPipe not initialized (e.g. headless/test) — no live re-apply needed.
+            // JIPipe not initialized (e.g. headless/test) - no live re-apply needed.
         }
     }
 

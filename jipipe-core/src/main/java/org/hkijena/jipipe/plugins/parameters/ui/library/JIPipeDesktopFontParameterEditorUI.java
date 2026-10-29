@@ -36,8 +36,8 @@ import java.util.regex.Pattern;
 /**
  * The adaptive editor for the font parameter family (#1339, Task 2): a compact
  * inline preview row (sample text rendered in the current font) that opens a
- * popout with family (searchable box), size, and — <em>only when the concrete
- * value carries that capability</em> — a style section and an <em>embedded</em>
+ * popout with family (searchable box), size, and - <em>only when the concrete
+ * value carries that capability</em> - a style section and an <em>embedded</em>
  * color section (swatch, pure colors, recents, Custom…). Custom color selection
  * hides the popout first, then shows the modal color dialog; the value is
  * applied live and the inline preview updates on return.
@@ -57,7 +57,7 @@ public class JIPipeDesktopFontParameterEditorUI<T extends JIPipeFontValue> exten
 
     /**
      * The sample text rendered in the preview: the trailing number is the font's
-     * <em>current size</em> (the paint methods substitute it live — #1339 item
+     * <em>current size</em> (the paint methods substitute it live - #1339 item
      * 7: "'12' in the example text should be the font size").
      */
     private static final String SAMPLE_TEXT_PREFIX = "Aa Label text ";
@@ -102,7 +102,7 @@ public class JIPipeDesktopFontParameterEditorUI<T extends JIPipeFontValue> exten
     /**
      * The font preview's background, auto-selected so the font color is always
      * readable (#1339): picks the theme tone (light or dark) that maximizes the
-     * contrast against the font color — light fonts get a dark background, dark
+     * contrast against the font color - light fonts get a dark background, dark
      * fonts a light one. No more checkerboard; the background simply follows
      * the text color. Pure (no Swing state), headless-testable.
      *
@@ -145,7 +145,7 @@ public class JIPipeDesktopFontParameterEditorUI<T extends JIPipeFontValue> exten
         JIPipeFontValue parameter = getParameter();
         preview.updateFrom(parameter);
         // The popout's own preview band must live-update with the inline one
-        // (family/size/style/color apply while the popout is open — #1339).
+        // (family/size/style/color apply while the popout is open - #1339).
         if (popup != null && popup.isVisible()) {
             popup.revalidate();
             popup.repaint();
@@ -157,7 +157,7 @@ public class JIPipeDesktopFontParameterEditorUI<T extends JIPipeFontValue> exten
         preview = new FontPreviewControl();
         // A non-zero minimum AND preferred size keeps the GridBag row from
         // collapsing the control (the same failure mode as the boolean switch
-        // — #1339; in packed panels the row gets only its preferred height).
+        // - #1339; in packed panels the row gets only its preferred height).
         preview.setMinimumSize(new Dimension(120, 22));
         preview.setPreferredSize(new Dimension(120, 22));
         preview.addMouseListener(new MouseAdapter() {
@@ -187,7 +187,7 @@ public class JIPipeDesktopFontParameterEditorUI<T extends JIPipeFontValue> exten
     /**
      * Builds the popout's content panel. Extracted as a public seam so the
      * screenshot harness (the #1339 VLM loop) can render the popout's content
-     * directly — a shown {@link JPopupMenu} can't be captured, but its content
+     * directly - a shown {@link JPopupMenu} can't be captured, but its content
      * panel can. The form panel's GridBagLayout sizes the label column to the
      * widest label under the active theme font, which keeps all controls
      * left-aligned to one shared inset (spec §5).
@@ -280,7 +280,7 @@ public class JIPipeDesktopFontParameterEditorUI<T extends JIPipeFontValue> exten
         });
         // Pin the width for a 3-digit value + arrows; take the height from the
         // spinner's natural default (never a flat 22px that undercuts the
-        // theme font's line height — spec §5).
+        // theme font's line height - spec §5).
         Dimension d = spinner.getPreferredSize();
         spinner.setPreferredSize(new Dimension(80, Math.max(d.height, 24)));
         return spinner;
@@ -325,7 +325,7 @@ public class JIPipeDesktopFontParameterEditorUI<T extends JIPipeFontValue> exten
         p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
         p.setOpaque(false);
 
-        // #1339 item 8: no inner "Color" label here — the form row already
+        // #1339 item 8: no inner "Color" label here - the form row already
         // labels the section "Color" (the duplication was "Color → Color →
         // Custom"). Only the "Custom…" button sits on the row now.
         JPanel header = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
@@ -347,7 +347,7 @@ public class JIPipeDesktopFontParameterEditorUI<T extends JIPipeFontValue> exten
         swatch.setContentAreaFilled(true);
         swatch.setBorder(BorderFactory.createLineBorder(new Color(110, 110, 110), 1, true));
         swatch.setFocusable(false);
-        swatch.setToolTipText("Current color " + ColorUtils.colorToHexString(parameter.getColor()) + " — click to open the full picker");
+        swatch.setToolTipText("Current color " + ColorUtils.colorToHexString(parameter.getColor()) + " - click to open the full picker");
         swatch.addActionListener(e -> pickCustomColor(parameter));
         row.add(swatch);
         // Pure colors
@@ -391,7 +391,7 @@ public class JIPipeDesktopFontParameterEditorUI<T extends JIPipeFontValue> exten
     }
 
     /**
-     * Hides the popout first, then shows the modal color dialog — the value is
+     * Hides the popout first, then shows the modal color dialog - the value is
      * applied live, and the inline preview is updated on return (no stacked
      * popups; #1339).
      */

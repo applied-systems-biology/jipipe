@@ -1,12 +1,12 @@
-# Taxonomy research — real-pipeline corpus study (6.0.0, work item 1324)
+# Taxonomy research - real-pipeline corpus study (6.0.0, work item 1324)
 
 Research artifacts for mining the real JIPipe pipeline corpus for node-taxonomy
 findings. Part of the taxonomy follow-up research plan (`.superpowers/sdd/2026-10-14-taxonomy-followup-research/`).
 
 ## Corpus provenance
 
-- `/data/JIPipe/Example workflows/` — user example workflows (read-only)
-- `/data/JIPipe/AIAgentTests/` — AI-agent test projects (read-only)
+- `/data/JIPipe/Example workflows/` - user example workflows (read-only)
+- `/data/JIPipe/AIAgentTests/` - AI-agent test projects (read-only)
 - Date: 2026-10-14
 
 File counts (actual, 2026-10-14):
@@ -19,7 +19,7 @@ File counts (actual, 2026-10-14):
 
 **Discrepancy vs. the brief (61 + 102 = 163):** the brief's expected count
 `61` comes from `ls "/data/JIPipe/Example workflows/" | wc -l`, which counts
-directory entries, not `.jip` files — the directory also contains one subdirectory (`JIPipe.tmp.dir`) and one
+directory entries, not `.jip` files - the directory also contains one subdirectory (`JIPipe.tmp.dir`) and one
 non-project file (`workflow-pattern-analysis.md`).
 The recursive `*.jip` count is 59. AIAgentTests matches (102). The dumper
 processes every `*.jip` it finds under both roots (161 files total).
@@ -57,39 +57,39 @@ only present in the registry if at least one *registered* node carries its
 `@JIPipeNodeTaxonomyFamilyStepAnnotation`; `Cellpose4Family` and
 `MachineLearningFamily` are defined in source but no registered node is
 annotated with them, so they do not appear. (The dispatch brief estimated
-~72 families; the live registry is authoritative — 2.) Note the 21 trackmate
+~72 families; the live registry is authoritative - 2.) Note the 21 trackmate
 steps come from 15 annotated *classes*, not 21: `CreateSpotDetectorNode` is
 the shared instance class behind the 7 dynamically-registered
 `trackmate-create-spot-detector-*` nodes, so it contributes 7 steps.
 
 **Function tree:** the 88 registered taxonomy functions are dumped as the
-top-level `functions` array — one `{id, name, parent}` entry per function,
+top-level `functions` array - one `{id, name, parent}` entry per function,
 `parent` being the parent function's id or `null` for the 13 top-level
 branches (`getParent() == null`, the `FunctionRegistry.topLevel()`
 definition). Added so the workflow-chain / branch analyses can resolve which
 top-level branch each node's function leaf id lives under.
 
 **Family after-edges:** the declared workflow edges of each registered family
-are dumped as the top-level `families` array — per family, `steps[]` lists
+are dumped as the top-level `families` array - per family, `steps[]` lists
 every step as `{nodeId, label, after}`, where `after` = the step's resolved
 after **node ids** (sorted; `step.afterIds(assembler)` with the family step-id
 prefix stripped). The 20 after-edges across the 22 steps equal the reported
 K. Added so the family-coverage-vs-usage analysis can compare the declared
 "which step runs after which step" against the real corpus chains. Note the
-fan-out: `trackmate-tracking`'s `after` lists 8 node ids — `trackmate-detector`
+fan-out: `trackmate-tracking`'s `after` lists 8 node ids - `trackmate-detector`
 plus all 7 `trackmate-create-spot-detector-*` nodes, because the annotation's
 `after = {SpotDetectorNode.class, CreateSpotDetectorNode.class}` resolves the
 shared detector class to every dynamically-registered detector node.
 
 ## Files
 
-- `corpus.json` — generated corpus (structure only, no embedded data payloads;
+- `corpus.json` - generated corpus (structure only, no embedded data payloads;
   ~11.8 MB). Locked shape consumed verbatim by the later analysis tasks:
   `projects[]` → `file` (path relative to `/data/JIPipe`), `loadable`,
   `loadError`, `compartments[]` → `name`, `nodes[]` (`uid`, `id`, `name`,
   `slots.input[]`/`slots.output[]` with `name` + raw on-disk `dataClass` token),
   `edges[]` (`fromUid`, `fromSlot`, `dataClass`, `toUid`, `toSlot`).
-- `registry.json` — generated registry (~716 KB), byte-stable across runs (nodes sorted by id; the `functions` array
+- `registry.json` - generated registry (~716 KB), byte-stable across runs (nodes sorted by id; the `functions` array
   sorted by function id; the
   `families` array sorted by family id, its `steps` by node id, and each
   `after` array lexicographically; every registry set/array sorted
@@ -104,41 +104,41 @@ shared detector class to every dynamically-registered detector node.
   on `dataType`; the `functions` block resolves each node's function leaf id
   to its top-level branch; the `families` block feeds the family-coverage
   analysis.
-- `report.md` — the combined research report. **Section ownership:** section N (1–6) is owned by `analysis/t{N+1}_*.py`
+- `report.md` - the combined research report. **Section ownership:** section N (1–6) is owned by `analysis/t{N+1}_*.py`
   and is regenerated IN PLACE on
   re-run (each script replaces only its own `^## N. ` → next `^## `/EOF span;
   the rest of the file is untouched); section 7 + the executive summary are
   hand-written (native Task 9). Re-run order does not matter.
-- `analysis/t3_datatype_usage.py` — Task 3: data-type producer/consumer usage
+- `analysis/t3_datatype_usage.py` - Task 3: data-type producer/consumer usage
   map (report §1). Re-run: `python3
   utils/taxonomy-research/analysis/t3_datatype_usage.py`.
-- `analysis/t4_workflows.py` — Task 4: workflow chains + function-branch
+- `analysis/t4_workflows.py` - Task 4: workflow chains + function-branch
   fragmentation (report §2). Re-run: `python3
   utils/taxonomy-research/analysis/t4_workflows.py`.
-- `analysis/t5_families.py` — Task 5: family coverage vs real usage (report
+- `analysis/t5_families.py` - Task 5: family coverage vs real usage (report
   §3). Re-run: `python3
   utils/taxonomy-research/analysis/t5_families.py`.
-- `analysis/t6_functions.py` — Task 6: function-tree fit + secondary-function
+- `analysis/t6_functions.py` - Task 6: function-tree fit + secondary-function
   value (report §4). Re-run: `python3
   utils/taxonomy-research/analysis/t6_functions.py`.
-- `analysis/t7_patterns.py` — Task 7: pattern mining + LLM-library
+- `analysis/t7_patterns.py` - Task 7: pattern mining + LLM-library
   cross-check (report §5; also writes `patterns/patterns.json`). Re-run:
   `python3 utils/taxonomy-research/analysis/t7_patterns.py`.
-- `analysis/t8_pattern_docs.py` — Task 8: pattern docs + templates + report
+- `analysis/t8_pattern_docs.py` - Task 8: pattern docs + templates + report
   §6 (also writes `patterns/*.md` + `patterns/templates/*.json`). Re-run:
   `python3 utils/taxonomy-research/analysis/t8_pattern_docs.py`.
-- `analysis/t{3..8}_table.md` — the raw per-task tables (also embedded in
+- `analysis/t{3..8}_table.md` - the raw per-task tables (also embedded in
   their report sections).
-- `analysis/unresolved_types.md` — corpus data-class tokens that do not
+- `analysis/unresolved_types.md` - corpus data-class tokens that do not
   resolve against the registry (raw token, edge/project counts, example
   project).
-- `patterns/` — Task 7/8 outputs: `patterns.json` (mined patterns, emission-
+- `patterns/` - Task 7/8 outputs: `patterns.json` (mined patterns, emission-
   capped, with a `summary` object preserving the long tail numerically),
   `<pattern-id>.md` (185 curated pattern docs), `templates/<pattern-id>.json`
   (185 JIPipeGraph-shaped template data files).
-- `extract/ProjectCorpusDumper.java` — standalone dumper (Jackson only, no
+- `extract/ProjectCorpusDumper.java` - standalone dumper (Jackson only, no
   jipipe-core dependency, not a Maven module).
-- `extract/classes/` — `javac` build scratch (git-ignored).
+- `extract/classes/` - `javac` build scratch (git-ignored).
 
 ## Build & run
 
@@ -167,12 +167,12 @@ mvn -o -pl jipipe-launcher -am test -Dtest='RegistryDumperTest' -Dsurefire.failI
 ```
 
 The corpus dumper's walk is fully recursive (both corpus roots and all
-subdirectories; benign here — no nested `.jip` files exist in either root).
+subdirectories; benign here - no nested `.jip` files exist in either root).
 
 ## On-disk format notes (JIPipe 6.0.0, flat-graph project format)
 
 The `.jip` JSON format is not a per-compartment nesting of nodes/edges (as the
-brief's assumed shape suggested) — the dumper adapts to what is real:
+brief's assumed shape suggested) - the dumper adapts to what is real:
 
 - `graph` is the **flat main graph**: `nodes` is a map keyed by node UUID,
   `edges` a list with `source-node`/`source-slot`/`target-node`/`target-slot`.
@@ -205,16 +205,16 @@ brief's assumed shape suggested) — the dumper adapts to what is real:
 ## Pattern library (Task 8)
 
 `analysis/t8_pattern_docs.py` **owns doc generation** (the task brief allowed
-folding it into `t7_patterns.py --emit-docs`; a separate script was chosen —
+folding it into `t7_patterns.py --emit-docs`; a separate script was chosen -
 t7 is reviewed and frozen). Re-run: `python3
 utils/taxonomy-research/analysis/t8_pattern_docs.py`. Stdlib only; reads
 `patterns/patterns.json` (locked) + `registry.json` + `report.md` section 5,
 writes:
 
-- `patterns/<pattern-id>.md` — one doc per CURATED pattern (**185 docs**:
+- `patterns/<pattern-id>.md` - one doc per CURATED pattern (**185 docs**:
   graph-shaped `chain`/`conversion`/`fan-out`/`fan-in` with support >= 25, OR
   any `annotation-sandwich`; the controller's R8 rule overrides the plan's
-  "one doc per pattern, support >= 3" — 13,122 docs would be a data dump).
+  "one doc per pattern, support >= 3" - 13,122 docs would be a data dump).
   Frontmatter keeps the LLM-branch shape (`audience`, `modality`, `tags`,
   `biologicalContext`, `prerequisiteKnowledge`) but fills only what is
   mechanically derivable: `modality` (registry data types flowing through the
@@ -222,18 +222,18 @@ writes:
   other three keys are the literal `tbd` (domain framing cannot honestly be
   derived from generic algorithm node ids). Plus a `corpus` block (support,
   top-5 projects, example subgraph) and a `template` block.
-- `patterns/templates/<pattern-id>.json` — the minimal JIPipeGraph-shaped
+- `patterns/templates/<pattern-id>.json` - the minimal JIPipeGraph-shaped
   `data` per doc (R8b contract in report section 6 method note).
 - `report.md` section 6 (method note + tables 6a/6b/6c; in-place
-  architecture — only the `^## 6. ` → next `^## `/EOF span is replaced,
+  architecture - only the `^## 6. ` → next `^## `/EOF span is replaced,
   sections 1–5 untouched, byte-stable).
-- `analysis/t8_table.md` — the raw 6a rows (all 416, not just top-30).
+- `analysis/t8_table.md` - the raw 6a rows (all 416, not just top-30).
 
 End-to-end check of one template `data` (candidate
 `fan-in-ij1-roi-to-rgb-core-io-1-other-1`, the highest-support pattern):
 `jipipe-launcher/src/test/java/.../taxonomy/TemplateDataDeserializationTest.java`
 (deserializes via `JsonUtils.readFromString(data, JIPipeGraph.class)`, the
-exact `JIPipeNodeTemplate.getGraph()` path) — PASS (3 nodes, 1 connection).
+exact `JIPipeNodeTemplate.getGraph()` path) - PASS (3 nodes, 1 connection).
 Run: `mvn -o -pl jipipe-launcher -am test
 -Dtest='TemplateDataDeserializationTest' -Dsurefire.failIfNoSpecifiedTests=false`.
 

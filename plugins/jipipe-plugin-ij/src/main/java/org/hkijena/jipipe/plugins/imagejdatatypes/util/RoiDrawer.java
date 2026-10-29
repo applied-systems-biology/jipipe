@@ -170,7 +170,7 @@ public class RoiDrawer extends AbstractJIPipeParameterCollection {
     }
 
     /**
-     * @return the effective label font — the explicit override when set,
+     * @return the effective label font - the explicit override when set,
      * otherwise the font built from the family/size pair.
      */
     public Font getLabelFont() {
@@ -207,7 +207,7 @@ public class RoiDrawer extends AbstractJIPipeParameterCollection {
      * The effective label foreground for a specific ROI: the explicit
      * {@code labelForeground} in {@link RoiLabelColorMode#FIXED} mode, or the
      * effective line color of the ROI in {@link RoiLabelColorMode#FROM_ROI_LINE}
-     * mode — the same expression the outline uses.
+     * mode - the same expression the outline uses.
      */
     Color effectiveLabelForeground(Roi roi) {
         if (labelColorMode == RoiLabelColorMode.FIXED) {

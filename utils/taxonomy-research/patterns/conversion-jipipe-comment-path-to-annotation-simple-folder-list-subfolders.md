@@ -61,7 +61,7 @@ Project: `AIAgentTests/03-ExampleWorkflows/Clara_08_feet.jip` (relative to `/dat
 ## Template
 
 Proposed name `Comment -> Annotate with file/directory name -> List subfolders`, menu path
-`Patterns/Graph / Project/Comment -> Annotate with file/directory name -> List subfolders` (proposal only — not
+`Patterns/Graph / Project/Comment -> Annotate with file/directory name -> List subfolders` (proposal only - not
 registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/conversion-jipipe-comment-path-to-annotation-simple-folder-list-subfolders.json`.
 

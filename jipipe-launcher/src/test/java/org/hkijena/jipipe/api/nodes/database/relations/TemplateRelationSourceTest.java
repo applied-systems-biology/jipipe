@@ -35,20 +35,20 @@ import static org.junit.jupiter.api.Assertions.*;
  * <p>
  * The template is a 2-node subgraph of the production {@code Thresholding}
  * function. Both nodes share the same function and the ImageJ 1 framework, so
- * they are natural "similar" candidates of one another — which is exactly what
- * makes the exclusion assertion meaningful (Review Focus #3 — the three lists
+ * they are natural "similar" candidates of one another - which is exactly what
+ * makes the exclusion assertion meaningful (Review Focus #3 - the three lists
  * stay disjoint):
  * <pre>
  *   nuclei → hysteresis      (the mined A→B edge)
  * </pre>
  * <ul>
- * <li>{@code relations(nuclei).next()} contains hysteresis — the template edge
+ * <li>{@code relations(nuclei).next()} contains hysteresis - the template edge
  * is mined into the <em>next</em> direction;</li>
- * <li>{@code relations(hysteresis).previous()} contains nuclei — the template
+ * <li>{@code relations(hysteresis).previous()} contains nuclei - the template
  * edge is mined into the <em>previous</em> direction (the direction the legacy
  * {@code followUps} API could not express);</li>
  * <li>{@code relations(nuclei).similar()} is non-empty (the same-function /
- * same-framework tiers still produce suggestions — there are many other
+ * same-framework tiers still produce suggestions - there are many other
  * Thresholding nodes in the registry) but does <b>not</b> contain hysteresis
  * (a direct next-neighbor is excluded so the three lists stay distinct), and
  * does not contain nuclei itself (self-exclusion preserved).</li>
@@ -59,11 +59,11 @@ import static org.junit.jupiter.api.Assertions.*;
  * {@code node-templates/} directory or leaking into other tests. The node
  * database is scoped to that project and rebuilt <em>synchronously</em> on the
  * test thread (the async {@code SwingWorker} builder is bypassed via a
- * {@code rebuildImmediately()} override — its {@code done()} callback needs an
+ * {@code rebuildImmediately()} override - its {@code done()} callback needs an
  * EDT that a headless JUnit JVM does not reliably provide). The real
  * {@link JIPipeNodeDatabaseBuilderRun} runs in full, so the entries come from
  * the real registry and the relation index is rebuilt from the real family
- * steps + the project template — exercising the production wiring end to end.
+ * steps + the project template - exercising the production wiring end to end.
  * <p>
  * Mirrors {@link org.hkijena.jipipe.api.nodes.taxonomy.RegistryDumperTest}'s
  * bootstrap: this module's registered ImageJ legacy-patcher
@@ -74,11 +74,11 @@ import static org.junit.jupiter.api.Assertions.*;
 class TemplateRelationSourceTest {
 
     /**
-     * "A" — the template edge source (a Thresholding node).
+     * "A" - the template edge source (a Thresholding node).
      */
     private static final String NODE_A = "ij3d-segmentation-nuclei-3d";
     /**
-     * "B" — the template edge target (a Thresholding node, same function as A).
+     * "B" - the template edge target (a Thresholding node, same function as A).
      */
     private static final String NODE_B = "ij3d-segmentation-hysteresis";
 
@@ -96,7 +96,7 @@ class TemplateRelationSourceTest {
         JIPipe.ensureInstance();
 
         // The template nodes must exist in the registry (the ij-3d plugin is a
-        // bundled launcher dependency) — fail fast with a clear message.
+        // bundled launcher dependency) - fail fast with a clear message.
         JIPipeNodesServiceComponent nodes = JIPipe.getNodes();
         for (String id : new String[]{NODE_A, NODE_B}) {
             assertTrue(nodes.hasNodeInfoWithId(id),
@@ -135,8 +135,8 @@ class TemplateRelationSourceTest {
                 "the template must be added to the project");
 
         // A database scoped to the project (so its TemplateRelationSource mines
-        // the project templates). Rebuilt synchronously — see the class
-        // Javadoc — so by the time the constructor returns the entries are set
+        // the project templates). Rebuilt synchronously - see the class
+        // Javadoc - so by the time the constructor returns the entries are set
         // and the relation index (family steps + this template) is current.
         JIPipeNodeDatabase database = new TestNodeDatabase(project);
 
@@ -171,13 +171,13 @@ class TemplateRelationSourceTest {
     /**
      * A template whose {@link JIPipeNodeTemplate#getGraph()} throws must be
      * <em>skipped with a warning</em>, not abort the whole relation-index
-     * build — and a valid template alongside it must still be mined. This
+     * build - and a valid template alongside it must still be mined. This
      * pins the per-template {@code catch (Throwable)} guard in
      * {@link TemplateRelationSource}: without it, the corrupted template's
      * exception would propagate out of the index rebuild on every
      * {@code relations()} call, violating the spec's "never fail" intent
      * (the database builder already tolerates per-template corruption the
-     * same way — {@code catch (Throwable ignored)} around entry
+     * same way - {@code catch (Throwable ignored)} around entry
      * construction).
      * <p>
      * A throwing {@code getGraph()} is used (rather than merely invalid
@@ -248,7 +248,7 @@ class TemplateRelationSourceTest {
      * the async {@code SwingWorker} executor. The builder run sets the entries
      * (invalidating the relation index) and then calls
      * {@link JIPipeNodeDatabase#rebuildRelationIndex()}, which mines the family
-     * steps + template graphs on this thread — so after the constructor
+     * steps + template graphs on this thread - so after the constructor
      * returns, the entries and the relation index are both current, with no
      * dependence on an EDT for the worker's {@code done()} callback.
      */

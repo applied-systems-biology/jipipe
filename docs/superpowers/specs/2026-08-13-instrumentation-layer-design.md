@@ -29,14 +29,14 @@ underlying primitives into a standalone instrumentation layer, we:
 
 The layer combines a typed Java facade with a JSON-based operation registry:
 
-- **`InstrumentationAPI`** — typed Java methods for all built-in operations. The AI agent calls these directly.
-- **`InstrumentationOperation`** — interface for JSON-in/JSON-out operations. The WebSocket server dispatches to these.
+- **`InstrumentationAPI`** - typed Java methods for all built-in operations. The AI agent calls these directly.
+- **`InstrumentationOperation`** - interface for JSON-in/JSON-out operations. The WebSocket server dispatches to these.
   Built-in operations wrap `InstrumentationAPI` methods; plugin operations are fully custom.
-- **`InstrumentationOperationRegistry`** — holds all operations (built-in + plugin-registered). The WebSocket server and
+- **`InstrumentationOperationRegistry`** - holds all operations (built-in + plugin-registered). The WebSocket server and
   Java API both use the same underlying implementation.
-- **`InstrumentationEventBus`** — publish-subscribe event system. The WebSocket server subscribes and broadcasts events
+- **`InstrumentationEventBus`** - publish-subscribe event system. The WebSocket server subscribes and broadcasts events
   to clients.
-- **`InstrumentationJobManager`** — tracks async jobs (pipeline runs) with job IDs, progress, and completion
+- **`InstrumentationJobManager`** - tracks async jobs (pipeline runs) with job IDs, progress, and completion
   notification via events.
 
 ### Data flow
@@ -153,7 +153,7 @@ public class InstrumentationContext {
 
 ### InstrumentationAPI
 
-The API is stateless for project-scoped operations — each method takes an `InstrumentationContext` (which carries the
+The API is stateless for project-scoped operations - each method takes an `InstrumentationContext` (which carries the
 project). Project management operations (`listProjects`, `selectProject`, `openProject`, `newProject`) are handled by
 the `InstrumentationServer`, which tracks open project windows. Key methods:
 
@@ -202,11 +202,11 @@ Commands may include an optional `"requestId"` for response correlation.
 
 | Command                | Parameters                               | Response type      | Async? |
 |------------------------|------------------------------------------|--------------------|--------|
-| `list_projects`        | —                                        | `project_list`     | No     |
+| `list_projects`        | -                                        | `project_list`     | No     |
 | `select_project`       | `projectId`                              | `project_changed`  | No     |
 | `open_project`         | `path`                                   | `project_changed`  | No     |
-| `new_project`          | —                                        | `project_changed`  | No     |
-| `query_compartments`   | —                                        | `operation_result` | No     |
+| `new_project`          | -                                        | `project_changed`  | No     |
+| `query_compartments`   | -                                        | `operation_result` | No     |
 | `query_graph`          | `compartmentId?`                         | `operation_result` | No     |
 | `query_node`           | `nodeId`                                 | `operation_result` | No     |
 | `query_data`           | `nodeId, slotName, limit?`               | `operation_result` | No     |
@@ -221,10 +221,10 @@ Commands may include an optional `"requestId"` for response correlation.
 | `set_project_metadata` | `name?, description?`                    | `operation_result` | No     |
 | `add_compartment`      | `name`                                   | `operation_result` | No     |
 | `rename_compartment`   | `compartmentId, name`                    | `operation_result` | No     |
-| `get_pipeline_map`     | —                                        | `operation_result` | No     |
+| `get_pipeline_map`     | -                                        | `operation_result` | No     |
 | `get_segment_detail`   | `segmentId`                              | `operation_result` | No     |
 | `search_nodes`         | `query, limit?`                          | `operation_result` | No     |
-| `list_operations`      | —                                        | `operation_list`   | No     |
+| `list_operations`      | -                                        | `operation_list`   | No     |
 | `get_job_status`       | `jobId`                                  | `operation_result` | No     |
 | `cancel_job`           | `jobId`                                  | `operation_result` | No     |
 
@@ -516,8 +516,8 @@ Operation exceptions are caught and returned as errors with the exception messag
 
 The instrumentation layer uses only existing jipipe-core dependencies:
 
-- **Jackson** — JSON serialization (already used throughout)
-- **java-websocket** — WebSocket server (already used by `AgentMonitorServer`)
-- **JIPipeGraphRun** — core pipeline execution (already in `api/run/`)
+- **Jackson** - JSON serialization (already used throughout)
+- **java-websocket** - WebSocket server (already used by `AgentMonitorServer`)
+- **JIPipeGraphRun** - core pipeline execution (already in `api/run/`)
 
 No new external dependencies are required.

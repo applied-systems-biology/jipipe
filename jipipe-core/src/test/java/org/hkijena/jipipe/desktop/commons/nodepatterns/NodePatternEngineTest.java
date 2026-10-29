@@ -60,7 +60,7 @@ class NodePatternEngineTest {
         return ((argb >>> 24) & 0xFF) > 40;
     }
 
-    // 1. DETERMINISM — same (style, seed, size) ⇒ byte-identical mask, all styles, 3 sizes.
+    // 1. DETERMINISM - same (style, seed, size) ⇒ byte-identical mask, all styles, 3 sizes.
     //    invalidateCache() between the calls so the second mask() truly re-renders
     //    (otherwise the cache hands back the same object and the test proves nothing).
     @Test
@@ -76,7 +76,7 @@ class NodePatternEngineTest {
         }
     }
 
-    // 1b. GOLDEN — net@128, seed = TrackMate id, pixel-exact vs the checked-in reference
+    // 1b. GOLDEN - net@128, seed = TrackMate id, pixel-exact vs the checked-in reference
     @Test
     void netMaskMatchesGoldenReference() throws Exception {
         BufferedImage live = NodePatternRenderer.mask("net", "jipipe:framework:trackmate", 128, 128);
@@ -88,7 +88,7 @@ class NodePatternEngineTest {
                 assertEquals(ref.getRGB(x, y), live.getRGB(x, y), "golden pixel mismatch at " + x + "," + y);
     }
 
-    // 2. PLANE-FILLING — ink in the 6px band of ALL four borders, >= 4%, every family, 3 sizes x 2 seeds
+    // 2. PLANE-FILLING - ink in the 6px band of ALL four borders, >= 4%, every family, 3 sizes x 2 seeds
     @Test
     void everyFamilyFillsAllFourBorders() {
         for (String id : NodePatternStyles.ids()) {
@@ -103,7 +103,7 @@ class NodePatternEngineTest {
         }
     }
 
-    // 3. COLOR-NEUTRAL — every non-transparent pixel has white channels (alpha may vary)
+    // 3. COLOR-NEUTRAL - every non-transparent pixel has white channels (alpha may vary)
     @Test
     void everyMaskIsWhiteInkOnly() {
         for (String id : NodePatternStyles.ids()) {
@@ -189,10 +189,10 @@ class NodePatternEngineTest {
         assertTrue(reds > blues, "red ink should dominate the tinted mask");
         // the tint must follow the mask's shape, not fill the whole rect
         assertTrue(transparent > total / 2,
-                "tinted draw is a solid rectangle (" + transparent + "/" + total + " transparent) — tinting ignores the mask alpha");
+                "tinted draw is a solid rectangle (" + transparent + "/" + total + " transparent) - tinting ignores the mask alpha");
     }
 
-    // Review round 2 (ruling 2026-18): the tint cache must be keyed by mask identity —
+    // Review round 2 (ruling 2026-18): the tint cache must be keyed by mask identity -
     // two DIFFERENT styles at the same size + ink + opacity must not share a tinted copy.
     // Fails against a tint cache keyed by (ink, opacity, w, h) only.
     @Test
@@ -212,6 +212,6 @@ class NodePatternEngineTest {
                 if (pa != pb && ((((pa >>> 24) | (pb >>> 24)) & 0xFF) > 0)) differing++;
             }
         assertTrue(differing > 0,
-                "two different styles at the same size/ink/opacity drew pixel-identical images — tint cache key omits mask identity");
+                "two different styles at the same size/ink/opacity drew pixel-identical images - tint cache key omits mask identity");
     }
 }

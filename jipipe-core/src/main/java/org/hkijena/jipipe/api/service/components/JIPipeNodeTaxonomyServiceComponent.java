@@ -60,7 +60,7 @@ public final class JIPipeNodeTaxonomyServiceComponent extends JIPipeServiceCompo
      * @param name         the display name, or null
      * @param index        every (keyword, functionId, weight) contribution
      * @param functionById live-id lookup (returns null for unregistered ids)
-     * @return the highest-scoring REGISTERED function — ties break to the
+     * @return the highest-scoring REGISTERED function - ties break to the
      * lexicographically smallest function id; unregistered ids are
      * skipped (never thrown); no matched keyword -> null
      */
@@ -75,7 +75,7 @@ public final class JIPipeNodeTaxonomyServiceComponent extends JIPipeServiceCompo
             if (entry.keyword() == null || !name.contains(entry.keyword())) {
                 continue;
             }
-            // Unregistered ids are skipped (soft fail — never thrown)
+            // Unregistered ids are skipped (soft fail - never thrown)
             if (functionById.apply(entry.functionId()) == null) {
                 continue;
             }
@@ -243,7 +243,7 @@ public final class JIPipeNodeTaxonomyServiceComponent extends JIPipeServiceCompo
      * {@link JIPipeNodeTaxonomyFunction#getInferencePatterns()}); the highest
      * total wins, ties break to the lexicographically smallest function id.
      * Names without a keyword match (including null/blank names) yield the
-     * inference fallback, resolved live by id — {@code null} (soft fail) if no
+     * inference fallback, resolved live by id - {@code null} (soft fail) if no
      * fallback is set or it is not registered. Never throws.
      *
      * @param name the node's display name, may be {@code null}
@@ -263,7 +263,7 @@ public final class JIPipeNodeTaxonomyServiceComponent extends JIPipeServiceCompo
     /**
      * (Re)builds the aggregate keyword index from every registered function's
      * inference patterns: one {@link IndexedKeyword} per pattern, with the
-     * keyword lowercased with Locale.ROOT (blank keywords are skipped — they
+     * keyword lowercased with Locale.ROOT (blank keywords are skipped - they
      * would match every name).
      */
     private List<IndexedKeyword> ensureIndex() {

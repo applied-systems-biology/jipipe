@@ -30,14 +30,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Pure-static tests of the taxonomy name-inference scorer: no JIPipe boot,
- * no live registry — the index and the id lookup are handed in, so these pin
+ * no live registry - the index and the id lookup are handed in, so these pin
  * the scoring rules (summation, tie-break, soft-fail) on their own.
  */
 class NodeTaxonomyInferenceTest {
 
     private static final List<JIPipeNodeTaxonomyServiceComponent.IndexedKeyword> INDEX = buildIndex();
     // (the brief sketched this as a static method, but scoreName takes a
-    // Function parameter — a bare method name is not a valid expression, so
+    // Function parameter - a bare method name is not a valid expression, so
     // it is a static final field; every call site is unchanged)
     private static final Function<String, JIPipeNodeTaxonomyFunction> lookup = id ->
             switch (id) {
@@ -149,7 +149,7 @@ class NodeTaxonomyInferenceTest {
                 freshComponent.inferFunction("3D Gaussian filter").getClass());
     }
 
-    // (a) parity corpus — the exact names of the retired functionForName tests
+    // (a) parity corpus - the exact names of the retired functionForName tests
 
     @Test
     void parityMedianFilterIsFiltering() {
@@ -182,7 +182,7 @@ class NodeTaxonomyInferenceTest {
                 freshComponent.inferFunction("Some totally unknown operation xyz").getClass());
     }
 
-    // (b) THE BEHAVIOR CHANGE — the fallback is MiscellaneousUnassignedFunction
+    // (b) THE BEHAVIOR CHANGE - the fallback is MiscellaneousUnassignedFunction
 
     @Test
     void nameNotInPatternsFallsBackToMiscellaneousUnassigned() {
@@ -215,7 +215,7 @@ class NodeTaxonomyInferenceTest {
         assertNotNull(freshComponent.functionById("test:function:clustery"));
     }
 
-    // (c) extensibility — a "second plugin" registers a new function at runtime
+    // (c) extensibility - a "second plugin" registers a new function at runtime
 
     @Test
     void unregisteredFunctionContributesNothingToInference() {

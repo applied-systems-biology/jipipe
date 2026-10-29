@@ -17,16 +17,16 @@ POST.
 
 - Java 21 (required, `maven.compiler.source` and `target` = 21)
 - Maven build system, parent POM `pom-jipipe` at `/data/src/jipipe-3/pom.xml`
-- JUnit Jupiter is already inherited from the parent POM (test scope) — no pom changes needed for tests
+- JUnit Jupiter is already inherited from the parent POM (test scope) - no pom changes needed for tests
 - Follow existing JIPipe patterns: `JIPipePrepackagedDefaultJavaPlugin`, `JIPipeServiceComponent`,
   `JIPipeDefaultApplicationsSettingsSheet`
-- No new external dependencies — use existing libraries already in jipipe-core
+- No new external dependencies - use existing libraries already in jipipe-core
 - Statistics file at `<JIPipe user dir>/statistics.json` (path via `JIPipe.getJIPipeUserDir(false)`)
 - Must handle multiple JIPipe instances writing to the same file (file locking + atomic writes)
 - Default privacy level: `Everything`
 - Default server URL: `https://jipipe.hki-jena.de/statistics/api/v1/statistics`
 - All new code goes in `jipipe-core/src/main/java/org/hkijena/jipipe/`
-- Desktop UI code lives in `jipipe-core` (despite `desktop` package name — there is no separate `jipipe-desktop` module)
+- Desktop UI code lives in `jipipe-core` (despite `desktop` package name - there is no separate `jipipe-desktop` module)
 
 **Spec:** `docs/superpowers/specs/2026-08-04-user-statistics-design.md`
 
@@ -38,43 +38,43 @@ All new files under `jipipe-core/src/main/java/org/hkijena/jipipe/`:
 
 ```
 plugins/statistics/
-  StatisticsPlugin.java                      — Plugin registration
-  StatisticsPrivacyLevel.java                — Privacy level enum
-  JIPipeStatisticsItem.java                  — Statistics item interface
-  JIPipeStatisticsItemCategory.java          — Category enum
-  JIPipeStatisticsRegistry.java              — Item registry
+  StatisticsPlugin.java                      - Plugin registration
+  StatisticsPrivacyLevel.java                - Privacy level enum
+  JIPipeStatisticsItem.java                  - Statistics item interface
+  JIPipeStatisticsItemCategory.java          - Category enum
+  JIPipeStatisticsRegistry.java              - Item registry
   items/
-    MachineIdStatisticsItem.java             — Machine UUID
-    OperatingSystemStatisticsItem.java       — OS name
-    TotalRamStatisticsItem.java              — Total RAM in MB
-    JIPipeVersionStatisticsItem.java         — JIPipe version string
-    GpuInfoStatisticsItem.java               — GPU/VRAM info
-    WorkflowRunsStatisticsItem.java          — Workflow run counter
-    RecentProjectsCountStatisticsItem.java   — Recent projects count
-    RoCratesCreatedStatisticsItem.java       — RO-Crate creation counter
-    NodeMoveDistanceStatisticsItem.java      — Accumulated node move distance
-    LongestNodeWidthStatisticsItem.java      — Max node width
-    PopularNodesStatisticsItem.java          — Top 5 node types by usage
-    LargestProjectNodesStatisticsItem.java   — Max nodes in a project
-    LargestProjectCompartmentsStatisticsItem.java — Max compartments
-    NoodleScoreStatisticsItem.java           — Edge path min/avg/max
+    MachineIdStatisticsItem.java             - Machine UUID
+    OperatingSystemStatisticsItem.java       - OS name
+    TotalRamStatisticsItem.java              - Total RAM in MB
+    JIPipeVersionStatisticsItem.java         - JIPipe version string
+    GpuInfoStatisticsItem.java               - GPU/VRAM info
+    WorkflowRunsStatisticsItem.java          - Workflow run counter
+    RecentProjectsCountStatisticsItem.java   - Recent projects count
+    RoCratesCreatedStatisticsItem.java       - RO-Crate creation counter
+    NodeMoveDistanceStatisticsItem.java      - Accumulated node move distance
+    LongestNodeWidthStatisticsItem.java      - Max node width
+    PopularNodesStatisticsItem.java          - Top 5 node types by usage
+    LargestProjectNodesStatisticsItem.java   - Max nodes in a project
+    LargestProjectCompartmentsStatisticsItem.java - Max compartments
+    NoodleScoreStatisticsItem.java           - Edge path min/avg/max
   settings/
-    JIPipeStatisticsApplicationSettings.java — Settings sheet
+    JIPipeStatisticsApplicationSettings.java - Settings sheet
   ui/
-    JIPipeDesktopStatisticsButton.java       — First-time balloon button
-    JIPipeDesktopStatisticsConfigurationUI.java — Privacy level config dialog
-    ShowStatisticsTool.java                  — Tools > Statistics menu item
-    JIPipeDesktopStatisticsUI.java           — Statistics viewer dialog
+    JIPipeDesktopStatisticsButton.java       - First-time balloon button
+    JIPipeDesktopStatisticsConfigurationUI.java - Privacy level config dialog
+    ShowStatisticsTool.java                  - Tools > Statistics menu item
+    JIPipeDesktopStatisticsUI.java           - Statistics viewer dialog
 
 api/service/components/
-  JIPipeStatisticsServiceComponent.java      — Service component (lifecycle, storage, timer)
+  JIPipeStatisticsServiceComponent.java      - Service component (lifecycle, storage, timer)
 ```
 
 Modified files:
 
-- `jipipe-core/src/main/java/org/hkijena/jipipe/api/service/JIPipeService.java` — add statistics field, instantiation,
+- `jipipe-core/src/main/java/org/hkijena/jipipe/api/service/JIPipeService.java` - add statistics field, instantiation,
   components array entry, getter
-- `jipipe-core/src/main/java/org/hkijena/jipipe/desktop/app/JIPipeDesktopProjectWorkbench.java` — conditionally add
+- `jipipe-core/src/main/java/org/hkijena/jipipe/desktop/app/JIPipeDesktopProjectWorkbench.java` - conditionally add
   statistics button to status bar
 
 ---
@@ -307,7 +307,7 @@ class JIPipeStatisticsRegistryTest {
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `mvn test -pl jipipe-core -Dtest=JIPipeStatisticsRegistryTest -q`
-Expected: FAIL — `JIPipeStatisticsRegistry` does not exist
+Expected: FAIL - `JIPipeStatisticsRegistry` does not exist
 
 - [ ] **Step 3: Write the registry implementation**
 
@@ -351,7 +351,7 @@ public class JIPipeStatisticsRegistry {
 - [ ] **Step 4: Run test to verify it passes**
 
 Run: `mvn test -pl jipipe-core -Dtest=JIPipeStatisticsRegistryTest -q`
-Expected: PASS — all 4 tests pass
+Expected: PASS - all 4 tests pass
 
 - [ ] **Step 5: Commit**
 
@@ -503,7 +503,7 @@ git commit -m "Add statistics application settings sheet (#1304)"
 - Produces: `JIPipeStatisticsServiceComponent` with methods `getRegistry()`, `getMachineId()`, `rerollMachineId()`,
   `saveLater()`, `save()`, `load()`, `getStatisticsFile()`, `getFirstLaunchTimestamp()`, `getLastSentTimestamp()`,
   `setLastSentTimestamp()`.
-- Modifies: `JIPipeService` — add field `statistics`, instantiate in constructor, add to `components` array, add getter
+- Modifies: `JIPipeService` - add field `statistics`, instantiate in constructor, add to `components` array, add getter
   `getStatistics()`.
 
 **Key reference patterns:**
@@ -609,7 +609,7 @@ class JIPipeStatisticsServiceComponentTest {
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `mvn test -pl jipipe-core -Dtest=JIPipeStatisticsServiceComponentTest -q`
-Expected: FAIL — `JIPipeStatisticsServiceComponent` does not exist
+Expected: FAIL - `JIPipeStatisticsServiceComponent` does not exist
 
 - [ ] **Step 3: Write the service component**
 
@@ -768,7 +768,7 @@ public class JIPipeStatisticsServiceComponent extends JIPipeServiceComponent {
 - [ ] **Step 4: Run test to verify it passes**
 
 Run: `mvn test -pl jipipe-core -Dtest=JIPipeStatisticsServiceComponentTest -q`
-Expected: PASS — all 3 tests pass
+Expected: PASS - all 3 tests pass
 
 - [ ] **Step 5: Add `initialize` method to `JIPipeStatisticsItem` interface**
 
@@ -846,18 +846,18 @@ git commit -m "Add statistics service component with storage, load/save, and tes
 
 - Consumes: `JIPipeStatisticsApplicationSettings`, `StatisticsPrivacyLevel`, `JIPipeStatisticsServiceComponent` (via
   `JIPipe.getInstance().getStatistics()`)
-- Produces: `StatisticsPlugin` — a `JIPipePrepackagedDefaultJavaPlugin` that registers the privacy level enum type,
+- Produces: `StatisticsPlugin` - a `JIPipePrepackagedDefaultJavaPlugin` that registers the privacy level enum type,
   settings sheet, and Tools menu item. Statistics items are registered in later tasks.
 
 **Key reference patterns:**
 
-- `ProcessesPlugin` at `jipipe-core/.../plugins/processes/ProcessesPlugin.java` — minimal plugin example
-- `StandardSettingsPlugin.register()` at `jipipe-core/.../plugins/settings/StandardSettingsPlugin.java` lines 60-106 —
+- `ProcessesPlugin` at `jipipe-core/.../plugins/processes/ProcessesPlugin.java` - minimal plugin example
+- `StandardSettingsPlugin.register()` at `jipipe-core/.../plugins/settings/StandardSettingsPlugin.java` lines 60-106 -
   registration pattern
-- `JIPipeDefaultJavaPlugin.registerEnumParameterType(id, EnumClass.class, name, description)` — line 430 of
+- `JIPipeDefaultJavaPlugin.registerEnumParameterType(id, EnumClass.class, name, description)` - line 430 of
   `JIPipeDefaultJavaPlugin.java`
-- `JIPipeDefaultJavaPlugin.registerApplicationSettingsSheet(sheet)` — line 696 of `JIPipeDefaultJavaPlugin.java`
-- `JIPipeDefaultJavaPlugin.registerMenuExtension(Class)` — line 224 of `JIPipeDefaultJavaPlugin.java`
+- `JIPipeDefaultJavaPlugin.registerApplicationSettingsSheet(sheet)` - line 696 of `JIPipeDefaultJavaPlugin.java`
+- `JIPipeDefaultJavaPlugin.registerMenuExtension(Class)` - line 224 of `JIPipeDefaultJavaPlugin.java`
 
 - [ ] **Step 1: Create the plugin class**
 
@@ -1202,20 +1202,20 @@ git commit -m "Add passive machine statistics items: OS, RAM, version, GPU, mach
 
 - Consumes: `JIPipeStatisticsItem`, `JIPipeStatisticsServiceComponent`, `JIPipeRunnableQueue`, `JIPipeGraphRun`,
   `CreateROCrateRun`
-- Produces: `RecentProjectsCountStatisticsItem` (passive — reads on demand), `WorkflowRunsStatisticsItem` (persistent
-  counter — subscribes to `JIPipeRunnableQueue.getFinishedEventEmitter()`), `RoCratesCreatedStatisticsItem` (persistent
-  counter — subscribes to same emitter, filters for `CreateROCrateRun`).
+- Produces: `RecentProjectsCountStatisticsItem` (passive - reads on demand), `WorkflowRunsStatisticsItem` (persistent
+  counter - subscribes to `JIPipeRunnableQueue.getFinishedEventEmitter()`), `RoCratesCreatedStatisticsItem` (persistent
+  counter - subscribes to same emitter, filters for `CreateROCrateRun`).
 
 **Key reference patterns:**
 
-- `JIPipeRunnableQueue.getInstance().getFinishedEventEmitter()` — file:
+- `JIPipeRunnableQueue.getInstance().getFinishedEventEmitter()` - file:
   `jipipe-core/.../api/run/JIPipeRunnableQueue.java` line 83
-- `JIPipeRunnable.FinishedEvent.getRun()` — file: `jipipe-core/.../api/run/JIPipeRunnable.java` line 156
-- `JIPipeGraphRun.getParent()` — returns null for top-level runs. File: `jipipe-core/.../api/run/JIPipeGraphRun.java`
+- `JIPipeRunnable.FinishedEvent.getRun()` - file: `jipipe-core/.../api/run/JIPipeRunnable.java` line 156
+- `JIPipeGraphRun.getParent()` - returns null for top-level runs. File: `jipipe-core/.../api/run/JIPipeGraphRun.java`
   line 127
-- `JIPipe.getInstance().getRecentProjects().getRecentProjects().size()` — file:
+- `JIPipe.getInstance().getRecentProjects().getRecentProjects().size()` - file:
   `jipipe-core/.../api/service/components/JIPipeRecentProjectsRegistry.java` line 69
-- `CreateROCrateRun` — file: `jipipe-core/.../plugins/publish/rocrate/CreateROCrateRun.java`
+- `CreateROCrateRun` - file: `jipipe-core/.../plugins/publish/rocrate/CreateROCrateRun.java`
 
 - [ ] **Step 1: Create `RecentProjectsCountStatisticsItem`**
 
@@ -1368,7 +1368,7 @@ git commit -m "Add usage statistics items: recent projects count, workflow runs,
 
 ---
 
-### Task 8: Fun Statistics Items (Part 1 — Popular Nodes & Largest Project)
+### Task 8: Fun Statistics Items (Part 1 - Popular Nodes & Largest Project)
 
 **Files:**
 
@@ -1381,14 +1381,14 @@ git commit -m "Add usage statistics items: recent projects count, workflow runs,
 
 - Consumes: `JIPipeStatisticsItem`, `JIPipeStatisticsServiceComponent`, `JIPipeGraph.NodeAddedEventEmitter`,
   `JIPipeDesktopProjectWindow`
-- Produces: `PopularNodesStatisticsItem` (persistent — tracks node type additions), `LargestProjectNodesStatisticsItem`
-  and `LargestProjectCompartmentsStatisticsItem` (persistent — tracks max on project open).
+- Produces: `PopularNodesStatisticsItem` (persistent - tracks node type additions), `LargestProjectNodesStatisticsItem`
+  and `LargestProjectCompartmentsStatisticsItem` (persistent - tracks max on project open).
 
 **Key reference patterns:**
 
-- `JIPipeGraph.getNodeAddedEventEmitter()` — file: `jipipe-core/.../api/nodes/JIPipeGraph.java` line 144. Event has
+- `JIPipeGraph.getNodeAddedEventEmitter()` - file: `jipipe-core/.../api/nodes/JIPipeGraph.java` line 144. Event has
   `getNode()` which returns `JIPipeGraphNode`. Node type ID: `node.getInfo().getId()`.
-- `JIPipeDesktopProjectWindow.WINDOW_OPENED_EVENT_EMITTER` — file:
+- `JIPipeDesktopProjectWindow.WINDOW_OPENED_EVENT_EMITTER` - file:
   `jipipe-core/.../desktop/app/JIPipeDesktopProjectWindow.java` line 87
 - `JIPipeProject.getGraph()` and `graph.getNodes()` for counting nodes
 - `JIPipeProject.getCompartmentGraph()` and compartment count
@@ -1610,7 +1610,7 @@ git commit -m "Add fun statistics items: popular nodes, largest project nodes/co
 
 ---
 
-### Task 9: Fun Statistics Items (Part 2 — Node Move Distance, Noodle Score, Longest Node Width)
+### Task 9: Fun Statistics Items (Part 2 - Node Move Distance, Noodle Score, Longest Node Width)
 
 **Files:**
 
@@ -1621,16 +1621,16 @@ git commit -m "Add fun statistics items: popular nodes, largest project nodes/co
 **Interfaces:**
 
 - Consumes: `JIPipeStatisticsItem`, `JIPipeStatisticsServiceComponent`, `JIPipeDesktopGraphEdgeUI`, `JIPipeGraphNode`
-- Produces: `NodeMoveDistanceStatisticsItem` (persistent — accumulates distance from node drags),
-  `NoodleScoreStatisticsItem` (passive — computes from current open project's edge UIs on demand),
-  `LongestNodeWidthStatisticsItem` (persistent — tracks max width from node UI).
+- Produces: `NodeMoveDistanceStatisticsItem` (persistent - accumulates distance from node drags),
+  `NoodleScoreStatisticsItem` (passive - computes from current open project's edge UIs on demand),
+  `LongestNodeWidthStatisticsItem` (persistent - tracks max width from node UI).
 
 **Key reference patterns:**
 
-- `JIPipeGraphNode.getNodeUILocationWithin(compartmentUUID)` returns `Point` — file: `JIPipeGraphNode.java`
-- `JIPipeDesktopGraphEdgeUI.getUIManhattanDistance()` — file:
+- `JIPipeGraphNode.getNodeUILocationWithin(compartmentUUID)` returns `Point` - file: `JIPipeGraphNode.java`
+- `JIPipeDesktopGraphEdgeUI.getUIManhattanDistance()` - file:
   `jipipe-core/.../desktop/app/grapheditor/commons/edgeui/JIPipeDesktopGraphEdgeUI.java` line 102
-- `canvasUI.getEdgeUIs()` returns `Map<UUID, JIPipeDesktopGraphEdgeUI>` — used in
+- `canvasUI.getEdgeUIs()` returns `Map<UUID, JIPipeDesktopGraphEdgeUI>` - used in
   `JIPipeDesktopGraphCanvasEdgesOverlay.java` line 110
 
 - [ ] **Step 1: Create `NodeMoveDistanceStatisticsItem`**
@@ -1640,7 +1640,7 @@ there is no dedicated event for this, we use a simpler approach: track positions
 manager by subscribing to graph node `ParameterChangedEventEmitter` for the position parameter, or by polling on save.
 
 A simpler and more robust approach: track total move distance by subscribing to
-`JIPipeGraphNode.getNodeInfoChangedEventEmitter()` — but this may not fire on UI moves. The most reliable approach given
+`JIPipeGraphNode.getNodeInfoChangedEventEmitter()` - but this may not fire on UI moves. The most reliable approach given
 the codebase is to make this a passive item that reads accumulated distance from a static counter updated by a static
 method, called from the drag manager.
 
@@ -1680,7 +1680,7 @@ public class NodeMoveDistanceStatisticsItem implements JIPipeStatisticsItem {
     public static void addDistance(double delta, Runnable onSave) {
         accumulatedDistance += delta;
         // The instance will pick up accumulatedDistance on next serialize
-        // This is a simple approach — the instance's distance is updated on save
+        // This is a simple approach - the instance's distance is updated on save
     }
 
     public void syncAccumulated(Runnable onSave) {
@@ -1861,7 +1861,7 @@ git commit -m "Add fun statistics items: node move distance, noodle score, longe
 
 **Key reference patterns:**
 
-- `JIPipeAPIEmbeddingAIModelRunner` — `HttpClient` POST with JSON body. File:
+- `JIPipeAPIEmbeddingAIModelRunner` - `HttpClient` POST with JSON body. File:
   `jipipe-core/.../api/ai/JIPipeAPIEmbeddingAIModelRunner.java`
 - `JsonUtils.getObjectMapper()` for JSON serialization. File: `jipipe-core/.../utils/json/JsonUtils.java`
 
@@ -1930,7 +1930,7 @@ class StatisticsReporterTest {
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `mvn test -pl jipipe-core -Dtest=StatisticsReporterTest -q`
-Expected: FAIL — `StatisticsReporter` does not exist
+Expected: FAIL - `StatisticsReporter` does not exist
 
 - [ ] **Step 3: Write the reporter**
 
@@ -2021,7 +2021,7 @@ public class StatisticsReporter {
 - [ ] **Step 4: Run test to verify it passes**
 
 Run: `mvn test -pl jipipe-core -Dtest=StatisticsReporterTest -q`
-Expected: PASS — both tests pass
+Expected: PASS - both tests pass
 
 - [ ] **Step 5: Commit**
 
@@ -2041,12 +2041,12 @@ git commit -m "Add statistics reporter with payload builder and HTTP POST (#1304
 **Interfaces:**
 
 - Consumes: `StatisticsReporter`, `JIPipeStatisticsApplicationSettings`
-- Modifies: `JIPipeStatisticsServiceComponent` — add daily timer in `postprocess()`, add `checkAndSend()` method, add
+- Modifies: `JIPipeStatisticsServiceComponent` - add daily timer in `postprocess()`, add `checkAndSend()` method, add
   `sendNow()` method.
 
 **Key reference patterns:**
 
-- `JIPipeProjectBackupServiceComponent.restartTimer()` — `javax.swing.Timer` with `setRepeats(true)`, started in
+- `JIPipeProjectBackupServiceComponent.restartTimer()` - `javax.swing.Timer` with `setRepeats(true)`, started in
   `postprocess()`. File: `jipipe-core/.../api/service/components/JIPipeProjectBackupServiceComponent.java` lines 38-49
 
 - [ ] **Step 1: Add timer and send logic to service component**
@@ -2143,16 +2143,16 @@ git commit -m "Add daily reporting timer and send flow to statistics service (#1
 
 - Consumes: `JIPipeStatisticsApplicationSettings`, `JIPipeDesktopStatisticsConfigurationUI` (from Task 13),
   `StatisticsReporter`, `BalloonTip`
-- Produces: `JIPipeDesktopStatisticsButton` — a `JButton` that shows a `BalloonTip` on first launch with "Configure" and
+- Produces: `JIPipeDesktopStatisticsButton` - a `JButton` that shows a `BalloonTip` on first launch with "Configure" and
   "Dismiss" actions.
 
 **Key reference patterns:**
 
-- `JIPipeDesktopAuthorProfileButton` — full balloon pattern. File:
+- `JIPipeDesktopAuthorProfileButton` - full balloon pattern. File:
   `jipipe-core/.../desktop/app/components/JIPipeDesktopAuthorProfileButton.java`
-- `JIPipeDesktopProjectWorkbench.initializeStatusBar()` — status bar setup. File:
+- `JIPipeDesktopProjectWorkbench.initializeStatusBar()` - status bar setup. File:
   `jipipe-core/.../desktop/app/JIPipeDesktopProjectWorkbench.java` lines 515-563
-- `JIPipeDesktopProjectWindow.registerBalloon()` — file: `jipipe-core/.../desktop/app/JIPipeDesktopProjectWindow.java`
+- `JIPipeDesktopProjectWindow.registerBalloon()` - file: `jipipe-core/.../desktop/app/JIPipeDesktopProjectWindow.java`
   line 714
 
 - [ ] **Step 1: Create `JIPipeDesktopStatisticsButton`**
@@ -2408,10 +2408,10 @@ git commit -m "Add first-time statistics button with balloon and wire to status 
 
 **Key reference patterns:**
 
-- `JIPipeDesktopModernSliderUI` — file: `jipipe-core/.../desktop/commons/theme/ui/JIPipeDesktopModernSliderUI.java`
-- `GettingStartedPanel` from jipipe-2 — layout with `UIUtils.createInfoLabel`. File:
+- `JIPipeDesktopModernSliderUI` - file: `jipipe-core/.../desktop/commons/theme/ui/JIPipeDesktopModernSliderUI.java`
+- `GettingStartedPanel` from jipipe-2 - layout with `UIUtils.createInfoLabel`. File:
   `/data/src/jipipe-2/jipipe-core/.../GettingStartedPanel.java`
-- `UIUtils.createInfoLabel(text, subtext, icon)` — file: `jipipe-core/.../utils/UIUtils.java` line 203
+- `UIUtils.createInfoLabel(text, subtext, icon)` - file: `jipipe-core/.../utils/UIUtils.java` line 203
 
 - [ ] **Step 1: Replace the placeholder with the full slider-based dialog**
 
@@ -2549,13 +2549,13 @@ git commit -m "Add slider-based statistics configuration dialog (#1304)"
 **Interfaces:**
 
 - Consumes: `JIPipeStatisticsServiceComponent`, `JIPipeStatisticsRegistry`, `JIPipeStatisticsItem`
-- Produces: `JIPipeDesktopStatisticsUI` — a `JDialog` showing machine ID, timestamps, privacy level, statistics cards
+- Produces: `JIPipeDesktopStatisticsUI` - a `JDialog` showing machine ID, timestamps, privacy level, statistics cards
   grouped by category, "Send now" and "Close" buttons. `ShowStatisticsTool` opens this dialog.
 
 **Key reference patterns:**
 
-- `OpenImageJTool` — Tools menu item pattern. File: `jipipe-core/.../plugins/tools/OpenImageJTool.java`
-- `OKCancelDialog` — dialog pattern. File: `jipipe-core/.../utils/OKCancelDialog.java`
+- `OpenImageJTool` - Tools menu item pattern. File: `jipipe-core/.../plugins/tools/OpenImageJTool.java`
+- `OKCancelDialog` - dialog pattern. File: `jipipe-core/.../utils/OKCancelDialog.java`
 
 - [ ] **Step 1: Create `JIPipeDesktopStatisticsUI`**
 
@@ -2784,7 +2784,7 @@ git commit -m "Add statistics viewer dialog with cards and Tools menu item (#130
 **Interfaces:**
 
 - Consumes: All statistics item classes from Tasks 6-9, `JIPipeStatisticsServiceComponent`
-- Modifies: `StatisticsPlugin.register()` — add registration of all 14 statistics items.
+- Modifies: `StatisticsPlugin.register()` - add registration of all 14 statistics items.
 
 - [ ] **Step 1: Add item registration to `StatisticsPlugin.register()`**
 
@@ -2842,13 +2842,13 @@ git commit -m "Register all statistics items in plugin (#1304)"
 **Interfaces:**
 
 - Consumes: `NodeMoveDistanceStatisticsItem` (static `addDistance` method)
-- Modifies: `JIPipeDesktopGraphCanvasDragManagerMove` — add position tracking and distance calculation on drag.
+- Modifies: `JIPipeDesktopGraphCanvasDragManagerMove` - add position tracking and distance calculation on drag.
 
 **Key reference patterns:**
 
-- `startDragCurrentNodeSelection(MouseEvent)` — line 40, records pre-drag offsets
-- `mouseDragged(MouseEvent)` — line 74, applies movement
-- `JIPipeDesktopGraphNodeUI.getStoredGridLocation()` — returns `Point` grid location
+- `startDragCurrentNodeSelection(MouseEvent)` - line 40, records pre-drag offsets
+- `mouseDragged(MouseEvent)` - line 74, applies movement
+- `JIPipeDesktopGraphNodeUI.getStoredGridLocation()` - returns `Point` grid location
 
 - [ ] **Step 1: Read the drag manager to understand the exact drag flow**
 
@@ -2928,11 +2928,11 @@ git commit -m "Instrument node drag to track move distance statistic (#1304)"
 **Interfaces:**
 
 - Consumes: `LongestNodeWidthStatisticsItem` (static `reportWidth` method)
-- Modifies: `JIPipeDesktopGraphNodeUI` — report width when node UI is resized/rendered.
+- Modifies: `JIPipeDesktopGraphNodeUI` - report width when node UI is resized/rendered.
 
 **Key reference patterns:**
 
-- `JIPipeDesktopGraphNodeUI` — node UI component. File:
+- `JIPipeDesktopGraphNodeUI` - node UI component. File:
   `jipipe-core/.../desktop/app/grapheditor/commons/nodeui/JIPipeDesktopGraphNodeUI.java`
 - `getWidth()` or `getPreferredSize().width` for node width
 
@@ -2972,7 +2972,7 @@ git commit -m "Instrument node UI to track longest node width statistic (#1304)"
 
 ---
 
-### Task 18: Concurrency — File Locking
+### Task 18: Concurrency - File Locking
 
 **Files:**
 
@@ -2981,7 +2981,7 @@ git commit -m "Instrument node UI to track longest node width statistic (#1304)"
 
 **Interfaces:**
 
-- Modifies: `JIPipeStatisticsServiceComponent.save()` — add `FileLock` on `statistics.lock`, re-read file, merge dirty
+- Modifies: `JIPipeStatisticsServiceComponent.save()` - add `FileLock` on `statistics.lock`, re-read file, merge dirty
   items, write atomically.
 
 - [ ] **Step 1: Write a concurrency test**
@@ -3025,7 +3025,7 @@ class StatisticsConcurrencyTest {
         data.put("machineId", "test-uuid");
         JIPipeStatisticsServiceComponent.save(statsFile, data);
 
-        // Read while another write might happen — should always get valid JSON
+        // Read while another write might happen - should always get valid JSON
         ObjectNode readBack = (ObjectNode) JsonUtils.getObjectMapper().readTree(statsFile.toFile());
         assertEquals("test-uuid", readBack.get("machineId").asText());
     }
@@ -3097,7 +3097,7 @@ public void save() {
 - [ ] **Step 4: Run tests to verify**
 
 Run: `mvn test -pl jipipe-core -Dtest=StatisticsConcurrencyTest,JIPipeStatisticsServiceComponentTest -q`
-Expected: PASS — all tests pass
+Expected: PASS - all tests pass
 
 - [ ] **Step 5: Commit**
 
@@ -3112,7 +3112,7 @@ git commit -m "Add file locking and merge strategy for multi-instance statistics
 
 **Files:**
 
-- No new files — verification task
+- No new files - verification task
 
 - [ ] **Step 1: Full compilation**
 

@@ -106,7 +106,7 @@ public class ColorRail extends JComponent {
      * Like {@link #repaintGradient} but skips the work when the controlling
      * inputs are unchanged (#1339). During an a/b drag on the LAB well only
      * one channel changes, so the other rails keep their cached gradient
-     * image instead of rebuilding a {@link BufferedImage} per frame — the
+     * image instead of rebuilding a {@link BufferedImage} per frame - the
      * main cause of the drag lag.
      */
     public void updateGradient(double[] key, IntFunction<Color> newGradient) {

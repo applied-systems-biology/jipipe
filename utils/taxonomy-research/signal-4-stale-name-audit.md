@@ -1,15 +1,15 @@
-# Signal 4 (named nodes) — stale-name audit & fix (2026-10-19)
+# Signal 4 (named nodes) - stale-name audit & fix (2026-10-19)
 
 **Question (user, during the C′ review):** "Because of how names are
 serialized, candidates found by section 2 signal 4 need to be carefully
 investigated if it's even a signal or just an old name."
 
-**Verdict: confirmed — partially.** Signal 4 as defined in the plan (`label ≠ current registry name`) conflates two
+**Verdict: confirmed - partially.** Signal 4 as defined in the plan (`label ≠ current registry name`) conflates two
 events that serialize
 identically into `jipipe:node:name`:
 
 1. a **user** renames a node instance (genuine naming signal), and
-2. a **developer** renames the node *type* — every project saved before the
+2. a **developer** renames the node *type* - every project saved before the
    rename keeps the old default name, which now differs from the current
    registry name (pure staleness, not a signal).
 
@@ -39,10 +39,10 @@ Corpus: 1,966 `.jip`, 123,122 node instances (top-level + compartment
 graphs). 100% carry a non-empty `jipipe:node:name` (JIPipe serializes the
 resolved name at save time, default or custom).
 
-- 52,588 instances (42.7%) have a label ≠ **current** registry name — the
+- 52,588 instances (42.7%) have a label ≠ **current** registry name - the
   raw signal-4 hit rate.
 - Of the 874 `nameEvidence` entries actually written across the 324
-  clusters: **251 (29%) are uniform stale defaults** — the same label on
+  clusters: **251 (29%) are uniform stale defaults** - the same label on
   ≥80% of that type's corpus occurrences and ≠ the current name, i.e. the
   signature of a dev rename:
 
@@ -55,7 +55,7 @@ resolved name at save time, default or custom).
   | `ij1-roi-extract-metadata` | "Extract ROI metadata as table" (100%) | Extract 2D ROI metadata as table |
 
   **47 clusters had nameEvidence that was 100% dev-rename noise.**
-- The other **623 (71%) are genuine user naming** — variants and suffixes
+- The other **623 (71%) are genuine user naming** - variants and suffixes
   deviating from the type's norm ("Annotate with file names", "Auto
   threshold 2D: cadherin mask", "Convert ROI to RGB: blue overlay").
   The discriminator: a dev rename is **uniform per type** across the whole
@@ -68,15 +68,15 @@ Traced every consumer of `nameEvidence`:
 - **Zero downstream consumers.** The only reference in code is the (B)
   writer (`merge-dag-patterns.py`); the (C) judge and the review-report
   generator never read it. It was *intended* as namer vocabulary (plan
-  §3.2) but (C)'s `build_state` never included it — (C) saw
+  §3.2) but (C)'s `build_state` never included it - (C) saw
   `titleEvidence` (human-authored group/note/compartment titles) + **registry** node names only.
 - The **(C) namer** therefore produced all 265 mined + 154 derived names
-  from registry names + authored titles — **no shipped name or description
+  from registry names + authored titles - **no shipped name or description
   carries a stale node name.** (Verified in the shipped states, e.g.
   "Annotate with file/directory name", not "Add path to annotations".)
 - **(B) clustering** embedded the raw labels (canonical text). A dev rename
   is uniform per type, so it acted as a *consistent* token in the
-  embedding space — same old name on every instance of a type — and did not
+  embedding space - same old name on every instance of a type - and did not
   distort grouping. (Recorded as a known limitation; (B) is frozen and
   reviewed, not re-run.)
 
@@ -90,24 +90,24 @@ one:
 
 - the type's **current registry name** (a post-rename project serializes
   the new default), and
-- the type's **dominant census label** — the most frequent label for that
+- the type's **dominant census label** - the most frequent label for that
   type over the candidate population (rebuilt from `dag-candidates.json`
   on every (B) run, deterministic lexicographic tie-break, no new artifact).
   For an un-renamed type the dominant *is* the registry name (behavior
   unchanged); for a renamed type the dominant is the **stale old default**,
   which is exactly what the old detector miscounted as user naming.
 
-A label is evidence only if it deviates from **both** — i.e. it is a
+A label is evidence only if it deviates from **both** - i.e. it is a
 genuine per-instance user choice.
 
-**Regenerated `dag-clusters.json`:** the (B) re-run was 100% cache-only (all 624 representative texts already embedded —
+**Regenerated `dag-clusters.json`:** the (B) re-run was 100% cache-only (all 624 representative texts already embedded -
 verified before running,
 zero endpoint calls). The diff proves the clusters are **byte-identical
 except `nameEvidence`** (and the `generated` timestamp):
 
 - entries 874 → **472** (402 stale-default labels dropped);
 - re-audit: 0 remaining entries equal their type's dominant label, with one
-  documented residual — "Z-Project" in cluster-0236, a count-1 instance of
+  documented residual - "Z-Project" in cluster-0236, a count-1 instance of
   `ij1-dimensions-zproject` (census: "Z-Project (classic)" 4 / "Z-Project"
   1). The label equals the *sibling* type's current registry name; the
   mode rule cannot resolve a 20%-share label (stale type-1 default vs.
@@ -122,6 +122,6 @@ exclusion keeps genuine user naming; deterministic tie-break).
 - `(B)` canonical text still embeds corpus labels (uniform per type; (B)
   frozen and reviewed). A future re-mine would get the same clusters.
 - The residual low-mode-share ambiguity (one entry, above) and types whose
-  mode itself is a popular user label — at most one label per type can be
+  mode itself is a popular user label - at most one label per type can be
   miskept/misdropped; the field is advisory.
 - The plan §2 row for signal 4 is amended to the corrected definition.

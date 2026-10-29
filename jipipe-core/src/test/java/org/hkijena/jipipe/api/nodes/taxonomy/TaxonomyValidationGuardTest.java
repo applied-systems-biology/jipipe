@@ -257,8 +257,8 @@ class TaxonomyValidationGuardTest {
     /**
      * A real taxonomy error (a cyclic function registered in the shared
      * registry) is appended to the service's initialization report
-     * errors during {@code postprocess()} — the existing init-failure
-     * mechanism — while unconverted nodes (the expected 1a state with
+     * errors during {@code postprocess()} - the existing init-failure
+     * mechanism - while unconverted nodes (the expected 1a state with
      * the curated tree unregistered) are not.
      */
     @Test

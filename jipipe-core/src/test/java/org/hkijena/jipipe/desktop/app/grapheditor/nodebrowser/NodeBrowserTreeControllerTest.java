@@ -53,8 +53,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 /**
  * Verifies the node-leaf contract of {@link NodeBrowserTreeController} that
  * the add-nodes panel depends on (issues from the 1324 manual review):
- * the tree carries entry leaves from the FULL current result set —
- * independent of which function/scope is selected — so branches are
+ * the tree carries entry leaves from the FULL current result set -
+ * independent of which function/scope is selected - so branches are
  * expandable and scope groups (System/Global/Project) show their entries
  * without first selecting them.
  */
@@ -149,7 +149,7 @@ class NodeBrowserTreeControllerTest {
         // Root cause of "System templates only shown when System is selected":
         // the browser rebuilt the leaves from the SELECTION-FILTERED set, so a
         // System template left the tree the moment a function was selected.
-        // With full-set attachment the System leaf must persist — re-attaching
+        // With full-set attachment the System leaf must persist - re-attaching
         // the FULL set (as the fixed browser does) must not drop it.
         CreateNewNodesByTemplateDatabaseEntry systemTemplate =
                 templateEntry(TemplateScope.System, IMAGES_FN_ID);
@@ -170,7 +170,7 @@ class NodeBrowserTreeControllerTest {
     /**
      * The round-2 review bug: the tree ROOT (a String user object, "All
      * functions") never forwarded into the synthetic Templates header, so the
-     * System/Global/Project scope rows received NO leaves in any tier — the
+     * System/Global/Project scope rows received NO leaves in any tier - the
      * Templates/System branch appeared empty while the same entries were in
      * the results list. The leaf must hang directly under the scope row
      * (Templates → System), not only under the function branch.
@@ -198,7 +198,7 @@ class NodeBrowserTreeControllerTest {
 
     /**
      * The "Patterns" grouping: a template entry must NOT hang directly under
-     * a function row (that mixed templates into the node lists — the
+     * a function row (that mixed templates into the node lists - the
      * "functions full of templates" clutter). It hangs one level below, under
      * a synthetic "Patterns" child of the function that carries it (or the
      * scope row on the Templates branch); the function level itself shows
@@ -215,7 +215,7 @@ class NodeBrowserTreeControllerTest {
         Map<Object, List<Object>> parentsByLeaf = new HashMap<>();
         collectLeafParents((DefaultMutableTreeNode) controller.getTreeModel().getRoot(), parentsByLeaf);
 
-        // The template leaf (dual-placed: function side + scope side) — EVERY
+        // The template leaf (dual-placed: function side + scope side) - EVERY
         // occurrence hangs under a grouping row (Patterns or
         // Templates/<scope>), never directly under a function row.
         List<Object> templateParents = parentsByLeaf.get(template);
@@ -323,7 +323,7 @@ class NodeBrowserTreeControllerTest {
 
     /**
      * Counts the entry leaves in the tree MODEL (independent of expansion
-     * state — visible-row counting would miss leaves under collapsed branches).
+     * state - visible-row counting would miss leaves under collapsed branches).
      */
     private int leafCount() {
         return countLeaves((DefaultMutableTreeNode) controller.getTreeModel().getRoot());

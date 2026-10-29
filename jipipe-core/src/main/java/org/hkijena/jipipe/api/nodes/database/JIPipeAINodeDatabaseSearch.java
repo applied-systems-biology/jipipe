@@ -474,7 +474,7 @@ public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
                 return modelId;
             }
 
-            // Model not loaded — derive the ID from settings without starting the model
+            // Model not loaded - derive the ID from settings without starting the model
             AIApplicationSettings settings = AIApplicationSettings.getInstance();
             EmbeddingModelEnvironment environment = settings.getEmbeddingModelEnvironment();
             return environment.deriveModelId();

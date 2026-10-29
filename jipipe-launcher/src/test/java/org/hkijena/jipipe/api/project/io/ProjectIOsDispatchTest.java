@@ -65,8 +65,8 @@ class ProjectIOsDispatchTest {
     /**
      * Builds a minimal JIPX container (no wrapper root): {@code jipx.json}
      * (the default manifest, pruned to the parts written), {@code
-     * project/metadata.json} ({@code {"name": "Peek"}}), and — when
-     * {@code withDependencies} — {@code project/dependencies.json}
+     * project/metadata.json} ({@code {"name": "Peek"}}), and - when
+     * {@code withDependencies} - {@code project/dependencies.json}
      * ({@code []}).
      */
     private static Path writeJipxZip(Path zipPath, boolean withDependencies) throws IOException {
@@ -135,7 +135,7 @@ class ProjectIOsDispatchTest {
         assertTrue(JIPipeProjectIOs.writerFromPath(jip) instanceof JIPipeLegacyProjectWriter);
 
         // Writes are extension-driven: .jipx selects the JIPX container
-        // writer (Task 4) — the save target may not exist yet, so the
+        // writer (Task 4) - the save target may not exist yet, so the
         // writer's supports() is not consulted here.
         Path jipx = tmp.resolve("a.jipx");
         Files.writeString(jipx, MINIMAL_PROJECT_JSON);
@@ -159,7 +159,7 @@ class ProjectIOsDispatchTest {
 
         // A real corpus file with exactly 7 dependencies (module fixtures
         // have zero, so the size assertion is the non-vacuity guard).
-        // Skipped where the local /data/JIPipe corpus is absent (e.g. CI) —
+        // Skipped where the local /data/JIPipe corpus is absent (e.g. CI) -
         // the hand-written-fixture assertions above are the real contract.
         Path corpus = Path.of("/data/JIPipe/06072020a.jip");
         Assumptions.assumeTrue(Files.exists(corpus), "local /data/JIPipe corpus absent; skipping corpus peek check");
@@ -171,7 +171,7 @@ class ProjectIOsDispatchTest {
     @Test
     void peekRejectsZipsWithoutJipxManifest() throws IOException {
         // A ZIP-magic file without a jipx.json entry is not a JIPipe 6
-        // project — the GUI's .crate.zip import path is handled by the GUI
+        // project - the GUI's .crate.zip import path is handled by the GUI
         // layer and never reaches peek.
         Path zip = writeZipMagicFile(tmp, "peek.zip");
         UnsupportedOperationException e = assertThrows(UnsupportedOperationException.class,
@@ -183,7 +183,7 @@ class ProjectIOsDispatchTest {
     @Test
     void peekStreamsJipxWithoutExtraction() throws IOException {
         // The content-stream peek contract: a proper JIPX container is peeked
-        // from its zip entries (no extraction, no temp dir) — metadata from
+        // from its zip entries (no extraction, no temp dir) - metadata from
         // project/metadata.json, dependencies from project/dependencies.json.
         Path jipx = tmp.resolve("peek.jipx");
         writeJipxZip(jipx, true);
@@ -195,7 +195,7 @@ class ProjectIOsDispatchTest {
 
     @Test
     void peekJipxWithoutDependenciesEntryYieldsEmptySet() throws IOException {
-        // project/dependencies.json is optional in the container — a missing
+        // project/dependencies.json is optional in the container - a missing
         // entry yields an empty dependency set (peek is best-effort: absent
         // parts fall back to the loaders' defaults; it is the READER's
         // corrupt-container contract that enforces listed-part presence).

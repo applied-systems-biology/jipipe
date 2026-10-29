@@ -48,7 +48,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Verifies the Swing-free {@link TemplateManagementController} — the store
+ * Verifies the Swing-free {@link TemplateManagementController} - the store
  * logic behind the "Configure templates" modal (task 9, spec §8.3).
  * <p>
  * The controller partitions the template store by {@link TemplateScope}
@@ -56,7 +56,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * and round-trips the legacy JSON-array export/import format. System scope is
  * read-only (a no-op for every mutating operation). Boots the {@link JIPipe}
  * instance so the real service component (and the bundled System pattern
- * templates) are available. It never touches Swing — no dialog, no list.
+ * templates) are available. It never touches Swing - no dialog, no list.
  */
 class TemplateManagementControllerTest {
 
@@ -79,7 +79,7 @@ class TemplateManagementControllerTest {
      * the stub templates leaked there: the in-memory cleanup removed them from
      * the list, but {@code removeFromGlobal}'s value-keyed file-map lookup
      * misses once a template's graph has been re-serialized (its {@code data}
-     * field — part of the map key's hash — changes), orphaning the on-disk
+     * field - part of the map key's hash - changes), orphaning the on-disk
      * file. Each orphan then made every later JVM print
      * "Unable to find node type ... template-mgmt-ctrl-test:stub-node" at boot.
      * {@link #cleanup()} restores the override and deletes the temp dir.
@@ -202,8 +202,8 @@ class TemplateManagementControllerTest {
     @Test
     void systemScopeIsReadOnly() {
         // A template registered as a plugin template (via addFromPlugin) is a
-        // GENUINE System-scope template — it is in pluginTemplates AND carries
-        // the Extension source AND is present in globalTemplates — so it
+        // GENUINE System-scope template - it is in pluginTemplates AND carries
+        // the Extension source AND is present in globalTemplates - so it
         // exercises the real read-only path (not a synthetic Extension-source
         // template that never entered the store).
         JIPipeNodeTemplate system = tmpl("Read Only System");
@@ -213,12 +213,12 @@ class TemplateManagementControllerTest {
         assertThat(controller.forScope(null, TemplateScope.System))
                 .anySatisfy(t -> assertThat(t.getName()).isEqualTo(system.getName()));
 
-        // Delete is a no-op (returns false) — the template stays in the System scope.
+        // Delete is a no-op (returns false) - the template stays in the System scope.
         assertThat(controller.delete(null, TemplateScope.System, system)).isFalse();
         assertThat(controller.forScope(null, TemplateScope.System))
                 .anySatisfy(t -> assertThat(t.getName()).isEqualTo(system.getName()));
 
-        // Edit is also a no-op (returns false) — the original is untouched.
+        // Edit is also a no-op (returns false) - the original is untouched.
         JIPipeNodeTemplate editedCopy = new JIPipeNodeTemplate(system);
         editedCopy.setName("Should Not Apply");
         assertThat(controller.edit(null, TemplateScope.System, system, editedCopy)).isFalse();
@@ -248,7 +248,7 @@ class TemplateManagementControllerTest {
         // A same-named copy now lives in the Global scope ...
         List<JIPipeNodeTemplate> globalScope = controller.forScope(null, TemplateScope.Global);
         assertThat(globalScope.stream().anyMatch(t -> t.getName().equals("Escaped Pattern"))).isTrue();
-        // ... and it is NOT a plugin template (classified Global, not System) —
+        // ... and it is NOT a plugin template (classified Global, not System) -
         // the identity-based pluginTemplates set + the user re-stamp make this hold.
         JIPipeNodeTemplate globalCopy = globalScope.stream()
                 .filter(t -> t.getName().equals("Escaped Pattern")).findFirst().orElseThrow();
@@ -320,8 +320,8 @@ class TemplateManagementControllerTest {
         // Whole-branch follow-up: the bundled original P and its unedited user
         // copy C are VALUE-equal (JIPipeNodeTemplate.equals compares
         // name+description+data). removeFromGlobal used to match by value
-        // (globalTemplates.contains/remove), so removing C evicted P — the
-        // FIRST value match in the list (P was added before C) — from the
+        // (globalTemplates.contains/remove), so removing C evicted P - the
+        // FIRST value match in the list (P was added before C) - from the
         // in-memory store. The on-disk file deleted was still C's (the BiMap
         // only maps C), so no data was lost and P re-registered on the next
         // start, but P silently vanished from the System tab for the rest of
@@ -385,8 +385,8 @@ class TemplateManagementControllerTest {
         // The tests write into the REAL user dir (service.getStoragePath()), so
         // this test must leave the directory exactly as it found it: add a
         // template (+1 file), delete it (back to baseline). Pre-fix,
-        // removeFromGlobal could not find the file — addToGlobal_ /
-        // addToGlobalAsUserCopy never recorded it in globalTemplatesPaths — so
+        // removeFromGlobal could not find the file - addToGlobal_ /
+        // addToGlobalAsUserCopy never recorded it in globalTemplatesPaths - so
         // the delete left the file behind (count stayed baseline + 1) and the
         // "deleted" template resurrected on the next reload. This asserts the
         // file is genuinely removed, and is self-cleaning (net-zero on disk).

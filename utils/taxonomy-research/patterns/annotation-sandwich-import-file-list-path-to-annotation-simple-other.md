@@ -59,7 +59,7 @@ Project: `AIAgentTests/03-ExampleWorkflows/Angela_Roots_38.jip` (relative to `/d
 ## Template
 
 Proposed name `File list -> Annotate with file/directory name -> other`, menu path
-`Patterns/Data Sources/File list -> Annotate with file/directory name -> other` (proposal only — not registered).
+`Patterns/Data Sources/File list -> Annotate with file/directory name -> other` (proposal only - not registered).
 `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/annotation-sandwich-import-file-list-path-to-annotation-simple-other.json`.
 

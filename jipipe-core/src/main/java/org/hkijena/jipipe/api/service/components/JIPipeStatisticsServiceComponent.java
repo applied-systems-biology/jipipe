@@ -192,7 +192,7 @@ public class JIPipeStatisticsServiceComponent extends JIPipeServiceComponent {
             try (FileChannel channel = FileChannel.open(lockFile, StandardOpenOption.WRITE);
                  FileLock lock = channel.tryLock()) {
                 if (lock == null) {
-                    logger.warn("Could not acquire statistics lock — save skipped, will retry");
+                    logger.warn("Could not acquire statistics lock - save skipped, will retry");
                     saveLaterTimer.restart();
                     return;
                 }

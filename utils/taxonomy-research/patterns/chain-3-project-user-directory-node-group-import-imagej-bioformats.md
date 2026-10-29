@@ -61,7 +61,7 @@ Project: `AIAgentTests/02-AdvancedPipelines/CellTracking_01.jip` (relative to `/
 ## Template
 
 Proposed name `Project user path -> Group -> Bio-Formats importer`, menu path
-`Patterns/Data Sources/Project user path -> Group -> Bio-Formats importer` (proposal only — not registered). `data` =
+`Patterns/Data Sources/Project user path -> Group -> Bio-Formats importer` (proposal only - not registered). `data` =
 the minimal JIPipeGraph JSON; the full object is written to
 `templates/chain-3-project-user-directory-node-group-import-imagej-bioformats.json`.
 

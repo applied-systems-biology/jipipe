@@ -22,8 +22,8 @@ import java.awt.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * #1339: the lighter members of the font parameter family —
- * family+size / family+size+style / family+size+color — serialization
+ * #1339: the lighter members of the font parameter family -
+ * family+size / family+size+style / family+size+color - serialization
  * round-trips (with the absent fields really absent from the JSON), plain
  * {@code toFont()}, and the shared {@code fromLegacyKeys} migration helpers.
  */
@@ -136,7 +136,7 @@ class FontParameterFamilyTest {
         // #1339 pin: the exact key set + prefix DefaultTextBoxGraphCanvasNote.onDeserialized
         // uses for the title style (the nested collection is loaded via flat slash-keys),
         // plus the title's default size (18). If the node's keys ever drift, this input
-        // records what they were. All keys belong to the title prefix — the node composes
+        // records what they were. All keys belong to the title prefix - the node composes
         // each style from its own prefix.
         JsonNode n = json("{\"title-style/font-family\":\"Dialog\",\"title-style/font-size\":18,\"title-style/color\":\"#000000\"}");
         JIPipeFontFamilySizeStyleColorParameter p =

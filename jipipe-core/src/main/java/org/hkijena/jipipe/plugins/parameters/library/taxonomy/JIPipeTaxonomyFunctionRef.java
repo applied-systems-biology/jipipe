@@ -37,7 +37,7 @@ import java.util.Objects;
  * Mirrors {@link org.hkijena.jipipe.plugins.parameters.library.references.JIPipeDataInfoRef}:
  * a plain reference wrapper that serializes to the bare id string (or {@code null} when unset),
  * so saved JSON stays human-readable. The id is only resolved lazily against the live
- * {@link FunctionRegistry}; an unknown (stale) id never throws — it simply reports
+ * {@link FunctionRegistry}; an unknown (stale) id never throws - it simply reports
  * {@link #isResolved() is unresolved} and {@link #getFunction()} returns {@code null}.
  */
 @JsonSerialize(using = JIPipeTaxonomyFunctionRef.Serializer.class)

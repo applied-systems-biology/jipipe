@@ -30,7 +30,7 @@ import java.util.Set;
  * The docked node browser shows its entries in two places: the node
  * <em>list</em> (two-pane / comfortable width) and, in the compact
  * single-pane, the function tree's <em>node leaves</em> (the tree takes
- * over the node-list role). Before this class the two surfaces disagreed —
+ * over the node-list role). Before this class the two surfaces disagreed -
  * the tree leaves had NO context menu, so Insert at cursor / Pin / Unpin /
  * Show documentation were unreachable in the compact pane. The parity is
  * structural, not copy-paste: BOTH surfaces call
@@ -39,10 +39,10 @@ import java.util.Set;
  * actions map, so a tree leaf and a list row of the same entry get the
  * identical menu.
  * <p>
- * {@link #specs} and {@link MenuItemSpec} are deliberately Swing-free — the
+ * {@link #specs} and {@link MenuItemSpec} are deliberately Swing-free - the
  * single source of truth for WHICH items an entry gets is unit-testable
  * without a UI. {@link #buildJPopupMenu} is the thin Swing assembler (the
- * Swing-side dressing — icons, tooltips — lives there, not in the spec).
+ * Swing-side dressing - icons, tooltips - lives there, not in the spec).
  */
 public final class NodeEntryContextMenu {
 
@@ -83,13 +83,13 @@ public final class NodeEntryContextMenu {
      * scope-gated template quick actions (spec §7.3/§8.2), appended AFTER
      * the base items:
      * <ul>
-     * <li><b>Global</b> (the user's own templates) — {@code edit},
+     * <li><b>Global</b> (the user's own templates) - {@code edit},
      * {@code copy-to-project}, {@code delete}, {@code configure-templates};</li>
-     * <li><b>Project</b> — {@code edit}, {@code copy-to-global},
+     * <li><b>Project</b> - {@code edit}, {@code copy-to-global},
      * {@code delete}, {@code configure-templates};</li>
-     * <li><b>System</b> (read-only) — {@code copy-to-global},
+     * <li><b>System</b> (read-only) - {@code copy-to-global},
      * {@code configure-templates} (no edit, no delete);</li>
-     * <li><b>Downloaded</b> (read-only repository artifacts) —
+     * <li><b>Downloaded</b> (read-only repository artifacts) -
      * {@code copy-to-global} (make a local editable version),
      * {@code delete} (remove the download), {@code configure-templates}
      * (no edit).</li>
@@ -138,8 +138,8 @@ public final class NodeEntryContextMenu {
      * The ordered item set for a (possibly multi-) selection of the node
      * <em>list</em> (spec §7.3). This is the list surface's entry point: it
      * delegates to {@link #specs(JIPipeNodeDatabaseEntry, Set)} for the FIRST
-     * selected entry (so a single-entry selection — and therefore the
-     * tree's single-selection path, which calls {@code specs} directly —
+     * selected entry (so a single-entry selection - and therefore the
+     * tree's single-selection path, which calls {@code specs} directly -
      * yields exactly the same result), and only for a MIXED multi-selection
      * (some selected entries pinned, some not) restores the pre-refactor
      * list-menu display: BOTH {@code pin} and {@code unpin}, ordered
@@ -148,7 +148,7 @@ public final class NodeEntryContextMenu {
      * An all-pinned or all-unpinned multi-selection yields the same single
      * pin/unpin item as {@code specs(first, pinned)} already does, so no
      * adjustment is needed there. The actions still act on the WHOLE
-     * selection (the caller's actions map) — only which item(s) are DISPLAYED
+     * selection (the caller's actions map) - only which item(s) are DISPLAYED
      * changes here.
      * <p>
      * This stays Swing-free and is deliberately SEPARATE from
@@ -193,7 +193,7 @@ public final class NodeEntryContextMenu {
      * <p>
      * For each spec, when {@code actions} contains the spec's id, an enabled
      * {@link JMenuItem} (label, icon, tooltip, wired action) is added; when
-     * it does NOT, the spec is <b>skipped</b> — a disabled item is
+     * it does NOT, the spec is <b>skipped</b> - a disabled item is
      * deliberately NOT rendered. That skip is the seam Task 9 closes: until
      * it supplies the template management actions, the template items are
      * present in {@link #specs(JIPipeNodeDatabaseEntry, Set)} but absent
@@ -264,7 +264,7 @@ public final class NodeEntryContextMenu {
     /**
      * The Swing-side icon for an item id (the pre-existing node-list menu's
      * icons, so the rendered menu looks like today's); no icon yet for the
-     * template quick actions (Task 9 supplies their actions — and can
+     * template quick actions (Task 9 supplies their actions - and can
      * refine the dressing with them).
      */
     private static Icon iconFor(String id) {
@@ -292,13 +292,13 @@ public final class NodeEntryContextMenu {
     }
 
     /**
-     * A single context-menu item specification — the Swing-free contract
+     * A single context-menu item specification - the Swing-free contract
      * both surfaces share.
      *
      * @param id      the stable item id (see the {@code INSERT_AT_CURSOR} ...
      *                {@code CONFIGURE_TEMPLATES} constants)
      * @param label   the user-facing label
-     * @param enabled whether the item is enabled (always {@code true} here —
+     * @param enabled whether the item is enabled (always {@code true} here -
      *                an item's <em>presence</em>, not a disabled state, is
      *                the signal; an unsupplied action simply omits the item,
      *                see {@link #buildJPopupMenu(List, Map)})

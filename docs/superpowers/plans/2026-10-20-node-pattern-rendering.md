@@ -1,4 +1,4 @@
-# Node Pattern Rendering — Implementation Plan
+# Node Pattern Rendering - Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:
 > executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
@@ -14,10 +14,10 @@ in the existing theme style (4 fields). No new dependencies, no contrib module, 
 
 **Tech Stack:** Java 21, `java.awt`/`Graphics2D`, `BufferedImage`, Jackson (theme JSON), JUnit 5.
 
-**Spec:** `docs/superpowers/specs/2026-10-20-node-pattern-rendering-design.md` (read it first — it is the source of
+**Spec:** `docs/superpowers/specs/2026-10-20-node-pattern-rendering-design.md` (read it first - it is the source of
 truth for the 17-family catalog, the mapping table, the 4 contract tests, and the theme setting names/defaults).
 
-**Reference formulas:** `docs/superpowers/plans/assets/PatternForge-reference.java` — the validated prototype. The 17
+**Reference formulas:** `docs/superpowers/plans/assets/PatternForge-reference.java` - the validated prototype. The 17
 family bodies are ported from its lambdas (see the per-family line ranges below). **Keep the tuned constants
 byte-for-byte**: the plane-filling, determinism and golden tests depend on them. `assets/node-wall-preview.png` and
 `assets/patterns-sheet-preview.png` are the approved visual target.
@@ -27,7 +27,7 @@ byte-for-byte**: the plane-filling, determinism and golden tests depend on them.
 - Package for all engine code: `org.hkijena.jipipe.desktop.commons.nodepatterns`.
 - All family ids are **stable string literals** (never code-derived), per the project's registered-ID rule.
 - Every family draws **only** with the current paint (white) onto a transparent canvas; no color, no `Math.random`, no
-  wall clock — a pure function of `(w, h, rng)`.
+  wall clock - a pure function of `(w, h, rng)`.
 - Antialiasing ON + `STROKE_CONTROL_PURE` (set by the renderer before a family paints).
 - Seeded by **framework id**: `new Random(seed.hashCode())`. Same framework ⇒ identical pattern on every node, every
   run.
@@ -35,19 +35,19 @@ byte-for-byte**: the plane-filling, determinism and golden tests depend on them.
   `showNodeFrameworkBadge=true`. All-off ⇒ today's look.
 - `NoFramework` ⇒ **null** style id ⇒ no pattern, no badge (deliberate).
 - Tests are headless (`BufferedImage` only). **No Swing interaction/UI tests** (the "do not test trivial things"
-  policy) — appearance is verified by the user in the app.
+  policy) - appearance is verified by the user in the app.
 - Java 21. Build offline: `mvn -o -pl jipipe-core …`.
 
 ## Review Focus
 
-Five input classes the spec implies but no unit test exercises — the behaviors a user would expect. Each is pinned to
+Five input classes the spec implies but no unit test exercises - the behaviors a user would expect. Each is pinned to
 the task that owns the code:
 
 1. **A framework registered with an unknown/null style id** (e.g. a plugin added later with a style we don't ship).
    Expected: node paints with **no pattern and no badge, no exception**. → Task 4 (registry test: every shipped
    framework resolves to a known id; the renderer's null-guard is verified by the engine test that an unknown id yields
    an empty/absent mask).
-2. **`NoFramework` nodes** (the large majority of custom/legacy nodes). Expected: **no pattern, no badge** — they stay
+2. **`NoFramework` nodes** (the large majority of custom/legacy nodes). Expected: **no pattern, no badge** - they stay
    plain. → Task 4 (registry test asserts `NoFramework` style id is null) + Task 5 (paint guard).
 3. **A node smaller than one mask bucket** (zoomed way out). Expected: the smallest bucket is scaled down, no crash,
    still tinted correctly. → Task 1 (renderer clamps to the smallest bucket; engine test renders a 16×16 mask without
@@ -55,8 +55,8 @@ the task that owns the code:
 4. **The disabled/pass-through hatch must cover the pattern** (a disabled node should read as disabled, pattern
    suppressed). Expected: hatch paints over the mask. → Task 5 (paint order: mask before hatch).
 5. **Theme reload while the mask cache is warm** (user switches ink/opacity). Expected: the mask (theme-independent
-   white) is reused; only the tint changes — no stale colored tile. → Task 3 (the mask cache key is (style,seed,size),
-   never the ink; the tint is applied at draw time, so changing the theme needs no cache invalidation — asserted by an
+   white) is reused; only the tint changes - no stale colored tile. → Task 3 (the mask cache key is (style,seed,size),
+   never the ink; the tint is applied at draw time, so changing the theme needs no cache invalidation - asserted by an
    engine test that two `paint` calls with different inks over the same mask differ only in color).
 
 ---
@@ -65,9 +65,9 @@ the task that owns the code:
 
 Created (engine, `jipipe-core/src/main/java/org/hkijena/jipipe/desktop/commons/nodepatterns/`):
 
-- `NodePatternFamily.java` — the `paint(Graphics2D,int,int,Random)` interface + its contract in the javadoc.
-- `NodePatternStyles.java` — registry: id → family instance; `family(String)`, `ids()`.
-- `NodePatternRenderer.java` — mask cache + `mask(...)` + `paint(...)` + `invalidateCache()`.
+- `NodePatternFamily.java` - the `paint(Graphics2D,int,int,Random)` interface + its contract in the javadoc.
+- `NodePatternStyles.java` - registry: id → family instance; `family(String)`, `ids()`.
+- `NodePatternRenderer.java` - mask cache + `mask(...)` + `paint(...)` + `invalidateCache()`.
 - 17 family classes: `StripesFamily`, `NetFamily`, `CellularFamily`, `CarpetFamily`, `HilbertFamily`, `LandscapeFamily`
   (Task 1); `WavesFamily`, `WeaveFamily`, `PatchworkFamily`, `LoopsFamily`, `DiscoFamily`, `TrianglesFamily`,
   `BlobsFamily`, `DotsFamily`, `HoneycombFamily`, `RippleFamily`, `FlowFamily` (Task 2).
@@ -85,7 +85,7 @@ Modified:
 - `jipipe-core/src/main/java/org/hkijena/jipipe/desktop/app/grapheditor/commons/nodeui/JIPipeDesktopGraphNodeUI.java`
   (Task 5).
 - `jipipe-core/src/main/java/org/hkijena/jipipe/desktop/app/grapheditor/commons/JIPipeDesktopGraphCanvasUI.java` (Task
-  5 — the node context menu is assembled in `createContextMenu()`, ~line 925).
+  5 - the node context menu is assembled in `createContextMenu()`, ~line 925).
 
 ---
 
@@ -116,7 +116,7 @@ membranes), `carpet` (fractal fill), `hilbert` (space-filling curve), `landscape
 
 - [ ] **Step 1: Write the failing engine test**
 
-Create `NodePatternEngineTest.java` (no JIPipe boot needed — pure `BufferedImage`):
+Create `NodePatternEngineTest.java` (no JIPipe boot needed - pure `BufferedImage`):
 
 ```java
 package org.hkijena.jipipe.desktop.commons.nodepatterns;
@@ -142,7 +142,7 @@ class NodePatternEngineTest {
         return NodePatternRenderer.mask(style, seed, w, h);
     }
 
-    // 1. DETERMINISM — same (style, seed, size) ⇒ byte-identical mask, all styles, 3 sizes.
+    // 1. DETERMINISM - same (style, seed, size) ⇒ byte-identical mask, all styles, 3 sizes.
     //    invalidateCache() between the calls so the second mask() truly re-renders
     //    (otherwise the cache hands back the same object and the test proves nothing).
     @Test
@@ -158,7 +158,7 @@ class NodePatternEngineTest {
         }
     }
 
-    // 1b. GOLDEN — net@128, seed = TrackMate id, pixel-exact vs the checked-in reference
+    // 1b. GOLDEN - net@128, seed = TrackMate id, pixel-exact vs the checked-in reference
     @Test
     void netMaskMatchesGoldenReference() throws Exception {
         BufferedImage live = NodePatternRenderer.mask("net", "jipipe:framework:trackmate", 128, 128);
@@ -170,7 +170,7 @@ class NodePatternEngineTest {
                 assertEquals(ref.getRGB(x, y), live.getRGB(x, y), "golden pixel mismatch at " + x + "," + y);
     }
 
-    // 2. PLANE-FILLING — ink in the 6px band of ALL four borders, >= 4%, every family, 3 sizes x 2 seeds
+    // 2. PLANE-FILLING - ink in the 6px band of ALL four borders, >= 4%, every family, 3 sizes x 2 seeds
     @Test
     void everyFamilyFillsAllFourBorders() {
         for (String id : NodePatternStyles.ids()) {
@@ -185,7 +185,7 @@ class NodePatternEngineTest {
         }
     }
 
-    // 3. COLOR-NEUTRAL — every non-transparent pixel has white channels (alpha may vary)
+    // 3. COLOR-NEUTRAL - every non-transparent pixel has white channels (alpha may vary)
     @Test
     void everyMaskIsWhiteInkOnly() {
         for (String id : NodePatternStyles.ids()) {
@@ -232,7 +232,7 @@ class NodePatternEngineTest {
         assertTrue(reds > blues, "red ink should dominate the tinted mask");
         // the tint must follow the mask's shape, not fill the whole rect
         assertTrue(transparent > total / 2,
-                "tinted draw is a solid rectangle (" + transparent + "/" + total + " transparent) — tinting ignores the mask alpha");
+                "tinted draw is a solid rectangle (" + transparent + "/" + total + " transparent) - tinting ignores the mask alpha");
     }
 
     // ---- helpers ----
@@ -265,7 +265,7 @@ Note: `toPng` is only called inside tests that already `throws Exception`; add `
 - [ ] **Step 2: Run the test to verify it fails**
 
 Run: `mvn -o -q -pl jipipe-core test -Dtest=NodePatternEngineTest`
-Expected: COMPILE FAILURE — `NodePatternRenderer`/`NodePatternStyles`/families do not exist yet.
+Expected: COMPILE FAILURE - `NodePatternRenderer`/`NodePatternStyles`/families do not exist yet.
 
 - [ ] **Step 3: Create the interface and registry**
 
@@ -283,11 +283,11 @@ import java.util.Random;
  * <p>
  * Contract (enforced by NodePatternEngineTest):
  * <ul>
- *   <li>draws only with the current paint (white) — no color, no alpha channel
+ *   <li>draws only with the current paint (white) - no color, no alpha channel
  *       selection of its own; the renderer supplies a white pen/brush;</li>
  *   <li>reaches all four borders (overshoot the frame on grid-based geometry
  *       so the motif is clipped by the node body like an infinite texture);</li>
- *   <li>is a pure function of {@code (w, h, rng)} — no Math.random, no clock.</li>
+ *   <li>is a pure function of {@code (w, h, rng)} - no Math.random, no clock.</li>
  * </ul>
  * The renderer sets {@code KEY_ANTIALIASING=ON} and {@code KEY_STROKE_CONTROL=PURE}
  * before calling.
@@ -297,7 +297,7 @@ public interface NodePatternFamily {
 }
 ```
 
-`NodePatternStyles.java` — registry over the 17 ids (this task registers 6; Task 2 adds the rest). Use stable literal
+`NodePatternStyles.java` - registry over the 17 ids (this task registers 6; Task 2 adds the rest). Use stable literal
 ids:
 
 ```java
@@ -358,9 +358,9 @@ import java.util.concurrent.ConcurrentHashMap;
  * <p>
  * Two cache levels:
  * <ul>
- *   <li>the white MASK, keyed by (style, seed, size bucket) — theme-independent;
+ *   <li>the white MASK, keyed by (style, seed, size bucket) - theme-independent;
  *       changing ink/opacity never invalidates it;</li>
- *   <li>the TINTED copy, keyed by (mask, ink, opacity) — built once per theme
+ *   <li>the TINTED copy, keyed by (mask, ink, opacity) - built once per theme
  *       look, drawn per node with a plain alpha composite.</li>
  * </ul>
  * Nodes cluster into a handful of sizes; larger nodes scale the nearest
@@ -396,7 +396,7 @@ public final class NodePatternRenderer {
         gg.dispose();
     }
 
-    /** Clears both caches (test hook; not needed for theme changes — the mask is theme-independent). */
+    /** Clears both caches (test hook; not needed for theme changes - the mask is theme-independent). */
     public static void invalidateCache() {
         MASK_CACHE.clear();
         TINT_CACHE.clear();
@@ -405,7 +405,7 @@ public final class NodePatternRenderer {
     // ---- internal ----
 
     /** Reuses or builds the tinted copy of the white mask (ink + its alpha, at {@code opacity}).
-     *  Keyed by (maskId, ink, opacity, size) — the mask identity is part of the key so two
+     *  Keyed by (maskId, ink, opacity, size) - the mask identity is part of the key so two
      *  styles at the same size/ink never share a tint (Ruling 18). */
     private static BufferedImage tint(String maskId, BufferedImage mask, Color ink, float opacity) {
         int w = mask.getWidth(), h = mask.getHeight();
@@ -445,7 +445,7 @@ public final class NodePatternRenderer {
 
 The tint technique (mask alpha × ink color, per-pixel, cached) is the non-obvious part of this task; the test
 `inkIsAppliedAtDrawTimeNotBakedIn` pins it, including the guard that the tint follows the mask's shape rather than
-filling the rectangle. Do NOT tint with `SRC_IN` on the node's graphics object — that compositing mode multiplies the
+filling the rectangle. Do NOT tint with `SRC_IN` on the node's graphics object - that compositing mode multiplies the
 ink into everything already painted (it would erase the node body).
 
 - [ ] **Step 5: Port the 6 families**
@@ -503,8 +503,8 @@ Expected: `golden written` and the PNG exists at the test-resource path.
 
 Run: `mvn -o -q -pl jipipe-core test -Dtest=NodePatternEngineTest`
 Expected: PASS (5-6 tests: determinism, golden, plane-filling, color-neutral, registry, tiny-node, ink-at-draw-time). If
-a family fails plane-filling, its port drifted from the reference — re-copy that lambda's constants. If
-`inkIsAppliedAtDrawTimeNotBakedIn` fails, fix the renderer's tinting (Step 4 note) — do NOT weaken the test.
+a family fails plane-filling, its port drifted from the reference - re-copy that lambda's constants. If
+`inkIsAppliedAtDrawTimeNotBakedIn` fails, fix the renderer's tinting (Step 4 note) - do NOT weaken the test.
 
 - [ ] **Step 8: Commit**
 
@@ -543,7 +543,7 @@ keep it in-class: `WavesFamily` (uses the reference's `f(...)` field + `crossSeg
 `RippleFamily` (none), `FlowFamily` (none), `WeaveFamily` (`fillBandH(...)`), `LoopsFamily` (none), `DiscoFamily`
 (none), `TrianglesFamily` (none).
 
-Reference line anchors: `F.put("waves",…)` (the SECOND waves lambda — the proper marching-squares one, not the first
+Reference line anchors: `F.put("waves",…)` (the SECOND waves lambda - the proper marching-squares one, not the first
 placeholder), `F.put("weave",…)`, `F.put("patchwork",…)`, `F.put("loops",…)`, `F.put("disco",…)`,
 `F.put("triangles",…)`, `F.put("blobs",…)`, `F.put("dots",…)`, `F.put("honeycomb",…)`, `F.put("ripple",…)`,
 `F.put("flow",…)`.
@@ -569,8 +569,8 @@ Add to the static block (after the 6 from Task 1):
 - [ ] **Step 3: Run the full engine sweep (now covers all 17)**
 
 Run: `mvn -o -q -pl jipipe-core test -Dtest=NodePatternEngineTest`
-Expected: PASS — the plane-filling, determinism, color-neutral and registry tests now iterate all 17 ids. If any new
-family fails plane-filling or color-neutral, its port drifted — re-copy the constants (do not lower the test
+Expected: PASS - the plane-filling, determinism, color-neutral and registry tests now iterate all 17 ids. If any new
+family fails plane-filling or color-neutral, its port drifted - re-copy the constants (do not lower the test
 thresholds).
 
 - [ ] **Step 4: Commit**
@@ -598,10 +598,10 @@ Engine contract tests now sweep the full catalog. (6.0.0)"
 - Produces (on `JIPipeDesktopModernThemeStyle`): `isShowNodeFrameworkPattern()`, `setShowNodeFrameworkPattern(boolean)`,
   `getNodePatternInk()`, `setNodePatternInk(Color)`, `getNodePatternOpacity()`, `setNodePatternOpacity(float)`,
   `isShowNodeFrameworkBadge()`, `setShowNodeFrameworkBadge(boolean)`.
-- Consumes: Task 1/2 (not directly — this is the settings layer).
+- Consumes: Task 1/2 (not directly - this is the settings layer).
 
 Exact names/defaults (from the spec): `showNodeFrameworkPattern` (boolean, `true`), `nodePatternInk` (Color,
-`Color.WHITE`), `nodePatternOpacity` (float, `0.4f` — live-tuned for the light base theme; the dark bundled themes pin
+`Color.WHITE`), `nodePatternOpacity` (float, `0.4f` - live-tuned for the light base theme; the dark bundled themes pin
 `0.15` explicitly, see `NodePatternThemeSettingsTest.shippedThemesPinPatternOpacity`), `showNodeFrameworkBadge`
 (boolean, `true`). `@JsonProperty`/`@JIPipeParameter` keys (kebab-case, matching the file's existing
 `node-fill-saturation`-style keys): `show-node-framework-pattern`, `node-pattern-ink`, `node-pattern-opacity`,
@@ -670,13 +670,13 @@ class NodePatternThemeSettingsTest {
 }
 ```
 
-Use `org.hkijena.jipipe.utils.json.JsonUtils` (accessor: `getObjectMapper()` — the same one `ThemeUtils` uses to load
+Use `org.hkijena.jipipe.utils.json.JsonUtils` (accessor: `getObjectMapper()` - the same one `ThemeUtils` uses to load
 styles).
 
 - [ ] **Step 2: Run to verify it fails**
 
 Run: `mvn -o -q -pl jipipe-core test -Dtest=NodePatternThemeSettingsTest`
-Expected: COMPILE FAILURE — the accessors don't exist yet.
+Expected: COMPILE FAILURE - the accessors don't exist yet.
 
 - [ ] **Step 3: Add the 4 fields to `JIPipeDesktopModernThemeStyle`**
 
@@ -736,7 +736,7 @@ fallback. (6.0.0)"
 - Consumes: `NodePatternStyles.family/ids` (Tasks 1-2); `JIPipeNodeTaxonomyFramework.getPatternStyleId()`.
 - Produces: the shipped mapping (15 framework→style pairs + `NoFramework`→null).
 
-Mapping (from the spec table — this is the ship contract):
+Mapping (from the spec table - this is the ship contract):
 
 | Framework class                                                  | style id    |
 |------------------------------------------------------------------|-------------|
@@ -756,9 +756,9 @@ Mapping (from the spec table — this is the ship contract):
 
 - [ ] **Step 1: Write the failing mapping test**
 
-Two tests live in `FrameworksTest.java` (api test — it may import api classes but NOT the desktop `NodePatternStyles`):
+Two tests live in `FrameworksTest.java` (api test - it may import api classes but NOT the desktop `NodePatternStyles`):
 
-(a) The existing `namesAndPatternStyleIdsMatchTheSeedTable` (lines ~105-129) pins the OLD ids — replace its
+(a) The existing `namesAndPatternStyleIdsMatchTheSeedTable` (lines ~105-129) pins the OLD ids - replace its
 pattern-style assertions with the new mapping (keep the name assertions):
 
 ```java
@@ -789,10 +789,10 @@ pattern-style assertions with the new mapping (keep the name assertions):
     }
 ```
 
-(The existing `patternStyleIdsAreNonEmpty` stays — `allFrameworks()` lists the 16 frameworks and excludes `NoFramework`,
+(The existing `patternStyleIdsAreNonEmpty` stays - `allFrameworks()` lists the 16 frameworks and excludes `NoFramework`,
 so it still passes once the mapping is in.)
 
-The registry-resolution half lives in `NodePatternEngineTest` (desktop test — importing the api framework classes is
+The registry-resolution half lives in `NodePatternEngineTest` (desktop test - importing the api framework classes is
 fine; desktop depends on api). Add:
 
 ```java
@@ -829,13 +829,13 @@ fine; desktop depends on api). Add:
 - [ ] **Step 2: Run to verify it fails**
 
 Run: `mvn -o -q -pl jipipe-core test -Dtest=FrameworksTest,NodePatternEngineTest`
-Expected: FAIL — the framework classes still return the old ids (`constellation`, `shape-grid`, `initials`, `weave`, …)
+Expected: FAIL - the framework classes still return the old ids (`constellation`, `shape-grid`, `initials`, `weave`, …)
 and `NoFramework` still returns `"initials"`.
 
 - [ ] **Step 3: Update the 16 framework classes + NoFramework**
 
 Edit each `getPatternStyleId()` to the table value. `NoFramework.getPatternStyleId()` returns `null`. Keep `getId()`,
-`getName()`, `getAbbreviation()` unchanged. (These are presentation strings, not persisted project data — safe per the
+`getName()`, `getAbbreviation()` unchanged. (These are presentation strings, not persisted project data - safe per the
 spec's migration note.)
 
 - [ ] **Step 4: Run to verify it passes**
@@ -872,7 +872,7 @@ NoFramework carries no pattern. Mapping is the ship contract (tested). (6.0.0)"
 - Consumes: `NodePatternRenderer.paint(...)` (Task 1), the theme accessors (Task 3), `node.getInfo().getFramework()`
   (defaults `NoFramework`), `fw.getPatternStyleId()`, `fw.getId()`, `fw.getAbbreviation()`, `fw.getName()`,
   `fw.getColor()`.
-- Produces: the on-canvas pattern + badge. **No tests** (Swing UI — verified by the user in the app, per the test
+- Produces: the on-canvas pattern + badge. **No tests** (Swing UI - verified by the user in the app, per the test
   policy). Gate = compiles + full suite stays green + visual check.
 
 - [ ] **Step 1: Paint the pattern in `paintNode`**
@@ -894,29 +894,29 @@ BEFORE the disabled/pass-through hatch (`if (getNode() instanceof JIPipeAlgorith
 ```
 
 Add the needed imports (`NodePatternRenderer`, `JIPipeDesktopModernThemeStyle`, `NoFramework`,
-`JIPipeNodeTaxonomyFramework`, `ThemeUtils` — several are already imported).
+`JIPipeNodeTaxonomyFramework`, `ThemeUtils` - several are already imported).
 
 - [ ] **Step 2: Add the badge in the title band**
 
 In `paintNodeControls` (after the node name is drawn, ~line 1205+), when the badge is enabled and the framework is not
 `NoFramework`, draw a rounded chip: abbreviation text, fill = `fw.getColor()`, border = the node border color, using
 `zoomedTertiaryFont` (or a derived small font). Compute the chip width with the same `FontMetrics` the name uses and
-**add it to the title-band centering math** — extend the `centerNativeWidth` expression (the `nameWidth` sum, ~line
+**add it to the title-band centering math** - extend the `centerNativeWidth` expression (the `nameWidth` sum, ~line
 1215) by the chip width (a small gap + the chip) when the badge is shown, so the whole
 run-button/partition/icon/name/chip group stays centered.
 
-CRITICAL — the badge extra width has THREE sites, not two; all three must derive from ONE native-units helper or the
+CRITICAL - the badge extra width has THREE sites, not two; all three must derive from ONE native-units helper or the
 chip clips (Ruling 20):
 
-1. `paintNodeControls` `centerNativeWidth` (~line 1219) — zoomed.
-2. `updateWholeNodeActiveAreas()` `centerNativeWidth` (~line 414, the run-button hit-area math) — zoomed.
-3. **`updateSize()` `mainWidth` (~line 574, the node's actual width, NATIVE units)** — if this is missed, on
+1. `paintNodeControls` `centerNativeWidth` (~line 1219) - zoomed.
+2. `updateWholeNodeActiveAreas()` `centerNativeWidth` (~line 414, the run-button hit-area math) - zoomed.
+3. **`updateSize()` `mainWidth` (~line 574, the node's actual width, NATIVE units)** - if this is missed, on
    title-band-width-driven nodes the node is too narrow and the centered chip overflows the right edge (verified:
    "Threshold"+CPOS clips ~8px). Add the badge's NATIVE extra width here:
    `4 + nativeTertiaryFontMetrics.stringWidth(abbr) + 6`.
 
 Make a single native-units helper (e.g. `badgeExtraNativeWidth()`) and have the two zoomed sites return
-`badgeExtraNativeWidth() * zoom` (stringWidth scales linearly with the zoomed font) — so paint, hit-areas, and
+`badgeExtraNativeWidth() * zoom` (stringWidth scales linearly with the zoomed font) - so paint, hit-areas, and
 node-width can never drift.
 
 Guard: `style.isShowNodeFrameworkBadge() && fw != null && !NoFramework.ID.equals(fw.getId())`. Cache the framework on
@@ -936,7 +936,7 @@ contains selection-based node sections (the "Node partitioning menus" block, ~li
 contains exactly one node UI (`selectionManager.getSelectionByType(JIPipeDesktopGraphNodeUI.class)` of size 1) whose
 framework is not `NoFramework`, add at the very top of that block: `menu.add` a disabled
 `JMenuItem("Framework: " + fw.getName())` (a leading separator only if the menu is non-empty). The canvas has no
-hover-tooltip, so this line is the discoverability surface for the full framework name — the abbreviation chip alone is
+hover-tooltip, so this line is the discoverability surface for the full framework name - the abbreviation chip alone is
 not self-explanatory. Guard on the same framework check.
 
 - [ ] **Step 5: Compile**
@@ -998,7 +998,7 @@ Expected: `0`.
 
 - [ ] **Step 3: Registry oracle sanity (no taxonomy drift)**
 
-The feature touches no node ids or registered IDs — confirm no shipped resource changed: `git status --short` should
+The feature touches no node ids or registered IDs - confirm no shipped resource changed: `git status --short` should
 show only the source/test files from Tasks 1-5 (no `src/main/resources` or pattern-JSON changes).
 
 - [ ] **Step 4: Commit any remaining + report**
@@ -1016,7 +1016,7 @@ is the user's to verify (no Swing UI tests, per policy).
 - §Architecture (interface/registry/renderer, seed, cache) → Task 1. ✔
 - §Style catalog (17 families, 12 mapped, 5 spare) → Tasks 1-2. ✔
 - §Framework mapping (15 pairs + NoFramework null) → Task 4. ✔
-- §Node UI (pattern paint order, badge, minimap, tooltip→context-menu) → Task 5. ✔ (tooltip adjusted to context menu —
+- §Node UI (pattern paint order, badge, minimap, tooltip→context-menu) → Task 5. ✔ (tooltip adjusted to context menu -
   see note below.)
 - §Theme settings (4 fields, defaults, editor wiring) → Task 3. ✔
 - §Error handling (unknown/NoFramework/tiny-node/hatch-over-pattern/cache-reuse) → Tasks 1 (tiny-node, unknown→null,
@@ -1036,11 +1036,11 @@ names match the registry ids in Tasks 1-2.
 **Review Focus:** all 5 lines are pinned to a task (1→T4, 2→T4+T5, 3→T1, 4→T5, 5→T3+T1). None orphaned.
 
 **Proportion:** the plan is longer than the spec, but the excess is the porting pointers (line ranges into the reference
-file) and the exact test code — both are decisions the implementer cannot make alone (which constants, which
+file) and the exact test code - both are decisions the implementer cannot make alone (which constants, which
 assertions). No family body is transcribed.
 
 **One deliberate deviation from the spec (flagged for the user):** the spec's §Node UI says "tooltip shows the full
 framework name", but this codebase has **no node hover-tooltip** (the canvas owns mouse handling; only toolbar/menu
 items have tooltips). The full framework name is therefore surfaced as a disabled `Framework: <name>` line in the node
-**context menu** (Task 5 Step 4) — the discoverability surface that actually exists. The abbreviation chip + this line
+**context menu** (Task 5 Step 4) - the discoverability surface that actually exists. The abbreviation chip + this line
 together satisfy "full framework name is reachable".

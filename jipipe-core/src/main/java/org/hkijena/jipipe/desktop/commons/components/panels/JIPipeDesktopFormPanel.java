@@ -404,7 +404,7 @@ public class JIPipeDesktopFormPanel extends JPanel {
         }
 
         if (headerControls != null) {
-            // The header row holds the standardized parameter action buttons —
+            // The header row holds the standardized parameter action buttons -
             // give the controls cell at least the standard button height so the
             // name row is tall enough for them (#1339; makes rows slightly less
             // dense, which is intentional).

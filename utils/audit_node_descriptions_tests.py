@@ -7,7 +7,7 @@ them to the ``@SetJIPipeDocumentation`` annotations in the Java source. The
 risky part is the source edit itself: descriptions are Java string-literal
 concatenations that span lines, may be empty (``description = ""``), or absent
 entirely. These tests pin the apply behavior; the round-trip through the
-extractor (utils/extract-node-descriptions.py) is the acceptance criterion —
+extractor (utils/extract-node-descriptions.py) is the acceptance criterion -
 whatever we write must be re-readable.
 
 Run standalone:
@@ -120,7 +120,7 @@ class ApplyDescriptionTests(unittest.TestCase):
 
 class AuditDraftingTests(unittest.TestCase):
     """The draft prompt must carry the defect context (wrong vs thin vs
-    missing) — a node whose description is known-wrong gets a different
+    missing) - a node whose description is known-wrong gets a different
     instruction than one that is merely thin."""
 
     def _slots(self, *data_types):

@@ -59,7 +59,7 @@ Project: `AIAgentTests/03-ExampleWorkflows/Angela_Roots_38.jip` (relative to `/d
 ## Template
 
 Proposed name `Group fans in from 3 source ids (roles: import, other)`, menu path
-`Patterns/Graph / Project/Group fans in from 3 source ids (roles: import, other)` (proposal only — not registered).
+`Patterns/Graph / Project/Group fans in from 3 source ids (roles: import, other)` (proposal only - not registered).
 `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/fan-in-node-group-import-1-other-1.json`.
 

@@ -58,7 +58,7 @@ Project: `AIAgentTests/02-AdvancedPipelines/Cryogels_01.jip` (relative to `/data
 ## Template
 
 Proposed name `Cellpose segmentation (2.x) fans in from 8 source ids (roles: other)`, menu path
-`Patterns/Machine learning/Cellpose segmentation (2.x) fans in from 8 source ids (roles: other)` (proposal only — not
+`Patterns/Machine learning/Cellpose segmentation (2.x) fans in from 8 source ids (roles: other)` (proposal only - not
 registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/fan-in-cellpose-inference-2-x-other-2.json`.
 

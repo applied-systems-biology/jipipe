@@ -70,6 +70,6 @@ Project: `AIAgentTests/02-AdvancedPipelines/Cryogels_01.jip` (relative to `/data
 Proposed name `Compartment output -> Compartment output -> Filter 2D ROI by overlap (old) -> Compartment output`, menu
 path
 `Patterns/Graph / Project/Compartment output -> Compartment output -> Filter 2D ROI by overlap (old) -> Compartment output`
-(proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+(proposal only - not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/chain-4-jipipe-compartment-output-jipipe-compartment-output-ij1-roi-filter-by-overlap-jipipe-compartment-output.json`.
 

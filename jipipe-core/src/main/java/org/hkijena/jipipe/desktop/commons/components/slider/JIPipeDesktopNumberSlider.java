@@ -220,7 +220,7 @@ public class JIPipeDesktopNumberSlider extends JComponent {
     }
 
     /**
-     * Sets the value (clamped + snapped) without firing change listeners —
+     * Sets the value (clamped + snapped) without firing change listeners -
      * used by the owning editor to sync programmatic updates.
      */
     public void setValue(double v) {

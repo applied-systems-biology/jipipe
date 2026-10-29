@@ -61,7 +61,7 @@ public class JIPipeEphemeralRunnableExecutor implements JIPipeRunnableExecutor {
 
     private void onWorkerFinished(JIPipeRunnable.FinishedEvent event) {
         if (event.getWorker() != currentWorker) {
-            // Superseded — silently discard
+            // Superseded - silently discard
             return;
         }
         currentWorker = null;
@@ -70,7 +70,7 @@ public class JIPipeEphemeralRunnableExecutor implements JIPipeRunnableExecutor {
 
     private void onWorkerInterrupted(JIPipeRunnable.InterruptedEvent event) {
         if (event.getWorker() != currentWorker) {
-            // Superseded — silently discard
+            // Superseded - silently discard
             return;
         }
         currentWorker = null;
@@ -79,7 +79,7 @@ public class JIPipeEphemeralRunnableExecutor implements JIPipeRunnableExecutor {
 
     private void onWorkerProgress(JIPipeRunnable.ProgressEvent event) {
         if (event.getWorker() != currentWorker) {
-            // Superseded — silently discard
+            // Superseded - silently discard
             return;
         }
         progressEventEmitter.emit(event);

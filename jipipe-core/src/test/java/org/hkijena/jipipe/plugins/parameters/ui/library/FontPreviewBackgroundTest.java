@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Pins the font-preview background contract (#1339): the preview no longer
- * paints a checkerboard — it auto-selects a single background color that keeps
+ * paints a checkerboard - it auto-selects a single background color that keeps
  * the font color readable for <em>any</em> font color. The font parameter
  * defaults to WHITE text; on a light theme a flat panel background rendered it
  * invisible.
@@ -86,7 +86,7 @@ class FontPreviewBackgroundTest {
         // split) is far more readable on the DARK tone (~7:1) than light
         // (~1.7:1), so a correct auto-contrast must pick dark.
         assertTrue(relLum(JIPipeDesktopFontParameterEditorUI.previewBackground(new Color(0xC0, 0xC0, 0x00))) < 0.2,
-                "olive must land on the dark tone — a naive luminance>0.5 split picks the wrong (unreadable) light tone");
+                "olive must land on the dark tone - a naive luminance>0.5 split picks the wrong (unreadable) light tone");
     }
 
     @Test
@@ -104,7 +104,7 @@ class FontPreviewBackgroundTest {
             // minimum occurs at the crossover luminance); 3.0 is a safe floor
             // that still catches a tone pair drifting too close together.
             assertTrue(ratio >= 3.0,
-                    "font " + f + " on " + bg + ": contrast " + ratio + " < 3.0 — text would be hard to read");
+                    "font " + f + " on " + bg + ": contrast " + ratio + " < 3.0 - text would be hard to read");
         }
     }
 }

@@ -61,7 +61,7 @@ compartment `Preprocessing`.
 ## Template
 
 Proposed name `Comment -> Group -> Bio-Formats importer`, menu path
-`Patterns/Graph / Project/Comment -> Group -> Bio-Formats importer` (proposal only — not registered). `data` = the
+`Patterns/Graph / Project/Comment -> Group -> Bio-Formats importer` (proposal only - not registered). `data` = the
 minimal JIPipeGraph JSON; the full object is written to
 `templates/conversion-jipipe-comment-node-group-import-imagej-bioformats.json`.
 

@@ -62,7 +62,7 @@ Project: `AIAgentTests/01-BasicWorkshop/JSC_2025_03_Kidney_Basic/kidney.jip` (re
 ## Template
 
 Proposed name `Morphological hole filling 2D -> Morphological operation 2D -> Find particles 2D`, menu path
-`Patterns/Images/Morphological hole filling 2D -> Morphological operation 2D -> Find particles 2D` (proposal only — not
+`Patterns/Images/Morphological hole filling 2D -> Morphological operation 2D -> Find particles 2D` (proposal only - not
 registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/conversion-ij1-morph-binary-fillholes2d-ij1-morph-operation2d-ij1-analyze-find-particles2d.json`.
 

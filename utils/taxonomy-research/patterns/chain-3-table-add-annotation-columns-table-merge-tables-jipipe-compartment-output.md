@@ -62,7 +62,7 @@ compartment `Colocalization`.
 ## Template
 
 Proposed name `Add annotations as columns -> Merge table rows -> Compartment output`, menu path
-`Patterns/Tables/Add annotations as columns -> Merge table rows -> Compartment output` (proposal only — not registered).
+`Patterns/Tables/Add annotations as columns -> Merge table rows -> Compartment output` (proposal only - not registered).
 `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/chain-3-table-add-annotation-columns-table-merge-tables-jipipe-compartment-output.json`.
 

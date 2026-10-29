@@ -136,7 +136,7 @@ class TemplateManagementDialogTest {
     @Test
     void downloadedSectionIsItsOwnReadonlyScope() {
         // Round-2 spec: "Downloaded" is a first-class scope (repository
-        // artifacts in the global store, source = the repository URL) —
+        // artifacts in the global store, source = the repository URL) -
         // distinct from "Your templates" (user-owned global templates), and
         // listed in the design's position.
         withDialog(stubWorkbench(null), dialog -> {

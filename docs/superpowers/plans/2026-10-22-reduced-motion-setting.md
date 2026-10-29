@@ -3,7 +3,7 @@
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:
 > executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Add a "Reduced motion" application setting that disables UI motion — caret blinking in text/script editors,
+**Goal:** Add a "Reduced motion" application setting that disables UI motion - caret blinking in text/script editors,
 the progress spinner animation (replaced by a static hourglass), and the notification badge's color cross-fade (kept a
 static orange).
 
@@ -20,7 +20,7 @@ search attention fade, notification heading rotation, caret blink in the HTML ed
 **Tech Stack:** Java 21, Swing (`javax.swing.Timer`, `DefaultCaret`/RSyntaxTextArea `ConfigurableCaret`, LAF
 `BasicProgressBarUI`), JUnit 5 (Jupiter) in `jipipe-core`, Jackson (existing) for settings serialization.
 
-**Spec:** GitLab work item RGerst/jipipe#1335 — "Add into settings and theme settings a reduced motion setting that (1)
+**Spec:** GitLab work item RGerst/jipipe#1335 - "Add into settings and theme settings a reduced motion setting that (1)
 disables caret blinking in text/script editors, (2) shows a static hourglass in spinner instead of an animation, (3)
 disables notification icon animation color change (stays static orange)." Plus maintainer notes: the setting also needs
 a wire in the "Customize JIPipe" dialog, and any other UI element that produces motion must have its motion reduced
@@ -33,7 +33,7 @@ a wire in the "Customize JIPipe" dialog, and any other UI element that produces 
 - **Registration/parameter IDs are stable string literals.** The new parameter id is exactly `"reduced-motion"`. Never
   derive it from code.
 - **Test policy (AGENTS.md):** No Swing *structure* tests (no asserting component hierarchy, pixels, tab titles,
-  visibility toggles). Tests pin **non-trivial behavior only** — here: the setting's default/serialization contract, and
+  visibility toggles). Tests pin **non-trivial behavior only** - here: the setting's default/serialization contract, and
   the "reduced motion ⇒ no running timer / static state" decision on each surface. Pixel/drawing output is verified by
   the user by eye, not tested.
 - **ImageJ legacy patcher:** New tests must NOT call `LegacyInjector.preinit()`, must NOT add `--add-opens`/javaagent
@@ -49,10 +49,10 @@ a wire in the "Customize JIPipe" dialog, and any other UI element that produces 
 
 Inputs/conditions the spec implies but that no unit test exercises (the user checks these by eye in the running app):
 
-1. **Hourglass renders correctly at all spinner sizes** (16/24/32/48 px, light + dark theme) — expect a crisp,
+1. **Hourglass renders correctly at all spinner sizes** (16/24/32/48 px, light + dark theme) - expect a crisp,
    theme-aware static hourglass, not a stretched/blank icon, in the run queue, search field, splash, AI/server status
    controls. *Owned by Task 2 (drawing); verify by eye, no pixel test.*
-2. **Static orange notification badge** — with reduced motion on and notifications present, the badge is a solid orange
+2. **Static orange notification badge** - with reduced motion on and notifications present, the badge is a solid orange
    `warning.png` (full opacity), not a pulsing cross-fade and not the blue-gray `emblem-important.png`. *Owned by Task
    3; verify by eye.*
 3. **Caret is visible but not blinking** while typing in the code editor, the inline script parameter editor, and the
@@ -60,14 +60,14 @@ Inputs/conditions the spec implies but that no unit test exercises (the user che
    clicked. Turning the setting off restores the normal ~500 ms blink. *Owned by Tasks 4 + 8; verify by eye.*
 4. **Indeterminate progress bars are static** (a centered hourglass, sized to the bar) in the run queue logger and the
    queue menu item, and determinate bars still fill normally. *Owned by Task 6; verify by eye.*
-5. **Live re-apply without restart** — toggling the setting (in either the Settings dialog or Customize JIPipe) and
+5. **Live re-apply without restart** - toggling the setting (in either the Settings dialog or Customize JIPipe) and
    saving changes already-open spinners/badges/editors/progress bars immediately, including resuming animation for an
    in-flight run or present notification when the setting is turned off. *Owned by Tasks 2–6 (the
    `ChangedEventEmitter` / per-paint read); verify by eye.*
-6. **Default/upgrade safety** — a user with an existing `settings.json` that has no `reduced-motion` key gets animations
+6. **Default/upgrade safety** - a user with an existing `settings.json` that has no `reduced-motion` key gets animations
    ON (no behavior change), and the key round-trips through save. *Partially tested in Task 1 (missing-key fallback);
    the full-app path is verified by eye.*
-7. **Splash screen honors the setting pre-init** — because the splash shows before `JIPipe` is initialized, the "Powered
+7. **Splash screen honors the setting pre-init** - because the splash shows before `JIPipe` is initialized, the "Powered
    by" icon showcase must be frozen via the raw-settings read (`isReducedMotionFromRaw`), not the live
    `ThemeUtils.isReducedMotion()`. *Owned by Task 7; verify by eye on a fresh startup with the setting ON.*
 
@@ -90,7 +90,7 @@ Inputs/conditions the spec implies but that no unit test exercises (the user che
 - Produces:
     - `JIPipeGeneralUIApplicationSettings.isReducedMotion(): boolean`
     - `JIPipeGeneralUIApplicationSettings.setReducedMotion(boolean)`
-    - `ThemeUtils.isReducedMotion(): boolean` — returns the setting when a JIPipe instance is available, else `false`
+    - `ThemeUtils.isReducedMotion(): boolean` - returns the setting when a JIPipe instance is available, else `false`
       (never throws).
 - Consumes: none (foundation task).
 
@@ -151,7 +151,7 @@ class JIPipeGeneralUIApplicationSettingsReducedMotionTest {
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `mvn -q -pl jipipe-core test -Dtest=JIPipeGeneralUIApplicationSettingsReducedMotionTest`
-Expected: FAIL — `isReducedMotion`/`setReducedMotion` do not exist (compilation error).
+Expected: FAIL - `isReducedMotion`/`setReducedMotion` do not exist (compilation error).
 
 - [ ] **Step 3: Add the field + accessors to the settings sheet**
 
@@ -214,7 +214,7 @@ Expected: PASS (4 tests).
 
 `JIPipeDesktopApplicationSettingsUI` renders every `@JIPipeParameter` of a sheet generically, so "Reduced motion" now
 automatically appears under **Settings → UI → General** (a checkbox) with no extra code. The only place needing an
-explicit wire is the "Customize JIPipe" dialog — that is Task 5. (Verify by eye: open Settings, expand the UI category →
+explicit wire is the "Customize JIPipe" dialog - that is Task 5. (Verify by eye: open Settings, expand the UI category →
 General sheet, expect the new checkbox.)
 
 - [ ] **Step 7: Commit**
@@ -316,7 +316,7 @@ class SpinnerIconReducedMotionTest {
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `mvn -q -pl jipipe-core test -Dtest=SpinnerIconReducedMotionTest`
-Expected: FAIL — `setReducedMotion`/`isReducedMotion` do not exist (compilation error).
+Expected: FAIL - `setReducedMotion`/`isReducedMotion` do not exist (compilation error).
 
 - [ ] **Step 3: Implement reduced motion on `SpinnerIcon`**
 
@@ -334,7 +334,7 @@ Edit `SpinnerIcon.java`:
   try {
       JIPipe.getSettings().getChangedEventEmitter().subscribeWeak(this);
   } catch (Throwable ignored) {
-      // JIPipe not initialized (e.g. headless/test) — no live re-apply needed.
+      // JIPipe not initialized (e.g. headless/test) - no live re-apply needed.
   }
   ```
   Do NOT call `parent.repaint()` from inside the constructor (the parent may not be displayable yet); defer repaints to
@@ -454,7 +454,7 @@ import java.awt.image.BufferedImage;
 import static org.junit.jupiter.api.Assertions.*;
 
 // Headless. Two 1x1 ImageIcons stand in for the real orange/blue badges. We assert the
-// static-state contract (opacity pinned to full, timer never running) — the actual
+// static-state contract (opacity pinned to full, timer never running) - the actual
 // orange glyph is verified by the user by eye.
 class JIPipeDesktopAnimatedIconReducedMotionTest {
 
@@ -502,7 +502,7 @@ class JIPipeDesktopAnimatedIconReducedMotionTest {
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `mvn -q -pl jipipe-core test -Dtest=JIPipeDesktopAnimatedIconReducedMotionTest`
-Expected: FAIL — `setReducedMotion`/`getOpacity` do not exist (compilation error).
+Expected: FAIL - `setReducedMotion`/`getOpacity` do not exist (compilation error).
 
 - [ ] **Step 3: Implement reduced motion on `JIPipeDesktopAnimatedIcon`**
 
@@ -519,7 +519,7 @@ Edit `JIPipeDesktopAnimatedIcon.java`:
   try {
       JIPipe.getSettings().getChangedEventEmitter().subscribeWeak(this);
   } catch (Throwable ignored) {
-      // JIPipe not initialized (headless/test) — no live re-apply needed.
+      // JIPipe not initialized (headless/test) - no live re-apply needed.
   }
   ```
 - Add methods:
@@ -607,11 +607,11 @@ git commit -m "feat(ui): static orange notification badge under reduced motion"
 
 - Consumes: `ThemeUtils.isReducedMotion()` (Task 1); `CustomEditorPane` (existing, in `org.hkijena.jipipe.utils`).
 - Produces:
-    - `ThemeUtils.applyCaretMotion(javax.swing.text.JTextComponent, boolean)` — reduced motion ⇒
+    - `ThemeUtils.applyCaretMotion(javax.swing.text.JTextComponent, boolean)` - reduced motion ⇒
       `DefaultCaret.setBlinkRate(0)` + `ConfigurableCaret.setAlwaysVisible(true)`; otherwise restore
       `setBlinkRate(500)` + `setAlwaysVisible(false)`. No-op if the caret is not a `DefaultCaret`. (Works for
       `BasicCaret` too, which is what plain `JTextPane`/`JTextField` use.)
-    - `ThemeUtils.watchCaretMotion(javax.swing.text.JTextComponent)` — applies the current value now and subscribes for
+    - `ThemeUtils.watchCaretMotion(javax.swing.text.JTextComponent)` - applies the current value now and subscribes for
       live re-apply, keeping the listener retained for the component's lifetime via a static `WeakHashMap` (an
       inline/local listener passed to `subscribeWeak` would be GC'd immediately; the map holds it while the component is
       strongly reachable). **This is the one-liner every text surface (Tasks 4 + 8) calls.**
@@ -659,7 +659,7 @@ class ThemeUtilsCaretMotionTest {
 
     @Test
     void reducedMotionDisablesBlinkingOnPlainBasicCaret() {
-        // Plain JTextPane uses a BasicCaret (a DefaultCaret subclass) — the HTML editor and
+        // Plain JTextPane uses a BasicCaret (a DefaultCaret subclass) - the HTML editor and
         // read-only panes rely on the same path.
         JTextPane pane = new JTextPane();
         DefaultCaret caret = (DefaultCaret) pane.getCaret();
@@ -672,7 +672,7 @@ class ThemeUtilsCaretMotionTest {
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `mvn -q -pl jipipe-core test -Dtest=ThemeUtilsCaretMotionTest`
-Expected: FAIL — `ThemeUtils.applyCaretMotion` does not exist (compilation error).
+Expected: FAIL - `ThemeUtils.applyCaretMotion` does not exist (compilation error).
 
 - [ ] **Step 3: Add `applyCaretMotion` + `watchCaretMotion` to `ThemeUtils`**
 
@@ -715,7 +715,7 @@ In `ThemeUtils.java`, add imports if absent: `javax.swing.text.JTextComponent`, 
         try {
             JIPipe.getSettings().getChangedEventEmitter().subscribeWeak(listener);
         } catch (Throwable ignored) {
-            // JIPipe not initialized — no live re-apply needed.
+            // JIPipe not initialized - no live re-apply needed.
         }
     }
 ```
@@ -766,7 +766,7 @@ git commit -m "feat(ui): disable caret blinking in code/script editors under red
 - Consumes: `JIPipeGeneralUIApplicationSettings.isReducedMotion()`/`setReducedMotion(boolean)` (Task 1).
 - Produces: a checkbox in the Customize JIPipe dialog; on Save it persists via the existing
   `JIPipe.getSettings().save()` (which also fires the `ChangedEvent` that Tasks 2–4, 6–8 use to live re-apply).
-- No unit test (pure Swing form structure — per test policy, verified by the user by eye).
+- No unit test (pure Swing form structure - per test policy, verified by the user by eye).
 
 - [ ] **Step 1: Add the checkbox field**
 
@@ -831,7 +831,7 @@ git commit -m "feat(ui): wire reduced-motion into the Customize JIPipe dialog"
   `jipipe-core/src/test/java/org/hkijena/jipipe/desktop/commons/theme/ui/JIPipeDesktopModernProgressBarUIReducedMotionTest.java`
 
 **Why this one file:** `installModernUIs()` (in `ThemeUtils`, already run for every modern-theme app) registers this as
-the global `ProgressBarUI`, so it governs **all** `JProgressBar`s in the app — including the indeterminate ones in
+the global `ProgressBarUI`, so it governs **all** `JProgressBar`s in the app - including the indeterminate ones in
 `JIPipeDesktopRunQueueLoggerPanel`, `JIPipeDesktopRunnableQueueButtonMenuItem`, and `JIPipeDesktopProgressLoggerPanel`.
 `JIPipeDesktopMemoryStatusUI` (a `JProgressBar` subclass) inherits the same UI.
 
@@ -840,7 +840,7 @@ the global `ProgressBarUI`, so it governs **all** `JProgressBar`s in the app —
 - Consumes: `ThemeUtils.isReducedMotion()` (Task 1); `JIPipe.RESOURCES.getIcon16("actions/hourglass-half.png")` (exists
   in the light + dark icon sets).
 - Produces: under reduced motion, `paintIndeterminate` draws a static hourglass icon (centered) instead of the moving
-  bar. Determinate bars are unchanged. No changes at the `setIndeterminate(true)` call sites — the LAF owns the
+  bar. Determinate bars are unchanged. No changes at the `setIndeterminate(true)` call sites - the LAF owns the
   rendering.
 
 - [ ] **Step 1: Write the headless regression-guard test**
@@ -895,10 +895,10 @@ class JIPipeDesktopModernProgressBarUIReducedMotionTest {
 }
 ```
 
-- [ ] **Step 2: Run test — it passes before AND after the change (documented guard)**
+- [ ] **Step 2: Run test - it passes before AND after the change (documented guard)**
 
 Run: `mvn -q -pl jipipe-core test -Dtest=JIPipeDesktopModernProgressBarUIReducedMotionTest`
-Expected: PASS (this is a guard, not a red→green TDD step — the base `paintIndeterminate` is also headless-safe).
+Expected: PASS (this is a guard, not a red→green TDD step - the base `paintIndeterminate` is also headless-safe).
 Proceed to Step 3 to make the behavior change; re-run in Step 4 to confirm the new reduced-motion branch still paints
 headlessly.
 
@@ -961,12 +961,12 @@ git commit -m "feat(ui): static indeterminate progress bars under reduced motion
 
 - Consumes: `JIPipeGeneralUIApplicationSettings.isReducedMotion()` (Task 1).
 - Produces: no new API; the three decorative timers simply do not run when the setting is on. Each is re-checked at its
-  trigger point, so a live toggle takes effect at the next trigger (no subscription needed — these are event-driven, not
+  trigger point, so a live toggle takes effect at the next trigger (no subscription needed - these are event-driven, not
   persistent animations).
-- No unit tests: each change is a single `if` guard on a timer `start()` — pure Swing structure, verified by the user by
+- No unit tests: each change is a single `if` guard on a timer `start()` - pure Swing structure, verified by the user by
   eye (test policy: no tests for trivial guards).
 
-**Design note — splash startup ordering:** `JIPipeGUICommand.run()` shows the splash *before* `JIPipe.ensureInstance()`
+**Design note - splash startup ordering:** `JIPipeGUICommand.run()` shows the splash *before* `JIPipe.ensureInstance()`
 completes, so `JIPipe.getInstance()` may be null at that point. Reading the setting there must therefore go through the
 **raw settings file**, not `ThemeUtils.isReducedMotion()`. Add a small static helper on
 `JIPipeGeneralUIApplicationSettings` (Task 7 owns it):
@@ -988,10 +988,10 @@ completes, so `JIPipe.getInstance()` may be null at that point. Reading the sett
 ```
 
 (imports: `com.fasterxml.jackson.databind.JsonNode`,
-`org.hkijena.jipipe.api.service.components.JIPipeApplicationSettingsServiceComponent` — the latter is already used by
+`org.hkijena.jipipe.api.service.components.JIPipeApplicationSettingsServiceComponent` - the latter is already used by
 `JIPipeExtensionApplicationSettings.getInstanceFromRaw`, the same pattern.)
 
-- [ ] **Step 1: Splash — freeze the "Powered by" icon showcase**
+- [ ] **Step 1: Splash - freeze the "Powered by" icon showcase**
 
 In `JIPipeDesktopSplashScreen.java`, add the `isReducedMotionFromRaw` call. In the constructor, where `iconTimer` is
 created (line ~64), guard it:
@@ -1007,7 +1007,7 @@ created (line ~64), guard it:
 Add the import `org.hkijena.jipipe.plugins.settings.application.JIPipeGeneralUIApplicationSettings`.
 (`updateIconShowcase()` still runs once from `addIcon(...)` so a single icon shows; it just no longer *rotates*.)
 
-- [ ] **Step 2: Search field — freeze the attention border animation**
+- [ ] **Step 2: Search field - freeze the attention border animation**
 
 In `JIPipeDesktopSearchTextField.java`, in `grabAttentionAnimation()` (line ~228), when reduced motion is on, jump
 straight to the final state instead of animating:
@@ -1030,10 +1030,10 @@ straight to the final state instead of animating:
     }
 ```
 
-Add imports `org.hkijena.jipipe.utils.ThemeUtils` (and confirm `UIUtils` is already imported — it is). The timer is
+Add imports `org.hkijena.jipipe.utils.ThemeUtils` (and confirm `UIUtils` is already imported - it is). The timer is
 still *created* (unchanged constructor) but never started under reduced motion.
 
-- [ ] **Step 3: Notification button — freeze the heading rotation**
+- [ ] **Step 3: Notification button - freeze the heading rotation**
 
 In `JIPipeDesktopNotificationButton.java`, in `updateStatus()` where `timer.start()` is called (line ~100), guard it:
 
@@ -1044,8 +1044,8 @@ In `JIPipeDesktopNotificationButton.java`, in `updateStatus()` where `timer.star
             }
 ```
 
-(Import `org.hkijena.jipipe.plugins.settings.application.JIPipeGeneralUIApplicationSettings` — already imported for the
-notification settings? No — it imports `JIPipeNotificationUIApplicationSettings`. Add the General one.) The heading
+(Import `org.hkijena.jipipe.plugins.settings.application.JIPipeGeneralUIApplicationSettings` - already imported for the
+notification settings? No - it imports `JIPipeNotificationUIApplicationSettings`. Add the General one.) The heading
 still shows the first notification; it just stops cycling. `warningIcon.start()` stays unconditional because Task 3
 already makes the icon static under reduced motion.
 
@@ -1099,7 +1099,7 @@ configured (right after the `availableEditorKitActions` loop, before it is added
         ThemeUtils.watchCaretMotion(wysiwygEditorPane);
 ```
 
-(`ThemeUtils` is in `org.hkijena.jipipe.utils` — confirm the import; add if missing.) This file is the shared WYSIWYG
+(`ThemeUtils` is in `org.hkijena.jipipe.utils` - confirm the import; add if missing.) This file is the shared WYSIWYG
 used by `JIPipeDesktopHTMLTextParameterEditorUI` and others, so fixing it here covers the parameter editors too.
 
 - [ ] **Step 2: Markdown reader**
@@ -1172,7 +1172,7 @@ git commit -m "feat(ui): disable caret blinking in HTML editor and read-only tex
 - [ ] **Step 1: Full module test run**
 
 Run: `mvn -q -pl jipipe-core test`
-Expected: BUILD SUCCESS. If a pre-existing (unrelated) test fails, report it — do **not** delete or skip tests (see the
+Expected: BUILD SUCCESS. If a pre-existing (unrelated) test fails, report it - do **not** delete or skip tests (see the
 ImageJ legacy patcher constraint in Global Constraints).
 
 - [ ] **Step 2: Run the whole new feature test set**
@@ -1200,10 +1200,10 @@ setting ON and OFF:
 
 ---
 
-## Motion audit (appendix — what was checked and deliberately left alone)
+## Motion audit (appendix - what was checked and deliberately left alone)
 
 Full sweep of `jipipe-core/.../desktop` for `new Timer(...)`, `setIndeterminate`, and animation keywords. **Not**
-covered (functional data refresh, not decorative motion — left alone per the maintainer's rule "left alone IF they do
+covered (functional data refresh, not decorative motion - left alone per the maintainer's rule "left alone IF they do
 not produce motion"; these update content, not animate a visual):
 
 - `JIPipeDesktopAIMonitorWindow` / `JIPipeDesktopServerMonitorWindow` / `...OverviewPage` (5 s data refresh)
@@ -1218,7 +1218,7 @@ Covered (decorative motion): `SpinnerIcon` (Task 2), `JIPipeDesktopAnimatedIcon`
 4), indeterminate progress bars (Task 6), splash/search/notification decorative timers (Task 7), HTML editor + read-only
 panes (Task 8).
 
-If a future surface is found to animate, add it here and to a task — the `ThemeUtils.isReducedMotion()` +
+If a future surface is found to animate, add it here and to a task - the `ThemeUtils.isReducedMotion()` +
 `ChangedEventEmitter` pattern is the standard to follow.
 
 ---
@@ -1230,4 +1230,4 @@ If a future surface is found to animate, add it here and to a task — the `Them
   Run: `mvn -q -pl jipipe-core test`
   Expected: BUILD SUCCESS. If a pre-existing (unrelated) test fails, report it but do not "fix" it by deleting tests
   (see the ImageJ legacy patcher constraint).
-- Manual verification checklist for the user — see Task 9, Step 3.
+- Manual verification checklist for the user - see Task 9, Step 3.

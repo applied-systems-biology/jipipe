@@ -40,7 +40,7 @@ public final class JIPipeNodeTemplatesServiceComponent extends JIPipeServiceComp
     // value. JIPipeNodeTemplate.equals/hashCode compare only name+description+
     // data, so a value-equal HashSet would make isPluginTemplate() return true for
     // a user COPY of a bundled template (misclassifying it as System) and would
-    // make addToGlobal_ reject it (pluginTemplates.contains(copy) == true) —
+    // make addToGlobal_ reject it (pluginTemplates.contains(copy) == true) -
     // silently killing the System -> Global "Copy to Global" escape hatch.
     private final Set<JIPipeNodeTemplate> pluginTemplates = Collections.newSetFromMap(new IdentityHashMap<>());
     private final List<JIPipeNodeTemplate> globalTemplates = new ArrayList<>();
@@ -200,7 +200,7 @@ public final class JIPipeNodeTemplatesServiceComponent extends JIPipeServiceComp
      * would trip it) and the blanket {@code globalTemplates.contains} guard (the
      * bundled original is value-equal and already present in the list). Instead it
      * dedups ONLY against existing USER (non-plugin) global copies, so a user who
-     * clicks "Copy to Global" twice does not get two identical copies — while the
+     * clicks "Copy to Global" twice does not get two identical copies - while the
      * bundled original (a plugin template) never blocks the copy. Persistence
      * mirrors {@link #addToGlobal_} verbatim (add to {@code globalTemplates} +
      * write the per-template JSON file).
@@ -217,7 +217,7 @@ public final class JIPipeNodeTemplatesServiceComponent extends JIPipeServiceComp
         // Dedup ONLY against existing user-owned copies: the read-only
         // originals (a bundled plugin template, or a repository-downloaded
         // template still in the global store) are value-equal to the copy but
-        // must not block it — they are exactly what this path escapes from.
+        // must not block it - they are exactly what this path escapes from.
         for (JIPipeNodeTemplate existing : globalTemplates) {
             if (!isPluginTemplate(existing) && !isDownloadedTemplate(existing) && existing.equals(copy)) {
                 return false;
@@ -227,7 +227,7 @@ public final class JIPipeNodeTemplatesServiceComponent extends JIPipeServiceComp
         Path targetPath = getStoragePath().resolve(UUID.randomUUID() + ".json");
         JsonUtils.saveToFile(copy, targetPath);
         // Record the file (keyed by the added `copy` instance) so removeFromGlobal
-        // can delete it — without this the escape copy's file is orphaned and the
+        // can delete it - without this the escape copy's file is orphaned and the
         // "deleted" template resurrects on the next reload.
         globalTemplatesPaths.put(copy, targetPath);
         emitRefreshedEvent();
@@ -302,7 +302,7 @@ public final class JIPipeNodeTemplatesServiceComponent extends JIPipeServiceComp
     public boolean removeFromGlobal(JIPipeNodeTemplate template) {
         // Remove by INSTANCE, not value: JIPipeNodeTemplate.equals compares
         // name+description+data only, so a value-based remove would evict the
-        // first value-equal entry — e.g. deleting an unedited user copy of a
+        // first value-equal entry - e.g. deleting an unedited user copy of a
         // bundled pattern would delete the bundled original from the in-memory
         // store (the on-disk file mapping below is still per-instance, so only
         // the list membership was wrong). The membership check uses the same

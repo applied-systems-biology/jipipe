@@ -79,7 +79,7 @@ public abstract class AbstractMicroservice implements Microservice {
                 }
                 continue;
             }
-            // Dependency is Stopped or Failed — start it
+            // Dependency is Stopped or Failed - start it
             dep.start();
             if (!waitForDependency(dep)) {
                 MicroserviceState oldState = state;

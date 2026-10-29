@@ -48,12 +48,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * pure, behavior-preserving extraction): the Path variant pretty-prints the
  * project after merging authors from the global list (when the project's
  * metadata allows it); the {@code Writer}/{@code OutputStream} variants
- * pretty-print only — no authors merge. This asymmetry is intentional and
+ * pretty-print only - no authors merge. This asymmetry is intentional and
  * must be preserved.
  * <p>
  * <b>Scope: jipipe-launcher.</b> The fixture references the node id
- * {@code ij1-blur-gaussian2d} from the ij-algorithms plugin, so — like
- * {@code FixtureProjectsLoadTest} — this test must live in the launcher
+ * {@code ij1-blur-gaussian2d} from the ij-algorithms plugin, so - like
+ * {@code FixtureProjectsLoadTest} - this test must live in the launcher
  * (the only module with all plugin modules on its classpath). On
  * jipipe-core's classpath {@code nodesFromJson} would silently skip the
  * fixture node and the mapping assertion would pass vacuously.
@@ -111,7 +111,7 @@ class LegacyProjectWriterContractTest {
                 "Written JSON must carry the \"project\" type marker");
 
         // (2b) The OutputStream contract: the 2-arg
-        // write(project, outputStream) pretty-prints to the given stream —
+        // write(project, outputStream) pretty-prints to the given stream -
         // no authors merge (legacy asymmetry), no file side effects.
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         writer.write(p, out);
@@ -142,7 +142,7 @@ class LegacyProjectWriterContractTest {
         assertEquals(fixture, p.getProjectFile());
 
         // updateSavePath = false: the internally tracked project file stays
-        // unchanged. The writer itself never touches it — only the
+        // unchanged. The writer itself never touches it - only the
         // JIPipeProject.saveProject(Path, boolean) delegate applies the
         // update when requested.
         Path target = tmp.resolve("target.jip");

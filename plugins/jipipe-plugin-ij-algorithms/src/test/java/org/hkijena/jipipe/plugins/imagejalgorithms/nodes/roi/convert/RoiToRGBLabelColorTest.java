@@ -76,7 +76,7 @@ class RoiToRGBLabelColorTest {
      * Builds the JSON of a node that carries a non-default font, and turns it
      * into a PRE-MIGRATION project: drop the "label-font" key, add the legacy
      * split keys (family string / size number / style enum name / plain hex
-     * color — the shape {@code JIPipeFontFamilySizeStyleParameter.legacyColor}
+     * color - the shape {@code JIPipeFontFamilySizeStyleParameter.legacyColor}
      * accepts).
      */
     private static ObjectNode legacyJson() {
@@ -89,7 +89,7 @@ class RoiToRGBLabelColorTest {
         json.put("label-font-family", fontNode.get("family").textValue());
         json.put("label-size", fontNode.get("size").asInt());
         json.put("label-foreground", "#FF0000");
-        // Note: no style key — this node's label font never had a style
+        // Note: no style key - this node's label font never had a style
         // parameter before the migration, so a legacy project does not
         // contain one either.
         return json;
@@ -118,7 +118,7 @@ class RoiToRGBLabelColorTest {
         RoiToRGBAlgorithm fresh = (RoiToRGBAlgorithm) JIPipe.createNode(RoiToRGBAlgorithm.class);
 
         assertFalse(fresh.getLabelColor().isEnabled(),
-                "A fresh node must not fix the label color — labels follow the ROI line color");
+                "A fresh node must not fix the label color - labels follow the ROI line color");
         // Default label font: legacy size 9, plain, default family.
         assertEquals(JIPipeFontFamilySizeStyleParameter.defaultFamily(), fresh.getLabelFont().getFamily());
         assertEquals(9, fresh.getLabelFont().getSize());

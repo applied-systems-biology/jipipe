@@ -48,14 +48,14 @@ import java.util.List;
  * The "Configure node templates" manager (round-2 redesign, work-item 1324
  * design v2). A <b>non-modal, unique</b> feature-manager window (a
  * {@link JFrame}, opened via {@link #show(JIPipeDesktopWorkbench, TemplateScope)}
- * so at most one instance exists per owner window — opening it again brings the
+ * so at most one instance exists per owner window - opening it again brings the
  * existing one to the front) with two views:
  * <ul>
  * <li><b>Manage</b>: collapsible sections (Your templates / This project /
  * Downloaded [+ "Get more"] / System, last and collapsed by default). Each
  * section's templates are a wrapping {@link JList} of cards (standard
  * shift/ctrl selection, wheel scroll, right-click context menu for the
- * operations — no bottom toolbar).</li>
+ * operations - no bottom toolbar).</li>
  * <li><b>Repository</b> ("Get more"): an islands split pane (category sidebar
  * + content) that notes the marketplace is a future feature, with the existing
  * "Download templates" action.</li>
@@ -109,7 +109,7 @@ public class TemplateManagementDialog extends JFrame implements NodeTemplatesRef
 
     /**
      * Opens (or brings to the front) the template manager for the given owner
-     * window — the unique-enforcement entry point: at most one instance per
+     * window - the unique-enforcement entry point: at most one instance per
      * owner window; a second call focuses the existing one. Non-blocking (the
      * window is a non-modal {@link JFrame}).
      *
@@ -189,13 +189,13 @@ public class TemplateManagementDialog extends JFrame implements NodeTemplatesRef
         // machinery that my hand-rolled attempts kept getting wrong:
         //   - its content is a JXPanel with ScrollableSizeHint.FIT width, so the
         //     page width always tracks the scroll viewport (no right-edge
-        //     overflow — fixes the "list expands to the right after resizing
+        //     overflow - fixes the "list expands to the right after resizing
         //     with System expanded" bug);
         //   - addGroupHeader / addWideToForm lay rows out with GridBag
         //     fill=HORIZONTAL + weightx=1, so every row is STRETCHED to the full
         //     page width. A VERTICAL_WRAP list reflows its column count to the
-        //     width it is actually given, so the cards always fit (BoxLayout —
-        //     what (76)/(77) used — only gives children their self-referential
+        //     width it is actually given, so the cards always fit (BoxLayout -
+        //     what (76)/(77) used - only gives children their self-referential
         //     preferred width, which is why the list used to overflow);
         //   - the WITH_SCROLLING scroll handles all vertical scrolling; the
         //     opaque panel background is the same color as the island fill, so
@@ -226,14 +226,14 @@ public class TemplateManagementDialog extends JFrame implements NodeTemplatesRef
     }
 
     // ------------------------------------------------------------------
-    // Repository view ("Get more") — the marketplace seam (a future feature)
+    // Repository view ("Get more") - the marketplace seam (a future feature)
     // ------------------------------------------------------------------
 
     private JPanel buildRepositoryView() {
         JPanel view = new JPanel(new BorderLayout());
         view.setOpaque(false);
 
-        // Header (the round-3 fix: this was dropped in the (76) rewrite — the
+        // Header (the round-3 fix: this was dropped in the (76) rewrite - the
         // "Back" button and the search bar are back). [← Back] returns to the
         // manage view; the search field filters the (future) marketplace.
         JPanel header = new JPanel(new BorderLayout(8, 0));
@@ -270,8 +270,8 @@ public class TemplateManagementDialog extends JFrame implements NodeTemplatesRef
         content.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
         JLabel header2 = UIUtils.createJLabel("Template marketplace", JIPipe.RESOURCES.getIcon32("actions/download.png"), 20);
         content.add(header2, BorderLayout.NORTH);
-        JLabel note = new JLabel("<html>The full template marketplace — searching, categories, and sharing your own "
-                + "templates — is a future feature.<br/><br/>You can already download templates from the configured "
+        JLabel note = new JLabel("<html>The full template marketplace - searching, categories, and sharing your own "
+                + "templates - is a future feature.<br/><br/>You can already download templates from the configured "
                 + "repositories.</html>");
         note.setVerticalAlignment(SwingConstants.TOP);
         note.setForeground(ThemeUtils.getCurrentStyle().getTextMuted());
@@ -326,7 +326,7 @@ public class TemplateManagementDialog extends JFrame implements NodeTemplatesRef
 
     /**
      * The context menu for a set of selected templates (item 6). Items are
-     * included only when applicable to the (possibly multi) selection — this
+     * included only when applicable to the (possibly multi) selection - this
      * is the bulk right-click operation. Returns {@code null} when there is no
      * actionable selection.
      */
@@ -366,7 +366,7 @@ public class TemplateManagementDialog extends JFrame implements NodeTemplatesRef
         }
         if (!anySystem) {
             // Deletable: user-owned templates and downloads (removing a
-            // download — re-obtainable via "Get more"). System patterns are
+            // download - re-obtainable via "Get more"). System patterns are
             // bundled and cannot be removed.
             menu.add(UIUtils.createMenuItem(anyDownloaded && !anyGlobal && !anyProject ? "Remove download" : "Delete",
                     "Delete the selected template(s)", JIPipe.RESOURCES.getIcon16("actions/edit-delete.png"),
@@ -546,12 +546,12 @@ public class TemplateManagementDialog extends JFrame implements NodeTemplatesRef
             //
             // The list lives in a plain width-forcing host panel (see
             // buildSectionOn), so it is always given a STABLE width to wrap
-            // into — no layout manager (BoxLayout, the form's GridBag) does
+            // into - no layout manager (BoxLayout, the form's GridBag) does
             // that for a wrap list on its own. The host must NOT be a
             // JScrollPane: BasicScrollPaneUI installs a MouseWheelListener on
             // every scroll pane, and AWT re-targets wheel events to the
             // nearest wheel-enabled ancestor (Component.dispatch
-            // MouseWheelToAncestor) — an inner, non-scrolling scroll pane
+            // MouseWheelToAncestor) - an inner, non-scrolling scroll pane
             // would swallow every wheel over the list and the form's outer
             // scroll would never move.
             this.list = new JList<>(new DefaultListModel<>()) {
@@ -599,14 +599,14 @@ public class TemplateManagementDialog extends JFrame implements NodeTemplatesRef
                     }
                 }
             };
-            // HORIZONTAL_WRAP — NOT VERTICAL_WRAP. This is what fixes the
+            // HORIZONTAL_WRAP - NOT VERTICAL_WRAP. This is what fixes the
             // "list expands to the right beyond the edge" bug. HORIZONTAL_WRAP
             // lays the cards out left-to-right and computes the number of
             // COLUMNS from the list's WIDTH (columnCount = width / cellWidth),
             // so the grid fills the available width and grows DOWNWARD as
             // needed, reflowing its column count on every resize. VERTICAL_WRAP
             // instead computes the column count from the HEIGHT and grows the
-            // list RIGHTWARD to fit all of its columns — which is exactly the
+            // list RIGHTWARD to fit all of its columns - which is exactly the
             // right-edge overflow the user reported.
             list.setLayoutOrientation(JList.HORIZONTAL_WRAP);
             // CRITICAL: force visibleRowCount to 0. The default (8) makes
@@ -631,7 +631,7 @@ public class TemplateManagementDialog extends JFrame implements NodeTemplatesRef
             list.setOpaque(false); // the island/form background provides the surface
 
             // The list is hosted by a plain width-forcing panel (buildSectionOn),
-            // NOT a scroll pane (which would swallow the mouse wheel — see
+            // NOT a scroll pane (which would swallow the mouse wheel - see
             // buildSectionOn). The form panel's single outer scroll
             // (buildManageView) scrolls the whole page.
             list.setMinimumSize(new Dimension(CARD_CELL_WIDTH, 0));
@@ -640,7 +640,7 @@ public class TemplateManagementDialog extends JFrame implements NodeTemplatesRef
         /**
          * Adds this section to the form panel: a full-width group header (with
          * the collapse caret + optional extra button) and the full-width card
-         * list right below it — the same addGroupHeader + addWideToForm pattern
+         * list right below it - the same addGroupHeader + addWideToForm pattern
          * the AI monitor and the parameter forms use.
          */
         void buildSectionOn(JIPipeDesktopFormPanel formPanel) {
@@ -655,14 +655,14 @@ public class TemplateManagementDialog extends JFrame implements NodeTemplatesRef
             // The card list in a plain width-forcing host. The form's GridBag
             // (fill=HORIZONTAL, weightx=1) stretches the host to the page
             // width, and BorderLayout.CENTER stretches the list to the host
-            // width — so the HORIZONTAL_WRAP list (columns = width / cellWidth)
+            // width - so the HORIZONTAL_WRAP list (columns = width / cellWidth)
             // reflows on every resize ("list expands to the right beyond the
             // edge" fix).
             //
             // CRITICAL: the host must be a JPanel, NOT a JScrollPane.
             // BasicScrollPaneUI installs a MouseWheelListener on every scroll
             // pane, and AWT re-targets wheel events to the nearest wheel-enabled
-            // ancestor (Component.dispatchMouseWheelToAncestor) — an inner
+            // ancestor (Component.dispatchMouseWheelToAncestor) - an inner
             // scroll pane (its scrollbars were NEVER, so it had nothing to
             // scroll) swallowed every wheel over the list, and the form's
             // outer scroll never moved. A plain panel has no wheel listener, so

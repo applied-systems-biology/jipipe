@@ -61,7 +61,7 @@ Project: `AIAgentTests/03-ExampleWorkflows/BacteriaOnAgarPad_Kerstin_26.jip` (re
 ## Template
 
 Proposed name `Set LUT (color map) -> Compartment output -> Convert 2D ROI to RGB`, menu path
-`Patterns/Images/Set LUT (color map) -> Compartment output -> Convert 2D ROI to RGB` (proposal only — not registered).
+`Patterns/Images/Set LUT (color map) -> Compartment output -> Convert 2D ROI to RGB` (proposal only - not registered).
 `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/chain-3-ij1-set-lut-from-color-map-jipipe-compartment-output-ij1-roi-to-rgb.json`.
 

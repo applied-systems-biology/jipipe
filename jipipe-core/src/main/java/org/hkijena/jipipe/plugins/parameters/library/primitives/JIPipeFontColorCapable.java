@@ -17,7 +17,7 @@ import java.awt.*;
 
 /**
  * A {@link JIPipeFontValue} that also carries the {@link Color} to draw the
- * text with (#1339) — a {@link java.awt.Font} does not hold a color, so it
+ * text with (#1339) - a {@link java.awt.Font} does not hold a color, so it
  * is a separate capability. The color uses the mapper's standard
  * hex-string codec, like the {@code color} parameter type.
  */

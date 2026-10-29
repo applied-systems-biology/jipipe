@@ -99,7 +99,7 @@ class FunctionLeavesTest {
                 ResamplingFunction.class,
                 MergingSplittingFunction.class,
                 ColorStackFunction.class,
-                // images — full-registry audit leaves
+                // images - full-registry audit leaves
                 ImageArithmeticFunction.class,
                 ImageComparisonFunction.class,
                 ImageProjectionsFunction.class,
@@ -111,14 +111,14 @@ class FunctionLeavesTest {
                 ImagePixelManipulationFunction.class,
                 ImageNeighborMeasurementsFunction.class,
                 ImagePropertiesFunction.class,
-                // data — full-registry audit leaves
+                // data - full-registry audit leaves
                 FileSystemFunction.class,
                 OmeroFunction.class,
                 FormsFunction.class,
-                // misc — full-registry audit leaves
+                // misc - full-registry audit leaves
                 DataUtilitiesFunction.class,
                 TextMarkupFunction.class,
-                // scripting — language sub-leaves (re-clustering audit)
+                // scripting - language sub-leaves (re-clustering audit)
                 ScriptingPythonFunction.class,
                 ScriptingRFunction.class,
                 ScriptingImageJMacroFunction.class,

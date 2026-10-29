@@ -64,7 +64,7 @@ public class PruneBackupsRun extends DefaultJIPipeRunnable {
 
     /**
      * Checks whether the given backup session directory contains at least
-     * one project backup file — in either format, {@code .jip} or
+     * one project backup file - in either format, {@code .jip} or
      * {@code .jipx} (see {@link JIPipeProjectBackupUtils#isBackupFile}).
      * A session with only .jipx backups is NOT empty (JIPX spec §7).
      *

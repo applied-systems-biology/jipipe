@@ -41,15 +41,15 @@ import java.util.List;
  * paginated row list with grip drag-reorder and per-row menu, and the
  * stateless list operations. The concrete editors only supply the per-item
  * content ({@link #buildItemContent}), the item text description
- * ({@link #itemDescription}) and — for collection lists — the template fixup
+ * ({@link #itemDescription}) and - for collection lists - the template fixup
  * ({@link #onBeforeGenerateEntries}).
  * <p>
- * Pass 2: the inline view has no selection — the grip's left click opens the
+ * Pass 2: the inline view has no selection - the grip's left click opens the
  * per-row menu (Delete / Move up / Move down) just like the right click. The
  * row and menu factories ({@link #buildListRow}, {@link #buildRowMenu}) keep
  * no row state in the base: the caller passes its own row list (the row is
  * appended to it, and drag-reorder indices resolve against it) and, for
- * {@link RowGripBehavior#SELECT}, its own callbacks — so a modal editor can
+ * {@link RowGripBehavior#SELECT}, its own callbacks - so a modal editor can
  * rebuild the full list over its own state without touching the inline
  * view's rows.
  */
@@ -75,7 +75,7 @@ public abstract class JIPipeListParameterEditorUI extends JIPipeDesktopParameter
      * Invoked after a structural change to the row order (grip drag or the
      * row menu's Delete / Move up / Move down) has been written to the
      * parameter. The modal editor ({@link JIPipeDesktopListEditorDialog})
-     * registers itself to rebuild its rows so the new order is visible — its
+     * registers itself to rebuild its rows so the new order is visible - its
      * row list must be re-derived from the parameter. The inline view leaves
      * it null (the parameter write already reloads it).
      */
@@ -112,7 +112,7 @@ public abstract class JIPipeListParameterEditorUI extends JIPipeDesktopParameter
 
     /**
      * Wires the stacked layout: the (paginated) row list in the center with
-     * the "This list is empty" hint below it. No footer — the Add/count/⋯
+     * the "This list is empty" hint below it. No footer - the Add/count/⋯
      * controls live on the name row via {@link #createHeaderControls()}.
      */
     protected void initializeBase() {
@@ -162,7 +162,7 @@ public abstract class JIPipeListParameterEditorUI extends JIPipeDesktopParameter
 
     /**
      * Row-level chrome on the stacked row's name line (#1339): a right-aligned
-     * group — the muted item count, a green-highlighted **Add**, and the
+     * group - the muted item count, a green-highlighted **Add**, and the
      * **Edit** button (icon {@code actions/edit.png}) that opens the modal. The
      * old ⋯ "Clear list" menu is gone: bulk operations (Clear list, Remove
      * selected) live in the edit dialog. Per-row operations (Delete / Move)
@@ -260,7 +260,7 @@ public abstract class JIPipeListParameterEditorUI extends JIPipeDesktopParameter
     /**
      * The centered footer below the visible rows: a "+k more" button (reveals
      * another page) and/or a "Show less" button (collapses to the first page)
-     * — both may show while the list is partially expanded. The panel is
+     * - both may show while the list is partially expanded. The panel is
      * always added (invisible when there is nothing to paginate), so the body
      * keeps a constant child structure: rows → footer → glue.
      */
@@ -289,7 +289,7 @@ public abstract class JIPipeListParameterEditorUI extends JIPipeDesktopParameter
     /**
      * Builds one list row: a vertical grip (drag to reorder; left or right
      * click opens the per-row menu for {@link RowGripBehavior#MENU}) and the
-     * item content at gridx=1. No row state is kept in the base — the row is
+     * item content at gridx=1. No row state is kept in the base - the row is
      * appended to the caller's {@code rows} list, and grip drags resolve
      * their indices against that same list, so a modal editor (SELECT
      * behavior) can rebuild the full list over its own state without
@@ -415,9 +415,9 @@ public abstract class JIPipeListParameterEditorUI extends JIPipeDesktopParameter
     /**
      * Grip activation behavior:
      * <ul>
-     * <li>{@code MENU} — the inline view: the grip's left click opens the
+     * <li>{@code MENU} - the inline view: the grip's left click opens the
      * per-row menu (Delete / Move up / Move down), like the right click.</li>
-     * <li>{@code SELECT} — the modal view: the grip's left click is forwarded
+     * <li>{@code SELECT} - the modal view: the grip's left click is forwarded
      * to {@link ListRowCallbacks#onGripActivate} (single / Ctrl-toggle /
      * Shift-range selection over the caller's own state).</li>
      * </ul>
@@ -429,7 +429,7 @@ public abstract class JIPipeListParameterEditorUI extends JIPipeDesktopParameter
 
     /**
      * Callbacks a caller of {@link #buildListRow} supplies so the row stays
-     * stateless — the modal editor owns its selection state.
+     * stateless - the modal editor owns its selection state.
      */
     interface ListRowCallbacks {
         /**

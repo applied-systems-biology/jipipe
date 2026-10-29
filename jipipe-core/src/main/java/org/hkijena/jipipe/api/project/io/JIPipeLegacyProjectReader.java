@@ -33,14 +33,14 @@ import java.util.List;
  * Reproduces the load semantics of the former inline
  * {@code JIPipeProject.loadProject} implementation exactly:
  * JSON deserialization, work directory set to the file's parent folder,
- * user path validation, and — when enabled in the application settings —
+ * user path validation, and - when enabled in the application settings -
  * automatic fixing of broken environments.
  */
 public class JIPipeLegacyProjectReader implements JIPipeProjectReader {
 
     /**
      * The stable id of the legacy .jip format.
-     * Persisted in saved projects — never derive from code.
+     * Persisted in saved projects - never derive from code.
      */
     public static final String FORMAT_ID = "org.hkijena.jipipe.core:jip";
 

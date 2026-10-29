@@ -52,7 +52,7 @@ public class JIPipeDesktopDynamicSetParameterEditorUI extends JIPipeDesktopParam
 
         JIPipeDynamicSetParameter<Object> parameter = getParameter();
         // The parameter name comes from the form panel's label column, so the
-        // button must not repeat it — a neutral prompt + a count summary.
+        // button must not repeat it - a neutral prompt + a count summary.
         selectionBox = new JIPipeDesktopRichSelectionBox("Select items", "Select items", true, this::options, selected -> {
             Set<Object> newValues = new LinkedHashSet<>();
             for (JIPipeDesktopRichSelectionBox.Option<?> option : selected) {

@@ -85,7 +85,7 @@ public class JIPipeDesktopServerStatusControl extends JButton
             popupMenu.add(empty);
         } else {
             for (JIPipeServerInstance<?> instance : instances) {
-                String label = instance.getDisplayName() + " — " + instance.getState().name() + " (port " + instance.getPort() + ")";
+                String label = instance.getDisplayName() + " - " + instance.getState().name() + " (port " + instance.getPort() + ")";
                 popupMenu.add(UIUtils.createMenuItem(label,
                         instance.getStateDetail(),
                         JIPipe.RESOURCES.getIcon16("actions/server.png"),

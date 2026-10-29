@@ -63,6 +63,6 @@ Project: `AIAgentTests/01-BasicWorkshop/JSC_2025_03_Kidney_Basic/kidney.jip` (re
 
 Proposed name `Auto threshold 2D (8-bit) -> Morphological operation 2D -> Morphological hole filling 2D`, menu path
 `Patterns/Images/Auto threshold 2D (8-bit) -> Morphological operation 2D -> Morphological hole filling 2D` (proposal
-only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+only - not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/conversion-ij1-threshold-auto2d-ij1-morph-operation2d-ij1-morph-binary-fillholes2d.json`.
 

@@ -83,7 +83,7 @@ class JIPipeXProjectReaderTest {
      * slices the fixture's parts, writes them under {@code project/} at the
      * default manifest file names, writes {@code jipx.json} (the default
      * manifest) at the container root, and zips the result with NO wrapper
-     * root directory. (Test-local — the production writer in Task 4 does
+     * root directory. (Test-local - the production writer in Task 4 does
      * not reuse this helper.)
      */
     private static Path buildJipxFromFixture(Path jipxPath) throws IOException, URISyntaxException {
@@ -121,7 +121,7 @@ class JIPipeXProjectReaderTest {
 
     /**
      * Zip parameters that store the file under its path relative to the
-     * staging root — zip4j's plain {@code addFile} would strip the parent
+     * staging root - zip4j's plain {@code addFile} would strip the parent
      * directory from the entry name.
      */
     private static ZipParameters fileNameInZipParams(Path staging, Path file) {
@@ -234,7 +234,7 @@ class JIPipeXProjectReaderTest {
     @Test
     void missingCompartmentsPartIsRejectedWithClearMessage() throws IOException, URISyntaxException {
         // A manifest that omits the REQUIRED "compartments" part must be
-        // rejected with a clear validation error — not a NullPointerException
+        // rejected with a clear validation error - not a NullPointerException
         // from JIPipeProject.fromJson (which tolerates a missing graph but
         // not a missing compartments object).
         assertMissingRequiredPartRejected("compartments", "project/compartments.json");
@@ -268,7 +268,7 @@ class JIPipeXProjectReaderTest {
     /**
      * Builds a container whose manifest omits the given required part
      * (the part file is still written, just not listed) and asserts the
-     * reader rejects it with a clear exception naming the part — not an
+     * reader rejects it with a clear exception naming the part - not an
      * NPE from {@code JIPipeProject.fromJson}.
      */
     private void assertMissingRequiredPartRejected(String requiredPart, String omittedEntry)

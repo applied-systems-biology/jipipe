@@ -407,7 +407,7 @@ public class PatternForge {
                 }
         });
 
-        // 14. cellular: organic voronoi — each cell as one smooth wobbly
+        // 14. cellular: organic voronoi - each cell as one smooth wobbly
         //     closed membrane (KDE 'Cluster' / Vanta 'cells' look)
         F.put("cellular", (g, w, h, rng) -> {
             int side = 4;

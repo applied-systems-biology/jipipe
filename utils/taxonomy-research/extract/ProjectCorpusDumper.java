@@ -55,12 +55,12 @@ import java.util.stream.Stream;
  * <h2>On-disk format (JIPipe 6.0.0, flat-graph project format)</h2>
  * <p>A {@code .jip} file is a JSON object with two graphs:
  * <ul>
- *   <li>{@code graph} — the <b>flat main graph</b>: {@code nodes} (a map keyed by node
+ *   <li>{@code graph} - the <b>flat main graph</b>: {@code nodes} (a map keyed by node
  *       UUID) and {@code edges} (a list of
  *       {@code source-node}/{@code source-slot}/{@code target-node}/{@code target-slot}).
  *       Every main-graph node carries {@code jipipe:graph-compartment} = the UUID of
  *       the compartment it belongs to (empty/absent for root-level nodes).</li>
- *   <li>{@code compartments.compartment-graph} — a separate graph whose nodes are the
+ *   <li>{@code compartments.compartment-graph} - a separate graph whose nodes are the
  *       <b>compartment container</b> nodes ({@code jipipe:node-info-id} =
  *       {@code jipipe:project-compartment}). The container nodes themselves are not
  *       duplicated into the output; they provide the compartment display names.</li>

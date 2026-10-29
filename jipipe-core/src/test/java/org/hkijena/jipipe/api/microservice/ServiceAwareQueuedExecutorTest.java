@@ -67,11 +67,11 @@ class ServiceAwareQueuedExecutorTest {
         exec.enqueue(new CountingRun(latch, counter, 0));
         exec.enqueue(new CountingRun(latch, counter, 0));
 
-        // Service not ready — tasks should not execute
+        // Service not ready - tasks should not execute
         assertFalse(latch.await(1, TimeUnit.SECONDS));
         assertEquals(0, counter.get());
 
-        // Start service — tasks should execute
+        // Start service - tasks should execute
         service.start();
         assertTrue(latch.await(10, TimeUnit.SECONDS));
         assertEquals(2, counter.get());

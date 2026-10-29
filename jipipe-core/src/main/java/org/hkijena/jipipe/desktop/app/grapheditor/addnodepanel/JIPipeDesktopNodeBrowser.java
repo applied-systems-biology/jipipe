@@ -91,11 +91,11 @@ import java.util.List;
  * (a pure function of the dock width):
  * <ul>
  * <li>compact (&lt; 380 px, {@link NodeBrowserModel#TIER_COMPACT}): the
- * <b>single function tree with node leaves</b> — the tree takes over the
+ * <b>single function tree with node leaves</b> - the tree takes over the
  * node-view role, so the panel stays usable in a narrow dock;</li>
  * <li>comfortable ({@link NodeBrowserModel#TIER_COMFORTABLE}): the
  * <b>function tree (with the same node leaves) | filtered node list</b> side
- * by side — the tree is a stable navigator of the full result set; the list
+ * by side - the tree is a stable navigator of the full result set; the list
  * applies the selection (function path / template scope) on top of it.</li>
  * </ul>
  * An active search never changes the layout: the list re-queries in place
@@ -105,7 +105,7 @@ import java.util.List;
  * The non-Swing state lives in {@link NodeBrowserModel} (unit-tested);
  * this component renders it and reacts to its changes.
  * <p>
- * <b>Wiring note (Task 24):</b> this component is self-contained — it
+ * <b>Wiring note (Task 24):</b> this component is self-contained - it
  * reads from {@code JIPipe.getNodes()} and the (project's)
  * {@link JIPipeNodeDatabase} and holds no static state. It is mounted in
  * both graph editors' {@code DOCK_ADD_NODES} dock (Task 24b).
@@ -121,8 +121,8 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
     /**
      * The expanded function branches as of the last save. Kept in memory
      * only (the current run): it survives browser instances being
-     * recreated (panel close/reopen, editor tab recreation) — which is
-     * where the state was lost — without the brittleness of a
+     * recreated (panel close/reopen, editor tab recreation) - which is
+     * where the state was lost - without the brittleness of a
      * settings-registry round-trip (JSON serialization, autosave timing,
      * stale ids across versions).
      */
@@ -175,7 +175,7 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
     private int lastRenderedTier = -1;
     /**
      * Whether the tree-structure changes of {@link #rebuildNodeLeaves()} are
-     * in flight — the selection listener must not re-query (and not wipe the
+     * in flight - the selection listener must not re-query (and not wipe the
      * branch filter) while the node leaves are being rebuilt (see
      * {@link NodeBrowserTreeController#rebuildNodeLeaves(List)}).
      */
@@ -183,7 +183,7 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
     /**
      * Suspends the tree-expansion persistence while the browser applies
      * programmatic model changes (populate, state restore, node-leaf
-     * rebuild) — their transient collapse/expand events must not overwrite
+     * rebuild) - their transient collapse/expand events must not overwrite
      * the user's saved state.
      */
     private boolean treeStateSavingSuspended;
@@ -383,7 +383,7 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
         followUpToggle.setFocusPainted(false);
 
         // Apply the persisted collapse state (setState does not fire the
-        // toggled event — only a user click does — so this cannot write the
+        // toggled event - only a user click does - so this cannot write the
         // setting back).
         boolean followUpInitiallyExpanded =
                 JIPipeGraphEditorUIApplicationSettings.getInstance().isFollowUpNodesExpanded();
@@ -410,7 +410,7 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
         // to a short overview, not a wall of categories (the controller's
         // populateTree expands exactly the root). The user's previous
         // expand/collapse state (persisted function ids) is restored right
-        // after the populate — suspended, so the populate's collapse
+        // after the populate - suspended, so the populate's collapse
         // events do not overwrite the saved state first.
         treeStateSavingSuspended = true;
         try {
@@ -477,7 +477,7 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
 
         // "Configure templates" gear (spec §8.3): opens the TemplateManagement
         // modal on Global by default (or the selected entry's scope when a
-        // template entry is selected — see openTemplateManagementFromToolbar).
+        // template entry is selected - see openTemplateManagementFromToolbar).
         JButton configureTemplatesButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/configure.png"));
         configureTemplatesButton.setToolTipText("Configure node templates");
         UIUtils.makeButtonFlatWithSize(configureTemplatesButton, 28);
@@ -511,7 +511,7 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
         // template kinds split by Pattern/Custom badge and system/user
         // origin. The selection is a PERSISTED, shared setting (the node
         // finder dialog reads the same value), so restore it into the model
-        // before the constructor's initial reloadList() — an empty selection
+        // before the constructor's initial reloadList() - an empty selection
         // means "show all kinds".
         kindsBox = new JIPipeDesktopRichSelectionBox("All kinds", "Kinds", true, NodeEntryKind::options, selection -> {
             Set<NodeEntryKind> kinds = new LinkedHashSet<>();
@@ -532,7 +532,7 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
 
         // Framework combo (first item = "all frameworks" sentinel). Only
         // frameworks with at least one node visible in THIS editor role are
-        // listed — a framework nobody's nodes use (e.g. Comet) would just be
+        // listed - a framework nobody's nodes use (e.g. Comet) would just be
         // an empty, confusing filter option.
         frameworkCombo.addItem(new AllFrameworksSentinel());
         Set<String> populatedFrameworks = new LinkedHashSet<>();
@@ -567,7 +567,7 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
         });
         filterBar.add(frameworkCombo);
 
-        // Data types (input + output, multi) — a rich selection box with a
+        // Data types (input + output, multi) - a rich selection box with a
         // search bar and the data types' icons (replaces the former
         // "Spatial" + "Input" buttons and their checkbox popup)
         dataTypeBox = new JIPipeDesktopRichSelectionBox("All data", "Data", true, true, this::dataTypeOptions, selection -> {
@@ -589,9 +589,9 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
         dataTypeBox.setToolTipText("Filter by input and/or output data type (select one or more)");
         filterBar.add(dataTypeBox);
 
-        // Tags (multi) — a rich selection box with a search bar (the merged
+        // Tags (multi) - a rich selection box with a search bar (the merged
         // tag vocabulary is far too long for a plain combo). Populated from
-        // the merged tags (node-level + function-path tags) — the same set
+        // the merged tags (node-level + function-path tags) - the same set
         // the filter predicate matches against.
         tagsBox = new JIPipeDesktopRichSelectionBox("All tags", "Tags", true, this::tagOptions, selection -> {
             Set<String> selectedTags = new LinkedHashSet<>();
@@ -687,7 +687,7 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
     /**
      * Applies the main-area layout. Unlike the earlier tier-based design,
      * the pipeline view is <em>always</em> the function tree | filtered node
-     * list side by side — it no longer collapses to a tree-only pane when
+     * list side by side - it no longer collapses to a tree-only pane when
      * the dock narrows, and an active search no longer hides the tree (it
      * re-queries the list in place and highlights the matching tree leafs,
      * see {@link NodeBrowserTreeController#updateSearchHighlights(boolean, List)}). This keeps the panel usable
@@ -718,7 +718,7 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
 
         // Pipeline editor: the adaptive design switches between the
         // compact single-pane (a narrow dock, < 380 px: the function tree
-        // WITH node leaves — the tree takes over the node-view role) and the
+        // WITH node leaves - the tree takes over the node-view role) and the
         // comfortable two-pane (the function tree | filtered node list side
         // by side). An active search never changes the layout: the list
         // re-queries in place and the tree highlights the matches.
@@ -738,7 +738,7 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
             split.setContinuousLayout(true);
             bodyPanel.add(split, BorderLayout.CENTER);
         }
-        // Keep the node leaves in sync with the view (the full entry set —
+        // Keep the node leaves in sync with the view (the full entry set -
         // see rebuildNodeLeaves); in the comfortable tier the tree carries
         // them alongside the results list.
         rebuildNodeLeaves();
@@ -747,13 +747,13 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
     }
 
     // ------------------------------------------------------------------
-    // Node leaves (children of the function tree — every tier)
+    // Node leaves (children of the function tree - every tier)
     // ------------------------------------------------------------------
 
     /**
      * Syncs the controller's node leaves with the current results. The
      * leaves are attached from the FULL search+facet filtered set (see
-     * {@link #lastFacets}) — NOT from the selection-filtered list — so the
+     * {@link #lastFacets}) - NOT from the selection-filtered list - so the
      * tree is a stable full navigator in every tier: every branch is
      * expandable and every {@code Templates / <scope>} group shows its
      * entries regardless of what is currently selected (selecting a branch
@@ -790,7 +790,7 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
         }
         TreePath path = tree.getTree().getSelectionPath();
         // A node leaf (compact view) is an insert/drag target, not a branch
-        // filter — selecting it must not re-query.
+        // filter - selecting it must not re-query.
         if (path != null && tree.entryFromPath(path) != null) {
             return;
         }
@@ -808,7 +808,7 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
         }
         // A synthetic <function>/Patterns row selects the templates filed
         // under exactly that function (mutually exclusive with the function
-        // path and the scope — the model setters cancel the others). Must be
+        // path and the scope - the model setters cancel the others). Must be
         // checked BEFORE the function-path fallback: the row's path contains
         // its ancestor function, which the fallback would misread as a
         // branch filter (listing real nodes too).
@@ -862,7 +862,7 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
             if (model.isSelectionOnly() && !passesSelectionOnlyRule(entry)) {
                 continue;
             }
-            // Result-kind filter (1340): shared NodeBrowserModel predicate —
+            // Result-kind filter (1340): shared NodeBrowserModel predicate -
             // entries without a kind (existing nodes/compartments, new
             // compartments) always pass.
             if (!model.matchesKindFilter(entry)) {
@@ -879,15 +879,15 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
             }
             filtered.add(entry);
         }
-        // The tree's node leaves use the FULL filtered set (all tiers — the
+        // The tree's node leaves use the FULL filtered set (all tiers - the
         // tree is a stable navigator; the selection below must not add or
         // remove its leaves). Search mode: the flat results override the
         // tree, so no leaves (matching the old compact-only behavior).
         lastFacets = model.isSearchActive() ? List.of() : new ArrayList<>(filtered);
 
         // Selection filter (spec §7.2, shared predicate): when not in search
-        // mode, only entries matching the current selection — a template
-        // scope, a function path, or the root — are listed. This replaces the
+        // mode, only entries matching the current selection - a template
+        // scope, a function path, or the root - are listed. This replaces the
         // old inline function-path filter and covers the new scope selection;
         // both surfaces call the same NodeBrowserModel#matchesSelection so
         // they agree. (In search mode the flat results override the tree, so
@@ -897,7 +897,7 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
             filtered.removeIf(entry -> !model.matchesSelection(entry, registry));
         }
 
-        // Down-ranked nodes (auto-imported, deprecated, unstable — the
+        // Down-ranked nodes (auto-imported, deprecated, unstable - the
         // generalized state classifiers, see JIPipeNodeStateChips) come
         // after the standard curated nodes; the query's own ranking is
         // preserved within each group (stable partition).
@@ -1083,7 +1083,7 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
     }
 
     // ------------------------------------------------------------------
-    // Tree expansion state (current run only — in-memory, shared by all
+    // Tree expansion state (current run only - in-memory, shared by all
     // node-browser instances in this process; deliberately NOT persisted
     // to settings)
     // ------------------------------------------------------------------
@@ -1097,7 +1097,7 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
 
     /**
      * Remembers the tree's current expanded function branches (called on
-     * every user expansion/collapse; cheap — a reference swap).
+     * every user expansion/collapse; cheap - a reference swap).
      */
     private void saveTreeExpansionState() {
         sessionExpandedFunctionIds = List.copyOf(tree.expandedFunctionIds());
@@ -1107,7 +1107,7 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
      * Initializes the data-source quick menu: one submenu per data type
      * (grouped by the data types' menu paths), each listing the data source
      * nodes that can produce that type. Ported from the old add-nodes panel's
-     * {@code initializeAddDataSourceMenu} — same {@code getDataTypesByMenuPaths()}
+     * {@code initializeAddDataSourceMenu} - same {@code getDataTypesByMenuPaths()}
      * iteration, same {@code getMenuDataSourcesFor(dataClass)} lookup, same
      * hidden data-type / node skips, same {@code newInstance()} +
      * {@code snapshotBeforeAddNode} + {@code insertNode} (the old method's
@@ -1180,7 +1180,7 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
 
     // ------------------------------------------------------------------
     // Data-source menu (ported from the old add-nodes panel, which is
-    // deleted in this task; the per-category menus are not ported — the
+    // deleted in this task; the per-category menus are not ported - the
     // tree takes over the "see what's available" role)
     // ------------------------------------------------------------------
 
@@ -1189,9 +1189,9 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
      * check on both press and release covers all platforms).
      * <p>
      * When the clicked row is a <b>node leaf</b> (a
-     * {@link JIPipeNodeDatabaseEntry} user object — what the compact
+     * {@link JIPipeNodeDatabaseEntry} user object - what the compact
      * single-pane shows, the tree having taken over the node-list role),
-     * the shared node-entry menu is shown — the SAME
+     * the shared node-entry menu is shown - the SAME
      * {@link NodeEntryContextMenu#specs} +
      * {@link NodeEntryContextMenu#buildJPopupMenu} +
      * {@link #entryActionsMap} the node list uses (spec §7.3, the 1-pane
@@ -1200,7 +1200,7 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
      * <p>
      * When the clicked row is on the {@code DataSourcesFunction} branch or
      * one of its {@code *DataFunction} leaf branches, the full data-source
-     * menu is shown — rebuilt on each show (reloaded-on-show, like the old
+     * menu is shown - rebuilt on each show (reloaded-on-show, like the old
      * panel's reloadable pattern). Right-clicks on any other tree row are
      * ignored: the old per-category {@code menuPath} popups are removed by
      * the redesign. The full menu is shown on the branch <em>and</em> its
@@ -1215,7 +1215,7 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
             return;
         }
         // Node leaf (the compact single-pane's insert target): the shared
-        // node-entry menu — the SAME builder + actions map the node list
+        // node-entry menu - the SAME builder + actions map the node list
         // uses, so a tree leaf and a list row of the same entry render the
         // identical menu (spec §7.3).
         JIPipeNodeDatabaseEntry entry = tree.entryFromPath(path);
@@ -1281,7 +1281,7 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
             List<JIPipeNodeDatabaseEntry> selected = resultList.getSelectedValuesList();
             if (!selected.isEmpty()) {
                 // Shared menu builder (spec §7.3): the specs are the single
-                // source of truth for WHICH items the selection gets — the
+                // source of truth for WHICH items the selection gets - the
                 // same specs + buildJPopupMenu the compact-mode tree leaves
                 // use, so a list row and a tree leaf of the same entry render
                 // the identical menu (structural parity, not copy-paste).
@@ -1334,7 +1334,7 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
     private Map<String, Runnable> entryActionsMap(List<JIPipeNodeDatabaseEntry> selected, Set<String> pinned) {
         Map<String, Runnable> actions = new HashMap<>();
         actions.put(NodeEntryContextMenu.INSERT_AT_CURSOR, () -> insertAtCursor(selected.get(0)));
-        // Pin and Unpin are BOTH always supplied — the menu shows whichever
+        // Pin and Unpin are BOTH always supplied - the menu shows whichever
         // one specs() (driven by the first selected entry) includes, and the
         // action acts on the WHOLE selection (pinNodes/unpinNodes walk every
         // selected entry, as before). Supplying both keeps this helper
@@ -1383,7 +1383,7 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
 
     /**
      * The Edit action: opens the template editor dialog on a COPY (exactly as
-     * the old template box's edit action did) — because
+     * the old template box's edit action did) - because
      * {@code taxonomyFunction} is a registered {@code @JIPipeParameter}, the
      * form automatically shows the taxonomy-function picker (spec §8.2).
      * Restricted to Global/Project by specs() (System omits edit).
@@ -1469,7 +1469,7 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
     /**
      * Populates (or collapses) the relation strip based on the current
      * canvas selection: when exactly one node is selected, the strip shows
-     * its workflow relations as clickable buttons — the "next steps" first
+     * its workflow relations as clickable buttons - the "next steps" first
      * (the workflow successors, as before), then the "previous steps", then
      * the "similar" nodes, de-duplicated by entry id.
      */
@@ -1485,7 +1485,7 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
                 JIPipeNodeDatabaseEntry entry = entryByOriginNodeId(nodeId);
                 if (entry != null) {
                     // Next steps first (the workflow successors, as before),
-                    // then previous steps, then similar nodes — de-duplicated
+                    // then previous steps, then similar nodes - de-duplicated
                     // by entry id. The three groups come from the one
                     // relations() call; the database caches it per entry.
                     var relations = database.relations(entry, 6);
@@ -1515,7 +1515,7 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
         if (show) {
             // The wrap layout's preferred size is width-dependent (it walks
             // up the parent chain for the width) and counts only effectively
-            // visible buttons — so measure while the body is effectively
+            // visible buttons - so measure while the body is effectively
             // visible: temporarily re-show it if the user had it collapsed
             // (synchronous, nothing repaints in between). Then cap the
             // height so the body scrolls instead of growing without bound
@@ -1638,12 +1638,12 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
      * DnD source for the function tree. The canvas only accepts node-graph
      * JSON (the transfer data produced by
      * {@link JIPipeDesktopAddNodeTransferHandler}), so the selected tree row
-     * is resolved to a database entry and delegated to that handler — the
+     * is resolved to a database entry and delegated to that handler - the
      * same payload the results list produces:
      * <ul>
      * <li>a <em>node leaf</em> row (compact view) drags exactly that entry;
      * <li>a <em>function</em> row (branch) is resolved to the first database
-     * entry that appears under it (or one of its descendants) — unchanged
+     * entry that appears under it (or one of its descendants) - unchanged
      * from before node leaves existed; dragging a branch with no matching
      * entry (e.g. an unconverted branch) produces no droppable data.
      * </ul>

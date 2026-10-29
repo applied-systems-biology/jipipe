@@ -51,17 +51,17 @@ import static org.junit.jupiter.api.Assertions.*;
  * <p>
  * The shipped set is two families, both reviewed by the 1324 manual review:
  * <ul>
- *   <li><b>24 linear (node-sequence) patterns</b> — the 185 research
+ *   <li><b>24 linear (node-sequence) patterns</b> - the 185 research
  *       artifacts cut to 64 with derivable names (fan shapes + every
  *       {@code jipipe:compartment-output} sink excluded, shape-label
  *       duplicates deduped), then Option C (ruling 2026-19) to the 24
  *       genuinely linear-only workflows: the 32 node+edge sub-paths of
  *       already-shipped DAG patterns and the 8 plumbing (comment/group)
  *       patterns are dropped. Their names are OUTCOME names ("what the
- *       workflow does") — no node chain, no chain separator of any kind —
+ *       workflow does") - no node chain, no chain separator of any kind -
  *       the mechanism stays in the description ({@code Sequence:}/
  *       {@code Wiring:}).</li>
- *   <li><b>396 DAG patterns</b> — 422 mined/derived (262 corpus-mined [3
+ *   <li><b>396 DAG patterns</b> - 422 mined/derived (262 corpus-mined [3
  *       stale-id remaps, 3 excludes] + 160 derived [26 twins + 134
  *       what-next, incl. the 6 cLij2 re-sweep chains]), cleaned at
  *       generation (group I/O wrapper nodes stripped, the {Parameters}
@@ -81,11 +81,11 @@ import static org.junit.jupiter.api.Assertions.*;
  * <p>
  * Pins:
  * <ol>
- *   <li><b>exact count 420</b> — the 24 linear keep-set + the cleaned DAG
+ *   <li><b>exact count 420</b> - the 24 linear keep-set + the cleaned DAG
  *       set (422 mined/derived − 6 io-interface drops − 4 sealed-slot
  *       drops (Ruling 13) − 16 item-3c drops = 396) is pinned to a number;
  *       not "≥420".</li>
- *   <li><b>per-template deserialization guard</b> — each shipped graph must
+ *   <li><b>per-template deserialization guard</b> - each shipped graph must
  *       deserialize through the exact {@code JIPipeNodeTemplate.getGraph()}
  *       path with the same node set as its bundled resource, and every node
  *       id must resolve in the registry (the silent-empty / stale-id guard,
@@ -93,24 +93,24 @@ import static org.junit.jupiter.api.Assertions.*;
  *       org.hkijena.jipipe.api.nodes.taxonomy.TemplateDataDeserializationTest}
  *       to all 420). Identity is (name, node-info-id multiset): 13 DAG names
  *       are shared by structurally different graphs, so name alone is no
- *       longer a unique key — (name, id multiset) is (verified at
+ *       longer a unique key - (name, id multiset) is (verified at
  *       generation).</li>
- *   <li><b>top-level function</b> — every template's {@code taxonomyFunction}
+ *   <li><b>top-level function</b> - every template's {@code taxonomyFunction}
  *       resolves and its assigned function is a top-level branch
  *       ({@code getParent() == null}).</li>
- *   <li><b>flagship mined next-step</b> — the flagship pattern
+ *   <li><b>flagship mined next-step</b> - the flagship pattern
  *       {@code folder-list-files → path-to-annotation-simple →
  *       import-imagej-imgplus-from-file} flows into the relation index: the
  *       {@code next} relations of {@code path-to-annotation-simple} include an
  *       entry named "Import image".</li>
- *   <li><b>consumer-side dedup</b> — no two shipped templates share
+ *   <li><b>consumer-side dedup</b> - no two shipped templates share
  *       (name, graph data); the deduped shape-label duplicates must not
  *       reappear, and same-name patterns that ship are kept distinct
  *       (different slot wiring → different graph data).</li>
- *   <li><b>curation rules</b> — no shipped pattern contains a
+ *   <li><b>curation rules</b> - no shipped pattern contains a
  *       {@code jipipe:compartment-output} node and no shipped name is a
  *       statistical "fans in/out from N ids" name.</li>
- *   <li><b>function tie-break</b> — a surviving 3-way tie (annotations/
+ *   <li><b>function tie-break</b> - a surviving 3-way tie (annotations/
  *       images/rois at max count) resolves to the lexicographically-first id.</li>
  * </ol>
  * <p>
@@ -136,9 +136,9 @@ class SystemPatternTemplatesTest {
      * duplicates, then Option C (ruling 2026-19) drops the 32 node+edge
      * sub-paths of already-shipped DAG patterns and the 8 plumbing
      * (comment/group) patterns) + 396 DAG (422 mined/derived minus the 6
-     * io-interface drops from the B2 ruling — 5 mined + 1 derived — minus
+     * io-interface drops from the B2 ruling - 5 mined + 1 derived - minus
      * the 4 sealed-slot drops from Ruling 13, and minus the 16 item-3c
-     * drops — 5 JIPipe-scripting patterns, 2 tunnel patterns, 9 degenerate
+     * drops - 5 JIPipe-scripting patterns, 2 tunnel patterns, 9 degenerate
      * multi-component harvest artifacts).
      */
     static final int EXPECTED_SYSTEM_TEMPLATES = 420;
@@ -334,7 +334,7 @@ class SystemPatternTemplatesTest {
         assertEquals(EXPECTED_SYSTEM_TEMPLATES, templates.size());
 
         // Identity key: (name, RESOLVABLE node-info-id multiset). Matching by
-        // (name, node-ids) — NOT name alone — is the required key: 13 DAG
+        // (name, node-ids) - NOT name alone - is the required key: 13 DAG
         // pattern names are shared by structurally different graphs, so a
         // name-only key would false-conflict; (name, node-info-id multiset) is
         // unique across all 446 (verified at generation; multiset, not set, so
@@ -343,14 +343,14 @@ class SystemPatternTemplatesTest {
         // "Resolvable" = present in the RUNNING test JVM's registry (hasNodeInfo-
         // WithId). The test JVM boots on the Maven-classpath cLij2 2.3.0.6, while
         // the SHIPPING dist bundles cLij2 2.5.3.5 + clijx 0.32.2.0 (a Fiji-only
-        // build, not on Maven Central / imagej.net — so the pom cannot be
+        // build, not on Maven Central / imagej.net - so the pom cannot be
         // bumped to match it in CI). 10 cLij2 patterns therefore reference
         // dynamically-registered clij:plugin:* / clijx:* kernels that the
         // older test-JVM cLij2 does not register; fromJson drops exactly those
         // (they load fine in the dist). The authoritative stale-id oracle is the
         // 2072-node full-launcher registry, enforced at generation
         // (generate-dag-system-template-metadata.py fails closed on any
-        // unregistered id) — per the 1324 (D) ruling that the (D) id oracle is
+        // unregistered id) - per the 1324 (D) ruling that the (D) id oracle is
         // the full-launcher dump, never the test-classpath registry. Filtering
         // to resolvable ids here makes the guard tolerant of ONLY that
         // version-gated cLij2 gap while still catching every real defect:
@@ -388,7 +388,7 @@ class SystemPatternTemplatesTest {
             assertNotNull(expected,
                     "template '" + t.getName() + "' (loaded node ids "
                             + nodeInfoIds(graph) + ") is not one of the shipped patterns "
-                            + "— a bundled node the test JVM can resolve was dropped by fromJson");
+                            + "- a bundled node the test JVM can resolve was dropped by fromJson");
 
             // (ii) silent-empty guard: the loaded node count equals the number
             //      of bundled nodes the test JVM can resolve. (A fromJson that
@@ -428,7 +428,7 @@ class SystemPatternTemplatesTest {
         // A database that runs its builder run synchronously on this thread (the
         // default enqueue needs an EDT the headless JUnit JVM does not reliably
         // provide). The real builder run populates the entries (so the relation
-        // node-ids map back to entries) and mines the template graphs — see
+        // node-ids map back to entries) and mines the template graphs - see
         // TemplateRelationSourceTest for the same override.
         JIPipeNodeDatabase database = new SyncNodeDatabase(null);
 
@@ -476,7 +476,7 @@ class SystemPatternTemplatesTest {
         // The manual-review curation: a pattern ships only if it has a proper
         // derivable name of what it does. That means NO compartment sink
         // (workflow-specific plumbing) and NO statistical "fans in/out from N
-        // ids" name — both were the shipped noise.
+        // ids" name - both were the shipped noise.
         for (JIPipeNodeTemplate t : systemTemplates()) {
             boolean hasCompartmentSink = false;
             for (JIPipeGraphNode node : t.getGraph().getGraphNodes()) {
@@ -496,7 +496,7 @@ class SystemPatternTemplatesTest {
     void everyBundledPatternNodeHasAResolvableLocation() throws Exception {
         // Contract pin (task 1, RED until the data fix ships): every node in
         // every bundled pattern must have a UI location resolvable in its own
-        // compartment — the exact key the editor looks up. This is a true
+        // compartment - the exact key the editor looks up. This is a true
         // load-path contract: we deserialize through
         // {@code JsonUtils.readFromString(json, JIPipeGraph.class)}, the very
         // call {@code JIPipeNodeTemplate.getGraph()} makes, so a location
@@ -505,8 +505,8 @@ class SystemPatternTemplatesTest {
         // Resolvability ONLY, NOT spacing/overlap: 36 of the 251 mined files
         // carry user layouts with nodes closer than any fixed footprint, so a
         // spacing assertion would false-fail. Spacing of the *generated* files
-        // is guaranteed by construction — the same longest-path layering the
-        // app's own Sugiyama impl uses — and is eyeballed in-app.
+        // is guaranteed by construction - the same longest-path layering the
+        // app's own Sugiyama impl uses - and is eyeballed in-app.
         for (Map.Entry<String, JsonNode> entry : sidecarEntries()) {
             String f = entry.getValue().get("file").asText();
             String raw = readResource(PATTERN_RESOURCE_DIR + f);
@@ -526,12 +526,12 @@ class SystemPatternTemplatesTest {
         // cross-node edges the deserialized graph holds must equal the number
         // of edges the bundled resource declares. A mismatch means at least
         // one edge was dropped on load because its endpoint slot did not
-        // exist — the slot configurations + slot-driving parameters stripped
+        // exist - the slot configurations + slot-driving parameters stripped
         // from the minimal format (the B1 dynamic-slot rule, and the
         // parameter-driven named slots such as ij1-color-split-channels-2's
-        // Blue/Green/… outputs) — leaving nodes floating.
+        // Blue/Green/… outputs) - leaving nodes floating.
         // <p>
-        // The metric is {@code getSlotEdges()} (cross-node edges only) — NOT
+        // The metric is {@code getSlotEdges()} (cross-node edges only) - NOT
         // {@code getGraph().edgeSet().size()}: repairGraph() (run on every
         // node insert during deserialization) adds per-node internal
         // input→output edges to the JGraphT graph, so edgeSet().size() =
@@ -543,13 +543,13 @@ class SystemPatternTemplatesTest {
         // test JVM's registry (hasNodeInfoWithId). The test JVM boots on the
         // Maven-classpath cLij2 2.3.0.6, while the SHIPPING dist bundles
         // cLij2 2.5.3.5 + clijx 0.32.2.0 (a Fiji-only build, not on Maven
-        // Central / imagej.net — so the pom cannot be bumped to match it in
+        // Central / imagej.net - so the pom cannot be bumped to match it in
         // CI). Several patterns therefore reference dynamically-registered
         // clij:plugin:* / clijx:* kernels that the older test-JVM cLij2 does
         // not register; fromJson drops exactly those nodes (they load fine
         // in the dist), and so do the edges touching them. The authoritative
         // stale-id oracle is the full-launcher registry dump, enforced at
-        // generation (the generator fails closed on any unregistered id) —
+        // generation (the generator fails closed on any unregistered id) -
         // per the 1324 (D) ruling that the id oracle is the full-launcher
         // dump, never the test-classpath registry. Filtering the raw edges
         // to resolvable endpoints here makes the guard tolerant of ONLY that
@@ -569,7 +569,7 @@ class SystemPatternTemplatesTest {
             }
 
             // Only the raw edges whose endpoints both resolve in the test
-            // JVM's registry are expected to load — the loaded graph can
+            // JVM's registry are expected to load - the loaded graph can
             // only hold cross-edges between loaded (i.e. resolvable) nodes.
             int resolvableRawEdges = 0;
             for (JsonNode edge : tree.get("edges")) {
@@ -590,7 +590,7 @@ class SystemPatternTemplatesTest {
     /**
      * A node database that runs its {@link JIPipeNodeDatabaseBuilderRun}
      * synchronously on the calling thread instead of enqueueing it on the
-     * async {@code SwingWorker} executor — so after construction the entries
+     * async {@code SwingWorker} executor - so after construction the entries
      * are set and the relation index is current, with no dependence on an EDT.
      * (Same pattern as {@code TemplateRelationSourceTest}.)
      */

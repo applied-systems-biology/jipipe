@@ -18,7 +18,7 @@ improved design.
 - Use lazy singleton tab pattern (`documentTabPane.registerSingletonTab()`)
 - Port `HardwareDetector` from
   `/data/src/jipipe-2/jipipe-core/src/main/java/org/hkijena/jipipe/servers/llmproxy/server/HardwareDetector.java`
-- No category labels — all statistics are uncategorized with neutral language
+- No category labels - all statistics are uncategorized with neutral language
 - Daily samples, 90 data points max for time-tracked stats
 
 ---
@@ -31,7 +31,7 @@ improved design.
 - Create: `jipipe-core/src/main/java/org/hkijena/jipipe/api/system/SystemResources.java`
 - Modify: `jipipe-core/src/main/java/org/hkijena/jipipe/plugins/statistics/items/GpuInfoStatisticsItem.java` → replace
   with `GpuModelStatisticsItem.java` and `GpuVramStatisticsItem.java` and `AccelerationStatisticsItem.java`
-- Modify: `jipipe-core/src/main/java/org/hkijena/jipipe/plugins/statistics/StatisticsPlugin.java` — update item
+- Modify: `jipipe-core/src/main/java/org/hkijena/jipipe/plugins/statistics/StatisticsPlugin.java` - update item
   registration
 
 **Interfaces:**
@@ -52,21 +52,21 @@ improved design.
 - jipipe-3 `JIPipeHardwareAccelerationApplicationSettings`:
   `jipipe-core/src/main/java/org/hkijena/jipipe/plugins/settings/application/JIPipeHardwareAccelerationApplicationSettings.java`
 
-- [ ] **Step 1: Port `SystemResources.java`** — Copy from jipipe-2, adapt package to `org.hkijena.jipipe.api.system`,
+- [ ] **Step 1: Port `SystemResources.java`** - Copy from jipipe-2, adapt package to `org.hkijena.jipipe.api.system`,
   keep Jackson annotations
 
-- [ ] **Step 2: Port `HardwareDetector.java`** — Copy from jipipe-2, adapt package to `org.hkijena.jipipe.utils`, ensure
+- [ ] **Step 2: Port `HardwareDetector.java`** - Copy from jipipe-2, adapt package to `org.hkijena.jipipe.utils`, ensure
   `CUDAUtils` import path is correct for jipipe-3
 
 - [ ] **Step 3: Delete `GpuInfoStatisticsItem.java`** and create 3 replacement items:
-    - `GpuModelStatisticsItem` — returns GPU name string from `HardwareDetector.detect().getGpuType()`, privacy level
+    - `GpuModelStatisticsItem` - returns GPU name string from `HardwareDetector.detect().getGpuType()`, privacy level
       `Everything`
-    - `GpuVramStatisticsItem` — returns VRAM total in MB from `HardwareDetector.detect().getGpuVramTotalMB()`, privacy
+    - `GpuVramStatisticsItem` - returns VRAM total in MB from `HardwareDetector.detect().getGpuVramTotalMB()`, privacy
       level `Everything`
-    - `AccelerationStatisticsItem` — returns acceleration mode + CUDA version string from `HardwareDetector.detect()`,
+    - `AccelerationStatisticsItem` - returns acceleration mode + CUDA version string from `HardwareDetector.detect()`,
       privacy level `Installation`
 
-- [ ] **Step 4: Update `StatisticsPlugin.java`** — Remove `GpuInfoStatisticsItem` registration, add the 3 new items
+- [ ] **Step 4: Update `StatisticsPlugin.java`** - Remove `GpuInfoStatisticsItem` registration, add the 3 new items
 
 - [ ] **Step 5: Compile and verify**
 
@@ -85,18 +85,18 @@ git add -A && git commit -m "Port HardwareDetector and replace GPU info with det
 
 **Files:**
 
-- Modify: `jipipe-core/src/main/java/org/hkijena/jipipe/plugins/statistics/JIPipeStatisticsItemCategory.java` — delete
+- Modify: `jipipe-core/src/main/java/org/hkijena/jipipe/plugins/statistics/JIPipeStatisticsItemCategory.java` - delete
   or deprecate
-- Modify: `jipipe-core/src/main/java/org/hkijena/jipipe/plugins/statistics/JIPipeStatisticsItem.java` — remove
+- Modify: `jipipe-core/src/main/java/org/hkijena/jipipe/plugins/statistics/JIPipeStatisticsItem.java` - remove
   `getCategory()` from interface
-- Modify: `jipipe-core/src/main/java/org/hkijena/jipipe/plugins/statistics/JIPipeStatisticsRegistry.java` — remove
+- Modify: `jipipe-core/src/main/java/org/hkijena/jipipe/plugins/statistics/JIPipeStatisticsRegistry.java` - remove
   `getItemsByCategory()`
-- Modify: All item classes in `plugins/statistics/items/` — remove `getCategory()` implementations
-- Modify: `jipipe-core/src/main/java/org/hkijena/jipipe/plugins/statistics/StatisticsPrivacyLevel.java` — update
+- Modify: All item classes in `plugins/statistics/items/` - remove `getCategory()` implementations
+- Modify: `jipipe-core/src/main/java/org/hkijena/jipipe/plugins/statistics/StatisticsPrivacyLevel.java` - update
   descriptions to neutral language (remove "fun" etc.)
-- Modify: `jipipe-core/src/test/java/org/hkijena/jipipe/plugins/statistics/JIPipeStatisticsRegistryTest.java` — remove
+- Modify: `jipipe-core/src/test/java/org/hkijena/jipipe/plugins/statistics/JIPipeStatisticsRegistryTest.java` - remove
   category-related tests
-- Modify: `jipipe-core/src/main/java/org/hkijena/jipipe/plugins/statistics/ui/JIPipeDesktopStatisticsUI.java` — remove
+- Modify: `jipipe-core/src/main/java/org/hkijena/jipipe/plugins/statistics/ui/JIPipeDesktopStatisticsUI.java` - remove
   category grouping
 
 **Changes:**
@@ -129,13 +129,13 @@ git add -A && git commit -m "Remove statistics categories, use neutral language 
 **Files:**
 
 - Create: `jipipe-core/src/main/java/org/hkijena/jipipe/plugins/statistics/JIPipeTimeTrackedStatisticsItem.java`
-- Modify: `jipipe-core/src/main/java/org/hkijena/jipipe/plugins/statistics/JIPipeStatisticsItem.java` — add
+- Modify: `jipipe-core/src/main/java/org/hkijena/jipipe/plugins/statistics/JIPipeStatisticsItem.java` - add
   `default boolean isTimeTracked() { return false; }` and `default JsonNode getHistory() { return null; }` and
   `default void setHistory(JsonNode history) {}`
-- Modify: `jipipe-core/src/main/java/org/hkijena/jipipe/api/service/components/JIPipeStatisticsServiceComponent.java` —
+- Modify: `jipipe-core/src/main/java/org/hkijena/jipipe/api/service/components/JIPipeStatisticsServiceComponent.java` -
   add history storage and daily sampling
 - Modify: All numeric persistent items (WorkflowRuns, RoCratesCreated, NodeMoveDistance, LongestNodeWidth, PopularNodes,
-  LargestProjectNodes, LargestProjectCompartments, NoodleScore, TotalRam) — implement `isTimeTracked()` returning true
+  LargestProjectNodes, LargestProjectCompartments, NoodleScore, TotalRam) - implement `isTimeTracked()` returning true
 
 **Design:**
 
@@ -203,11 +203,11 @@ git add -A && git commit -m "Add time-tracking infrastructure for statistics (#1
 
 **Files:**
 
-- Modify: `jipipe-core/src/main/java/org/hkijena/jipipe/plugins/statistics/ui/JIPipeDesktopStatisticsUI.java` — convert
+- Modify: `jipipe-core/src/main/java/org/hkijena/jipipe/plugins/statistics/ui/JIPipeDesktopStatisticsUI.java` - convert
   from `JDialog` to `JIPipeDesktopProjectWorkbenchPanel`, redesign with project overview tips pattern
-- Modify: `jipipe-core/src/main/java/org/hkijena/jipipe/plugins/statistics/ui/ShowStatisticsTool.java` — open tab
+- Modify: `jipipe-core/src/main/java/org/hkijena/jipipe/plugins/statistics/ui/ShowStatisticsTool.java` - open tab
   instead of dialog
-- Modify: `jipipe-core/src/main/java/org/hkijena/jipipe/desktop/app/JIPipeDesktopProjectWorkbench.java` — register
+- Modify: `jipipe-core/src/main/java/org/hkijena/jipipe/desktop/app/JIPipeDesktopProjectWorkbench.java` - register
   statistics singleton tab
 
 **Design:**
@@ -220,12 +220,12 @@ git add -A && git commit -m "Add time-tracking infrastructure for statistics (#1
 
 **UI Layout (following project overview pattern):**
 
-- Top: Header panel with title "Statistics", machine ID, first launch date, last sent date, privacy level — styled like
+- Top: Header panel with title "Statistics", machine ID, first launch date, last sent date, privacy level - styled like
   the overview header
 - Center: Scrolling panel of cards using `RoundedLineBorder` (like `addToTipsPanel`)
 - Each card: `[ICON | [bold title]\n[current value]]` with a small JFreeChart `ChartPanel` below for time-tracked items
 - Bottom toolbar: "Refresh" button (no send button)
-- Cards are NOT grouped by category — just listed in a grid
+- Cards are NOT grouped by category - just listed in a grid
 
 **Card design:**
 
@@ -323,9 +323,9 @@ git add -A && git commit -m "Convert statistics viewer to tab with redesigned UI
 **Files:**
 
 - Modify:
-  `jipipe-core/src/main/java/org/hkijena/jipipe/plugins/statistics/ui/JIPipeDesktopStatisticsConfigurationUI.java` —
+  `jipipe-core/src/main/java/org/hkijena/jipipe/plugins/statistics/ui/JIPipeDesktopStatisticsConfigurationUI.java` -
   update description text to neutral language
-- Modify: `jipipe-core/src/main/java/org/hkijena/jipipe/plugins/statistics/ui/JIPipeDesktopStatisticsButton.java` —
+- Modify: `jipipe-core/src/main/java/org/hkijena/jipipe/plugins/statistics/ui/JIPipeDesktopStatisticsButton.java` -
   update balloon text to neutral language
 
 - [ ] **Step 1: Update all user-facing text to remove "fun" and category references**

@@ -208,7 +208,7 @@ public class JIPipeNodeTemplate extends AbstractJIPipeParameterCollection {
      * without a getter: the value is read in from old template files, consumed
      * by {@link #migrateLegacyMenuPath()} (which maps it onto
      * {@link #getTaxonomyFunction() taxonomyFunction} and appends an auditable
-     * footer to the description), and then never written back — so the key
+     * footer to the description), and then never written back - so the key
      * vanishes from a file after one save cycle.
      *
      * @param menuPath the legacy menu path (may be {@code null})
@@ -235,9 +235,9 @@ public class JIPipeNodeTemplate extends AbstractJIPipeParameterCollection {
      * {@link #taxonomyFunction} reference (spec §9): when the captured
      * legacy path is non-empty and no taxonomy function is set yet, the first
      * menu segment is matched against the registered taxonomy functions
-     * (case-insensitively, top-level branches before same-named leaves — the
+     * (case-insensitively, top-level branches before same-named leaves - the
      * childless export sub-leaves "Images"/"Tables" must not shadow the
-     * top-level branches of the same name — with the legacy abbreviation
+     * top-level branches of the same name - with the legacy abbreviation
      * table), the old path is appended to the description as an auditable
      * italic footer ("*Previously: Image → Threshold*"), and the captured key
      * is cleared.

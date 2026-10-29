@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * <p>
  * The registry is a LIVE service component, so this test asserts <em>presence</em>
  * of the four curated core IDs (and their field classes) rather than pinning a
- * total count — plugins may legitimately register additional parameter types.
+ * total count - plugins may legitimately register additional parameter types.
  */
 class FontRegistrationIdsTest {
 

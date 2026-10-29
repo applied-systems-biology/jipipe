@@ -72,7 +72,7 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
     private OptionalDoubleParameter overrideLineWidth = new OptionalDoubleParameter();
     private boolean drawOver = true;
     private OptionalColorParameter labelBackground = new OptionalColorParameter(Color.BLACK, false);
-    // #1339: label font (family/size/style) — the color is a separate, optional override.
+    // #1339: label font (family/size/style) - the color is a separate, optional override.
     private JIPipeFontFamilySizeStyleParameter labelFont = defaultLabelFont();
     // #1339: optional fixed label color. Disabled by default, so each label
     // uses the line color of its ROI (RoiDrawer's FROM_ROI_LINE mode).

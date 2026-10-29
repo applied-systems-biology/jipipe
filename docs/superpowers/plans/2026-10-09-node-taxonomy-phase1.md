@@ -1,4 +1,4 @@
-# Node Taxonomy Redesign — Phase 1 Implementation Plan
+# Node Taxonomy Redesign - Phase 1 Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:
 > executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
@@ -6,7 +6,7 @@
 **Goal:** Replace the 11-category `JIPipeNodeTypeCategory` system with the `JIPipeNodeTaxonomy*` model (function tree,
 framework, spatial dimensionality, derived input profile, workflow families, tags), convert all ~1,840 node
 registrations, migrate every consumer of the old category API, and deliver the adaptive node browser + rebuilt node
-finder — per the spec.
+finder - per the spec.
 
 **Architecture:** Two sub-phases. **1a** builds the new taxonomy API, registries, seed content, node-database facets,
 and UI **in parallel with the untouched legacy system** (legacy annotation fields become `@Deprecated` but stay present,
@@ -17,7 +17,7 @@ atomic task. A startup/CI validation guard enforces taxonomy invariants througho
 **Tech Stack:** Java 21, Maven, JUnit 5 (`jipipe-core` already has `junit-jupiter` + `junit-platform-launcher` + the
 `ImageJLegacyPatcherLauncherSessionListener`), JGraphT (already a dependency) for family graphs.
 
-**Spec:** `docs/superpowers/specs/2026-10-08-node-taxonomy-redesign-design.md` — read it first; this plan implements its
+**Spec:** `docs/superpowers/specs/2026-10-08-node-taxonomy-redesign-design.md` - read it first; this plan implements its
 Phase 1 ("Data model, taxonomy, UI, conversion"). Phases 2 (rendering/DiceBear contrib module) and 3 (audit refinement)
 get their own plans.
 
@@ -34,10 +34,10 @@ API stays (deprecated) until 1b's final rip-out, and the tree compiles at every 
   `master`.
 - **6.0.0 hard break at the END of 1b.** The legacy system (`JIPipeNodeTypeCategory` + 11 classes, `menuPath()`/
   `nodeTypeCategory()` annotation fields, `getCategory()`/`getMenuPath()`/`getCategoryIds()`) is **removed in Task
-  27** — no shims, no deprecation window in the shipped 6.0.0. During 1a/1b it is `@Deprecated`-present only as a
+  27** - no shims, no deprecation window in the shipped 6.0.0. During 1a/1b it is `@Deprecated`-present only as a
   transition aid.
 - **Registered IDs are stable string literals.** Function ids `"jipipe:function:…"`, framework ids
-  `"jipipe:framework:…"`, family ids `"jipipe:family:…"` — never derived from class names (project rule, AGENTS.md).
+  `"jipipe:framework:…"`, family ids `"jipipe:family:…"` - never derived from class names (project rule, AGENTS.md).
 - All new taxonomy names carry the `JIPipeNodeTaxonomy` prefix (spec decision #4).
 - TDD: every API task starts with a failing test. Run with `mvn test -pl jipipe-core`.
 - Never call `LegacyInjector.preinit()` from tests, never add `--add-opens` workarounds (AGENTS.md; the launcher session
@@ -47,7 +47,7 @@ API stays (deprecated) until 1b's final rip-out, and the tree compiles at every 
 
 ## Review Focus
 
-Failure modes the spec implies but whose tests are easy to forget — each line is pinned into its owning task:
+Failure modes the spec implies but whose tests are easy to forget - each line is pinned into its owning task:
 
 1. **A node annotation references an unregistered function** (function class exists but nobody registered it) →
    registration fails loudly at startup listing node id + function id; the node must not silently vanish. *Pinned in
@@ -67,7 +67,7 @@ Failure modes the spec implies but whose tests are easy to forget — each line 
 
 ---
 
-# Phase 1a — Build the new system in parallel
+# Phase 1a - Build the new system in parallel
 
 The legacy system is untouched (its annotation fields become `@Deprecated`). Every commit compiles.
 
@@ -120,21 +120,21 @@ The legacy system is untouched (its annotation fields become `@Deprecated`). Eve
 **Interfaces:**
 
 - Produces:
-    - `interface JIPipeNodeTaxonomyFunction` — `String getId()`, `String getName()`,
+    - `interface JIPipeNodeTaxonomyFunction` - `String getId()`, `String getName()`,
       `JIPipeNodeTaxonomyFunction getParent()`, `@Nullable Float getColorHue()` (top-level only; sub-branches return
       null and inherit), `String getDescription()`, `Icon getIcon()`, `Set<String> getTags()`,
       `boolean isVisibleInPipeline()`, `boolean isVisibleInCompartments()`, and the four carried-over defaults
       `canExtract()/userCanCreate()/userCanDelete()/isRunnable()` (all `true`).
-    - `class FunctionRegistry` — `register(JIPipeNodeTaxonomyFunction)`, `JIPipeNodeTaxonomyFunction byId(String)`,
+    - `class FunctionRegistry` - `register(JIPipeNodeTaxonomyFunction)`, `JIPipeNodeTaxonomyFunction byId(String)`,
       `Set<…> all()`, `Set<…> topLevel()`, `List<…> children(JIPipeNodeTaxonomyFunction parent)`,
       `float baseHue(JIPipeNodeTaxonomyFunction f)` (nearest ancestor's non-null hue; the function's own if it has one),
       `int shadeDepth(JIPipeNodeTaxonomyFunction f)` (number of tree edges below that ancestor; 0 for the hue owner
       itself), `static float[] shadeHsb(float hue, float sat, float bri, int depth)` (implements the fixed shading rule
-      below, verbatim, and returns `{hue, shadedSat, shadedBri}` — a pure function so the registry stays
+      below, verbatim, and returns `{hue, shadedSat, shadedBri}` - a pure function so the registry stays
       theme-independent; Task 21 composes it with the current theme style's sat/bri), `Set<String> validate()`
       (human-readable error strings; empty = OK).
     - **Corrected contract (controller ruling, pre-dispatch):** the original plan pinned `float effectiveHue(f)` whose
-      pinned rule changes brightness/saturation — a hue-only float cannot carry it. `baseHue` + `shadeDepth` +
+      pinned rule changes brightness/saturation - a hue-only float cannot carry it. `baseHue` + `shadeDepth` +
       `shadeHsb` replace it; the shading rule text is unchanged.
 - Consumes: nothing.
 
@@ -171,15 +171,15 @@ The legacy system is untouched (its annotation fields become `@Deprecated`). Eve
 **Interfaces:**
 
 - Produces:
-    - `interface JIPipeNodeTaxonomyFramework` — `String getId()`, `String getName()`, `String getAbbreviation()`,
+    - `interface JIPipeNodeTaxonomyFramework` - `String getId()`, `String getName()`, `String getAbbreviation()`,
       `String getPatternStyleId()`, `Color getColor()` (default impl = fixed 12-color neutral palette indexed by
       `Math.floorMod(id.hashCode(), 12)`; exact palette:
       `0x4a86c8, 0xd08a3e, 0x5aa05a, 0x8a63c0, 0xb3542e, 0x2e6db3, 0x5a7d2a, 0xc05a8a, 0x7a5ac0, 0x2ea0a0, 0xa0a02e, 0x666e7a`).
-    - `class FrameworkRegistry` — `register(…)`, `byId(String)`, `Set<…> all()`, `Set<String> validate()` (errors:
+    - `class FrameworkRegistry` - `register(…)`, `byId(String)`, `Set<…> all()`, `Set<String> validate()` (errors:
       duplicate ids; abbreviation length > 4; empty abbreviation).
 - Consumes: none.
 
-- [ ] **Step 1: Write the failing tests** — `duplicateIdsRejected`, `abbreviationOverFourCharsRejected` (stub with
+- [ ] **Step 1: Write the failing tests** - `duplicateIdsRejected`, `abbreviationOverFourCharsRejected` (stub with
   `getAbbreviation()="ABCDE"`), `abbreviationEmptyRejected`, `colorStablePerId` (same id ⇒ same color across two
   registry instances).
 - [ ] **Step 2: Run** → FAIL.
@@ -202,22 +202,22 @@ The legacy system is untouched (its annotation fields become `@Deprecated`). Eve
 **Interfaces:**
 
 - Produces:
-    - `interface JIPipeNodeTaxonomyFamily` — `String getId()`, `getName()`, `getDescription()`,
+    - `interface JIPipeNodeTaxonomyFamily` - `String getId()`, `getName()`, `getDescription()`,
       `@Nullable JIPipeNodeTemplate getTemplate()`, `@Nullable JIPipeNodeExample getExample()`, `Set<String> getTags()`.
       (`JIPipeNodeTemplate` = `api/JIPipeNodeTemplate.java`; `JIPipeNodeExample` = `api/nodes/JIPipeNodeExample.java`.)
-    - `class JIPipeNodeTaxonomyFamilyStep` — `String label()`, `nodeId()`, `purpose()`, `List<String> afterIds()`; a
+    - `class JIPipeNodeTaxonomyFamilyStep` - `String label()`, `nodeId()`, `purpose()`, `List<String> afterIds()`; a
       node's step id = `"familyId#nodeId"`.
-    - `@Repeatable JIPipeNodeTaxonomyFamilyStepAnnotation` —
+    - `@Repeatable JIPipeNodeTaxonomyFamilyStepAnnotation` -
       `Class<? extends JIPipeNodeTaxonomyFamily> family()`, `String label()`, `Class<?>[] after() default {}`
       (predecessor **node classes**; empty = start step), `String purpose() default ""`.
-    - `class FamilyAssembler` — `addStep(String nodeId, JIPipeNodeTaxonomyFamilyStepAnnotation a)`,
+    - `class FamilyAssembler` - `addStep(String nodeId, JIPipeNodeTaxonomyFamilyStepAnnotation a)`,
       `Graph<String, DefaultEdge> graph(JIPipeNodeTaxonomyFamily f)`,
       `Set<JIPipeNodeTaxonomyFamilyStep> steps(JIPipeNodeTaxonomyFamily f)`, `List<String> followUps(String nodeId)`
       (outgoing-edge targets, ordered), `Set<String> validate(Set<String> registeredNodeIds)` (error per dangling step
       whose node id is not registered).
 - Consumes: `JIPipeNodeTemplate`, `JIPipeNodeExample` (existing).
 
-- [ ] **Step 1: Write the failing tests** (tiny stub node classes in the test file — `DetectSpots` with
+- [ ] **Step 1: Write the failing tests** (tiny stub node classes in the test file - `DetectSpots` with
   `@JIPipeNodeTaxonomyFamilyStepAnnotation(family=Tm.class, label="Detect spots")`, `TrackSpots` with
   `after={DetectSpots.class}`):
     - `graphBuiltFromAnnotations`: 2 steps + 1 edge DetectSpots→TrackSpots.
@@ -231,7 +231,7 @@ The legacy system is untouched (its annotation fields become `@Deprecated`). Eve
 
 ---
 
-### Task 5: ADD taxonomy fields to `@ConfigureJIPipeNode` (+ tags, `NoFramework`) — old fields deprecated, NOT removed
+### Task 5: ADD taxonomy fields to `@ConfigureJIPipeNode` (+ tags, `NoFramework`) - old fields deprecated, NOT removed
 
 **Files:**
 
@@ -243,19 +243,19 @@ The legacy system is untouched (its annotation fields become `@Deprecated`). Eve
 **Interfaces:**
 
 - Produces (on `@ConfigureJIPipeNode`):
-    - `Class<? extends JIPipeNodeTaxonomyFunction>[] function() default { }` — first entry = primary; rest = secondary
+    - `Class<? extends JIPipeNodeTaxonomyFunction>[] function() default { }` - first entry = primary; rest = secondary
       locations.
     - `JIPipeNodeTaxonomySpatialDimension[] spatialDimensions() default {}`
     - `Class<? extends JIPipeNodeTaxonomyFramework> framework() default NoFramework.class`
     - **NEW:** `@Deprecated` on `menuPath()` and `nodeTypeCategory()` (still present with their current defaults). They
       are removed only in Task 27.
     - `nodeClassification()`, `dataSourceMenuLocation()` unchanged.
-    - New `@Repeatable JIPipeNodeTaxonomyTags` — `String[] value()`.
-    - `class NoFramework implements JIPipeNodeTaxonomyFramework` — id `"jipipe:framework:none"`, name `"—"`,
-      abbreviation `"—"`, patternStyleId `"initials"`.
+    - New `@Repeatable JIPipeNodeTaxonomyTags` - `String[] value()`.
+    - `class NoFramework implements JIPipeNodeTaxonomyFramework` - id `"jipipe:framework:none"`, name `"-"`,
+      abbreviation `"-"`, patternStyleId `"initials"`.
 - Consumes: Tasks 2, 3.
 
-- [ ] **Step 1: Write the failing test** — a stub class annotated with the new fields; assert `function()[0]`,
+- [ ] **Step 1: Write the failing test** - a stub class annotated with the new fields; assert `function()[0]`,
   `spatialDimensions()`, `framework()` via `getAnnotation`; `@JIPipeNodeTaxonomyTags({"a","b"})` twice ⇒
   `getAnnotationsByType` returns both, values concatenate. Also assert the OLD fields still exist (compile check) so
   nothing downstream breaks yet.
@@ -264,7 +264,7 @@ The legacy system is untouched (its annotation fields become `@Deprecated`). Eve
 - [ ] **Step 4: Run** → PASS.
 - [ ] **Step 5: Commit** `git commit -m "feat: add taxonomy fields to ConfigureJIPipeNode, deprecate legacy fields"`.
 
-Note: this task does NOT break the tree — it only adds fields and deprecates old ones. All ~1,840 node classes still
+Note: this task does NOT break the tree - it only adds fields and deprecates old ones. All ~1,840 node classes still
 compile unchanged.
 
 ---
@@ -302,13 +302,13 @@ compile unchanged.
       abstract methods would break all 5 direct implementors.
 - Consumes: Tasks 2, 3, 5.
 
-- [ ] **Step 1: Write the failing test** — stub node with
+- [ ] **Step 1: Write the failing test** - stub node with
   `@ConfigureJIPipeNode(function={StubFuncA.class, StubFuncB.class}, spatialDimensions={SPATIAL_2D, SPATIAL_3D}, framework=StubFramework.class)` +
   `@JIPipeNodeTaxonomyTags({"x"})`; construct `new JIPipeJavaNodeInfo("test-node", Stub.class)`; assert
   primary/secondary/framework/spatial/tags correct. Also a stub using ONLY the legacy `nodeTypeCategory` ⇒
   `getPrimaryFunction()` is null (unconverted), `getCategory()` still populated (dual state during transition).
 - [ ] **Step 2: Run** → FAIL.
-- [ ] **Step 3: Implement** extraction in the constructor — new statics `getFunctionOf`, `getFrameworkOf`,
+- [ ] **Step 3: Implement** extraction in the constructor - new statics `getFunctionOf`, `getFrameworkOf`,
   `getSpatialOf`, `getTaxonomyTagsOf` mirroring the existing `getCategoryOf`/`getMenuPathOf`. Set new fields only when
   `function().length > 0`; always set framework (default `NoFramework`), spatial (default empty), tags.
 - [ ] **Step 4: Run** → PASS.
@@ -316,7 +316,7 @@ compile unchanged.
 
 ---
 
-### Task 7: Registry wiring (functions, frameworks, families, input profiles) — dual-read
+### Task 7: Registry wiring (functions, frameworks, families, input profiles) - dual-read
 
 **Files:**
 
@@ -331,16 +331,16 @@ compile unchanged.
       `Map<String, JIPipeNodeTaxonomyFamily> getFamilies()`
     - `void registerInputProfileProvider(InputProfileProvider p)`,
       `JIPipeNodeTaxonomyInputProfile inputProfileFor(Class<?> dataClass)` (first non-`NA` provider wins; all `NA` ⇒
-      `NA`; **never throws** — Review Focus #5)
-    - `Set<String> validateTaxonomy()` — aggregates `FunctionRegistry.validate()`, `FrameworkRegistry.validate()`,
+      `NA`; **never throws** - Review Focus #5)
+    - `Set<String> validateTaxonomy()` - aggregates `FunctionRegistry.validate()`, `FrameworkRegistry.validate()`,
       family `validate()`, plus: for every node with a non-null primary function, that function and framework must be
       registered; a function class that exists but was never registered ⇒ error listing node id + function id (Review
-      Focus #1). Nodes with null function are **unconverted** (expected in 1b) — they are reported separately, not as
+      Focus #1). Nodes with null function are **unconverted** (expected in 1b) - they are reported separately, not as
       errors.
 - Consumes: Tasks 2, 3, 4, 6.
 
 - [ ] **Step 1: Write the failing tests** in `TaxonomyResolverTest` (construct a minimal `JIPipeNodesServiceComponent`
-  the way existing service-component tests do — inspect `jipipe-core/src/test` for the pattern; if none, a no-op
+  the way existing service-component tests do - inspect `jipipe-core/src/test` for the pattern; if none, a no-op
   `JIPipeService` stub):
     - `unregisteredFunctionFailsValidation`: node info whose primary function was never registered ⇒
       `validateTaxonomy()` non-empty, message has node id + function id.
@@ -348,11 +348,11 @@ compile unchanged.
     - `inputProfileFirstNonNAWins`: providers return `NA` then `VOLUME_3D` ⇒ `VOLUME_3D`.
     - `familyDanglingStepSurfaces`: family with a step for an unregistered node id ⇒ `validateTaxonomy()` non-empty.
     - `unconvertedNodeIsNotAnError`: node info with null function ⇒ not in `validateTaxonomy()` errors (but IS in the
-      unassigned list — see Task 8).
+      unassigned list - see Task 8).
 - [ ] **Step 2: Run** → FAIL.
 - [ ] **Step 3: Implement.** In `register(JIPipeNodeInfo, JIPipeDependency)`: record node→function membership (node id →
   its primary + secondary functions) and node→framework membership; **do NOT** auto-register the function into the
-  `FunctionRegistry` — the curated tree is registered once by the taxonomy plugin (Task 12); `validateTaxonomy()` then
+  `FunctionRegistry` - the curated tree is registered once by the taxonomy plugin (Task 12); `validateTaxonomy()` then
   flags any node whose primary function is absent from that registry (the Review-Focus-#1 guard, and what makes the
   `unregisteredFunctionFailsValidation` test constructible). Read the node's `@JIPipeNodeTaxonomyFamilyStepAnnotation`s
   (repeatable, on `info.getInstanceClass()`) and `addStep` each into the `FamilyAssembler` (family id literal =
@@ -378,23 +378,23 @@ compile unchanged.
 **Interfaces:**
 
 - Produces:
-    - `class TaxonomyValidationReport` — `boolean ok()`, `List<String> errors()`, `List<String> unassignedNodeIds()`
-      (nodes with null primary function — the "vanishes from browser" detector, Review Focus #6),
+    - `class TaxonomyValidationReport` - `boolean ok()`, `List<String> errors()`, `List<String> unassignedNodeIds()`
+      (nodes with null primary function - the "vanishes from browser" detector, Review Focus #6),
       `static TaxonomyValidationReport run(FunctionRegistry, FrameworkRegistry, Map<String, JIPipeNodeTaxonomyFamily>, Map<String, JIPipeNodeInfo>)`.
     - Guard: a final pass at the END of initialization runs `TaxonomyValidationReport.run(...)`; real `errors()` are
-      added to the service's `JIPipeInitializationReport` (the existing init-failure mechanism —
+      added to the service's `JIPipeInitializationReport` (the existing init-failure mechanism -
       `JIPipeServiceDefaultInitializer.java:357` fails init when that report has errors; no new exception type exists or
       is needed). **During 1a** (nothing converted) `ok()` may be false only due to `unassignedNodeIds` being
-      non-empty — that is the *expected 1a state*: log INFO, add nothing to the init report. A
+      non-empty - that is the *expected 1a state*: log INFO, add nothing to the init report. A
       broken-but-partly-converted taxonomy (a `validate()` error) must never ship a wrong browser.
 - Consumes: Task 7.
 
-- [ ] **Step 1: Write the failing tests** — synthetic registries: (a) all valid + one unconverted node ⇒ `ok()` true,
+- [ ] **Step 1: Write the failing tests** - synthetic registries: (a) all valid + one unconverted node ⇒ `ok()` true,
   `unassignedNodeIds()` has that node, `errors()` empty; (b) cyclic functions ⇒ `errors()` non-empty ⇒ the startup hook
   path throws; (c) fully converted synthetic set ⇒ `unassignedNodeIds()` empty.
 - [ ] **Step 2: Run** → FAIL.
 - [ ] **Step 3: Implement** the report + the guard. **Exception-type correction (controller ruling):** there is NO
-  `JIPipeInitializationException` in this codebase — the established pattern is `JIPipeInitializationReport`
+  `JIPipeInitializationException` in this codebase - the established pattern is `JIPipeInitializationReport`
   (`api/service/JIPipeInitializationReport.java`), which the initializers check at the end of init:
   `JIPipeServiceDefaultInitializer.java:357` does
   `if (!getService().getInitializationReport().getErrors().isEmpty()) { … }` (and `JIPipeServiceNoImageJInitializer` +
@@ -403,17 +403,17 @@ compile unchanged.
   init flow then fails on, exactly like other init errors); "all nodes unconverted" (only `unassignedNodeIds` non-empty)
   logs INFO and adds nothing. Additionally, ABSORB the Task 7 deferred concern: `JIPipeNodesServiceComponent` must STOP
   the per-settle-loop `validateTaxonomy()` WARN logging (Task 7's component lines ~99-102 log on every
-  `runRegistrationTasks()` cycle — during the Task 19 conversion that re-logs the full error set repeatedly); leave a
+  `runRegistrationTasks()` cycle - during the Task 19 conversion that re-logs the full error set repeatedly); leave a
   single silent `validateTaxonomy()` available for `TaxonomyValidationReport`/tests, with the one authoritative
   log+report happening at the final init pass. **Verified hook location:** the component's
-  `postprocess(JIPipeProgressInfo)` override (added in Task 7) is the single final pass — it is invoked at
+  `postprocess(JIPipeProgressInfo)` override (added in Task 7) is the single final pass - it is invoked at
   `JIPipeServiceDefaultInitializer.java:333` (the
   `for(JIPipeServiceComponent component : getService().getComponents()) component.postprocess(…)` loop), which runs
   BEFORE the init-report error check at `:357`. So in that override: run `TaxonomyValidationReport.run(...)`, and if
   `errors()` is non-empty, append throwables to `getService().getInitializationReport().getErrors()` (the live list;
   `getErrors().add(…)` is how the initializer records init errors, e.g. `:245/:387`) so the existing `:357` block logs
   them. If only `unassignedNodeIds` is non-empty (the 1a "nothing converted" state), log INFO and append nothing. Do NOT
-  touch `JIPipeServiceDefaultInitializer` itself — the hook is entirely inside the component.
+  touch `JIPipeServiceDefaultInitializer` itself - the hook is entirely inside the component.
 - [ ] **Step 4: Run** → PASS.
 - [ ] **Step 5: Commit** `git commit -m "feat: add taxonomy validation guard with unassigned-node report"`.
 
@@ -423,7 +423,7 @@ compile unchanged.
 
 **Files:**
 
-- Create: `…/api/nodes/taxonomy/functions/` — 13 files.
+- Create: `…/api/nodes/taxonomy/functions/` - 13 files.
 - Test: `…/api/nodes/taxonomy/functions/TopLevelBranchesTest.java`
 
 **Interfaces:**
@@ -448,19 +448,19 @@ compile unchanged.
 | `MiscellaneousFunction` | `jipipe:function:misc`          | Miscellaneous   | 50   |
 
 `GraphFunction.getColorHue()` returns `null`, `isVisibleInPipeline()` returns **false**, and `isVisibleInCompartments()`
-returns **false** — mirroring legacy `InternalNodeTypeCategory` exactly (which is `false`/`false`/hue −1); the
+returns **false** - mirroring legacy `InternalNodeTypeCategory` exactly (which is `false`/`false`/hue −1); the
 Graph/Project leaves are auto-generated scaffolding + debug utilities that the user does not manually insert, so they
 must NOT appear as an insertable section in the pipeline add-node browser. Consumers render the null hue using the
-theme's panel background (the legacy negative-hue case) — document this in the class javadoc. (Controller note: a
-transient "isVisibleInPipeline () stays true" reading was raised in review and retracted — the written plan + legacy
+theme's panel background (the legacy negative-hue case) - document this in the class javadoc. (Controller note: a
+transient "isVisibleInPipeline () stays true" reading was raised in review and retracted - the written plan + legacy
 precedent both give false.)
 
-- [ ] **Step 1: Write the failing test** — instantiate all 13 via a test `all()` list; assert unique literal ids; names
+- [ ] **Step 1: Write the failing test** - instantiate all 13 via a test `all()` list; assert unique literal ids; names
   as above; hues exactly per the table (null for Graph); **pairwise hue uniqueness** among the 12 colored branches
   (Review Focus #3); all `getParent()==null`; after a register loop, all in a `FunctionRegistry`.
 - [ ] **Step 2: Run** → FAIL.
-- [ ] **Step 3: Implement** (icons: reuse legacy category icons where 1:1 — e.g. `actions/tool_imageeffects.png` for
-  Images — else pick from `jipipe-core/src/main/resources/icons/actions/`).
+- [ ] **Step 3: Implement** (icons: reuse legacy category icons where 1:1 - e.g. `actions/tool_imageeffects.png` for
+  Images - else pick from `jipipe-core/src/main/resources/icons/actions/`).
 - [ ] **Step 4: Run** → PASS.
 - [ ] **Step 5: Commit** `git commit -m "feat: add 13 top-level taxonomy function branches"`.
 
@@ -472,7 +472,7 @@ precedent both give false.)
 
 - Create: leaf classes under `…/functions/` in per-branch subpackages
   `data/ images/ rois/ filaments/ tables/ statistics/ tracking/ annotations/ deeplearning/ plotting/ export/ graph/`
-  (class = `<Branch><Leaf>Function`, id = `jipipe:function:<leaf-name-kebab>` — the leaf's own name kebab-cased, NOT the
+  (class = `<Branch><Leaf>Function`, id = `jipipe:function:<leaf-name-kebab>` - the leaf's own name kebab-cased, NOT the
   full branch path, e.g. `ImageDataFunction`→`jipipe:function:image-data`; parent = the Task 9 branch).
 - Test: `…/functions/FunctionLeavesTest.java`
 
@@ -497,13 +497,13 @@ precedent both give false.)
     - **export**: `ExportFileFormatsFunction`, `ExportArchiveFunction`
     - **graph**: `GraphCompartmentOutputsFunction`, `GraphWrappersFunction`, `GraphDebugFunction`
       (48 leaf classes total: 5 data + 9 images + 4 rois + 3 filaments + 5 tables + 3 statistics + 4 tracking + 2
-      annotations + 3 deeplearning + 5 plotting + 2 export + 3 graph. The earlier "39" count was an arithmetic slip —
+      annotations + 3 deeplearning + 5 plotting + 2 export + 3 graph. The earlier "39" count was an arithmetic slip -
       the named list above is the contract. Seed tags: `TrackingDetectionFunction` → `{"spot-detection"}`,
       `DeepLearningInferenceFunction` → `{"inference"}`, `SegmentationCellBasedFunction` → `{"cell-segmentation"}`; all
       others empty.)
 - Consumes: Task 9.
 
-- [ ] **Step 1: Write the failing test** — helper listing all 39; assert unique literal ids; each parent is a Task-9
+- [ ] **Step 1: Write the failing test** - helper listing all 39; assert unique literal ids; each parent is a Task-9
   top-level (or `SegmentationFunction` for the cell-based leaf); every leaf reachable via `topLevel()→…→leaf` (Review
   Focus #2); full set registered ⇒ `FunctionRegistry.validate()` empty.
 - [ ] **Step 2: Run** → FAIL.
@@ -517,7 +517,7 @@ precedent both give false.)
 
 **Files:**
 
-- Create: `…/api/nodes/taxonomy/frameworks/` — 12 files.
+- Create: `…/api/nodes/taxonomy/frameworks/` - 12 files.
 - Test: `…/frameworks/FrameworksTest.java`
 
 **Interfaces:**
@@ -539,7 +539,7 @@ precedent both give false.)
 | `ImageJ1Framework`    | `jipipe:framework:imagej1`    | ImageJ 1   | IJ1    | `triangles`     |
 | `ImageJ2Framework`    | `jipipe:framework:imagej2`    | ImageJ 2   | IJ2    | `triangles`     |
 
-- [ ] **Step 1: Write the failing test** — all 12: unique ids; abbreviations ≤ 4 chars and unique (Review Focus #4);
+- [ ] **Step 1: Write the failing test** - all 12: unique ids; abbreviations ≤ 4 chars and unique (Review Focus #4);
   `FrameworkRegistry.validate()` empty when all registered; `getColor()` stable per id.
 - [ ] **Step 2: Run** → FAIL.
 - [ ] **Step 3: Implement.**
@@ -553,32 +553,32 @@ precedent both give false.)
 **Files:**
 
 - Create: `…/plugins/taxonomy/TaxonomyPlugin.java` (extends `JIPipePrepackagedDefaultJavaPlugin`, annotated
-  `@Plugin(type = JIPipeJavaPlugin.class)` exactly like `CorePlugin` and every other core plugin — there is NO manual
+  `@Plugin(type = JIPipeJavaPlugin.class)` exactly like `CorePlugin` and every other core plugin - there is NO manual
   plugin list to add to).
 - Modify: `plugins/jipipe-plugin-ij/src/main/java/org/hkijena/jipipe/plugins/imagejdatatypes/ImageJDataTypesPlugin.java`
   `register(...)` to register `ImageTypeInfoInputProfileProvider` (create it in that plugin's package) reading
   `@ImageTypeInfo.numDimensions()`: 2→`PLANE_2D`, 3→`VOLUME_3D`, −1/absent→`ANY`; non-image types (no `@ImageTypeInfo`)→
   `NA`.
-- Test (jipipe-core): `…/api/nodes/taxonomy/TaxonomyPluginTest.java` — the `allTaxonomyRegistered` case.
+- Test (jipipe-core): `…/api/nodes/taxonomy/TaxonomyPluginTest.java` - the `allTaxonomyRegistered` case.
 - Test (jipipe-plugin-ij):
-  `plugins/jipipe-plugin-ij/src/test/java/org/hkijena/jipipe/plugins/imagejdatatypes/ImageTypeInfoInputProfileProviderTest.java` —
+  `plugins/jipipe-plugin-ij/src/test/java/org/hkijena/jipipe/plugins/imagejdatatypes/ImageTypeInfoInputProfileProviderTest.java` -
   the `providerMapsNumDimensions` case.
 
 **Controller notes (binding):** (a) Plugin discovery is via the SciJava `@Plugin(type = JIPipeJavaPlugin.class)`
-annotation — just like `CorePlugin` — so "add TaxonomyPlugin before node plugins" is NOT a manual ordering step; it is
+annotation - just like `CorePlugin` - so "add TaxonomyPlugin before node plugins" is NOT a manual ordering step; it is
 one more `@Plugin` class the service discovers. The ordering concern is moot: node plugins only RECORD function
 membership at registration (Task 7) and the validation guard runs at end-of-init (Task 8 `postprocess()`), so the tree
 just needs to be registered somewhere during init. (b) `getFamilies()` will be EMPTY after this task (no node yet
-carries a `@JIPipeNodeTaxonomyFamilyStepAnnotation` — that lands in Task 13); the `allTaxonomyRegistered` test must
+carries a `@JIPipeNodeTaxonomyFamilyStepAnnotation` - that lands in Task 13); the `allTaxonomyRegistered` test must
 assert 61 functions + 12 frameworks + `validate()` empty and must NOT assert any families. (c) `ImageTypeInfo` is at
 `org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImageTypeInfo` (annotation, `numDimensions()` default −1). **(d)
 TEST MODULE SPLIT (corrects the brief's defect):** `jipipe-core` does NOT depend on `jipipe-plugin-ij` (the reverse is
-true), so the `@ImageTypeInfo`-based `providerMapsNumDimensions` test CANNOT live in a jipipe-core test — it must live
+true), so the `@ImageTypeInfo`-based `providerMapsNumDimensions` test CANNOT live in a jipipe-core test - it must live
 in **jipipe-plugin-ij** (where `@ImageTypeInfo` + the provider are). `jipipe-plugin-ij` has NO test infra today (no
-`src/test`, no junit deps): add the minimal JUnit 5 setup mirroring jipipe-core per AGENTS.md — `junit-jupiter` +
+`src/test`, no junit deps): add the minimal JUnit 5 setup mirroring jipipe-core per AGENTS.md - `junit-jupiter` +
 `junit-platform-launcher` test-scope deps in `plugins/jipipe-plugin-ij/pom.xml`. The provider test should be a **pure
 unit test** (construct `ImageTypeInfoInputProfileProvider` directly, call `getProfile` on `@ImageTypeInfo`-annotated
-stub classes, assert the enum) that does **NOT** call `JIPipe.ensureInstance()` — if, and only if, it trips the
+stub classes, assert the enum) that does **NOT** call `JIPipe.ensureInstance()` - if, and only if, it trips the
 documented ImageJ legacy-patcher ordering error ("No _hooks field found in ij.IJ"), add the
 `ImageJLegacyPatcherLauncherSessionListener` service registration
 (`plugins/jipipe-plugin-ij/src/test/resources/META-INF/services/org.junit.platform.launcher.LauncherSessionListener`)
@@ -590,14 +590,14 @@ mirroring jipipe-core; do not add it speculatively. The `allTaxonomyRegistered` 
 - Produces:
     - `TaxonomyPlugin.register()` registers all 13 top-levels + 48 leaves + 12 frameworks into `JIPipe.getNodes()`
       registries.
-    - `ImageTypeInfoInputProfileProvider implements InputProfileProvider` — `getProfile(Class)`: reads `@ImageTypeInfo`;
+    - `ImageTypeInfoInputProfileProvider implements InputProfileProvider` - `getProfile(Class)`: reads `@ImageTypeInfo`;
       unannotated ⇒ `NA`.
 - Consumes: Tasks 7, 9, 10, 11.
 
 - [ ] **Step 1: Write the failing tests (two modules, see note (d)).** In **jipipe-plugin-ij**
-  (`ImageTypeInfoInputProfileProviderTest`): `providerMapsNumDimensions` — `@ImageTypeInfo(numDimensions=2/3/-1)`
+  (`ImageTypeInfoInputProfileProviderTest`): `providerMapsNumDimensions` - `@ImageTypeInfo(numDimensions=2/3/-1)`
   stubs ⇒ `PLANE_2D`/`VOLUME_3D`/`ANY`; unannotated ⇒ `NA` (pure unit test, no `JIPipe.ensureInstance()`). In
-  **jipipe-core** (`TaxonomyPluginTest`): `allTaxonomyRegistered` — after `TaxonomyPlugin` registers (full `JIPipe`
+  **jipipe-core** (`TaxonomyPluginTest`): `allTaxonomyRegistered` - after `TaxonomyPlugin` registers (full `JIPipe`
   init, per existing JIPipe-test precedent) ⇒ `getFunctions()` has 61 ids (13 top-levels + 48 leaves), `getFrameworks()`
   has 12, `validate()` empty, and `getFamilies()` is empty (no families yet).
 - [ ] **Step 2: Run** both → FAIL (RED: TaxonomyPlugin + provider missing).
@@ -614,10 +614,10 @@ mirroring jipipe-core; do not add it speculatively. The `allTaxonomyRegistered` 
 
 **Files:**
 
-- Create: `…/api/nodes/taxonomy/families/` — `TrackMateFamily.java`, `Cellpose4Family.java`, `DeepLearningFamily.java`,
+- Create: `…/api/nodes/taxonomy/families/` - `TrackMateFamily.java`, `Cellpose4Family.java`, `DeepLearningFamily.java`,
   `PlottingFamily.java` (ids `jipipe:family:trackmate` / `:cellpose4` / `:deep-learning` / `:plotting`; `getTemplate()`/
-  `getExample()` return null for now — template wiring is Phase 3).
-- Modify: `plugins/jipipe-plugin-ij-trackmate/` — add
+  `getExample()` return null for now - template wiring is Phase 3).
+- Modify: `plugins/jipipe-plugin-ij-trackmate/` - add
   `@JIPipeNodeTaxonomyFamilyStepAnnotation(family = TrackMateFamily.class, …)` to the 18 TrackMate node classes
   (detection→linking→filtering→analysis; `after` = node classes in the same module).
 - Test: `…/families/SeedFamiliesTest.java`
@@ -628,7 +628,7 @@ mirroring jipipe-core; do not add it speculatively. The `allTaxonomyRegistered` 
   etc.
 - Consumes: Task 4.
 
-- [ ] **Step 1: Write the failing test** — assemble `TrackMateFamily` steps from the annotated trackmate node classes
+- [ ] **Step 1: Write the failing test** - assemble `TrackMateFamily` steps from the annotated trackmate node classes
   (import them in the test); assert graph acyclic, no dangling step ids, `followUps` of the first step non-empty and
   ordered; all 4 families validate (unique ids, non-empty names).
 - [ ] **Step 2: Run** → FAIL.
@@ -672,7 +672,7 @@ mirroring jipipe-core; do not add it speculatively. The `allTaxonomyRegistered` 
             clij→`ClijFramework`; opencv→`OpenCVFramework`; plots→`JFreeChartFramework`; weka/ilastik/omnipose→
             `JIPipeDLFramework`; ij2-discovered→`ImageJ2Framework`; ij/ij-3d/ij-algorithms→`ImageJ1Framework` (unless
             more specific); core plugins→`CoreFramework`; else leave `NoFramework` (flagged for Phase 3).
-        12. Spatial: read the node's first image input slot — `Image2DData`/`d2`⇒`SPATIAL_2D`; `d3`⇒`SPATIAL_3D`;
+        12. Spatial: read the node's first image input slot - `Image2DData`/`d2`⇒`SPATIAL_2D`; `d3`⇒`SPATIAL_3D`;
             `ImagePlusData`/`Image5DData`⇒both; non-image⇒absent (no `spatialDimensions` field).
     - `TaxonomyConversionReportTest`: reads `-Djipipe.taxonomy.report.module=<id>`, initializes JIPipe, collects
       `TaxonomyValidationReport` filtered to that module's node ids, **fails if any node in the module has a null
@@ -681,18 +681,18 @@ mirroring jipipe-core; do not add it speculatively. The `allTaxonomyRegistered` 
 
 - [ ] **Step 1: Write `conversion-map.md`** with the 12 rules + an empty per-module status table (module, node count,
   status).
-- [ ] **Step 2: Write `convert.py`** (argparse; `map.tsv` in; rewrites `@ConfigureJIPipeNode(...)` blocks in place —
+- [ ] **Step 2: Write `convert.py`** (argparse; `map.tsv` in; rewrites `@ConfigureJIPipeNode(...)` blocks in place -
   replaces `nodeTypeCategory=`/`menuPath=` with `function=` and inserts `framework=`/`spatialDimensions=` per the TSV;
   leaves name/descriptions/slots/other annotations untouched; `--dry-run` prints the change summary; idempotent).
 - [ ] **Step 3: Write `TaxonomyConversionReportTest`** as specified.
 - [ ] **Step 4: Verify tooling end-to-end** on a throwaway copy: copy one small module's source to `/tmp`, run
   `convert.py` with a 3-row TSV, confirm the rewrite + idempotency.
-- [ ] **Step 5: Commit** — add `utils/taxonomy-conversion/convert.py` to `.gitignore` first;
+- [ ] **Step 5: Commit** - add `utils/taxonomy-conversion/convert.py` to `.gitignore` first;
   `git add utils/taxonomy-conversion/conversion-map.md jipipe-core/src/test/java/…/TaxonomyConversionReportTest.java && git commit -m "feat: add taxonomy conversion tooling and per-module report test"`.
 
 ---
 
-### Task 15: Node database — ADD function facets + related/follow-ups (legacy kept)
+### Task 15: Node database - ADD function facets + related/follow-ups (legacy kept)
 
 **Files:**
 
@@ -704,7 +704,7 @@ mirroring jipipe-core; do not add it speculatively. The `allTaxonomyRegistered` 
 
 - Produces (on `JIPipeNodeDatabaseEntry`):
     - **ADD** `getFunctionIds()` (all functions the node appears under; empty until converted), `getFramework()` (never
-      null), `getSpatialDimensions()`, `getInputProfile()`, `getTags()` (the node's merged tag set — read from
+      null), `getSpatialDimensions()`, `getInputProfile()`, `getTags()` (the node's merged tag set - read from
       `JIPipeNodeInfo.getMergedTags()`, Task 7).
     - **KEEP** `getCategoryIds()` (still populated from the legacy category for unconverted nodes) until Task 27.
     - On `JIPipeNodeDatabase`: `List<JIPipeNodeDatabaseEntry> followUps(JIPipeNodeDatabaseEntry e)` (via
@@ -714,7 +714,7 @@ mirroring jipipe-core; do not add it speculatively. The `allTaxonomyRegistered` 
       down-ranking last; cached per entry, invalidated on database rebuild).
 - Consumes: Tasks 7, 13.
 
-- [ ] **Step 1: Write the failing test** — build the database over a small synthetic set of node infos (reuse Task 7's
+- [ ] **Step 1: Write the failing test** - build the database over a small synthetic set of node infos (reuse Task 7's
   service-component construction): two `TrackMateFamily` nodes (detect→track) ⇒ `followUps(detect)` = `[track]`; a third
   node same framework, not in the family ⇒ `related(detect)` contains it after the family sibling; a shared-tag node ⇒
   appears on tag match; cache: a second `related` call returns the same list instance.
@@ -737,13 +737,13 @@ mirroring jipipe-core; do not add it speculatively. The `allTaxonomyRegistered` 
 **Interfaces:**
 
 - Produces:
-    - `class NodeBrowserModel` — `setSearch(String)`, `setFramework(@Nullable JIPipeNodeTaxonomyFramework)`,
+    - `class NodeBrowserModel` - `setSearch(String)`, `setFramework(@Nullable JIPipeNodeTaxonomyFramework)`,
       `setSpatial(Set<JIPipeNodeTaxonomySpatialDimension>)`, `setInput(Set<JIPipeNodeTaxonomyInputProfile>)`,
       `setTags(Set<String>)`, `setPinnedOnly(boolean)`, `setSelectionOnly(boolean)`,
       `setTreePath(List<JIPipeNodeTaxonomyFunction>)`, `int getTier(int widthPx)` ⇒
       `widthPx < 380 ? TIER_COMPACT : TIER_COMFORTABLE` (`TIER_COMPACT=0`, `TIER_COMFORTABLE=1`),
       `boolean isSearchActive()` (non-empty search ⇒ flat-results mode, overrides tree).
-    - `class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel` — ctor
+    - `class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel` - ctor
       `(JIPipeDesktopWorkbench, JIPipeDesktopGraphEditorUI)`; renders per tier (compact: single tree list with node
       leaves; comfortable: tree list + results list); filter bar (own wrapping `JIPipeDesktopWrapLayout` row: framework
       combo, spatial 2D/3D checkboxes, input checkboxes, tags combo, ★ pinned, ⊂ selection-only); search field + AI
@@ -754,7 +754,7 @@ mirroring jipipe-core; do not add it speculatively. The `allTaxonomyRegistered` 
       pin/unpin via existing settings key `"node-db"`/`pinned-node-ids` (L295-297).
     - **⊂ selection-only rule** (pinned, since the old panel had no equivalent): a node passes iff the canvas selection
       is non-empty **and** for at least one selected node's output slot there exists a candidate node's input slot whose
-      data type is compatible with the output's data type — compatibility = the output data class is assignable to the
+      data type is compatible with the output's data type - compatibility = the output data class is assignable to the
       input data class via the existing datatype-registry hierarchy (`JIPipe.getDataTypes()` assignability), the same
       relation JIPipe uses to allow a connection. Nodes with no input slots (templates, sources) are excluded; the rule
       is recomputed on selection change (listen to the existing `JIPipeDesktopGraphCanvasUINodeSelectionChangedEvent`).
@@ -769,10 +769,10 @@ mirroring jipipe-core; do not add it speculatively. The `allTaxonomyRegistered` 
     - `searchOverridesTree`: empty search + tree path ⇒ `isSearchActive()` false; non-empty ⇒ true.
     - `facetCombination`: setting framework+spatial+tags stores all three; clearing one leaves the others (no
       cross-reset).
-    - `filterQuery`: over the Task 15 synthetic database — framework filter returns only that framework's nodes; spatial
+    - `filterQuery`: over the Task 15 synthetic database - framework filter returns only that framework's nodes; spatial
       `SPATIAL_3D` returns nodes declaring it; input `PLANE_2D` returns nodes with that profile; tags intersect.
 - [ ] **Step 2: Run** → FAIL.
-- [ ] **Step 3: Implement** `NodeBrowserModel` first (TDD), then the Swing component (no Swing tests — spec: unit-level
+- [ ] **Step 3: Implement** `NodeBrowserModel` first (TDD), then the Swing component (no Swing tests - spec: unit-level
   only).
 - [ ] **Step 4: Run** → PASS (model tests).
 - [ ] **Step 5: Commit** `git commit -m "feat: add adaptive node browser component"`.
@@ -799,16 +799,16 @@ mirroring jipipe-core; do not add it speculatively. The `allTaxonomyRegistered` 
 - [ ] **Step 2: Wire** ▶ Insert setup via the family's template or, absent, `addToGraph` per follow-up entry at the
   cursor.
 - [ ] **Step 3:** `mvn -q compile -pl jipipe-core` → success.
-- [ ] **Step 4: Manual smoke** (recorded, not automated — see Task 20 step 4 note).
+- [ ] **Step 4: Manual smoke** (recorded, not automated - see Task 20 step 4 note).
 - [ ] **Step 5: Commit** `git commit -m "feat: rebuild node finder dialog with detail rail and family follow-ups"`.
 
 ---
 
-### Task 18: Search tokens — ADD taxonomy tokens (dual-read)
+### Task 18: Search tokens - ADD taxonomy tokens (dual-read)
 
 **Files:**
 
-- Modify: `…/api/nodes/database/entries/CreateNewNodeByInfoDatabaseEntry.java` (+ siblings that build `WeightedTokens` —
+- Modify: `…/api/nodes/database/entries/CreateNewNodeByInfoDatabaseEntry.java` (+ siblings that build `WeightedTokens` -
   grep `getTokens()` in `api/nodes/database/`)
 - Test: `…/api/nodes/database/TokenTaxonomyTest.java`
 
@@ -817,10 +817,10 @@ mirroring jipipe-core; do not add it speculatively. The `allTaxonomyRegistered` 
 - Produces: `getTokens()` composition = node name (highest weight, existing) **+** function path terms at decreasing
   weight (leaf > parent > … > top, e.g. leaf 1.0, each ancestor ×0.5) **+** framework name (1.0) **+** framework
   abbreviation (0.8) **+** tags (1.0 each) **+** description (existing). For **unconverted** nodes (no function), the
-  function-path terms are empty and the existing category token (from `getCategoryIds()`) is retained — so search never
+  function-path terms are empty and the existing category token (from `getCategoryIds()`) is retained - so search never
   regresses during 1b. Spatial/input-profile are **filter-only, not tokens** (spec).
 
-- [ ] **Step 1: Write the failing test** — synthetic entry: name "Segment cells", function
+- [ ] **Step 1: Write the failing test** - synthetic entry: name "Segment cells", function
   path [Images > Segmentation > Cell-based], framework Cellpose 4 (CP4), tags {cells}: token set has "segment cells"
   (weight ≥ all), "cell-based" > "segmentation" > "images", "cellpose 4" + "cp4" present, "cells" present; no
   spatial/input-profile tokens. Second case: unconverted entry (category set, no function) ⇒ category token present, no
@@ -835,17 +835,17 @@ every commit.
 
 ---
 
-# Phase 1b — Convert all nodes, migrate consumers, rip out the legacy system
+# Phase 1b - Convert all nodes, migrate consumers, rip out the legacy system
 
 Every step keeps the tree compiling (legacy annotation fields still exist). The single Task 27 rip-out removes them and
 re-establishes a clean compiling tree.
 
 **Per-batch method (Tasks 19.x):** (1) run `convert.py` with the module's TSV rows (built from Task 14 rules; record
-every non-obvious decision in `conversion-map.md`); (2) fix what the script can't — drop leftover `nodeTypeCategory`/
+every non-obvious decision in `conversion-map.md`); (2) fix what the script can't - drop leftover `nodeTypeCategory`/
 `menuPath`/`@AddJIPipeNodeAlias` per node (aliases become secondary `function[]` entries), fix imports (remove
 `…categories.*`, add leaf/framework classes); (3) handle **programmatic `registerNodeType` nodes** in the module:
 `convert.py` only rewrites `@ConfigureJIPipeNode` blocks, but taxonomy extraction reads the node class's annotations
-regardless of registration path — so add `@ConfigureJIPipeNode(function = …, framework = …)` to those node classes by
+regardless of registration path - so add `@ConfigureJIPipeNode(function = …, framework = …)` to those node classes by
 hand (list them in the module's `conversion-map.md` row); (4) `mvn -q compile -pl <module> -am` → **full success**
 (unconverted siblings still use the old fields, so the module compiles as a whole); (5) run the per-module gate: for a
 **plugin module**, first copy `TaxonomyConversionReportTest.java` into the module's `src/test` (core's classpath can't
@@ -862,21 +862,21 @@ scene-3d 7, opencv 6, r 5, imp 5, omnipose 5, clij 4, ij2 2, ij-multi-template-m
 ### Task 19.1: jipipe-core (31 annotated + the programmatic `registerNodeType` node classes)
 
 **Files:** all `@ConfigureJIPipeNode` classes in `jipipe-core/src/main/java` (convert.py), **plus** the node classes
-registered programmatically via `registerNodeType` — `LoopStartNode`/`LoopEndNode` (`api/looping/LoopingPlugin.java`),
+registered programmatically via `registerNodeType` - `LoopStartNode`/`LoopEndNode` (`api/looping/LoopingPlugin.java`),
 `GraphWrapperAlgorithmInput`/`GraphWrapperAlgorithmOutput` (`api/grouping/GroupingPlugin.java`),
 `JIPipeProjectCompartmentOutput`/`JIPipeProjectCompartment` (`api/compartments/JIPipeCompartmentsPlugin.java`),
 `JIPipeDataFlowTunnel*Entrance/Exit` (`plugins/tunnels/TunnelsPlugin.java`), and the `plugins/multiparameters/` node
-classes (`MultiParametersPlugin`/`MultiParameterAlgorithmsPlugin`) — each gets a hand-written `@ConfigureJIPipeNode`
+classes (`MultiParametersPlugin`/`MultiParameterAlgorithmsPlugin`) - each gets a hand-written `@ConfigureJIPipeNode`
 with function/framework (rule: loops/wrappers/compartments → `GraphDebugFunction` or `GraphWrappersFunction`; tunnels →
-`GraphWrappersFunction`; multiparameters → `TablesFunction > TableTransformFunction` as appropriate — record each in
+`GraphWrappersFunction`; multiparameters → `TablesFunction > TableTransformFunction` as appropriate - record each in
 `conversion-map.md`).
 
-- [ ] **Steps 1–7** per the batch method. (This module defines node types other modules reference — fix ripple compile
+- [ ] **Steps 1–7** per the batch method. (This module defines node types other modules reference - fix ripple compile
   errors here.)
 - [ ] **Verify:** `mvn -q compile -pl jipipe-core` + module report zero unassigned.
 - [ ] **Commit.**
 
-### Task 19.2: jipipe-plugin-ij-algorithms — BUILD THE COMPLETE MAPPING (no source changes)
+### Task 19.2: jipipe-plugin-ij-algorithms - BUILD THE COMPLETE MAPPING (no source changes)
 
 **Controller restructure (mapping-first):** the function mapping for this module depends on the menuPath (the ImageJ
 operation type), NOT on a class-index chunk. Splitting "classes 1–140 / 141–280 / 281–424" would make each chunk
@@ -885,20 +885,20 @@ mapping is built ONCE, completely, and committed as the decision record; the lat
 mechanically. **Files:** NO source changes. Produce:
 
 - `utils/taxonomy-conversion/ij-algorithms-map.tsv` (git-ignored): one row per DISTINCT menuPath-prefix that actually
-  occurs in the module — `<category-class>\t<menuPath-prefix>\t<FunctionLeaf>\t<FrameworkClass>\t<spatial-or-->`.
+  occurs in the module - `<category-class>\t<menuPath-prefix>\t<FunctionLeaf>\t<FrameworkClass>\t<spatial-or-->`.
   Ordered MOST-SPECIFIC-FIRST (convert.py matches by startswith; a general "Process" row must come after
   "Process\nFilters"). Build it from a survey of all 424 `@ConfigureJIPipeNode` nodes (their `nodeTypeCategory` +
-  `menuPath` + first image input slot for spatial per rule 12). Cover EVERY node — the TSV must leave no node unmapped
+  `menuPath` + first image input slot for spatial per rule 12). Cover EVERY node - the TSV must leave no node unmapped
   (convert.py reports UNMATCHED rows; the bar is zero unmatched).
-- `conversion-map.md` (committed): a "19.2 — ij-algorithms mapping" section: the menuPath-group → leaf table
+- `conversion-map.md` (committed): a "19.2 - ij-algorithms mapping" section: the menuPath-group → leaf table
   (human-readable, the decision record), the chunk assignment (which menuPath groups form 19.2a / 19.2b / 19.2c, ~140
   nodes each), and per non-obvious decision a one-line rationale.
 - **Rules of record:** rule 1 (Images by first menuPath segment), rules 3/4/6/7/8
   (Roi/Table/DataSource/Export/FileSystem leaves). **Framework is `ImageJ1Framework` for the ENTIRE module** (rule 11:
-  ij-algorithms → `ImageJ1Framework`), applied to all 424 nodes regardless of category — NOT by the
+  ij-algorithms → `ImageJ1Framework`), applied to all 424 nodes regardless of category - NOT by the
   `ImageJNodeTypeCategory` (the plan's "rule 2, 257 nodes" was inflated by
   `@AddJIPipeNodeAlias(nodeTypeCategory=ImageJNodeTypeCategory)` entries, 239 of which exist in this module; the
-  primary-category counts are: Images 312, Roi 67, DataSource 20, Export 10, Table 7, Annotations 5, Misc 2, ImageJ 1 —
+  primary-category counts are: Images 312, Roi 67, DataSource 20, Export 10, Table 7, Annotations 5, Misc 2, ImageJ 1 -
   the function is determined by menuPath per the rules, the framework is always `ImageJ1Framework` unless a node's
   imports show it wraps an IJ2 API → `ImageJ2Framework`, rare). Spatial per rule 12 (3D in name → `SPATIAL_3D`; 2D →
   `SPATIAL_2D`; unconstrained `ImagePlusData` → both; non-image → absent).
@@ -908,7 +908,7 @@ mechanically. **Files:** NO source changes. Produce:
   UNMATCHED count = 0) → commit `docs(conversion-map): ij-algorithms 424-node function mapping (19.2)`. No source files
   change; no compile needed (nothing changed).
 
-### Task 19.2a: jipipe-plugin-ij-algorithms — apply chunk A (~140 nodes, per the 19.2 chunk assignment)
+### Task 19.2a: jipipe-plugin-ij-algorithms - apply chunk A (~140 nodes, per the 19.2 chunk assignment)
 
 - [ ] Run `convert.py --map ij-algorithms-map.tsv --target <module>` scoped to chunk A's menuPath groups (or the whole
   TSV, then verify only chunk A's files changed); fix imports (drop `…categories.*`, add leaf/framework); drop leftover
@@ -916,22 +916,22 @@ mechanically. **Files:** NO source changes. Produce:
 - [ ] `mvn -q compile -pl plugins/jipipe-plugin-ij-algorithms` → success (unconverted B/C still use the old fields).
   Commit.
 
-### Task 19.2b: jipipe-plugin-ij-algorithms — apply chunk B (~141–280)
+### Task 19.2b: jipipe-plugin-ij-algorithms - apply chunk B (~141–280)
 
 - [ ] As 19.2a for chunk B. Compile → success. Commit.
 
-### Task 19.2c: jipipe-plugin-ij-algorithms — apply chunk C (rest) + module completion
+### Task 19.2c: jipipe-plugin-ij-algorithms - apply chunk C (rest) + module completion
 
 - [ ] As 19.2a for chunk C. Then `mvn -q compile -pl plugins/jipipe-plugin-ij-algorithms -am` full success; copy
   `TaxonomyConversionReportTest` into the module's `src/test` (add JUnit 5 test deps per Task 12/13 precedent) and run
   the FULL module gate `-Djipipe.taxonomy.report.module=<module-package-prefix>` → **zero unassigned** (the gate is
-  module-level; it can only pass once all 424 are converted — that's why it runs here, not in 2a/2b). Update
+  module-level; it can only pass once all 424 are converted - that's why it runs here, not in 2a/2b). Update
   `conversion-map.md` status → converted. Commit.
 
 ### Task 19.3: jipipe-plugin-ij (80)
 
 Data types live here; `ImagePlusData`-based. Framework `ImageJ1Framework` (or `ImageJ2Framework` where a node wraps an
-IJ2 API — check imports). Spatial per slot types (rule 12).
+IJ2 API - check imports). Spatial per slot types (rule 12).
 
 ### Task 19.4: jipipe-plugin-ij-3d (62)
 
@@ -957,7 +957,7 @@ Phase 3); record the decision.
 
 ### Task 19.9: jipipe-plugin-cellpose (21) + omnipose (5)
 
-Framework per subpackage (cp2/cp3/cp4); spatial `SPATIAL_2D, SPATIAL_3D` for inference nodes (unconstrained input slot —
+Framework per subpackage (cp2/cp3/cp4); spatial `SPATIAL_2D, SPATIAL_3D` for inference nodes (unconstrained input slot -
 the Cellpose4 evidence). Add `@JIPipeNodeTaxonomyFamilyStepAnnotation(family = Cellpose4Family.class, …)` to cp4
 inference/training (Load model → Predict → Post-process) and `DeepLearningFamily` steps for training nodes.
 
@@ -966,7 +966,7 @@ inference/training (Load model → Predict → Post-process) and `DeepLearningFa
 Already annotated in Task 13; here convert the remaining `nodeTypeCategory`/`menuPath` fields to `function`/`framework`
 and complete.
 
-### Task 19.11: small modules — weka (9), ilastik (8), python (9), r (5), scene-3d (7), opencv (6), clij (4), ij-multi-template-matching (1), ij-ocr (1), ij2 (2), plots (1)
+### Task 19.11: small modules - weka (9), ilastik (8), python (9), r (5), scene-3d (7), opencv (6), clij (4), ij-multi-template-matching (1), ij-ocr (1), ij2 (2), plots (1)
 
 Frameworks: weka/ilastik/omnipose→`JIPipeDLFramework`; python/r→`NoFramework` (scripting, Phase 3); scene-3d→
 `CoreFramework`; opencv→`OpenCVFramework`; clij→`ClijFramework`; ij2→`ImageJ2Framework` (the 2 annotated; the
@@ -986,8 +986,8 @@ auto-discovered bulk is Task 20); plots→`JFreeChartFramework` +
   node sets: function by name/menuPath heuristics (small table: "segment"→`SegmentationFunction`, "filter"→
   `FilteringFunction`, …; default `MiscellaneousFunction`), framework `ImageJ2Framework`/`ClijFramework`, spatial
   `SPATIAL_2D, SPATIAL_3D` when the slot takes unconstrained image data (reuse the input-profile provider: `ANY` ⇒
-  both). **Input profile stays derived** (never heuristic — spec).
-- Test: `…/api/nodes/taxonomy/TaxonomyAutoAssignmentTest.java` — stub discovered-node infos named "3D Gaussian filter" /
+  both). **Input profile stays derived** (never heuristic - spec).
+- Test: `…/api/nodes/taxonomy/TaxonomyAutoAssignmentTest.java` - stub discovered-node infos named "3D Gaussian filter" /
   "Median filter" / "Segment cells" ⇒ expected function leaves; unknown name ⇒ `MiscellaneousFunction`, no exception.
 - [ ] **Steps:** 1 write test → 2 fail → 3 implement → 4 pass → 5 commit
   `feat: auto-assign taxonomy for discovered IJ2/CLIJ nodes`.
@@ -1006,7 +1006,7 @@ auto-discovered bulk is Task 20); plots→`JFreeChartFramework` +
   /etc.)
 - Modify: all 7 `…/api/nodes/database/entries/*DatabaseEntry.java` (`getCategoryIds()` impls)
 - Modify: `…/api/nodes/database/JIPipeEnhancedNodeDatabaseSearch.java` (L259 category-id indexing)
-- Modify: `…/utils/ThemeUtils.java` — `getNodeFillColor(JIPipeNodeInfo)`/`getNodeBorderColor(JIPipeNodeInfo)` (L289-331)
+- Modify: `…/utils/ThemeUtils.java` - `getNodeFillColor(JIPipeNodeInfo)`/`getNodeBorderColor(JIPipeNodeInfo)` (L289-331)
   currently read `info.getCategory().getColorHue()`; change to: if the info has a primary function ⇒
   `FunctionRegistry baseHue` + `shadeDepth` (looked up via `JIPipe.getNodes().getFunctions()`; function with no hue in
   its chain ⇒ theme panel background, like the legacy negative-hue case; unregistered function ⇒ 0.5 base + depth 0 +
@@ -1021,7 +1021,7 @@ auto-discovered bulk is Task 20); plots→`JFreeChartFramework` +
 **Interfaces:**
 
 - Produces:
-    - `class TaxonomyView` — `functionDisplayName(JIPipeNodeInfo)` ⇒ primary function's name, or the legacy category
+    - `class TaxonomyView` - `functionDisplayName(JIPipeNodeInfo)` ⇒ primary function's name, or the legacy category
       name (fallback for unconverted nodes); `locationPath(JIPipeNodeInfo)` ⇒ "Function > … > node" (or legacy
       "Category > menuPath > node" fallback); `behaviorFlags(JIPipeNodeInfo)` ⇒ the four flags from the primary
       function, or from the legacy category (fallback); `searchIds(JIPipeNodeDatabaseEntry)` ⇒ function ids, else
@@ -1030,7 +1030,7 @@ auto-discovered bulk is Task 20); plots→`JFreeChartFramework` +
     - `ThemeUtils` function-hue path as above, with a pure-hue fallback for functions not yet in the registry.
 - Consumes: Tasks 2, 6, 7, 15.
 
-- [ ] **Step 1: Write the failing tests** — `TaxonomyViewTest`: a converted info (function set) ⇒
+- [ ] **Step 1: Write the failing tests** - `TaxonomyViewTest`: a converted info (function set) ⇒
   `functionDisplayName` = function name, `behaviorFlags` from function; an unconverted info (category set, function
   null) ⇒ `functionDisplayName` = category name (fallback), `behaviorFlags` from category; `searchIds` returns function
   ids when present else category ids. `ThemeUtilsFunctionColorTest`: a converted info whose primary function is a
@@ -1058,7 +1058,7 @@ auto-discovered bulk is Task 20); plots→`JFreeChartFramework` +
 - Consumes: everything (full JIPipe init).
 - Produces: a test that, after all 19.x + 20 are done, runs `TaxonomyValidationReport.run(...)` over the **entire**
   registry ⇒ `ok()` true AND `unassignedNodeIds()` **empty** (the whole-point check that the 1,840-site conversion is
-  complete — the branch gate). Uses the full JIPipe init like the existing JIPipe tests.
+  complete - the branch gate). Uses the full JIPipe init like the existing JIPipe tests.
 - [ ] **Step 1: Write the test.**
 - [ ] **Step 2: Run** → should PASS now (all nodes converted). If it lists remaining unassigned nodes, fix those
   stragglers (likely a few in small modules) and re-run.
@@ -1071,7 +1071,7 @@ auto-discovered bulk is Task 20); plots→`JFreeChartFramework` +
 
 **Files:**
 
-- Create: `jipipe-core/src/test/resources/projects/5.3.0-taxonomy-fixtures/` — 3 minimal project JSONs (copy real 5.3.0
+- Create: `jipipe-core/src/test/resources/projects/5.3.0-taxonomy-fixtures/` - 3 minimal project JSONs (copy real 5.3.0
   projects if present: `git log --all --diff-filter=A --name-only | grep -iE "\.jipipe$"`; else hand-write minimal
   projects using node ids that exist post-conversion). Names: `basic-images.jipipe`, `trackmate-setup.jipipe`,
   `tables.jipipe`.
@@ -1080,7 +1080,7 @@ auto-discovered bulk is Task 20); plots→`JFreeChartFramework` +
 
 **Interfaces:**
 
-- Produces: for each fixture — load the project, assert no exception, every loaded graph node has a **non-null primary
+- Produces: for each fixture - load the project, assert no exception, every loaded graph node has a **non-null primary
   function** (the "projects unaffected" guarantee: they store only node ids, which resolve to a function now), and the
   project round-trips (serialize → reload → same node ids).
 - [ ] **Step 1: Write the fixtures + failing test.**
@@ -1106,7 +1106,7 @@ auto-discovered bulk is Task 20); plots→`JFreeChartFramework` +
 - Consumes: Task 16.
 - Produces: both editors mount `JIPipeDesktopNodeBrowser` in `DOCK_ADD_NODES`. The old panel's
   `initializeMenuForCategory` and `initializeAddDataSourceMenu` are referenced **only** inside the panel itself
-  (verified: no external callers — their right-click category-button popups die with the panel, and the canvas "Add new
+  (verified: no external callers - their right-click category-button popups die with the panel, and the canvas "Add new
   node" context action already opens the node finder dialog, not these menus). Data-source insertion is preserved by a
   "Data sources" section in the browser tree (the `DataSourcesFunction` branch already lists them by data type via the
   existing `JIPipeNodesServiceComponent.getMenuDataSourcesFor` mechanism).
@@ -1115,7 +1115,7 @@ auto-discovered bulk is Task 20); plots→`JFreeChartFramework` +
 - [ ] **Step 2:** Delete the old panel + renderer + the two menu-builder methods; fix dangling references; add the
   data-sources section to the browser.
 - [ ] **Step 3:** `mvn -q compile -pl jipipe-core` → success.
-- [ ] **Step 4: Manual smoke** (recorded, not automated — no display in CI is fine; note "verified locally" or
+- [ ] **Step 4: Manual smoke** (recorded, not automated - no display in CI is fine; note "verified locally" or
   "deferred" in the commit): launch desktop, panel appears, search + drag/drop + double-click work, filter bar filters,
   tier switches on dock resize.
 - [ ] **Step 5:** Commit `git commit -m "feat: replace add-nodes panel with adaptive taxonomy browser"`.
@@ -1137,7 +1137,7 @@ auto-discovered bulk is Task 20); plots→`JFreeChartFramework` +
 - Consumes: Tasks 18, 21.
 - Produces: `getCategoryIds()` gone from the entry interface; search tokens are purely function/framework/tag-based; the
   unconverted-node category-token branch in `getTokens()` deleted.
-- [ ] **Step 1: Extend the token test** — assert every entry's tokens contain no legacy category token.
+- [ ] **Step 1: Extend the token test** - assert every entry's tokens contain no legacy category token.
 - [ ] **Step 2: Run** → FAIL (method still present).
 - [ ] **Step 3: Implement** the removals.
 - [ ] **Step 4: Run** `mvn -q compile -pl jipipe-core` + tests → PASS.
@@ -1152,25 +1152,25 @@ auto-discovered bulk is Task 20); plots→`JFreeChartFramework` +
 - Modify: `…/api/nodes/JIPipeNodeInfo.java` (remove `getCategory()`, `getMenuPath()`, `getAliases()`;
   `getPrimaryMenuLocation()` reworked to return the primary function), `…/api/nodes/infos/JIPipeMutableNodeInfo.java` +
   `JIPipeJavaNodeInfo.java` (remove the category/menuPath fields + the `getCategoryOf`/`getMenuPathOf`/`getAliasesOf`
-  statics + `@AddJIPipeNodeAlias` extraction), `…/api/nodes/JIPipeNodeMenuLocation.java` — **disposition decided: delete
-  it.** After Task 21, no consumer reads `JIPipeNodeMenuLocation` (its callers — `JIPipeDesktopGraphEditorUI`
-  location-info L1196 and the old panel's menu builder — were rewired to `TaxonomyView`/`initializeFunctionMenu`; verify
+  statics + `@AddJIPipeNodeAlias` extraction), `…/api/nodes/JIPipeNodeMenuLocation.java` - **disposition decided: delete
+  it.** After Task 21, no consumer reads `JIPipeNodeMenuLocation` (its callers - `JIPipeDesktopGraphEditorUI`
+  location-info L1196 and the old panel's menu builder - were rewired to `TaxonomyView`/`initializeFunctionMenu`; verify
   with `git grep JIPipeNodeMenuLocation` before deleting, and if a consumer remains, migrate it first).
   `@AddJIPipeNodeAlias`/`AddJIPipeNodeAliases` are removed too (aliases became secondary `function[]` entries during
   conversion).
-- Test: `…/api/nodes/infos/JIPipeJavaNodeInfoTaxonomyTest.java` (extend: assert the removed methods are gone — compile
-  check — and secondary functions replace aliases).
+- Test: `…/api/nodes/infos/JIPipeJavaNodeInfoTaxonomyTest.java` (extend: assert the removed methods are gone - compile
+  check - and secondary functions replace aliases).
 
 **Interfaces:**
 
 - Consumes: Tasks 6, 21 (all consumers now use `TaxonomyView`/function API).
 - Produces: `JIPipeNodeInfo` exposes only taxonomy getters; `@AddJIPipeNodeAlias` extraction removed (aliases became
   secondary `function[]` entries during conversion). `git grep "getMenuPath()"` (node-info sense) ⇒ nothing.
-- [ ] **Step 1: Extend the test** — a node with secondary functions ⇒ `getSecondaryFunctions()` correct; assert no
+- [ ] **Step 1: Extend the test** - a node with secondary functions ⇒ `getSecondaryFunctions()` correct; assert no
   compile reference to `getCategory()`.
 - [ ] **Step 2: Run** → FAIL.
 - [ ] **Step 3: Implement** the removals + `JIPipeNodeMenuLocation` deletion; **also delete the `ThemeUtils` node-info
-  methods' legacy `info.getCategory()` fallback branch** (it cannot compile once `getCategory()` is gone — this must
+  methods' legacy `info.getCategory()` fallback branch** (it cannot compile once `getCategory()` is gone - this must
   land with this task, not Task 27); the `getNodeFillColor/getNodeBorderColor(JIPipeNodeTypeCategory)` overloads are
   removed in Task 27 with the interface. Fix any last consumer the `git grep` reveals.
 - [ ] **Step 4: Run** `mvn -q compile -pl jipipe-core` + tests → PASS.
@@ -1178,21 +1178,21 @@ auto-discovered bulk is Task 20); plots→`JFreeChartFramework` +
 
 ---
 
-### Task 27: The legacy rip-out (atomic) — remove `JIPipeNodeTypeCategory` + 11 classes + deprecated annotation fields +
+### Task 27: The legacy rip-out (atomic) - remove `JIPipeNodeTypeCategory` + 11 classes + deprecated annotation fields +
 `TaxonomyView` fallback
 
 **Files:**
 
 - Delete: `…/api/nodes/JIPipeNodeTypeCategory.java` + all 11 files in `…/api/nodes/categories/`
-- Modify: `…/api/ConfigureJIPipeNode.java` — remove the now-deprecated `menuPath()` and `nodeTypeCategory()` fields.
-- Modify: `…/api/nodes/taxonomy/TaxonomyView.java` — delete the legacy fallback branches (all nodes have functions, all
+- Modify: `…/api/ConfigureJIPipeNode.java` - remove the now-deprecated `menuPath()` and `nodeTypeCategory()` fields.
+- Modify: `…/api/nodes/taxonomy/TaxonomyView.java` - delete the legacy fallback branches (all nodes have functions, all
   consumers use the new API).
-- Modify: `…/utils/ThemeUtils.java` — remove the `getNodeFillColor/getNodeBorderColor(JIPipeNodeTypeCategory)`
+- Modify: `…/utils/ThemeUtils.java` - remove the `getNodeFillColor/getNodeBorderColor(JIPipeNodeTypeCategory)`
   overloads; the node-info methods keep their dual-read (task 21) but the legacy `info.getCategory()` fallback branch is
-  deleted (all nodes converted — guard: the fallback now asserts and throws if ever reached, which cannot happen once
+  deleted (all nodes converted - guard: the fallback now asserts and throws if ever reached, which cannot happen once
   `getCategory()` itself is gone in task 26; the test in step 1 pins the function path).
-- Modify: `…/JIPipeDefaultJavaPlugin.java` — remove `registerNodeTypeCategory`.
-- Test: `…/utils/ThemeUtilsFunctionColorTest.java` (already created in Task 21 — extend it)
+- Modify: `…/JIPipeDefaultJavaPlugin.java` - remove `registerNodeTypeCategory`.
+- Test: `…/utils/ThemeUtilsFunctionColorTest.java` (already created in Task 21 - extend it)
 
 **Interfaces:**
 
@@ -1201,15 +1201,15 @@ auto-discovered bulk is Task 20); plots→`JFreeChartFramework` +
   `git grep "TaxonomyView"` ⇒ only the (fallback-free) class. Full `mvn -q compile` (all modules) +
   `mvn test -pl jipipe-core` ⇒ PASS.
 
-- [ ] **Step 1: Extend `ThemeUtilsFunctionColorTest`** — the function-hue path (top hue, shaded child, 0.5-fallback for
+- [ ] **Step 1: Extend `ThemeUtilsFunctionColorTest`** - the function-hue path (top hue, shaded child, 0.5-fallback for
   an unregistered function) was pinned in Task 21; add one assertion that the result no longer depends on any legacy
   category object (e.g. an info with both function and a legacy-Internal-equivalent category still yields the function
-  hue — this pins that the legacy branch is truly gone after step 3).
+  hue - this pins that the legacy branch is truly gone after step 3).
 - [ ] **Step 2: Run** → PASS (behavior unchanged; the test now also documents the removal).
 - [ ] **Step 3: Perform the atomic removals** (annotation fields, category interface + 11 classes, `ThemeUtils` legacy
   overloads, `registerNodeTypeCategory`, `TaxonomyView` fallbacks).
 - [ ] **Step 4: Run** `mvn -q compile` (all modules) + `mvn test -pl jipipe-core` → PASS. Fix any straggler the compiler
-  surfaces (should be none — Tasks 21-26 migrated every consumer).
+  surfaces (should be none - Tasks 21-26 migrated every consumer).
 - [ ] **Step 5: Commit** `git commit -m "refactor: remove legacy node type category system (6.0.0 break)"`.
 
 ---
@@ -1218,7 +1218,7 @@ auto-discovered bulk is Task 20); plots→`JFreeChartFramework` +
 
 **Files:**
 
-- Modify: `AGENTS.md` (the `api/nodes/categories` / "Node categories" references are obsolete — replace with a short
+- Modify: `AGENTS.md` (the `api/nodes/categories` / "Node categories" references are obsolete - replace with a short
   "Node taxonomy" section pointing at the spec + the `api/nodes/taxonomy/` package).
 - Modify: user-facing strings referencing "category" in the node system
   (`grep -rn "node category\|nodeCategory" docs/ jipipe-core/src/main`).
@@ -1235,12 +1235,12 @@ auto-discovered bulk is Task 20); plots→`JFreeChartFramework` +
 
 ## Out of scope for this plan (own plans/specs)
 
-- **Phase 2 — node rendering:** the DiceBear contrib module (`contrib/jipipe-avatar-dicebear/`), Batik dependency +
+- **Phase 2 - node rendering:** the DiceBear contrib module (`contrib/jipipe-avatar-dicebear/`), Batik dependency +
   `dist/dist-info.json` entries, `JIPipeDesktopGraphNodeUI` pattern+badge paint, theme-editor toggles. Its plan uses the
   framework classes' `getPatternStyleId()` (Task 11) as the stable contract.
-- **Phase 3 — audit refinement:** per-node placement review of the converted ~1,840 nodes against the live tree,
+- **Phase 3 - audit refinement:** per-node placement review of the converted ~1,840 nodes against the live tree,
   `WeightedTokens` re-balancing, Miscellaneous pruning, custom pattern styles, family template wiring (`getTemplate()`
-  returns null until then — Task 13 defers it), and the `NoFramework`-remaining decisions flagged in `conversion-map.md`
+  returns null until then - Task 13 defers it), and the `NoFramework`-remaining decisions flagged in `conversion-map.md`
   (rule 11).
 - The 5D-stack-splitting user settings (which T/C axes to iterate) already exist in the iteration layer; nothing changes
   there.

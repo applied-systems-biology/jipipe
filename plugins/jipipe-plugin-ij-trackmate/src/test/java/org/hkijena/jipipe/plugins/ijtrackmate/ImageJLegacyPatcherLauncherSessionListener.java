@@ -29,7 +29,7 @@ import org.junit.platform.launcher.LauncherSessionListener;
  * context. This module's node classes genuinely load ImageJ1 classes
  * ({@code ij.*}: {@code ij.ImagePlus}, {@code ij.ImageStack},
  * {@code ij.process.ColorProcessor}, …), so the legacy patcher must run
- * first — otherwise the patcher fails ({@code LinkageError: duplicate class
+ * first - otherwise the patcher fails ({@code LinkageError: duplicate class
  * definition} / {@code No _hooks field found in ij.IJ}, depending on ordering),
  * corrupting the context so that no node infos are registered.
  *

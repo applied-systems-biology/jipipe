@@ -63,7 +63,7 @@ import java.util.*;
 import java.util.List;
 
 /**
- * {@code JIPipeLauncher screenshot-ui --out <dir> [--only id1,id2]} — boots the
+ * {@code JIPipeLauncher screenshot-ui --out <dir> [--only id1,id2]} - boots the
  * GUI stack in-process and renders a fixed set of showcase parameter panels and
  * dialogs to PNGs for VLM-driven before/after verification (the #1339
  * parameter UX overhaul). Filenames are stable; the per-task VLM prompts key
@@ -98,7 +98,7 @@ public class ScreenshotUiCommand {
      * Panel flags for the showcase capture. Deliberately WITHOUT
      * {@code WITH_SCROLLING}: a JScrollPane reports a clipped preferred height
      * (not its content's), which truncates an off-screen capture. The captured
-     * panel is the full, unscrolled form — which is what the VLM must see.
+     * panel is the full, unscrolled form - which is what the VLM must see.
      * (Ruling: Task 0.)
      */
     private static final int PANEL_FLAGS = JIPipeDesktopParameterFormPanel.WITH_DOCUMENTATION
@@ -130,10 +130,10 @@ public class ScreenshotUiCommand {
         // Synthetic: an empty file list (S2 empty state: hint, no rows, no footer).
         SHOWCASE.put("panel-list-empty", "<list-empty>");
         // Synthetic: a bounded 0-1 double annotated style=SLIDER at runtime
-        // (#1339 pass 2, S6) — the number editor renders a slider, not a
+        // (#1339 pass 2, S6) - the number editor renders a slider, not a
         // text field + spinners.
         SHOWCASE.put("panel-number-slider", "<number-slider>");
-        // Synthetic: an HTMLText field (#1339 pass 2, S7) — the modernized
+        // Synthetic: an HTMLText field (#1339 pass 2, S7) - the modernized
         // compact-toolbar HTML widget (B/I/U, color, image, |, view toggle,
         // density toggle, edit-in-dialog).
         SHOWCASE.put("panel-html-text", "<html-text>");
@@ -159,13 +159,13 @@ public class ScreenshotUiCommand {
         PER_EDITOR.put("editor-runtime-partition-ref", RuntimePartitionReferenceParameter.class);
         // #1339 item 1/6: the ref editors that switched to the searchable
         // RichSelectionBox comboboxes (and the icon ref whose redundant Edit
-        // button was removed) — per-editor renders for the VLM loop.
+        // button was removed) - per-editor renders for the VLM loop.
         PER_EDITOR.put("editor-data-info-ref", JIPipeDataInfoRef.class);
         PER_EDITOR.put("editor-node-info-ref", JIPipeNodeInfoRef.class);
         PER_EDITOR.put("editor-parameter-type-info-ref", JIPipeParameterTypeInfoRef.class);
         PER_EDITOR.put("editor-artifact-query", JIPipeArtifactQueryParameter.class);
         PER_EDITOR.put("editor-icon-ref", IconRef.class);
-        // #1339 font family: the size-style type — the adaptive editor must
+        // #1339 font family: the size-style type - the adaptive editor must
         // render family + size + style with NO color section.
         PER_EDITOR.put("editor-font-family-size-style", JIPipeFontFamilySizeStyleParameter.class);
     }
@@ -219,7 +219,7 @@ public class ScreenshotUiCommand {
             String nodeId = e.getValue();
             JIPipeDesktopParameterFormPanel panel;
             if ("<font-parameter>".equals(nodeId)) {
-                // Synthetic: one JIPipeFontFamilySizeStyleColorParameter (no node uses it yet — the
+                // Synthetic: one JIPipeFontFamilySizeStyleColorParameter (no node uses it yet - the
                 // migration lands in Task 10).
                 FontParameterShowcase root = new FontParameterShowcase();
                 panel = new JIPipeDesktopParameterFormPanel(workbench, root, null, PANEL_FLAGS);
@@ -271,8 +271,8 @@ public class ScreenshotUiCommand {
     /**
      * The HTML editor 3-state view showcase (#1339 pass 2, S7). The view
      * toggle (WYSIWYG / Preview / Source) can't be exercised in a static node
-     * panel (it's a click interaction), so the widget is rendered directly —
-     * one capture per view state — to verify the brief's claim that Preview
+     * panel (it's a click interaction), so the widget is rendered directly -
+     * one capture per view state - to verify the brief's claim that Preview
      * renders the HTML read-only and Source shows the raw markup.
      */
     private static void renderHtmlEditorViews(JIPipeDesktopWorkbench workbench, Path outDir, List<String> only, List<String> rendered) throws Exception {
@@ -297,7 +297,7 @@ public class ScreenshotUiCommand {
     }
 
     /**
-     * The HTML editor in FULL (expanded) mode — the state with the two-row
+     * The HTML editor in FULL (expanded) mode - the state with the two-row
      * toolbar (font/size combos on row 1, formatting/alignment on row 2).
      * This is the state the user's dialog screenshot captured, so it is the
      * one to verify the toolbar left-alignment and the combo selection
@@ -339,7 +339,7 @@ public class ScreenshotUiCommand {
 
     /**
      * The list editor modal showcases (#1339 pass 2, S2c). The modal is
-     * app-modal, so it is never shown — the content pane is constructed and
+     * app-modal, so it is never shown - the content pane is constructed and
      * captured off-screen at its initial size (640×520). Each showcase
      * builds a synthetic list, obtains the registered list editor instance
      * for a synthetic parameter access (the same factory call the list
@@ -390,7 +390,7 @@ public class ScreenshotUiCommand {
     }
 
     /**
-     * Creates the registered editor instance for a list parameter access —
+     * Creates the registered editor instance for a list parameter access -
      * the same factory call the list editors' rows use internally (a
      * synthetic tree over the access, the dummy workbench, null parent).
      */
@@ -401,7 +401,7 @@ public class ScreenshotUiCommand {
 
     /**
      * The font popout showcase (#1339 pass 2, S4). The popout is a
-     * {@link JPopupMenu}, which the harness can't capture while shown — but
+     * {@link JPopupMenu}, which the harness can't capture while shown - but
      * its content panel can: build a font editor instance and render
      * {@code getPopoutContent()}. The form panel sizes the label column to
      * the widest label automatically; the preview band's fixed preferred
@@ -422,7 +422,7 @@ public class ScreenshotUiCommand {
         }
         if (only.isEmpty() || only.contains("popup-font-size-style")) {
             // The color-less variant (Task 8/9): the same factory mechanism as
-            // popup-font, cast to the size-style thin editor — its popout must
+            // popup-font, cast to the size-style thin editor - its popout must
             // show family + size + style and NO color section (Review Focus #5).
             JIPipeDesktopFontFamilySizeStyleParameterEditorUI fontEditor = (JIPipeDesktopFontFamilySizeStyleParameterEditorUI)
                     JIPipe.getParameterTypes().createEditorInstanceWithEmbeddedValue(workbench, JIPipeFontFamilySizeStyleParameter.class);
@@ -436,7 +436,7 @@ public class ScreenshotUiCommand {
     private static void renderSettingsSheet(JIPipeDesktopDummyWorkbench workbench, Path outDir, List<String> only, List<String> rendered) throws Exception {
         if (!only.isEmpty() && !only.contains("settings-appearance"))
             return;
-        // A form-panel consumer (non-parameter rows) — the regression baseline.
+        // A form-panel consumer (non-parameter rows) - the regression baseline.
         JIPipeDesktopParameterFormPanel panel = new JIPipeDesktopParameterFormPanel(
                 workbench, new JIPipeGeneralUIApplicationSettings(), null,
                 JIPipeDesktopFormPanel.NONE);
@@ -470,7 +470,7 @@ public class ScreenshotUiCommand {
 
     /**
      * A minimal parameter collection exposing a single {@link JIPipeFontFamilySizeStyleColorParameter}
-     * (harness-only, #1339 — no node uses the font parameter until the Task 10
+     * (harness-only, #1339 - no node uses the font parameter until the Task 10
      * migration). {@link JIPipeDynamicParameterCollection} instantiates the
      * registered type automatically.
      */
@@ -486,7 +486,7 @@ public class ScreenshotUiCommand {
 
     /**
      * A minimal parameter collection exposing a single {@link PathList} with a
-     * given number of entries (harness-only, #1339 pass 2 — the inline list
+     * given number of entries (harness-only, #1339 pass 2 - the inline list
      * editor's pagination/empty state have no populated node showcase).
      */
     private static class ListShowcase extends JIPipeDynamicParameterCollection {
@@ -503,7 +503,7 @@ public class ScreenshotUiCommand {
      * A minimal parameter collection exposing a bounded (0–1) double annotated
      * {@code style = SLIDER} at runtime (#1339 pass 2, S6). The proven pattern
      * for a runtime annotation instance is {@code addParameter(..., annotations)}.
-     * The value is set to 0.5 so the slider thumb is visibly centered — the VLM
+     * The value is set to 0.5 so the slider thumb is visibly centered - the VLM
      * verifies the thumb position matches the value.
      */
     private static class NumberSliderShowcase extends JIPipeDynamicParameterCollection {
@@ -571,7 +571,7 @@ public class ScreenshotUiCommand {
 
     /**
      * A minimal parameter collection exposing a single {@link HTMLText} with
-     * sample rich content (#1339 pass 2, S7) — the modernized compact-toolbar
+     * sample rich content (#1339 pass 2, S7) - the modernized compact-toolbar
      * HTML widget has no node showcase in the default set, so a synthetic one
      * renders it for the VLM loop.
      */

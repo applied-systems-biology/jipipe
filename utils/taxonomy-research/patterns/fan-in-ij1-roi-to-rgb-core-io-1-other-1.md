@@ -59,7 +59,7 @@ compartment `File Handling+Glomeruli`.
 ## Template
 
 Proposed name `Convert 2D ROI to RGB fans in from 13 source ids (roles: core-io, other)`, menu path
-`Patterns/ROIs/Convert 2D ROI to RGB fans in from 13 source ids (roles: core-io, other)` (proposal only — not
+`Patterns/ROIs/Convert 2D ROI to RGB fans in from 13 source ids (roles: core-io, other)` (proposal only - not
 registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/fan-in-ij1-roi-to-rgb-core-io-1-other-1.json`.
 

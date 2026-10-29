@@ -26,7 +26,7 @@ import java.util.*;
  * The two kinds of findings have deliberately different consequences
  * (Review Focus #6, the "vanishes from browser" detector):
  * <ul>
- * <li>{@link #errors() errors} are hard problems — a cyclic or dangling
+ * <li>{@link #errors() errors} are hard problems - a cyclic or dangling
  * function tree, a broken framework set, a dangling family step, or a node
  * pointing at an unregistered function/framework. A broken-but-partly-
  * converted taxonomy must never ship a wrong browser, so these fail
@@ -65,8 +65,8 @@ public final class TaxonomyValidationReport {
      * Runs a taxonomy validation pass over the given registries and node
      * infos:
      * <ul>
-     * <li>{@link FunctionRegistry#validate()} — the function tree,</li>
-     * <li>{@link FrameworkRegistry#validate()} — the framework set,</li>
+     * <li>{@link FunctionRegistry#validate()} - the function tree,</li>
+     * <li>{@link FrameworkRegistry#validate()} - the framework set,</li>
      * <li>membership of every node with a non-{@code null} primary
      * function: its primary function must be present in the function
      * registry, and its framework (unless it is the
@@ -79,7 +79,7 @@ public final class TaxonomyValidationReport {
      * The family steps are <b>not</b> validated here: they are owned by
      * the {@link FamilyAssembler}, which is stateful (a live
      * component-owned object, not a pure parameter) and is validated
-     * separately against the node registry — see the {@code run} overload
+     * separately against the node registry - see the {@code run} overload
      * that takes a {@code FamilyAssembler}, which the node service
      * component's final initialization pass invokes.
      * <p>
@@ -104,15 +104,15 @@ public final class TaxonomyValidationReport {
      * Runs a full taxonomy validation pass over the given registries,
      * family steps, and node infos: exactly the 3-arg
      * {@link #run(FunctionRegistry, FrameworkRegistry, Map)} checks
-     * plus {@link FamilyAssembler#validate(Set)} — every assembled
+     * plus {@link FamilyAssembler#validate(Set)} - every assembled
      * family step must reference a node id present in
      * {@code registeredNodeIds} (a step whose node was unregistered, or
      * whose {@code after} predecessor never existed, is a hard error: a
      * broken family workflow must never ship a wrong browser).
      * <p>
      * This is the single entry point the production guard uses, so that
-     * ALL {@code validate()} error classes — function tree, framework
-     * set, family steps, and node membership — reach the startup report.
+     * ALL {@code validate()} error classes - function tree, framework
+     * set, family steps, and node membership - reach the startup report.
      *
      * @param functions         the function registry (the curated
      *                          function tree)
@@ -154,7 +154,7 @@ public final class TaxonomyValidationReport {
             JIPipeNodeTaxonomyFunction primary = info.getPrimaryFunction();
             if (primary == null) {
                 // Unconverted node: expected during the conversion,
-                // reported separately — not an error.
+                // reported separately - not an error.
                 unassignedNodeIds.add(info.getId());
                 continue;
             }

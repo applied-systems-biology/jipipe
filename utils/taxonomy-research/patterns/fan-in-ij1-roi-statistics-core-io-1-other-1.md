@@ -59,7 +59,7 @@ Project: `AIAgentTests/02-AdvancedPipelines/Cryogels_01.jip` (relative to `/data
 ## Template
 
 Proposed name `Extract 2D ROI statistics fans in from 10 source ids (roles: core-io, other)`, menu path
-`Patterns/ROIs/Extract 2D ROI statistics fans in from 10 source ids (roles: core-io, other)` (proposal only — not
+`Patterns/ROIs/Extract 2D ROI statistics fans in from 10 source ids (roles: core-io, other)` (proposal only - not
 registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/fan-in-ij1-roi-statistics-core-io-1-other-1.json`.
 

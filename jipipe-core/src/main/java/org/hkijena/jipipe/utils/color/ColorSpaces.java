@@ -21,7 +21,7 @@ import java.awt.*;
  * <p>
  * {@link #fromLab(double, double, double)} always returns a valid sRGB color:
  * out-of-gamut L*a*b* values are clamped by iterative channel clipping
- * (clip the linear RGB, convert back to L*a*b*, keep L, repeat) —
+ * (clip the linear RGB, convert back to L*a*b*, keep L, repeat) -
  * deterministic and bounded (≤ 30 iterations).
  */
 public final class ColorSpaces {
@@ -92,7 +92,7 @@ public final class ColorSpaces {
 
     /**
      * Converts L*a*b* to the nearest representable sRGB color (out-of-gamut
-     * values are clamped — the result is always a valid sRGB color).
+     * values are clamped - the result is always a valid sRGB color).
      * <p>
      * The clamp is a projected subgradient search in L*a*b* space: starting at
      * the target, each step moves against the sum of (a) the pull back to the

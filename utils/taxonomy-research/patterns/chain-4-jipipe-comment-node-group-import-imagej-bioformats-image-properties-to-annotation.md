@@ -67,7 +67,7 @@ compartment `Preprocessing`.
 ## Template
 
 Proposed name `Comment -> Group -> Bio-Formats importer -> Annotate with image properties`, menu path
-`Patterns/Graph / Project/Comment -> Group -> Bio-Formats importer -> Annotate with image properties` (proposal only —
+`Patterns/Graph / Project/Comment -> Group -> Bio-Formats importer -> Annotate with image properties` (proposal only -
 not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/chain-4-jipipe-comment-node-group-import-imagej-bioformats-image-properties-to-annotation.json`.
 

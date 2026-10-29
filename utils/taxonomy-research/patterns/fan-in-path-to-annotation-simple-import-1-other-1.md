@@ -59,6 +59,6 @@ Project: `AIAgentTests/03-ExampleWorkflows/Clara_08_feet.jip` (relative to `/dat
 
 Proposed name `Annotate with file/directory name fans in from 3 source ids (roles: import, other)`, menu path
 `Patterns/Annotations/Annotate with file/directory name fans in from 3 source ids (roles: import, other)` (proposal
-only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+only - not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/fan-in-path-to-annotation-simple-import-1-other-1.json`.
 

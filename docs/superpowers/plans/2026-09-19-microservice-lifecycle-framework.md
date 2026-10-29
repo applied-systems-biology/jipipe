@@ -33,14 +33,14 @@ mixed lifecycle/work queues.
 
 ```
 jipipe-core/src/main/java/org/hkijena/jipipe/api/microservice/
-  Microservice.java                          — interface
-  AbstractMicroservice.java                  — base implementation with state, deps, events
-  MicroserviceState.java                     — enum: Stopped, Starting, Ready, Stopping, Failed
-  MicroserviceStateChangeEvent.java          — event carrying oldState, newState, source
-  MicroserviceStateChangeListener.java       — listener interface
-  MicroserviceStateChangeEventEmitter.java   — emitter extending JIPipeEventEmitter
-  ServiceAwareQueuedExecutor.java            — FIFO executor gating on isReady()
-  ServiceAwareEphemeralExecutor.java         — latest-wins executor gating on isReady()
+  Microservice.java                          - interface
+  AbstractMicroservice.java                  - base implementation with state, deps, events
+  MicroserviceState.java                     - enum: Stopped, Starting, Ready, Stopping, Failed
+  MicroserviceStateChangeEvent.java          - event carrying oldState, newState, source
+  MicroserviceStateChangeListener.java       - listener interface
+  MicroserviceStateChangeEventEmitter.java   - emitter extending JIPipeEventEmitter
+  ServiceAwareQueuedExecutor.java            - FIFO executor gating on isReady()
+  ServiceAwareEphemeralExecutor.java         - latest-wins executor gating on isReady()
 ```
 
 ### New files (tests)
@@ -65,17 +65,17 @@ jipipe-core/.../api/servers/JIPipeServerEventListener.java
 
 ### Modified files (migration)
 
-- `jipipe-core/pom.xml` — add JUnit 5
-- `JIPipeAIServiceComponent.java` — replace mixed queue with microservice + service-aware executors
-- `JIPipeAINodeDatabaseSearch.java` — remove workarounds, use service-aware ephemeral executor
-- `JIPipeServerInstance.java` — extend `AbstractMicroservice`
-- `EmbeddingServerInstance.java` — rename `start()`/`stop()` to `startProcess()`/`stopProcess()`
-- `JIPipeServerServiceComponent.java` — use `Microservice.start()`/`stop()`
-- `JIPipeAIModelRunner.java` — replace `JIPipeAIModelRunnerStatus` with `MicroserviceState`
-- `JIPipeAPIEmbeddingAIModelRunner.java` — update status references
-- `JIPipeOnnxEmbeddingAIModelRunner.java` — update status references
-- All AI monitor UI components — update to `MicroserviceStateChangeEvent`
-- All server monitor UI components — update to `MicroserviceStateChangeEvent`
+- `jipipe-core/pom.xml` - add JUnit 5
+- `JIPipeAIServiceComponent.java` - replace mixed queue with microservice + service-aware executors
+- `JIPipeAINodeDatabaseSearch.java` - remove workarounds, use service-aware ephemeral executor
+- `JIPipeServerInstance.java` - extend `AbstractMicroservice`
+- `EmbeddingServerInstance.java` - rename `start()`/`stop()` to `startProcess()`/`stopProcess()`
+- `JIPipeServerServiceComponent.java` - use `Microservice.start()`/`stop()`
+- `JIPipeAIModelRunner.java` - replace `JIPipeAIModelRunnerStatus` with `MicroserviceState`
+- `JIPipeAPIEmbeddingAIModelRunner.java` - update status references
+- `JIPipeOnnxEmbeddingAIModelRunner.java` - update status references
+- All AI monitor UI components - update to `MicroserviceStateChangeEvent`
+- All server monitor UI components - update to `MicroserviceStateChangeEvent`
 - Any file referencing `JIPipeAIModelRunnerStatus` or `JIPipeServerState`
 
 ---
@@ -175,7 +175,7 @@ package org.hkijena.jipipe.api.microservice;
  *   <li>{@code Failed → Starting} (retry via start)</li>
  * </ul>
  *
- * <p>There is no {@code Busy} state — "busy" is a transient condition during
+ * <p>There is no {@code Busy} state - "busy" is a transient condition during
  * work execution tracked by the executor, not a lifecycle state. The optional
  * detail string on {@link AbstractMicroservice} can convey nuance.
  */
@@ -500,7 +500,7 @@ public abstract class AbstractMicroservice implements Microservice {
                 }
                 continue;
             }
-            // Dependency is Stopped or Failed — start it
+            // Dependency is Stopped or Failed - start it
             dep.start();
             if (!waitForDependency(dep)) {
                 MicroserviceState oldState = state;
@@ -773,7 +773,7 @@ class AbstractMicroserviceTest {
         TestService s = new TestService() {
             @Override
             protected void onStart() throws Exception {
-                // Simulate that we're "in" onStart — state should already be Starting
+                // Simulate that we're "in" onStart - state should already be Starting
                 assertEquals(MicroserviceState.Starting, getState());
                 // A second start() call should be a no-op (but it can't happen
                 // because start() is synchronized and we're inside it)
@@ -1091,7 +1091,7 @@ import java.util.stream.Collectors;
  * When the service transitions to Ready, the executor's state-change listener
  * triggers dispatch.</p>
  *
- * <p>Cancellation removes pending tasks from the queue before they start —
+ * <p>Cancellation removes pending tasks from the queue before they start -
  * no orphan tasks remain. Lifecycle operations (start/stop) are handled by
  * the {@link Microservice}, NOT as queue tasks.</p>
  */
@@ -1706,11 +1706,11 @@ class ServiceAwareQueuedExecutorTest {
         exec.enqueue(new CountingRun(latch, counter, 0));
         exec.enqueue(new CountingRun(latch, counter, 0));
 
-        // Service not ready — tasks should not execute
+        // Service not ready - tasks should not execute
         assertFalse(latch.await(1, TimeUnit.SECONDS));
         assertEquals(0, counter.get());
 
-        // Start service — tasks should execute
+        // Start service - tasks should execute
         service.start();
         assertTrue(latch.await(10, TimeUnit.SECONDS));
         assertEquals(2, counter.get());
@@ -1845,7 +1845,7 @@ class ServiceAwareEphemeralExecutorTest {
 
         assertTrue(firstStarted.await(2, TimeUnit.SECONDS));
 
-        // Enqueue second task — should cancel the first
+        // Enqueue second task - should cancel the first
         CountDownLatch secondDone = new CountDownLatch(1);
         exec.enqueue(new DefaultJIPipeRunnable() {
             @Override
@@ -1960,7 +1960,7 @@ In `JIPipeServerInstance.java`:
 - Rename the abstract `stop()` method to `stopProcess()`
 - Add `onStart()` that calls `startProcess()` and health check
 - Add `onStop()` that calls `stopProcess()`
-- Remove the `state` field, `getState()`, `setState()` — inherited from `AbstractMicroservice`
+- Remove the `state` field, `getState()`, `setState()` - inherited from `AbstractMicroservice`
 - Remove `JIPipeServerState` import
 
 The full modified `JIPipeServerInstance.java`:
@@ -2052,7 +2052,7 @@ Apply the same rename pattern (`start()` → `startProcess()`, `stop()` → `sto
 In `JIPipeServerServiceComponent.java`:
 
 - Replace all `instance.getState()` checks that used `JIPipeServerState` with `MicroserviceState` checks
-- Replace `instance.setState(JIPipeServerState.X)` calls — these are now handled by `Microservice.start()`/`stop()`
+- Replace `instance.setState(JIPipeServerState.X)` calls - these are now handled by `Microservice.start()`/`stop()`
 - Replace `instance.start()` with `instance.startProcess()` or `instance.start()` (the Microservice.start () which calls
   onStart () which calls startProcess ())
 - Remove `JIPipeServerState` imports, `JIPipeServerEvent` imports
@@ -2073,8 +2073,8 @@ Delete:
 
 Update any files that import `JIPipeServerState`:
 
-- `JIPipeDesktopServerMonitorOverviewPage.java` — replace `JIPipeServerState` checks with `MicroserviceState`
-- `JIPipeDesktopServerStatusControl.java` — same
+- `JIPipeDesktopServerMonitorOverviewPage.java` - replace `JIPipeServerState` checks with `MicroserviceState`
+- `JIPipeDesktopServerStatusControl.java` - same
 
 - [ ] **Step 7: Verify it compiles**
 
@@ -2164,21 +2164,21 @@ Remove:
 
 Delete the file. Update all references:
 
-- `JIPipeAIModelRunner.java` — change `getStatus()` return type to `MicroserviceState`
-- `JIPipeAPIEmbeddingAIModelRunner.java` — update status field and references
-- `JIPipeOnnxEmbeddingAIModelRunner.java` — update status field and references
+- `JIPipeAIModelRunner.java` - change `getStatus()` return type to `MicroserviceState`
+- `JIPipeAPIEmbeddingAIModelRunner.java` - update status field and references
+- `JIPipeOnnxEmbeddingAIModelRunner.java` - update status field and references
 
 - [ ] **Step 6: Update AI monitor UI components**
 
 Update all files importing `JIPipeAIModelRunnerStatus`:
 
-- `JIPipeDesktopAIMonitorOverviewPage.java` — subscribe to `MicroserviceStateChangeEvent`, replace status checks with
+- `JIPipeDesktopAIMonitorOverviewPage.java` - subscribe to `MicroserviceStateChangeEvent`, replace status checks with
   `MicroserviceState`
-- `JIPipeDesktopAIStatusControl.java` — same
-- `JIPipeDesktopAIMonitorLogPage.java` — same
-- `JIPipeDesktopAIMonitorEmbeddingLogPage.java` — same
-- `JIPipeDesktopAIMonitorWindow.java` — same
-- `ModelConfigurationComponent.java` — same
+- `JIPipeDesktopAIStatusControl.java` - same
+- `JIPipeDesktopAIMonitorLogPage.java` - same
+- `JIPipeDesktopAIMonitorEmbeddingLogPage.java` - same
+- `JIPipeDesktopAIMonitorWindow.java` - same
+- `ModelConfigurationComponent.java` - same
 
 Replace patterns:
 

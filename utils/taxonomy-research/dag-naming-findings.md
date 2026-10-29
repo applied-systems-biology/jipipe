@@ -1,4 +1,4 @@
-# DAG Pattern Mining — Naming & Description Findings
+# DAG Pattern Mining - Naming & Description Findings
 
 Work item 1324 · branch `1324-node-taxonomy-core` · 2026-10-17
 Status: **findings + proposed fix, awaiting review.** Not re-run yet.
@@ -15,7 +15,7 @@ from you.
 **The step (C) LLM never saw any node *descriptions*.** It only got each node
 's short display name (e.g. "Add path to annotations", "Convert 2D ROI to
 RGB") plus the slot wiring. The research `registry.json` I built for the
-mining pipeline is *structure-only* (id, name, functions, slots) — it carries **0** of the 1510 node descriptions, even
+mining pipeline is *structure-only* (id, name, functions, slots) - it carries **0** of the 1510 node descriptions, even
 though 300 of the 326 node types
 the 270 patterns actually use **do have real descriptions in the source**.
 
@@ -29,7 +29,7 @@ JIPipe slot vocabulary. That is exactly why:
 
 The fix is therefore two-part and cheap: **(1)** feed the real node
 descriptions into the (C) prompt, and **(2)** tighten the naming rules. No
-change to (A) or (B) — the candidates and clusters are fine; only the (C)
+change to (A) or (B) - the candidates and clusters are fine; only the (C)
 verdicts (name + description + gate) need regenerating.
 
 Evidence that the descriptions exist and are extractable:
@@ -51,11 +51,11 @@ types with an extractable source description         : 300 (92%)
 ```
 
 (the 26 without a source description are mostly `clij:plugin:*`, `jipipe2ai-*`
-and a few auto-registered nodes — a fallback to the node name is fine for those.)
+and a few auto-registered nodes - a fallback to the node name is fine for those.)
 
 ---
 
-## Issue 1 — Names use JIPipe-internal terms ("annotated paths", "hyperstack")
+## Issue 1 - Names use JIPipe-internal terms ("annotated paths", "hyperstack")
 
 Measured: 8 of 270 names contain a JIPipe-internal or image-analysis-jargon term
 a biologist wouldn't map to an outcome. The flagship is the worst (support 92,
@@ -78,7 +78,7 @@ data** (path → annotate → …) rather than **what the analyst achieves**.
 **Proposed fix (prompt rules, applied on re-run):**
 
 1. Name the *outcome*, not the mechanism. Ask "what does a user end up with?"
-   — "Load images and ROIs from a folder", not "List folder contents with
+   - "Load images and ROIs from a folder", not "List folder contents with
    annotated paths".
 2. Forbid / replace a short list of JIPipe-internal terms in names: `annotated
    path(s)`, `path annotation`, `hyperstack`, `slot`, `graph`, `compartment`,
@@ -90,10 +90,10 @@ data** (path → annotate → …) rather than **what the analyst achieves**.
 
 ---
 
-## Issue 2 — 2D and 3D ROIs are conflated
+## Issue 2 - 2D and 3D ROIs are conflated
 
 Measured across all 71 ROI-named patterns (node-type is the ground truth:
-`ij1-roi*` = 2D ROI, `ij3d-roi3d*` = 3D ROI — different data types):
+`ij1-roi*` = 2D ROI, `ij3d-roi3d*` = 3D ROI - different data types):
 
 | category                                                                         | count  |
 |----------------------------------------------------------------------------------|--------|
@@ -103,7 +103,7 @@ Measured across all 71 ROI-named patterns (node-type is the ground truth:
 | bare "ROI", no ROI-typed node identifiable by id                                 | 3      |
 
 The 56 single-type-but-unqualified ones are exactly your "the other type is
-usually derivable" case — the name silently implies the pattern works for both
+usually derivable" case - the name silently implies the pattern works for both
 dimensions, which misleads a biologist into dropping it onto the wrong data.
 Worst offenders (high support, most trusted):
 
@@ -116,11 +116,11 @@ Worst offenders (high support, most trusted):
 0027  support 8   actually 3D  'Segment objects and extract ROI statistics'
 ```
 
-The **one genuine mix** is `0104 support 4 'Cellpose segmentation to ROIs'` —
+The **one genuine mix** is `0104 support 4 'Cellpose segmentation to ROIs'` -
 its graph runs `ij1-roi-to-mask` / `ij1-roi-to-rgb` (2D) **and**
 `ij3d-labels-to-roi` (3D) in the same pipeline. That's either a legitimate
 2D→3D conversion (the name must say so) or a mining artifact that merged two
-dimensionalities — needs a manual look.
+dimensionalities - needs a manual look.
 
 **Proposed fix (prompt rule + a data-side note):**
 
@@ -137,7 +137,7 @@ dimensionalities — needs a manual look.
 
 ---
 
-## Issue 3 — Descriptions must say what the node actually does
+## Issue 3 - Descriptions must say what the node actually does
 
 Measured: for the 12 annotation-function patterns, **9 of 12 never state what
 is being annotated** (the concrete input → concrete output). Example:
@@ -160,7 +160,7 @@ instead of stating function.
 
 1. Extend the structure-only `registry.json` to carry each node's source
    `description` (a one-off change to the `RegistryDumperTest`-style dump, or
-   a direct extract from the `@SetJIPipeDocumentation` annotations — 92%
+   a direct extract from the `@SetJIPipeDocumentation` annotations - 92%
    coverage shown above). This is genuinely useful beyond mining: it makes the
    registry searchable by what a node does, which feeds node search and the
    user.
@@ -171,18 +171,18 @@ instead of stating function.
 3. **Multi-section documentation API (your note):** the current viewer
    (`JIPipeDesktopAlgorithmCompendiumUI.buildAlgorithmDocumentation`) flattens
    name + one description blob + slot table + parameters into one concatenated
-   markdown string. A *structured* doc type (named sections — e.g. "What it
+   markdown string. A *structured* doc type (named sections - e.g. "What it
    does", "Inputs", "Outputs", "Parameters", "Examples/See-also") is the right
    API so the viewer can render sections independently. This is a separate,
    larger workstream than the mining step; the descriptions we generate here
    are the content that will eventually populate those sections. I'd treat it
    as its own follow-up task (design the `SectionedDocumentation` type +
-   viewer) rather than block the mining on it — but I'll note it and can
+   viewer) rather than block the mining on it - but I'll note it and can
    draft the design if you want.
 
 ---
 
-## Issue 4 — Two audiences: bioinformaticians and biologists
+## Issue 4 - Two audiences: bioinformaticians and biologists
 
 This is a rule, not a bug, but it's the lens the other three are seen through.
 A name/description that only an image-analysis programmer understands ("annotated paths", "expression-based annotation
@@ -212,8 +212,8 @@ audience; one that over-simplifies fails the other.
 
 | step                   | status                                                                                                                                                                                                  |
 |------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| (A) harvest            | unchanged — candidates and their source layouts are correct                                                                                                                                             |
-| (B) merge              | unchanged — the 324 families are correct (they're structural)                                                                                                                                           |
+| (A) harvest            | unchanged - candidates and their source layouts are correct                                                                                                                                             |
+| (B) merge              | unchanged - the 324 families are correct (they're structural)                                                                                                                                           |
 | (C) gate/name/classify | **re-run** with (i) node descriptions in the state and (ii) the four prompt rules. Gate decisions will shift a little (the model now has real function evidence), names/descriptions will change a lot. |
 | (D) ship               | **blocked** on the (C) re-run + your decisions below                                                                                                                                                    |
 
@@ -227,7 +227,7 @@ happy with the new names.
 ## Decisions I need from you
 
 1. **Support floor** (carried over from the last report): which set does (D)
-   ship? — all 270 (plan literal) / ≥2 (208) / ≥3 (133) / ≥5 (65)? The
+   ship? - all 270 (plan literal) / ≥2 (208) / ≥3 (133) / ≥5 (65)? The
    re-run will change these counts slightly.
 2. **Node descriptions in the registry**: OK to extend the registry dump to
    carry descriptions (the 92%-coverage fix)? This is the main enabler for

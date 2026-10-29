@@ -61,7 +61,7 @@ compartment `File Handling+Glomeruli`.
 ## Template
 
 Proposed name `Compartment output -> Convert 2D ROI to RGB -> Compartment output`, menu path
-`Patterns/Graph / Project/Compartment output -> Convert 2D ROI to RGB -> Compartment output` (proposal only — not
+`Patterns/Graph / Project/Compartment output -> Convert 2D ROI to RGB -> Compartment output` (proposal only - not
 registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/chain-3-jipipe-compartment-output-ij1-roi-to-rgb-jipipe-compartment-output.json`.
 

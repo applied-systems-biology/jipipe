@@ -61,7 +61,7 @@ Project: `AIAgentTests/02-AdvancedPipelines/Cryogels_01.jip` (relative to `/data
 ## Template
 
 Proposed name `Convert 2D ROI to RGB -> Compartment output -> Filter 2D ROI by overlap (old)`, menu path
-`Patterns/ROIs/Convert 2D ROI to RGB -> Compartment output -> Filter 2D ROI by overlap (old)` (proposal only — not
+`Patterns/ROIs/Convert 2D ROI to RGB -> Compartment output -> Filter 2D ROI by overlap (old)` (proposal only - not
 registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/chain-3-ij1-roi-to-rgb-jipipe-compartment-output-ij1-roi-filter-by-overlap.json`.
 

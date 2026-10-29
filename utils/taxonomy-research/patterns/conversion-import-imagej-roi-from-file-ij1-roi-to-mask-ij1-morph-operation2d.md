@@ -61,7 +61,7 @@ Project: `AIAgentTests/02-AdvancedPipelines/Cryogels_01.jip` (relative to `/data
 ## Template
 
 Proposed name `Import ROI -> Convert 2D ROI to mask -> Morphological operation 2D`, menu path
-`Patterns/Data Sources/Import ROI -> Convert 2D ROI to mask -> Morphological operation 2D` (proposal only — not
+`Patterns/Data Sources/Import ROI -> Convert 2D ROI to mask -> Morphological operation 2D` (proposal only - not
 registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/conversion-import-imagej-roi-from-file-ij1-roi-to-mask-ij1-morph-operation2d.json`.
 

@@ -1,4 +1,4 @@
-# 16-bit / n-bit thresholding — Design
+# 16-bit / n-bit thresholding - Design
 
 Work item: https://asb-git.hki-jena.de/RGerst/jipipe/-/work_items/1327
 
@@ -14,7 +14,7 @@ reject (8U-only input slots) or handle via lossy 8-bit conversions. ImageJ's
 
 1. Clear naming of all (auto)thresholding nodes indicating bit depth and binning.
 2. 16-bit thresholding nodes covering the full feature set of the 8-bit variants (auto threshold, percentile threshold,
-   local auto thresholds — manual and
+   local auto thresholds - manual and
    expression-based 16-bit nodes already exist).
 3. Thresholding with custom number of bins via parameter.
 4. Same for expression functions.
@@ -24,7 +24,7 @@ reject (8U-only input slots) or handle via lossy 8-bit conversions. ImageJ's
 
 ## Design decisions (user-approved)
 
-- **Preserve existing nodes exactly** — only their displayed name/description
+- **Preserve existing nodes exactly** - only their displayed name/description
   changes so users understand limitations. No input-slot widening.
 - **Port threshold methods to a JIPipe-owned n-bit engine** rather than
   rescaling to 256 bins around ImageJ's implementation.
@@ -55,12 +55,12 @@ share one engine.
 
 Components:
 
-- **`AutoThresholdMethod`** — enum mirroring `ij.process.AutoThresholder.Method`'s
+- **`AutoThresholdMethod`** - enum mirroring `ij.process.AutoThresholder.Method`'s
   17 values. **The enum constant names must be exactly identical to ImageJ's**
   (`Default, Huang, Intermodes, IsoData, IJ_IsoData, Li, MaxEntropy, Mean,
   MinError, Minimum, Moments, Otsu, Percentile, RenyiEntropy, Shanbhag,
   Triangle, Yen`): enum parameters are deserialized via Jackson
-  `readerFor(fieldClass)`, which matches by constant `name()` — renamed
+  `readerFor(fieldClass)`, which matches by constant `name()` - renamed
   constants would break deserialization of existing projects.
   The code base is ported to the new enum: all existing usages of
   `AutoThresholder.Method` as a parameter type (e.g.
@@ -77,7 +77,7 @@ Components:
   each describing the method's algorithm and its binning behavior.
 
 
-- **`NBinsAutoThresholder`** — public entry point. Static method
+- **`NBinsAutoThresholder`** - public entry point. Static method
   `getThreshold(AutoThresholdMethod method, int[] histogram)` where histogram
   length is the bin count. Dispatches:
 
@@ -97,7 +97,7 @@ Components:
       arbitrary-length histograms (used for custom bins and as the engine behind
       the 16-bit path).
 
-- **Ported method implementations** — one static method per threshold method,
+- **Ported method implementations** - one static method per threshold method,
   ported from ImageJ 1.54p `ij.process.AutoThresholder` (public static
   methods), with every 255/256 hardcoding replaced by `histogram.length - 1`
   scaling. **Fidelity rule:** on 256-bin input every ported method must return
@@ -136,7 +136,7 @@ Implementation notes:
   fresh 8-bit output hyperstack (pattern from `ManualThreshold16U2DAlgorithm`),
   NOT via `ip.threshold()`. The dark-background inversion happens on a 32-bit
   duplicate or on the histogram (bin reversal) to avoid mutating 16-bit
-  original semantics — the simple approach: invert the 16-bit processor copy (`255 - v` for 8-bit becomes `65535 - v`)
+  original semantics - the simple approach: invert the 16-bit processor copy (`255 - v` for 8-bit becomes `65535 - v`)
   exactly as the 8-bit node inverts,
   then treat as dark background.
 - `AutoThreshold2DNBinsAlgorithm`: input `ImagePlusGreyscaleData`; reads pixels
@@ -185,9 +185,9 @@ NOT touched. New nodes get no ImageJ alias (no ImageJ equivalent exists).
   `nbins` and evaluated by the n-bit engine. Return: bin index (integer).
   Function IDs unchanged.
 - **New variants** (34 functions, same 17 methods each):
-    - `HISTOGRAM_THRESHOLD_8_BIT_<METHOD>` — validates histogram length ≤ 256,
+    - `HISTOGRAM_THRESHOLD_8_BIT_<METHOD>` - validates histogram length ≤ 256,
       evaluates via the ImageJ fast path, returns bin index 0..255.
-    - `HISTOGRAM_THRESHOLD_16_BIT_<METHOD>` — validates histogram length ≤
+    - `HISTOGRAM_THRESHOLD_16_BIT_<METHOD>` - validates histogram length ≤
       65536, evaluates via the 16-bit engine path, returns bin index 0..65535.
 - Implementation: `HistogramThresholdFunction` base class reworked to delegate
   to `NBinsAutoThresholder`; the 17 existing per-method subclasses keep their
@@ -233,8 +233,8 @@ Tests:
 
 ## Out of scope
 
-- 3D thresholding nodes (jipipe-plugin-ij-3d) — may adopt the engine later.
-- Color thresholding (HSB/RGB/LAB nodes) — 8-bit per-channel by design.
+- 3D thresholding nodes (jipipe-plugin-ij-3d) - may adopt the engine later.
+- Color thresholding (HSB/RGB/LAB nodes) - 8-bit per-channel by design.
 - Renaming expression functions (forbidden by requirements).
 - Widening existing node input slots (preserved per user decision).
 
@@ -247,7 +247,7 @@ Tests:
     - `AutoThreshold2DAlgorithm` (field, getter/setter, `runIteration`)
     - `NucleiSegmentation3DAlgorithm` (jipipe-plugin-ij-3d; field
       `autoThresholdMethod`, getter/setter)
-    - `ImageJAlgorithmsPlugin.registerThresholdAlgorithms()` — the
+    - `ImageJAlgorithmsPlugin.registerThresholdAlgorithms()` - the
       `registerEnumParameterType(AutoThresholder.Method.class.getCanonicalName(), ...)`
       registration is changed to register `AutoThresholdMethod` (new ID, e.g.
       its canonical name); the per-method `registerNodeExample` loop follows.

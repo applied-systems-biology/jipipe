@@ -51,8 +51,8 @@ public class JIPipeDesktopNodeDatabaseEntryListCellRenderer extends JPanel imple
      * <p>
      * Node-info-carrying entries that wrap a <em>converted</em> node (a
      * non-null primary function) show the taxonomy function path
-     * ({@link TaxonomyView#locationPath}). Every other entry — unconverted
-     * node entries, existing pipeline nodes, compartments, and templates —
+     * ({@link TaxonomyView#locationPath}). Every other entry - unconverted
+     * node entries, existing pipeline nodes, compartments, and templates -
      * keeps the stored {@link JIPipeNodeDatabaseEntry#getLocationInfos()
      * location info} byte-equivalent to before, so no unconverted node's
      * visible location changes.

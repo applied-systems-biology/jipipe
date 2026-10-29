@@ -58,7 +58,7 @@ Project: `AIAgentTests/02-AdvancedPipelines/Cryogels_01.jip` (relative to `/data
 ## Template
 
 Proposed name `Folder list fans out to 2 target ids (roles: import, other)`, menu path
-`Patterns/Data Sources/Folder list fans out to 2 target ids (roles: import, other)` (proposal only — not registered).
+`Patterns/Data Sources/Folder list fans out to 2 target ids (roles: import, other)` (proposal only - not registered).
 `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/fan-out-import-folder-list-import-1-other-1.json`.
 

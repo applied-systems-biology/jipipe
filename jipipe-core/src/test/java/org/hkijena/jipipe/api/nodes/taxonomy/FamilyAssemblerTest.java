@@ -260,7 +260,7 @@ class FamilyAssemblerTest {
 
     /**
      * Without an injected mapping, an {@code after} class resolves to its
-     * own simple name — the documented fallback rule.
+     * own simple name - the documented fallback rule.
      */
     @Test
     void afterFallsBackToSimpleName() {
@@ -276,13 +276,13 @@ class FamilyAssemblerTest {
     /**
      * A step registered BEFORE its predecessor's class is known to the
      * mapping still resolves once the mapping is updated (deferred
-     * resolution — registration order must not break the edges).
+     * resolution - registration order must not break the edges).
      */
     @Test
     void afterResolvesLazilyAfterMappingUpdate() {
         FamilyAssembler assembler = new FamilyAssembler();
         // "track" is added first, while the mapping still does not know
-        // DetectSpots — at query time it must resolve via the mapping
+        // DetectSpots - at query time it must resolve via the mapping
         // added later, not the (stale) simple-name fallback.
         assembler.addStep("track", TM_FAMILY_ID, step(Tm.class, "Track spots", DetectSpots.class));
         assertEquals(List.of(), assembler.followUps("detect"),

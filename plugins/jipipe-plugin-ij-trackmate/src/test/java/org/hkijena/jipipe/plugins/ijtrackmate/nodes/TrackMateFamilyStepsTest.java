@@ -44,7 +44,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * must not depend on its plugins. The class-level metadata of the four seed
  * families is tested in core's {@code SeedFamiliesTest}.
  * <p>
- * Steps are keyed by the node class's <em>simple name</em> — the
+ * Steps are keyed by the node class's <em>simple name</em> - the
  * {@link FamilyAssembler} fallback rule for an empty class→node-id mapping.
  * In production the registry provides the real stable node ids, and the
  * {@code after} classes resolve lazily against that mapping at query time.
@@ -80,7 +80,7 @@ class TrackMateFamilyStepsTest {
             ConvertTracksToRoiNode.class,
             TrackSchemeRendererNode.class,
             // The shared factory class of the generated detector entries (DoG,
-            // LoG, …) — each generated node id becomes a "Detect spots" step,
+            // LoG, …) - each generated node id becomes a "Detect spots" step,
             // and "Track spots" follows all of them (deferred, multi-id
             // resolution in production; the simple-name fallback here).
             CreateSpotDetectorNode.class
@@ -265,7 +265,7 @@ class TrackMateFamilyStepsTest {
                 "render track scheme is terminal");
 
         // The generated detector entries (shared CreateSpotDetectorNode
-        // class, simple-name fallback here) link into "Track spots" — this
+        // class, simple-name fallback here) link into "Track spots" - this
         // is the "DoG detector → Track spots" follow-up the finder must
         // show for every generated detector node id in production.
         assertTrue(assembler.followUps(CreateSpotDetectorNode.class.getSimpleName())

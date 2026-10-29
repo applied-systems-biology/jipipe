@@ -61,7 +61,7 @@ Project: `AIAgentTests/01-BasicWorkshop/JSC_2025_06_Kidney_Exports/kidney.jip` (
 ## Template
 
 Proposed name `Folder list -> List subfolders -> Annotate with file/directory name`, menu path
-`Patterns/Data Sources/Folder list -> List subfolders -> Annotate with file/directory name` (proposal only — not
+`Patterns/Data Sources/Folder list -> List subfolders -> Annotate with file/directory name` (proposal only - not
 registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/chain-3-import-folder-list-folder-list-subfolders-path-to-annotation-simple.json`.
 

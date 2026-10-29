@@ -27,14 +27,14 @@ import java.util.function.Consumer;
  * <p>
  * For every registered family it reads the directed step-workflow graph from
  * the {@link FamilyAssembler} and emits one {@link Edge} per workflow
- * connection — in the graph's natural direction, predecessor step →
- * successor step — so a family step {@code A → B} contributes
+ * connection - in the graph's natural direction, predecessor step →
+ * successor step - so a family step {@code A → B} contributes
  * {@code next(A) += B} and {@code previous(B) += A}. The family graph
  * direction is what supplies the previously-missing <em>predecessor</em>
  * direction (the legacy {@code followUps} query only exposed successors).
  * <p>
  * The family graph's vertices are exactly the family's step ids, so every
- * edge maps to a step of that family — there is nothing to resolve or skip
+ * edge maps to a step of that family - there is nothing to resolve or skip
  * here (contrast with {@link TemplateRelationSource}, whose graphs can
  * reference removed nodes and must be guarded).
  */

@@ -74,7 +74,7 @@ class AbstractMicroserviceTest {
         TestService s = new TestService() {
             @Override
             protected void onStart() throws Exception {
-                // Simulate that we're "in" onStart — state should already be Starting
+                // Simulate that we're "in" onStart - state should already be Starting
                 assertEquals(MicroserviceState.Starting, getState());
                 // A second start() call should be a no-op (but it can't happen
                 // because start() is synchronized and we're inside it)

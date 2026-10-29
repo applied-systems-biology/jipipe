@@ -61,7 +61,7 @@ Project: `AIAgentTests/03-ExampleWorkflows/Clara_08_feet.jip` (relative to `/dat
 ## Template
 
 Proposed name `Apply expression per row fans out to 3 target ids (roles: core-io, export)`, menu path
-`Patterns/Tables/Apply expression per row fans out to 3 target ids (roles: core-io, export)` (proposal only — not
+`Patterns/Tables/Apply expression per row fans out to 3 target ids (roles: core-io, export)` (proposal only - not
 registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/fan-out-table-apply-expression-per-row-v2-core-io-1-export-1.json`.
 

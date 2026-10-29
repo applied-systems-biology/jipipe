@@ -60,7 +60,7 @@ Project: `AIAgentTests/03-ExampleWorkflows/Angela_Roots_38.jip` (relative to `/d
 ## Template
 
 Proposed name `Export image -> IO Interface -> Compartment output`, menu path
-`Patterns/Export/Export image -> IO Interface -> Compartment output` (proposal only — not registered). `data` = the
+`Patterns/Export/Export image -> IO Interface -> Compartment output` (proposal only - not registered). `data` = the
 minimal JIPipeGraph JSON; the full object is written to
 `templates/chain-3-iji-export-image-v2-io-interface-jipipe-compartment-output.json`.
 

@@ -47,7 +47,7 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
  * format: it round-trips a corpus of real, user-produced <code>.jip</code>
  * project files through BOTH the legacy cycle and the JIPX cycle and captures
  * a deterministic verification report. The legacy cycle is the inheritance of
- * the phase 0 gate ({@code CorpusRoundTripFixpointTest} — the verified
+ * the phase 0 gate ({@code CorpusRoundTripFixpointTest} - the verified
  * baseline, kept byte-identical); the JIPX cycle is the subject under test:
  * <ol>
  * <li>Copy the corpus file into a fresh, index-named per-project working
@@ -57,32 +57,32 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
  * <code>M1 = loadProject(S1)</code> → save <code>S2</code> from M1 →
  * <code>legacyFixpoint = canonical(S1 tree) == canonical(S2 tree)</code>
  * (the phase 0 fixpoint property).</li>
- * <li><b>JIPX cycle</b> (from M1 — the legacy-fixpoint model): write
+ * <li><b>JIPX cycle</b> (from M1 - the legacy-fixpoint model): write
  * <code>workdir/project.jipx</code> via
  * {@link JIPipeXProjectWriter#writeWithViolations(JIPipeProject, Path, JIPipeProgressInfo, List)}
  * (collecting the compliance violations) → <code>M2 = loadProject(project.jipx)</code>
- * (the read dispatch routes ZIP → JIPX reader — the dispatch seam itself is
+ * (the read dispatch routes ZIP → JIPX reader - the dispatch seam itself is
  * proven here; the reader is never instantiated directly) →
  * <code>jipxModelEquivalent = canonical(monolithTree(M1)) ==
  * canonical(monolithTree(M2))</code>, where {@code monolithTree(X)} is the
  * full monolith serialization of the model:
  * <code>readValue(writeValueAsString(X))</code>. The full monolith
- * serialization of both models is compared — the JIPX load re-runs the same
+ * serialization of both models is compared - the JIPX load re-runs the same
  * regeneration machinery (e.g. external environments), and the canonical
  * comparison erases the known array-order nondeterminism of the current
  * save path (the phase 0 ruling, duplicated here by design).</li>
  * <li><b>Crate check</b>: open the <code>.jipx</code> with
  * {@link java.util.zip.ZipFile}; the <code>ro-crate-metadata.json</code>
  * entry exists, parses as JSON, and its root <code>./</code> entity carries
- * a <code>mainEntity</code> (an RO-Crate id reference —
+ * a <code>mainEntity</code> (an RO-Crate id reference -
  * <code>{"@id": "project/graph.json"}</code>) and a <code>license</code>
  * reference; the <code>jipx.json</code> entry exists and parses.
- * Boolean only — the crate content is deliberately NOT compared byte-wise:
+ * Boolean only - the crate content is deliberately NOT compared byte-wise:
  * <code>datePublished</code> is non-deterministic by design.</li>
  * </ol>
  * <p>
  * <b>Scope: jipipe-launcher.</b> The corpus references node ids from every
- * plugin — like the phase 0 gate, this harness must live in the launcher, the
+ * plugin - like the phase 0 gate, this harness must live in the launcher, the
  * only module with all plugin modules on its classpath.
  * <p>
  * <b>Gated:</b> the test is skipped unless the system property
@@ -90,16 +90,16 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
  * so CI stays green (on this machine: <code>/data/JIPipe</code>, 367
  * <code>.jip</code> files recursive). Optional properties:
  * <ul>
- * <li><code>jipipe.jipx.roundtrip.report</code> — report output path
+ * <li><code>jipipe.jipx.roundtrip.report</code> - report output path
  * (default: <code>&lt;corpus&gt;/.roundtrip/jipx.json</code>)</li>
- * <li><code>jipipe.jipx.roundtrip.limit</code> — process only the first N
+ * <li><code>jipipe.jipx.roundtrip.limit</code> - process only the first N
  * files (smoke runs); a present-but-malformed value fails loudly rather
  * than silently falling back (the phase 0 pattern)</li>
  * </ul>
  * <p>
  * <b>Per-project failure policy:</b> every project runs in its own
  * try/catch and a failure CONTINUEs the run. The outcome is mapped from an
- * explicit stage variable updated before each step (the phase 0 pattern) —
+ * explicit stage variable updated before each step (the phase 0 pattern) -
  * no single file may abort the corpus run:
  * <code>OK</code> (legacy fixpoint + JIPX model equivalence + crate checks
  * all recorded) | <code>PARSE_FAILED</code> (copy or JSON parse of the
@@ -112,7 +112,7 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
  * a top-level <code>*.jip</code> count snapshot before/after the run is
  * asserted unchanged (the phase 0 pollution guard).
  * <p>
- * <b>Report schema</b> (deterministic — no timestamps, timings, or absolute
+ * <b>Report schema</b> (deterministic - no timestamps, timings, or absolute
  * temporary paths):
  * <pre>
  * {
@@ -130,7 +130,7 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
  * non-vacuity guard of the JIPX comparison; <code>jipxViolations</code> is
  * the compliance-violation count of the JIPX save (expected 0 for
  * well-formed saves); <code>error</code> is a one-line exception summary
- * (diagnostic only — known to flap for JDK NPE helpful-message forms; never
+ * (diagnostic only - known to flap for JDK NPE helpful-message forms; never
  * part of any comparison).
  */
 class JipxRoundTripFixpointTest {
@@ -147,7 +147,7 @@ class JipxRoundTripFixpointTest {
 
     /**
      * Loads a project from the given path with an empty, throwaway validation
-     * report and notification inbox, through the format dispatcher — the
+     * report and notification inbox, through the format dispatcher - the
      * same entry point every load site in the code base uses (legacy JSON
      * reader for plain files, JIPX reader for ZIP content).
      */
@@ -157,7 +157,7 @@ class JipxRoundTripFixpointTest {
     }
 
     /**
-     * The full monolith serialization of a project as a JSON tree —
+     * The full monolith serialization of a project as a JSON tree -
      * {@code readValue(writeValueAsString(project))}. Used to compare the
      * legacy-fixpoint model (M1) with the model loaded back from the JIPX
      * container (M2): both models are serialized the same way, so the
@@ -169,7 +169,7 @@ class JipxRoundTripFixpointTest {
     }
 
     /**
-     * The JIPX crate validity check (boolean only — see the class javadoc:
+     * The JIPX crate validity check (boolean only - see the class javadoc:
      * the crate content is deliberately NOT compared byte-wise because
      * {@code datePublished} is non-deterministic by design):
      * <ul>
@@ -247,7 +247,7 @@ class JipxRoundTripFixpointTest {
     /**
      * Canonical form of a JSON tree for order-insensitive comparison
      * (DUPLICATED from the phase 0 gate {@code CorpusRoundTripFixpointTest}
-     * by design — that file is the verified baseline and keeps zero diff;
+     * by design - that file is the verified baseline and keeps zero diff;
      * two test files sharing the canonical helper is acceptable for tests):
      * objects are re-emitted with fields sorted by key; arrays have each
      * element canonicalized and are then sorted by the element's canonical
@@ -301,7 +301,7 @@ class JipxRoundTripFixpointTest {
     /**
      * One-line exception summary (the phase 0 pattern):
      * <code>Class: message</code>, whitespace-collapsed, 500-char cap.
-     * Diagnostic only — known to flap for JDK NPE helpful-message forms;
+     * Diagnostic only - known to flap for JDK NPE helpful-message forms;
      * never part of any comparison.
      */
     private static String errorLine(Throwable e) {
@@ -396,7 +396,7 @@ class JipxRoundTripFixpointTest {
                 m0.saveProject(s1Path, false);
                 s1Tree = JsonUtils.getObjectMapper().readTree(s1Path.toFile());
 
-                // M1 — the legacy-fixpoint model; also the JIPX cycle's source.
+                // M1 - the legacy-fixpoint model; also the JIPX cycle's source.
                 stage = "LOAD2";
                 JIPipeProject m1 = load(s1Path, context);
                 loadedNodesM1 = m1.getGraph().traverse().size();
@@ -418,7 +418,7 @@ class JipxRoundTripFixpointTest {
                 new JIPipeXProjectWriter().writeWithViolations(m1, jipxPath, JIPipeProgressInfo.SILENT, violations);
                 jipxViolations = violations.size();
 
-                // The read dispatch routes ZIP → JIPX reader — never
+                // The read dispatch routes ZIP → JIPX reader - never
                 // instantiate the reader directly; the dispatch seam is part
                 // of what this harness proves.
                 stage = "JIPX_LOAD";
@@ -439,11 +439,11 @@ class JipxRoundTripFixpointTest {
                 // Map the failing stage to an outcome (a legacy-cycle failure
                 // skips the JIPX steps; the JIPX fields keep their false/0
                 // defaults):
-                //   PARSE_FAILED     — the corpus file could not be copied (COPY);
-                //   LOAD_FAILED      — legacy cycle loadProject threw (LOAD1/LOAD2);
-                //   SAVE_FAILED      — legacy cycle saveProject threw (SAVE1/SAVE2);
-                //   JIPX_SAVE_FAILED — writeWithViolations threw (JIPX_SAVE);
-                //   JIPX_LOAD_FAILED — the JIPX container could not be loaded
+                //   PARSE_FAILED     - the corpus file could not be copied (COPY);
+                //   LOAD_FAILED      - legacy cycle loadProject threw (LOAD1/LOAD2);
+                //   SAVE_FAILED      - legacy cycle saveProject threw (SAVE1/SAVE2);
+                //   JIPX_SAVE_FAILED - writeWithViolations threw (JIPX_SAVE);
+                //   JIPX_LOAD_FAILED - the JIPX container could not be loaded
                 //                      (JIPX_LOAD, incl. the crate check that
                 //                      runs inside this stage).
                 switch (stage) {
@@ -476,7 +476,7 @@ class JipxRoundTripFixpointTest {
             entry.put("outcome", outcome);
             outcomes.put(outcome, outcomes.get(outcome).asInt() + 1);
             entries.add(entry);
-            System.out.println("[jipx-roundtrip] " + outcome + " " + input + (error == null ? "" : " — " + error));
+            System.out.println("[jipx-roundtrip] " + outcome + " " + input + (error == null ? "" : " - " + error));
         }
 
         // The harness must not have polluted the corpus.
@@ -489,16 +489,16 @@ class JipxRoundTripFixpointTest {
         // (outcome OK), the JIPX round trip must have been model-equivalent,
         // crate-valid, and violation-free. A JIPX regression must turn the
         // gated run RED, not merely write an ugly report.
-        // Scanned: entries with outcome "OK" only — non-OK entries carry
+        // Scanned: entries with outcome "OK" only - non-OK entries carry
         // false/0 by construction (their JIPX steps were skipped) and are
         // triaged through their outcome, not this assertion.
         // Checked: jipxModelEquivalent (must be true), jipxCrateValid (must
         // be true), jipxViolations (must be 0).
         // Deliberately NOT checked: legacyFixpoint (74 corpus files are
-        // legitimately false — pre-existing .jip save churn, baselined in
+        // legitimately false - pre-existing .jip save churn, baselined in
         // Phase 0) and the error diagnostic (known JDK NPE flap).
         // Safety (no added flakiness): the three JIPX booleans are
-        // deterministic given a successfully loaded model — the known
+        // deterministic given a successfully loaded model - the known
         // environmental flakiness (IOInterface registry warmup) affects the
         // LOAD outcome classification, not the equivalence of loaded models.
         List<String> jipxGateFailures = new ArrayList<>();
@@ -508,13 +508,13 @@ class JipxRoundTripFixpointTest {
             }
             String file = entry.path("file").asText();
             if (!entry.path("jipxModelEquivalent").asBoolean(false)) {
-                jipxGateFailures.add(file + " — jipxModelEquivalent=false");
+                jipxGateFailures.add(file + " - jipxModelEquivalent=false");
             }
             if (!entry.path("jipxCrateValid").asBoolean(false)) {
-                jipxGateFailures.add(file + " — jipxCrateValid=false");
+                jipxGateFailures.add(file + " - jipxCrateValid=false");
             }
             if (entry.path("jipxViolations").asInt(0) != 0) {
-                jipxGateFailures.add(file + " — jipxViolations=" + entry.path("jipxViolations").asInt());
+                jipxGateFailures.add(file + " - jipxViolations=" + entry.path("jipxViolations").asInt());
             }
         }
         assertTrue(jipxGateFailures.isEmpty(),

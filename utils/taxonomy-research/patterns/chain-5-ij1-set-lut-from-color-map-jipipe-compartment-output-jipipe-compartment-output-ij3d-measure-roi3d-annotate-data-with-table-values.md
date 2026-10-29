@@ -76,6 +76,6 @@ Proposed name
 `Set LUT (color map) -> Compartment output -> Compartment output -> Extract IJ3D ROI statistics -> Annotate data with table values`,
 menu path
 `Patterns/Images/Set LUT (color map) -> Compartment output -> Compartment output -> Extract IJ3D ROI statistics -> Annotate data with table values`
-(proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+(proposal only - not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/chain-5-ij1-set-lut-from-color-map-jipipe-compartment-output-jipipe-compartment-output-ij3d-measure-roi3d-annotate-data-with-table-values.json`.
 

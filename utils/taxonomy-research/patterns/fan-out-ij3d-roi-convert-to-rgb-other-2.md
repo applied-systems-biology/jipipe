@@ -57,7 +57,7 @@ Project: `AIAgentTests/03-ExampleWorkflows/Annamaria_12.jip` (relative to `/data
 ## Template
 
 Proposed name `Convert IJ3D ROI to RGB fans out to 2 target ids (roles: other)`, menu path
-`Patterns/ROIs/Convert IJ3D ROI to RGB fans out to 2 target ids (roles: other)` (proposal only — not registered).
+`Patterns/ROIs/Convert IJ3D ROI to RGB fans out to 2 target ids (roles: other)` (proposal only - not registered).
 `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/fan-out-ij3d-roi-convert-to-rgb-other-2.json`.
 

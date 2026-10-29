@@ -40,7 +40,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * research plan task 2).
  * <p>
  * Dumps the fully-booted node registry to
- * {@code utils/taxonomy-research/registry.json} — the registry-side twin of
+ * {@code utils/taxonomy-research/registry.json} - the registry-side twin of
  * the real-pipeline {@code corpus.json} produced by task 1. The later
  * analysis tasks consume the two files only; the emitted shape is a locked
  * interface:
@@ -93,7 +93,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * of each registered family (added for the family-coverage-vs-usage
  * analysis): per family, {@code steps[]} lists every step with its
  * {@code nodeId}, {@code label}, and {@code after} = the step's resolved
- * after <em>node</em> ids — {@link JIPipeNodeTaxonomyFamilyStep#afterIds(FamilyAssembler)}
+ * after <em>node</em> ids - {@link JIPipeNodeTaxonomyFamilyStep#afterIds(FamilyAssembler)}
  * returns step ids ({@code familyId + "#" + nodeId}); the family prefix is
  * stripped because steps are per-family. The resolution itself is the lazy
  * class→node-id mapping only the live assembler can do; a shared instance
@@ -151,7 +151,7 @@ class RegistryDumperTest {
     /**
      * Emits the per-slot entries WITH the runtime slot name: one
      * {@code {"class", "dataType", "name"}} object per slot (in declaration
-     * order, no deduplication — the same data class may back several named
+     * order, no deduplication - the same data class may back several named
      * slots). {@code name} is the slot's declared name (empty string when
      * the annotation has none, which happens for single-slot nodes that
      * derive the name from the class).
@@ -278,7 +278,7 @@ class RegistryDumperTest {
 
             // Per-slot entries WITH names (additive, 2026-10-19): the runtime
             // slot name is authoritative for dynamically-registered nodes
-            // (cLij2/clijx kernels — no @AddJIPipe*Slot source annotation to
+            // (cLij2/clijx kernels - no @AddJIPipe*Slot source annotation to
             // parse), and a code-classpath dump cannot see those nodes at all.
             nodeJson.set("inputSlots",
                     slotNameEntries(info.getInputSlots().stream().map(AddJIPipeInputSlot::value).collect(Collectors.toList()),
@@ -314,7 +314,7 @@ class RegistryDumperTest {
         // registered family. id = the family id; steps = every step the
         // assembler knows for the family (sorted by nodeId), each carrying
         // nodeId, label, and after = the step's resolved after NODE ids
-        // (step.afterIds(assembler) returns step ids "familyId#nodeId" —
+        // (step.afterIds(assembler) returns step ids "familyId#nodeId" -
         // the prefix is stripped, injective within a family; the lazy
         // class→node-id resolution itself is only the live assembler can
         // perform, and a shared instance class behind programmatically
@@ -339,7 +339,7 @@ class RegistryDumperTest {
             // afterIds() returns STEP ids ("familyId + '#' + nodeId", see
             // JIPipeNodeTaxonomyFamilyStep#afterIds); the locked block shape
             // carries NODE ids, so the family prefix is stripped (injective
-            // within a family — no duplicates can arise).
+            // within a family - no duplicates can arise).
             String stepPrefix = FamilyAssembler.stepId(familyId, "");
             for (JIPipeNodeTaxonomyFamilyStep step : familySteps) {
                 ObjectNode stepJson = stepsJson.addObject();

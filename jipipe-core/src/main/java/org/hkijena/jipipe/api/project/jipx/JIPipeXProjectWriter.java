@@ -40,53 +40,53 @@ import java.util.zip.ZipOutputStream;
 /**
  * The JIPX (JIPipe 6) project container writer.
  * <p>
- * Writes a {@code .jipx} file — a ZIP container holding the project parts
+ * Writes a {@code .jipx} file - a ZIP container holding the project parts
  * as individual JSON documents plus a {@code jipx.json} manifest
  * (see {@link JIPipeXManifest} and {@link JIPipeProjectParts}) and the
  * Workflow RO-Crate metadata (see {@link JIPipeProjectCrate}):
  * <ol>
  * <li>The authors merge (same gate as the legacy Path variant:
  * {@code auto-add-authors} → {@link JIPipeProject#addAuthorsFromGlobalList()})
- * — the writer is self-contained; the {@code saveProject(Path, boolean)}
+ * - the writer is self-contained; the {@code saveProject(Path, boolean)}
  * delegate stays merge-free.</li>
  * <li>The project workspace is materialized from the model
- * ({@link JIPipeProjectWorkspace#materializeFromModel(JIPipeProgressInfo)}) —
+ * ({@link JIPipeProjectWorkspace#materializeFromModel(JIPipeProgressInfo)}) -
  * this updates the part files in place, so unknown/payload entries
  * (e.g. {@code data/foo.tiff}) survive and are zipped verbatim.</li>
  * <li>The crate metadata ({@code ro-crate-metadata.json}) and a generated
  * {@code README.md} are written into the workspace.</li>
  * <li>The workspace is zipped into a {@code .part} sibling of the target
  * with {@link ZipOutputStream} (production ZIP writing uses
- * {@code java.util.zip} only — never zip4j). Entry order:
+ * {@code java.util.zip} only - never zip4j). Entry order:
  * {@code ro-crate-metadata.json} first (Workflow RO-Crate root
  * convention), then {@code jipx.json}, then {@code README.md}, then the
  * {@code project/*.json} part files in manifest parts-table order, then
  * any unknown/payload entries sorted by path (determinism). Entry names
- * are the workspace-relative paths — no leading slash, no wrapper root.</li>
+ * are the workspace-relative paths - no leading slash, no wrapper root.</li>
  * <li>{@link #selfVerifyZip(Path, JIPipeProgressInfo)} re-opens the
  * {@code .part} and asserts the container's internal consistency; on
  * failure the part is deleted and the exception carries the first
  * problem.</li>
  * <li>The verified part atomically replaces the target (a single OS-level
- * rename — see {@link #writeWithViolations}), and the workspace is marked
+ * rename - see {@link #writeWithViolations}), and the workspace is marked
  * saved. The target is never half-written.</li>
  * </ol>
  * <p>
  * <b>Concurrency:</b> the workspace-touching sequence (materialize →
  * crate/README/manifest writes → zip → self-verify → atomic move →
  * markSaved) is synchronized on the {@link JIPipeProjectWorkspace}
- * instance — concurrent saves of the same project (e.g. the EDT save and
+ * instance - concurrent saves of the same project (e.g. the EDT save and
  * the backup-queue save) cannot interleave and produce a torn container.
  * <p>
  * <b>Compliance seam:</b> the interface {@link #write} logs RO-Crate
  * compliance violations via the progress info. The package-visible
  * {@link #writeWithViolations(JIPipeProject, Path, JIPipeProgressInfo, List)}
  * overload does the same work but fills the caller's list instead of
- * (in addition to) logging — the GUI save flow (Task 5) uses it to show
+ * (in addition to) logging - the GUI save flow (Task 5) uses it to show
  * the warning dialog.
  * <p>
  * The {@code Writer}/{@code OutputStream} variants throw
- * {@link UnsupportedOperationException} — the JIPX format is a ZIP
+ * {@link UnsupportedOperationException} - the JIPX format is a ZIP
  * container and stream writes are not supported (the frozen asymmetry:
  * only the legacy format supports stream writes).
  */
@@ -94,7 +94,7 @@ public class JIPipeXProjectWriter implements JIPipeProjectWriter {
 
     /**
      * The RO-Crate metadata file name within the container (the library's
-     * writers copy files by this name — we write the ZIP ourselves, but
+     * writers copy files by this name - we write the ZIP ourselves, but
      * the name is the Workflow RO-Crate root convention).
      */
     public static final String CRATE_METADATA_FILE_NAME = "ro-crate-metadata.json";
@@ -131,7 +131,7 @@ public class JIPipeXProjectWriter implements JIPipeProjectWriter {
      * {@link ZipOutputStream} (no wrapper root). Entry order:
      * {@code ro-crate-metadata.json}, {@code jipx.json}, {@code README.md},
      * the part files in manifest parts-table order, then every remaining
-     * file sorted by path (unknown/payload entries — deterministic).
+     * file sorted by path (unknown/payload entries - deterministic).
      *
      * @param workspace    the materialized workspace to zip
      * @param target       the part file to write
@@ -181,7 +181,7 @@ public class JIPipeXProjectWriter implements JIPipeProjectWriter {
     /**
      * The self-verification seam of the write path: re-opens the
      * container with {@link ZipFile} and asserts its internal
-     * consistency —
+     * consistency -
      * <ul>
      * <li>the {@code jipx.json} entry exists and parses as JSON,</li>
      * <li>every part listed in the manifest's parts table exists in the
@@ -207,7 +207,7 @@ public class JIPipeXProjectWriter implements JIPipeProjectWriter {
                         "missing " + JIPipeXManifest.MANIFEST_FILE_NAME + " entry"),
                         "Invalid JIPX container",
                         "The container " + zipPath + " has no " + JIPipeXManifest.MANIFEST_FILE_NAME + " entry.",
-                        "The container was written by JIPipe and is internally inconsistent — delete it and save the project again.");
+                        "The container was written by JIPipe and is internally inconsistent - delete it and save the project again.");
             }
             JsonNode manifestJson;
             try (InputStream is = zip.getInputStream(manifestEntry)) {
@@ -215,7 +215,7 @@ public class JIPipeXProjectWriter implements JIPipeProjectWriter {
             } catch (Exception e) {
                 throw new JIPipeValidationRuntimeException(e, "Invalid JIPX container",
                         "The " + JIPipeXManifest.MANIFEST_FILE_NAME + " entry of " + zipPath + " does not parse as JSON: " + e.getMessage(),
-                        "The container was written by JIPipe and is internally inconsistent — delete it and save the project again.");
+                        "The container was written by JIPipe and is internally inconsistent - delete it and save the project again.");
             }
             JIPipeXManifest manifest = JIPipeXManifest.fromJsonNode(manifestJson);
 
@@ -228,14 +228,14 @@ public class JIPipeXProjectWriter implements JIPipeProjectWriter {
                             "Invalid JIPX container",
                             "The " + JIPipeXManifest.MANIFEST_FILE_NAME + " manifest of " + zipPath + " lists the part entry '"
                                     + partPath + "', but it is missing from the container.",
-                            "The container was written by JIPipe and is internally inconsistent — delete it and save the project again.");
+                            "The container was written by JIPipe and is internally inconsistent - delete it and save the project again.");
                 }
                 try (InputStream is = zip.getInputStream(partEntry)) {
                     JsonUtils.getObjectMapper().readTree(is);
                 } catch (Exception e) {
                     throw new JIPipeValidationRuntimeException(e, "Invalid JIPX container",
                             "The part entry '" + partPath + "' of " + zipPath + " does not parse as JSON: " + e.getMessage(),
-                            "The container was written by JIPipe and is internally inconsistent — delete it and save the project again.");
+                            "The container was written by JIPipe and is internally inconsistent - delete it and save the project again.");
                 }
             }
 
@@ -246,14 +246,14 @@ public class JIPipeXProjectWriter implements JIPipeProjectWriter {
                         "missing " + CRATE_METADATA_FILE_NAME + " entry"),
                         "Invalid JIPX container",
                         "The container " + zipPath + " has no " + CRATE_METADATA_FILE_NAME + " entry.",
-                        "The container was written by JIPipe and is internally inconsistent — delete it and save the project again.");
+                        "The container was written by JIPipe and is internally inconsistent - delete it and save the project again.");
             }
             try (InputStream is = zip.getInputStream(crateEntry)) {
                 JsonUtils.getObjectMapper().readTree(is);
             } catch (Exception e) {
                 throw new JIPipeValidationRuntimeException(e, "Invalid JIPX container",
                         "The " + CRATE_METADATA_FILE_NAME + " entry of " + zipPath + " does not parse as JSON: " + e.getMessage(),
-                        "The container was written by JIPipe and is internally inconsistent — delete it and save the project again.");
+                        "The container was written by JIPipe and is internally inconsistent - delete it and save the project again.");
             }
         }
     }
@@ -271,7 +271,7 @@ public class JIPipeXProjectWriter implements JIPipeProjectWriter {
     /**
      * Unlike the reader, this does NOT check the ZIP magic bytes: a save
      * TARGET may not exist yet (and if it does, its content is about to
-     * be replaced). Write dispatch is extension-driven — see
+     * be replaced). Write dispatch is extension-driven - see
      * {@link org.hkijena.jipipe.api.project.io.JIPipeProjectIOs#writerFromPath(Path)}.
      */
     @Override
@@ -291,7 +291,7 @@ public class JIPipeXProjectWriter implements JIPipeProjectWriter {
      * Behaves exactly like {@link #write(JIPipeProject, Path, JIPipeProgressInfo)}
      * except that every RO-Crate compliance violation is additionally
      * reported into {@code violationsOut} (when non-null, the violations
-     * are NOT logged via the progress info — the caller presents them).
+     * are NOT logged via the progress info - the caller presents them).
      *
      * @param project       the project to write
      * @param target        the target file (replaced atomically)
@@ -301,7 +301,7 @@ public class JIPipeXProjectWriter implements JIPipeProjectWriter {
      * @throws IOException triggered by file or zip I/O
      */
     public void writeWithViolations(JIPipeProject project, Path target, JIPipeProgressInfo progressInfo, List<String> violationsOut) throws IOException {
-        // (1) Authors merge — same gate as the legacy Path variant; the
+        // (1) Authors merge - same gate as the legacy Path variant; the
         // writer is self-contained, the saveProject delegate is merge-free.
         if (project.getMetadata().isAutoAddAuthors()) {
             project.addAuthorsFromGlobalList();
@@ -314,13 +314,13 @@ public class JIPipeXProjectWriter implements JIPipeProjectWriter {
         if (workspace == null) {
             throw new JIPipeValidationRuntimeException(new IllegalStateException("Project is closed"),
                     "Project is closed",
-                    "The project's workspace is unavailable (the project has been disposed) — it cannot be saved as a JIPX container.",
+                    "The project's workspace is unavailable (the project has been disposed) - it cannot be saved as a JIPX container.",
                     "Re-open the project and try again.");
         }
 
-        // The whole workspace-touching sequence — materialize →
+        // The whole workspace-touching sequence - materialize →
         // crate/README/manifest writes → zip → self-verify → atomic move →
-        // markSaved — is synchronized on the WORKSPACE instance (see the
+        // markSaved - is synchronized on the WORKSPACE instance (see the
         // JIPipeProjectWorkspace concurrency contract): the EDT save and
         // the backup-queue save can target the SAME project, and without
         // the lock the interleaved writes produce a torn container that
@@ -346,7 +346,7 @@ public class JIPipeXProjectWriter implements JIPipeProjectWriter {
                     generateReadme(project), StandardCharsets.UTF_8);
 
             // (4) The manifest (jipx.json) was written by
-            // materializeFromModel and lists exactly the parts present —
+            // materializeFromModel and lists exactly the parts present -
             // nothing to refresh here; markSaved runs AFTER the zip
             // succeeds (step 8).
 
@@ -360,7 +360,7 @@ public class JIPipeXProjectWriter implements JIPipeProjectWriter {
                 zipWorkspace(workspace, part, progressInfo);
                 selfVerifyZip(part, progressInfo);
                 // Single atomic replace: Files.move with REPLACE_EXISTING
-                // is an OS-level rename — it atomically replaces an
+                // is an OS-level rename - it atomically replaces an
                 // existing regular file (same parent directory → same
                 // filesystem) and FAILS when the target is a non-empty
                 // directory (DirectoryNotEmptyException),

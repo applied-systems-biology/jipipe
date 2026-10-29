@@ -131,20 +131,20 @@ def flagged(row, side):
 
 def fmt_obs(id_counts, names):
     parts = [f"{nid} ({cnt})" if names.get(nid) in (None, "")
-             else f"{nid} — {names.get(nid)} ({cnt})" for nid, cnt in id_counts]
-    return ", ".join(parts) if parts else "(none — 0)"
+             else f"{nid} - {names.get(nid)} ({cnt})" for nid, cnt in id_counts]
+    return ", ".join(parts) if parts else "(none - 0)"
 
 
 def fmt_cap(ids):
-    return ", ".join(f"`{i}`" for i in ids) if ids else "(none — 0)"
+    return ", ".join(f"`{i}`" for i in ids) if ids else "(none - 0)"
 
 
 def table(rows, names):
     lines = [
         "| data-type id (row key) | raw corpus token | edges | projects | "
         "registry producers (capability) | registry consumers (capability) | "
-        "corpus producers (node id — name, edge count) | "
-        "corpus consumers (node id — name, edge count) |",
+        "corpus producers (node id - name, edge count) | "
+        "corpus consumers (node id - name, edge count) |",
         "|---|---|---:|---:|---|---|---|---|",
     ]
     for r in rows:
@@ -165,7 +165,7 @@ def flagged_table(rows, side, names):
     sub.sort(key=lambda r: (r["key"] is None, r["key"] or r["raw"]))
     lines = [
         f"| data-type id (row key) | distinct corpus {side} | "
-        f"corpus {side} (node id — name, edge count) | edges | projects |",
+        f"corpus {side} (node id - name, edge count) | edges | projects |",
         "|---|---:|---|---:|---:|",
     ]
     for r in sub:
@@ -177,18 +177,18 @@ def flagged_table(rows, side, names):
 
 def unresolved_md(rows):
     lines = [
-        "# Task 3 — unresolved corpus data-class tokens", "",
+        "# Task 3 - unresolved corpus data-class tokens", "",
         "Raw `slot-data-type` tokens on corpus edges that do not resolve against",
         "`registry.json` (no exact data-type id, no exact class FQN, no simple-name",
         "match; a simple-name match hitting more than one data type is listed as",
         "`ambiguous` instead of guessed). These are the corpus-side 'unresolvable'",
-        "tokens of Review Focus #3 — their edges cannot be attributed to a",
+        "tokens of Review Focus #3 - their edges cannot be attributed to a",
         "registered data type (e.g. a legacy id that no longer exists in 6.0.0).",
         "",
     ]
     bad = [r for r in rows if r["kind"] in ("unresolved", "ambiguous")]
     if not bad:
-        lines.append("(none — every raw edge token resolved)")
+        lines.append("(none - every raw edge token resolved)")
     else:
         lines += ["| raw token | kind | edges | projects | example project |",
                   "|---|---|---:|---:|---|"]
@@ -205,7 +205,7 @@ def verification_lines(rows, dts_to_fqns, names):
     by_key = {r["key"]: r for r in rows if r["key"]}
     spot, det = by_key.get("trackmate-spot-collection"), by_key.get("trackmate-spot-detector")
     if not spot or not det:
-        return ["Step 2 verification: FAILED — expected trackmate types missing."]
+        return ["Step 2 verification: FAILED - expected trackmate types missing."]
     fq = lambda dt: ", ".join(f"`{c}`" for c in sorted(dts_to_fqns.get(dt, ())))
     present = "trackmate-tracking" in {n for n, _ in spot["obs_c"]}
     cap_det = [n for n in det["cap_p"] if n.startswith("trackmate-create-spot-detector-")]
@@ -220,7 +220,7 @@ def verification_lines(rows, dts_to_fqns, names):
         f"and consumed by {fmt_obs(det['obs_c'], names)}. Corpus producers of "
         f"`{spot['key']}`: {fmt_obs(spot['obs_p'], names)} (registry capability "
         f"{fmt_cap(spot['cap_p'])}); corpus consumers: {fmt_obs(spot['obs_c'], names)} "
-        f"— `trackmate-tracking` is "
+        f"- `trackmate-tracking` is "
         f"{'present' if present else '**ABSENT**'} among them.",
     ]
 
@@ -250,7 +250,7 @@ def section_body(rows, names, dts_to_fqns):
         "slot; “corpus … (edge count)” = the same counted over corpus edges, i.e. "
         "what pipelines actually wire. All tables sorted by edge count descending.",
         "",
-        f"### Table 1a — All data types observed on corpus edges ({len(rows)} "
+        f"### Table 1a - All data types observed on corpus edges ({len(rows)} "
         f"distinct raw tokens: {n_res} resolved"
         + (f", {len(unres)} unresolved" if unres else "")
         + (f", {len(ambig)} ambiguous" if ambig else "") + ")",
@@ -258,18 +258,18 @@ def section_body(rows, names, dts_to_fqns):
     ]
     out += table(rows, names)
     out += ["",
-            f"### Table 1b — Flagged: exactly 1–2 distinct corpus producers "
+            f"### Table 1b - Flagged: exactly 1–2 distinct corpus producers "
             f"({len(low_p)} types)", ""]
     out += flagged_table(rows, "producers", names)
     out += ["",
-            f"### Table 1c — Flagged: exactly 1–2 distinct corpus consumers "
+            f"### Table 1c - Flagged: exactly 1–2 distinct corpus consumers "
             f"({len(low_c)} types)", ""]
     out += flagged_table(rows, "consumers", names)
     out.append("")
     if unres or ambig:
         lines = [
             "Flagged types that are **UNRESOLVED** (raw token not in the "
-            "registry; no registry capability, no node attribution — these "
+            "registry; no registry capability, no node attribution - these "
             "matter more than the registry-known flags above) vs "
             "**registry-known**:", "",
             "| flagged type | status |", "|---|---|",
@@ -281,7 +281,7 @@ def section_body(rows, names, dts_to_fqns):
             if key in seen:
                 continue
             seen.add(key)
-            status = {"unresolved": "UNRESOLVED — raw token not in registry",
+            status = {"unresolved": "UNRESOLVED - raw token not in registry",
                       "ambiguous": "AMBIGUOUS simple-name match"}.get(
                           r["kind"], "registry-known")
             lines.append(f"| `{key}` | {status} |")

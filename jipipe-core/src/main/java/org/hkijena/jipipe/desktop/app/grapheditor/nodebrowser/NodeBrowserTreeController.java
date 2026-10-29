@@ -36,7 +36,7 @@ import java.util.function.Supplier;
  * The shared function-tree component of the node browser (add-node panel)
  * and the node finder dialog.
  * <p>
- * Before this class both UIs carried their own copy of the tree machinery —
+ * Before this class both UIs carried their own copy of the tree machinery -
  * the "All functions" tree model, the empty-branch pruning, the collapse-all
  * reset, the "select the reference node in the tree" crosshairs action, the
  * search-match highlighting and the tree cell renderer. Those copies had
@@ -59,7 +59,7 @@ public class NodeBrowserTreeController extends JPanel {
 
     /**
      * The "select the reference node in the tree" crosshairs button of the
-     * slim control bar (visible by default — the node browser uses it; the
+     * slim control bar (visible by default - the node browser uses it; the
      * modal find-node dialog hides it via
      * {@link #setCrosshairsButtonVisible}).
      */
@@ -75,7 +75,7 @@ public class NodeBrowserTreeController extends JPanel {
     /**
      * Supplies the entry the crosshairs button should reveal in the tree
      * (e.g. the first selected graph node, or the first result row). May
-     * return {@code null} — the button is then a no-op.
+     * return {@code null} - the button is then a no-op.
      */
     private Supplier<JIPipeNodeDatabaseEntry> referenceEntrySupplier = () -> null;
 
@@ -89,7 +89,7 @@ public class NodeBrowserTreeController extends JPanel {
 
         // Slim control bar under the tree (no border, minimal height): a
         // collapse-all reset and a "select the reference node in the tree"
-        // crosshairs button (hideable via setCrosshairsButtonVisible — the
+        // crosshairs button (hideable via setCrosshairsButtonVisible - the
         // modal find-node dialog hides it, see its javadoc).
         JPanel treeToolbar = new JPanel(new FlowLayout(FlowLayout.LEFT, 2, 0));
         treeToolbar.setBorder(null);
@@ -162,7 +162,7 @@ public class NodeBrowserTreeController extends JPanel {
 
     /**
      * Shows or hides the "select the reference node in the tree" crosshairs
-     * button of the slim control bar (visible by default — the node browser
+     * button of the slim control bar (visible by default - the node browser
      * uses it). The modal find-node dialog hides it: a canvas node
      * selection the button would reveal is unlikely behind a modal, so the
      * button was a frequent no-op there. (The reveal ACTION itself,
@@ -178,7 +178,7 @@ public class NodeBrowserTreeController extends JPanel {
      * Populates the tree with the live function registry, pruning branches
      * that carry no node visible for the given role (so the tree never
      * shows empty categories). The root stays expanded. No node leaves are
-     * attached — call {@link #rebuildNodeLeaves(List)} (or the 2-arg
+     * attached - call {@link #rebuildNodeLeaves(List)} (or the 2-arg
      * overload) to add them.
      *
      * @param role the visibility role of the calling editor
@@ -189,13 +189,13 @@ public class NodeBrowserTreeController extends JPanel {
 
     // ------------------------------------------------------------------
     // Expansion-state persistence (call site decides WHEN to save/restore;
-    // the ids are the stable taxonomy function ids — safe to persist, see
+    // the ids are the stable taxonomy function ids - safe to persist, see
     // the project's stable-ID rule)
     // ------------------------------------------------------------------
 
     /**
      * Populates the tree with the live function registry and attaches the
-     * given entries as node leaves (the full current result set — see
+     * given entries as node leaves (the full current result set - see
      * {@link #rebuildNodeLeaves(List)}). The branches are pruned by the
      * entries' own function ids when the list is non-empty (a tree that
      * carries leaves is a full navigator, so its pruning follows the same
@@ -260,7 +260,7 @@ public class NodeBrowserTreeController extends JPanel {
 
     /**
      * The stable ids of all currently expanded function branches (function
-     * rows only — the root's expansion is implicit and entry leaves are
+     * rows only - the root's expansion is implicit and entry leaves are
      * never persisted). The call site decides how long to keep the list
      * (the node browser holds it in memory for the current run only).
      */
@@ -338,13 +338,13 @@ public class NodeBrowserTreeController extends JPanel {
                     return true;
                 }
                 // A synthetic Templates/<scope> row (or the header) also
-                // carries entry leaves — recurse so its expandability is
+                // carries entry leaves - recurse so its expandability is
                 // treated like a function branch with entry children.
                 if (mtn.getUserObject() instanceof TemplateScopeTreeNode && branchHasEntryChildren(mtn)) {
                     return true;
                 }
                 // A synthetic <function>/Patterns row carries the function's
-                // template leaves — recurse the same way.
+                // template leaves - recurse the same way.
                 if (mtn.getUserObject() instanceof PatternsTreeNode && branchHasEntryChildren(mtn)) {
                     return true;
                 }
@@ -361,7 +361,7 @@ public class NodeBrowserTreeController extends JPanel {
      * Callers are responsible for the "should I rebuild at all?" decision
      * (tier, search state) and for suppressing their own selection listeners
      * (the {@code selectionSuppressed}/{@code programmaticUpdate} guards)
-     * around this call — see the call sites.
+     * around this call - see the call sites.
      *
      * @param entries the post-filtered entries to attach as node leaves
      */
@@ -387,7 +387,7 @@ public class NodeBrowserTreeController extends JPanel {
         attachNodeLeaves(root, entries);
         treeModel.reload();
 
-        // Restore the captured navigation state (only function rows —
+        // Restore the captured navigation state (only function rows -
         // entry rows were re-created by attachNodeLeaves)
         for (TreePath p : expandedFunctionPaths) {
             tree.expandPath(p);
@@ -407,7 +407,7 @@ public class NodeBrowserTreeController extends JPanel {
     /**
      * Recursively attaches the entries that list each function node's own
      * id as direct children of that node. The tree ROOT carries a String
-     * user object ("All functions"), not a function — it only forwards the
+     * user object ("All functions"), not a function - it only forwards the
      * walk to its function children (the round-3 ClassCastException was
      * exactly this missing guard).
      */
@@ -416,7 +416,7 @@ public class NodeBrowserTreeController extends JPanel {
         // <function>/Patterns row (reverse order keeps the indices stable
         // while removing). The Patterns row is fully rebuilt below when the
         // function carries template entries, so a rebuild WITHOUT templates
-        // must drop the old row — otherwise an empty "Patterns" entry
+        // must drop the old row - otherwise an empty "Patterns" entry
         // survives (and its stale leaves would leak into the counts).
         for (int i = functionNode.getChildCount() - 1; i >= 0; i--) {
             Object child = functionNode.getChildAt(i);
@@ -429,7 +429,7 @@ public class NodeBrowserTreeController extends JPanel {
         Object userObject = functionNode.getUserObject();
         if (userObject instanceof JIPipeNodeTaxonomyFunction function) {
             // A function row: attach the entries that list this function
-            // (own id — rows appear at the level the node declares). This is
+            // (own id - rows appear at the level the node declares). This is
             // the dual-placement "taxonomy" side; it is free for templates
             // too (their getFunctionIds() returns the function id).
             // Templates, however, do NOT sit at the function's own level:
@@ -466,7 +466,7 @@ public class NodeBrowserTreeController extends JPanel {
         } else if (userObject instanceof TemplateScopeTreeNode scopeNode && !scopeNode.isRoot()) {
             // The "scope placement": a synthetic Templates/<scope> row lists
             // the template entries of exactly that scope (guaranteed home).
-            // The ROOT header is a pure grouping row — it forwards only.
+            // The ROOT header is a pure grouping row - it forwards only.
             TemplateScope scope = scopeNode.getScope();
             for (JIPipeNodeDatabaseEntry entry : entries) {
                 if (entry instanceof CreateNewNodesByTemplateDatabaseEntry template
@@ -485,7 +485,7 @@ public class NodeBrowserTreeController extends JPanel {
         // ... and to the scope children of the Templates header (the scope
         // side). Scope rows carry no further function/scope children. The
         // tree ROOT (a String user object) also carries the Templates header
-        // as a direct child — forward there too, or the scope rows never
+        // as a direct child - forward there too, or the scope rows never
         // receive their leaves (the round-2 review bug: the root only ran
         // the function forwarding, so Templates/System was empty in every
         // tier).
@@ -668,7 +668,7 @@ public class NodeBrowserTreeController extends JPanel {
 
     /**
      * Collapses every expanded function branch, leaving only the "All
-     * functions" root open — the tree's default depth. Call sites wrap the
+     * functions" root open - the tree's default depth. Call sites wrap the
      * call in their selection guard (the collapse itself does not change
      * the selection, the guard protects the restored root expansion from
      * any listener side effect).
@@ -676,7 +676,7 @@ public class NodeBrowserTreeController extends JPanel {
     public void collapseToRoot() {
         DefaultMutableTreeNode root = (DefaultMutableTreeNode) treeModel.getRoot();
         TreePath rootPath = new TreePath(new Object[]{root});
-        // Collect the expanded paths first — collapsing changes the row
+        // Collect the expanded paths first - collapsing changes the row
         // count, so iterating the rows while collapsing is not safe.
         List<TreePath> expandedPaths = new ArrayList<>();
         for (int i = 0; i < tree.getRowCount(); i++) {
@@ -710,7 +710,7 @@ public class NodeBrowserTreeController extends JPanel {
             // leaf (it is in the current result view). Find it.
             target = nodeLeafRow(reference);
             if (target == null) {
-                // The reference is not in the current view — fall back to
+                // The reference is not in the current view - fall back to
                 // its primary function row.
                 JIPipeNodeTaxonomyFunction primary = primaryFunctionOf(reference);
                 target = primary != null ? functionRow(primary) : null;
@@ -765,9 +765,9 @@ public class NodeBrowserTreeController extends JPanel {
     // ------------------------------------------------------------------
 
     /**
-     * Highlights (in bold) the function rows that a search matched — i.e.
+     * Highlights (in bold) the function rows that a search matched - i.e.
      * the rows under which at least one of the given result entries is
-     * filed — and expands their ancestors so the matches are visible even
+     * filed - and expands their ancestors so the matches are visible even
      * when their branches were collapsed. An empty or inactive search
      * clears the highlight.
      *
@@ -806,7 +806,7 @@ public class NodeBrowserTreeController extends JPanel {
                 // own function (primary or secondary): for leaf rows that is
                 // their nodes, and for branches that carry direct nodes AND
                 // sub-branches (e.g. Scripting, Segmentation) their direct
-                // nodes. Plain branches (no direct entries) are not bolded —
+                // nodes. Plain branches (no direct entries) are not bolded -
                 // that would highlight nearly every branch for any search.
                 if (matchedFunctionIds.contains(fn.getId())) {
                     highlighted.add(new TreePath(mtn.getPath()));

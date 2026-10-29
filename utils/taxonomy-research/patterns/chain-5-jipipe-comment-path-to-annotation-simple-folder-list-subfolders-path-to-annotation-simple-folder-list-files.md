@@ -75,6 +75,6 @@ Proposed name
 `Comment -> Annotate with file/directory name -> List subfolders -> Annotate with file/directory name -> List files`,
 menu path
 `Patterns/Graph / Project/Comment -> Annotate with file/directory name -> List subfolders -> Annotate with file/directory name -> List files`
-(proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+(proposal only - not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/chain-5-jipipe-comment-path-to-annotation-simple-folder-list-subfolders-path-to-annotation-simple-folder-list-files.json`.
 

@@ -57,7 +57,7 @@ Project: `AIAgentTests/02-AdvancedPipelines/Paco_06.jip` (relative to `/data/JIP
 ## Template
 
 Proposed name `Cellpose segmentation (3.x) fans in from 9 source ids (roles: other)`, menu path
-`Patterns/Machine learning/Cellpose segmentation (3.x) fans in from 9 source ids (roles: other)` (proposal only — not
+`Patterns/Machine learning/Cellpose segmentation (3.x) fans in from 9 source ids (roles: other)` (proposal only - not
 registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/fan-in-cellpose-segmentation-inference-3-x-other-2.json`.
 

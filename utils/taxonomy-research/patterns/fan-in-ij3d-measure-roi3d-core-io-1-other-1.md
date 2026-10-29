@@ -61,7 +61,7 @@ Project: `AIAgentTests/03-ExampleWorkflows/Annamaria_12.jip` (relative to `/data
 ## Template
 
 Proposed name `Extract IJ3D ROI statistics fans in from 6 source ids (roles: core-io, other)`, menu path
-`Patterns/ROIs/Extract IJ3D ROI statistics fans in from 6 source ids (roles: core-io, other)` (proposal only — not
+`Patterns/ROIs/Extract IJ3D ROI statistics fans in from 6 source ids (roles: core-io, other)` (proposal only - not
 registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/fan-in-ij3d-measure-roi3d-core-io-1-other-1.json`.
 

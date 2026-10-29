@@ -29,7 +29,7 @@ import java.util.Objects;
  * {@link JIPipeFontFamilySizeStyleParameter}; the {@link #toFont()} of this
  * class always renders with {@link Font#PLAIN}.
  * <p>
- * Both fields are always present (never null) — missing JSON keys fall back
+ * Both fields are always present (never null) - missing JSON keys fall back
  * to defaults on deserialization, which keeps old projects (that stored the
  * fields separately, if at all) loadable.
  */
@@ -84,7 +84,7 @@ public class JIPipeFontFamilySizeParameter implements JIPipeFontValue {
         if (sizeKey != null && json.has(sizeKey)) {
             size = json.get(sizeKey).asInt(defaultSize);
         }
-        // styleKey and colorKey are not fields of this class — intentionally ignored
+        // styleKey and colorKey are not fields of this class - intentionally ignored
 
         result.setFamily(family);
         result.setSize(size);

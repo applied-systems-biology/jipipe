@@ -14,11 +14,11 @@ import java.time.LocalDateTime;
  * The menubar save control. Besides the usual Unsaved / Save / Auto save /
  * Saved states it now shows (feature #753):
  * <ul>
- *   <li>SAVING — while a NON-MODAL JIPX save runs: the main button is
+ *   <li>SAVING - while a NON-MODAL JIPX save runs: the main button is
  *       disabled, a spinner icon is shown, and the text is
  *       {@code Saving… <stage>} (stage ∈ writing / compressing / verifying,
- *       from the save run's progress). Indeterminate — no % bar.</li>
- *   <li>RESULT FLASH — when the save finishes: {@code "Saved ✓"} (green) or
+ *       from the save run's progress). Indeterminate - no % bar.</li>
+ *   <li>RESULT FLASH - when the save finishes: {@code "Saved ✓"} (green) or
  *       {@code "Save failed ✗"} (red) shown for a few seconds by a single-shot
  *       timer, then {@link #updateStatus()} reverts to the normal state.</li>
  * </ul>

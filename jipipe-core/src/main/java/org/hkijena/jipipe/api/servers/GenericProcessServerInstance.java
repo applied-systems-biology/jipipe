@@ -75,7 +75,7 @@ public class GenericProcessServerInstance extends JIPipeServerInstance<JIPipeEnv
     @Override
     protected void startProcess() throws ServerStartException {
         // The actual process spawning is handled by subclasses or by the environment's
-        // runExecutable method. This base implementation does nothing — subclasses
+        // runExecutable method. This base implementation does nothing - subclasses
         // are expected to override and spawn the process before returning.
     }
 

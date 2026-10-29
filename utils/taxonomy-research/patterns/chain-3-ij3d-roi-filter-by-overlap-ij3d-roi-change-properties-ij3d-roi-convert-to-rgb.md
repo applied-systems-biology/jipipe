@@ -61,7 +61,7 @@ Project: `AIAgentTests/03-ExampleWorkflows/Annamaria_12.jip` (relative to `/data
 ## Template
 
 Proposed name `Filter IJ3D ROI by overlap (old) -> Set IJ3D ROI properties -> Convert IJ3D ROI to RGB`, menu path
-`Patterns/ROIs/Filter IJ3D ROI by overlap (old) -> Set IJ3D ROI properties -> Convert IJ3D ROI to RGB` (proposal only —
+`Patterns/ROIs/Filter IJ3D ROI by overlap (old) -> Set IJ3D ROI properties -> Convert IJ3D ROI to RGB` (proposal only -
 not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/chain-3-ij3d-roi-filter-by-overlap-ij3d-roi-change-properties-ij3d-roi-convert-to-rgb.json`.
 

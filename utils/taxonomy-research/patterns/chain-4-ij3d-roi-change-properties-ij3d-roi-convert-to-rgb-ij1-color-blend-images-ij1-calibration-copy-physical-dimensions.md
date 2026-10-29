@@ -68,6 +68,6 @@ Project: `AIAgentTests/03-ExampleWorkflows/Annamaria_12.jip` (relative to `/data
 
 Proposed name `Set IJ3D ROI properties -> Convert IJ3D ROI to RGB -> Blend images -> Copy physical dimensions`, menu
 path `Patterns/ROIs/Set IJ3D ROI properties -> Convert IJ3D ROI to RGB -> Blend images -> Copy physical dimensions`
-(proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+(proposal only - not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/chain-4-ij3d-roi-change-properties-ij3d-roi-convert-to-rgb-ij1-color-blend-images-ij1-calibration-copy-physical-dimensions.json`.
 

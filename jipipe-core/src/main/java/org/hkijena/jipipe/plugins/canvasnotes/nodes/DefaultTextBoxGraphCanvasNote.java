@@ -499,7 +499,7 @@ public abstract class DefaultTextBoxGraphCanvasNote extends JIPipeGraphCanvasNot
 
         /**
          * The text color (the font's color). Kept as a plain convenience for
-         * the rendering code — the color is persisted inside the {@code font}
+         * the rendering code - the color is persisted inside the {@code font}
          * parameter, not separately (#1339).
          */
         public Color getColor() {

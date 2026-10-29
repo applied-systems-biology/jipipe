@@ -31,7 +31,7 @@ class ThemeUtilsCaretMotionTest {
 
     @Test
     void reducedMotionDisablesBlinkingOnPlainBasicCaret() {
-        // Plain JTextPane uses a BasicCaret (a DefaultCaret subclass) — the HTML editor and
+        // Plain JTextPane uses a BasicCaret (a DefaultCaret subclass) - the HTML editor and
         // read-only panes rely on the same path.
         JTextPane pane = new JTextPane();
         DefaultCaret caret = (DefaultCaret) pane.getCaret();

@@ -11,10 +11,10 @@ remote RO-Crate creation.
 
 Four parts:
 
-1. **Docker settings** — Application-level defaults with per-export override
-2. **CI Docker builds** — Automated Docker image builds pushed to Docker Hub with version-based tags
-3. **RO-Crate standards compliance** — Fix metadata to satisfy Workflow-RO-Crate 1.0 profile
-4. **Instrumentation + verification** — Synchronous `create_ro_crate` operation + CI verification with `cwltool`
+1. **Docker settings** - Application-level defaults with per-export override
+2. **CI Docker builds** - Automated Docker image builds pushed to Docker Hub with version-based tags
+3. **RO-Crate standards compliance** - Fix metadata to satisfy Workflow-RO-Crate 1.0 profile
+4. **Instrumentation + verification** - Synchronous `create_ro_crate` operation + CI verification with `cwltool`
 
 ## Part 1: Docker Settings
 
@@ -44,7 +44,7 @@ through the publisher assistant UI.
 
 ### ROCrateDockerSettings
 
-**New class**: `ROCrateDockerSettings` — a simple `AbstractJIPipeParameterCollection` holding `dockerImage` (String),
+**New class**: `ROCrateDockerSettings` - a simple `AbstractJIPipeParameterCollection` holding `dockerImage` (String),
 `dockerTag` (String), `dockerEnvVars` (`StringAndStringPairParameterList`). Constructed from either application defaults
 or per-export overrides. Passed to `CreateROCrateRun`. Provides a `getEnvVarsAsMap()` convenience method that converts
 the pair list to `Map<String, String>` for CWL generation.
@@ -64,10 +64,10 @@ the pair list to `Map<String, String>` for CWL generation.
 
 - **New**: `jipipe-core/.../plugins/publish/rocrate/ROCrateApplicationSettings.java`
 - **New**: `jipipe-core/.../plugins/publish/rocrate/ROCrateDockerSettings.java`
-- **Modified**: `jipipe-core/.../plugins/publish/rocrate/CreateROCrateRun.java` — accept settings, use them in CWL
+- **Modified**: `jipipe-core/.../plugins/publish/rocrate/CreateROCrateRun.java` - accept settings, use them in CWL
   generation
-- **Modified**: `jipipe-core/.../plugins/publish/rocrate/ROCratePublisherAssistant.java` — add advanced settings section
-- **Modified**: `jipipe-core/.../plugins/publish/PublishPlugin.java` — register `ROCrateApplicationSettings`
+- **Modified**: `jipipe-core/.../plugins/publish/rocrate/ROCratePublisherAssistant.java` - add advanced settings section
+- **Modified**: `jipipe-core/.../plugins/publish/PublishPlugin.java` - register `ROCrateApplicationSettings`
 
 ## Part 2: CI Docker Build
 
@@ -79,17 +79,17 @@ the pair list to `Map<String, String>` for CWL generation.
 
 **Installed packages**:
 
-- `xvfb` — for headless AWT/ImageJ ROI support
+- `xvfb` - for headless AWT/ImageJ ROI support
 - Native X libraries: `libxrender1`, `libxtst6`, `libxi6`, `libxext6`, `libx11-6`, `libgl1`, `libglib2.0-0`,
   `libfontconfig1`, `libfreetype6`, `libnspr4`, `libnss3`, `libdbus-1-3`, `libatk1.0-0`, `libatk-bridge2.0-0`,
   `libcups2`, `libdrm2`, `libxcb1`, `libxcomposite1`, `libxdamage1`, `libxfixes3`, `libxrandr2`, `libgbm1`,
   `libpango-1.0-0`, `libcairo2`, `libasound2t64`
-- `libopencv-dev` — for image processing
+- `libopencv-dev` - for image processing
 
 **Build**: The Dockerfile accepts the `JIPipe-*-Prepackaged-Linux64.tar.gz` as a build arg. The tar.gz is extracted into
 `/opt/jipipe/`.
 
-**Entrypoint**: `xvfb-run -a /opt/jipipe/jipipe-linux-x64 "$@"` — `xvfb-run -a` automatically picks a free display
+**Entrypoint**: `xvfb-run -a /opt/jipipe/jipipe-linux-x64 "$@"` - `xvfb-run -a` automatically picks a free display
 number, starts Xvfb, sets `DISPLAY`, runs the command, and cleans up on exit. This handles ImageJ's AWT/ROI requirements
 without a custom entrypoint script.
 
@@ -127,7 +127,7 @@ commits, this tag points to the latest snapshot. On release, the same tag is ove
 
 - **New**: `dist/docker/Dockerfile`
 - **New**: `dist/docker/build.sh`
-- **Modified**: `.gitlab-ci.yml` — add `docker_build_push` job
+- **Modified**: `.gitlab-ci.yml` - add `docker_build_push` job
 
 ## Part 3: RO-Crate Standards Compliance Fixes
 
@@ -205,7 +205,7 @@ raw string if not recognized.
 
 ### Files Changed
 
-- **Modified**: `jipipe-core/.../plugins/publish/rocrate/CreateROCrateRun.java` — all compliance fixes in the builder
+- **Modified**: `jipipe-core/.../plugins/publish/rocrate/CreateROCrateRun.java` - all compliance fixes in the builder
   methods
 
 ## Part 4: Instrumentation Operation
@@ -267,10 +267,10 @@ Delegates to `InstrumentationAPI.createROCrate(ctx, outputPath, dockerSettings, 
 
 ### Files
 
-- **New**: `jipipe-core/.../api/instrumentation/operations/ROCrateOperations.java` — contains `CreateROCrate` operation
+- **New**: `jipipe-core/.../api/instrumentation/operations/ROCrateOperations.java` - contains `CreateROCrate` operation
   class
-- **Modified**: `jipipe-core/.../api/instrumentation/InstrumentationAPI.java` — add `createROCrate()` method
-- **Modified**: `jipipe-core/.../plugins/instrumentation/InstrumentationPlugin.java` — register the operation
+- **Modified**: `jipipe-core/.../api/instrumentation/InstrumentationAPI.java` - add `createROCrate()` method
+- **Modified**: `jipipe-core/.../plugins/instrumentation/InstrumentationPlugin.java` - register the operation
 
 ## Part 5: CI Verification with cwltool
 
@@ -278,10 +278,10 @@ Delegates to `InstrumentationAPI.createROCrate(ctx, outputPath, dockerSettings, 
 
 Test projects stored in-repo at `dist/docker/test-data/`:
 
-- `kidney.jip` — basic kidney pipeline
-- `kidney_with_user_dirs.jip` — kidney pipeline with user directories
-- `raw/` — input image data (git-lfs)
-- `results/` — expected output reference (git-lfs)
+- `kidney.jip` - basic kidney pipeline
+- `kidney_with_user_dirs.jip` - kidney pipeline with user directories
+- `raw/` - input image data (git-lfs)
+- `results/` - expected output reference (git-lfs)
 
 Large files (images) tracked with git-lfs.
 
@@ -330,8 +330,8 @@ project, creates an RO-Crate, and verifies the result.
 - **New**: `dist/docker/test-data/raw/` (git-lfs)
 - **New**: `dist/docker/test-data/results/` (git-lfs)
 - **New**: `dist/docker/verify_ro_crate.py`
-- **Modified**: `.gitlab-ci.yml` — add `verify_ro_crate` job
-- **New**: `.gitattributes` — configure git-lfs for test data
+- **Modified**: `.gitlab-ci.yml` - add `verify_ro_crate` job
+- **New**: `.gitattributes` - configure git-lfs for test data
 
 ## Architecture Diagram
 

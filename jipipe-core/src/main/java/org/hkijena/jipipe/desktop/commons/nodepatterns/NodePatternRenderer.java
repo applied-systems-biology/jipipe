@@ -25,9 +25,9 @@ import java.util.concurrent.ConcurrentHashMap;
  * <p>
  * Two cache levels:
  * <ul>
- *   <li>the white MASK, keyed by (style, seed, size bucket) — theme-independent;
+ *   <li>the white MASK, keyed by (style, seed, size bucket) - theme-independent;
  *       changing ink/opacity never invalidates it;</li>
- *   <li>the TINTED copy, keyed by (mask, ink, opacity) — built once per theme
+ *   <li>the TINTED copy, keyed by (mask, ink, opacity) - built once per theme
  *       look, drawn per node with a plain alpha composite.</li>
  * </ul>
  * Nodes cluster into a handful of sizes; larger nodes scale the nearest
@@ -75,7 +75,7 @@ public final class NodePatternRenderer {
 
     /**
      * Paints the pattern into (x,y,w,h) as a CROP of a node's background: a
-     * canonical node body ({@value #NODE_WIDTH}×{@value #NODE_HEIGHT} — the size
+     * canonical node body ({@value #NODE_WIDTH}×{@value #NODE_HEIGHT} - the size
      * the theme preview draws nodes at) is rendered exactly as a canvas node
      * renders its pattern (via {@link #paint}), and a centered (w×h) window of
      * it is copied into the target. The icon therefore shows the pattern at
@@ -99,8 +99,8 @@ public final class NodePatternRenderer {
         try {
             // Capture the caller's clip BEFORE replacing it. gg inherits g's
             // clip at creation; setClip would discard it. Intersect (not
-            // replace) so callers that rely on their clip surviving — e.g. the
-            // round-cornered list icon that clips to a rounded rect — are not
+            // replace) so callers that rely on their clip surviving - e.g. the
+            // round-cornered list icon that clips to a rounded rect - are not
             // overdrawn by the square crop window.
             Shape callerClip = gg.getClip();
             gg.setClip(x, y, w, h);
@@ -114,7 +114,7 @@ public final class NodePatternRenderer {
     }
 
     /**
-     * Clears both caches (test hook; not needed for theme changes — the mask is theme-independent).
+     * Clears both caches (test hook; not needed for theme changes - the mask is theme-independent).
      */
     public static void invalidateCache() {
         MASK_CACHE.clear();
@@ -130,7 +130,7 @@ public final class NodePatternRenderer {
         int w = mask.getWidth(), h = mask.getHeight();
         float o = Math.max(0f, Math.min(1f, opacity));
         int inkArgb = (ink.getRed() << 16) | (ink.getGreen() << 8) | ink.getBlue();
-        // maskId (style + seed) identifies WHICH white mask this tint belongs to —
+        // maskId (style + seed) identifies WHICH white mask this tint belongs to -
         // two styles at the same size/ink/opacity must never share a tinted copy
         String key = maskId + "\u0000" + inkArgb + "\u0000" + Float.floatToIntBits(o) + "\u0000" + w + "\u0000" + h;
         return TINT_CACHE.computeIfAbsent(key, k -> {

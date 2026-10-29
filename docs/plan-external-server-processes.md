@@ -13,9 +13,9 @@ JIPipe currently lacks infrastructure for managing persistent external server pr
 follow a fire-and-forget pattern: spawn a process, wait for completion, read output files. This plan introduces a
 **server manager** that supports three types of long-running server processes:
 
-1. **Temporary servers** — scoped to a single pipeline run (e.g., per-run IPython kernel)
-2. **Application-wide servers** — scoped to a single JIPipe instance (e.g., session IPython kernel)
-3. **Cross-instance servers** — shared across all JIPipe instances on the same machine (e.g., llama.cpp LLM server with
+1. **Temporary servers** - scoped to a single pipeline run (e.g., per-run IPython kernel)
+2. **Application-wide servers** - scoped to a single JIPipe instance (e.g., session IPython kernel)
+3. **Cross-instance servers** - shared across all JIPipe instances on the same machine (e.g., llama.cpp LLM server with
    GPU resources)
 
 The architecture follows JIPipe's linear hierarchy: server management is a **core feature** with all APIs in
@@ -87,7 +87,7 @@ via the JIPipe launcher (`jipipe server <id>`). File-based reference counting de
 
 - The server is expensive to start and consumes significant resources (GPU memory, model loading time)
 - Multiple JIPipe instances benefit from sharing the same server
-- Crash resilience is critical — the server must survive individual JIPipe crashes
+- Crash resilience is critical - the server must survive individual JIPipe crashes
 
 **Example:** A llama.cpp LLM server that loads a large model into GPU memory. Starting a second instance would exhaust
 GPU resources; sharing is essential.
@@ -121,7 +121,7 @@ The launcher reads the server definition to know what **native process** to mana
 all. It only uses SciJava libraries (leaner than full JIPipe, but not as compact as pure JDK).
 
 - **Classpath:** Full `jipipe-core` classpath available (launcher depends on `jipipe-core`)
-- **Initialization:** No `JIPipeService` initialization — parse definition file, spawn native process, monitor it
+- **Initialization:** No `JIPipeService` initialization - parse definition file, spawn native process, monitor it
 - **Examples:** llama.cpp server, IPython kernel, any native executable server
 - **Launcher behavior:** Read `server.config` → construct `ProcessBuilder` → start process → monitor health → manage
   lifecycle
@@ -131,11 +131,11 @@ This is the most common type. The launcher acts as a thin process supervisor.
 #### 2.6.2 Java-Based but Not JIPipe (Type 2)
 
 The launcher runs a **Java-based server** that doesn't need the full JIPipe stack. The server runs inside the launcher's
-JVM. The server class is already on the classpath — SciJava initialization ensures it in production, and the IDE ensures
+JVM. The server class is already on the classpath - SciJava initialization ensures it in production, and the IDE ensures
 it in development. No additional classpath construction or artifact downloads are needed.
 
 - **Classpath:** Full `jipipe-core` classpath available (launcher depends on `jipipe-core`)
-- **Initialization:** No `JIPipeService` initialization — instantiate the Java server class by name, call
+- **Initialization:** No `JIPipeService` initialization - instantiate the Java server class by name, call
   `start(JavaServerContext)`
 - **Examples:** DJL/ONNX Runtime inference server, a custom Java HTTP server
 - **Launcher behavior:** Load server class by name from classpath → instantiate → call `start()` with context → monitor
@@ -228,10 +228,10 @@ The `JIPipeServerManagerServiceComponent` selects the mode based on the `ownersh
 
 | `ownership` | `scope`     | Executable Available? | Mode                      | Implementation                                             |
 |-------------|-------------|-----------------------|---------------------------|------------------------------------------------------------|
-| `AppOwned`  | `Temporary` | —                     | Embedded                  | `EmbeddedServerManager` — in-process                       |
-| `AppOwned`  | `AppWide`   | —                     | Embedded                  | `EmbeddedServerManager` — in-process                       |
-| `Shared`    | —           | Yes (production)      | External                  | `ExternalServerManager` — via launcher                     |
-| `Shared`    | —           | No (debug mode)       | Embedded (auto-downgrade) | `EmbeddedServerManager` — in-process, `AppOwned`/`AppWide` |
+| `AppOwned`  | `Temporary` | -                     | Embedded                  | `EmbeddedServerManager` - in-process                       |
+| `AppOwned`  | `AppWide`   | -                     | Embedded                  | `EmbeddedServerManager` - in-process                       |
+| `Shared`    | -           | Yes (production)      | External                  | `ExternalServerManager` - via launcher                     |
+| `Shared`    | -           | No (debug mode)       | Embedded (auto-downgrade) | `EmbeddedServerManager` - in-process, `AppOwned`/`AppWide` |
 
 Calling code always uses the same `acquire()` / `release()` API regardless of mode. The auto-downgrade from
 cross-instance to app-wide is transparent to algorithm nodes.
@@ -258,7 +258,7 @@ public static boolean isProductionMode() {
     if (executableName != null) {
         return Files.exists(imageJDir.resolve(executableName));
     }
-    // Windows has three variants — check all of them
+    // Windows has three variants - check all of them
     if (os.contains("windows")) {
         String[] windowsVariants = {
             "jipipe-windows-x64.exe",
@@ -289,34 +289,34 @@ public static boolean isProductionMode() {
   it doesn't exist, we're in debug mode and can't spawn cross-instance servers.
 
 **Key implication:** The `ExternalServerManager` must detect whether it's running in debug or production mode, and
-gracefully degrade when the executable isn't available. This should be transparent to algorithm nodes — they just call
+gracefully degrade when the executable isn't available. This should be transparent to algorithm nodes - they just call
 `acquire()` and get a working server, whether it's embedded or external.
 
 ### 3.4 Key Architectural Decisions
 
-1. **Core feature, not a separate module** — All server management APIs and implementation live in `jipipe-core`,
+1. **Core feature, not a separate module** - All server management APIs and implementation live in `jipipe-core`,
    following the linear hierarchy `[contrib] → core → [plugins] → launcher`.
 
-2. **Plugins define server types** — Just like plugins register algorithms, data types, and environments, they register
+2. **Plugins define server types** - Just like plugins register algorithms, data types, and environments, they register
    server definitions via `JIPipeServerManagerServiceComponent.registerServerType()`.
 
-3. **Launcher spawns cross-instance servers** — The `jipipe server <id>` CLI subcommand starts a server as a separate
+3. **Launcher spawns cross-instance servers** - The `jipipe server <id>` CLI subcommand starts a server as a separate
    process. This leverages the existing launcher infrastructure for classpath, JRE, and ImageJ context management. No
    manual classpath construction or `ManifestJarBuilder` needed.
 
-4. **File-based inter-JVM coordination** — Uses existing `FileLocker` for mutual exclusion. State directories with
+4. **File-based inter-JVM coordination** - Uses existing `FileLocker` for mutual exclusion. State directories with
    `refs/` for reference counting. PID monitoring via `ProcessHandle` for crash detection.
 
-5. **The `halt()` problem** — JIPipe uses `Runtime.getRuntime().halt()` which bypasses shutdown hooks. For embedded
+5. **The `halt()` problem** - JIPipe uses `Runtime.getRuntime().halt()` which bypasses shutdown hooks. For embedded
    servers, cleanup is explicitly invoked before `halt()` in `exitLater()`. For cross-instance servers, the
-   launcher-spawned process uses `System.exit()` (not `halt()`), so its shutdown hooks always execute — the server
+   launcher-spawned process uses `System.exit()` (not `halt()`), so its shutdown hooks always execute - the server
    process survives JIPipe crashes.
 
-6. **Three process types in the launcher** — The `ServerCommand` supports process-based, Java-based, and JIPipe full
+6. **Three process types in the launcher** - The `ServerCommand` supports process-based, Java-based, and JIPipe full
    stack modes. The initialization differs per type (classpath is the same for all), enabling lean resource usage for
    the common case (process-based) while supporting richer scenarios.
 
-7. **Debug mode auto-downgrade** — When running from IDE (no dedicated executable), cross-instance servers automatically
+7. **Debug mode auto-downgrade** - When running from IDE (no dedicated executable), cross-instance servers automatically
    downgrade to app-wide embedded mode. This ensures the development experience is seamless while preserving the
    production cross-instance behavior.
 
@@ -324,33 +324,33 @@ gracefully degrade when the executable isn't available. This should be transpare
 
 The server management system is **purely additive** and does not affect any existing functionality:
 
-- **Existing `ProcessUtils.runProcess()`** — Unaffected. The per-invocation process pattern (spawn, wait, read output)
+- **Existing `ProcessUtils.runProcess()`** - Unaffected. The per-invocation process pattern (spawn, wait, read output)
   continues to work as-is. Server-managed processes are a separate concept for long-running services.
-- **Python plugin per-invocation pattern** — Coexists with the new server manager. The Python plugin's existing
+- **Python plugin per-invocation pattern** - Coexists with the new server manager. The Python plugin's existing
   `runProcess()` calls are not changed. Future versions may optionally use an IPython server for persistent kernel
   support.
-- **All new API is additive** — New interfaces, classes, and service components are added without modifying existing
+- **All new API is additive** - New interfaces, classes, and service components are added without modifying existing
   APIs. The `JIPipeServerManagerServiceComponent` is a new service component that doesn't replace any existing
   component.
-- **No changes to algorithm node base classes** — Algorithm nodes opt into server usage by calling `acquire()`/
+- **No changes to algorithm node base classes** - Algorithm nodes opt into server usage by calling `acquire()`/
   `release()` explicitly. Existing algorithms are unaffected.
 
 ### 3.6 Thread Safety Model
 
 All server manager operations are designed for concurrent access from multiple algorithm nodes and pipeline threads:
 
-- **`acquire()`/`release()` are thread-safe** — Both `EmbeddedServerManager` and `ExternalServerManager` use internal
+- **`acquire()`/`release()` are thread-safe** - Both `EmbeddedServerManager` and `ExternalServerManager` use internal
   synchronization to prevent race conditions during server startup/shutdown.
-- **`JIPipeRunnableQueue` for lifecycle serialization** — Following the `JIPipeAIServiceComponent` pattern, all
+- **`JIPipeRunnableQueue` for lifecycle serialization** - Following the `JIPipeAIServiceComponent` pattern, all
   lifecycle operations (start, stop, restart) are serialized through a `JIPipeRunnableQueue` to prevent concurrent state
   mutations.
-- **`ConcurrentHashMap` for registry** — The managed server registry in both managers uses
+- **`ConcurrentHashMap` for registry** - The managed server registry in both managers uses
   `ConcurrentHashMap<String, ManagedServerEntry>` for thread-safe lookup and insertion.
-- **`AtomicInteger` for reference counting** — `ManagedServerEntry.refCount` uses `AtomicInteger` for lock-free
+- **`AtomicInteger` for reference counting** - `ManagedServerEntry.refCount` uses `AtomicInteger` for lock-free
   reference counting. The `acquire()` and `release()` methods are atomic.
-- **File-based locking for cross-instance coordination** — `FileLocker` on `server.lock` provides mutual exclusion
+- **File-based locking for cross-instance coordination** - `FileLocker` on `server.lock` provides mutual exclusion
   across JVM boundaries. The lock is held only during the start/stop sequence, not while the server runs.
-- **Heartbeat scheduler is a daemon `ScheduledExecutorService`** — Does not prevent JVM shutdown. Thread-safe by design.
+- **Heartbeat scheduler is a daemon `ScheduledExecutorService`** - Does not prevent JVM shutdown. Thread-safe by design.
 
 ---
 
@@ -474,30 +474,30 @@ the initialization overhead for each.
     - Health check polling with configurable timeout
     - Graceful shutdown via SIGTERM, force-kill via process tree termination
     - Restart on failure with configurable policy
-8. Implement `HttpHealthCheck` — HTTP GET to endpoint, expect status code
-9. Implement `TcpHealthCheck` — connect to port, expect success
-10. Implement `JIPipeProcessServerDefinition` — command line, env vars, working dir, port argument placeholder
-11. Implement `JIPipeJavaServerDefinition` — in-process Java server start/stop
+8. Implement `HttpHealthCheck` - HTTP GET to endpoint, expect status code
+9. Implement `TcpHealthCheck` - connect to port, expect success
+10. Implement `JIPipeProcessServerDefinition` - command line, env vars, working dir, port argument placeholder
+11. Implement `JIPipeJavaServerDefinition` - in-process Java server start/stop
 12. Implement `JavaServerContext`:
     - Fields: `port`, `stateDirectory`, `definition`
     - Passed to `JIPipeJavaServerDefinition.start()`
 13. Implement `ManagedServerEntry`:
     - `AtomicInteger refCount` for thread-safe reference counting
     - `JIPipeManagedServer server` handle
-    - `void acquire()` — increment ref count
-    - `boolean release()` — decrement, return true if count reaches zero
+    - `void acquire()` - increment ref count
+    - `boolean release()` - decrement, return true if count reaches zero
 14. Implement `EmbeddedServerManager`:
-    - `acquire()` — spawn process, wait for health check, return `JIPipeManagedServer`
-    - `release()` — decrement ref count, stop process if no other references
-    - `status()` — check process alive + health check
+    - `acquire()` - spawn process, wait for health check, return `JIPipeManagedServer`
+    - `release()` - decrement ref count, stop process if no other references
+    - `status()` - check process alive + health check
     - Track managed servers by ID in a `ConcurrentHashMap<String, ManagedServerEntry>`
 15. Create `JIPipeServerManagerServiceComponent`:
     - Extends `JIPipeServiceComponent`
     - Holds `EmbeddedServerManager` (and later `ExternalServerManager`)
-    - `registerServerType()` — plugins call this to register server definitions
-    - `acquire(serverId, environment)` — delegates to correct manager based on ownership
-    - `release(serverId)` — releases reference
-    - `releaseAll()` — releases all servers for this JIPipe instance
+    - `registerServerType()` - plugins call this to register server definitions
+    - `acquire(serverId, environment)` - delegates to correct manager based on ownership
+    - `release(serverId)` - releases reference
+    - `releaseAll()` - releases all servers for this JIPipe instance
     - Uses `JIPipeRunnableQueue` for serialized lifecycle operations (following `JIPipeAIServiceComponent` pattern)
 16. Register `JIPipeServerManagerServiceComponent` in `JIPipeService` constructor:
     - Add field: `private final JIPipeServerManagerServiceComponent serverManager;`
@@ -507,10 +507,10 @@ the initialization overhead for each.
     - Consolidated configuration (no separate `JIPipeServerConfiguration` class)
     - Fields: `ownership` (default `AppOwned`), `scope`, `port`, `startupTimeoutMs`, `idleTimeoutMs`, `autoStart`,
       `restartPolicy`
-    - Abstract method `toServerDefinition()` — converts to `JIPipeServerDefinition`
-    - Abstract method `getServerId()` — unique server type identifier
-    - Override `runPreconfigure()` — auto-starts server if `autoStart = true`
-    - Override `runPostprocessing()` — releases temporary servers, deletes temporary state directory
+    - Abstract method `toServerDefinition()` - converts to `JIPipeServerDefinition`
+    - Abstract method `getServerId()` - unique server type identifier
+    - Override `runPreconfigure()` - auto-starts server if `autoStart = true`
+    - Override `runPostprocessing()` - releases temporary servers, deletes temporary state directory
 18. Create `JIPipeServerOwnership` enum: `AppOwned`, `Shared`
 19. Create `JIPipeServerScope` enum: `Temporary`, `AppWide`
 20. Modify `JIPipe.exitLater()`:
@@ -583,32 +583,32 @@ all three process types and debug/production mode detection.
     - Log mode detection result at startup
 3. Implement `ExternalServerManager`:
     - `acquire()`:
-        1. Check production mode — if debug mode, auto-downgrade to `EmbeddedServerManager.acquire()` with `AppOwned`/
+        1. Check production mode - if debug mode, auto-downgrade to `EmbeddedServerManager.acquire()` with `AppOwned`/
            `AppWide`
-        2. Read `server.info` — check if server already running
+        2. Read `server.info` - check if server already running
         3. Validate: check PID via `ProcessHandle.of(pid).isAlive()` AND probe port
-        4. If orphaned — kill orphaned process, clean up state directory
-        5. If not running — acquire `server.lock`, spawn via launcher, wait for health check, write `server.info`,
+        4. If orphaned - kill orphaned process, clean up state directory
+        5. If not running - acquire `server.lock`, spawn via launcher, wait for health check, write `server.info`,
            release lock
-        6. Register as consumer — create `refs/<mypid>.ref` with timestamp
-        7. Start heartbeat — periodically update `refs/<mypid>.ref` timestamp
+        6. Register as consumer - create `refs/<mypid>.ref` with timestamp
+        7. Start heartbeat - periodically update `refs/<mypid>.ref` timestamp
     - `release()`:
         1. Delete `refs/<mypid>.ref`
-        2. Scan `refs/` — check each PID via `ProcessHandle`
-        3. If no live consumers — send SIGTERM to server process
-        4. If other consumers exist — leave running
-    - `status()` — read `server.info`, verify PID and port
+        2. Scan `refs/` - check each PID via `ProcessHandle`
+        3. If no live consumers - send SIGTERM to server process
+        4. If other consumers exist - leave running
+    - `status()` - read `server.info`, verify PID and port
 4. Implement `ServerCommand` in `jipipe-launcher` with three process type modes:
     - New subcommand: `jipipe server <id>`
     - Parse arguments: `--port`, `--state-dir`, `--idle-timeout`, `--definition-file`, `--process-type`
     - **Process-based mode (Type 1):**
         - Read server definition from `--definition-file` (JSON)
-        - No JIPipe initialization — `JIPipeService` not started
+        - No JIPipe initialization - `JIPipeService` not started
         - Spawn native process via `ProcessBuilder`
         - Monitor health and lifecycle
     - **Java-based mode (Type 2):**
         - Read server definition from `--definition-file` (JSON)
-        - No JIPipe initialization — `JIPipeService` not started; server class is on classpath
+        - No JIPipe initialization - `JIPipeService` not started; server class is on classpath
         - Instantiate Java server class, call `start(JavaServerContext)`
         - Monitor health and lifecycle
     - **JIPipe full stack mode (Type 3):**
@@ -624,9 +624,9 @@ all three process types and debug/production mode detection.
     - Register shutdown hook (uses `System.exit()`, NOT `halt()`)
     - Handle SIGTERM for graceful shutdown
 5. Implement minimal REST API in `ServerCommand`:
-    - `GET /api/v1/health` — process alive?
-    - `GET /api/v1/server/status` — PID, port, ref count, uptime
-    - `POST /api/v1/server/restart` — restart managed server
+    - `GET /api/v1/health` - process alive?
+    - `GET /api/v1/server/status` - PID, port, ref count, uptime
+    - `POST /api/v1/server/restart` - restart managed server
     - Bind to `127.0.0.1` on the server port + 1 (or a dedicated management port)
 6. Implement server process output handling:
     - stdout/stderr → `<stateDir>/server.log`
@@ -782,8 +782,8 @@ all three process types and debug/production mode detection.
       `JIPIPE_FULL` support is deferred to a later phase
     - For users who want to manage custom server processes
 6. Create algorithm nodes:
-    - `LlamaCppInferenceAlgorithm` — uses `LlamaCppServerEnvironment`
-    - `IPythonExecuteAlgorithm` — uses `IPythonServerEnvironment`
+    - `LlamaCppInferenceAlgorithm` - uses `LlamaCppServerEnvironment`
+    - `IPythonExecuteAlgorithm` - uses `IPythonServerEnvironment`
 7. Register environments and nodes in the respective plugin `register()` methods
 8. Write per-plugin tests
 
@@ -841,7 +841,7 @@ all three process types and debug/production mode detection.
 
 ## 6. Detailed Class/Interface Specifications
 
-### 6.1 API — `org.hkijena.jipipe.api.servers`
+### 6.1 API - `org.hkijena.jipipe.api.servers`
 
 #### `JIPipeServerDefinition` (Interface)
 
@@ -932,7 +932,7 @@ package org.hkijena.jipipe.api.servers;
 public enum JIPipeServerProcessType {
     PROCESS,       // Type 1: Native process management (no JIPipeService initialization)
     JAVA,          // Type 2: Java server in launcher JVM (no JIPipeService initialization, class on classpath)
-    JIPIPE_FULL    // Type 3: Full headless JIPipe instance (reserved for future use; no corresponding definition interface in current implementation — a JIPipeFullStackServerDefinition interface may be added when needed)
+    JIPIPE_FULL    // Type 3: Full headless JIPipe instance (reserved for future use; no corresponding definition interface in current implementation - a JIPipeFullStackServerDefinition interface may be added when needed)
 }
 ```
 
@@ -1031,7 +1031,7 @@ public class JIPipeServerEvent {
 }
 ```
 
-### 6.2 Implementation — `org.hkijena.jipipe.servers`
+### 6.2 Implementation - `org.hkijena.jipipe.servers`
 
 #### `ManagedServerEntry`
 
@@ -1245,7 +1245,7 @@ public class TcpHealthCheck implements JIPipeServerHealthCheck {
 }
 ```
 
-### 6.3 Service Component — `org.hkijena.jipipe.api.service.components`
+### 6.3 Service Component - `org.hkijena.jipipe.api.service.components`
 
 #### `JIPipeServerManagerServiceComponent`
 
@@ -1283,7 +1283,7 @@ public class JIPipeServerManagerServiceComponent extends JIPipeServiceComponent 
 (embedded/external/debug-downgrade). Plugin registry for server types.  
 **Dependencies:** `EmbeddedServerManager`, `ExternalServerManager`, `JIPipeServiceComponent`.
 
-### 6.4 Environment — `org.hkijena.jipipe.api.environments`
+### 6.4 Environment - `org.hkijena.jipipe.api.environments`
 
 #### `JIPipeServerEnvironment`
 
@@ -1325,7 +1325,7 @@ class.
 ownership, which requires cross-instance coordination. This prevents accidental resource sharing and ensures that
 developers consciously choose to share servers.
 
-### 6.5 Launcher — `org.hkijena.jipipe.launcher.commands`
+### 6.5 Launcher - `org.hkijena.jipipe.launcher.commands`
 
 #### `ServerCommand`
 
@@ -1454,7 +1454,7 @@ the acquire fails with a `ServerConfigurationMismatchException` (see Section 10)
 
 ## 7. Server Type Lifecycle Flows
 
-### 7.1 Temporary Server — Acquire, Use, Release
+### 7.1 Temporary Server - Acquire, Use, Release
 
 ```mermaid
 sequenceDiagram
@@ -1493,7 +1493,7 @@ sequenceDiagram
     ESM->>ESM: Delete temporary state directory
 ```
 
-### 7.2 App-Wide Server — Acquire, Use, Release
+### 7.2 App-Wide Server - Acquire, Use, Release
 
 ```mermaid
 sequenceDiagram
@@ -1527,7 +1527,7 @@ sequenceDiagram
     Srv-->>PS: exits
 ```
 
-### 7.3 Cross-Instance Server — Acquire, Use, Release (Production Mode)
+### 7.3 Cross-Instance Server - Acquire, Use, Release (Production Mode)
 
 ```mermaid
 sequenceDiagram
@@ -1572,7 +1572,7 @@ sequenceDiagram
     Note over Launcher: Launcher monitors refs/ directory<br/>No live refs + idle timeout → stop server and exit
 ```
 
-### 7.4 Cross-Instance Server — Debug Mode Auto-Downgrade
+### 7.4 Cross-Instance Server - Debug Mode Auto-Downgrade
 
 ```mermaid
 sequenceDiagram
@@ -1599,7 +1599,7 @@ sequenceDiagram
     Note over ESM: Standard embedded release logic
 ```
 
-### 7.5 Cross-Instance Server — Three Process Types in Launcher
+### 7.5 Cross-Instance Server - Three Process Types in Launcher
 
 ```mermaid
 flowchart TD
@@ -1695,7 +1695,7 @@ The `ServerCommand` process runs the following loop (common to all three process
 9. On SIGTERM:
    - Stop server process
    - Clean up server.info
-   - System.exit(0) — triggers shutdown hook
+   - System.exit(0) - triggers shutdown hook
 ```
 
 ### 8.3 Minimal REST API
@@ -1722,7 +1722,7 @@ All server process stdout/stderr output is captured and written to log files:
 - **Process-based servers:** `ProcessBuilder.redirectOutput()` + background reader thread
 - **Java-based servers:** Direct file appender via logging framework
 
-### 8.5 Second JIPipe Instance — Server Already Running
+### 8.5 Second JIPipe Instance - Server Already Running
 
 ```mermaid
 sequenceDiagram
@@ -1743,7 +1743,7 @@ sequenceDiagram
     Note over JIPipe: Server is ready to use on port 18081
 ```
 
-### 8.6 Concurrent Spawn — Two Instances Start Simultaneously
+### 8.6 Concurrent Spawn - Two Instances Start Simultaneously
 
 ```mermaid
 sequenceDiagram
@@ -1861,7 +1861,7 @@ graceful shutdown. For crashes, orphan detection on next startup handles cleanup
 
 #### JIPipe Instance Crashes
 
-1. The JIPipe process is gone — its `refs/<pid>.ref` file remains but heartbeat stops
+1. The JIPipe process is gone - its `refs/<pid>.ref` file remains but heartbeat stops
 2. The launcher's periodic ref scan (every 5 seconds) checks each ref file:
     - `ProcessHandle.of(pid).isAlive()` → false
     - Heartbeat timestamp is stale
@@ -2034,11 +2034,11 @@ not execute.
 
 **Mitigation:**
 
-- Insert `releaseAll()` call **before** `halt()` in `exitLater()` — handles graceful shutdown
+- Insert `releaseAll()` call **before** `halt()` in `exitLater()` - handles graceful shutdown
 - For cross-instance servers: the launcher process uses `System.exit()` (not `halt()`), so its shutdown hooks always
-  execute — the launcher survives JIPipe crashes
-- For temporary/app-wide servers: orphan detection on next JIPipe startup — handles crash
-- For Fiji mode: cleanup in `JIPipeDesktopProjectWindow.dispose()` — handles window close without `halt()`
+  execute - the launcher survives JIPipe crashes
+- For temporary/app-wide servers: orphan detection on next JIPipe startup - handles crash
+- For Fiji mode: cleanup in `JIPipeDesktopProjectWindow.dispose()` - handles window close without `halt()`
 
 **Residual risk:** If `releaseAll()` is never called (code bug), app-owned servers are orphaned until next startup
 cleanup.
@@ -2050,7 +2050,7 @@ registered).
 
 **Mitigation:**
 
-- The launcher already handles JRE and classpath — no manual construction needed
+- The launcher already handles JRE and classpath - no manual construction needed
 - `ExternalServerManager` verifies the launcher process started successfully (check `server.info` appears within
   timeout)
 - If spawn fails, fall back to embedded mode with a warning logged
@@ -2134,7 +2134,7 @@ API) may not be tested in debug mode.
 command needs to initialize JIPipe to look up server definitions.
 
 **Resolution:** Phase 0 spike will measure this. For process-based servers (Type 1), no JIPipe initialization is
-needed — the definition is passed via `--definition-file`. For JIPipe full stack (Type 3), the server startup time
+needed - the definition is passed via `--definition-file`. For JIPipe full stack (Type 3), the server startup time
 (e.g., 30s for LLM model loading) dominates over JIPipe init time.
 
 **Remaining work:** Measure actual startup times in Phase 0.
@@ -2156,7 +2156,7 @@ message). Starting a second instance with a different internal ID is a future en
 **Resolution:** Use `UserDir` for consistency. Clean up the state directory in `runPostprocessing()` after the server is
 stopped. Stale directories are also cleaned up on startup via PID scan.
 
-### 12.4 Launcher Server Command — Full Init vs Minimal Init ✅ Resolved
+### 12.4 Launcher Server Command - Full Init vs Minimal Init ✅ Resolved
 
 **Question:** Should the `jipipe server <id>` command initialize the full JIPipe stack or a minimal subset?
 
@@ -2213,7 +2213,7 @@ based on the server ID?
 2. Separate `--mgmt-port` argument (explicit, but more configuration)
 3. Well-known port derived from server ID hash (deterministic, but may conflict)
 
-**Recommendation:** Option 2 for MVP — pass `--mgmt-port 0` and let the OS allocate a free port. Write the management
+**Recommendation:** Option 2 for MVP - pass `--mgmt-port 0` and let the OS allocate a free port. Write the management
 port to `server.info` so JIPipe can query it.
 
 **Resolution target:** Phase 2.
@@ -2223,7 +2223,7 @@ port to `server.info` so JIPipe can query it.
 **Question:** For Java-based servers (Type 2), how are server-specific libraries (e.g., DJL, ONNX Runtime) added to the
 launcher classpath?
 
-**Resolution:** No special classpath strategy is needed. The server class is already on the classpath — SciJava
+**Resolution:** No special classpath strategy is needed. The server class is already on the classpath - SciJava
 initialization ensures it in production (via plugin discovery), and the IDE ensures it in development. The launcher
 simply instantiates the server class by name from the classpath. No additional artifact downloads or classpath
 construction required.

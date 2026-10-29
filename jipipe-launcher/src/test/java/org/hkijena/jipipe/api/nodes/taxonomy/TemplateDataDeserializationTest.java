@@ -41,7 +41,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * {@code utils/taxonomy-research/patterns/templates/<pattern-id>.json})
  * actually deserializes through the EXACT path a node template uses:
  * {@link JsonUtils#readFromString(String, Class)} on
- * {@link JIPipeGraph} — {@code JIPipeNodeTemplate.getGraph()} calls exactly
+ * {@link JIPipeGraph} - {@code JIPipeNodeTemplate.getGraph()} calls exactly
  * this. The candidate is the highest-support curated pattern
  * ({@code fan-in-ij1-roi-to-rgb-core-io-1-other-1}, support 71; 3 nodes, 1
  * edge in its example subgraph).
@@ -49,21 +49,21 @@ import static org.junit.jupiter.api.Assertions.*;
  * Guards:
  * <ol>
  *   <li>deserialization does not throw (an NPE on a missing required field
- *       would surface here — in particular
+ *       would surface here - in particular
  *       {@code jipipe:graph-compartment} is read via
  *       {@code .get(...).asText()} in {@code JIPipeGraph.nodesFromJson} and
  *       is REQUIRED);</li>
- *   <li>{@code getNodeCount()} equals the template's node count — a missing
+ *   <li>{@code getNodeCount()} equals the template's node count - a missing
  *       {@code nodes} key or unknown node ids make {@code fromJson} return an
  *       EMPTY graph silently (this assertion is the guard);</li>
- *   <li>at least one connection loads — a slot-name mismatch is a SOFT skip
+ *   <li>at least one connection loads - a slot-name mismatch is a SOFT skip
  *       (edge dropped, not a crash), so this guards soft-skipped edges;</li>
  *   <li>every loaded node's id is a registry id AND the loaded id set equals
  *       the template's id set (guards individually soft-skipped nodes).</li>
  * </ol>
  * The minimal node object per template is exactly
  * {@code {"jipipe:node-info-id": ..., "jipipe:graph-compartment": ...,
- * "jipipe:node:name": ...}} — no {@code parameters} object; the node's own
+ * "jipipe:node:name": ...}} - no {@code parameters} object; the node's own
  * {@code fromJson} guards every optional field and parameter deserialization
  * reads {@code node.path(key)}, so missing parameters are fine. If this test
  * ever fails, the contract above (task 8 report section 6 method note) is
@@ -108,7 +108,7 @@ class TemplateDataDeserializationTest {
             expectedIds.add(entry.getValue().get("jipipe:node-info-id").asText());
         }
 
-        // (i) no exception — the exact JIPipeNodeTemplate.getGraph() path
+        // (i) no exception - the exact JIPipeNodeTemplate.getGraph() path
         JIPipeGraph graph = JsonUtils.readFromString(data, JIPipeGraph.class);
         assertNotNull(graph, "deserialization must not return null");
 

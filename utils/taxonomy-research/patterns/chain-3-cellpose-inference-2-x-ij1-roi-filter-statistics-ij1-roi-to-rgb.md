@@ -62,6 +62,6 @@ Project: `AIAgentTests/02-AdvancedPipelines/Cryogels_01.jip` (relative to `/data
 
 Proposed name `Cellpose segmentation (2.x) -> Filter 2D ROI by statistics -> Convert 2D ROI to RGB`, menu path
 `Patterns/Machine learning/Cellpose segmentation (2.x) -> Filter 2D ROI by statistics -> Convert 2D ROI to RGB`
-(proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+(proposal only - not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
 `templates/chain-3-cellpose-inference-2-x-ij1-roi-filter-statistics-ij1-roi-to-rgb.json`.
 

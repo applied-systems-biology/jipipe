@@ -20,13 +20,13 @@ import org.junit.platform.launcher.LauncherSessionListener;
  * Keeps ImageJ1's {@code IJ.log} from opening its GUI "Log" window during tests.
  *
  * <p>ImageJ1's {@code IJ.log(String)} lazily creates a visible
- * {@code ij.text.TextWindow} the first time it is called — it only skips window
+ * {@code ij.text.TextWindow} the first time it is called - it only skips window
  * creation when the static {@code logPanel} field is already non-null. Some
  * threshold algorithms log on degenerate input (e.g.
  * {@code ij.process.AutoThresholder.MinErrorI} logs
  * {@code "MinError(I): NaN, not converging"} for certain synthetic histograms),
- * so a test that exercises those paths — like
- * {@link org.hkijena.jipipe.utils.threshold.NBinsAutoThresholderTest} — pops up
+ * so a test that exercises those paths - like
+ * {@link org.hkijena.jipipe.utils.threshold.NBinsAutoThresholderTest} - pops up
  * the Log window over the user's desktop.
  *
  * <p>This listener runs at launcher-session start (before any test) and

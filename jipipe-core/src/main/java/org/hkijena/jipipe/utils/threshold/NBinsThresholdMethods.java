@@ -117,8 +117,8 @@ public final class NBinsThresholdMethods {
         int last_bin;
         // NOTE: unlike the ImageJ 1.54p original, sum_pix accumulates in double. The
         // original's 32-bit int accumulator overflows once the weighted sum
-        // (sum of bin*count) exceeds 2^31 — reachable on n-bin histograms with large
-        // pixel counts — and silently corrupts the running means and the resulting
+        // (sum of bin*count) exceeds 2^31 - reachable on n-bin histograms with large
+        // pixel counts - and silently corrupts the running means and the resulting
         // threshold.
         double sum_pix;
         double num_pix;
