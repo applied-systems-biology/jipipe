@@ -32,6 +32,7 @@ import org.hkijena.jipipe.api.settings.SettingsFileWatching;
 import org.hkijena.jipipe.api.settings.SettingsScope;
 import org.hkijena.jipipe.api.settings.SettingsSheetBridge;
 import org.hkijena.jipipe.utils.VersionUtils;
+import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,6 +42,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -131,6 +133,14 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
 
     private static final DateTimeFormatter META_TIMESTAMP =
             DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'").withZone(ZoneOffset.UTC);
+    /**
+     * Backup marker and timestamp format for a corrupt foreign settings file,
+     * identical to {@code SettingsFileStore}'s recovery convention
+     * ({@code <name>.bad-<timestamp>}, filename-safe ISO basic format).
+     */
+    private static final String BAD_BACKUP_MARKER = ".bad-";
+    private static final DateTimeFormatter BAD_BACKUP_TIMESTAMP =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH-mm-ss'Z'").withZone(ZoneOffset.UTC);
 
     private final Path userDir;
     /**
@@ -179,6 +189,14 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
      * document is first materialized (see {@link #document(SettingsScope)}).
      * Headless runs hold no live watch: {@link #startWatchingFor} does
      * nothing in that case, and the slot stays empty.
+     * <p>
+     * Monitor discipline: a plain {@link LinkedHashMap}, only read and
+     * written by methods that run under the component monitor —
+     * {@code document()}, {@code startWatchingFor()},
+     * {@code handleForeignChange()} (the executor thread),
+     * {@code recordOwnFingerprint()} (from the executor or from
+     * {@code save()}) and {@code dispose()}. Never touch it from a document
+     * path listener (those run on the mutating thread).
      */
     private final Map<SettingsScope, SettingsFileWatching> watchers = new LinkedHashMap<>();
     /**
@@ -232,17 +250,39 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
     private final Map<SettingsDocument, Map<String, JsonNode>> lastValues = new ConcurrentHashMap<>();
     /**
      * Normalized paths that already have a component listener, per document.
+     * <p>
+     * Monitor discipline: like {@link #watchers}, only touched by
+     * component-monitor methods ({@code ensureObserved}, {@code reload},
+     * {@code dispose}); the listener that is registered from here runs
+     * elsewhere but only reads its own captured {@code doc}/{@code path}.
      */
     private final Map<SettingsDocument, Set<String>> watchedPaths = new LinkedHashMap<>();
     /**
      * Blocks that already have a local-change tracking listener (see
      * {@link #observeBlockWrites}), per document. Prevents duplicate
      * listeners on re-bind.
+     * <p>
+     * Monitor discipline: only touched under the component monitor — by
+     * {@code bind()}, {@code attachSheet()} (via {@code attachBridge}),
+     * the merge paths and {@code reload}/{@code dispose}.
      */
     private final Map<SettingsDocument, Set<String>> localChangeTrackedBlocks = new LinkedHashMap<>();
 
     private final SettingsChangedEventEmitter changedEventEmitter = new SettingsChangedEventEmitter();
     private final LegacyChangedEventEmitter legacyChangedEventEmitter = new LegacyChangedEventEmitter();
+    /**
+     * The last on-disk state each file-backed scope was known to be in from
+     * this process's point of view: the fingerprint this process wrote, or
+     * the fingerprint of a foreign state it merged. The pre-save
+     * read-merge-write check ({@link #mergeForeignBeforeSave}) compares the
+     * file's current fingerprint against it; any difference means another
+     * writer changed the file since, and the save must merge before it
+     * replaces. Recorded at a sync point (see
+     * {@link #recordOwnFingerprint}), which also seeds it from the file at
+     * first load. Guarded by the component monitor like every other field
+     * here.
+     */
+    private final Map<SettingsScope, FileFingerprint> lastKnownFileStates = new LinkedHashMap<>();
     /**
      * Set when a merge with foreign changes found a true same-block
      * collision (the foreign value won over a local edit), cleared when a
@@ -267,6 +307,11 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
      * channel and is intentionally not produced by this task.
      */
     private final ThreadLocal<ChangeOrigin> foreignMergeOrigin = ThreadLocal.withInitial(() -> ChangeOrigin.LOCAL_PROGRAMMATIC);
+    /**
+     * The thread that performed the last foreign merge, for
+     * {@link #getLastMergeThreadNameForTesting()}.
+     */
+    private volatile String lastMergeThreadName;
 
     /**
      * Creates the component for the real JVM-wide {@link JIPipeService}, using
@@ -312,14 +357,19 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
     }
 
     /**
-     * <b>Testing only.</b> Runs the post-save read-back verification
-     * ({@link #verifyOwnWrite}) for one file-backed scope synchronously, so
-     * a test can deterministically simulate a foreign write that
-     * interleaved with a save. Production code runs the same logic from
-     * {@link #save()} right after each successful write; this seam exists
-     * only because the interleaving window (between the atomic write and
-     * the read-back) is too narrow to hit reliably in a race. See
-     * {@code JIPipeSettingsServiceComponentSyncTest.interleavedForeignWriteIsNotSilentlyLost}.
+     * <b>Testing only — not part of the production API.</b> Runs the
+     * post-save read-back verification
+     * ({@link #verifyOwnWrite(SettingsFileStore, SettingsDocument, String)})
+     * for one file-backed scope synchronously, so a test can
+     * deterministically simulate a foreign write that interleaved with a
+     * save. Production code runs the same logic from {@link #save()} right
+     * after each successful write; this seam exists only because the
+     * interleaving window (between the atomic write and the read-back) is
+     * too narrow to hit reliably as a race. The tests that use it live in
+     * the {@code org.hkijena.jipipe.api.service} package (same as this
+     * class), so the method is {@code public} only because it is declared on
+     * a {@code public final} class; it must not be called from feature code.
+     * See {@code JIPipeSettingsServiceComponentSyncTest.interleavedForeignWriteIsNotSilentlyLost}.
      *
      * @param scope the file-backed scope to verify
      */
@@ -329,7 +379,19 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
         if (store == null || doc == null) {
             return;
         }
-        verifyOwnWrite(store, doc);
+        verifyOwnWrite(store, doc, "during a test");
+    }
+
+    /**
+     * <b>Testing only.</b> The thread that performed the last foreign merge
+     * (documented at {@link #applyForeignInto}). Used to prove that the
+     * watcher callback only hands off and the file load + merge happen on
+     * the executor thread. Not part of the production API.
+     *
+     * @return the name of the last merge thread, or {@code null} if no merge ran
+     */
+    public String getLastMergeThreadNameForTesting() {
+        return lastMergeThreadName;
     }
 
     /**
@@ -377,6 +439,11 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
                 SettingsFileStore store = new SettingsFileStore(file, scope, blockPath -> true);
                 stores.put(scope, store);
                 doc = store.load();
+                // The file's current state is what both sides agree on at
+                // load time: the pre-save read-merge-write check compares
+                // against it, so the first save does not mistake our own
+                // loaded content for a foreign write.
+                lastKnownFileStates.put(scope, store.fingerprint());
             }
             documents.put(scope, doc);
             attachPathListeners(doc);
@@ -408,8 +475,9 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
      * <p>
      * In a headless JVM no watch is started at all: CLI runs do not spawn
      * watcher threads (the same rule as the debounce executor), and the
-     * post-save read-back verification in {@link #verifyOwnWrite} remains
-     * the safety net there.
+     * post-save read-back verification in
+     * {@link #verifyOwnWrite(SettingsFileStore, SettingsDocument, String)}
+     * remains the safety net there.
      */
     private void startWatchingFor(SettingsScope scope, SettingsDocument doc) {
         if (disposed || GraphicsEnvironment.isHeadless()) {
@@ -432,31 +500,56 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
 
     /**
      * Handles a foreign change of the given settings file, off the
-     * watcher's thread: reloads the file into a temporary document, runs
-     * the per-block merge against the live document, records the new sync
-     * point, and persists the local document when the merge outcome
-     * requires it.
+     * watcher's thread (the asynchronous fast path). Delegates the real work
+     * to {@link #mergeForeignFile(SettingsScope, SettingsFileStore, String)}.
      * <p>
      * All access to the live document happens under this component's
      * monitor (this method is synchronized on it, as are
      * {@link #document(SettingsScope)}, {@link #save()} and
      * {@link #reload()}), so a merge can never observe a document that a
      * concurrent save or reload is in the middle of replacing.
-     * <p>
-     * The blocks and sub-paths the merge is about to touch are observed
-     * <em>before</em> the merge runs, with their pre-merge values as the
-     * baseline for the "old" value of the emitted events; the merge's
-     * block replacements then re-emit them as
-     * {@link ChangeOrigin#EXTERNAL_FILE} (via the
-     * {@link #foreignMergeOrigin} thread-local). This is what makes
-     * "fire per-path events for adopted/conflicted blocks" true for
-     * sub-paths that no binding or bridge had observed before.
      *
      * @param scope the scope of the changed file
      * @param file the settings file that changed
      * @param store the store that owns the file
      */
     private synchronized void handleForeignChange(SettingsScope scope, Path file, SettingsFileStore store) {
+        mergeForeignFile(scope, store, "detected by the settings file watcher");
+    }
+
+    /**
+     * Loads the file into a temporary foreign document and runs the per-block
+     * merge against the live document, then records the sync point and
+     * schedules a converging save when the outcome requires one. Shared by
+     * the two detection tiers so they cannot drift apart:
+     * <ul>
+     * <li>the watcher's asynchronous {@link #handleForeignChange} (fast
+     * path: another process wrote and we did not save);</li>
+     * <li>the save-time read-merge-write in {@link #save()} (correctness
+     * floor: another process wrote <em>before</em> our blind whole-document
+     * write would have replaced their content).</li>
+     * </ul>
+     * Callers must hold the component's monitor (this method is not
+     * synchronized itself so the save path can use it without an extra lock
+     * hop and without a re-entrancy surprise).
+     * <p>
+     * <b>Guarded load:</b> a corrupt or partially written foreign file must
+     * never abort a save nor wipe the local document. {@code SettingsFileStore#load()}
+     * would back the broken file up as {@code <name>.bad-<timestamp>} and
+     * return an <em>empty</em> document, and merging that empty document
+     * would delete every local block. So the file is probed first
+     * ({@link #isUnreadableSettingsFile}): if it is not parseable settings
+     * JSON, it is preserved as {@code <name>.bad-<timestamp>} (the store's own
+     * recovery convention), its state is recorded as handled (so the watcher
+     * does not re-deliver the same broken file in a loop), and the method
+     * returns without merging. The local document is left unchanged.
+     *
+     * @param scope the scope of the changed file
+     * @param store the store that owns the file
+     * @param reason a human-readable reason for the log ("detected by the
+     *               settings file watcher", "found before saving", …)
+     */
+    private void mergeForeignFile(SettingsScope scope, SettingsFileStore store, String reason) {
         if (disposed) {
             return;
         }
@@ -470,7 +563,107 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
         // content against an already-updated baseline and could adopt the
         // local blocks as foreign deletions — data loss).
         FileFingerprint foreignFingerprint = store.fingerprint();
-        SettingsDocument foreign = store.load();
+        Path file = store.file();
+        if (isUnreadableSettingsFile(file)) {
+            // A corrupt or partially written foreign file (e.g. another
+            // process crashed mid-write): merging it would either be
+            // meaningless (an empty document would delete local blocks) or
+            // throw out of the save loop. Keep the local document, preserve
+            // the broken content via the store's recovery (.bad-<timestamp>),
+            // and record the state as handled so no watcher re-delivers it.
+            logger.warn("Foreign settings file {} ({}) is not valid settings JSON; "
+                    + "preserving it as a backup and keeping the local document unchanged", file, reason);
+            backupCorruptForeignFile(store);
+            recordOwnFingerprint(scope, store.fingerprint());
+            return;
+        }
+        SettingsDocument foreign;
+        try {
+            foreign = store.load();
+        } catch (RuntimeException e) {
+            // SettingsFileStore#load() is documented never to throw; this is
+            // belt and braces so a save loop is never aborted by a bad file.
+            logger.warn("Could not load foreign settings file {} ({}); the local document is kept unchanged",
+                    file, reason, e);
+            recordOwnFingerprint(scope, foreignFingerprint);
+            return;
+        }
+        applyForeignInto(scope, doc, foreign);
+        if (disposed) {
+            return;
+        }
+        recordOwnFingerprint(scope, foreignFingerprint);
+    }
+
+    /**
+     * @param file the settings file
+     * @return whether the file exists, has content, and is <em>not</em> a
+     * parseable settings document (corrupt / partially written). An absent or
+     * empty file is not "unreadable" here: an absent file is handled by the
+     * caller before this check, and an empty file is a legitimate (empty)
+     * settings document the store can load.
+     */
+    private static boolean isUnreadableSettingsFile(Path file) {
+        try {
+            if (!Files.isRegularFile(file) || Files.size(file) == 0) {
+                return false;
+            }
+            JsonNode node = JsonUtils.getObjectMapper().readTree(Files.readString(file));
+            return node == null || !node.isObject();
+        } catch (IOException e) {
+            return true; // unreadable
+        } catch (RuntimeException e) {
+            return true; // Jackson parse error
+        }
+    }
+
+    /**
+     * Preserves a corrupt foreign settings file using the store's existing
+     * recovery convention ({@code <name>.bad-<timestamp>}), so the broken
+     * content is not silently discarded: it can be inspected and the user's
+     * data is never lost. Mirrors {@code SettingsFileStore#load()}'s backup
+     * naming; the store owns its own recovery path, this only makes the
+     * pre-check produce the same outcome without merging an empty document.
+     */
+    private void backupCorruptForeignFile(SettingsFileStore store) {
+        Path file = store.file();
+        try {
+            Path backup = file.resolveSibling(file.getFileName() + BAD_BACKUP_MARKER
+                    + BAD_BACKUP_TIMESTAMP.format(Instant.now()));
+            Files.move(file, backup, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            logger.warn("Could not back up the corrupt settings file {}", file, e);
+        }
+    }
+
+    /**
+     * Merges {@code foreign} into the live document {@code doc} using the
+     * per-block {@link SettingsDocumentMerger} rules, records the new sync
+     * point, updates {@link #foreignConflict}, and schedules a converging
+     * save when the outcome requires one. This is the single merge
+     * implementation shared by the asynchronous watcher path and the
+     * save-time read-merge-write.
+     * <p>
+     * The blocks and sub-paths the merge is about to touch are observed
+     * <em>before</em> the merge runs, with their pre-merge values as the
+     * baseline for the "old" value of the emitted events; the merge's block
+     * replacements then re-emit them as {@link ChangeOrigin#EXTERNAL_FILE}
+     * (via the {@link #foreignMergeOrigin} thread-local). This is what makes
+     * "fire per-path events for adopted/conflicted blocks" true for
+     * sub-paths that no binding or bridge had observed before.
+     * <p>
+     * The caller holds the component's monitor and is responsible for
+     * persisting the document afterwards when needed (the watcher path only
+     * schedules it via {@link #saveLater()}; the save path writes it in the
+     * same call).
+     *
+     * @param scope the scope of the document
+     * @param doc the live document to merge into
+     * @param foreign the document loaded from disk
+     * @return the merge outcome
+     */
+    private SettingsDocumentMerger.MergeResult applyForeignInto(SettingsScope scope, SettingsDocument doc,
+                                                               SettingsDocument foreign) {
         Set<String> affected = new LinkedHashSet<>(doc.blockPaths());
         affected.addAll(foreign.blockPaths());
         // Observe the blocks the merge may touch, and the sub-paths they
@@ -485,11 +678,12 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
             }
         }
         foreignMergeOrigin.set(ChangeOrigin.EXTERNAL_FILE);
+        lastMergeThreadName = Thread.currentThread().getName();
+        SettingsDocumentMerger.MergeResult result;
         try {
             Set<String> changed = locallyChangedBlocks.getOrDefault(doc, Set.of());
             Map<String, JsonNode> baseline = lastSyncedBaselines.getOrDefault(doc, Map.of());
-            SettingsDocumentMerger.MergeResult result =
-                    SettingsDocumentMerger.merge(doc, foreign, changed, baseline);
+            result = SettingsDocumentMerger.merge(doc, foreign, changed, baseline);
             recordSyncPoint(doc);
             if (result.hasConflicts()) {
                 foreignConflict = true;
@@ -498,22 +692,37 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
             } else {
                 foreignConflict = false;
             }
-            if (result.requiresSave()) {
-                // Kept blocks are newer than the foreign file (we re-save so
-                // the file converges), and a conflicted merge must write the
-                // winning foreign values back so both processes end up with
-                // the same content. saveLater() coalesces with pending
-                // debounced saves and self-ignores its own write.
-                saveLater();
-            }
         } finally {
             foreignMergeOrigin.remove();
         }
-        if (foreignFingerprint != null) {
-            SettingsFileWatching watch = watchers.get(scope);
-            if (watch != null) {
-                watch.setOwnFingerprint(foreignFingerprint);
-            }
+        if (result.requiresSave()) {
+            // Kept blocks are newer than the foreign file (we re-save so
+            // the file converges), and a conflicted merge must write the
+            // winning foreign values back so both processes end up with
+            // the same content. saveLater() coalesces with pending
+            // debounced saves and self-ignores its own write.
+            saveLater();
+        }
+        return result;
+    }
+
+    /**
+     * Records the given fingerprint as this process's own on the scope's
+     * watcher (self-write suppression for the state that was just handled)
+     * and as the scope's {@link #lastKnownFileStates} entry (the baseline for
+     * the pre-save read-merge-write check). No-op for the watcher when there
+     * is none (headless), but the last-known state is always recorded.
+     */
+    private void recordOwnFingerprint(SettingsScope scope, FileFingerprint fingerprint) {
+        if (fingerprint == null) {
+            return;
+        }
+        lastKnownFileStates.put(scope, fingerprint);
+        // Touched from the merge executor and from save() (both under the
+        // component monitor), so the plain map lookup is safe here.
+        SettingsFileWatching watch = watchers.get(scope);
+        if (watch != null) {
+            watch.setOwnFingerprint(fingerprint);
         }
     }
 
@@ -712,6 +921,9 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
             }
             attachPathListeners(fresh);
             recordSyncPoint(fresh);
+            // The disk content is what both sides agree on again: the
+            // pre-save read-merge-write check starts from it.
+            lastKnownFileStates.put(scope, store.fingerprint());
             if (scope == SettingsScope.APPLICATION) {
                 // Re-create every bridge on the fresh document and attach it.
                 for (JIPipeApplicationSettingsSheet sheet : bridgedSheets) {
@@ -728,16 +940,31 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
      * Flushes all attached sheet bridges into the document, then atomically
      * saves every file-backed document.
      * <p>
-     * Each successful save is immediately verified by
-     * {@link #verifyOwnWrite(SettingsFileStore, SettingsDocument)}: the
-     * file is read back and compared against the content this process just
-     * wrote, closing the watcher's documented own-fingerprint suppression
-     * window (a foreign write interleaved between this process's write and
-     * its fingerprint read would otherwise be silently absorbed, leaving
-     * the in-memory state diverged from disk with no event to reconcile
-     * it — see {@code SettingsFileWatcher}). A verification mismatch feeds
-     * the foreign content through the same merge path a watcher callback
-     * would use, instead of silently accepting the observed fingerprint.
+     * <b>Read-merge-write (the correctness floor for multi-instance sync).</b>
+     * A save is a blind whole-document atomic replace, so a foreign write
+     * that landed on disk <em>before</em> this save would simply be
+     * overwritten and lost forever (the post-save verification below can
+     * only see writes that land <em>after</em> our write). Before writing,
+     * each scope therefore checks whether the on-disk state still equals the
+     * state this process last wrote or merged (its own fingerprint or its
+     * last-synced fingerprint). If it does not — a foreign writer
+     * interleaved — the foreign file is merged into the live document with
+     * the same per-block rules and events as the watcher path
+     * ({@link #mergeForeignFile}) <em>first</em>, and only the merged result
+     * is written. If it does, the save proceeds unchanged.
+     * <p>
+     * Each successful save is then verified by
+     * {@link #verifyOwnWrite(SettingsFileStore, SettingsDocument, String)}:
+     * the file is read back and compared against the content this process
+     * just wrote, closing the watcher's documented own-fingerprint
+     * suppression window (a foreign write interleaved between this process's
+     * write and its fingerprint read would otherwise be silently absorbed,
+     * leaving the in-memory state diverged from disk with no event to
+     * reconcile it — see {@code SettingsFileWatcher}).
+     * <p>
+     * Ordering per scope: flush bridges → pre-save check → (merge if the
+     * file is foreign) → stamp → write → record sync point → record own
+     * fingerprint → verify the write.
      */
     public synchronized void save() {
         if (disposed) {
@@ -747,24 +974,32 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
             bridge.flushToDocument();
         }
         for (Map.Entry<SettingsScope, SettingsFileStore> entry : stores.entrySet()) {
-            SettingsDocument doc = documents.get(entry.getKey());
+            SettingsScope scope = entry.getKey();
+            SettingsDocument doc = documents.get(scope);
             if (doc == null) {
                 continue;
             }
             SettingsFileStore store = entry.getValue();
+            // Read-merge-write: adopt a foreign write that is already on
+            // disk BEFORE our blind replace would destroy it. The merge
+            // records its own sync point, so the merged document is what
+            // gets written below. A corrupt foreign file never aborts the
+            // save: the merge path keeps the local document and logs.
+            mergeForeignBeforeSave(scope, store);
             stampMeta(doc);
             try {
                 store.save(doc);
             } catch (RuntimeException e) {
-                logger.error("Could not save settings document for scope {}", entry.getKey(), e);
+                logger.error("Could not save settings document for scope {}", scope, e);
                 JIPipeService service = getService();
                 if (service != null) {
-                    service.getLogService().error("Could not save settings document for scope " + entry.getKey(), e);
+                    service.getLogService().error("Could not save settings document for scope " + scope, e);
                 }
                 continue; // the write failed: no successful sync point
             }
             recordSyncPoint(doc); // a successful save is a sync point
-            verifyOwnWrite(store, doc);
+            recordOwnFingerprint(scope, store.fingerprint());
+            verifyOwnWrite(store, doc, "after saving");
         }
         if (getProgressInfo() != null) {
             getProgressInfo().log("Saved settings documents to disk");
@@ -772,35 +1007,76 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
     }
 
     /**
+     * Pre-save check of the read-merge-write protocol: when the file on disk
+     * no longer matches the last state this process wrote or merged, a
+     * foreign writer got there first and its content must be merged into the
+     * live document before the save may replace it.
+     * <p>
+     * Three states are distinguished by the fingerprint alone (no content
+     * read is needed): absent file (nothing to lose — write), a fingerprint
+     * equal to the recorded own/last-synced one (no foreign writer — write),
+     * and anything else (foreign — merge first). A file that cannot be
+     * fingerprinted is treated like a foreign change and goes through the
+     * merge, which is non-destructive (see the guarded load in
+     * {@link #mergeForeignFile}): either the foreign content is merged, or it
+     * is unreadable and the local document is kept. Either way the save then
+     * proceeds with the (possibly merged) local document.
+     *
+     * @param scope the scope being saved
+     * @param store the scope's store
+     */
+    private void mergeForeignBeforeSave(SettingsScope scope, SettingsFileStore store) {
+        SettingsDocument doc = documents.get(scope);
+        if (doc == null) {
+            return;
+        }
+        Path file = store.file();
+        if (!Files.isRegularFile(file)) {
+            return; // nothing on disk (first save, or deleted): nothing to clobber
+        }
+        FileFingerprint onDisk = store.fingerprint();
+        // The last state this process produced or accepted for this file.
+        // A save records it as own; a merge records the merged foreign state
+        // as own. Anything else means another writer changed the file since.
+        FileFingerprint expected = lastKnownFileStates.get(scope);
+        if (onDisk != null && expected != null && onDisk.equals(expected)) {
+            return; // the file is exactly what we last wrote/merged: no foreign writer
+        }
+        logger.info("Settings file {} changed on disk before saving; merging the foreign content first",
+                file);
+        mergeForeignFile(scope, store, "found before saving (another instance wrote it first)");
+    }
+
+    /**
      * Self-healing check after a successful save: reads the file back and
      * compares it against the content this process actually wrote.
      * <p>
-     * <b>What it closes:</b> the watcher suppresses changes whose
-     * fingerprint equals the one the owner recorded after its save, and
-     * the owner records that fingerprint from the file as it is <em>at the
-     * moment of the read</em>. If a foreign process writes the file after
-     * this process's atomic move but before that read — the window the
-     * watcher documents as its realistic suppression case — the owner
-     * records the <b>foreign</b> state as its own fingerprint and the
-     * watcher never reports it: the foreign change is silently lost. This
-     * check detects exactly that situation, because the read-back content
-     * differs from the serialized bytes this process intended to write
-     * (the store's temp-file-then-replace write makes the intended bytes
-     * deterministic for the document at save time).
+     * <b>What it covers:</b> a foreign write that lands <em>during or just
+     * after</em> this process's atomic replace. Without it the watcher would
+     * absorb such a write: it suppresses changes whose fingerprint equals the
+     * one the owner recorded after its save, and the owner records that
+     * fingerprint from the file as it is <em>at the moment of the read</em>
+     * — so a foreign write that lands before that read is recorded as our
+     * own and never reported. This check compares the read-back content
+     * against what this process actually wrote, so that case is detected and
+     * merged.
+     * <p>
+     * It complements (and does not replace) the pre-save read-merge-write in
+     * {@link #save()}, which covers the opposite direction — a foreign write
+     * that landed <em>before</em> our write would otherwise have been
+     * replaced blindly.
      * <p>
      * On a mismatch the observed file content is fed through
-     * {@link #handleForeignChange} — the same merge path a watcher
-     * callback uses — so the foreign blocks are adopted/conflicted/kept
-     * with events, and the re-save scheduled by the merge converges the
-     * file. It is called from {@link #save()} while already holding the
-     * component's monitor; the (reentrant) {@code synchronized}
-     * {@link #handleForeignChange} call re-enters the same lock, so no
-     * deadlock is possible.
+     * {@link #mergeForeignFile} — the same merge implementation the watcher
+     * path uses — so the foreign blocks are adopted/conflicted/kept with
+     * events. This method runs from {@link #save()} while the component's
+     * monitor is already held; {@code mergeForeignFile} deliberately does not
+     * re-acquire it, so no extra lock hop or deadlock is involved.
      * <p>
      * <b>What it does not cover:</b> a byte-identical foreign write (a
      * foreign process that writes exactly the same content we did is
-     * indistinguishable from our own write by any content comparison; such
-     * a write is a no-op for the values anyway). A foreign write landing
+     * indistinguishable from our own write by any content comparison; such a
+     * write is a no-op for the values anyway). A foreign write landing
      * <em>during</em> the verification read is covered: the fingerprint is
      * read first and the decision is made on the content read second, so a
      * write in between surfaces as a content mismatch and is merged.
@@ -808,8 +1084,10 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
      * @param store the store the document was just saved through
      * @param doc the document that was just saved; its scope identifies the
      *            watcher to record the own fingerprint on
+     * @param reason a human-readable description of when the verification ran
+     *               ("after saving", "during a test"), used in the log message
      */
-    private void verifyOwnWrite(SettingsFileStore store, SettingsDocument doc) {
+    private void verifyOwnWrite(SettingsFileStore store, SettingsDocument doc, String reason) {
         Path file = store.file();
         try {
             if (!Files.isRegularFile(file)) {
@@ -827,20 +1105,15 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
             if (onDisk.equals(SettingsDocumentIO.toPrettyString(doc))) {
                 // Our write survived: record it as our own, so the watcher
                 // suppresses it (normal self-write).
-                if (own != null) {
-                    SettingsFileWatching watch = watchers.get(doc.scope());
-                    if (watch != null) {
-                        watch.setOwnFingerprint(own);
-                    }
-                }
+                recordOwnFingerprint(doc.scope(), own);
                 return;
             }
             // A foreign writer interleaved between our save and the
             // fingerprint read: the on-disk content is not ours. Treat it
             // as a foreign change instead of silently recording the
             // foreign fingerprint as our own.
-            logger.info("Settings file {} was modified by another process while saving; merging it", file);
-            handleForeignChange(doc.scope(), file, store);
+            logger.info("Settings file {} was replaced by another process {}; merging it", file, reason);
+            mergeForeignFile(doc.scope(), store, "detected " + reason);
         } catch (IOException e) {
             // The verification is best-effort: on a read failure the next
             // watcher delivery or the next save reconciles the file.
@@ -1067,6 +1340,7 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
         watchedPaths.clear();
         locallyChangedBlocks.clear();
         lastSyncedBaselines.clear();
+        lastKnownFileStates.clear();
         localChangeTrackedBlocks.clear();
         changedEventEmitter.dispose();
         legacyChangedEventEmitter.dispose();
@@ -1148,12 +1422,23 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
 
     /**
      * Called by a document path listener when the value at a watched path
-     * changes: reads the old value from the cache, emits the fine-grained and
-     * legacy events, and updates the baseline. The change origin is taken
-     * from {@link #foreignMergeOrigin}, so mutations applied by a foreign
-     * merge are re-emitted as {@link ChangeOrigin#EXTERNAL_FILE} while all
-     * other (local) mutations keep the default
-     * {@link ChangeOrigin#LOCAL_PROGRAMMATIC}.
+     * changes: reads the old value from the cache, updates the baseline, and
+     * delivers the fine-grained and legacy events to subscribers.
+     * <p>
+     * <b>Delivery thread.</b> The cached old/new values are captured here, on
+     * the mutating thread, so the event always reports the change that
+     * actually happened. {@link #dispatchChangeEvent} then keeps the historic
+     * synchronous contract for headless runs and for mutations that already
+     * run on the Swing EDT (normal UI edits), and hands an <b>off-EDT</b>
+     * mutation (the foreign-merge executor, or a background feature thread)
+     * to the EDT via {@link javax.swing.SwingUtilities#invokeLater}, so UI
+     * subscribers never run on the merge thread. The merge executor is a
+     * single thread, so the events it posts keep their relative order.
+     * <p>
+     * The change origin is taken from {@link #foreignMergeOrigin}, so
+     * mutations applied by a foreign merge are re-emitted as
+     * {@link ChangeOrigin#EXTERNAL_FILE} while all other (local) mutations keep
+     * the default {@link ChangeOrigin#LOCAL_PROGRAMMATIC}.
      */
     private void onPathChanged(SettingsDocument doc, String path, JsonNode newValue) {
         Map<String, JsonNode> valueCache = lastValues.get(doc);
@@ -1163,10 +1448,31 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
         JsonNode oldValue = valueCache.get(path);
         if (!Objects.equals(oldValue, newValue)) {
             valueCache.put(path, newValue);
-            changedEventEmitter.emit(new SettingsChangedEvent(
-                    doc.scope(), path, oldValue, newValue, foreignMergeOrigin.get()));
-            legacyChangedEventEmitter.emit(new LegacyChangedEvent());
+            SettingsChangedEvent event = new SettingsChangedEvent(
+                    doc.scope(), path, oldValue, newValue, foreignMergeOrigin.get());
+            dispatchChangeEvent(event);
         }
+    }
+
+    /**
+     * Delivers one change event (and its legacy aggregate companion) to the
+     * subscribers on the Swing EDT when a display is present, inline when
+     * headless. See {@link #onPathChanged} for why.
+     * <p>
+     * Headless runs and mutations already on the EDT deliver inline and
+     * synchronously (the caller's {@code binding.set(...)} still has notified
+     * its subscribers on return). An off-EDT mutation is handed to the EDT.
+     */
+    private void dispatchChangeEvent(SettingsChangedEvent event) {
+        Runnable deliver = () -> {
+            changedEventEmitter.emit(event);
+            legacyChangedEventEmitter.emit(new LegacyChangedEvent());
+        };
+        if (GraphicsEnvironment.isHeadless() || javax.swing.SwingUtilities.isEventDispatchThread()) {
+            deliver.run(); // inline: headless runs, and already on the UI thread
+            return;
+        }
+        javax.swing.SwingUtilities.invokeLater(deliver);
     }
 
     /**

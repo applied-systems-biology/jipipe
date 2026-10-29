@@ -88,7 +88,7 @@ class JIPipeSettingsServiceComponentTest {
         assertNull(c.fileFor(SettingsScope.PROJECT));
     }
 
-    @Test void changeEventsAreEmittedWithOldAndNewValues() {
+    @Test void changeEventsAreEmittedWithOldAndNewValues() throws Exception {
         JIPipeSettingsServiceComponent c = JIPipeSettingsServiceComponent.forTesting(tempDir);
         JIPipeSettingKey<String> key = JIPipeSettingKey.string("registry:events", "name", String.class).defaultValue("default");
         List<JIPipeSettingsServiceComponent.SettingsChangedEvent> events = new ArrayList<>();
@@ -97,9 +97,14 @@ class JIPipeSettingsServiceComponentTest {
         c.getLegacyChangedEventEmitter().subscribeLambda((emitter, event) -> legacy.add(event));
 
         SettingsBinding<String> b = c.bind(key);
-        b.set("one");
-        b.set("two");
-        b.set("one"); // effective value changed again
+        // The component delivers change events inline on the Swing EDT (and
+        // hands off-EDT mutations to the EDT), so the assertions run on the
+        // EDT — the thread real UI subscribers use.
+        javax.swing.SwingUtilities.invokeAndWait(() -> {
+            b.set("one");
+            b.set("two");
+            b.set("one"); // effective value changed again
+        });
 
         assertEquals(3, events.size(), "one event per effective change: " + events);
         assertEquals("registry:events/name", events.get(0).getPath());

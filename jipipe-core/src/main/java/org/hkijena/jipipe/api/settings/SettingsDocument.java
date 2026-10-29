@@ -61,6 +61,29 @@ import java.util.function.Predicate;
  * {@link #removePathListener}), which lets in-process observers (such as
  * {@link SettingsBinding}s) be told when the value at a specific path
  * changes.
+ * <p>
+ * <b>Threading contract.</b> A document is shared between threads: UI and
+ * feature code mutate it on the Swing EDT (bindings write through
+ * {@link #set}/{@link #setBlock} without any outer lock), while the
+ * settings service's foreign-change merge mutates the same document on a
+ * background thread. To make that safe, every mutating operation (and the
+ * listener registration it uses) is {@link Object#synchronized
+ * synchronized} on the document instance, and notifications are dispatched
+ * while that same lock is held. The lock is <b>reentrant</b>, so a listener
+ * that writes back into the document from inside its callback is safe (the
+ * change it causes is then dispatched after it returns, in the normal
+ * nested-call order). Listeners therefore run on the mutating thread while
+ * the document is locked: they must be short and must not block on another
+ * thread that could itself touch this document (e.g. do not wait for another
+ * thread to save the settings from inside a listener).
+ * <p>
+ * Reads ({@link #get}, {@link #has}, {@link #getBlock}, {@link #blockPaths},
+ * {@link #subPaths}) are not synchronized: a {@link JsonNode} obtained from
+ * a read is a live view that may be mutated or replaced by a concurrent
+ * write. Read into a local value and do not mutate the returned node, or
+ * perform multi-read sequences in the same thread as the writes. The
+ * settings service serializes its own reads/writes with its component
+ * monitor, and the document lock covers the mutation itself.
  */
 public final class SettingsDocument {
     private static final String SCHEMA_FIELD = "$schema";
@@ -121,7 +144,7 @@ public final class SettingsDocument {
      * @param pathWithSubPath the path to observe
      * @param listener the listener to fire with the new value at the path
      */
-    public void addPathListener(String pathWithSubPath, Consumer<JsonNode> listener) {
+    public synchronized void addPathListener(String pathWithSubPath, Consumer<JsonNode> listener) {
         pathListeners
                 .computeIfAbsent(Objects.requireNonNull(pathWithSubPath, "pathWithSubPath"), p -> new ArrayList<>())
                 .add(Objects.requireNonNull(listener, "listener"));
@@ -134,7 +157,7 @@ public final class SettingsDocument {
      * @param pathWithSubPath the path the listener was registered for
      * @param listener the listener to remove
      */
-    public void removePathListener(String pathWithSubPath, Consumer<JsonNode> listener) {
+    public synchronized void removePathListener(String pathWithSubPath, Consumer<JsonNode> listener) {
         List<Consumer<JsonNode>> listeners = pathListeners.get(pathWithSubPath);
         if (listeners != null) {
             listeners.remove(listener);
@@ -177,7 +200,7 @@ public final class SettingsDocument {
      * @param blockPath the canonical block path
      * @param value the new block value, or {@code null} to remove the block
      */
-    public void setBlock(String blockPath, JsonNode value) {
+    public synchronized void setBlock(String blockPath, JsonNode value) {
         if (value == null || value.isMissingNode()) {
             root.remove(blockPath);
         } else {
@@ -226,7 +249,7 @@ public final class SettingsDocument {
      * @param subPath slash-separated sub-path within the block, or empty for the whole block
      * @param value the value to store; a {@code null} or missing value removes the location
      */
-    public void set(String blockPath, String subPath, JsonNode value) {
+    public synchronized void set(String blockPath, String subPath, JsonNode value) {
         List<String> segments = subSegments(blockPath, subPath);
         if (value == null || value.isMissingNode()) {
             removeAt(segments);
@@ -258,7 +281,7 @@ public final class SettingsDocument {
      * @param blockPath the canonical block path
      * @param subPath slash-separated sub-path within the block, or empty for the whole block
      */
-    public void remove(String blockPath, String subPath) {
+    public synchronized void remove(String blockPath, String subPath) {
         String path = listenerPath(blockPath, subPath);
         removeAt(subSegments(blockPath, subPath));
         if (path.equals(blockPath)) {
@@ -273,7 +296,7 @@ public final class SettingsDocument {
      *
      * @param blockPath the canonical block path
      */
-    public void removeBlock(String blockPath) {
+    public synchronized void removeBlock(String blockPath) {
         root.remove(Objects.requireNonNull(blockPath, "blockPath"));
         notifyBlockAndDescendants(blockPath);
     }
@@ -282,7 +305,7 @@ public final class SettingsDocument {
      * @return the canonical block paths present in the document, excluding
      * reserved {@code $}-prefixed fields
      */
-    public Set<String> blockPaths() {
+    public synchronized Set<String> blockPaths() {
         Set<String> paths = new LinkedHashSet<>();
         root.fieldNames().forEachRemaining(f -> {
             if (!f.startsWith("$")) {
@@ -298,7 +321,7 @@ public final class SettingsDocument {
      * including the full path of the block's direct fields; empty if the block
      * is absent or holds a non-object value
      */
-    public Set<String> subPaths(String blockPath) {
+    public synchronized Set<String> subPaths(String blockPath) {
         Set<String> result = new LinkedHashSet<>();
         collectSubPaths(node(Objects.requireNonNull(blockPath, "blockPath")), "", result);
         return result;
@@ -316,14 +339,14 @@ public final class SettingsDocument {
      *
      * @param version the new schema version
      */
-    public void setSchemaVersion(int version) {
+    public synchronized void setSchemaVersion(int version) {
         root.put(SCHEMA_FIELD, version);
     }
 
     /**
      * @return the live {@code $meta} object node; created on first access
      */
-    public ObjectNode meta() {
+    public synchronized ObjectNode meta() {
         return root.get(META_FIELD) instanceof ObjectNode m ? m : root.putObject(META_FIELD);
     }
 
@@ -342,7 +365,7 @@ public final class SettingsDocument {
         return current;
     }
 
-    private ObjectNode objectAt(List<String> segments, int depth) {
+    private synchronized ObjectNode objectAt(List<String> segments, int depth) {
         ObjectNode current = root;
         for (int i = 0; i < depth; i++) {
             String segment = segments.get(i);
@@ -358,7 +381,7 @@ public final class SettingsDocument {
         return current;
     }
 
-    private void removeAt(List<String> segments) {
+    private synchronized void removeAt(List<String> segments) {
         if (segments.size() == 1) {
             root.remove(segments.get(0));
             return;
@@ -406,7 +429,7 @@ public final class SettingsDocument {
         return normalized.toString();
     }
 
-    private void notifyBlockAndDescendants(String blockPath) {
+    private synchronized void notifyBlockAndDescendants(String blockPath) {
         String prefix = blockPath + "/";
         notifyPathListener(blockPath);
         for (String path : pathListeners.keySet()) {
@@ -416,7 +439,7 @@ public final class SettingsDocument {
         }
     }
 
-    private void notifyPathListener(String pathWithSubPath) {
+    private synchronized void notifyPathListener(String pathWithSubPath) {
         List<Consumer<JsonNode>> listeners = pathListeners.get(pathWithSubPath);
         if (listeners == null) {
             return;

@@ -22,6 +22,8 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests for {@link SettingsDocumentMerger}: the five per-block merge rules
@@ -156,6 +158,46 @@ class SettingsDocumentMergerTest {
         assertEquals(9, local.get("registry:a", "x").asInt());
         assertEquals(0, r.adoptedBlocks().size());
         assertEquals(0, r.conflictedBlocks().size());
+    }
+
+    /**
+     * The rule that makes a foreign deletion and "another instance never
+     * wrote this block yet" distinguishable: with a baseline equal to the
+     * local (unchanged) block, the foreign document's absence is a real
+     * deletion and is <b>adopted</b> (the block is removed locally).
+     * <p>
+     * Inverting the deletion rule to "keep a block only present locally"
+     * makes this test fail (adoptedBlocks empty, block still present).
+     */
+    @Test void foreignDeletionOfBaselineBlockIsAdopted() {
+        SettingsDocument local = docWith("registry:del", "x", 5);
+        SettingsDocument foreign = new SettingsDocument(SettingsScope.APPLICATION);
+        SettingsDocumentMerger.MergeResult r = SettingsDocumentMerger.merge(
+                local, foreign, Set.of(),
+                Map.of("registry:del", JsonUtils.getObjectMapper().createObjectNode().put("x", 5)));
+        assertEquals(Set.of("registry:del"), r.adoptedBlocks(),
+                "a block that existed at the last sync and is gone from the foreign file was deleted by the other side");
+        assertEquals(0, r.keptBlocks().size());
+        assertFalse(local.hasBlock("registry:del"), "the foreign deletion must be applied locally");
+    }
+
+    /**
+     * The mirror image (no baseline): a block present only locally with no
+     * known sync state may simply not have been written by the other
+     * instance yet, so it is <b>kept</b>, never deleted.
+     * <p>
+     * If the merge deleted it (e.g. by treating a missing foreign block as
+     * "changed externally"), this test fails on both the kept set and the
+     * block's presence.
+     */
+    @Test void localOnlyBlockWithoutBaselineIsKeptNotNullDeleted() {
+        SettingsDocument local = docWith("registry:new", "x", 7);
+        SettingsDocument foreign = new SettingsDocument(SettingsScope.APPLICATION);
+        SettingsDocumentMerger.MergeResult r = SettingsDocumentMerger.merge(local, foreign, Set.of());
+        assertEquals(Set.of("registry:new"), r.keptBlocks(), "a local-only block without a baseline must be kept");
+        assertEquals(0, r.adoptedBlocks().size(), "it must never be adopted as a deletion");
+        assertTrue(local.hasBlock("registry:new"), "the block must still exist locally");
+        assertEquals(7, local.get("registry:new", "x").asInt());
     }
 
     /**

@@ -28,56 +28,60 @@ import java.util.Set;
  * document and calls {@link #merge} to decide, block by block, what to
  * adopt into the in-memory <em>local</em> document.
  * <p>
- * <b>Rules.</b> For every block present in either document (blocks that
- * are structurally equal in both, or absent from both, are untouched and
- * not reported):
+ * <b>Rules.</b> The single decision input is, per block, whether the
+ * <em>foreign</em> value differs from the block's value at the <b>last sync
+ * point</b> (the {@code lastSynced} baseline: this process's previous save or
+ * merge result, or the disk content at load; a block that did not exist then
+ * has no baseline entry). Blocks that are structurally equal in both
+ * documents, or absent from both, are untouched and not reported. For every
+ * other block:
  * <ul>
- * <li><b>Adopted</b> — the block was changed only externally: the foreign
- * value is written into the local document, including whole-block adds
- * (foreign present, local absent) and removals (foreign absent, local
- * value identical to the last-synced value — the other side deleted the
- * block and this side has not touched it since the sync point).</li>
- * <li><b>Kept</b> — the block was changed only locally: the local value
- * stays, and the caller must persist it again so the file converges (this
- * process is newer). Concretely: a locally-changed block whose foreign
- * value equals the last-synced value (the other side never changed it
- * since the sync point), or a block present only locally whose foreign
- * value is unknown (the other instance may simply not have written it
- * yet).</li>
- * <li><b>Conflicted</b> — a true same-block collision: the block was
- * changed locally <em>and</em> the foreign value differs from both the
- * local value and the last-synced value (or the other side deleted it
- * while this side changed it). The <b>foreign block wins</b> (it is the
- * most recent on-disk truth); the local unsaved edit of that block is
- * discarded, and the block is reported in
- * {@link MergeResult#conflictedBlocks()} so the caller can surface it to
- * the user (e.g. a "Settings were updated by another JIPipe instance"
+ * <li><b>The foreign side changed the block</b> — its value differs from the
+ * baseline (a different value, a whole-block add, or a <b>deletion</b> of a
+ * block that existed at the last sync):
+ * <ul>
+ * <li>if the block was <em>not</em> changed locally → <b>adopted</b>: the
+ * foreign value is written into the local document (add, update, or
+ * removal);</li>
+ * <li>if the block was <em>also</em> changed locally → <b>conflicted</b>: a
+ * true same-block collision. The <b>foreign value wins</b> (it is the most
+ * recent on-disk truth); the local edit is discarded and the block is
+ * reported in {@link MergeResult#conflictedBlocks()} so the caller can
+ * surface it (e.g. a "Settings were updated by another JIPipe instance"
  * banner).</li>
+ * </ul></li>
+ * <li><b>The foreign side did not change the block</b> — its value equals the
+ * baseline. This <em>includes</em> the case where the block is absent from
+ * the foreign document <em>and</em> no baseline exists (the block never
+ * existed at a sync point, i.e. another instance simply never wrote it) →
+ * <b>kept</b>: the local value stays and the caller must persist it again so
+ * the file converges (this process is newer).</li>
  * </ul>
+ * <b>Consequence for deletions.</b> The <em>same</em> shape "block present
+ * locally, absent from the foreign document" is an <b>adopted foreign
+ * deletion</b> when a baseline shows the block existed at the last sync, and a
+ * <b>kept local-only block</b> when no baseline does. The baseline is the only
+ * input that distinguishes "the other side deleted it" from "the other side
+ * never wrote it yet".
+ * <p>
  * Pass-through blocks (unknown kind or unregistered id) are merged by the
  * same rules as registered blocks. Block comparison is structural
  * ({@link JsonNode#equals}); reserved {@code $}-prefixed fields are never
  * merged.
  * <p>
- * <b>The last-synced baseline is what makes the three outcomes distinct.</b>
- * "Changed locally" alone does not say whether the foreign side also
- * changed the block, and "absent in the foreign document" alone does not
- * say whether that is a foreign deletion or an instance that simply never
- * wrote the block. The deciding input is the block's value at the last
- * point where both sides were in sync — this process's last save, the
- * value adopted by a previous merge, or (at document load) the content
- * that was on disk. The caller tracks this baseline and supplies it via
+ * <b>Where the baseline comes from.</b> The block's value at the last point
+ * where both sides were in sync — this process's last save, the value adopted
+ * by a previous merge, or (at document load) the content that was on disk. The
+ * caller tracks it and supplies it via
  * {@link #merge(SettingsDocument, SettingsDocument, Set, Map)} and
  * {@link #baselineOf(SettingsDocument)}.
  * <p>
- * When no baseline is known for a block (e.g. the three-argument form of
- * this class's contract, or a block that did not exist at the last sync),
- * the decision is conservative in the non-data-losing direction: a
- * locally-changed block that the foreign document still holds is treated
- * as a collision (the foreign value wins — the on-disk truth), while a
- * locally-changed or untracked block that the foreign document does not
- * hold is kept (never destroy a local block the other side may simply not
- * have written yet).
+ * <b>No baseline known</b> (the three-argument form of this contract, or a
+ * block that did not exist at the last sync): the decision is conservative in
+ * the non-data-losing direction — a locally-changed block that the foreign
+ * document still holds is treated as a collision (foreign wins, the on-disk
+ * truth), while a local block the foreign document does not hold is kept
+ * (never destroy a block the other side may simply not have written yet).
  * <p>
  * This class performs no IO and no event handling: it mutates the local
  * document's blocks in place and reports the outcome. Firing

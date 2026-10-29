@@ -21,12 +21,14 @@ import org.hkijena.jipipe.api.settings.SettingsScope;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import java.awt.GraphicsEnvironment;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Supplier;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -77,6 +79,25 @@ class JIPipeSettingsServiceComponentSyncTest {
     }
 
     /**
+     * Waits until {@code events} contains an event for {@code path} whose
+     * origin is {@code EXTERNAL_FILE}. Change events are delivered on the
+     * Swing EDT when a display is present, so they may arrive slightly after
+     * the document mutation the test observed.
+     */
+    private static JIPipeSettingsServiceComponent.SettingsChangedEvent awaitExternalEvent(
+            List<JIPipeSettingsServiceComponent.SettingsChangedEvent> events, String path) throws InterruptedException {
+        boolean found = waitFor(5000, () -> events.stream().anyMatch(e ->
+                path.equals(e.getPath())
+                        && e.getOrigin() == JIPipeSettingsServiceComponent.ChangeOrigin.EXTERNAL_FILE));
+        assertTrue(found, "an EXTERNAL_FILE event for " + path + " must be delivered; events: " + events);
+        return events.stream()
+                .filter(e -> path.equals(e.getPath()))
+                .filter(e -> e.getOrigin() == JIPipeSettingsServiceComponent.ChangeOrigin.EXTERNAL_FILE)
+                .findFirst()
+                .orElseThrow();
+    }
+
+    /**
      * A file change made by "another process" is detected by the watcher,
      * merged into the live document, re-emitted with the EXTERNAL_FILE
      * origin, and visible through the binding — without a conflict flag
@@ -107,17 +128,9 @@ class JIPipeSettingsServiceComponentSyncTest {
         assertEquals("two", c.document(SettingsScope.APPLICATION).get("registry:adp", "x").asText());
         assertFalse(c.hasForeignConflict(), "an adoption (no unsaved local edit lost) is not a conflict");
 
-        boolean sawExternalAdoption = false;
-        for (JIPipeSettingsServiceComponent.SettingsChangedEvent e : events) {
-            if ("registry:adp/x".equals(e.getPath())) {
-                sawExternalAdoption = true;
-                assertEquals("one", e.getOldValue().asText(), "old value of the adopted change");
-                assertEquals("two", e.getNewValue().asText(), "new value of the adopted change");
-                assertEquals(JIPipeSettingsServiceComponent.ChangeOrigin.EXTERNAL_FILE, e.getOrigin(),
-                        "a watcher-detected foreign change is EXTERNAL_FILE, not a local change");
-            }
-        }
-        assertTrue(sawExternalAdoption, "the adopted sub-path must fire a change event; events: " + events);
+        JIPipeSettingsServiceComponent.SettingsChangedEvent adopted = awaitExternalEvent(events, "registry:adp/x");
+        assertEquals("one", adopted.getOldValue().asText(), "old value of the adopted change");
+        assertEquals("two", adopted.getNewValue().asText(), "new value of the adopted change");
         c.dispose();
     }
 
@@ -165,14 +178,7 @@ class JIPipeSettingsServiceComponentSyncTest {
                 "the interleaved foreign write must be merged in immediately, not silently absorbed");
         assertFalse(c.hasForeignConflict(),
                 "the foreign write replaced a SAVED value; no unsaved local edit was lost, so this is an adoption, not a conflict");
-        boolean sawExternalAdoption = false;
-        for (JIPipeSettingsServiceComponent.SettingsChangedEvent e : events) {
-            if ("registry:sync/x".equals(e.getPath())) {
-                sawExternalAdoption = true;
-                assertEquals(JIPipeSettingsServiceComponent.ChangeOrigin.EXTERNAL_FILE, e.getOrigin());
-            }
-        }
-        assertTrue(sawExternalAdoption, "the adopted block must fire an EXTERNAL_FILE event; events: " + events);
+        awaitExternalEvent(events, "registry:sync/x");
 
         // The foreign file already holds x="foreign" and the local document
         // now matches it, so the merge adopted it (no re-save needed).
@@ -215,14 +221,93 @@ class JIPipeSettingsServiceComponentSyncTest {
                 "a collision must be flagged for the UI banner");
         // The local edit "two" must have been discarded in favor of the
         // foreign value (data-loss direction pinned).
-        for (JIPipeSettingsServiceComponent.SettingsChangedEvent e : events) {
-            if ("registry:col/x".equals(e.getPath()) && "two".equals(e.getOldValue() == null ? null : e.getOldValue().asText())) {
-                assertEquals("three", e.getNewValue().asText(), "foreign wins on collision");
-                assertEquals(JIPipeSettingsServiceComponent.ChangeOrigin.EXTERNAL_FILE, e.getOrigin());
-            }
-        }
+        JIPipeSettingsServiceComponent.SettingsChangedEvent conflict = awaitExternalEvent(events, "registry:col/x");
+        assertEquals("three", conflict.getNewValue().asText(), "foreign wins on collision");
         assertTrue(waitFor(8000, () -> fileContains(file, "\"three\"")),
                 "the conflicted merge must persist the winning value so the file converges");
+        c.dispose();
+    }
+
+    /**
+     * <b>Critical regression pin: a foreign write is never clobbered by our
+     * own save.</b> Sequence: this process saves {@code x="one"}; another
+     * instance then writes {@code x="foreign"} to the file; our debounced
+     * {@code save()} runs with that foreign content already on disk. A blind
+     * whole-document replace would overwrite (and lose) the foreign write,
+     * and the post-save verification could never notice it (it only sees
+     * writes that land <em>after</em> our write).
+     * <p>
+     * The read-merge-write in {@code save()} must instead merge the foreign
+     * content into the live document first, so the foreign block is present
+     * both in the saved document <em>and</em> on disk after {@code save()}.
+     * This test is written entirely without the watcher (no wait, no sleep):
+     * the foreign file is written directly and {@code save()} is called
+     * synchronously, so it fails deterministically against the blind-replace
+     * implementation.
+     */
+    @Test void saveDoesNotClobberAForeignWriteThatLandedFirst() throws Exception {
+        JIPipeSettingsServiceComponent c = newComponent(tempDir);
+        JIPipeSettingKey<String> shared = JIPipeSettingKey.string("registry:cas", "x", String.class).defaultValue("d");
+        JIPipeSettingKey<String> localOnly = JIPipeSettingKey.string("registry:cas-local", "y", String.class).defaultValue("d");
+        c.bind(shared).set("one");
+        c.save();
+
+        Path file = c.fileFor(SettingsScope.APPLICATION);
+        // Another instance writes the file (same block, different value,
+        // different size) after our save and before our next save.
+        String onDisk = fileContent(file);
+        assertTrue(onDisk.contains("\"one\""), "precondition: our first save was on disk");
+        Files.writeString(file,
+                "{ \"$schema\": 2, \"registry:cas\": { \"x\" : \"foreign\" }, \"$meta\": { \"writer-id\": \"other\" } }");
+
+        // A local edit in a *different* block makes this process save again.
+        c.bind(localOnly).set("local-value");
+        c.save();
+
+        SettingsDocument doc = c.document(SettingsScope.APPLICATION);
+        assertEquals("foreign", doc.get("registry:cas", "x").asText(),
+                "the foreign block must be merged into the document, not overwritten");
+        assertEquals("local-value", doc.get("registry:cas-local", "y").asText(),
+                "the local edit is still saved");
+        String saved = fileContent(file);
+        assertTrue(saved.contains("\"foreign\""),
+                "the foreign write must survive on disk after our save; file: " + saved);
+        assertTrue(saved.contains("\"local-value\""),
+                "the local edit must be written too; file: " + saved);
+        c.dispose();
+    }
+
+    /**
+     * A corrupt (partially written) foreign settings file must never abort a
+     * save nor wipe the local document: the merge path treats it as "nothing
+     * to merge", keeps the local blocks, preserves the broken file as
+     * {@code .bad-*} (the store's existing recovery), and the save still
+     * happens for the remaining/this scope.
+     */
+    @Test void corruptForeignFileDoesNotAbortOrWipeTheLocalSave() throws Exception {
+        JIPipeSettingsServiceComponent c = newComponent(tempDir);
+        JIPipeSettingKey<String> key = JIPipeSettingKey.string("registry:corrupt", "x", String.class).defaultValue("d");
+        c.bind(key).set("one");
+        c.save();
+
+        Path file = c.fileFor(SettingsScope.APPLICATION);
+        Files.writeString(file, "{ this is not json");
+
+        // A local edit forces a save while the file on disk is corrupt.
+        c.bind(JIPipeSettingKey.string("registry:corrupt", "z", String.class).defaultValue("d")).set("two");
+        assertDoesNotThrow(c::save, "a corrupt foreign file must never throw out of save()");
+
+        SettingsDocument doc = c.document(SettingsScope.APPLICATION);
+        assertEquals("one", doc.get("registry:corrupt", "x").asText(),
+                "the local block must not be deleted by merging an empty/corrupt foreign document");
+        assertEquals("two", doc.get("registry:corrupt", "z").asText(),
+                "the local edit must still be written");
+        try (var s = Files.list(tempDir)) {
+            assertTrue(s.anyMatch(p -> p.getFileName().toString().startsWith("settings.json.bad-")),
+                    "the corrupt foreign file must be preserved as .bad-<timestamp>");
+        }
+        assertTrue(fileContent(file).contains("\"one\""),
+                "the save must still have produced a valid file");
         c.dispose();
     }
 
@@ -232,13 +317,20 @@ class JIPipeSettingsServiceComponentSyncTest {
      * component's single-thread foreign-change executor, not on the
      * watcher's worker thread (which invokes the callback while holding
      * its instance monitor; a heavy callback there would block
-     * {@code close()} and the other worker). The proof: the merge's
-     * per-path change events are emitted by the thread performing the
-     * file load + merge, so the event delivery thread is observed and
-     * asserted to be the executor thread, not a
-     * {@code SettingsFileWatcher-*} thread. If the merge were inlined
-     * into the watcher callback, the events would be delivered on the
-     * watcher thread and this test fails.
+     * {@code close()} and the other worker).
+     * <p>
+     * Two observations:
+     * <ol>
+     * <li>the thread that performed the merge (recorded by the component)
+     * is {@code jipipe-settings-foreign-merge}, never a
+     * {@code SettingsFileWatcher-*} thread — if the merge were inlined into
+     * the callback this fails;</li>
+     * <li>the change event reaches subscribers on the Swing EDT when a
+     * display is present, i.e. never on the merge executor (mutation of UI
+     * state off the EDT is what the event marshalling exists to prevent).</li>
+     * </ol>
+     * This test JVM is not headless, so the EDT branch is the one exercised;
+     * headless runs deliver inline and the assertion below is skipped.
      */
     @Test void mergeRunsOnTheExecutorThreadNotInTheWatcherCallback() throws Exception {
         JIPipeSettingsServiceComponent c = newComponent(tempDir);
@@ -256,11 +348,17 @@ class JIPipeSettingsServiceComponentSyncTest {
                 "{ \"$schema\": 2, \"registry:thd\": { \"x\" : \"two\" }, \"$meta\": { \"writer-id\": \"other\" } }");
 
         assertTrue(waitFor(8000, () -> "two".equals(b.get())), "the foreign change must be merged");
-        assertFalse(eventThreads.isEmpty(), "the merge must emit change events");
-        for (String threadName : eventThreads) {
-            assertTrue(threadName.startsWith("jipipe-settings-foreign-merge"),
-                    "the file load + merge must run on the executor thread, not in the watcher callback; "
-                            + "event was emitted on: " + threadName);
+        assertTrue(c.getLastMergeThreadNameForTesting() != null
+                        && c.getLastMergeThreadNameForTesting().startsWith("jipipe-settings-foreign-merge"),
+                "the file load + merge must run on the executor thread, not in the watcher callback; was: "
+                        + c.getLastMergeThreadNameForTesting());
+
+        assertTrue(waitFor(3000, () -> !eventThreads.isEmpty()), "the merge must emit change events");
+        if (!GraphicsEnvironment.isHeadless()) {
+            for (String threadName : eventThreads) {
+                assertTrue(threadName.startsWith("AWT-EventQueue"),
+                        "with a display the change event must be delivered on the Swing EDT; was: " + threadName);
+            }
         }
         c.dispose();
     }
