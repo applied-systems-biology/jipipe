@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.plugins.parameters.ui.api;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeListParameter;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -21,7 +22,6 @@ import org.scijava.Disposable;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -79,7 +79,7 @@ public final class JIPipeDesktopListEditorDialog extends JDialog {
      * Modal-local selection (the pass-1 grip selection, re-implemented).
      */
     private final Set<JIPipeListParameterEditorUI.EntryComponents> selected = new HashSet<>();
-    private final JPanel body = new JPanel();
+    private final JIPipeDesktopFormPanel itemList = new JIPipeDesktopFormPanel(JIPipeDesktopFormPanel.WITH_SCROLLING);
     private final JIPipeDesktopSearchTextField searchField = new JIPipeDesktopSearchTextField();
     /**
      * Last clicked row, for Shift range selection.
@@ -107,15 +107,7 @@ public final class JIPipeDesktopListEditorDialog extends JDialog {
         content.setOpaque(false);
         content.add(buildToolbar(), BorderLayout.NORTH);
 
-        body.setLayout(new BoxLayout(body, BoxLayout.Y_AXIS));
-        body.setOpaque(false);
-        body.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
-        body.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
-        JScrollPane scrollPane = new JScrollPane(body,
-                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        scrollPane.setOpaque(false);
-        scrollPane.getViewport().setOpaque(false);
-        content.add(scrollPane, BorderLayout.CENTER);
+        content.add(itemList, BorderLayout.CENTER);
         content.add(buildCloseRow(), BorderLayout.SOUTH);
         setContentPane(content);
 
@@ -132,38 +124,6 @@ public final class JIPipeDesktopListEditorDialog extends JDialog {
         }
     }
 
-    /**
-     * An icon-only parameter action button in the dialog's symbol toolbar
-     * (#1339) - the standardized filled rounded button.
-     */
-    private static JButton iconButton(String icon, String tooltip, ActionListener action) {
-        return UIUtils.createParameterIconButton(JIPipe.RESOURCES.getIcon16(icon), tooltip, action);
-    }
-
-    private static JButton iconButton(String icon, String tooltip) {
-        return iconButton(icon, tooltip, e -> {
-        });
-    }
-
-    /**
-     * Disposes every {@link Disposable} below the component (depth first,
-     * bottom up), then removes all children. The row panels hold nested
-     * editors (one per item) that must be released on rebuild - the
-     * shallow-dispose helpers would leak them.
-     */
-    private static void disposeDescendants(Container container) {
-        Component[] children = container.getComponents();
-        for (int i = children.length - 1; i >= 0; --i) {
-            Component child = children[i];
-            if (child instanceof Container) {
-                disposeDescendants((Container) child);
-            }
-            if (child instanceof Disposable) {
-                ((Disposable) child).dispose();
-            }
-        }
-        container.removeAll();
-    }
 
     /**
      * Clears the post-reorder hook on the (shared) base so that, once the
@@ -176,7 +136,7 @@ public final class JIPipeDesktopListEditorDialog extends JDialog {
     @Override
     public void dispose() {
         listEditor.setAfterRowOrderChanged(null);
-        disposeDescendants(body);
+        itemList.clear();
         super.dispose();
     }
 
@@ -190,9 +150,9 @@ public final class JIPipeDesktopListEditorDialog extends JDialog {
         rows.clear();
         selected.clear();
         lastClickedIndex = -1;
-        disposeDescendants(body);
+        itemList.clear();
         for (int i = 0; i < parameter.size(); ++i) {
-            JPanel row = (JPanel) listEditor.buildListRow(i,
+            JPanel row = listEditor.buildListRow(i,
                     JIPipeListParameterEditorUI.RowGripBehavior.SELECT,
                     this::handleSelection,
                     rows).entryPanel;
@@ -200,10 +160,9 @@ public final class JIPipeDesktopListEditorDialog extends JDialog {
             // alignmentY=0.5 centers each row, floating it in the viewport -
             // #1339: rows must pack to the top).
             row.setAlignmentY(0f);
-            body.add(row, 0);
+            itemList.addWideToForm(row);
         }
-        body.revalidate();
-        body.repaint();
+        itemList.addVerticalGlue();
         updateSearchFilter();
     }
 
@@ -290,8 +249,8 @@ public final class JIPipeDesktopListEditorDialog extends JDialog {
      * Top bar: the search field above the icon toolbar (Add + bulk ops).
      */
     private JComponent buildToolbar() {
-        JPanel toolbar = new JPanel(new GridBagLayout());
-        toolbar.setOpaque(false);
+        JToolBar toolbar = new JToolBar();
+        toolbar.setFloatable(false);
 
         searchField.getTextField().getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
             public void insertUpdate(javax.swing.event.DocumentEvent e) {
@@ -306,48 +265,45 @@ public final class JIPipeDesktopListEditorDialog extends JDialog {
                 updateSearchFilter();
             }
         });
-        toolbar.add(searchField, new GridBagConstraints(0, 0, 1, 1, 1, 0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 4, 0), 0, 0));
 
-        JPanel buttonsRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
-        buttonsRow.setOpaque(false);
-        // Primary action - add an item (the modal edits the shared parameter
-        // live, so the new row appears immediately). Green border, matching
-        // the inline header's Add (#1339).
-        JButton add = UIUtils.createPrimaryParameterButton("", JIPipe.RESOURCES.getIcon16("actions/list-add.png"), e -> {
+        toolbar.add(UIUtils.createButton("Add", JIPipe.RESOURCES.getIcon16("actions/list-add.png"), () -> {
             listEditor.addNewEntry();
             rebuildRows();
-        });
-        add.setToolTipText("Add item");
-        buttonsRow.add(add);
+        }));
+        toolbar.add(UIUtils.createButton("Remove", JIPipe.RESOURCES.getIcon16("actions/edit-delete.png"), this::removeSelectedEntries));
 
-        buttonsRow.add(iconButton("actions/edit-select-all.png", "Select all", e -> {
-            selected.clear();
-            selected.addAll(rows);
-            lastClickedIndex = -1;
-            updateSelectionVisualizations();
-        }));
-        buttonsRow.add(iconButton("actions/edit-select-invert.png", "Invert selection", e -> {
-            Set<JIPipeListParameterEditorUI.EntryComponents> toSelect = new HashSet<>();
-            for (JIPipeListParameterEditorUI.EntryComponents row : rows) {
-                if (!selected.contains(row)) {
-                    toSelect.add(row);
-                }
-            }
-            selected.clear();
-            selected.addAll(toSelect);
-            updateSelectionVisualizations();
-        }));
-        buttonsRow.add(iconButton("actions/edit-select-none.png", "Clear selection", e -> {
-            selected.clear();
-            lastClickedIndex = -1;
-            updateSelectionVisualizations();
-        }));
-        buttonsRow.add(iconButton("actions/remove.png", "Remove selected", e -> removeSelectedEntries()));
-        buttonsRow.add(iconButton("actions/clear-brush.png", "Clear list", e -> {
-            listEditor.clearList();
-            rebuildRows();
-        }));
-        toolbar.add(buttonsRow, new GridBagConstraints(0, 1, 1, 1, 1, 1, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
+        toolbar.addSeparator();
+
+        toolbar.add(UIUtils.createIconOnlyButton("Select all", JIPipe.RESOURCES.getIcon16("actions/edit-select-all.png"), () -> {
+                    selected.clear();
+                    selected.addAll(rows);
+                    lastClickedIndex = -1;
+                    updateSelectionVisualizations();
+                }));
+        toolbar.add(UIUtils.createIconOnlyButton("Invert selection", JIPipe.RESOURCES.getIcon16("actions/edit-select-invert.png"), () -> {
+                    Set<JIPipeListParameterEditorUI.EntryComponents> toSelect = new HashSet<>();
+                    for (JIPipeListParameterEditorUI.EntryComponents row : rows) {
+                        if (!selected.contains(row)) {
+                            toSelect.add(row);
+                        }
+                    }
+                    selected.clear();
+                    selected.addAll(toSelect);
+                    updateSelectionVisualizations();
+                }));
+        toolbar.add(UIUtils.createIconOnlyButton("Clear selection", JIPipe.RESOURCES.getIcon16("actions/edit-select-none.png"), () -> {
+                    selected.clear();
+                    lastClickedIndex = -1;
+                    updateSelectionVisualizations();
+                }));
+
+        toolbar.add(searchField, new GridBagConstraints(0, 0, 1, 1, 1, 0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 4, 0), 0, 0));
+
+        toolbar.add(UIUtils.createButton("Clear", JIPipe.RESOURCES.getIcon16("actions/clear-brush.png"), () -> {
+                    listEditor.clearList();
+                    rebuildRows();
+                }));
+
         return toolbar;
     }
 
