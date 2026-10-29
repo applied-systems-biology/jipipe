@@ -326,6 +326,24 @@ public class ColorUtils {
         return color.getRed() == color.getGreen() && color.getGreen() == color.getBlue();
     }
 
+    public static Color getContrastColor(Color background) {
+        double r = linearize(background.getRed() / 255.0);
+        double g = linearize(background.getGreen() / 255.0);
+        double b = linearize(background.getBlue() / 255.0);
+
+        // WCAG relative luminance
+        double luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+
+        // Choose whichever has the higher contrast ratio
+        return luminance > 0.179 ? Color.BLACK : Color.WHITE;
+    }
+
+    private static double linearize(double value) {
+        return value <= 0.04045
+                ? value / 12.92
+                : Math.pow((value + 0.055) / 1.055, 2.4);
+    }
+
     public static Color invertRGBA(Color color) {
         return new Color(~color.getRGB());
     }
