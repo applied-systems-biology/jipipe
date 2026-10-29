@@ -290,13 +290,18 @@ public class JIPipeDesktopFontParameterEditorUI<T extends JIPipeFontValue> exten
         JIPipeFontStyleCapable parameter = (JIPipeFontStyleCapable) getParameter();
         JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
         p.setOpaque(false);
-        JButton bold = new JButton("B");
+        // JToggleButton (not JButton): the listener below decides the new style
+        // from isSelected(), which a plain JButton never changes on click (it
+        // stays at its initial state, so both buttons were no-ops - #1339). A
+        // toggle button flips its model before firing the action, so isSelected()
+        // reports the NEW state on every click.
+        JToggleButton bold = new JToggleButton("B");
         bold.setOpaque(false);
         bold.setFont(bold.getFont().deriveFont(Font.BOLD));
         bold.setFocusable(false);
         Dimension boldDim = bold.getPreferredSize();
         bold.setPreferredSize(new Dimension(28, Math.max(boldDim.height, 24)));
-        JButton italic = new JButton("I");
+        JToggleButton italic = new JToggleButton("I");
         italic.setOpaque(false);
         italic.setFont(italic.getFont().deriveFont(Font.ITALIC));
         italic.setFocusable(false);
@@ -325,24 +330,18 @@ public class JIPipeDesktopFontParameterEditorUI<T extends JIPipeFontValue> exten
         p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
         p.setOpaque(false);
 
-        // #1339 item 8: no inner "Color" label here - the form row already
-        // labels the section "Color" (the duplication was "Color → Color →
-        // Custom"). Only the "Custom…" button sits on the row now.
-        JPanel header = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
-        header.setOpaque(false);
-        JButton custom = new JButton("Custom…");
-        custom.setFocusable(false);
-        custom.addActionListener(e -> pickCustomColor(parameter));
-        header.add(custom);
-        p.add(header);
-
+        // One row for everything: current swatch, pure colors, Custom… - no
+        // separate header row (the button used to float alone above the
+        // patches, which read as out of place - #1339). All swatches share
+        // the 16x16 size, so FlowLayout centers them on one line (a 18x18
+        // swatch beside 16x16 dots left the row visibly staggered).
         JPanel row = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
         row.setOpaque(false);
         // Current-color swatch (click → custom dialog, popout hides first)
         JButton swatch = new JButton();
-        swatch.setPreferredSize(new Dimension(18, 18));
-        swatch.setMinimumSize(new Dimension(18, 18));
-        swatch.setMaximumSize(new Dimension(18, 18));
+        swatch.setPreferredSize(new Dimension(16, 16));
+        swatch.setMinimumSize(new Dimension(16, 16));
+        swatch.setMaximumSize(new Dimension(16, 16));
         swatch.setBackground(parameter.getColor());
         swatch.setContentAreaFilled(true);
         swatch.setBorder(BorderFactory.createLineBorder(new Color(110, 110, 110), 1, true));
@@ -358,6 +357,10 @@ public class JIPipeDesktopFontParameterEditorUI<T extends JIPipeFontValue> exten
         for (String[] c : pure) {
             row.add(colorDot(ColorUtils.hexStringToColor(c[0]), c[0] + " " + c[1], parameter));
         }
+        JButton custom = new JButton("Custom…");
+        custom.setFocusable(false);
+        custom.addActionListener(e -> pickCustomColor(parameter));
+        row.add(custom);
         p.add(row);
 
         // Recents
