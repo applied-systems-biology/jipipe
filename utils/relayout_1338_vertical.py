@@ -12,7 +12,7 @@ Why a scoped transform instead of re-running the generators:
     it would strip/rewrite 51 mined files that are byte-stable in the repo.
   * The layout only needs the width map, which is file-LOCAL
     (restore_mod.extras_for_graph + width_map_for_graph over the committed
-    graph's own jipipe:slot-configuration + the static registry) — exactly
+    graph's own jipipe:slot-configuration + the static registry) - exactly
     what the generators compute at layout time (Ruling 12).
 
 Therefore: read each committed linear (chain-*/annotation-sandwich-*) and

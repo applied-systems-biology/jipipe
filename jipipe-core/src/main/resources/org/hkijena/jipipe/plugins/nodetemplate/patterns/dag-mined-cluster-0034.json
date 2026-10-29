@@ -1,1 +1,168 @@
-{"edges":[{"source-node":"n0","source-slot":"Output","target-node":"n10","target-slot":"Input"},{"source-node":"n10","source-slot":"Output","target-node":"n1","target-slot":"Input"},{"source-node":"n11","source-slot":"Filaments","target-node":"n4","target-slot":"Input"},{"source-node":"n2","source-slot":"Output","target-node":"n8","target-slot":"Input"},{"source-node":"n3","source-slot":"Output","target-node":"n11","target-slot":"Skeleton"},{"source-node":"n4","source-slot":"Output","target-node":"n0","target-slot":"Input"},{"source-node":"n4","source-slot":"Output","target-node":"n7","target-slot":"Input"},{"source-node":"n5","source-slot":"Output","target-node":"n6","target-slot":"Input"},{"source-node":"n6","source-slot":"Output","target-node":"n9","target-slot":"Input"},{"source-node":"n8","source-slot":"Output","target-node":"n3","target-slot":"Input"},{"source-node":"n9","source-slot":"Output","target-node":"n2","target-slot":"Input"}],"nodes":{"n0":{"jipipe:graph-compartment":"1b7ccdd7-a847-5877-9d67-8ed6800e1eb4","jipipe:metadata-v1":{"location/1b7ccdd7-a847-5877-9d67-8ed6800e1eb4/x":3,"location/1b7ccdd7-a847-5877-9d67-8ed6800e1eb4/y":32},"jipipe:node-info-id":"filaments-measure-filaments"},"n1":{"jipipe:graph-compartment":"1b7ccdd7-a847-5877-9d67-8ed6800e1eb4","jipipe:metadata-v1":{"location/1b7ccdd7-a847-5877-9d67-8ed6800e1eb4/x":3,"location/1b7ccdd7-a847-5877-9d67-8ed6800e1eb4/y":40},"jipipe:node-info-id":"table-merge-tables"},"n10":{"jipipe:graph-compartment":"1b7ccdd7-a847-5877-9d67-8ed6800e1eb4","jipipe:metadata-v1":{"location/1b7ccdd7-a847-5877-9d67-8ed6800e1eb4/x":1,"location/1b7ccdd7-a847-5877-9d67-8ed6800e1eb4/y":36},"jipipe:node-info-id":"table-add-annotation-columns"},"n11":{"jipipe:graph-compartment":"1b7ccdd7-a847-5877-9d67-8ed6800e1eb4","jipipe:metadata-v1":{"location/1b7ccdd7-a847-5877-9d67-8ed6800e1eb4/x":0,"location/1b7ccdd7-a847-5877-9d67-8ed6800e1eb4/y":24},"jipipe:node-info-id":"filaments-skeleton-to-filaments-2d"},"n2":{"jipipe:graph-compartment":"1b7ccdd7-a847-5877-9d67-8ed6800e1eb4","jipipe:metadata-v1":{"location/1b7ccdd7-a847-5877-9d67-8ed6800e1eb4/x":0,"location/1b7ccdd7-a847-5877-9d67-8ed6800e1eb4/y":12},"jipipe:node-info-id":"ij1-threshold-auto2d"},"n3":{"jipipe:graph-compartment":"1b7ccdd7-a847-5877-9d67-8ed6800e1eb4","jipipe:metadata-v1":{"location/1b7ccdd7-a847-5877-9d67-8ed6800e1eb4/x":0,"location/1b7ccdd7-a847-5877-9d67-8ed6800e1eb4/y":20},"jipipe:node-info-id":"ij1-color-set-to-grayscale-value"},"n4":{"jipipe:graph-compartment":"1b7ccdd7-a847-5877-9d67-8ed6800e1eb4","jipipe:metadata-v1":{"location/1b7ccdd7-a847-5877-9d67-8ed6800e1eb4/x":0,"location/1b7ccdd7-a847-5877-9d67-8ed6800e1eb4/y":28},"jipipe:node-info-id":"filaments-filter-components-by-properties"},"n5":{"jipipe:graph-compartment":"1b7ccdd7-a847-5877-9d67-8ed6800e1eb4","jipipe:metadata-v1":{"location/1b7ccdd7-a847-5877-9d67-8ed6800e1eb4/x":0,"location/1b7ccdd7-a847-5877-9d67-8ed6800e1eb4/y":0},"jipipe:node-info-id":"ij1-morph-operation2d"},"n6":{"jipipe:graph-compartment":"1b7ccdd7-a847-5877-9d67-8ed6800e1eb4","jipipe:metadata-v1":{"location/1b7ccdd7-a847-5877-9d67-8ed6800e1eb4/x":0,"location/1b7ccdd7-a847-5877-9d67-8ed6800e1eb4/y":4},"jipipe:node-info-id":"ij1-morph-operation2d"},"n7":{"jipipe:graph-compartment":"1b7ccdd7-a847-5877-9d67-8ed6800e1eb4","jipipe:metadata-v1":{"location/1b7ccdd7-a847-5877-9d67-8ed6800e1eb4/x":0,"location/1b7ccdd7-a847-5877-9d67-8ed6800e1eb4/y":44},"jipipe:node-info-id":"filaments-convert-to-mask"},"n8":{"jipipe:graph-compartment":"1b7ccdd7-a847-5877-9d67-8ed6800e1eb4","jipipe:metadata-v1":{"location/1b7ccdd7-a847-5877-9d67-8ed6800e1eb4/x":0,"location/1b7ccdd7-a847-5877-9d67-8ed6800e1eb4/y":16},"jipipe:node-info-id":"ij1-morph-binary-skeletonize2d"},"n9":{"jipipe:graph-compartment":"1b7ccdd7-a847-5877-9d67-8ed6800e1eb4","jipipe:metadata-v1":{"location/1b7ccdd7-a847-5877-9d67-8ed6800e1eb4/x":0,"location/1b7ccdd7-a847-5877-9d67-8ed6800e1eb4/y":8},"jipipe:node-info-id":"ij1-blur-gaussian2d"}}}
+{
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Output",
+      "target-node": "n10",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n10",
+      "source-slot": "Output",
+      "target-node": "n1",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n11",
+      "source-slot": "Filaments",
+      "target-node": "n4",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n2",
+      "source-slot": "Output",
+      "target-node": "n8",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n3",
+      "source-slot": "Output",
+      "target-node": "n11",
+      "target-slot": "Skeleton"
+    },
+    {
+      "source-node": "n4",
+      "source-slot": "Output",
+      "target-node": "n0",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n4",
+      "source-slot": "Output",
+      "target-node": "n7",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n5",
+      "source-slot": "Output",
+      "target-node": "n6",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n6",
+      "source-slot": "Output",
+      "target-node": "n9",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n8",
+      "source-slot": "Output",
+      "target-node": "n3",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n9",
+      "source-slot": "Output",
+      "target-node": "n2",
+      "target-slot": "Input"
+    }
+  ],
+  "nodes": {
+    "n0": {
+      "jipipe:graph-compartment": "1b7ccdd7-a847-5877-9d67-8ed6800e1eb4",
+      "jipipe:metadata-v1": {
+        "location/1b7ccdd7-a847-5877-9d67-8ed6800e1eb4/x": 3,
+        "location/1b7ccdd7-a847-5877-9d67-8ed6800e1eb4/y": 32
+      },
+      "jipipe:node-info-id": "filaments-measure-filaments"
+    },
+    "n1": {
+      "jipipe:graph-compartment": "1b7ccdd7-a847-5877-9d67-8ed6800e1eb4",
+      "jipipe:metadata-v1": {
+        "location/1b7ccdd7-a847-5877-9d67-8ed6800e1eb4/x": 3,
+        "location/1b7ccdd7-a847-5877-9d67-8ed6800e1eb4/y": 40
+      },
+      "jipipe:node-info-id": "table-merge-tables"
+    },
+    "n10": {
+      "jipipe:graph-compartment": "1b7ccdd7-a847-5877-9d67-8ed6800e1eb4",
+      "jipipe:metadata-v1": {
+        "location/1b7ccdd7-a847-5877-9d67-8ed6800e1eb4/x": 1,
+        "location/1b7ccdd7-a847-5877-9d67-8ed6800e1eb4/y": 36
+      },
+      "jipipe:node-info-id": "table-add-annotation-columns"
+    },
+    "n11": {
+      "jipipe:graph-compartment": "1b7ccdd7-a847-5877-9d67-8ed6800e1eb4",
+      "jipipe:metadata-v1": {
+        "location/1b7ccdd7-a847-5877-9d67-8ed6800e1eb4/x": 0,
+        "location/1b7ccdd7-a847-5877-9d67-8ed6800e1eb4/y": 24
+      },
+      "jipipe:node-info-id": "filaments-skeleton-to-filaments-2d"
+    },
+    "n2": {
+      "jipipe:graph-compartment": "1b7ccdd7-a847-5877-9d67-8ed6800e1eb4",
+      "jipipe:metadata-v1": {
+        "location/1b7ccdd7-a847-5877-9d67-8ed6800e1eb4/x": 0,
+        "location/1b7ccdd7-a847-5877-9d67-8ed6800e1eb4/y": 12
+      },
+      "jipipe:node-info-id": "ij1-threshold-auto2d"
+    },
+    "n3": {
+      "jipipe:graph-compartment": "1b7ccdd7-a847-5877-9d67-8ed6800e1eb4",
+      "jipipe:metadata-v1": {
+        "location/1b7ccdd7-a847-5877-9d67-8ed6800e1eb4/x": 0,
+        "location/1b7ccdd7-a847-5877-9d67-8ed6800e1eb4/y": 20
+      },
+      "jipipe:node-info-id": "ij1-color-set-to-grayscale-value"
+    },
+    "n4": {
+      "jipipe:graph-compartment": "1b7ccdd7-a847-5877-9d67-8ed6800e1eb4",
+      "jipipe:metadata-v1": {
+        "location/1b7ccdd7-a847-5877-9d67-8ed6800e1eb4/x": 0,
+        "location/1b7ccdd7-a847-5877-9d67-8ed6800e1eb4/y": 28
+      },
+      "jipipe:node-info-id": "filaments-filter-components-by-properties"
+    },
+    "n5": {
+      "jipipe:graph-compartment": "1b7ccdd7-a847-5877-9d67-8ed6800e1eb4",
+      "jipipe:metadata-v1": {
+        "location/1b7ccdd7-a847-5877-9d67-8ed6800e1eb4/x": 0,
+        "location/1b7ccdd7-a847-5877-9d67-8ed6800e1eb4/y": 0
+      },
+      "jipipe:node-info-id": "ij1-morph-operation2d"
+    },
+    "n6": {
+      "jipipe:graph-compartment": "1b7ccdd7-a847-5877-9d67-8ed6800e1eb4",
+      "jipipe:metadata-v1": {
+        "location/1b7ccdd7-a847-5877-9d67-8ed6800e1eb4/x": 0,
+        "location/1b7ccdd7-a847-5877-9d67-8ed6800e1eb4/y": 4
+      },
+      "jipipe:node-info-id": "ij1-morph-operation2d"
+    },
+    "n7": {
+      "jipipe:graph-compartment": "1b7ccdd7-a847-5877-9d67-8ed6800e1eb4",
+      "jipipe:metadata-v1": {
+        "location/1b7ccdd7-a847-5877-9d67-8ed6800e1eb4/x": 0,
+        "location/1b7ccdd7-a847-5877-9d67-8ed6800e1eb4/y": 44
+      },
+      "jipipe:node-info-id": "filaments-convert-to-mask"
+    },
+    "n8": {
+      "jipipe:graph-compartment": "1b7ccdd7-a847-5877-9d67-8ed6800e1eb4",
+      "jipipe:metadata-v1": {
+        "location/1b7ccdd7-a847-5877-9d67-8ed6800e1eb4/x": 0,
+        "location/1b7ccdd7-a847-5877-9d67-8ed6800e1eb4/y": 16
+      },
+      "jipipe:node-info-id": "ij1-morph-binary-skeletonize2d"
+    },
+    "n9": {
+      "jipipe:graph-compartment": "1b7ccdd7-a847-5877-9d67-8ed6800e1eb4",
+      "jipipe:metadata-v1": {
+        "location/1b7ccdd7-a847-5877-9d67-8ed6800e1eb4/x": 0,
+        "location/1b7ccdd7-a847-5877-9d67-8ed6800e1eb4/y": 8
+      },
+      "jipipe:node-info-id": "ij1-blur-gaussian2d"
+    }
+  }
+}

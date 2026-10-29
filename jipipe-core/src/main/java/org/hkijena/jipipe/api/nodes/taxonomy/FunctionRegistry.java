@@ -15,14 +15,7 @@ package org.hkijena.jipipe.api.nodes.taxonomy;
 
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -47,6 +40,50 @@ public class FunctionRegistry {
      * taxonomy service's inference index to detect direct-registry mutations.
      */
     private final AtomicLong version = new AtomicLong();
+
+    /**
+     * The fixed HSB shading rule for taxonomy tree depth. The hue is unchanged;
+     * each level of depth below the hue owner raises brightness by {@code 0.06}
+     * (capped at {@code 0.95}) and lowers saturation by {@code 0.04}
+     * (floored at {@code 0.05}).
+     * <p>
+     * This is a pure function so that the registry stays theme-independent:
+     * callers compose it with the current theme style's saturation/brightness.
+     * With {@code depth = 0} the rule is the identity: hue, saturation and
+     * brightness are returned unchanged.
+     *
+     * @param hue   the base hue, unchanged
+     * @param sat   the base saturation
+     * @param bri   the base brightness
+     * @param depth the depth below the hue owner; {@code 0} is the identity
+     * @return {@code {hue, shadedSaturation, shadedBrightness}}
+     */
+    public static float[] shadeHsb(float hue, float sat, float bri, int depth) {
+        if (depth < 0) {
+            throw new IllegalArgumentException("depth must be >= 0, got " + depth);
+        }
+        float shadedSat = Math.max(0.05f, sat - 0.04f * depth);
+        float shadedBri = Math.min(0.95f, bri + 0.06f * depth);
+        return new float[]{hue, shadedSat, shadedBri};
+    }
+
+    /**
+     * Extracts the ids that form a cycle: the suffix of {@code path} from the
+     * first occurrence of {@code repeatedId} to the end, in walk order.
+     */
+    private static String cycleIds(Set<String> path, String repeatedId) {
+        List<String> cycle = new ArrayList<>();
+        boolean inCycle = false;
+        for (String id : path) {
+            if (id.equals(repeatedId)) {
+                inCycle = true;
+            }
+            if (inCycle) {
+                cycle.add(id);
+            }
+        }
+        return String.join(" → ", cycle);
+    }
 
     /**
      * Registers a function. Re-registering an existing id replaces the previous function.
@@ -168,50 +205,17 @@ public class FunctionRegistry {
             // A valid parent chain visits each id at most once; a repeat means a cycle.
             if (!visited.add(current.getId())) {
                 throw new IllegalStateException(
-                    "Cycle in the parent chain of taxonomy function " + current.getId() + ": " + cycleIds(visited, current.getId()));
+                        "Cycle in the parent chain of taxonomy function " + current.getId() + ": " + cycleIds(visited, current.getId()));
             }
             JIPipeNodeTaxonomyFunction parent = current.getParent();
             if (parent == null) {
                 throw new IllegalStateException(
-                    "No color hue defined in the parent chain of taxonomy function " + current.getId());
+                        "No color hue defined in the parent chain of taxonomy function " + current.getId());
             }
             current = parent;
             depth++;
         }
         return new HueOwnerChain(current, depth);
-    }
-
-    /**
-     * The hue-owning ancestor and the number of tree edges from the original
-     * function to it.
-     */
-    private record HueOwnerChain(JIPipeNodeTaxonomyFunction owner, int depth) {
-    }
-
-    /**
-     * The fixed HSB shading rule for taxonomy tree depth. The hue is unchanged;
-     * each level of depth below the hue owner raises brightness by {@code 0.06}
-     * (capped at {@code 0.95}) and lowers saturation by {@code 0.04}
-     * (floored at {@code 0.05}).
-     * <p>
-     * This is a pure function so that the registry stays theme-independent:
-     * callers compose it with the current theme style's saturation/brightness.
-     * With {@code depth = 0} the rule is the identity: hue, saturation and
-     * brightness are returned unchanged.
-     *
-     * @param hue   the base hue, unchanged
-     * @param sat   the base saturation
-     * @param bri   the base brightness
-     * @param depth the depth below the hue owner; {@code 0} is the identity
-     * @return {@code {hue, shadedSaturation, shadedBrightness}}
-     */
-    public static float[] shadeHsb(float hue, float sat, float bri, int depth) {
-        if (depth < 0) {
-            throw new IllegalArgumentException("depth must be >= 0, got " + depth);
-        }
-        float shadedSat = Math.max(0.05f, sat - 0.04f * depth);
-        float shadedBri = Math.min(0.95f, bri + 0.06f * depth);
-        return new float[]{hue, shadedSat, shadedBri};
     }
 
     /**
@@ -278,20 +282,9 @@ public class FunctionRegistry {
     }
 
     /**
-     * Extracts the ids that form a cycle: the suffix of {@code path} from the
-     * first occurrence of {@code repeatedId} to the end, in walk order.
+     * The hue-owning ancestor and the number of tree edges from the original
+     * function to it.
      */
-    private static String cycleIds(Set<String> path, String repeatedId) {
-        List<String> cycle = new ArrayList<>();
-        boolean inCycle = false;
-        for (String id : path) {
-            if (id.equals(repeatedId)) {
-                inCycle = true;
-            }
-            if (inCycle) {
-                cycle.add(id);
-            }
-        }
-        return String.join(" → ", cycle);
+    private record HueOwnerChain(JIPipeNodeTaxonomyFunction owner, int depth) {
     }
 }

@@ -12,10 +12,6 @@
  */
 
 package org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.fft;
-import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
-import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.ImageDataFunction;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
@@ -33,6 +29,8 @@ import org.hkijena.jipipe.api.data.documentation.EncodingFormats;
 import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrateEntityType;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.ImageDataFunction;
 import org.hkijena.jipipe.plugins.imagejdatatypes.ImageJDataTypesApplicationSettings;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImageTypeInfo;
@@ -43,11 +41,14 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
+
 /**
  * Image in frequency space
  */
 @SetJIPipeDocumentation(name = "ImageJ FFT Image")
-@ConfigureJIPipeNode(function = ImageDataFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
+@ConfigureJIPipeNode(function = ImageDataFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @LabelAsJIPipeHeavyData
 @ConfigureJIPipeDataCrate(
         entities = {

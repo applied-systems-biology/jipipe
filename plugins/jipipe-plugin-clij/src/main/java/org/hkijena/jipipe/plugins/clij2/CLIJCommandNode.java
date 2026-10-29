@@ -328,11 +328,11 @@ public class CLIJCommandNode extends JIPipeIteratingAlgorithm {
 
                     // Extract image outputs and store them into the global storage
                     for (JIPipeOutputDataSlot outputSlot : getOutputSlots()) {
-                        if(outputSlot.getAcceptedDataType() == ResultsTableData.class) {
+                        if (outputSlot.getAcceptedDataType() == ResultsTableData.class) {
                             continue;
                         }
                         ClearCLBuffer buffer = outputs.get(outputSlot.getName());
-                        if(buffer == null) {
+                        if (buffer == null) {
                             continue;
                         }
                         CLIJImageData imageData = new CLIJImageData(buffer);
@@ -495,7 +495,7 @@ public class CLIJCommandNode extends JIPipeIteratingAlgorithm {
      * @return the value to pass to CLIJ
      */
     private Object parameterToArgs(JIPipeParameterAccess parameterAccess) {
-        boolean byRef = ((CLIJCommandNodeInfo)getInfo()).getNodeParametersByRef().getOrDefault(parameterAccess.getKey(), false);
+        boolean byRef = ((CLIJCommandNodeInfo) getInfo()).getNodeParametersByRef().getOrDefault(parameterAccess.getKey(), false);
         Object result = parameterAccess.get(Object.class);
         if (byRef) {
             if (result instanceof Boolean b) {

@@ -20,12 +20,14 @@ package org.hkijena.jipipe.api.nodes.taxonomy;
  * <p>
  * The name intentionally does not carry the {@code JIPipeNodeTaxonomy} prefix
  * because it is a short, well-known sentinel rather than a named taxonomy
- * member. Its display name and abbreviation are both a dash ("—") to render
+ * member. Its display name and abbreviation are both a dash ("-") to render
  * as an empty slot in node labels.
  */
 public class NoFramework implements JIPipeNodeTaxonomyFramework {
 
-    /** The stable id of the no-framework sentinel (see the stable-ID rule). */
+    /**
+     * The stable id of the no-framework sentinel (see the stable-ID rule).
+     */
     public static final String ID = "jipipe:framework:none";
 
     @Override
@@ -35,12 +37,12 @@ public class NoFramework implements JIPipeNodeTaxonomyFramework {
 
     @Override
     public String getName() {
-        return "—";
+        return "-";
     }
 
     @Override
     public String getAbbreviation() {
-        return "—";
+        return "-";
     }
 
     @Override

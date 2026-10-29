@@ -53,10 +53,17 @@ public class RoiDrawer extends AbstractJIPipeParameterCollection {
     private FontFamilyParameter labelFontFamily = new FontFamilyParameter();
     private OptionalColorParameter labelBackground = new OptionalColorParameter(Color.BLACK, false);
     private int labelSize = 9;
+    /**
+     * An explicit label font (when set, it replaces the family/size pair).
+     * Additive API for consumers that manage the label font as one value
+     * (e.g. {@code JIPipeFontFamilySizeStyleColorParameter}, #1339).
+     */
+    private Font labelFontOverride = null;
     private double opacity = 1.0;
     private boolean ignoreZ = false;
     private boolean ignoreC = false;
     private boolean ignoreT = false;
+    private RoiLabelColorMode labelColorMode = RoiLabelColorMode.FIXED;
 
     public RoiDrawer() {
     }
@@ -99,6 +106,7 @@ public class RoiDrawer extends AbstractJIPipeParameterCollection {
         this.drawFilledOutlineMode = other.drawFilledOutlineMode;
         this.drawnLabel = other.drawnLabel;
         this.labelFontFamily = new FontFamilyParameter(other.labelFontFamily);
+        this.labelFontOverride = other.labelFontOverride;
         this.overrideFillColor = new OptionalColorParameter(other.overrideFillColor);
         this.overrideLineColor = new OptionalColorParameter(other.overrideLineColor);
         this.overrideLineWidth = new OptionalDoubleParameter(other.overrideLineWidth);
@@ -110,6 +118,7 @@ public class RoiDrawer extends AbstractJIPipeParameterCollection {
         this.ignoreC = other.ignoreC;
         this.ignoreZ = other.ignoreZ;
         this.ignoreT = other.ignoreT;
+        this.labelColorMode = other.labelColorMode;
     }
 
     @SetJIPipeDocumentation(name = "Opacity", description = "Opacity of the added ROI and labels. If zero, they are not visible. If set to one, they are fully visible.")
@@ -158,6 +167,53 @@ public class RoiDrawer extends AbstractJIPipeParameterCollection {
     @JIPipeParameter("label-font-family")
     public void setLabelFontFamily(FontFamilyParameter labelFontFamily) {
         this.labelFontFamily = labelFontFamily;
+    }
+
+    /**
+     * @return the effective label font - the explicit override when set,
+     * otherwise the font built from the family/size pair.
+     */
+    public Font getLabelFont() {
+        if (labelFontOverride != null) {
+            return labelFontOverride;
+        }
+        return labelFontFamily.toFont(Font.PLAIN, labelSize);
+    }
+
+    /**
+     * Sets an explicit label font (overrides the family/size pair). Passing
+     * {@code null} falls back to the family/size.
+     */
+    public void setLabelFont(Font labelFont) {
+        this.labelFontOverride = labelFont;
+    }
+
+    /**
+     * @return the label foreground mode (default {@link RoiLabelColorMode#FIXED})
+     */
+    public RoiLabelColorMode getLabelColorMode() {
+        return labelColorMode;
+    }
+
+    /**
+     * The label foreground mode. This is a rendering mode set by the consumer
+     * node (e.g. {@code RoiToRGB}), not a user-facing parameter.
+     */
+    public void setLabelColorMode(RoiLabelColorMode mode) {
+        this.labelColorMode = mode;
+    }
+
+    /**
+     * The effective label foreground for a specific ROI: the explicit
+     * {@code labelForeground} in {@link RoiLabelColorMode#FIXED} mode, or the
+     * effective line color of the ROI in {@link RoiLabelColorMode#FROM_ROI_LINE}
+     * mode - the same expression the outline uses.
+     */
+    Color effectiveLabelForeground(Roi roi) {
+        if (labelColorMode == RoiLabelColorMode.FIXED) {
+            return labelForeground;
+        }
+        return (overrideLineColor.isEnabled() || roi.getStrokeColor() == null) ? overrideLineColor.getContent() : roi.getStrokeColor();
     }
 
     @SetJIPipeDocumentation(name = "Draw labels", description = "Allows to draw labels on top of ROI.")
@@ -319,7 +375,7 @@ public class RoiDrawer extends AbstractJIPipeParameterCollection {
             result = IJ.createImage("ROIs", "RGB", sx, sy, sc, sz, st);
         }
 
-        Font labelFont = labelFontFamily.toFont(Font.PLAIN, labelSize);
+        Font labelFont = getLabelFont();
 
         // Draw ROI
         for (int z = 0; z < sz; z++) {
@@ -361,7 +417,7 @@ public class RoiDrawer extends AbstractJIPipeParameterCollection {
                                     roi,
                                     roiIndices.get(roi),
                                     new Rectangle(centroid.x, centroid.y, 0, 0),
-                                    labelForeground,
+                                    effectiveLabelForeground(roi),
                                     labelBackground.getContent(),
                                     labelFont,
                                     labelBackground.isEnabled());
@@ -430,7 +486,7 @@ public class RoiDrawer extends AbstractJIPipeParameterCollection {
         final int z = index.getZ();
         final int c = index.getC();
         final int t = index.getT();
-        final Font labelFont = labelFontFamily.toFont(Font.PLAIN, labelSize);
+        final Font labelFont = getLabelFont();
 
         // Draw the ROIs
         if (withHighlight) {
@@ -487,7 +543,7 @@ public class RoiDrawer extends AbstractJIPipeParameterCollection {
                     roi,
                     roiIndices.get(roi),
                     new Rectangle(centroid.x, centroid.y, 0, 0),
-                    labelForeground,
+                    effectiveLabelForeground(roi),
                     labelBackground.getContent(),
                     labelFont,
                     labelBackground.isEnabled());
@@ -552,7 +608,7 @@ public class RoiDrawer extends AbstractJIPipeParameterCollection {
         final int z = index.getZ();
         final int c = index.getC();
         final int t = index.getT();
-        final Font labelFont = labelFontFamily.toFont(Font.PLAIN, labelSize);
+        final Font labelFont = getLabelFont();
 
         // Draw the ROIs
         if (withHighlight) {
@@ -647,7 +703,7 @@ public class RoiDrawer extends AbstractJIPipeParameterCollection {
                     roiIndices.get(roi),
                     centroid,
                     magnification,
-                    labelForeground,
+                    effectiveLabelForeground(roi),
                     labelBackground.getContent(),
                     labelFont,
                     labelBackground.isEnabled());
@@ -670,5 +726,19 @@ public class RoiDrawer extends AbstractJIPipeParameterCollection {
         roi.setFillColor(oldFillColor);
         roi.setStrokeColor(oldStrokeColor);
         roi.setStrokeWidth(oldLineWidth);
+    }
+
+    /**
+     * Determines the label foreground per ROI.
+     */
+    public enum RoiLabelColorMode {
+        /**
+         * Use the explicit {@code labelForeground} for all labels.
+         */
+        FIXED,
+        /**
+         * Use each ROI's effective line color as the label foreground.
+         */
+        FROM_ROI_LINE;
     }
 }

@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.segment;
 
-import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
 import inra.ijpb.watershed.Watershed;
@@ -21,12 +20,15 @@ import org.hkijena.jipipe.api.AddJIPipeCitation;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.SegmentationFunction;
+import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.SegmentationFunction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejalgorithms.parameters.ImageROITargetArea;
 import org.hkijena.jipipe.plugins.imagejalgorithms.parameters.Neighborhood2D3D;
@@ -35,9 +37,11 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d3.greyscale.ImagePl
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalDoubleParameter;
 
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
+
 @SetJIPipeDocumentation(name = "Classic watershed", description = "Performs segmentation via watershed on a 2D or 3D image using flooding simulations. Please note that this node returns labels instead of masks.")
 @AddJIPipeCitation("\"Determining watersheds in digital pictures via flooding simulations.\" Lausanne-DL tentative. International Society for Optics and Photonics, 1990")
-@ConfigureJIPipeNode(function = SegmentationFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_3D })
+@ConfigureJIPipeNode(function = SegmentationFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, name = "Image", create = true)
 @AddJIPipeOutputSlot(value = ImagePlus3DGreyscaleData.class, name = "Labels", create = true)
 @AddJIPipeCitation("Legland, D.; Arganda-Carreras, I. & Andrey, P. (2016), \"MorphoLibJ: integrated library and plugins for mathematical morphology with ImageJ\", " +

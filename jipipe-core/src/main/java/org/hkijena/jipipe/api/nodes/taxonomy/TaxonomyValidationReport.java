@@ -15,12 +15,7 @@ package org.hkijena.jipipe.api.nodes.taxonomy;
 
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * The result of a full taxonomy validation pass: the combined errors of the
@@ -31,7 +26,7 @@ import java.util.Set;
  * The two kinds of findings have deliberately different consequences
  * (Review Focus #6, the "vanishes from browser" detector):
  * <ul>
- * <li>{@link #errors() errors} are hard problems — a cyclic or dangling
+ * <li>{@link #errors() errors} are hard problems - a cyclic or dangling
  * function tree, a broken framework set, a dangling family step, or a node
  * pointing at an unregistered function/framework. A broken-but-partly-
  * converted taxonomy must never ship a wrong browser, so these fail
@@ -56,7 +51,7 @@ public final class TaxonomyValidationReport {
      * The immutable result: no errors and no unassigned nodes.
      */
     private static final TaxonomyValidationReport NO_FINDINGS =
-        new TaxonomyValidationReport(List.of(), List.of());
+            new TaxonomyValidationReport(List.of(), List.of());
 
     private final List<String> errors;
     private final List<String> unassignedNodeIds;
@@ -67,40 +62,11 @@ public final class TaxonomyValidationReport {
     }
 
     /**
-     * @return {@code true} if the taxonomy is valid, i.e.
-     * {@link #errors()} is empty. Unassigned (not yet converted) nodes
-     * do not affect this: they are the expected state during the
-     * conversion, not a validation failure.
-     */
-    public boolean ok() {
-        return errors.isEmpty();
-    }
-
-    /**
-     * @return the validation errors (function tree, framework set,
-     * family steps, and node→function/framework membership); empty if
-     * the taxonomy is valid. The list is unmodifiable.
-     */
-    public List<String> errors() {
-        return errors;
-    }
-
-    /**
-     * @return the ids of nodes whose primary function is
-     * {@code null}, i.e. nodes that are not yet converted to the
-     * taxonomy and would vanish from the function-based browser. The
-     * list is unmodifiable; empty if every node is converted.
-     */
-    public List<String> unassignedNodeIds() {
-        return unassignedNodeIds;
-    }
-
-    /**
      * Runs a taxonomy validation pass over the given registries and node
      * infos:
      * <ul>
-     * <li>{@link FunctionRegistry#validate()} — the function tree,</li>
-     * <li>{@link FrameworkRegistry#validate()} — the framework set,</li>
+     * <li>{@link FunctionRegistry#validate()} - the function tree,</li>
+     * <li>{@link FrameworkRegistry#validate()} - the framework set,</li>
      * <li>membership of every node with a non-{@code null} primary
      * function: its primary function must be present in the function
      * registry, and its framework (unless it is the
@@ -113,7 +79,7 @@ public final class TaxonomyValidationReport {
      * The family steps are <b>not</b> validated here: they are owned by
      * the {@link FamilyAssembler}, which is stateful (a live
      * component-owned object, not a pure parameter) and is validated
-     * separately against the node registry — see the {@code run} overload
+     * separately against the node registry - see the {@code run} overload
      * that takes a {@code FamilyAssembler}, which the node service
      * component's final initialization pass invokes.
      * <p>
@@ -138,15 +104,15 @@ public final class TaxonomyValidationReport {
      * Runs a full taxonomy validation pass over the given registries,
      * family steps, and node infos: exactly the 3-arg
      * {@link #run(FunctionRegistry, FrameworkRegistry, Map)} checks
-     * plus {@link FamilyAssembler#validate(Set)} — every assembled
+     * plus {@link FamilyAssembler#validate(Set)} - every assembled
      * family step must reference a node id present in
      * {@code registeredNodeIds} (a step whose node was unregistered, or
      * whose {@code after} predecessor never existed, is a hard error: a
      * broken family workflow must never ship a wrong browser).
      * <p>
      * This is the single entry point the production guard uses, so that
-     * ALL {@code validate()} error classes — function tree, framework
-     * set, family steps, and node membership — reach the startup report.
+     * ALL {@code validate()} error classes - function tree, framework
+     * set, family steps, and node membership - reach the startup report.
      *
      * @param functions         the function registry (the curated
      *                          function tree)
@@ -188,19 +154,19 @@ public final class TaxonomyValidationReport {
             JIPipeNodeTaxonomyFunction primary = info.getPrimaryFunction();
             if (primary == null) {
                 // Unconverted node: expected during the conversion,
-                // reported separately — not an error.
+                // reported separately - not an error.
                 unassignedNodeIds.add(info.getId());
                 continue;
             }
             if (functions.byId(primary.getId()) == null) {
                 errors.add("Node '" + info.getId() + "' points at taxonomy function '"
-                    + primary.getId() + "' that is not registered in the function registry");
+                        + primary.getId() + "' that is not registered in the function registry");
             }
             JIPipeNodeTaxonomyFramework framework = info.getFramework();
             if (framework != null && !(framework instanceof NoFramework)
-                && frameworks.byId(framework.getId()) == null) {
+                    && frameworks.byId(framework.getId()) == null) {
                 errors.add("Node '" + info.getId() + "' points at taxonomy framework '"
-                    + framework.getId() + "' that is not registered in the framework registry");
+                        + framework.getId() + "' that is not registered in the framework registry");
             }
         }
 
@@ -208,7 +174,36 @@ public final class TaxonomyValidationReport {
             return NO_FINDINGS;
         }
         return new TaxonomyValidationReport(
-            Collections.unmodifiableList(new ArrayList<>(errors)),
-            Collections.unmodifiableList(unassignedNodeIds));
+                Collections.unmodifiableList(new ArrayList<>(errors)),
+                Collections.unmodifiableList(unassignedNodeIds));
+    }
+
+    /**
+     * @return {@code true} if the taxonomy is valid, i.e.
+     * {@link #errors()} is empty. Unassigned (not yet converted) nodes
+     * do not affect this: they are the expected state during the
+     * conversion, not a validation failure.
+     */
+    public boolean ok() {
+        return errors.isEmpty();
+    }
+
+    /**
+     * @return the validation errors (function tree, framework set,
+     * family steps, and node→function/framework membership); empty if
+     * the taxonomy is valid. The list is unmodifiable.
+     */
+    public List<String> errors() {
+        return errors;
+    }
+
+    /**
+     * @return the ids of nodes whose primary function is
+     * {@code null}, i.e. nodes that are not yet converted to the
+     * taxonomy and would vanish from the function-based browser. The
+     * list is unmodifiable; empty if every node is converted.
+     */
+    public List<String> unassignedNodeIds() {
+        return unassignedNodeIds;
     }
 }

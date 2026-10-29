@@ -1,5 +1,6 @@
 package org.hkijena.jipipe.plugins.statistics.ui;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.service.components.JIPipeStatisticsServiceComponent;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
@@ -11,13 +12,10 @@ import org.hkijena.jipipe.desktop.commons.components.layouts.JIPipeDesktopRow;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.plugins.statistics.JIPipeStatisticsItem;
 import org.hkijena.jipipe.plugins.statistics.settings.JIPipeStatisticsApplicationSettings;
-import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
-
-import com.fasterxml.jackson.databind.JsonNode;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;

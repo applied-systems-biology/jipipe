@@ -50,10 +50,8 @@ public class JIPipeDesktopParameterTableEditorUI extends JIPipeDesktopParameterE
 
         toolBar.add(Box.createHorizontalGlue());
 
-        JButton editButton = new JButton("Edit parameters", JIPipe.RESOURCES.getIcon16("actions/document-edit.png"));
-        UIUtils.makeButtonHighlightedSuccess(editButton);
+        JButton editButton = UIUtils.createParameterButton("Edit parameters", JIPipe.RESOURCES.getIcon16("actions/document-edit.png"), e -> openEditor());
         editButton.setToolTipText("Opens a new window that allows to edit the parameter table");
-        editButton.addActionListener(e -> openEditor());
 
         toolBar.add(editButton);
 

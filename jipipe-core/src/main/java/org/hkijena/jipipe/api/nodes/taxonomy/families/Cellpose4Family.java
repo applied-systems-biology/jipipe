@@ -27,7 +27,9 @@ import java.util.Set;
  */
 public final class Cellpose4Family implements JIPipeNodeTaxonomyFamily {
 
-    /** The stable id of this family; used verbatim in step ids. */
+    /**
+     * The stable id of this family; used verbatim in step ids.
+     */
     public static final String ID = "jipipe:family:cellpose4";
 
     @Override

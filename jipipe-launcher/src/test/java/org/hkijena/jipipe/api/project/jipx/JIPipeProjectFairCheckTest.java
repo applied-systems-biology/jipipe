@@ -28,13 +28,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * The pure FAIR-metadata checker the publish button's badge and the
  * "FAIR checker" dialog rely on (feature #753). {@link
- * JIPipeProjectFairCheck#missing(JIPipeProject)} is metadata-only — it does
- * NOT build a RO-Crate — and mirrors the crate-compliance intent at the
+ * JIPipeProjectFairCheck#missing(JIPipeProject)} is metadata-only - it does
+ * NOT build a RO-Crate - and mirrors the crate-compliance intent at the
  * point where the user is deciding whether to publish: a shareable project
  * must declare a license, a summary, and at least one author.
  * <p>
  * <b>No Swing.</b> {@code new JIPipeProject()} needs the plugin registry
- * (the project-settings sheet types), so the instance is required — the
+ * (the project-settings sheet types), so the instance is required - the
  * same {@code @BeforeAll JIPipe.ensureInstance()} pattern the other JIPX
  * tests in this module use. The legacy-patcher listener registered for this
  * module makes {@code ensureInstance()} safe regardless of test ordering.
@@ -50,7 +50,17 @@ class JIPipeProjectFairCheckTest {
     }
 
     /**
-     * A fresh project has no license, no summary and no authors — all three
+     * Test-only helper: true if any missing-item string mentions {@code word}
+     * (case-insensitive). Keeps the production {@link
+     * JIPipeProjectFairCheck} free of test-facing helpers.
+     */
+    private static boolean hasWord(List<String> missing, String word) {
+        String needle = word.toLowerCase(java.util.Locale.ROOT);
+        return missing.stream().anyMatch(s -> s.toLowerCase(java.util.Locale.ROOT).contains(needle));
+    }
+
+    /**
+     * A fresh project has no license, no summary and no authors - all three
      * items must be flagged as missing.
      */
     @Test
@@ -69,7 +79,7 @@ class JIPipeProjectFairCheckTest {
 
     /**
      * A fully-populated project (license + summary + one author) is
-     * FAIR-complete — nothing is missing.
+     * FAIR-complete - nothing is missing.
      */
     @Test
     void fullyPopulatedProjectIsComplete() {
@@ -88,16 +98,6 @@ class JIPipeProjectFairCheckTest {
     }
 
     /**
-     * Test-only helper: true if any missing-item string mentions {@code word}
-     * (case-insensitive). Keeps the production {@link
-     * JIPipeProjectFairCheck} free of test-facing helpers.
-     */
-    private static boolean hasWord(List<String> missing, String word) {
-        String needle = word.toLowerCase(java.util.Locale.ROOT);
-        return missing.stream().anyMatch(s -> s.toLowerCase(java.util.Locale.ROOT).contains(needle));
-    }
-
-    /**
      * Each item is checked independently: filling only the license must
      * still leave summary + author flagged.
      */
@@ -109,10 +109,10 @@ class JIPipeProjectFairCheckTest {
 
         assertEquals(2, missing.size(), "Only license is set, so 2 items remain missing: " + missing);
         assertTrue(!hasWord(missing, "license"),
-                "License is set — it must not be flagged; got: " + missing);
+                "License is set - it must not be flagged; got: " + missing);
         assertTrue(hasWord(missing, "summary"),
-                "Summary is still empty — it must be flagged; got: " + missing);
+                "Summary is still empty - it must be flagged; got: " + missing);
         assertTrue(hasWord(missing, "author"),
-                "Author is still missing — it must be flagged; got: " + missing);
+                "Author is still missing - it must be flagged; got: " + missing);
     }
 }

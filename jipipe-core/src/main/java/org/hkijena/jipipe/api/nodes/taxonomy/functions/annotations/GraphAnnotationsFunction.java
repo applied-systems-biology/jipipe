@@ -17,13 +17,13 @@ import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.AnnotationsFunction;
 import org.jetbrains.annotations.Nullable;
 
-import javax.swing.Icon;
+import javax.swing.*;
 import java.util.Collections;
 import java.util.Set;
 
 /**
  * Leaf of the Annotations branch for <em>graph (canvas) annotations</em>:
- * nodes that decorate a graph's canvas rather than operating on data —
+ * nodes that decorate a graph's canvas rather than operating on data -
  * text boxes, arrows, and image boxes
  * ({@code org.hkijena.jipipe.api.nodes.annotation.JIPipeGraphCanvasNote}).
  * <p>
@@ -41,7 +41,9 @@ import java.util.Set;
  */
 public final class GraphAnnotationsFunction implements JIPipeNodeTaxonomyFunction {
 
-    /** The stable registry id of this function (a string literal per the stable-ID rule). */
+    /**
+     * The stable registry id of this function (a string literal per the stable-ID rule).
+     */
     public static final String ID = "jipipe:function:graph-annotations";
 
     @Override

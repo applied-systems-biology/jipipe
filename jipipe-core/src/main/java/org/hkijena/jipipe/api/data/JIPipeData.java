@@ -236,7 +236,7 @@ public interface JIPipeData extends Closeable, AutoCloseable {
         }
     }
 
-   default JIPipeDataInstanceInfo toInfo() {
+    default JIPipeDataInstanceInfo toInfo() {
         return JIPipeDataInstanceInfo.builder().add(JIPipeDataInstanceInfo.DetailLevel.Brief, toString()).build();
-   }
+    }
 }

@@ -7,8 +7,10 @@
   "patternProperties": {
     "^.*\\.json": {
       "$ref": "#/$defs/file",
-      "properties" : {
-        "fs:entry-type": { "$ref": "https://jipipe.org/schemas/filesystem/type-file.schema.json" }
+      "properties": {
+        "fs:entry-type": {
+          "$ref": "https://jipipe.org/schemas/filesystem/type-file.schema.json"
+        }
       }
     }
   },
@@ -17,8 +19,14 @@
       "type": "object",
       "description": "A JSON file that contains information about the file path.",
       "properties": {
-        "jipipe:data-type": { "type": "string", "description": "JIPipe data type ID of the path object." },
-        "path": { "type": "string", "description": "The path" }
+        "jipipe:data-type": {
+          "type": "string",
+          "description": "JIPipe data type ID of the path object."
+        },
+        "path": {
+          "type": "string",
+          "description": "The path"
+        }
       }
     }
   }

@@ -6,11 +6,21 @@
       "type": "array",
       "items": {
         "anyOf": [
-          { "$ref": "#/$defs/idProperty"},
-          {"type": "string"},
-          {"type": "number"},
-          {"type": "boolean"},
-          {"type": "null"}
+          {
+            "$ref": "#/$defs/idProperty"
+          },
+          {
+            "type": "string"
+          },
+          {
+            "type": "number"
+          },
+          {
+            "type": "boolean"
+          },
+          {
+            "type": "null"
+          }
         ]
       }
     },
@@ -30,17 +40,22 @@
       "type": "null"
     }
   ],
-  "$defs" : {
+  "$defs": {
     "idProperty": {
-      "type": ["object"],
+      "type": [
+        "object"
+      ],
       "properties": {
         "@id": {
-          "type": ["string"]
+          "type": [
+            "string"
+          ]
         }
       },
-      "required": ["@id"],
+      "required": [
+        "@id"
+      ],
       "additionalProperties": false
     }
-
-    }
+  }
 }

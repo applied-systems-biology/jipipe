@@ -70,7 +70,8 @@ public class GuiCommand {
                 if (instrumentationServer != null) {
                     try {
                         instrumentationServer.stop(0);
-                    } catch (Exception ignored) { }
+                    } catch (Exception ignored) {
+                    }
                 }
                 JIPipe.exitLater(0);
             }

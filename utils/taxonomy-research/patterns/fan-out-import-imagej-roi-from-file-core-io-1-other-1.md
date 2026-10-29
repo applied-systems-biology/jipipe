@@ -35,27 +35,30 @@ Mined pattern `fan-out-import-imagej-roi-from-file-core-io-1-other-1` (shape `fa
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| import | `import-imagej-roi-from-file` |
-| core-io | `jipipe:compartment-output` |
-| other | `ij1-roi-to-mask` |
+| role    | node ids                      |
+|---------|-------------------------------|
+| import  | `import-imagej-roi-from-file` |
+| core-io | `jipipe:compartment-output`   |
+| other   | `ij1-roi-to-mask`             |
 
 ## Example graph
 
 Project: `AIAgentTests/02-AdvancedPipelines/Cryogels_01.jip` (relative to `/data/JIPipe`), compartment `Preprocessing`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `import-imagej-roi-from-file` | ROI from file |
-| n1 | `ij1-roi-to-mask` | Convert ROI to mask |
-| n2 | `jipipe:compartment-output` | Output |
+| key | node id                       | name                |
+|-----|-------------------------------|---------------------|
+| n0  | `import-imagej-roi-from-file` | ROI from file       |
+| n1  | `ij1-roi-to-mask`             | Convert ROI to mask |
+| n2  | `jipipe:compartment-output`   | Output              |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
+| from          | slot     | to                  | slot  | data class   |
+|---------------|----------|---------------------|-------|--------------|
 | ROI from file | `Output` | Convert ROI to mask | `ROI` | `imagej-roi` |
 
 ## Template
 
-Proposed name `Import ROI fans out to 2 target ids (roles: core-io, other)`, menu path `Patterns/Data Sources/Import ROI fans out to 2 target ids (roles: core-io, other)` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/fan-out-import-imagej-roi-from-file-core-io-1-other-1.json`.
+Proposed name `Import ROI fans out to 2 target ids (roles: core-io, other)`, menu path
+`Patterns/Data Sources/Import ROI fans out to 2 target ids (roles: core-io, other)` (proposal only - not registered).
+`data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/fan-out-import-imagej-roi-from-file-core-io-1-other-1.json`.
 

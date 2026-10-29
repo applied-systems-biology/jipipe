@@ -1,1 +1,294 @@
-{"edges":[{"source-node":"n1","source-slot":"Output","target-node":"n0","target-slot":"Input"},{"source-node":"n2","source-slot":"Output","target-node":"n7","target-slot":"Green STED"},{"source-node":"n3","source-slot":"Output","target-node":"n4","target-slot":"Mask"},{"source-node":"n4","source-slot":"Output","target-node":"n8","target-slot":"Input"},{"source-node":"n5","source-slot":"Output","target-node":"n1","target-slot":"Mask"},{"source-node":"n5","source-slot":"Output","target-node":"n7","target-slot":"Mask"},{"source-node":"n6","source-slot":"Output","target-node":"n1","target-slot":"Magenta STED"},{"source-node":"n6","source-slot":"Output","target-node":"n4","target-slot":"Magenta STED"},{"source-node":"n6","source-slot":"Output","target-node":"n7","target-slot":"Magenta STED"},{"source-node":"n9","source-slot":"Output","target-node":"n3","target-slot":"Reference"},{"source-node":"n9","source-slot":"Output","target-node":"n5","target-slot":"Reference"}],"nodes":{"n0":{"jipipe:graph-compartment":"5e5a2371-a999-5f1f-866d-08b4e77a0033","jipipe:metadata-v1":{"location/5e5a2371-a999-5f1f-866d-08b4e77a0033/x":0,"location/5e5a2371-a999-5f1f-866d-08b4e77a0033/y":28},"jipipe:node-info-id":"ij1-color-to-rgb"},"n1":{"jipipe:graph-compartment":"5e5a2371-a999-5f1f-866d-08b4e77a0033","jipipe:metadata-v1":{"location/5e5a2371-a999-5f1f-866d-08b4e77a0033/x":0,"location/5e5a2371-a999-5f1f-866d-08b4e77a0033/y":24},"jipipe:node-info-id":"ij1-color-blend-images","jipipe:slot-configuration":{"input":{"Mask":{"slot-data-type":"imagej-imgplus","slot-type":"Input","name":"Mask","custom-name":null,"description":"","is-virtual":false,"save-outputs":true,"is-optional":false},"Magenta STED":{"slot-data-type":"imagej-imgplus","slot-type":"Input","name":"Magenta STED","custom-name":null,"description":"","is-virtual":false,"save-outputs":true,"is-optional":false}},"output":{"Output":{"slot-data-type":"imagej-imgplus-color-rgb","slot-type":"Output","name":"Output","custom-name":null,"description":"The output image","is-virtual":false,"save-outputs":true,"is-optional":false}}},"render-greyscale-images":true,"layers/Mask":{"opacity":1.0},"layers/Magenta STED":{"opacity":1.0}},"n2":{"jipipe:graph-compartment":"5e5a2371-a999-5f1f-866d-08b4e77a0033","jipipe:metadata-v1":{"location/5e5a2371-a999-5f1f-866d-08b4e77a0033/x":0,"location/5e5a2371-a999-5f1f-866d-08b4e77a0033/y":8},"jipipe:node-info-id":"ij1-set-lut-from-color-map"},"n3":{"jipipe:graph-compartment":"5e5a2371-a999-5f1f-866d-08b4e77a0033","jipipe:metadata-v1":{"location/5e5a2371-a999-5f1f-866d-08b4e77a0033/x":0,"location/5e5a2371-a999-5f1f-866d-08b4e77a0033/y":35},"jipipe:node-info-id":"filaments-convert-to-mask"},"n4":{"jipipe:graph-compartment":"5e5a2371-a999-5f1f-866d-08b4e77a0033","jipipe:metadata-v1":{"location/5e5a2371-a999-5f1f-866d-08b4e77a0033/x":0,"location/5e5a2371-a999-5f1f-866d-08b4e77a0033/y":39},"jipipe:node-info-id":"ij1-color-blend-images","jipipe:slot-configuration":{"input":{"Mask":{"slot-data-type":"imagej-imgplus","slot-type":"Input","name":"Mask","custom-name":null,"description":"","is-virtual":false,"save-outputs":true,"is-optional":false},"Magenta STED":{"slot-data-type":"imagej-imgplus","slot-type":"Input","name":"Magenta STED","custom-name":null,"description":"","is-virtual":false,"save-outputs":true,"is-optional":false}},"output":{"Output":{"slot-data-type":"imagej-imgplus-color-rgb","slot-type":"Output","name":"Output","custom-name":null,"description":"The output image","is-virtual":false,"save-outputs":true,"is-optional":false}}},"render-greyscale-images":true,"layers/Mask":{"opacity":1.0},"layers/Magenta STED":{"opacity":1.0}},"n5":{"jipipe:graph-compartment":"5e5a2371-a999-5f1f-866d-08b4e77a0033","jipipe:metadata-v1":{"location/5e5a2371-a999-5f1f-866d-08b4e77a0033/x":0,"location/5e5a2371-a999-5f1f-866d-08b4e77a0033/y":4},"jipipe:node-info-id":"filaments-convert-to-mask"},"n6":{"jipipe:graph-compartment":"5e5a2371-a999-5f1f-866d-08b4e77a0033","jipipe:metadata-v1":{"location/5e5a2371-a999-5f1f-866d-08b4e77a0033/x":8,"location/5e5a2371-a999-5f1f-866d-08b4e77a0033/y":8},"jipipe:node-info-id":"ij1-set-lut-from-color-map"},"n7":{"jipipe:graph-compartment":"5e5a2371-a999-5f1f-866d-08b4e77a0033","jipipe:metadata-v1":{"location/5e5a2371-a999-5f1f-866d-08b4e77a0033/x":0,"location/5e5a2371-a999-5f1f-866d-08b4e77a0033/y":12},"jipipe:node-info-id":"ij1-color-blend-images","jipipe:slot-configuration":{"input":{"Mask":{"slot-data-type":"imagej-imgplus","slot-type":"Input","name":"Mask","custom-name":null,"description":"","is-virtual":false,"save-outputs":true,"is-optional":false},"Green STED":{"slot-data-type":"imagej-imgplus","slot-type":"Input","name":"Green STED","custom-name":null,"description":"","is-virtual":false,"save-outputs":true,"is-optional":false},"Magenta STED":{"slot-data-type":"imagej-imgplus","slot-type":"Input","name":"Magenta STED","custom-name":null,"description":"","is-virtual":false,"save-outputs":true,"is-optional":false}},"output":{"Output":{"slot-data-type":"imagej-imgplus-color-rgb","slot-type":"Output","name":"Output","custom-name":null,"description":"The output image","is-virtual":false,"save-outputs":true,"is-optional":false}}},"render-greyscale-images":true,"layers/Mask":{"opacity":1.0},"layers/Green STED":{"opacity":1.0},"layers/Magenta STED":{"opacity":1.0}},"n8":{"jipipe:graph-compartment":"5e5a2371-a999-5f1f-866d-08b4e77a0033","jipipe:metadata-v1":{"location/5e5a2371-a999-5f1f-866d-08b4e77a0033/x":0,"location/5e5a2371-a999-5f1f-866d-08b4e77a0033/y":43},"jipipe:node-info-id":"ij1-color-to-rgb"},"n9":{"jipipe:graph-compartment":"5e5a2371-a999-5f1f-866d-08b4e77a0033","jipipe:metadata-v1":{"location/5e5a2371-a999-5f1f-866d-08b4e77a0033/x":0,"location/5e5a2371-a999-5f1f-866d-08b4e77a0033/y":0},"jipipe:node-info-id":"filaments-convert-to-rgb"}}}
+{
+  "edges": [
+    {
+      "source-node": "n1",
+      "source-slot": "Output",
+      "target-node": "n0",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n2",
+      "source-slot": "Output",
+      "target-node": "n7",
+      "target-slot": "Green STED"
+    },
+    {
+      "source-node": "n3",
+      "source-slot": "Output",
+      "target-node": "n4",
+      "target-slot": "Mask"
+    },
+    {
+      "source-node": "n4",
+      "source-slot": "Output",
+      "target-node": "n8",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n5",
+      "source-slot": "Output",
+      "target-node": "n1",
+      "target-slot": "Mask"
+    },
+    {
+      "source-node": "n5",
+      "source-slot": "Output",
+      "target-node": "n7",
+      "target-slot": "Mask"
+    },
+    {
+      "source-node": "n6",
+      "source-slot": "Output",
+      "target-node": "n1",
+      "target-slot": "Magenta STED"
+    },
+    {
+      "source-node": "n6",
+      "source-slot": "Output",
+      "target-node": "n4",
+      "target-slot": "Magenta STED"
+    },
+    {
+      "source-node": "n6",
+      "source-slot": "Output",
+      "target-node": "n7",
+      "target-slot": "Magenta STED"
+    },
+    {
+      "source-node": "n9",
+      "source-slot": "Output",
+      "target-node": "n3",
+      "target-slot": "Reference"
+    },
+    {
+      "source-node": "n9",
+      "source-slot": "Output",
+      "target-node": "n5",
+      "target-slot": "Reference"
+    }
+  ],
+  "nodes": {
+    "n0": {
+      "jipipe:graph-compartment": "5e5a2371-a999-5f1f-866d-08b4e77a0033",
+      "jipipe:metadata-v1": {
+        "location/5e5a2371-a999-5f1f-866d-08b4e77a0033/x": 0,
+        "location/5e5a2371-a999-5f1f-866d-08b4e77a0033/y": 28
+      },
+      "jipipe:node-info-id": "ij1-color-to-rgb"
+    },
+    "n1": {
+      "jipipe:graph-compartment": "5e5a2371-a999-5f1f-866d-08b4e77a0033",
+      "jipipe:metadata-v1": {
+        "location/5e5a2371-a999-5f1f-866d-08b4e77a0033/x": 0,
+        "location/5e5a2371-a999-5f1f-866d-08b4e77a0033/y": 24
+      },
+      "jipipe:node-info-id": "ij1-color-blend-images",
+      "jipipe:slot-configuration": {
+        "input": {
+          "Mask": {
+            "slot-data-type": "imagej-imgplus",
+            "slot-type": "Input",
+            "name": "Mask",
+            "custom-name": null,
+            "description": "",
+            "is-virtual": false,
+            "save-outputs": true,
+            "is-optional": false
+          },
+          "Magenta STED": {
+            "slot-data-type": "imagej-imgplus",
+            "slot-type": "Input",
+            "name": "Magenta STED",
+            "custom-name": null,
+            "description": "",
+            "is-virtual": false,
+            "save-outputs": true,
+            "is-optional": false
+          }
+        },
+        "output": {
+          "Output": {
+            "slot-data-type": "imagej-imgplus-color-rgb",
+            "slot-type": "Output",
+            "name": "Output",
+            "custom-name": null,
+            "description": "The output image",
+            "is-virtual": false,
+            "save-outputs": true,
+            "is-optional": false
+          }
+        }
+      },
+      "render-greyscale-images": true,
+      "layers/Mask": {
+        "opacity": 1.0
+      },
+      "layers/Magenta STED": {
+        "opacity": 1.0
+      }
+    },
+    "n2": {
+      "jipipe:graph-compartment": "5e5a2371-a999-5f1f-866d-08b4e77a0033",
+      "jipipe:metadata-v1": {
+        "location/5e5a2371-a999-5f1f-866d-08b4e77a0033/x": 0,
+        "location/5e5a2371-a999-5f1f-866d-08b4e77a0033/y": 8
+      },
+      "jipipe:node-info-id": "ij1-set-lut-from-color-map"
+    },
+    "n3": {
+      "jipipe:graph-compartment": "5e5a2371-a999-5f1f-866d-08b4e77a0033",
+      "jipipe:metadata-v1": {
+        "location/5e5a2371-a999-5f1f-866d-08b4e77a0033/x": 0,
+        "location/5e5a2371-a999-5f1f-866d-08b4e77a0033/y": 35
+      },
+      "jipipe:node-info-id": "filaments-convert-to-mask"
+    },
+    "n4": {
+      "jipipe:graph-compartment": "5e5a2371-a999-5f1f-866d-08b4e77a0033",
+      "jipipe:metadata-v1": {
+        "location/5e5a2371-a999-5f1f-866d-08b4e77a0033/x": 0,
+        "location/5e5a2371-a999-5f1f-866d-08b4e77a0033/y": 39
+      },
+      "jipipe:node-info-id": "ij1-color-blend-images",
+      "jipipe:slot-configuration": {
+        "input": {
+          "Mask": {
+            "slot-data-type": "imagej-imgplus",
+            "slot-type": "Input",
+            "name": "Mask",
+            "custom-name": null,
+            "description": "",
+            "is-virtual": false,
+            "save-outputs": true,
+            "is-optional": false
+          },
+          "Magenta STED": {
+            "slot-data-type": "imagej-imgplus",
+            "slot-type": "Input",
+            "name": "Magenta STED",
+            "custom-name": null,
+            "description": "",
+            "is-virtual": false,
+            "save-outputs": true,
+            "is-optional": false
+          }
+        },
+        "output": {
+          "Output": {
+            "slot-data-type": "imagej-imgplus-color-rgb",
+            "slot-type": "Output",
+            "name": "Output",
+            "custom-name": null,
+            "description": "The output image",
+            "is-virtual": false,
+            "save-outputs": true,
+            "is-optional": false
+          }
+        }
+      },
+      "render-greyscale-images": true,
+      "layers/Mask": {
+        "opacity": 1.0
+      },
+      "layers/Magenta STED": {
+        "opacity": 1.0
+      }
+    },
+    "n5": {
+      "jipipe:graph-compartment": "5e5a2371-a999-5f1f-866d-08b4e77a0033",
+      "jipipe:metadata-v1": {
+        "location/5e5a2371-a999-5f1f-866d-08b4e77a0033/x": 0,
+        "location/5e5a2371-a999-5f1f-866d-08b4e77a0033/y": 4
+      },
+      "jipipe:node-info-id": "filaments-convert-to-mask"
+    },
+    "n6": {
+      "jipipe:graph-compartment": "5e5a2371-a999-5f1f-866d-08b4e77a0033",
+      "jipipe:metadata-v1": {
+        "location/5e5a2371-a999-5f1f-866d-08b4e77a0033/x": 8,
+        "location/5e5a2371-a999-5f1f-866d-08b4e77a0033/y": 8
+      },
+      "jipipe:node-info-id": "ij1-set-lut-from-color-map"
+    },
+    "n7": {
+      "jipipe:graph-compartment": "5e5a2371-a999-5f1f-866d-08b4e77a0033",
+      "jipipe:metadata-v1": {
+        "location/5e5a2371-a999-5f1f-866d-08b4e77a0033/x": 0,
+        "location/5e5a2371-a999-5f1f-866d-08b4e77a0033/y": 12
+      },
+      "jipipe:node-info-id": "ij1-color-blend-images",
+      "jipipe:slot-configuration": {
+        "input": {
+          "Mask": {
+            "slot-data-type": "imagej-imgplus",
+            "slot-type": "Input",
+            "name": "Mask",
+            "custom-name": null,
+            "description": "",
+            "is-virtual": false,
+            "save-outputs": true,
+            "is-optional": false
+          },
+          "Green STED": {
+            "slot-data-type": "imagej-imgplus",
+            "slot-type": "Input",
+            "name": "Green STED",
+            "custom-name": null,
+            "description": "",
+            "is-virtual": false,
+            "save-outputs": true,
+            "is-optional": false
+          },
+          "Magenta STED": {
+            "slot-data-type": "imagej-imgplus",
+            "slot-type": "Input",
+            "name": "Magenta STED",
+            "custom-name": null,
+            "description": "",
+            "is-virtual": false,
+            "save-outputs": true,
+            "is-optional": false
+          }
+        },
+        "output": {
+          "Output": {
+            "slot-data-type": "imagej-imgplus-color-rgb",
+            "slot-type": "Output",
+            "name": "Output",
+            "custom-name": null,
+            "description": "The output image",
+            "is-virtual": false,
+            "save-outputs": true,
+            "is-optional": false
+          }
+        }
+      },
+      "render-greyscale-images": true,
+      "layers/Mask": {
+        "opacity": 1.0
+      },
+      "layers/Green STED": {
+        "opacity": 1.0
+      },
+      "layers/Magenta STED": {
+        "opacity": 1.0
+      }
+    },
+    "n8": {
+      "jipipe:graph-compartment": "5e5a2371-a999-5f1f-866d-08b4e77a0033",
+      "jipipe:metadata-v1": {
+        "location/5e5a2371-a999-5f1f-866d-08b4e77a0033/x": 0,
+        "location/5e5a2371-a999-5f1f-866d-08b4e77a0033/y": 43
+      },
+      "jipipe:node-info-id": "ij1-color-to-rgb"
+    },
+    "n9": {
+      "jipipe:graph-compartment": "5e5a2371-a999-5f1f-866d-08b4e77a0033",
+      "jipipe:metadata-v1": {
+        "location/5e5a2371-a999-5f1f-866d-08b4e77a0033/x": 0,
+        "location/5e5a2371-a999-5f1f-866d-08b4e77a0033/y": 0
+      },
+      "jipipe:node-info-id": "filaments-convert-to-rgb"
+    }
+  }
+}

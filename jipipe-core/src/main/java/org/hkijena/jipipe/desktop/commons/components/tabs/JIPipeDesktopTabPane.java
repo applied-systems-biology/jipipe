@@ -257,7 +257,7 @@ public class JIPipeDesktopTabPane extends JPanel implements Disposable {
      * without this propagation a caller that adds tabs before setting the
      * border (a historical {@code NodeFinderDetailRail} bug) would silently
      * render the tabs with the thin default padding instead of the intended
-     * one — order-independent behavior, like any Swing {@code setBorder}.
+     * one - order-independent behavior, like any Swing {@code setBorder}.
      *
      * @param tabPanelBorder the border to lay the tab components out with
      */

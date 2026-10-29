@@ -1,1 +1,98 @@
-{"edges":[{"source-node":"n0","source-slot":"ROI","target-node":"n6","target-slot":"ROI"},{"source-node":"n1","source-slot":"Output","target-node":"n2","target-slot":"Input"},{"source-node":"n2","source-slot":"Output","target-node":"n0","target-slot":"Mask"},{"source-node":"n3","source-slot":"Output","target-node":"n1","target-slot":"Input"},{"source-node":"n4","source-slot":"Output","target-node":"n3","target-slot":"Input"},{"source-node":"n5","source-slot":"Output","target-node":"n4","target-slot":"Input"}],"nodes":{"n0":{"jipipe:graph-compartment":"dc573e1f-27f9-581c-9d61-a652e6effc40","jipipe:metadata-v1":{"location/dc573e1f-27f9-581c-9d61-a652e6effc40/x":0,"location/dc573e1f-27f9-581c-9d61-a652e6effc40/y":20},"jipipe:node-info-id":"ij1-analyze-find-particles2d"},"n1":{"jipipe:graph-compartment":"dc573e1f-27f9-581c-9d61-a652e6effc40","jipipe:metadata-v1":{"location/dc573e1f-27f9-581c-9d61-a652e6effc40/x":0,"location/dc573e1f-27f9-581c-9d61-a652e6effc40/y":12},"jipipe:node-info-id":"ij1-morph-operation2d"},"n2":{"jipipe:graph-compartment":"dc573e1f-27f9-581c-9d61-a652e6effc40","jipipe:metadata-v1":{"location/dc573e1f-27f9-581c-9d61-a652e6effc40/x":0,"location/dc573e1f-27f9-581c-9d61-a652e6effc40/y":16},"jipipe:node-info-id":"ij1-binary-dtwatershed2d"},"n3":{"jipipe:graph-compartment":"dc573e1f-27f9-581c-9d61-a652e6effc40","jipipe:metadata-v1":{"location/dc573e1f-27f9-581c-9d61-a652e6effc40/x":0,"location/dc573e1f-27f9-581c-9d61-a652e6effc40/y":8},"jipipe:node-info-id":"ij1-morph-binary-fillholes2d"},"n4":{"jipipe:graph-compartment":"dc573e1f-27f9-581c-9d61-a652e6effc40","jipipe:metadata-v1":{"location/dc573e1f-27f9-581c-9d61-a652e6effc40/x":0,"location/dc573e1f-27f9-581c-9d61-a652e6effc40/y":4},"jipipe:node-info-id":"ij1-threshold-auto2d"},"n5":{"jipipe:graph-compartment":"dc573e1f-27f9-581c-9d61-a652e6effc40","jipipe:metadata-v1":{"location/dc573e1f-27f9-581c-9d61-a652e6effc40/x":0,"location/dc573e1f-27f9-581c-9d61-a652e6effc40/y":0},"jipipe:node-info-id":"ij1-blur-gaussian2d"},"n6":{"jipipe:graph-compartment":"dc573e1f-27f9-581c-9d61-a652e6effc40","jipipe:metadata-v1":{"location/dc573e1f-27f9-581c-9d61-a652e6effc40/x":0,"location/dc573e1f-27f9-581c-9d61-a652e6effc40/y":24},"jipipe:node-info-id":"ij1-roi-to-rgb"}}}
+{
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "ROI",
+      "target-node": "n6",
+      "target-slot": "ROI"
+    },
+    {
+      "source-node": "n1",
+      "source-slot": "Output",
+      "target-node": "n2",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n2",
+      "source-slot": "Output",
+      "target-node": "n0",
+      "target-slot": "Mask"
+    },
+    {
+      "source-node": "n3",
+      "source-slot": "Output",
+      "target-node": "n1",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n4",
+      "source-slot": "Output",
+      "target-node": "n3",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n5",
+      "source-slot": "Output",
+      "target-node": "n4",
+      "target-slot": "Input"
+    }
+  ],
+  "nodes": {
+    "n0": {
+      "jipipe:graph-compartment": "dc573e1f-27f9-581c-9d61-a652e6effc40",
+      "jipipe:metadata-v1": {
+        "location/dc573e1f-27f9-581c-9d61-a652e6effc40/x": 0,
+        "location/dc573e1f-27f9-581c-9d61-a652e6effc40/y": 20
+      },
+      "jipipe:node-info-id": "ij1-analyze-find-particles2d"
+    },
+    "n1": {
+      "jipipe:graph-compartment": "dc573e1f-27f9-581c-9d61-a652e6effc40",
+      "jipipe:metadata-v1": {
+        "location/dc573e1f-27f9-581c-9d61-a652e6effc40/x": 0,
+        "location/dc573e1f-27f9-581c-9d61-a652e6effc40/y": 12
+      },
+      "jipipe:node-info-id": "ij1-morph-operation2d"
+    },
+    "n2": {
+      "jipipe:graph-compartment": "dc573e1f-27f9-581c-9d61-a652e6effc40",
+      "jipipe:metadata-v1": {
+        "location/dc573e1f-27f9-581c-9d61-a652e6effc40/x": 0,
+        "location/dc573e1f-27f9-581c-9d61-a652e6effc40/y": 16
+      },
+      "jipipe:node-info-id": "ij1-binary-dtwatershed2d"
+    },
+    "n3": {
+      "jipipe:graph-compartment": "dc573e1f-27f9-581c-9d61-a652e6effc40",
+      "jipipe:metadata-v1": {
+        "location/dc573e1f-27f9-581c-9d61-a652e6effc40/x": 0,
+        "location/dc573e1f-27f9-581c-9d61-a652e6effc40/y": 8
+      },
+      "jipipe:node-info-id": "ij1-morph-binary-fillholes2d"
+    },
+    "n4": {
+      "jipipe:graph-compartment": "dc573e1f-27f9-581c-9d61-a652e6effc40",
+      "jipipe:metadata-v1": {
+        "location/dc573e1f-27f9-581c-9d61-a652e6effc40/x": 0,
+        "location/dc573e1f-27f9-581c-9d61-a652e6effc40/y": 4
+      },
+      "jipipe:node-info-id": "ij1-threshold-auto2d"
+    },
+    "n5": {
+      "jipipe:graph-compartment": "dc573e1f-27f9-581c-9d61-a652e6effc40",
+      "jipipe:metadata-v1": {
+        "location/dc573e1f-27f9-581c-9d61-a652e6effc40/x": 0,
+        "location/dc573e1f-27f9-581c-9d61-a652e6effc40/y": 0
+      },
+      "jipipe:node-info-id": "ij1-blur-gaussian2d"
+    },
+    "n6": {
+      "jipipe:graph-compartment": "dc573e1f-27f9-581c-9d61-a652e6effc40",
+      "jipipe:metadata-v1": {
+        "location/dc573e1f-27f9-581c-9d61-a652e6effc40/x": 0,
+        "location/dc573e1f-27f9-581c-9d61-a652e6effc40/y": 24
+      },
+      "jipipe:node-info-id": "ij1-roi-to-rgb"
+    }
+  }
+}

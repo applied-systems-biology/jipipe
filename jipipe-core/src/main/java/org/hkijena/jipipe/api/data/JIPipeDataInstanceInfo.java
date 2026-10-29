@@ -37,12 +37,12 @@ public class JIPipeDataInstanceInfo {
         this.entries.addAll(entries);
     }
 
-    public List<Entry> getEntries() {
-        return Collections.unmodifiableList(entries);
-    }
-
     public static Builder builder() {
         return new Builder();
+    }
+
+    public List<Entry> getEntries() {
+        return Collections.unmodifiableList(entries);
     }
 
     public String toPlainText(boolean detailed, boolean withNames) {
@@ -53,11 +53,11 @@ public class JIPipeDataInstanceInfo {
         StringBuilder sb = new StringBuilder();
         boolean first = true;
         for (Entry entry : entries) {
-            if(entry.isVisibleIn(detailLevel)) {
-                if(!first) {
+            if (entry.isVisibleIn(detailLevel)) {
+                if (!first) {
                     sb.append("\n");
                 }
-                if(withNames && !StringUtils.isNullOrEmpty(entry.getName())) {
+                if (withNames && !StringUtils.isNullOrEmpty(entry.getName())) {
                     sb.append(entry.getName());
                     sb.append(": ");
                 }
@@ -65,7 +65,7 @@ public class JIPipeDataInstanceInfo {
                 first = false;
             }
         }
-        return  sb.toString();
+        return sb.toString();
     }
 
     public HTMLText toHtml(boolean detailed, boolean withNames) {
@@ -77,11 +77,11 @@ public class JIPipeDataInstanceInfo {
         sb.append("<html>");
         boolean first = true;
         for (Entry entry : entries) {
-            if(entry.isVisibleIn(detailLevel)) {
-                if(!first) {
+            if (entry.isVisibleIn(detailLevel)) {
+                if (!first) {
                     sb.append("<br/>");
                 }
-                if(withNames && !StringUtils.isNullOrEmpty(entry.getName())) {
+                if (withNames && !StringUtils.isNullOrEmpty(entry.getName())) {
                     sb.append(entry.getName());
                     sb.append(": ");
                 }
@@ -90,7 +90,13 @@ public class JIPipeDataInstanceInfo {
             }
         }
         sb.append("</html>");
-        return  new HTMLText(sb.toString());
+        return new HTMLText(sb.toString());
+    }
+
+    public enum DetailLevel {
+        Brief,
+        Detailed,
+        Verbose
     }
 
     public static class Entry {
@@ -117,26 +123,19 @@ public class JIPipeDataInstanceInfo {
         }
 
         public boolean isVisibleIn(DetailLevel detailLevel) {
-            if(detailLevel == DetailLevel.Verbose) {
+            if (detailLevel == DetailLevel.Verbose) {
                 return true;
-            }
-            else if(detailLevel == DetailLevel.Detailed) {
+            } else if (detailLevel == DetailLevel.Detailed) {
                 return this.detailLevel != DetailLevel.Verbose;
-            }
-            else {
+            } else {
                 return this.detailLevel == DetailLevel.Brief;
             }
         }
     }
 
-    public enum DetailLevel {
-        Brief,
-        Detailed,
-        Verbose
-    }
-
     public static class Builder {
         private final List<Entry> entries = new ArrayList<>();
+
         public Builder add(DetailLevel detailLevel, String name, String value) {
             entries.add(new Entry(detailLevel, name, value));
             return this;

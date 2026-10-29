@@ -17,14 +17,14 @@ import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 
 /**
  * Functional interface for creating server instances from environments.
- * 
+ *
  * <p>Each factory knows:</p>
  * <ul>
  *     <li>Which environment class it accepts</li>
  *     <li>How to create a {@link JIPipeServerInstance} from that environment</li>
  * </ul>
  *
- * @param <TEnv> the environment type
+ * @param <TEnv>  the environment type
  * @param <TInst> the server instance type
  */
 @FunctionalInterface

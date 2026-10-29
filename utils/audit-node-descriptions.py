@@ -2,13 +2,13 @@
 """Draft and apply improved node descriptions (the (C) review decision 3).
 
 Full-audit worklist: ``utils/taxonomy-research/node-description-audit-plan.json``
-(the ``wrong`` / ``missing`` / ``thin`` buckets — the editable, pattern-relevant
+(the ``wrong`` / ``missing`` / ``thin`` buckets - the editable, pattern-relevant
 node types). For each one this tool
 
-1. **draft** — sends the node's real evidence to the LLM (node name + id, the
+1. **draft** - sends the node's real evidence to the LLM (node name + id, the
    input/output data types, the current description, and the class source
-   itself) with the defect made explicit (a ``wrong`` description — copy-pasted
-   from a sibling — is a different instruction than ``thin`` or ``missing``) and
+   itself) with the defect made explicit (a ``wrong`` description - copy-pasted
+   from a sibling - is a different instruction than ``thin`` or ``missing``) and
    the same audience rules the (C) re-run uses (two audiences: bioinformaticians
    and biologists; outcome first, then the technical specifics; no JIPipe
    data-model jargon; 2D/3D stated for ROI nodes). The response is a single
@@ -16,11 +16,11 @@ node types). For each one this tool
    Drafts are cached by prompt sha-256 (gitignored) and written to
    ``node-description-audit-proposals.json`` for review.
 
-2. **apply** — splices each reviewed proposal into the
+2. **apply** - splices each reviewed proposal into the
    ``@SetJIPipeDocumentation`` annotation of the owning class. The edit targets
    only the class-level annotation's ``description`` value: it replaces a
    (possibly multi-line) string-literal concatenation, fills an empty
-   ``description = ""``, or inserts a missing ``description`` attribute —
+   ``description = ""``, or inserts a missing ``description`` attribute -
    leaving the ``name`` and any other attributes (e.g.
    ``descriptionResourceURL``) untouched. Java escapes (``\\`` ``\"``) are
    written correctly and newlines are collapsed to spaces (a raw newline inside
@@ -68,7 +68,7 @@ EDITABLE_BUCKETS = ("wrong", "missing", "thin")
 # user-facing display names for the data types the pattern-relevant nodes use
 # (the registry's dataType ids; anything unknown falls back to a spaced id).
 # Feeding raw Java class names as anchors made the model copy them into the
-# prose ("an ImagePlusData image") — the (C) review flagged them as internals
+# prose ("an ImagePlusData image") - the (C) review flagged them as internals
 # users do not care about.
 DATA_TYPE_DISPLAY = {
     "imagej-imgplus": "an ImageJ image",
@@ -144,7 +144,7 @@ def escape_java(text: str) -> str:
 
 def find_class_annotation(text: str):
     """(block_start, block_end, paren_open, paren_close) of the FIRST
-    ``@SetJIPipeDocumentation(…)`` in ``text`` — the class-level one (it
+    ``@SetJIPipeDocumentation(…)`` in ``text`` - the class-level one (it
     precedes any parameter-level annotations). None if absent."""
     m = re.search(r"@SetJIPipeDocumentation\s*\(", text)
     if not m:
@@ -238,7 +238,7 @@ def apply_description(text: str, new_desc: str) -> str:
         run_text, consumed = _scan_literal_run(block[value_pos:])
         value_end = value_pos + consumed
         if run_text is None or consumed == 0:
-            # description = <not a literal run> (e.g. a variable) — refuse
+            # description = <not a literal run> (e.g. a variable) - refuse
             raise ValueError("description value is not a string-literal run")
         # value_pos is right after '='; keep the separating space
         new_block = block[:value_pos] + " " + literal + block[value_end:]
@@ -258,7 +258,7 @@ def apply_description(text: str, new_desc: str) -> str:
 def build_draft_prompt(*, name, node_id, current, bucket, wrong_note,
                        inputs, outputs, source) -> str:
     """The per-node drafting prompt. ``inputs``/``outputs`` are the registry
-    slot lists ([{class, dataType}]) — shown to the model by user-facing
+    slot lists ([{class, dataType}]) - shown to the model by user-facing
     DISPLAY NAME, never by Java class name; ``source`` is the (capped) class
     source."""
     def slots(lst):
@@ -273,16 +273,16 @@ def build_draft_prompt(*, name, node_id, current, bucket, wrong_note,
             return "  (none)"
         return "\n".join(f"  - {d}" for d in shown)
     if bucket == "wrong":
-        defect = (f"The CURRENT description is WRONG — it was copy-pasted from a "
+        defect = (f"The CURRENT description is WRONG - it was copy-pasted from a "
                   f"sibling node ({wrong_note}). It does not describe THIS node. "
                   f"Discard it and write the correct one from the source below.")
         current_block = f"Current (WRONG, describes the sibling) description:\n  {current}\n"
     elif bucket == "thin":
         defect = ("The CURRENT description is too thin to tell a user what the "
-                  "node does — extend it into a real description.")
+                  "node does - extend it into a real description.")
         current_block = f"Current (thin) description:\n  {current}\n"
     else:
-        defect = ("The node has NO description (missing) — write one from "
+        defect = ("The node has NO description (missing) - write one from "
                   "scratch from the source below.")
         current_block = ""
     return f"""You are writing the user-facing documentation description of ONE JIPipe algorithm node.
@@ -297,7 +297,7 @@ Node: {name} (id: {node_id})
 Output data the node produces:
 {slots(outputs)}
 
-The node's own source code (ground truth of what it does — for YOUR
+The node's own source code (ground truth of what it does - for YOUR
 understanding only; do not quote its identifiers in the description):
 ```java
 {source}
@@ -305,7 +305,7 @@ understanding only; do not quote its identifiers in the description):
 
 Write ONE description for this node.
 
-Audience: TWO readers — bioinformaticians who know image-analysis tools, AND
+Audience: TWO readers - bioinformaticians who know image-analysis tools, AND
 biologists who do not. Requirements:
 - State concretely what the node TAKES IN, what it DOES, and what it PRODUCES
   (the input/output data above are the anchors).
@@ -317,7 +317,7 @@ biologists who do not. Requirements:
 - NEVER mention internal Java class names or implementation identifiers (no
   "ImagePlusData", "ResultsTableData", "TrackCollectionData", "JIPipe…" or
   similar). Call data what it is: "an ImageJ image", "a results table".
-- If the node operates on ROIs, say "2D ROI" or "3D ROI" — they are different
+- If the node operates on ROIs, say "2D ROI" or "3D ROI" - they are different
   data types and must not be conflated.
 - 1-3 sentences, at most ~400 characters. Plain prose; a single inline <code>
   is allowed for a formula. No line breaks, no markdown.
@@ -329,7 +329,7 @@ Answer with ONE JSON object only:
 
 def parse_draft(response, max_chars: int = MAX_DESC_CHARS):
     """The description string out of the model response, or None (malformed /
-    over the cap — fail-closed). ``response`` is the parsed verdict dict (the
+    over the cap - fail-closed). ``response`` is the parsed verdict dict (the
     model answers ``{"description": …}``) or raw text (defensively)."""
     if isinstance(response, dict):
         d = response.get("description")
@@ -353,7 +353,7 @@ def parse_draft(response, max_chars: int = MAX_DESC_CHARS):
     if not d or len(d) > max_chars:
         return None
     # internal Java class names are internals users do not care about (the
-    # (C) review follow-up) — fail closed on them
+    # (C) review follow-up) - fail closed on them
     if _INTERNAL_CLASS.search(d):
         return None
     return d
@@ -435,7 +435,7 @@ def cmd_draft(limit=0):
             continue
         cls_name, path, txt = sources.get(nid, (None, None, None))
         if txt is None:
-            # the plan says editable, but no in-tree class resolved — record
+            # the plan says editable, but no in-tree class resolved - record
             # it as unresolvable instead of silently skipping
             proposals.append({"nodeId": nid, "file": None, "class": None,
                               "bucket": r["bucket"], "current": r.get("desc"),
@@ -453,13 +453,13 @@ def cmd_draft(limit=0):
         verdict = J.fetch_verdict(client.complete, cache, prompt)
         calls += 1
         # verdict is the model's {"description": …} dict (or None if the
-        # endpoint failed / no JSON) — parse_draft caps + fail-closes on it
+        # endpoint failed / no JSON) - parse_draft caps + fail-closes on it
         desc = parse_draft(verdict)
         proposals.append({
             "nodeId": nid, "file": path, "class": cls_name,
             "bucket": r["bucket"], "current": r.get("desc"),
             "proposed": desc,
-            "note": None if desc else "draft failed (malformed/over cap) — retry",
+            "note": None if desc else "draft failed (malformed/over cap) - retry",
         })
     J.save_cache(CACHE, cache)
     with open(PROPOSALS, "w", encoding="utf-8") as fh:
@@ -496,7 +496,7 @@ def cmd_apply():
             continue
         path = p["file"]
         if path in by_node:
-            # two node ids share one class file — apply sequentially in memory
+            # two node ids share one class file - apply sequentially in memory
             by_node.setdefault(path, []).append(p)
         else:
             by_node[path] = [p]

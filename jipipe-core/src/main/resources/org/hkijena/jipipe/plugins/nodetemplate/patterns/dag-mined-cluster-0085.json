@@ -1,1 +1,260 @@
-{"edges":[{"source-node":"n0","source-slot":"Output","target-node":"n1","target-slot":"Input"},{"source-node":"n0","source-slot":"Output 1","target-node":"n7","target-slot":"Input"},{"source-node":"n1","source-slot":"Matched","target-node":"n8","target-slot":"Input"},{"source-node":"n1","source-slot":"Unmatched","target-node":"n2","target-slot":"Input"},{"source-node":"n2","source-slot":"Output","target-node":"n3","target-slot":"I1"},{"source-node":"n5","source-slot":"Output","target-node":"n3","target-slot":"I2"},{"source-node":"n6","source-slot":"Output","target-node":"n4","target-slot":"I2"},{"source-node":"n7","source-slot":"Matched","target-node":"n6","target-slot":"Input"},{"source-node":"n7","source-slot":"Unmatched","target-node":"n5","target-slot":"Input"},{"source-node":"n8","source-slot":"Output","target-node":"n4","target-slot":"I1"}],"nodes":{"n0":{"jipipe:graph-compartment":"d1a496d8-97b0-536e-b120-05cb86d22589","jipipe:metadata-v1":{"location/d1a496d8-97b0-536e-b120-05cb86d22589/x":18,"location/d1a496d8-97b0-536e-b120-05cb86d22589/y":0},"jipipe:node-info-id":"annotate-split-by-annotation","jipipe:slot-configuration":{"input":{"Input":{"slot-data-type":"jipipe:data","slot-type":"Input","name":"Input","custom-name":null,"description":"","is-virtual":false,"save-outputs":true,"is-optional":false}},"output":{"Output":{"slot-data-type":"jipipe:data","slot-type":"Output","name":"Output","custom-name":"Green","description":"","is-virtual":false,"save-outputs":true,"is-optional":false},"Output 1":{"slot-data-type":"jipipe:data","slot-type":"Output","name":"Output 1","custom-name":"Magenta","description":"","is-virtual":false,"save-outputs":true,"is-optional":false}}},"target-slots/Output":{"expression":"#Label CONTAINS \"488\""},"target-slots/Output 1":{"expression":"#Label CONTAINS \"594\""}},"n1":{"jipipe:graph-compartment":"d1a496d8-97b0-536e-b120-05cb86d22589","jipipe:metadata-v1":{"location/d1a496d8-97b0-536e-b120-05cb86d22589/x":3,"location/d1a496d8-97b0-536e-b120-05cb86d22589/y":4},"jipipe:node-info-id":"annotate-filter-by-annotation-if-else"},"n2":{"jipipe:graph-compartment":"d1a496d8-97b0-536e-b120-05cb86d22589","jipipe:metadata-v1":{"location/d1a496d8-97b0-536e-b120-05cb86d22589/x":8,"location/d1a496d8-97b0-536e-b120-05cb86d22589/y":8},"jipipe:node-info-id":"ij1-math-divide-by-maximum"},"n3":{"jipipe:graph-compartment":"d1a496d8-97b0-536e-b120-05cb86d22589","jipipe:metadata-v1":{"location/d1a496d8-97b0-536e-b120-05cb86d22589/x":18,"location/d1a496d8-97b0-536e-b120-05cb86d22589/y":16},"jipipe:node-info-id":"ij1-math-fast-image-arithmetics","jipipe:slot-configuration":{"input":{"I1":{"slot-data-type":"imagej-imgplus-greyscale","slot-type":"Input","name":"I1","custom-name":null,"description":"","is-virtual":false,"save-outputs":true,"is-optional":true},"I2":{"slot-data-type":"imagej-imgplus-greyscale","slot-type":"Input","name":"I2","custom-name":null,"description":"","is-virtual":false,"save-outputs":true,"is-optional":false}},"output":{"Output":{"slot-data-type":"imagej-imgplus-greyscale","slot-type":"Output","name":"Output","custom-name":null,"description":"","is-virtual":false,"save-outputs":true,"is-optional":false}}},"expression":{"expression":"MAX(I1,I2)"},"bit-depth":"Grayscale32f"},"n4":{"jipipe:graph-compartment":"d1a496d8-97b0-536e-b120-05cb86d22589","jipipe:metadata-v1":{"location/d1a496d8-97b0-536e-b120-05cb86d22589/x":18,"location/d1a496d8-97b0-536e-b120-05cb86d22589/y":12},"jipipe:node-info-id":"ij1-math-fast-image-arithmetics","jipipe:slot-configuration":{"input":{"I1":{"slot-data-type":"imagej-imgplus-greyscale","slot-type":"Input","name":"I1","custom-name":null,"description":"","is-virtual":false,"save-outputs":true,"is-optional":true},"I2":{"slot-data-type":"imagej-imgplus-greyscale","slot-type":"Input","name":"I2","custom-name":null,"description":"","is-virtual":false,"save-outputs":true,"is-optional":false}},"output":{"Output":{"slot-data-type":"imagej-imgplus-greyscale","slot-type":"Output","name":"Output","custom-name":null,"description":"","is-virtual":false,"save-outputs":true,"is-optional":false}}},"expression":{"expression":"MAX(I1,I2)"},"bit-depth":"Grayscale32f"},"n5":{"jipipe:graph-compartment":"d1a496d8-97b0-536e-b120-05cb86d22589","jipipe:metadata-v1":{"location/d1a496d8-97b0-536e-b120-05cb86d22589/x":37,"location/d1a496d8-97b0-536e-b120-05cb86d22589/y":8},"jipipe:node-info-id":"ij1-math-divide-by-maximum"},"n6":{"jipipe:graph-compartment":"d1a496d8-97b0-536e-b120-05cb86d22589","jipipe:metadata-v1":{"location/d1a496d8-97b0-536e-b120-05cb86d22589/x":29,"location/d1a496d8-97b0-536e-b120-05cb86d22589/y":8},"jipipe:node-info-id":"ij1-math-divide-by-maximum"},"n7":{"jipipe:graph-compartment":"d1a496d8-97b0-536e-b120-05cb86d22589","jipipe:metadata-v1":{"location/d1a496d8-97b0-536e-b120-05cb86d22589/x":32,"location/d1a496d8-97b0-536e-b120-05cb86d22589/y":4},"jipipe:node-info-id":"annotate-filter-by-annotation-if-else"},"n8":{"jipipe:graph-compartment":"d1a496d8-97b0-536e-b120-05cb86d22589","jipipe:metadata-v1":{"location/d1a496d8-97b0-536e-b120-05cb86d22589/x":0,"location/d1a496d8-97b0-536e-b120-05cb86d22589/y":8},"jipipe:node-info-id":"ij1-math-divide-by-maximum"}}}
+{
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Output",
+      "target-node": "n1",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n0",
+      "source-slot": "Output 1",
+      "target-node": "n7",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n1",
+      "source-slot": "Matched",
+      "target-node": "n8",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n1",
+      "source-slot": "Unmatched",
+      "target-node": "n2",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n2",
+      "source-slot": "Output",
+      "target-node": "n3",
+      "target-slot": "I1"
+    },
+    {
+      "source-node": "n5",
+      "source-slot": "Output",
+      "target-node": "n3",
+      "target-slot": "I2"
+    },
+    {
+      "source-node": "n6",
+      "source-slot": "Output",
+      "target-node": "n4",
+      "target-slot": "I2"
+    },
+    {
+      "source-node": "n7",
+      "source-slot": "Matched",
+      "target-node": "n6",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n7",
+      "source-slot": "Unmatched",
+      "target-node": "n5",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n8",
+      "source-slot": "Output",
+      "target-node": "n4",
+      "target-slot": "I1"
+    }
+  ],
+  "nodes": {
+    "n0": {
+      "jipipe:graph-compartment": "d1a496d8-97b0-536e-b120-05cb86d22589",
+      "jipipe:metadata-v1": {
+        "location/d1a496d8-97b0-536e-b120-05cb86d22589/x": 18,
+        "location/d1a496d8-97b0-536e-b120-05cb86d22589/y": 0
+      },
+      "jipipe:node-info-id": "annotate-split-by-annotation",
+      "jipipe:slot-configuration": {
+        "input": {
+          "Input": {
+            "slot-data-type": "jipipe:data",
+            "slot-type": "Input",
+            "name": "Input",
+            "custom-name": null,
+            "description": "",
+            "is-virtual": false,
+            "save-outputs": true,
+            "is-optional": false
+          }
+        },
+        "output": {
+          "Output": {
+            "slot-data-type": "jipipe:data",
+            "slot-type": "Output",
+            "name": "Output",
+            "custom-name": "Green",
+            "description": "",
+            "is-virtual": false,
+            "save-outputs": true,
+            "is-optional": false
+          },
+          "Output 1": {
+            "slot-data-type": "jipipe:data",
+            "slot-type": "Output",
+            "name": "Output 1",
+            "custom-name": "Magenta",
+            "description": "",
+            "is-virtual": false,
+            "save-outputs": true,
+            "is-optional": false
+          }
+        }
+      },
+      "target-slots/Output": {
+        "expression": "#Label CONTAINS \"488\""
+      },
+      "target-slots/Output 1": {
+        "expression": "#Label CONTAINS \"594\""
+      }
+    },
+    "n1": {
+      "jipipe:graph-compartment": "d1a496d8-97b0-536e-b120-05cb86d22589",
+      "jipipe:metadata-v1": {
+        "location/d1a496d8-97b0-536e-b120-05cb86d22589/x": 3,
+        "location/d1a496d8-97b0-536e-b120-05cb86d22589/y": 4
+      },
+      "jipipe:node-info-id": "annotate-filter-by-annotation-if-else"
+    },
+    "n2": {
+      "jipipe:graph-compartment": "d1a496d8-97b0-536e-b120-05cb86d22589",
+      "jipipe:metadata-v1": {
+        "location/d1a496d8-97b0-536e-b120-05cb86d22589/x": 8,
+        "location/d1a496d8-97b0-536e-b120-05cb86d22589/y": 8
+      },
+      "jipipe:node-info-id": "ij1-math-divide-by-maximum"
+    },
+    "n3": {
+      "jipipe:graph-compartment": "d1a496d8-97b0-536e-b120-05cb86d22589",
+      "jipipe:metadata-v1": {
+        "location/d1a496d8-97b0-536e-b120-05cb86d22589/x": 18,
+        "location/d1a496d8-97b0-536e-b120-05cb86d22589/y": 16
+      },
+      "jipipe:node-info-id": "ij1-math-fast-image-arithmetics",
+      "jipipe:slot-configuration": {
+        "input": {
+          "I1": {
+            "slot-data-type": "imagej-imgplus-greyscale",
+            "slot-type": "Input",
+            "name": "I1",
+            "custom-name": null,
+            "description": "",
+            "is-virtual": false,
+            "save-outputs": true,
+            "is-optional": true
+          },
+          "I2": {
+            "slot-data-type": "imagej-imgplus-greyscale",
+            "slot-type": "Input",
+            "name": "I2",
+            "custom-name": null,
+            "description": "",
+            "is-virtual": false,
+            "save-outputs": true,
+            "is-optional": false
+          }
+        },
+        "output": {
+          "Output": {
+            "slot-data-type": "imagej-imgplus-greyscale",
+            "slot-type": "Output",
+            "name": "Output",
+            "custom-name": null,
+            "description": "",
+            "is-virtual": false,
+            "save-outputs": true,
+            "is-optional": false
+          }
+        }
+      },
+      "expression": {
+        "expression": "MAX(I1,I2)"
+      },
+      "bit-depth": "Grayscale32f"
+    },
+    "n4": {
+      "jipipe:graph-compartment": "d1a496d8-97b0-536e-b120-05cb86d22589",
+      "jipipe:metadata-v1": {
+        "location/d1a496d8-97b0-536e-b120-05cb86d22589/x": 18,
+        "location/d1a496d8-97b0-536e-b120-05cb86d22589/y": 12
+      },
+      "jipipe:node-info-id": "ij1-math-fast-image-arithmetics",
+      "jipipe:slot-configuration": {
+        "input": {
+          "I1": {
+            "slot-data-type": "imagej-imgplus-greyscale",
+            "slot-type": "Input",
+            "name": "I1",
+            "custom-name": null,
+            "description": "",
+            "is-virtual": false,
+            "save-outputs": true,
+            "is-optional": true
+          },
+          "I2": {
+            "slot-data-type": "imagej-imgplus-greyscale",
+            "slot-type": "Input",
+            "name": "I2",
+            "custom-name": null,
+            "description": "",
+            "is-virtual": false,
+            "save-outputs": true,
+            "is-optional": false
+          }
+        },
+        "output": {
+          "Output": {
+            "slot-data-type": "imagej-imgplus-greyscale",
+            "slot-type": "Output",
+            "name": "Output",
+            "custom-name": null,
+            "description": "",
+            "is-virtual": false,
+            "save-outputs": true,
+            "is-optional": false
+          }
+        }
+      },
+      "expression": {
+        "expression": "MAX(I1,I2)"
+      },
+      "bit-depth": "Grayscale32f"
+    },
+    "n5": {
+      "jipipe:graph-compartment": "d1a496d8-97b0-536e-b120-05cb86d22589",
+      "jipipe:metadata-v1": {
+        "location/d1a496d8-97b0-536e-b120-05cb86d22589/x": 37,
+        "location/d1a496d8-97b0-536e-b120-05cb86d22589/y": 8
+      },
+      "jipipe:node-info-id": "ij1-math-divide-by-maximum"
+    },
+    "n6": {
+      "jipipe:graph-compartment": "d1a496d8-97b0-536e-b120-05cb86d22589",
+      "jipipe:metadata-v1": {
+        "location/d1a496d8-97b0-536e-b120-05cb86d22589/x": 29,
+        "location/d1a496d8-97b0-536e-b120-05cb86d22589/y": 8
+      },
+      "jipipe:node-info-id": "ij1-math-divide-by-maximum"
+    },
+    "n7": {
+      "jipipe:graph-compartment": "d1a496d8-97b0-536e-b120-05cb86d22589",
+      "jipipe:metadata-v1": {
+        "location/d1a496d8-97b0-536e-b120-05cb86d22589/x": 32,
+        "location/d1a496d8-97b0-536e-b120-05cb86d22589/y": 4
+      },
+      "jipipe:node-info-id": "annotate-filter-by-annotation-if-else"
+    },
+    "n8": {
+      "jipipe:graph-compartment": "d1a496d8-97b0-536e-b120-05cb86d22589",
+      "jipipe:metadata-v1": {
+        "location/d1a496d8-97b0-536e-b120-05cb86d22589/x": 0,
+        "location/d1a496d8-97b0-536e-b120-05cb86d22589/y": 8
+      },
+      "jipipe:node-info-id": "ij1-math-divide-by-maximum"
+    }
+  }
+}

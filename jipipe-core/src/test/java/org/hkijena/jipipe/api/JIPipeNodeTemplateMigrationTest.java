@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.api;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabase;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseBuilderRun;
@@ -76,7 +75,9 @@ class JIPipeNodeTemplateMigrationTest {
         deleteRecursivelyQuietly(tempUserDirBase);
     }
 
-    /** Best-effort recursive delete of the temp user-dir base. */
+    /**
+     * Best-effort recursive delete of the temp user-dir base.
+     */
     private static void deleteRecursivelyQuietly(Path root) {
         if (root == null) {
             return;
@@ -151,7 +152,7 @@ class JIPipeNodeTemplateMigrationTest {
     @Test
     void migrationIsIdempotent() throws Exception {
         JIPipeNodeTemplate t = JsonUtils.readFromString(
-            "{\"name\":\"x\",\"menu-path\":[\"Image\"]}", JIPipeNodeTemplate.class);
+                "{\"name\":\"x\",\"menu-path\":[\"Image\"]}", JIPipeNodeTemplate.class);
         t.migrateLegacyMenuPath();
         String afterFirst = t.getDescription().getHtml();
         t.migrateLegacyMenuPath();
@@ -161,7 +162,7 @@ class JIPipeNodeTemplateMigrationTest {
     @Test
     void saveDropsLegacyKey() throws Exception {
         JIPipeNodeTemplate t = JsonUtils.readFromString(
-            "{\"name\":\"x\",\"menu-path\":[\"Image\",\"Threshold\"]}", JIPipeNodeTemplate.class);
+                "{\"name\":\"x\",\"menu-path\":[\"Image\",\"Threshold\"]}", JIPipeNodeTemplate.class);
         t.migrateLegacyMenuPath();
         assertThat(JsonUtils.toPrettyJsonString(t)).doesNotContain("menu-path");
     }
@@ -182,7 +183,7 @@ class JIPipeNodeTemplateMigrationTest {
         assertThat(JIPipe.getNodeTemplates().addToProject(t, project)).isTrue();
 
         // Trigger the database build. rebuildImmediately() enqueues the builder
-        // run ASYNCHRONOUSLY (SwingWorker), so — like NodeDatabaseTaxonomyTest —
+        // run ASYNCHRONOUSLY (SwingWorker), so - like NodeDatabaseTaxonomyTest -
         // we use a database whose virtual rebuildImmediately() is a no-op and
         // run the builder synchronously to assert its effect deterministically.
         // The database must hold the SAME project, because the builder's
@@ -211,11 +212,11 @@ class JIPipeNodeTemplateMigrationTest {
     @Test
     void downloadedGlobalTemplateGetsTheDownloadedScopeInTheDatabase() throws Exception {
         JIPipeNodeTemplate downloaded = JsonUtils.readFromString(
-            "{\"name\":\"builder-downloaded-probe\"}", JIPipeNodeTemplate.class);
+                "{\"name\":\"builder-downloaded-probe\"}", JIPipeNodeTemplate.class);
         downloaded.setGraph(new JIPipeGraph());
         downloaded.setSource("https://example.org/repo/node-templates.json");
         JIPipeNodeTemplate userOwned = JsonUtils.readFromString(
-            "{\"name\":\"builder-user-probe\"}", JIPipeNodeTemplate.class);
+                "{\"name\":\"builder-user-probe\"}", JIPipeNodeTemplate.class);
         userOwned.setGraph(new JIPipeGraph()); // default source = the user source
 
         JIPipeProject project = new JIPipeProject();
@@ -226,16 +227,16 @@ class JIPipeNodeTemplateMigrationTest {
             new JIPipeNodeDatabaseBuilderRun(database).run();
 
             var downloadedEntry = database.getEntries().stream()
-                .filter(e -> "builder-downloaded-probe".equals(e.getName()))
-                .findFirst().orElseThrow();
+                    .filter(e -> "builder-downloaded-probe".equals(e.getName()))
+                    .findFirst().orElseThrow();
             var userEntry = database.getEntries().stream()
-                .filter(e -> "builder-user-probe".equals(e.getName()))
-                .findFirst().orElseThrow();
+                    .filter(e -> "builder-user-probe".equals(e.getName()))
+                    .findFirst().orElseThrow();
 
             assertThat(((CreateNewNodesByTemplateDatabaseEntry) downloadedEntry).getScope())
-                .isEqualTo(TemplateScope.Downloaded);
+                    .isEqualTo(TemplateScope.Downloaded);
             assertThat(((CreateNewNodesByTemplateDatabaseEntry) userEntry).getScope())
-                .isEqualTo(TemplateScope.Global);
+                    .isEqualTo(TemplateScope.Global);
         } finally {
             JIPipe.getNodeTemplates().removeFromGlobal(downloaded);
             JIPipe.getNodeTemplates().removeFromGlobal(userOwned);

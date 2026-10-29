@@ -34,35 +34,41 @@ template:
 
 # Pattern: Annotate with file/directory name -> Filter paths -> List files -> Annotate with file/directory name
 
-Mined pattern `chain-4-path-to-annotation-simple-path-filter-folder-list-files-path-to-annotation-simple` (shape `chain`, support 32).
+Mined pattern `chain-4-path-to-annotation-simple-path-filter-folder-list-files-path-to-annotation-simple` (shape
+`chain`, support 32).
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
+| role     | node ids                    |
+|----------|-----------------------------|
 | annotate | `path-to-annotation-simple` |
-| import | `path-filter` |
-| import | `folder-list-files` |
+| import   | `path-filter`               |
+| import   | `folder-list-files`         |
 | annotate | `path-to-annotation-simple` |
 
 ## Example graph
 
-Project: `AIAgentTests/03-ExampleWorkflows/Angela_Roots_38.jip` (relative to `/data/JIPipe`), compartment `Preprocessing`.
+Project: `AIAgentTests/03-ExampleWorkflows/Angela_Roots_38.jip` (relative to `/data/JIPipe`), compartment
+`Preprocessing`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `path-to-annotation-simple` | Add path to annotations #1 |
-| n1 | `path-filter` | Filter paths |
-| n2 | `folder-list-files` | List TIFF or JPG |
-| n3 | `path-to-annotation-simple` | Add path to annotations #2 |
+| key | node id                     | name                       |
+|-----|-----------------------------|----------------------------|
+| n0  | `path-to-annotation-simple` | Add path to annotations #1 |
+| n1  | `path-filter`               | Filter paths               |
+| n2  | `folder-list-files`         | List TIFF or JPG           |
+| n3  | `path-to-annotation-simple` | Add path to annotations #2 |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
-| Add path to annotations #1 | `Annotated paths` | Filter paths | `Input` | `path` |
-| Filter paths | `Output` | List TIFF or JPG | `Folders` | `path` |
-| List TIFF or JPG | `Files` | Add path to annotations #2 | `Paths` | `file` |
+| from                       | slot              | to                         | slot      | data class |
+|----------------------------|-------------------|----------------------------|-----------|------------|
+| Add path to annotations #1 | `Annotated paths` | Filter paths               | `Input`   | `path`     |
+| Filter paths               | `Output`          | List TIFF or JPG           | `Folders` | `path`     |
+| List TIFF or JPG           | `Files`           | Add path to annotations #2 | `Paths`   | `file`     |
 
 ## Template
 
-Proposed name `Annotate with file/directory name -> Filter paths -> List files -> Annotate with file/directory name`, menu path `Patterns/Annotations/Annotate with file/directory name -> Filter paths -> List files -> Annotate with file/directory name` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/chain-4-path-to-annotation-simple-path-filter-folder-list-files-path-to-annotation-simple.json`.
+Proposed name `Annotate with file/directory name -> Filter paths -> List files -> Annotate with file/directory name`,
+menu path
+`Patterns/Annotations/Annotate with file/directory name -> Filter paths -> List files -> Annotate with file/directory name`
+(proposal only - not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/chain-4-path-to-annotation-simple-path-filter-folder-list-files-path-to-annotation-simple.json`.
 

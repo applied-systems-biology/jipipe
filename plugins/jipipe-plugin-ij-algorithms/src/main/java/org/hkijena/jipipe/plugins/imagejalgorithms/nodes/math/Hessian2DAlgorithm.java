@@ -13,8 +13,6 @@
 
 package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.math;
 
-import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
-import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import ij.ImagePlus;
 import ij.ImageStack;
 import imagescience.feature.Hessian;
@@ -22,13 +20,16 @@ import imagescience.image.Aspects;
 import imagescience.image.FloatImage;
 import imagescience.image.Image;
 import org.hkijena.jipipe.api.*;
-import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.MeasurementsFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.FilteringFunction;
+import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.FilteringFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.MeasurementsFunction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejalgorithms.parameters.EigenvalueSelection2D;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
@@ -37,10 +38,13 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 
 import java.util.Vector;
 
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
+
 @SetJIPipeDocumentation(name = "Hessian 2D (FeatureJ, old)", description = "Deprecated: Replace with node with the same name. " +
         "Computes Hessian the eigenvalues of the Hessian, which can be used for example to discriminate locally between plate-like, line-like, and blob-like image structures." +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@ConfigureJIPipeNode(function = { FilteringFunction.class, MeasurementsFunction.class }, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
+@ConfigureJIPipeNode(function = {FilteringFunction.class, MeasurementsFunction.class}, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, name = "Output", create = true)
 @AddJIPipeCitation("Y. Sato, S. Nakajima, N. Shiraga, H. Atsumi, S. Yoshida, T. Koller, G. Gerig, R. Kikinis Three-Dimensional Multi-Scale Line Filter for Segmentation and Visualization of Curvilinear Structures in Medical Images Medical Image Analysis, vol. 2, no. 2, June 1998, pp. 143-168")

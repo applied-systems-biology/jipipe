@@ -13,20 +13,20 @@
 
 package org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.modify;
 
-import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
-import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.IJ3DFramework;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.rois.RoiFiltersFunction;
-
 import gnu.trove.list.TDoubleList;
 import gnu.trove.list.array.TDoubleArrayList;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.IJ3DFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.rois.RoiFiltersFunction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.ij3d.IJ3DUtils;
 import org.hkijena.jipipe.plugins.ij3d.datatypes.Ij3dSuiteRoi;
@@ -38,8 +38,11 @@ import org.hkijena.jipipe.plugins.parameters.library.colors.ColorMapEnumItemInfo
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorMapParameter;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
+
 @SetJIPipeDocumentation(name = "Color IJ3D ROI by statistics", description = "Colors a list of 3D ROIs by a chosen measurement. It takes 3D ROIs and an optional reference image, measures the selected statistic for each ROI (in physical units when available), maps the values to a color map, and outputs the same 3D ROI list with updated fill colors.")
-@ConfigureJIPipeNode(function = RoiFiltersFunction.class, framework = IJ3DFramework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
+@ConfigureJIPipeNode(function = RoiFiltersFunction.class, framework = IJ3DFramework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = Ij3dSuiteRoiListData.class, name = "ROI", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true)
 @AddJIPipeOutputSlot(value = Ij3dSuiteRoiListData.class, name = "Output", create = true)

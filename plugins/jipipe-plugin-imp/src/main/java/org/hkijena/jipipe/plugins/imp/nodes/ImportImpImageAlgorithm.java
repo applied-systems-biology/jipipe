@@ -13,17 +13,17 @@
 
 package org.hkijena.jipipe.plugins.imp.nodes;
 
-import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
-import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.CoreFramework;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.ImageDataFunction;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.ImageDataFunction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.plugins.imp.datatypes.ImpImageData;
@@ -32,8 +32,11 @@ import org.hkijena.jipipe.utils.BufferedImageUtils;
 import java.awt.image.BufferedImage;
 import java.nio.file.Path;
 
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
+
 @SetJIPipeDocumentation(name = "Import image (with transparency)", description = "Imports an image via the Image Manipulation Pipeline.")
-@ConfigureJIPipeNode(function = ImageDataFunction.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
+@ConfigureJIPipeNode(function = ImageDataFunction.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = FileData.class, name = "File", create = true, description = "The file to be imported")
 @AddJIPipeOutputSlot(value = ImpImageData.class, name = "Image", create = true, description = "The image")
 public class ImportImpImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {

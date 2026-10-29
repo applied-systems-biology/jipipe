@@ -1,4 +1,4 @@
-# Mirror Snapshot Builds to GitHub Prereleases — Design
+# Mirror Snapshot Builds to GitHub Prereleases - Design
 
 Date: 2026-09-09
 
@@ -49,7 +49,7 @@ master commit
 
 ## Approach (chosen)
 
-**Option A — a new dedicated `upload_to_github_prerelease` job** in the
+**Option A - a new dedicated `upload_to_github_prerelease` job** in the
 `publish` stage, using the official GitHub CLI `gh`.
 
 Rationale:
@@ -66,7 +66,7 @@ Rationale:
 
 Add job `upload_to_github_prerelease` to the `publish` stage.
 
-- `needs: distribution_package` (artifacts) — it does **not** wait on
+- `needs: distribution_package` (artifacts) - it does **not** wait on
   `upload_to_package_registry`; the two publish jobs run in parallel.
 - `rules: if: $CI_COMMIT_BRANCH == "master"` (same as siblings).
 - Runs only when the build artifacts exist; fails with a clear message
@@ -101,7 +101,7 @@ Script steps:
    predicate; fail if empty.
 4. Auth: `gh` reads the `GH_TOKEN` env var automatically.
 5. Delete-and-recreate (see §4):
-   - `gh release view <VERSION>`; if present, `gh release delete --yes`.
+    - `gh release view <VERSION>`; if present, `gh release delete --yes`.
 6. Create + upload:
    ```
    gh release create "<VERSION>" \
@@ -125,14 +125,14 @@ master commit → distribution_package
 
 New CI/CD variable (GitLab → Settings → CI/CD → Variables, masked):
 
-| Name | Masked | Value |
-|------|--------|-------|
-| `GH_TOKEN` | yes | GitHub **fine-grained** PAT with `Contents: Read and write` on `applied-systems-biology/jipipe` only |
+| Name       | Masked | Value                                                                                                |
+|------------|--------|------------------------------------------------------------------------------------------------------|
+| `GH_TOKEN` | yes    | GitHub **fine-grained** PAT with `Contents: Read and write` on `applied-systems-biology/jipipe` only |
 
 Token guidance:
 
 - Prefer a **fine-grained** PAT scoped to only the `applied-systems-biology/jipipe`
-  repository with only `Contents: Read and write` — enough for
+  repository with only `Contents: Read and write` - enough for
   `GET /repos/.../releases`, `POST /repos/.../releases`, and asset upload.
 - Do not use a broad classic PAT.
 - Prefer a bot/service-account token so it survives engineer offboarding.
@@ -163,11 +163,11 @@ Verification is intrinsic to the CI job (no JUnit applies to CI YAML):
   ```
   gh release view <VERSION> --json assets --jq '.assets[].name'
   ```
-  and assert all 5 expected filenames are present; fail if any are missing.
-  (Delete-and-recreate means a re-run recovers.)
+  and assert all 5 expected filenames are present; fail if any are missing. (Delete-and-recreate means a re-run
+  recovers.)
 - Confirm the release is queryable after creation.
 - **Manual smoke test** on first master merge: inspect
-  `https://github.com/applied-systems-biology/jipipe/releases` — confirm the "Pre-release"
+  `https://github.com/applied-systems-biology/jipipe/releases` - confirm the "Pre-release"
   badge, all 5 assets present and downloadable, and that download speed from
   GitHub exceeds the ~2 MB/s GitLab limit.
 
@@ -179,4 +179,4 @@ Verification is intrinsic to the CI job (no JUnit applies to CI YAML):
 
 ## Files changed
 
-- `.gitlab-ci.yml` — add `upload_to_github_prerelease` job.
+- `.gitlab-ci.yml` - add `upload_to_github_prerelease` job.

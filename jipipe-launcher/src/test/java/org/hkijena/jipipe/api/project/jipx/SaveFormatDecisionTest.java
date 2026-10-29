@@ -19,18 +19,16 @@ import org.junit.jupiter.api.Test;
 
 import java.nio.file.Path;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * The JIPX migration prompt decision (spec §7): only projects whose
  * current save target is a legacy {@code .jip} file get the per-save
- * "save as JIPipe 6 project?" prompt — and only when the save is a
+ * "save as JIPipe 6 project?" prompt - and only when the save is a
  * user-initiated one (Ctrl+S / save chooser). Untitled projects and
  * projects already saved as {@code .jipx} proceed directly, and
  * AUTOSAVES (the {@code (avoidDialog, updateSavePath)} combination
- * {@code (true, false)}) never prompt — a modal prompt on every autosave
+ * {@code (true, false)}) never prompt - a modal prompt on every autosave
  * interval would break autosave.
  */
 public class SaveFormatDecisionTest {
@@ -49,47 +47,47 @@ public class SaveFormatDecisionTest {
     @Test
     public void untitledProjectNeverPrompts() {
         assertFalse(JIPipeProjectSaveTarget.shouldPrompt(NULL, true, false),
-                "(null, true, false) — untitled autosave must not prompt");
+                "(null, true, false) - untitled autosave must not prompt");
         assertFalse(JIPipeProjectSaveTarget.shouldPrompt(NULL, true, true),
-                "(null, true, true) — untitled save must not prompt (the chooser decides)");
+                "(null, true, true) - untitled save must not prompt (the chooser decides)");
         assertFalse(JIPipeProjectSaveTarget.shouldPrompt(NULL, false, true),
-                "(null, false, true) — untitled chooser save must not prompt");
+                "(null, false, true) - untitled chooser save must not prompt");
     }
 
     @Test
     public void jipxProjectNeverPrompts() {
         assertFalse(JIPipeProjectSaveTarget.shouldPrompt(JIPX, true, false),
-                "(x.jipx, true, false) — autosave of a .jipx must not prompt");
+                "(x.jipx, true, false) - autosave of a .jipx must not prompt");
         assertFalse(JIPipeProjectSaveTarget.shouldPrompt(JIPX, true, true),
-                "(x.jipx, true, true) — Ctrl+S of a .jipx must not prompt (it round-trips)");
+                "(x.jipx, true, true) - Ctrl+S of a .jipx must not prompt (it round-trips)");
         assertFalse(JIPipeProjectSaveTarget.shouldPrompt(JIPX, false, true),
-                "(x.jipx, false, true) — chooser save of a .jipx must not prompt");
+                "(x.jipx, false, true) - chooser save of a .jipx must not prompt");
         assertFalse(JIPipeProjectSaveTarget.shouldPrompt(JIPX_UPPER, true, true),
-                "(x.JIPX, true, true) — extension check is case-insensitive");
+                "(x.JIPX, true, true) - extension check is case-insensitive");
     }
 
     @Test
     public void autosaveOfLegacyJipNeverPrompts() {
         assertFalse(JIPipeProjectSaveTarget.shouldPrompt(JIP, true, false),
-                "(x.jip, true, false) — autosave must NEVER prompt (the modal prompt would fire every autosave interval)");
+                "(x.jip, true, false) - autosave must NEVER prompt (the modal prompt would fire every autosave interval)");
     }
 
     @Test
     public void ctrlSOfLegacyJipPrompts() {
         assertTrue(JIPipeProjectSaveTarget.shouldPrompt(JIP, true, true),
-                "(x.jip, true, true) — Ctrl+S of a legacy project must prompt");
+                "(x.jip, true, true) - Ctrl+S of a legacy project must prompt");
     }
 
     @Test
     public void chooserSaveOfLegacyJipPrompts() {
         assertTrue(JIPipeProjectSaveTarget.shouldPrompt(JIP, false, true),
-                "(x.jip, false, true) — a .jip chosen in the save dialog must prompt");
+                "(x.jip, false, true) - a .jip chosen in the save dialog must prompt");
     }
 
     @Test
     public void nonProjectExtensionsNeverPrompt() {
         // Files that are neither format go through the normal save flow
-        // (which will fail at the writer dispatch) — no prompt.
+        // (which will fail at the writer dispatch) - no prompt.
         for (Path path : new Path[]{JIPC, JSON}) {
             for (int avoid = 0; avoid < 2; avoid++) {
                 for (int update = 0; update < 2; update++) {
@@ -130,7 +128,7 @@ public class SaveFormatDecisionTest {
 
     @Test
     public void legacyCompatibilityGateCurrentlyEveryProjectIsCompatible() {
-        // No jipx-exclusive state exists yet — every project is still
+        // No jipx-exclusive state exists yet - every project is still
         // expressible in the legacy format, so the prompt and the legacy
         // save path stay reachable. (That old-format projects round-trip
         // losslessly is pinned by the corpus done-gate.)

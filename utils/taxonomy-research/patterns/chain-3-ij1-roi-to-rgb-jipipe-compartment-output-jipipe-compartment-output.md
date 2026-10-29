@@ -36,28 +36,32 @@ Mined pattern `chain-3-ij1-roi-to-rgb-jipipe-compartment-output-jipipe-compartme
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| other | `ij1-roi-to-rgb` |
+| role    | node ids                    |
+|---------|-----------------------------|
+| other   | `ij1-roi-to-rgb`            |
 | core-io | `jipipe:compartment-output` |
 | core-io | `jipipe:compartment-output` |
 
 ## Example graph
 
-Project: `AIAgentTests/02-AdvancedPipelines/Cryogels_01.jip` (relative to `/data/JIPipe`), compartment `Apply Cellpose Model 2+ROI management`.
+Project: `AIAgentTests/02-AdvancedPipelines/Cryogels_01.jip` (relative to `/data/JIPipe`), compartment
+`Apply Cellpose Model 2+ROI management`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `ij1-roi-to-rgb` | Convert ROI to RGB: Cellpose results |
-| n1 | `jipipe:compartment-output` | Output #1 |
-| n2 | `jipipe:compartment-output` | Output #2 |
+| key | node id                     | name                                 |
+|-----|-----------------------------|--------------------------------------|
+| n0  | `ij1-roi-to-rgb`            | Convert ROI to RGB: Cellpose results |
+| n1  | `jipipe:compartment-output` | Output #1                            |
+| n2  | `jipipe:compartment-output` | Output #2                            |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
-| Convert ROI to RGB: Cellpose results | `Output` | Output #1 | `Overlay` | `imagej-imgplus-color-rgb` |
-| Output #1 | `ROIs` | Output #2 | `Model2 ROI` | `imagej-roi` |
+| from                                 | slot     | to        | slot         | data class                 |
+|--------------------------------------|----------|-----------|--------------|----------------------------|
+| Convert ROI to RGB: Cellpose results | `Output` | Output #1 | `Overlay`    | `imagej-imgplus-color-rgb` |
+| Output #1                            | `ROIs`   | Output #2 | `Model2 ROI` | `imagej-roi`               |
 
 ## Template
 
-Proposed name `Convert 2D ROI to RGB -> Compartment output -> Compartment output`, menu path `Patterns/ROIs/Convert 2D ROI to RGB -> Compartment output -> Compartment output` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/chain-3-ij1-roi-to-rgb-jipipe-compartment-output-jipipe-compartment-output.json`.
+Proposed name `Convert 2D ROI to RGB -> Compartment output -> Compartment output`, menu path
+`Patterns/ROIs/Convert 2D ROI to RGB -> Compartment output -> Compartment output` (proposal only - not registered).
+`data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/chain-3-ij1-roi-to-rgb-jipipe-compartment-output-jipipe-compartment-output.json`.
 

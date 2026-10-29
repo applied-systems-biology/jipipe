@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyInferencePattern;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.ImagesFunction;
 import org.jetbrains.annotations.Nullable;
 
-import javax.swing.Icon;
+import javax.swing.*;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -28,7 +28,9 @@ import java.util.Set;
  */
 public final class ThresholdingFunction implements JIPipeNodeTaxonomyFunction {
 
-    /** The stable registry id of this function (a string literal per the stable-ID rule). */
+    /**
+     * The stable registry id of this function (a string literal per the stable-ID rule).
+     */
     public static final String ID = "jipipe:function:thresholding";
 
     @Override

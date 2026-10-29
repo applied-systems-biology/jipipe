@@ -25,7 +25,9 @@ import java.util.Set;
  */
 public final class MiscellaneousUnassignedFunction implements JIPipeNodeTaxonomyFunction {
 
-    /** The stable registry id of this function (a string literal per the stable-ID rule). */
+    /**
+     * The stable registry id of this function (a string literal per the stable-ID rule).
+     */
     public static final String ID = "jipipe:function:misc-unassigned";
 
     @Override

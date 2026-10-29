@@ -99,6 +99,7 @@ public abstract class JIPipeArtifactEnvironment extends JIPipeEnvironment {
 
     /**
      * Returns true if the artifact environment can be deployed to a read-only repository
+     *
      * @return if read-only deployment is allowed
      */
     public abstract boolean isAllowReadOnlyDeployment();

@@ -1,1 +1,55 @@
-{"nodes":{"n0":{"jipipe:node-info-id":"import-imagej-roi-from-file","jipipe:graph-compartment":"77aec6ff-1f4a-5643-b368-7517f2e95d34","jipipe:node:name":"ROI from file"},"n1":{"jipipe:node-info-id":"ij1-roi-to-mask","jipipe:graph-compartment":"77aec6ff-1f4a-5643-b368-7517f2e95d34","jipipe:node:name":"Convert ROI to mask"},"n2":{"jipipe:node-info-id":"ij1-morph-operation2d","jipipe:graph-compartment":"77aec6ff-1f4a-5643-b368-7517f2e95d34","jipipe:node:name":"Morphological operation 2D"},"n3":{"jipipe:node-info-id":"annotate-with-data","jipipe:graph-compartment":"77aec6ff-1f4a-5643-b368-7517f2e95d34","jipipe:node:name":"Annotate with data"},"n4":{"jipipe:node-info-id":"distribute-data","jipipe:graph-compartment":"77aec6ff-1f4a-5643-b368-7517f2e95d34","jipipe:node:name":"Split data randomly (percentage)"}},"edges":[{"source-node":"n0","source-slot":"Output","target-node":"n1","target-slot":"ROI"},{"source-node":"n1","source-slot":"Output","target-node":"n2","target-slot":"Input"},{"source-node":"n2","source-slot":"Output","target-node":"n3","target-slot":"Annotation"},{"source-node":"n3","source-slot":"Output","target-node":"n4","target-slot":"Input"}]}
+{
+  "nodes": {
+    "n0": {
+      "jipipe:node-info-id": "import-imagej-roi-from-file",
+      "jipipe:graph-compartment": "77aec6ff-1f4a-5643-b368-7517f2e95d34",
+      "jipipe:node:name": "ROI from file"
+    },
+    "n1": {
+      "jipipe:node-info-id": "ij1-roi-to-mask",
+      "jipipe:graph-compartment": "77aec6ff-1f4a-5643-b368-7517f2e95d34",
+      "jipipe:node:name": "Convert ROI to mask"
+    },
+    "n2": {
+      "jipipe:node-info-id": "ij1-morph-operation2d",
+      "jipipe:graph-compartment": "77aec6ff-1f4a-5643-b368-7517f2e95d34",
+      "jipipe:node:name": "Morphological operation 2D"
+    },
+    "n3": {
+      "jipipe:node-info-id": "annotate-with-data",
+      "jipipe:graph-compartment": "77aec6ff-1f4a-5643-b368-7517f2e95d34",
+      "jipipe:node:name": "Annotate with data"
+    },
+    "n4": {
+      "jipipe:node-info-id": "distribute-data",
+      "jipipe:graph-compartment": "77aec6ff-1f4a-5643-b368-7517f2e95d34",
+      "jipipe:node:name": "Split data randomly (percentage)"
+    }
+  },
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Output",
+      "target-node": "n1",
+      "target-slot": "ROI"
+    },
+    {
+      "source-node": "n1",
+      "source-slot": "Output",
+      "target-node": "n2",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n2",
+      "source-slot": "Output",
+      "target-node": "n3",
+      "target-slot": "Annotation"
+    },
+    {
+      "source-node": "n3",
+      "source-slot": "Output",
+      "target-node": "n4",
+      "target-slot": "Input"
+    }
+  ]
+}

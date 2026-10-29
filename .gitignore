@@ -93,7 +93,7 @@ cmake-build-*/
 # IntelliJ
 out/
 
-# Taxonomy conversion tooling (task 14) — one-off scratch inputs/tools, not committed.
+# Taxonomy conversion tooling (task 14) - one-off scratch inputs/tools, not committed.
 # The committed decision record is utils/taxonomy-conversion/conversion-map.md.
 /utils/taxonomy-conversion/convert.py
 /utils/taxonomy-conversion/*.tsv
@@ -124,7 +124,7 @@ fabric.properties
 /jcef-bundle/
 /config/
 
-# Taxonomy conversion scratch (19.2 mapping build) — one-off survey data + builder scripts.
+# Taxonomy conversion scratch (19.2 mapping build) - one-off survey data + builder scripts.
 # The committed decision record is utils/taxonomy-conversion/conversion-map.md.
 /utils/taxonomy-conversion/*.json
 /utils/taxonomy-conversion/*_map.py

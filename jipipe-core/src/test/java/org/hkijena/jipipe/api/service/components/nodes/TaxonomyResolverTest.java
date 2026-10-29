@@ -15,20 +15,15 @@ package org.hkijena.jipipe.api.service.components.nodes;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeMutableDependency;
-import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.infos.JIPipeJavaNodeInfo;
-import org.hkijena.jipipe.api.nodes.taxonomy.InputProfileProvider;
-import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFamily;
-import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFamilyStepAnnotation;
-import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework;
-import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyInputProfile;
-import org.hkijena.jipipe.api.data.JIPipeDataTable;
+import org.hkijena.jipipe.api.nodes.taxonomy.*;
 import org.hkijena.jipipe.api.service.components.JIPipeNodesServiceComponent;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
@@ -37,7 +32,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import javax.swing.Icon;
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -70,7 +65,9 @@ class TaxonomyResolverTest {
 
     private static final String FRAMEWORK_ID = "taxonomy-resolver-test:framework";
 
-    /** Stable id literal for the stub workflow family (see the stable-ID rule). */
+    /**
+     * Stable id literal for the stub workflow family (see the stable-ID rule).
+     */
     private static final String FAMILY_ID = "jipipe:family:taxonomy-resolver-test";
 
     private static final String TEST_DEPENDENCY_ID = "taxonomy-resolver-test";
@@ -85,6 +82,19 @@ class TaxonomyResolverTest {
     static void ensureJIPipe() {
         JIPipe.ensureInstance();
     }
+
+    private static void registerNode(Class<? extends JIPipeGraphNode> nodeClass) {
+        JIPipeNodesServiceComponent nodes = JIPipe.getNodes();
+        if (nodes.hasNodeInfoWithId(nodeClass.getSimpleName())) {
+            nodes.unregister(nodeClass.getSimpleName());
+        }
+        JIPipeNodeInfo info = new JIPipeJavaNodeInfo(nodeClass.getSimpleName(), nodeClass);
+        nodes.register(info, new JIPipeMutableDependency(TEST_DEPENDENCY_ID, "1.0.0", "taxonomy-resolver-test"));
+    }
+
+    // ------------------------------------------------------------------
+    // Test cases
+    // ------------------------------------------------------------------
 
     @AfterEach
     void cleanup() {
@@ -109,10 +119,6 @@ class TaxonomyResolverTest {
         nodes.runRegistrationTasks();
     }
 
-    // ------------------------------------------------------------------
-    // Test cases
-    // ------------------------------------------------------------------
-
     /**
      * A node whose primary function was never registered in the
      * FunctionRegistry produces a {@code validateTaxonomy()} error that
@@ -128,7 +134,7 @@ class TaxonomyResolverTest {
 
         assertFalse(errors.isEmpty(), "expected at least the unregistered-function error");
         assertTrue(errors.stream().anyMatch(e -> e.contains(NodesWithFunction.class.getSimpleName()) && e.contains(FUNC_ID)),
-            "error must name the node id and the function id, got: " + errors);
+                "error must name the node id and the function id, got: " + errors);
     }
 
     /**
@@ -141,7 +147,7 @@ class TaxonomyResolverTest {
         JIPipeNodesServiceComponent nodes = JIPipe.getNodes();
 
         JIPipeNodeTaxonomyInputProfile profile = assertDoesNotThrow(
-            () -> nodes.inputProfileFor(JIPipeDataTable.class));
+                () -> nodes.inputProfileFor(JIPipeDataTable.class));
 
         assertEquals(JIPipeNodeTaxonomyInputProfile.NA, profile);
     }
@@ -155,16 +161,16 @@ class TaxonomyResolverTest {
         JIPipeNodesServiceComponent nodes = JIPipe.getNodes();
         InputProfileProvider naProvider = dataClass -> JIPipeNodeTaxonomyInputProfile.NA;
         InputProfileProvider volumeProvider = dataClass ->
-            dataClass == JIPipeDataTable.class
-                ? JIPipeNodeTaxonomyInputProfile.VOLUME_3D
-                : JIPipeNodeTaxonomyInputProfile.NA;
+                dataClass == JIPipeDataTable.class
+                        ? JIPipeNodeTaxonomyInputProfile.VOLUME_3D
+                        : JIPipeNodeTaxonomyInputProfile.NA;
         nodes.registerInputProfileProvider(naProvider);
         nodes.registerInputProfileProvider(volumeProvider);
         testProviders.add(naProvider);
         testProviders.add(volumeProvider);
 
         assertEquals(JIPipeNodeTaxonomyInputProfile.VOLUME_3D,
-            nodes.inputProfileFor(JIPipeDataTable.class));
+                nodes.inputProfileFor(JIPipeDataTable.class));
     }
 
     /**
@@ -184,8 +190,12 @@ class TaxonomyResolverTest {
         Set<String> errors = nodes.validateTaxonomy();
 
         assertTrue(errors.stream().anyMatch(e -> e.contains(FAMILY_ID) && e.contains(DanglingStepNode.class.getSimpleName())),
-            "error must name the family id and the dangling node id, got: " + errors);
+                "error must name the family id and the dangling node id, got: " + errors);
     }
+
+    // ------------------------------------------------------------------
+    // Helpers
+    // ------------------------------------------------------------------
 
     /**
      * A node with a null primary function (not yet converted to the
@@ -201,27 +211,16 @@ class TaxonomyResolverTest {
         Set<String> errors = nodes.validateTaxonomy();
 
         assertFalse(errors.stream().anyMatch(e -> e.contains(NoFunctionNode.class.getSimpleName())),
-            "an unconverted node must not be an error, got: " + errors);
-    }
-
-    // ------------------------------------------------------------------
-    // Helpers
-    // ------------------------------------------------------------------
-
-    private static void registerNode(Class<? extends JIPipeGraphNode> nodeClass) {
-        JIPipeNodesServiceComponent nodes = JIPipe.getNodes();
-        if (nodes.hasNodeInfoWithId(nodeClass.getSimpleName())) {
-            nodes.unregister(nodeClass.getSimpleName());
-        }
-        JIPipeNodeInfo info = new JIPipeJavaNodeInfo(nodeClass.getSimpleName(), nodeClass);
-        nodes.register(info, new JIPipeMutableDependency(TEST_DEPENDENCY_ID, "1.0.0", "taxonomy-resolver-test"));
+                "an unconverted node must not be an error, got: " + errors);
     }
 
     // ------------------------------------------------------------------
     // Stub taxonomy members
     // ------------------------------------------------------------------
 
-    /** Minimal taxonomy function with a top-level hue (self-validating). */
+    /**
+     * Minimal taxonomy function with a top-level hue (self-validating).
+     */
     static class StubFunction implements JIPipeNodeTaxonomyFunction {
         public StubFunction() {
         }
@@ -272,7 +271,9 @@ class TaxonomyResolverTest {
         }
     }
 
-    /** Minimal taxonomy framework. */
+    /**
+     * Minimal taxonomy framework.
+     */
     static class StubFramework implements JIPipeNodeTaxonomyFramework {
         public StubFramework() {
         }
@@ -298,7 +299,9 @@ class TaxonomyResolverTest {
         }
     }
 
-    /** Stub workflow family. */
+    /**
+     * Stub workflow family.
+     */
     static class StubFamily implements JIPipeNodeTaxonomyFamily {
         public StubFamily() {
         }
@@ -343,7 +346,9 @@ class TaxonomyResolverTest {
         }
     }
 
-    /** A node that is not yet converted: no taxonomy functions. */
+    /**
+     * A node that is not yet converted: no taxonomy functions.
+     */
     private static class NoFunctionNode extends JIPipeGraphNode {
         public NoFunctionNode(JIPipeNodeInfo info) {
             super(info);

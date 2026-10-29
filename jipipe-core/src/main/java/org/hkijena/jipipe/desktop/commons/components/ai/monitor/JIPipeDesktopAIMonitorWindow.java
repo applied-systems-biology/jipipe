@@ -35,9 +35,9 @@ import java.util.List;
  * <p>
  * Provides three pages:
  * <ul>
- *     <li><b>Overview</b> — shows embedding model status, model type, model ID, start/stop controls, and AI config button</li>
- *     <li><b>Log</b> — displays the AI service task queue log via {@link org.hkijena.jipipe.desktop.app.running.queue.JIPipeDesktopRunQueueLoggerPanel}</li>
- *     <li><b>Embedding log</b> — displays the embedding model operation log via {@link org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopProgressLoggerPanel}</li>
+ *     <li><b>Overview</b> - shows embedding model status, model type, model ID, start/stop controls, and AI config button</li>
+ *     <li><b>Log</b> - displays the AI service task queue log via {@link org.hkijena.jipipe.desktop.app.running.queue.JIPipeDesktopRunQueueLoggerPanel}</li>
+ *     <li><b>Embedding log</b> - displays the embedding model operation log via {@link org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopProgressLoggerPanel}</li>
  * </ul>
  * <p>
  * Subscribes to {@link org.hkijena.jipipe.api.microservice.MicroserviceStateChangeEventEmitter} on the

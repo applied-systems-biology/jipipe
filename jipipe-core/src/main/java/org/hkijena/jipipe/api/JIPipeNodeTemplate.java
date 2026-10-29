@@ -208,7 +208,7 @@ public class JIPipeNodeTemplate extends AbstractJIPipeParameterCollection {
      * without a getter: the value is read in from old template files, consumed
      * by {@link #migrateLegacyMenuPath()} (which maps it onto
      * {@link #getTaxonomyFunction() taxonomyFunction} and appends an auditable
-     * footer to the description), and then never written back — so the key
+     * footer to the description), and then never written back - so the key
      * vanishes from a file after one save cycle.
      *
      * @param menuPath the legacy menu path (may be {@code null})
@@ -235,9 +235,9 @@ public class JIPipeNodeTemplate extends AbstractJIPipeParameterCollection {
      * {@link #taxonomyFunction} reference (spec §9): when the captured
      * legacy path is non-empty and no taxonomy function is set yet, the first
      * menu segment is matched against the registered taxonomy functions
-     * (case-insensitively, top-level branches before same-named leaves — the
+     * (case-insensitively, top-level branches before same-named leaves - the
      * childless export sub-leaves "Images"/"Tables" must not shadow the
-     * top-level branches of the same name — with the legacy abbreviation
+     * top-level branches of the same name - with the legacy abbreviation
      * table), the old path is appended to the description as an auditable
      * italic footer ("*Previously: Image → Threshold*"), and the captured key
      * is cleared.
@@ -309,7 +309,7 @@ public class JIPipeNodeTemplate extends AbstractJIPipeParameterCollection {
     @JIPipeParameter(value = "data", uiOrder = 999)
     @StringParameterSettings(monospace = true, multiline = true, visible = false)
     public String getData() {
-        if(graph != null) {
+        if (graph != null) {
             data = JsonUtils.toPrettyJsonString(graph);
         }
         return data;
@@ -322,10 +322,6 @@ public class JIPipeNodeTemplate extends AbstractJIPipeParameterCollection {
         this.data = data;
     }
 
-    public void setGraph(JIPipeGraph graph) {
-        setData(JsonUtils.toPrettyJsonString(graph));
-    }
-
     @SetJIPipeDocumentation(name = "Source", description = "Used for assigning the node templates to a source (e.g., remote repository). You can leave this parameter alone.")
     @JIPipeParameter(value = "source")
     @StringParameterSettings(monospace = true)
@@ -336,6 +332,22 @@ public class JIPipeNodeTemplate extends AbstractJIPipeParameterCollection {
     @JIPipeParameter("source")
     public void setSource(String source) {
         this.source = source;
+    }
+
+    /**
+     * Gets the node type stored inside the data.
+     * Returns null if the node type could not be found.
+     *
+     * @return the node type or null if it could not be found
+     */
+    public JIPipeGraph getGraph() {
+        if (graph == null) {
+            try {
+                graph = JsonUtils.readFromString(data, JIPipeGraph.class);
+            } catch (Throwable e) {
+            }
+        }
+        return graph;
     }
 
     //    @JIPipeDocumentation(name = "Paste from clipboard", description = "Sets the node data from clipboard.")
@@ -353,20 +365,8 @@ public class JIPipeNodeTemplate extends AbstractJIPipeParameterCollection {
 //        }
 //    }
 
-    /**
-     * Gets the node type stored inside the data.
-     * Returns null if the node type could not be found.
-     *
-     * @return the node type or null if it could not be found
-     */
-    public JIPipeGraph getGraph() {
-        if (graph == null) {
-            try {
-                graph = JsonUtils.readFromString(data, JIPipeGraph.class);
-            } catch (Throwable e) {
-            }
-        }
-        return graph;
+    public void setGraph(JIPipeGraph graph) {
+        setData(JsonUtils.toPrettyJsonString(graph));
     }
 
     @Override

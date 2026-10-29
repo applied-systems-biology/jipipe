@@ -32,32 +32,37 @@ template:
 
 # Pattern: Compartment output -> Filter IJ3D ROI by overlap (old) -> Extract IJ3D ROI statistics
 
-Mined pattern `chain-3-jipipe-compartment-output-ij3d-roi-filter-by-overlap-ij3d-measure-roi3d` (shape `chain`, support 26).
+Mined pattern `chain-3-jipipe-compartment-output-ij3d-roi-filter-by-overlap-ij3d-measure-roi3d` (shape `chain`, support
+26).
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| core-io | `jipipe:compartment-output` |
-| other | `ij3d-roi-filter-by-overlap` |
-| other | `ij3d-measure-roi3d` |
+| role    | node ids                     |
+|---------|------------------------------|
+| core-io | `jipipe:compartment-output`  |
+| other   | `ij3d-roi-filter-by-overlap` |
+| other   | `ij3d-measure-roi3d`         |
 
 ## Example graph
 
-Project: `AIAgentTests/03-ExampleWorkflows/Annamaria_12.jip` (relative to `/data/JIPipe`), compartment `Colocalization+Particles`.
+Project: `AIAgentTests/03-ExampleWorkflows/Annamaria_12.jip` (relative to `/data/JIPipe`), compartment
+`Colocalization+Particles`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `jipipe:compartment-output` | Output |
-| n1 | `ij3d-roi-filter-by-overlap` | Filter 3D ROI by overlap |
-| n2 | `ij3d-measure-roi3d` | Extract ROI 3D statistics |
+| key | node id                      | name                      |
+|-----|------------------------------|---------------------------|
+| n0  | `jipipe:compartment-output`  | Output                    |
+| n1  | `ij3d-roi-filter-by-overlap` | Filter 3D ROI by overlap  |
+| n2  | `ij3d-measure-roi3d`         | Extract ROI 3D statistics |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
-| Output | `Green ROIs` | Filter 3D ROI by overlap | `ROI 1` | `roi-3d-list` |
-| Filter 3D ROI by overlap | `ROI 2` | Extract ROI 3D statistics | `ROI` | `roi-3d-list` |
+| from                     | slot         | to                        | slot    | data class    |
+|--------------------------|--------------|---------------------------|---------|---------------|
+| Output                   | `Green ROIs` | Filter 3D ROI by overlap  | `ROI 1` | `roi-3d-list` |
+| Filter 3D ROI by overlap | `ROI 2`      | Extract ROI 3D statistics | `ROI`   | `roi-3d-list` |
 
 ## Template
 
-Proposed name `Compartment output -> Filter IJ3D ROI by overlap (old) -> Extract IJ3D ROI statistics`, menu path `Patterns/Graph / Project/Compartment output -> Filter IJ3D ROI by overlap (old) -> Extract IJ3D ROI statistics` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/chain-3-jipipe-compartment-output-ij3d-roi-filter-by-overlap-ij3d-measure-roi3d.json`.
+Proposed name `Compartment output -> Filter IJ3D ROI by overlap (old) -> Extract IJ3D ROI statistics`, menu path
+`Patterns/Graph / Project/Compartment output -> Filter IJ3D ROI by overlap (old) -> Extract IJ3D ROI statistics`
+(proposal only - not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/chain-3-jipipe-compartment-output-ij3d-roi-filter-by-overlap-ij3d-measure-roi3d.json`.
 

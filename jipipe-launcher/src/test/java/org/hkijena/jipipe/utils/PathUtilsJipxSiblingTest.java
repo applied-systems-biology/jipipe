@@ -19,10 +19,11 @@ import org.junit.jupiter.api.io.TempDir;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
- * Tests {@link PathUtils#findJipxSibling(Path)} — the pure file-logic
+ * Tests {@link PathUtils#findJipxSibling(Path)} - the pure file-logic
  * that decides whether a legacy {@code .jip} open should offer the
  * JIPipe 6 ({@code .jipx}) sibling instead.
  * <p>

@@ -732,13 +732,13 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
             Set<JIPipeDataSlot> result = new HashSet<>();
             for (JIPipeGraphEdge edge : edges) {
                 JIPipeDataSlot edgeSource = graph.getEdgeSource(edge);
-                if(edgeSource.getNode() instanceof JIPipeDataFlowTunnelExit) {
+                if (edgeSource.getNode() instanceof JIPipeDataFlowTunnelExit) {
                     // Need to dissolve
                     Stack<JIPipeDataSlot> edgeSourceStack = new Stack<>();
                     edgeSourceStack.push(edgeSource);
-                    while(!edgeSourceStack.isEmpty()) {
+                    while (!edgeSourceStack.isEmpty()) {
                         JIPipeDataSlot es = edgeSourceStack.pop();
-                        if(es.getNode() instanceof JIPipeDataFlowTunnelExit tunnelExit) {
+                        if (es.getNode() instanceof JIPipeDataFlowTunnelExit tunnelExit) {
                             List<JIPipeDataFlowTunnelEntrance> tunnelEntrances = JIPipeDataFlowTunnelUtils.findTunnelEntrances(this, tunnelExit.getCompartmentUUIDInParentGraph(), tunnelExit.getTunnelKeyGroup(), tunnelExit.getTunnelKey());
                             if (tunnelEntrances.size() == 1) {
                                 // Get the entrance and the input slot that corresponds to the output slot
@@ -750,13 +750,11 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
                                     edgeSourceStack.push(slot);
                                 }
                             }
-                        }
-                        else {
+                        } else {
                             result.add(es);
                         }
                     }
-                }
-                else {
+                } else {
                     // No dissolve needed
                     result.add(edgeSource);
                 }
@@ -1180,7 +1178,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
                 // "DEFAULT" stays a special case: it is not stored in the legacy map,
                 // so the fallback preserves the previous behavior exactly. A node in the
                 // main canvas serializes its compartment as "" (the default-location key
-                // itself), which is stored in the legacy map but needs no migration — skip
+                // itself), which is stored in the legacy map but needs no migration - skip
                 // it, or clearEntriesWithPathPrefix(location, "") would collapse to
                 // "location" and wipe the node's already-correct stored location.
                 String legacyCompartmentId = nodeLegacyCompartmentIDs.get(nodeUUID);
@@ -1189,7 +1187,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
                 if (!migrationKey.isEmpty() && allNodeUILocations.containsKey(migrationKey)) {
                     node.setNodeUILocationWithin("", allNodeUILocations.get(migrationKey));
                     node.getNodeMetadata().clearEntriesWithPathPrefix(
-                        JIPipePathMetadataStore.key("location", migrationKey));
+                            JIPipePathMetadataStore.key("location", migrationKey));
                 }
             }
         }

@@ -34,35 +34,40 @@ template:
 
 # Pattern: List files -> Annotate with file/directory name -> Import ROI -> Convert 2D ROI to mask
 
-Mined pattern `chain-4-folder-list-files-path-to-annotation-simple-import-imagej-roi-from-file-ij1-roi-to-mask` (shape `chain`, support 32).
+Mined pattern `chain-4-folder-list-files-path-to-annotation-simple-import-imagej-roi-from-file-ij1-roi-to-mask` (shape
+`chain`, support 32).
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| import | `folder-list-files` |
-| annotate | `path-to-annotation-simple` |
-| import | `import-imagej-roi-from-file` |
-| other | `ij1-roi-to-mask` |
+| role     | node ids                      |
+|----------|-------------------------------|
+| import   | `folder-list-files`           |
+| annotate | `path-to-annotation-simple`   |
+| import   | `import-imagej-roi-from-file` |
+| other    | `ij1-roi-to-mask`             |
 
 ## Example graph
 
-Project: `AIAgentTests/03-ExampleWorkflows/Angela_Roots_38.jip` (relative to `/data/JIPipe`), compartment `Preprocessing`.
+Project: `AIAgentTests/03-ExampleWorkflows/Angela_Roots_38.jip` (relative to `/data/JIPipe`), compartment
+`Preprocessing`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `folder-list-files` | List ZIP |
-| n1 | `path-to-annotation-simple` | Add path to annotations |
-| n2 | `import-imagej-roi-from-file` | ROI from file |
-| n3 | `ij1-roi-to-mask` | Convert ROI to mask |
+| key | node id                       | name                    |
+|-----|-------------------------------|-------------------------|
+| n0  | `folder-list-files`           | List ZIP                |
+| n1  | `path-to-annotation-simple`   | Add path to annotations |
+| n2  | `import-imagej-roi-from-file` | ROI from file           |
+| n3  | `ij1-roi-to-mask`             | Convert ROI to mask     |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
-| List ZIP | `Files` | Add path to annotations | `Paths` | `file` |
-| Add path to annotations | `Annotated paths` | ROI from file | `Files` | `path` |
-| ROI from file | `Output` | Convert ROI to mask | `ROI` | `imagej-roi` |
+| from                    | slot              | to                      | slot    | data class   |
+|-------------------------|-------------------|-------------------------|---------|--------------|
+| List ZIP                | `Files`           | Add path to annotations | `Paths` | `file`       |
+| Add path to annotations | `Annotated paths` | ROI from file           | `Files` | `path`       |
+| ROI from file           | `Output`          | Convert ROI to mask     | `ROI`   | `imagej-roi` |
 
 ## Template
 
-Proposed name `List files -> Annotate with file/directory name -> Import ROI -> Convert 2D ROI to mask`, menu path `Patterns/Data Sources/List files -> Annotate with file/directory name -> Import ROI -> Convert 2D ROI to mask` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/chain-4-folder-list-files-path-to-annotation-simple-import-imagej-roi-from-file-ij1-roi-to-mask.json`.
+Proposed name `List files -> Annotate with file/directory name -> Import ROI -> Convert 2D ROI to mask`, menu path
+`Patterns/Data Sources/List files -> Annotate with file/directory name -> Import ROI -> Convert 2D ROI to mask`
+(proposal only - not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/chain-4-folder-list-files-path-to-annotation-simple-import-imagej-roi-from-file-ij1-roi-to-mask.json`.
 

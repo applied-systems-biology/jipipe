@@ -19,14 +19,14 @@ public class InstrumentationJob {
     private final String description;
     private final Instant createdAt;
     private final AtomicReference<InstrumentationJobStatus> status = new AtomicReference<>(InstrumentationJobStatus.PENDING);
+    private final InstrumentationEventBus eventBus;
+    private final String projectId;
+    private final JIPipeProgressInfo progressInfo;
     private volatile double progress;
     private volatile String message;
     private volatile JsonNode result;
     private volatile String error;
     private volatile Instant completedAt;
-    private final InstrumentationEventBus eventBus;
-    private final String projectId;
-    private final JIPipeProgressInfo progressInfo;
 
     InstrumentationJob(String operation, String description, InstrumentationEventBus eventBus, String projectId, JIPipeProgressInfo progressInfo) {
         this.id = "job-" + UUID.randomUUID().toString().substring(0, 8);
@@ -38,19 +38,48 @@ public class InstrumentationJob {
         this.progressInfo = progressInfo != null ? progressInfo : new JIPipeProgressInfo();
     }
 
-    public String getId() { return id; }
-    public String getOperation() { return operation; }
-    public String getDescription() { return description; }
-    public Instant getCreatedAt() { return createdAt; }
-    public Instant getCompletedAt() { return completedAt; }
-    public InstrumentationJobStatus getStatus() { return status.get(); }
-    public double getProgress() { return progress; }
-    public String getMessage() { return message; }
-    public JsonNode getResult() { return result; }
-    public String getError() { return error; }
+    public String getId() {
+        return id;
+    }
+
+    public String getOperation() {
+        return operation;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public Instant getCompletedAt() {
+        return completedAt;
+    }
+
+    public InstrumentationJobStatus getStatus() {
+        return status.get();
+    }
 
     void setStatus(InstrumentationJobStatus newStatus) {
         status.set(newStatus);
+    }
+
+    public double getProgress() {
+        return progress;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public JsonNode getResult() {
+        return result;
+    }
+
+    public String getError() {
+        return error;
     }
 
     public void updateProgress(double progress, String message) {

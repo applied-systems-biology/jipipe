@@ -1,1 +1,44 @@
-{"nodes":{"n0":{"jipipe:node-info-id":"folder-list-subfolders","jipipe:graph-compartment":"d668358c-a97f-5145-a2e8-c8f2bd92aa54","jipipe:node:name":"List subfolders"},"n1":{"jipipe:node-info-id":"path-to-annotation-simple","jipipe:graph-compartment":"d668358c-a97f-5145-a2e8-c8f2bd92aa54","jipipe:node:name":"Annotate with file/directory name #1"},"n2":{"jipipe:node-info-id":"folder-list-files","jipipe:graph-compartment":"d668358c-a97f-5145-a2e8-c8f2bd92aa54","jipipe:node:name":"List files"},"n3":{"jipipe:node-info-id":"path-to-annotation-simple","jipipe:graph-compartment":"d668358c-a97f-5145-a2e8-c8f2bd92aa54","jipipe:node:name":"Annotate with file/directory name #2"}},"edges":[{"source-node":"n0","source-slot":"Subfolders","target-node":"n1","target-slot":"Paths"},{"source-node":"n1","source-slot":"Annotated paths","target-node":"n2","target-slot":"Folders"},{"source-node":"n2","source-slot":"Files","target-node":"n3","target-slot":"Paths"}]}
+{
+  "nodes": {
+    "n0": {
+      "jipipe:node-info-id": "folder-list-subfolders",
+      "jipipe:graph-compartment": "d668358c-a97f-5145-a2e8-c8f2bd92aa54",
+      "jipipe:node:name": "List subfolders"
+    },
+    "n1": {
+      "jipipe:node-info-id": "path-to-annotation-simple",
+      "jipipe:graph-compartment": "d668358c-a97f-5145-a2e8-c8f2bd92aa54",
+      "jipipe:node:name": "Annotate with file/directory name #1"
+    },
+    "n2": {
+      "jipipe:node-info-id": "folder-list-files",
+      "jipipe:graph-compartment": "d668358c-a97f-5145-a2e8-c8f2bd92aa54",
+      "jipipe:node:name": "List files"
+    },
+    "n3": {
+      "jipipe:node-info-id": "path-to-annotation-simple",
+      "jipipe:graph-compartment": "d668358c-a97f-5145-a2e8-c8f2bd92aa54",
+      "jipipe:node:name": "Annotate with file/directory name #2"
+    }
+  },
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Subfolders",
+      "target-node": "n1",
+      "target-slot": "Paths"
+    },
+    {
+      "source-node": "n1",
+      "source-slot": "Annotated paths",
+      "target-node": "n2",
+      "target-slot": "Folders"
+    },
+    {
+      "source-node": "n2",
+      "source-slot": "Files",
+      "target-node": "n3",
+      "target-slot": "Paths"
+    }
+  ]
+}

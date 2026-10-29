@@ -17,7 +17,10 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
@@ -53,7 +56,7 @@ import java.util.*;
 @SetJIPipeDocumentation(name = "Plot tables", description = "Plots incoming tables. First, set the plot type via a parameter. This " +
         "will then show the available settings for this plot type, and a list of input columns for the plot. " +
         "Please ensure to correctly setup these input columns.")
-@ConfigureJIPipeNode(function = { PlotMiscFunction.class, MeasurementsFunction.class }, framework = JFreeChartFramework.class)
+@ConfigureJIPipeNode(function = {PlotMiscFunction.class, MeasurementsFunction.class}, framework = JFreeChartFramework.class)
 @AddJIPipeInputSlot(ResultsTableData.class)
 @AddJIPipeOutputSlot(JFreeChartPlotData.class)
 @LabelAsJIPipeHidden

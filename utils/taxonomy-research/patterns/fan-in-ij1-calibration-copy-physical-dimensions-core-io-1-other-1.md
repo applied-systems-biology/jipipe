@@ -36,28 +36,32 @@ Mined pattern `fan-in-ij1-calibration-copy-physical-dimensions-core-io-1-other-1
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| other | `ij1-calibration-copy-physical-dimensions` |
-| core-io | `io-interface`, `jipipe:compartment-output` |
-| other | `ij1-binary-connected-component-labeling-3d`, `ij1-color-blend-images`, `ij1-color-to-rgb`, `ij1-set-lut-from-color-map`, `ij3d-roi-convert-to-rgb` |
+| role    | node ids                                                                                                                                            |
+|---------|-----------------------------------------------------------------------------------------------------------------------------------------------------|
+| other   | `ij1-calibration-copy-physical-dimensions`                                                                                                          |
+| core-io | `io-interface`, `jipipe:compartment-output`                                                                                                         |
+| other   | `ij1-binary-connected-component-labeling-3d`, `ij1-color-blend-images`, `ij1-color-to-rgb`, `ij1-set-lut-from-color-map`, `ij3d-roi-convert-to-rgb` |
 
 ## Example graph
 
-Project: `AIAgentTests/03-ExampleWorkflows/AdrianFeile_VibrioOnChip_04.jip` (relative to `/data/JIPipe`), compartment `Visualization`.
+Project: `AIAgentTests/03-ExampleWorkflows/AdrianFeile_VibrioOnChip_04.jip` (relative to `/data/JIPipe`), compartment
+`Visualization`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `io-interface` | IO Interface |
-| n1 | `ij1-color-blend-images` | Blend images |
-| n2 | `ij1-calibration-copy-physical-dimensions` | Copy physical dimensions |
+| key | node id                                    | name                     |
+|-----|--------------------------------------------|--------------------------|
+| n0  | `io-interface`                             | IO Interface             |
+| n1  | `ij1-color-blend-images`                   | Blend images             |
+| n2  | `ij1-calibration-copy-physical-dimensions` | Copy physical dimensions |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
-| IO Interface | `RL` | Blend images | `RL` | `imagej-imgplus` |
+| from         | slot     | to                       | slot     | data class                 |
+|--------------|----------|--------------------------|----------|----------------------------|
+| IO Interface | `RL`     | Blend images             | `RL`     | `imagej-imgplus`           |
 | Blend images | `Output` | Copy physical dimensions | `Target` | `imagej-imgplus-color-rgb` |
 
 ## Template
 
-Proposed name `Copy physical dimensions fans in from 7 source ids (roles: core-io, other)`, menu path `Patterns/Images/Copy physical dimensions fans in from 7 source ids (roles: core-io, other)` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/fan-in-ij1-calibration-copy-physical-dimensions-core-io-1-other-1.json`.
+Proposed name `Copy physical dimensions fans in from 7 source ids (roles: core-io, other)`, menu path
+`Patterns/Images/Copy physical dimensions fans in from 7 source ids (roles: core-io, other)` (proposal only - not
+registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/fan-in-ij1-calibration-copy-physical-dimensions-core-io-1-other-1.json`.
 

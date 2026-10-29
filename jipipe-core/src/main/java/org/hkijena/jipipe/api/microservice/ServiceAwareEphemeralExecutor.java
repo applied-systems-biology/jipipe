@@ -17,11 +17,10 @@ import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeRunnableExecutor;
 import org.hkijena.jipipe.api.run.JIPipeRunnableWorker;
 
+import javax.swing.*;
 import java.util.ArrayDeque;
 import java.util.Queue;
 import java.util.function.Predicate;
-
-import javax.swing.SwingWorker;
 
 /**
  * Latest-wins {@link JIPipeRunnableExecutor} that gates on {@link Microservice#isReady()}.
@@ -36,14 +35,13 @@ public class ServiceAwareEphemeralExecutor implements JIPipeRunnableExecutor,
 
     private final String name;
     private final Microservice service;
-    private volatile JIPipeRunnableWorker currentWorker = null;
-    private volatile boolean silent = false;
-
     private final JIPipeRunnable.EnqueuedEventEmitter enqueuedEventEmitter = new JIPipeRunnable.EnqueuedEventEmitter();
     private final JIPipeRunnable.FinishedEventEmitter finishedEventEmitter = new JIPipeRunnable.FinishedEventEmitter();
     private final JIPipeRunnable.InterruptedEventEmitter interruptedEventEmitter = new JIPipeRunnable.InterruptedEventEmitter();
     private final JIPipeRunnable.ProgressEventEmitter progressEventEmitter = new JIPipeRunnable.ProgressEventEmitter();
     private final JIPipeRunnable.StartedEventEmitter startedEventEmitter = new JIPipeRunnable.StartedEventEmitter();
+    private volatile JIPipeRunnableWorker currentWorker = null;
+    private volatile boolean silent = false;
 
     public ServiceAwareEphemeralExecutor(String name, Microservice service) {
         this.name = name;

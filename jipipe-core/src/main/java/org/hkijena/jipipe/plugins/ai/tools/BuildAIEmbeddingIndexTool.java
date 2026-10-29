@@ -24,7 +24,6 @@ import org.hkijena.jipipe.api.nodes.database.embeddings.JIPipeGlobalEmbeddingSea
 import org.hkijena.jipipe.api.service.components.JIPipeAIServiceComponent;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopMenuExtension;
 import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
 import org.hkijena.jipipe.plugins.ai.AIApplicationSettings;

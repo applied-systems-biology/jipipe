@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.plugins.embeddingserver;
 
-import org.hkijena.jipipe.api.ai.JIPipeOnnxEmbeddingAIModelRunner;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -8,6 +7,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
+import org.hkijena.jipipe.api.ai.JIPipeOnnxEmbeddingAIModelRunner;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -32,17 +32,17 @@ public class EmbeddingServerProcess {
     private final JIPipeOnnxEmbeddingAIModelRunner runner;
     private final String modelId;
     private final ObjectMapper objectMapper = new ObjectMapper();
-    private volatile boolean modelReady = false;
     private final long parentPid;
+    private volatile boolean modelReady = false;
 
     /**
      * Creates and starts the embedding server process.
      *
-     * @param modelPath    the path to the ONNX model file
+     * @param modelPath     the path to the ONNX model file
      * @param tokenizerPath the path to the tokenizer file
-     * @param port         the TCP port to listen on
-     * @param modelId      the model identifier reported by the API
-     * @param parentPid    the PID of the parent process to monitor (0 to disable monitoring)
+     * @param port          the TCP port to listen on
+     * @param modelId       the model identifier reported by the API
+     * @param parentPid     the PID of the parent process to monitor (0 to disable monitoring)
      * @throws Exception if the model or HTTP server cannot be started
      */
     public EmbeddingServerProcess(Path modelPath, Path tokenizerPath, int port, String modelId, long parentPid) throws Exception {
@@ -66,33 +66,6 @@ public class EmbeddingServerProcess {
         if (parentPid > 0) {
             startParentMonitor();
         }
-    }
-
-    /**
-     * Starts a daemon thread that periodically checks whether the parent process
-     * (identified by {@link #parentPid}) is still alive. If the parent is gone,
-     * this server self-terminates via {@link System#exit(int)}.
-     *
-     * <p>This handles the case where the parent JIPipe process is killed with
-     * {@code kill -9} (SIGKILL), which prevents shutdown hooks from running and
-     * thus prevents the parent from telling this server to stop.</p>
-     */
-    private void startParentMonitor() {
-        Thread monitor = new Thread(() -> {
-            while (true) {
-                try {
-                    Thread.sleep(2000); // Check every 2 seconds
-                } catch (InterruptedException e) {
-                    break;
-                }
-                if (!ProcessHandle.of(parentPid).isPresent()) {
-                    // Parent process is gone — self-terminate
-                    System.exit(0);
-                }
-            }
-        }, "Parent-Process-Monitor");
-        monitor.setDaemon(true);
-        monitor.start();
     }
 
     /**
@@ -160,6 +133,33 @@ public class EmbeddingServerProcess {
 
         // Keep the process running until killed
         Thread.currentThread().join();
+    }
+
+    /**
+     * Starts a daemon thread that periodically checks whether the parent process
+     * (identified by {@link #parentPid}) is still alive. If the parent is gone,
+     * this server self-terminates via {@link System#exit(int)}.
+     *
+     * <p>This handles the case where the parent JIPipe process is killed with
+     * {@code kill -9} (SIGKILL), which prevents shutdown hooks from running and
+     * thus prevents the parent from telling this server to stop.</p>
+     */
+    private void startParentMonitor() {
+        Thread monitor = new Thread(() -> {
+            while (true) {
+                try {
+                    Thread.sleep(2000); // Check every 2 seconds
+                } catch (InterruptedException e) {
+                    break;
+                }
+                if (!ProcessHandle.of(parentPid).isPresent()) {
+                    // Parent process is gone - self-terminate
+                    System.exit(0);
+                }
+            }
+        }, "Parent-Process-Monitor");
+        monitor.setDaemon(true);
+        monitor.start();
     }
 
     /**

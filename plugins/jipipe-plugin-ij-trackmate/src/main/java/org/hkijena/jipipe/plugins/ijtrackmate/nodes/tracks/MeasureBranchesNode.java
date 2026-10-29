@@ -13,8 +13,6 @@
 
 package org.hkijena.jipipe.plugins.ijtrackmate.nodes.tracks;
 
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.TrackMateFramework;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.tracking.TrackingAnalysisFunction;
 import fiji.plugin.trackmate.SelectionModel;
 import fiji.plugin.trackmate.visualization.table.BranchTableView;
 import fiji.plugin.trackmate.visualization.table.TablePanel;
@@ -27,9 +25,11 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFamilyStepAnnotation;
 import org.hkijena.jipipe.api.nodes.taxonomy.families.TrackMateFamily;
-import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.TrackMateFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.tracking.TrackingAnalysisFunction;
 import org.hkijena.jipipe.plugins.ijtrackmate.datatypes.TrackCollectionData;
 import org.hkijena.jipipe.plugins.ijtrackmate.utils.JIPipeLogger;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;

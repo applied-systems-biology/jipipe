@@ -1,1 +1,70 @@
-{"edges":[{"source-node":"n0","source-slot":"Output","target-node":"n3","target-slot":"Input"},{"source-node":"n1","source-slot":"Output","target-node":"n0","target-slot":"Input"},{"source-node":"n2","source-slot":"Filenames","target-node":"n4","target-slot":"Files"},{"source-node":"n4","source-slot":"Image","target-node":"n1","target-slot":"Input"}],"nodes":{"n0":{"jipipe:graph-compartment":"76acc92f-b974-5c31-9b8c-0bd71987918d","jipipe:metadata-v1":{"location/76acc92f-b974-5c31-9b8c-0bd71987918d/x":1,"location/76acc92f-b974-5c31-9b8c-0bd71987918d/y":12},"jipipe:node-info-id":"ij1-contrast-calibrate"},"n1":{"jipipe:graph-compartment":"76acc92f-b974-5c31-9b8c-0bd71987918d","jipipe:metadata-v1":{"location/76acc92f-b974-5c31-9b8c-0bd71987918d/x":0,"location/76acc92f-b974-5c31-9b8c-0bd71987918d/y":8},"jipipe:node-info-id":"ij-convert-image-to-8-bit"},"n2":{"jipipe:graph-compartment":"76acc92f-b974-5c31-9b8c-0bd71987918d","jipipe:metadata-v1":{"location/76acc92f-b974-5c31-9b8c-0bd71987918d/x":0,"location/76acc92f-b974-5c31-9b8c-0bd71987918d/y":0},"jipipe:node-info-id":"import-file-list"},"n3":{"jipipe:graph-compartment":"76acc92f-b974-5c31-9b8c-0bd71987918d","jipipe:metadata-v1":{"location/76acc92f-b974-5c31-9b8c-0bd71987918d/x":1,"location/76acc92f-b974-5c31-9b8c-0bd71987918d/y":16},"jipipe:node-info-id":"ij1-color-to-rgb"},"n4":{"jipipe:graph-compartment":"76acc92f-b974-5c31-9b8c-0bd71987918d","jipipe:metadata-v1":{"location/76acc92f-b974-5c31-9b8c-0bd71987918d/x":0,"location/76acc92f-b974-5c31-9b8c-0bd71987918d/y":4},"jipipe:node-info-id":"import-imagej-imgplus-from-file"}}}
+{
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Output",
+      "target-node": "n3",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n1",
+      "source-slot": "Output",
+      "target-node": "n0",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n2",
+      "source-slot": "Filenames",
+      "target-node": "n4",
+      "target-slot": "Files"
+    },
+    {
+      "source-node": "n4",
+      "source-slot": "Image",
+      "target-node": "n1",
+      "target-slot": "Input"
+    }
+  ],
+  "nodes": {
+    "n0": {
+      "jipipe:graph-compartment": "76acc92f-b974-5c31-9b8c-0bd71987918d",
+      "jipipe:metadata-v1": {
+        "location/76acc92f-b974-5c31-9b8c-0bd71987918d/x": 1,
+        "location/76acc92f-b974-5c31-9b8c-0bd71987918d/y": 12
+      },
+      "jipipe:node-info-id": "ij1-contrast-calibrate"
+    },
+    "n1": {
+      "jipipe:graph-compartment": "76acc92f-b974-5c31-9b8c-0bd71987918d",
+      "jipipe:metadata-v1": {
+        "location/76acc92f-b974-5c31-9b8c-0bd71987918d/x": 0,
+        "location/76acc92f-b974-5c31-9b8c-0bd71987918d/y": 8
+      },
+      "jipipe:node-info-id": "ij-convert-image-to-8-bit"
+    },
+    "n2": {
+      "jipipe:graph-compartment": "76acc92f-b974-5c31-9b8c-0bd71987918d",
+      "jipipe:metadata-v1": {
+        "location/76acc92f-b974-5c31-9b8c-0bd71987918d/x": 0,
+        "location/76acc92f-b974-5c31-9b8c-0bd71987918d/y": 0
+      },
+      "jipipe:node-info-id": "import-file-list"
+    },
+    "n3": {
+      "jipipe:graph-compartment": "76acc92f-b974-5c31-9b8c-0bd71987918d",
+      "jipipe:metadata-v1": {
+        "location/76acc92f-b974-5c31-9b8c-0bd71987918d/x": 1,
+        "location/76acc92f-b974-5c31-9b8c-0bd71987918d/y": 16
+      },
+      "jipipe:node-info-id": "ij1-color-to-rgb"
+    },
+    "n4": {
+      "jipipe:graph-compartment": "76acc92f-b974-5c31-9b8c-0bd71987918d",
+      "jipipe:metadata-v1": {
+        "location/76acc92f-b974-5c31-9b8c-0bd71987918d/x": 0,
+        "location/76acc92f-b974-5c31-9b8c-0bd71987918d/y": 4
+      },
+      "jipipe:node-info-id": "import-imagej-imgplus-from-file"
+    }
+  }
+}

@@ -8,22 +8,40 @@ import org.hkijena.jipipe.utils.VersionUtils;
 
 public class JIPipeVersionStatisticsItem implements JIPipeStatisticsItem {
     @Override
-    public String getId() { return "jipipe-version"; }
+    public String getId() {
+        return "jipipe-version";
+    }
+
     @Override
-    public String getName() { return "JIPipe version"; }
+    public String getName() {
+        return "JIPipe version";
+    }
+
     @Override
-    public String getDescription() { return "The JIPipe version string"; }
+    public String getDescription() {
+        return "The JIPipe version string";
+    }
+
     @Override
-    public StatisticsPrivacyLevel getRequiredPrivacyLevel() { return StatisticsPrivacyLevel.Installation; }
+    public StatisticsPrivacyLevel getRequiredPrivacyLevel() {
+        return StatisticsPrivacyLevel.Installation;
+    }
+
     @Override
     public JsonNode serialize() {
         return TextNode.valueOf(VersionUtils.getJIPipeVersion());
     }
-    @Override
-    public void deserialize(JsonNode node) { }
-    @Override
-    public void reset() { }
 
     @Override
-    public String getIcon32() { return "actions/help-about.png"; }
+    public void deserialize(JsonNode node) {
+    }
+
+    @Override
+    public void reset() {
+    }
+
+    @Override
+    public String getIcon32() {
+        return "actions/help-about.png";
+    }
 }

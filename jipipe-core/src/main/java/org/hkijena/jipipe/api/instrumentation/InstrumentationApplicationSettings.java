@@ -24,24 +24,36 @@ public class InstrumentationApplicationSettings extends JIPipeDefaultApplication
 
     @SetJIPipeDocumentation(name = "Enable instrumentation", description = "Enable the instrumentation WebSocket server for external automation and diagnostics tools.")
     @JIPipeParameter("enable-instrumentation")
-    public boolean isEnableInstrumentation() { return enableInstrumentation; }
+    public boolean isEnableInstrumentation() {
+        return enableInstrumentation;
+    }
 
     @JIPipeParameter("enable-instrumentation")
-    public void setEnableInstrumentation(boolean enableInstrumentation) { this.enableInstrumentation = enableInstrumentation; }
+    public void setEnableInstrumentation(boolean enableInstrumentation) {
+        this.enableInstrumentation = enableInstrumentation;
+    }
 
     @SetJIPipeDocumentation(name = "Port", description = "WebSocket port for the instrumentation server (default: 8780)")
     @JIPipeParameter("port")
-    public int getPort() { return port; }
+    public int getPort() {
+        return port;
+    }
 
     @JIPipeParameter("port")
-    public void setPort(int port) { this.port = port; }
+    public void setPort(int port) {
+        this.port = port;
+    }
 
     @SetJIPipeDocumentation(name = "Auto-start", description = "Start the instrumentation server when JIPipe launches")
     @JIPipeParameter("auto-start")
-    public boolean isAutoStart() { return autoStart; }
+    public boolean isAutoStart() {
+        return autoStart;
+    }
 
     @JIPipeParameter("auto-start")
-    public void setAutoStart(boolean autoStart) { this.autoStart = autoStart; }
+    public void setAutoStart(boolean autoStart) {
+        this.autoStart = autoStart;
+    }
 
     @Override
     public JIPipeDefaultApplicationSettingsSheetCategory getDefaultCategory() {

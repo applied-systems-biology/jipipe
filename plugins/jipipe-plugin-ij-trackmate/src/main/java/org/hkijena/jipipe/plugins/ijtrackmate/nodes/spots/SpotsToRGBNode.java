@@ -13,10 +13,6 @@
 
 package org.hkijena.jipipe.plugins.ijtrackmate.nodes.spots;
 
-import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
-import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.TrackMateFramework;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.tracking.TrackingAnalysisFunction;
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.process.ColorProcessor;
@@ -33,6 +29,8 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFamilyStepAnnotation;
 import org.hkijena.jipipe.api.nodes.taxonomy.families.TrackMateFamily;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.TrackMateFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.tracking.TrackingAnalysisFunction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.ijtrackmate.datatypes.SpotsCollectionData;
 import org.hkijena.jipipe.plugins.ijtrackmate.nodes.tracks.TrackingNode;
@@ -47,9 +45,12 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.Collections;
 
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
+
 @JIPipeNodeTaxonomyFamilyStepAnnotation(family = TrackMateFamily.class, label = "Convert spots to RGB", after = {TrackingNode.class}, purpose = "Render the spots and their tracks as RGB images")
 @SetJIPipeDocumentation(name = "Convert spots to RGB", description = "Renders detected spots and their tracks as a color image. It takes a spots collection and, optionally, a reference RGB image, draws the spots on each frame and Z slice, and produces a new RGB image with the same scale.")
-@ConfigureJIPipeNode(function = TrackingAnalysisFunction.class, framework = TrackMateFramework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
+@ConfigureJIPipeNode(function = TrackingAnalysisFunction.class, framework = TrackMateFramework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = SpotsCollectionData.class, name = "Spots", create = true)
 @AddJIPipeInputSlot(value = ImagePlusColorRGBData.class, name = "Image", create = true, optional = true, description = "")
 @AddJIPipeOutputSlot(value = ImagePlusColorRGBData.class, name = "Output", create = true)

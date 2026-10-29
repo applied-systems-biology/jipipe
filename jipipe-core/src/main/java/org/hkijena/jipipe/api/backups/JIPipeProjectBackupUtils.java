@@ -23,7 +23,7 @@ import java.nio.file.Path;
  * <p>
  * Backups are project files, and since 6.0.0 they exist in both formats:
  * legacy {@code .jip} and JIPipe 6 {@code .jipx}. Every place that scans
- * a backup directory for backup files must accept BOTH — otherwise
+ * a backup directory for backup files must accept BOTH - otherwise
  * {@code .jipx} backups are invisible in the backup manager, and a session
  * directory whose backups are all {@code .jipx} is considered empty and
  * deleted by {@link PruneBackupsRun#pruneEmptySessions} (which the

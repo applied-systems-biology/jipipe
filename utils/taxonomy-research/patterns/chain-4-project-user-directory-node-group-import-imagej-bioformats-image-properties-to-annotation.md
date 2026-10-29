@@ -34,35 +34,40 @@ template:
 
 # Pattern: Project user path -> Group -> Bio-Formats importer -> Annotate with image properties
 
-Mined pattern `chain-4-project-user-directory-node-group-import-imagej-bioformats-image-properties-to-annotation` (shape `chain`, support 40).
+Mined pattern `chain-4-project-user-directory-node-group-import-imagej-bioformats-image-properties-to-annotation` (shape
+`chain`, support 40).
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| import | `project-user-directory` |
-| other | `node-group` |
-| import | `import-imagej-bioformats` |
+| role     | node ids                         |
+|----------|----------------------------------|
+| import   | `project-user-directory`         |
+| other    | `node-group`                     |
+| import   | `import-imagej-bioformats`       |
 | annotate | `image-properties-to-annotation` |
 
 ## Example graph
 
-Project: `AIAgentTests/02-AdvancedPipelines/CellTracking_01.jip` (relative to `/data/JIPipe`), compartment `Preprocessing`.
+Project: `AIAgentTests/02-AdvancedPipelines/CellTracking_01.jip` (relative to `/data/JIPipe`), compartment
+`Preprocessing`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `project-user-directory` | Project user directory |
-| n1 | `node-group` | READ: folders, subfolders and files |
-| n2 | `import-imagej-bioformats` | Bio-Formats importer |
-| n3 | `image-properties-to-annotation` | Annotate with image properties |
+| key | node id                          | name                                |
+|-----|----------------------------------|-------------------------------------|
+| n0  | `project-user-directory`         | Project user directory              |
+| n1  | `node-group`                     | READ: folders, subfolders and files |
+| n2  | `import-imagej-bioformats`       | Bio-Formats importer                |
+| n3  | `image-properties-to-annotation` | Annotate with image properties      |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
-| Project user directory | `Output` | READ: folders, subfolders and files | `Input folder` | `folder` |
-| READ: folders, subfolders and files | `Annotated paths` | Bio-Formats importer | `Input` | `path` |
-| Bio-Formats importer | `Output` | Annotate with image properties | `Image` | `imagej-ome` |
+| from                                | slot              | to                                  | slot           | data class   |
+|-------------------------------------|-------------------|-------------------------------------|----------------|--------------|
+| Project user directory              | `Output`          | READ: folders, subfolders and files | `Input folder` | `folder`     |
+| READ: folders, subfolders and files | `Annotated paths` | Bio-Formats importer                | `Input`        | `path`       |
+| Bio-Formats importer                | `Output`          | Annotate with image properties      | `Image`        | `imagej-ome` |
 
 ## Template
 
-Proposed name `Project user path -> Group -> Bio-Formats importer -> Annotate with image properties`, menu path `Patterns/Data Sources/Project user path -> Group -> Bio-Formats importer -> Annotate with image properties` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/chain-4-project-user-directory-node-group-import-imagej-bioformats-image-properties-to-annotation.json`.
+Proposed name `Project user path -> Group -> Bio-Formats importer -> Annotate with image properties`, menu path
+`Patterns/Data Sources/Project user path -> Group -> Bio-Formats importer -> Annotate with image properties` (proposal
+only - not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/chain-4-project-user-directory-node-group-import-imagej-bioformats-image-properties-to-annotation.json`.
 

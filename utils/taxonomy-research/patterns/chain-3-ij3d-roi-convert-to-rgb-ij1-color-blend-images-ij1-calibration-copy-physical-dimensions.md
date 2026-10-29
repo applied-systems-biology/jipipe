@@ -32,32 +32,36 @@ template:
 
 # Pattern: Convert IJ3D ROI to RGB -> Blend images -> Copy physical dimensions
 
-Mined pattern `chain-3-ij3d-roi-convert-to-rgb-ij1-color-blend-images-ij1-calibration-copy-physical-dimensions` (shape `chain`, support 30).
+Mined pattern `chain-3-ij3d-roi-convert-to-rgb-ij1-color-blend-images-ij1-calibration-copy-physical-dimensions` (shape
+`chain`, support 30).
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| other | `ij3d-roi-convert-to-rgb` |
-| other | `ij1-color-blend-images` |
+| role  | node ids                                   |
+|-------|--------------------------------------------|
+| other | `ij3d-roi-convert-to-rgb`                  |
+| other | `ij1-color-blend-images`                   |
 | other | `ij1-calibration-copy-physical-dimensions` |
 
 ## Example graph
 
 Project: `AIAgentTests/03-ExampleWorkflows/Annamaria_12.jip` (relative to `/data/JIPipe`), compartment `Colocalization`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `ij3d-roi-convert-to-rgb` | Convert 3D ROI to RGB |
-| n1 | `ij1-color-blend-images` | Blend images |
-| n2 | `ij1-calibration-copy-physical-dimensions` | Copy physical dimensions |
+| key | node id                                    | name                     |
+|-----|--------------------------------------------|--------------------------|
+| n0  | `ij3d-roi-convert-to-rgb`                  | Convert 3D ROI to RGB    |
+| n1  | `ij1-color-blend-images`                   | Blend images             |
+| n2  | `ij1-calibration-copy-physical-dimensions` | Copy physical dimensions |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
-| Convert 3D ROI to RGB | `Output` | Blend images | `Magenta` | `imagej-imgplus-color-rgb` |
-| Blend images | `Output` | Copy physical dimensions | `Target` | `imagej-imgplus-color-rgb` |
+| from                  | slot     | to                       | slot      | data class                 |
+|-----------------------|----------|--------------------------|-----------|----------------------------|
+| Convert 3D ROI to RGB | `Output` | Blend images             | `Magenta` | `imagej-imgplus-color-rgb` |
+| Blend images          | `Output` | Copy physical dimensions | `Target`  | `imagej-imgplus-color-rgb` |
 
 ## Template
 
-Proposed name `Convert IJ3D ROI to RGB -> Blend images -> Copy physical dimensions`, menu path `Patterns/ROIs/Convert IJ3D ROI to RGB -> Blend images -> Copy physical dimensions` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/chain-3-ij3d-roi-convert-to-rgb-ij1-color-blend-images-ij1-calibration-copy-physical-dimensions.json`.
+Proposed name `Convert IJ3D ROI to RGB -> Blend images -> Copy physical dimensions`, menu path
+`Patterns/ROIs/Convert IJ3D ROI to RGB -> Blend images -> Copy physical dimensions` (proposal only - not registered).
+`data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/chain-3-ij3d-roi-convert-to-rgb-ij1-color-blend-images-ij1-calibration-copy-physical-dimensions.json`.
 

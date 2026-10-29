@@ -36,28 +36,32 @@ Mined pattern `chain-3-ij1-set-lut-from-color-map-jipipe-compartment-output-ij1-
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| other | `ij1-set-lut-from-color-map` |
-| core-io | `jipipe:compartment-output` |
-| other | `ij1-roi-to-rgb` |
+| role    | node ids                     |
+|---------|------------------------------|
+| other   | `ij1-set-lut-from-color-map` |
+| core-io | `jipipe:compartment-output`  |
+| other   | `ij1-roi-to-rgb`             |
 
 ## Example graph
 
-Project: `AIAgentTests/03-ExampleWorkflows/BacteriaOnAgarPad_Kerstin_26.jip` (relative to `/data/JIPipe`), compartment `New green +Preprocessing`.
+Project: `AIAgentTests/03-ExampleWorkflows/BacteriaOnAgarPad_Kerstin_26.jip` (relative to `/data/JIPipe`), compartment
+`New green +Preprocessing`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `ij1-set-lut-from-color-map` | Set LUT (color map) |
-| n1 | `jipipe:compartment-output` | Images and masks |
-| n2 | `ij1-roi-to-rgb` | Convert 2D ROI to RGB |
+| key | node id                      | name                  |
+|-----|------------------------------|-----------------------|
+| n0  | `ij1-set-lut-from-color-map` | Set LUT (color map)   |
+| n1  | `jipipe:compartment-output`  | Images and masks      |
+| n2  | `ij1-roi-to-rgb`             | Convert 2D ROI to RGB |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
-| Set LUT (color map) | `Output` | Images and masks | `Normalized red` | `imagej-imgplus-greyscale` |
-| Images and masks | `Raw green` | Convert 2D ROI to RGB | `Image` | `imagej-imgplus-greyscale` |
+| from                | slot        | to                    | slot             | data class                 |
+|---------------------|-------------|-----------------------|------------------|----------------------------|
+| Set LUT (color map) | `Output`    | Images and masks      | `Normalized red` | `imagej-imgplus-greyscale` |
+| Images and masks    | `Raw green` | Convert 2D ROI to RGB | `Image`          | `imagej-imgplus-greyscale` |
 
 ## Template
 
-Proposed name `Set LUT (color map) -> Compartment output -> Convert 2D ROI to RGB`, menu path `Patterns/Images/Set LUT (color map) -> Compartment output -> Convert 2D ROI to RGB` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/chain-3-ij1-set-lut-from-color-map-jipipe-compartment-output-ij1-roi-to-rgb.json`.
+Proposed name `Set LUT (color map) -> Compartment output -> Convert 2D ROI to RGB`, menu path
+`Patterns/Images/Set LUT (color map) -> Compartment output -> Convert 2D ROI to RGB` (proposal only - not registered).
+`data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/chain-3-ij1-set-lut-from-color-map-jipipe-compartment-output-ij1-roi-to-rgb.json`.
 

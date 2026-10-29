@@ -28,7 +28,7 @@ import java.util.Map;
  * A manifest is a stable, versioned description of the container's
  * structure: which parts it contains (zip entry path → part key, see
  * {@link JIPipeProjectParts#PART_KEYS}), which graph is the main graph,
- * and — via the {@code unknown} map — which other entries the container
+ * and - via the {@code unknown} map - which other entries the container
  * holds so that they are preserved verbatim on round-trips. The reserved
  * slots {@code data/}, {@code graphs/}, and {@code history/} appear in
  * {@code unknown} when non-empty.
@@ -83,7 +83,7 @@ public class JIPipeXManifest {
 
     /**
      * Other container entry paths (not parts), preserved verbatim on
-     * round-trip — including the reserved slots {@code data/},
+     * round-trip - including the reserved slots {@code data/},
      * {@code graphs/}, and {@code history/} when non-empty.
      */
     @JsonProperty("unknown")
@@ -108,15 +108,6 @@ public class JIPipeXManifest {
     }
 
     /**
-     * Serializes this manifest to a JSON tree.
-     *
-     * @return the manifest JSON tree
-     */
-    public JsonNode toJsonNode() {
-        return JsonUtils.getObjectMapper().valueToTree(this);
-    }
-
-    /**
      * Creates the default manifest for a container authored by JIPipe:
      * all 9 default parts at {@code project/<part key>.json} (file name
      * = part key with {@code ':'} replaced by {@code '-'}; the value
@@ -134,6 +125,15 @@ public class JIPipeXManifest {
             manifest.getParts().put("project/" + partKey.replace(':', '-') + ".json", partKey);
         }
         return manifest;
+    }
+
+    /**
+     * Serializes this manifest to a JSON tree.
+     *
+     * @return the manifest JSON tree
+     */
+    public JsonNode toJsonNode() {
+        return JsonUtils.getObjectMapper().valueToTree(this);
     }
 
     public int getFormatVersion() {

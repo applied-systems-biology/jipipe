@@ -36,38 +36,46 @@ template:
 
 # Pattern: List subfolders -> Annotate with file/directory name -> List files -> Annotate with file/directory name -> Filter paths
 
-Mined pattern `chain-5-folder-list-subfolders-path-to-annotation-simple-folder-list-files-path-to-annotation-simple-path-filter` (shape `chain`, support 36).
+Mined pattern
+`chain-5-folder-list-subfolders-path-to-annotation-simple-folder-list-files-path-to-annotation-simple-path-filter`
+(shape `chain`, support 36).
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| import | `folder-list-subfolders` |
+| role     | node ids                    |
+|----------|-----------------------------|
+| import   | `folder-list-subfolders`    |
 | annotate | `path-to-annotation-simple` |
-| import | `folder-list-files` |
+| import   | `folder-list-files`         |
 | annotate | `path-to-annotation-simple` |
-| import | `path-filter` |
+| import   | `path-filter`               |
 
 ## Example graph
 
-Project: `AIAgentTests/01-BasicWorkshop/JSC_2025_06_Kidney_Exports/kidney.jip` (relative to `/data/JIPipe`), compartment `File Handling`.
+Project: `AIAgentTests/01-BasicWorkshop/JSC_2025_06_Kidney_Exports/kidney.jip` (relative to `/data/JIPipe`), compartment
+`File Handling`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `folder-list-subfolders` | List subfolders |
-| n1 | `path-to-annotation-simple` | Annotate with file/directory name #1 |
-| n2 | `folder-list-files` | List files |
-| n3 | `path-to-annotation-simple` | Annotate with file/directory name #2 |
-| n4 | `path-filter` | Filter paths |
+| key | node id                     | name                                 |
+|-----|-----------------------------|--------------------------------------|
+| n0  | `folder-list-subfolders`    | List subfolders                      |
+| n1  | `path-to-annotation-simple` | Annotate with file/directory name #1 |
+| n2  | `folder-list-files`         | List files                           |
+| n3  | `path-to-annotation-simple` | Annotate with file/directory name #2 |
+| n4  | `path-filter`               | Filter paths                         |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
-| List subfolders | `Subfolders` | Annotate with file/directory name #1 | `Paths` | `folder` |
-| Annotate with file/directory name #1 | `Annotated paths` | List files | `Folders` | `path` |
-| List files | `Files` | Annotate with file/directory name #2 | `Paths` | `file` |
-| Annotate with file/directory name #2 | `Annotated paths` | Filter paths | `Input` | `path` |
+| from                                 | slot              | to                                   | slot      | data class |
+|--------------------------------------|-------------------|--------------------------------------|-----------|------------|
+| List subfolders                      | `Subfolders`      | Annotate with file/directory name #1 | `Paths`   | `folder`   |
+| Annotate with file/directory name #1 | `Annotated paths` | List files                           | `Folders` | `path`     |
+| List files                           | `Files`           | Annotate with file/directory name #2 | `Paths`   | `file`     |
+| Annotate with file/directory name #2 | `Annotated paths` | Filter paths                         | `Input`   | `path`     |
 
 ## Template
 
-Proposed name `List subfolders -> Annotate with file/directory name -> List files -> Annotate with file/directory name -> Filter paths`, menu path `Patterns/Data Sources/List subfolders -> Annotate with file/directory name -> List files -> Annotate with file/directory name -> Filter paths` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/chain-5-folder-list-subfolders-path-to-annotation-simple-folder-list-files-path-to-annotation-simple-path-filter.json`.
+Proposed name
+`List subfolders -> Annotate with file/directory name -> List files -> Annotate with file/directory name -> Filter paths`,
+menu path
+`Patterns/Data Sources/List subfolders -> Annotate with file/directory name -> List files -> Annotate with file/directory name -> Filter paths`
+(proposal only - not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/chain-5-folder-list-subfolders-path-to-annotation-simple-folder-list-files-path-to-annotation-simple-path-filter.json`.
 

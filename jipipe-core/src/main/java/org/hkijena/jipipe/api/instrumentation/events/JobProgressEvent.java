@@ -14,7 +14,15 @@ public class JobProgressEvent extends InstrumentationEvent {
         this.message = message;
     }
 
-    public String getJobId() { return jobId; }
-    public double getProgress() { return progress; }
-    public String getMessage() { return message; }
+    public String getJobId() {
+        return jobId;
+    }
+
+    public double getProgress() {
+        return progress;
+    }
+
+    public String getMessage() {
+        return message;
+    }
 }

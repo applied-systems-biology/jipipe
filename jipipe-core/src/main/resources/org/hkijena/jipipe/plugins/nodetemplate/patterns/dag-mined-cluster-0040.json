@@ -1,1 +1,191 @@
-{"edges":[{"source-node":"n0","source-slot":"ROI 1","target-node":"n6","target-slot":"ROI"},{"source-node":"n0","source-slot":"ROI 1","target-node":"n8","target-slot":"False negatives"},{"source-node":"n0","source-slot":"ROI 2","target-node":"n4","target-slot":"ROI"},{"source-node":"n0","source-slot":"ROI 2","target-node":"n8","target-slot":"False positives"},{"source-node":"n2","source-slot":"ROI 1","target-node":"n3","target-slot":"ROI"},{"source-node":"n2","source-slot":"ROI 1","target-node":"n8","target-slot":"GT found"},{"source-node":"n2","source-slot":"ROI 2","target-node":"n1","target-slot":"ROI"},{"source-node":"n2","source-slot":"ROI 2","target-node":"n8","target-slot":"True positives"},{"source-node":"n8","source-slot":"Counts","target-node":"n5","target-slot":"Input"}],"nodes":{"n0":{"jipipe:graph-compartment":"588b74a8-0852-5745-aa20-fe0ae61de039","jipipe:metadata-v1":{"location/588b74a8-0852-5745-aa20-fe0ae61de039/x":26,"location/588b74a8-0852-5745-aa20-fe0ae61de039/y":0},"jipipe:node-info-id":"ij1-roi-filter-by-overlap"},"n1":{"jipipe:graph-compartment":"588b74a8-0852-5745-aa20-fe0ae61de039","jipipe:metadata-v1":{"location/588b74a8-0852-5745-aa20-fe0ae61de039/x":10,"location/588b74a8-0852-5745-aa20-fe0ae61de039/y":15},"jipipe:node-info-id":"ij1-roi-to-rgb"},"n2":{"jipipe:graph-compartment":"588b74a8-0852-5745-aa20-fe0ae61de039","jipipe:metadata-v1":{"location/588b74a8-0852-5745-aa20-fe0ae61de039/x":0,"location/588b74a8-0852-5745-aa20-fe0ae61de039/y":0},"jipipe:node-info-id":"ij1-roi-filter-by-overlap"},"n3":{"jipipe:graph-compartment":"588b74a8-0852-5745-aa20-fe0ae61de039","jipipe:metadata-v1":{"location/588b74a8-0852-5745-aa20-fe0ae61de039/x":0,"location/588b74a8-0852-5745-aa20-fe0ae61de039/y":15},"jipipe:node-info-id":"ij1-roi-to-rgb"},"n4":{"jipipe:graph-compartment":"588b74a8-0852-5745-aa20-fe0ae61de039","jipipe:metadata-v1":{"location/588b74a8-0852-5745-aa20-fe0ae61de039/x":33,"location/588b74a8-0852-5745-aa20-fe0ae61de039/y":15},"jipipe:node-info-id":"ij1-roi-to-rgb"},"n5":{"jipipe:graph-compartment":"588b74a8-0852-5745-aa20-fe0ae61de039","jipipe:metadata-v1":{"location/588b74a8-0852-5745-aa20-fe0ae61de039/x":15,"location/588b74a8-0852-5745-aa20-fe0ae61de039/y":10},"jipipe:node-info-id":"table-apply-expression-per-row-v2"},"n6":{"jipipe:graph-compartment":"588b74a8-0852-5745-aa20-fe0ae61de039","jipipe:metadata-v1":{"location/588b74a8-0852-5745-aa20-fe0ae61de039/x":21,"location/588b74a8-0852-5745-aa20-fe0ae61de039/y":15},"jipipe:node-info-id":"ij1-roi-to-rgb"},"n8":{"jipipe:graph-compartment":"588b74a8-0852-5745-aa20-fe0ae61de039","jipipe:metadata-v1":{"location/588b74a8-0852-5745-aa20-fe0ae61de039/x":0,"location/588b74a8-0852-5745-aa20-fe0ae61de039/y":5},"jipipe:node-info-id":"ij1-roi-count","jipipe:slot-configuration":{"input":{"GT found":{"slot-data-type":"imagej-roi","slot-type":"Input","name":"GT found","custom-name":null,"description":"ROI to be counted","is-virtual":false,"save-outputs":true,"is-optional":false},"True positives":{"slot-data-type":"imagej-roi","slot-type":"Input","name":"True positives","custom-name":null,"description":"","is-virtual":false,"save-outputs":true,"is-optional":false},"False negatives":{"slot-data-type":"imagej-roi","slot-type":"Input","name":"False negatives","custom-name":null,"description":"","is-virtual":false,"save-outputs":true,"is-optional":false},"False positives":{"slot-data-type":"imagej-roi","slot-type":"Input","name":"False positives","custom-name":null,"description":"","is-virtual":false,"save-outputs":true,"is-optional":false},"GT ROI":{"slot-data-type":"imagej-roi","slot-type":"Input","name":"GT ROI","custom-name":null,"description":"","is-virtual":false,"save-outputs":true,"is-optional":false}},"output":{"Counts":{"slot-data-type":"annotation-table","slot-type":"Output","name":"Counts","custom-name":"False positves","description":"The counts","is-virtual":false,"save-outputs":true,"is-optional":false}}},"add-annotations":true}}}
+{
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "ROI 1",
+      "target-node": "n6",
+      "target-slot": "ROI"
+    },
+    {
+      "source-node": "n0",
+      "source-slot": "ROI 1",
+      "target-node": "n8",
+      "target-slot": "False negatives"
+    },
+    {
+      "source-node": "n0",
+      "source-slot": "ROI 2",
+      "target-node": "n4",
+      "target-slot": "ROI"
+    },
+    {
+      "source-node": "n0",
+      "source-slot": "ROI 2",
+      "target-node": "n8",
+      "target-slot": "False positives"
+    },
+    {
+      "source-node": "n2",
+      "source-slot": "ROI 1",
+      "target-node": "n3",
+      "target-slot": "ROI"
+    },
+    {
+      "source-node": "n2",
+      "source-slot": "ROI 1",
+      "target-node": "n8",
+      "target-slot": "GT found"
+    },
+    {
+      "source-node": "n2",
+      "source-slot": "ROI 2",
+      "target-node": "n1",
+      "target-slot": "ROI"
+    },
+    {
+      "source-node": "n2",
+      "source-slot": "ROI 2",
+      "target-node": "n8",
+      "target-slot": "True positives"
+    },
+    {
+      "source-node": "n8",
+      "source-slot": "Counts",
+      "target-node": "n5",
+      "target-slot": "Input"
+    }
+  ],
+  "nodes": {
+    "n0": {
+      "jipipe:graph-compartment": "588b74a8-0852-5745-aa20-fe0ae61de039",
+      "jipipe:metadata-v1": {
+        "location/588b74a8-0852-5745-aa20-fe0ae61de039/x": 26,
+        "location/588b74a8-0852-5745-aa20-fe0ae61de039/y": 0
+      },
+      "jipipe:node-info-id": "ij1-roi-filter-by-overlap"
+    },
+    "n1": {
+      "jipipe:graph-compartment": "588b74a8-0852-5745-aa20-fe0ae61de039",
+      "jipipe:metadata-v1": {
+        "location/588b74a8-0852-5745-aa20-fe0ae61de039/x": 10,
+        "location/588b74a8-0852-5745-aa20-fe0ae61de039/y": 15
+      },
+      "jipipe:node-info-id": "ij1-roi-to-rgb"
+    },
+    "n2": {
+      "jipipe:graph-compartment": "588b74a8-0852-5745-aa20-fe0ae61de039",
+      "jipipe:metadata-v1": {
+        "location/588b74a8-0852-5745-aa20-fe0ae61de039/x": 0,
+        "location/588b74a8-0852-5745-aa20-fe0ae61de039/y": 0
+      },
+      "jipipe:node-info-id": "ij1-roi-filter-by-overlap"
+    },
+    "n3": {
+      "jipipe:graph-compartment": "588b74a8-0852-5745-aa20-fe0ae61de039",
+      "jipipe:metadata-v1": {
+        "location/588b74a8-0852-5745-aa20-fe0ae61de039/x": 0,
+        "location/588b74a8-0852-5745-aa20-fe0ae61de039/y": 15
+      },
+      "jipipe:node-info-id": "ij1-roi-to-rgb"
+    },
+    "n4": {
+      "jipipe:graph-compartment": "588b74a8-0852-5745-aa20-fe0ae61de039",
+      "jipipe:metadata-v1": {
+        "location/588b74a8-0852-5745-aa20-fe0ae61de039/x": 33,
+        "location/588b74a8-0852-5745-aa20-fe0ae61de039/y": 15
+      },
+      "jipipe:node-info-id": "ij1-roi-to-rgb"
+    },
+    "n5": {
+      "jipipe:graph-compartment": "588b74a8-0852-5745-aa20-fe0ae61de039",
+      "jipipe:metadata-v1": {
+        "location/588b74a8-0852-5745-aa20-fe0ae61de039/x": 15,
+        "location/588b74a8-0852-5745-aa20-fe0ae61de039/y": 10
+      },
+      "jipipe:node-info-id": "table-apply-expression-per-row-v2"
+    },
+    "n6": {
+      "jipipe:graph-compartment": "588b74a8-0852-5745-aa20-fe0ae61de039",
+      "jipipe:metadata-v1": {
+        "location/588b74a8-0852-5745-aa20-fe0ae61de039/x": 21,
+        "location/588b74a8-0852-5745-aa20-fe0ae61de039/y": 15
+      },
+      "jipipe:node-info-id": "ij1-roi-to-rgb"
+    },
+    "n8": {
+      "jipipe:graph-compartment": "588b74a8-0852-5745-aa20-fe0ae61de039",
+      "jipipe:metadata-v1": {
+        "location/588b74a8-0852-5745-aa20-fe0ae61de039/x": 0,
+        "location/588b74a8-0852-5745-aa20-fe0ae61de039/y": 5
+      },
+      "jipipe:node-info-id": "ij1-roi-count",
+      "jipipe:slot-configuration": {
+        "input": {
+          "GT found": {
+            "slot-data-type": "imagej-roi",
+            "slot-type": "Input",
+            "name": "GT found",
+            "custom-name": null,
+            "description": "ROI to be counted",
+            "is-virtual": false,
+            "save-outputs": true,
+            "is-optional": false
+          },
+          "True positives": {
+            "slot-data-type": "imagej-roi",
+            "slot-type": "Input",
+            "name": "True positives",
+            "custom-name": null,
+            "description": "",
+            "is-virtual": false,
+            "save-outputs": true,
+            "is-optional": false
+          },
+          "False negatives": {
+            "slot-data-type": "imagej-roi",
+            "slot-type": "Input",
+            "name": "False negatives",
+            "custom-name": null,
+            "description": "",
+            "is-virtual": false,
+            "save-outputs": true,
+            "is-optional": false
+          },
+          "False positives": {
+            "slot-data-type": "imagej-roi",
+            "slot-type": "Input",
+            "name": "False positives",
+            "custom-name": null,
+            "description": "",
+            "is-virtual": false,
+            "save-outputs": true,
+            "is-optional": false
+          },
+          "GT ROI": {
+            "slot-data-type": "imagej-roi",
+            "slot-type": "Input",
+            "name": "GT ROI",
+            "custom-name": null,
+            "description": "",
+            "is-virtual": false,
+            "save-outputs": true,
+            "is-optional": false
+          }
+        },
+        "output": {
+          "Counts": {
+            "slot-data-type": "annotation-table",
+            "slot-type": "Output",
+            "name": "Counts",
+            "custom-name": "False positves",
+            "description": "The counts",
+            "is-virtual": false,
+            "save-outputs": true,
+            "is-optional": false
+          }
+        }
+      },
+      "add-annotations": true
+    }
+  }
+}

@@ -14,11 +14,11 @@ import java.time.LocalDateTime;
  * The menubar save control. Besides the usual Unsaved / Save / Auto save /
  * Saved states it now shows (feature #753):
  * <ul>
- *   <li>SAVING — while a NON-MODAL JIPX save runs: the main button is
+ *   <li>SAVING - while a NON-MODAL JIPX save runs: the main button is
  *       disabled, a spinner icon is shown, and the text is
  *       {@code Saving… <stage>} (stage ∈ writing / compressing / verifying,
- *       from the save run's progress). Indeterminate — no % bar.</li>
- *   <li>RESULT FLASH — when the save finishes: {@code "Saved ✓"} (green) or
+ *       from the save run's progress). Indeterminate - no % bar.</li>
+ *   <li>RESULT FLASH - when the save finishes: {@code "Saved ✓"} (green) or
  *       {@code "Save failed ✗"} (red) shown for a few seconds by a single-shot
  *       timer, then {@link #updateStatus()} reverts to the normal state.</li>
  * </ul>
@@ -29,24 +29,28 @@ public class JIPipeDesktopProjectSaveManagerButton extends SplitButton implement
     private static final int RESULT_FLASH_MILLIS = 4000;
     private final JIPipeDesktopProjectWorkbench workbench;
     private final JIPipeAutoSaveApplicationSettings settings;
-    private LocalDateTime lastProjectSaveTime;
-    private long lastAutoSaveTime = 0;
     private final JCheckBoxMenuItem autoSaveMenuItem = new JCheckBoxMenuItem("Auto save");
     private final Timer checkTimer;
-
-    /** Whether a save is currently running (SAVING state). */
-    private boolean saving = false;
-    /** The current save stage ("writing" / "compressing" / "verifying"). */
-    private String savingStage = "";
-
-    /** Transient result-flash state (single-shot timer reverts it). */
-    private boolean flashActive = false;
-    private Icon flashIcon;
-    private String flashText;
     private final Timer flashTimer = new Timer(RESULT_FLASH_MILLIS, e -> {
         flashActive = false;
         updateStatus();
     });
+    private LocalDateTime lastProjectSaveTime;
+    private long lastAutoSaveTime = 0;
+    /**
+     * Whether a save is currently running (SAVING state).
+     */
+    private boolean saving = false;
+    /**
+     * The current save stage ("writing" / "compressing" / "verifying").
+     */
+    private String savingStage = "";
+    /**
+     * Transient result-flash state (single-shot timer reverts it).
+     */
+    private boolean flashActive = false;
+    private Icon flashIcon;
+    private String flashText;
 
     public JIPipeDesktopProjectSaveManagerButton(JIPipeDesktopProjectWorkbench workbench) {
         this.workbench = workbench;
@@ -146,8 +150,8 @@ public class JIPipeDesktopProjectSaveManagerButton extends SplitButton implement
     /**
      * Starts the transient result flash (single-shot timer reverts it).
      *
-     * @param icon  the flash icon
-     * @param text  the flash text
+     * @param icon the flash icon
+     * @param text the flash text
      */
     private void showResultFlash(Icon icon, String text) {
         flashIcon = icon;

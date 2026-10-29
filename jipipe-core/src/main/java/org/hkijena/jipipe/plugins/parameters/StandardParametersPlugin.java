@@ -356,6 +356,34 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
                 "Anchor",
                 "An anchor to a position within a rectangle",
                 JIPipeDesktopAnchorParameterEditorUI.class);
+        registerParameterType("jipipe:font-family-size",
+                JIPipeFontFamilySizeParameter.class,
+                JIPipeParameterArchetype.Value, JIPipeFontFamilySizeParameter::new,
+                o -> new JIPipeFontFamilySizeParameter((JIPipeFontFamilySizeParameter) o),
+                "Font (family + size)",
+                "A font: family and size",
+                JIPipeDesktopFontFamilySizeParameterEditorUI.class);
+        registerParameterType("jipipe:font-family-size-style",
+                JIPipeFontFamilySizeStyleParameter.class,
+                JIPipeParameterArchetype.Value, JIPipeFontFamilySizeStyleParameter::new,
+                o -> new JIPipeFontFamilySizeStyleParameter((JIPipeFontFamilySizeStyleParameter) o),
+                "Font (family + size + style)",
+                "A font: family, size and style",
+                JIPipeDesktopFontFamilySizeStyleParameterEditorUI.class);
+        registerParameterType("jipipe:font-family-size-color",
+                JIPipeFontFamilySizeColorParameter.class,
+                JIPipeParameterArchetype.Value, JIPipeFontFamilySizeColorParameter::new,
+                o -> new JIPipeFontFamilySizeColorParameter((JIPipeFontFamilySizeColorParameter) o),
+                "Font (family + size + color)",
+                "A font: family, size and text color",
+                JIPipeDesktopFontFamilySizeColorParameterEditorUI.class);
+        registerParameterType("jipipe:font-family-size-style-color",
+                JIPipeFontFamilySizeStyleColorParameter.class,
+                JIPipeParameterArchetype.Value, JIPipeFontFamilySizeStyleColorParameter::new,
+                o -> new JIPipeFontFamilySizeStyleColorParameter((JIPipeFontFamilySizeStyleColorParameter) o),
+                "Font (family + size + style + color)",
+                "A font: family, size, style and text color",
+                JIPipeDesktopFontFamilySizeStyleColorParameterEditorUI.class);
     }
 
     private void registerOptionalParameters() {

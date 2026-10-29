@@ -12,10 +12,6 @@
  */
 
 package org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d5.color;
-import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
-import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.ImageDataFunction;
 
 import ij.IJ;
 import ij.ImagePlus;
@@ -26,6 +22,8 @@ import org.hkijena.jipipe.api.LabelAsJIPipeHeavyData;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.ImageDataFunction;
 import org.hkijena.jipipe.plugins.imagejdatatypes.colorspace.ColorSpace;
 import org.hkijena.jipipe.plugins.imagejdatatypes.colorspace.RGBColorSpace;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
@@ -34,11 +32,14 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.color.ImagePlusColor
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageDimensions;
 
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
+
 /**
  * RGB color 5D image
  */
 @SetJIPipeDocumentation(name = "5D ImageJ image (RGB)", description = "A color image (RGB colors)")
-@ConfigureJIPipeNode(function = ImageDataFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
+@ConfigureJIPipeNode(function = ImageDataFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @LabelAsJIPipeHeavyData
 @ImageTypeInfo(imageProcessorType = ColorProcessor.class, colorSpace = RGBColorSpace.class, pixelType = Integer.class, bitDepth = 24, numDimensions = 5)
 @ConfigureJIPipeDataCrate(entities = {}, inherits = ImagePlus5DColorData.class)

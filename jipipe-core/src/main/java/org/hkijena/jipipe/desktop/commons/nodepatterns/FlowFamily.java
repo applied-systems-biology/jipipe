@@ -13,12 +13,13 @@
 
 package org.hkijena.jipipe.desktop.commons.nodepatterns;
 
-import java.awt.BasicStroke;
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.awt.geom.Path2D;
 import java.util.Random;
 
-/** Flow-field lines (Vanta 'topology' look); lines start at random points inside the frame and wander beyond it. */
+/**
+ * Flow-field lines (Vanta 'topology' look); lines start at random points inside the frame and wander beyond it.
+ */
 public final class FlowFamily implements NodePatternFamily {
     @Override
     public void paint(Graphics2D g, int w, int h, Random rng) {

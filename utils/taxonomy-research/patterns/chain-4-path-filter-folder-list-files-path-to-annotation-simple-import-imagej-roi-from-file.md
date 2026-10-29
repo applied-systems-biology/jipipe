@@ -34,35 +34,40 @@ template:
 
 # Pattern: Filter paths -> List files -> Annotate with file/directory name -> Import ROI
 
-Mined pattern `chain-4-path-filter-folder-list-files-path-to-annotation-simple-import-imagej-roi-from-file` (shape `chain`, support 32).
+Mined pattern `chain-4-path-filter-folder-list-files-path-to-annotation-simple-import-imagej-roi-from-file` (shape
+`chain`, support 32).
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| import | `path-filter` |
-| import | `folder-list-files` |
-| annotate | `path-to-annotation-simple` |
-| import | `import-imagej-roi-from-file` |
+| role     | node ids                      |
+|----------|-------------------------------|
+| import   | `path-filter`                 |
+| import   | `folder-list-files`           |
+| annotate | `path-to-annotation-simple`   |
+| import   | `import-imagej-roi-from-file` |
 
 ## Example graph
 
-Project: `AIAgentTests/03-ExampleWorkflows/Angela_Roots_38.jip` (relative to `/data/JIPipe`), compartment `Preprocessing`.
+Project: `AIAgentTests/03-ExampleWorkflows/Angela_Roots_38.jip` (relative to `/data/JIPipe`), compartment
+`Preprocessing`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `path-filter` | Filter paths |
-| n1 | `folder-list-files` | List ZIP |
-| n2 | `path-to-annotation-simple` | Add path to annotations |
-| n3 | `import-imagej-roi-from-file` | ROI from file |
+| key | node id                       | name                    |
+|-----|-------------------------------|-------------------------|
+| n0  | `path-filter`                 | Filter paths            |
+| n1  | `folder-list-files`           | List ZIP                |
+| n2  | `path-to-annotation-simple`   | Add path to annotations |
+| n3  | `import-imagej-roi-from-file` | ROI from file           |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
-| Filter paths | `Output` | List ZIP | `Folders` | `path` |
-| List ZIP | `Files` | Add path to annotations | `Paths` | `file` |
-| Add path to annotations | `Annotated paths` | ROI from file | `Files` | `path` |
+| from                    | slot              | to                      | slot      | data class |
+|-------------------------|-------------------|-------------------------|-----------|------------|
+| Filter paths            | `Output`          | List ZIP                | `Folders` | `path`     |
+| List ZIP                | `Files`           | Add path to annotations | `Paths`   | `file`     |
+| Add path to annotations | `Annotated paths` | ROI from file           | `Files`   | `path`     |
 
 ## Template
 
-Proposed name `Filter paths -> List files -> Annotate with file/directory name -> Import ROI`, menu path `Patterns/Data Sources/Filter paths -> List files -> Annotate with file/directory name -> Import ROI` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/chain-4-path-filter-folder-list-files-path-to-annotation-simple-import-imagej-roi-from-file.json`.
+Proposed name `Filter paths -> List files -> Annotate with file/directory name -> Import ROI`, menu path
+`Patterns/Data Sources/Filter paths -> List files -> Annotate with file/directory name -> Import ROI` (proposal only -
+not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/chain-4-path-filter-folder-list-files-path-to-annotation-simple-import-imagej-roi-from-file.json`.
 

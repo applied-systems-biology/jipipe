@@ -277,7 +277,7 @@ def test_fresh_slot_preference_over_registry():
     """The FRESH-node slot set (JVM-measured) is authoritative over the
     registry annotation list: a node type whose fresh outputs are a subset of
     its registry outputs (parameter-gated, e.g. cellpose) is affected when it
-    requires an output the fresh node does NOT create — even though the
+    requires an output the fresh node does NOT create - even though the
     registry lists it as static."""
     tmp = tempfile.mkdtemp()
     try:
@@ -313,7 +313,7 @@ def test_fresh_slot_preference_over_registry():
         }
         _write(os.path.join(out, "cp.json"), g)
         reg = {"cellpose-3.x": {
-                   # registry (annotation) lists ALL outputs — the over-report.
+                   # registry (annotation) lists ALL outputs - the over-report.
                    "inputSlots": [{"name": "Input"}, {"name": "Model"}],
                    "outputSlots": [{"name": "Labels"}, {"name": "Flows XY"},
                                    {"name": "Flows Z"}, {"name": "Flows d"},

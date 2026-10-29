@@ -22,8 +22,6 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -140,6 +138,21 @@ public class JIPipePathMetadataStore {
         }
     }
 
+    public static Key key(String... arr) {
+        // Add additional processing
+        List<String> items = new ArrayList<>();
+        for (String item : arr) {
+            for (String item2 : item.split("[/\\\\]")) {
+                if (!item2.isEmpty()) {
+                    items.add(item2);
+                }
+            }
+        }
+        return new Key(items.toArray(new String[0]));
+    }
+
+    // Put methods with Key keys
+
     /**
      * Puts all entries from another PathMetadataStore into this store.
      * Entries from the other store will override existing entries with the same keys.
@@ -151,8 +164,6 @@ public class JIPipePathMetadataStore {
             this.data.putAll(other.data);
         }
     }
-
-    // Put methods with Key keys
 
     /**
      * Adds or updates a string value using a Key key.
@@ -190,6 +201,8 @@ public class JIPipePathMetadataStore {
         }
     }
 
+    // String overloads for convenience
+
     /**
      * Adds or updates a boolean value using a Key key.
      *
@@ -201,8 +214,6 @@ public class JIPipePathMetadataStore {
             data.put(key, value);
         }
     }
-
-    // String overloads for convenience
 
     /**
      * Adds or updates a string value using a string path (converted to Key internally).
@@ -240,6 +251,8 @@ public class JIPipePathMetadataStore {
         }
     }
 
+    // Put methods for JSON-serializable objects
+
     /**
      * Adds or updates a boolean value using a string path (converted to Key internally).
      *
@@ -251,8 +264,6 @@ public class JIPipePathMetadataStore {
             putPrimitive(key(pathString.split("/")), value);
         }
     }
-
-    // Put methods for JSON-serializable objects
 
     /**
      * Adds or updates a JSON-serializable object using a Key key.
@@ -268,6 +279,8 @@ public class JIPipePathMetadataStore {
         }
     }
 
+    // Get methods with Path keys
+
     /**
      * Adds or updates a JSON-serializable object using a string path (converted to Key internally).
      * The object will be stored directly in the data map and serialized when needed.
@@ -280,8 +293,6 @@ public class JIPipePathMetadataStore {
             putObject(key(pathString.split("/")), value);
         }
     }
-
-    // Get methods with Path keys
 
     /**
      * Checks if the store contains the specified path key.
@@ -326,6 +337,8 @@ public class JIPipePathMetadataStore {
         return getTypedValue(key, defaultValue, Double.class, input -> Double.valueOf(input.toString()));
     }
 
+    // String overloads for convenience
+
     /**
      * Retrieves a boolean value with a default if not found or type mismatched.
      *
@@ -344,8 +357,6 @@ public class JIPipePathMetadataStore {
             return defaultValue;
         });
     }
-
-    // String overloads for convenience
 
     /**
      * Retrieves a string value using a string path with a default if not found or type mismatched.
@@ -486,6 +497,8 @@ public class JIPipePathMetadataStore {
         return null;
     }
 
+    // Path-based collection methods
+
     /**
      * Retrieves a JSON-serializable object with type safety using a string path.
      * If the object is already deserialized and stored in data, it's returned directly.
@@ -500,8 +513,6 @@ public class JIPipePathMetadataStore {
     public <T> T getObject(String pathString, Class<T> type) {
         return getObject(pathString != null ? key(pathString.split("/")) : null, type);
     }
-
-    // Path-based collection methods
 
     /**
      * Returns a map of all entries where the path starts with the given prefix.
@@ -590,13 +601,6 @@ public class JIPipePathMetadataStore {
     }
 
     /**
-     * Removes all entries from the store.
-     */
-    public void clear() {
-        data.clear();
-    }
-
-    /**
      * Removes all entries where the path starts with the given prefix.
      * This method handles pathPrefix with or without trailing separator (e.g., "path" and "path/" will both match "path/subkey").
      * If pathPrefix is null or empty, this method does nothing.
@@ -624,6 +628,14 @@ public class JIPipePathMetadataStore {
      *
      * @param pathPrefix the path prefix to remove entries for (must not be null or empty)
      */
+
+    /**
+     * Removes all entries from the store.
+     */
+    public void clear() {
+        data.clear();
+    }
+
     /**
      * Removes all entries where the path starts with the given prefix.
      * This method handles pathPrefix with or without trailing separator (e.g., "path" and "path/" will both match "path/subkey").
@@ -739,6 +751,8 @@ public class JIPipePathMetadataStore {
         }
     }
 
+    // Helper methods
+
     /**
      * Returns an unmodifiable copy of the internal data map.
      *
@@ -747,8 +761,6 @@ public class JIPipePathMetadataStore {
     public Map<Key, Object> getData() {
         return Collections.unmodifiableMap(data);
     }
-
-    // Helper methods
 
     private boolean isUnderPath(Key path, Key prefix) {
         if (path == null || prefix == null) {
@@ -849,10 +861,10 @@ public class JIPipePathMetadataStore {
                     if (keyStr != null && !keyStr.isEmpty() && valueNode != null && !valueNode.isNull()) {
                         // Normalize the key string to handle backslashes from Windows paths
                         String normalizedKeyStr = keyStr.replace('\\', '/');
-                        
+
                         // Split by both forward and backward slashes to handle cross-platform paths
                         String[] pathItems = normalizedKeyStr.split("[/\\\\]");
-                        
+
                         // Trim away empty components (e.g., "/a//b" turns into ["a", "b"])
                         List<String> filteredItems = new ArrayList<>();
                         for (String item : pathItems) {
@@ -860,7 +872,7 @@ public class JIPipePathMetadataStore {
                                 filteredItems.add(item);
                             }
                         }
-                        
+
                         Key key = key(filteredItems.toArray(new String[0]));
 
                         try {
@@ -885,19 +897,6 @@ public class JIPipePathMetadataStore {
 
             return store;
         }
-    }
-
-    public static Key key(String... arr) {
-        // Add additional processing
-        List<String> items = new  ArrayList<>();
-        for (String item : arr) {
-            for(String item2 : item.split("[/\\\\]")) {
-                if(!item2.isEmpty()) {
-                    items.add(item2);
-                }
-            }
-        }
-        return new Key(items.toArray(new String[0]));
     }
 
     public static final class Key {

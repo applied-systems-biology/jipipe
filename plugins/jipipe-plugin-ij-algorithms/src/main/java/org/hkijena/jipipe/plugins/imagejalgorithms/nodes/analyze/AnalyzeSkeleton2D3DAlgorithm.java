@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.analyze;
 
-import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
@@ -23,12 +22,15 @@ import org.apache.commons.lang3.reflect.MethodUtils;
 import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
-import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.MeasurementsFunction;
+import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.MeasurementsFunction;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
@@ -49,10 +51,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Comparator;
 
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
+
 @SetJIPipeDocumentation(name = "Analyze skeleton 2D/3D", description = "Tags all pixel/voxels in a skeleton image and then counts all its junctions, triple and quadruple points and branches, and measures their average and maximum length.")
 @AddJIPipeCitation("Arganda-Carreras, I., Fernández-González, R., Muñoz-Barrutia, A., & Ortiz-De-Solorzano, C. (2010). 3D reconstruction of histological sections: Application to mammary gland tissue. Microscopy Research and Technique, 73(11), 1019–1029. doi:10.1002/jemt.20829")
 @AddJIPipeCitation("G. Polder, H.L.E Hovens and A.J Zweers, Measuring shoot length of submerged aquatic plants using graph analysis (2010), In: Proceedings of the ImageJ User and Developer Conference, Centre de Recherche Public Henri Tudor, Luxembourg, 27-29 October, pp 172-177.")
-@ConfigureJIPipeNode(function = MeasurementsFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_3D })
+@ConfigureJIPipeNode(function = MeasurementsFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlus3DGreyscaleMaskData.class, name = "Skeleton", create = true)
 @AddJIPipeInputSlot(value = Roi2dListData.class, name = "ROI", description = "ROI to exclude on pruning ends")
 @AddJIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, name = "Reference", description = "Original grayscale input image (for lowest pixel intensity pruning mode)")

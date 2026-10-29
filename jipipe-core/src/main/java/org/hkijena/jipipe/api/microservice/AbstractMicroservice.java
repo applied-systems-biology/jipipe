@@ -16,11 +16,7 @@ package org.hkijena.jipipe.api.microservice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -48,10 +44,10 @@ public abstract class AbstractMicroservice implements Microservice {
     private static final long DEPENDENCY_POLL_INTERVAL_MS = 500;
 
     private final String name;
-    private volatile MicroserviceState state = MicroserviceState.Stopped;
-    private volatile String stateDetail = "";
     private final List<Microservice> dependencies = new CopyOnWriteArrayList<>();
     private final MicroserviceStateChangeEventEmitter stateChangeEventEmitter = new MicroserviceStateChangeEventEmitter();
+    private volatile MicroserviceState state = MicroserviceState.Stopped;
+    private volatile String stateDetail = "";
 
     protected AbstractMicroservice(String name) {
         this.name = name;
@@ -83,7 +79,7 @@ public abstract class AbstractMicroservice implements Microservice {
                 }
                 continue;
             }
-            // Dependency is Stopped or Failed — start it
+            // Dependency is Stopped or Failed - start it
             dep.start();
             if (!waitForDependency(dep)) {
                 MicroserviceState oldState = state;
@@ -144,6 +140,10 @@ public abstract class AbstractMicroservice implements Microservice {
         return stateDetail;
     }
 
+    protected void setStateDetail(String detail) {
+        this.stateDetail = detail != null ? detail : "";
+    }
+
     @Override
     public boolean isReady() {
         return state == MicroserviceState.Ready;
@@ -164,20 +164,16 @@ public abstract class AbstractMicroservice implements Microservice {
         dependencies.add(dependency);
     }
 
+    // ===== Subclass hooks =====
+
     @Override
     public MicroserviceStateChangeEventEmitter getStateChangeEventEmitter() {
         return stateChangeEventEmitter;
     }
 
-    // ===== Subclass hooks =====
-
     protected abstract void onStart() throws Exception;
 
     protected void onStop() throws Exception {
-    }
-
-    protected void setStateDetail(String detail) {
-        this.stateDetail = detail != null ? detail : "";
     }
 
     protected void markFailed(String detail) {

@@ -13,12 +13,18 @@
 
 package org.hkijena.jipipe.desktop.commons.nodepatterns;
 
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.awt.geom.RoundRectangle2D;
 import java.util.Random;
 
-/** Over/under bands. */
+/**
+ * Over/under bands.
+ */
 public final class WeaveFamily implements NodePatternFamily {
+    private static void fillBandH(Graphics2D g, int w, int h, double y, double bw) {
+        g.fill(new RoundRectangle2D.Double(-bw, y, w + 2 * bw, bw, bw * 0.6, bw * 0.6));
+    }
+
     @Override
     public void paint(Graphics2D g, int w, int h, Random rng) {
         int n = 4 + rng.nextInt(2);
@@ -40,9 +46,5 @@ public final class WeaveFamily implements NodePatternFamily {
                 }
             }
         }
-    }
-
-    private static void fillBandH(Graphics2D g, int w, int h, double y, double bw) {
-        g.fill(new RoundRectangle2D.Double(-bw, y, w + 2 * bw, bw, bw * 0.6, bw * 0.6));
     }
 }

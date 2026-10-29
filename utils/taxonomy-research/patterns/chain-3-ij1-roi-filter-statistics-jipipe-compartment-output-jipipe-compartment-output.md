@@ -32,32 +32,37 @@ template:
 
 # Pattern: Filter 2D ROI by statistics -> Compartment output -> Compartment output
 
-Mined pattern `chain-3-ij1-roi-filter-statistics-jipipe-compartment-output-jipipe-compartment-output` (shape `chain`, support 30).
+Mined pattern `chain-3-ij1-roi-filter-statistics-jipipe-compartment-output-jipipe-compartment-output` (shape `chain`,
+support 30).
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| other | `ij1-roi-filter-statistics` |
+| role    | node ids                    |
+|---------|-----------------------------|
+| other   | `ij1-roi-filter-statistics` |
 | core-io | `jipipe:compartment-output` |
 | core-io | `jipipe:compartment-output` |
 
 ## Example graph
 
-Project: `AIAgentTests/02-AdvancedPipelines/Cryogels_01.jip` (relative to `/data/JIPipe`), compartment `Apply Cellpose Model 2+ROI management`.
+Project: `AIAgentTests/02-AdvancedPipelines/Cryogels_01.jip` (relative to `/data/JIPipe`), compartment
+`Apply Cellpose Model 2+ROI management`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `ij1-roi-filter-statistics` | Filter ROI by statistics |
-| n1 | `jipipe:compartment-output` | Output #1 |
-| n2 | `jipipe:compartment-output` | Output #2 |
+| key | node id                     | name                     |
+|-----|-----------------------------|--------------------------|
+| n0  | `ij1-roi-filter-statistics` | Filter ROI by statistics |
+| n1  | `jipipe:compartment-output` | Output #1                |
+| n2  | `jipipe:compartment-output` | Output #2                |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
-| Filter ROI by statistics | `Output` | Output #1 | `ROIs` | `imagej-roi` |
-| Output #1 | `ROIs` | Output #2 | `Model2 ROI` | `imagej-roi` |
+| from                     | slot     | to        | slot         | data class   |
+|--------------------------|----------|-----------|--------------|--------------|
+| Filter ROI by statistics | `Output` | Output #1 | `ROIs`       | `imagej-roi` |
+| Output #1                | `ROIs`   | Output #2 | `Model2 ROI` | `imagej-roi` |
 
 ## Template
 
-Proposed name `Filter 2D ROI by statistics -> Compartment output -> Compartment output`, menu path `Patterns/ROIs/Filter 2D ROI by statistics -> Compartment output -> Compartment output` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/chain-3-ij1-roi-filter-statistics-jipipe-compartment-output-jipipe-compartment-output.json`.
+Proposed name `Filter 2D ROI by statistics -> Compartment output -> Compartment output`, menu path
+`Patterns/ROIs/Filter 2D ROI by statistics -> Compartment output -> Compartment output` (proposal only - not
+registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/chain-3-ij1-roi-filter-statistics-jipipe-compartment-output-jipipe-compartment-output.json`.
 

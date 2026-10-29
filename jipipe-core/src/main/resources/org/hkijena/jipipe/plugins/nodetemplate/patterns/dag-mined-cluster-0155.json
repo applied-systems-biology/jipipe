@@ -1,1 +1,42 @@
-{"edges":[{"source-node":"n0","source-slot":"Output","target-node":"n1","target-slot":"Input"},{"source-node":"n2","source-slot":"Output","target-node":"n0","target-slot":"Input"}],"nodes":{"n0":{"jipipe:graph-compartment":"be4d6e93-5ce2-59f0-b44b-4558a7248250","jipipe:metadata-v1":{"location/be4d6e93-5ce2-59f0-b44b-4558a7248250/x":0,"location/be4d6e93-5ce2-59f0-b44b-4558a7248250/y":4},"jipipe:node-info-id":"ij1-color-to-rgb"},"n1":{"jipipe:graph-compartment":"be4d6e93-5ce2-59f0-b44b-4558a7248250","jipipe:metadata-v1":{"location/be4d6e93-5ce2-59f0-b44b-4558a7248250/x":0,"location/be4d6e93-5ce2-59f0-b44b-4558a7248250/y":8},"jipipe:node-info-id":"iji-export-image-v2"},"n2":{"jipipe:graph-compartment":"be4d6e93-5ce2-59f0-b44b-4558a7248250","jipipe:metadata-v1":{"location/be4d6e93-5ce2-59f0-b44b-4558a7248250/x":0,"location/be4d6e93-5ce2-59f0-b44b-4558a7248250/y":0},"jipipe:node-info-id":"ij1-dimensions-input2montage-v2"}}}
+{
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Output",
+      "target-node": "n1",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n2",
+      "source-slot": "Output",
+      "target-node": "n0",
+      "target-slot": "Input"
+    }
+  ],
+  "nodes": {
+    "n0": {
+      "jipipe:graph-compartment": "be4d6e93-5ce2-59f0-b44b-4558a7248250",
+      "jipipe:metadata-v1": {
+        "location/be4d6e93-5ce2-59f0-b44b-4558a7248250/x": 0,
+        "location/be4d6e93-5ce2-59f0-b44b-4558a7248250/y": 4
+      },
+      "jipipe:node-info-id": "ij1-color-to-rgb"
+    },
+    "n1": {
+      "jipipe:graph-compartment": "be4d6e93-5ce2-59f0-b44b-4558a7248250",
+      "jipipe:metadata-v1": {
+        "location/be4d6e93-5ce2-59f0-b44b-4558a7248250/x": 0,
+        "location/be4d6e93-5ce2-59f0-b44b-4558a7248250/y": 8
+      },
+      "jipipe:node-info-id": "iji-export-image-v2"
+    },
+    "n2": {
+      "jipipe:graph-compartment": "be4d6e93-5ce2-59f0-b44b-4558a7248250",
+      "jipipe:metadata-v1": {
+        "location/be4d6e93-5ce2-59f0-b44b-4558a7248250/x": 0,
+        "location/be4d6e93-5ce2-59f0-b44b-4558a7248250/y": 0
+      },
+      "jipipe:node-info-id": "ij1-dimensions-input2montage-v2"
+    }
+  }
+}

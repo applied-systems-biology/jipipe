@@ -54,6 +54,11 @@ public class JIPipeDesktopParameterCollectionVisibilitiesParameterEditorUI exten
     }
 
     @Override
+    public boolean isUIInline() {
+        return false;
+    }
+
+    @Override
     public void reload() {
         formPanel.clear();
         JIPipeParameterCollectionVisibilities visibilities = getParameter();
@@ -94,8 +99,7 @@ public class JIPipeDesktopParameterCollectionVisibilitiesParameterEditorUI exten
                 });
                 labelPanel.add(exportParameterToggle, BorderLayout.WEST);
 
-                if (ui.isUILabelEnabled())
-                    labelPanel.add(new JLabel(parameterAccess.getName()));
+                labelPanel.add(new JLabel(parameterAccess.getName()));
 
                 formPanel.addToForm(ui, labelPanel, null);
             }

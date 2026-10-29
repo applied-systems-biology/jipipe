@@ -6,7 +6,7 @@ into a usable pattern library:
 
   * ONE markdown doc per CURATED pattern -> patterns/<pattern-id>.md
     (curation rule R8: graph-shaped (chain/conversion/fan-out/fan-in) with
-    support >= 25, OR any annotation-sandwich — the plan's "one doc per
+    support >= 25, OR any annotation-sandwich - the plan's "one doc per
     pattern, support >= 3" is overridden; 13,122 docs is a data dump, not a
     library. The long tail stays numerically preserved in patterns.json
     `summary` + report section 5a.)
@@ -17,7 +17,7 @@ into a usable pattern library:
     on re-runs ONLY the text from "^## 6. " to the next "^## " / EOF is
     replaced; sections 1-5 (owned by t3-t7) are never touched. Byte-identical
     across runs (no sets in emitted order; everything sorted explicitly).
-  * analysis/t8_table.md — the raw 6a rows (all, not just top-30).
+  * analysis/t8_table.md - the raw 6a rows (all, not just top-30).
 
 Honest frontmatter (R8): the LLM-branch doc shape (audience, modality, tags,
 biologicalContext, prerequisiteKnowledge) is kept, but ONLY what is
@@ -25,7 +25,7 @@ mechanically derivable is filled: modality (coarse data types flowing through
 the pattern, from the registry inputs/outputs of its nodes) and tags (the
 top-level function branches of its nodes, parent-walked, deduped + sorted).
 audience / biologicalContext / prerequisiteKnowledge are the literal string
-`tbd` — domain framing that cannot honestly be derived from generic algorithm
+`tbd` - domain framing that cannot honestly be derived from generic algorithm
 node ids; fabricating them would violate the no-unsourced-opinions constraint.
 
 Stdlib only. Reads patterns/patterns.json + registry.json + report.md section
@@ -225,7 +225,7 @@ def doc_for(p, reg_by_id, top, fname, data, collisions):
     ]
     if collisions:
         lines += [f"> Note: {collisions} duplicate node instance name(s) in the "
-                  "example subgraph — edge endpoints resolve to the first "
+                  "example subgraph - edge endpoints resolve to the first "
                   "matching node.", ""]
     lines += ["## Role sequence", "",
               "| role | node ids |", "|---|---|"]
@@ -246,7 +246,7 @@ def doc_for(p, reg_by_id, top, fname, data, collisions):
         lines.append(f"| {esc(e['from'])} | `{e['fromSlot']}` | "
                      f"{esc(e['to'])} | `{e['toSlot']}` | `{e['dataClass']}` |")
     lines += ["", f"## Template", "",
-              f"Proposed name `{tmpl_name}`, menu path `{menu}` (proposal only — "
+              f"Proposed name `{tmpl_name}`, menu path `{menu}` (proposal only - "
               "not registered). `data` = the minimal JIPipeGraph JSON; the full "
               "object is written to `templates/" + p["id"] + ".json`.", ""]
     return "\n".join(lines) + "\n", menu, branch
@@ -296,7 +296,7 @@ def parse_section5(report_text):
 
 
 def render_section6(sel, reg_by_id, top, fname, s5, coll_total, mod_unknown):
-    """The section-6 body WITHOUT the "## 6." header line — render_report()
+    """The section-6 body WITHOUT the "## 6." header line - render_report()
     owns the header (mirrors t7; a header line inside the body would break the
     in-place replacement, whose boundary is the next "^## " line)."""
     body = []
@@ -310,7 +310,7 @@ def render_section6(sel, reg_by_id, top, fname, s5, coll_total, mod_unknown):
         "`jipipe-launcher/.../taxonomy/TemplateDataDeserializationTest.java` "
         "(JUnit, same module as `RegistryDumperTest`): "
         f"**{JUNIT_TEST_RESULT}**"
-        + (f" — `{JUNIT_COUNTS['nodes']}` nodes (== the template's "
+        + (f" - `{JUNIT_COUNTS['nodes']}` nodes (== the template's "
            f"`{JUNIT_COUNTS['nodes']}` nodes; the silent-empty case is ruled "
            f"out), `{JUNIT_COUNTS['connections']}` connection (== the "
            f"template's `{JUNIT_COUNTS['connections']}` edge; soft-skipped "
@@ -335,12 +335,12 @@ def render_section6(sel, reg_by_id, top, fname, s5, coll_total, mod_unknown):
         "mechanically derivable is filled: `modality` = the coarse data types "
         "flowing through the pattern (the registry `inputs[].dataType` / "
         "`outputs[].dataType` of its nodes, group order, deduped; `unknown` if "
-        "not derivable — "
+        "not derivable - "
         + (f"{len(mod_unknown)} doc(s): " + ", ".join(f"`{i}`" for i in mod_unknown)
            if mod_unknown else "0 doc(s)")
         + "); `tags` = the top-level function branches of the pattern's nodes "
         "(parent-walk), deduped + sorted. `audience`, `biologicalContext` and "
-        "`prerequisiteKnowledge` are the literal `tbd` — domain framing that "
+        "`prerequisiteKnowledge` are the literal `tbd` - domain framing that "
         "cannot honestly be derived from generic algorithm node ids (most are "
         "ImageJ ops, not biology); `tbd` defers them to the LLM branch / a human.",
         "- **Template `data` contract (R8b, verified against "
@@ -361,7 +361,7 @@ def render_section6(sel, reg_by_id, top, fname, s5, coll_total, mod_unknown):
         "so the `n<k>` map keys resolve the edges; edges carry "
         "`source-node`/`target-node` = those map keys and `source-slot` / "
         "`target-slot` = the registered slot names (the corpus `fromSlot` / "
-        "`toSlot` came from the on-disk `slot-configuration.name` — a slot "
+        "`toSlot` came from the on-disk `slot-configuration.name` - a slot "
         "mismatch is a SOFT skip: the edge is dropped, not a crash). NO other "
         "field is required: the node's own `fromJson` guards every optional "
         "field and parameter deserialization reads `node.path(key)`, so "
@@ -395,12 +395,12 @@ def render_section6(sel, reg_by_id, top, fname, s5, coll_total, mod_unknown):
                 f" | {r[5]} |")
 
     body += [
-        "### 6a — Pattern -> follow-up mapping (top 30 of "
+        "### 6a - Pattern -> follow-up mapping (top 30 of "
         f"{len(rows)} rows by support)",
         "",
         "For each curated pattern and each CONSECUTIVE role pair, the "
         "suggestion: after a node of role `role[i]`, the corpus shows nodes of "
-        "role `role[i+1]` — i.e. surface the `role[i+1]` node ids as follow-up "
+        "role `role[i+1]` - i.e. surface the `role[i+1]` node ids as follow-up "
         "recommendations for `role[i]` role nodes. Mechanically derived from "
         "the pattern's role sequence + its `nodes[]` id lists. One example node "
         "id per row (the group's first, i.e. the registry-sorted first); the "
@@ -420,7 +420,7 @@ def render_section6(sel, reg_by_id, top, fname, s5, coll_total, mod_unknown):
         b6b.append((p, b))
     b6b.sort(key=lambda t: (-(t[0]["support"] * t[1]), t[0]["id"]))
     body += [
-        "### 6b — Template candidates (all 185, ranked by support x breadth)",
+        "### 6b - Template candidates (all 185, ranked by support x breadth)",
         "",
         "| rank | pattern id | shape | support | breadth | score | proposed menuPath |",
         "|---:|---|---|---:|---:|---:|---|",
@@ -438,19 +438,19 @@ def render_section6(sel, reg_by_id, top, fname, s5, coll_total, mod_unknown):
     body += [""]
     # 6c
     body += [
-        "### 6c — Corrections to the LLM-branch library (seeding hand-off)",
+        "### 6c - Corrections to the LLM-branch library (seeding hand-off)",
         "",
         f"Re-presentation of Task 7's cross-check (committed section 5): "
         f"**{s5['matched']} matched** (validated by the corpus), "
         f"**{s5['corrections']} correction candidates** (hand-written docs the "
-        "corpus does not sufficiently exhibit — the seeding work list), "
-        f"**{s5['unmatchable']} unmatchable** (< 2 extracted registry ids — "
+        "corpus does not sufficiently exhibit - the seeding work list), "
+        f"**{s5['unmatchable']} unmatchable** (< 2 extracted registry ids - "
         "an extraction weakness, NOT absence from the corpus). The "
         f"**{s5['gaps']:,} library gaps** of section 5c are the "
         "mined-but-undocumented patterns (support >= 5, no doc at overlap >= "
-        "50%); section 6 documents the top of that list — the full id list is "
+        "50%); section 6 documents the top of that list - the full id list is "
         "NOT in `patterns/patterns.json` (it is emission-capped; only the "
-        "counts survive in its `summary`) — refer, don't re-list.",
+        "counts survive in its `summary`) - refer, don't re-list.",
         "",
         f"**Correction candidates ({s5['corrections']}, from 5b):**",
         "",
@@ -476,10 +476,10 @@ def render_section6(sel, reg_by_id, top, fname, s5, coll_total, mod_unknown):
              "prose, not raw ids in backticks).", ""]
     if coll_total:
         body += [f"**Edge-resolution note:** {coll_total} duplicate node "
-                 "instance name(s) across all curated example subgraphs — "
+                 "instance name(s) across all curated example subgraphs - "
                  "edge endpoints resolve to the first matching node.", ""]
     return "\n".join(body), "\n".join(
-        ["# Task 8 — raw 6a rows (pattern -> follow-up mapping)", "",
+        ["# Task 8 - raw 6a rows (pattern -> follow-up mapping)", "",
          f"**Total rows: {len(rows)}** (all curated patterns, all consecutive "
          "role pairs; sorted by support desc, then pattern id, then role).",
          "",

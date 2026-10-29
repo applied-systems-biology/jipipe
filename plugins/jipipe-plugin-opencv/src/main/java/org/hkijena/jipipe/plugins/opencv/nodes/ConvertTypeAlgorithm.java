@@ -13,10 +13,6 @@
 
 package org.hkijena.jipipe.plugins.opencv.nodes;
 
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ImageTypeConversionFunction;
-import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.OpenCVFramework;
-
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -27,13 +23,17 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.OpenCVFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ImageTypeConversionFunction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.opencv.datatypes.OpenCvImageData;
 import org.hkijena.jipipe.plugins.opencv.utils.OpenCvImageUtils;
 import org.hkijena.jipipe.plugins.opencv.utils.OpenCvType;
 
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
+
 @SetJIPipeDocumentation(name = "OpenCV Convert Type", description = "Converts an OpenCV image to another type.")
-@ConfigureJIPipeNode(function = ImageTypeConversionFunction.class, framework = OpenCVFramework.class, spatialDimensions = { SPATIAL_2D })
+@ConfigureJIPipeNode(function = ImageTypeConversionFunction.class, framework = OpenCVFramework.class, spatialDimensions = {SPATIAL_2D})
 @AddJIPipeInputSlot(value = OpenCvImageData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = OpenCvImageData.class, name = "Output", create = true)
 public class ConvertTypeAlgorithm extends JIPipeSimpleIteratingAlgorithm {

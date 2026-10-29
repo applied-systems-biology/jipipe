@@ -16,11 +16,10 @@ package org.hkijena.jipipe.desktop.app.running.logs;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
-import org.hkijena.jipipe.api.run.JIPipeRunnable;
-import org.hkijena.jipipe.api.run.JIPipeRunnableLogEntry;
 import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
+import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeRunnableExecutor;
-import org.hkijena.jipipe.api.run.JIPipeRunnableWorker;
+import org.hkijena.jipipe.api.run.JIPipeRunnableLogEntry;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeRuntimeApplicationSettings;
 
 import java.time.LocalDateTime;
@@ -38,6 +37,13 @@ public class JIPipeDesktopRunnableLogsCollection implements JIPipeRunnable.Finis
         registerQueue(JIPipeQueuedRunnableExecutor.getInstance());
     }
 
+    public static JIPipeDesktopRunnableLogsCollection getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new JIPipeDesktopRunnableLogsCollection();
+        }
+        return INSTANCE;
+    }
+
     public void registerQueue(JIPipeRunnableExecutor queue) {
         queue.getFinishedEventEmitter().subscribe(this);
         queue.getInterruptedEventEmitter().subscribe(this);
@@ -46,13 +52,6 @@ public class JIPipeDesktopRunnableLogsCollection implements JIPipeRunnable.Finis
     public void unregisterQueue(JIPipeRunnableExecutor queue) {
         queue.getFinishedEventEmitter().unsubscribe(this);
         queue.getInterruptedEventEmitter().unsubscribe(this);
-    }
-
-    public static JIPipeDesktopRunnableLogsCollection getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new JIPipeDesktopRunnableLogsCollection();
-        }
-        return INSTANCE;
     }
 
     public LogEntryAddedEventEmitter getLogEntryAddedEventEmitter() {

@@ -27,18 +27,14 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * Dumper for the bundled System patterns' FRESH-node slot sets (Task 2, B1
  * restore). The registry dump ({@code utils/taxonomy-research/registry.json})
  * lists the {@code @AddJIPipe*Slot} ANNOTATION slots, but a fresh node loads
  * only what its constructor creates (a slot-config-less minimal-format node
- * gets no further slots from {@code fromJson}) — so the FRESH slot set can
+ * gets no further slots from {@code fromJson}) - so the FRESH slot set can
  * differ: the cellpose inference nodes gate their extra outputs behind
  * parameters (default: Labels + ROI only), some types create slots in
  * onDeserialized, and single-class nodes derive their slot name from the
@@ -46,15 +42,15 @@ import java.util.TreeSet;
  * <p>
  * The B1 restore pass ({@code utils/restore_pattern_slot_configs.py}) matches
  * each shipped node's required (edge-referenced) slot set against the FRESH
- * set — the world the launcher edge test sees — so this dump is the
+ * set - the world the launcher edge test sees - so this dump is the
  * generator-side oracle. It scans the BUNDLED pattern resources (via the
- * committed {@code system-templates.json} sidecar, self-contained — no
+ * committed {@code system-templates.json} sidecar, self-contained - no
  * external input), collects the distinct node types, instantiates each fresh
  * node, and writes its input/output slot names to
  * {@code utils/fresh-node-slots.json}.
  * <p>
  * Types that cannot be instantiated in the test JVM (the version-gated
- * cLij2 kernels — dropped on load anyway, so their edges are never counted
+ * cLij2 kernels - dropped on load anyway, so their edges are never counted
  * by the edge test) are marked {@code uninstantiable} and the consumer falls
  * back to the registry annotation list.
  * <p>
@@ -65,7 +61,7 @@ import java.util.TreeSet;
 class FreshNodeSlotProbeTest {
 
     private static final String PATTERN_RESOURCE_DIR =
-        "/org/hkijena/jipipe/plugins/nodetemplate/patterns/";
+            "/org/hkijena/jipipe/plugins/nodetemplate/patterns/";
     private static final String SIDECAR_RESOURCE = PATTERN_RESOURCE_DIR + "system-templates.json";
 
     @BeforeAll
@@ -76,12 +72,24 @@ class FreshNodeSlotProbeTest {
         JIPipe.ensureInstance();
     }
 
+    /**
+     * Reads a bundled resource from the classpath as a UTF-8 string.
+     */
+    private static String readResource(String path) throws Exception {
+        try (InputStream in = FreshNodeSlotProbeTest.class.getResourceAsStream(path)) {
+            if (in == null) {
+                throw new AssertionError("resource not found on the classpath: " + path);
+            }
+            return new String(in.readAllBytes(), StandardCharsets.UTF_8);
+        }
+    }
+
     @Test
     void dumpFreshNodeSlots() throws Exception {
         JIPipeNodesServiceComponent nodes = JIPipe.getNodes();
 
         // The distinct node types referenced by the bundled patterns (via the
-        // committed sidecar — self-contained, no external input).
+        // committed sidecar - self-contained, no external input).
         Set<String> types = new TreeSet<>();
         JsonNode sidecar = JsonUtils.getObjectMapper().readTree(readResource(SIDECAR_RESOURCE));
         for (JsonNode entry : sidecar) {
@@ -99,7 +107,7 @@ class FreshNodeSlotProbeTest {
                 JIPipeNodeInfo info = nodes.getInfoById(id);
                 if (info == null) {
                     // not registered in this JVM (the version-gated cLij2
-                    // kernels) — dropped on load; the consumer falls back to
+                    // kernels) - dropped on load; the consumer falls back to
                     // the registry annotation list.
                     entry.put("uninstantiable", true);
                 } else {
@@ -112,7 +120,7 @@ class FreshNodeSlotProbeTest {
                     entry.put("outputs", outs);
                 }
             } catch (Throwable t) {
-                // A fresh instance cannot be created in this JVM — fall back
+                // A fresh instance cannot be created in this JVM - fall back
                 // to the registry annotation list on the consumer side.
                 entry.put("inputs", new ArrayList<>());
                 entry.put("outputs", new ArrayList<>());
@@ -127,16 +135,6 @@ class FreshNodeSlotProbeTest {
         Files.createDirectories(dst.getParent());
         JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValue(dst.toFile(), out);
         System.out.println("FreshNodeSlotProbe: " + out.size()
-            + " bundled pattern node types -> " + dst);
-    }
-
-    /** Reads a bundled resource from the classpath as a UTF-8 string. */
-    private static String readResource(String path) throws Exception {
-        try (InputStream in = FreshNodeSlotProbeTest.class.getResourceAsStream(path)) {
-            if (in == null) {
-                throw new AssertionError("resource not found on the classpath: " + path);
-            }
-            return new String(in.readAllBytes(), StandardCharsets.UTF_8);
-        }
+                + " bundled pattern node types -> " + dst);
     }
 }

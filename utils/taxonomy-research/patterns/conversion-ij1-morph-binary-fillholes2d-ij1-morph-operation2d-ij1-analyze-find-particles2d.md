@@ -32,32 +32,37 @@ template:
 
 # Pattern: Morphological hole filling 2D -> Morphological operation 2D -> Find particles 2D
 
-Mined pattern `conversion-ij1-morph-binary-fillholes2d-ij1-morph-operation2d-ij1-analyze-find-particles2d` (shape `conversion`, support 40).
+Mined pattern `conversion-ij1-morph-binary-fillholes2d-ij1-morph-operation2d-ij1-analyze-find-particles2d` (shape
+`conversion`, support 40).
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
+| role  | node ids                       |
+|-------|--------------------------------|
 | other | `ij1-morph-binary-fillholes2d` |
-| other | `ij1-morph-operation2d` |
+| other | `ij1-morph-operation2d`        |
 | other | `ij1-analyze-find-particles2d` |
 
 ## Example graph
 
-Project: `AIAgentTests/01-BasicWorkshop/JSC_2025_03_Kidney_Basic/kidney.jip` (relative to `/data/JIPipe`), compartment `Analysis`.
+Project: `AIAgentTests/01-BasicWorkshop/JSC_2025_03_Kidney_Basic/kidney.jip` (relative to `/data/JIPipe`), compartment
+`Analysis`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `ij1-morph-binary-fillholes2d` | Morphological hole filling 2D |
-| n1 | `ij1-morph-operation2d` | Morphological operation 2D: Erode |
-| n2 | `ij1-analyze-find-particles2d` | Find particles 2D |
+| key | node id                        | name                              |
+|-----|--------------------------------|-----------------------------------|
+| n0  | `ij1-morph-binary-fillholes2d` | Morphological hole filling 2D     |
+| n1  | `ij1-morph-operation2d`        | Morphological operation 2D: Erode |
+| n2  | `ij1-analyze-find-particles2d` | Find particles 2D                 |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
-| Morphological hole filling 2D | `Output` | Morphological operation 2D: Erode | `Input` | `imagej-imgplus-greyscale-mask` |
-| Morphological operation 2D: Erode | `Output` | Find particles 2D | `Mask` | `imagej-imgplus` |
+| from                              | slot     | to                                | slot    | data class                      |
+|-----------------------------------|----------|-----------------------------------|---------|---------------------------------|
+| Morphological hole filling 2D     | `Output` | Morphological operation 2D: Erode | `Input` | `imagej-imgplus-greyscale-mask` |
+| Morphological operation 2D: Erode | `Output` | Find particles 2D                 | `Mask`  | `imagej-imgplus`                |
 
 ## Template
 
-Proposed name `Morphological hole filling 2D -> Morphological operation 2D -> Find particles 2D`, menu path `Patterns/Images/Morphological hole filling 2D -> Morphological operation 2D -> Find particles 2D` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/conversion-ij1-morph-binary-fillholes2d-ij1-morph-operation2d-ij1-analyze-find-particles2d.json`.
+Proposed name `Morphological hole filling 2D -> Morphological operation 2D -> Find particles 2D`, menu path
+`Patterns/Images/Morphological hole filling 2D -> Morphological operation 2D -> Find particles 2D` (proposal only - not
+registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/conversion-ij1-morph-binary-fillholes2d-ij1-morph-operation2d-ij1-analyze-find-particles2d.json`.
 

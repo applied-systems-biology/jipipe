@@ -88,7 +88,6 @@ public class JIPipeDesktopParameterFormPanel extends JIPipeDesktopFormPanel impl
     private final boolean noEmptyGroupHeaders;
     private final boolean forceTraverse;
     private final boolean withSearchBar;
-    private final boolean withoutLabelSeparation;
     private final boolean allowCollapse;
     private final JToolBar toolBar = new JToolBar();
     private final JIPipeDesktopSearchTextField searchField = new JIPipeDesktopSearchTextField();
@@ -113,7 +112,6 @@ public class JIPipeDesktopParameterFormPanel extends JIPipeDesktopFormPanel impl
         this.noEmptyGroupHeaders = (flags & NO_EMPTY_GROUP_HEADERS) == NO_EMPTY_GROUP_HEADERS;
         this.forceTraverse = (flags & FORCE_TRAVERSE) == FORCE_TRAVERSE;
         this.withSearchBar = (flags & WITH_SEARCH_BAR) == WITH_SEARCH_BAR;
-        this.withoutLabelSeparation = (flags & WITHOUT_LABEL_SEPARATION) == WITHOUT_LABEL_SEPARATION;
         this.allowCollapse = (flags & WITHOUT_COLLAPSE) != WITHOUT_COLLAPSE;
         this.desktopWorkbench = desktopWorkbench;
         this.context = desktopWorkbench.getContext();
@@ -447,27 +445,27 @@ public class JIPipeDesktopParameterFormPanel extends JIPipeDesktopFormPanel impl
 
                 if (node != null) {
                     for (JIPipeParameterCollectionContextAction action : node.getActions()) {
-                        JButton actionButton = new JButton(action.getName(), action.getIcon());
+                        // Group-header buttons: highlighted parameter-action
+                        // fill; highlighted actions keep the success-styled
+                        // variant.
+                        JButton actionButton = action.isHighlighted()
+                                ? UIUtils.createPrimaryParameterButton(action.getName(), action.getIcon(), e -> action.accept(desktopWorkbench))
+                                : UIUtils.createParameterButton(action.getName(), action.getIcon(),
+                                ThemeUtils.getCurrentStyle().getParameterActionHighlightedBackground(), e -> action.accept(desktopWorkbench));
                         actionButton.setToolTipText(action.getDescription());
-                        actionButton.addActionListener(e -> action.accept(desktopWorkbench));
-                        UIUtils.setStandardButtonBorder(actionButton);
-                        if (action.isHighlighted()) {
-                            UIUtils.makeButtonHighlightedSuccess(actionButton);
-                        }
                         groupHeaderPanel.addToEndOfTitlePanel(actionButton);
                     }
                 }
 
                 if (isModifiable) {
-                    JButton addButton = new JButton("Edit", JIPipe.RESOURCES.getIcon16("actions/edit.png"));
-                    addButton.addActionListener(e -> {
-                        JIPipeDesktopDynamicParameterEditorDialog dialog = new JIPipeDesktopDynamicParameterEditorDialog(SwingUtilities.getWindowAncestor(this), desktopWorkbench, (JIPipeDynamicParameterCollection) parameterCollection);
-                        dialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(this));
-                        dialog.setModal(true);
-                        dialog.setVisible(true);
-                    });
+                    JButton addButton = UIUtils.createParameterButton("Edit", JIPipe.RESOURCES.getIcon16("actions/edit.png"),
+                            ThemeUtils.getCurrentStyle().getParameterActionHighlightedBackground(), e -> {
+                                JIPipeDesktopDynamicParameterEditorDialog dialog = new JIPipeDesktopDynamicParameterEditorDialog(SwingUtilities.getWindowAncestor(this), desktopWorkbench, (JIPipeDynamicParameterCollection) parameterCollection);
+                                dialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(this));
+                                dialog.setModal(true);
+                                dialog.setVisible(true);
+                            });
                     addButton.setToolTipText("Allows to add/remove parameters in this group");
-                    UIUtils.setStandardButtonBorder(addButton);
                     groupHeaderPanel.addToEndOfTitlePanel(addButton);
                 }
 
@@ -492,19 +490,13 @@ public class JIPipeDesktopParameterFormPanel extends JIPipeDesktopFormPanel impl
             uiList.add(ui);
             uiComponents.add(ui);
         }
-        Comparator<JIPipeDesktopParameterEditorUI> comparator;
-        if (withoutLabelSeparation) {
-            comparator = Comparator.comparing((JIPipeDesktopParameterEditorUI u) -> !u.getParameterAccess().isPinned())
-                    .thenComparing((JIPipeDesktopParameterEditorUI u) -> u.getParameterAccess().getUIOrder())
-                    .thenComparing(JIPipeDesktopParameterEditorUI::getUIControlStyleType)
-                    .thenComparing(u -> u.getParameterAccess().getName());
-        } else {
-            comparator = Comparator.comparing((JIPipeDesktopParameterEditorUI u) -> !u.getParameterAccess().isPinned())
-                    .thenComparing((JIPipeDesktopParameterEditorUI u) -> !u.isUILabelEnabled())
-                    .thenComparing(u -> u.getParameterAccess().getUIOrder())
-                    .thenComparing(JIPipeDesktopParameterEditorUI::getUIControlStyleType)
-                    .thenComparing(u -> u.getParameterAccess().getName());
-        }
+        // Every editor is label-bearing now (#1339), so the old
+        // WITHOUT_LABEL_SEPARATION / "label-less editors first" distinction is gone.
+        // Sort by pin, order, control style, then name.
+        Comparator<JIPipeDesktopParameterEditorUI> comparator = Comparator.comparing((JIPipeDesktopParameterEditorUI u) -> !u.getParameterAccess().isPinned())
+                .thenComparing(u -> u.getParameterAccess().getUIOrder())
+                .thenComparing(JIPipeDesktopParameterEditorUI::getUIControlStyleType)
+                .thenComparing(u -> u.getParameterAccess().getName());
 
         boolean pinModeStarted = false;
 
@@ -526,17 +518,14 @@ public class JIPipeDesktopParameterFormPanel extends JIPipeDesktopFormPanel impl
             JPanel labelPanel = new JPanel(new BorderLayout());
             MarkdownText documentation = generateParameterDocumentation(parameterAccess, tree);
 
-            // Label panel
-            if (ui.isUILabelEnabled() || (parameterAccess.isImportant() && ui.isUIImportantLabelEnabled())) {
-                JLabel label = new JLabel();
-                if (ui.isUILabelEnabled())
-                    label.setText(parameterAccess.getName());
-                if (parameterAccess.isImportant())
-                    label.setIcon(JIPipe.RESOURCES.getIcon16("emblems/important.png"));
-                if (!isWithDocumentation())
-                    label.setToolTipText("<html>" + documentation.getRenderedHTML() + "</html>");
-                labelPanel.add(label, BorderLayout.CENTER);
-            }
+            // Label panel - the form panel always supplies the parameter name
+            // (editers must not draw it themselves; #1339).
+            JLabel label = new JLabel(parameterAccess.getName());
+            if (parameterAccess.isImportant())
+                label.setIcon(JIPipe.RESOURCES.getIcon16("emblems/important.png"));
+            if (!isWithDocumentation())
+                label.setToolTipText("<html>" + documentation.getRenderedHTML() + "</html>");
+            labelPanel.add(label, BorderLayout.CENTER);
             if (!isWithDocumentation()) {
                 ui.setToolTipText("<html>" + documentation.getRenderedHTML() + "</html>");
             }
@@ -551,23 +540,19 @@ public class JIPipeDesktopParameterFormPanel extends JIPipeDesktopFormPanel impl
 
             // Add to form
             JComponent wrappedUI = displayedParameters.installUIOverrideParameterEditor(this, ui);
-            if (ui.isUILabelEnabled() || parameterCollection instanceof JIPipeDynamicParameterCollection) {
+            if (ui.isUIInline()) {
                 addToForm(wrappedUI, labelPanel, documentation);
                 uiComponents.add(labelPanel);
             } else {
-                if (!parameterAccess.isImportant() || !ui.isUIImportantLabelEnabled()) {
-                    addWideToForm(wrappedUI, documentation);
-                } else {
-                    JPanel wrapperPanel = new JPanel(new BorderLayout());
-                    wrapperPanel.add(wrappedUI, BorderLayout.CENTER);
-                    wrapperPanel.add(labelPanel, BorderLayout.WEST);
-                    addWideToForm(wrapperPanel, documentation);
-                    uiComponents.add(labelPanel);
-                }
+                JComponent headerControls = (ui instanceof JIPipeDesktopParameterEditorUI e) ? e.createHeaderControls() : null;
+                addToFormStacked(wrappedUI, labelPanel, documentation, headerControls);
+                uiComponents.add(labelPanel);
             }
 
-            // Get the entry
-            FormPanelEntry entry = getEntries().get(getNumRows() - 1);
+            // Get the entry (last appended - a stacked row consumes two grid rows,
+            // so the row number is not the list index)
+            List<FormPanelEntry> currentEntries = getEntries();
+            FormPanelEntry entry = currentEntries.get(currentEntries.size() - 1);
             if (entry.getProperties() != null) {
                 uiComponents.add(entry.getProperties());
             }

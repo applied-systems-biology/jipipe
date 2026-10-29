@@ -1,1 +1,322 @@
-{"edges":[{"source-node":"n1","source-slot":"Test","target-node":"n3","target-slot":"Image"},{"source-node":"n1","source-slot":"Test","target-node":"n9","target-slot":"Input"},{"source-node":"n1","source-slot":"Train","target-node":"n7","target-slot":"Training data"},{"source-node":"n1","source-slot":"Validate","target-node":"n7","target-slot":"Test data"},{"source-node":"n3","source-slot":"Output","target-node":"n2","target-slot":"Image"},{"source-node":"n4","source-slot":"Output","target-node":"n9","target-slot":"Pretrained Model"},{"source-node":"n5","source-slot":"Output","target-node":"n8","target-slot":"Input"},{"source-node":"n6","source-slot":"Filenames","target-node":"n4","target-slot":"Input"},{"source-node":"n7","source-slot":"Model","target-node":"n0","target-slot":"Data"},{"source-node":"n8","source-slot":"Output","target-node":"n1","target-slot":"Input"},{"source-node":"n9","source-slot":"ROI","target-node":"n3","target-slot":"ROI"}],"nodes":{"n0":{"jipipe:graph-compartment":"1dde3a4c-c1bf-531e-8a9f-7ac16d4b6138","jipipe:metadata-v1":{"location/1dde3a4c-c1bf-531e-8a9f-7ac16d4b6138/x":0,"location/1dde3a4c-c1bf-531e-8a9f-7ac16d4b6138/y":16},"jipipe:node-info-id":"export-data-by-parameter-v2"},"n1":{"jipipe:graph-compartment":"1dde3a4c-c1bf-531e-8a9f-7ac16d4b6138","jipipe:metadata-v1":{"location/1dde3a4c-c1bf-531e-8a9f-7ac16d4b6138/x":0,"location/1dde3a4c-c1bf-531e-8a9f-7ac16d4b6138/y":8},"jipipe:node-info-id":"distribute-data","jipipe:slot-configuration":{"input":{"Input":{"slot-data-type":"jipipe:data","slot-type":"Input","name":"Input","custom-name":null,"description":"","is-virtual":false,"save-outputs":true,"is-optional":false}},"output":{"Train":{"slot-data-type":"imagej-imgplus","slot-type":"Output","name":"Train","custom-name":null,"description":"","is-virtual":true,"save-outputs":true,"is-optional":false},"Validate":{"slot-data-type":"imagej-imgplus","slot-type":"Output","name":"Validate","custom-name":null,"description":"","is-virtual":true,"save-outputs":true,"is-optional":false},"Test":{"slot-data-type":"imagej-imgplus","slot-type":"Output","name":"Test","custom-name":null,"description":"","is-virtual":true,"save-outputs":true,"is-optional":false}}},"percentages/Train":80.0,"percentages/Validate":10.0,"percentages/Test":10.0},"n2":{"jipipe:graph-compartment":"1dde3a4c-c1bf-531e-8a9f-7ac16d4b6138","jipipe:metadata-v1":{"location/1dde3a4c-c1bf-531e-8a9f-7ac16d4b6138/x":16,"location/1dde3a4c-c1bf-531e-8a9f-7ac16d4b6138/y":20},"jipipe:node-info-id":"ij1-roi-to-rgb"},"n3":{"jipipe:graph-compartment":"1dde3a4c-c1bf-531e-8a9f-7ac16d4b6138","jipipe:metadata-v1":{"location/1dde3a4c-c1bf-531e-8a9f-7ac16d4b6138/x":16,"location/1dde3a4c-c1bf-531e-8a9f-7ac16d4b6138/y":16},"jipipe:node-info-id":"ij1-roi-to-rgb"},"n4":{"jipipe:graph-compartment":"1dde3a4c-c1bf-531e-8a9f-7ac16d4b6138","jipipe:metadata-v1":{"location/1dde3a4c-c1bf-531e-8a9f-7ac16d4b6138/x":16,"location/1dde3a4c-c1bf-531e-8a9f-7ac16d4b6138/y":8},"jipipe:node-info-id":"import-cellpose-model"},"n5":{"jipipe:graph-compartment":"1dde3a4c-c1bf-531e-8a9f-7ac16d4b6138","jipipe:metadata-v1":{"location/1dde3a4c-c1bf-531e-8a9f-7ac16d4b6138/x":0,"location/1dde3a4c-c1bf-531e-8a9f-7ac16d4b6138/y":0},"jipipe:node-info-id":"ij1-roi-remove-overlay"},"n6":{"jipipe:graph-compartment":"1dde3a4c-c1bf-531e-8a9f-7ac16d4b6138","jipipe:metadata-v1":{"location/1dde3a4c-c1bf-531e-8a9f-7ac16d4b6138/x":16,"location/1dde3a4c-c1bf-531e-8a9f-7ac16d4b6138/y":4},"jipipe:node-info-id":"import-file-list"},"n7":{"jipipe:graph-compartment":"1dde3a4c-c1bf-531e-8a9f-7ac16d4b6138","jipipe:metadata-v1":{"location/1dde3a4c-c1bf-531e-8a9f-7ac16d4b6138/x":0,"location/1dde3a4c-c1bf-531e-8a9f-7ac16d4b6138/y":12},"jipipe:node-info-id":"cellpose-training-2"},"n8":{"jipipe:graph-compartment":"1dde3a4c-c1bf-531e-8a9f-7ac16d4b6138","jipipe:metadata-v1":{"location/1dde3a4c-c1bf-531e-8a9f-7ac16d4b6138/x":0,"location/1dde3a4c-c1bf-531e-8a9f-7ac16d4b6138/y":4},"jipipe:node-info-id":"annotate-with-data"},"n9":{"jipipe:graph-compartment":"1dde3a4c-c1bf-531e-8a9f-7ac16d4b6138","jipipe:metadata-v1":{"location/1dde3a4c-c1bf-531e-8a9f-7ac16d4b6138/x":16,"location/1dde3a4c-c1bf-531e-8a9f-7ac16d4b6138/y":12},"jipipe:node-info-id":"cellpose-2","jipipe:slot-configuration":{"input":{"Input":{"slot-data-type":"imagej-imgplus","slot-type":"Input","name":"Input","custom-name":null,"description":"","is-virtual":false,"save-outputs":true,"is-optional":false},"Pretrained Model":{"slot-data-type":"cellpose-model","slot-type":"Input","name":"Pretrained Model","custom-name":null,"description":"A custom pretrained model","is-virtual":false,"save-outputs":true,"is-optional":false}},"output":{"ROI":{"slot-data-type":"imagej-roi","slot-type":"Output","name":"ROI","custom-name":null,"description":"ROI of the segmented areas","is-virtual":false,"save-outputs":true,"is-optional":false},"Probabilities":{"slot-data-type":"imagej-imgplus-greyscale","slot-type":"Output","name":"Probabilities","custom-name":null,"description":"An image indicating the cell probabilities for each pixel","is-virtual":false,"save-outputs":true,"is-optional":false},"Flows XY":{"slot-data-type":"imagej-imgplus","slot-type":"Output","name":"Flows XY","custom-name":null,"description":"An RGB image that indicates the x and y flow of each pixel","is-virtual":false,"save-outputs":true,"is-optional":false}}},"enable-3d-segmentation":true,"suppress-logs":false,"diameter-annotation":{"content":"Diameter","enabled":true},"cleanup-afterwards":true,"diameter":{"content":30.0,"enabled":true},"override-environment":{"content":{"name":"","version":"unknown","source":"NA","load-from-artifact":false,"artifact-query":{"query":null},"environment-type":"System","arguments":{"expression":"ARRAY(script_file)"},"executable-path":""},"enabled":false},"model":"Custom","threshold-parameters/stitch-threshold":{"content":0.0,"enabled":false},"threshold-parameters/cell-probability-threshold":-5.0,"threshold-parameters/flow-threshold":0.0,"threshold-parameters/exclude-on-edges":false,"enhancement-parameters/anisotropy":{"content":1.0,"enabled":false},"enhancement-parameters/normalize":true,"enhancement-parameters/interpolate":true,"enhancement-parameters/no-resample":false,"enhancement-parameters/net-average":true,"output-parameters/output-roi":true,"output-parameters/output-probabilities":true,"output-parameters/output-labels":false,"output-parameters/output-flows-xy":true,"output-parameters/output-flows-z":false,"output-parameters/output-flows-d":false,"gpu-parameters/enable-gpu":true,"gpu-parameters/gpu-device":{"content":0,"enabled":false},"channel-parameters/invert":false,"channel-parameters/segmented-channel":{"content":0,"enabled":false},"channel-parameters/nuclear-channel":{"content":0,"enabled":false},"channel-parameters/all-channels":false}}}
+{
+  "edges": [
+    {
+      "source-node": "n1",
+      "source-slot": "Test",
+      "target-node": "n3",
+      "target-slot": "Image"
+    },
+    {
+      "source-node": "n1",
+      "source-slot": "Test",
+      "target-node": "n9",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n1",
+      "source-slot": "Train",
+      "target-node": "n7",
+      "target-slot": "Training data"
+    },
+    {
+      "source-node": "n1",
+      "source-slot": "Validate",
+      "target-node": "n7",
+      "target-slot": "Test data"
+    },
+    {
+      "source-node": "n3",
+      "source-slot": "Output",
+      "target-node": "n2",
+      "target-slot": "Image"
+    },
+    {
+      "source-node": "n4",
+      "source-slot": "Output",
+      "target-node": "n9",
+      "target-slot": "Pretrained Model"
+    },
+    {
+      "source-node": "n5",
+      "source-slot": "Output",
+      "target-node": "n8",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n6",
+      "source-slot": "Filenames",
+      "target-node": "n4",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n7",
+      "source-slot": "Model",
+      "target-node": "n0",
+      "target-slot": "Data"
+    },
+    {
+      "source-node": "n8",
+      "source-slot": "Output",
+      "target-node": "n1",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n9",
+      "source-slot": "ROI",
+      "target-node": "n3",
+      "target-slot": "ROI"
+    }
+  ],
+  "nodes": {
+    "n0": {
+      "jipipe:graph-compartment": "1dde3a4c-c1bf-531e-8a9f-7ac16d4b6138",
+      "jipipe:metadata-v1": {
+        "location/1dde3a4c-c1bf-531e-8a9f-7ac16d4b6138/x": 0,
+        "location/1dde3a4c-c1bf-531e-8a9f-7ac16d4b6138/y": 16
+      },
+      "jipipe:node-info-id": "export-data-by-parameter-v2"
+    },
+    "n1": {
+      "jipipe:graph-compartment": "1dde3a4c-c1bf-531e-8a9f-7ac16d4b6138",
+      "jipipe:metadata-v1": {
+        "location/1dde3a4c-c1bf-531e-8a9f-7ac16d4b6138/x": 0,
+        "location/1dde3a4c-c1bf-531e-8a9f-7ac16d4b6138/y": 8
+      },
+      "jipipe:node-info-id": "distribute-data",
+      "jipipe:slot-configuration": {
+        "input": {
+          "Input": {
+            "slot-data-type": "jipipe:data",
+            "slot-type": "Input",
+            "name": "Input",
+            "custom-name": null,
+            "description": "",
+            "is-virtual": false,
+            "save-outputs": true,
+            "is-optional": false
+          }
+        },
+        "output": {
+          "Train": {
+            "slot-data-type": "imagej-imgplus",
+            "slot-type": "Output",
+            "name": "Train",
+            "custom-name": null,
+            "description": "",
+            "is-virtual": true,
+            "save-outputs": true,
+            "is-optional": false
+          },
+          "Validate": {
+            "slot-data-type": "imagej-imgplus",
+            "slot-type": "Output",
+            "name": "Validate",
+            "custom-name": null,
+            "description": "",
+            "is-virtual": true,
+            "save-outputs": true,
+            "is-optional": false
+          },
+          "Test": {
+            "slot-data-type": "imagej-imgplus",
+            "slot-type": "Output",
+            "name": "Test",
+            "custom-name": null,
+            "description": "",
+            "is-virtual": true,
+            "save-outputs": true,
+            "is-optional": false
+          }
+        }
+      },
+      "percentages/Train": 80.0,
+      "percentages/Validate": 10.0,
+      "percentages/Test": 10.0
+    },
+    "n2": {
+      "jipipe:graph-compartment": "1dde3a4c-c1bf-531e-8a9f-7ac16d4b6138",
+      "jipipe:metadata-v1": {
+        "location/1dde3a4c-c1bf-531e-8a9f-7ac16d4b6138/x": 16,
+        "location/1dde3a4c-c1bf-531e-8a9f-7ac16d4b6138/y": 20
+      },
+      "jipipe:node-info-id": "ij1-roi-to-rgb"
+    },
+    "n3": {
+      "jipipe:graph-compartment": "1dde3a4c-c1bf-531e-8a9f-7ac16d4b6138",
+      "jipipe:metadata-v1": {
+        "location/1dde3a4c-c1bf-531e-8a9f-7ac16d4b6138/x": 16,
+        "location/1dde3a4c-c1bf-531e-8a9f-7ac16d4b6138/y": 16
+      },
+      "jipipe:node-info-id": "ij1-roi-to-rgb"
+    },
+    "n4": {
+      "jipipe:graph-compartment": "1dde3a4c-c1bf-531e-8a9f-7ac16d4b6138",
+      "jipipe:metadata-v1": {
+        "location/1dde3a4c-c1bf-531e-8a9f-7ac16d4b6138/x": 16,
+        "location/1dde3a4c-c1bf-531e-8a9f-7ac16d4b6138/y": 8
+      },
+      "jipipe:node-info-id": "import-cellpose-model"
+    },
+    "n5": {
+      "jipipe:graph-compartment": "1dde3a4c-c1bf-531e-8a9f-7ac16d4b6138",
+      "jipipe:metadata-v1": {
+        "location/1dde3a4c-c1bf-531e-8a9f-7ac16d4b6138/x": 0,
+        "location/1dde3a4c-c1bf-531e-8a9f-7ac16d4b6138/y": 0
+      },
+      "jipipe:node-info-id": "ij1-roi-remove-overlay"
+    },
+    "n6": {
+      "jipipe:graph-compartment": "1dde3a4c-c1bf-531e-8a9f-7ac16d4b6138",
+      "jipipe:metadata-v1": {
+        "location/1dde3a4c-c1bf-531e-8a9f-7ac16d4b6138/x": 16,
+        "location/1dde3a4c-c1bf-531e-8a9f-7ac16d4b6138/y": 4
+      },
+      "jipipe:node-info-id": "import-file-list"
+    },
+    "n7": {
+      "jipipe:graph-compartment": "1dde3a4c-c1bf-531e-8a9f-7ac16d4b6138",
+      "jipipe:metadata-v1": {
+        "location/1dde3a4c-c1bf-531e-8a9f-7ac16d4b6138/x": 0,
+        "location/1dde3a4c-c1bf-531e-8a9f-7ac16d4b6138/y": 12
+      },
+      "jipipe:node-info-id": "cellpose-training-2"
+    },
+    "n8": {
+      "jipipe:graph-compartment": "1dde3a4c-c1bf-531e-8a9f-7ac16d4b6138",
+      "jipipe:metadata-v1": {
+        "location/1dde3a4c-c1bf-531e-8a9f-7ac16d4b6138/x": 0,
+        "location/1dde3a4c-c1bf-531e-8a9f-7ac16d4b6138/y": 4
+      },
+      "jipipe:node-info-id": "annotate-with-data"
+    },
+    "n9": {
+      "jipipe:graph-compartment": "1dde3a4c-c1bf-531e-8a9f-7ac16d4b6138",
+      "jipipe:metadata-v1": {
+        "location/1dde3a4c-c1bf-531e-8a9f-7ac16d4b6138/x": 16,
+        "location/1dde3a4c-c1bf-531e-8a9f-7ac16d4b6138/y": 12
+      },
+      "jipipe:node-info-id": "cellpose-2",
+      "jipipe:slot-configuration": {
+        "input": {
+          "Input": {
+            "slot-data-type": "imagej-imgplus",
+            "slot-type": "Input",
+            "name": "Input",
+            "custom-name": null,
+            "description": "",
+            "is-virtual": false,
+            "save-outputs": true,
+            "is-optional": false
+          },
+          "Pretrained Model": {
+            "slot-data-type": "cellpose-model",
+            "slot-type": "Input",
+            "name": "Pretrained Model",
+            "custom-name": null,
+            "description": "A custom pretrained model",
+            "is-virtual": false,
+            "save-outputs": true,
+            "is-optional": false
+          }
+        },
+        "output": {
+          "ROI": {
+            "slot-data-type": "imagej-roi",
+            "slot-type": "Output",
+            "name": "ROI",
+            "custom-name": null,
+            "description": "ROI of the segmented areas",
+            "is-virtual": false,
+            "save-outputs": true,
+            "is-optional": false
+          },
+          "Probabilities": {
+            "slot-data-type": "imagej-imgplus-greyscale",
+            "slot-type": "Output",
+            "name": "Probabilities",
+            "custom-name": null,
+            "description": "An image indicating the cell probabilities for each pixel",
+            "is-virtual": false,
+            "save-outputs": true,
+            "is-optional": false
+          },
+          "Flows XY": {
+            "slot-data-type": "imagej-imgplus",
+            "slot-type": "Output",
+            "name": "Flows XY",
+            "custom-name": null,
+            "description": "An RGB image that indicates the x and y flow of each pixel",
+            "is-virtual": false,
+            "save-outputs": true,
+            "is-optional": false
+          }
+        }
+      },
+      "enable-3d-segmentation": true,
+      "suppress-logs": false,
+      "diameter-annotation": {
+        "content": "Diameter",
+        "enabled": true
+      },
+      "cleanup-afterwards": true,
+      "diameter": {
+        "content": 30.0,
+        "enabled": true
+      },
+      "override-environment": {
+        "content": {
+          "name": "",
+          "version": "unknown",
+          "source": "NA",
+          "load-from-artifact": false,
+          "artifact-query": {
+            "query": null
+          },
+          "environment-type": "System",
+          "arguments": {
+            "expression": "ARRAY(script_file)"
+          },
+          "executable-path": ""
+        },
+        "enabled": false
+      },
+      "model": "Custom",
+      "threshold-parameters/stitch-threshold": {
+        "content": 0.0,
+        "enabled": false
+      },
+      "threshold-parameters/cell-probability-threshold": -5.0,
+      "threshold-parameters/flow-threshold": 0.0,
+      "threshold-parameters/exclude-on-edges": false,
+      "enhancement-parameters/anisotropy": {
+        "content": 1.0,
+        "enabled": false
+      },
+      "enhancement-parameters/normalize": true,
+      "enhancement-parameters/interpolate": true,
+      "enhancement-parameters/no-resample": false,
+      "enhancement-parameters/net-average": true,
+      "output-parameters/output-roi": true,
+      "output-parameters/output-probabilities": true,
+      "output-parameters/output-labels": false,
+      "output-parameters/output-flows-xy": true,
+      "output-parameters/output-flows-z": false,
+      "output-parameters/output-flows-d": false,
+      "gpu-parameters/enable-gpu": true,
+      "gpu-parameters/gpu-device": {
+        "content": 0,
+        "enabled": false
+      },
+      "channel-parameters/invert": false,
+      "channel-parameters/segmented-channel": {
+        "content": 0,
+        "enabled": false
+      },
+      "channel-parameters/nuclear-channel": {
+        "content": 0,
+        "enabled": false
+      },
+      "channel-parameters/all-channels": false
+    }
+  }
+}

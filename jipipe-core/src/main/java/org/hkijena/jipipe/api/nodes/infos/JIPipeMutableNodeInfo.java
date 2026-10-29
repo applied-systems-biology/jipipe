@@ -17,11 +17,7 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeEmptyData;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework;
-import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyInputProfile;
-import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension;
-import org.hkijena.jipipe.api.nodes.taxonomy.NoFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.*;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 
 import java.util.ArrayList;

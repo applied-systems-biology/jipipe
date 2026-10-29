@@ -631,13 +631,13 @@ public class PathUtils {
      * yields {@code /a/Proj.jipx}.
      * <p>
      * If the file name does not end with {@code oldExtension}
-     * (case-insensitive), the path is returned unchanged — in particular,
+     * (case-insensitive), the path is returned unchanged - in particular,
      * {@code .jipx} is <b>not</b> treated as an acceptable alternative
      * (unlike {@link #ensureExtension}).
      *
-     * @param path           the path (null-safe)
-     * @param oldExtension   the extension to replace (should include the dot)
-     * @param newExtension   the replacement extension (should include the dot)
+     * @param path         the path (null-safe)
+     * @param oldExtension the extension to replace (should include the dot)
+     * @param newExtension the replacement extension (should include the dot)
      * @return the path with the replaced extension, or the path unchanged
      */
     public static Path replaceExtension(Path path, String oldExtension, String newExtension) {
@@ -666,7 +666,7 @@ public class PathUtils {
      * <p>
      * A legacy {@code .jip} save can produce a {@code .jipx} sibling
      * (the migration prompt). When opening the {@code .jip}, its
-     * existing {@code .jipx} sibling is offered as an alternative — the
+     * existing {@code .jipx} sibling is offered as an alternative - the
      * user decides which version is current. The offer is purely
      * existence-based on purpose: last-modified times are an unreliable
      * signal (projects are frequently copied between NAS shares, SFTP
@@ -980,7 +980,7 @@ public class PathUtils {
     }
 
     public static void copyFile(Path src, Path dst) {
-        if(!Files.isDirectory(dst.getParent())) {
+        if (!Files.isDirectory(dst.getParent())) {
             createDirectories(dst.getParent());
         }
         try {
@@ -993,8 +993,7 @@ public class PathUtils {
     public static void tryMakeUnixExecutable(Path path, JIPipeProgressInfo progressInfo) {
         try {
             makeUnixExecutable(path);
-        }
-        catch (Exception ignored) {
+        } catch (Exception ignored) {
             progressInfo.warn("Unable to make " + path + " executable");
         }
     }
@@ -1006,8 +1005,7 @@ public class PathUtils {
                 try {
                     progressInfo.log(" - chmod +x " + path);
                     PathUtils.makeUnixExecutable(path);
-                }
-                catch (Exception ignored) {
+                } catch (Exception ignored) {
                     progressInfo.warn("Unable to make " + path + " executable");
                 }
             }

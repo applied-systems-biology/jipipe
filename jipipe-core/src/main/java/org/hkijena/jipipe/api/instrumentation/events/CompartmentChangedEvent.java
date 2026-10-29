@@ -14,7 +14,15 @@ public class CompartmentChangedEvent extends InstrumentationEvent {
         this.action = action;
     }
 
-    public String getCompartmentId() { return compartmentId; }
-    public String getName() { return name; }
-    public String getAction() { return action; }
+    public String getCompartmentId() {
+        return compartmentId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getAction() {
+        return action;
+    }
 }

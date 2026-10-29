@@ -17,6 +17,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeNodeTemplate;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -27,7 +28,6 @@ import org.hkijena.jipipe.api.service.components.JIPipeNodesServiceComponent;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
-import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.plugins.parameters.library.taxonomy.JIPipeTaxonomyFunctionRef;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -51,7 +51,7 @@ class CreateNewNodesByTemplateDatabaseEntryTest {
 
     private static final String STUB_ID = "template-entry-test:stub-node";
     private static final JIPipeMutableDependency TEST_DEPENDENCY =
-        new JIPipeMutableDependency("template-entry-test", "1.0.0", "template-entry-test");
+            new JIPipeMutableDependency("template-entry-test", "1.0.0", "template-entry-test");
 
     @BeforeAll
     static void boot() {
@@ -75,6 +75,12 @@ class CreateNewNodesByTemplateDatabaseEntryTest {
     // ------------------------------------------------------------------
     // Test cases
     // ------------------------------------------------------------------
+
+    private static JIPipeGraph rekeyedDuplicate(JIPipeNodeTemplate template, UUID target) {
+        JIPipeGraph graph = template.getGraph().duplicate();
+        CreateNewNodesByTemplateDatabaseEntry.rekeyTemplateGraphToCompartment(graph, target);
+        return graph;
+    }
 
     @Test
     void badgeIsCustomForSingleNode() {
@@ -104,20 +110,12 @@ class CreateNewNodesByTemplateDatabaseEntryTest {
 
     @Test
     void locationInfoIsScoped() {
-        // The location reads as the template's FUNCTION ("Images" — the same
+        // The location reads as the template's FUNCTION ("Images" - the same
         // form the node entries use), not as storage bookkeeping ("Templates /
         // Global"). The scope line remains only as the fallback for an unset
         // function.
         var e = new CreateNewNodesByTemplateDatabaseEntry(tmpl(1, "jipipe:function:images"), TemplateScope.Global);
         assertThat(e.getLocationInfos()).containsExactly("Images");
-    }
-
-    @Test
-    void locationInfoFallsBackToScopeWithoutFunction() {
-        // Unset taxonomy function: the catch-all placement keeps the scope
-        // line as the location (there is no function to show).
-        var e = new CreateNewNodesByTemplateDatabaseEntry(tmpl(1, null), TemplateScope.Global);
-        assertThat(e.getLocationInfos()).containsExactly("Templates / Global");
     }
 
     // ------------------------------------------------------------------
@@ -127,12 +125,20 @@ class CreateNewNodesByTemplateDatabaseEntryTest {
     // mergeWith preserves that UUID, so the clicked-into-canvas nodes land
     // in a compartment the canvas does not render: isVisibleIn
     // (canvasCompartment) is false for all of them, no node UIs are
-    // created, and nothing happens — no error, no log. Drag & drop was
+    // created, and nothing happens - no error, no log. Drag & drop was
     // unaffected because the drop is re-parsed through pasteNodes, which
     // re-keys the compartment to the target canvas. The fix
     // (rekeyTemplateGraphToCompartment) must restore canvas visibility and
     // keep the stored locations resolvable under the new compartment key.
     // ------------------------------------------------------------------
+
+    @Test
+    void locationInfoFallsBackToScopeWithoutFunction() {
+        // Unset taxonomy function: the catch-all placement keeps the scope
+        // line as the location (there is no function to show).
+        var e = new CreateNewNodesByTemplateDatabaseEntry(tmpl(1, null), TemplateScope.Global);
+        assertThat(e.getLocationInfos()).containsExactly("Templates / Global");
+    }
 
     @Test
     void phantomSourceCompartmentIsRekeyedSoNodesAppearInTheCanvas() {
@@ -158,7 +164,7 @@ class CreateNewNodesByTemplateDatabaseEntryTest {
             assertThat(stored.getCompartmentUUIDOf(node)).isEqualTo(phantomCompartment);
         }
 
-        // The canvas' (compartment) graph — e.g. the project's pipeline.
+        // The canvas' (compartment) graph - e.g. the project's pipeline.
         UUID canvasCompartment = UUID.randomUUID();
         JIPipeGraph canvas = new JIPipeGraph();
 
@@ -168,8 +174,8 @@ class CreateNewNodesByTemplateDatabaseEntryTest {
         brokenMerge.mergeWith(template.getGraph().duplicate());
         for (JIPipeGraphNode node : brokenMerge.getGraphNodes()) {
             assertThat(node.isVisibleIn(canvasCompartment))
-                .as("without the re-key the node is invisible on the canvas (the bug)")
-                .isFalse();
+                    .as("without the re-key the node is invisible on the canvas (the bug)")
+                    .isFalse();
         }
 
         // With the fix: re-key the duplicated graph, then merge.
@@ -180,18 +186,18 @@ class CreateNewNodesByTemplateDatabaseEntryTest {
         for (JIPipeGraphNode node : canvas.getGraphNodes()) {
             assertThat(node.getCompartmentUUIDInParentGraph()).isEqualTo(canvasCompartment);
             assertThat(node.isVisibleIn(canvasCompartment))
-                .as("the canvas renders the node now")
-                .isTrue();
+                    .as("the canvas renders the node now")
+                    .isTrue();
             // The stored location survived the re-key under the NEW
             // compartment (resolvable by the canvas' moveToStoredGridLocation)
             // and the stale entry under the phantom compartment is gone (no
             // metadata bloat in saved projects).
             assertThat(node.getNodeUILocationWithin(canvasCompartment.toString()))
-                .as("location resolvable under the canvas compartment")
-                .isNotNull();
+                    .as("location resolvable under the canvas compartment")
+                    .isNotNull();
             assertThat(node.getNodeUILocationWithin(phantomCompartment.toString()))
-                .as("stale location entry under the phantom compartment removed")
-                .isNull();
+                    .as("stale location entry under the phantom compartment removed")
+                    .isNull();
         }
     }
 
@@ -207,7 +213,7 @@ class CreateNewNodesByTemplateDatabaseEntryTest {
         template.setGraph(source);
 
         // Main canvas (null compartment, i.e. key "_"): the node already
-        // belongs to the right compartment — the location stays under "_".
+        // belongs to the right compartment - the location stays under "_".
         JIPipeGraph mainCanvas = new JIPipeGraph();
         mainCanvas.mergeWith(rekeyedDuplicate(template, null));
         JIPipeGraphNode onMain = mainCanvas.getGraphNodes().iterator().next();
@@ -227,19 +233,13 @@ class CreateNewNodesByTemplateDatabaseEntryTest {
         assertThat(onSub.getNodeUILocationWithin("_")).isNull();
     }
 
-    private static JIPipeGraph rekeyedDuplicate(JIPipeNodeTemplate template, UUID target) {
-        JIPipeGraph graph = template.getGraph().duplicate();
-        CreateNewNodesByTemplateDatabaseEntry.rekeyTemplateGraphToCompartment(graph, target);
-        return graph;
-    }
-
     // ------------------------------------------------------------------
     // Helpers
     // ------------------------------------------------------------------
 
     /**
      * Builds a real {@link JIPipeNodeTemplate} whose graph contains {@code nodes}
-     * instances of the registered stub node (no edges — the badge counts nodes,
+     * instances of the registered stub node (no edges - the badge counts nodes,
      * not edges). When {@code fnId} is non-null, the template's taxonomy function
      * ref is set to that id; otherwise the ref is left unset (the default no-arg
      * ref). {@code template.setGraph(graph)} serializes the graph, and
@@ -268,7 +268,7 @@ class CreateNewNodesByTemplateDatabaseEntryTest {
     /**
      * A minimal, unconverted node used purely as material for the template
      * graphs. It declares no taxonomy, so it carries no behavior flags that
-     * would flip the entry's pipeline visibility — the entry's constructor
+     * would flip the entry's pipeline visibility - the entry's constructor
      * (which walks the graph) stays deterministic.
      */
     @SetJIPipeDocumentation(name = "Template Stub Node", description = "A stub for template entry testing.")
@@ -278,7 +278,7 @@ class CreateNewNodesByTemplateDatabaseEntryTest {
             super(info);
         }
 
-        // Required by JIPipeGraph.duplicate() (the addToGraph path) — the
+        // Required by JIPipeGraph.duplicate() (the addToGraph path) - the
         // production copy constructor. The base copy constructor carries
         // name, slot configuration, and the node UI location metadata (the
         // re-key logic under test needs the locations to survive the

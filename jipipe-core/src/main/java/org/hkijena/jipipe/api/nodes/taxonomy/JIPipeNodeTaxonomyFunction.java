@@ -15,7 +15,7 @@ package org.hkijena.jipipe.api.nodes.taxonomy;
 
 import org.jetbrains.annotations.Nullable;
 
-import javax.swing.Icon;
+import javax.swing.*;
 import java.util.List;
 import java.util.Set;
 

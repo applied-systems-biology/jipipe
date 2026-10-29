@@ -9,14 +9,29 @@ public class LongestNodeWidthStatisticsItem implements JIPipeStatisticsItem {
     private static int maxWidthSeen = 0;
     private int maxWidth = 0;
 
+    public static void reportWidth(int width) {
+        maxWidthSeen = Math.max(maxWidthSeen, width);
+    }
+
     @Override
-    public String getId() { return "longest-node-width"; }
+    public String getId() {
+        return "longest-node-width";
+    }
+
     @Override
-    public String getName() { return "Longest node width"; }
+    public String getName() {
+        return "Longest node width";
+    }
+
     @Override
-    public String getDescription() { return "The widest node UI seen (pixels)"; }
+    public String getDescription() {
+        return "The widest node UI seen (pixels)";
+    }
+
     @Override
-    public StatisticsPrivacyLevel getRequiredPrivacyLevel() { return StatisticsPrivacyLevel.Everything; }
+    public StatisticsPrivacyLevel getRequiredPrivacyLevel() {
+        return StatisticsPrivacyLevel.Everything;
+    }
 
     @Override
     public JsonNode serialize() {
@@ -30,14 +45,18 @@ public class LongestNodeWidthStatisticsItem implements JIPipeStatisticsItem {
     }
 
     @Override
-    public void reset() { maxWidth = 0; maxWidthSeen = 0; }
-    @Override
-    public boolean isTimeTracked() { return true; }
-
-    public static void reportWidth(int width) {
-        maxWidthSeen = Math.max(maxWidthSeen, width);
+    public void reset() {
+        maxWidth = 0;
+        maxWidthSeen = 0;
     }
 
     @Override
-    public String getIcon32() { return "actions/resizecol.png"; }
+    public boolean isTimeTracked() {
+        return true;
+    }
+
+    @Override
+    public String getIcon32() {
+        return "actions/resizecol.png";
+    }
 }

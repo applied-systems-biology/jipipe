@@ -26,15 +26,14 @@ import org.hkijena.jipipe.api.nodes.database.entries.ExistingCompartmentDatabase
 import org.hkijena.jipipe.api.nodes.database.entries.ExistingPipelineNodeDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.entries.NodeEntryKind;
 import org.hkijena.jipipe.api.nodes.database.entries.TemplateScope;
-
 import org.hkijena.jipipe.api.nodes.taxonomy.FunctionRegistry;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
 import org.hkijena.jipipe.api.run.JIPipeEphemeralRunnableExecutor;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.grapheditor.addnodepanel.NodeBrowserModel;
-import org.hkijena.jipipe.desktop.app.grapheditor.nodebrowser.NodeBrowserTreeController;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.nodebrowser.NodeBrowserTreeController;
 import org.hkijena.jipipe.desktop.commons.components.ai.JIPipeDesktopAISetupDialog;
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeNodeStateChips;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
@@ -48,33 +47,27 @@ import org.hkijena.jipipe.utils.json.JIPipePathMetadataStore;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
-
 import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashSet;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * The "Find node" dialog (Ctrl+A / context action). Rebuilt in Task 17 into a
  * permanent three-zone layout:
  * <ol>
- * <li><b>left</b> — the taxonomy function tree (13 top-levels → leaves, from
+ * <li><b>left</b> - the taxonomy function tree (13 top-levels → leaves, from
  * the live {@link FunctionRegistry}); selecting a node filters the center
  * list to entries whose {@link JIPipeNodeDatabaseEntry#getFunctionIds()
  * function ids} include that node or one of its descendants
  * ({@link NodeBrowserModel#descendantIds(FunctionRegistry, JIPipeNodeTaxonomyFunction)}),</li>
- * <li><b>center</b> — the results {@link JList} with the existing search
+ * <li><b>center</b> - the results {@link JList} with the existing search
  * field, find-existing / create-nodes toggles, AI toggle and list behavior
- * (preserved from the pre-rebuild dialog — the "see what's available"
+ * (preserved from the pre-rebuild dialog - the "see what's available"
  * contract),</li>
- * <li><b>right</b> — the {@link NodeFinderDetailRail} (node facets +
+ * <li><b>right</b> - the {@link NodeFinderDetailRail} (node facets +
  * Documentation / Related / Follow-ups tabs; see the rail's javadoc for the
  * deferred template-based action follow-up).</li>
  * </ol>
@@ -106,27 +99,27 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
     private final JIPipeEphemeralRunnableExecutor executor = new JIPipeEphemeralRunnableExecutor("Node finder");
     private final NodeBrowserModel model = new NodeBrowserModel();
     /**
+     * Function-leaf tree rows to highlight because a search matched a node
+     * under them (bold in the tree renderer); empty when no search is active.
+     */
+    private final JToggleButton aiSearchButton = new JToggleButton(JIPipe.RESOURCES.getIcon16("actions/ai.png"));
+    /**
+     * The shared function tree (tree + slim control bar under it).
+     */
+    private final NodeBrowserTreeController tree;
+    private final NodeFinderDetailRail detailRail;
+
+    // --- Three-zone layout components ---
+    private final JSplitPane leftSplit;
+    private final JSplitPane rightSplit;
+    /**
      * The result-kind filter box (1340): the SAME shared, persisted setting
      * as the node browser's "Kinds" box (see {@link NodeEntryKind#loadKinds()}),
      * so a selection made in one surface is honored by the other. An empty
      * selection shows all kinds.
      */
     private JIPipeDesktopRichSelectionBox kindsBox;
-
-    /**
-     * Function-leaf tree rows to highlight because a search matched a node
-     * under them (bold in the tree renderer); empty when no search is active.
-     */
-    private final JToggleButton aiSearchButton = new JToggleButton(JIPipe.RESOURCES.getIcon16("actions/ai.png"));
     private JIPipeDesktopSearchTextField searchField;
-
-    // --- Three-zone layout components ---
-    /** The shared function tree (tree + slim control bar under it). */
-    private final NodeBrowserTreeController tree;
-    private final NodeFinderDetailRail detailRail;
-    private final JSplitPane leftSplit;
-    private final JSplitPane rightSplit;
-
     /**
      * The entry the user clicked in the detail rail's related/follow-up
      * lists, which may not be present in the current (filtered) list view.
@@ -167,7 +160,7 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
      * Monotonic counter bumped on every {@link #reloadList()}. A
      * {@link ReloadListRun} only applies its result if this value is still
      * current when the result is handed back on the EDT, so a stale in-flight
-     * query (superseded by a newer reload) cannot clobber the list — in
+     * query (superseded by a newer reload) cannot clobber the list - in
      * particular it cannot reset the selection after
      * {@link #selectEntryFromRail} has broadened the view.
      */
@@ -215,10 +208,31 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
         // The compartments graph ⇒ compartments role, everything else ⇒
         // pipeline role (mirrors the list query's visibility role).
         tree.populateTree(canvasUI.getDesktopWorkbench() instanceof JIPipeDesktopProjectWorkbench workbench
-            && canvasUI.getGraph() == workbench.getProject().getCompartmentGraph() ?
-            JIPipeNodeDatabasePipelineVisibility.Compartments :
-            JIPipeNodeDatabasePipelineVisibility.Pipeline);
+                && canvasUI.getGraph() == workbench.getProject().getCompartmentGraph() ?
+                JIPipeNodeDatabasePipelineVisibility.Compartments :
+                JIPipeNodeDatabasePipelineVisibility.Pipeline);
         reloadList();
+    }
+
+    /**
+     * The index of the first entry with the same id in the given list
+     * model, or -1. Entries carry no {@code equals()} override (reference
+     * identity only), and related / follow-up lookups resolve entries
+     * through a different code path than the list query, so the id - not
+     * the instance - is the stable identity (the {@link ListModel}
+     * interface does not expose a lookup by value either way).
+     */
+    private static int indexOfEntry(ListModel<? extends JIPipeNodeDatabaseEntry> model, JIPipeNodeDatabaseEntry entry) {
+        if (entry == null) {
+            return -1;
+        }
+        String entryId = entry.getId();
+        for (int i = 0; i < model.getSize(); i++) {
+            if (entryId.equals(model.getElementAt(i).getId())) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     private void initialize() {
@@ -481,7 +495,7 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
                     reloadList();
                 }
             } else {
-                // Switched AI off — reload with standard search
+                // Switched AI off - reload with standard search
                 reloadList();
             }
         });
@@ -514,6 +528,10 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
         getContentPane().add(toolbarPanel, BorderLayout.NORTH);
     }
 
+    // ------------------------------------------------------------------
+    // Function tree (left zone)
+    // ------------------------------------------------------------------
+
     private void openFirstEntryMenu() {
         if (nodeList.getModel().getSize() > 0) {
             nodeList.setSelectedIndex(0);
@@ -523,10 +541,6 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
             openEntryMenu(nodeList.getModel().getElementAt(0), point, true);
         }
     }
-
-    // ------------------------------------------------------------------
-    // Function tree (left zone)
-    // ------------------------------------------------------------------
 
     /**
      * Reads the selected tree path into the shared {@link NodeBrowserModel}.
@@ -558,15 +572,19 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
         model.setTreePath(pathFunctions);
     }
 
+    // ------------------------------------------------------------------
+    // Rail → center list entry selection (with recursion guard)
+    // ------------------------------------------------------------------
+
     /**
      * Keeps the stored tree branch filter consistent with the search
      * state. When a search becomes active the flat query results override
      * the function tree, so the stored branch filter is dropped ONCE (on
      * the inactive→active transition). When the search is cleared again,
      * the filter is re-synced from the tree's current selection ONCE
-     * (active→inactive) — the user may have navigated the tree while
+     * (active→inactive) - the user may have navigated the tree while
      * searching, and that branch then applies to the (no longer flat)
-     * results. The tree itself is left alone at all times — it stays
+     * results. The tree itself is left alone at all times - it stays
      * enabled and navigable (dimming/disabling it blocked all interaction,
      * which the evaluation flagged).
      */
@@ -574,7 +592,7 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
         boolean searchActive = model.isSearchActive();
         if (searchActive && !searchWasActive) {
             // Enter search: the flat results override BOTH the function tree
-            // and any template scope — clear the stored selection (once).
+            // and any template scope - clear the stored selection (once).
             // setTreePath also clears selectedScope (they are mutually
             // exclusive), so one call resets both.
             model.setTreePath(List.of());
@@ -585,14 +603,14 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
     }
 
     // ------------------------------------------------------------------
-    // Rail → center list entry selection (with recursion guard)
+    // List reload (shared async pattern)
     // ------------------------------------------------------------------
 
     /**
      * Called by the detail rail when the user clicks a related / follow-up
      * entry. If the entry is already visible in the center list (matched by
-     * id — see {@link #indexOfEntry}) it is selected and scrolled into view
-     * (which, via the list's selection listener, updates the rail — one hop,
+     * id - see {@link #indexOfEntry}) it is selected and scrolled into view
+     * (which, via the list's selection listener, updates the rail - one hop,
      * and the rail's {@code setEntry} does not call the selector again, so
      * there is no loop). Otherwise the view is broadened (search cleared,
      * tree revealed + selected on the entry's function branch, the list
@@ -605,7 +623,7 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
             // The entry is already in the current list view.
             //
             // (a) Picked out in the TREE: the entry's function branch row is
-            // selected and scrolled into view (the locator — selectRow =
+            // selected and scrolled into view (the locator - selectRow =
             // expand + makeVisible). The tree selection listener is
             // suppressed so this does NOT re-filter or reload the list (the
             // entry is already in it); only the tree's pickout happens.
@@ -620,7 +638,7 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
                 }
             }
             // (b) Picked out in the LIST: select the row AND scroll it into
-            // view — setSelectedIndex alone does not move the viewport when
+            // view - setSelectedIndex alone does not move the viewport when
             // the row is below the fold (the rail click must make the entry
             // visible, not just selected).
             nodeList.setSelectedIndex(index);
@@ -643,7 +661,7 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
             // resetting to "All functions"): expand it, select its row AND
             // scroll it into view (selectRow's locator), so the broadened
             // view is visibly scoped to the clicked entry. The tree filter
-            // is NOT applied (the list keeps the full, broadened result —
+            // is NOT applied (the list keeps the full, broadened result -
             // the entry must be in it).
             JIPipeNodeTaxonomyFunction primaryFunction = NodeBrowserTreeController.primaryFunctionOf(entry);
             TreePath functionRow = primaryFunction != null ? tree.functionRow(primaryFunction) : null;
@@ -656,7 +674,7 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
             programmaticUpdate = false;
         }
         model.setSearch("");
-        // The tree now shows the clicked entry's branch — make the stored
+        // The tree now shows the clicked entry's branch - make the stored
         // branch filter match what the tree displays, so list and tree
         // agree (the reloaded list is scoped to that branch, which
         // contains the clicked entry by definition). The applyResult
@@ -667,10 +685,6 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
         long gen = reloadList();
         pendingRailSelectionGeneration = gen;
     }
-
-    // ------------------------------------------------------------------
-    // List reload (shared async pattern)
-    // ------------------------------------------------------------------
 
     /**
      * @return the reload generation the new {@link ReloadListRun} was enqueued
@@ -710,11 +724,11 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
         // search text); entries without a kind (existing nodes/compartments)
         // always pass, and an empty selection matches everything.
         filtered.removeIf(entry -> !model.matchesKindFilter(entry));
-        // Down-ranked nodes (auto-imported, deprecated, unstable — the
+        // Down-ranked nodes (auto-imported, deprecated, unstable - the
         // generalized state classifiers, see JIPipeNodeStateChips) come
         // after the standard curated nodes (same rule as the node browser).
         filtered.sort(Comparator.comparingInt(entry ->
-            JIPipeNodeStateChips.isDownRanked(entry) ? 1 : 0));
+                JIPipeNodeStateChips.isDownRanked(entry) ? 1 : 0));
         // Highlight the tree leafs the search matched (same rule as the node
         // browser; no-op without a search term)
         tree.updateSearchHighlights(model.isSearchActive(), filtered);
@@ -727,7 +741,7 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
 
         // This run only reaches here if it is still the latest generation, so
         // reloadGeneration == this run's generation. Consume a pending rail
-        // selection only if it was requested for this (current) reload — a
+        // selection only if it was requested for this (current) reload - a
         // pending selection left over from a superseded broaden reload must
         // not be applied to an unrelated later reload.
         boolean pendingMatches = pendingRailSelection != null && pendingRailSelectionGeneration == reloadGeneration;
@@ -753,31 +767,12 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
         }
     }
 
-    /**
-     * The index of the first entry with the same id in the given list
-     * model, or -1. Entries carry no {@code equals()} override (reference
-     * identity only), and related / follow-up lookups resolve entries
-     * through a different code path than the list query, so the id — not
-     * the instance — is the stable identity (the {@link ListModel}
-     * interface does not expose a lookup by value either way).
-     */
-    private static int indexOfEntry(ListModel<? extends JIPipeNodeDatabaseEntry> model, JIPipeNodeDatabaseEntry entry) {
-        if (entry == null) {
-            return -1;
-        }
-        String entryId = entry.getId();
-        for (int i = 0; i < model.getSize(); i++) {
-            if (entryId.equals(model.getElementAt(i).getId())) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
     public static class ReloadListRun extends DefaultJIPipeRunnable {
 
         private final JIPipeDesktopNodeFinderDialogUI dialogUI;
-        /** The reload generation this run was enqueued under (see {@link #reloadGeneration}). */
+        /**
+         * The reload generation this run was enqueued under (see {@link #reloadGeneration}).
+         */
         private final long generation;
 
         public ReloadListRun(JIPipeDesktopNodeFinderDialogUI dialogUI) {

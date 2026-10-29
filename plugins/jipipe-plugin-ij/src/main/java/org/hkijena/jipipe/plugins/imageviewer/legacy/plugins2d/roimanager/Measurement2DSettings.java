@@ -26,7 +26,6 @@ public class Measurement2DSettings extends AbstractJIPipeParameterCollection {
     private boolean measureInPhysicalUnits = true;
 
     public Measurement2DSettings() {
-        statistics.setCollapsed(false);
     }
 
     @SetJIPipeDocumentation(name = "Statistics", description = "The statistics to measure." + "<br/><br/>" + ImageJMeasurementsSetParameter.ALL_DESCRIPTIONS)

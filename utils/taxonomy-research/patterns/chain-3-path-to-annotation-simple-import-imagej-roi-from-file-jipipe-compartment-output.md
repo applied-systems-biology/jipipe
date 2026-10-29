@@ -32,32 +32,37 @@ template:
 
 # Pattern: Annotate with file/directory name -> Import ROI -> Compartment output
 
-Mined pattern `chain-3-path-to-annotation-simple-import-imagej-roi-from-file-jipipe-compartment-output` (shape `chain`, support 32).
+Mined pattern `chain-3-path-to-annotation-simple-import-imagej-roi-from-file-jipipe-compartment-output` (shape `chain`,
+support 32).
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| annotate | `path-to-annotation-simple` |
-| import | `import-imagej-roi-from-file` |
-| core-io | `jipipe:compartment-output` |
+| role     | node ids                      |
+|----------|-------------------------------|
+| annotate | `path-to-annotation-simple`   |
+| import   | `import-imagej-roi-from-file` |
+| core-io  | `jipipe:compartment-output`   |
 
 ## Example graph
 
-Project: `AIAgentTests/03-ExampleWorkflows/Angela_Roots_38.jip` (relative to `/data/JIPipe`), compartment `Preprocessing`.
+Project: `AIAgentTests/03-ExampleWorkflows/Angela_Roots_38.jip` (relative to `/data/JIPipe`), compartment
+`Preprocessing`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `path-to-annotation-simple` | Add path to annotations |
-| n1 | `import-imagej-roi-from-file` | ROI from file |
-| n2 | `jipipe:compartment-output` | Output |
+| key | node id                       | name                    |
+|-----|-------------------------------|-------------------------|
+| n0  | `path-to-annotation-simple`   | Add path to annotations |
+| n1  | `import-imagej-roi-from-file` | ROI from file           |
+| n2  | `jipipe:compartment-output`   | Output                  |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
-| Add path to annotations | `Annotated paths` | ROI from file | `Files` | `path` |
-| ROI from file | `Output` | Output | `ROI` | `imagej-roi` |
+| from                    | slot              | to            | slot    | data class   |
+|-------------------------|-------------------|---------------|---------|--------------|
+| Add path to annotations | `Annotated paths` | ROI from file | `Files` | `path`       |
+| ROI from file           | `Output`          | Output        | `ROI`   | `imagej-roi` |
 
 ## Template
 
-Proposed name `Annotate with file/directory name -> Import ROI -> Compartment output`, menu path `Patterns/Annotations/Annotate with file/directory name -> Import ROI -> Compartment output` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/chain-3-path-to-annotation-simple-import-imagej-roi-from-file-jipipe-compartment-output.json`.
+Proposed name `Annotate with file/directory name -> Import ROI -> Compartment output`, menu path
+`Patterns/Annotations/Annotate with file/directory name -> Import ROI -> Compartment output` (proposal only - not
+registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/chain-3-path-to-annotation-simple-import-imagej-roi-from-file-jipipe-compartment-output.json`.
 

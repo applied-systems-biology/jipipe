@@ -1,1 +1,127 @@
-{"edges":[{"source-node":"n0","source-slot":"Data","target-node":"n3","target-slot":"Input"},{"source-node":"n1","source-slot":"Output","target-node":"n2","target-slot":"Input"},{"source-node":"n2","source-slot":"Output","target-node":"n0","target-slot":"Data"},{"source-node":"n3","source-slot":"Output","target-node":"n4","target-slot":"Mask"},{"source-node":"n5","source-slot":"Data","target-node":"n4","target-slot":"Raw image"}],"nodes":{"n0":{"jipipe:graph-compartment":"9355f6a5-eb83-5a05-80dc-ca148257b1a8","jipipe:metadata-v1":{"location/9355f6a5-eb83-5a05-80dc-ca148257b1a8/x":0,"location/9355f6a5-eb83-5a05-80dc-ca148257b1a8/y":8},"jipipe:node-info-id":"ij1-transform-equalize-dimensions-max-io"},"n1":{"jipipe:graph-compartment":"9355f6a5-eb83-5a05-80dc-ca148257b1a8","jipipe:metadata-v1":{"location/9355f6a5-eb83-5a05-80dc-ca148257b1a8/x":0,"location/9355f6a5-eb83-5a05-80dc-ca148257b1a8/y":0},"jipipe:node-info-id":"ij1-threshold-auto2d"},"n2":{"jipipe:graph-compartment":"9355f6a5-eb83-5a05-80dc-ca148257b1a8","jipipe:metadata-v1":{"location/9355f6a5-eb83-5a05-80dc-ca148257b1a8/x":0,"location/9355f6a5-eb83-5a05-80dc-ca148257b1a8/y":4},"jipipe:node-info-id":"ij1-blur-median2d"},"n3":{"jipipe:graph-compartment":"9355f6a5-eb83-5a05-80dc-ca148257b1a8","jipipe:metadata-v1":{"location/9355f6a5-eb83-5a05-80dc-ca148257b1a8/x":0,"location/9355f6a5-eb83-5a05-80dc-ca148257b1a8/y":16},"jipipe:node-info-id":"ij1-set-lut-from-color-map"},"n4":{"jipipe:graph-compartment":"9355f6a5-eb83-5a05-80dc-ca148257b1a8","jipipe:metadata-v1":{"location/9355f6a5-eb83-5a05-80dc-ca148257b1a8/x":0,"location/9355f6a5-eb83-5a05-80dc-ca148257b1a8/y":20},"jipipe:node-info-id":"ij1-color-blend-images","jipipe:slot-configuration":{"input":{"Mask":{"slot-data-type":"imagej-imgplus","slot-type":"Input","name":"Mask","custom-name":null,"description":"","is-virtual":false,"save-outputs":true,"is-optional":false},"Raw image":{"slot-data-type":"imagej-imgplus","slot-type":"Input","name":"Raw image","custom-name":null,"description":"","is-virtual":false,"save-outputs":true,"is-optional":false}},"output":{"Output":{"slot-data-type":"imagej-imgplus-color-rgb","slot-type":"Output","name":"Output","custom-name":null,"description":"The output image","is-virtual":false,"save-outputs":true,"is-optional":false}}},"render-greyscale-images":true,"layers/Mask":{"opacity":0.3},"layers/Raw image":{"opacity":1.0}},"n5":{"jipipe:graph-compartment":"9355f6a5-eb83-5a05-80dc-ca148257b1a8","jipipe:metadata-v1":{"location/9355f6a5-eb83-5a05-80dc-ca148257b1a8/x":0,"location/9355f6a5-eb83-5a05-80dc-ca148257b1a8/y":12},"jipipe:node-info-id":"ij1-transform-equalize-dimensions-max-io"}}}
+{
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Data",
+      "target-node": "n3",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n1",
+      "source-slot": "Output",
+      "target-node": "n2",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n2",
+      "source-slot": "Output",
+      "target-node": "n0",
+      "target-slot": "Data"
+    },
+    {
+      "source-node": "n3",
+      "source-slot": "Output",
+      "target-node": "n4",
+      "target-slot": "Mask"
+    },
+    {
+      "source-node": "n5",
+      "source-slot": "Data",
+      "target-node": "n4",
+      "target-slot": "Raw image"
+    }
+  ],
+  "nodes": {
+    "n0": {
+      "jipipe:graph-compartment": "9355f6a5-eb83-5a05-80dc-ca148257b1a8",
+      "jipipe:metadata-v1": {
+        "location/9355f6a5-eb83-5a05-80dc-ca148257b1a8/x": 0,
+        "location/9355f6a5-eb83-5a05-80dc-ca148257b1a8/y": 8
+      },
+      "jipipe:node-info-id": "ij1-transform-equalize-dimensions-max-io"
+    },
+    "n1": {
+      "jipipe:graph-compartment": "9355f6a5-eb83-5a05-80dc-ca148257b1a8",
+      "jipipe:metadata-v1": {
+        "location/9355f6a5-eb83-5a05-80dc-ca148257b1a8/x": 0,
+        "location/9355f6a5-eb83-5a05-80dc-ca148257b1a8/y": 0
+      },
+      "jipipe:node-info-id": "ij1-threshold-auto2d"
+    },
+    "n2": {
+      "jipipe:graph-compartment": "9355f6a5-eb83-5a05-80dc-ca148257b1a8",
+      "jipipe:metadata-v1": {
+        "location/9355f6a5-eb83-5a05-80dc-ca148257b1a8/x": 0,
+        "location/9355f6a5-eb83-5a05-80dc-ca148257b1a8/y": 4
+      },
+      "jipipe:node-info-id": "ij1-blur-median2d"
+    },
+    "n3": {
+      "jipipe:graph-compartment": "9355f6a5-eb83-5a05-80dc-ca148257b1a8",
+      "jipipe:metadata-v1": {
+        "location/9355f6a5-eb83-5a05-80dc-ca148257b1a8/x": 0,
+        "location/9355f6a5-eb83-5a05-80dc-ca148257b1a8/y": 16
+      },
+      "jipipe:node-info-id": "ij1-set-lut-from-color-map"
+    },
+    "n4": {
+      "jipipe:graph-compartment": "9355f6a5-eb83-5a05-80dc-ca148257b1a8",
+      "jipipe:metadata-v1": {
+        "location/9355f6a5-eb83-5a05-80dc-ca148257b1a8/x": 0,
+        "location/9355f6a5-eb83-5a05-80dc-ca148257b1a8/y": 20
+      },
+      "jipipe:node-info-id": "ij1-color-blend-images",
+      "jipipe:slot-configuration": {
+        "input": {
+          "Mask": {
+            "slot-data-type": "imagej-imgplus",
+            "slot-type": "Input",
+            "name": "Mask",
+            "custom-name": null,
+            "description": "",
+            "is-virtual": false,
+            "save-outputs": true,
+            "is-optional": false
+          },
+          "Raw image": {
+            "slot-data-type": "imagej-imgplus",
+            "slot-type": "Input",
+            "name": "Raw image",
+            "custom-name": null,
+            "description": "",
+            "is-virtual": false,
+            "save-outputs": true,
+            "is-optional": false
+          }
+        },
+        "output": {
+          "Output": {
+            "slot-data-type": "imagej-imgplus-color-rgb",
+            "slot-type": "Output",
+            "name": "Output",
+            "custom-name": null,
+            "description": "The output image",
+            "is-virtual": false,
+            "save-outputs": true,
+            "is-optional": false
+          }
+        }
+      },
+      "render-greyscale-images": true,
+      "layers/Mask": {
+        "opacity": 0.3
+      },
+      "layers/Raw image": {
+        "opacity": 1.0
+      }
+    },
+    "n5": {
+      "jipipe:graph-compartment": "9355f6a5-eb83-5a05-80dc-ca148257b1a8",
+      "jipipe:metadata-v1": {
+        "location/9355f6a5-eb83-5a05-80dc-ca148257b1a8/x": 0,
+        "location/9355f6a5-eb83-5a05-80dc-ca148257b1a8/y": 12
+      },
+      "jipipe:node-info-id": "ij1-transform-equalize-dimensions-max-io"
+    }
+  }
+}

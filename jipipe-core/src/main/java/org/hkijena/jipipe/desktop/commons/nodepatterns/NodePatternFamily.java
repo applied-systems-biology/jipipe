@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.desktop.commons.nodepatterns;
 
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.util.Random;
 
 /**
@@ -22,12 +22,12 @@ import java.util.Random;
  * <p>
  * Contract (enforced by NodePatternEngineTest):
  * <ul>
- *   <li>never selects its own COLOR — the white RGB channels are mandatory so
+ *   <li>never selects its own COLOR - the white RGB channels are mandatory so
  *       the mask can be tinted at draw time; per-shape alpha is allowed;
  *       the renderer supplies a white pen/brush;</li>
  *   <li>reaches all four borders (overshoot the frame on grid-based geometry
  *       so the motif is clipped by the node body like an infinite texture);</li>
- *   <li>is a pure function of {@code (w, h, rng)} — no Math.random, no clock.</li>
+ *   <li>is a pure function of {@code (w, h, rng)} - no Math.random, no clock.</li>
  * </ul>
  * The renderer sets {@code KEY_ANTIALIASING=ON} and {@code KEY_STROKE_CONTROL=PURE}
  * before calling.

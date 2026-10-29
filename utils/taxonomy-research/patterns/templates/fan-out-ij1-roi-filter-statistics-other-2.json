@@ -1,1 +1,27 @@
-{"nodes":{"n0":{"jipipe:node-info-id":"ij1-roi-filter-statistics","jipipe:graph-compartment":"c09838e7-0f9c-5870-a593-bd9239fbc9c6","jipipe:node:name":"Filter 2D ROI by statistics"},"n1":{"jipipe:node-info-id":"ij1-roi-statistics","jipipe:graph-compartment":"c09838e7-0f9c-5870-a593-bd9239fbc9c6","jipipe:node:name":"Extract 2D ROI statistics"},"n2":{"jipipe:node-info-id":"ij1-roi-to-rgb","jipipe:graph-compartment":"c09838e7-0f9c-5870-a593-bd9239fbc9c6","jipipe:node:name":"Convert 2D ROI to RGB"}},"edges":[{"source-node":"n0","source-slot":"Output","target-node":"n1","target-slot":"ROI"}]}
+{
+  "nodes": {
+    "n0": {
+      "jipipe:node-info-id": "ij1-roi-filter-statistics",
+      "jipipe:graph-compartment": "c09838e7-0f9c-5870-a593-bd9239fbc9c6",
+      "jipipe:node:name": "Filter 2D ROI by statistics"
+    },
+    "n1": {
+      "jipipe:node-info-id": "ij1-roi-statistics",
+      "jipipe:graph-compartment": "c09838e7-0f9c-5870-a593-bd9239fbc9c6",
+      "jipipe:node:name": "Extract 2D ROI statistics"
+    },
+    "n2": {
+      "jipipe:node-info-id": "ij1-roi-to-rgb",
+      "jipipe:graph-compartment": "c09838e7-0f9c-5870-a593-bd9239fbc9c6",
+      "jipipe:node:name": "Convert 2D ROI to RGB"
+    }
+  },
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Output",
+      "target-node": "n1",
+      "target-slot": "ROI"
+    }
+  ]
+}

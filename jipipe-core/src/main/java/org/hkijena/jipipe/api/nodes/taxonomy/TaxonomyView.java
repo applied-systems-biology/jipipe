@@ -28,7 +28,7 @@ import java.util.Set;
  * Every accessor prefers the node's
  * {@link JIPipeNodeInfo#getPrimaryFunction() primary taxonomy function} when
  * present (every registered node, after the 1b conversions). It is a set of
- * static, stateless methods over the {@link JIPipeNodeInfo} — no {@code
+ * static, stateless methods over the {@link JIPipeNodeInfo} - no {@code
  * JIPipe} instance or registry is required, because the function objects
  * carry their own parent chain and behavior flags.
  * <p>
@@ -39,21 +39,6 @@ import java.util.Set;
 public final class TaxonomyView {
 
     private TaxonomyView() {
-    }
-
-    /**
-     * The four behavior flags that gate where and how a node appears and
-     * can be manipulated, read from the primary taxonomy function.
-     *
-     * @param isVisibleInPipeline    whether the node shows in the pipeline editor
-     * @param isVisibleInCompartments whether the node shows in the compartment editor
-     * @param canExtract             whether the node can be extracted (copied) from a graph
-     * @param isRunnable             whether the node can be run
-     */
-    public record BehaviorFlags(boolean isVisibleInPipeline,
-                                boolean isVisibleInCompartments,
-                                boolean canExtract,
-                                boolean isRunnable) {
     }
 
     /**
@@ -81,7 +66,7 @@ public final class TaxonomyView {
      * <p>
      * A primary function present: the function chain from the root down to
      * the primary function, joined by {@code " > "}, followed by the node
-     * name — e.g. {@code "Images > Filtering > Gaussian Blur"}. Otherwise
+     * name - e.g. {@code "Images > Filtering > Gaussian Blur"}. Otherwise
      * (the fn-null defensive state): just the node name, with no branch
      * prefix.
      *
@@ -132,14 +117,14 @@ public final class TaxonomyView {
         }
         // fn-null defensive state (only reachable via JIPipeEmptyNodeInfo,
         // never a registered node): no category to read, so the safe
-        // defaults (all true) — canExtract/isRunnable mirror the taxonomy
+        // defaults (all true) - canExtract/isRunnable mirror the taxonomy
         // defaults; the two visibility flags are permissive true.
         return new BehaviorFlags(true, true, true, true);
     }
 
     /**
      * Whether the node's primary function (or one of its ancestors) IS the
-     * given top-level function branch — the taxonomy replacement for the
+     * given top-level function branch - the taxonomy replacement for the
      * legacy "category is an instance of &lt;Category&gt;" checks.
      * <p>
      * Walks the primary function's {@link JIPipeNodeTaxonomyFunction#getParent()
@@ -240,5 +225,20 @@ public final class TaxonomyView {
             result.add(leafFirst.get(i));
         }
         return result;
+    }
+
+    /**
+     * The four behavior flags that gate where and how a node appears and
+     * can be manipulated, read from the primary taxonomy function.
+     *
+     * @param isVisibleInPipeline     whether the node shows in the pipeline editor
+     * @param isVisibleInCompartments whether the node shows in the compartment editor
+     * @param canExtract              whether the node can be extracted (copied) from a graph
+     * @param isRunnable              whether the node can be run
+     */
+    public record BehaviorFlags(boolean isVisibleInPipeline,
+                                boolean isVisibleInCompartments,
+                                boolean canExtract,
+                                boolean isRunnable) {
     }
 }

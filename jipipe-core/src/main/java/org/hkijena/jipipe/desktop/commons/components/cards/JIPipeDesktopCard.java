@@ -23,13 +23,13 @@ import javax.swing.*;
 import java.awt.*;
 
 public class JIPipeDesktopCard extends JPanel {
+    private final JToolBar headerToolBar = new JToolBar();
+    private final JLabel titleLabel = new JLabel();
+    private final JToolBar footerToolBar = new JToolBar();
     private String title;
     private Icon icon;
     private JComponent body;
     private JIPipeDesktopCardVariant variant = JIPipeDesktopCardVariant.Default;
-    private final JToolBar headerToolBar = new JToolBar();
-    private final JLabel titleLabel = new JLabel();
-    private final JToolBar footerToolBar = new JToolBar();
     private boolean headerVisible = false;
     private boolean footerVisible = false;
 
@@ -51,6 +51,10 @@ public class JIPipeDesktopCard extends JPanel {
         initializeHeader();
         initializeFooter();
         updateHeader();
+    }
+
+    public static Builder builder(String title) {
+        return new Builder(title);
     }
 
     private void updateBorder() {
@@ -192,10 +196,6 @@ public class JIPipeDesktopCard extends JPanel {
 
     public boolean hasFooter() {
         return footerVisible;
-    }
-
-    public static Builder builder(String title) {
-        return new Builder(title);
     }
 
     public static class Builder {

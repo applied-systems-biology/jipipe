@@ -32,32 +32,37 @@ template:
 
 # Pattern: Annotate with file/directory name -> Import image -> Compartment output
 
-Mined pattern `conversion-path-to-annotation-simple-import-imagej-imgplus-from-file-jipipe-compartment-output` (shape `conversion`, support 25).
+Mined pattern `conversion-path-to-annotation-simple-import-imagej-imgplus-from-file-jipipe-compartment-output` (shape
+`conversion`, support 25).
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| annotate | `path-to-annotation-simple` |
-| import | `import-imagej-imgplus-from-file` |
-| core-io | `jipipe:compartment-output` |
+| role     | node ids                          |
+|----------|-----------------------------------|
+| annotate | `path-to-annotation-simple`       |
+| import   | `import-imagej-imgplus-from-file` |
+| core-io  | `jipipe:compartment-output`       |
 
 ## Example graph
 
-Project: `AIAgentTests/01-BasicWorkshop/JSC_2025_05_Batch_Processing_Kidney/kidney.jip` (relative to `/data/JIPipe`), compartment `File Handling`.
+Project: `AIAgentTests/01-BasicWorkshop/JSC_2025_05_Batch_Processing_Kidney/kidney.jip` (relative to `/data/JIPipe`),
+compartment `File Handling`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `path-to-annotation-simple` | Annotate with file/directory name |
-| n1 | `import-imagej-imgplus-from-file` | Import image |
-| n2 | `jipipe:compartment-output` | Output |
+| key | node id                           | name                              |
+|-----|-----------------------------------|-----------------------------------|
+| n0  | `path-to-annotation-simple`       | Annotate with file/directory name |
+| n1  | `import-imagej-imgplus-from-file` | Import image                      |
+| n2  | `jipipe:compartment-output`       | Output                            |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
-| Annotate with file/directory name | `Annotated paths` | Import image | `Files` | `path` |
-| Import image | `Image` | Output | `Raw` | `imagej-imgplus` |
+| from                              | slot              | to           | slot    | data class       |
+|-----------------------------------|-------------------|--------------|---------|------------------|
+| Annotate with file/directory name | `Annotated paths` | Import image | `Files` | `path`           |
+| Import image                      | `Image`           | Output       | `Raw`   | `imagej-imgplus` |
 
 ## Template
 
-Proposed name `Annotate with file/directory name -> Import image -> Compartment output`, menu path `Patterns/Annotations/Annotate with file/directory name -> Import image -> Compartment output` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/conversion-path-to-annotation-simple-import-imagej-imgplus-from-file-jipipe-compartment-output.json`.
+Proposed name `Annotate with file/directory name -> Import image -> Compartment output`, menu path
+`Patterns/Annotations/Annotate with file/directory name -> Import image -> Compartment output` (proposal only - not
+registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/conversion-path-to-annotation-simple-import-imagej-imgplus-from-file-jipipe-compartment-output.json`.
 

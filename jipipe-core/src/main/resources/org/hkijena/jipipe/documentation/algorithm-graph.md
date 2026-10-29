@@ -1,7 +1,8 @@
 # Quick reference
 
-This editor allows you to create a data processing pipeline. Processing steps are represented as 
-nodes that have one or multiple inputs or outputs located at the top/bottom (vertical view, default) or left/right (horizontal view).
+This editor allows you to create a data processing pipeline. Processing steps are represented as
+nodes that have one or multiple inputs or outputs located at the top/bottom (vertical view, default) or left/right
+(horizontal view).
 Edges represent that data is transferred from an output to an input node.
 
 <h3>Navigating the graph</h3>

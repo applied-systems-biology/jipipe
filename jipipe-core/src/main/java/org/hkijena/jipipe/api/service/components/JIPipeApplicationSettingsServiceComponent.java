@@ -29,8 +29,8 @@ import org.hkijena.jipipe.api.service.JIPipeServiceComponent;
 import org.hkijena.jipipe.api.settings.JIPipeApplicationSettingsSheet;
 import org.hkijena.jipipe.api.settings.JIPipeSettingsSheet;
 import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.json.JIPipePathMetadataStore;
+import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import javax.swing.Timer;
 import java.io.BufferedWriter;

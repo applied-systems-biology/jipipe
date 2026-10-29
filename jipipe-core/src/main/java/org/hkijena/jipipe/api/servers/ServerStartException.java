@@ -19,15 +19,6 @@ package org.hkijena.jipipe.api.servers;
 public class ServerStartException extends RuntimeException {
     private final Reason reason;
 
-    public enum Reason {
-        PortUnavailable,
-        ProcessFailed,
-        HealthCheckFailed,
-        Timeout,
-        ConfigurationError,
-        Unknown
-    }
-
     public ServerStartException(String message, Reason reason) {
         super(message);
         this.reason = reason;
@@ -40,5 +31,14 @@ public class ServerStartException extends RuntimeException {
 
     public Reason getReason() {
         return reason;
+    }
+
+    public enum Reason {
+        PortUnavailable,
+        ProcessFailed,
+        HealthCheckFailed,
+        Timeout,
+        ConfigurationError,
+        Unknown
     }
 }

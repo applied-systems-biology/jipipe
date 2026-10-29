@@ -33,9 +33,9 @@ import java.util.List;
  * variant merges the global author list into the project metadata (when
  * enabled) and pretty-prints the project to the target file; the
  * {@code Writer}/{@code OutputStream} variants pretty-print without the
- * authors merge — an asymmetry of the legacy format, preserved on purpose.
+ * authors merge - an asymmetry of the legacy format, preserved on purpose.
  * <p>
- * The writer never updates the project's internally tracked file path —
+ * The writer never updates the project's internally tracked file path -
  * that side effect stays in
  * {@link JIPipeProject#saveProject(Path, boolean)}.
  */
@@ -43,9 +43,9 @@ public class JIPipeLegacyProjectWriter implements JIPipeProjectWriter {
 
     /**
      * The stable id of the legacy .jip format.
-     * Persisted in saved projects — never derive from code.
+     * Persisted in saved projects - never derive from code.
      * <p>
-     * Alias of {@link JIPipeLegacyProjectReader#FORMAT_ID} — the single source
+     * Alias of {@link JIPipeLegacyProjectReader#FORMAT_ID} - the single source
      * of truth for the format id lives with the reader.
      */
     public static final String FORMAT_ID = JIPipeLegacyProjectReader.FORMAT_ID;

@@ -36,28 +36,32 @@ Mined pattern `chain-3-ij3d-labels-to-roi-jipipe-compartment-output-ij3d-measure
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| other | `ij3d-labels-to-roi` |
+| role    | node ids                    |
+|---------|-----------------------------|
+| other   | `ij3d-labels-to-roi`        |
 | core-io | `jipipe:compartment-output` |
-| other | `ij3d-measure-roi3d` |
+| other   | `ij3d-measure-roi3d`        |
 
 ## Example graph
 
-Project: `AIAgentTests/03-ExampleWorkflows/AdrianFeile_VibrioOnChip_04.jip` (relative to `/data/JIPipe`), compartment `Analysis+Preprocessing`.
+Project: `AIAgentTests/03-ExampleWorkflows/AdrianFeile_VibrioOnChip_04.jip` (relative to `/data/JIPipe`), compartment
+`Analysis+Preprocessing`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `ij3d-labels-to-roi` | IJ3D Labels to 3D ROI |
-| n1 | `jipipe:compartment-output` | For analysis |
-| n2 | `ij3d-measure-roi3d` | Extract ROI 3D statistics |
+| key | node id                     | name                      |
+|-----|-----------------------------|---------------------------|
+| n0  | `ij3d-labels-to-roi`        | IJ3D Labels to 3D ROI     |
+| n1  | `jipipe:compartment-output` | For analysis              |
+| n2  | `ij3d-measure-roi3d`        | Extract ROI 3D statistics |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
-| IJ3D Labels to 3D ROI | `ROI` | For analysis | `Bacteria from blue` | `roi-3d-list` |
-| For analysis | `Bacteria from blue` | Extract ROI 3D statistics | `ROI` | `roi-3d-list` |
+| from                  | slot                 | to                        | slot                 | data class    |
+|-----------------------|----------------------|---------------------------|----------------------|---------------|
+| IJ3D Labels to 3D ROI | `ROI`                | For analysis              | `Bacteria from blue` | `roi-3d-list` |
+| For analysis          | `Bacteria from blue` | Extract ROI 3D statistics | `ROI`                | `roi-3d-list` |
 
 ## Template
 
-Proposed name `IJ3D Labels to 3D ROI -> Compartment output -> Extract IJ3D ROI statistics`, menu path `Patterns/Images/IJ3D Labels to 3D ROI -> Compartment output -> Extract IJ3D ROI statistics` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/chain-3-ij3d-labels-to-roi-jipipe-compartment-output-ij3d-measure-roi3d.json`.
+Proposed name `IJ3D Labels to 3D ROI -> Compartment output -> Extract IJ3D ROI statistics`, menu path
+`Patterns/Images/IJ3D Labels to 3D ROI -> Compartment output -> Extract IJ3D ROI statistics` (proposal only - not
+registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/chain-3-ij3d-labels-to-roi-jipipe-compartment-output-ij3d-measure-roi3d.json`.
 

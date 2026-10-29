@@ -1,1 +1,33 @@
-{"nodes":{"n0":{"jipipe:node-info-id":"jipipe:compartment-output","jipipe:graph-compartment":"105d7a0b-ea2d-5c18-97c0-a20283ab3a82","jipipe:node:name":"Mask"},"n1":{"jipipe:node-info-id":"jipipe:compartment-output","jipipe:graph-compartment":"105d7a0b-ea2d-5c18-97c0-a20283ab3a82","jipipe:node:name":"Output"},"n2":{"jipipe:node-info-id":"jipipe:compartment-output","jipipe:graph-compartment":"105d7a0b-ea2d-5c18-97c0-a20283ab3a82","jipipe:node:name":"Distances"}},"edges":[{"source-node":"n0","source-slot":"3D cell mask","target-node":"n1","target-slot":"3D cell mask"},{"source-node":"n1","source-slot":"Green distances","target-node":"n2","target-slot":"Green to green closest distances"}]}
+{
+  "nodes": {
+    "n0": {
+      "jipipe:node-info-id": "jipipe:compartment-output",
+      "jipipe:graph-compartment": "105d7a0b-ea2d-5c18-97c0-a20283ab3a82",
+      "jipipe:node:name": "Mask"
+    },
+    "n1": {
+      "jipipe:node-info-id": "jipipe:compartment-output",
+      "jipipe:graph-compartment": "105d7a0b-ea2d-5c18-97c0-a20283ab3a82",
+      "jipipe:node:name": "Output"
+    },
+    "n2": {
+      "jipipe:node-info-id": "jipipe:compartment-output",
+      "jipipe:graph-compartment": "105d7a0b-ea2d-5c18-97c0-a20283ab3a82",
+      "jipipe:node:name": "Distances"
+    }
+  },
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "3D cell mask",
+      "target-node": "n1",
+      "target-slot": "3D cell mask"
+    },
+    {
+      "source-node": "n1",
+      "source-slot": "Green distances",
+      "target-node": "n2",
+      "target-slot": "Green to green closest distances"
+    }
+  ]
+}

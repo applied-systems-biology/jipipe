@@ -25,8 +25,8 @@ import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernThemeStyle;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.junit.jupiter.api.Test;
 
-import javax.swing.Icon;
-import java.awt.Color;
+import javax.swing.*;
+import java.awt.*;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -49,6 +49,116 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class ThemeUtilsFunctionColorTest {
 
     private static final float TEST_HUE = 186f / 360f;
+
+    // ---------------------------------------------------------------------
+    // (a) top-level hue-186/360 → depth-0 identity
+    // ---------------------------------------------------------------------
+    @Test
+    void topLevelFunctionFillUsesUnshadedHue() {
+        JIPipeDesktopModernThemeStyle style = new JIPipeDesktopModernThemeStyle();
+        FunctionRegistry registry = new FunctionRegistry();
+        TestFunction top = new TestFunction("top", "Top", TEST_HUE);
+
+        Color fill = ThemeUtils.functionNodeFillColor(top, style, registry);
+        Color expected = Color.getHSBColor(TEST_HUE,
+                style.getNodeFillSaturation(), style.getNodeFillBrightness());
+        assertEquals(expected, fill);
+
+        Color border = ThemeUtils.functionNodeBorderColor(top, style, registry);
+        Color expectedBorder = Color.getHSBColor(TEST_HUE,
+                style.getNodeBorderSaturation(), style.getNodeBorderBrightness());
+        assertEquals(expectedBorder, border);
+    }
+
+    // ---------------------------------------------------------------------
+    // (b) child at depth 1 → shaded by the fixed HSB rule
+    // ---------------------------------------------------------------------
+    @Test
+    void childFunctionFillIsShadedByDepthOne() {
+        JIPipeDesktopModernThemeStyle style = new JIPipeDesktopModernThemeStyle();
+        FunctionRegistry registry = new FunctionRegistry();
+        TestFunction top = new TestFunction("top", "Top", TEST_HUE);
+        TestFunction child = new TestFunction("child", "Child", null).withParent(top);
+
+        float fillSat = style.getNodeFillSaturation();
+        float fillBri = style.getNodeFillBrightness();
+        // The Task-2 shade rule (identical to FunctionRegistry.shadeHsb at depth 1):
+        // saturation -0.04 floored at 0.05, brightness +0.06 capped at 0.95.
+        Color expectedFill = Color.getHSBColor(TEST_HUE,
+                Math.max(0.05f, fillSat - 0.04f), Math.min(0.95f, fillBri + 0.06f));
+        assertEquals(expectedFill, ThemeUtils.functionNodeFillColor(child, style, registry));
+
+        float borderSat = style.getNodeBorderSaturation();
+        float borderBri = style.getNodeBorderBrightness();
+        Color expectedBorder = Color.getHSBColor(TEST_HUE,
+                Math.max(0.05f, borderSat - 0.04f), Math.min(0.95f, borderBri + 0.06f));
+        assertEquals(expectedBorder, ThemeUtils.functionNodeBorderColor(child, style, registry));
+
+        // Cross-check the core against the registry's own pure shading rule.
+        float[] hsb = FunctionRegistry.shadeHsb(TEST_HUE, fillSat, fillBri, 1);
+        assertEquals(Color.getHSBColor(hsb[0], hsb[1], hsb[2]),
+                ThemeUtils.functionNodeFillColor(child, style, registry));
+    }
+
+    // ---------------------------------------------------------------------
+    // (c) transparent branch (hue-null root) → panel background / highlight border
+    // ---------------------------------------------------------------------
+    @Test
+    void transparentBranchUsesPanelBackgroundAndHighlightBorder() {
+        JIPipeDesktopModernThemeStyle style = new JIPipeDesktopModernThemeStyle();
+        FunctionRegistry registry = new FunctionRegistry();
+        // Root with a null hue (transparent) and a child beneath it.
+        TestFunction transparentRoot = new TestFunction("transparent", "Transparent", null);
+        TestFunction child = new TestFunction("tchild", "TChild", null).withParent(transparentRoot);
+
+        assertEquals(style.getPanelBackground(),
+                ThemeUtils.functionNodeFillColor(child, style, registry));
+        assertEquals(style.getNodeHighlightBorder(),
+                ThemeUtils.functionNodeBorderColor(child, style, registry));
+
+        // The transparent root itself is also rendered with the panel background.
+        assertEquals(style.getPanelBackground(),
+                ThemeUtils.functionNodeFillColor(transparentRoot, style, registry));
+        assertEquals(style.getNodeHighlightBorder(),
+                ThemeUtils.functionNodeBorderColor(transparentRoot, style, registry));
+    }
+
+    // ---------------------------------------------------------------------
+    // (e-cycle, optional) broken/cycle chain → base hue 0.5, depth 0 (identity)
+    // ---------------------------------------------------------------------
+    @Test
+    void brokenCycleFallsBackToNeutralHalfHue() {
+        JIPipeDesktopModernThemeStyle style = new JIPipeDesktopModernThemeStyle();
+        FunctionRegistry registry = new FunctionRegistry();
+        // a -> b -> a, both hue-null: baseHue throws a cycle ISE.
+        TestFunction a = new TestFunction("a", "A", null);
+        TestFunction b = new TestFunction("b", "B", null).withParent(a);
+        a.withParent(b);
+
+        Color expectedFill = Color.getHSBColor(0.5f,
+                style.getNodeFillSaturation(), style.getNodeFillBrightness());
+        assertEquals(expectedFill, ThemeUtils.functionNodeFillColor(a, style, registry));
+
+        Color expectedBorder = Color.getHSBColor(0.5f,
+                style.getNodeBorderSaturation(), style.getNodeBorderBrightness());
+        assertEquals(expectedBorder, ThemeUtils.functionNodeBorderColor(a, style, registry));
+    }
+
+    // ---------------------------------------------------------------------
+    // (d) unconverted node through the PUBLIC facade → byte-identical legacy color
+    // ---------------------------------------------------------------------
+    @Test
+    void fnNullInfoPublicFacadeUsesDefensiveDefaults() {
+        // The fn-null defensive state (primary function null; only reachable
+        // via JIPipeEmptyNodeInfo, never a registered node): the facades
+        // resolve to the legacy negative-hue transparent channels - the panel
+        // background fill and the highlight border. This path never calls
+        // JIPipe.getNodes(), so the test stays pure.
+        TestInfo info = new TestInfo();
+        JIPipeDesktopModernThemeStyle currentStyle = ThemeUtils.getCurrentStyle();
+        assertEquals(currentStyle.getPanelBackground(), ThemeUtils.getNodeFillColor(info));
+        assertEquals(currentStyle.getNodeHighlightBorder(), ThemeUtils.getNodeBorderColor(info));
+    }
 
     // ---------------------------------------------------------------------
     // Minimal taxonomy-function stub (id/name/hue/parent, default flags)
@@ -189,115 +299,5 @@ class ThemeUtilsFunctionColorTest {
         public Set<JIPipeNodeTaxonomyFunction> getSecondaryFunctions() {
             return Collections.emptySet();
         }
-    }
-
-    // ---------------------------------------------------------------------
-    // (a) top-level hue-186/360 → depth-0 identity
-    // ---------------------------------------------------------------------
-    @Test
-    void topLevelFunctionFillUsesUnshadedHue() {
-        JIPipeDesktopModernThemeStyle style = new JIPipeDesktopModernThemeStyle();
-        FunctionRegistry registry = new FunctionRegistry();
-        TestFunction top = new TestFunction("top", "Top", TEST_HUE);
-
-        Color fill = ThemeUtils.functionNodeFillColor(top, style, registry);
-        Color expected = Color.getHSBColor(TEST_HUE,
-                style.getNodeFillSaturation(), style.getNodeFillBrightness());
-        assertEquals(expected, fill);
-
-        Color border = ThemeUtils.functionNodeBorderColor(top, style, registry);
-        Color expectedBorder = Color.getHSBColor(TEST_HUE,
-                style.getNodeBorderSaturation(), style.getNodeBorderBrightness());
-        assertEquals(expectedBorder, border);
-    }
-
-    // ---------------------------------------------------------------------
-    // (b) child at depth 1 → shaded by the fixed HSB rule
-    // ---------------------------------------------------------------------
-    @Test
-    void childFunctionFillIsShadedByDepthOne() {
-        JIPipeDesktopModernThemeStyle style = new JIPipeDesktopModernThemeStyle();
-        FunctionRegistry registry = new FunctionRegistry();
-        TestFunction top = new TestFunction("top", "Top", TEST_HUE);
-        TestFunction child = new TestFunction("child", "Child", null).withParent(top);
-
-        float fillSat = style.getNodeFillSaturation();
-        float fillBri = style.getNodeFillBrightness();
-        // The Task-2 shade rule (identical to FunctionRegistry.shadeHsb at depth 1):
-        // saturation -0.04 floored at 0.05, brightness +0.06 capped at 0.95.
-        Color expectedFill = Color.getHSBColor(TEST_HUE,
-                Math.max(0.05f, fillSat - 0.04f), Math.min(0.95f, fillBri + 0.06f));
-        assertEquals(expectedFill, ThemeUtils.functionNodeFillColor(child, style, registry));
-
-        float borderSat = style.getNodeBorderSaturation();
-        float borderBri = style.getNodeBorderBrightness();
-        Color expectedBorder = Color.getHSBColor(TEST_HUE,
-                Math.max(0.05f, borderSat - 0.04f), Math.min(0.95f, borderBri + 0.06f));
-        assertEquals(expectedBorder, ThemeUtils.functionNodeBorderColor(child, style, registry));
-
-        // Cross-check the core against the registry's own pure shading rule.
-        float[] hsb = FunctionRegistry.shadeHsb(TEST_HUE, fillSat, fillBri, 1);
-        assertEquals(Color.getHSBColor(hsb[0], hsb[1], hsb[2]),
-                ThemeUtils.functionNodeFillColor(child, style, registry));
-    }
-
-    // ---------------------------------------------------------------------
-    // (c) transparent branch (hue-null root) → panel background / highlight border
-    // ---------------------------------------------------------------------
-    @Test
-    void transparentBranchUsesPanelBackgroundAndHighlightBorder() {
-        JIPipeDesktopModernThemeStyle style = new JIPipeDesktopModernThemeStyle();
-        FunctionRegistry registry = new FunctionRegistry();
-        // Root with a null hue (transparent) and a child beneath it.
-        TestFunction transparentRoot = new TestFunction("transparent", "Transparent", null);
-        TestFunction child = new TestFunction("tchild", "TChild", null).withParent(transparentRoot);
-
-        assertEquals(style.getPanelBackground(),
-                ThemeUtils.functionNodeFillColor(child, style, registry));
-        assertEquals(style.getNodeHighlightBorder(),
-                ThemeUtils.functionNodeBorderColor(child, style, registry));
-
-        // The transparent root itself is also rendered with the panel background.
-        assertEquals(style.getPanelBackground(),
-                ThemeUtils.functionNodeFillColor(transparentRoot, style, registry));
-        assertEquals(style.getNodeHighlightBorder(),
-                ThemeUtils.functionNodeBorderColor(transparentRoot, style, registry));
-    }
-
-    // ---------------------------------------------------------------------
-    // (e-cycle, optional) broken/cycle chain → base hue 0.5, depth 0 (identity)
-    // ---------------------------------------------------------------------
-    @Test
-    void brokenCycleFallsBackToNeutralHalfHue() {
-        JIPipeDesktopModernThemeStyle style = new JIPipeDesktopModernThemeStyle();
-        FunctionRegistry registry = new FunctionRegistry();
-        // a -> b -> a, both hue-null: baseHue throws a cycle ISE.
-        TestFunction a = new TestFunction("a", "A", null);
-        TestFunction b = new TestFunction("b", "B", null).withParent(a);
-        a.withParent(b);
-
-        Color expectedFill = Color.getHSBColor(0.5f,
-                style.getNodeFillSaturation(), style.getNodeFillBrightness());
-        assertEquals(expectedFill, ThemeUtils.functionNodeFillColor(a, style, registry));
-
-        Color expectedBorder = Color.getHSBColor(0.5f,
-                style.getNodeBorderSaturation(), style.getNodeBorderBrightness());
-        assertEquals(expectedBorder, ThemeUtils.functionNodeBorderColor(a, style, registry));
-    }
-
-    // ---------------------------------------------------------------------
-    // (d) unconverted node through the PUBLIC facade → byte-identical legacy color
-    // ---------------------------------------------------------------------
-    @Test
-    void fnNullInfoPublicFacadeUsesDefensiveDefaults() {
-        // The fn-null defensive state (primary function null; only reachable
-        // via JIPipeEmptyNodeInfo, never a registered node): the facades
-        // resolve to the legacy negative-hue transparent channels — the panel
-        // background fill and the highlight border. This path never calls
-        // JIPipe.getNodes(), so the test stays pure.
-        TestInfo info = new TestInfo();
-        JIPipeDesktopModernThemeStyle currentStyle = ThemeUtils.getCurrentStyle();
-        assertEquals(currentStyle.getPanelBackground(), ThemeUtils.getNodeFillColor(info));
-        assertEquals(currentStyle.getNodeHighlightBorder(), ThemeUtils.getNodeBorderColor(info));
     }
 }

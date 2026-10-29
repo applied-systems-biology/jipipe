@@ -13,13 +13,14 @@
 
 package org.hkijena.jipipe.desktop.commons.nodepatterns;
 
-import java.awt.BasicStroke;
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Path2D;
 import java.util.Random;
 
-/** Wobbly hexagonal tiling (KDE 'Canopee' / 'Flow' look); the grid overshoots the frame so hexagons clip at all four edges. */
+/**
+ * Wobbly hexagonal tiling (KDE 'Canopee' / 'Flow' look); the grid overshoots the frame so hexagons clip at all four edges.
+ */
 public final class HoneycombFamily implements NodePatternFamily {
     @Override
     public void paint(Graphics2D g, int w, int h, Random rng) {
@@ -37,7 +38,8 @@ public final class HoneycombFamily implements NodePatternFamily {
                     double a = Math.toRadians(60 * k - 30 + (rng.nextDouble() - 0.5) * 14);
                     double rr = r * (0.94 + rng.nextDouble() * 0.09);
                     double x = cx + rr * Math.cos(a), y = cy + rr * Math.sin(a);
-                    if (k == 0) p.moveTo(x, y); else p.lineTo(x, y);
+                    if (k == 0) p.moveTo(x, y);
+                    else p.lineTo(x, y);
                 }
                 p.closePath();
                 g.draw(p);

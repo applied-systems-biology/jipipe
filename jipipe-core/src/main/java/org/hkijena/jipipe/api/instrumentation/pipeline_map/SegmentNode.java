@@ -28,24 +28,59 @@ public class SegmentNode {
         this.label = label;
     }
 
-    public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
+    public String getId() {
+        return id;
+    }
 
-    public String getLabel() { return label; }
-    public void setLabel(String label) { this.label = label; }
+    public void setId(String id) {
+        this.id = id;
+    }
 
-    public String getSummary() { return summary; }
-    public void setSummary(String summary) { this.summary = summary; }
+    public String getLabel() {
+        return label;
+    }
 
-    public SegmentStatus getStatus() { return status; }
-    public void setStatus(SegmentStatus status) { this.status = status; }
+    public void setLabel(String label) {
+        this.label = label;
+    }
 
-    public String getCompartmentId() { return compartmentId; }
-    public void setCompartmentId(String compartmentId) { this.compartmentId = compartmentId; }
+    public String getSummary() {
+        return summary;
+    }
 
-    public List<String> getNodeIds() { return nodeIds; }
-    public void setNodeIds(List<String> nodeIds) { this.nodeIds = nodeIds; }
+    public void setSummary(String summary) {
+        this.summary = summary;
+    }
 
-    public List<SegmentNode> getChildren() { return children; }
-    public void setChildren(List<SegmentNode> children) { this.children = children; }
+    public SegmentStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(SegmentStatus status) {
+        this.status = status;
+    }
+
+    public String getCompartmentId() {
+        return compartmentId;
+    }
+
+    public void setCompartmentId(String compartmentId) {
+        this.compartmentId = compartmentId;
+    }
+
+    public List<String> getNodeIds() {
+        return nodeIds;
+    }
+
+    public void setNodeIds(List<String> nodeIds) {
+        this.nodeIds = nodeIds;
+    }
+
+    public List<SegmentNode> getChildren() {
+        return children;
+    }
+
+    public void setChildren(List<SegmentNode> children) {
+        this.children = children;
+    }
 }

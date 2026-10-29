@@ -14,11 +14,9 @@
 package org.hkijena.jipipe.api.service.components;
 
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.microservice.MicroserviceState;
-import org.hkijena.jipipe.api.microservice.MicroserviceStateChangeEvent;
 import org.hkijena.jipipe.api.microservice.MicroserviceStateChangeEventEmitter;
-import org.hkijena.jipipe.api.microservice.MicroserviceStateChangeListener;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
 import org.hkijena.jipipe.api.servers.*;
 import org.hkijena.jipipe.api.service.JIPipeService;
@@ -185,7 +183,7 @@ public class JIPipeServerServiceComponent extends JIPipeServiceComponent {
 
         int newCount = managedEntry.release();
         if (newCount <= 0) {
-            // No more leases — update state detail to idle
+            // No more leases - update state detail to idle
             instance.updateStateDetail("Idle (port " + instance.getPort() + ")");
         }
     }

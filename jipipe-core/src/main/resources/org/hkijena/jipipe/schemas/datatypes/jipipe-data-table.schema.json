@@ -12,8 +12,10 @@
     "^\\d+": {
       "type": "object",
       "description": "Directory that stores data for the specified row. Contents vary based on data type.",
-      "properties" : {
-        "fs:entry-type": { "$ref": "https://jipipe.org/schemas/filesystem/type-directory.schema.json" }
+      "properties": {
+        "fs:entry-type": {
+          "$ref": "https://jipipe.org/schemas/filesystem/type-directory.schema.json"
+        }
       }
     }
   },

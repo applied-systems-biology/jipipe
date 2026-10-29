@@ -62,111 +62,11 @@ class ProjectIOsDispatchTest {
         JIPipe.ensureInstance();
     }
 
-    @Test
-    void readsDispatchByContent() throws IOException {
-        Path jip = tmp.resolve("project.jip");
-        Files.writeString(jip, MINIMAL_PROJECT_JSON);
-        assertTrue(JIPipeProjectIOs.readerFromPath(jip) instanceof JIPipeLegacyProjectReader);
-
-        // Same content, different extension: content wins over extension.
-        Path json = tmp.resolve("project.json");
-        Files.writeString(json, MINIMAL_PROJECT_JSON);
-        assertTrue(JIPipeProjectIOs.readerFromPath(json) instanceof JIPipeLegacyProjectReader);
-    }
-
-    @Test
-    void zipContentDispatchesToJipxReader() throws IOException {
-        // Reads are content-first: a ZIP-magic file goes to the JIPX reader
-        // regardless of its extension (the reader's read() rejects
-        // non-JIPX contents via the jipx.json check).
-        Path zip = writeZipMagicFile(tmp, "x.jip");
-        assertTrue(JIPipeProjectIOs.readerFromPath(zip) instanceof JIPipeXProjectReader);
-    }
-
-    @Test
-    void writesDispatchByExtension() throws IOException {
-        Path jip = tmp.resolve("a.jip");
-        Files.writeString(jip, MINIMAL_PROJECT_JSON);
-        assertTrue(JIPipeProjectIOs.writerFromPath(jip) instanceof JIPipeLegacyProjectWriter);
-
-        // Writes are extension-driven: .jipx selects the JIPX container
-        // writer (Task 4) — the save target may not exist yet, so the
-        // writer's supports() is not consulted here.
-        Path jipx = tmp.resolve("a.jipx");
-        Files.writeString(jipx, MINIMAL_PROJECT_JSON);
-        assertTrue(JIPipeProjectIOs.writerFromPath(jipx) instanceof JIPipeXProjectWriter);
-
-        Path unknown = tmp.resolve("a.txt");
-        Files.writeString(unknown, MINIMAL_PROJECT_JSON);
-        IllegalArgumentException iae = assertThrows(IllegalArgumentException.class,
-                () -> JIPipeProjectIOs.writerFromPath(unknown));
-        assertTrue(iae.getMessage().contains("Cannot determine project writer for: " + unknown));
-    }
-
-    @Test
-    void peekParsesMetadataAndDependencies() throws IOException {
-        Path jip = tmp.resolve("peek.jip");
-        Files.writeString(jip, MINIMAL_PROJECT_JSON);
-
-        JIPipeProjectPeek peek = JIPipeProjectIOs.peek(jip);
-        assertTrue(peek.getDependencies().isEmpty());
-        assertTrue("Roundtrip".equals(peek.getMetadata().getName()));
-
-        // A real corpus file with exactly 7 dependencies (module fixtures
-        // have zero, so the size assertion is the non-vacuity guard).
-        // Skipped where the local /data/JIPipe corpus is absent (e.g. CI) —
-        // the hand-written-fixture assertions above are the real contract.
-        Path corpus = Path.of("/data/JIPipe/06072020a.jip");
-        Assumptions.assumeTrue(Files.exists(corpus), "local /data/JIPipe corpus absent; skipping corpus peek check");
-        JIPipeProjectPeek corpusPeek = JIPipeProjectIOs.peek(corpus);
-        assertTrue(7 == corpusPeek.getDependencies().size(),
-                "Expected 7 dependencies, got " + corpusPeek.getDependencies().size());
-    }
-
-    @Test
-    void peekRejectsZipsWithoutJipxManifest() throws IOException {
-        // A ZIP-magic file without a jipx.json entry is not a JIPipe 6
-        // project — the GUI's .crate.zip import path is handled by the GUI
-        // layer and never reaches peek.
-        Path zip = writeZipMagicFile(tmp, "peek.zip");
-        UnsupportedOperationException e = assertThrows(UnsupportedOperationException.class,
-                () -> JIPipeProjectIOs.peek(zip));
-        assertTrue(e.getMessage().contains("not a JIPipe project crate"));
-        assertTrue(e.getMessage().contains("jipx.json"));
-    }
-
-    @Test
-    void peekStreamsJipxWithoutExtraction() throws IOException {
-        // The content-stream peek contract: a proper JIPX container is peeked
-        // from its zip entries (no extraction, no temp dir) — metadata from
-        // project/metadata.json, dependencies from project/dependencies.json.
-        Path jipx = tmp.resolve("peek.jipx");
-        writeJipxZip(jipx, true);
-
-        JIPipeProjectPeek peek = JIPipeProjectIOs.peek(jipx);
-        assertTrue("Peek".equals(peek.getMetadata().getName()));
-        assertTrue(peek.getDependencies().isEmpty());
-    }
-
-    @Test
-    void peekJipxWithoutDependenciesEntryYieldsEmptySet() throws IOException {
-        // project/dependencies.json is optional in the container — a missing
-        // entry yields an empty dependency set (peek is best-effort: absent
-        // parts fall back to the loaders' defaults; it is the READER's
-        // corrupt-container contract that enforces listed-part presence).
-        Path jipx = tmp.resolve("peek-nodir.jipx");
-        writeJipxZip(jipx, false);
-
-        JIPipeProjectPeek peek = JIPipeProjectIOs.peek(jipx);
-        assertTrue(peek.getDependencies().isEmpty());
-        assertTrue("Peek".equals(peek.getMetadata().getName()));
-    }
-
     /**
      * Builds a minimal JIPX container (no wrapper root): {@code jipx.json}
      * (the default manifest, pruned to the parts written), {@code
-     * project/metadata.json} ({@code {"name": "Peek"}}), and — when
-     * {@code withDependencies} — {@code project/dependencies.json}
+     * project/metadata.json} ({@code {"name": "Peek"}}), and - when
+     * {@code withDependencies} - {@code project/dependencies.json}
      * ({@code []}).
      */
     private static Path writeJipxZip(Path zipPath, boolean withDependencies) throws IOException {
@@ -205,5 +105,105 @@ class ProjectIOsDispatchTest {
         }
         Files.write(path, zipMagic);
         return path;
+    }
+
+    @Test
+    void readsDispatchByContent() throws IOException {
+        Path jip = tmp.resolve("project.jip");
+        Files.writeString(jip, MINIMAL_PROJECT_JSON);
+        assertTrue(JIPipeProjectIOs.readerFromPath(jip) instanceof JIPipeLegacyProjectReader);
+
+        // Same content, different extension: content wins over extension.
+        Path json = tmp.resolve("project.json");
+        Files.writeString(json, MINIMAL_PROJECT_JSON);
+        assertTrue(JIPipeProjectIOs.readerFromPath(json) instanceof JIPipeLegacyProjectReader);
+    }
+
+    @Test
+    void zipContentDispatchesToJipxReader() throws IOException {
+        // Reads are content-first: a ZIP-magic file goes to the JIPX reader
+        // regardless of its extension (the reader's read() rejects
+        // non-JIPX contents via the jipx.json check).
+        Path zip = writeZipMagicFile(tmp, "x.jip");
+        assertTrue(JIPipeProjectIOs.readerFromPath(zip) instanceof JIPipeXProjectReader);
+    }
+
+    @Test
+    void writesDispatchByExtension() throws IOException {
+        Path jip = tmp.resolve("a.jip");
+        Files.writeString(jip, MINIMAL_PROJECT_JSON);
+        assertTrue(JIPipeProjectIOs.writerFromPath(jip) instanceof JIPipeLegacyProjectWriter);
+
+        // Writes are extension-driven: .jipx selects the JIPX container
+        // writer (Task 4) - the save target may not exist yet, so the
+        // writer's supports() is not consulted here.
+        Path jipx = tmp.resolve("a.jipx");
+        Files.writeString(jipx, MINIMAL_PROJECT_JSON);
+        assertTrue(JIPipeProjectIOs.writerFromPath(jipx) instanceof JIPipeXProjectWriter);
+
+        Path unknown = tmp.resolve("a.txt");
+        Files.writeString(unknown, MINIMAL_PROJECT_JSON);
+        IllegalArgumentException iae = assertThrows(IllegalArgumentException.class,
+                () -> JIPipeProjectIOs.writerFromPath(unknown));
+        assertTrue(iae.getMessage().contains("Cannot determine project writer for: " + unknown));
+    }
+
+    @Test
+    void peekParsesMetadataAndDependencies() throws IOException {
+        Path jip = tmp.resolve("peek.jip");
+        Files.writeString(jip, MINIMAL_PROJECT_JSON);
+
+        JIPipeProjectPeek peek = JIPipeProjectIOs.peek(jip);
+        assertTrue(peek.getDependencies().isEmpty());
+        assertTrue("Roundtrip".equals(peek.getMetadata().getName()));
+
+        // A real corpus file with exactly 7 dependencies (module fixtures
+        // have zero, so the size assertion is the non-vacuity guard).
+        // Skipped where the local /data/JIPipe corpus is absent (e.g. CI) -
+        // the hand-written-fixture assertions above are the real contract.
+        Path corpus = Path.of("/data/JIPipe/06072020a.jip");
+        Assumptions.assumeTrue(Files.exists(corpus), "local /data/JIPipe corpus absent; skipping corpus peek check");
+        JIPipeProjectPeek corpusPeek = JIPipeProjectIOs.peek(corpus);
+        assertTrue(7 == corpusPeek.getDependencies().size(),
+                "Expected 7 dependencies, got " + corpusPeek.getDependencies().size());
+    }
+
+    @Test
+    void peekRejectsZipsWithoutJipxManifest() throws IOException {
+        // A ZIP-magic file without a jipx.json entry is not a JIPipe 6
+        // project - the GUI's .crate.zip import path is handled by the GUI
+        // layer and never reaches peek.
+        Path zip = writeZipMagicFile(tmp, "peek.zip");
+        UnsupportedOperationException e = assertThrows(UnsupportedOperationException.class,
+                () -> JIPipeProjectIOs.peek(zip));
+        assertTrue(e.getMessage().contains("not a JIPipe project crate"));
+        assertTrue(e.getMessage().contains("jipx.json"));
+    }
+
+    @Test
+    void peekStreamsJipxWithoutExtraction() throws IOException {
+        // The content-stream peek contract: a proper JIPX container is peeked
+        // from its zip entries (no extraction, no temp dir) - metadata from
+        // project/metadata.json, dependencies from project/dependencies.json.
+        Path jipx = tmp.resolve("peek.jipx");
+        writeJipxZip(jipx, true);
+
+        JIPipeProjectPeek peek = JIPipeProjectIOs.peek(jipx);
+        assertTrue("Peek".equals(peek.getMetadata().getName()));
+        assertTrue(peek.getDependencies().isEmpty());
+    }
+
+    @Test
+    void peekJipxWithoutDependenciesEntryYieldsEmptySet() throws IOException {
+        // project/dependencies.json is optional in the container - a missing
+        // entry yields an empty dependency set (peek is best-effort: absent
+        // parts fall back to the loaders' defaults; it is the READER's
+        // corrupt-container contract that enforces listed-part presence).
+        Path jipx = tmp.resolve("peek-nodir.jipx");
+        writeJipxZip(jipx, false);
+
+        JIPipeProjectPeek peek = JIPipeProjectIOs.peek(jipx);
+        assertTrue(peek.getDependencies().isEmpty());
+        assertTrue("Peek".equals(peek.getMetadata().getName()));
     }
 }

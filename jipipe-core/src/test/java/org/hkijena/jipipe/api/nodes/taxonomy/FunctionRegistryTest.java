@@ -15,16 +15,11 @@ package org.hkijena.jipipe.api.nodes.taxonomy;
 
 import org.junit.jupiter.api.Test;
 
-import javax.swing.Icon;
+import javax.swing.*;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotSame;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Tests {@link FunctionRegistry} registration, lookup, hue resolution,
@@ -33,73 +28,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class FunctionRegistryTest {
 
     /**
-     * Minimal test implementation of {@link JIPipeNodeTaxonomyFunction}.
-     * {@code withParent()} links the function into a chain.
+     * Builds a 3-node chain: top ("seg", hue 0.5) → cell → leaf.
      */
-    private static class TestFunction implements JIPipeNodeTaxonomyFunction {
-        private final String id;
-        private final String name;
-        private JIPipeNodeTaxonomyFunction parent;
-        private final Float hue;
-
-        private TestFunction(String id, String name, Float hue) {
-            this.id = id;
-            this.name = name;
-            this.hue = hue;
-        }
-
-        private TestFunction withParent(JIPipeNodeTaxonomyFunction parent) {
-            this.parent = parent;
-            return this;
-        }
-
-        @Override
-        public String getId() {
-            return id;
-        }
-
-        @Override
-        public String getName() {
-            return name;
-        }
-
-        @Override
-        public JIPipeNodeTaxonomyFunction getParent() {
-            return parent;
-        }
-
-        @Override
-        public Float getColorHue() {
-            return hue;
-        }
-
-        @Override
-        public String getDescription() {
-            return id;
-        }
-
-        @Override
-        public Icon getIcon() {
-            return null;
-        }
-
-        @Override
-        public Set<String> getTags() {
-            return Set.of();
-        }
-
-        @Override
-        public boolean isVisibleInPipeline() {
-            return true;
-        }
-
-        @Override
-        public boolean isVisibleInCompartments() {
-            return true;
-        }
-    }
-
-    /** Builds a 3-node chain: top ("seg", hue 0.5) → cell → leaf. */
     private static JIPipeNodeTaxonomyFunction chain() {
         TestFunction top = new TestFunction("seg", "Segmentation", 0.5f);
         TestFunction cell = new TestFunction("cell", "Cells", null).withParent(top);
@@ -150,9 +80,9 @@ class FunctionRegistryTest {
         registry.register(leaf);
 
         assertNotSame(registeredTop, freshTopCopy,
-            "precondition: the leaf's parent must be a different instance than the registered top-level");
+                "precondition: the leaf's parent must be a different instance than the registered top-level");
         assertEquals(List.of(leaf), registry.children(registeredTop),
-            "children() must resolve the leaf under the registered top-level by parent id");
+                "children() must resolve the leaf under the registered top-level by parent id");
         // And the reverse lookup direction (by the fresh instance) also works
         assertEquals(List.of(leaf), registry.children(freshTopCopy));
     }
@@ -168,7 +98,7 @@ class FunctionRegistryTest {
 
         Set<String> errors = registry.validate();
         assertTrue(errors.stream().anyMatch(e -> e.contains("a") && e.contains("b")),
-            "cycle must be reported with the offending ids, got: " + errors);
+                "cycle must be reported with the offending ids, got: " + errors);
     }
 
     @Test
@@ -184,7 +114,7 @@ class FunctionRegistryTest {
 
         Set<String> errors = registry.validate();
         assertTrue(errors.stream().anyMatch(e -> e.contains("leaf") && e.contains("mid")),
-            "unreachable leaf must be reported with the offending ids, got: " + errors);
+                "unreachable leaf must be reported with the offending ids, got: " + errors);
     }
 
     @Test
@@ -251,6 +181,73 @@ class FunctionRegistryTest {
 
         Set<String> errors = registry.validate();
         assertTrue(errors.stream().anyMatch(e -> e.contains("top-a") && e.contains("top-b")),
-            "duplicate top-level hues must be reported with the offending ids, got: " + errors);
+                "duplicate top-level hues must be reported with the offending ids, got: " + errors);
+    }
+
+    /**
+     * Minimal test implementation of {@link JIPipeNodeTaxonomyFunction}.
+     * {@code withParent()} links the function into a chain.
+     */
+    private static class TestFunction implements JIPipeNodeTaxonomyFunction {
+        private final String id;
+        private final String name;
+        private final Float hue;
+        private JIPipeNodeTaxonomyFunction parent;
+
+        private TestFunction(String id, String name, Float hue) {
+            this.id = id;
+            this.name = name;
+            this.hue = hue;
+        }
+
+        private TestFunction withParent(JIPipeNodeTaxonomyFunction parent) {
+            this.parent = parent;
+            return this;
+        }
+
+        @Override
+        public String getId() {
+            return id;
+        }
+
+        @Override
+        public String getName() {
+            return name;
+        }
+
+        @Override
+        public JIPipeNodeTaxonomyFunction getParent() {
+            return parent;
+        }
+
+        @Override
+        public Float getColorHue() {
+            return hue;
+        }
+
+        @Override
+        public String getDescription() {
+            return id;
+        }
+
+        @Override
+        public Icon getIcon() {
+            return null;
+        }
+
+        @Override
+        public Set<String> getTags() {
+            return Set.of();
+        }
+
+        @Override
+        public boolean isVisibleInPipeline() {
+            return true;
+        }
+
+        @Override
+        public boolean isVisibleInCompartments() {
+            return true;
+        }
     }
 }

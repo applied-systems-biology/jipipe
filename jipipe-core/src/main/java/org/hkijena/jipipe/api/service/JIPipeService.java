@@ -75,6 +75,7 @@ public class JIPipeService extends AbstractService implements JIPipeValidatable 
     private final JIPipePluginDiscoveredEventEmitter extensionDiscoveredEventEmitter = new JIPipePluginDiscoveredEventEmitter();
     private final JIPipePluginRegisteredEventEmitter extensionRegisteredEventEmitter = new JIPipePluginRegisteredEventEmitter();
     private final JIPipeNodeInfoRegisteredEventEmitter nodeInfoRegisteredEventEmitter = new JIPipeNodeInfoRegisteredEventEmitter();
+    private final JIPipeServiceComponent[] components;
     private JIPipeServiceState state = JIPipeServiceState.Uninitialized;
     private JIPipeServiceInitializationSettings initializationSettings = new JIPipeServiceInitializationSettings();
     private JIPipeServiceInitializer initializer = new JIPipeServiceDefaultInitializer(this);
@@ -83,7 +84,6 @@ public class JIPipeService extends AbstractService implements JIPipeValidatable 
     @Parameter
     private PluginService pluginService;
     private boolean autosaveSettings;
-    private final JIPipeServiceComponent[] components;
 
     public JIPipeService() {
         recentProjects = new JIPipeRecentProjectsRegistry(this);
@@ -118,7 +118,7 @@ public class JIPipeService extends AbstractService implements JIPipeValidatable 
         instrumentation = new JIPipeInstrumentationServiceComponent(this);
 
         // Add into components list so we can later postprocess them
-        this.components = new JIPipeServiceComponent[] {
+        this.components = new JIPipeServiceComponent[]{
                 recentProjects, nodeTaxonomy, nodes, dataTypes, imageJDataAdapters, customMenuItems, parameterTypes, applicationSettings, projectSettings, expressionFunctions, utilityClasses,
                 environments, plugins, projectTemplates, artifacts, nodeTemplates, acceleration, cleanup, projectBackup, memoryMonitor, aiService, serverService, statistics, instrumentation
         };

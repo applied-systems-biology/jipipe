@@ -52,7 +52,7 @@ public class JIPipeBDVProgressWriter implements ProgressWriter {
     @Override
     public void setProgress(double completionRatio) {
         // Cancellation guard
-        if(progressInfo.isCancelled()) {
+        if (progressInfo.isCancelled()) {
             throw new CancellationException();
         }
         this.completionRatio = completionRatio;

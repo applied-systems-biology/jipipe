@@ -3,7 +3,7 @@
 utils/judge-dag-patterns.py).
 
 Step (C) asks the LLM (``vllm/frontier`` via the asb-llm OpenAI-compatible
-``/chat/completions`` endpoint — a reasoning model: the answer is in
+``/chat/completions`` endpoint - a reasoning model: the answer is in
 ``content`` after the ``reasoning_content``; fallback extraction follows the
 data-analysis plugin's vlm_client) ONE structured-JSON question per cluster:
 
@@ -18,7 +18,7 @@ produces gate + function + name + description in one call. The imajev-based
 implementation was removed; its endpoint contract remains recorded in the
 ledger.)
 
-The endpoint is NOT called by these tests — they inject a deterministic
+The endpoint is NOT called by these tests - they inject a deterministic
 fake LLM function, so the suite is hermetic.
 
 Run standalone:
@@ -45,7 +45,7 @@ def load_judge():
 
 JUDGE = load_judge()
 
-# The 13 top-level branch keys (jipipe:function:<x>) — the function option set.
+# The 13 top-level branch keys (jipipe:function:<x>) - the function option set.
 BRANCH_KEYS = ("annotations", "data", "export", "filaments", "graph",
                "images", "machine-learning", "misc", "plotting", "rois",
                "statistics", "tables", "tracking")
@@ -130,7 +130,7 @@ class JudgeTests(unittest.TestCase):
 
     def test_state_marks_roi_dimension(self):
         # the (C) review: 2D and 3D ROIs are different data types and must not
-        # be conflated — the state must say which dimension each ROI node is
+        # be conflated - the state must say which dimension each ROI node is
         # (detected from the node id: ij1-* = 2D, ij3d-* = 3D).
         c = cluster(node_names=["Convert 2D ROI to RGB", "Measure 3D ROI"])
         # node ids are n0..nK in the fixture -> nid0, nid1; override the graph
@@ -150,7 +150,7 @@ class JudgeTests(unittest.TestCase):
             self.assertIn(g, prompt)
 
     def test_prompt_has_the_four_naming_rules(self):
-        # the (C) review: the prompt must carry the four rules — name the
+        # the (C) review: the prompt must carry the four rules - name the
         # outcome (no jargon), qualify ROI 2D/3D, state concrete in->out, and
         # write for two audiences.
         c = cluster(titles=["Load images"])
@@ -315,7 +315,7 @@ class FetchVerdictTests(unittest.TestCase):
 
     def test_cached_malformed_response_triggers_retry(self):
         # the full run cached a reasoning-bloat response (no JSON) for a
-        # cluster; a later run must NOT just return the cached None — it must
+        # cluster; a later run must NOT just return the cached None - it must
         # do the concise retry (fresh call) and recover the verdict.
         import hashlib
         prompt = "prompt"

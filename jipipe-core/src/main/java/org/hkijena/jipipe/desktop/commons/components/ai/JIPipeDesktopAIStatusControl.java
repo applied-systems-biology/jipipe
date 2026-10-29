@@ -38,19 +38,17 @@ public class JIPipeDesktopAIStatusControl extends JButton implements Microservic
     private final AIApplicationSettings settings;
     private final ImageIcon defaultIcon;
     private final SpinnerIcon busyIcon;
-
-    /**
-     * Tracks the last status that was applied to the UI, used to detect busy→idle transitions.
-     */
-    private MicroserviceState displayedStatus = null;
-    private String displayedDetail = null;
-
     /**
      * Debouncer for the busy→idle transition. If the state detail changes back to "Busy"
      * before the debouncer fires, the pending idle update is effectively cancelled
      * because the next state-change call will apply busy immediately.
      */
     private final StaticDebouncer idleDebouncer;
+    /**
+     * Tracks the last status that was applied to the UI, used to detect busy→idle transitions.
+     */
+    private MicroserviceState displayedStatus = null;
+    private String displayedDetail = null;
 
     public JIPipeDesktopAIStatusControl(JIPipeDesktopProjectWorkbench workbench) {
         this.workbench = workbench;

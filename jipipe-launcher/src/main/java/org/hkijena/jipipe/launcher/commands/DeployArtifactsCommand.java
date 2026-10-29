@@ -78,10 +78,10 @@ public class DeployArtifactsCommand {
         System.out.println(cachedArtifacts.size() + " artifacts are compatible and not installed yet");
 
         // Secondary filter (read-only target)
-        if(target == Target.readonly) {
+        if (target == Target.readonly) {
             cachedArtifacts.removeIf(artifact -> {
                 boolean result = isAssociatedToReadOnlyTarget(artifact, service);
-                if(result) {
+                if (result) {
                     System.out.println("Removing " + artifact.getFullId() + " - marked as not compatible with read-only deployment!");
                 }
                 return result;
@@ -104,28 +104,28 @@ public class DeployArtifactsCommand {
         }
 
         // Deploy artifacts
-        if(target != Target.none) {
+        if (target != Target.none) {
             JIPipeProgressInfo deployProgress = JIPipeProgressInfo.STDOUT;
             System.out.println("Executing artifact deployment scripts ...");
             Set<String> configuredArtifactIds = new HashSet<>();
             for (Map.Entry<String, JIPipeEnvironmentsServiceComponent.EnvironmentInfo> entry : service.getEnvironments().getInfosById().entrySet()) {
                 JIPipeEnvironmentsServiceComponent.EnvironmentInfo environmentInfo = entry.getValue();
-                if(!environmentInfo.hasArtifactQuery()) {
+                if (!environmentInfo.hasArtifactQuery()) {
                     continue;
                 }
-                if(JIPipeArtifactEnvironment.class.isAssignableFrom(environmentInfo.getEnvironmentClass())) {
+                if (JIPipeArtifactEnvironment.class.isAssignableFrom(environmentInfo.getEnvironmentClass())) {
                     JIPipeProgressInfo deployEnvironmentProgress = deployProgress.resolve(entry.getKey());
                     JIPipeArtifactEnvironment environment = createEnvironmentInstance(service, environmentInfo);
-                    if(!environment.isAllowReadOnlyDeployment() && target ==Target.readonly) {
+                    if (!environment.isAllowReadOnlyDeployment() && target == Target.readonly) {
                         deployEnvironmentProgress.log("Skipping artifact environment ID=" + entry.getKey() + " -> not compatible with read-only deployment");
                         continue;
                     }
                     deployEnvironmentProgress.log("Deploying artifacts for environment ID=" + entry.getKey() + " ...");
                     List<JIPipeArtifact> cachedArtifactsForEnvironment = service.getArtifacts().queryCachedArtifacts(environmentInfo.getArtifactQuery());
                     for (JIPipeArtifact artifact : cachedArtifactsForEnvironment) {
-                        if(artifact instanceof JIPipeLocalArtifact localArtifact) {
+                        if (artifact instanceof JIPipeLocalArtifact localArtifact) {
                             JIPipeProgressInfo deployEnvironmentArtifactProgress = deployEnvironmentProgress.resolve(localArtifact.getFullId());
-                            if(configuredArtifactIds.contains(localArtifact.getFullId())) {
+                            if (configuredArtifactIds.contains(localArtifact.getFullId())) {
                                 deployEnvironmentArtifactProgress.log("Skipping deployment of " + localArtifact.getFullId() + " (already applied)");
                                 continue;
                             }
@@ -141,8 +141,7 @@ public class DeployArtifactsCommand {
 
                 }
             }
-        }
-        else {
+        } else {
             System.out.println("Artifact deployment is disabled.");
         }
 
@@ -159,9 +158,9 @@ public class DeployArtifactsCommand {
             if (!environmentInfo.hasArtifactQuery()) {
                 continue;
             }
-            if(artifact.matchesQuery(environmentInfo.getArtifactQuery())) {
+            if (artifact.matchesQuery(environmentInfo.getArtifactQuery())) {
                 JIPipeArtifactEnvironment environmentInstance = createEnvironmentInstance(service, environmentInfo);
-                if(!environmentInstance.isAllowReadOnlyDeployment()) {
+                if (!environmentInstance.isAllowReadOnlyDeployment()) {
                     return true;
                 }
             }
@@ -170,10 +169,10 @@ public class DeployArtifactsCommand {
     }
 
     private static boolean isInstalledOrIncompatibleArtifact(JIPipeArtifact artifact) {
-        if(artifact instanceof JIPipeLocalArtifact) {
+        if (artifact instanceof JIPipeLocalArtifact) {
             return true;
         }
-        if(!artifact.isCompatible()) {
+        if (!artifact.isCompatible()) {
             return true;
         }
         return false;

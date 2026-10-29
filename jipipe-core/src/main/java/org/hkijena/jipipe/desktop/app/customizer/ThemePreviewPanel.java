@@ -362,8 +362,6 @@ public class ThemePreviewPanel extends JPanel {
     }
 
     public static class NodeViewportComponent extends JPanel {
-        private final ThemePreviewPanel themePreviewPanel;
-
         /**
          * Representative framework used to demonstrate the node-pattern
          * settings in the preview. TrackMate (style {@code net}) is chosen
@@ -373,6 +371,7 @@ public class ThemePreviewPanel extends JPanel {
          * tunable.
          */
         private static final TrackMateFramework PREVIEW_FRAMEWORK = new TrackMateFramework();
+        private final ThemePreviewPanel themePreviewPanel;
 
         public NodeViewportComponent(ThemePreviewPanel themePreviewPanel) {
             this.themePreviewPanel = themePreviewPanel;

@@ -1,1 +1,33 @@
-{"nodes":{"n0":{"jipipe:node-info-id":"ij3d-roi-change-properties","jipipe:graph-compartment":"2872803f-1d23-5e0e-810b-0718dcfaf9de","jipipe:node:name":"Set 3D ROI properties"},"n1":{"jipipe:node-info-id":"ij3d-roi-convert-to-rgb","jipipe:graph-compartment":"2872803f-1d23-5e0e-810b-0718dcfaf9de","jipipe:node:name":"Convert 3D ROI to RGB"},"n2":{"jipipe:node-info-id":"ij1-color-blend-images","jipipe:graph-compartment":"2872803f-1d23-5e0e-810b-0718dcfaf9de","jipipe:node:name":"Blend images"}},"edges":[{"source-node":"n0","source-slot":"Output","target-node":"n1","target-slot":"ROI"},{"source-node":"n1","source-slot":"Output","target-node":"n2","target-slot":"Magenta"}]}
+{
+  "nodes": {
+    "n0": {
+      "jipipe:node-info-id": "ij3d-roi-change-properties",
+      "jipipe:graph-compartment": "2872803f-1d23-5e0e-810b-0718dcfaf9de",
+      "jipipe:node:name": "Set 3D ROI properties"
+    },
+    "n1": {
+      "jipipe:node-info-id": "ij3d-roi-convert-to-rgb",
+      "jipipe:graph-compartment": "2872803f-1d23-5e0e-810b-0718dcfaf9de",
+      "jipipe:node:name": "Convert 3D ROI to RGB"
+    },
+    "n2": {
+      "jipipe:node-info-id": "ij1-color-blend-images",
+      "jipipe:graph-compartment": "2872803f-1d23-5e0e-810b-0718dcfaf9de",
+      "jipipe:node:name": "Blend images"
+    }
+  },
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Output",
+      "target-node": "n1",
+      "target-slot": "ROI"
+    },
+    {
+      "source-node": "n1",
+      "source-slot": "Output",
+      "target-node": "n2",
+      "target-slot": "Magenta"
+    }
+  ]
+}

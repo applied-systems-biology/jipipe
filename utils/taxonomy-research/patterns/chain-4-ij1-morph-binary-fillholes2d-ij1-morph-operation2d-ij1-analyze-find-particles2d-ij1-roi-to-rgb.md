@@ -34,35 +34,41 @@ template:
 
 # Pattern: Morphological hole filling 2D -> Morphological operation 2D -> Find particles 2D -> Convert 2D ROI to RGB
 
-Mined pattern `chain-4-ij1-morph-binary-fillholes2d-ij1-morph-operation2d-ij1-analyze-find-particles2d-ij1-roi-to-rgb` (shape `chain`, support 34).
+Mined pattern `chain-4-ij1-morph-binary-fillholes2d-ij1-morph-operation2d-ij1-analyze-find-particles2d-ij1-roi-to-rgb`
+(shape `chain`, support 34).
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
+| role  | node ids                       |
+|-------|--------------------------------|
 | other | `ij1-morph-binary-fillholes2d` |
-| other | `ij1-morph-operation2d` |
+| other | `ij1-morph-operation2d`        |
 | other | `ij1-analyze-find-particles2d` |
-| other | `ij1-roi-to-rgb` |
+| other | `ij1-roi-to-rgb`               |
 
 ## Example graph
 
-Project: `AIAgentTests/01-BasicWorkshop/JSC_2025_03_Kidney_Basic/kidney.jip` (relative to `/data/JIPipe`), compartment `Analysis`.
+Project: `AIAgentTests/01-BasicWorkshop/JSC_2025_03_Kidney_Basic/kidney.jip` (relative to `/data/JIPipe`), compartment
+`Analysis`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `ij1-morph-binary-fillholes2d` | Morphological hole filling 2D |
-| n1 | `ij1-morph-operation2d` | Morphological operation 2D: Erode |
-| n2 | `ij1-analyze-find-particles2d` | Find particles 2D |
-| n3 | `ij1-roi-to-rgb` | Convert ROI to RGB |
+| key | node id                        | name                              |
+|-----|--------------------------------|-----------------------------------|
+| n0  | `ij1-morph-binary-fillholes2d` | Morphological hole filling 2D     |
+| n1  | `ij1-morph-operation2d`        | Morphological operation 2D: Erode |
+| n2  | `ij1-analyze-find-particles2d` | Find particles 2D                 |
+| n3  | `ij1-roi-to-rgb`               | Convert ROI to RGB                |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
-| Morphological hole filling 2D | `Output` | Morphological operation 2D: Erode | `Input` | `imagej-imgplus-greyscale-mask` |
-| Morphological operation 2D: Erode | `Output` | Find particles 2D | `Mask` | `imagej-imgplus` |
-| Find particles 2D | `ROI` | Convert ROI to RGB | `ROI` | `imagej-roi` |
+| from                              | slot     | to                                | slot    | data class                      |
+|-----------------------------------|----------|-----------------------------------|---------|---------------------------------|
+| Morphological hole filling 2D     | `Output` | Morphological operation 2D: Erode | `Input` | `imagej-imgplus-greyscale-mask` |
+| Morphological operation 2D: Erode | `Output` | Find particles 2D                 | `Mask`  | `imagej-imgplus`                |
+| Find particles 2D                 | `ROI`    | Convert ROI to RGB                | `ROI`   | `imagej-roi`                    |
 
 ## Template
 
-Proposed name `Morphological hole filling 2D -> Morphological operation 2D -> Find particles 2D -> Convert 2D ROI to RGB`, menu path `Patterns/Images/Morphological hole filling 2D -> Morphological operation 2D -> Find particles 2D -> Convert 2D ROI to RGB` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/chain-4-ij1-morph-binary-fillholes2d-ij1-morph-operation2d-ij1-analyze-find-particles2d-ij1-roi-to-rgb.json`.
+Proposed name
+`Morphological hole filling 2D -> Morphological operation 2D -> Find particles 2D -> Convert 2D ROI to RGB`, menu path
+`Patterns/Images/Morphological hole filling 2D -> Morphological operation 2D -> Find particles 2D -> Convert 2D ROI to RGB`
+(proposal only - not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/chain-4-ij1-morph-binary-fillholes2d-ij1-morph-operation2d-ij1-analyze-find-particles2d-ij1-roi-to-rgb.json`.
 

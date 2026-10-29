@@ -12,9 +12,6 @@
  */
 
 package org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d2.greyscale;
-import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.ImageDataFunction;
 
 import ij.ImagePlus;
 import ij.process.FloatProcessor;
@@ -24,6 +21,8 @@ import org.hkijena.jipipe.api.LabelAsJIPipeHeavyData;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.ImageDataFunction;
 import org.hkijena.jipipe.plugins.imagejdatatypes.colorspace.ColorSpace;
 import org.hkijena.jipipe.plugins.imagejdatatypes.colorspace.GreyscaleColorSpace;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
@@ -32,11 +31,13 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d2.ImagePlus2DData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.GreyscaleImageData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
+
 /**
  * Greyscale 2D image
  */
 @SetJIPipeDocumentation(name = "2D ImageJ image (greyscale)", description = "A greyscale image")
-@ConfigureJIPipeNode(function = ImageDataFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D })
+@ConfigureJIPipeNode(function = ImageDataFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D})
 @LabelAsJIPipeHeavyData
 @ImageTypeInfo(imageProcessorType = FloatProcessor.class, colorSpace = GreyscaleColorSpace.class, pixelType = Float.class, bitDepth = 32, numDimensions = 2)
 @ConfigureJIPipeDataCrate(entities = {}, inherits = ImagePlus2DData.class)

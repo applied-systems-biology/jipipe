@@ -355,6 +355,101 @@ public class JIPipeDesktopFormPanel extends JPanel {
         return component;
     }
 
+    /**
+     * Adds a component as a <em>stacked</em> row: the label (description) and
+     * the options component share a top line, and the component itself spans
+     * the full content width on the line below. Used for compound parameter
+     * editors (lists, matrices, margins, scripts) that need the row width.
+     *
+     * @param component     The component
+     * @param description   A label/description component for the top line (may be null)
+     * @param documentation Optional documentation. Can be null.
+     * @param <T>           Component type
+     * @return The component
+     */
+    public <T extends Component> T addToFormStacked(T component, Component description, MarkdownText documentation) {
+        return addToFormStacked(component, description, documentation, null);
+    }
+
+    /**
+     * Adds a component as a <em>stacked</em> row with optional header controls:
+     * the label (description) sits on a top line next to {@code headerControls}
+     * (in the content column, left of the options cell), and the component
+     * itself spans the full content width on the line below.
+     *
+     * @param component      The component
+     * @param description    A label/description component for the top line (may be null)
+     * @param documentation  Optional documentation. Can be null.
+     * @param headerControls Optional controls on the top line, in the content column (may be null)
+     * @param <T>            Component type
+     * @return The component
+     */
+    public <T extends Component> T addToFormStacked(T component, Component description, MarkdownText documentation, JComponent headerControls) {
+        int labelRow = numRows;
+
+        if (description != null) {
+            GridBagConstraints labelPosition = new GridBagConstraints() {
+                {
+                    anchor = GridBagConstraints.WEST;
+                    // With header controls the label stays in the label column only;
+                    // without, it spans into the content column (existing behavior).
+                    gridx = COLUMN_LABEL_OR_WIDE_CONTENT;
+                    gridwidth = (headerControls != null) ? 1 : 2;
+                    gridy = labelRow;
+                    insets = UI_PADDING;
+                    fill = GridBagConstraints.HORIZONTAL;
+                }
+            };
+            contentPanel.add(description, labelPosition);
+        }
+
+        if (headerControls != null) {
+            // The header row holds the standardized parameter action buttons -
+            // give the controls cell at least the standard button height so the
+            // name row is tall enough for them (#1339; makes rows slightly less
+            // dense, which is intentional).
+            Dimension hcSize = headerControls.getPreferredSize();
+            if (hcSize != null) {
+                headerControls.setMinimumSize(new Dimension(hcSize.width, Math.max(hcSize.height, UIUtils.STANDARD_BUTTON_HEIGHT)));
+            }
+            GridBagConstraints hc = new GridBagConstraints() {
+                {
+                    anchor = GridBagConstraints.WEST;
+                    gridx = COLUMN_LABELLED_CONTENT;
+                    gridwidth = 1;
+                    gridy = labelRow;
+                    insets = UI_PADDING;
+                    fill = GridBagConstraints.HORIZONTAL;
+                    weightx = 1;
+                }
+            };
+            contentPanel.add(headerControls, hc);
+        }
+
+        // Options/help on the label line, right-aligned (unchanged).
+        Component propertiesComponent = null;
+        if (withDocumentation)
+            propertiesComponent = createAndAddEntryPropertiesComponent(component, description, labelRow, documentation);
+
+        // The editor spans the full content width on the next line (unchanged).
+        GridBagConstraints bodyPosition = new GridBagConstraints() {
+            {
+                anchor = GridBagConstraints.WEST;
+                gridx = COLUMN_LABEL_OR_WIDE_CONTENT;
+                gridwidth = 2;
+                gridy = labelRow + 1;
+                insets = UI_PADDING;
+                fill = GridBagConstraints.HORIZONTAL;
+                weightx = 1;
+            }
+        };
+        contentPanel.add(component, bodyPosition);
+
+        entries.add(new FormPanelEntry(labelRow, description, component, propertiesComponent, true));
+        numRows = labelRow + 2;
+        return component;
+    }
+
     private Component createAndAddEntryPropertiesComponent(Component component, Component description, int row, MarkdownText documentation) {
         Component newComponent = createEntryPropertiesComponent(component, description, row, documentation);
         if (newComponent != null) {
@@ -782,11 +877,15 @@ public class JIPipeDesktopFormPanel extends JPanel {
         }
 
         /**
-         * Adds a component on the right hand side
+         * Adds a component on the right hand side (a small horizontal gap is
+         * inserted before it so consecutive buttons do not touch).
          *
          * @param component the component
          */
         public void addToEndOfTitlePanel(Component component) {
+            if (titlePanel.getComponentCount() > 0) {
+                titlePanel.add(Box.createHorizontalStrut(4));
+            }
             titlePanel.add(component);
         }
 

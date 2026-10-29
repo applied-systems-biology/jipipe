@@ -15,20 +15,52 @@ package org.hkijena.jipipe.desktop.commons.nodepatterns;
 
 import org.junit.jupiter.api.Test;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
+import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
-
-import javax.imageio.ImageIO;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class NodePatternEngineTest {
 
-    private static final String[] SIZES = { "64", "128", "200" };
+    private static final String[] SIZES = {"64", "128", "200"};
 
-    // 1. DETERMINISM — same (style, seed, size) ⇒ byte-identical mask, all styles, 3 sizes.
+    // ---- helpers ----
+    static byte[] toPng(BufferedImage img) throws Exception {
+        ByteArrayOutputStream b = new ByteArrayOutputStream();
+        ImageIO.write(img, "png", b);
+        return b.toByteArray();
+    }
+
+    static void assertSameSize(BufferedImage a, BufferedImage b) {
+        assertEquals(b.getWidth(), a.getWidth());
+        assertEquals(b.getHeight(), a.getHeight());
+    }
+
+    static double[] edgeCoverage(BufferedImage img) {
+        int S = img.getWidth();
+        int edgeW = 6;
+        double[] acc = new double[4];
+        for (int i = 0; i < edgeW; i++) {
+            for (int j = 0; j < S; j++) {
+                if (ink(img.getRGB(j, i))) acc[0]++;
+                if (ink(img.getRGB(i, j))) acc[1]++;
+            }
+            for (int j = 0; j < S; j++) {
+                if (ink(img.getRGB(j, S - 1 - i))) acc[2]++;
+                if (ink(img.getRGB(S - 1 - i, j))) acc[3]++;
+            }
+        }
+        double n = edgeW * S;
+        return new double[]{acc[0] / n, acc[1] / n, acc[2] / n, acc[3] / n};
+    }
+
+    static boolean ink(int argb) {
+        return ((argb >>> 24) & 0xFF) > 40;
+    }
+
+    // 1. DETERMINISM - same (style, seed, size) ⇒ byte-identical mask, all styles, 3 sizes.
     //    invalidateCache() between the calls so the second mask() truly re-renders
     //    (otherwise the cache hands back the same object and the test proves nothing).
     @Test
@@ -44,7 +76,7 @@ class NodePatternEngineTest {
         }
     }
 
-    // 1b. GOLDEN — net@128, seed = TrackMate id, pixel-exact vs the checked-in reference
+    // 1b. GOLDEN - net@128, seed = TrackMate id, pixel-exact vs the checked-in reference
     @Test
     void netMaskMatchesGoldenReference() throws Exception {
         BufferedImage live = NodePatternRenderer.mask("net", "jipipe:framework:trackmate", 128, 128);
@@ -56,7 +88,7 @@ class NodePatternEngineTest {
                 assertEquals(ref.getRGB(x, y), live.getRGB(x, y), "golden pixel mismatch at " + x + "," + y);
     }
 
-    // 2. PLANE-FILLING — ink in the 6px band of ALL four borders, >= 4%, every family, 3 sizes x 2 seeds
+    // 2. PLANE-FILLING - ink in the 6px band of ALL four borders, >= 4%, every family, 3 sizes x 2 seeds
     @Test
     void everyFamilyFillsAllFourBorders() {
         for (String id : NodePatternStyles.ids()) {
@@ -71,7 +103,7 @@ class NodePatternEngineTest {
         }
     }
 
-    // 3. COLOR-NEUTRAL — every non-transparent pixel has white channels (alpha may vary)
+    // 3. COLOR-NEUTRAL - every non-transparent pixel has white channels (alpha may vary)
     @Test
     void everyMaskIsWhiteInkOnly() {
         for (String id : NodePatternStyles.ids()) {
@@ -99,27 +131,27 @@ class NodePatternEngineTest {
     // Registry mapping: every shipped framework resolves to a shipped style; NoFramework carries none
     @Test
     void everyFrameworkResolvesToAShippedStyle() {
-        org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework[] fws = new org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework[] {
-            new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.CoreFramework(),
-            new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.Cellpose2Framework(),
-            new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.Cellpose3Framework(),
-            new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.Cellpose4Framework(),
-            new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.TrackMateFramework(),
-            new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.JIPipeDLFramework(),
-            new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.JFreeChartFramework(),
-            new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.OpenCVFramework(),
-            new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ClijFramework(),
-            new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework(),
-            new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ2Framework(),
-            new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.IlastikFramework(),
-            new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.OmniposeFramework(),
-            new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.PythonFramework(),
-            new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.RFramework(),
-            new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.WekaFramework(),
-            new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.FilamentsFramework(),
-            new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.IJ3DFramework(),
-            new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.OmeroFramework(),
-            new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.Scene3DFramework()
+        org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework[] fws = new org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework[]{
+                new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.CoreFramework(),
+                new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.Cellpose2Framework(),
+                new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.Cellpose3Framework(),
+                new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.Cellpose4Framework(),
+                new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.TrackMateFramework(),
+                new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.JIPipeDLFramework(),
+                new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.JFreeChartFramework(),
+                new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.OpenCVFramework(),
+                new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ClijFramework(),
+                new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework(),
+                new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ2Framework(),
+                new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.IlastikFramework(),
+                new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.OmniposeFramework(),
+                new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.PythonFramework(),
+                new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.RFramework(),
+                new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.WekaFramework(),
+                new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.FilamentsFramework(),
+                new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.IJ3DFramework(),
+                new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.OmeroFramework(),
+                new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.Scene3DFramework()
         };
         for (var fw : fws) {
             assertNotNull(fw.getPatternStyleId(), fw.getId() + " has no style");
@@ -144,18 +176,23 @@ class NodePatternEngineTest {
         NodePatternRenderer.paint(g, 0, 0, 128, 128, "net", "seed", new Color(0xFF0000), 0.5f);
         g.dispose();
         long reds = 0, blues = 0, transparent = 0, total = 128L * 128;
-        for (int y = 0; y < 128; y++) for (int x = 0; x < 128; x++) {
-            int a = base.getRGB(x, y);
-            if (((a >>> 24) & 0xFF) == 0) { transparent++; continue; }
-            if (((a >>> 16) & 0xFF) > (a & 0xFF)) reds++; else blues++;
-        }
+        for (int y = 0; y < 128; y++)
+            for (int x = 0; x < 128; x++) {
+                int a = base.getRGB(x, y);
+                if (((a >>> 24) & 0xFF) == 0) {
+                    transparent++;
+                    continue;
+                }
+                if (((a >>> 16) & 0xFF) > (a & 0xFF)) reds++;
+                else blues++;
+            }
         assertTrue(reds > blues, "red ink should dominate the tinted mask");
         // the tint must follow the mask's shape, not fill the whole rect
         assertTrue(transparent > total / 2,
-                "tinted draw is a solid rectangle (" + transparent + "/" + total + " transparent) — tinting ignores the mask alpha");
+                "tinted draw is a solid rectangle (" + transparent + "/" + total + " transparent) - tinting ignores the mask alpha");
     }
 
-    // Review round 2 (ruling 2026-18): the tint cache must be keyed by mask identity —
+    // Review round 2 (ruling 2026-18): the tint cache must be keyed by mask identity -
     // two DIFFERENT styles at the same size + ink + opacity must not share a tinted copy.
     // Fails against a tint cache keyed by (ink, opacity, w, h) only.
     @Test
@@ -175,27 +212,6 @@ class NodePatternEngineTest {
                 if (pa != pb && ((((pa >>> 24) | (pb >>> 24)) & 0xFF) > 0)) differing++;
             }
         assertTrue(differing > 0,
-                "two different styles at the same size/ink/opacity drew pixel-identical images — tint cache key omits mask identity");
+                "two different styles at the same size/ink/opacity drew pixel-identical images - tint cache key omits mask identity");
     }
-
-    // ---- helpers ----
-    static byte[] toPng(BufferedImage img) throws Exception {
-        ByteArrayOutputStream b = new ByteArrayOutputStream();
-        ImageIO.write(img, "png", b);
-        return b.toByteArray();
-    }
-    static void assertSameSize(BufferedImage a, BufferedImage b) {
-        assertEquals(b.getWidth(), a.getWidth());
-        assertEquals(b.getHeight(), a.getHeight());
-    }
-    static double[] edgeCoverage(BufferedImage img) {
-        int S = img.getWidth(); int edgeW = 6; double[] acc = new double[4];
-        for (int i = 0; i < edgeW; i++) {
-            for (int j = 0; j < S; j++) { if (ink(img.getRGB(j, i))) acc[0]++; if (ink(img.getRGB(i, j))) acc[1]++; }
-            for (int j = 0; j < S; j++) { if (ink(img.getRGB(j, S - 1 - i))) acc[2]++; if (ink(img.getRGB(S - 1 - i, j))) acc[3]++; }
-        }
-        double n = edgeW * S;
-        return new double[]{acc[0] / n, acc[1] / n, acc[2] / n, acc[3] / n};
-    }
-    static boolean ink(int argb) { return ((argb >>> 24) & 0xFF) > 40; }
 }

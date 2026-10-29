@@ -31,9 +31,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * {@link JIPipeQueuedRunnableExecutor} (a per-project queue, NOT the global
  * singleton). The two guarantees this locks in are:
  * <ol>
- *   <li>Runs enqueued on the <b>same</b> executor never overlap — same-project
+ *   <li>Runs enqueued on the <b>same</b> executor never overlap - same-project
  *       saves (manual vs. autosave) serialize.</li>
- *   <li>Runs on <b>different</b> executors are independent — a large save in
+ *   <li>Runs on <b>different</b> executors are independent - a large save in
  *       project A must not stall a save in project B.</li>
  * </ol>
  * The executor is exercised directly (no Swing window), mirroring the
@@ -43,6 +43,54 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * {@code ServiceAwareQueuedExecutorTest} in jipipe-core).
  */
 class SaveQueueSerializationTest {
+
+    @Test
+    void sameExecutorSerializesTwoRuns() throws InterruptedException {
+        JIPipeQueuedRunnableExecutor queue = new JIPipeQueuedRunnableExecutor("Save Test Project");
+
+        AtomicInteger active = new AtomicInteger(0);
+        AtomicLong maxActive = new AtomicLong(0);
+        CountDownLatch finished = new CountDownLatch(2);
+
+        queue.enqueue(new TimedRun("save #1", 600, active, maxActive, finished, null));
+        queue.enqueue(new TimedRun("save #2", 600, active, maxActive, finished, null));
+
+        assertTrue(finished.await(10, TimeUnit.SECONDS), "Both enqueued saves must complete");
+        // The single-worker queue must never run two saves at the same time.
+        assertEquals(1L, maxActive.get(),
+                "Two saves on the same per-project queue must never overlap; observed max concurrency: " + maxActive.get());
+    }
+
+    @Test
+    void differentExecutorsRunIndependently() throws InterruptedException {
+        JIPipeQueuedRunnableExecutor queueA = new JIPipeQueuedRunnableExecutor("Save Project A");
+        JIPipeQueuedRunnableExecutor queueB = new JIPipeQueuedRunnableExecutor("Save Project B");
+
+        AtomicInteger activeA = new AtomicInteger(0);
+        AtomicLong maxActiveA = new AtomicLong(0);
+        CountDownLatch aStarted = new CountDownLatch(1);
+        CountDownLatch aFinished = new CountDownLatch(1);
+
+        // A long save on project A (2s) - must NOT block project B.
+        queueA.enqueue(new TimedRun("save A (long)", 2000, activeA, maxActiveA, aFinished, aStarted));
+
+        // Project B's save must START while A is still running, proving the
+        // two per-project queues are independent.
+        AtomicInteger activeB = new AtomicInteger(0);
+        AtomicLong maxActiveB = new AtomicLong(0);
+        CountDownLatch bStarted = new CountDownLatch(1);
+        CountDownLatch bFinished = new CountDownLatch(1);
+        queueB.enqueue(new TimedRun("save B", 0, activeB, maxActiveB, bFinished, bStarted));
+
+        assertTrue(aStarted.await(2, TimeUnit.SECONDS), "Project A's long save must start");
+        // If the queues were shared/serialized, B would only start after A
+        // finished (~2s). A short window proves independence.
+        assertTrue(bStarted.await(1, TimeUnit.SECONDS),
+                "Project B's save must start immediately, not wait for project A's long save");
+        assertTrue(aFinished.await(10, TimeUnit.SECONDS), "Project A's save must complete");
+        assertTrue(bFinished.await(10, TimeUnit.SECONDS), "Project B's save must complete");
+        assertEquals(1L, maxActiveA.get(), "Project A's queue must stay serialized");
+    }
 
     /**
      * A run that signals entry/exit and sleeps so that, if two runs ran
@@ -88,53 +136,5 @@ class SaveQueueSerializationTest {
             active.decrementAndGet();
             finished.countDown();
         }
-    }
-
-    @Test
-    void sameExecutorSerializesTwoRuns() throws InterruptedException {
-        JIPipeQueuedRunnableExecutor queue = new JIPipeQueuedRunnableExecutor("Save Test Project");
-
-        AtomicInteger active = new AtomicInteger(0);
-        AtomicLong maxActive = new AtomicLong(0);
-        CountDownLatch finished = new CountDownLatch(2);
-
-        queue.enqueue(new TimedRun("save #1", 600, active, maxActive, finished, null));
-        queue.enqueue(new TimedRun("save #2", 600, active, maxActive, finished, null));
-
-        assertTrue(finished.await(10, TimeUnit.SECONDS), "Both enqueued saves must complete");
-        // The single-worker queue must never run two saves at the same time.
-        assertEquals(1L, maxActive.get(),
-                "Two saves on the same per-project queue must never overlap; observed max concurrency: " + maxActive.get());
-    }
-
-    @Test
-    void differentExecutorsRunIndependently() throws InterruptedException {
-        JIPipeQueuedRunnableExecutor queueA = new JIPipeQueuedRunnableExecutor("Save Project A");
-        JIPipeQueuedRunnableExecutor queueB = new JIPipeQueuedRunnableExecutor("Save Project B");
-
-        AtomicInteger activeA = new AtomicInteger(0);
-        AtomicLong maxActiveA = new AtomicLong(0);
-        CountDownLatch aStarted = new CountDownLatch(1);
-        CountDownLatch aFinished = new CountDownLatch(1);
-
-        // A long save on project A (2s) — must NOT block project B.
-        queueA.enqueue(new TimedRun("save A (long)", 2000, activeA, maxActiveA, aFinished, aStarted));
-
-        // Project B's save must START while A is still running, proving the
-        // two per-project queues are independent.
-        AtomicInteger activeB = new AtomicInteger(0);
-        AtomicLong maxActiveB = new AtomicLong(0);
-        CountDownLatch bStarted = new CountDownLatch(1);
-        CountDownLatch bFinished = new CountDownLatch(1);
-        queueB.enqueue(new TimedRun("save B", 0, activeB, maxActiveB, bFinished, bStarted));
-
-        assertTrue(aStarted.await(2, TimeUnit.SECONDS), "Project A's long save must start");
-        // If the queues were shared/serialized, B would only start after A
-        // finished (~2s). A short window proves independence.
-        assertTrue(bStarted.await(1, TimeUnit.SECONDS),
-                "Project B's save must start immediately, not wait for project A's long save");
-        assertTrue(aFinished.await(10, TimeUnit.SECONDS), "Project A's save must complete");
-        assertTrue(bFinished.await(10, TimeUnit.SECONDS), "Project B's save must complete");
-        assertEquals(1L, maxActiveA.get(), "Project A's queue must stay serialized");
     }
 }

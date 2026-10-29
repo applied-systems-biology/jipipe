@@ -13,20 +13,20 @@
 
 package org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.split;
 
-import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
-import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.IJ3DFramework;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.rois.RoiMorphologyFunction;
-
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
-import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.IJ3DFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.rois.RoiMorphologyFunction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
@@ -45,8 +45,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
+
 @SetJIPipeDocumentation(name = "Split IJ3D ROI lists by statistics", description = "Splits the incoming 3D ROI lists by a classifier value that is calculated based on statistics.")
-@ConfigureJIPipeNode(function = RoiMorphologyFunction.class, framework = IJ3DFramework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
+@ConfigureJIPipeNode(function = RoiMorphologyFunction.class, framework = IJ3DFramework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = Ij3dSuiteRoiListData.class, name = "ROI", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true, description = "Optional image that is the basis for the measurements. If not set, all affected measurements are set to NaN.")
 @AddJIPipeOutputSlot(value = Ij3dSuiteRoiListData.class, name = "Split ROI", create = true)
@@ -110,7 +113,7 @@ public class SplitRoi3dByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
             target.add(roi);
         }
 
-          for (Map.Entry<String, Ij3dSuiteRoiListData> entry : groups.entrySet()) {
+        for (Map.Entry<String, Ij3dSuiteRoiListData> entry : groups.entrySet()) {
             List<JIPipeTextAnnotation> annotationList = new ArrayList<>();
             classifierAnnotation.addAnnotationIfEnabled(annotationList, entry.getKey());
             iterationStep.addOutputData(getFirstOutputSlot(), entry.getValue(), annotationList, JIPipeTextAnnotationMergeMode.Merge, progressInfo);

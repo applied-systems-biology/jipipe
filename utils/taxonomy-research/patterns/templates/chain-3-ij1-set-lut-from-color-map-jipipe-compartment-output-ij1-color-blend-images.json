@@ -1,1 +1,33 @@
-{"nodes":{"n0":{"jipipe:node-info-id":"ij1-set-lut-from-color-map","jipipe:graph-compartment":"5ed93409-bcb9-5db2-8c09-1d25debf8e20","jipipe:node:name":"Set LUT (color map)"},"n1":{"jipipe:node-info-id":"jipipe:compartment-output","jipipe:graph-compartment":"5ed93409-bcb9-5db2-8c09-1d25debf8e20","jipipe:node:name":"Mask"},"n2":{"jipipe:node-info-id":"ij1-color-blend-images","jipipe:graph-compartment":"5ed93409-bcb9-5db2-8c09-1d25debf8e20","jipipe:node:name":"Blend images"}},"edges":[{"source-node":"n0","source-slot":"Output","target-node":"n1","target-slot":"3D labels"},{"source-node":"n1","source-slot":"3D labels","target-node":"n2","target-slot":"Cell"}]}
+{
+  "nodes": {
+    "n0": {
+      "jipipe:node-info-id": "ij1-set-lut-from-color-map",
+      "jipipe:graph-compartment": "5ed93409-bcb9-5db2-8c09-1d25debf8e20",
+      "jipipe:node:name": "Set LUT (color map)"
+    },
+    "n1": {
+      "jipipe:node-info-id": "jipipe:compartment-output",
+      "jipipe:graph-compartment": "5ed93409-bcb9-5db2-8c09-1d25debf8e20",
+      "jipipe:node:name": "Mask"
+    },
+    "n2": {
+      "jipipe:node-info-id": "ij1-color-blend-images",
+      "jipipe:graph-compartment": "5ed93409-bcb9-5db2-8c09-1d25debf8e20",
+      "jipipe:node:name": "Blend images"
+    }
+  },
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Output",
+      "target-node": "n1",
+      "target-slot": "3D labels"
+    },
+    {
+      "source-node": "n1",
+      "source-slot": "3D labels",
+      "target-node": "n2",
+      "target-slot": "Cell"
+    }
+  ]
+}

@@ -51,7 +51,7 @@ public abstract class PathMatchedImportImageBackend extends ImportImageBackend {
 
     @Override
     public boolean canImport(Path path, JIPipeExpressionVariablesMap variablesMap) {
-        if(!isEnabled()) {
+        if (!isEnabled()) {
             return false;
         }
         variablesMap.put("path", path.toString());

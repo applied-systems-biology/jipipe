@@ -32,7 +32,6 @@ import java.util.*;
 public abstract class JIPipeDynamicSetParameter<T> implements JIPipeEnumParameter {
     private Set<T> values = new HashSet<>();
     private Set<T> allowedValues = new TreeSet<>();
-    private boolean collapsed = false;
 
     /**
      * Creates a new instance with null value
@@ -43,7 +42,6 @@ public abstract class JIPipeDynamicSetParameter<T> implements JIPipeEnumParamete
     public JIPipeDynamicSetParameter(JIPipeDynamicSetParameter<T> other) {
         this.values = new HashSet<>(other.values);
         this.allowedValues = other.allowedValues;
-        this.collapsed = other.collapsed;
     }
 
     public JIPipeDynamicSetParameter(Set<T> values) {
@@ -58,16 +56,6 @@ public abstract class JIPipeDynamicSetParameter<T> implements JIPipeEnumParamete
     @JsonSetter("values")
     public void setValues(Set<T> values) {
         this.values = new HashSet<>(values);
-    }
-
-    @JsonGetter("collapsed")
-    public boolean isCollapsed() {
-        return collapsed;
-    }
-
-    @JsonSetter("collapsed")
-    public void setCollapsed(boolean collapsed) {
-        this.collapsed = collapsed;
     }
 
     public Set<T> getAllowedValues() {

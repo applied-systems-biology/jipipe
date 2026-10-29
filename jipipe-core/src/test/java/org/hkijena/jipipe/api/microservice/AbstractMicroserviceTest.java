@@ -24,34 +24,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class AbstractMicroserviceTest {
 
-    static class TestService extends AbstractMicroservice {
-        volatile boolean startCalled = false;
-        volatile boolean stopCalled = false;
-        volatile boolean throwOnStart = false;
-        volatile boolean throwOnStop = false;
-        String throwMessage = "boom";
-
-        TestService() {
-            super("Test Service");
-        }
-
-        TestService(String name) {
-            super(name);
-        }
-
-        @Override
-        protected void onStart() throws Exception {
-            startCalled = true;
-            if (throwOnStart) throw new RuntimeException(throwMessage);
-        }
-
-        @Override
-        protected void onStop() throws Exception {
-            stopCalled = true;
-            if (throwOnStop) throw new RuntimeException(throwMessage);
-        }
-    }
-
     @Test
     void startTransitionsToReady() {
         TestService s = new TestService();
@@ -102,7 +74,7 @@ class AbstractMicroserviceTest {
         TestService s = new TestService() {
             @Override
             protected void onStart() throws Exception {
-                // Simulate that we're "in" onStart — state should already be Starting
+                // Simulate that we're "in" onStart - state should already be Starting
                 assertEquals(MicroserviceState.Starting, getState());
                 // A second start() call should be a no-op (but it can't happen
                 // because start() is synchronized and we're inside it)
@@ -206,5 +178,33 @@ class AbstractMicroserviceTest {
         s.throwOnStart = false;
         s.start();
         assertEquals(MicroserviceState.Ready, s.getState());
+    }
+
+    static class TestService extends AbstractMicroservice {
+        volatile boolean startCalled = false;
+        volatile boolean stopCalled = false;
+        volatile boolean throwOnStart = false;
+        volatile boolean throwOnStop = false;
+        String throwMessage = "boom";
+
+        TestService() {
+            super("Test Service");
+        }
+
+        TestService(String name) {
+            super(name);
+        }
+
+        @Override
+        protected void onStart() throws Exception {
+            startCalled = true;
+            if (throwOnStart) throw new RuntimeException(throwMessage);
+        }
+
+        @Override
+        protected void onStop() throws Exception {
+            stopCalled = true;
+            if (throwOnStop) throw new RuntimeException(throwMessage);
+        }
     }
 }

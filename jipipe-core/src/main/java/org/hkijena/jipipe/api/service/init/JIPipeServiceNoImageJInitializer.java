@@ -100,7 +100,7 @@ public class JIPipeServiceNoImageJInitializer extends JIPipeServiceInitializer {
         postprocessingProgress.log("Registering extension-provided templates ...");
         getService().getNodes().executeScheduledRegisterTemplates();
         postprocessingProgress.log("Post-processing service components ...");
-        for(JIPipeServiceComponent component : getService ().getComponents()) {
+        for (JIPipeServiceComponent component : getService().getComponents()) {
             component.postprocess(getProgressInfo().resolve(component.getClass().getSimpleName()));
         }
         getProgressInfo().log("JIPipe loading finished");

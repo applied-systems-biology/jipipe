@@ -277,11 +277,11 @@ public abstract class JIPipeValidationReportContext {
     public static class ValidationEntryBuilder {
         private final JIPipeValidationReportEntryLevel level;
         private final JIPipeValidationReportContext context;
+        private final List<JIPipeNotificationAction> actions = new ArrayList<>();
         private String title;
         private String explanation;
         private String solution;
         private String details;
-        private final List<JIPipeNotificationAction> actions = new ArrayList<>();
 
         private ValidationEntryBuilder(JIPipeValidationReportEntryLevel level, JIPipeValidationReportContext context) {
             this.level = level;

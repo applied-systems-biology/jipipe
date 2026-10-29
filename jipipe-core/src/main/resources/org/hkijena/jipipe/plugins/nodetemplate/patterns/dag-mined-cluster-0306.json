@@ -1,1 +1,56 @@
-{"edges":[{"source-node":"n0","source-slot":"Output","target-node":"n1","target-slot":"Input"},{"source-node":"n1","source-slot":"Output","target-node":"n3","target-slot":"Input"},{"source-node":"n2","source-slot":"Output","target-node":"n0","target-slot":"Input"}],"nodes":{"n0":{"jipipe:graph-compartment":"f4db3cf8-747a-59ab-a150-fbf0ff7c5e3a","jipipe:metadata-v1":{"location/f4db3cf8-747a-59ab-a150-fbf0ff7c5e3a/x":0,"location/f4db3cf8-747a-59ab-a150-fbf0ff7c5e3a/y":4},"jipipe:node-info-id":"ij1-convert-image-to-table"},"n1":{"jipipe:graph-compartment":"f4db3cf8-747a-59ab-a150-fbf0ff7c5e3a","jipipe:metadata-v1":{"location/f4db3cf8-747a-59ab-a150-fbf0ff7c5e3a/x":0,"location/f4db3cf8-747a-59ab-a150-fbf0ff7c5e3a/y":8},"jipipe:node-info-id":"table-rename-columns"},"n2":{"jipipe:graph-compartment":"f4db3cf8-747a-59ab-a150-fbf0ff7c5e3a","jipipe:metadata-v1":{"location/f4db3cf8-747a-59ab-a150-fbf0ff7c5e3a/x":0,"location/f4db3cf8-747a-59ab-a150-fbf0ff7c5e3a/y":0},"jipipe:node-info-id":"ij1-math-generate-from-expression"},"n3":{"jipipe:graph-compartment":"f4db3cf8-747a-59ab-a150-fbf0ff7c5e3a","jipipe:metadata-v1":{"location/f4db3cf8-747a-59ab-a150-fbf0ff7c5e3a/x":2,"location/f4db3cf8-747a-59ab-a150-fbf0ff7c5e3a/y":12},"jipipe:node-info-id":"table-remove-columns"}}}
+{
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Output",
+      "target-node": "n1",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n1",
+      "source-slot": "Output",
+      "target-node": "n3",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n2",
+      "source-slot": "Output",
+      "target-node": "n0",
+      "target-slot": "Input"
+    }
+  ],
+  "nodes": {
+    "n0": {
+      "jipipe:graph-compartment": "f4db3cf8-747a-59ab-a150-fbf0ff7c5e3a",
+      "jipipe:metadata-v1": {
+        "location/f4db3cf8-747a-59ab-a150-fbf0ff7c5e3a/x": 0,
+        "location/f4db3cf8-747a-59ab-a150-fbf0ff7c5e3a/y": 4
+      },
+      "jipipe:node-info-id": "ij1-convert-image-to-table"
+    },
+    "n1": {
+      "jipipe:graph-compartment": "f4db3cf8-747a-59ab-a150-fbf0ff7c5e3a",
+      "jipipe:metadata-v1": {
+        "location/f4db3cf8-747a-59ab-a150-fbf0ff7c5e3a/x": 0,
+        "location/f4db3cf8-747a-59ab-a150-fbf0ff7c5e3a/y": 8
+      },
+      "jipipe:node-info-id": "table-rename-columns"
+    },
+    "n2": {
+      "jipipe:graph-compartment": "f4db3cf8-747a-59ab-a150-fbf0ff7c5e3a",
+      "jipipe:metadata-v1": {
+        "location/f4db3cf8-747a-59ab-a150-fbf0ff7c5e3a/x": 0,
+        "location/f4db3cf8-747a-59ab-a150-fbf0ff7c5e3a/y": 0
+      },
+      "jipipe:node-info-id": "ij1-math-generate-from-expression"
+    },
+    "n3": {
+      "jipipe:graph-compartment": "f4db3cf8-747a-59ab-a150-fbf0ff7c5e3a",
+      "jipipe:metadata-v1": {
+        "location/f4db3cf8-747a-59ab-a150-fbf0ff7c5e3a/x": 2,
+        "location/f4db3cf8-747a-59ab-a150-fbf0ff7c5e3a/y": 12
+      },
+      "jipipe:node-info-id": "table-remove-columns"
+    }
+  }
+}

@@ -16,13 +16,9 @@ package org.hkijena.jipipe.api.nodes.taxonomy;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
-import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.api.service.components.JIPipeNodesServiceComponent;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
@@ -34,13 +30,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import javax.swing.Icon;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import javax.swing.*;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -71,7 +62,9 @@ class TaxonomyValidationGuardTest {
 
     private static final String DEPENDENCY_ID = "taxonomy-validation-guard-test";
 
-    /** Stable id literal for the stub family used by the dangle test. */
+    /**
+     * Stable id literal for the stub family used by the dangle test.
+     */
     private static final String FAMILY_ID = "jipipe:family:guard-test";
 
     private final List<String> registeredNodeIds = new ArrayList<>();
@@ -80,7 +73,9 @@ class TaxonomyValidationGuardTest {
 
     private final List<JIPipeNodeTaxonomyFramework> registeredFrameworks = new ArrayList<>();
 
-    /** (nodeId, familyId) pairs added to the family assembler, for teardown. */
+    /**
+     * (nodeId, familyId) pairs added to the family assembler, for teardown.
+     */
     private final List<String[]> registeredFamilySteps = new ArrayList<>();
 
     // ------------------------------------------------------------------
@@ -91,6 +86,43 @@ class TaxonomyValidationGuardTest {
     static void ensureJIPipe() {
         JIPipe.ensureInstance();
     }
+
+    /**
+     * Builds a runtime annotation instance with the given family and label.
+     */
+    private static JIPipeNodeTaxonomyFamilyStepAnnotation stepAnnotation(
+            Class<? extends JIPipeNodeTaxonomyFamily> family, String label) {
+        return new JIPipeNodeTaxonomyFamilyStepAnnotation() {
+            @Override
+            public Class<? extends JIPipeNodeTaxonomyFamily> family() {
+                return family;
+            }
+
+            @Override
+            public String label() {
+                return label;
+            }
+
+            @Override
+            public Class<?>[] after() {
+                return new Class<?>[0];
+            }
+
+            @Override
+            public String purpose() {
+                return "";
+            }
+
+            @Override
+            public Class<? extends JIPipeNodeTaxonomyFamilyStepAnnotation> annotationType() {
+                return JIPipeNodeTaxonomyFamilyStepAnnotation.class;
+            }
+        };
+    }
+
+    // ------------------------------------------------------------------
+    // Scenario (a): all registries valid + one unconverted node
+    // ------------------------------------------------------------------
 
     @AfterEach
     void cleanup() {
@@ -121,7 +153,7 @@ class TaxonomyValidationGuardTest {
     }
 
     // ------------------------------------------------------------------
-    // Scenario (a): all registries valid + one unconverted node
+    // Scenario (b): cyclic functions ⇒ errors ⇒ not ok
     // ------------------------------------------------------------------
 
     /**
@@ -144,12 +176,12 @@ class TaxonomyValidationGuardTest {
 
         Map<String, JIPipeNodeInfo> nodeInfos = new LinkedHashMap<>();
         nodeInfos.put("guard-test:assigned",
-            new StubNodeInfo("guard-test:assigned", function, framework));
+                new StubNodeInfo("guard-test:assigned", function, framework));
         nodeInfos.put("guard-test:unconverted",
-            new StubNodeInfo("guard-test:unconverted", null, null));
+                new StubNodeInfo("guard-test:unconverted", null, null));
 
         TaxonomyValidationReport report = TaxonomyValidationReport.run(
-            functions, frameworks, nodeInfos);
+                functions, frameworks, nodeInfos);
 
         assertTrue(report.ok(), "unconverted nodes must not make the taxonomy invalid: " + report.errors());
         assertTrue(report.errors().isEmpty(), "no errors expected, got: " + report.errors());
@@ -157,7 +189,7 @@ class TaxonomyValidationGuardTest {
     }
 
     // ------------------------------------------------------------------
-    // Scenario (b): cyclic functions ⇒ errors ⇒ not ok
+    // Scenario (c): fully converted synthetic set
     // ------------------------------------------------------------------
 
     /**
@@ -176,21 +208,22 @@ class TaxonomyValidationGuardTest {
 
         Map<String, JIPipeNodeInfo> nodeInfos = new LinkedHashMap<>();
         nodeInfos.put("guard-test:assigned",
-            new StubNodeInfo("guard-test:assigned", f1, new NoFramework()));
+                new StubNodeInfo("guard-test:assigned", f1, new NoFramework()));
 
         TaxonomyValidationReport report = TaxonomyValidationReport.run(
-            functions, new FrameworkRegistry(), nodeInfos);
+                functions, new FrameworkRegistry(), nodeInfos);
 
         assertFalse(report.ok(), "a cyclic function registry must be invalid");
         assertFalse(report.errors().isEmpty(), "the cycle must be reported");
         assertTrue(report.errors().stream().anyMatch(e ->
-                e.contains("guard-test:cycle-a") && e.contains("guard-test:cycle-b")),
-            "the cycle must name both function ids, got: " + report.errors());
+                        e.contains("guard-test:cycle-a") && e.contains("guard-test:cycle-b")),
+                "the cycle must name both function ids, got: " + report.errors());
         assertTrue(report.unassignedNodeIds().isEmpty());
     }
 
     // ------------------------------------------------------------------
-    // Scenario (c): fully converted synthetic set
+    // Component wiring: postprocess() appends real errors to the
+    // initialization report
     // ------------------------------------------------------------------
 
     /**
@@ -213,24 +246,19 @@ class TaxonomyValidationGuardTest {
         nodeInfos.put("guard-test:node-b", new StubNodeInfo("guard-test:node-b", function, framework));
 
         TaxonomyValidationReport report = TaxonomyValidationReport.run(
-            functions, frameworks, nodeInfos);
+                functions, frameworks, nodeInfos);
 
         assertTrue(report.ok());
         assertTrue(report.errors().isEmpty(), "got: " + report.errors());
         assertTrue(report.unassignedNodeIds().isEmpty(),
-            "got: " + report.unassignedNodeIds());
+                "got: " + report.unassignedNodeIds());
     }
-
-    // ------------------------------------------------------------------
-    // Component wiring: postprocess() appends real errors to the
-    // initialization report
-    // ------------------------------------------------------------------
 
     /**
      * A real taxonomy error (a cyclic function registered in the shared
      * registry) is appended to the service's initialization report
-     * errors during {@code postprocess()} — the existing init-failure
-     * mechanism — while unconverted nodes (the expected 1a state with
+     * errors during {@code postprocess()} - the existing init-failure
+     * mechanism - while unconverted nodes (the expected 1a state with
      * the curated tree unregistered) are not.
      */
     @Test
@@ -253,23 +281,27 @@ class TaxonomyValidationGuardTest {
 
             int reportErrorsAfter = service.getInitializationReport().getErrors().size();
             assertTrue(reportErrorsAfter > reportErrorsBefore,
-                "postprocess() must append the taxonomy error to the initialization report");
+                    "postprocess() must append the taxonomy error to the initialization report");
             appended = service.getInitializationReport().getErrors().get(reportErrorsBefore);
         } finally {
             // Restore the init report: a leaked init error would fail every
             // later init-related test in the suite.
             while (service.getInitializationReport().getErrors().size() > reportErrorsBefore) {
                 service.getInitializationReport().getErrors().remove(
-                    service.getInitializationReport().getErrors().size() - 1);
+                        service.getInitializationReport().getErrors().size() - 1);
             }
         }
 
         assertNotNull(appended.getMessage());
         assertTrue(appended.getMessage().contains("guard-test:cycle-a"),
-            "the appended error must carry the cycle message, got: " + appended.getMessage());
+                "the appended error must carry the cycle message, got: " + appended.getMessage());
         // Nothing must remain after teardown
         assertEquals(reportErrorsBefore, service.getInitializationReport().getErrors().size());
     }
+
+    // ------------------------------------------------------------------
+    // Stub taxonomy members
+    // ------------------------------------------------------------------
 
     /**
      * A family step whose node is not (any longer) registered is a hard
@@ -297,63 +329,30 @@ class TaxonomyValidationGuardTest {
 
             int reportErrorsAfter = service.getInitializationReport().getErrors().size();
             assertTrue(reportErrorsAfter > reportErrorsBefore,
-                "postprocess() must append the dangling-family-step error to the initialization report");
+                    "postprocess() must append the dangling-family-step error to the initialization report");
             appended = service.getInitializationReport().getErrors().get(reportErrorsBefore);
         } finally {
             // Restore the init report: a leaked init error would fail every
             // later init-related test in the suite.
             while (service.getInitializationReport().getErrors().size() > reportErrorsBefore) {
                 service.getInitializationReport().getErrors().remove(
-                    service.getInitializationReport().getErrors().size() - 1);
+                        service.getInitializationReport().getErrors().size() - 1);
             }
         }
 
         assertNotNull(appended.getMessage());
         String message = appended.getMessage();
         assertTrue(message.contains("guard-test:phantom-node"),
-            "the appended error must name the dangling node id, got: " + message);
+                "the appended error must name the dangling node id, got: " + message);
         assertTrue(message.contains(FAMILY_ID),
-            "the appended error must name the family id, got: " + message);
+                "the appended error must name the family id, got: " + message);
         // Nothing must remain after teardown
         assertEquals(reportErrorsBefore, service.getInitializationReport().getErrors().size());
     }
 
-    // ------------------------------------------------------------------
-    // Stub taxonomy members
-    // ------------------------------------------------------------------
-
-    /** Builds a runtime annotation instance with the given family and label. */
-    private static JIPipeNodeTaxonomyFamilyStepAnnotation stepAnnotation(
-        Class<? extends JIPipeNodeTaxonomyFamily> family, String label) {
-        return new JIPipeNodeTaxonomyFamilyStepAnnotation() {
-            @Override
-            public Class<? extends JIPipeNodeTaxonomyFamily> family() {
-                return family;
-            }
-
-            @Override
-            public String label() {
-                return label;
-            }
-
-            @Override
-            public Class<?>[] after() {
-                return new Class<?>[0];
-            }
-
-            @Override
-            public String purpose() {
-                return "";
-            }
-
-            @Override
-            public Class<? extends JIPipeNodeTaxonomyFamilyStepAnnotation> annotationType() {
-                return JIPipeNodeTaxonomyFamilyStepAnnotation.class;
-            }
-        };
-    }
-
-    /** Stub workflow family for the dangle test. */
+    /**
+     * Stub workflow family for the dangle test.
+     */
     private static class StubFamily implements JIPipeNodeTaxonomyFamily {
         @Override
         public String getId() {
@@ -371,7 +370,9 @@ class TaxonomyValidationGuardTest {
         }
     }
 
-    /** Minimal taxonomy function; optionally parented for cycle construction. */
+    /**
+     * Minimal taxonomy function; optionally parented for cycle construction.
+     */
     private static class StubFunction implements JIPipeNodeTaxonomyFunction {
         private final String id;
         private final JIPipeNodeTaxonomyFunction parent;
@@ -436,7 +437,9 @@ class TaxonomyValidationGuardTest {
         }
     }
 
-    /** Minimal taxonomy framework. */
+    /**
+     * Minimal taxonomy framework.
+     */
     private static class StubFramework implements JIPipeNodeTaxonomyFramework {
         private final String id;
 
@@ -557,7 +560,9 @@ class TaxonomyValidationGuardTest {
         }
     }
 
-    /** A minimal node class backing {@link StubNodeInfo}. */
+    /**
+     * A minimal node class backing {@link StubNodeInfo}.
+     */
     @AddJIPipeInputSlot(value = JIPipeDataTable.class, name = "Table", create = true)
     private static class StubNode extends JIPipeGraphNode {
         StubNode(JIPipeNodeInfo info) {

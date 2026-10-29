@@ -1,8 +1,5 @@
 package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.transform;
 
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ImageTransformationsFunction;
-import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
-import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import ij.ImagePlus;
 import ij.gui.Roi;
 import ij.process.FloatPolygon;
@@ -12,14 +9,14 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotRole;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
-
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ImageTransformationsFunction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.LineMirror;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
@@ -29,6 +26,9 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.InvalidRoiOutlineBehavior
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.RoiOutline;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
+
 @SetJIPipeDocumentation(name = "Mirror image over line 2D (ROI)", description = "The two endpoints of a line a provided via one or multiple line ROI. " +
         "If multiple ROI are provided, the algorithm is executed per ROI. " +
         "If a ROI is not a line ROI, a line outline/hull operation is applied to the ROI (see Outline 2D ROI)." +
@@ -37,7 +37,7 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.Optiona
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
 @AddJIPipeInputSlot(value = Roi2dListData.class, name = "Mirror", create = true, role = JIPipeDataSlotRole.ParametersLooping)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output", create = true)
-@ConfigureJIPipeNode(function = ImageTransformationsFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
+@ConfigureJIPipeNode(function = ImageTransformationsFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 public class LineMirror2DFromRoiAlgorithm extends JIPipeIteratingAlgorithm {
 
     private LineMirror.MirrorOperationMode mode = LineMirror.MirrorOperationMode.Max;

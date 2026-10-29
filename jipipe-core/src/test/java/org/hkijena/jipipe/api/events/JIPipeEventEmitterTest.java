@@ -9,39 +9,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class JIPipeEventEmitterTest {
 
-    private static class TestEvent extends AbstractJIPipeEvent {
-        private final String message;
-
-        TestEvent(String message) {
-            super(null);
-            this.message = message;
-        }
-
-        String getMessage() {
-            return message;
-        }
-    }
-
-    private interface TestEventListener {
-        void onTestEvent(TestEvent event);
-    }
-
-    private static class TestEventEmitter extends JIPipeEventEmitter<TestEvent, TestEventListener> {
-        @Override
-        protected void call(TestEventListener listener, TestEvent event) {
-            listener.onTestEvent(event);
-        }
-    }
-
-    private static class RecordingListener implements TestEventListener {
-        final List<String> messages = new ArrayList<>();
-
-        @Override
-        public void onTestEvent(TestEvent event) {
-            messages.add(event.getMessage());
-        }
-    }
-
     @Test
     void subscribeAndEmit_deliversToListener() {
         TestEventEmitter emitter = new TestEventEmitter();
@@ -183,5 +150,38 @@ class JIPipeEventEmitterTest {
         emitter.gc();
         emitter.emit(new TestEvent("hello"));
         // Should not throw or fail
+    }
+
+    private interface TestEventListener {
+        void onTestEvent(TestEvent event);
+    }
+
+    private static class TestEvent extends AbstractJIPipeEvent {
+        private final String message;
+
+        TestEvent(String message) {
+            super(null);
+            this.message = message;
+        }
+
+        String getMessage() {
+            return message;
+        }
+    }
+
+    private static class TestEventEmitter extends JIPipeEventEmitter<TestEvent, TestEventListener> {
+        @Override
+        protected void call(TestEventListener listener, TestEvent event) {
+            listener.onTestEvent(event);
+        }
+    }
+
+    private static class RecordingListener implements TestEventListener {
+        final List<String> messages = new ArrayList<>();
+
+        @Override
+        public void onTestEvent(TestEvent event) {
+            messages.add(event.getMessage());
+        }
     }
 }

@@ -17,14 +17,12 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeNodeTemplate;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
-import org.hkijena.jipipe.utils.UIUtils;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import javax.swing.*;
 import java.awt.*;
-import java.nio.file.Path;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -116,6 +114,12 @@ class TemplateManagementDialogTest {
         };
     }
 
+    private static void withDialog(JIPipeDesktopWorkbench workbench, java.util.function.Consumer<TemplateManagementDialog> check) {
+        TemplateManagementDialog dialog = new TemplateManagementDialog(workbench, null);
+        check.accept(dialog);
+        dialog.dispose();
+    }
+
     @Test
     void systemSectionListsTheBundledPatterns() {
         // The curated corpus patterns are plugin (System) templates; they
@@ -123,7 +127,7 @@ class TemplateManagementDialogTest {
         withDialog(stubWorkbench(null), dialog -> {
             List<JIPipeNodeTemplate> system = dialog.sectionTemplatesForTest("System");
             int expected = JIPipe.getNodeTemplates().getAllTemplates(null).stream()
-                .filter(JIPipe.getNodeTemplates()::isPluginTemplate).toList().size();
+                    .filter(JIPipe.getNodeTemplates()::isPluginTemplate).toList().size();
             assertThat(system).hasSize(expected);
             assertThat(system).isNotEmpty();
         });
@@ -132,15 +136,15 @@ class TemplateManagementDialogTest {
     @Test
     void downloadedSectionIsItsOwnReadonlyScope() {
         // Round-2 spec: "Downloaded" is a first-class scope (repository
-        // artifacts in the global store, source = the repository URL) —
+        // artifacts in the global store, source = the repository URL) -
         // distinct from "Your templates" (user-owned global templates), and
         // listed in the design's position.
         withDialog(stubWorkbench(null), dialog -> {
             List<JIPipeNodeTemplate> downloaded = dialog.sectionTemplatesForTest("Downloaded");
             for (JIPipeNodeTemplate t : downloaded) {
                 assertThat(JIPipe.getNodeTemplates().isDownloadedTemplate(t))
-                    .as("Downloaded section lists repository-sourced templates: " + t.getName())
-                    .isTrue();
+                        .as("Downloaded section lists repository-sourced templates: " + t.getName())
+                        .isTrue();
             }
             // ... and user-owned templates never leak into it.
             for (JIPipeNodeTemplate t : dialog.sectionTemplatesForTest("Your templates")) {
@@ -164,6 +168,10 @@ class TemplateManagementDialogTest {
         }
     }
 
+    // ------------------------------------------------------------------
+    // Harness
+    // ------------------------------------------------------------------
+
     @Test
     void contextMenuIsScopeGated() {
         // Item 6: operations live in the right-click context menu (no bottom
@@ -186,15 +194,5 @@ class TemplateManagementDialogTest {
                 assertThat(labels).anySatisfy(l -> assertThat(l).contains("Copy to"));
             }
         });
-    }
-
-    // ------------------------------------------------------------------
-    // Harness
-    // ------------------------------------------------------------------
-
-    private static void withDialog(JIPipeDesktopWorkbench workbench, java.util.function.Consumer<TemplateManagementDialog> check) {
-        TemplateManagementDialog dialog = new TemplateManagementDialog(workbench, null);
-        check.accept(dialog);
-        dialog.dispose();
     }
 }

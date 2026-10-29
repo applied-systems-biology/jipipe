@@ -35,27 +35,30 @@ Mined pattern `fan-in-path-filter-annotate-1-other-1` (shape `fan-in`, support 2
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| import | `path-filter` |
+| role     | node ids                                    |
+|----------|---------------------------------------------|
+| import   | `path-filter`                               |
 | annotate | `annotate-set`, `path-to-annotation-simple` |
-| other | `jipipe:comment` |
+| other    | `jipipe:comment`                            |
 
 ## Example graph
 
 Project: `AIAgentTests/03-ExampleWorkflows/Clara_08_feet.jip` (relative to `/data/JIPipe`), compartment `File handler`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `path-to-annotation-simple` | Add path to annotations |
-| n1 | `jipipe:comment` | Comment |
-| n2 | `path-filter` | Filter paths |
+| key | node id                     | name                    |
+|-----|-----------------------------|-------------------------|
+| n0  | `path-to-annotation-simple` | Add path to annotations |
+| n1  | `jipipe:comment`            | Comment                 |
+| n2  | `path-filter`               | Filter paths            |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
+| from    | slot      | to           | slot    | data class    |
+|---------|-----------|--------------|---------|---------------|
 | Comment | `Comment` | Filter paths | `Input` | `jipipe:data` |
 
 ## Template
 
-Proposed name `Filter paths fans in from 3 source ids (roles: annotate, other)`, menu path `Patterns/Data Sources/Filter paths fans in from 3 source ids (roles: annotate, other)` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/fan-in-path-filter-annotate-1-other-1.json`.
+Proposed name `Filter paths fans in from 3 source ids (roles: annotate, other)`, menu path
+`Patterns/Data Sources/Filter paths fans in from 3 source ids (roles: annotate, other)` (proposal only - not
+registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/fan-in-path-filter-annotate-1-other-1.json`.
 

@@ -32,32 +32,37 @@ template:
 
 # Pattern: JFreeChart Histogram plot -> Export image -> Compartment output
 
-Mined pattern `chain-3-plot-table-plot-histogram-iji-export-image-v2-jipipe-compartment-output` (shape `chain`, support 26).
+Mined pattern `chain-3-plot-table-plot-histogram-iji-export-image-v2-jipipe-compartment-output` (shape `chain`, support
+26).
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
+| role     | node ids                    |
+|----------|-----------------------------|
 | plotting | `plot-table:plot-histogram` |
-| export | `iji-export-image-v2` |
-| core-io | `jipipe:compartment-output` |
+| export   | `iji-export-image-v2`       |
+| core-io  | `jipipe:compartment-output` |
 
 ## Example graph
 
-Project: `AIAgentTests/02-AdvancedPipelines/CellTracking_01.jip` (relative to `/data/JIPipe`), compartment `Cartography`.
+Project: `AIAgentTests/02-AdvancedPipelines/CellTracking_01.jip` (relative to `/data/JIPipe`), compartment
+`Cartography`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `plot-table:plot-histogram` | Histogram plot |
-| n1 | `iji-export-image-v2` | Export image |
-| n2 | `jipipe:compartment-output` | Output |
+| key | node id                     | name           |
+|-----|-----------------------------|----------------|
+| n0  | `plot-table:plot-histogram` | Histogram plot |
+| n1  | `iji-export-image-v2`       | Export image   |
+| n2  | `jipipe:compartment-output` | Output         |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
-| Histogram plot | `Output` | Export image | `Input` | `plot-histogram` |
-| Export image | `Exported file` | Output | `Histogram distances` | `file` |
+| from           | slot            | to           | slot                  | data class       |
+|----------------|-----------------|--------------|-----------------------|------------------|
+| Histogram plot | `Output`        | Export image | `Input`               | `plot-histogram` |
+| Export image   | `Exported file` | Output       | `Histogram distances` | `file`           |
 
 ## Template
 
-Proposed name `JFreeChart Histogram plot -> Export image -> Compartment output`, menu path `Patterns/Plotting/JFreeChart Histogram plot -> Export image -> Compartment output` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/chain-3-plot-table-plot-histogram-iji-export-image-v2-jipipe-compartment-output.json`.
+Proposed name `JFreeChart Histogram plot -> Export image -> Compartment output`, menu path
+`Patterns/Plotting/JFreeChart Histogram plot -> Export image -> Compartment output` (proposal only - not registered).
+`data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/chain-3-plot-table-plot-histogram-iji-export-image-v2-jipipe-compartment-output.json`.
 

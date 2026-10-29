@@ -17,12 +17,14 @@ import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework;
 
 /**
  * The Python framework: nodes that run, define or import Python scripts
- * (both the CPython and the Jython runtime — same language, so both are
+ * (both the CPython and the Jython runtime - same language, so both are
  * tagged for users filtering for python-related nodes).
  */
 public final class PythonFramework implements JIPipeNodeTaxonomyFramework {
 
-    /** The stable registry id of this framework (a string literal per the stable-ID rule). */
+    /**
+     * The stable registry id of this framework (a string literal per the stable-ID rule).
+     */
     public static final String ID = "jipipe:framework:python";
 
     @Override

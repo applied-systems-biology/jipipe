@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Generate the DAG-pattern shipping review report (a (D)-stage deliverable).
 
-Reads the pipeline artifacts and writes ``dag-shipping-review.md`` — the
+Reads the pipeline artifacts and writes ``dag-shipping-review.md`` - the
 human-review document the user reads before (D) ships the survivors:
 
 * the A→B→C funnel + headline numbers,
@@ -102,7 +102,7 @@ def stale_ids(shipped, cluster_by_id, registry_ids):
 
 def derived_section(L, derived, judg_entries):
     """The C′ section: the derived siblings the mined set under-covers
-    (2D/3D twins + the model's "what next" chains) — for the same manual
+    (2D/3D twins + the model's "what next" chains) - for the same manual
     review the mined set gets."""
     A = L.append
     src_name = {e["clusterId"]: e["name"] for e in judg_entries}
@@ -116,23 +116,23 @@ def derived_section(L, derived, judg_entries):
     wn_noise = [e for e in wn if not e["ship"]]
     rejected = derived.get("rejected", [])
 
-    A("## Derived patterns (C′) — the \"what next\" siblings, for review")
+    A("## Derived patterns (C′) - the \"what next\" siblings, for review")
     A("")
     A("The (C′) derivation step fills the gap the review found in the mined")
     A("set: what an analyst would DERIVE from a pattern, not just what the")
     A("corpus happened to contain. Two mechanisms:")
     A("")
     A("- **twin-swap** (deterministic, no model): the verified 2D↔3D twin of")
-    A("  a shipped pattern — the other dimension is derivable by construction,")
+    A("  a shipped pattern - the other dimension is derivable by construction,")
     A("  so it inherits the source's already-(C)-reviewed name with the")
     A("  dimension token swapped.")
     A("- **what-next** (model-proposed): a short chain of real nodes extending")
     A("  the pattern's outputs. Every proposal is validated fail-closed against")
     A("  the real registry (node ids, exact slot names, type assignability,")
     A("  no cycles, ≤10 nodes) and gated with the (C) rules (no support")
-    A("  heuristic — it was never observed).")
+    A("  heuristic - it was never observed).")
     A("")
-    A("Provenance lives in `dag-derived.json` only — per the review decision")
+    A("Provenance lives in `dag-derived.json` only - per the review decision")
     A("they ship as normal patterns. The (D) guards apply identically")
     A("(§3.4 locations, deserialization, `SystemPatternTemplatesTest` re-pin).")
     A("")
@@ -148,18 +148,18 @@ def derived_section(L, derived, judg_entries):
     A(f"| what-next proposals rejected by fail-closed validation | {len(rejected)} |")
     A(f"| **total derived shipped** | **{len(shipped_twins) + len(wn_shipped)}** |")
     A("")
-    A("### twin-swap (26) — the dimension siblings")
+    A("### twin-swap (26) - the dimension siblings")
     A("")
     A("Source pattern → twin. The name/description are the source's,")
-    A("dimension-renamed — flag any where the rename reads oddly.")
+    A("dimension-renamed - flag any where the rename reads oddly.")
     A("")
     for e in sorted(shipped_twins, key=lambda e: e["provenance"]["derivedFrom"]):
         src = e["provenance"]["derivedFrom"]
         target = "3D" if e["clusterId"].endswith("-3d") else "2D"
-        A(f"- **{e['name']}** ({target}) — from “{src_name.get(src, src)}” (`{src}`)")
+        A(f"- **{e['name']}** ({target}) - from “{src_name.get(src, src)}” (`{src}`)")
         A(f"  - {e['description']}")
     A("")
-    A("### what-next (128) — grouped by function")
+    A("### what-next (128) - grouped by function")
     A("")
     A("Each extends a mined pattern (its source is named); the chain is")
     A("verified to type-check against the real node slots.")
@@ -175,7 +175,7 @@ def derived_section(L, derived, judg_entries):
                                             e["name"])):
             src = e["provenance"]["derivedFrom"]
             st = e["state"]["pattern"]
-            A(f"- **{e['name']}** — extends “{src_name.get(src, src)}” (`{src}`) · {st['nodeCount']}n/{st['edgeCount']}e")
+            A(f"- **{e['name']}** - extends “{src_name.get(src, src)}” (`{src}`) · {st['nodeCount']}n/{st['edgeCount']}e")
             A(f"  - {e['description']}")
         A("")
     A("### what-next rejected by the gate (false-negative check)")
@@ -183,12 +183,12 @@ def derived_section(L, derived, judg_entries):
     for e in sorted(wn_noise, key=lambda e: e["clusterId"]):
         st = e["state"]["pattern"]
         src = e["provenance"]["derivedFrom"]
-        A(f"- “{(e.get('provenance') or {}).get('draftName', '?')}” — extends “{src_name.get(src, src)}” · {st['nodeCount']}n — gate={e['gate']}")
+        A(f"- “{(e.get('provenance') or {}).get('draftName', '?')}” - extends “{src_name.get(src, src)}” · {st['nodeCount']}n - gate={e['gate']}")
     A("")
     A("### what-next rejected by fail-closed validation (the grounding gate)")
     A("")
     A(f"{len(rejected)} model proposals that named a real slot wrong, used an")
-    A("incompatible type, or cited a node id that does not exist — dropped")
+    A("incompatible type, or cited a node id that does not exist - dropped")
     A("before the gate ever saw them (fail-closed by design).")
     A("")
     for reason, n in Counter(r["reason"] for r in rejected).most_common():
@@ -223,12 +223,12 @@ def main(argv=None):
     def shape(e):
         st = e["state"]["pattern"]
         seq = st["nodeSequence"]
-        return (f"{st['nodeCount']} nodes / {st['edgeCount']} edges — "
+        return (f"{st['nodeCount']} nodes / {st['edgeCount']} edges - "
                 f"{seq[:157] + '…' if len(seq) > 160 else seq}")
 
     L = []
     A = L.append
-    A(f"# DAG Pattern Mining — Shipping Review (steps A–C′)")
+    A(f"# DAG Pattern Mining - Shipping Review (steps A–C′)")
     A("")
     A(f"Work item 1324 · branch `1324-node-taxonomy-core` · {date.today().isoformat()}")
     A("")
@@ -239,8 +239,8 @@ def main(argv=None):
     A("")
     A("| stage | in | out |")
     A("|---|---|---|")
-    A(f"| projects scanned | — | 510 |")
-    A(f"| (A) candidates | — | 2029 |")
+    A(f"| projects scanned | - | 510 |")
+    A(f"| (A) candidates | - | 2029 |")
     A(f"| (B) families | 2029 | 324 |")
     A(f"| **(C) shipped** | 324 | **{len(shipped)}** |")
     rej_counts = Counter()
@@ -264,7 +264,7 @@ def main(argv=None):
         A(f"| shipped count | {len(base_ship)} | {len(shipped)} |")
         A("")
         A("(The gate now sees each node's real description + ROI dimension, so it")
-        A("re-judged some families — the count shift is the model using real")
+        A("re-judged some families - the count shift is the model using real")
         A("function evidence, not noise.)")
     A("")
     # support distribution + floor options
@@ -303,7 +303,7 @@ def main(argv=None):
     A("6.0.0 launcher** (the corpus predates 6.0.0; some IDs were renamed, some")
     A("live in plugins the 6.0.0 distribution does not ship). Verified against the")
     A("FULL-LAUNCHER registry dump (2026-10-19): the earlier code/test-classpath")
-    A("dump was blind to the dynamically-registered cLij2/clijx kernels — the")
+    A("dump was blind to the dynamically-registered cLij2/clijx kernels - the")
     A("real launcher ships cLij2 2.5.3.5 + clijx 0.32.2.0, which resolved 9 of the")
     A("former 15. The launcher guard `everyPatternGraphDeserializes` asserts")
     A("every node id resolves, so these FAIL unless remapped or excluded in (D).")
@@ -327,7 +327,7 @@ def main(argv=None):
     A("")
     A(f"Shippable after remap + exclude: **{len(shipped) - len(exclude)}**.")
     A("")
-    A("### (D) shipped — 2026-10-19 (commit after the full-catalog re-sweep)")
+    A("### (D) shipped - 2026-10-19 (commit after the full-catalog re-sweep)")
     A("")
     A(f"Shipped **{len(shipped) - len(exclude)} mined + 160 derived = 422 DAG patterns** "
       "(`utils/generate-dag-system-template-metadata.py` → the bundled "
@@ -336,16 +336,16 @@ def main(argv=None):
       "against git history + the full-launcher registry (same/successor "
       "algorithm, identical `Input`/`Output` slot names):")
     A("")
-    A("- `ij1-transform-tile` → `ij1-transform-tile-2d-v2` — clusters 0133 + "
+    A("- `ij1-transform-tile` → `ij1-transform-tile-2d-v2` - clusters 0133 + "
       "0242 (the `-2d` variant is `@Deprecated @LabelAsJIPipeHidden`; the `-v2` "
       "is the current `TileImage2Dv2Algorithm`)")
     A("- `import-ome-zarr-from-directory-as-imgplus` → "
-      "`import-ome-zarr-from-zip-directory-as-imgplus` — cluster 0318 (commit "
+      "`import-ome-zarr-from-zip-directory-as-imgplus` - cluster 0318 (commit "
       "`fa85690da6` unified OME ZARR ZIP/directory reader; a strict superset)")
     A("")
     A("Generator guards (fail-closed, run on every regeneration): all node ids "
       "resolve in the 2072-node full-launcher registry (the (D) id oracle per "
-      "the (103) ruling — never the test-classpath dump), functionIds are "
+      "the (103) ruling - never the test-classpath dump), functionIds are "
       "registered top-level branches, every node carries its §3.4 "
       "`location/<compartment>/x|y`, `jipipe:node:name` is stripped, no "
       "compartment sinks / fan names, and (name, node-info-id multiset) is "
@@ -357,7 +357,7 @@ def main(argv=None):
       "cLij2 **2.5.3.5** + clijx **0.32.2.0** (a Fiji-only build, not on Maven "
       "Central). 10 cLij2 patterns therefore load with those version-gated "
       "kernels dropped *in the test JVM only*; the test guard matches on "
-      "(name, resolvable-node-ids) and stays strict for everything else — the "
+      "(name, resolvable-node-ids) and stays strict for everything else - the "
       "true stale-id oracle is the generator's 2072 full-launcher check, which "
       "all 422 pass.")
     A("")
@@ -381,7 +381,7 @@ def main(argv=None):
             A(f"  - {shape(e)}")
             A(f"  - {e['description']}")
         A("")
-    # derived (C') section — the "what next" siblings, same manual review
+    # derived (C') section - the "what next" siblings, same manual review
     if os.path.isfile(a.derived):
         derived = load(a.derived)
         derived_section(L, derived, judg["entries"])
@@ -399,7 +399,7 @@ def main(argv=None):
             reason = f"gate={e['gate']}" if e["gate"] else "name empty (gate general)"
         titles = c["titleEvidence"][:2]
         st = e["state"]["pattern"]
-        A(f"- `{e['clusterId']}` support {e['support']} — **{reason}** — {st['nodeCount']}n/{st['edgeCount']}e")
+        A(f"- `{e['clusterId']}` support {e['support']} - **{reason}** - {st['nodeCount']}n/{st['edgeCount']}e")
         if titles:
             A(f"  - titles: {titles}")
         vn = e.get("verdict", {})
@@ -413,7 +413,7 @@ def main(argv=None):
     for e in shipped:
         names[e["name"]].append(e["clusterId"])
     dups = {n: cs for n, cs in names.items() if len(cs) > 1}
-    A("**Same name, different graph** (legal — the browser dedups on (name, graph)):")
+    A("**Same name, different graph** (legal - the browser dedups on (name, graph)):")
     for n, cs in sorted(dups.items()):
         A(f"- {n!r} × {len(cs)}: {', '.join(cs)}")
     A("")

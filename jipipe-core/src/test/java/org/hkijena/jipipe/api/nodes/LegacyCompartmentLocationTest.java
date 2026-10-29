@@ -41,13 +41,13 @@ class LegacyCompartmentLocationTest {
     @Test
     void legacyCompartmentLocationIsRekeyedToDefaultAtLoad() throws Exception {
         String json = "{\"nodes\":{\"n0\":{\"jipipe:node-info-id\":\"parameters-define\","
-            + "\"jipipe:graph-compartment\":\"derived\","
-            + "\"jipipe:metadata-v1\":{\"location/derived/x\":12,\"location/derived/y\":5}}},"
-            + "\"edges\":[]}";
+                + "\"jipipe:graph-compartment\":\"derived\","
+                + "\"jipipe:metadata-v1\":{\"location/derived/x\":12,\"location/derived/y\":5}}},"
+                + "\"edges\":[]}";
         JIPipeGraph graph = JsonUtils.readFromString(json, JIPipeGraph.class);
         JIPipeGraphNode node = graph.getGraphNodes().iterator().next();
         assertNull(graph.getCompartmentUUIDOf(node), "legacy name demotes to the default compartment");
         assertEquals(new Point(12, 5), node.getNodeUILocationWithin(""),
-            "location must resolve under the default compartment key");
+                "location must resolve under the default compartment key");
     }
 }

@@ -12,10 +12,6 @@
  */
 
 package org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.color;
-import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
-import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.ImageDataFunction;
 
 import ij.ImagePlus;
 import ij.process.ColorProcessor;
@@ -26,12 +22,17 @@ import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailData;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.ImageDataFunction;
 import org.hkijena.jipipe.plugins.imagejdatatypes.colorspace.ColorSpace;
 import org.hkijena.jipipe.plugins.imagejdatatypes.colorspace.RGBColorSpace;
 import org.hkijena.jipipe.plugins.imagejdatatypes.converters.ImplicitImageTypeConverter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImageTypeInfo;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
 /**
  * A colored image without dimension.
@@ -40,7 +41,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
  * Conversion works through {@link ImplicitImageTypeConverter}
  */
 @SetJIPipeDocumentation(name = "ImageJ Image (Color)", description = "A colored image")
-@ConfigureJIPipeNode(function = ImageDataFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
+@ConfigureJIPipeNode(function = ImageDataFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @LabelAsJIPipeHeavyData
 @ImageTypeInfo(imageProcessorType = ColorProcessor.class, colorSpace = RGBColorSpace.class, pixelType = Integer.class, bitDepth = 24)
 @ConfigureJIPipeDataCrate(entities = {}, inherits = ImagePlusData.class)

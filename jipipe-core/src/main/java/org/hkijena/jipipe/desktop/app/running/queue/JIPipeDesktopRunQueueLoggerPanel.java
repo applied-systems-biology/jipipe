@@ -28,17 +28,16 @@ public class JIPipeDesktopRunQueueLoggerPanel extends JIPipeDesktopWorkbenchPane
     private final JIPipeDesktopRunnableQueueSpinnerIcon spinnerIcon;
     private final JLabel statusLabel = new JLabel("Ready ...");
     private final JProgressBar progressBar = new JProgressBar();
-    private JIPipeRunnable targetRun;
-    private Status targetRunStatus = Status.Enqueued;
     private final JPanel buttonPanel = UIUtils.boxHorizontal();
     private final JPanel headerButtonPanel = UIUtils.boxHorizontal();
     private final LoggerPanel loggerPanel = new LoggerPanel();
     private final JPopupMenu queuePopupMenu = new JPopupMenu();
     private final JCheckBox showLogCheckbox = new JCheckBox("Show log");
-    private Component visibleLoggerComponent;
-
     private final StaticDebouncer progressDebouncer;
     private final StringBuilder batchedProgressText = new StringBuilder();
+    private JIPipeRunnable targetRun;
+    private Status targetRunStatus = Status.Enqueued;
+    private Component visibleLoggerComponent;
     private String batchedStatusText = "Ready ...";
     private int batchedProgressCurrent = 0;
     private int batchedProgressMax = 0;
@@ -59,7 +58,7 @@ public class JIPipeDesktopRunQueueLoggerPanel extends JIPipeDesktopWorkbenchPane
         queue.getEnqueuedEventEmitter().subscribeWeak(this);
 
         // Load existing log
-        if(queue.getCurrentRun() != null) {
+        if (queue.getCurrentRun() != null) {
             loggerPanel.setLogText(queue.getCurrentRun().getProgressInfo().getLog().toString());
         }
 
@@ -75,7 +74,7 @@ public class JIPipeDesktopRunQueueLoggerPanel extends JIPipeDesktopWorkbenchPane
         JPanel headerPanel = UIUtils.boxHorizontal(titleLabel, Box.createHorizontalGlue(), headerButtonPanel, Box.createHorizontalStrut(16), queueButton);
         headerPanel.setBorder(UIUtils.createEmptyBorder(8));
         add(headerPanel, BorderLayout.NORTH);
-        if(ThemeUtils.isUsingModernTheme()) {
+        if (ThemeUtils.isUsingModernTheme()) {
             UIUtils.makeNonOpaque(loggerPanel, true);
         }
 
@@ -85,7 +84,7 @@ public class JIPipeDesktopRunQueueLoggerPanel extends JIPipeDesktopWorkbenchPane
         statusLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeSmall()));
         statusLabel.setForeground(ThemeUtils.getCurrentStyle().getTextMuted());
 
-        JPanel bottomPanel = new JPanel(new BorderLayout(16,16));
+        JPanel bottomPanel = new JPanel(new BorderLayout(16, 16));
         bottomPanel.setBorder(UIUtils.createEmptyBorder(8));
         bottomPanel.add(new JLabel(spinnerIcon), BorderLayout.WEST);
 
@@ -93,14 +92,14 @@ public class JIPipeDesktopRunQueueLoggerPanel extends JIPipeDesktopWorkbenchPane
         progressBar.setMaximumSize(new Dimension(Short.MAX_VALUE, 4));
         progressBar.setMinimumSize(new Dimension(32, 4));
         progressBar.setPreferredSize(new Dimension(100, 4));
-        statusInfoPanel.add(progressBar, new GridBagConstraints(0,0,1,1,1,0,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, UIUtils.UI_PADDING, 0,0));
-        statusInfoPanel.add(statusLabel, new GridBagConstraints(0,1,1,1,1,0,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, UIUtils.UI_PADDING, 0,0));
+        statusInfoPanel.add(progressBar, new GridBagConstraints(0, 0, 1, 1, 1, 0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, UIUtils.UI_PADDING, 0, 0));
+        statusInfoPanel.add(statusLabel, new GridBagConstraints(0, 1, 1, 1, 1, 0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, UIUtils.UI_PADDING, 0, 0));
 
         bottomPanel.add(statusInfoPanel, BorderLayout.CENTER);
         bottomPanel.add(buttonPanel, BorderLayout.EAST);
         add(bottomPanel, BorderLayout.SOUTH);
 
-        UIUtils.addReloadablePopupMenuToButton(queueButton, queuePopupMenu,  this::reloadQueuePopupMenu);
+        UIUtils.addReloadablePopupMenuToButton(queueButton, queuePopupMenu, this::reloadQueuePopupMenu);
 
         showLogCheckbox.addActionListener(e -> {
             JIPipe.getSettings().putIntoRegistry("ui-general", JIPipePathMetadataStore.key("logger-panel", "show-log"), showLogCheckbox.isSelected());
@@ -116,7 +115,7 @@ public class JIPipeDesktopRunQueueLoggerPanel extends JIPipeDesktopWorkbenchPane
         queuePopupMenu.removeAll();
         queuePopupMenu.add(UIUtils.createMenuItem("Cancel all", "Clears the queue and cancels the current run", JIPipe.RESOURCES.getIcon16("actions/gtk-cancel.png"), this::cancelAllRuns));
         queuePopupMenu.add(UIUtils.createMenuItem("Clear", "Clears the queue, but leaves the current run as-is", JIPipe.RESOURCES.getIcon16("actions/clear-brush.png"), this::clearQueue));
-        if(!queue.getQueue().isEmpty()) {
+        if (!queue.getQueue().isEmpty()) {
             queuePopupMenu.addSeparator();
             for (JIPipeRunnableWorker worker : queue.getQueue()) {
                 queuePopupMenu.add(UIUtils.createMenuItem("Cancel '" + worker.getRun().getTaskLabel() + "'", "Removes the task from the queue", JIPipe.RESOURCES.getIcon16("actions/gtk-cancel.png"), () -> {
@@ -138,27 +137,22 @@ public class JIPipeDesktopRunQueueLoggerPanel extends JIPipeDesktopWorkbenchPane
 
     private void updateHeader() {
         queueButton.setEnabled(queue.size() > 1);
-        queueButton.setText("Queue (" +  (queue.size() > 1 ? String.valueOf(queue.size() - 1) : "Empty") + ")");
-        if(targetRun != null) {
+        queueButton.setText("Queue (" + (queue.size() > 1 ? String.valueOf(queue.size() - 1) : "Empty") + ")");
+        if (targetRun != null) {
             titleLabel.setText(targetRun.getTaskLabel());
-            if(queue.getCurrentRun() == targetRun) {
+            if (queue.getCurrentRun() == targetRun) {
                 titleLabel.setIcon(JIPipe.RESOURCES.getIcon16("actions/run-build.png"));
-            }
-            else if(queue.isRunningOrEnqueued(targetRun)) {
+            } else if (queue.isRunningOrEnqueued(targetRun)) {
                 titleLabel.setIcon(JIPipe.RESOURCES.getIcon16("actions/hourglass-start.png"));
-            }
-            else if(targetRunStatus == Status.Interrupted) {
+            } else if (targetRunStatus == Status.Interrupted) {
                 titleLabel.setIcon(JIPipe.RESOURCES.getIcon16("emblems/vcs-conflicting.png"));
-            }
-            else if(targetRunStatus == Status.Finished) {
+            } else if (targetRunStatus == Status.Finished) {
                 titleLabel.setIcon(JIPipe.RESOURCES.getIcon16("emblems/vcs-normal.png"));
             }
-        }
-        else if(queue.getCurrentRun() != null) {
+        } else if (queue.getCurrentRun() != null) {
             titleLabel.setText(queue.getCurrentRun().getTaskLabel());
             titleLabel.setIcon(JIPipe.RESOURCES.getIcon16("actions/run-build.png"));
-        }
-        else {
+        } else {
             titleLabel.setText("All tasks finished");
             titleLabel.setIcon(JIPipe.RESOURCES.getIcon16("emblems/emblem-success.png"));
         }
@@ -174,12 +168,11 @@ public class JIPipeDesktopRunQueueLoggerPanel extends JIPipeDesktopWorkbenchPane
     }
 
     private void cancelCurrentRun() {
-        if(targetRun != null) {
+        if (targetRun != null) {
             queue.cancel(targetRun);
-        }
-        else {
+        } else {
             JIPipeRunnable currentRun = queue.getCurrentRun();
-            if(currentRun != null) {
+            if (currentRun != null) {
                 queue.cancel(currentRun);
             }
         }
@@ -207,17 +200,15 @@ public class JIPipeDesktopRunQueueLoggerPanel extends JIPipeDesktopWorkbenchPane
     }
 
     private void updateProgress() {
-        if(queue.getCurrentRun() != null) {
-            if(batchedProgressMax <= 1) {
+        if (queue.getCurrentRun() != null) {
+            if (batchedProgressMax <= 1) {
                 progressBar.setIndeterminate(true);
-            }
-            else {
+            } else {
                 progressBar.setIndeterminate(false);
                 progressBar.setMaximum(batchedProgressMax);
                 progressBar.setValue(batchedProgressCurrent);
             }
-        }
-        else {
+        } else {
             progressBar.setIndeterminate(false);
         }
 
@@ -228,7 +219,7 @@ public class JIPipeDesktopRunQueueLoggerPanel extends JIPipeDesktopWorkbenchPane
 
     @Override
     public void onRunnableFinished(JIPipeRunnable.FinishedEvent event) {
-        if(targetRun != null && event.getRun() == targetRun) {
+        if (targetRun != null && event.getRun() == targetRun) {
             targetRunStatus = Status.Finished;
         }
         updateHeader();
@@ -244,7 +235,7 @@ public class JIPipeDesktopRunQueueLoggerPanel extends JIPipeDesktopWorkbenchPane
 
     @Override
     public void onRunnableInterrupted(JIPipeRunnable.InterruptedEvent event) {
-        if(targetRun != null && event.getRun() == targetRun) {
+        if (targetRun != null && event.getRun() == targetRun) {
             targetRunStatus = Status.Interrupted;
         }
         updateHeader();
@@ -260,7 +251,7 @@ public class JIPipeDesktopRunQueueLoggerPanel extends JIPipeDesktopWorkbenchPane
 
     @Override
     public void onRunnableStarted(JIPipeRunnable.StartedEvent event) {
-        if(targetRun != null && event.getRun() == targetRun) {
+        if (targetRun != null && event.getRun() == targetRun) {
             targetRunStatus = Status.Running;
         }
         updateHeader();

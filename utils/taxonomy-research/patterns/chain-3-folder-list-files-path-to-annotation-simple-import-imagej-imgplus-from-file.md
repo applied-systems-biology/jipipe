@@ -32,32 +32,36 @@ template:
 
 # Pattern: List files -> Annotate with file/directory name -> Import image
 
-Mined pattern `chain-3-folder-list-files-path-to-annotation-simple-import-imagej-imgplus-from-file` (shape `chain`, support 43).
+Mined pattern `chain-3-folder-list-files-path-to-annotation-simple-import-imagej-imgplus-from-file` (shape `chain`,
+support 43).
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| import | `folder-list-files` |
-| annotate | `path-to-annotation-simple` |
-| import | `import-imagej-imgplus-from-file` |
+| role     | node ids                          |
+|----------|-----------------------------------|
+| import   | `folder-list-files`               |
+| annotate | `path-to-annotation-simple`       |
+| import   | `import-imagej-imgplus-from-file` |
 
 ## Example graph
 
 Project: `AIAgentTests/01-BasicWorkshop/lecture_06.jip` (relative to `/data/JIPipe`), compartment `Analysis`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `folder-list-files` | List files |
-| n1 | `path-to-annotation-simple` | Annotate with file/directory name |
-| n2 | `import-imagej-imgplus-from-file` | Import image |
+| key | node id                           | name                              |
+|-----|-----------------------------------|-----------------------------------|
+| n0  | `folder-list-files`               | List files                        |
+| n1  | `path-to-annotation-simple`       | Annotate with file/directory name |
+| n2  | `import-imagej-imgplus-from-file` | Import image                      |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
-| List files | `Files` | Annotate with file/directory name | `Paths` | `file` |
-| Annotate with file/directory name | `Annotated paths` | Import image | `Files` | `path` |
+| from                              | slot              | to                                | slot    | data class |
+|-----------------------------------|-------------------|-----------------------------------|---------|------------|
+| List files                        | `Files`           | Annotate with file/directory name | `Paths` | `file`     |
+| Annotate with file/directory name | `Annotated paths` | Import image                      | `Files` | `path`     |
 
 ## Template
 
-Proposed name `List files -> Annotate with file/directory name -> Import image`, menu path `Patterns/Data Sources/List files -> Annotate with file/directory name -> Import image` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/chain-3-folder-list-files-path-to-annotation-simple-import-imagej-imgplus-from-file.json`.
+Proposed name `List files -> Annotate with file/directory name -> Import image`, menu path
+`Patterns/Data Sources/List files -> Annotate with file/directory name -> Import image` (proposal only - not
+registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/chain-3-folder-list-files-path-to-annotation-simple-import-imagej-imgplus-from-file.json`.
 

@@ -13,10 +13,6 @@
 
 package org.hkijena.jipipe.plugins.ijocr.nodes;
 
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.TextMarkupFunction;
-import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
-import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
-
 import ij.IJ;
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.AddJIPipeCitation;
@@ -29,9 +25,9 @@ import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
-
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.TextMarkupFunction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
@@ -57,13 +53,16 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
+
 @SetJIPipeDocumentation(name = "Find text (Tesseract OCR)", description = "Detects text in the image using Tesseract OCR. " +
         "We highly recommend to preprocess the image by applying thresholding, otherwise Tesseract will apply its own Otsu-based method that may yield unsatisfactory results. " +
         "If higher-dimensional data is provided, the OCR is applied per plane.")
 @AddJIPipeCitation("For additional guidance see: https://tesseract-ocr.github.io/tessdoc/ImproveQuality.html")
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Results", create = true, description = "The results obtained using the TSV exporter")
-@ConfigureJIPipeNode(function = TextMarkupFunction.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
+@ConfigureJIPipeNode(function = TextMarkupFunction.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @RegisterJIPipeEnvironmentUsage(TesseractOCREnvironment.class)
 public class TesseractOCRAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
@@ -76,7 +75,6 @@ public class TesseractOCRAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public TesseractOCRAlgorithm(JIPipeNodeInfo info) {
         super(info);
         languages.setValues(Collections.singleton("eng"));
-        languages.setCollapsed(true);
     }
 
     public TesseractOCRAlgorithm(TesseractOCRAlgorithm other) {

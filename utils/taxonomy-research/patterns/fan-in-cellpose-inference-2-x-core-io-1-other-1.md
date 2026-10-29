@@ -35,27 +35,31 @@ Mined pattern `fan-in-cellpose-inference-2-x-core-io-1-other-1` (shape `fan-in`,
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| other | `cellpose-inference-2.x` |
-| core-io | `jipipe:compartment-output` |
-| other | `import-cellpose-2.x-pretrained-model`, `import-cellpose-model-v2` |
+| role    | node ids                                                           |
+|---------|--------------------------------------------------------------------|
+| other   | `cellpose-inference-2.x`                                           |
+| core-io | `jipipe:compartment-output`                                        |
+| other   | `import-cellpose-2.x-pretrained-model`, `import-cellpose-model-v2` |
 
 ## Example graph
 
-Project: `AIAgentTests/03-ExampleWorkflows/Angela_Roots_38.jip` (relative to `/data/JIPipe`), compartment `Nodules+Preprocessing and edges`.
+Project: `AIAgentTests/03-ExampleWorkflows/Angela_Roots_38.jip` (relative to `/data/JIPipe`), compartment
+`Nodules+Preprocessing and edges`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `import-cellpose-model-v2` | Import Cellpose model from file |
-| n1 | `jipipe:compartment-output` | Raw and masked images |
-| n2 | `cellpose-inference-2.x` | Cellpose prediction (2.x): 30, small nodules |
+| key | node id                     | name                                         |
+|-----|-----------------------------|----------------------------------------------|
+| n0  | `import-cellpose-model-v2`  | Import Cellpose model from file              |
+| n1  | `jipipe:compartment-output` | Raw and masked images                        |
+| n2  | `cellpose-inference-2.x`    | Cellpose prediction (2.x): 30, small nodules |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
+| from                  | slot               | to                                           | slot    | data class       |
+|-----------------------|--------------------|----------------------------------------------|---------|------------------|
 | Raw and masked images | `Masked raw image` | Cellpose prediction (2.x): 30, small nodules | `Input` | `imagej-imgplus` |
 
 ## Template
 
-Proposed name `Cellpose segmentation (2.x) fans in from 3 source ids (roles: core-io, other)`, menu path `Patterns/Machine learning/Cellpose segmentation (2.x) fans in from 3 source ids (roles: core-io, other)` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/fan-in-cellpose-inference-2-x-core-io-1-other-1.json`.
+Proposed name `Cellpose segmentation (2.x) fans in from 3 source ids (roles: core-io, other)`, menu path
+`Patterns/Machine learning/Cellpose segmentation (2.x) fans in from 3 source ids (roles: core-io, other)` (proposal
+only - not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/fan-in-cellpose-inference-2-x-core-io-1-other-1.json`.
 

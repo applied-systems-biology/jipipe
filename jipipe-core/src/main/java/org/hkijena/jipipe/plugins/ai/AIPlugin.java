@@ -65,7 +65,7 @@ public class AIPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public StringList getDependencyProvides() {
-        return new  StringList();
+        return new StringList();
     }
 
     @Override

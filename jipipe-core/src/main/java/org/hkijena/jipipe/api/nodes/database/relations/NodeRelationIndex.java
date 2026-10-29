@@ -13,12 +13,7 @@
 
 package org.hkijena.jipipe.api.nodes.database.relations;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * The pure, JIPipe-free relation index behind the Similar / Previous / Next
@@ -27,13 +22,13 @@ import java.util.Set;
  * The index holds the directed workflow edges contributed by the pluggable
  * {@link NodeRelationSource}s and answers the two directional queries:
  * <ul>
- * <li>{@link #next(String)} — the ids that run <em>after</em> the given node
+ * <li>{@link #next(String)} - the ids that run <em>after</em> the given node
  * (its workflow successors);</li>
- * <li>{@link #previous(String)} — the ids that run <em>before</em> the given
+ * <li>{@link #previous(String)} - the ids that run <em>before</em> the given
  * node (its workflow predecessors).</li>
  * </ul>
  * Within each list the ids are ranked by <b>support</b> (the number of times
- * the edge was contributed — i.e. the number of distinct sources/templates
+ * the edge was contributed - i.e. the number of distinct sources/templates
  * carrying it) descending, then by node id ascending, so the ordering is
  * deterministic even for a tie in support.
  * <p>
@@ -59,10 +54,35 @@ import java.util.Set;
  */
 public class NodeRelationIndex {
 
-    /** successor direction: from -> (to -> support) */
+    /**
+     * successor direction: from -> (to -> support)
+     */
     private final Map<String, Map<String, Integer>> nextSupport = new HashMap<>();
-    /** predecessor direction: to -> (from -> support) */
+    /**
+     * predecessor direction: to -> (from -> support)
+     */
     private final Map<String, Map<String, Integer>> previousSupport = new HashMap<>();
+
+    private static void increment(Map<String, Map<String, Integer>> direction,
+                                  String source, String target) {
+        direction.computeIfAbsent(source, id -> new HashMap<>())
+                .merge(target, 1, Integer::sum);
+    }
+
+    private static List<String> rankedIds(Map<String, Integer> supportByTarget) {
+        if (supportByTarget == null || supportByTarget.isEmpty()) {
+            return List.of();
+        }
+        List<Map.Entry<String, Integer>> entries = new ArrayList<>(supportByTarget.entrySet());
+        entries.sort(
+                Comparator.<Map.Entry<String, Integer>>comparingInt(Map.Entry::getValue).reversed()
+                        .thenComparing(Map.Entry::getKey));
+        List<String> result = new ArrayList<>(entries.size());
+        for (Map.Entry<String, Integer> entry : entries) {
+            result.add(entry.getKey());
+        }
+        return result;
+    }
 
     /**
      * Adds a single directed {@link Edge} ({@code to} runs after {@code from}).
@@ -130,26 +150,5 @@ public class NodeRelationIndex {
      */
     public List<String> previous(String nodeId) {
         return rankedIds(previousSupport.get(nodeId));
-    }
-
-    private static void increment(Map<String, Map<String, Integer>> direction,
-                                  String source, String target) {
-        direction.computeIfAbsent(source, id -> new HashMap<>())
-            .merge(target, 1, Integer::sum);
-    }
-
-    private static List<String> rankedIds(Map<String, Integer> supportByTarget) {
-        if (supportByTarget == null || supportByTarget.isEmpty()) {
-            return List.of();
-        }
-        List<Map.Entry<String, Integer>> entries = new ArrayList<>(supportByTarget.entrySet());
-        entries.sort(
-            Comparator.<Map.Entry<String, Integer>>comparingInt(Map.Entry::getValue).reversed()
-                .thenComparing(Map.Entry::getKey));
-        List<String> result = new ArrayList<>(entries.size());
-        for (Map.Entry<String, Integer> entry : entries) {
-            result.add(entry.getKey());
-        }
-        return result;
     }
 }

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Task 7: pattern mining — every recurring pipeline pattern (6.0.0, work item 1324).
+"""Task 7: pattern mining - every recurring pipeline pattern (6.0.0, work item 1324).
 
 Reads corpus.json + registry.json (locked, Tasks 1-6) and the 24 hand-written
 LLM-branch pattern docs (read-only); mines the five pattern classes defined by
@@ -104,7 +104,7 @@ class Acc:
     """Accumulator: (shape, key) -> pattern (occ, projects, role-group id-sets,
     deterministic smallest-example subgraph). The example subgraph is built only
     when an occurrence's selection key (node count, project file, comp name)
-    beats the current best — chains call upsert ~1M times, so it is deferred."""
+    beats the current best - chains call upsert ~1M times, so it is deferred."""
 
     def __init__(self):
         self.p = {}
@@ -344,7 +344,7 @@ def cross_check(docs, patterns, reg_ids, corpus_ids):
             if u:
                 ov = len(idset & u) / len(idset)
                 if ov >= 0.5:
-                    # this doc matches this pattern (>=50% overlap) — mark it so
+                    # this doc matches this pattern (>=50% overlap) - mark it so
                     # it is NOT a library gap, regardless of whether it is the
                     # doc's BEST match. (Gating on "best" would wrongly count a
                     # pattern as a gap when another pattern is the doc's best.)
@@ -461,24 +461,24 @@ def render_section(acc, docs, doc_rows, corrections, gaps, unmatchable, edge_cnt
         f"**occurrences** (where a class defines it) = total realizations "
         "(chains/conversions: edge-walks; fan-out/fan-in: qualifying node instances; "
         "boundary: edge count; sandwich: import->annotate->processor triples).",
-        "- **Class 1 — chains (`shape: chain`):** every maximal node-id sequence of "
+        "- **Class 1 - chains (`shape: chain`):** every maximal node-id sequence of "
         "length 3-5 along TYPED edges (both hops' `dataClass` non-null) in a "
         "project's project-wide node space; a chain is one id-tuple (occurrences = "
         "edge-paths realizing it). Overlaps Task 4's top-20 3-chains (this is the "
         "generalized multi-length inventory).",
-        "- **Class 2 — fan-out / fan-in (`shape: fan-out` / `fan-in`):** fan-out = a "
+        "- **Class 2 - fan-out / fan-in (`shape: fan-out` / `fan-in`):** fan-out = a "
         "node X with >= 2 TYPED output edges to >= 2 DISTINCT target node ids; "
         "generalized signature = (X.id, sorted role-multiset of targets). Fan-in = "
         "dual (>= 2 typed input edges from >= 2 distinct sources).",
-        "- **Class 3 — conversions (`shape: conversion`):** typed 2-hop A->B->C where "
+        "- **Class 3 - conversions (`shape: conversion`):** typed 2-hop A->B->C where "
         "the data type changes at EVERY hop (`dataClass(A->B) != dataClass(B->C)`; "
         "null edges excluded); generalized by (A.id, B.id, C.id).",
-        "- **Class 4 — annotation sandwiches (`shape: annotation-sandwich`):** a node "
+        "- **Class 4 - annotation sandwiches (`shape: annotation-sandwich`):** a node "
         "S of role `annotate` with >= 1 incoming edge (typed or any) from a role "
         "`import` node AND >= 1 outgoing edge to a node of role NOT in {import, "
         "annotate, unknown} (a 'processor'); generalized by (import_id, annotate_id, "
         "processor_role).",
-        "- **Class 5 — compartment motifs:** **boundary** (`compartment-boundary`) = "
+        "- **Class 5 - compartment motifs:** **boundary** (`compartment-boundary`) = "
         "inter-compartment edges (endpoints in different compartments per the "
         "uid->compartment map), generalized by (source_node_id, target_node_id), "
         f"occurrences = edge count, keep support >= {CUTOFF}. **cycle** "
@@ -486,7 +486,7 @@ def render_section(acc, docs, doc_rows, corrections, gaps, unmatchable, edge_cnt
         "by (compartment name + node count), NO support cutoff (reported as M; JIPipe "
         "dataflow is a DAG).",
         "- **Cross-check (Step 2):** a hand-written doc's named ids = every "
-        "backtick-quoted token (extracted **per line** — `[^`]+` over the full text "
+        "backtick-quoted token (extracted **per line** - `[^`]+` over the full text "
         "spans newlines and, in any doc with a multi-line code/mermaid block, pairs a "
         "fence's opening backtick with the next one, emitting one giant token that "
         "contains the real ids but is never an exact id, so they would be silently "
@@ -514,13 +514,13 @@ def render_section(acc, docs, doc_rows, corrections, gaps, unmatchable, edge_cnt
         "true distinct-project count and `exampleGraph` is kept in full (small; needed "
         "by Task 8). The long tail is represented numerically in the top-level "
         "`summary` object (`totalMined`, `byShape`, `emitted`, `supportHistogram` "
-        "1-2/3-4/>=5) — no silent data loss.",
+        "1-2/3-4/>=5) - no silent data loss.",
         "- **exampleGraph** = the smallest (fewest nodes; tie -> lexicographic "
         "project file + compartment name) subgraph with one occurrence: node ids + "
         "slot edges, parameters elided (the corpus carries no parameters).",
         "",
     ]
-    body += ["### 5a — Mined-pattern inventory (top-25 per class, ranked by support)",
+    body += ["### 5a - Mined-pattern inventory (top-25 per class, ranked by support)",
              ""]
     for s in SHAPE_ORDER:
         tot = totals[s]
@@ -555,7 +555,7 @@ def render_section(acc, docs, doc_rows, corrections, gaps, unmatchable, edge_cnt
              f". Independently re-scanned in `corpus.json`: {v['rescan']} typed edges "
              f"of the matching (from-id, to-id) pairs are present in that project. "
              f"PASS.", ""]
-    body += ["### 5b — Correction candidates (hand-written docs the corpus does not "
+    body += ["### 5b - Correction candidates (hand-written docs the corpus does not "
              "sufficiently exhibit)", ""]
     if corrections:
         body += ["| doc | extracted registry ids | in corpus | best overlap |",
@@ -564,7 +564,7 @@ def render_section(acc, docs, doc_rows, corrections, gaps, unmatchable, edge_cnt
             body.append(f"| {dname} | {', '.join(f'`{i}`' for i in ids)} "
                         f"| {inc}/{len(set(ids))} | {ov:.2f} |")
     else:
-        body.append("(none — every doc with >= 2 extracted ids matched a pattern)")
+        body.append("(none - every doc with >= 2 extracted ids matched a pattern)")
     body += [""]
     n_match = sum(1 for r in doc_rows if r[3] is not None)
     n_zero = sum(1 for r in doc_rows if r[1] == 0)
@@ -574,7 +574,7 @@ def render_section(acc, docs, doc_rows, corrections, gaps, unmatchable, edge_cnt
              f"registry ids), {len(gaps):,} library gaps (5c). **Weakness:** "
              f"{n_zero} of {len(docs)} docs name nodes by display name or prose "
              "rather than raw registry node ids inside backticks, so the mechanical "
-             "exact-id extraction yields 0 ids for them — they are 'unmatchable' for "
+             "exact-id extraction yields 0 ids for them - they are 'unmatchable' for "
              "a reason (extraction weakness), "
              "NOT because the corpus lacks the pattern. Per-doc:", ""]
     body += ["| doc | extracted ids | in corpus | best overlap | matched pattern |",
@@ -583,8 +583,8 @@ def render_section(acc, docs, doc_rows, corrections, gaps, unmatchable, edge_cnt
         body.append(f"| {dname} | {n_ids} | {inc} | {ov:.2f} | "
                     f"{'`' + mp + '`' if mp else '(none)'} |")
     body.append("")
-    body += [f"### 5c — Library gaps (mined patterns with support >= 5 and no matching "
-             f"doc) — {len(gaps):,} patterns", ""]
+    body += [f"### 5c - Library gaps (mined patterns with support >= 5 and no matching "
+             f"doc) - {len(gaps):,} patterns", ""]
     if gaps:
         body += ["| pattern id | support |", "|---|---:|"]
         for gid, sup in gaps[:TOPN]:
@@ -598,7 +598,7 @@ def render_section(acc, docs, doc_rows, corrections, gaps, unmatchable, edge_cnt
     body.append("")
     body += [f"Compartment cycles: **M = {cycle_n}** (JIPipe dataflow is a DAG; DFS "
              "found no back-edge in any of the 710 compartments).", ""]
-    raw += ["# Task 7 — raw tables (mined patterns)", ""]
+    raw += ["# Task 7 - raw tables (mined patterns)", ""]
     raw += [f"**Totals (kept, support >= {CUTOFF}):** " +
             ", ".join(f"{s}={totals[s]['kept']:,}" for s in SHAPE_ORDER) +
             f"; N={kept:,}.", ""]
@@ -606,7 +606,7 @@ def render_section(acc, docs, doc_rows, corrections, gaps, unmatchable, edge_cnt
         raw += [f"## {s} (top {TOPN} of {totals[s]['kept']:,} kept)", ""]
         raw += table_rows(totals[s]["kept_keys"], acc, nm)
         raw.append("")
-    raw += ["## cross-check — per-doc", "",
+    raw += ["## cross-check - per-doc", "",
             "| doc | extracted ids | in corpus | best overlap | matched pattern |",
             "|---|---:|---:|---:|---|"]
     for dname, n_ids, ov, mp, inc in sorted(doc_rows):
@@ -617,7 +617,7 @@ def render_section(acc, docs, doc_rows, corrections, gaps, unmatchable, edge_cnt
     raw += list(f"- {d}: {', '.join(ids)} ({inc} in corpus)"
                 for d, ids, inc, ov in sorted(corrections)) or ["(none)"]
     raw.append("")
-    raw += [f"## 5c library gaps ({len(gaps):,}) — support >= 5, no doc match", ""]
+    raw += [f"## 5c library gaps ({len(gaps):,}) - support >= 5, no doc match", ""]
     raw += list(f"- {gid} (support {sup})" for gid, sup in gaps[:TOPN]) or ["(none)"]
     raw.append("")
     return body, raw
@@ -706,7 +706,7 @@ def main():
             if best is None or len(p["projects"]) > best[2]:
                 best = (shape, key, len(p["projects"]), p)
     if best is None:
-        raise SystemExit("FLAGSHIP NOT FOUND — mining bug")
+        raise SystemExit("FLAGSHIP NOT FOUND - mining bug")
     shape, key, sup, p = best
     verify = {"shape": shape, "id": pid(shape, key),
               "name": p_name(p, lambda i: name.get(i, i)), "support": sup,
@@ -728,7 +728,7 @@ def main():
     # emission cap (approach recorded in the method note): patterns.json emits
     # only (a) patterns with support >= EMIT_SUP, OR (b) the top-100 by support
     # within each of the FIVE conceptual classes (class 2 = fan-out+fan-in;
-    # class 5 = boundary+cycle) — union, sorted by support desc then id. The
+    # class 5 = boundary+cycle) - union, sorted by support desc then id. The
     # literal "support >= 5" rule would emit 5,708 patterns / ~15 MB (mostly the
     # long chain tail), far over the ~3 MB budget; EMIT_SUP + top-100/class is
     # the highest-support set that fits (support >= 18 still ~3.75 MB). The full

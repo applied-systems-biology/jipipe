@@ -17,12 +17,9 @@ import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.CoreFramework;
-
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.FileSystemFunction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.PathData;
-import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.filesystem.PathList;
 import org.hkijena.jipipe.plugins.parameters.library.filesystem.PathParameterSettings;
 import org.hkijena.jipipe.utils.PathIOMode;
@@ -57,7 +54,6 @@ public class PathListDataSource extends AbstractPathDataSource {
     @JIPipeParameter("paths")
     @SetJIPipeDocumentation(name = "Paths")
     @PathParameterSettings(ioMode = PathIOMode.Open, pathMode = PathType.FilesAndDirectories)
-    @ListParameterSettings(withScrollBar = true)
     public PathList getPaths() {
         return paths;
     }

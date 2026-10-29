@@ -68,7 +68,7 @@ public class JIPipeDesktopNodeFinderDatasetListCellRenderer extends JPanel imple
         iconLabel.setIcon(entryIcon);
 
         Insets insets = new Insets(2, 2, 2, 2);
-        // The unified entry icon spans ALL text rows (gridheight 3, centered) —
+        // The unified entry icon spans ALL text rows (gridheight 3, centered) -
         // the function-colored bar covers every line of the card.
         add(iconLabel, new GridBagConstraints(1, 0, 1, 3, 0, 1, GridBagConstraints.WEST, GridBagConstraints.VERTICAL, insets, 0, 0));
         add(nameLabel, new GridBagConstraints(2, 0, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
@@ -105,7 +105,7 @@ public class JIPipeDesktopNodeFinderDatasetListCellRenderer extends JPanel imple
         stateChips.add(JIPipeNodeStateChips.panel(value));
         stateChips.revalidate();
         categoryLabel.setText(value.getLocationInfos().get(0).trim().replace("\n", " > "));
-        // Bottom row: the entry kind (Example / Pattern / Custom) — same text +
+        // Bottom row: the entry kind (Example / Pattern / Custom) - same text +
         // colors as the node browser's kind slot.
         String kind = JIPipeNodeStateChips.entryKind(value);
         kindLabel.setForeground(JIPipeNodeStateChips.entryKindColor(kind));

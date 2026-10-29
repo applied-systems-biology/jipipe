@@ -22,7 +22,6 @@ import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.CoreFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.graph.GraphDebugFunction;
 
 import java.util.*;

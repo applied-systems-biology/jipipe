@@ -28,7 +28,7 @@ import org.junit.platform.launcher.LauncherSessionListener;
  * calls {@code JIPipe.ensureInstance()}, which creates the SciJava/ImageJ
  * context. This module's {@code MaskTo3DMeshAlgorithm} node genuinely loads an
  * ImageJ1 class ({@code ij.ImagePlus}), so the legacy patcher must run
- * first — otherwise the patcher fails ({@code LinkageError: duplicate class
+ * first - otherwise the patcher fails ({@code LinkageError: duplicate class
  * definition} / {@code No _hooks field found in ij.IJ}, depending on ordering),
  * corrupting the context so that no node infos are registered.
  *

@@ -1,1 +1,138 @@
-{"edges":[{"source-node":"n1","source-slot":"Output","target-node":"n2","target-slot":"Input"},{"source-node":"n1","source-slot":"Output","target-node":"n4","target-slot":"Mask"},{"source-node":"n2","source-slot":"Output","target-node":"n3","target-slot":"Image"},{"source-node":"n2","source-slot":"Output","target-node":"n5","target-slot":"Reference"},{"source-node":"n3","source-slot":"Output","target-node":"n7","target-slot":"Input"},{"source-node":"n4","source-slot":"ROI","target-node":"n5","target-slot":"ROI"},{"source-node":"n5","source-slot":"Output","target-node":"n0","target-slot":"Input"},{"source-node":"n5","source-slot":"Output","target-node":"n3","target-slot":"ROI"},{"source-node":"n6","source-slot":"Output","target-node":"n1","target-slot":"Input 1"},{"source-node":"n8","source-slot":"Output","target-node":"n6","target-slot":"Input"}],"nodes":{"n0":{"jipipe:graph-compartment":"ee5cef41-629a-5bcf-9534-cfcdd75ffbdb","jipipe:metadata-v1":{"location/ee5cef41-629a-5bcf-9534-cfcdd75ffbdb/x":3,"location/ee5cef41-629a-5bcf-9534-cfcdd75ffbdb/y":25},"jipipe:node-info-id":"ij1-roi-set-properties"},"n1":{"jipipe:graph-compartment":"ee5cef41-629a-5bcf-9534-cfcdd75ffbdb","jipipe:metadata-v1":{"location/ee5cef41-629a-5bcf-9534-cfcdd75ffbdb/x":12,"location/ee5cef41-629a-5bcf-9534-cfcdd75ffbdb/y":9},"jipipe:node-info-id":"ij1-math-imagecalculator2d"},"n2":{"jipipe:graph-compartment":"ee5cef41-629a-5bcf-9534-cfcdd75ffbdb","jipipe:metadata-v1":{"location/ee5cef41-629a-5bcf-9534-cfcdd75ffbdb/x":10,"location/ee5cef41-629a-5bcf-9534-cfcdd75ffbdb/y":13},"jipipe:node-info-id":"ij1-math-edt2d"},"n3":{"jipipe:graph-compartment":"ee5cef41-629a-5bcf-9534-cfcdd75ffbdb","jipipe:metadata-v1":{"location/ee5cef41-629a-5bcf-9534-cfcdd75ffbdb/x":11,"location/ee5cef41-629a-5bcf-9534-cfcdd75ffbdb/y":25},"jipipe:node-info-id":"ij1-roi-to-mask"},"n4":{"jipipe:graph-compartment":"ee5cef41-629a-5bcf-9534-cfcdd75ffbdb","jipipe:metadata-v1":{"location/ee5cef41-629a-5bcf-9534-cfcdd75ffbdb/x":0,"location/ee5cef41-629a-5bcf-9534-cfcdd75ffbdb/y":13},"jipipe:node-info-id":"ij1-analyze-find-particles2d"},"n5":{"jipipe:graph-compartment":"ee5cef41-629a-5bcf-9534-cfcdd75ffbdb","jipipe:metadata-v1":{"location/ee5cef41-629a-5bcf-9534-cfcdd75ffbdb/x":5,"location/ee5cef41-629a-5bcf-9534-cfcdd75ffbdb/y":21},"jipipe:node-info-id":"ij1-roi-filter-statistics"},"n6":{"jipipe:graph-compartment":"ee5cef41-629a-5bcf-9534-cfcdd75ffbdb","jipipe:metadata-v1":{"location/ee5cef41-629a-5bcf-9534-cfcdd75ffbdb/x":4,"location/ee5cef41-629a-5bcf-9534-cfcdd75ffbdb/y":4},"jipipe:node-info-id":"ij1-threshold-expression2d-32f"},"n7":{"jipipe:graph-compartment":"ee5cef41-629a-5bcf-9534-cfcdd75ffbdb","jipipe:metadata-v1":{"location/ee5cef41-629a-5bcf-9534-cfcdd75ffbdb/x":7,"location/ee5cef41-629a-5bcf-9534-cfcdd75ffbdb/y":29},"jipipe:node-info-id":"ij1-binary-connected-component-labeling-2d"},"n8":{"jipipe:graph-compartment":"ee5cef41-629a-5bcf-9534-cfcdd75ffbdb","jipipe:metadata-v1":{"location/ee5cef41-629a-5bcf-9534-cfcdd75ffbdb/x":10,"location/ee5cef41-629a-5bcf-9534-cfcdd75ffbdb/y":0},"jipipe:node-info-id":"ij1-feature-laplacian-of-gaussian"}}}
+{
+  "edges": [
+    {
+      "source-node": "n1",
+      "source-slot": "Output",
+      "target-node": "n2",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n1",
+      "source-slot": "Output",
+      "target-node": "n4",
+      "target-slot": "Mask"
+    },
+    {
+      "source-node": "n2",
+      "source-slot": "Output",
+      "target-node": "n3",
+      "target-slot": "Image"
+    },
+    {
+      "source-node": "n2",
+      "source-slot": "Output",
+      "target-node": "n5",
+      "target-slot": "Reference"
+    },
+    {
+      "source-node": "n3",
+      "source-slot": "Output",
+      "target-node": "n7",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n4",
+      "source-slot": "ROI",
+      "target-node": "n5",
+      "target-slot": "ROI"
+    },
+    {
+      "source-node": "n5",
+      "source-slot": "Output",
+      "target-node": "n0",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n5",
+      "source-slot": "Output",
+      "target-node": "n3",
+      "target-slot": "ROI"
+    },
+    {
+      "source-node": "n6",
+      "source-slot": "Output",
+      "target-node": "n1",
+      "target-slot": "Input 1"
+    },
+    {
+      "source-node": "n8",
+      "source-slot": "Output",
+      "target-node": "n6",
+      "target-slot": "Input"
+    }
+  ],
+  "nodes": {
+    "n0": {
+      "jipipe:graph-compartment": "ee5cef41-629a-5bcf-9534-cfcdd75ffbdb",
+      "jipipe:metadata-v1": {
+        "location/ee5cef41-629a-5bcf-9534-cfcdd75ffbdb/x": 3,
+        "location/ee5cef41-629a-5bcf-9534-cfcdd75ffbdb/y": 25
+      },
+      "jipipe:node-info-id": "ij1-roi-set-properties"
+    },
+    "n1": {
+      "jipipe:graph-compartment": "ee5cef41-629a-5bcf-9534-cfcdd75ffbdb",
+      "jipipe:metadata-v1": {
+        "location/ee5cef41-629a-5bcf-9534-cfcdd75ffbdb/x": 12,
+        "location/ee5cef41-629a-5bcf-9534-cfcdd75ffbdb/y": 9
+      },
+      "jipipe:node-info-id": "ij1-math-imagecalculator2d"
+    },
+    "n2": {
+      "jipipe:graph-compartment": "ee5cef41-629a-5bcf-9534-cfcdd75ffbdb",
+      "jipipe:metadata-v1": {
+        "location/ee5cef41-629a-5bcf-9534-cfcdd75ffbdb/x": 10,
+        "location/ee5cef41-629a-5bcf-9534-cfcdd75ffbdb/y": 13
+      },
+      "jipipe:node-info-id": "ij1-math-edt2d"
+    },
+    "n3": {
+      "jipipe:graph-compartment": "ee5cef41-629a-5bcf-9534-cfcdd75ffbdb",
+      "jipipe:metadata-v1": {
+        "location/ee5cef41-629a-5bcf-9534-cfcdd75ffbdb/x": 11,
+        "location/ee5cef41-629a-5bcf-9534-cfcdd75ffbdb/y": 25
+      },
+      "jipipe:node-info-id": "ij1-roi-to-mask"
+    },
+    "n4": {
+      "jipipe:graph-compartment": "ee5cef41-629a-5bcf-9534-cfcdd75ffbdb",
+      "jipipe:metadata-v1": {
+        "location/ee5cef41-629a-5bcf-9534-cfcdd75ffbdb/x": 0,
+        "location/ee5cef41-629a-5bcf-9534-cfcdd75ffbdb/y": 13
+      },
+      "jipipe:node-info-id": "ij1-analyze-find-particles2d"
+    },
+    "n5": {
+      "jipipe:graph-compartment": "ee5cef41-629a-5bcf-9534-cfcdd75ffbdb",
+      "jipipe:metadata-v1": {
+        "location/ee5cef41-629a-5bcf-9534-cfcdd75ffbdb/x": 5,
+        "location/ee5cef41-629a-5bcf-9534-cfcdd75ffbdb/y": 21
+      },
+      "jipipe:node-info-id": "ij1-roi-filter-statistics"
+    },
+    "n6": {
+      "jipipe:graph-compartment": "ee5cef41-629a-5bcf-9534-cfcdd75ffbdb",
+      "jipipe:metadata-v1": {
+        "location/ee5cef41-629a-5bcf-9534-cfcdd75ffbdb/x": 4,
+        "location/ee5cef41-629a-5bcf-9534-cfcdd75ffbdb/y": 4
+      },
+      "jipipe:node-info-id": "ij1-threshold-expression2d-32f"
+    },
+    "n7": {
+      "jipipe:graph-compartment": "ee5cef41-629a-5bcf-9534-cfcdd75ffbdb",
+      "jipipe:metadata-v1": {
+        "location/ee5cef41-629a-5bcf-9534-cfcdd75ffbdb/x": 7,
+        "location/ee5cef41-629a-5bcf-9534-cfcdd75ffbdb/y": 29
+      },
+      "jipipe:node-info-id": "ij1-binary-connected-component-labeling-2d"
+    },
+    "n8": {
+      "jipipe:graph-compartment": "ee5cef41-629a-5bcf-9534-cfcdd75ffbdb",
+      "jipipe:metadata-v1": {
+        "location/ee5cef41-629a-5bcf-9534-cfcdd75ffbdb/x": 10,
+        "location/ee5cef41-629a-5bcf-9534-cfcdd75ffbdb/y": 0
+      },
+      "jipipe:node-info-id": "ij1-feature-laplacian-of-gaussian"
+    }
+  }
+}

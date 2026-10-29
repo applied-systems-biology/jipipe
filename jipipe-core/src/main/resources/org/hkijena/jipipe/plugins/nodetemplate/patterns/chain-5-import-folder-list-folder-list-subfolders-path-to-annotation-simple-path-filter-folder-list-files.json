@@ -1,1 +1,70 @@
-{"nodes":{"n0":{"jipipe:node-info-id":"import-folder-list","jipipe:graph-compartment":"4f4767eb-4e1f-5f74-9cee-156ebfdb2bf5","jipipe:metadata-v1":{"location/4f4767eb-4e1f-5f74-9cee-156ebfdb2bf5/x":1,"location/4f4767eb-4e1f-5f74-9cee-156ebfdb2bf5/y":1}},"n1":{"jipipe:node-info-id":"folder-list-subfolders","jipipe:graph-compartment":"4f4767eb-4e1f-5f74-9cee-156ebfdb2bf5","jipipe:metadata-v1":{"location/4f4767eb-4e1f-5f74-9cee-156ebfdb2bf5/x":1,"location/4f4767eb-4e1f-5f74-9cee-156ebfdb2bf5/y":5}},"n2":{"jipipe:node-info-id":"path-to-annotation-simple","jipipe:graph-compartment":"4f4767eb-4e1f-5f74-9cee-156ebfdb2bf5","jipipe:metadata-v1":{"location/4f4767eb-4e1f-5f74-9cee-156ebfdb2bf5/x":1,"location/4f4767eb-4e1f-5f74-9cee-156ebfdb2bf5/y":9}},"n3":{"jipipe:node-info-id":"path-filter","jipipe:graph-compartment":"4f4767eb-4e1f-5f74-9cee-156ebfdb2bf5","jipipe:metadata-v1":{"location/4f4767eb-4e1f-5f74-9cee-156ebfdb2bf5/x":1,"location/4f4767eb-4e1f-5f74-9cee-156ebfdb2bf5/y":13}},"n4":{"jipipe:node-info-id":"folder-list-files","jipipe:graph-compartment":"4f4767eb-4e1f-5f74-9cee-156ebfdb2bf5","jipipe:metadata-v1":{"location/4f4767eb-4e1f-5f74-9cee-156ebfdb2bf5/x":1,"location/4f4767eb-4e1f-5f74-9cee-156ebfdb2bf5/y":17}}},"edges":[{"source-node":"n0","source-slot":"Folder paths","target-node":"n1","target-slot":"Folders"},{"source-node":"n1","source-slot":"Subfolders","target-node":"n2","target-slot":"Paths"},{"source-node":"n2","source-slot":"Annotated paths","target-node":"n3","target-slot":"Input"},{"source-node":"n3","source-slot":"Output","target-node":"n4","target-slot":"Folders"}]}
+{
+  "nodes": {
+    "n0": {
+      "jipipe:node-info-id": "import-folder-list",
+      "jipipe:graph-compartment": "4f4767eb-4e1f-5f74-9cee-156ebfdb2bf5",
+      "jipipe:metadata-v1": {
+        "location/4f4767eb-4e1f-5f74-9cee-156ebfdb2bf5/x": 1,
+        "location/4f4767eb-4e1f-5f74-9cee-156ebfdb2bf5/y": 1
+      }
+    },
+    "n1": {
+      "jipipe:node-info-id": "folder-list-subfolders",
+      "jipipe:graph-compartment": "4f4767eb-4e1f-5f74-9cee-156ebfdb2bf5",
+      "jipipe:metadata-v1": {
+        "location/4f4767eb-4e1f-5f74-9cee-156ebfdb2bf5/x": 1,
+        "location/4f4767eb-4e1f-5f74-9cee-156ebfdb2bf5/y": 5
+      }
+    },
+    "n2": {
+      "jipipe:node-info-id": "path-to-annotation-simple",
+      "jipipe:graph-compartment": "4f4767eb-4e1f-5f74-9cee-156ebfdb2bf5",
+      "jipipe:metadata-v1": {
+        "location/4f4767eb-4e1f-5f74-9cee-156ebfdb2bf5/x": 1,
+        "location/4f4767eb-4e1f-5f74-9cee-156ebfdb2bf5/y": 9
+      }
+    },
+    "n3": {
+      "jipipe:node-info-id": "path-filter",
+      "jipipe:graph-compartment": "4f4767eb-4e1f-5f74-9cee-156ebfdb2bf5",
+      "jipipe:metadata-v1": {
+        "location/4f4767eb-4e1f-5f74-9cee-156ebfdb2bf5/x": 1,
+        "location/4f4767eb-4e1f-5f74-9cee-156ebfdb2bf5/y": 13
+      }
+    },
+    "n4": {
+      "jipipe:node-info-id": "folder-list-files",
+      "jipipe:graph-compartment": "4f4767eb-4e1f-5f74-9cee-156ebfdb2bf5",
+      "jipipe:metadata-v1": {
+        "location/4f4767eb-4e1f-5f74-9cee-156ebfdb2bf5/x": 1,
+        "location/4f4767eb-4e1f-5f74-9cee-156ebfdb2bf5/y": 17
+      }
+    }
+  },
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Folder paths",
+      "target-node": "n1",
+      "target-slot": "Folders"
+    },
+    {
+      "source-node": "n1",
+      "source-slot": "Subfolders",
+      "target-node": "n2",
+      "target-slot": "Paths"
+    },
+    {
+      "source-node": "n2",
+      "source-slot": "Annotated paths",
+      "target-node": "n3",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n3",
+      "source-slot": "Output",
+      "target-node": "n4",
+      "target-slot": "Folders"
+    }
+  ]
+}

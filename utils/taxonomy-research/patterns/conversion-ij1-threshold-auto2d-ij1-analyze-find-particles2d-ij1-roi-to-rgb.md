@@ -32,32 +32,37 @@ template:
 
 # Pattern: Auto threshold 2D (8-bit) -> Find particles 2D -> Convert 2D ROI to RGB
 
-Mined pattern `conversion-ij1-threshold-auto2d-ij1-analyze-find-particles2d-ij1-roi-to-rgb` (shape `conversion`, support 30).
+Mined pattern `conversion-ij1-threshold-auto2d-ij1-analyze-find-particles2d-ij1-roi-to-rgb` (shape `conversion`, support
+30).
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| other | `ij1-threshold-auto2d` |
+| role  | node ids                       |
+|-------|--------------------------------|
+| other | `ij1-threshold-auto2d`         |
 | other | `ij1-analyze-find-particles2d` |
-| other | `ij1-roi-to-rgb` |
+| other | `ij1-roi-to-rgb`               |
 
 ## Example graph
 
-Project: `AIAgentTests/01-BasicWorkshop/JSC_2025_02_Blobs_Single/blobs.jip` (relative to `/data/JIPipe`), compartment `Analysis`.
+Project: `AIAgentTests/01-BasicWorkshop/JSC_2025_02_Blobs_Single/blobs.jip` (relative to `/data/JIPipe`), compartment
+`Analysis`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `ij1-threshold-auto2d` | Auto threshold 2D |
-| n1 | `ij1-analyze-find-particles2d` | Find particles 2D |
-| n2 | `ij1-roi-to-rgb` | Convert ROI to RGB |
+| key | node id                        | name               |
+|-----|--------------------------------|--------------------|
+| n0  | `ij1-threshold-auto2d`         | Auto threshold 2D  |
+| n1  | `ij1-analyze-find-particles2d` | Find particles 2D  |
+| n2  | `ij1-roi-to-rgb`               | Convert ROI to RGB |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
-| Auto threshold 2D | `Output` | Find particles 2D | `Mask` | `imagej-imgplus-greyscale-mask` |
-| Find particles 2D | `ROI` | Convert ROI to RGB | `ROI` | `imagej-roi` |
+| from              | slot     | to                 | slot   | data class                      |
+|-------------------|----------|--------------------|--------|---------------------------------|
+| Auto threshold 2D | `Output` | Find particles 2D  | `Mask` | `imagej-imgplus-greyscale-mask` |
+| Find particles 2D | `ROI`    | Convert ROI to RGB | `ROI`  | `imagej-roi`                    |
 
 ## Template
 
-Proposed name `Auto threshold 2D (8-bit) -> Find particles 2D -> Convert 2D ROI to RGB`, menu path `Patterns/Images/Auto threshold 2D (8-bit) -> Find particles 2D -> Convert 2D ROI to RGB` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/conversion-ij1-threshold-auto2d-ij1-analyze-find-particles2d-ij1-roi-to-rgb.json`.
+Proposed name `Auto threshold 2D (8-bit) -> Find particles 2D -> Convert 2D ROI to RGB`, menu path
+`Patterns/Images/Auto threshold 2D (8-bit) -> Find particles 2D -> Convert 2D ROI to RGB` (proposal only - not
+registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/conversion-ij1-threshold-auto2d-ij1-analyze-find-particles2d-ij1-roi-to-rgb.json`.
 

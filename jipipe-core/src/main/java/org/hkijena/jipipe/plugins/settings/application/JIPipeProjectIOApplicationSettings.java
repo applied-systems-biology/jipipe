@@ -20,7 +20,7 @@ import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationSettingsSheetCate
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationsSettingsSheet;
 import org.hkijena.jipipe.utils.StringUtils;
 
-import javax.swing.Icon;
+import javax.swing.*;
 
 /**
  * Settings for the JIPipe project file formats (the .jipx container and
@@ -30,7 +30,7 @@ public class JIPipeProjectIOApplicationSettings extends JIPipeDefaultApplication
 
     /**
      * The stable id of this settings sheet.
-     * Persisted in saved settings — never derive from code.
+     * Persisted in saved settings - never derive from code.
      */
     public static final String ID = "org.hkijena.jipipe:project-io";
 

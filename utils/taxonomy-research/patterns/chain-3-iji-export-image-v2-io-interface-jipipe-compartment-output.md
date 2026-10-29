@@ -36,28 +36,31 @@ Mined pattern `chain-3-iji-export-image-v2-io-interface-jipipe-compartment-outpu
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| export | `iji-export-image-v2` |
-| core-io | `io-interface` |
+| role    | node ids                    |
+|---------|-----------------------------|
+| export  | `iji-export-image-v2`       |
+| core-io | `io-interface`              |
 | core-io | `jipipe:compartment-output` |
 
 ## Example graph
 
 Project: `AIAgentTests/03-ExampleWorkflows/Angela_Roots_38.jip` (relative to `/data/JIPipe`), compartment `Nodules`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `iji-export-image-v2` | Export image |
-| n1 | `io-interface` | IO Interface: save HSB histograms per image and per condition |
-| n2 | `jipipe:compartment-output` | Raw nodules from direct ROI medium size |
+| key | node id                     | name                                                          |
+|-----|-----------------------------|---------------------------------------------------------------|
+| n0  | `iji-export-image-v2`       | Export image                                                  |
+| n1  | `io-interface`              | IO Interface: save HSB histograms per image and per condition |
+| n2  | `jipipe:compartment-output` | Raw nodules from direct ROI medium size                       |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
-| Export image | `Exported file` | IO Interface: save HSB histograms per image and per condition | `Data 6` | `file` |
-| IO Interface: save HSB histograms per image and per condition | `Data` | Raw nodules from direct ROI medium size | `Save color histograms` | `file` |
+| from                                                          | slot            | to                                                            | slot                    | data class |
+|---------------------------------------------------------------|-----------------|---------------------------------------------------------------|-------------------------|------------|
+| Export image                                                  | `Exported file` | IO Interface: save HSB histograms per image and per condition | `Data 6`                | `file`     |
+| IO Interface: save HSB histograms per image and per condition | `Data`          | Raw nodules from direct ROI medium size                       | `Save color histograms` | `file`     |
 
 ## Template
 
-Proposed name `Export image -> IO Interface -> Compartment output`, menu path `Patterns/Export/Export image -> IO Interface -> Compartment output` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/chain-3-iji-export-image-v2-io-interface-jipipe-compartment-output.json`.
+Proposed name `Export image -> IO Interface -> Compartment output`, menu path
+`Patterns/Export/Export image -> IO Interface -> Compartment output` (proposal only - not registered). `data` = the
+minimal JIPipeGraph JSON; the full object is written to
+`templates/chain-3-iji-export-image-v2-io-interface-jipipe-compartment-output.json`.
 

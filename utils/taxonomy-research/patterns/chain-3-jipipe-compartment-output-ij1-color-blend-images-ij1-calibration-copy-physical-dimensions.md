@@ -32,32 +32,37 @@ template:
 
 # Pattern: Compartment output -> Blend images -> Copy physical dimensions
 
-Mined pattern `chain-3-jipipe-compartment-output-ij1-color-blend-images-ij1-calibration-copy-physical-dimensions` (shape `chain`, support 28).
+Mined pattern `chain-3-jipipe-compartment-output-ij1-color-blend-images-ij1-calibration-copy-physical-dimensions` (shape
+`chain`, support 28).
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| core-io | `jipipe:compartment-output` |
-| other | `ij1-color-blend-images` |
-| other | `ij1-calibration-copy-physical-dimensions` |
+| role    | node ids                                   |
+|---------|--------------------------------------------|
+| core-io | `jipipe:compartment-output`                |
+| other   | `ij1-color-blend-images`                   |
+| other   | `ij1-calibration-copy-physical-dimensions` |
 
 ## Example graph
 
-Project: `AIAgentTests/03-ExampleWorkflows/Annamaria_12.jip` (relative to `/data/JIPipe`), compartment `Membrane+Particles`.
+Project: `AIAgentTests/03-ExampleWorkflows/Annamaria_12.jip` (relative to `/data/JIPipe`), compartment
+`Membrane+Particles`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `jipipe:compartment-output` | Mask |
-| n1 | `ij1-color-blend-images` | Blend images |
-| n2 | `ij1-calibration-copy-physical-dimensions` | Copy physical dimensions |
+| key | node id                                    | name                     |
+|-----|--------------------------------------------|--------------------------|
+| n0  | `jipipe:compartment-output`                | Mask                     |
+| n1  | `ij1-color-blend-images`                   | Blend images             |
+| n2  | `ij1-calibration-copy-physical-dimensions` | Copy physical dimensions |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
-| Mask | `3D labels` | Blend images | `Cell` | `imagej-imgplus` |
-| Blend images | `Output` | Copy physical dimensions | `Target` | `imagej-imgplus-color-rgb` |
+| from         | slot        | to                       | slot     | data class                 |
+|--------------|-------------|--------------------------|----------|----------------------------|
+| Mask         | `3D labels` | Blend images             | `Cell`   | `imagej-imgplus`           |
+| Blend images | `Output`    | Copy physical dimensions | `Target` | `imagej-imgplus-color-rgb` |
 
 ## Template
 
-Proposed name `Compartment output -> Blend images -> Copy physical dimensions`, menu path `Patterns/Graph / Project/Compartment output -> Blend images -> Copy physical dimensions` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/chain-3-jipipe-compartment-output-ij1-color-blend-images-ij1-calibration-copy-physical-dimensions.json`.
+Proposed name `Compartment output -> Blend images -> Copy physical dimensions`, menu path
+`Patterns/Graph / Project/Compartment output -> Blend images -> Copy physical dimensions` (proposal only - not
+registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/chain-3-jipipe-compartment-output-ij1-color-blend-images-ij1-calibration-copy-physical-dimensions.json`.
 

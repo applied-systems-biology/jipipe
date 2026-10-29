@@ -5,9 +5,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.instrumentation.events.*;
+import org.hkijena.jipipe.api.instrumentation.pipeline_map.PipelineMap;
+import org.hkijena.jipipe.api.instrumentation.pipeline_map.SegmentNode;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -15,22 +17,16 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.project.JIPipeProjectUserPaths;
-import org.hkijena.jipipe.api.instrumentation.events.*;
-import org.hkijena.jipipe.api.instrumentation.pipeline_map.PipelineMap;
-import org.hkijena.jipipe.api.instrumentation.pipeline_map.SegmentNode;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.publish.rocrate.CreateROCrateRun;
 import org.hkijena.jipipe.plugins.publish.rocrate.ROCrateDockerSettings;
 
-import java.awt.Point;
+import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 /**
  * Stateless service providing typed Java methods for all built-in instrumentation operations.

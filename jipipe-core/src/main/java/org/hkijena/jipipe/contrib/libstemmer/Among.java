@@ -14,6 +14,7 @@ public class Among {
     final int result; /* result of the lookup */
     // Make sure this is not accessible outside package for Java security reasons!
     final MethodHandle method; /* method to use if substring matches */
+
     public Among(String s, int substring_i, int result) {
         this.s = s.toCharArray();
         this.substring_i = substring_i;

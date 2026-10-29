@@ -13,14 +13,17 @@
 
 package org.hkijena.jipipe.plugins.canvasnotes.nodes;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.annotation.JIPipeGraphCanvasNote;
+import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopAnnotationGraphNodeUI;
-import org.hkijena.jipipe.plugins.parameters.library.primitives.FontFamilyParameter;
-import org.hkijena.jipipe.plugins.parameters.library.primitives.FontStyleParameter;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.JIPipeFontFamilySizeStyleColorParameter;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.JIPipeFontFamilySizeStyleParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.roi.Anchor;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -52,7 +55,7 @@ public abstract class DefaultTextBoxGraphCanvasNote extends JIPipeGraphCanvasNot
         super(info);
 
         this.titleStyle = new TextRenderParameters();
-        this.titleStyle.fontSize = 18;
+        this.titleStyle.setFont(titleFontWithSize(18));
         this.contentStyle = new TextRenderParameters();
         this.textLocation = new TextLocationParameters();
 
@@ -73,6 +76,22 @@ public abstract class DefaultTextBoxGraphCanvasNote extends JIPipeGraphCanvasNot
         registerSubParameter(contentStyle);
 
         registerSubParameter(textLocation);
+    }
+
+    /**
+     * @return the given font scaled by {@code zoom} (minimum size 1)
+     */
+    private static Font scaledFont(Font font, double zoom) {
+        return font.deriveFont((float) Math.max(1, font.getSize() * zoom));
+    }
+
+    /**
+     * @return a title font (the default family, plain, black) at the given size
+     */
+    private static JIPipeFontFamilySizeStyleColorParameter titleFontWithSize(int size) {
+        JIPipeFontFamilySizeStyleColorParameter f = new JIPipeFontFamilySizeStyleColorParameter();
+        f.migrateFrom(JIPipeFontFamilySizeStyleParameter.defaultFamily(), size, Font.PLAIN, Color.BLACK);
+        return f;
     }
 
     @SetJIPipeDocumentation(name = "Text location", description = "The following settings determine the location of the title and content")
@@ -328,7 +347,7 @@ public abstract class DefaultTextBoxGraphCanvasNote extends JIPipeGraphCanvasNot
             renderedGridHeight = 0;
 
             if (!StringUtils.isNullOrEmpty(textTitle)) {
-                titleFont = new Font(this.titleStyle.fontFamily.getValue(), this.titleStyle.fontStyle.getNativeValue(), (int) Math.max(1, this.titleStyle.fontSize * zoom));
+                titleFont = scaledFont(titleStyle.getFont().toFont(), zoom);
                 FontMetrics fontMetrics = g2.getFontMetrics(titleFont);
                 renderedTitle = StringUtils.limitWithEllipsis(textTitle, availableWidth, fontMetrics);
                 renderedTextWidth = Math.max(renderedTextWidth, fontMetrics.stringWidth(renderedTitle));
@@ -338,7 +357,7 @@ public abstract class DefaultTextBoxGraphCanvasNote extends JIPipeGraphCanvasNot
             }
 
             if (!StringUtils.isNullOrEmpty(textContent)) {
-                contentFont = new Font(this.contentStyle.fontFamily.getValue(), this.contentStyle.fontStyle.getNativeValue(), (int) Math.max(1, this.contentStyle.fontSize * zoom));
+                contentFont = scaledFont(contentStyle.getFont().toFont(), zoom);
                 FontMetrics fontMetrics = g2.getFontMetrics(contentFont);
                 renderedContent = textContent.split("\n");
                 for (int i = 0; i < renderedContent.length; i++) {
@@ -359,6 +378,28 @@ public abstract class DefaultTextBoxGraphCanvasNote extends JIPipeGraphCanvasNot
     }
 
     protected abstract int getBorderThickness();
+
+    /**
+     * #1339: migrate the legacy split title/content font parameters
+     * (font-family, font-style, font-size, color) into the single
+     * {@code font} parameter of each style when a pre-migration project is
+     * loaded. The nested collections are loaded via flat slash-keys, so the
+     * keys are prefixed with {@code title-style/} / {@code content-style/}.
+     * Idempotent: after the next save the legacy keys are gone.
+     */
+    @Override
+    protected void onDeserialized(JsonNode node, JIPipeValidationReport issues, JIPipeNotificationInbox notifications) {
+        String[] prefixes = {"title-style/", "content-style/"};
+        for (String p : prefixes) {
+            if (node.has(p + "font-family") || node.has(p + "font-size")
+                    || node.has(p + "font-style") || node.has(p + "color")) {
+                TextRenderParameters target = p.equals("title-style/") ? titleStyle : contentStyle;
+                target.setFont(JIPipeFontFamilySizeStyleColorParameter.fromLegacyKeys(node,
+                        p + "font-family", p + "font-size", p + "font-style", p + "color",
+                        p.equals("title-style/") ? 18 : 12));
+            }
+        }
+    }
 
     public static class TextLocationParameters extends AbstractJIPipeParameterCollection {
         private Anchor anchor = Anchor.CenterCenter;
@@ -440,12 +481,12 @@ public abstract class DefaultTextBoxGraphCanvasNote extends JIPipeGraphCanvasNot
 
 
     public static class TextRenderParameters extends AbstractJIPipeParameterCollection {
-        private FontFamilyParameter fontFamily = new FontFamilyParameter();
-        private FontStyleParameter fontStyle = FontStyleParameter.Plain;
-        private int fontSize = 12;
-        private Color color = Color.BLACK;
+        // #1339: the legacy color + font-family + font-style + font-size are
+        // folded into one font parameter (the text color is the font's color).
+        private JIPipeFontFamilySizeStyleColorParameter font = new JIPipeFontFamilySizeStyleColorParameter();
 
         public TextRenderParameters() {
+            font.migrateFrom(JIPipeFontFamilySizeStyleParameter.defaultFamily(), 12, Font.PLAIN, Color.BLACK);
         }
 
         public TextRenderParameters(TextRenderParameters other) {
@@ -453,54 +494,27 @@ public abstract class DefaultTextBoxGraphCanvasNote extends JIPipeGraphCanvasNot
         }
 
         public void setTo(TextRenderParameters other) {
-            this.fontFamily = new FontFamilyParameter(other.fontFamily);
-            this.fontStyle = other.fontStyle;
-            this.fontSize = other.fontSize;
-            this.color = other.color;
+            this.font = new JIPipeFontFamilySizeStyleColorParameter(other.font);
         }
 
-        @SetJIPipeDocumentation(name = "Color", description = "The color of the text")
-        @JIPipeParameter("color")
+        /**
+         * The text color (the font's color). Kept as a plain convenience for
+         * the rendering code - the color is persisted inside the {@code font}
+         * parameter, not separately (#1339).
+         */
         public Color getColor() {
-            return color;
+            return font.getColor();
         }
 
-        @JIPipeParameter("color")
-        public void setColor(Color color) {
-            this.color = color;
+        @SetJIPipeDocumentation(name = "Font", description = "The font (family, size, style and color) of the text")
+        @JIPipeParameter("font")
+        public JIPipeFontFamilySizeStyleColorParameter getFont() {
+            return font;
         }
 
-        @SetJIPipeDocumentation(name = "Font", description = "The font family")
-        @JIPipeParameter("font-family")
-        public FontFamilyParameter getFontFamily() {
-            return fontFamily;
-        }
-
-        @JIPipeParameter("font-family")
-        public void setFontFamily(FontFamilyParameter fontFamily) {
-            this.fontFamily = fontFamily;
-        }
-
-        @SetJIPipeDocumentation(name = "Font style", description = "The font style")
-        @JIPipeParameter("font-style")
-        public FontStyleParameter getFontStyle() {
-            return fontStyle;
-        }
-
-        @JIPipeParameter("font-style")
-        public void setFontStyle(FontStyleParameter fontStyle) {
-            this.fontStyle = fontStyle;
-        }
-
-        @SetJIPipeDocumentation(name = "Font size", description = "The font size")
-        @JIPipeParameter("font-size")
-        public int getFontSize() {
-            return fontSize;
-        }
-
-        @JIPipeParameter("font-size")
-        public void setFontSize(int fontSize) {
-            this.fontSize = fontSize;
+        @JIPipeParameter("font")
+        public void setFont(JIPipeFontFamilySizeStyleColorParameter font) {
+            this.font = font;
         }
     }
 }

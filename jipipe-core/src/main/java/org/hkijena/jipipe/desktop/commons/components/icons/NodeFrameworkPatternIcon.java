@@ -19,7 +19,6 @@ import org.hkijena.jipipe.desktop.commons.nodepatterns.NodePatternRenderer;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernThemeStyle;
 import org.hkijena.jipipe.utils.ThemeUtils;
 
-import javax.swing.*;
 import java.awt.*;
 
 /**
@@ -144,7 +143,7 @@ public class NodeFrameworkPatternIcon implements JIPipeDesktopColorIcon {
 
         // Framework signature pattern over the fill (same gating as the canvas node).
         // paintNodeScaleCropped: the fill is a small 14×47 sliver, so render the
-        // pattern at the canonical node body size and center-crop it — the icon
+        // pattern at the canonical node body size and center-crop it - the icon
         // shows the pattern at exactly the cell scale of a real canvas node.
         JIPipeDesktopModernThemeStyle style = ThemeUtils.getCurrentStyle();
         if (isPatternEnabled(style) && fw > 0 && fh > 0) {

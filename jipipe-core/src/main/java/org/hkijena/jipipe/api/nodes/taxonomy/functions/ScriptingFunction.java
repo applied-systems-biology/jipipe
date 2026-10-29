@@ -17,7 +17,7 @@ import org.hkijena.jipipe.api.nodes.taxonomy.HueCategory;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
 import org.jetbrains.annotations.Nullable;
 
-import javax.swing.Icon;
+import javax.swing.*;
 import java.util.Collections;
 import java.util.Set;
 
@@ -29,13 +29,15 @@ import java.util.Set;
  * classification audit, Phase 3) to a first-class top-level branch ("Scripting
  * is turned into a proper function", user ruling): its script/process leaves
  * re-parented to it, and it is the first in-tree user of the deterministic
- * hue auto-picker — its hue is not overridden but derived from the
+ * hue auto-picker - its hue is not overridden but derived from the
  * Intelligence family cell ({@link JIPipeNodeTaxonomyFunction#getColorHue()}
  * default).
  */
 public final class ScriptingFunction implements JIPipeNodeTaxonomyFunction {
 
-    /** The stable registry id of this function (a string literal per the stable-ID rule). */
+    /**
+     * The stable registry id of this function (a string literal per the stable-ID rule).
+     */
     public static final String ID = "jipipe:function:scripting";
 
     @Override

@@ -36,28 +36,32 @@ Mined pattern `conversion-ij1-morph-operation2d-annotate-with-data-distribute-da
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| other | `ij1-morph-operation2d` |
-| annotate | `annotate-with-data` |
-| other | `distribute-data` |
+| role     | node ids                |
+|----------|-------------------------|
+| other    | `ij1-morph-operation2d` |
+| annotate | `annotate-with-data`    |
+| other    | `distribute-data`       |
 
 ## Example graph
 
-Project: `AIAgentTests/03-ExampleWorkflows/CellposeTraining.jip` (relative to `/data/JIPipe`), compartment `Cellpose training`.
+Project: `AIAgentTests/03-ExampleWorkflows/CellposeTraining.jip` (relative to `/data/JIPipe`), compartment
+`Cellpose training`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `ij1-morph-operation2d` | Morphological operation 2D |
-| n1 | `annotate-with-data` | Annotate with data |
-| n2 | `distribute-data` | Split data randomly (percentage) |
+| key | node id                 | name                             |
+|-----|-------------------------|----------------------------------|
+| n0  | `ij1-morph-operation2d` | Morphological operation 2D       |
+| n1  | `annotate-with-data`    | Annotate with data               |
+| n2  | `distribute-data`       | Split data randomly (percentage) |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
-| Morphological operation 2D | `Output` | Annotate with data | `Annotation` | `imagej-imgplus` |
-| Annotate with data | `Output` | Split data randomly (percentage) | `Input` | `jipipe:data` |
+| from                       | slot     | to                               | slot         | data class       |
+|----------------------------|----------|----------------------------------|--------------|------------------|
+| Morphological operation 2D | `Output` | Annotate with data               | `Annotation` | `imagej-imgplus` |
+| Annotate with data         | `Output` | Split data randomly (percentage) | `Input`      | `jipipe:data`    |
 
 ## Template
 
-Proposed name `Morphological operation 2D -> Annotate with data -> Split data randomly (percentage)`, menu path `Patterns/Images/Morphological operation 2D -> Annotate with data -> Split data randomly (percentage)` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/conversion-ij1-morph-operation2d-annotate-with-data-distribute-data.json`.
+Proposed name `Morphological operation 2D -> Annotate with data -> Split data randomly (percentage)`, menu path
+`Patterns/Images/Morphological operation 2D -> Annotate with data -> Split data randomly (percentage)` (proposal only -
+not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/conversion-ij1-morph-operation2d-annotate-with-data-distribute-data.json`.
 

@@ -14,7 +14,9 @@
       "type": "object",
       "description": "A Cellpose size model. Do not rename the file as it contains important parameters.",
       "properties": {
-        "fs:entry-type": { "$ref": "https://jipipe.org/schemas/filesystem/type-file.schema.json" }
+        "fs:entry-type": {
+          "$ref": "https://jipipe.org/schemas/filesystem/type-file.schema.json"
+        }
       }
     }
   }

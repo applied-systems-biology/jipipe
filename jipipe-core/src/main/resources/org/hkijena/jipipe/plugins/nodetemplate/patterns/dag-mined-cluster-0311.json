@@ -1,1 +1,98 @@
-{"edges":[{"source-node":"n1","source-slot":"Output","target-node":"n3","target-slot":"C2"},{"source-node":"n1","source-slot":"Output","target-node":"n3","target-slot":"C3"},{"source-node":"n3","source-slot":"Output","target-node":"n0","target-slot":"Input"}],"nodes":{"n0":{"jipipe:graph-compartment":"d1d6a63f-54de-5877-af74-445929025c8d","jipipe:metadata-v1":{"location/d1d6a63f-54de-5877-af74-445929025c8d/x":1,"location/d1d6a63f-54de-5877-af74-445929025c8d/y":8},"jipipe:node-info-id":"ij1-color-combine-rgb"},"n1":{"jipipe:graph-compartment":"d1d6a63f-54de-5877-af74-445929025c8d","jipipe:metadata-v1":{"location/d1d6a63f-54de-5877-af74-445929025c8d/x":2,"location/d1d6a63f-54de-5877-af74-445929025c8d/y":0},"jipipe:node-info-id":"trackmate-visualize-follow-spots"},"n3":{"jipipe:graph-compartment":"d1d6a63f-54de-5877-af74-445929025c8d","jipipe:metadata-v1":{"location/d1d6a63f-54de-5877-af74-445929025c8d/x":0,"location/d1d6a63f-54de-5877-af74-445929025c8d/y":4},"jipipe:node-info-id":"ij1-color-merge-channels","jipipe:slot-configuration":{"input":{"C1":{"slot-data-type":"imagej-imgplus-greyscale","slot-type":"Input","name":"C1","custom-name":null,"description":"","is-virtual":true,"save-outputs":true,"is-optional":false},"C2":{"slot-data-type":"imagej-imgplus-greyscale","slot-type":"Input","name":"C2","custom-name":null,"description":"","is-virtual":true,"save-outputs":true,"is-optional":false},"C3":{"slot-data-type":"imagej-imgplus-greyscale","slot-type":"Input","name":"C3","custom-name":null,"description":"","is-virtual":true,"save-outputs":true,"is-optional":false}},"output":{"Output":{"slot-data-type":"imagej-imgplus","slot-type":"Output","name":"Output","custom-name":null,"description":"","is-virtual":false,"save-outputs":true,"is-optional":false}}},"create-composite":false,"channel-color-assignments/C1":"Blue","channel-color-assignments/C2":"Red","channel-color-assignments/C3":"Gray"}}}
+{
+  "edges": [
+    {
+      "source-node": "n1",
+      "source-slot": "Output",
+      "target-node": "n3",
+      "target-slot": "C2"
+    },
+    {
+      "source-node": "n1",
+      "source-slot": "Output",
+      "target-node": "n3",
+      "target-slot": "C3"
+    },
+    {
+      "source-node": "n3",
+      "source-slot": "Output",
+      "target-node": "n0",
+      "target-slot": "Input"
+    }
+  ],
+  "nodes": {
+    "n0": {
+      "jipipe:graph-compartment": "d1d6a63f-54de-5877-af74-445929025c8d",
+      "jipipe:metadata-v1": {
+        "location/d1d6a63f-54de-5877-af74-445929025c8d/x": 1,
+        "location/d1d6a63f-54de-5877-af74-445929025c8d/y": 8
+      },
+      "jipipe:node-info-id": "ij1-color-combine-rgb"
+    },
+    "n1": {
+      "jipipe:graph-compartment": "d1d6a63f-54de-5877-af74-445929025c8d",
+      "jipipe:metadata-v1": {
+        "location/d1d6a63f-54de-5877-af74-445929025c8d/x": 2,
+        "location/d1d6a63f-54de-5877-af74-445929025c8d/y": 0
+      },
+      "jipipe:node-info-id": "trackmate-visualize-follow-spots"
+    },
+    "n3": {
+      "jipipe:graph-compartment": "d1d6a63f-54de-5877-af74-445929025c8d",
+      "jipipe:metadata-v1": {
+        "location/d1d6a63f-54de-5877-af74-445929025c8d/x": 0,
+        "location/d1d6a63f-54de-5877-af74-445929025c8d/y": 4
+      },
+      "jipipe:node-info-id": "ij1-color-merge-channels",
+      "jipipe:slot-configuration": {
+        "input": {
+          "C1": {
+            "slot-data-type": "imagej-imgplus-greyscale",
+            "slot-type": "Input",
+            "name": "C1",
+            "custom-name": null,
+            "description": "",
+            "is-virtual": true,
+            "save-outputs": true,
+            "is-optional": false
+          },
+          "C2": {
+            "slot-data-type": "imagej-imgplus-greyscale",
+            "slot-type": "Input",
+            "name": "C2",
+            "custom-name": null,
+            "description": "",
+            "is-virtual": true,
+            "save-outputs": true,
+            "is-optional": false
+          },
+          "C3": {
+            "slot-data-type": "imagej-imgplus-greyscale",
+            "slot-type": "Input",
+            "name": "C3",
+            "custom-name": null,
+            "description": "",
+            "is-virtual": true,
+            "save-outputs": true,
+            "is-optional": false
+          }
+        },
+        "output": {
+          "Output": {
+            "slot-data-type": "imagej-imgplus",
+            "slot-type": "Output",
+            "name": "Output",
+            "custom-name": null,
+            "description": "",
+            "is-virtual": false,
+            "save-outputs": true,
+            "is-optional": false
+          }
+        }
+      },
+      "create-composite": false,
+      "channel-color-assignments/C1": "Blue",
+      "channel-color-assignments/C2": "Red",
+      "channel-color-assignments/C3": "Gray"
+    }
+  }
+}

@@ -32,32 +32,39 @@ template:
 
 # Pattern: Pretrained Cellpose 3.x segmentation model -> Cellpose segmentation (3.x) -> Convert 2D ROI to RGB
 
-Mined pattern `chain-3-import-cellpose-3-x-pretrained-segmentation-model-cellpose-segmentation-inference-3-x-ij1-roi-to-rgb` (shape `chain`, support 34).
+Mined pattern
+`chain-3-import-cellpose-3-x-pretrained-segmentation-model-cellpose-segmentation-inference-3-x-ij1-roi-to-rgb` (shape
+`chain`, support 34).
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
+| role  | node ids                                            |
+|-------|-----------------------------------------------------|
 | other | `import-cellpose-3.x-pretrained-segmentation-model` |
-| other | `cellpose-segmentation-inference-3.x` |
-| other | `ij1-roi-to-rgb` |
+| other | `cellpose-segmentation-inference-3.x`               |
+| other | `ij1-roi-to-rgb`                                    |
 
 ## Example graph
 
-Project: `AIAgentTests/03-ExampleWorkflows/AdrianFeile_VibrioOnChip_04.jip` (relative to `/data/JIPipe`), compartment `Preprocessing`.
+Project: `AIAgentTests/03-ExampleWorkflows/AdrianFeile_VibrioOnChip_04.jip` (relative to `/data/JIPipe`), compartment
+`Preprocessing`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `import-cellpose-3.x-pretrained-segmentation-model` | Pretrained Cellpose 3.x segmentation model |
-| n1 | `cellpose-segmentation-inference-3.x` | Cellpose segmentation (3.x) |
-| n2 | `ij1-roi-to-rgb` | Convert 2D ROI to RGB |
+| key | node id                                             | name                                       |
+|-----|-----------------------------------------------------|--------------------------------------------|
+| n0  | `import-cellpose-3.x-pretrained-segmentation-model` | Pretrained Cellpose 3.x segmentation model |
+| n1  | `cellpose-segmentation-inference-3.x`               | Cellpose segmentation (3.x)                |
+| n2  | `ij1-roi-to-rgb`                                    | Convert 2D ROI to RGB                      |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
+| from                                       | slot     | to                          | slot    | data class          |
+|--------------------------------------------|----------|-----------------------------|---------|---------------------|
 | Pretrained Cellpose 3.x segmentation model | `Output` | Cellpose segmentation (3.x) | `Model` | `cellpose-model-v2` |
-| Cellpose segmentation (3.x) | `ROI` | Convert 2D ROI to RGB | `ROI` | `imagej-roi` |
+| Cellpose segmentation (3.x)                | `ROI`    | Convert 2D ROI to RGB       | `ROI`   | `imagej-roi`        |
 
 ## Template
 
-Proposed name `Pretrained Cellpose 3.x segmentation model -> Cellpose segmentation (3.x) -> Convert 2D ROI to RGB`, menu path `Patterns/Machine learning/Pretrained Cellpose 3.x segmentation model -> Cellpose segmentation (3.x) -> Convert 2D ROI to RGB` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/chain-3-import-cellpose-3-x-pretrained-segmentation-model-cellpose-segmentation-inference-3-x-ij1-roi-to-rgb.json`.
+Proposed name `Pretrained Cellpose 3.x segmentation model -> Cellpose segmentation (3.x) -> Convert 2D ROI to RGB`, menu
+path
+`Patterns/Machine learning/Pretrained Cellpose 3.x segmentation model -> Cellpose segmentation (3.x) -> Convert 2D ROI to RGB`
+(proposal only - not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/chain-3-import-cellpose-3-x-pretrained-segmentation-model-cellpose-segmentation-inference-3-x-ij1-roi-to-rgb.json`.
 

@@ -160,8 +160,8 @@ def render(parent_of, name_of, has_child, tops, reg_by_id, prim_branch, sec_bran
               "|---|---|---:|---|"]
     for Bf in sorted(tops, key=lambda f: (-branch_used.get(f, 0), f)):
         u = branch_used.get(Bf, 0)
-        flag = "0 used — strongest merge/demotion candidate" if u == 0 else (
-               "< 3 used — merge/demotion candidate" if u < 3 else "")
+        flag = "0 used - strongest merge/demotion candidate" if u == 0 else (
+               "< 3 used - merge/demotion candidate" if u < 3 else "")
         c_rows.append("| `%s` | %s | %d | %s |" % (S(Bf), name_of[Bf], u, flag))
     low = [S(Bf) for Bf in tops if branch_used.get(Bf, 0) < 3]
     zero = [S(Bf) for Bf in tops if branch_used.get(Bf, 0) == 0]
@@ -185,29 +185,29 @@ def render(parent_of, name_of, has_child, tops, reg_by_id, prim_branch, sec_bran
         "`analysis/t6_table.md`.",
         "", "Method:",
         "- **Branch definitions:** a node's **branch** = the top-level branch of its "
-        "**primary** function (`functions[0]`; parent-walk to `null` — verified "
+        "**primary** function (`functions[0]`; parent-walk to `null` - verified "
         "acyclic). A node's **secondary branches** = the top-level branch of each of "
         "its secondary functions (`functions[1:]`), deduped, excluding the primary "
         "branch. %d top-level branches; %d functions." % (len(tops), len(name_of)),
-        "- **4a:** nodes counted per **primary function id** (leaf or branch — "
+        "- **4a:** nodes counted per **primary function id** (leaf or branch - "
         "`misc` itself, `segmentation` and `scripting` can be primary values; %d "
         "non-empty primary ids are branch-level, not leaves); the %d functions "
         "never a primary are omitted. Top %d biggest and bottom %d smallest "
         "non-empty; the catch-all `misc` and its branch members are marked."
         % (n_branch_prims, n_never_prim, TOPN, BOTN),
-        "- **4b (dual reading):** (i) **catch-all only** — corpus-USED nodes whose "
-        "primary function is exactly `%s` (%d of them); (ii) **whole misc branch** — "
+        "- **4b (dual reading):** (i) **catch-all only** - corpus-USED nodes whose "
+        "primary function is exactly `%s` (%d of them); (ii) **whole misc branch** - "
         "corpus-USED nodes whose primary function is in the misc subtree: `misc`, "
         "`data-utilities`, `scripting` + its %d `scripting-*` leaf children, "
         "`text-markup` (%d of them, computed by branch-walk). Note: the "
         "ground-facts summary names 3 child leaves of `misc` and counts "
-        "`scripting` itself as one of them (2 nodes, 0 used — matching the file's "
+        "`scripting` itself as one of them (2 nodes, 0 used - matching the file's "
         "2 nodes with primary `scripting` exactly); in the file `scripting` is "
         "additionally an intermediate node with %d further leaf children "
         "(`scripting-expression`, `scripting-imagej-macro`, `scripting-python`, "
         "`scripting-r`), so the ruling's literal set {`misc`, `data-utilities`, "
         "`scripting`, `text-markup`} yields %d used nodes while the whole-branch "
-        "walk yields %d — the difference is %s (their primaries are `scripting-*` "
+        "walk yields %d - the difference is %s (their primaries are `scripting-*` "
         "leaves under `scripting`). The whole-branch walk is reported as reading "
         "(ii) (it is the 'whole misc branch'); the literal-set count is stated "
         "alongside." % (MISC, len(i_ids), n_scripting_children, len(ii_ids),
@@ -222,7 +222,7 @@ def render(parent_of, name_of, has_child, tops, reg_by_id, prim_branch, sec_bran
         "primary branch Pb and ≥ 1 secondary branch: gather N's corpus edges (in "
         "AND out, project-wide uid resolution, ANY dataClass; self-edges "
         "excluded; endpoints that are absent ids or have no primary branch "
-        "ignored — %s of %d corpus-USED node ids are absent from the registry and "
+        "ignored - %s of %d corpus-USED node ids are absent from the registry and "
         "treated as unknown-branch: %s). Let mass(B) = number of N's "
         "neighbor-endpoints whose primary branch == B. primaryMass = mass(Pb); "
         "bestSecondaryBranch = argmax over N's secondary branches of mass (tie → "
@@ -235,31 +235,31 @@ def render(parent_of, name_of, has_child, tops, reg_by_id, prim_branch, sec_bran
         % (len(absent), len(used), absent_l, D_TOP, len(cands), f"{n_edges:,}",
            len(withsec)),
         "",
-        "### 4a — Leaf occupancy (primary function id; top %d / bottom %d of %d "
+        "### 4a - Leaf occupancy (primary function id; top %d / bottom %d of %d "
         "non-empty)" % (TOPN, BOTN, len(occ)), ""]
     body += a_big + ["", "Bottom %d smallest non-empty:" % BOTN, ""] + a_small + [""]
-    body += ["### 4b — Orphan load: corpus-USED nodes in the Miscellaneous "
+    body += ["### 4b - Orphan load: corpus-USED nodes in the Miscellaneous "
              "catch-all (dual reading)", "",
-             "Reading (i) — catch-all only, primary function == `misc` "
+             "Reading (i) - catch-all only, primary function == `misc` "
              "(%d):" % len(i_ids), ""] + b1 + [
-             "", "Reading (ii) — whole misc branch, primary function in the misc "
+             "", "Reading (ii) - whole misc branch, primary function in the misc "
              "subtree (%d):" % len(ii_ids), ""] + b2 + [
              "", "Reading (ii) per the ruling's literal set {`misc`, "
-             "`data-utilities`, `scripting`, `text-markup`}: %d used nodes — the "
+             "`data-utilities`, `scripting`, `text-markup`}: %d used nodes - the "
              "difference from the whole-branch walk above: %s (their primaries are "
              "`scripting-*` leaves under the intermediate `scripting` node)."
              % (len(ii_literal),
                 ", ".join("`%s` (primary `%s`)" % (n, S(reg_by_id[n]["functions"][0]))
                           for n in ii_diff) or "(none)"), ""]
-    body += ["### 4c — Top-level branches: distinct corpus-USED node ids (full "
+    body += ["### 4c - Top-level branches: distinct corpus-USED node ids (full "
              "%d-branch table, sorted by used count desc)" % len(tops), ""] + c_rows + [
              "", "Merge/demotion candidates (< 3 used): " +
              (", ".join("`%s`" % x for x in low) or "(none)") + "; strongest (0 "
               "used): " + (", ".join("`%s`" % x for x in zero) or "(none)"), ""]
-    body += ["### 4d — Secondary-value candidates (top %d of %d total; sorted by "
+    body += ["### 4d - Secondary-value candidates (top %d of %d total; sorted by "
              "secondaryMass − primaryMass desc, then id)" % (min(D_TOP, len(cands)), len(cands)),
              ""] + d_rows + [
-             "", "Step 2 spot-check — 3 named candidates verified by reading "
+             "", "Step 2 spot-check - 3 named candidates verified by reading "
              "`registry.json` (functions + slot data types):", ""] + spot + [""]
     return body, a_full, b1, b2, b2lit, c_rows, d_rows, spot
 
@@ -290,13 +290,13 @@ def main():
             end = m.end() + nxt.start() if nxt else len(t)
             REPORT.write_text(t[:m.start()] + text + t[end:], encoding="utf-8")
     TABLE.write_text("\n".join(
-        ["# Task 6 — raw tables (function-tree fit & secondary-function value)", "",
-         "## 4a — leaf occupancy (primary function id): all non-empty", ""] + a_full +
-         ["", "## 4b — reading (i) catch-all only (primary == `misc`)", ""] + b1 +
-         ["", "## 4b — reading (ii) whole misc branch (primary function in misc subtree)", ""] + b2 +
-         ["", "## 4b — reading (ii), ruling's literal set {misc, data-utilities, scripting, text-markup}", ""] + b2lit +
-         ["", "## 4c — top-level branches: distinct corpus-USED node ids (primary branch)", ""] +
-         c_rows + ["", "## 4d — secondary-value candidates (all)", ""] + d_rows +
+        ["# Task 6 - raw tables (function-tree fit & secondary-function value)", "",
+         "## 4a - leaf occupancy (primary function id): all non-empty", ""] + a_full +
+         ["", "## 4b - reading (i) catch-all only (primary == `misc`)", ""] + b1 +
+         ["", "## 4b - reading (ii) whole misc branch (primary function in misc subtree)", ""] + b2 +
+         ["", "## 4b - reading (ii), ruling's literal set {misc, data-utilities, scripting, text-markup}", ""] + b2lit +
+         ["", "## 4c - top-level branches: distinct corpus-USED node ids (primary branch)", ""] +
+         c_rows + ["", "## 4d - secondary-value candidates (all)", ""] + d_rows +
          ["", "Step 2 spot-check (3 named candidates, registry read)", ""] + spot +
          ["", "Corpus-USED registry nodes with >= 1 secondary branch (denominator "
           "context): " + (", ".join("`%s`" % n for n in withsec) or "(none)"),

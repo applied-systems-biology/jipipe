@@ -19,11 +19,7 @@ import ij.gui.NewImage;
 import ij.gui.OvalRoi;
 import ij.gui.Roi;
 import ij.plugin.filter.RankFilters;
-import ij.process.Blitter;
-import ij.process.ByteProcessor;
-import ij.process.ImageConverter;
-import ij.process.ImageProcessor;
-import ij.process.ShortProcessor;
+import ij.process.*;
 import org.hkijena.jipipe.utils.threshold.AutoThresholdMethod;
 import org.hkijena.jipipe.utils.threshold.NBinsAutoThresholder;
 

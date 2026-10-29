@@ -36,28 +36,32 @@ Mined pattern `chain-3-import-folder-list-folder-list-subfolders-path-to-annotat
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| import | `import-folder-list` |
-| import | `folder-list-subfolders` |
+| role     | node ids                    |
+|----------|-----------------------------|
+| import   | `import-folder-list`        |
+| import   | `folder-list-subfolders`    |
 | annotate | `path-to-annotation-simple` |
 
 ## Example graph
 
-Project: `AIAgentTests/01-BasicWorkshop/JSC_2025_06_Kidney_Exports/kidney.jip` (relative to `/data/JIPipe`), compartment `File Handling`.
+Project: `AIAgentTests/01-BasicWorkshop/JSC_2025_06_Kidney_Exports/kidney.jip` (relative to `/data/JIPipe`), compartment
+`File Handling`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `import-folder-list` | Folder list |
-| n1 | `folder-list-subfolders` | List subfolders |
-| n2 | `path-to-annotation-simple` | Annotate with file/directory name |
+| key | node id                     | name                              |
+|-----|-----------------------------|-----------------------------------|
+| n0  | `import-folder-list`        | Folder list                       |
+| n1  | `folder-list-subfolders`    | List subfolders                   |
+| n2  | `path-to-annotation-simple` | Annotate with file/directory name |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
-| Folder list | `Folder paths` | List subfolders | `Folders` | `folder` |
-| List subfolders | `Subfolders` | Annotate with file/directory name | `Paths` | `folder` |
+| from            | slot           | to                                | slot      | data class |
+|-----------------|----------------|-----------------------------------|-----------|------------|
+| Folder list     | `Folder paths` | List subfolders                   | `Folders` | `folder`   |
+| List subfolders | `Subfolders`   | Annotate with file/directory name | `Paths`   | `folder`   |
 
 ## Template
 
-Proposed name `Folder list -> List subfolders -> Annotate with file/directory name`, menu path `Patterns/Data Sources/Folder list -> List subfolders -> Annotate with file/directory name` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/chain-3-import-folder-list-folder-list-subfolders-path-to-annotation-simple.json`.
+Proposed name `Folder list -> List subfolders -> Annotate with file/directory name`, menu path
+`Patterns/Data Sources/Folder list -> List subfolders -> Annotate with file/directory name` (proposal only - not
+registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/chain-3-import-folder-list-folder-list-subfolders-path-to-annotation-simple.json`.
 

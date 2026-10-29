@@ -7,28 +7,27 @@ import java.awt.*;
 
 public class LoggerPanel extends JPanel {
 
+    private final Object lineCountLock = new Object();
     private JScrollPane scrollPane;
     private JTextArea textArea;
     private boolean autoScrollEnabled = true;
     private boolean limitLines = true;
     private int maxLines = 8192;
-    
     // Performance optimization fields
     private int currentLineCount = 0;
     private int cachedDocumentLength = 0;
-    private final Object lineCountLock = new Object();
 
     public LoggerPanel() {
         initialize();
     }
 
     private void initialize() {
-        setLayout(new BorderLayout(8,8));
+        setLayout(new BorderLayout(8, 8));
 
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
 
-        textArea = new  JTextArea();
+        textArea = new JTextArea();
         textArea.setEditable(false);
         textArea.setLineWrap(false);
         textArea.setFont(new Font(Font.MONOSPACED, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeSmall()));
@@ -181,7 +180,7 @@ public class LoggerPanel extends JPanel {
      * Appends a line to the log and optionally scrolls down.
      * Implements high-performance line limiting when enabled.
      *
-     * @param line the line to append
+     * @param line       the line to append
      * @param scrollDown whether to scroll down after appending
      */
     public void appendLine(String line, boolean scrollDown) {
@@ -219,21 +218,21 @@ public class LoggerPanel extends JPanel {
     }
 
     /**
-     * Sets whether auto-scroll is enabled.
-     *
-     * @param enabled true to enable auto-scroll, false otherwise
-     */
-    public void setAutoScrollEnabled(boolean enabled) {
-        this.autoScrollEnabled = enabled;
-    }
-
-    /**
      * Returns whether auto-scroll is enabled.
      *
      * @return true if auto-scroll is enabled, false otherwise
      */
     public boolean isAutoScrollEnabled() {
         return autoScrollEnabled;
+    }
+
+    /**
+     * Sets whether auto-scroll is enabled.
+     *
+     * @param enabled true to enable auto-scroll, false otherwise
+     */
+    public void setAutoScrollEnabled(boolean enabled) {
+        this.autoScrollEnabled = enabled;
     }
 
     public int getMaxLines() {
@@ -282,7 +281,7 @@ public class LoggerPanel extends JPanel {
         if (text == null || text.isEmpty()) {
             return 0;
         }
-        
+
         int lineCount = 0;
         for (int i = 0; i < text.length(); i++) {
             if (text.charAt(i) == '\n') {

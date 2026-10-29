@@ -53,18 +53,20 @@ import static org.junit.jupiter.api.Assertions.fail;
 /**
  * Verifies the node-leaf contract of {@link NodeBrowserTreeController} that
  * the add-nodes panel depends on (issues from the 1324 manual review):
- * the tree carries entry leaves from the FULL current result set —
- * independent of which function/scope is selected — so branches are
+ * the tree carries entry leaves from the FULL current result set -
+ * independent of which function/scope is selected - so branches are
  * expandable and scope groups (System/Global/Project) show their entries
  * without first selecting them.
  */
 class NodeBrowserTreeControllerTest {
 
     private static final String STUB_ID = "tree-controller-test:stub-node";
-    /** A real, registry-registered branch the stub function ids can be filed under. */
+    /**
+     * A real, registry-registered branch the stub function ids can be filed under.
+     */
     private static final String IMAGES_FN_ID = "jipipe:function:images";
     private static final JIPipeMutableDependency TEST_DEPENDENCY =
-        new JIPipeMutableDependency("tree-controller-test", "1.0.0", "tree-controller-test");
+            new JIPipeMutableDependency("tree-controller-test", "1.0.0", "tree-controller-test");
 
     private static NodeBrowserTreeController controller;
 
@@ -87,12 +89,33 @@ class NodeBrowserTreeControllerTest {
         // the branches the leaves attach to are present). Individual tests
         // then drive the leaves via rebuildNodeLeaves.
         controller.populateTree(JIPipeNodeDatabasePipelineVisibility.Pipeline,
-            List.of(nodeEntry(), templateEntry(TemplateScope.System, IMAGES_FN_ID)));
+                List.of(nodeEntry(), templateEntry(TemplateScope.System, IMAGES_FN_ID)));
     }
 
     @AfterAll
     static void cleanup() {
         JIPipe.getNodes().unregister(STUB_ID);
+    }
+
+    /**
+     * The stub's own node entry (a real, insertable database entry). The stub
+     * is registered under the Images branch (the ColorStackFunction leaf), so
+     * its entry attaches to the same branch as the test templates.
+     */
+    private static JIPipeNodeDatabaseEntry nodeEntry() {
+        return new CreateNewNodeByInfoDatabaseEntry(STUB_ID, JIPipe.getNodes().getInfoById(STUB_ID));
+    }
+
+    private static CreateNewNodesByTemplateDatabaseEntry templateEntry(TemplateScope scope, String fnId) {
+        JIPipeGraph graph = new JIPipeGraph();
+        JIPipeNodeInfo stub = JIPipe.getNodes().getInfoById(STUB_ID);
+        graph.insertNode(stub.newInstance());
+        graph.insertNode(stub.newInstance());
+        JIPipeNodeTemplate template = new JIPipeNodeTemplate();
+        template.setName("Controller Test Template " + scope);
+        template.setGraph(graph);
+        template.setTaxonomyFunction(new JIPipeTaxonomyFunctionRef(fnId));
+        return new CreateNewNodesByTemplateDatabaseEntry(template, scope);
     }
 
     @Test
@@ -104,7 +127,7 @@ class NodeBrowserTreeControllerTest {
         // when it carries entry leaves.
         JIPipeNodeDatabaseEntry node = nodeEntry();
         CreateNewNodesByTemplateDatabaseEntry template =
-            templateEntry(TemplateScope.System, IMAGES_FN_ID);
+                templateEntry(TemplateScope.System, IMAGES_FN_ID);
 
         controller.rebuildNodeLeaves(List.of(node, template));
         // The template is dual-placed (under its function branch AND under
@@ -126,10 +149,10 @@ class NodeBrowserTreeControllerTest {
         // Root cause of "System templates only shown when System is selected":
         // the browser rebuilt the leaves from the SELECTION-FILTERED set, so a
         // System template left the tree the moment a function was selected.
-        // With full-set attachment the System leaf must persist — re-attaching
+        // With full-set attachment the System leaf must persist - re-attaching
         // the FULL set (as the fixed browser does) must not drop it.
         CreateNewNodesByTemplateDatabaseEntry systemTemplate =
-            templateEntry(TemplateScope.System, IMAGES_FN_ID);
+                templateEntry(TemplateScope.System, IMAGES_FN_ID);
         JIPipeNodeDatabaseEntry node = nodeEntry();
         List<JIPipeNodeDatabaseEntry> full = List.of(systemTemplate, node);
         controller.rebuildNodeLeaves(full);
@@ -147,7 +170,7 @@ class NodeBrowserTreeControllerTest {
     /**
      * The round-2 review bug: the tree ROOT (a String user object, "All
      * functions") never forwarded into the synthetic Templates header, so the
-     * System/Global/Project scope rows received NO leaves in any tier — the
+     * System/Global/Project scope rows received NO leaves in any tier - the
      * Templates/System branch appeared empty while the same entries were in
      * the results list. The leaf must hang directly under the scope row
      * (Templates → System), not only under the function branch.
@@ -155,9 +178,9 @@ class NodeBrowserTreeControllerTest {
     @Test
     void scopeRowsCarryTheirLeavesDirectly() {
         CreateNewNodesByTemplateDatabaseEntry systemTemplate =
-            templateEntry(TemplateScope.System, IMAGES_FN_ID);
+                templateEntry(TemplateScope.System, IMAGES_FN_ID);
         CreateNewNodesByTemplateDatabaseEntry globalTemplate =
-            templateEntry(TemplateScope.Global, IMAGES_FN_ID);
+                templateEntry(TemplateScope.Global, IMAGES_FN_ID);
         JIPipeNodeDatabaseEntry node = nodeEntry();
         controller.rebuildNodeLeaves(List.of(systemTemplate, globalTemplate, node));
 
@@ -175,7 +198,7 @@ class NodeBrowserTreeControllerTest {
 
     /**
      * The "Patterns" grouping: a template entry must NOT hang directly under
-     * a function row (that mixed templates into the node lists — the
+     * a function row (that mixed templates into the node lists - the
      * "functions full of templates" clutter). It hangs one level below, under
      * a synthetic "Patterns" child of the function that carries it (or the
      * scope row on the Templates branch); the function level itself shows
@@ -186,19 +209,19 @@ class NodeBrowserTreeControllerTest {
     void templatesHangUnderThePatternsChildNotTheFunctionLevel() {
         JIPipeNodeDatabaseEntry node = nodeEntry();
         CreateNewNodesByTemplateDatabaseEntry template =
-            templateEntry(TemplateScope.System, IMAGES_FN_ID);
+                templateEntry(TemplateScope.System, IMAGES_FN_ID);
         controller.rebuildNodeLeaves(List.of(node, template));
 
         Map<Object, List<Object>> parentsByLeaf = new HashMap<>();
         collectLeafParents((DefaultMutableTreeNode) controller.getTreeModel().getRoot(), parentsByLeaf);
 
-        // The template leaf (dual-placed: function side + scope side) — EVERY
+        // The template leaf (dual-placed: function side + scope side) - EVERY
         // occurrence hangs under a grouping row (Patterns or
         // Templates/<scope>), never directly under a function row.
         List<Object> templateParents = parentsByLeaf.get(template);
         assertThat(templateParents)
-            .as("the dual-placed template leaf must be present, got %s", parentsByLeaf.keySet())
-            .hasSize(2);
+                .as("the dual-placed template leaf must be present, got %s", parentsByLeaf.keySet())
+                .hasSize(2);
         boolean hasPatterns = false, hasScope = false;
         for (Object parent : templateParents) {
             if (parent instanceof PatternsTreeNode patterns) {
@@ -211,19 +234,19 @@ class NodeBrowserTreeControllerTest {
             }
         }
         assertThat(hasPatterns)
-            .as("at least one template occurrence hangs under the <function>/Patterns row")
-            .isTrue();
+                .as("at least one template occurrence hangs under the <function>/Patterns row")
+                .isTrue();
         assertThat(hasScope)
-            .as("the Templates/<scope> placement is kept (dual view)")
-            .isTrue();
+                .as("the Templates/<scope> placement is kept (dual view)")
+                .isTrue();
 
         // The real node's leaf hangs directly under a FUNCTION row (never a
         // Patterns row).
         List<Object> nodeParents = parentsByLeaf.get(node);
         assertThat(nodeParents).hasSize(1);
         assertThat(nodeParents.get(0))
-            .as("the real node stays at the function's own level, not under Patterns")
-            .isInstanceOf(JIPipeNodeTaxonomyFunction.class);
+                .as("the real node stays at the function's own level, not under Patterns")
+                .isInstanceOf(JIPipeNodeTaxonomyFunction.class);
 
         // The dual placement count holds (node + Patterns leaf +
         // Templates/System leaf = 3).
@@ -258,7 +281,13 @@ class NodeBrowserTreeControllerTest {
         assertThat(leafCount()).isEqualTo(1);
     }
 
-    /** The entry leaves that hang DIRECTLY under the given scope row. */
+    // ------------------------------------------------------------------
+    // Helpers
+    // ------------------------------------------------------------------
+
+    /**
+     * The entry leaves that hang DIRECTLY under the given scope row.
+     */
     private int scopeRowLeafCount(TemplateScope scope) {
         TreePath row = scopeRow(scope);
         assertThat(row).isNotNull();
@@ -269,7 +298,7 @@ class NodeBrowserTreeControllerTest {
         int count = 0;
         for (int i = 0; i < mtn.getChildCount(); i++) {
             if (mtn.getChildAt(i) instanceof DefaultMutableTreeNode child
-                && child.getUserObject() instanceof JIPipeNodeDatabaseEntry) {
+                    && child.getUserObject() instanceof JIPipeNodeDatabaseEntry) {
                 count++;
             }
         }
@@ -281,7 +310,7 @@ class NodeBrowserTreeControllerTest {
         // The leaves follow the current (search+facet) result set: an entry
         // that no longer matches the search must lose its leaf, the others keep theirs.
         CreateNewNodesByTemplateDatabaseEntry template =
-            templateEntry(TemplateScope.Global, IMAGES_FN_ID);
+                templateEntry(TemplateScope.Global, IMAGES_FN_ID);
         JIPipeNodeDatabaseEntry node = nodeEntry();
         controller.rebuildNodeLeaves(List.of(template, node));
         assertThat(leafCount()).isEqualTo(3);
@@ -292,13 +321,9 @@ class NodeBrowserTreeControllerTest {
         assertThat(controller.nodeLeafRow(node)).isNotNull();
     }
 
-    // ------------------------------------------------------------------
-    // Helpers
-    // ------------------------------------------------------------------
-
     /**
      * Counts the entry leaves in the tree MODEL (independent of expansion
-     * state — visible-row counting would miss leaves under collapsed branches).
+     * state - visible-row counting would miss leaves under collapsed branches).
      */
     private int leafCount() {
         return countLeaves((DefaultMutableTreeNode) controller.getTreeModel().getRoot());
@@ -358,25 +383,6 @@ class NodeBrowserTreeControllerTest {
         for (int i = 1; i < components.length; i++) {
             controller.getTree().expandPath(new TreePath(java.util.Arrays.copyOfRange(components, 0, i)));
         }
-    }
-
-    /** The stub's own node entry (a real, insertable database entry). The stub
-     * is registered under the Images branch (the ColorStackFunction leaf), so
-     * its entry attaches to the same branch as the test templates. */
-    private static JIPipeNodeDatabaseEntry nodeEntry() {
-        return new CreateNewNodeByInfoDatabaseEntry(STUB_ID, JIPipe.getNodes().getInfoById(STUB_ID));
-    }
-
-    private static CreateNewNodesByTemplateDatabaseEntry templateEntry(TemplateScope scope, String fnId) {
-        JIPipeGraph graph = new JIPipeGraph();
-        JIPipeNodeInfo stub = JIPipe.getNodes().getInfoById(STUB_ID);
-        graph.insertNode(stub.newInstance());
-        graph.insertNode(stub.newInstance());
-        JIPipeNodeTemplate template = new JIPipeNodeTemplate();
-        template.setName("Controller Test Template " + scope);
-        template.setGraph(graph);
-        template.setTaxonomyFunction(new JIPipeTaxonomyFunctionRef(fnId));
-        return new CreateNewNodesByTemplateDatabaseEntry(template, scope);
     }
 
     /**

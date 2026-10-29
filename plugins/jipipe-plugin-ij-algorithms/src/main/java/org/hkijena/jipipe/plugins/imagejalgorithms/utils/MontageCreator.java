@@ -32,7 +32,8 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
-import org.hkijena.jipipe.plugins.parameters.library.primitives.FontFamilyParameter;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.JIPipeFontFamilySizeStyleColorParameter;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.JIPipeFontFamilySizeStyleParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalIntegerParameter;
 import org.hkijena.jipipe.plugins.parameters.library.roi.Anchor;
 import org.hkijena.jipipe.utils.ColorUtils;
@@ -167,7 +168,7 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
         Font labelFont = null;
         FontMetrics labelFontMetrics = null;
         if (labelParameters.drawLabel) {
-            labelFont = labelParameters.getLabelFontFamily().toFont(Font.PLAIN, labelParameters.labelSize);
+            labelFont = labelParameters.getLabelFont().toFont();
 
             BufferedImage tmp = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
             Graphics2D g = (Graphics2D) tmp.getGraphics();
@@ -351,7 +352,7 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
                     ImageJUtils.drawAnchoredStringLabel(targetIp,
                             label,
                             drawArea,
-                            labelParameters.labelForeground,
+                            labelParameters.labelFont.getColor(),
                             labelParameters.labelBackground.getContent(),
                             lf,
                             labelParameters.labelBackground.isEnabled(),
@@ -490,9 +491,8 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
 
     public static class LabelParameters extends AbstractJIPipeParameterCollection {
         private boolean drawLabel = true;
-        private Color labelForeground = Color.WHITE;
-        private FontFamilyParameter labelFontFamily = new FontFamilyParameter();
-        private int labelSize = 12;
+        // #1339: label foreground + font family + size folded into one font param.
+        private JIPipeFontFamilySizeStyleColorParameter labelFont = new JIPipeFontFamilySizeStyleColorParameter();
         private Anchor labelLocation = Anchor.BottomCenter;
         private boolean avoidLabelOnImage = true;
         private boolean limitWithEllipsis = true;
@@ -500,13 +500,12 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
         private OptionalColorParameter labelBackground = new OptionalColorParameter(Color.BLACK, true);
 
         public LabelParameters() {
+            labelFont.migrateFrom(JIPipeFontFamilySizeStyleParameter.defaultFamily(), 12, Font.PLAIN, Color.WHITE);
         }
 
         public LabelParameters(LabelParameters other) {
             this.drawLabel = other.drawLabel;
-            this.labelForeground = other.labelForeground;
-            this.labelFontFamily = new FontFamilyParameter(other.labelFontFamily);
-            this.labelSize = other.labelSize;
+            this.labelFont = new JIPipeFontFamilySizeStyleColorParameter(other.labelFont);
             this.labelLocation = other.labelLocation;
             this.avoidLabelOnImage = other.avoidLabelOnImage;
             this.labelBackground = new OptionalColorParameter(other.labelBackground);
@@ -557,37 +556,15 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
             this.drawLabel = drawLabel;
         }
 
-        @SetJIPipeDocumentation(name = "Label color", description = "The color of the label")
-        @JIPipeParameter("label-foreground")
-        public Color getLabelForeground() {
-            return labelForeground;
+        @SetJIPipeDocumentation(name = "Label font", description = "The font (family, size, style and color) of the label")
+        @JIPipeParameter("label-font")
+        public JIPipeFontFamilySizeStyleColorParameter getLabelFont() {
+            return labelFont;
         }
 
-        @JIPipeParameter("label-foreground")
-        public void setLabelForeground(Color labelForeground) {
-            this.labelForeground = labelForeground;
-        }
-
-        @SetJIPipeDocumentation(name = "Label font family", description = "The font of the label")
-        @JIPipeParameter("label-font-family")
-        public FontFamilyParameter getLabelFontFamily() {
-            return labelFontFamily;
-        }
-
-        @JIPipeParameter("label-font-family")
-        public void setLabelFontFamily(FontFamilyParameter labelFontFamily) {
-            this.labelFontFamily = labelFontFamily;
-        }
-
-        @SetJIPipeDocumentation(name = "Label font size", description = "The font size of the drawn label")
-        @JIPipeParameter("label-font-size")
-        public int getLabelSize() {
-            return labelSize;
-        }
-
-        @JIPipeParameter("label-font-size")
-        public void setLabelSize(int labelSize) {
-            this.labelSize = labelSize;
+        @JIPipeParameter("label-font")
+        public void setLabelFont(JIPipeFontFamilySizeStyleColorParameter labelFont) {
+            this.labelFont = labelFont;
         }
 
         @SetJIPipeDocumentation(name = "Label location", description = "The location of the label")

@@ -1,1 +1,33 @@
-{"nodes":{"n0":{"jipipe:node-info-id":"import-imagej-roi-from-file","jipipe:graph-compartment":"11a25129-154c-59b5-8402-50edaf977833","jipipe:node:name":"ROI from file"},"n1":{"jipipe:node-info-id":"ij1-roi-to-mask","jipipe:graph-compartment":"11a25129-154c-59b5-8402-50edaf977833","jipipe:node:name":"Convert ROI to mask"},"n2":{"jipipe:node-info-id":"ij1-morph-operation2d","jipipe:graph-compartment":"11a25129-154c-59b5-8402-50edaf977833","jipipe:node:name":"Morphological operation 2D"}},"edges":[{"source-node":"n0","source-slot":"Output","target-node":"n1","target-slot":"ROI"},{"source-node":"n1","source-slot":"Output","target-node":"n2","target-slot":"Input"}]}
+{
+  "nodes": {
+    "n0": {
+      "jipipe:node-info-id": "import-imagej-roi-from-file",
+      "jipipe:graph-compartment": "11a25129-154c-59b5-8402-50edaf977833",
+      "jipipe:node:name": "ROI from file"
+    },
+    "n1": {
+      "jipipe:node-info-id": "ij1-roi-to-mask",
+      "jipipe:graph-compartment": "11a25129-154c-59b5-8402-50edaf977833",
+      "jipipe:node:name": "Convert ROI to mask"
+    },
+    "n2": {
+      "jipipe:node-info-id": "ij1-morph-operation2d",
+      "jipipe:graph-compartment": "11a25129-154c-59b5-8402-50edaf977833",
+      "jipipe:node:name": "Morphological operation 2D"
+    }
+  },
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Output",
+      "target-node": "n1",
+      "target-slot": "ROI"
+    },
+    {
+      "source-node": "n1",
+      "source-slot": "Output",
+      "target-node": "n2",
+      "target-slot": "Input"
+    }
+  ]
+}

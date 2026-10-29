@@ -13,10 +13,7 @@
 
 package org.hkijena.jipipe.desktop.commons.nodepatterns;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
-import java.awt.Shape;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.Map;
 import java.util.Random;
@@ -28,26 +25,31 @@ import java.util.concurrent.ConcurrentHashMap;
  * <p>
  * Two cache levels:
  * <ul>
- *   <li>the white MASK, keyed by (style, seed, size bucket) — theme-independent;
+ *   <li>the white MASK, keyed by (style, seed, size bucket) - theme-independent;
  *       changing ink/opacity never invalidates it;</li>
- *   <li>the TINTED copy, keyed by (mask, ink, opacity) — built once per theme
+ *   <li>the TINTED copy, keyed by (mask, ink, opacity) - built once per theme
  *       look, drawn per node with a plain alpha composite.</li>
  * </ul>
  * Nodes cluster into a handful of sizes; larger nodes scale the nearest
  * bucket up via drawImage.
  */
 public final class NodePatternRenderer {
+    /**
+     * The canonical node body size the pattern is rendered at (the theme preview's node).
+     */
+    public static final int NODE_WIDTH = 150;
+    public static final int NODE_HEIGHT = 75;
     private static final Map<String, BufferedImage> MASK_CACHE = new ConcurrentHashMap<>();
     private static final Map<String, BufferedImage> TINT_CACHE = new ConcurrentHashMap<>();
     private static final int BUCKET = 8;
     private static final int MAX = 512;
-    /** The canonical node body size the pattern is rendered at (the theme preview's node). */
-    public static final int NODE_WIDTH = 150;
-    public static final int NODE_HEIGHT = 75;
 
-    private NodePatternRenderer() {}
+    private NodePatternRenderer() {
+    }
 
-    /** White-on-transparent mask for (style, seed, size), from the cache. */
+    /**
+     * White-on-transparent mask for (style, seed, size), from the cache.
+     */
     public static BufferedImage mask(String styleId, String seed, int width, int height) {
         NodePatternFamily fam = NodePatternStyles.family(styleId);
         if (fam == null) return null; // unknown/null style => no pattern (fail quiet)
@@ -57,7 +59,9 @@ public final class NodePatternRenderer {
         return MASK_CACHE.computeIfAbsent(key, k -> render(fam, w, h, new Random(seed.hashCode())));
     }
 
-    /** Paints the mask into (x,y,w,h), tinted with {@code ink} at {@code opacity}. */
+    /**
+     * Paints the mask into (x,y,w,h), tinted with {@code ink} at {@code opacity}.
+     */
     public static void paint(Graphics2D g, int x, int y, int w, int h,
                              String styleId, String seed, Color ink, float opacity) {
         BufferedImage m = mask(styleId, seed, w, h);
@@ -71,7 +75,7 @@ public final class NodePatternRenderer {
 
     /**
      * Paints the pattern into (x,y,w,h) as a CROP of a node's background: a
-     * canonical node body ({@value #NODE_WIDTH}×{@value #NODE_HEIGHT} — the size
+     * canonical node body ({@value #NODE_WIDTH}×{@value #NODE_HEIGHT} - the size
      * the theme preview draws nodes at) is rendered exactly as a canvas node
      * renders its pattern (via {@link #paint}), and a centered (w×h) window of
      * it is copied into the target. The icon therefore shows the pattern at
@@ -95,8 +99,8 @@ public final class NodePatternRenderer {
         try {
             // Capture the caller's clip BEFORE replacing it. gg inherits g's
             // clip at creation; setClip would discard it. Intersect (not
-            // replace) so callers that rely on their clip surviving — e.g. the
-            // round-cornered list icon that clips to a rounded rect — are not
+            // replace) so callers that rely on their clip surviving - e.g. the
+            // round-cornered list icon that clips to a rounded rect - are not
             // overdrawn by the square crop window.
             Shape callerClip = gg.getClip();
             gg.setClip(x, y, w, h);
@@ -109,7 +113,9 @@ public final class NodePatternRenderer {
         }
     }
 
-    /** Clears both caches (test hook; not needed for theme changes — the mask is theme-independent). */
+    /**
+     * Clears both caches (test hook; not needed for theme changes - the mask is theme-independent).
+     */
     public static void invalidateCache() {
         MASK_CACHE.clear();
         TINT_CACHE.clear();
@@ -117,12 +123,14 @@ public final class NodePatternRenderer {
 
     // ---- internal ----
 
-    /** Reuses or builds the tinted copy of the white mask (ink + its alpha, at {@code opacity}). */
+    /**
+     * Reuses or builds the tinted copy of the white mask (ink + its alpha, at {@code opacity}).
+     */
     private static BufferedImage tint(String maskId, BufferedImage mask, Color ink, float opacity) {
         int w = mask.getWidth(), h = mask.getHeight();
         float o = Math.max(0f, Math.min(1f, opacity));
         int inkArgb = (ink.getRed() << 16) | (ink.getGreen() << 8) | ink.getBlue();
-        // maskId (style + seed) identifies WHICH white mask this tint belongs to —
+        // maskId (style + seed) identifies WHICH white mask this tint belongs to -
         // two styles at the same size/ink/opacity must never share a tinted copy
         String key = maskId + "\u0000" + inkArgb + "\u0000" + Float.floatToIntBits(o) + "\u0000" + w + "\u0000" + h;
         return TINT_CACHE.computeIfAbsent(key, k -> {
@@ -140,8 +148,13 @@ public final class NodePatternRenderer {
         });
     }
 
-    private static int bucket(int v) { return Math.max(1, (v / BUCKET) * BUCKET); }
-    private static int clamp(int v) { return Math.min(MAX, Math.max(1, v)); }
+    private static int bucket(int v) {
+        return Math.max(1, (v / BUCKET) * BUCKET);
+    }
+
+    private static int clamp(int v) {
+        return Math.min(MAX, Math.max(1, v));
+    }
 
     private static BufferedImage render(NodePatternFamily fam, int w, int h, Random rng) {
         BufferedImage img = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);

@@ -149,7 +149,7 @@ def table_2bc(chains, allb, primb, fname):
         frag += is_frag
         iso += is_iso
         branch_txt = (" ∪ ".join(fname[u] for u in union)
-                      or "(none — no registry function leaves)")
+                      or "(none - no registry function leaves)")
         lines.append(f"| {i} | `{a}` → `{b}` → `{cc}` | {s['occ']} | {len(s['projects'])} "
                      f"| {branch_txt} | {'yes' if is_frag else 'no'} "
                      f"| {'yes' if is_iso else 'no'} |")
@@ -176,10 +176,10 @@ def method_note(chains, dead, cnt, nonreg, M_all, allb, mid_unres_triples, mid_u
         "place (rest of `report.md` untouched). Raw tables: `analysis/t4_table.md`.",
         "",
         "Method:",
-        "- **2a — top-20 node ids:** aggregated by registry id across the corpus: "
+        "- **2a - top-20 node ids:** aggregated by registry id across the corpus: "
         "distinct projects (a node used twice in one project counts once) + total "
         "node instances; sorted by project count desc, then instance count desc, then id.",
-        f"- **2b/2c — chains:** a chain A→B→C is two data-class-typed edges e1 (A→B) and "
+        f"- **2b/2c - chains:** a chain A→B→C is two data-class-typed edges e1 (A→B) and "
         f"e2 (B→C) with e1.toUid == e2.fromUid (the same B node instance); counted per "
         f"occurrence, table rows deduped by the (A.id, B.id, C.id) id-triple, top 20 by "
         f"occurrence count (deterministic tie-break: occurrences desc, then lexicographic "
@@ -188,10 +188,10 @@ def method_note(chains, dead, cnt, nonreg, M_all, allb, mid_unres_triples, mid_u
         f"edges have a fromUid in another compartment). Edge `dataClass` = the source "
         f"slot's raw on-disk data-type token: {cnt['null']} of {cnt['total']:,} edges "
         f"carry a null token and {cnt['unres']} carry one of the 8 unresolved tokens of "
-        f"Task 3 (kept as their own token in the chain statistics — never dropped); "
+        f"Task 3 (kept as their own token in the chain statistics - never dropped); "
         f"{cnt['skip_mid']} typed edges with an unresolved fromUid and "
         f"{cnt['skip_partner']} (e1, e2) pairs with an unresolved toUid were skipped "
-        f"(0 / 0 here — nothing dropped).",
+        f"(0 / 0 here - nothing dropped).",
         "- **Branch facets (2c):** each node's branch set = the union of the top-level "
         "branches of ALL its function leaves (primary + secondary, registry `functions[]`), "
         "each leaf's `parent` walked up the registry function tree (88 functions, 13 "
@@ -200,9 +200,9 @@ def method_note(chains, dead, cnt, nonreg, M_all, allb, mid_unres_triples, mid_u
         "branch (top-level of its primary function) is in neither A's nor C's branch set; "
         f"in {mid_unres_triples} triples ({mid_unres:,} occurrences) the middle node's id "
         f"is absent from the registry (legacy plugin ids, see below) so no primary "
-        f"resolves to a branch — their isolated-middle flag is reported as 'no' "
+        f"resolves to a branch - their isolated-middle flag is reported as 'no' "
         f"(not computable, not a negative signal).",
-        f"- **2d — dead-end candidates (interpretation, recorded verbatim):** “frequently "
+        f"- **2d - dead-end candidates (interpretation, recorded verbatim):** “frequently "
         f"consumed” = node id with ≥ {THRESHOLD} typed outgoing edges across the whole "
         f"corpus; “output type's consumers all in one narrow branch” = take the node's "
         f"OUTPUT data-type ids (registry `outputs[].dataType`, non-null), the registry "
@@ -210,7 +210,7 @@ def method_note(chains, dead, cnt, nonreg, M_all, allb, mid_unres_triples, mid_u
         f"(primary + secondary, as above); flag when that consumer branch union is exactly "
         f"1 top-level branch AND that branch ≠ the node's own primary branch. These are "
         f"“candidates for secondary-function assignments or family steps” (the WHY is "
-        f"Task 9's job — counts + ids + the one branch name only).",
+        f"Task 9's job - counts + ids + the one branch name only).",
         "",
         f"Summary: {len(chains)} distinct id-triples with ≥1 occurrence "
         f"({sum(s['occ'] for s in chains.values()):,} total occurrences); {M_all} "
@@ -221,7 +221,7 @@ def method_note(chains, dead, cnt, nonreg, M_all, allb, mid_unres_triples, mid_u
     if nonreg:
         lines += [f"Corpus node ids absent from the 6.0.0 registry that carry typed "
                   f"outgoing edges ({len(nonreg)} of the {n_absent} absent ids; legacy "
-                  f"plugin ids — no function leaves, treated as an empty branch set): "
+                  f"plugin ids - no function leaves, treated as an empty branch set): "
                   f"{nonreg_txt}.", ""]
     return lines
 
@@ -270,12 +270,12 @@ def main():
     mid_unres_triples = sum(1 for k in chains if k[1] not in reg_ids)
     mid_unres = sum(s["occ"] for k, s in chains.items() if k[1] not in reg_ids)
     lines = method_note(chains, dead, cnt, nonreg, M_all, allb, mid_unres_triples, mid_unres, n_absent)
-    lines += ["### 2a — Top-20 most-used node ids", ""] + table_2a(node_stats, names)
-    lines += ["", "### 2b/2c — Top-20 3-node chains with branch facets", ""]
+    lines += ["### 2a - Top-20 most-used node ids", ""] + table_2a(node_stats, names)
+    lines += ["", "### 2b/2c - Top-20 3-node chains with branch facets", ""]
     t2bc, frag20, iso20 = table_2bc(chains, allb, primb, fname)
     lines += t2bc
     lines += ["", f"Top-20 flags: {frag20} fragmented, {iso20} isolated-middle.",
-              "", f"### 2d — Dead-end candidates (≥ {THRESHOLD} typed outgoing edges; output "
+              "", f"### 2d - Dead-end candidates (≥ {THRESHOLD} typed outgoing edges; output "
               "types' consumers in exactly one top-level branch ≠ own primary branch)", ""]
     lines += table_2d(dead, names, fname) if dead else ["(none)"]
     v = top_stat["first"]
@@ -285,7 +285,7 @@ def main():
               f"{len(top_stat['projects'])} projects; in project `{v[0]}` the two edges "
               f"sharing middle node instance B = `{top_triple[1]}` are e1 (A→B): {v[1]} and "
               f"e2 (B→C): {v[2]}"]
-    TABLE.write_text("\n".join(["# Task 4 — raw tables (workflow chains & branch fragmentation)",
+    TABLE.write_text("\n".join(["# Task 4 - raw tables (workflow chains & branch fragmentation)",
                                 "", *table_2a(node_stats, names), "",
                                 *table_2bc(chains, allb, primb, fname)[0], "",
                                 *(table_2d(dead, names, fname) if dead else ["(none)"]),

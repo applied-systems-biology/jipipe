@@ -17,11 +17,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeClassification;
-import org.hkijena.jipipe.api.nodes.database.relations.FamilyRelationSource;
-import org.hkijena.jipipe.api.nodes.database.relations.NodeRelationIndex;
-import org.hkijena.jipipe.api.nodes.database.relations.NodeRelationSource;
-import org.hkijena.jipipe.api.nodes.database.relations.NodeRelations;
-import org.hkijena.jipipe.api.nodes.database.relations.TemplateRelationSource;
+import org.hkijena.jipipe.api.nodes.database.relations.*;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyInputProfile;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension;
@@ -32,14 +28,7 @@ import org.hkijena.jipipe.plugins.ai.AIApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeGeneralUIApplicationSettings;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -79,7 +68,7 @@ public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
      * immutable index that is never mutated in place: invalidation swaps the
      * reference to {@code null}, and a build publishes a fresh snapshot. A
      * concurrent build may discard another thread's just-published snapshot
-     * — acceptable for a best-effort cache (at worst a momentarily stale or
+     * - acceptable for a best-effort cache (at worst a momentarily stale or
      * recomputed result; correctness never depends on it). Every thread sees
      * either the pre-swap or the post-swap index, never a half-built one.
      */
@@ -120,6 +109,26 @@ public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
         return INSTANCE;
     }
 
+    /**
+     * Stably partitions the given tier so that the down-ranked
+     * (non-{@link JIPipeNodeClassification#Standard}) entries come after
+     * the Standard ones, preserving the candidate order within both
+     * groups.
+     */
+    private static List<JIPipeNodeDatabaseEntry> standardFirst(List<JIPipeNodeDatabaseEntry> tier) {
+        List<JIPipeNodeDatabaseEntry> standard = new ArrayList<>(tier.size());
+        List<JIPipeNodeDatabaseEntry> downRanked = new ArrayList<>();
+        for (JIPipeNodeDatabaseEntry entry : tier) {
+            if (entry.getNodeClassification() == JIPipeNodeClassification.Standard) {
+                standard.add(entry);
+            } else {
+                downRanked.add(entry);
+            }
+        }
+        standard.addAll(downRanked);
+        return standard;
+    }
+
     public void rebuildImmediately() {
         queue.cancelAll();
         // Invalidate both caches by swapping the references (see the fields'
@@ -136,13 +145,13 @@ public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
      * <p>
      * The result bundles three disjoint, per-list-capped lists:
      * <ul>
-     * <li><b>{@link NodeRelations#next next}</b> — the entries that run
+     * <li><b>{@link NodeRelations#next next}</b> - the entries that run
      * <em>after</em> this one in a workflow (family successors ∪ template
      * edges pointing out of it), from the cached {@link NodeRelationIndex};</li>
-     * <li><b>{@link NodeRelations#previous previous}</b> — the entries that
+     * <li><b>{@link NodeRelations#previous previous}</b> - the entries that
      * run <em>before</em> this one (family predecessors ∪ template edges
      * pointing into it), from the index; and</li>
-     * <li><b>{@link NodeRelations#similar similar}</b> — entries that do the
+     * <li><b>{@link NodeRelations#similar similar}</b> - entries that do the
      * same kind of thing as this one, ranked by taxonomy tiers
      * (same function → same framework → shared tags), with any entry that is
      * also a {@code previous}/{@code next} neighbor <em>excluded</em> so the
@@ -194,9 +203,9 @@ public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
             List<JIPipeNodeDatabaseEntry> similar = computeSimilar(e, originNodeId, neighborIds, max);
 
             result = new NodeRelations(
-                Collections.unmodifiableList(similar),
-                Collections.unmodifiableList(previous),
-                Collections.unmodifiableList(next));
+                    Collections.unmodifiableList(similar),
+                    Collections.unmodifiableList(previous),
+                    Collections.unmodifiableList(next));
         }
         cacheRelations(cacheKey, result);
         return result;
@@ -206,7 +215,7 @@ public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
      * Publishes a computed {@link #relations(JIPipeNodeDatabaseEntry, int)}
      * result into the per-entry cache by swapping in a copy of the current
      * map plus the new entry (copy-on-write; see the {@link #relationsCache}
-     * concurrency contract — a concurrent publish may lose one of the two
+     * concurrency contract - a concurrent publish may lose one of the two
      * entries, which is harmless for a best-effort cache).
      */
     private void cacheRelations(String cacheKey, NodeRelations result) {
@@ -245,7 +254,7 @@ public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
      * {@code max}.
      * <p>
      * Unlike the old {@code related}, the first tier (same-family siblings
-     * minus follow-ups — the workflow neighborhood) is gone: those nodes are
+     * minus follow-ups - the workflow neighborhood) is gone: those nodes are
      * now surfaced by {@link NodeRelations#previous()}/{@link NodeRelations#next()}.
      * Candidates that are also in {@code neighborIds} (i.e. already a
      * previous/next neighbor) are excluded so the three lists stay disjoint.
@@ -260,15 +269,15 @@ public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
         // "create node by info" entry) are never "similar": a node is not
         // similar to itself under a different menu path.
         Predicate<JIPipeNodeDatabaseEntry> sameNode =
-            entry -> selfId.equals(entry.getId()) || originNodeId.equals(entry.getOriginNodeId());
+                entry -> selfId.equals(entry.getId()) || originNodeId.equals(entry.getOriginNodeId());
         // A candidate is excluded if it is the entry's own node, already
         // surfaced as a previous/next neighbor, or has no database entry.
         Predicate<JIPipeNodeDatabaseEntry> excluded =
-            entry -> sameNode.test(entry)
-                || (entry.getOriginNodeId() != null && neighborIds.contains(entry.getOriginNodeId()));
+                entry -> sameNode.test(entry)
+                        || (entry.getOriginNodeId() != null && neighborIds.contains(entry.getOriginNodeId()));
         Set<String> added = new LinkedHashSet<>();
 
-        // Tier 1: same function — entries that appear under at least one of
+        // Tier 1: same function - entries that appear under at least one of
         // the entry's function leaves (an exact shared function id). Ranking
         // shared functionality above framework is what keeps the suggestions
         // distinct for functionally different nodes that share a large
@@ -297,7 +306,7 @@ public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
         if (!NoFramework.ID.equals(frameworkId)) {
             for (JIPipeNodeDatabaseEntry entry : entries) {
                 if (frameworkId.equals(entry.getFramework().getId())
-                    && !excluded.test(entry) && added.add(entry.getId())) {
+                        && !excluded.test(entry) && added.add(entry.getId())) {
                     tierFramework.add(entry);
                 }
             }
@@ -359,7 +368,7 @@ public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
      * eagerly on the first query after the cache was invalidated (i.e. after
      * {@link #rebuildImmediately()} or {@link #setEntries(List)}). The build
      * is guarded so that concurrent first queries do not each re-mine the
-     * sources (a lost build is harmless — it is a best-effort cache; see the
+     * sources (a lost build is harmless - it is a best-effort cache; see the
      * {@link #relationIndex} concurrency contract).
      */
     private NodeRelationIndex relationIndex() {
@@ -384,37 +393,17 @@ public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
      * <p>
      * The source list is the pluggable seam (spec §10.2): a future source
      * (starter patterns, #1333 repository templates, ...) attaches by adding
-     * one entry here — no change to the index or to {@link #relations}.
+     * one entry here - no change to the index or to {@link #relations}.
      */
     private NodeRelationIndex buildRelationIndex() {
         List<NodeRelationSource> sources = List.of(
-            new FamilyRelationSource(),
-            new TemplateRelationSource(project));
+                new FamilyRelationSource(),
+                new TemplateRelationSource(project));
         NodeRelationIndex index = new NodeRelationIndex();
         for (NodeRelationSource source : sources) {
             source.contribute(index::addEdge);
         }
         return index;
-    }
-
-    /**
-     * Stably partitions the given tier so that the down-ranked
-     * (non-{@link JIPipeNodeClassification#Standard}) entries come after
-     * the Standard ones, preserving the candidate order within both
-     * groups.
-     */
-    private static List<JIPipeNodeDatabaseEntry> standardFirst(List<JIPipeNodeDatabaseEntry> tier) {
-        List<JIPipeNodeDatabaseEntry> standard = new ArrayList<>(tier.size());
-        List<JIPipeNodeDatabaseEntry> downRanked = new ArrayList<>();
-        for (JIPipeNodeDatabaseEntry entry : tier) {
-            if (entry.getNodeClassification() == JIPipeNodeClassification.Standard) {
-                standard.add(entry);
-            } else {
-                downRanked.add(entry);
-            }
-        }
-        standard.addAll(downRanked);
-        return standard;
     }
 
     /**
@@ -525,16 +514,16 @@ public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
      * mirror the node browser model's {@code matches(entry)} helper, so the
      * list render and the database query agree on what "matches" means.
      *
-     * @param text        the search text
-     * @param role        the pipeline visibility role
+     * @param text          the search text
+     * @param role          the pipeline visibility role
      * @param allowExisting whether existing nodes may be returned
-     * @param allowNew    whether new nodes may be returned
-     * @param pinnedIds   the pinned entry ids (used for ranking)
-     * @param framework   the framework to filter by, or {@code null} for no filter
-     * @param spatial     the spatial dimensions to filter by; empty = no filter
-     * @param input       the input profiles to filter by; empty = no filter
-     * @param tags        the tags to filter by; empty = no filter
-     * @param flags       query flags (e.g. {@link #FLAG_USE_AI_SEARCH})
+     * @param allowNew      whether new nodes may be returned
+     * @param pinnedIds     the pinned entry ids (used for ranking)
+     * @param framework     the framework to filter by, or {@code null} for no filter
+     * @param spatial       the spatial dimensions to filter by; empty = no filter
+     * @param input         the input profiles to filter by; empty = no filter
+     * @param tags          the tags to filter by; empty = no filter
+     * @param flags         query flags (e.g. {@link #FLAG_USE_AI_SEARCH})
      * @return the query result filtered by the active facets, in the
      * underlying search's order
      */
@@ -546,11 +535,11 @@ public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
                                                          Set<String> tags, Object... flags) {
         List<JIPipeNodeDatabaseEntry> result = query(text, role, allowExisting, allowNew, pinnedIds, flags);
         return result.stream()
-            .filter(e -> (framework == null || framework.getId().equals(e.getFramework().getId()))
-                && (spatial == null || spatial.isEmpty() || !Collections.disjoint(spatial, e.getSpatialDimensions()))
-                && (input == null || input.isEmpty() || input.contains(e.getInputProfile()))
-                && (tags == null || tags.isEmpty() || !Collections.disjoint(tags, e.getTags())))
-            .collect(Collectors.toList());
+                .filter(e -> (framework == null || framework.getId().equals(e.getFramework().getId()))
+                        && (spatial == null || spatial.isEmpty() || !Collections.disjoint(spatial, e.getSpatialDimensions()))
+                        && (input == null || input.isEmpty() || input.contains(e.getInputProfile()))
+                        && (tags == null || tags.isEmpty() || !Collections.disjoint(tags, e.getTags())))
+                .collect(Collectors.toList());
     }
 
     public void buildIndex() {

@@ -1,10 +1,14 @@
 # Bootstrap-Style Grid Layout & Card System Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:
+> executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Implement a reusable 12-column grid layout system and card component for Swing, then use them to redesign the statistics screen with responsive card layouts.
+**Goal:** Implement a reusable 12-column grid layout system and card component for Swing, then use them to redesign the
+statistics screen with responsive card layouts.
 
-**Architecture:** Custom `LayoutManager2` divides container width into 12 columns with configurable gutter and responsive breakpoints. Cards are `JPanel`-based components with header/body/footer and contextual color variants driven by the theme system. The statistics screen is the first consumer.
+**Architecture:** Custom `LayoutManager2` divides container width into 12 columns with configurable gutter and
+responsive breakpoints. Cards are `JPanel`-based components with header/body/footer and contextual color variants driven
+by the theme system. The statistics screen is the first consumer.
 
 **Tech Stack:** Java 21, Swing, JFreeChart 1.5.0, Jackson, JUnit Jupiter
 
@@ -16,7 +20,7 @@
 - All new layout code in `org.hkijena.jipipe.desktop.commons.components.layouts`
 - All new card code in `org.hkijena.jipipe.desktop.commons.components.cards`
 - Follow existing code conventions (copyright headers not required for new files unless matching neighboring files)
-- JUnit Jupiter inherited from parent POM — no pom changes needed
+- JUnit Jupiter inherited from parent POM - no pom changes needed
 - No comments in code unless explicitly requested
 
 ---
@@ -26,37 +30,45 @@
 ### New files
 
 **Layout system** (`jipipe-core/src/main/java/org/hkijena/jipipe/desktop/commons/components/layouts/`):
-- `JIPipeDesktopBreakpoint.java` — enum with pixel thresholds
-- `JIPipeDesktopColumnConstraints.java` — immutable constraint object (span, offset, breakpoint overrides)
-- `JIPipeDesktopColumnLayout.java` — `LayoutManager2` implementation (12-column grid)
-- `JIPipeDesktopRow.java` — `JPanel` with max-width + `JIPipeDesktopColumnLayout`
-- `JIPipeDesktopFluidRow.java` — `JPanel` filling 100% width + `JIPipeDesktopColumnLayout`
+
+- `JIPipeDesktopBreakpoint.java` - enum with pixel thresholds
+- `JIPipeDesktopColumnConstraints.java` - immutable constraint object (span, offset, breakpoint overrides)
+- `JIPipeDesktopColumnLayout.java` - `LayoutManager2` implementation (12-column grid)
+- `JIPipeDesktopRow.java` - `JPanel` with max-width + `JIPipeDesktopColumnLayout`
+- `JIPipeDesktopFluidRow.java` - `JPanel` filling 100% width + `JIPipeDesktopColumnLayout`
 
 **Card system** (`jipipe-core/src/main/java/org/hkijena/jipipe/desktop/commons/components/cards/`):
-- `JIPipeDesktopCardVariant.java` — enum of contextual variants
-- `JIPipeDesktopCard.java` — card component with header/body/footer + builder
+
+- `JIPipeDesktopCardVariant.java` - enum of contextual variants
+- `JIPipeDesktopCard.java` - card component with header/body/footer + builder
 
 **Test files:**
+
 - `jipipe-core/src/test/java/org/hkijena/jipipe/desktop/commons/components/layouts/JIPipeDesktopColumnLayoutTest.java`
 - `jipipe-core/src/test/java/org/hkijena/jipipe/desktop/commons/components/cards/JIPipeDesktopCardTest.java`
 
 ### Modified files
 
 **Theme:**
-- `jipipe-core/src/main/java/org/hkijena/jipipe/desktop/commons/theme/JIPipeDesktopModernThemeStyle.java` — add `info` color
+
+- `jipipe-core/src/main/java/org/hkijena/jipipe/desktop/commons/theme/JIPipeDesktopModernThemeStyle.java` - add `info`
+  color
 - `jipipe-core/src/main/resources/org/hkijena/jipipe/styles/JIPipe Classic Light.json`
 - `jipipe-core/src/main/resources/org/hkijena/jipipe/styles/JIPipe Dark.json`
 - `jipipe-core/src/main/resources/org/hkijena/jipipe/styles/JIPipe Dark Neon.json`
 - `jipipe-core/src/main/resources/org/hkijena/jipipe/styles/JIPipe Dark High Contrast.json`
 
 **Statistics item API:**
+
 - `jipipe-core/src/main/java/org/hkijena/jipipe/plugins/statistics/JIPipeStatisticsItem.java`
 - All 16 statistics item classes in `jipipe-core/src/main/java/org/hkijena/jipipe/plugins/statistics/items/`
 
 **Statistics UI:**
+
 - `jipipe-core/src/main/java/org/hkijena/jipipe/plugins/statistics/ui/JIPipeDesktopStatisticsUI.java`
 
 **Statistics tests:**
+
 - `jipipe-core/src/test/java/org/hkijena/jipipe/plugins/statistics/JIPipeStatisticsRegistryTest.java`
 
 ---
@@ -64,6 +76,7 @@
 ## Task 1: Add `info` color to theme system
 
 **Files:**
+
 - Modify: `jipipe-core/src/main/java/org/hkijena/jipipe/desktop/commons/theme/JIPipeDesktopModernThemeStyle.java`
 - Modify: `jipipe-core/src/main/resources/org/hkijena/jipipe/styles/JIPipe Classic Light.json`
 - Modify: `jipipe-core/src/main/resources/org/hkijena/jipipe/styles/JIPipe Dark.json`
@@ -71,6 +84,7 @@
 - Modify: `jipipe-core/src/main/resources/org/hkijena/jipipe/styles/JIPipe Dark High Contrast.json`
 
 **Interfaces:**
+
 - Produces: `JIPipeDesktopModernThemeStyle.getInfoColor()` → `Color` (default `#17A2B8`)
 
 - [ ] **Step 1: Add `infoColor` field to `JIPipeDesktopModernThemeStyle`**
@@ -84,7 +98,8 @@ In `JIPipeDesktopModernThemeStyle.java`, add the field after the `warningColor` 
 
 - [ ] **Step 2: Add `infoColor` to the copy constructor**
 
-In the copy constructor `JIPipeDesktopModernThemeStyle(JIPipeDesktopModernThemeStyle other)`, add after `this.warningColor = other.warningColor;` (after line 214):
+In the copy constructor `JIPipeDesktopModernThemeStyle(JIPipeDesktopModernThemeStyle other)`, add after
+`this.warningColor = other.warningColor;` (after line 214):
 
 ```java
         this.infoColor = other.infoColor;
@@ -107,21 +122,25 @@ Add after the `getWarningColor()`/`setWarningColor()` pair (after line 431):
 - [ ] **Step 4: Add `"info"` key to all 4 JSON theme files**
 
 In `JIPipe Classic Light.json`, add after the `"warning"` line:
+
 ```json
   "info" : "#17A2B8",
 ```
 
 In `JIPipe Dark.json`, add after the `"warning"` line:
+
 ```json
   "info" : "#17A2B8",
 ```
 
 In `JIPipe Dark Neon.json`, add after the `"warning"` line:
+
 ```json
   "info" : "#17A2B8",
 ```
 
 In `JIPipe Dark High Contrast.json`, add after the `"warning"` line:
+
 ```json
   "info" : "#00CCFF",
 ```
@@ -143,9 +162,11 @@ git commit -m "Add info color to theme system (#1304)"
 ## Task 2: Create `JIPipeDesktopBreakpoint` enum
 
 **Files:**
+
 - Create: `jipipe-core/src/main/java/org/hkijena/jipipe/desktop/commons/components/layouts/JIPipeDesktopBreakpoint.java`
 
 **Interfaces:**
+
 - Produces: `JIPipeDesktopBreakpoint` enum with `XS(0)`, `SM(576)`, `MD(768)`, `LG(992)`, `XL(1200)`
 - Produces: `JIPipeDesktopBreakpoint.fromWidth(int width)` → `JIPipeDesktopBreakpoint`
 
@@ -202,12 +223,17 @@ git commit -m "Add JIPipeDesktopBreakpoint enum (#1304)"
 ## Task 3: Create `JIPipeDesktopColumnConstraints`
 
 **Files:**
-- Create: `jipipe-core/src/main/java/org/hkijena/jipipe/desktop/commons/components/layouts/JIPipeDesktopColumnConstraints.java`
-- Test: `jipipe-core/src/test/java/org/hkijena/jipipe/desktop/commons/components/layouts/JIPipeDesktopColumnConstraintsTest.java` (created in Task 4 with layout tests)
+
+- Create:
+  `jipipe-core/src/main/java/org/hkijena/jipipe/desktop/commons/components/layouts/JIPipeDesktopColumnConstraints.java`
+- Test:
+  `jipipe-core/src/test/java/org/hkijena/jipipe/desktop/commons/components/layouts/JIPipeDesktopColumnConstraintsTest.java`
+  (created in Task 4 with layout tests)
 
 **Interfaces:**
+
 - Consumes: `JIPipeDesktopBreakpoint` from Task 2
-- Produces: `JIPipeDesktopColumnConstraints` — immutable constraint object
+- Produces: `JIPipeDesktopColumnConstraints` - immutable constraint object
 - Produces: `new JIPipeDesktopColumnConstraints(int defaultSpan)`
 - Produces: `withSpan(JIPipeDesktopBreakpoint, int)` → `JIPipeDesktopColumnConstraints` (new instance)
 - Produces: `withOffset(int)` → `JIPipeDesktopColumnConstraints` (new instance)
@@ -217,7 +243,8 @@ git commit -m "Add JIPipeDesktopBreakpoint enum (#1304)"
 
 - [ ] **Step 1: Write the failing test**
 
-Create `jipipe-core/src/test/java/org/hkijena/jipipe/desktop/commons/components/layouts/JIPipeDesktopColumnConstraintsTest.java`:
+Create
+`jipipe-core/src/test/java/org/hkijena/jipipe/desktop/commons/components/layouts/JIPipeDesktopColumnConstraintsTest.java`:
 
 ```java
 package org.hkijena.jipipe.desktop.commons.components.layouts;
@@ -292,11 +319,12 @@ class JIPipeDesktopColumnConstraintsTest {
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `mvn test -pl jipipe-core -Dtest=JIPipeDesktopColumnConstraintsTest`
-Expected: FAIL — class not found
+Expected: FAIL - class not found
 
 - [ ] **Step 3: Write the implementation**
 
-Create `jipipe-core/src/main/java/org/hkijena/jipipe/desktop/commons/components/layouts/JIPipeDesktopColumnConstraints.java`:
+Create
+`jipipe-core/src/main/java/org/hkijena/jipipe/desktop/commons/components/layouts/JIPipeDesktopColumnConstraints.java`:
 
 ```java
 package org.hkijena.jipipe.desktop.commons.components.layouts;
@@ -370,7 +398,7 @@ public class JIPipeDesktopColumnConstraints {
 - [ ] **Step 4: Run test to verify it passes**
 
 Run: `mvn test -pl jipipe-core -Dtest=JIPipeDesktopColumnConstraintsTest`
-Expected: PASS — 7 tests
+Expected: PASS - 7 tests
 
 - [ ] **Step 5: Commit**
 
@@ -384,17 +412,22 @@ git commit -m "Add JIPipeDesktopColumnConstraints with breakpoint resolution (#1
 ## Task 4: Create `JIPipeDesktopColumnLayout`
 
 **Files:**
-- Create: `jipipe-core/src/main/java/org/hkijena/jipipe/desktop/commons/components/layouts/JIPipeDesktopColumnLayout.java`
-- Test: `jipipe-core/src/test/java/org/hkijena/jipipe/desktop/commons/components/layouts/JIPipeDesktopColumnLayoutTest.java`
+
+- Create:
+  `jipipe-core/src/main/java/org/hkijena/jipipe/desktop/commons/components/layouts/JIPipeDesktopColumnLayout.java`
+- Test:
+  `jipipe-core/src/test/java/org/hkijena/jipipe/desktop/commons/components/layouts/JIPipeDesktopColumnLayoutTest.java`
 
 **Interfaces:**
+
 - Consumes: `JIPipeDesktopBreakpoint` from Task 2, `JIPipeDesktopColumnConstraints` from Task 3
-- Produces: `new JIPipeDesktopColumnLayout(int gutter)` — `LayoutManager2`
+- Produces: `new JIPipeDesktopColumnLayout(int gutter)` - `LayoutManager2`
 - Produces: Accepts `JIPipeDesktopColumnConstraints` as constraint objects via `addLayoutComponent(Component, Object)`
 
 - [ ] **Step 1: Write the failing test**
 
-Create `jipipe-core/src/test/java/org/hkijena/jipipe/desktop/commons/components/layouts/JIPipeDesktopColumnLayoutTest.java`:
+Create
+`jipipe-core/src/test/java/org/hkijena/jipipe/desktop/commons/components/layouts/JIPipeDesktopColumnLayoutTest.java`:
 
 ```java
 package org.hkijena.jipipe.desktop.commons.components.layouts;
@@ -497,7 +530,7 @@ class JIPipeDesktopColumnLayoutTest {
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `mvn test -pl jipipe-core -Dtest=JIPipeDesktopColumnLayoutTest`
-Expected: FAIL — class not found
+Expected: FAIL - class not found
 
 - [ ] **Step 3: Write the implementation**
 
@@ -686,7 +719,7 @@ public class JIPipeDesktopColumnLayout implements LayoutManager2 {
 - [ ] **Step 4: Run test to verify it passes**
 
 Run: `mvn test -pl jipipe-core -Dtest=JIPipeDesktopColumnLayoutTest`
-Expected: PASS — 7 tests
+Expected: PASS - 7 tests
 
 - [ ] **Step 5: Commit**
 
@@ -700,13 +733,15 @@ git commit -m "Add JIPipeDesktopColumnLayout 12-column grid LayoutManager2 (#130
 ## Task 5: Create `JIPipeDesktopRow` and `JIPipeDesktopFluidRow`
 
 **Files:**
+
 - Create: `jipipe-core/src/main/java/org/hkijena/jipipe/desktop/commons/components/layouts/JIPipeDesktopRow.java`
 - Create: `jipipe-core/src/main/java/org/hkijena/jipipe/desktop/commons/components/layouts/JIPipeDesktopFluidRow.java`
 
 **Interfaces:**
+
 - Consumes: `JIPipeDesktopColumnLayout` from Task 4
-- Produces: `new JIPipeDesktopRow()` / `new JIPipeDesktopRow(int gutter)` — `JPanel` with max-width 1140px
-- Produces: `new JIPipeDesktopFluidRow()` / `new JIPipeDesktopFluidRow(int gutter)` — `JPanel` filling 100% width
+- Produces: `new JIPipeDesktopRow()` / `new JIPipeDesktopRow(int gutter)` - `JPanel` with max-width 1140px
+- Produces: `new JIPipeDesktopFluidRow()` / `new JIPipeDesktopFluidRow(int gutter)` - `JPanel` filling 100% width
 
 - [ ] **Step 1: Create `JIPipeDesktopRow`**
 
@@ -783,9 +818,11 @@ git commit -m "Add JIPipeDesktopRow and JIPipeDesktopFluidRow containers (#1304)
 ## Task 6: Create `JIPipeDesktopCardVariant` enum
 
 **Files:**
+
 - Create: `jipipe-core/src/main/java/org/hkijena/jipipe/desktop/commons/components/cards/JIPipeDesktopCardVariant.java`
 
 **Interfaces:**
+
 - Consumes: `JIPipeDesktopModernThemeStyle` from Task 1
 - Produces: `JIPipeDesktopCardVariant` enum: `Default`, `Primary`, `Secondary`, `Success`, `Warning`, `Danger`, `Info`
 - Produces: `resolveColor(JIPipeDesktopModernThemeStyle)` → `Color` (null for Default)
@@ -841,12 +878,15 @@ git commit -m "Add JIPipeDesktopCardVariant enum (#1304)"
 ## Task 7: Create `JIPipeDesktopCard` component
 
 **Files:**
+
 - Create: `jipipe-core/src/main/java/org/hkijena/jipipe/desktop/commons/components/cards/JIPipeDesktopCard.java`
 - Test: `jipipe-core/src/test/java/org/hkijena/jipipe/desktop/commons/components/cards/JIPipeDesktopCardTest.java`
 
 **Interfaces:**
+
 - Consumes: `JIPipeDesktopCardVariant` from Task 6, `RoundedLineBorder`, `UIUtils`, `ThemeUtils`, `ColorUtils`
-- Produces: `new JIPipeDesktopCard()` / `new JIPipeDesktopCard(String title)` / `new JIPipeDesktopCard(String title, Icon icon)`
+- Produces: `new JIPipeDesktopCard()` / `new JIPipeDesktopCard(String title)` /
+  `new JIPipeDesktopCard(String title, Icon icon)`
 - Produces: `setTitle(String)`, `setIcon(Icon)`, `setBody(JComponent)`, `setVariant(JIPipeDesktopCardVariant)`
 - Produces: `addHeaderAction(JButton)`, `addFooterAction(JButton)`
 - Produces: `JIPipeDesktopCard.builder(String title)` → `Builder`
@@ -938,7 +978,7 @@ class JIPipeDesktopCardTest {
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `mvn test -pl jipipe-core -Dtest=JIPipeDesktopCardTest`
-Expected: FAIL — class not found
+Expected: FAIL - class not found
 
 - [ ] **Step 3: Write the implementation**
 
@@ -1170,7 +1210,7 @@ public class JIPipeDesktopCard extends JPanel {
 - [ ] **Step 4: Run test to verify it passes**
 
 Run: `mvn test -pl jipipe-core -Dtest=JIPipeDesktopCardTest`
-Expected: PASS — 8 tests
+Expected: PASS - 8 tests
 
 - [ ] **Step 5: Commit**
 
@@ -1184,9 +1224,11 @@ git commit -m "Add JIPipeDesktopCard component with header/body/footer and build
 ## Task 8: Add layout defaults to `JIPipeStatisticsItem`
 
 **Files:**
+
 - Modify: `jipipe-core/src/main/java/org/hkijena/jipipe/plugins/statistics/JIPipeStatisticsItem.java`
 
 **Interfaces:**
+
 - Consumes: `JIPipeDesktopCardVariant` from Task 6
 - Produces: `JIPipeStatisticsItem.getIcon32()` → `String` (default `"status/starred.png"`)
 - Produces: `JIPipeStatisticsItem.getCardVariant()` → `JIPipeDesktopCardVariant` (default `Default`)
@@ -1194,7 +1236,8 @@ git commit -m "Add JIPipeDesktopCard component with header/body/footer and build
 
 - [ ] **Step 1: Add default methods to the interface**
 
-In `JIPipeStatisticsItem.java`, add the import for `JIPipeDesktopCardVariant` and three new default methods at the end of the interface (before the closing brace, after `isTimeTracked()`):
+In `JIPipeStatisticsItem.java`, add the import for `JIPipeDesktopCardVariant` and three new default methods at the end
+of the interface (before the closing brace, after `isTimeTracked()`):
 
 ```java
     default String getIcon32() {
@@ -1210,7 +1253,8 @@ In `JIPipeStatisticsItem.java`, add the import for `JIPipeDesktopCardVariant` an
     }
 ```
 
-Note: Using fully-qualified name for `JIPipeDesktopCardVariant` to avoid adding an import to the interface file, keeping the diff minimal. If the implementer prefers to add an import statement, that's fine too.
+Note: Using fully-qualified name for `JIPipeDesktopCardVariant` to avoid adding an import to the interface file, keeping
+the diff minimal. If the implementer prefers to add an import statement, that's fine too.
 
 - [ ] **Step 2: Compile and verify**
 
@@ -1229,52 +1273,55 @@ git commit -m "Add layout defaults to JIPipeStatisticsItem interface (#1304)"
 ## Task 9: Override layout defaults in all 16 statistics items
 
 **Files:**
+
 - Modify all 16 files in `jipipe-core/src/main/java/org/hkijena/jipipe/plugins/statistics/items/`:
-  - `MachineIdStatisticsItem.java`
-  - `JIPipeVersionStatisticsItem.java`
-  - `OperatingSystemStatisticsItem.java`
-  - `AccelerationStatisticsItem.java`
-  - `GpuModelStatisticsItem.java`
-  - `GpuVramStatisticsItem.java`
-  - `TotalRamStatisticsItem.java`
-  - `RecentProjectsCountStatisticsItem.java`
-  - `WorkflowRunsStatisticsItem.java`
-  - `RoCratesCreatedStatisticsItem.java`
-  - `LargestProjectNodesStatisticsItem.java`
-  - `LargestProjectCompartmentsStatisticsItem.java`
-  - `PopularNodesStatisticsItem.java`
-  - `NodeMoveDistanceStatisticsItem.java`
-  - `LongestNodeWidthStatisticsItem.java`
-  - `NoodleScoreStatisticsItem.java`
+    - `MachineIdStatisticsItem.java`
+    - `JIPipeVersionStatisticsItem.java`
+    - `OperatingSystemStatisticsItem.java`
+    - `AccelerationStatisticsItem.java`
+    - `GpuModelStatisticsItem.java`
+    - `GpuVramStatisticsItem.java`
+    - `TotalRamStatisticsItem.java`
+    - `RecentProjectsCountStatisticsItem.java`
+    - `WorkflowRunsStatisticsItem.java`
+    - `RoCratesCreatedStatisticsItem.java`
+    - `LargestProjectNodesStatisticsItem.java`
+    - `LargestProjectCompartmentsStatisticsItem.java`
+    - `PopularNodesStatisticsItem.java`
+    - `NodeMoveDistanceStatisticsItem.java`
+    - `LongestNodeWidthStatisticsItem.java`
+    - `NoodleScoreStatisticsItem.java`
 - Modify: `jipipe-core/src/test/java/org/hkijena/jipipe/plugins/statistics/JIPipeStatisticsRegistryTest.java`
 
 **Interfaces:**
+
 - Consumes: `JIPipeStatisticsItem.getIcon32()`, `getCardVariant()`, `getDefaultColumnSpan()` from Task 8
 
 **Overrides table (from the design spec):**
 
-| Class | Icon | Variant | Span |
-|-------|------|---------|------|
-| `MachineIdStatisticsItem` | `status/dialog-password.png` | `Default` | 3 |
-| `JIPipeVersionStatisticsItem` | `actions/help-about.png` | `Default` | 3 |
-| `OperatingSystemStatisticsItem` | `actions/computer.png` | `Default` | 3 |
-| `AccelerationStatisticsItem` | `actions/gears.png` | `Primary` | 3 |
-| `GpuModelStatisticsItem` | `actions/display.png` | `Info` | 3 |
-| `GpuVramStatisticsItem` | `actions/memory.png` | `Info` | 3 |
-| `TotalRamStatisticsItem` | `actions/memory.png` | `Info` | 3 |
-| `RecentProjectsCountStatisticsItem` | `actions/document-open-folder.png` | `Secondary` | 3 |
-| `WorkflowRunsStatisticsItem` | `actions/debug-run.png` | `Success` | 6 |
-| `RoCratesCreatedStatisticsItem` | `actions/document-export.png` | `Warning` | 6 |
-| `LargestProjectNodesStatisticsItem` | `actions/network-server-database.png` | `Primary` | 6 |
-| `LargestProjectCompartmentsStatisticsItem` | `actions/window.png` | `Primary` | 6 |
-| `PopularNodesStatisticsItem` | `actions/starred.png` | `Secondary` | 12 |
-| `NodeMoveDistanceStatisticsItem` | `actions/transform-move.png` | `Default` | 3 |
-| `LongestNodeWidthStatisticsItem` | `actions/resizecol.png` | `Default` | 3 |
-| `NoodleScoreStatisticsItem` | `actions/bezier-curve.png` | `Default` | 6 |
+| Class                                      | Icon                                  | Variant     | Span |
+|--------------------------------------------|---------------------------------------|-------------|------|
+| `MachineIdStatisticsItem`                  | `status/dialog-password.png`          | `Default`   | 3    |
+| `JIPipeVersionStatisticsItem`              | `actions/help-about.png`              | `Default`   | 3    |
+| `OperatingSystemStatisticsItem`            | `actions/computer.png`                | `Default`   | 3    |
+| `AccelerationStatisticsItem`               | `actions/gears.png`                   | `Primary`   | 3    |
+| `GpuModelStatisticsItem`                   | `actions/display.png`                 | `Info`      | 3    |
+| `GpuVramStatisticsItem`                    | `actions/memory.png`                  | `Info`      | 3    |
+| `TotalRamStatisticsItem`                   | `actions/memory.png`                  | `Info`      | 3    |
+| `RecentProjectsCountStatisticsItem`        | `actions/document-open-folder.png`    | `Secondary` | 3    |
+| `WorkflowRunsStatisticsItem`               | `actions/debug-run.png`               | `Success`   | 6    |
+| `RoCratesCreatedStatisticsItem`            | `actions/document-export.png`         | `Warning`   | 6    |
+| `LargestProjectNodesStatisticsItem`        | `actions/network-server-database.png` | `Primary`   | 6    |
+| `LargestProjectCompartmentsStatisticsItem` | `actions/window.png`                  | `Primary`   | 6    |
+| `PopularNodesStatisticsItem`               | `actions/starred.png`                 | `Secondary` | 12   |
+| `NodeMoveDistanceStatisticsItem`           | `actions/transform-move.png`          | `Default`   | 3    |
+| `LongestNodeWidthStatisticsItem`           | `actions/resizecol.png`               | `Default`   | 3    |
+| `NoodleScoreStatisticsItem`                | `actions/bezier-curve.png`            | `Default`   | 6    |
 
 - [ ] **Step 1: Add overrides to each of the 16 item classes**
 
-For each item class, add the import and override methods. Example for `WorkflowRunsStatisticsItem` (add after the existing `isTimeTracked()` override):
+For each item class, add the import and override methods. Example for `WorkflowRunsStatisticsItem` (add after the
+existing `isTimeTracked()` override):
 
 ```java
     @Override
@@ -1287,9 +1334,11 @@ For each item class, add the import and override methods. Example for `WorkflowR
     public int getDefaultColumnSpan() { return 6; }
 ```
 
-Apply the same pattern to all 16 classes using the overrides table above. For classes where variant is `Default` and span is `3`, they inherit the defaults — but still override `getIcon32()`.
+Apply the same pattern to all 16 classes using the overrides table above. For classes where variant is `Default` and
+span is `3`, they inherit the defaults - but still override `getIcon32()`.
 
 Classes that need ONLY `getIcon32()` override (variant=Default, span=3):
+
 - `MachineIdStatisticsItem` → `"status/dialog-password.png"`
 - `JIPipeVersionStatisticsItem` → `"actions/help-about.png"`
 - `OperatingSystemStatisticsItem` → `"actions/computer.png"`
@@ -1297,6 +1346,7 @@ Classes that need ONLY `getIcon32()` override (variant=Default, span=3):
 - `LongestNodeWidthStatisticsItem` → `"actions/resizecol.png"`
 
 Classes that need `getIcon32()` + `getCardVariant()` (span=3):
+
 - `AccelerationStatisticsItem` → `"actions/gears.png"`, `Primary`
 - `GpuModelStatisticsItem` → `"actions/display.png"`, `Info`
 - `GpuVramStatisticsItem` → `"actions/memory.png"`, `Info`
@@ -1304,6 +1354,7 @@ Classes that need `getIcon32()` + `getCardVariant()` (span=3):
 - `RecentProjectsCountStatisticsItem` → `"actions/document-open-folder.png"`, `Secondary`
 
 Classes that need `getIcon32()` + `getCardVariant()` + `getDefaultColumnSpan()` (span=6):
+
 - `WorkflowRunsStatisticsItem` → `"actions/debug-run.png"`, `Success`, 6
 - `RoCratesCreatedStatisticsItem` → `"actions/document-export.png"`, `Warning`, 6
 - `LargestProjectNodesStatisticsItem` → `"actions/network-server-database.png"`, `Primary`, 6
@@ -1311,6 +1362,7 @@ Classes that need `getIcon32()` + `getCardVariant()` + `getDefaultColumnSpan()` 
 - `NoodleScoreStatisticsItem` → `"actions/bezier-curve.png"`, `Default`, 6
 
 Classes that need all three (span=12):
+
 - `PopularNodesStatisticsItem` → `"actions/starred.png"`, `Secondary`, 12
 
 - [ ] **Step 2: Add test for item defaults to `JIPipeStatisticsRegistryTest`**
@@ -1351,7 +1403,7 @@ Add this test method to `JIPipeStatisticsRegistryTest.java`:
 - [ ] **Step 3: Compile and run tests**
 
 Run: `mvn test -pl jipipe-core -Dtest=JIPipeStatisticsRegistryTest`
-Expected: PASS — 4 tests (3 existing + 1 new)
+Expected: PASS - 4 tests (3 existing + 1 new)
 
 - [ ] **Step 4: Commit**
 
@@ -1365,9 +1417,11 @@ git commit -m "Override layout defaults in all 16 statistics items (#1304)"
 ## Task 10: Rewrite `JIPipeDesktopStatisticsUI` using new grid + card system
 
 **Files:**
+
 - Modify: `jipipe-core/src/main/java/org/hkijena/jipipe/plugins/statistics/ui/JIPipeDesktopStatisticsUI.java`
 
 **Interfaces:**
+
 - Consumes: `JIPipeDesktopFluidRow`, `JIPipeDesktopColumnConstraints`, `JIPipeDesktopBreakpoint` from Tasks 2-5
 - Consumes: `JIPipeDesktopCard`, `JIPipeDesktopCardVariant` from Tasks 6-7
 - Consumes: `JIPipeStatisticsItem.getIcon32()`, `getCardVariant()`, `getDefaultColumnSpan()` from Tasks 8-9

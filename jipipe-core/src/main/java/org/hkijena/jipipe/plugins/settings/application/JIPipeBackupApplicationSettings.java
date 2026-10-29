@@ -27,10 +27,10 @@ import javax.swing.*;
 
 public class JIPipeBackupApplicationSettings extends JIPipeDefaultApplicationsSettingsSheet {
     public static final String ID = "org.hkijena.jipipe:backups";
+    private final CleanupSettings cleanupSettings;
     private boolean enableBackups = true;
     private int backupDelay = 7;
     private OptionalPathParameter customBackupPath = new OptionalPathParameter();
-    private final CleanupSettings cleanupSettings;
 
     public JIPipeBackupApplicationSettings() {
         this.cleanupSettings = new CleanupSettings();
@@ -125,7 +125,7 @@ public class JIPipeBackupApplicationSettings extends JIPipeDefaultApplicationsSe
         @SetJIPipeDocumentation(name = "Maximum age (days)", description = "If enabled, sets the maximum age of backups in days. Backups older than the given age are deleted. Please note that this age-based rule is overwritten by the number of retained backups (year/month/week/day). Fallback rule.")
         @JIPipeParameter(value = "max-age-days", uiOrder = 100)
         public OptionalIntegerParameter getMaxAgeDays() {
-            if(maxAgeDays.getContent() <= 0) {
+            if (maxAgeDays.getContent() <= 0) {
                 maxAgeDays.setContent(1);
             }
             return maxAgeDays;
@@ -151,7 +151,7 @@ public class JIPipeBackupApplicationSettings extends JIPipeDefaultApplicationsSe
                 "If they are older than more than one year, JIPipe will keep backups based on the year number (e.g., keep N backups for 2023, 2024, and 2025 each).")
         @JIPipeParameter(value = "keep-backups-per-year", uiOrder = 90)
         public OptionalIntegerParameter getKeepBackupsPerYear() {
-            if(keepBackupsPerYear.getContent() <= 0) {
+            if (keepBackupsPerYear.getContent() <= 0) {
                 keepBackupsPerYear.setContent(1);
             }
             return keepBackupsPerYear;
@@ -165,7 +165,7 @@ public class JIPipeBackupApplicationSettings extends JIPipeDefaultApplicationsSe
         @SetJIPipeDocumentation(name = "Keep monthly backups", description = "If enabled, JIPipe will keep the given number of backups if they are older than one month but do not fall within the 'Keep yearly backups' rule.")
         @JIPipeParameter(value = "keep-backups-per-month", uiOrder = 80)
         public OptionalIntegerParameter getKeepBackupsPerMonth() {
-            if(keepBackupsPerMonth.getContent() <= 0) {
+            if (keepBackupsPerMonth.getContent() <= 0) {
                 keepBackupsPerMonth.setContent(1);
             }
             return keepBackupsPerMonth;
@@ -179,7 +179,7 @@ public class JIPipeBackupApplicationSettings extends JIPipeDefaultApplicationsSe
         @SetJIPipeDocumentation(name = "Keep weekly backups", description = "If enabled, JIPipe will keep the given number of backups if they are older than one week but do not fall within the 'Keep yearly backups' or 'Keep monthly backups' rules.")
         @JIPipeParameter(value = "keep-backups-per-week", uiOrder = 70)
         public OptionalIntegerParameter getKeepBackupsPerWeek() {
-            if(keepBackupsPerWeek.getContent() <= 0) {
+            if (keepBackupsPerWeek.getContent() <= 0) {
                 keepBackupsPerWeek.setContent(1);
             }
             return keepBackupsPerWeek;
@@ -193,7 +193,7 @@ public class JIPipeBackupApplicationSettings extends JIPipeDefaultApplicationsSe
         @SetJIPipeDocumentation(name = "Keep daily backups", description = "If enabled, JIPipe will keep the given number of backups if they are older than one day but do not fall within the 'Keep yearly backups', 'Keep monthly backups', or 'Keep weekly backups' rules.")
         @JIPipeParameter(value = "keep-backups-per-day", uiOrder = 60)
         public OptionalIntegerParameter getKeepBackupsPerDay() {
-            if(keepBackupsPerDay.getContent() <= 0) {
+            if (keepBackupsPerDay.getContent() <= 0) {
                 keepBackupsPerDay.setContent(1);
             }
             return keepBackupsPerDay;
@@ -207,7 +207,7 @@ public class JIPipeBackupApplicationSettings extends JIPipeDefaultApplicationsSe
         @SetJIPipeDocumentation(name = "Keep hourly backups", description = "If enabled, JIPipe will keep the given number of backups if they are older than one hour but do not fall within the 'Keep yearly backups', 'Keep monthly backups', 'Keep weekly backups', or 'Keep daily backups' rules.")
         @JIPipeParameter(value = "keep-backups-per-hour", uiOrder = 50)
         public OptionalIntegerParameter getKeepBackupsPerHour() {
-            if(keepBackupsPerHour.getContent() <= 0) {
+            if (keepBackupsPerHour.getContent() <= 0) {
                 keepBackupsPerHour.setContent(1);
             }
             return keepBackupsPerHour;

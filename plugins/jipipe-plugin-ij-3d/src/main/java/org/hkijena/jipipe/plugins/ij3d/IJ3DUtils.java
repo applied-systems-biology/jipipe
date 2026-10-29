@@ -544,7 +544,7 @@ public class IJ3DUtils {
     }
 
     public static ImageHandler unwrap(ImagePlusData data) {
-        if(data != null) {
+        if (data != null) {
             return ImageHandler.wrap(data.getImage());
         }
         return null;

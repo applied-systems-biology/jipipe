@@ -18,9 +18,18 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;
 public class ProjectOperations {
 
     public static class ListProjects implements InstrumentationOperation {
-        @Override public String getId() { return "list_projects"; }
-        @Override public String getDescription() { return "List all open projects"; }
-        @Override public JsonNode execute(InstrumentationContext ctx, JsonNode params) {
+        @Override
+        public String getId() {
+            return "list_projects";
+        }
+
+        @Override
+        public String getDescription() {
+            return "List all open projects";
+        }
+
+        @Override
+        public JsonNode execute(InstrumentationContext ctx, JsonNode params) {
             ObjectMapper mapper = new ObjectMapper();
             ObjectNode data = mapper.createObjectNode();
             ArrayNode projects = data.putArray("projects");
@@ -37,9 +46,18 @@ public class ProjectOperations {
     }
 
     public static class ListOperations implements InstrumentationOperation {
-        @Override public String getId() { return "list_operations"; }
-        @Override public String getDescription() { return "List all available operations"; }
-        @Override public JsonNode execute(InstrumentationContext ctx, JsonNode params) {
+        @Override
+        public String getId() {
+            return "list_operations";
+        }
+
+        @Override
+        public String getDescription() {
+            return "List all available operations";
+        }
+
+        @Override
+        public JsonNode execute(InstrumentationContext ctx, JsonNode params) {
             ObjectMapper mapper = new ObjectMapper();
             ObjectNode data = mapper.createObjectNode();
             ArrayNode ops = data.putArray("operations");

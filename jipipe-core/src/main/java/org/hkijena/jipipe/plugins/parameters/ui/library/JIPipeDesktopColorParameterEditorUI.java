@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.plugins.parameters.ui.library;
 
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.utils.ColorUtils;
@@ -40,15 +39,13 @@ public class JIPipeDesktopColorParameterEditorUI extends JIPipeDesktopParameterE
     private void initialize() {
         setLayout(new BorderLayout());
         currentlyDisplayed = new JButton(icon);
+        currentlyDisplayed.setHorizontalAlignment(SwingConstants.LEFT);
         currentlyDisplayed.addActionListener(e -> pickColor());
+        currentlyDisplayed.setToolTipText("Select color");
         UIUtils.setStandardButtonBorder(currentlyDisplayed);
+        // #1339 item 6: no separate icon-only "Edit" button - the display
+        // button above is already wired to the same picker.
         add(currentlyDisplayed, BorderLayout.CENTER);
-
-        JButton selectButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/edit.png"));
-        UIUtils.setStandardButtonBorder(selectButton);
-        selectButton.setToolTipText("Select color");
-        selectButton.addActionListener(e -> pickColor());
-        add(selectButton, BorderLayout.EAST);
     }
 
     private void pickColor() {

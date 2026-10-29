@@ -13,79 +13,64 @@
 
 package org.hkijena.jipipe.plugins.parameters.ui.api;
 
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
+import org.hkijena.jipipe.desktop.commons.components.selection.JIPipeDesktopRichSelectionBox;
 import org.hkijena.jipipe.plugins.parameters.api.options.DynamicSetParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.api.options.JIPipeDynamicSetParameter;
 import org.hkijena.jipipe.utils.ReflectionUtils;
-import org.hkijena.jipipe.utils.ThemeUtils;
-import org.hkijena.jipipe.utils.UIUtils;
 
-import javax.swing.*;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
 import java.util.function.Supplier;
 
 /**
- * A parameter editor UI that works for all enumerations
+ * A parameter editor UI for dynamic sets: a multi-select
+ * {@link JIPipeDesktopRichSelectionBox} whose button shows a count summary
+ * ("Measurements (3)") and whose popup toggles items live (no OK, no
+ * collapse) (#1339).
  */
 public class JIPipeDesktopDynamicSetParameterEditorUI extends JIPipeDesktopParameterEditorUI<JIPipeDynamicSetParameter> {
 
-    private final Map<Object, JCheckBox> checkBoxMap = new HashMap<>();
-    private JToggleButton collapseToggle;
-    private JLabel collapseInfoLabel;
+    private JIPipeDesktopRichSelectionBox selectionBox;
 
     public JIPipeDesktopDynamicSetParameterEditorUI(InitializationParameters parameters) {
         super(JIPipeDynamicSetParameter.class, parameters);
         initialize();
-        reload();
-    }
-
-    @Override
-    public boolean isUILabelEnabled() {
-        return false;
-    }
-
-    @Override
-    public boolean isUIImportantLabelEnabled() {
-        return false;
-    }
-
-    private Set<Object> getCurrentlySelected() {
-        Set<Object> result = new HashSet<>();
-        for (Map.Entry<Object, JCheckBox> entry : checkBoxMap.entrySet()) {
-            if (entry.getValue().isSelected()) {
-                result.add(entry.getKey());
-            }
-        }
-
-        return result;
     }
 
     @Override
     public void reload() {
         JIPipeDynamicSetParameter<Object> parameter = getParameter();
-        Set<Object> currentlySelected = getCurrentlySelected();
-        if (!currentlySelected.equals(parameter.getValues())) {
-            for (Map.Entry<Object, JCheckBox> entry : checkBoxMap.entrySet()) {
-                entry.getValue().setSelected(!parameter.getValues().contains(entry.getKey()));
-            }
+        if (!selectionBox.getSelectedValues().equals(parameter.getValues())) {
+            selectionBox.setSelectedValues(parameter.getValues());
         }
-        for (JCheckBox checkBox : checkBoxMap.values()) {
-            checkBox.setVisible(!parameter.isCollapsed());
-        }
-        collapseInfoLabel.setVisible(parameter.isCollapsed());
-        collapseToggle.setSelected(parameter.isCollapsed());
-        revalidate();
-        repaint();
     }
-
 
     private void initialize() {
         setLayout(new BorderLayout());
-        setBorder(UIUtils.createControlBorder());
 
+        JIPipeDynamicSetParameter<Object> parameter = getParameter();
+        // The parameter name comes from the form panel's label column, so the
+        // button must not repeat it - a neutral prompt + a count summary.
+        selectionBox = new JIPipeDesktopRichSelectionBox("Select items", "Select items", true, this::options, selected -> {
+            Set<Object> newValues = new LinkedHashSet<>();
+            for (JIPipeDesktopRichSelectionBox.Option<?> option : selected) {
+                newValues.add(option.getValue());
+            }
+            parameter.getValues().clear();
+            parameter.getValues().addAll(newValues);
+            setParameter(parameter, false);
+        });
+        selectionBox.setCountOnly(true);
+        // "Select all" next to the popup's "Clear" (select none).
+        selectionBox.setHasSelectAll(true);
+        selectionBox.setSelectedValues(parameter.getValues());
+        selectionBox.refreshDisplay();
+        add(selectionBox, BorderLayout.CENTER);
+    }
+
+    private List<JIPipeDesktopRichSelectionBox.Option<?>> options() {
         JIPipeDynamicSetParameter<Object> parameter = getParameter();
         Object[] values;
         if (parameter.getAllowedValues() != null && !parameter.getAllowedValues().isEmpty()) {
@@ -101,82 +86,15 @@ public class JIPipeDesktopDynamicSetParameterEditorUI extends JIPipeDesktopParam
             }
         }
         Arrays.sort(values, Comparator.comparing(parameter::renderLabel));
-        checkBoxMap.clear();
-        JPanel contentPanel = new JPanel();
-        contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
+
+        List<JIPipeDesktopRichSelectionBox.Option<?>> result = new ArrayList<>();
         for (Object value : values) {
-            JCheckBox checkBox = new JCheckBox(parameter.renderLabel(value),
-                    parameter.getValues().contains(value));
-            checkBox.setToolTipText(parameter.renderTooltip(value));
-            checkBox.addActionListener(e -> {
-                if (checkBox.isSelected()) {
-                    parameter.getValues().add(value);
-                    setParameter(parameter, false);
-                } else {
-                    parameter.getValues().remove(value);
-                    setParameter(parameter, false);
-                }
-            });
-            checkBoxMap.put(value, checkBox);
-            contentPanel.add(checkBox);
+            result.add(new JIPipeDesktopRichSelectionBox.Option<>(value,
+                    parameter.renderLabel(value),
+                    parameter.renderIcon(value),
+                    null,
+                    parameter.renderTooltip(value)));
         }
-
-        collapseInfoLabel = new JLabel("The items are hidden",
-                JIPipe.RESOURCES.getIcon16("actions/eye-slash.png"),
-                JLabel.LEFT);
-        collapseInfoLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
-        contentPanel.add(collapseInfoLabel);
-
-        JToolBar toolBar = new JToolBar();
-        toolBar.add(Box.createHorizontalStrut(4));
-
-        JLabel nameLabel = new JLabel(getParameterAccess().getName());
-        if (getParameterAccess().isImportant()) {
-            nameLabel.setIcon(JIPipe.RESOURCES.getIcon16("emblems/important.png"));
-        }
-        toolBar.add(nameLabel);
-        toolBar.add(Box.createHorizontalGlue());
-
-        collapseToggle = new JToggleButton("Collapse",
-                JIPipe.RESOURCES.getIcon16("actions/eye-slash.png"));
-        toolBar.add(collapseToggle);
-        collapseToggle.addActionListener(e -> saveCollapsedState());
-
-        JButton selectAllButton = new JButton("Select all", JIPipe.RESOURCES.getIcon16("actions/stock_select-all.png"));
-        selectAllButton.addActionListener(e -> selectAll());
-        toolBar.add(selectAllButton);
-
-        JButton selectNoneButton = new JButton("Select none", JIPipe.RESOURCES.getIcon16("actions/cancel.png"));
-        selectNoneButton.addActionListener(e -> selectNone());
-        toolBar.add(selectNoneButton);
-
-        add(toolBar, BorderLayout.NORTH);
-        add(contentPanel, BorderLayout.CENTER);
-    }
-
-    private void saveCollapsedState() {
-        JIPipeDynamicSetParameter<Object> parameter = getParameter();
-        if (parameter.isCollapsed() != collapseToggle.isSelected()) {
-            parameter.setCollapsed(collapseToggle.isSelected());
-            setParameter(parameter, true);
-        }
-    }
-
-    private void selectNone() {
-        for (JCheckBox checkBox : checkBoxMap.values()) {
-            checkBox.setSelected(false);
-        }
-        JIPipeDynamicSetParameter<Object> parameter = getParameter();
-        parameter.getValues().clear();
-        setParameter(parameter, false);
-    }
-
-    private void selectAll() {
-        for (JCheckBox checkBox : checkBoxMap.values()) {
-            checkBox.setSelected(true);
-        }
-        JIPipeDynamicSetParameter<Object> parameter = getParameter();
-        parameter.getValues().addAll(checkBoxMap.keySet());
-        setParameter(parameter, false);
+        return result;
     }
 }

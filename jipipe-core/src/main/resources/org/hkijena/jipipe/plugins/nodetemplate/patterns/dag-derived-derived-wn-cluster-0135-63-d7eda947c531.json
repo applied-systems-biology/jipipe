@@ -1,1 +1,28 @@
-{"nodes":{"n0":{"jipipe:node-info-id":"filaments-find-linear-vertex-order","jipipe:graph-compartment":"DEFAULT","jipipe:metadata-v1":{"location/DEFAULT/x":1,"location/DEFAULT/y":1}},"n1":{"jipipe:node-info-id":"filaments-measure-edges","jipipe:graph-compartment":"DEFAULT","jipipe:metadata-v1":{"location/DEFAULT/x":1,"location/DEFAULT/y":5}}},"edges":[{"source-node":"n0","source-slot":"Output","target-node":"n1","target-slot":"Input"}]}
+{
+  "nodes": {
+    "n0": {
+      "jipipe:node-info-id": "filaments-find-linear-vertex-order",
+      "jipipe:graph-compartment": "DEFAULT",
+      "jipipe:metadata-v1": {
+        "location/DEFAULT/x": 1,
+        "location/DEFAULT/y": 1
+      }
+    },
+    "n1": {
+      "jipipe:node-info-id": "filaments-measure-edges",
+      "jipipe:graph-compartment": "DEFAULT",
+      "jipipe:metadata-v1": {
+        "location/DEFAULT/x": 1,
+        "location/DEFAULT/y": 5
+      }
+    }
+  },
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Output",
+      "target-node": "n1",
+      "target-slot": "Input"
+    }
+  ]
+}

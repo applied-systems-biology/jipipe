@@ -14,8 +14,8 @@
 package org.hkijena.jipipe.desktop.app.running;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
+import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeRunnableExecutor;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
@@ -86,7 +86,7 @@ public class JIPipeDesktopRunExecuteUI extends JIPipeDesktopWorkbenchPanel imple
                 dialog.setVisible(false);
             }
         });
-        if(logMode == GlobalLogMode.Everything || logMode == GlobalLogMode.OnlyFailures) {
+        if (logMode == GlobalLogMode.Everything || logMode == GlobalLogMode.OnlyFailures) {
             queue.getInterruptedEventEmitter().subscribeLambdaOnce((emitter, event) -> {
                 if (queue != JIPipeQueuedRunnableExecutor.getInstance()) {
                     JIPipeDesktopRunnableLogsCollection.getInstance().pushToLog(run, false);

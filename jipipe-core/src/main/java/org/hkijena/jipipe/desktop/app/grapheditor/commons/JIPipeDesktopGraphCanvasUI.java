@@ -26,8 +26,8 @@ import org.hkijena.jipipe.api.grapheditortool.JIPipeDesktopToggleableGraphEditor
 import org.hkijena.jipipe.api.grapheditortool.tools.DefaultGraphEditorTool;
 import org.hkijena.jipipe.api.history.JIPipeHistoryJournal;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.annotation.JIPipeGraphCanvasNote;
 import org.hkijena.jipipe.api.nodes.annotation.JIPipeAnnotationGraphNodeTool;
+import org.hkijena.jipipe.api.nodes.annotation.JIPipeGraphCanvasNote;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.NoFramework;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;

@@ -131,9 +131,9 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.properties.SetRoiMe
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.sort.SortAndExtractRoiByStatisticsAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.sort.SortAndExtractRoiByStatisticsAlgorithm2;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.sort.SortRoiListByExpressionsAndMeasurementsAlgorithm;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.split.SplitMultiComponentRoi2dAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.split.SplitRoi2dByStatisticsAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.split.SplitRoi2dIntoIndividualListsAlgorithm;
-import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.split.SplitMultiComponentRoi2dAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.split.SplitRoiConnectedComponentsAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.segment.ClassicWatershedSegmentationAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.segment.RidgeDetector2DAlgorithm;

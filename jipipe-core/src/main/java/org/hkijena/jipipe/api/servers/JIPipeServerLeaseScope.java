@@ -19,7 +19,7 @@ import java.util.List;
 
 /**
  * Aggregates multiple server leases and releases them all on {@link #close()}, in LIFO order.
- * 
+ *
  * <p>Inspired by the cache system's scope pattern, this allows managing multiple
  * server leases within a single try-with-resources block:</p>
  * <pre>
@@ -37,7 +37,7 @@ public class JIPipeServerLeaseScope implements AutoCloseable {
     /**
      * Adds a lease to this scope. The lease will be released when this scope is closed.
      *
-     * @param lease the lease to add
+     * @param lease   the lease to add
      * @param <TInst> the server instance type
      * @return the added lease (for convenient assignment)
      */

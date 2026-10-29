@@ -16,26 +16,49 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class LargestProjectNodesStatisticsItem implements JIPipeStatisticsItem {
-    private int maxNodes = 0;
     private final Set<JIPipeDesktopProjectWindow> attachedWindows = new HashSet<>();
+    private int maxNodes = 0;
     private JIPipeStatisticsServiceComponent service;
 
     @Override
-    public String getId() { return "largest-project-nodes"; }
+    public String getId() {
+        return "largest-project-nodes";
+    }
+
     @Override
-    public String getName() { return "Largest project (nodes)"; }
+    public String getName() {
+        return "Largest project (nodes)";
+    }
+
     @Override
-    public String getDescription() { return "Maximum number of nodes in any opened project"; }
+    public String getDescription() {
+        return "Maximum number of nodes in any opened project";
+    }
+
     @Override
-    public StatisticsPrivacyLevel getRequiredPrivacyLevel() { return StatisticsPrivacyLevel.Everything; }
+    public StatisticsPrivacyLevel getRequiredPrivacyLevel() {
+        return StatisticsPrivacyLevel.Everything;
+    }
+
     @Override
-    public JsonNode serialize() { return IntNode.valueOf(maxNodes); }
+    public JsonNode serialize() {
+        return IntNode.valueOf(maxNodes);
+    }
+
     @Override
-    public void deserialize(JsonNode node) { if (node != null && !node.isNull()) maxNodes = node.asInt(); }
+    public void deserialize(JsonNode node) {
+        if (node != null && !node.isNull()) maxNodes = node.asInt();
+    }
+
     @Override
-    public void reset() { maxNodes = 0; }
+    public void reset() {
+        maxNodes = 0;
+    }
+
     @Override
-    public boolean isTimeTracked() { return true; }
+    public boolean isTimeTracked() {
+        return true;
+    }
 
     @Override
     public void initialize(JIPipeStatisticsServiceComponent service) {
@@ -84,11 +107,17 @@ public class LargestProjectNodesStatisticsItem implements JIPipeStatisticsItem {
     }
 
     @Override
-    public String getIcon32() { return "actions/network-server-database.png"; }
+    public String getIcon32() {
+        return "actions/network-server-database.png";
+    }
+
     @Override
     public org.hkijena.jipipe.desktop.commons.components.cards.JIPipeDesktopCardVariant getCardVariant() {
         return org.hkijena.jipipe.desktop.commons.components.cards.JIPipeDesktopCardVariant.Primary;
     }
+
     @Override
-    public int getDefaultColumnSpan() { return 6; }
+    public int getDefaultColumnSpan() {
+        return 6;
+    }
 }

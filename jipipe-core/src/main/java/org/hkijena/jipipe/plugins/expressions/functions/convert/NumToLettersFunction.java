@@ -23,7 +23,7 @@ import java.util.List;
 @SetJIPipeDocumentation(
         name = "Number to letters",
         description = "Converts a number to a string of letters, like spreadsheet column labels " +
-                "(1 = A, 2 = B, …, 26 = Z, 27 = AA, 702 = ZZ, 703 = AAA, …) — bijective base-26. " +
+                "(1 = A, 2 = B, …, 26 = Z, 27 = AA, 702 = ZZ, 703 = AAA, …) - bijective base-26. " +
                 "The optional start parameter is the number that maps to the first letter (A); default 1.")
 public class NumToLettersFunction extends ExpressionFunction {
     public NumToLettersFunction() {

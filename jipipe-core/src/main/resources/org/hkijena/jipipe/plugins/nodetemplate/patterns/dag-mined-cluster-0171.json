@@ -1,1 +1,85 @@
-{"edges":[{"source-node":"n1","source-slot":"Output","target-node":"n2","target-slot":"Input"},{"source-node":"n2","source-slot":"Output","target-node":"n0","target-slot":"Top"}],"nodes":{"n0":{"jipipe:graph-compartment":"c31522e7-72e9-5749-a03a-297a5a4a5bba","jipipe:metadata-v1":{"location/c31522e7-72e9-5749-a03a-297a5a4a5bba/x":0,"location/c31522e7-72e9-5749-a03a-297a5a4a5bba/y":10},"jipipe:node-info-id":"ij1-color-blend-images","jipipe:slot-configuration":{"input":{"Bottom":{"slot-data-type":"imagej-imgplus","slot-type":"Input","name":"Bottom","custom-name":null,"description":"","is-virtual":true,"save-outputs":true,"is-optional":false},"Top":{"slot-data-type":"imagej-imgplus","slot-type":"Input","name":"Top","custom-name":null,"description":"","is-virtual":true,"save-outputs":true,"is-optional":false}},"output":{"Output":{"slot-data-type":"imagej-imgplus-color-rgb","slot-type":"Output","name":"Output","custom-name":null,"description":"The output image","is-virtual":false,"save-outputs":true,"is-optional":false}}},"render-greyscale-images":true,"layers/Bottom":{"opacity":1.0},"layers/Top":{"opacity":1.0}},"n1":{"jipipe:graph-compartment":"c31522e7-72e9-5749-a03a-297a5a4a5bba","jipipe:metadata-v1":{"location/c31522e7-72e9-5749-a03a-297a5a4a5bba/x":0,"location/c31522e7-72e9-5749-a03a-297a5a4a5bba/y":0},"jipipe:node-info-id":"ij1-dimensions-reslice"},"n2":{"jipipe:graph-compartment":"c31522e7-72e9-5749-a03a-297a5a4a5bba","jipipe:metadata-v1":{"location/c31522e7-72e9-5749-a03a-297a5a4a5bba/x":0,"location/c31522e7-72e9-5749-a03a-297a5a4a5bba/y":4},"jipipe:node-info-id":"ij1-set-lut-from-color-map"}}}
+{
+  "edges": [
+    {
+      "source-node": "n1",
+      "source-slot": "Output",
+      "target-node": "n2",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n2",
+      "source-slot": "Output",
+      "target-node": "n0",
+      "target-slot": "Top"
+    }
+  ],
+  "nodes": {
+    "n0": {
+      "jipipe:graph-compartment": "c31522e7-72e9-5749-a03a-297a5a4a5bba",
+      "jipipe:metadata-v1": {
+        "location/c31522e7-72e9-5749-a03a-297a5a4a5bba/x": 0,
+        "location/c31522e7-72e9-5749-a03a-297a5a4a5bba/y": 10
+      },
+      "jipipe:node-info-id": "ij1-color-blend-images",
+      "jipipe:slot-configuration": {
+        "input": {
+          "Bottom": {
+            "slot-data-type": "imagej-imgplus",
+            "slot-type": "Input",
+            "name": "Bottom",
+            "custom-name": null,
+            "description": "",
+            "is-virtual": true,
+            "save-outputs": true,
+            "is-optional": false
+          },
+          "Top": {
+            "slot-data-type": "imagej-imgplus",
+            "slot-type": "Input",
+            "name": "Top",
+            "custom-name": null,
+            "description": "",
+            "is-virtual": true,
+            "save-outputs": true,
+            "is-optional": false
+          }
+        },
+        "output": {
+          "Output": {
+            "slot-data-type": "imagej-imgplus-color-rgb",
+            "slot-type": "Output",
+            "name": "Output",
+            "custom-name": null,
+            "description": "The output image",
+            "is-virtual": false,
+            "save-outputs": true,
+            "is-optional": false
+          }
+        }
+      },
+      "render-greyscale-images": true,
+      "layers/Bottom": {
+        "opacity": 1.0
+      },
+      "layers/Top": {
+        "opacity": 1.0
+      }
+    },
+    "n1": {
+      "jipipe:graph-compartment": "c31522e7-72e9-5749-a03a-297a5a4a5bba",
+      "jipipe:metadata-v1": {
+        "location/c31522e7-72e9-5749-a03a-297a5a4a5bba/x": 0,
+        "location/c31522e7-72e9-5749-a03a-297a5a4a5bba/y": 0
+      },
+      "jipipe:node-info-id": "ij1-dimensions-reslice"
+    },
+    "n2": {
+      "jipipe:graph-compartment": "c31522e7-72e9-5749-a03a-297a5a4a5bba",
+      "jipipe:metadata-v1": {
+        "location/c31522e7-72e9-5749-a03a-297a5a4a5bba/x": 0,
+        "location/c31522e7-72e9-5749-a03a-297a5a4a5bba/y": 4
+      },
+      "jipipe:node-info-id": "ij1-set-lut-from-color-map"
+    }
+  }
+}

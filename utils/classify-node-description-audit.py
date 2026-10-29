@@ -4,22 +4,22 @@
 The (C) review's decision (3) is a full audit of the node descriptions the
 patterns use. A length-only scoping pass (missing or <50 chars) undercounts:
 the most damaging defect is a description that is long yet describes the WRONG
-node (copy-pasted from a sibling) — e.g. ``ij1-roi-to-rgb``, the single most
+node (copy-pasted from a sibling) - e.g. ``ij1-roi-to-rgb``, the single most
 used pattern node, whose text says "Converts ROI lists to masks" (that is
 ``ij1-roi-to-mask``'s description).
 
 For every node type that appears in the shipped patterns this classifies the
 description into a defect bucket and orders the worklist by pattern frequency:
 
-* ``wrong``              — long but copy-pasted from a sibling node (curated
+* ``wrong``              - long but copy-pasted from a sibling node (curated
                            list, verified against the source). Highest value.
-* ``missing``            — no ``@SetJIPipeDocumentation`` description in-tree.
-* ``thin``               — present but < 50 chars (too short to say what it does).
-* ``not_editable_here``  — auto-registered / dynamic / third-party / stale id:
+* ``missing``            - no ``@SetJIPipeDocumentation`` description in-tree.
+* ``thin``               - present but < 50 chars (too short to say what it does).
+* ``not_editable_here``  - auto-registered / dynamic / third-party / stale id:
                            the text is not in a JIPipe annotation, or the id no
                            longer exists (the pattern is remapped to a
                            successor that has its own description).
-* ``ok``                 — present, long enough, not flagged.
+* ``ok``                 - present, long enough, not flagged.
 
 Usage (from the repository root):
 
@@ -39,7 +39,7 @@ THIN_CHARS = 50
 
 # Verified copy-paste errors: the description text belongs to the SIBLING node,
 # not this one (checked against the source). Auditing these is the whole point
-# of "the name alone does not carry enough info to infer what it does" — a
+# of "the name alone does not carry enough info to infer what it does" - a
 # wrong description is worse than a thin one because it confidently misleads.
 WRONG_COPY_PASTE = {
     # "Converts ROI lists to masks…" is ij1-roi-to-mask's description; the node
@@ -51,7 +51,7 @@ WRONG_COPY_PASTE = {
     "trackmate-filter-tracks": "describes trackmate-filter-spots (says 'spots')",
 }
 
-# ids that no longer exist in 6.0.0 — the pattern is remapped to the successor
+# ids that no longer exist in 6.0.0 - the pattern is remapped to the successor
 # (which carries its own description), so there is nothing to fix on this id.
 STALE_IDS = {
     "ij1-transform-tile",

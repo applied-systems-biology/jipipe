@@ -46,25 +46,22 @@ public class JIPipeDesktopImageJDataImportOperationRefParameterEditorUI extends 
 
     private void initialize() {
         setLayout(new BorderLayout());
+        setBorder(UIUtils.createControlBorder());
 
         currentlyDisplayed = new JButton();
+        currentlyDisplayed.setHorizontalAlignment(SwingConstants.LEFT);
         currentlyDisplayed.addActionListener(e -> pick());
+        currentlyDisplayed.setToolTipText("Select algorithm type");
         UIUtils.setStandardButtonBorder(currentlyDisplayed);
         add(currentlyDisplayed, BorderLayout.CENTER);
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
 
-        JButton selectButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/edit.png"));
-        UIUtils.setStandardButtonBorder(selectButton);
-        selectButton.setToolTipText("Select algorithm type");
-        selectButton.addActionListener(e -> pick());
-        buttonPanel.add(selectButton);
-
-        JButton configureButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/configure.png"));
-        UIUtils.setStandardButtonBorder(configureButton);
-        configureButton.setToolTipText("Configure the importer");
-        configureButton.addActionListener(e -> configure());
+        // #1339 item 6: no separate "select algorithm type" icon button - the
+        // display button already opens the same picker. Only Configure (a
+        // distinct action) remains.
+        JButton configureButton = UIUtils.createParameterIconButton(JIPipe.RESOURCES.getIcon16("actions/configure.png"), "Configure the importer", e -> configure());
         buttonPanel.add(configureButton);
 
         add(buttonPanel, BorderLayout.EAST);

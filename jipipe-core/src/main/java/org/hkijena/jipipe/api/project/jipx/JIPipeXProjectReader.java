@@ -34,7 +34,7 @@ import java.util.Map;
 /**
  * The JIPX (JIPipe 6) project container reader.
  * <p>
- * Reads a {@code .jipx} file — a ZIP container holding the project parts
+ * Reads a {@code .jipx} file - a ZIP container holding the project parts
  * as individual JSON documents plus a {@code jipx.json} manifest
  * (see {@link JIPipeXManifest} and {@link JIPipeProjectParts}):
  * <ol>
@@ -48,7 +48,7 @@ import java.util.Map;
  * <li>The manifest ({@code jipx.json}) is read. A container without a
  * manifest is not a JIPipe 6 project and is rejected with a
  * {@link JIPipeValidationRuntimeException} naming the missing
- * {@code jipx.json} entry — this is also how non-JIPX ZIPs (e.g.
+ * {@code jipx.json} entry - this is also how non-JIPX ZIPs (e.g.
  * {@code .crate.zip} files) are rejected during read.</li>
  * <li>The parts listed in the manifest are read
  * ({@link JIPipeProjectWorkspace#readParts()}); a listed part that is
@@ -56,7 +56,7 @@ import java.util.Map;
  * missing entry.</li>
  * <li>The parts are reassembled into the exact monolith tree
  * ({@link JIPipeProjectParts#assembleParts}) and loaded via
- * {@link JIPipeProject#fromJson} — the full upgrade machinery applies.</li>
+ * {@link JIPipeProject#fromJson} - the full upgrade machinery applies.</li>
  * <li>Same reader contract as the legacy reader: user path validation,
  * settings-gated broken-environment fixing, and the project file path is
  * recorded.</li>
@@ -66,7 +66,7 @@ public class JIPipeXProjectReader implements JIPipeProjectReader {
 
     /**
      * The stable id of the JIPX project format.
-     * Persisted in saved projects — never derive from code.
+     * Persisted in saved projects - never derive from code.
      */
     public static final String FORMAT_ID = "org.hkijena.jipipe.core:jipx";
 
@@ -92,7 +92,7 @@ public class JIPipeXProjectReader implements JIPipeProjectReader {
         JIPipeProject project = new JIPipeProject();
         // (a) Work directory BEFORE the workspace: the temporary base
         // directory (and thus the workspace) is memoized from the work
-        // directory — see the class Javadoc.
+        // directory - see the class Javadoc.
         project.setWorkDirectory(path.getParent());
         // (b) Extract the container into the workspace.
         project.getWorkspace().extractFromZip(path, progressInfo.resolve("Extract JIPX container"));
@@ -123,7 +123,7 @@ public class JIPipeXProjectReader implements JIPipeProjectReader {
                         "Invalid JIPipe project crate",
                         "The " + JIPipeXManifest.MANIFEST_FILE_NAME + " manifest of '" + path + "' does not list the required part '"
                                 + requiredPart + "'.",
-                        "The container is not a valid JIPipe project crate — it may be corrupt or was written by an incompatible tool. " +
+                        "The container is not a valid JIPipe project crate - it may be corrupt or was written by an incompatible tool. " +
                                 "Please check the file or re-save the project.");
             }
         }

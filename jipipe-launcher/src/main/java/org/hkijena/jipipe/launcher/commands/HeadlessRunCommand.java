@@ -256,8 +256,7 @@ public class HeadlessRunCommand {
         // Cleanup temporary files
         try {
             project.close(run.getProgressInfo().resolve("Cleanup"));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

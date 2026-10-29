@@ -1,1 +1,33 @@
-{"nodes":{"n0":{"jipipe:node-info-id":"jipipe:compartment-output","jipipe:graph-compartment":"e630be7d-4fad-53f1-bc1b-6ada8af9c23c","jipipe:node:name":"Output"},"n1":{"jipipe:node-info-id":"ij3d-roi-filter-by-overlap","jipipe:graph-compartment":"e630be7d-4fad-53f1-bc1b-6ada8af9c23c","jipipe:node:name":"Filter 3D ROI by overlap"},"n2":{"jipipe:node-info-id":"ij3d-measure-roi3d","jipipe:graph-compartment":"e630be7d-4fad-53f1-bc1b-6ada8af9c23c","jipipe:node:name":"Extract ROI 3D statistics"}},"edges":[{"source-node":"n0","source-slot":"Green ROIs","target-node":"n1","target-slot":"ROI 1"},{"source-node":"n1","source-slot":"ROI 2","target-node":"n2","target-slot":"ROI"}]}
+{
+  "nodes": {
+    "n0": {
+      "jipipe:node-info-id": "jipipe:compartment-output",
+      "jipipe:graph-compartment": "e630be7d-4fad-53f1-bc1b-6ada8af9c23c",
+      "jipipe:node:name": "Output"
+    },
+    "n1": {
+      "jipipe:node-info-id": "ij3d-roi-filter-by-overlap",
+      "jipipe:graph-compartment": "e630be7d-4fad-53f1-bc1b-6ada8af9c23c",
+      "jipipe:node:name": "Filter 3D ROI by overlap"
+    },
+    "n2": {
+      "jipipe:node-info-id": "ij3d-measure-roi3d",
+      "jipipe:graph-compartment": "e630be7d-4fad-53f1-bc1b-6ada8af9c23c",
+      "jipipe:node:name": "Extract ROI 3D statistics"
+    }
+  },
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Green ROIs",
+      "target-node": "n1",
+      "target-slot": "ROI 1"
+    },
+    {
+      "source-node": "n1",
+      "source-slot": "ROI 2",
+      "target-node": "n2",
+      "target-slot": "ROI"
+    }
+  ]
+}

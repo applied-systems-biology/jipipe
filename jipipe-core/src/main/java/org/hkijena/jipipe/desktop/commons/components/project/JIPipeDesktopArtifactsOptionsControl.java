@@ -134,7 +134,7 @@ public class JIPipeDesktopArtifactsOptionsControl extends JButton implements JIP
             }
         };
         JIPipeDesktopRunExecuteUI.runInDialog(workbench, workbench.getWindow(), runnable);
-        JOptionPane.showMessageDialog(workbench.getWindow(), "The operation finished", "Fix broken project-wide services",  JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(workbench.getWindow(), "The operation finished", "Fix broken project-wide services", JOptionPane.INFORMATION_MESSAGE);
     }
 
     private void openEnvironmentApplicationSettings() {

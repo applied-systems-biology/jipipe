@@ -1,1 +1,56 @@
-{"nodes":{"n0":{"jipipe:node-info-id":"ij1-morph-binary-fillholes2d","jipipe:graph-compartment":"54a1eca1-98a3-56b1-834a-d5561e346d15","jipipe:metadata-v1":{"location/54a1eca1-98a3-56b1-834a-d5561e346d15/x":1,"location/54a1eca1-98a3-56b1-834a-d5561e346d15/y":1}},"n1":{"jipipe:node-info-id":"ij1-morph-operation2d","jipipe:graph-compartment":"54a1eca1-98a3-56b1-834a-d5561e346d15","jipipe:metadata-v1":{"location/54a1eca1-98a3-56b1-834a-d5561e346d15/x":1,"location/54a1eca1-98a3-56b1-834a-d5561e346d15/y":5}},"n2":{"jipipe:node-info-id":"ij1-analyze-find-particles2d","jipipe:graph-compartment":"54a1eca1-98a3-56b1-834a-d5561e346d15","jipipe:metadata-v1":{"location/54a1eca1-98a3-56b1-834a-d5561e346d15/x":1,"location/54a1eca1-98a3-56b1-834a-d5561e346d15/y":9}},"n3":{"jipipe:node-info-id":"ij1-roi-to-rgb","jipipe:graph-compartment":"54a1eca1-98a3-56b1-834a-d5561e346d15","jipipe:metadata-v1":{"location/54a1eca1-98a3-56b1-834a-d5561e346d15/x":1,"location/54a1eca1-98a3-56b1-834a-d5561e346d15/y":13}}},"edges":[{"source-node":"n0","source-slot":"Output","target-node":"n1","target-slot":"Input"},{"source-node":"n1","source-slot":"Output","target-node":"n2","target-slot":"Mask"},{"source-node":"n2","source-slot":"ROI","target-node":"n3","target-slot":"ROI"}]}
+{
+  "nodes": {
+    "n0": {
+      "jipipe:node-info-id": "ij1-morph-binary-fillholes2d",
+      "jipipe:graph-compartment": "54a1eca1-98a3-56b1-834a-d5561e346d15",
+      "jipipe:metadata-v1": {
+        "location/54a1eca1-98a3-56b1-834a-d5561e346d15/x": 1,
+        "location/54a1eca1-98a3-56b1-834a-d5561e346d15/y": 1
+      }
+    },
+    "n1": {
+      "jipipe:node-info-id": "ij1-morph-operation2d",
+      "jipipe:graph-compartment": "54a1eca1-98a3-56b1-834a-d5561e346d15",
+      "jipipe:metadata-v1": {
+        "location/54a1eca1-98a3-56b1-834a-d5561e346d15/x": 1,
+        "location/54a1eca1-98a3-56b1-834a-d5561e346d15/y": 5
+      }
+    },
+    "n2": {
+      "jipipe:node-info-id": "ij1-analyze-find-particles2d",
+      "jipipe:graph-compartment": "54a1eca1-98a3-56b1-834a-d5561e346d15",
+      "jipipe:metadata-v1": {
+        "location/54a1eca1-98a3-56b1-834a-d5561e346d15/x": 1,
+        "location/54a1eca1-98a3-56b1-834a-d5561e346d15/y": 9
+      }
+    },
+    "n3": {
+      "jipipe:node-info-id": "ij1-roi-to-rgb",
+      "jipipe:graph-compartment": "54a1eca1-98a3-56b1-834a-d5561e346d15",
+      "jipipe:metadata-v1": {
+        "location/54a1eca1-98a3-56b1-834a-d5561e346d15/x": 1,
+        "location/54a1eca1-98a3-56b1-834a-d5561e346d15/y": 13
+      }
+    }
+  },
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Output",
+      "target-node": "n1",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n1",
+      "source-slot": "Output",
+      "target-node": "n2",
+      "target-slot": "Mask"
+    },
+    {
+      "source-node": "n2",
+      "source-slot": "ROI",
+      "target-node": "n3",
+      "target-slot": "ROI"
+    }
+  ]
+}

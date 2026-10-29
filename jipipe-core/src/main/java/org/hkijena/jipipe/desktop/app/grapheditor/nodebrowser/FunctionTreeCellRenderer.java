@@ -15,11 +15,7 @@ package org.hkijena.jipipe.desktop.app.grapheditor.nodebrowser;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
-import org.hkijena.jipipe.api.nodes.taxonomy.FunctionRegistry;
-import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework;
-import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension;
-import org.hkijena.jipipe.api.nodes.taxonomy.NoFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.*;
 import org.hkijena.jipipe.desktop.commons.components.icons.ColoredCircleIcon;
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeNodeStateChips;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernThemeStyle;
@@ -54,7 +50,7 @@ public class FunctionTreeCellRenderer implements TreeCellRenderer {
 
     /**
      * The 24×24 wrapper for template rows: the template icon centered on a circle
-     * with NEUTRAL theme colors (panel-background fill, highlight-border ring) —
+     * with NEUTRAL theme colors (panel-background fill, highlight-border ring) -
      * the look of a "node of no function family," so templates read as distinct
      * from the function rows' colored circles.
      */
@@ -136,7 +132,7 @@ public class FunctionTreeCellRenderer implements TreeCellRenderer {
                 chip.add(chipLabel);
                 rowPanel.add(chip);
             }
-            // The template badge (Pattern / Custom), read from the entry —
+            // The template badge (Pattern / Custom), read from the entry -
             // spec §7.2. Non-templates get no badge.
             JComponent badge = JIPipeNodeStateChips.templateBadge(entry);
             if (badge != null) {
@@ -152,7 +148,7 @@ public class FunctionTreeCellRenderer implements TreeCellRenderer {
             label.setText(function.getName());
             Icon icon = function.getIcon();
             // The function icon wrapped in a circle painted with the function's
-            // node fill/border color (the exact color of its canvas nodes) —
+            // node fill/border color (the exact color of its canvas nodes) -
             // the tree doubles as a legend for what node colors mean.
             JIPipeDesktopModernThemeStyle style = ThemeUtils.getCurrentStyle();
             FunctionRegistry registry = JIPipe.getNodes().getFunctions();
@@ -167,24 +163,24 @@ public class FunctionTreeCellRenderer implements TreeCellRenderer {
             }
         } else if (userObject instanceof TemplateScopeTreeNode scopeNode) {
             // The synthetic "Templates" branch (spec §7.2): the header row and
-            // its System/Global/Project children. Pure UI grouping — distinct
+            // its System/Global/Project children. Pure UI grouping - distinct
             // template icon, not a taxonomy function.
             label.setText(scopeNode.isRoot()
-                ? "Templates"
-                : scopeNode.getScope().name());
+                    ? "Templates"
+                    : scopeNode.getScope().name());
             label.setIcon(templateCircleIcon());
             label.setToolTipText(scopeNode.isRoot()
-                ? "Node templates grouped by storage scope"
-                : "Node templates stored in the " + scopeNode.getScope().name().toLowerCase() + " scope");
+                    ? "Node templates grouped by storage scope"
+                    : "Node templates stored in the " + scopeNode.getScope().name().toLowerCase() + " scope");
         } else if (userObject instanceof PatternsTreeNode patterns) {
             // The synthetic <function>/Patterns row: the function's node
             // templates, grouped below the function level (pure UI grouping,
-            // not a taxonomy function — the function level itself shows only
+            // not a taxonomy function - the function level itself shows only
             // real nodes).
             label.setText("Patterns");
             label.setIcon(templateCircleIcon());
             label.setToolTipText("Node template patterns filed under "
-                + (patterns.getFunction() != null ? patterns.getFunction().getName() : "this function"));
+                    + (patterns.getFunction() != null ? patterns.getFunction().getName() : "this function"));
         } else {
             // The root node
             label.setText("All functions");

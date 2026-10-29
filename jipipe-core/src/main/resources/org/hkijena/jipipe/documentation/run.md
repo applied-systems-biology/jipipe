@@ -1,6 +1,6 @@
 # Running JIPipe
 
-After creating an analysis graph, it can be executed. You only have to select 
+After creating an analysis graph, it can be executed. You only have to select
 the output folder.
 
 If there are issues with the current project, they are listed, instead. Please

@@ -1,1 +1,56 @@
-{"nodes":{"n0":{"jipipe:graph-compartment":"DEFAULT","jipipe:metadata-v1":{"location/DEFAULT/x":1,"location/DEFAULT/y":5},"jipipe:node-info-id":"export-data-by-parameter-v2"},"n1":{"jipipe:graph-compartment":"DEFAULT","jipipe:metadata-v1":{"location/DEFAULT/x":1,"location/DEFAULT/y":1},"jipipe:node-info-id":"ij1-roi-relation-2d"},"n2":{"jipipe:graph-compartment":"DEFAULT","jipipe:metadata-v1":{"location/DEFAULT/x":1,"location/DEFAULT/y":9},"jipipe:node-info-id":"iji-export-image-v2"},"n3":{"jipipe:graph-compartment":"DEFAULT","jipipe:metadata-v1":{"location/DEFAULT/x":10,"location/DEFAULT/y":5},"jipipe:node-info-id":"plot-table:plot-histogram"}},"edges":[{"source-node":"n1","source-slot":"Measurements","target-node":"n0","target-slot":"Data"},{"source-node":"n1","source-slot":"Measurements","target-node":"n3","target-slot":"Input"},{"source-node":"n3","source-slot":"Output","target-node":"n2","target-slot":"Input"}]}
+{
+  "nodes": {
+    "n0": {
+      "jipipe:graph-compartment": "DEFAULT",
+      "jipipe:metadata-v1": {
+        "location/DEFAULT/x": 1,
+        "location/DEFAULT/y": 5
+      },
+      "jipipe:node-info-id": "export-data-by-parameter-v2"
+    },
+    "n1": {
+      "jipipe:graph-compartment": "DEFAULT",
+      "jipipe:metadata-v1": {
+        "location/DEFAULT/x": 1,
+        "location/DEFAULT/y": 1
+      },
+      "jipipe:node-info-id": "ij1-roi-relation-2d"
+    },
+    "n2": {
+      "jipipe:graph-compartment": "DEFAULT",
+      "jipipe:metadata-v1": {
+        "location/DEFAULT/x": 1,
+        "location/DEFAULT/y": 9
+      },
+      "jipipe:node-info-id": "iji-export-image-v2"
+    },
+    "n3": {
+      "jipipe:graph-compartment": "DEFAULT",
+      "jipipe:metadata-v1": {
+        "location/DEFAULT/x": 10,
+        "location/DEFAULT/y": 5
+      },
+      "jipipe:node-info-id": "plot-table:plot-histogram"
+    }
+  },
+  "edges": [
+    {
+      "source-node": "n1",
+      "source-slot": "Measurements",
+      "target-node": "n0",
+      "target-slot": "Data"
+    },
+    {
+      "source-node": "n1",
+      "source-slot": "Measurements",
+      "target-node": "n3",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n3",
+      "source-slot": "Output",
+      "target-node": "n2",
+      "target-slot": "Input"
+    }
+  ]
+}

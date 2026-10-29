@@ -4,13 +4,14 @@ import org.hkijena.jipipe.api.notifications.JIPipeNotificationAction;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ValidationEntryBuilderActionTest {
 
     @Test
     public void testBuilderWithAction() {
-        JIPipeNotificationAction action = new JIPipeNotificationAction("Update", "Update tooltip", null, wb -> {});
+        JIPipeNotificationAction action = new JIPipeNotificationAction("Update", "Update tooltip", null, wb -> {
+        });
         JIPipeValidationReportContext context = new UnspecifiedValidationReportContext();
         JIPipeValidationReportEntry entry = context.error()
                 .title("Test title")
@@ -24,8 +25,10 @@ public class ValidationEntryBuilderActionTest {
 
     @Test
     public void testBuilderWithMultipleActions() {
-        JIPipeNotificationAction action1 = new JIPipeNotificationAction("Update", null, null, wb -> {});
-        JIPipeNotificationAction action2 = new JIPipeNotificationAction("Fix", null, null, wb -> {});
+        JIPipeNotificationAction action1 = new JIPipeNotificationAction("Update", null, null, wb -> {
+        });
+        JIPipeNotificationAction action2 = new JIPipeNotificationAction("Fix", null, null, wb -> {
+        });
         JIPipeValidationReportContext context = new UnspecifiedValidationReportContext();
         JIPipeValidationReportEntry entry = context.error()
                 .title("Test title")
@@ -38,7 +41,8 @@ public class ValidationEntryBuilderActionTest {
 
     @Test
     public void testBuilderReportCarriesActions() {
-        JIPipeNotificationAction action = new JIPipeNotificationAction("Update", null, null, wb -> {});
+        JIPipeNotificationAction action = new JIPipeNotificationAction("Update", null, null, wb -> {
+        });
         JIPipeValidationReportContext context = new UnspecifiedValidationReportContext();
         JIPipeValidationReport report = new JIPipeValidationReport();
         JIPipeValidationReportEntry entry = context.error()

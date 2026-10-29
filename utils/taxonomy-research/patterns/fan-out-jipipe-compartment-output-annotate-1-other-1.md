@@ -36,28 +36,32 @@ Mined pattern `fan-out-jipipe-compartment-output-annotate-1-other-1` (shape `fan
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| core-io | `jipipe:compartment-output` |
+| role     | node ids                                                                                                         |
+|----------|------------------------------------------------------------------------------------------------------------------|
+| core-io  | `jipipe:compartment-output`                                                                                      |
 | annotate | `annotate-data-with-table-values`, `annotate-split-by-annotation`, `annotate-with-data`, `overwrite-annotations` |
-| other | `cellpose-inference-2.x`, `ij1-colocalization-coloc2`, `ij1-roi-to-rgb`, `ij3d-measure-roi3d` |
+| other    | `cellpose-inference-2.x`, `ij1-colocalization-coloc2`, `ij1-roi-to-rgb`, `ij3d-measure-roi3d`                    |
 
 ## Example graph
 
-Project: `AIAgentTests/03-ExampleWorkflows/Lukas_CFranke_09.jip` (relative to `/data/JIPipe`), compartment `Colocalization+Membrane+Z stack and colocalization`.
+Project: `AIAgentTests/03-ExampleWorkflows/Lukas_CFranke_09.jip` (relative to `/data/JIPipe`), compartment
+`Colocalization+Membrane+Z stack and colocalization`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `jipipe:compartment-output` | Raw images |
-| n1 | `overwrite-annotations` | Copy/overwrite annotations #1 |
-| n2 | `overwrite-annotations` | Copy/overwrite annotations #2 |
-| n3 | `cellpose-inference-2.x` | Cellpose prediction (2.x) |
+| key | node id                     | name                          |
+|-----|-----------------------------|-------------------------------|
+| n0  | `jipipe:compartment-output` | Raw images                    |
+| n1  | `overwrite-annotations`     | Copy/overwrite annotations #1 |
+| n2  | `overwrite-annotations`     | Copy/overwrite annotations #2 |
+| n3  | `cellpose-inference-2.x`    | Cellpose prediction (2.x)     |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
+| from       | slot                 | to                            | slot     | data class    |
+|------------|----------------------|-------------------------------|----------|---------------|
 | Raw images | `Annotated with ROI` | Copy/overwrite annotations #1 | `Source` | `jipipe:data` |
 
 ## Template
 
-Proposed name `Compartment output fans out to 8 target ids (roles: annotate, other)`, menu path `Patterns/Graph / Project/Compartment output fans out to 8 target ids (roles: annotate, other)` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/fan-out-jipipe-compartment-output-annotate-1-other-1.json`.
+Proposed name `Compartment output fans out to 8 target ids (roles: annotate, other)`, menu path
+`Patterns/Graph / Project/Compartment output fans out to 8 target ids (roles: annotate, other)` (proposal only - not
+registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/fan-out-jipipe-compartment-output-annotate-1-other-1.json`.
 

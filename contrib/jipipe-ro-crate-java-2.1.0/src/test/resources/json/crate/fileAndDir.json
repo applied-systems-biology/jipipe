@@ -1,12 +1,15 @@
-{ "@context": "https://w3id.org/ro/crate/1.1/context",
+{
+  "@context": "https://w3id.org/ro/crate/1.1/context",
   "@graph": [
     {
       "@id": "./",
       "@type": "Dataset",
       "name": "Example RO-Crate",
       "description": "The RO-Crate Root Data Entity",
-       "datePublished": "2024",
-       "license": {"@id": "https://creativecommons.org/licenses/by-nc-sa/3.0/au/"},
+      "datePublished": "2024",
+      "license": {
+        "@id": "https://creativecommons.org/licenses/by-nc-sa/3.0/au/"
+      },
       "hasPart": [
         {
           "@id": "cp7glop.ai"
@@ -19,8 +22,12 @@
     {
       "@type": "CreativeWork",
       "@id": "ro-crate-metadata.json",
-      "conformsTo": {"@id": "https://w3id.org/ro/crate/1.1"},
-      "about": {"@id": "./"}
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.1"
+      },
+      "about": {
+        "@id": "./"
+      }
     },
     {
       "@id": "cp7glop.ai",
