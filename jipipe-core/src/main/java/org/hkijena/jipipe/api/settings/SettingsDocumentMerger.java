@@ -173,6 +173,29 @@ public final class SettingsDocumentMerger {
      */
     public static MergeResult merge(SettingsDocument local, SettingsDocument foreign,
                                     Set<String> locallyChangedBlocks, Map<String, JsonNode> lastSynced) {
+        return merge(local, foreign, locallyChangedBlocks, lastSynced, null);
+    }
+
+    /**
+     * <b>Testing seam.</b> Identical to
+     * {@link #merge(SettingsDocument, SettingsDocument, Set, Map)}, but
+     * invokes {@code midMergeHook} once, immediately before the first block
+     * whose foreign value differs from the baseline is resolved. A test uses
+     * it to inject a local edit into the exact window a concurrent writer
+     * would land in (after the locally-changed set was snapshotted by the
+     * caller, before the merge writes that block). Production passes
+     * {@code null}. Not part of the settings API.
+     *
+     * @param local the in-memory document to merge into; mutated in place
+     * @param foreign the document loaded from the other process's write
+     * @param locallyChangedBlocks the block paths changed locally since the last sync
+     * @param lastSynced the block values of the last sync point
+     * @param midMergeHook the test hook, or {@code null}
+     * @return which blocks were adopted, kept, or conflicted
+     */
+    public static MergeResult merge(SettingsDocument local, SettingsDocument foreign,
+                                    Set<String> locallyChangedBlocks, Map<String, JsonNode> lastSynced,
+                                    Runnable midMergeHook) {
         Objects.requireNonNull(local, "local");
         Objects.requireNonNull(foreign, "foreign");
         Objects.requireNonNull(locallyChangedBlocks, "locallyChangedBlocks");
@@ -182,11 +205,22 @@ public final class SettingsDocumentMerger {
         Set<String> adoptedBlocks = new LinkedHashSet<>();
         Set<String> keptBlocks = new LinkedHashSet<>();
         Set<String> conflictedBlocks = new LinkedHashSet<>();
+        Runnable hook = midMergeHook;
         for (String blockPath : affected) {
             JsonNode l = local.getBlock(blockPath);
             JsonNode f = foreign.getBlock(blockPath);
             if (l.equals(f)) {
                 continue; // in sync: both absent, or structurally equal
+            }
+            if (hook != null) {
+                Runnable pending = hook;
+                hook = null;
+                pending.run(); // testing seam: a "concurrent" write lands here
+                l = local.getBlock(blockPath);
+                f = foreign.getBlock(blockPath);
+                if (l.equals(f)) {
+                    continue;
+                }
             }
             JsonNode baseline = lastSynced.get(blockPath);
             boolean locallyChanged = locallyChangedBlocks.contains(blockPath);

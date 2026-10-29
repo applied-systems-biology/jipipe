@@ -49,14 +49,17 @@ public final class SettingsDocumentIO {
      * Serializes the document to a JSON tree.
      * <p>
      * The returned node is a deep copy: mutating it does not affect the
-     * document.
+     * document. The copy is taken through
+     * {@link SettingsDocument#snapshotJson()}, i.e. under the document lock,
+     * so the result is a consistent snapshot even if another thread is
+     * mutating the document at the same time.
      *
      * @param doc the document to serialize
      * @return a deep copy of the document's root
      */
     public static ObjectNode toJson(SettingsDocument doc) {
         Objects.requireNonNull(doc, "doc");
-        return (ObjectNode) doc.root().deepCopy();
+        return doc.snapshotJson();
     }
 
     /**
@@ -106,6 +109,10 @@ public final class SettingsDocumentIO {
      * Serializes the document to a pretty-printed JSON string, using the same
      * default pretty printer as the existing settings writer, so the output
      * matches the legacy {@code settings.json} formatting closely.
+     * <p>
+     * The tree is read through {@link SettingsDocument#snapshotJson()}, so the
+     * pretty-printing never walks a tree another thread is mutating: the
+     * output is a consistent snapshot taken at one instant.
      *
      * @param doc the document to serialize
      * @return the pretty-printed JSON string
@@ -115,7 +122,7 @@ public final class SettingsDocumentIO {
         StringWriter writer = new StringWriter();
         try (JsonGenerator generator = JsonUtils.getObjectMapper().getFactory().createGenerator(writer)) {
             generator.useDefaultPrettyPrinter();
-            JsonUtils.getObjectMapper().writeTree(generator, doc.root());
+            JsonUtils.getObjectMapper().writeTree(generator, doc.snapshotJson());
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

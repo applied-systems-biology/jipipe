@@ -173,9 +173,33 @@ public final class SettingsDocument {
 
     /**
      * @return the live, mutable root of the document
+     * <p>
+     * <b>Concurrency:</b> this returns the tree itself, not a copy, and the
+     * read does <em>not</em> take the document lock. Another thread may be
+     * mutating the same tree (a binding write on the EDT, a foreign merge on
+     * the settings service's executor), so traversing or serializing this
+     * node while that can happen is unsafe (it may throw or produce an
+     * inconsistent tree). Use {@link #snapshotJson()} to obtain a consistent
+     * deep copy, or only call this where no concurrent mutation is possible.
      */
     public ObjectNode root() {
         return root;
+    }
+
+    /**
+     * Returns a consistent deep copy of the document's tree, taken while
+     * holding the document lock, so concurrent writers cannot produce a torn
+     * or inconsistent snapshot.
+     * <p>
+     * This is the safe way to serialize a live document: the returned node is
+     * detached (mutating it does not affect the document) and is exactly the
+     * state at one instant. Prefer this over reading {@link #root()} and
+     * copying it yourself.
+     *
+     * @return a detached deep copy of the document's root
+     */
+    public synchronized ObjectNode snapshotJson() {
+        return root.deepCopy();
     }
 
     /**

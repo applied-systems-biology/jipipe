@@ -284,6 +284,56 @@ class JIPipeSettingsServiceComponentSyncTest {
      * {@code .bad-*} (the store's existing recovery), and the save still
      * happens for the remaining/this scope.
      */
+    /**
+     * Pins the second-pass re-check: a local edit that lands <em>during</em>
+     * a merge must not be silently discarded by the merge's adoption of the
+     * foreign value.
+     * <p>
+     * Local edits go through the document lock only (a binding write does not
+     * take the component monitor), so an edit can arrive after the merge
+     * snapshotted the locally-changed set but before it reaches that block: the
+     * first pass then sees "not changed locally, foreign differs" and adopts
+     * the foreign value over the edit. The deterministic reproduction uses the
+     * component's testing hook, which runs exactly in that window (after the
+     * first pass, before the newly-changed re-check), and performs a real
+     * {@code binding.set(...)} on the <em>same</em> block the merge is about
+     * to adopt from the foreign document. Without the second pass the test
+     * sees the foreign value; with it, the local edit survives and the block
+     * is reported as kept (requiring a save, so the file converges on the
+     * local edit).
+     */
+    @Test void localEditDuringMergeIsNotDiscardedByTheSecondPass() throws Exception {
+        JIPipeSettingsServiceComponent c = newComponent(tempDir);
+        JIPipeSettingKey<String> key = JIPipeSettingKey.string("registry:race", "x", String.class).defaultValue("d");
+        SettingsBinding<String> b = c.bind(key);
+        b.set("base");
+        c.save();
+
+        Path file = c.fileFor(SettingsScope.APPLICATION);
+        // Another instance writes the block that the local edit will target.
+        String onDisk = fileContent(file);
+        Files.writeString(file, onDisk.replace(": \"base\"", ": \"foreign\""));
+
+        // The edit lands inside the first pass: after the locally-changed set
+        // was snapshotted, before the merge writes that block. This is the
+        // real interleaving of a binding write on the EDT (it takes only the
+        // document lock), and without the second pass the merge's adoption
+        // of the foreign value overwrites and loses the edit.
+        c.setMidMergeHookForTesting(() -> {
+            c.setMidMergeHookForTesting(null);
+            b.set("local-edit");
+        });
+
+        c.save(); // pre-save read-merge-write: merges the foreign file first
+
+        SettingsDocument doc = c.document(SettingsScope.APPLICATION);
+        assertEquals("local-edit", doc.get("registry:race", "x").asText(),
+                "a local edit landing during the merge must be kept, not overwritten by the adopted foreign value");
+        assertTrue(fileContent(file).contains("\"local-edit\""),
+                "the kept local edit must be persisted so the file converges on it; file: " + fileContent(file));
+        c.dispose();
+    }
+
     @Test void corruptForeignFileDoesNotAbortOrWipeTheLocalSave() throws Exception {
         JIPipeSettingsServiceComponent c = newComponent(tempDir);
         JIPipeSettingKey<String> key = JIPipeSettingKey.string("registry:corrupt", "x", String.class).defaultValue("d");

@@ -312,6 +312,30 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
      * {@link #getLastMergeThreadNameForTesting()}.
      */
     private volatile String lastMergeThreadName;
+    /**
+     * <b>Testing only.</b> A hook invoked once inside the first merge pass,
+     * right before its first affected block is resolved, so a test can
+     * deterministically simulate a local edit landing <em>during</em> the
+     * merge (after the locally-changed set snapshot, before the merge writes
+     * the block — the window the second pass closes). {@code null} in
+     * production.
+     */
+    private volatile Runnable midMergeHookForTesting;
+    /**
+     * While a merge is applying foreign values (between the snapshot of the
+     * locally-changed set and the end of the second pass), local edits to a
+     * block that the merge is about to overwrite are captured here by
+     * block path, so the second pass can restore them. {@code null} outside
+     * a merge. Written by whatever thread performs the local edit (the EDT),
+     * read and cleared by the merging thread; hence concurrent.
+     */
+    private final Map<String, JsonNode> pendingLocalEdits = new ConcurrentHashMap<>();
+    /**
+     * Whether a merge is currently applying foreign values (see
+     * {@link #pendingLocalEdits}). Set while the merge runs, so the
+     * local-change listener only captures edits that can race the merge.
+     */
+    private volatile boolean mergeInProgress;
 
     /**
      * Creates the component for the real JVM-wide {@link JIPipeService}, using
@@ -392,6 +416,17 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
      */
     public String getLastMergeThreadNameForTesting() {
         return lastMergeThreadName;
+    }
+
+    /**
+     * <b>Testing only.</b> Installs a hook that runs once right after the
+     * first merge pass, before its first block is resolved (see
+     * {@link #midMergeHookForTesting}).
+     *
+     * @param hook the hook, or {@code null} to remove it
+     */
+    public void setMidMergeHookForTesting(Runnable hook) {
+        this.midMergeHookForTesting = hook;
     }
 
     /**
@@ -525,9 +560,9 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
      * <ul>
      * <li>the watcher's asynchronous {@link #handleForeignChange} (fast
      * path: another process wrote and we did not save);</li>
-     * <li>the save-time read-merge-write in {@link #save()} (correctness
-     * floor: another process wrote <em>before</em> our blind whole-document
-     * write would have replaced their content).</li>
+     * <li>the save-time read-merge-write in {@link #save()} (another process
+     * wrote <em>before</em> our whole-document write, and its content is
+     * merged before that write replaces it).</li>
      * </ul>
      * Callers must hold the component's monitor (this method is not
      * synchronized itself so the save path can use it without an extra lock
@@ -652,6 +687,40 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
      * "fire per-path events for adopted/conflicted blocks" true for
      * sub-paths that no binding or bridge had observed before.
      * <p>
+     * <b>Second-pass re-check (local edits racing the merge).</b> A local edit
+     * reaches the document through {@code SettingsBinding.set} →
+     * {@link SettingsDocument#set}, which takes only the <em>document</em>
+     * lock, not this component's monitor. So an EDT edit can land after the
+     * merge snapshotted the locally-changed set but before the merge reaches
+     * that block; the first pass would then see "not changed locally, foreign
+     * differs" and adopt the foreign value, silently discarding the edit —
+     * the same loss class the save-time merge exists to prevent.
+     * <p>
+     * Two mechanisms close this, in this order, and only when an edit actually
+     * raced (a merge with no concurrent edit does exactly one pass):
+     * <ol>
+     * <li><b>Capture and restore.</b> While the first pass runs, the
+     * local-change listener records the edited block's value in
+     * {@link #pendingLocalEdits}. After the pass, those values are written
+     * back, so an adoption that overwrote an edit cannot destroy its data.</li>
+     * <li><b>One bounded second pass</b> over exactly the raced blocks. Its
+     * baseline is the first pass's result with every adopted block set to the
+     * <em>foreign</em> value — i.e. what both sides agreed on after the first
+     * pass — not the live document (which holds the local edits and would
+     * make the foreign value look "changed", turning the block into a
+     * conflict the foreign side would win). With that baseline the foreign
+     * side counts as unchanged and the block is <b>kept</b>, so the caller
+     * re-saves and the file converges on the local edit.</li>
+     * </ol>
+     * The sync point is recorded once, after both steps.
+     * <p>
+     * <b>Residual:</b> an edit that lands between the second pass's snapshot
+     * and its write of the same block can still lose. The window is bounded by
+     * one pass over the raced blocks and is not closed further; reaching zero
+     * would require holding the document lock for the whole merge, which the
+     * merge deliberately does not do (a listener must be able to run, and the
+     * EDT must not be starved).
+     * <p>
      * The caller holds the component's monitor and is responsible for
      * persisting the document afterwards when needed (the watcher path only
      * schedules it via {@link #saveLater()}; the save path writes it in the
@@ -681,9 +750,61 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
         lastMergeThreadName = Thread.currentThread().getName();
         SettingsDocumentMerger.MergeResult result;
         try {
-            Set<String> changed = locallyChangedBlocks.getOrDefault(doc, Set.of());
-            Map<String, JsonNode> baseline = lastSyncedBaselines.getOrDefault(doc, Map.of());
-            result = SettingsDocumentMerger.merge(doc, foreign, changed, baseline);
+            Set<String> changedBefore = new LinkedHashSet<>(locallyChangedBlocks.getOrDefault(doc, Set.of()));
+            // The testing hook fires inside the first pass, before the first
+            // block is resolved — the exact window a concurrent EDT write
+            // lands in (the locally-changed set was just snapshotted above).
+            mergeInProgress = true;
+            SettingsDocumentMerger.MergeResult first;
+            try {
+                first = SettingsDocumentMerger.merge(doc, foreign, changedBefore,
+                        lastSyncedBaselines.getOrDefault(doc, Map.of()),
+                        wrapHookWithLocalOrigin(midMergeHookForTesting));
+            } finally {
+                mergeInProgress = false;
+            }
+            // Step 1 — restore: a local edit that lost the race against the
+            // first pass (the pass adopted the foreign value over it) is put
+            // back from the value the local-change listener captured while
+            // the pass ran. Without this the edit's value would be gone.
+            Set<String> racedEdits = new LinkedHashSet<>(pendingLocalEdits.keySet());
+            for (Map.Entry<String, JsonNode> edit : pendingLocalEdits.entrySet()) {
+                doc.setBlock(edit.getKey(), edit.getValue());
+            }
+            pendingLocalEdits.clear();
+            // Step 2 — second pass: re-merge with the CURRENT locally-changed
+            // set and a baseline in which every block the first pass adopted
+            // holds the foreign value, so the restored (or racing) local edit
+            // is classified "foreign unchanged, changed locally" and KEPT.
+            //
+            // The baseline deliberately comes from the first pass's result,
+            // not from baselineOf(doc): the document also holds the local
+            // edits themselves, so reading it would make those edits the
+            // baseline, the foreign value look "changed", and the block a
+            // conflict (which the foreign side would then win).
+            Set<String> newlyChanged = new LinkedHashSet<>(locallyChangedBlocks.getOrDefault(doc, Set.of()));
+            newlyChanged.removeAll(changedBefore);
+            newlyChanged.addAll(racedEdits);
+            SettingsDocumentMerger.MergeResult second = null;
+            if (!newlyChanged.isEmpty()) {
+                logger.debug("Settings merge for scope {}: {} block(s) changed locally during the merge; "
+                        + "running the second pass", scope, newlyChanged.size());
+                Map<String, JsonNode> postPassBaseline = new LinkedHashMap<>(SettingsDocumentMerger.baselineOf(doc));
+                for (String adoptedBlock : first.adoptedBlocks()) {
+                    JsonNode adoptedValue = foreign.getBlock(adoptedBlock);
+                    if (adoptedValue.isMissingNode()) {
+                        postPassBaseline.remove(adoptedBlock);
+                    } else {
+                        postPassBaseline.put(adoptedBlock, adoptedValue.deepCopy());
+                    }
+                }
+                // Only the raced blocks are re-judged: re-running the whole
+                // merge would re-litigate blocks the first pass already
+                // settled.
+                second = restrictTo(SettingsDocumentMerger.merge(doc, foreign,
+                        locallyChangedBlocks.getOrDefault(doc, Set.of()), postPassBaseline), newlyChanged);
+            }
+            result = combine(first, second);
             recordSyncPoint(doc);
             if (result.hasConflicts()) {
                 foreignConflict = true;
@@ -707,12 +828,77 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
     }
 
     /**
+     * Keeps only the given blocks in each set of a merge result, so a second
+     * pass that re-judges the whole document only reports on the blocks it
+     * was meant to settle.
+     */
+    private static SettingsDocumentMerger.MergeResult restrictTo(SettingsDocumentMerger.MergeResult result,
+                                                                 Set<String> blocks) {
+        Set<String> adopted = new LinkedHashSet<>(result.adoptedBlocks());
+        adopted.retainAll(blocks);
+        Set<String> kept = new LinkedHashSet<>(result.keptBlocks());
+        kept.retainAll(blocks);
+        Set<String> conflicted = new LinkedHashSet<>(result.conflictedBlocks());
+        conflicted.retainAll(blocks);
+        return new SettingsDocumentMerger.MergeResult(adopted, kept, conflicted);
+    }
+
+    /**
+     * Combines the outcome of the merge passes into one report. The sets are
+     * unions with a precedence that reflects the <em>final</em> state of each
+     * block: a block kept by the second pass was stolen back from the first
+     * pass's adoption, so "kept" wins over both; a block the second pass
+     * itself adopted or conflicted was resolved by it, so those wins over a
+     * first-pass "kept". (Adopted and conflicted never contain the same
+     * block, and kept blocks are never re-adopted by a later pass.)
+     */
+    private static SettingsDocumentMerger.MergeResult combine(SettingsDocumentMerger.MergeResult first,
+                                                              SettingsDocumentMerger.MergeResult second) {
+        if (second == null) {
+            return first;
+        }
+        Set<String> adopted = new LinkedHashSet<>(first.adoptedBlocks());
+        adopted.removeAll(second.keptBlocks());
+        adopted.addAll(second.adoptedBlocks());
+        adopted.removeAll(second.conflictedBlocks());
+        Set<String> conflicted = new LinkedHashSet<>(first.conflictedBlocks());
+        conflicted.removeAll(second.keptBlocks());
+        conflicted.addAll(second.conflictedBlocks());
+        Set<String> kept = new LinkedHashSet<>(first.keptBlocks());
+        kept.removeAll(second.adoptedBlocks());
+        kept.removeAll(second.conflictedBlocks());
+        kept.addAll(second.keptBlocks());
+        return new SettingsDocumentMerger.MergeResult(adopted, kept, conflicted);
+    }
+
+    /**
      * Records the given fingerprint as this process's own on the scope's
      * watcher (self-write suppression for the state that was just handled)
      * and as the scope's {@link #lastKnownFileStates} entry (the baseline for
      * the pre-save read-merge-write check). No-op for the watcher when there
      * is none (headless), but the last-known state is always recorded.
      */
+    /**
+     * <b>Testing only.</b> Wraps the mid-merge hook so the simulated local
+     * edit runs with the default (local) origin, exactly like a real edit on
+     * another thread, instead of inheriting the merge's
+     * {@link ChangeOrigin#EXTERNAL_FILE} marker from this thread.
+     */
+    private Runnable wrapHookWithLocalOrigin(Runnable hook) {
+        if (hook == null) {
+            return null;
+        }
+        return () -> {
+            ChangeOrigin saved = foreignMergeOrigin.get();
+            foreignMergeOrigin.remove();
+            try {
+                hook.run();
+            } finally {
+                foreignMergeOrigin.set(saved);
+            }
+        };
+    }
+
     private void recordOwnFingerprint(SettingsScope scope, FileFingerprint fingerprint) {
         if (fingerprint == null) {
             return;
@@ -836,9 +1022,23 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
             return;
         }
         doc.addPathListener(path, newValue -> {
+            if (foreignMergeOrigin.get() == ChangeOrigin.EXTERNAL_FILE) {
+                // The merge's own write of an adopted/conflicted block is not
+                // a local change: marking the block locally changed would make
+                // the next merge pass, and the next save, treat content that
+                // came from the foreign file as this process's edit.
+                return;
+            }
             Set<String> changed = locallyChangedBlocks.get(doc);
             if (changed != null) {
                 changed.add(blockPath);
+            }
+            if (mergeInProgress) {
+                // A genuinely local edit landed while the merge is applying
+                // foreign values. Capture the full block value: the merge may
+                // adopt the foreign value over it before the second pass
+                // runs, and only here is the edited value still visible.
+                pendingLocalEdits.put(blockPath, doc.getBlock(blockPath).deepCopy());
             }
         });
     }
@@ -940,18 +1140,26 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
      * Flushes all attached sheet bridges into the document, then atomically
      * saves every file-backed document.
      * <p>
-     * <b>Read-merge-write (the correctness floor for multi-instance sync).</b>
-     * A save is a blind whole-document atomic replace, so a foreign write
-     * that landed on disk <em>before</em> this save would simply be
-     * overwritten and lost forever (the post-save verification below can
-     * only see writes that land <em>after</em> our write). Before writing,
-     * each scope therefore checks whether the on-disk state still equals the
-     * state this process last wrote or merged (its own fingerprint or its
-     * last-synced fingerprint). If it does not — a foreign writer
-     * interleaved — the foreign file is merged into the live document with
-     * the same per-block rules and events as the watcher path
-     * ({@link #mergeForeignFile}) <em>first</em>, and only the merged result
-     * is written. If it does, the save proceeds unchanged.
+     * <b>Read-merge-write before the blind replace.</b> A save is a
+     * whole-document atomic replace, so a foreign write that landed on disk
+     * <em>before</em> this save would simply be overwritten (the post-save
+     * verification below can only see writes that land <em>after</em> our
+     * write). Before writing, each scope therefore checks whether the
+     * on-disk state still equals the state this process last wrote or merged
+     * (its own fingerprint or its last-synced fingerprint). If it does not —
+     * a foreign writer got there first — the foreign file is merged into the
+     * live document with the same per-block rules and events as the watcher
+     * path ({@link #mergeForeignFile}) <em>first</em>, and only the merged
+     * result is written. If it does, the save proceeds unchanged.
+     * <p>
+     * <b>What this guarantees, precisely:</b> every foreign write that is
+     * present on disk at the moment of the pre-write fingerprint check is
+     * merged before it can be replaced. It does not make a save atomic with
+     * respect to a foreign write that lands <em>between</em> that check and
+     * the write — such a write is the post-save verification's job (below),
+     * and a foreign write landing between the verification's own two reads is
+     * undetectable by content comparison. The residual windows are
+     * microsecond-scale, not zero.
      * <p>
      * Each successful save is then verified by
      * {@link #verifyOwnWrite(SettingsFileStore, SettingsDocument, String)}:
