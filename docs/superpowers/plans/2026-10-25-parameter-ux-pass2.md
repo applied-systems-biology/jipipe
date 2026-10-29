@@ -1606,3 +1606,47 @@ names (user: "FontSizeParameter may imply it's a font size - add Family"):
   Open decisions left for user: (2) include both unused classes now? (3) confirm
   RoiToRGB fresh-node label-follows-ROI-line behavior. After approval:
   writing-plans, then implement on this branch.
+
+## Item 9 execution + follow-up round 4 (2026-10-28/29)
+
+**Item 9 (font family) — DONE via subagent-driven development** (plan
+`docs/superpowers/plans/2026-10-28-font-parameter-family.md`, 9 tasks, each
+task-reviewed, final whole-branch review "Ready to merge: Yes"):
+- `7d7cf2eb00` family interfaces + 3 lighter classes (additive).
+- `dac0fe0932` rename `JIPipeFontParameter` -> `JIPipeFontFamilySizeStyleColorParameter`,
+  4 registrations (dev `jipipe:font` deleted), adaptive editor + 4 thin subclasses.
+- `ecae036735` canvas-note migration pin (prefixed keys, 18/12 defaults).
+- `6c379fadcc` `RoiDrawer.RoiLabelColorMode {FIXED, FROM_ROI_LINE}` (default FIXED;
+  per-ROI `effectiveLabelForeground(roi)` = the outline's exact line-color
+  expression at all THREE draw sites).
+- `d9c1509a9d`/`d033d6d168`/`2308b7b224` scale bars x2 / DrawTextRoi+TableToTextROI
+  (no color field; migration JSON pinned to have no "color" key) / montage -> full
+  type; `1c6102672e` RoiToRGB -> size+style + optional `label-color` (fresh
+  disabled = label follows ROI line color; legacy `label-foreground` -> enabled).
+- `3d7c8233a9` shared statics consolidated on the size-style class (6 ref
+  switches + delegators deleted); `e0e0f8b02c` harness showcases
+  (`editor-font-family-size-style`, `popup-font-size-style`,
+  `panel-convert-2d-roi-to-rgb`) + full suites green.
+- Suites: core 638 / ij 6 / ij-algorithms 18, 0 failures.
+- Controller rulings on record in the SDD ledger (merged 4+5+6+8 dispatch,
+  3-call-site plan correction, 634-vs-637 count adjudication, toString
+  false-positive).
+
+**Round 4 (color chooser, user review 2026-10-29) — `f59f7c6cf4`:**
+- LAB well click geometry: stray "+ 1" in the b mapping made b in [0,256]
+  (center click selected b=128; marker drawn in the top half or above the
+  component -> "goes somewhere / sometimes appears"). Fixed; old marker test
+  was circular (asserted against the click handler's own formula) - rewritten
+  to pin the real contract (center = neutral axis; top-right = +128/+128;
+  out-of-gamut pointer != clamped color).
+- Numeric editing (Krita-style): every channel rail (RGB/HSB/LAB/alpha) has a
+  JSpinner (integer steps for 8-bit, 0.1 otherwise, 32px, value field sized
+  for the full range, right-aligned); typing drives the rail through the same
+  listener as the mouse; refresh() syncs back, equality guard ends the loop.
+- `showLabTab()` hardcoded index 2 selected HSB since the redesign added a
+  Palette tab at index 0 - now title-based `showTab("LAB")`; harness
+  dialog-color showcase explicitly selects the RGB tab.
+- User also redesigned the dialog meanwhile (commits 78c400c5..f779c615:
+  form panels, palette tab, preview bar, list editor) - round 4 built on top.
+
+**MR: !177** (1339-parameter-ux-overhaul -> master) opened 2026-10-29.
