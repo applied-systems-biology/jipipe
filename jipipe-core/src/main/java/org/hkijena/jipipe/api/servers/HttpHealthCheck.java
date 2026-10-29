@@ -13,15 +13,13 @@
 
 package org.hkijena.jipipe.api.servers;
 
-import org.hkijena.jipipe.api.servers.JIPipeServerHealthCheck;
-
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
 /**
  * Health check strategy that uses HTTP GET requests.
- * 
+ *
  * <p>Considers a server healthy if the HTTP response status code
  * matches the expected status (default: 200).</p>
  */
@@ -41,9 +39,9 @@ public class HttpHealthCheck implements JIPipeServerHealthCheck {
     /**
      * Creates an HTTP health check with custom settings.
      *
-     * @param path          the URL path to check (e.g., "/health")
+     * @param path           the URL path to check (e.g., "/health")
      * @param expectedStatus the expected HTTP status code
-     * @param timeoutMs     the connection timeout in milliseconds
+     * @param timeoutMs      the connection timeout in milliseconds
      */
     public HttpHealthCheck(String path, int expectedStatus, int timeoutMs) {
         this.path = path;

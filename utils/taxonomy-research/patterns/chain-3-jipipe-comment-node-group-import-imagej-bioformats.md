@@ -36,28 +36,32 @@ Mined pattern `chain-3-jipipe-comment-node-group-import-imagej-bioformats` (shap
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| other | `jipipe:comment` |
-| other | `node-group` |
+| role   | node ids                   |
+|--------|----------------------------|
+| other  | `jipipe:comment`           |
+| other  | `node-group`               |
 | import | `import-imagej-bioformats` |
 
 ## Example graph
 
-Project: `AIAgentTests/02-AdvancedPipelines/JohannesBrendel_Supramolecular_17.jip` (relative to `/data/JIPipe`), compartment `Preprocessing`.
+Project: `AIAgentTests/02-AdvancedPipelines/JohannesBrendel_Supramolecular_17.jip` (relative to `/data/JIPipe`),
+compartment `Preprocessing`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `jipipe:comment` | Comment |
-| n1 | `node-group` | READ: folders, subfolders and files |
-| n2 | `import-imagej-bioformats` | Bio-Formats importer |
+| key | node id                    | name                                |
+|-----|----------------------------|-------------------------------------|
+| n0  | `jipipe:comment`           | Comment                             |
+| n1  | `node-group`               | READ: folders, subfolders and files |
+| n2  | `import-imagej-bioformats` | Bio-Formats importer                |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
-| Comment | `Comment` | READ: folders, subfolders and files | `Input folder` | `jipipe:data` |
-| READ: folders, subfolders and files | `Annotated paths` | Bio-Formats importer | `Input` | `path` |
+| from                                | slot              | to                                  | slot           | data class    |
+|-------------------------------------|-------------------|-------------------------------------|----------------|---------------|
+| Comment                             | `Comment`         | READ: folders, subfolders and files | `Input folder` | `jipipe:data` |
+| READ: folders, subfolders and files | `Annotated paths` | Bio-Formats importer                | `Input`        | `path`        |
 
 ## Template
 
-Proposed name `Comment -> Group -> Bio-Formats importer`, menu path `Patterns/Graph / Project/Comment -> Group -> Bio-Formats importer` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/chain-3-jipipe-comment-node-group-import-imagej-bioformats.json`.
+Proposed name `Comment -> Group -> Bio-Formats importer`, menu path
+`Patterns/Graph / Project/Comment -> Group -> Bio-Formats importer` (proposal only — not registered). `data` = the
+minimal JIPipeGraph JSON; the full object is written to
+`templates/chain-3-jipipe-comment-node-group-import-imagej-bioformats.json`.
 

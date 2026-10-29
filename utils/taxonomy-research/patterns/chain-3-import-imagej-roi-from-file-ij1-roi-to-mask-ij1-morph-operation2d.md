@@ -36,28 +36,31 @@ Mined pattern `chain-3-import-imagej-roi-from-file-ij1-roi-to-mask-ij1-morph-ope
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
+| role   | node ids                      |
+|--------|-------------------------------|
 | import | `import-imagej-roi-from-file` |
-| other | `ij1-roi-to-mask` |
-| other | `ij1-morph-operation2d` |
+| other  | `ij1-roi-to-mask`             |
+| other  | `ij1-morph-operation2d`       |
 
 ## Example graph
 
 Project: `AIAgentTests/02-AdvancedPipelines/Cryogels_01.jip` (relative to `/data/JIPipe`), compartment `Preprocessing`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `import-imagej-roi-from-file` | ROI from file |
-| n1 | `ij1-roi-to-mask` | Convert ROI to mask |
-| n2 | `ij1-morph-operation2d` | Morphological operation 2D |
+| key | node id                       | name                       |
+|-----|-------------------------------|----------------------------|
+| n0  | `import-imagej-roi-from-file` | ROI from file              |
+| n1  | `ij1-roi-to-mask`             | Convert ROI to mask        |
+| n2  | `ij1-morph-operation2d`       | Morphological operation 2D |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
-| ROI from file | `Output` | Convert ROI to mask | `ROI` | `imagej-roi` |
+| from                | slot     | to                         | slot    | data class                      |
+|---------------------|----------|----------------------------|---------|---------------------------------|
+| ROI from file       | `Output` | Convert ROI to mask        | `ROI`   | `imagej-roi`                    |
 | Convert ROI to mask | `Output` | Morphological operation 2D | `Input` | `imagej-imgplus-greyscale-mask` |
 
 ## Template
 
-Proposed name `Import ROI -> Convert 2D ROI to mask -> Morphological operation 2D`, menu path `Patterns/Data Sources/Import ROI -> Convert 2D ROI to mask -> Morphological operation 2D` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/chain-3-import-imagej-roi-from-file-ij1-roi-to-mask-ij1-morph-operation2d.json`.
+Proposed name `Import ROI -> Convert 2D ROI to mask -> Morphological operation 2D`, menu path
+`Patterns/Data Sources/Import ROI -> Convert 2D ROI to mask -> Morphological operation 2D` (proposal only — not
+registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/chain-3-import-imagej-roi-from-file-ij1-roi-to-mask-ij1-morph-operation2d.json`.
 

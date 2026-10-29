@@ -32,32 +32,37 @@ template:
 
 # Pattern: Compartment output -> Compartment output -> Extract IJ3D ROI statistics
 
-Mined pattern `chain-3-jipipe-compartment-output-jipipe-compartment-output-ij3d-measure-roi3d` (shape `chain`, support 26).
+Mined pattern `chain-3-jipipe-compartment-output-jipipe-compartment-output-ij3d-measure-roi3d` (shape `chain`, support
+26).
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
+| role    | node ids                    |
+|---------|-----------------------------|
 | core-io | `jipipe:compartment-output` |
 | core-io | `jipipe:compartment-output` |
-| other | `ij3d-measure-roi3d` |
+| other   | `ij3d-measure-roi3d`        |
 
 ## Example graph
 
-Project: `AIAgentTests/03-ExampleWorkflows/Annamaria_12.jip` (relative to `/data/JIPipe`), compartment `Membrane+Particles+Preprocessing`.
+Project: `AIAgentTests/03-ExampleWorkflows/Annamaria_12.jip` (relative to `/data/JIPipe`), compartment
+`Membrane+Particles+Preprocessing`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `jipipe:compartment-output` | Output |
-| n1 | `jipipe:compartment-output` | Mask |
-| n2 | `ij3d-measure-roi3d` | Extract ROI 3D statistics |
+| key | node id                     | name                      |
+|-----|-----------------------------|---------------------------|
+| n0  | `jipipe:compartment-output` | Output                    |
+| n1  | `jipipe:compartment-output` | Mask                      |
+| n2  | `ij3d-measure-roi3d`        | Extract ROI 3D statistics |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
-| Output | `Green trimmed` | Mask | `Green trimmed` | `imagej-imgplus` |
-| Mask | `Magenta trimmed` | Extract ROI 3D statistics | `Reference` | `imagej-imgplus` |
+| from   | slot              | to                        | slot            | data class       |
+|--------|-------------------|---------------------------|-----------------|------------------|
+| Output | `Green trimmed`   | Mask                      | `Green trimmed` | `imagej-imgplus` |
+| Mask   | `Magenta trimmed` | Extract ROI 3D statistics | `Reference`     | `imagej-imgplus` |
 
 ## Template
 
-Proposed name `Compartment output -> Compartment output -> Extract IJ3D ROI statistics`, menu path `Patterns/Graph / Project/Compartment output -> Compartment output -> Extract IJ3D ROI statistics` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/chain-3-jipipe-compartment-output-jipipe-compartment-output-ij3d-measure-roi3d.json`.
+Proposed name `Compartment output -> Compartment output -> Extract IJ3D ROI statistics`, menu path
+`Patterns/Graph / Project/Compartment output -> Compartment output -> Extract IJ3D ROI statistics` (proposal only — not
+registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/chain-3-jipipe-compartment-output-jipipe-compartment-output-ij3d-measure-roi3d.json`.
 

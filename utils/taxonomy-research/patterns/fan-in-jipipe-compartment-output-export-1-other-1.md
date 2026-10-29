@@ -35,27 +35,31 @@ Mined pattern `fan-in-jipipe-compartment-output-export-1-other-1` (shape `fan-in
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| core-io | `jipipe:compartment-output` |
-| export | `export-data-by-parameter-v2`, `iji-export-image-v2`, `iji-export-table-v2` |
-| other | `ij1-calibration-copy-physical-dimensions`, `ij1-calibration-draw-scale-bar`, `ij1-contrast-histogram-enhancer`, `ij1-roi-relation-2d`, `table-apply-expression-per-row-v2`, `table-filter`, … (8 total) |
+| role    | node ids                                                                                                                                                                                                 |
+|---------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| core-io | `jipipe:compartment-output`                                                                                                                                                                              |
+| export  | `export-data-by-parameter-v2`, `iji-export-image-v2`, `iji-export-table-v2`                                                                                                                              |
+| other   | `ij1-calibration-copy-physical-dimensions`, `ij1-calibration-draw-scale-bar`, `ij1-contrast-histogram-enhancer`, `ij1-roi-relation-2d`, `table-apply-expression-per-row-v2`, `table-filter`, … (8 total) |
 
 ## Example graph
 
-Project: `AIAgentTests/02-AdvancedPipelines/CellTracking_01.jip` (relative to `/data/JIPipe`), compartment `Cartography`.
+Project: `AIAgentTests/02-AdvancedPipelines/CellTracking_01.jip` (relative to `/data/JIPipe`), compartment
+`Cartography`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `iji-export-image-v2` | Export image |
-| n1 | `ij1-roi-relation-2d` | Extract pairwise 2D ROI statistics |
-| n2 | `jipipe:compartment-output` | Output |
+| key | node id                     | name                               |
+|-----|-----------------------------|------------------------------------|
+| n0  | `iji-export-image-v2`       | Export image                       |
+| n1  | `ij1-roi-relation-2d`       | Extract pairwise 2D ROI statistics |
+| n2  | `jipipe:compartment-output` | Output                             |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
+| from                               | slot           | to     | slot                     | data class             |
+|------------------------------------|----------------|--------|--------------------------|------------------------|
 | Extract pairwise 2D ROI statistics | `Measurements` | Output | `Cell to cell distances` | `imagej-results-table` |
 
 ## Template
 
-Proposed name `Compartment output fans in from 11 source ids (roles: export, other)`, menu path `Patterns/Graph / Project/Compartment output fans in from 11 source ids (roles: export, other)` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/fan-in-jipipe-compartment-output-export-1-other-1.json`.
+Proposed name `Compartment output fans in from 11 source ids (roles: export, other)`, menu path
+`Patterns/Graph / Project/Compartment output fans in from 11 source ids (roles: export, other)` (proposal only — not
+registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/fan-in-jipipe-compartment-output-export-1-other-1.json`.
 

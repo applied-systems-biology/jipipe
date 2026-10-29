@@ -13,8 +13,6 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
-import javax.swing.*;
-
 /**
  * Plugin that registers the embedding server instance factory.
  *

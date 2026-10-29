@@ -46,10 +46,10 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
+import org.hkijena.jipipe.api.project.io.JIPipeLegacyProjectWriter;
 import org.hkijena.jipipe.api.project.io.JIPipeProjectIOs;
 import org.hkijena.jipipe.api.project.jipx.JIPipeLocalProjectWorkspace;
 import org.hkijena.jipipe.api.project.jipx.JIPipeProjectWorkspace;
-import org.hkijena.jipipe.api.project.io.JIPipeLegacyProjectWriter;
 import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
 import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartition;
 import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartitionConfiguration;
@@ -66,7 +66,6 @@ import org.hkijena.jipipe.plugins.settings.application.JIPipeRuntimeApplicationS
 import org.hkijena.jipipe.plugins.settings.project.JIPipeDataStorageProjectSettings;
 import org.hkijena.jipipe.utils.*;
 import org.hkijena.jipipe.utils.json.JsonUtils;
-import org.scijava.Disposable;
 
 import java.awt.*;
 import java.io.IOException;
@@ -101,12 +100,6 @@ public class JIPipeProject implements JIPipeValidatable {
     private final JIPipeGraphNode.BaseDirectoryChangedEventEmitter baseDirectoryChangedEventEmitter = new JIPipeGraphNode.BaseDirectoryChangedEventEmitter();
     private final Map<String, JIPipeProjectSettingsSheet> settingsSheets = new HashMap<>();
     private final Map<String, JsonNode> unloadedSettingsSheets = new HashMap<>();
-    private JIPipeProjectMetadata metadata = new JIPipeProjectMetadata();
-    private JIPipeRuntimePartitionConfiguration runtimePartitions = new JIPipeRuntimePartitionConfiguration();
-    private JIPipeProjectRunSetsConfiguration runSetsConfiguration = new JIPipeProjectRunSetsConfiguration();
-    private Map<String, JIPipeMetadataObject> additionalMetadata = new HashMap<>();
-    private Path workDirectory;
-    private Path temporaryBaseDirectory;
     /**
      * Every temporary base this project ever used (feature #753). The
      * temporary base re-resolves when the work directory changes (e.g.
@@ -116,6 +109,12 @@ public class JIPipeProject implements JIPipeValidatable {
      * {@link #close(JIPipeProgressInfo)} deletes them all.
      */
     private final Set<Path> usedTemporaryBaseDirectories = new LinkedHashSet<>();
+    private JIPipeProjectMetadata metadata = new JIPipeProjectMetadata();
+    private JIPipeRuntimePartitionConfiguration runtimePartitions = new JIPipeRuntimePartitionConfiguration();
+    private JIPipeProjectRunSetsConfiguration runSetsConfiguration = new JIPipeProjectRunSetsConfiguration();
+    private Map<String, JIPipeMetadataObject> additionalMetadata = new HashMap<>();
+    private Path workDirectory;
+    private Path temporaryBaseDirectory;
     private boolean isCleaningUp;
     private boolean isLoading;
     private Path projectFile;
@@ -346,7 +345,7 @@ public class JIPipeProject implements JIPipeValidatable {
         }
 
         // Ensure that output is always parented at "JIPipe.tmp.dir"
-        if(!output.getFileName().toString().equals("JIPipe.tmp.dir")) {
+        if (!output.getFileName().toString().equals("JIPipe.tmp.dir")) {
             output = output.resolve("JIPipe.tmp.dir");
         }
 
@@ -359,7 +358,7 @@ public class JIPipeProject implements JIPipeValidatable {
         }
 
         // Release any old tmp handles
-        if(!output.equals(temporaryBaseDirectory) && temporaryBaseDirectoryLocker != null) {
+        if (!output.equals(temporaryBaseDirectory) && temporaryBaseDirectoryLocker != null) {
             temporaryBaseDirectoryLocker.releaseLock();
             temporaryBaseDirectoryLocker = null;
         }
@@ -372,13 +371,13 @@ public class JIPipeProject implements JIPipeValidatable {
         usedTemporaryBaseDirectories.add(output);
 
         // Acquire new lock if necessary
-        if(temporaryBaseDirectoryLocker == null) {
+        if (temporaryBaseDirectoryLocker == null) {
             temporaryBaseDirectoryLocker = new FileLocker(JIPipeProgressInfo.SILENT, temporaryBaseDirectory.resolve("lock"));
             boolean success = false;
-            if(temporaryBaseDirectoryLocker.tryWriteLock()) {
+            if (temporaryBaseDirectoryLocker.tryWriteLock()) {
                 success = temporaryBaseDirectoryLocker.acquireWriteLock();
             }
-            if(!success) {
+            if (!success) {
                 IJ.handleException(new IOException("Unable to acquire project temporary directory lock on " + temporaryBaseDirectory));
                 temporaryBaseDirectoryLocker.releaseLock();
                 temporaryBaseDirectoryLocker = null;
@@ -506,7 +505,7 @@ public class JIPipeProject implements JIPipeValidatable {
         progressInfo.log("Clearing cache ...");
         cache.clearAll(progressInfo.resolve("Clear cache"));
 
-        if(temporaryBaseDirectoryLocker != null) {
+        if (temporaryBaseDirectoryLocker != null) {
             // Release temporary directory lock
             progressInfo.log("Releasing temporary directory lock on " + temporaryBaseDirectory + " ...");
             temporaryBaseDirectoryLocker.releaseLock();
@@ -520,7 +519,7 @@ public class JIPipeProject implements JIPipeValidatable {
         // data) would leak on disk. This deliberately does NOT call
         // getTemporaryBaseDirectory() — that would create and lock a FRESH
         // base just to delete it.
-        if(JIPipeRuntimeApplicationSettings.getInstance().isAutoCleanClosedProjectTemporaryDirectories()) {
+        if (JIPipeRuntimeApplicationSettings.getInstance().isAutoCleanClosedProjectTemporaryDirectories()) {
             progressInfo.log("Clearing temporary directory ...");
             for (Path base : usedTemporaryBaseDirectories) {
                 try {
@@ -867,8 +866,7 @@ public class JIPipeProject implements JIPipeValidatable {
                     }
                 }
             }
-        }
-        catch (Throwable ex) {
+        } catch (Throwable ex) {
             progressInfo.log(ex);
         }
     }

@@ -20,7 +20,7 @@ import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeListParameter;
 import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeListParameterItemParameterAccess;
 
-import javax.swing.JComponent;
+import javax.swing.*;
 
 /**
  * Generic parameter editor for {@link JIPipeListParameter} — the thin subclass

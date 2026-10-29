@@ -34,7 +34,9 @@ import java.nio.file.Path;
  */
 public final class ScreenshotRenderer {
 
-    /** Far-off position so the realization frame is never visible on screen. */
+    /**
+     * Far-off position so the realization frame is never visible on screen.
+     */
     private static final int OFFSCREEN_X = -4000;
     private static final int OFFSCREEN_Y = -4000;
 
@@ -45,13 +47,14 @@ public final class ScreenshotRenderer {
      * Lays out the component at the given width inside an off-screen frame,
      * then captures it at its full realized size into a PNG.
      *
-     * @param c       the component to capture (already constructed)
-     * @param width   target width in pixels
-     * @param outPng  destination file (parent directory must exist)
+     * @param c      the component to capture (already constructed)
+     * @param width  target width in pixels
+     * @param outPng destination file (parent directory must exist)
      */
     public static void renderComponent(Component c, int width, Path outPng) throws IOException {
         renderFixed(c, width, -1, outPng);
     }
+
     /**
      * Captures the component at a fixed width, and (if {@code height > 0}) a
      * fixed height; otherwise at the component's full realized height.

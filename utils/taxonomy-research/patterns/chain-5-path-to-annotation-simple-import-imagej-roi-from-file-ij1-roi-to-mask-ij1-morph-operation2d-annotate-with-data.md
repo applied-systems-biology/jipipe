@@ -36,38 +36,46 @@ template:
 
 # Pattern: Annotate with file/directory name -> Import ROI -> Convert 2D ROI to mask -> Morphological operation 2D -> Annotate with data
 
-Mined pattern `chain-5-path-to-annotation-simple-import-imagej-roi-from-file-ij1-roi-to-mask-ij1-morph-operation2d-annotate-with-data` (shape `chain`, support 26).
+Mined pattern
+`chain-5-path-to-annotation-simple-import-imagej-roi-from-file-ij1-roi-to-mask-ij1-morph-operation2d-annotate-with-data`
+(shape `chain`, support 26).
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| annotate | `path-to-annotation-simple` |
-| import | `import-imagej-roi-from-file` |
-| other | `ij1-roi-to-mask` |
-| other | `ij1-morph-operation2d` |
-| annotate | `annotate-with-data` |
+| role     | node ids                      |
+|----------|-------------------------------|
+| annotate | `path-to-annotation-simple`   |
+| import   | `import-imagej-roi-from-file` |
+| other    | `ij1-roi-to-mask`             |
+| other    | `ij1-morph-operation2d`       |
+| annotate | `annotate-with-data`          |
 
 ## Example graph
 
-Project: `AIAgentTests/03-ExampleWorkflows/CellposeTraining.jip` (relative to `/data/JIPipe`), compartment `Cellpose training`.
+Project: `AIAgentTests/03-ExampleWorkflows/CellposeTraining.jip` (relative to `/data/JIPipe`), compartment
+`Cellpose training`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `path-to-annotation-simple` | Add path to annotations |
-| n1 | `import-imagej-roi-from-file` | ROI from file |
-| n2 | `ij1-roi-to-mask` | Convert ROI to mask |
-| n3 | `ij1-morph-operation2d` | Morphological operation 2D |
-| n4 | `annotate-with-data` | Annotate with data |
+| key | node id                       | name                       |
+|-----|-------------------------------|----------------------------|
+| n0  | `path-to-annotation-simple`   | Add path to annotations    |
+| n1  | `import-imagej-roi-from-file` | ROI from file              |
+| n2  | `ij1-roi-to-mask`             | Convert ROI to mask        |
+| n3  | `ij1-morph-operation2d`       | Morphological operation 2D |
+| n4  | `annotate-with-data`          | Annotate with data         |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
-| Add path to annotations | `Annotated paths` | ROI from file | `Files` | `path` |
-| ROI from file | `Output` | Convert ROI to mask | `ROI` | `imagej-roi` |
-| Convert ROI to mask | `Output` | Morphological operation 2D | `Input` | `imagej-imgplus-greyscale-mask` |
-| Morphological operation 2D | `Output` | Annotate with data | `Annotation` | `imagej-imgplus` |
+| from                       | slot              | to                         | slot         | data class                      |
+|----------------------------|-------------------|----------------------------|--------------|---------------------------------|
+| Add path to annotations    | `Annotated paths` | ROI from file              | `Files`      | `path`                          |
+| ROI from file              | `Output`          | Convert ROI to mask        | `ROI`        | `imagej-roi`                    |
+| Convert ROI to mask        | `Output`          | Morphological operation 2D | `Input`      | `imagej-imgplus-greyscale-mask` |
+| Morphological operation 2D | `Output`          | Annotate with data         | `Annotation` | `imagej-imgplus`                |
 
 ## Template
 
-Proposed name `Annotate with file/directory name -> Import ROI -> Convert 2D ROI to mask -> Morphological operation 2D -> Annotate with data`, menu path `Patterns/Annotations/Annotate with file/directory name -> Import ROI -> Convert 2D ROI to mask -> Morphological operation 2D -> Annotate with data` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/chain-5-path-to-annotation-simple-import-imagej-roi-from-file-ij1-roi-to-mask-ij1-morph-operation2d-annotate-with-data.json`.
+Proposed name
+`Annotate with file/directory name -> Import ROI -> Convert 2D ROI to mask -> Morphological operation 2D -> Annotate with data`,
+menu path
+`Patterns/Annotations/Annotate with file/directory name -> Import ROI -> Convert 2D ROI to mask -> Morphological operation 2D -> Annotate with data`
+(proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/chain-5-path-to-annotation-simple-import-imagej-roi-from-file-ij1-roi-to-mask-ij1-morph-operation2d-annotate-with-data.json`.
 

@@ -30,9 +30,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Template data deserialization check for the taxonomy research study
@@ -78,7 +76,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 class TemplateDataDeserializationTest {
 
-    /** Highest-support curated pattern (R8 curation): 3 nodes, 1 edge. */
+    /**
+     * Highest-support curated pattern (R8 curation): 3 nodes, 1 edge.
+     */
     static final String CANDIDATE = "fan-in-ij1-roi-to-rgb-core-io-1-other-1";
 
     @BeforeAll
@@ -96,7 +96,7 @@ class TemplateDataDeserializationTest {
         // The test runs with working dir jipipe-launcher/; resolve to the
         // repo-relative path (same approach as RegistryDumperTest).
         Path template = Paths.get("..", "utils", "taxonomy-research",
-                "patterns", "templates", CANDIDATE + ".json")
+                        "patterns", "templates", CANDIDATE + ".json")
                 .toAbsolutePath().normalize();
         String data = Files.readString(template);
 

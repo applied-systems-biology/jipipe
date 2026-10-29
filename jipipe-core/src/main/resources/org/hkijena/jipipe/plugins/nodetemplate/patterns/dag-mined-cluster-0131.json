@@ -1,1 +1,42 @@
-{"edges":[{"source-node":"n0","source-slot":"Image","target-node":"n2","target-slot":"Input"},{"source-node":"n1","source-slot":"Filenames","target-node":"n0","target-slot":"Files"}],"nodes":{"n0":{"jipipe:graph-compartment":"553a7063-fb0a-5b22-b0e9-fcd11eb6a8a6","jipipe:metadata-v1":{"location/553a7063-fb0a-5b22-b0e9-fcd11eb6a8a6/x":0,"location/553a7063-fb0a-5b22-b0e9-fcd11eb6a8a6/y":4},"jipipe:node-info-id":"import-imagej-imgplus-from-file"},"n1":{"jipipe:graph-compartment":"553a7063-fb0a-5b22-b0e9-fcd11eb6a8a6","jipipe:metadata-v1":{"location/553a7063-fb0a-5b22-b0e9-fcd11eb6a8a6/x":0,"location/553a7063-fb0a-5b22-b0e9-fcd11eb6a8a6/y":0},"jipipe:node-info-id":"import-file-list"},"n2":{"jipipe:graph-compartment":"553a7063-fb0a-5b22-b0e9-fcd11eb6a8a6","jipipe:metadata-v1":{"location/553a7063-fb0a-5b22-b0e9-fcd11eb6a8a6/x":1,"location/553a7063-fb0a-5b22-b0e9-fcd11eb6a8a6/y":8},"jipipe:node-info-id":"ij1-background-rollingball2d"}}}
+{
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Image",
+      "target-node": "n2",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n1",
+      "source-slot": "Filenames",
+      "target-node": "n0",
+      "target-slot": "Files"
+    }
+  ],
+  "nodes": {
+    "n0": {
+      "jipipe:graph-compartment": "553a7063-fb0a-5b22-b0e9-fcd11eb6a8a6",
+      "jipipe:metadata-v1": {
+        "location/553a7063-fb0a-5b22-b0e9-fcd11eb6a8a6/x": 0,
+        "location/553a7063-fb0a-5b22-b0e9-fcd11eb6a8a6/y": 4
+      },
+      "jipipe:node-info-id": "import-imagej-imgplus-from-file"
+    },
+    "n1": {
+      "jipipe:graph-compartment": "553a7063-fb0a-5b22-b0e9-fcd11eb6a8a6",
+      "jipipe:metadata-v1": {
+        "location/553a7063-fb0a-5b22-b0e9-fcd11eb6a8a6/x": 0,
+        "location/553a7063-fb0a-5b22-b0e9-fcd11eb6a8a6/y": 0
+      },
+      "jipipe:node-info-id": "import-file-list"
+    },
+    "n2": {
+      "jipipe:graph-compartment": "553a7063-fb0a-5b22-b0e9-fcd11eb6a8a6",
+      "jipipe:metadata-v1": {
+        "location/553a7063-fb0a-5b22-b0e9-fcd11eb6a8a6/x": 1,
+        "location/553a7063-fb0a-5b22-b0e9-fcd11eb6a8a6/y": 8
+      },
+      "jipipe:node-info-id": "ij1-background-rollingball2d"
+    }
+  }
+}

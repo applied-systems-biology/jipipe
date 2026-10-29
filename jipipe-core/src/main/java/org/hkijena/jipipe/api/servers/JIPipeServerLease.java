@@ -19,14 +19,14 @@ import java.util.UUID;
 
 /**
  * An AutoCloseable lease that guards access to a running server instance.
- * 
+ *
  * <p>Inspired by the cache system's pin pattern, the lease provides:</p>
  * <ul>
  *     <li>Use-after-free protection via {@link #checkNotClosed()}</li>
  *     <li>Automatic release on {@link #close()} (for try-with-resources)</li>
  *     <li>Reference counting in the service component</li>
  * </ul>
- * 
+ *
  * <p>Usage:</p>
  * <pre>
  * try (JIPipeServerLease<MyServerInstance> lease = service.acquireLease(...)) {

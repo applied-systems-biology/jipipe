@@ -17,7 +17,7 @@ import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.color.ColorSpaces;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
-import java.awt.Color;
+import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -35,33 +35,14 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public class JIPipeColorHistory {
 
-    /** The maximum number of "recent" colors kept. */
-    public static final int RECENT_CAP = 8;
-
     /**
-     * JSON store layout. JIPipe's mapper disables property auto-detection, so
-     * the fields are explicitly annotated.
+     * The maximum number of "recent" colors kept.
      */
-    @com.fasterxml.jackson.annotation.JsonAutoDetect(
-            fieldVisibility = com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY)
-    private static class Store {
-        public List<String> recent = new ArrayList<>();   // hex strings, most recent first
-        public List<SavedDto> saved = new ArrayList<>();
-    }
-
-    @com.fasterxml.jackson.annotation.JsonAutoDetect(
-            fieldVisibility = com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY)
-    private static class SavedDto {
-        public String hex;
-        public String name;
-    }
-
+    public static final int RECENT_CAP = 8;
+    private static volatile JIPipeColorHistory instance;
     private final Path file;
     private final List<NamedColor> recent = new CopyOnWriteArrayList<>();
     private final List<NamedColor> saved = new CopyOnWriteArrayList<>();
-
-    private static volatile JIPipeColorHistory instance;
-
     /**
      * Creates an instance backed by an explicit file (package-private, for
      * tests). Loads existing data if present.
@@ -71,7 +52,9 @@ public class JIPipeColorHistory {
         load();
     }
 
-    /** The shared instance (stored in {@code <jipipe-user-dir>/color-history.json}). */
+    /**
+     * The shared instance (stored in {@code <jipipe-user-dir>/color-history.json}).
+     */
     public static JIPipeColorHistory get() {
         if (instance == null) {
             synchronized (JIPipeColorHistory.class) {
@@ -83,19 +66,23 @@ public class JIPipeColorHistory {
         return instance;
     }
 
-    // ------------------------------------------------------------------
-    // API
-    // ------------------------------------------------------------------
-
-    /** @return the recent colors, most recent first (max {@link #RECENT_CAP}) */
+    /**
+     * @return the recent colors, most recent first (max {@link #RECENT_CAP})
+     */
     public List<NamedColor> getRecent() {
         return List.copyOf(recent);
     }
 
-    /** @return the user-saved colors */
+    /**
+     * @return the user-saved colors
+     */
     public List<NamedColor> getSaved() {
         return List.copyOf(saved);
     }
+
+    // ------------------------------------------------------------------
+    // API
+    // ------------------------------------------------------------------
 
     /**
      * Records a color as recently used: moved to the front, deduplicated
@@ -126,15 +113,13 @@ public class JIPipeColorHistory {
         save();
     }
 
-    /** Removes a saved color (matched by RGB). */
+    /**
+     * Removes a saved color (matched by RGB).
+     */
     public void removeSaved(Color color) {
         saved.removeIf(c -> c.getColor().getRGB() == color.getRGB());
         save();
     }
-
-    // ------------------------------------------------------------------
-    // Persistence
-    // ------------------------------------------------------------------
 
     private void load() {
         if (!Files.exists(file)) {
@@ -177,5 +162,27 @@ public class JIPipeColorHistory {
         } catch (IOException e) {
             System.err.println("Could not save color history to " + file + ": " + e.getMessage());
         }
+    }
+
+    // ------------------------------------------------------------------
+    // Persistence
+    // ------------------------------------------------------------------
+
+    /**
+     * JSON store layout. JIPipe's mapper disables property auto-detection, so
+     * the fields are explicitly annotated.
+     */
+    @com.fasterxml.jackson.annotation.JsonAutoDetect(
+            fieldVisibility = com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY)
+    private static class Store {
+        public List<String> recent = new ArrayList<>();   // hex strings, most recent first
+        public List<SavedDto> saved = new ArrayList<>();
+    }
+
+    @com.fasterxml.jackson.annotation.JsonAutoDetect(
+            fieldVisibility = com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY)
+    private static class SavedDto {
+        public String hex;
+        public String name;
     }
 }

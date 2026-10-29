@@ -1,1 +1,42 @@
-{"edges":[{"source-node":"n1","source-slot":"Folder paths","target-node":"n2","target-slot":"Folders"},{"source-node":"n2","source-slot":"Files","target-node":"n0","target-slot":"Input"}],"nodes":{"n0":{"jipipe:graph-compartment":"e1e2b56a-33ae-5488-b1ca-9a0c17bcb996","jipipe:metadata-v1":{"location/e1e2b56a-33ae-5488-b1ca-9a0c17bcb996/x":0,"location/e1e2b56a-33ae-5488-b1ca-9a0c17bcb996/y":8},"jipipe:node-info-id":"import-imagej-bioformats"},"n1":{"jipipe:graph-compartment":"e1e2b56a-33ae-5488-b1ca-9a0c17bcb996","jipipe:metadata-v1":{"location/e1e2b56a-33ae-5488-b1ca-9a0c17bcb996/x":0,"location/e1e2b56a-33ae-5488-b1ca-9a0c17bcb996/y":0},"jipipe:node-info-id":"import-folder-list"},"n2":{"jipipe:graph-compartment":"e1e2b56a-33ae-5488-b1ca-9a0c17bcb996","jipipe:metadata-v1":{"location/e1e2b56a-33ae-5488-b1ca-9a0c17bcb996/x":0,"location/e1e2b56a-33ae-5488-b1ca-9a0c17bcb996/y":4},"jipipe:node-info-id":"folder-list-files"}}}
+{
+  "edges": [
+    {
+      "source-node": "n1",
+      "source-slot": "Folder paths",
+      "target-node": "n2",
+      "target-slot": "Folders"
+    },
+    {
+      "source-node": "n2",
+      "source-slot": "Files",
+      "target-node": "n0",
+      "target-slot": "Input"
+    }
+  ],
+  "nodes": {
+    "n0": {
+      "jipipe:graph-compartment": "e1e2b56a-33ae-5488-b1ca-9a0c17bcb996",
+      "jipipe:metadata-v1": {
+        "location/e1e2b56a-33ae-5488-b1ca-9a0c17bcb996/x": 0,
+        "location/e1e2b56a-33ae-5488-b1ca-9a0c17bcb996/y": 8
+      },
+      "jipipe:node-info-id": "import-imagej-bioformats"
+    },
+    "n1": {
+      "jipipe:graph-compartment": "e1e2b56a-33ae-5488-b1ca-9a0c17bcb996",
+      "jipipe:metadata-v1": {
+        "location/e1e2b56a-33ae-5488-b1ca-9a0c17bcb996/x": 0,
+        "location/e1e2b56a-33ae-5488-b1ca-9a0c17bcb996/y": 0
+      },
+      "jipipe:node-info-id": "import-folder-list"
+    },
+    "n2": {
+      "jipipe:graph-compartment": "e1e2b56a-33ae-5488-b1ca-9a0c17bcb996",
+      "jipipe:metadata-v1": {
+        "location/e1e2b56a-33ae-5488-b1ca-9a0c17bcb996/x": 0,
+        "location/e1e2b56a-33ae-5488-b1ca-9a0c17bcb996/y": 4
+      },
+      "jipipe:node-info-id": "folder-list-files"
+    }
+  }
+}

@@ -36,28 +36,32 @@ Mined pattern `conversion-project-user-directory-node-group-import-imagej-biofor
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| import | `project-user-directory` |
-| other | `node-group` |
+| role   | node ids                   |
+|--------|----------------------------|
+| import | `project-user-directory`   |
+| other  | `node-group`               |
 | import | `import-imagej-bioformats` |
 
 ## Example graph
 
-Project: `AIAgentTests/02-AdvancedPipelines/CellTracking_01.jip` (relative to `/data/JIPipe`), compartment `Preprocessing`.
+Project: `AIAgentTests/02-AdvancedPipelines/CellTracking_01.jip` (relative to `/data/JIPipe`), compartment
+`Preprocessing`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `project-user-directory` | Project user directory |
-| n1 | `node-group` | READ: folders, subfolders and files |
-| n2 | `import-imagej-bioformats` | Bio-Formats importer |
+| key | node id                    | name                                |
+|-----|----------------------------|-------------------------------------|
+| n0  | `project-user-directory`   | Project user directory              |
+| n1  | `node-group`               | READ: folders, subfolders and files |
+| n2  | `import-imagej-bioformats` | Bio-Formats importer                |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
-| Project user directory | `Output` | READ: folders, subfolders and files | `Input folder` | `folder` |
-| READ: folders, subfolders and files | `Annotated paths` | Bio-Formats importer | `Input` | `path` |
+| from                                | slot              | to                                  | slot           | data class |
+|-------------------------------------|-------------------|-------------------------------------|----------------|------------|
+| Project user directory              | `Output`          | READ: folders, subfolders and files | `Input folder` | `folder`   |
+| READ: folders, subfolders and files | `Annotated paths` | Bio-Formats importer                | `Input`        | `path`     |
 
 ## Template
 
-Proposed name `Project user path -> Group -> Bio-Formats importer`, menu path `Patterns/Data Sources/Project user path -> Group -> Bio-Formats importer` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/conversion-project-user-directory-node-group-import-imagej-bioformats.json`.
+Proposed name `Project user path -> Group -> Bio-Formats importer`, menu path
+`Patterns/Data Sources/Project user path -> Group -> Bio-Formats importer` (proposal only — not registered). `data` =
+the minimal JIPipeGraph JSON; the full object is written to
+`templates/conversion-project-user-directory-node-group-import-imagej-bioformats.json`.
 

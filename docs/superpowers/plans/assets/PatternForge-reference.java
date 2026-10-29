@@ -22,14 +22,14 @@ import javax.imageio.ImageIO;
  */
 public class PatternForge {
 
-    public interface Family {
-        void paint(Graphics2D g, int w, int h, Random rng);
+    // deterministic seed from a string (stable across JVMs)
+    static Random seedOf(String s) {
+        return new Random(s.hashCode());
     }
 
-    // deterministic seed from a string (stable across JVMs)
-    static Random seedOf(String s) { return new Random(s.hashCode()); }
-
-    /** The family registry (shared with the node-wall preview). */
+    /**
+     * The family registry (shared with the node-wall preview).
+     */
     public static Map<String, Family> families() {
         Map<String, Family> F = new LinkedHashMap<>();
 
@@ -49,7 +49,8 @@ public class PatternForge {
                 Path2D p = new Path2D.Double();
                 for (int y = -2; y <= h + 2; y += 2) {
                     double x = x0 + amp * Math.sin(y / h * Math.PI * 2 * k + ph);
-                    if (y == -2) p.moveTo(x, y); else p.lineTo(x, y);
+                    if (y == -2) p.moveTo(x, y);
+                    else p.lineTo(x, y);
                 }
                 for (int y = h + 2; y >= -2; y -= 2) {
                     double x = x0 + stripW + amp * Math.sin(y / h * Math.PI * 2 * k + ph + 0.6);
@@ -62,7 +63,9 @@ public class PatternForge {
 
         // 2. waves: isocurves of a periodic smooth field (marching squares)
         F.put("waves", (g, w, h, rng) -> {
-            int[] fx = new int[4]; double[] amp = new double[4]; double[] ph = new double[4];
+            int[] fx = new int[4];
+            double[] amp = new double[4];
+            double[] ph = new double[4];
             for (int i = 0; i < 4; i++) {
                 fx[i] = 1 + rng.nextInt(3);
                 amp[i] = 0.4 + rng.nextDouble() * 0.6;
@@ -79,8 +82,8 @@ public class PatternForge {
                 for (int gy = 0; gy < h - step; gy += step)
                     for (int gx = 0; gx < w - step; gx += step) {
                         double[] v = {
-                            field(gx, gy, fx, fy, amp, ph, w, h), field(gx + step, gy, fx, fy, amp, ph, w, h),
-                            field(gx + step, gy + step, fx, fy, amp, ph, w, h), field(gx, gy + step, fx, fy, amp, ph, w, h)};
+                                field(gx, gy, fx, fy, amp, ph, w, h), field(gx + step, gy, fx, fy, amp, ph, w, h),
+                                field(gx + step, gy + step, fx, fy, amp, ph, w, h), field(gx, gy + step, fx, fy, amp, ph, w, h)};
                         double[] a = {gx, gy}, b = {gx + step, gy}, c = {gx + step, gy + step}, d = {gx, gy + step};
                         for (int e = 0; e < 4; e++) {
                             double v1 = v[e], v2 = v[(e + 1) % 4];
@@ -107,10 +110,13 @@ public class PatternForge {
         // proper marching-squares waves (replaces the above placeholder)
         F.put("waves", (g, w, h, rng) -> {
             int n = 3;
-            int[] fx = new int[n], fyy = new int[n]; double[] amp = new double[n], ph = new double[n];
+            int[] fx = new int[n], fyy = new int[n];
+            double[] amp = new double[n], ph = new double[n];
             for (int i = 0; i < n; i++) {
-                fx[i] = 1 + rng.nextInt(3); fyy[i] = 1 + rng.nextInt(3);
-                amp[i] = 0.5 + rng.nextDouble() * 0.7; ph[i] = rng.nextDouble() * Math.PI * 2;
+                fx[i] = 1 + rng.nextInt(3);
+                fyy[i] = 1 + rng.nextInt(3);
+                amp[i] = 0.5 + rng.nextDouble() * 0.7;
+                ph[i] = rng.nextDouble() * Math.PI * 2;
             }
             int step = 4;
             for (double lv : new double[]{-0.5, 0.0, 0.5}) {
@@ -195,10 +201,12 @@ public class PatternForge {
                     for (int s = 0; s < sides; s++) {
                         double a = rot + s * 2 * Math.PI / sides;
                         double x = cx + r * Math.cos(a), y = cy + r * Math.sin(a);
-                        if (s == 0) p.moveTo(x, y); else p.lineTo(x, y);
+                        if (s == 0) p.moveTo(x, y);
+                        else p.lineTo(x, y);
                     }
                     p.closePath();
-                    if (rng.nextDouble() < 0.5) g.fill(p); else g.draw(p);
+                    if (rng.nextDouble() < 0.5) g.fill(p);
+                    else g.draw(p);
                 }
         });
 
@@ -217,8 +225,10 @@ public class PatternForge {
             // snap border points onto the edges so the mesh fills the whole area
             for (int i = 0; i <= n; i++)
                 for (int j = 0; j <= n; j++) {
-                    if (i == 0) px[i][j] = 0; else if (i == n) px[i][j] = w;
-                    if (j == 0) py[i][j] = 0; else if (j == n) py[i][j] = h;
+                    if (i == 0) px[i][j] = 0;
+                    else if (i == n) px[i][j] = w;
+                    if (j == 0) py[i][j] = 0;
+                    else if (j == n) py[i][j] = h;
                 }
             g.setStroke(new BasicStroke(1.3f));
             for (int i = 0; i < n; i++)
@@ -265,7 +275,8 @@ public class PatternForge {
                 p.moveTo(0, curveY(0, yb[L], amp[L], k[L], ph[L], w));
                 for (int x = 0; x <= w; x += 4) p.lineTo(x, curveY(x, yb[L], amp[L], k[L], ph[L], w));
                 if (L + 1 < layers) {
-                    for (int x = w; x >= 0; x -= 4) p.lineTo(x, curveY(x, yb[L + 1], amp[L + 1], k[L + 1], ph[L + 1], w));
+                    for (int x = w; x >= 0; x -= 4)
+                        p.lineTo(x, curveY(x, yb[L + 1], amp[L + 1], k[L + 1], ph[L + 1], w));
                 } else {
                     p.lineTo(w, h);
                     p.lineTo(0, h);
@@ -416,10 +427,18 @@ public class PatternForge {
             int c = n;
             for (int i = 0; i < side; i++) {
                 double t = (i + 0.5) / side;
-                ex[c] = -w * 0.06; ey[c] = t * h; c++;
-                ex[c] = w * 1.06; ey[c] = t * h; c++;
-                ex[c] = t * w; ey[c] = -h * 0.06; c++;
-                ex[c] = t * w; ey[c] = h * 1.06; c++;
+                ex[c] = -w * 0.06;
+                ey[c] = t * h;
+                c++;
+                ex[c] = w * 1.06;
+                ey[c] = t * h;
+                c++;
+                ex[c] = t * w;
+                ey[c] = -h * 0.06;
+                c++;
+                ex[c] = t * w;
+                ey[c] = h * 1.06;
+                c++;
             }
             int total = n + extra;
             g.setStroke(new BasicStroke(1.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
@@ -443,7 +462,8 @@ public class PatternForge {
                     double wob = maxR * (0.07 * Math.sin(3 * a + s * 1.7) + 0.05 * Math.cos(5 * a + s * 0.9));
                     double bx = ex[s] + (maxR + wob) * dxr;
                     double by = ey[s] + (maxR + wob) * dyr;
-                    if (k == 0) p.moveTo(bx, by); else p.lineTo(bx, by);
+                    if (k == 0) p.moveTo(bx, by);
+                    else p.lineTo(bx, by);
                 }
                 p.closePath();
                 g.draw(p);
@@ -467,7 +487,8 @@ public class PatternForge {
             for (int d = 0; d < n * n; d++) {
                 int[] xy = d2xy(n, d);
                 double x = ox + (xy[0] + 0.5) * m, y = oy + (xy[1] + 0.5) * m;
-                if (d == 0) p.moveTo(x, y); else p.lineTo(x, y);
+                if (d == 0) p.moveTo(x, y);
+                else p.lineTo(x, y);
             }
             g.draw(p);
         });
@@ -488,7 +509,8 @@ public class PatternForge {
                         double a = Math.toRadians(60 * k - 30 + (rng.nextDouble() - 0.5) * 14);
                         double rr = r * (0.94 + rng.nextDouble() * 0.09);
                         double x = cx + rr * Math.cos(a), y = cy + rr * Math.sin(a);
-                        if (k == 0) p.moveTo(x, y); else p.lineTo(x, y);
+                        if (k == 0) p.moveTo(x, y);
+                        else p.lineTo(x, y);
                     }
                     p.closePath();
                     g.draw(p);
@@ -649,11 +671,15 @@ public class PatternForge {
     }
 
     static int owner(double x, double y, double[] sx, double[] sy, int n) {
-        int best = -1; double bd = Double.MAX_VALUE;
+        int best = -1;
+        double bd = Double.MAX_VALUE;
         for (int i = 0; i < n; i++) {
             double dx = x - sx[i], dy = y - sy[i];
             double d = dx * dx + dy * dy;
-            if (d < bd) { bd = d; best = i; }
+            if (d < bd) {
+                bd = d;
+                best = i;
+            }
         }
         return best;
     }
@@ -696,7 +722,9 @@ public class PatternForge {
                     x = s - 1 - x;
                     y = s - 1 - y;
                 }
-                int tmp = x; x = y; y = tmp;
+                int tmp = x;
+                x = y;
+                y = tmp;
             }
             x += s * rx;
             y += s * ry;
@@ -705,7 +733,9 @@ public class PatternForge {
         return new int[]{x, y};
     }
 
-    static double toDeg(double rad) { return Math.toDegrees(rad); }
+    static double toDeg(double rad) {
+        return Math.toDegrees(rad);
+    }
 
     static double[] edgeCoverage(BufferedImage img) {
         int S = img.getWidth();
@@ -734,5 +764,9 @@ public class PatternForge {
         fam.paint(g, w, h, rng);
         g.dispose();
         return img;
+    }
+
+    public interface Family {
+        void paint(Graphics2D g, int w, int h, Random rng);
     }
 }

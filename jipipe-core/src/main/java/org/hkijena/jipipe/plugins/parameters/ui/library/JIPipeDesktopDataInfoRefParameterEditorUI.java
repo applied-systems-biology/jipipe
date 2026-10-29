@@ -25,13 +25,9 @@ import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.classfilters.AnyClassFilter;
 import org.hkijena.jipipe.utils.classfilters.ClassFilter;
 
-import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashSet;
+import java.util.*;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Parameter for {@link JIPipeDataInfoRef}.

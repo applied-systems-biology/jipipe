@@ -62,7 +62,7 @@ class NodeRelationIndexTest {
         // a template edge whose node id no longer resolves is dropped, not fatal
         NodeRelationIndex idx = new NodeRelationIndex();
         idx.addEdgesIgnoringUnresolved(Set.of("known-node", "other-known"),   // "ghost-node" is NOT known
-            List.of(new Edge("known-node", "ghost-node"), new Edge("known-node", "other-known")));
+                List.of(new Edge("known-node", "ghost-node"), new Edge("known-node", "other-known")));
         assertThat(idx.next("known-node")).isEqualTo(List.of("other-known"));  // ghost edge dropped
     }
 

@@ -2,7 +2,7 @@ package org.hkijena.jipipe.utils;
 
 import org.junit.jupiter.api.Test;
 
-import javax.swing.JTextPane;
+import javax.swing.*;
 import javax.swing.text.DefaultCaret;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

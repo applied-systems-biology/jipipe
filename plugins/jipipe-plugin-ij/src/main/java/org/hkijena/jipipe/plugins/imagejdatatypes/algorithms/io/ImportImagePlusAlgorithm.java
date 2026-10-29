@@ -12,8 +12,6 @@
  */
 
 package org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.io;
-import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
-import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 
 import ij.IJ;
 import ij.ImagePlus;
@@ -24,12 +22,15 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
-import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.ImageDataFunction;
+import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.ImageDataFunction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
@@ -56,8 +57,11 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
+
 @SetJIPipeDocumentation(name = "Import image", description = "Imports each image file into ImageJ image data that can be analyzed downstream. It tries the best-matching importer (Java, ImageJ, or Bio-Formats), optionally removes LUTs and overlays, and can store the image title.")
-@ConfigureJIPipeNode(function = ImageDataFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
+@ConfigureJIPipeNode(function = ImageDataFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = FileData.class, name = "Files", description = "The image file", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Image", description = "Imported image", create = true)
 @AddJIPipeCitation("Melissa Linkert, Curtis T. Rueden, Chris Allan, Jean-Marie Burel, Will Moore, Andrew Patterson, Brian Loranger, Josh Moore, " +
@@ -65,6 +69,9 @@ import java.util.stream.Stream;
         "and Jason R. Swedlow (2010) Metadata matters: access to image data in the real world. The Journal of Cell Biology 189(5), 777-782")
 public class ImportImagePlusAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
+    private final ImageJImportImageBackend imageJBackendSettings;
+    private final BioFormatsImageImageBackend bioFormatsBackendSettings;
+    private final JavaImportImageBackend javaBackendSettings;
     private JIPipeDataInfoRef generatedImageType = new JIPipeDataInfoRef("imagej-imgplus");
     private OptionalTextAnnotationNameParameter titleAnnotation = new OptionalTextAnnotationNameParameter();
     private boolean removeLut = false;
@@ -72,10 +79,6 @@ public class ImportImagePlusAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private boolean continueWithNextBackendOnFailure = true;
     @Deprecated
     private boolean forceNativeImport = false;
-
-    private final ImageJImportImageBackend imageJBackendSettings;
-    private final BioFormatsImageImageBackend bioFormatsBackendSettings;
-    private final JavaImportImageBackend javaBackendSettings;
 
     public ImportImagePlusAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -112,19 +115,19 @@ public class ImportImagePlusAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ImagePlus image = null;
         for (ImportImageBackend backend : backends) {
             JIPipeProgressInfo backendProgress = progressInfo.resolveAndLog("Backend " + backend.getClass().getSimpleName());
-            if(!backend.isEnabled()) {
+            if (!backend.isEnabled()) {
                 backendProgress.log("Is disabled, skipping");
                 continue;
             }
             if (backendProgress.isCancelled()) {
                 return null;
             }
-            if(backend.canImport(fileName, variablesMap)) {
+            if (backend.canImport(fileName, variablesMap)) {
                 backendProgress.log("canImport() returned TRUE");
                 backendProgress.log("Loading " + fileName);
                 try {
                     image = backend.doImport(fileName, runContext, backendProgress);
-                    if(image != null) {
+                    if (image != null) {
                         return image;
                     }
                 } catch (Throwable ex) {
@@ -134,8 +137,7 @@ public class ImportImagePlusAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                         throw ex;
                     }
                 }
-            }
-            else {
+            } else {
                 backendProgress.log("canImport() returned false, trying next backend");
             }
         }

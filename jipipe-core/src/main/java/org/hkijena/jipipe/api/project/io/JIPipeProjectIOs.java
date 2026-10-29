@@ -107,7 +107,7 @@ public final class JIPipeProjectIOs {
      *
      * @param path the project file
      * @return the extracted project dependencies and metadata
-     * @throws IOException                 triggered by the JSON parser
+     * @throws IOException                   triggered by the JSON parser
      * @throws UnsupportedOperationException if the file is a ZIP that is not
      *                                       a JIPX container (no
      *                                       {@code jipx.json} entry) — the
@@ -131,9 +131,9 @@ public final class JIPipeProjectIOs {
      *
      * @param path the JIPX container
      * @return the extracted project dependencies and metadata
-     * @throws IOException                       triggered by the JSON parser
-     * @throws UnsupportedOperationException     if the ZIP has no
-     *                                           {@code jipx.json} entry
+     * @throws IOException                   triggered by the JSON parser
+     * @throws UnsupportedOperationException if the ZIP has no
+     *                                       {@code jipx.json} entry
      */
     private static JIPipeProjectPeek peekZip(Path path) throws IOException {
         try (ZipFile zip = openZipForPeek(path)) {

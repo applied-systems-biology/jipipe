@@ -66,7 +66,7 @@ public final class JIPipeNodeTemplatesServiceComponent extends JIPipeServiceComp
         // directory. Preserve them across the clear() so the disk reload only
         // affects the user's own templates.
         List<JIPipeNodeTemplate> pluginSubset =
-            new ArrayList<>(globalTemplates).stream().filter(this::isPluginTemplate).toList();
+                new ArrayList<>(globalTemplates).stream().filter(this::isPluginTemplate).toList();
         globalTemplates.clear();
         globalTemplatesPaths.clear();
 
@@ -147,8 +147,8 @@ public final class JIPipeNodeTemplatesServiceComponent extends JIPipeServiceComp
     public boolean isDownloadedTemplate(JIPipeNodeTemplate template) {
         String source = template.getSource();
         return source != null && !source.isEmpty()
-            && !JIPipeNodeTemplate.SOURCE_USER.equals(source)
-            && !JIPipeNodeTemplate.SOURCE_EXTENSION.equals(source);
+                && !JIPipeNodeTemplate.SOURCE_USER.equals(source)
+                && !JIPipeNodeTemplate.SOURCE_EXTENSION.equals(source);
     }
 
     public boolean addToGlobal_(JIPipeNodeTemplate template) {
@@ -207,7 +207,7 @@ public final class JIPipeNodeTemplatesServiceComponent extends JIPipeServiceComp
      *
      * @param pluginTemplate the bundled (System-scope) template to copy
      * @return whether the user copy was actually stored (false when a value-equal
-     *         user copy already exists in the global store)
+     * user copy already exists in the global store)
      */
     public boolean addToGlobalAsUserCopy(JIPipeNodeTemplate pluginTemplate) {
         JIPipeNodeTemplate copy = new JIPipeNodeTemplate(pluginTemplate);
@@ -281,7 +281,7 @@ public final class JIPipeNodeTemplatesServiceComponent extends JIPipeServiceComp
         // user choice). A save that does NOT change the function keeps it.
         JIPipeTaxonomyFunctionRef newFunction = target.getTaxonomyFunction();
         if (oldFunction != null && newFunction != null
-            && !Objects.equals(oldFunction.getId(), newFunction.getId())) {
+                && !Objects.equals(oldFunction.getId(), newFunction.getId())) {
             target.setDescription(JIPipeNodeTemplateMigration.clearPreviouslyFooter(target.getDescription()));
         }
         if (project != null) {

@@ -20,14 +20,12 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabase;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseBuilderRun;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
-import org.hkijena.jipipe.api.service.components.JIPipeNodesServiceComponent;
 import org.hkijena.jipipe.api.project.JIPipeProject;
+import org.hkijena.jipipe.api.service.components.JIPipeNodesServiceComponent;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Integration gate for the relations generalization (spec §10): mines the
@@ -75,13 +73,19 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 class TemplateRelationSourceTest {
 
-    /** "A" — the template edge source (a Thresholding node). */
+    /**
+     * "A" — the template edge source (a Thresholding node).
+     */
     private static final String NODE_A = "ij3d-segmentation-nuclei-3d";
-    /** "B" — the template edge target (a Thresholding node, same function as A). */
+    /**
+     * "B" — the template edge target (a Thresholding node, same function as A).
+     */
     private static final String NODE_B = "ij3d-segmentation-hysteresis";
 
-    /** A generous cap so the similar-list assertions are not affected by the
-     * per-list cap (the registry carries many Thresholding-function nodes). */
+    /**
+     * A generous cap so the similar-list assertions are not affected by the
+     * per-list cap (the registry carries many Thresholding-function nodes).
+     */
     private static final int MAX = 1000;
 
     @BeforeAll
@@ -96,9 +100,26 @@ class TemplateRelationSourceTest {
         JIPipeNodesServiceComponent nodes = JIPipe.getNodes();
         for (String id : new String[]{NODE_A, NODE_B}) {
             assertTrue(nodes.hasNodeInfoWithId(id),
-                "expected node id to be registered in the launcher: " + id);
+                    "expected node id to be registered in the launcher: " + id);
         }
     }
+
+    private static JIPipeNodeDatabaseEntry entryByOriginNodeId(JIPipeNodeDatabase database, String nodeId) {
+        for (JIPipeNodeDatabaseEntry entry : database.getEntries()) {
+            if (nodeId.equals(entry.getOriginNodeId())) {
+                return entry;
+            }
+        }
+        return null;
+    }
+
+    private static String names(java.util.List<JIPipeNodeDatabaseEntry> entries) {
+        return entries.stream().map(JIPipeNodeDatabaseEntry::getName).toList().toString();
+    }
+
+    // ------------------------------------------------------------------
+    // Helpers
+    // ------------------------------------------------------------------
 
     @Test
     void templateGraphMiningPopulatesNextPreviousAndExcludesNeighborsFromSimilar() {
@@ -111,7 +132,7 @@ class TemplateRelationSourceTest {
         // Project scope: mined (all scopes are mined) but not persisted to the
         // user's global node-templates directory.
         assertTrue(JIPipe.getNodeTemplates().addToProject(template, project),
-            "the template must be added to the project");
+                "the template must be added to the project");
 
         // A database scoped to the project (so its TemplateRelationSource mines
         // the project templates). Rebuilt synchronously — see the class
@@ -128,23 +149,23 @@ class TemplateRelationSourceTest {
 
         // (1) The template edge is mined into the NEXT direction.
         assertTrue(relationsA.next().contains(entryB),
-            "next(" + NODE_A + ") must contain " + NODE_B + " (the template edge), got: " + names(relationsA.next()));
+                "next(" + NODE_A + ") must contain " + NODE_B + " (the template edge), got: " + names(relationsA.next()));
 
         // (2) The template edge is mined into the PREVIOUS direction.
         NodeRelations relationsB = database.relations(entryB, MAX);
         assertTrue(relationsB.previous().contains(entryA),
-            "previous(" + NODE_B + ") must contain " + NODE_A + " (the template edge), got: " + names(relationsB.previous()));
+                "previous(" + NODE_B + ") must contain " + NODE_A + " (the template edge), got: " + names(relationsB.previous()));
 
         // (3) similar() is populated by the same-function/framework tiers...
         assertFalse(relationsA.similar().isEmpty(),
-            "similar(" + NODE_A + ") must be non-empty (other Thresholding nodes exist)");
+                "similar(" + NODE_A + ") must be non-empty (other Thresholding nodes exist)");
 
         // ...but the direct next-neighbor (B) is EXCLUDED from similar so the
         // three lists stay disjoint, and the entry is not similar to itself.
         assertFalse(relationsA.similar().contains(entryB),
-            "similar(" + NODE_A + ") must NOT contain the next-neighbor " + NODE_B + "; got: " + names(relationsA.similar()));
+                "similar(" + NODE_A + ") must NOT contain the next-neighbor " + NODE_B + "; got: " + names(relationsA.similar()));
         assertFalse(relationsA.similar().contains(entryA),
-            "similar(" + NODE_A + ") must NOT contain itself; got: " + names(relationsA.similar()));
+                "similar(" + NODE_A + ") must NOT contain itself; got: " + names(relationsA.similar()));
     }
 
     /**
@@ -195,13 +216,9 @@ class TemplateRelationSourceTest {
         // (and relations() does not throw).
         NodeRelations relationsA = database.relations(entryA, MAX);
         assertTrue(relationsA.next().contains(entryB),
-            "the valid template's edge must still be mined alongside a corrupted template; got: "
-                + names(relationsA.next()));
+                "the valid template's edge must still be mined alongside a corrupted template; got: "
+                        + names(relationsA.next()));
     }
-
-    // ------------------------------------------------------------------
-    // Helpers
-    // ------------------------------------------------------------------
 
     /**
      * Builds a real {@link JIPipeNodeTemplate} whose graph is the 2-node
@@ -223,19 +240,6 @@ class TemplateRelationSourceTest {
         template.setName("Relation test template");
         template.setGraph(graph);
         return template;
-    }
-
-    private static JIPipeNodeDatabaseEntry entryByOriginNodeId(JIPipeNodeDatabase database, String nodeId) {
-        for (JIPipeNodeDatabaseEntry entry : database.getEntries()) {
-            if (nodeId.equals(entry.getOriginNodeId())) {
-                return entry;
-            }
-        }
-        return null;
-    }
-
-    private static String names(java.util.List<JIPipeNodeDatabaseEntry> entries) {
-        return entries.stream().map(JIPipeNodeDatabaseEntry::getName).toList().toString();
     }
 
     /**

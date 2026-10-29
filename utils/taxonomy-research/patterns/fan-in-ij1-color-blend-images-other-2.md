@@ -35,26 +35,29 @@ Mined pattern `fan-in-ij1-color-blend-images-other-2` (shape `fan-in`, support 3
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| other | `ij1-color-blend-images` |
+| role  | node ids                                                                                                                                                                                   |
+|-------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| other | `ij1-color-blend-images`                                                                                                                                                                   |
 | other | `filaments-convert-to-mask`, `ij1-blur-median2d`, `ij1-color-blend-images`, `ij1-contrast-illumination-correction2d`, `ij1-dimensions-reorder`, `ij1-math-divide-by-maximum`, … (13 total) |
 
 ## Example graph
 
-Project: `AIAgentTests/02-AdvancedPipelines/JohannesBrendel_Supramolecular_17.jip` (relative to `/data/JIPipe`), compartment `Mask`.
+Project: `AIAgentTests/02-AdvancedPipelines/JohannesBrendel_Supramolecular_17.jip` (relative to `/data/JIPipe`),
+compartment `Mask`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `filaments-convert-to-mask` | Convert filaments to mask |
-| n1 | `ij1-set-lut-from-color-map` | Set LUT (color map) |
-| n2 | `ij1-color-blend-images` | Blend images |
+| key | node id                      | name                      |
+|-----|------------------------------|---------------------------|
+| n0  | `filaments-convert-to-mask`  | Convert filaments to mask |
+| n1  | `ij1-set-lut-from-color-map` | Set LUT (color map)       |
+| n2  | `ij1-color-blend-images`     | Blend images              |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
+| from                | slot     | to           | slot           | data class                 |
+|---------------------|----------|--------------|----------------|----------------------------|
 | Set LUT (color map) | `Output` | Blend images | `Magenta STED` | `imagej-imgplus-greyscale` |
 
 ## Template
 
-Proposed name `Blend images fans in from 13 source ids (roles: other)`, menu path `Patterns/Images/Blend images fans in from 13 source ids (roles: other)` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/fan-in-ij1-color-blend-images-other-2.json`.
+Proposed name `Blend images fans in from 13 source ids (roles: other)`, menu path
+`Patterns/Images/Blend images fans in from 13 source ids (roles: other)` (proposal only — not registered). `data` = the
+minimal JIPipeGraph JSON; the full object is written to `templates/fan-in-ij1-color-blend-images-other-2.json`.
 

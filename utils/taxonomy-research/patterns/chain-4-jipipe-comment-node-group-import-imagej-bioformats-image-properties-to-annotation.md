@@ -34,35 +34,40 @@ template:
 
 # Pattern: Comment -> Group -> Bio-Formats importer -> Annotate with image properties
 
-Mined pattern `chain-4-jipipe-comment-node-group-import-imagej-bioformats-image-properties-to-annotation` (shape `chain`, support 28).
+Mined pattern `chain-4-jipipe-comment-node-group-import-imagej-bioformats-image-properties-to-annotation` (shape
+`chain`, support 28).
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| other | `jipipe:comment` |
-| other | `node-group` |
-| import | `import-imagej-bioformats` |
+| role     | node ids                         |
+|----------|----------------------------------|
+| other    | `jipipe:comment`                 |
+| other    | `node-group`                     |
+| import   | `import-imagej-bioformats`       |
 | annotate | `image-properties-to-annotation` |
 
 ## Example graph
 
-Project: `AIAgentTests/02-AdvancedPipelines/JohannesBrendel_Supramolecular_17.jip` (relative to `/data/JIPipe`), compartment `Preprocessing`.
+Project: `AIAgentTests/02-AdvancedPipelines/JohannesBrendel_Supramolecular_17.jip` (relative to `/data/JIPipe`),
+compartment `Preprocessing`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `jipipe:comment` | Comment |
-| n1 | `node-group` | READ: folders, subfolders and files |
-| n2 | `import-imagej-bioformats` | Bio-Formats importer |
-| n3 | `image-properties-to-annotation` | Annotate with image properties |
+| key | node id                          | name                                |
+|-----|----------------------------------|-------------------------------------|
+| n0  | `jipipe:comment`                 | Comment                             |
+| n1  | `node-group`                     | READ: folders, subfolders and files |
+| n2  | `import-imagej-bioformats`       | Bio-Formats importer                |
+| n3  | `image-properties-to-annotation` | Annotate with image properties      |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
-| Comment | `Comment` | READ: folders, subfolders and files | `Input folder` | `jipipe:data` |
-| READ: folders, subfolders and files | `Annotated paths` | Bio-Formats importer | `Input` | `path` |
-| Bio-Formats importer | `Output` | Annotate with image properties | `Image` | `imagej-ome` |
+| from                                | slot              | to                                  | slot           | data class    |
+|-------------------------------------|-------------------|-------------------------------------|----------------|---------------|
+| Comment                             | `Comment`         | READ: folders, subfolders and files | `Input folder` | `jipipe:data` |
+| READ: folders, subfolders and files | `Annotated paths` | Bio-Formats importer                | `Input`        | `path`        |
+| Bio-Formats importer                | `Output`          | Annotate with image properties      | `Image`        | `imagej-ome`  |
 
 ## Template
 
-Proposed name `Comment -> Group -> Bio-Formats importer -> Annotate with image properties`, menu path `Patterns/Graph / Project/Comment -> Group -> Bio-Formats importer -> Annotate with image properties` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/chain-4-jipipe-comment-node-group-import-imagej-bioformats-image-properties-to-annotation.json`.
+Proposed name `Comment -> Group -> Bio-Formats importer -> Annotate with image properties`, menu path
+`Patterns/Graph / Project/Comment -> Group -> Bio-Formats importer -> Annotate with image properties` (proposal only —
+not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/chain-4-jipipe-comment-node-group-import-imagej-bioformats-image-properties-to-annotation.json`.
 

@@ -13,6 +13,6 @@ and indicates that a JSON extension cannot be loaded because a dependency plugin
 The ID of this dependency is given in the issue.
 
 It can happen that dependencies have been renamed or merged with existing plugins - meaning
-that all required contents actually exist. To resolve those issues, open the JSON extension 
-in the extension builder and confirm loading it. After loading the extension, save it to 
+that all required contents actually exist. To resolve those issues, open the JSON extension
+in the extension builder and confirm loading it. After loading the extension, save it to
 update the dependency list.

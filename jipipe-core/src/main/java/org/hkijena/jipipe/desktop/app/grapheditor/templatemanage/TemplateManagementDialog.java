@@ -23,8 +23,8 @@ import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
-import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
+import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernThemeStyle;
 import org.hkijena.jipipe.plugins.nodetemplate.NodeTemplatesRefreshedEvent;
@@ -33,22 +33,16 @@ import org.hkijena.jipipe.plugins.nodetemplate.templatedownloader.NodeTemplateDo
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
-import org.hkijena.jipipe.utils.CustomStateLessToggleButton;
-import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
-import org.hkijena.jipipe.utils.PathUtils;
-import org.hkijena.jipipe.utils.ThemeUtils;
-import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
 /**
  * The "Configure node templates" manager (round-2 redesign, work-item 1324
@@ -76,12 +70,10 @@ import java.util.Map;
  */
 public class TemplateManagementDialog extends JFrame implements NodeTemplatesRefreshedEventListener {
 
-    /** Unique-enforcement registry: one manager per owner window (item 1). */
+    /**
+     * Unique-enforcement registry: one manager per owner window (item 1).
+     */
     private static final Map<Window, TemplateManagementDialog> INSTANCES = new HashMap<>();
-
-    /** True once the window has been closed (Swing has no isDisposed()). */
-    private boolean disposed;
-
     private static final int CARD_CELL_WIDTH = 210;
     private static final int CARD_CELL_HEIGHT = 66;
     // The painted card is inset by CARD_INSET within its cell: this inset is the
@@ -90,19 +82,20 @@ public class TemplateManagementDialog extends JFrame implements NodeTemplatesRef
     private static final int CARD_INSET = 6;
     // A clearly visible corner radius (round-3 "rounded corners" ask).
     private static final int CARD_ARC = 12;
-
     private final JIPipeDesktopWorkbench workbench;
     private final JIPipeProject project;
     private final TemplateManagementController controller = new TemplateManagementController();
-
     // --- Views (built in initialize(); non-final so the two-card layout can
     // assign them) ---
     private final JPanel viewContainer = new JPanel(new CardLayout());
-    private JPanel manageView;
-    private JPanel repositoryView;
-
     // --- Manage view sections ---
     private final List<TemplateSection> sections = new ArrayList<>();
+    /**
+     * True once the window has been closed (Swing has no isDisposed()).
+     */
+    private boolean disposed;
+    private JPanel manageView;
+    private JPanel repositoryView;
 
     public TemplateManagementDialog(JIPipeDesktopWorkbench workbench, TemplateScope initialScope) {
         this.workbench = workbench;
@@ -120,7 +113,7 @@ public class TemplateManagementDialog extends JFrame implements NodeTemplatesRef
      * owner window; a second call focuses the existing one. Non-blocking (the
      * window is a non-modal {@link JFrame}).
      *
-     * @param workbench  the workbench providing the owner window + project
+     * @param workbench    the workbench providing the owner window + project
      * @param initialScope the scope to focus (reserved; the manager shows all sections)
      * @return the shown (or already-existing) window
      */
@@ -168,11 +161,13 @@ public class TemplateManagementDialog extends JFrame implements NodeTemplatesRef
         addEscapeListener();
     }
 
-    /** Escape closes the window (frame-equivalent of {@code UIUtils.addEscapeListener}). */
+    /**
+     * Escape closes the window (frame-equivalent of {@code UIUtils.addEscapeListener}).
+     */
     private void addEscapeListener() {
         getRootPane().registerKeyboardAction(e -> setVisible(false),
-            KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
-            JComponent.WHEN_IN_FOCUSED_WINDOW);
+                KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
+                JComponent.WHEN_IN_FOCUSED_WINDOW);
     }
 
     private void showManageView() {
@@ -215,7 +210,7 @@ public class TemplateManagementDialog extends JFrame implements NodeTemplatesRef
             sections.add(new TemplateSection("This project", TemplateScope.Project, JIPipe.RESOURCES.getIcon16("actions/graph-compartment.png"), true));
         }
         sections.add(new TemplateSection("Downloaded", TemplateScope.Downloaded, JIPipe.RESOURCES.getIcon16("actions/download.png"), true,
-            this::buildGetMoreButton));
+                this::buildGetMoreButton));
         sections.add(new TemplateSection("System", TemplateScope.System, JIPipe.RESOURCES.getIcon16("actions/dialog-templates.png"), false));
         for (TemplateSection section : sections) {
             section.buildSectionOn(formPanel);
@@ -276,21 +271,21 @@ public class TemplateManagementDialog extends JFrame implements NodeTemplatesRef
         JLabel header2 = UIUtils.createJLabel("Template marketplace", JIPipe.RESOURCES.getIcon32("actions/download.png"), 20);
         content.add(header2, BorderLayout.NORTH);
         JLabel note = new JLabel("<html>The full template marketplace — searching, categories, and sharing your own "
-            + "templates — is a future feature.<br/><br/>You can already download templates from the configured "
-            + "repositories.</html>");
+                + "templates — is a future feature.<br/><br/>You can already download templates from the configured "
+                + "repositories.</html>");
         note.setVerticalAlignment(SwingConstants.TOP);
         note.setForeground(ThemeUtils.getCurrentStyle().getTextMuted());
         content.add(note, BorderLayout.CENTER);
         JPanel actionRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
         actionRow.setOpaque(false);
         actionRow.add(UIUtils.createButton("Download templates", JIPipe.RESOURCES.getIcon16("actions/download.png"),
-            () -> JIPipeDesktopRunExecuteUI.runInDialog(workbench, this, new NodeTemplateDownloaderRun(workbench))));
+                () -> JIPipeDesktopRunExecuteUI.runInDialog(workbench, this, new NodeTemplateDownloaderRun(workbench))));
         content.add(actionRow, BorderLayout.SOUTH);
 
         JIPipeDesktopSplitPane splitPane = new JIPipeDesktopSplitPane(JIPipeDesktopSplitPane.LEFT_RIGHT,
-            UIUtils.wrapInIslandPanelIfNeeded(sidebar),
-            UIUtils.wrapInIslandPanelIfNeeded(content),
-            JIPipeDesktopSplitPane.RATIO_1_TO_3);
+                UIUtils.wrapInIslandPanelIfNeeded(sidebar),
+                UIUtils.wrapInIslandPanelIfNeeded(content),
+                JIPipeDesktopSplitPane.RATIO_1_TO_3);
         view.add(splitPane, BorderLayout.CENTER);
         return view;
     }
@@ -317,16 +312,222 @@ public class TemplateManagementDialog extends JFrame implements NodeTemplatesRef
     // One collapsible section (GroupHeaderPanel header + wrapping JList)
     // ------------------------------------------------------------------
 
+    private void showTemplateMenu(MouseEvent e, JList<JIPipeNodeTemplate> list) {
+        List<JIPipeNodeTemplate> selected = list.getSelectedValuesList();
+        JPopupMenu menu = buildTemplateMenu(selected);
+        if (menu != null) {
+            menu.show(list, e.getX(), e.getY());
+        }
+    }
+
+    // ------------------------------------------------------------------
+    // Selection + context menu (delegating to the controller)
+    // ------------------------------------------------------------------
+
+    /**
+     * The context menu for a set of selected templates (item 6). Items are
+     * included only when applicable to the (possibly multi) selection — this
+     * is the bulk right-click operation. Returns {@code null} when there is no
+     * actionable selection.
+     */
+    private JPopupMenu buildTemplateMenu(List<JIPipeNodeTemplate> selected) {
+        if (selected.isEmpty()) {
+            return null;
+        }
+        JPopupMenu menu = new JPopupMenu();
+        boolean anySystem = false, anyDownloaded = false, anyEditable = false, anyProject = false, anyGlobal = false;
+        for (JIPipeNodeTemplate t : selected) {
+            switch (scopeOf(t)) {
+                case System -> anySystem = true;
+                case Downloaded -> anyDownloaded = true;
+                case Global -> anyGlobal = true;
+                case Project -> anyProject = true;
+            }
+            if (canEdit(t)) {
+                anyEditable = true;
+            }
+        }
+
+        if (anyEditable && selected.size() == 1) {
+            menu.add(UIUtils.createMenuItem("Edit", "Edit this template", JIPipe.RESOURCES.getIcon16("actions/document-edit.png"),
+                    () -> editTemplate(selected.get(0), scopeOf(selected.get(0)))));
+        }
+        if (anySystem || anyDownloaded || anyProject) {
+            // The escape hatch: a bundled pattern / a download / a project
+            // template becomes a local (editable) version in the user's own
+            // templates. (Publishing it back is a future feature.)
+            menu.add(UIUtils.createMenuItem(anySystem || anyDownloaded ? "Copy to Your templates" : "Copy to Global",
+                    "Copy into the user's own templates", JIPipe.RESOURCES.getIcon16("actions/edit-copy.png"),
+                    () -> copySelected(selected, TemplateScope.Global)));
+        }
+        if (project != null && (anyGlobal || anyDownloaded)) {
+            menu.add(UIUtils.createMenuItem("Copy to Project", "Copy into the project storage", JIPipe.RESOURCES.getIcon16("actions/folder.png"),
+                    () -> copySelected(selected, TemplateScope.Project)));
+        }
+        if (!anySystem) {
+            // Deletable: user-owned templates and downloads (removing a
+            // download — re-obtainable via "Get more"). System patterns are
+            // bundled and cannot be removed.
+            menu.add(UIUtils.createMenuItem(anyDownloaded && !anyGlobal && !anyProject ? "Remove download" : "Delete",
+                    "Delete the selected template(s)", JIPipe.RESOURCES.getIcon16("actions/edit-delete.png"),
+                    () -> deleteSelected(selected)));
+        }
+        menu.addSeparator();
+        menu.add(UIUtils.createMenuItem("Export…", "Export the selected template(s) to a file", JIPipe.RESOURCES.getIcon16("actions/document-export.png"),
+                () -> exportSelected(selected)));
+        menu.add(UIUtils.createMenuItem("Import…", "Import templates from a file into the user's own templates", JIPipe.RESOURCES.getIcon16("actions/document-import.png"),
+                this::importTemplates));
+        return menu;
+    }
+
+    private boolean canEdit(JIPipeNodeTemplate template) {
+        // System (bundled) and Downloaded (repository artifact) templates are
+        // read-only: the escape hatch for both is a copy into the user's own
+        // templates.
+        return !template.isFromExtension()
+                && !JIPipe.getNodeTemplates().isDownloadedTemplate(template);
+    }
+
+    /**
+     * The scope a template belongs to, from the live store (mirrors the
+     * database builder's {@code determineTemplateScope}): plugin templates are
+     * System, global-store templates are Downloaded (repository source) or
+     * Global (user-authored), everything else is Project. Deriving from the
+     * store (rather than "which section listed it") keeps the context menu
+     * correct for a template that just changed scope mid-session.
+     */
+    private TemplateScope scopeOf(JIPipeNodeTemplate template) {
+        if (JIPipe.getNodeTemplates().isPluginTemplate(template)) {
+            return TemplateScope.System;
+        }
+        if (JIPipe.getNodeTemplates().isInGlobal(template)) {
+            return JIPipe.getNodeTemplates().isDownloadedTemplate(template) ? TemplateScope.Downloaded : TemplateScope.Global;
+        }
+        return TemplateScope.Project;
+    }
+
+    private void editTemplate(JIPipeNodeTemplate template, TemplateScope scope) {
+        // Edit on a COPY (exactly as the old template box's edit action did);
+        // because taxonomyFunction is a registered @JIPipeParameter, the form
+        // shows the taxonomy-function picker automatically.
+        JIPipeNodeTemplate copy = new JIPipeNodeTemplate(template);
+        if (JIPipeDesktopParameterFormPanel.showDialog(workbench, copy,
+                new MarkdownText("# Node templates\n\nUse this user interface to modify node templates."),
+                "Edit template",
+                JIPipeDesktopParameterFormPanel.WITH_SCROLLING
+                        | JIPipeDesktopParameterFormPanel.WITH_SEARCH_BAR
+                        | JIPipeDesktopParameterFormPanel.WITH_DOCUMENTATION)) {
+            controller.edit(project, scope, template, copy);
+        }
+    }
+
+    private void copySelected(List<JIPipeNodeTemplate> selected, TemplateScope target) {
+        if (project == null && target == TemplateScope.Project) {
+            return;
+        }
+        int n = selected.size();
+        String targetName = target == TemplateScope.Global ? "global" : "project";
+        if (JOptionPane.showConfirmDialog(this, "Copy " + n + " template(s) into the " + targetName + " storage?",
+                "Copy to " + targetName + " storage", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) != JOptionPane.YES_OPTION) {
+            return;
+        }
+        for (JIPipeNodeTemplate t : ImmutableList.copyOf(selected)) {
+            controller.copyTo(project, scopeOf(t), target, t);
+        }
+    }
+
+    private void deleteSelected(List<JIPipeNodeTemplate> selected) {
+        int n = selected.size();
+        if (JOptionPane.showConfirmDialog(this, "Delete " + n + " template(s)?",
+                "Delete templates", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) != JOptionPane.YES_OPTION) {
+            return;
+        }
+        for (JIPipeNodeTemplate t : ImmutableList.copyOf(selected)) {
+            controller.delete(project, scopeOf(t), t);
+        }
+    }
+
+    private void exportSelected(List<JIPipeNodeTemplate> selected) {
+        if (selected.isEmpty()) {
+            return;
+        }
+        Path path = JIPipeDesktop.saveFile(this, workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects,
+                "Export templates", HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_JSON);
+        if (path != null) {
+            if (!controller.exportTemplates(project, scopeOf(selected.get(0)), selected, path)) {
+                UIUtils.showErrorDialog(workbench, this, new IOException("Could not write template file " + path));
+            }
+        }
+    }
+
+    private void importTemplates() {
+        Path path = JIPipeDesktop.openFile(this, workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects,
+                "Import templates", HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_JSON);
+        if (path != null) {
+            List<JIPipeNodeTemplate> imported = controller.importTemplates(project, TemplateScope.Global, path);
+            if (imported.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "No templates were imported from " + path + ".", "Import", JOptionPane.INFORMATION_MESSAGE);
+            }
+        }
+    }
+
+    private void reloadSections() {
+        for (TemplateSection section : sections) {
+            section.reload();
+        }
+    }
+
+    // ------------------------------------------------------------------
+    // Refresh + test accessors
+    // ------------------------------------------------------------------
+
+    @Override
+    public void onJIPipeNodeTemplatesRefreshed(NodeTemplatesRefreshedEvent event) {
+        if (isDisplayable()) {
+            SwingUtilities.invokeLater(this::reloadSections);
+        }
+    }
+
+    List<JIPipeNodeTemplate> sectionTemplatesForTest(String title) {
+        for (TemplateSection section : sections) {
+            if (section.title.equals(title)) {
+                return section.templates();
+            }
+        }
+        throw new IllegalArgumentException("no section: " + title);
+    }
+
+    // ------------------------------------------------------------------
+    // Test accessors (headless UI tests; no production callers)
+    // ------------------------------------------------------------------
+
+    /**
+     * The context-menu item labels for the given selection (test access).
+     */
+    List<String> templateMenuLabelsForTest(List<JIPipeNodeTemplate> selected) {
+        JPopupMenu menu = buildTemplateMenu(selected);
+        if (menu == null) {
+            return List.of();
+        }
+        List<String> labels = new ArrayList<>();
+        for (Component c : menu.getComponents()) {
+            if (c instanceof JMenuItem item) {
+                labels.add(item.getText());
+            }
+        }
+        return labels;
+    }
+
     private class TemplateSection {
         private final String title;
         private final TemplateScope scope;
         private final boolean expanded;
         private final Icon icon;
         private final java.util.function.Supplier<JComponent> headerExtra;
-        private JIPipeDesktopFormPanel formPanel;
-        private JIPipeDesktopFormPanel.GroupHeaderPanel header;
         private final JList<JIPipeNodeTemplate> list;
         private final CardRenderer cardRenderer = new CardRenderer();
+        private JIPipeDesktopFormPanel formPanel;
+        private JIPipeDesktopFormPanel.GroupHeaderPanel header;
 
         TemplateSection(String title, TemplateScope scope, Icon icon, boolean expanded) {
             this(title, scope, icon, expanded, null);
@@ -473,10 +674,10 @@ public class TemplateManagementDialog extends JFrame implements NodeTemplatesRef
             listHost.setVisible(expanded);
 
             CustomStateLessToggleButton collapseButton = new CustomStateLessToggleButton("",
-                JIPipe.RESOURCES.getIcon16("actions/caret-right.png"),
-                "",
-                JIPipe.RESOURCES.getIcon16("actions/caret-down.png"),
-                expanded);
+                    JIPipe.RESOURCES.getIcon16("actions/caret-right.png"),
+                    "",
+                    JIPipe.RESOURCES.getIcon16("actions/caret-down.png"),
+                    expanded);
             UIUtils.makeButtonFlat25x25(collapseButton);
             collapseButton.setOpaque(false); // no toggled/pressed background (item 10)
             collapseButton.setFocusPainted(false);
@@ -505,7 +706,9 @@ public class TemplateManagementDialog extends JFrame implements NodeTemplatesRef
             formPanel.addWideToForm(listHost);
         }
 
-        /** (Re)loads this section's card list from the store. */
+        /**
+         * (Re)loads this section's card list from the store.
+         */
         void reload() {
             DefaultListModel<JIPipeNodeTemplate> model = (DefaultListModel<JIPipeNodeTemplate>) list.getModel();
             model.removeAllElements();
@@ -514,7 +717,9 @@ public class TemplateManagementDialog extends JFrame implements NodeTemplatesRef
             }
         }
 
-        /** The templates currently in this section's list (test accessor support). */
+        /**
+         * The templates currently in this section's list (test accessor support).
+         */
         List<JIPipeNodeTemplate> templates() {
             DefaultListModel<JIPipeNodeTemplate> model = (DefaultListModel<JIPipeNodeTemplate>) list.getModel();
             List<JIPipeNodeTemplate> result = new ArrayList<>();
@@ -523,210 +728,6 @@ public class TemplateManagementDialog extends JFrame implements NodeTemplatesRef
             }
             return result;
         }
-    }
-
-    // ------------------------------------------------------------------
-    // Selection + context menu (delegating to the controller)
-    // ------------------------------------------------------------------
-
-    private void showTemplateMenu(MouseEvent e, JList<JIPipeNodeTemplate> list) {
-        List<JIPipeNodeTemplate> selected = list.getSelectedValuesList();
-        JPopupMenu menu = buildTemplateMenu(selected);
-        if (menu != null) {
-            menu.show(list, e.getX(), e.getY());
-        }
-    }
-
-    /**
-     * The context menu for a set of selected templates (item 6). Items are
-     * included only when applicable to the (possibly multi) selection — this
-     * is the bulk right-click operation. Returns {@code null} when there is no
-     * actionable selection.
-     */
-    private JPopupMenu buildTemplateMenu(List<JIPipeNodeTemplate> selected) {
-        if (selected.isEmpty()) {
-            return null;
-        }
-        JPopupMenu menu = new JPopupMenu();
-        boolean anySystem = false, anyDownloaded = false, anyEditable = false, anyProject = false, anyGlobal = false;
-        for (JIPipeNodeTemplate t : selected) {
-            switch (scopeOf(t)) {
-                case System -> anySystem = true;
-                case Downloaded -> anyDownloaded = true;
-                case Global -> anyGlobal = true;
-                case Project -> anyProject = true;
-            }
-            if (canEdit(t)) {
-                anyEditable = true;
-            }
-        }
-
-        if (anyEditable && selected.size() == 1) {
-            menu.add(UIUtils.createMenuItem("Edit", "Edit this template", JIPipe.RESOURCES.getIcon16("actions/document-edit.png"),
-                () -> editTemplate(selected.get(0), scopeOf(selected.get(0)))));
-        }
-        if (anySystem || anyDownloaded || anyProject) {
-            // The escape hatch: a bundled pattern / a download / a project
-            // template becomes a local (editable) version in the user's own
-            // templates. (Publishing it back is a future feature.)
-            menu.add(UIUtils.createMenuItem(anySystem || anyDownloaded ? "Copy to Your templates" : "Copy to Global",
-                "Copy into the user's own templates", JIPipe.RESOURCES.getIcon16("actions/edit-copy.png"),
-                () -> copySelected(selected, TemplateScope.Global)));
-        }
-        if (project != null && (anyGlobal || anyDownloaded)) {
-            menu.add(UIUtils.createMenuItem("Copy to Project", "Copy into the project storage", JIPipe.RESOURCES.getIcon16("actions/folder.png"),
-                () -> copySelected(selected, TemplateScope.Project)));
-        }
-        if (!anySystem) {
-            // Deletable: user-owned templates and downloads (removing a
-            // download — re-obtainable via "Get more"). System patterns are
-            // bundled and cannot be removed.
-            menu.add(UIUtils.createMenuItem(anyDownloaded && !anyGlobal && !anyProject ? "Remove download" : "Delete",
-                "Delete the selected template(s)", JIPipe.RESOURCES.getIcon16("actions/edit-delete.png"),
-                () -> deleteSelected(selected)));
-        }
-        menu.addSeparator();
-        menu.add(UIUtils.createMenuItem("Export…", "Export the selected template(s) to a file", JIPipe.RESOURCES.getIcon16("actions/document-export.png"),
-            () -> exportSelected(selected)));
-        menu.add(UIUtils.createMenuItem("Import…", "Import templates from a file into the user's own templates", JIPipe.RESOURCES.getIcon16("actions/document-import.png"),
-            this::importTemplates));
-        return menu;
-    }
-
-    private boolean canEdit(JIPipeNodeTemplate template) {
-        // System (bundled) and Downloaded (repository artifact) templates are
-        // read-only: the escape hatch for both is a copy into the user's own
-        // templates.
-        return !template.isFromExtension()
-            && !JIPipe.getNodeTemplates().isDownloadedTemplate(template);
-    }
-
-    /**
-     * The scope a template belongs to, from the live store (mirrors the
-     * database builder's {@code determineTemplateScope}): plugin templates are
-     * System, global-store templates are Downloaded (repository source) or
-     * Global (user-authored), everything else is Project. Deriving from the
-     * store (rather than "which section listed it") keeps the context menu
-     * correct for a template that just changed scope mid-session.
-     */
-    private TemplateScope scopeOf(JIPipeNodeTemplate template) {
-        if (JIPipe.getNodeTemplates().isPluginTemplate(template)) {
-            return TemplateScope.System;
-        }
-        if (JIPipe.getNodeTemplates().isInGlobal(template)) {
-            return JIPipe.getNodeTemplates().isDownloadedTemplate(template) ? TemplateScope.Downloaded : TemplateScope.Global;
-        }
-        return TemplateScope.Project;
-    }
-
-    private void editTemplate(JIPipeNodeTemplate template, TemplateScope scope) {
-        // Edit on a COPY (exactly as the old template box's edit action did);
-        // because taxonomyFunction is a registered @JIPipeParameter, the form
-        // shows the taxonomy-function picker automatically.
-        JIPipeNodeTemplate copy = new JIPipeNodeTemplate(template);
-        if (JIPipeDesktopParameterFormPanel.showDialog(workbench, copy,
-                new MarkdownText("# Node templates\n\nUse this user interface to modify node templates."),
-                "Edit template",
-                JIPipeDesktopParameterFormPanel.WITH_SCROLLING
-                    | JIPipeDesktopParameterFormPanel.WITH_SEARCH_BAR
-                    | JIPipeDesktopParameterFormPanel.WITH_DOCUMENTATION)) {
-            controller.edit(project, scope, template, copy);
-        }
-    }
-
-    private void copySelected(List<JIPipeNodeTemplate> selected, TemplateScope target) {
-        if (project == null && target == TemplateScope.Project) {
-            return;
-        }
-        int n = selected.size();
-        String targetName = target == TemplateScope.Global ? "global" : "project";
-        if (JOptionPane.showConfirmDialog(this, "Copy " + n + " template(s) into the " + targetName + " storage?",
-                "Copy to " + targetName + " storage", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) != JOptionPane.YES_OPTION) {
-            return;
-        }
-        for (JIPipeNodeTemplate t : ImmutableList.copyOf(selected)) {
-            controller.copyTo(project, scopeOf(t), target, t);
-        }
-    }
-
-    private void deleteSelected(List<JIPipeNodeTemplate> selected) {
-        int n = selected.size();
-        if (JOptionPane.showConfirmDialog(this, "Delete " + n + " template(s)?",
-                "Delete templates", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) != JOptionPane.YES_OPTION) {
-            return;
-        }
-        for (JIPipeNodeTemplate t : ImmutableList.copyOf(selected)) {
-            controller.delete(project, scopeOf(t), t);
-        }
-    }
-
-    private void exportSelected(List<JIPipeNodeTemplate> selected) {
-        if (selected.isEmpty()) {
-            return;
-        }
-        Path path = JIPipeDesktop.saveFile(this, workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects,
-            "Export templates", HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_JSON);
-        if (path != null) {
-            if (!controller.exportTemplates(project, scopeOf(selected.get(0)), selected, path)) {
-                UIUtils.showErrorDialog(workbench, this, new IOException("Could not write template file " + path));
-            }
-        }
-    }
-
-    private void importTemplates() {
-        Path path = JIPipeDesktop.openFile(this, workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects,
-            "Import templates", HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_JSON);
-        if (path != null) {
-            List<JIPipeNodeTemplate> imported = controller.importTemplates(project, TemplateScope.Global, path);
-            if (imported.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "No templates were imported from " + path + ".", "Import", JOptionPane.INFORMATION_MESSAGE);
-            }
-        }
-    }
-
-    // ------------------------------------------------------------------
-    // Refresh + test accessors
-    // ------------------------------------------------------------------
-
-    private void reloadSections() {
-        for (TemplateSection section : sections) {
-            section.reload();
-        }
-    }
-
-    @Override
-    public void onJIPipeNodeTemplatesRefreshed(NodeTemplatesRefreshedEvent event) {
-        if (isDisplayable()) {
-            SwingUtilities.invokeLater(this::reloadSections);
-        }
-    }
-
-    // ------------------------------------------------------------------
-    // Test accessors (headless UI tests; no production callers)
-    // ------------------------------------------------------------------
-
-    List<JIPipeNodeTemplate> sectionTemplatesForTest(String title) {
-        for (TemplateSection section : sections) {
-            if (section.title.equals(title)) {
-                return section.templates();
-            }
-        }
-        throw new IllegalArgumentException("no section: " + title);
-    }
-
-    /** The context-menu item labels for the given selection (test access). */
-    List<String> templateMenuLabelsForTest(List<JIPipeNodeTemplate> selected) {
-        JPopupMenu menu = buildTemplateMenu(selected);
-        if (menu == null) {
-            return List.of();
-        }
-        List<String> labels = new ArrayList<>();
-        for (Component c : menu.getComponents()) {
-            if (c instanceof JMenuItem item) {
-                labels.add(item.getText());
-            }
-        }
-        return labels;
     }
 
     // ------------------------------------------------------------------

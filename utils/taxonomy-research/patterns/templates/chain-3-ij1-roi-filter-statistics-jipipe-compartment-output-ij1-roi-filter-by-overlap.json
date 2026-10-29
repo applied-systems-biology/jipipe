@@ -1,1 +1,33 @@
-{"nodes":{"n0":{"jipipe:node-info-id":"ij1-roi-filter-statistics","jipipe:graph-compartment":"bbf124be-5129-5349-8d11-f4f1f45bb3a6","jipipe:node:name":"Filter ROI by statistics"},"n1":{"jipipe:node-info-id":"jipipe:compartment-output","jipipe:graph-compartment":"bbf124be-5129-5349-8d11-f4f1f45bb3a6","jipipe:node:name":"Output"},"n2":{"jipipe:node-info-id":"ij1-roi-filter-by-overlap","jipipe:graph-compartment":"bbf124be-5129-5349-8d11-f4f1f45bb3a6","jipipe:node:name":"Filter ROI by overlap"}},"edges":[{"source-node":"n0","source-slot":"Output","target-node":"n1","target-slot":"ROIs"},{"source-node":"n1","source-slot":"ROIs","target-node":"n2","target-slot":"ROI 2"}]}
+{
+  "nodes": {
+    "n0": {
+      "jipipe:node-info-id": "ij1-roi-filter-statistics",
+      "jipipe:graph-compartment": "bbf124be-5129-5349-8d11-f4f1f45bb3a6",
+      "jipipe:node:name": "Filter ROI by statistics"
+    },
+    "n1": {
+      "jipipe:node-info-id": "jipipe:compartment-output",
+      "jipipe:graph-compartment": "bbf124be-5129-5349-8d11-f4f1f45bb3a6",
+      "jipipe:node:name": "Output"
+    },
+    "n2": {
+      "jipipe:node-info-id": "ij1-roi-filter-by-overlap",
+      "jipipe:graph-compartment": "bbf124be-5129-5349-8d11-f4f1f45bb3a6",
+      "jipipe:node:name": "Filter ROI by overlap"
+    }
+  },
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Output",
+      "target-node": "n1",
+      "target-slot": "ROIs"
+    },
+    {
+      "source-node": "n1",
+      "source-slot": "ROIs",
+      "target-node": "n2",
+      "target-slot": "ROI 2"
+    }
+  ]
+}

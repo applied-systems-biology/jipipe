@@ -1,8 +1,7 @@
 # DAG-Aware Pattern Mining — Plan v2 (scheduled follow-up, #1324 / #1333)
 
-Status: **plan only — not implemented.** Supersedes the v1 extraction
-(induced-subgraph enumeration) — the extraction problem is better framed as
-**harvesting the groupings humans already authored**, which the user mapped
+Status: **plan only — not implemented.** Supersedes the v1 extraction (induced-subgraph enumeration) — the extraction
+problem is better framed as **harvesting the groupings humans already authored**, which the user mapped
 to well-known human tasks:
 
 1. sections drawn with canvas notes ("these nodes fulfill a function"),
@@ -31,14 +30,14 @@ The corpus is `/data/JIPipe`: **541 projects** (535 with named compartments,
 148 with at least one authored grouping signal). Each signal is mechanically
 harvestable — no structure discovery needed:
 
-| # | Signal | Storage | Membership | Measured |
-|---|--------|---------|------------|----------|
-| 1 | **Canvas-note sections** (`graph-annotation-text-box`, + `graph-annotation-group-box`) | `text-title` + `grid-width/height` + `location/x,y` (grid rect) | **geometric**: nodes whose grid coords fall inside the rect | 1000 notes + 105 boxes; verified on the flagship: 4 titled sections cover 13/13 nodes, "Loading raw images and ROIs" = 8-node DAG with 8 intra edges |
-| 2 | **Group nodes** (`node-group`) | `jipipe:node:name` + `contents: {nodes, edges}` | **explicit** (embedded subgraph) | 215 (all with contents; 200 in the 3–12 node band); names e.g. "READ: folders, subfolders and files" |
-| 3 | **Named compartments** (`jipipe:project-compartment` in `compartments["compartment-graph"]`) | `jipipe:node:name` | **shared UUID**: pipeline nodes whose `jipipe:graph-compartment` equals the compartment node's key | 535 projects; 480 compartments in the 3–12 band; names e.g. "Analysis", "Main" |
-| 3b | **Geometric clusters (unannotated)** — the user's addition: related nodes are placed together, distinct from other parts, even without a canvas note | node grid coordinates (`location/<comp>/x,y`) | **single-linkage clustering with an automatic gap cut**: the largest ratio between consecutive merge distances is the natural separation ("distinct from other parts"); fixed-epsilon DBSCAN was rejected as eps-sensitive (jaccard 0.67–1.0 across eps 4–12) | measured over the corpus: 41/78 checked projects (6–60 nodes) show clean auto-cutable clusters (ratios 1.3–2.5); **18 are unannotated** — e.g. `cellpose4-training.jip` (no notes) auto-cuts into its real blocks (9-node image/ROI loading + 5-node label loading + the 3.x/4.x training pairs); on the annotated flagship the auto-cut agrees with the human sections (jaccard 0.67–1.0) |
-| 4 | **Named nodes** (`jipipe:node:name` ≠ the type's default) | per node | n/a (naming signal, feeds the namer) | **amended 2026-10-19** (audit: `utils/taxonomy-research/signal-4-stale-name-audit.md`): "name ≠ current registry display name" is NOT the correct default test — `jipipe:node:name` is the serialized name at save time, so a node *type* the devs renamed carries its stale old default across the corpus (42.7% of all corpus nodes ≠ current name; 29% of the original nameEvidence field, 251/874, was exactly that; 47 clusters 100% noise). Correct detection: a label is evidence only if it deviates from **both** the current registry name **and** the type's dominant corpus label (its de-facto default — stale for renamed types). Fixed in (B) `collect_name_evidence`; nameEvidence regenerated (874 → 472 entries, clusters otherwise byte-identical). Signal 4 never produced candidates (signals 1–3b only), and the (C) namer never read nameEvidence (registry names + titles), so shipped 265+154 are unaffected |
-| 5 | **Comment nodes** (`jipipe:comment`) | `jipipe:node:description` (HTML) | adjacency (they attach to a node via the Comment slot) | 385; same class as 4 — text + attachment, not grouping |
+| #  | Signal                                                                                                                                               | Storage                                                         | Membership                                                                                                                                                                                                                                                    | Measured                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+|----|------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 1  | **Canvas-note sections** (`graph-annotation-text-box`, + `graph-annotation-group-box`)                                                               | `text-title` + `grid-width/height` + `location/x,y` (grid rect) | **geometric**: nodes whose grid coords fall inside the rect                                                                                                                                                                                                   | 1000 notes + 105 boxes; verified on the flagship: 4 titled sections cover 13/13 nodes, "Loading raw images and ROIs" = 8-node DAG with 8 intra edges                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| 2  | **Group nodes** (`node-group`)                                                                                                                       | `jipipe:node:name` + `contents: {nodes, edges}`                 | **explicit** (embedded subgraph)                                                                                                                                                                                                                              | 215 (all with contents; 200 in the 3–12 node band); names e.g. "READ: folders, subfolders and files"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| 3  | **Named compartments** (`jipipe:project-compartment` in `compartments["compartment-graph"]`)                                                         | `jipipe:node:name`                                              | **shared UUID**: pipeline nodes whose `jipipe:graph-compartment` equals the compartment node's key                                                                                                                                                            | 535 projects; 480 compartments in the 3–12 band; names e.g. "Analysis", "Main"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| 3b | **Geometric clusters (unannotated)** — the user's addition: related nodes are placed together, distinct from other parts, even without a canvas note | node grid coordinates (`location/<comp>/x,y`)                   | **single-linkage clustering with an automatic gap cut**: the largest ratio between consecutive merge distances is the natural separation ("distinct from other parts"); fixed-epsilon DBSCAN was rejected as eps-sensitive (jaccard 0.67–1.0 across eps 4–12) | measured over the corpus: 41/78 checked projects (6–60 nodes) show clean auto-cutable clusters (ratios 1.3–2.5); **18 are unannotated** — e.g. `cellpose4-training.jip` (no notes) auto-cuts into its real blocks (9-node image/ROI loading + 5-node label loading + the 3.x/4.x training pairs); on the annotated flagship the auto-cut agrees with the human sections (jaccard 0.67–1.0)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| 4  | **Named nodes** (`jipipe:node:name` ≠ the type's default)                                                                                            | per node                                                        | n/a (naming signal, feeds the namer)                                                                                                                                                                                                                          | **amended 2026-10-19** (audit: `utils/taxonomy-research/signal-4-stale-name-audit.md`): "name ≠ current registry display name" is NOT the correct default test — `jipipe:node:name` is the serialized name at save time, so a node *type* the devs renamed carries its stale old default across the corpus (42.7% of all corpus nodes ≠ current name; 29% of the original nameEvidence field, 251/874, was exactly that; 47 clusters 100% noise). Correct detection: a label is evidence only if it deviates from **both** the current registry name **and** the type's dominant corpus label (its de-facto default — stale for renamed types). Fixed in (B) `collect_name_evidence`; nameEvidence regenerated (874 → 472 entries, clusters otherwise byte-identical). Signal 4 never produced candidates (signals 1–3b only), and the (C) namer never read nameEvidence (registry names + titles), so shipped 265+154 are unaffected |
+| 5  | **Comment nodes** (`jipipe:comment`)                                                                                                                 | `jipipe:node:description` (HTML)                                | adjacency (they attach to a node via the Comment slot)                                                                                                                                                                                                        | 385; same class as 4 — text + attachment, not grouping                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 
 Signals 1–3b yield the candidate **patterns** (1–3 with a human-authored
 name; 3b without — see the harvest stage);
@@ -49,6 +48,7 @@ candidates.
 
 Reuses the existing System-template machinery end to end (generator +
 `system-templates.json` sidecar + `TaxonomyPlugin.registerSystemTemplates()`
+
 + the live guards from (69)); shipping stays mechanical.
 
 ### 3.1 Harvest (deterministic, no AI) — `utils/mine-dag-patterns.py`
@@ -71,8 +71,8 @@ For each `.jip` in the corpus (same exclusions: tmp dirs, Fiji, docs):
   each auto-cut cluster (single-linkage + largest-merge-distance-ratio cut,
   capped at 8 clusters; clusters of 3–12 real nodes). No title — these
   candidates carry NO authored name, so they route differently: the merge
-  stage (3.2) first tries to match them against a titled candidate
-  (same-cluster ⇒ the title transfers); unmatched ones rely entirely on the
+  stage (3.2) first tries to match them against a titled candidate (same-cluster ⇒ the title transfers); unmatched ones
+  rely entirely on the
   JEV Q3 namer, and `none` ⇒ reject (no name, no ship — the §1 rule). The
   annotated and unannotated variants interact: where notes exist, the note
   rectangles are the ground truth and geometric clustering only fills the
@@ -83,8 +83,8 @@ For each `.jip` in the corpus (same exclusions: tmp dirs, Fiji, docs):
   containing a compartment sink, exclude pure chains already shipped (de-dup
   against the 64 by the functional-content signature from (69)).
 - Output: `utils/taxonomy-research/dag-candidates.json` — candidate graph +
-  signal provenance (which signal, source project, title) + support counts
-  (a candidate harvested from N projects is itself a cross-project pattern).
+  signal provenance (which signal, source project, title) + support counts (a candidate harvested from N projects is
+  itself a cross-project pattern).
 
 ### 3.2 Merge/dedup + name evidence (Qwen embedding, `asb-llm.hki-jena.de`)
 
@@ -123,8 +123,7 @@ decisions:
   model picks the best general name or admits none.
 
 State = the candidate's canonical text form (title evidence + node names +
-wiring). Answers recorded in the research artifact (audit trail), like the
-(69) generator's guards.
+wiring). Answers recorded in the research artifact (audit trail), like the (69) generator's guards.
 
 ### 3.4 Ship
 
@@ -181,12 +180,12 @@ template's do. Contract for the harvest + generator:
 - **Registry oracle: the FULL booted launcher, not a code dump (ruled
   2026-10-19).** The (D) guard `everyPatternGraphDeserializes` resolves node
   ids against the *running* launcher's registry — and cLij2/clijx kernel
-  nodes register **dynamically** by scanning the cLij jars actually loaded
-  (`CLIJPlugin.registerAlgorithms` → `service.getPluginsOfType(CLIJMacroPlugin.class)`,
+  nodes register **dynamically** by scanning the cLij jars actually loaded (`CLIJPlugin.registerAlgorithms` →
+  `service.getPluginsOfType(CLIJMacroPlugin.class)`,
   id = `"clij:" + pluginInfo.getIdentifier()`). A code/test-classpath dump
   cannot see them: the repo poms pin cLij2 2.3.0.6 (363 kernels) while the
-  6.0.0 prepackaged launcher ships cLij2 2.5.3.5 + clijx 0.32.2.0
-  (561 more kernel nodes). The first (D) blocker computed against the
+  6.0.0 prepackaged launcher ships cLij2 2.5.3.5 + clijx 0.32.2.0 (561 more kernel nodes). The first (D) blocker
+  computed against the
   code-dump `registry.json` (1510 nodes) wrongly listed 12 "exclude"
   patterns; the full-launcher re-dump (2072 nodes, clean superset, 0
   removed) resolves 9 of them, leaving **3 renamable + 3 exclude = 6**
@@ -212,16 +211,16 @@ template's do. Contract for the harvest + generator:
 - **(B)** embedding merge stage (Qwen) + name-evidence collection; commit
   clusters + threshold note.
 - **(C)** JEV gate/name/classify (imajev); commit survivors + Q1–Q3 answers.
-- **(D)** generator extension + sidecar + test re-pin + manual review.
-  **DONE (2026-10-19):** `utils/generate-dag-system-template-metadata.py`
+- **(D)** generator extension + sidecar + test re-pin + manual review. **DONE (2026-10-19):**
+  `utils/generate-dag-system-template-metadata.py`
   ships the 262 mined (3 stale-id remaps to verified successors, 3 excludes)
-  + 160 derived = 422 DAG patterns as bundled `patterns/dag-*.json` resources
-  + sidecar entries (on top of the 64 linear → 486 System templates).
-  `SystemPatternTemplatesTest` re-pinned to 486; its deserialization guard
-  re-keyed to (name, resolvable-node-ids) because the Maven test classpath
-  boots cLij2 2.3.0.6 while the dist bundles 2.5.3.5 (10 cLij2 patterns load
-  short in the test JVM only; the authoritative stale-id oracle is the
-  generator's 2072 full-launcher check, per the (103) ruling).
+    + 160 derived = 422 DAG patterns as bundled `patterns/dag-*.json` resources
+    + sidecar entries (on top of the 64 linear → 486 System templates).
+      `SystemPatternTemplatesTest` re-pinned to 486; its deserialization guard
+      re-keyed to (name, resolvable-node-ids) because the Maven test classpath
+      boots cLij2 2.3.0.6 while the dist bundles 2.5.3.5 (10 cLij2 patterns load
+      short in the test JVM only; the authoritative stale-id oracle is the
+      generator's 2072 full-launcher check, per the (103) ruling).
 
 ## 6. Non-goals (unchanged)
 
@@ -238,8 +237,8 @@ knowledgeable analyst *would* build next. Approved design (decisions in the
 ledger):
 
 - **Scope:** sweep ALL shipped patterns. **Ship as normal patterns** (no
-  user-visible derivation marker; provenance in the research artifact only).
-  **Same (D) pipeline + guards.** **Report before ship.**
+  user-visible derivation marker; provenance in the research artifact only). **Same (D) pipeline + guards.** **Report
+  before ship.**
 - **Generators:** (1) mechanical 2D↔3D twin swap (slot-signature-verified
   node twins); (2) LLM "what next" sweep per shipped pattern — grounded in a
   capability catalog (nodes consuming the pattern's outputs, exact slot names

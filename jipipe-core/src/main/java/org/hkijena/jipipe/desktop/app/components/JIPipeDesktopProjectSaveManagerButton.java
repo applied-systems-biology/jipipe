@@ -29,24 +29,28 @@ public class JIPipeDesktopProjectSaveManagerButton extends SplitButton implement
     private static final int RESULT_FLASH_MILLIS = 4000;
     private final JIPipeDesktopProjectWorkbench workbench;
     private final JIPipeAutoSaveApplicationSettings settings;
-    private LocalDateTime lastProjectSaveTime;
-    private long lastAutoSaveTime = 0;
     private final JCheckBoxMenuItem autoSaveMenuItem = new JCheckBoxMenuItem("Auto save");
     private final Timer checkTimer;
-
-    /** Whether a save is currently running (SAVING state). */
-    private boolean saving = false;
-    /** The current save stage ("writing" / "compressing" / "verifying"). */
-    private String savingStage = "";
-
-    /** Transient result-flash state (single-shot timer reverts it). */
-    private boolean flashActive = false;
-    private Icon flashIcon;
-    private String flashText;
     private final Timer flashTimer = new Timer(RESULT_FLASH_MILLIS, e -> {
         flashActive = false;
         updateStatus();
     });
+    private LocalDateTime lastProjectSaveTime;
+    private long lastAutoSaveTime = 0;
+    /**
+     * Whether a save is currently running (SAVING state).
+     */
+    private boolean saving = false;
+    /**
+     * The current save stage ("writing" / "compressing" / "verifying").
+     */
+    private String savingStage = "";
+    /**
+     * Transient result-flash state (single-shot timer reverts it).
+     */
+    private boolean flashActive = false;
+    private Icon flashIcon;
+    private String flashText;
 
     public JIPipeDesktopProjectSaveManagerButton(JIPipeDesktopProjectWorkbench workbench) {
         this.workbench = workbench;
@@ -146,8 +150,8 @@ public class JIPipeDesktopProjectSaveManagerButton extends SplitButton implement
     /**
      * Starts the transient result flash (single-shot timer reverts it).
      *
-     * @param icon  the flash icon
-     * @param text  the flash text
+     * @param icon the flash icon
+     * @param text the flash text
      */
     private void showResultFlash(Icon icon, String text) {
         flashIcon = icon;

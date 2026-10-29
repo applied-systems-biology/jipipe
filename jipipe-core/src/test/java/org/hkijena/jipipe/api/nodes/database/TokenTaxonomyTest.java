@@ -15,9 +15,9 @@ package org.hkijena.jipipe.api.nodes.database;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeMutableDependency;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeNodeTaxonomyTags;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeEmptyData;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
@@ -26,11 +26,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.database.entries.CreateNewNodeByInfoDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.infos.JIPipeJavaNodeInfo;
-import org.hkijena.jipipe.api.nodes.taxonomy.InputProfileProvider;
-import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyInputProfile;
-import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension;
-import org.hkijena.jipipe.api.nodes.taxonomy.NoFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.*;
 import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.Cellpose4Framework;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.ImagesFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.RoisFunction;
@@ -86,7 +82,7 @@ class TokenTaxonomyTest {
     private static final String UNCONVERTED_ID = "tokentax:unconverted-legacy";
 
     private static final JIPipeMutableDependency TEST_DEPENDENCY =
-        new JIPipeMutableDependency("token-taxonomy-test", "1.0.0", "token-taxonomy-test");
+            new JIPipeMutableDependency("token-taxonomy-test", "1.0.0", "token-taxonomy-test");
 
     /**
      * A test input-profile provider mapping the stub's
@@ -96,12 +92,81 @@ class TokenTaxonomyTest {
      * set (filter-only facet).
      */
     private static final InputProfileProvider TEST_PROFILE_PROVIDER = dataClass ->
-        JIPipeEmptyData.class.equals(dataClass) ? JIPipeNodeTaxonomyInputProfile.PLANE_2D
-            : JIPipeNodeTaxonomyInputProfile.NA;
+            JIPipeEmptyData.class.equals(dataClass) ? JIPipeNodeTaxonomyInputProfile.PLANE_2D
+                    : JIPipeNodeTaxonomyInputProfile.NA;
 
     @BeforeAll
     static void ensureJIPipe() {
         JIPipe.ensureInstance();
+    }
+
+    private static JIPipeNodeInfo registerNode(Class<? extends JIPipeGraphNode> nodeClass, String id) {
+        JIPipeNodesServiceComponent nodes = JIPipe.getNodes();
+        if (nodes.hasNodeInfoWithId(id)) {
+            nodes.unregister(id);
+        }
+        JIPipeNodeInfo info = new JIPipeJavaNodeInfo(id, nodeClass);
+        nodes.register(info, TEST_DEPENDENCY);
+        // register() runs the registration pipeline and the idempotent
+        // taxonomy enrichment, which populates getMergedTags() from the
+        // node-level tags plus the tags of every function on the node's
+        // paths (leaf → root, primary and secondary).
+        return nodes.getRegisteredNodeInfos().get(id);
+    }
+
+    // ------------------------------------------------------------------
+    // Test cases
+    // ------------------------------------------------------------------
+
+    /**
+     * Every word that the converted test node's taxonomy would contribute
+     * (function-name words, function tags, framework words, node-level
+     * tag), lowercased — the set the unconverted node must NOT carry.
+     */
+    private static Set<String> taxonomyWords() {
+        Set<String> words = new HashSet<>();
+        for (JIPipeNodeTaxonomyFunction function : new JIPipeNodeTaxonomyFunction[]{
+                new SegmentationCellBasedFunction(), new SegmentationFunction(), new ImagesFunction(),
+                new RoiMeasurementsFunction(), new RoisFunction()}) {
+            for (String word : function.getName().toLowerCase(Locale.ROOT).split(" ")) {
+                words.add(word);
+            }
+            for (String tag : function.getTags()) {
+                words.add(tag.toLowerCase(Locale.ROOT));
+            }
+        }
+        Cellpose4Framework framework = new Cellpose4Framework();
+        for (String word : framework.getName().toLowerCase(Locale.ROOT).split(" ")) {
+            words.add(word);
+        }
+        words.add(framework.getAbbreviation().toLowerCase(Locale.ROOT));
+        words.add("cells");
+        return words;
+    }
+
+    private static Set<Integer> tokenWeights(WeightedTokens tokens, String word) {
+        Set<Integer> weights = new HashSet<>();
+        for (int i = 0; i < tokens.size(); i++) {
+            if (word.equals(tokens.getToken(i))) {
+                weights.add(tokens.getWeight(i));
+            }
+        }
+        assertFalse(weights.isEmpty(),
+                "expected the token '" + word + "' to be present, tokens=" + tokenDump(tokens));
+        return weights;
+    }
+
+    // ------------------------------------------------------------------
+    // Helpers
+    // ------------------------------------------------------------------
+
+    private static String tokenDump(WeightedTokens tokens) {
+        StringBuilder sb = new StringBuilder("[");
+        for (int i = 0; i < tokens.size(); i++) {
+            if (i > 0) sb.append(", ");
+            sb.append(tokens.getToken(i)).append('@').append(tokens.getWeight(i));
+        }
+        return sb.append("]").toString();
     }
 
     @AfterEach
@@ -114,10 +179,6 @@ class TokenTaxonomyTest {
         // taxonomy enrichment recomputes over the surviving real nodes only.
         nodes.runRegistrationTasks();
     }
-
-    // ------------------------------------------------------------------
-    // Test cases
-    // ------------------------------------------------------------------
 
     /**
      * Brief case 1: a converted node (function path
@@ -146,84 +207,84 @@ class TokenTaxonomyTest {
         assertEquals(Set.of("cells", "cell-segmentation"), info.getMergedTags());
 
         WeightedTokens tokens = new CreateNewNodeByInfoDatabaseEntry(
-            "create-node-by-info:" + CONVERTED_ID, info).getTokens();
+                "create-node-by-info:" + CONVERTED_ID, info).getTokens();
 
         // --- Legacy name tokens (existing, highest weight 8) ---
         assertEquals(Set.of(WeightedTokens.WEIGHT_NAME), tokenWeights(tokens, "segment"),
-            "name word 'segment' must be at WEIGHT_NAME: " + tokenDump(tokens));
+                "name word 'segment' must be at WEIGHT_NAME: " + tokenDump(tokens));
         assertTrue(tokenWeights(tokens, "cells").contains(WeightedTokens.WEIGHT_NAME),
-            "name word 'cells' must be at WEIGHT_NAME: " + tokenDump(tokens));
+                "name word 'cells' must be at WEIGHT_NAME: " + tokenDump(tokens));
 
         // --- Function-path gradient 6/4/2 (per word, see class Javadoc) ---
         // Primary leaf "Cell-based segmentation": 'cell-based' is unique to
         // the leaf level
         assertEquals(Set.of(WeightedTokens.WEIGHT_FUNCTION_LEAF), tokenWeights(tokens, "cell-based"),
-            "primary function leaf word must be at WEIGHT_FUNCTION_LEAF: " + tokenDump(tokens));
+                "primary function leaf word must be at WEIGHT_FUNCTION_LEAF: " + tokenDump(tokens));
         // 'segmentation' is a leaf word (6) AND the parent "Segmentation"'s
         // only word (4)
         assertEquals(Set.of(WeightedTokens.WEIGHT_FUNCTION_LEAF, WeightedTokens.WEIGHT_FUNCTION_PARENT),
-            tokenWeights(tokens, "segmentation"),
-            "'segmentation' must be at the leaf weight AND the parent weight: " + tokenDump(tokens));
+                tokenWeights(tokens, "segmentation"),
+                "'segmentation' must be at the leaf weight AND the parent weight: " + tokenDump(tokens));
         // Top "Images": 'images' is unique to the top level
         assertEquals(Set.of(WeightedTokens.WEIGHT_FUNCTION_TOP), tokenWeights(tokens, "images"),
-            "top function word must be at WEIGHT_FUNCTION_TOP: " + tokenDump(tokens));
+                "top function word must be at WEIGHT_FUNCTION_TOP: " + tokenDump(tokens));
 
         // --- Secondary function: leaf weight only, NO ancestor walk ---
         assertEquals(Set.of(WeightedTokens.WEIGHT_FUNCTION_LEAF), tokenWeights(tokens, "roi"),
-            "secondary function leaf word must be at WEIGHT_FUNCTION_LEAF: " + tokenDump(tokens));
+                "secondary function leaf word must be at WEIGHT_FUNCTION_LEAF: " + tokenDump(tokens));
         assertEquals(Set.of(WeightedTokens.WEIGHT_FUNCTION_LEAF), tokenWeights(tokens, "measurements"),
-            "secondary function leaf word must be at WEIGHT_FUNCTION_LEAF: " + tokenDump(tokens));
+                "secondary function leaf word must be at WEIGHT_FUNCTION_LEAF: " + tokenDump(tokens));
         assertFalse(tokens.contains("rois"),
-            "the secondary function's ancestor chain must NOT be walked (no double-add): "
-                + tokenDump(tokens));
+                "the secondary function's ancestor chain must NOT be walked (no double-add): "
+                        + tokenDump(tokens));
 
         // --- Framework: name 6 per word, abbreviation 5 ---
         assertEquals(Set.of(WeightedTokens.WEIGHT_FRAMEWORK), tokenWeights(tokens, "cellpose"),
-            "framework name word must be at WEIGHT_FRAMEWORK: " + tokenDump(tokens));
+                "framework name word must be at WEIGHT_FRAMEWORK: " + tokenDump(tokens));
         assertEquals(Set.of(WeightedTokens.WEIGHT_FRAMEWORK), tokenWeights(tokens, "4"),
-            "framework name word must be at WEIGHT_FRAMEWORK: " + tokenDump(tokens));
+                "framework name word must be at WEIGHT_FRAMEWORK: " + tokenDump(tokens));
         assertEquals(Set.of(WeightedTokens.WEIGHT_FRAMEWORK_ABBREV), tokenWeights(tokens, "cp4"),
-            "framework abbreviation must be at WEIGHT_FRAMEWORK_ABBREV: " + tokenDump(tokens));
+                "framework abbreviation must be at WEIGHT_FRAMEWORK_ABBREV: " + tokenDump(tokens));
 
         // --- Merged tags at WEIGHT_TAG (6) ---
         assertEquals(Set.of(WeightedTokens.WEIGHT_TAG), tokenWeights(tokens, "cell-segmentation"),
-            "function-path tag must be at WEIGHT_TAG: " + tokenDump(tokens));
+                "function-path tag must be at WEIGHT_TAG: " + tokenDump(tokens));
         assertTrue(tokenWeights(tokens, "cells").contains(WeightedTokens.WEIGHT_TAG),
-            "node-level tag 'cells' must be at WEIGHT_TAG: " + tokenDump(tokens));
+                "node-level tag 'cells' must be at WEIGHT_TAG: " + tokenDump(tokens));
 
         // --- The legacy category/menu token is gone (Task 25) ---
         // The word 'miscellaneous' was contributed only by the removed
         // legacy "category name \n menu path" WEIGHT_MENU token, so its
         // absence proves that token is no longer added.
         assertFalse(tokens.contains("miscellaneous"),
-            "the legacy category/menu token 'miscellaneous' must be absent: " + tokenDump(tokens));
+                "the legacy category/menu token 'miscellaneous' must be absent: " + tokenDump(tokens));
 
         // --- Legacy description token still present at WEIGHT_DESCRIPTION (1) ---
         assertEquals(Set.of(WeightedTokens.WEIGHT_DESCRIPTION), tokenWeights(tokens, "stub"),
-            "legacy description word must still be at WEIGHT_DESCRIPTION: " + tokenDump(tokens));
+                "legacy description word must still be at WEIGHT_DESCRIPTION: " + tokenDump(tokens));
 
         // --- Required relative order: name(8) > leaf/framework/tags(6) >
         //     abbrev(5) > parent(4) > top(2) = menu(2) > description(1) ---
         assertTrue(WeightedTokens.WEIGHT_NAME > WeightedTokens.WEIGHT_FUNCTION_LEAF
-                && WeightedTokens.WEIGHT_FUNCTION_LEAF == WeightedTokens.WEIGHT_FRAMEWORK
-                && WeightedTokens.WEIGHT_FUNCTION_LEAF == WeightedTokens.WEIGHT_TAG
-                && WeightedTokens.WEIGHT_FUNCTION_LEAF > WeightedTokens.WEIGHT_FRAMEWORK_ABBREV
-                && WeightedTokens.WEIGHT_FRAMEWORK_ABBREV > WeightedTokens.WEIGHT_FUNCTION_PARENT
-                && WeightedTokens.WEIGHT_FUNCTION_PARENT > WeightedTokens.WEIGHT_FUNCTION_TOP
-                && WeightedTokens.WEIGHT_FUNCTION_TOP == WeightedTokens.WEIGHT_MENU
-                && WeightedTokens.WEIGHT_MENU > WeightedTokens.WEIGHT_DESCRIPTION,
-            "the weight constants must preserve the brief's required relative order");
+                        && WeightedTokens.WEIGHT_FUNCTION_LEAF == WeightedTokens.WEIGHT_FRAMEWORK
+                        && WeightedTokens.WEIGHT_FUNCTION_LEAF == WeightedTokens.WEIGHT_TAG
+                        && WeightedTokens.WEIGHT_FUNCTION_LEAF > WeightedTokens.WEIGHT_FRAMEWORK_ABBREV
+                        && WeightedTokens.WEIGHT_FRAMEWORK_ABBREV > WeightedTokens.WEIGHT_FUNCTION_PARENT
+                        && WeightedTokens.WEIGHT_FUNCTION_PARENT > WeightedTokens.WEIGHT_FUNCTION_TOP
+                        && WeightedTokens.WEIGHT_FUNCTION_TOP == WeightedTokens.WEIGHT_MENU
+                        && WeightedTokens.WEIGHT_MENU > WeightedTokens.WEIGHT_DESCRIPTION,
+                "the weight constants must preserve the brief's required relative order");
 
         // --- Spatial dimensions + input profile are filter-only, NOT tokens ---
         for (String spatialToken : Set.of("spatial", "2d", "3d",
-            JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D.name().toLowerCase(Locale.ROOT),
-            JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D.name().toLowerCase(Locale.ROOT))) {
+                JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D.name().toLowerCase(Locale.ROOT),
+                JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D.name().toLowerCase(Locale.ROOT))) {
             assertFalse(tokens.contains(spatialToken),
-                "spatial dimension token '" + spatialToken + "' must not be a search token");
+                    "spatial dimension token '" + spatialToken + "' must not be a search token");
         }
         for (JIPipeNodeTaxonomyInputProfile profile : JIPipeNodeTaxonomyInputProfile.values()) {
             assertFalse(tokens.contains(profile.name().toLowerCase(Locale.ROOT)),
-                "input profile '" + profile + "' must not be a search token");
+                    "input profile '" + profile + "' must not be a search token");
         }
     }
 
@@ -246,7 +307,7 @@ class TokenTaxonomyTest {
         assertTrue(info.getMergedTags().isEmpty());
 
         WeightedTokens tokens = new CreateNewNodeByInfoDatabaseEntry(
-            "create-node-by-info:" + UNCONVERTED_ID, info).getTokens();
+                "create-node-by-info:" + UNCONVERTED_ID, info).getTokens();
 
         // Legacy tokens: name words (highest) and description words at
         // weight 1 are intact; the legacy category/menu token
@@ -254,80 +315,15 @@ class TokenTaxonomyTest {
         assertEquals(Set.of(WeightedTokens.WEIGHT_NAME), tokenWeights(tokens, "unconverted"));
         assertTrue(tokenWeights(tokens, "legacy").contains(WeightedTokens.WEIGHT_NAME));
         assertFalse(tokens.contains("miscellaneous"),
-            "the legacy category/menu token must be absent: " + tokenDump(tokens));
+                "the legacy category/menu token must be absent: " + tokenDump(tokens));
         assertEquals(Set.of(WeightedTokens.WEIGHT_DESCRIPTION), tokenWeights(tokens, "stub"));
 
         // No taxonomy word may appear
         for (String taxonomyWord : taxonomyWords()) {
             assertFalse(tokens.contains(taxonomyWord),
-                "unconverted node must not carry the taxonomy token '" + taxonomyWord + "': "
-                    + tokenDump(tokens));
+                    "unconverted node must not carry the taxonomy token '" + taxonomyWord + "': "
+                            + tokenDump(tokens));
         }
-    }
-
-    // ------------------------------------------------------------------
-    // Helpers
-    // ------------------------------------------------------------------
-
-    private static JIPipeNodeInfo registerNode(Class<? extends JIPipeGraphNode> nodeClass, String id) {
-        JIPipeNodesServiceComponent nodes = JIPipe.getNodes();
-        if (nodes.hasNodeInfoWithId(id)) {
-            nodes.unregister(id);
-        }
-        JIPipeNodeInfo info = new JIPipeJavaNodeInfo(id, nodeClass);
-        nodes.register(info, TEST_DEPENDENCY);
-        // register() runs the registration pipeline and the idempotent
-        // taxonomy enrichment, which populates getMergedTags() from the
-        // node-level tags plus the tags of every function on the node's
-        // paths (leaf → root, primary and secondary).
-        return nodes.getRegisteredNodeInfos().get(id);
-    }
-
-    /**
-     * Every word that the converted test node's taxonomy would contribute
-     * (function-name words, function tags, framework words, node-level
-     * tag), lowercased — the set the unconverted node must NOT carry.
-     */
-    private static Set<String> taxonomyWords() {
-        Set<String> words = new HashSet<>();
-        for (JIPipeNodeTaxonomyFunction function : new JIPipeNodeTaxonomyFunction[]{
-            new SegmentationCellBasedFunction(), new SegmentationFunction(), new ImagesFunction(),
-            new RoiMeasurementsFunction(), new RoisFunction()}) {
-            for (String word : function.getName().toLowerCase(Locale.ROOT).split(" ")) {
-                words.add(word);
-            }
-            for (String tag : function.getTags()) {
-                words.add(tag.toLowerCase(Locale.ROOT));
-            }
-        }
-        Cellpose4Framework framework = new Cellpose4Framework();
-        for (String word : framework.getName().toLowerCase(Locale.ROOT).split(" ")) {
-            words.add(word);
-        }
-        words.add(framework.getAbbreviation().toLowerCase(Locale.ROOT));
-        words.add("cells");
-        return words;
-    }
-
-    private static Set<Integer> tokenWeights(WeightedTokens tokens, String word) {
-        Set<Integer> weights = new HashSet<>();
-        for (int i = 0; i < tokens.size(); i++) {
-            if (word.equals(tokens.getToken(i))) {
-                weights.add(tokens.getWeight(i));
-            }
-        }
-        assertFalse(weights.isEmpty(),
-            "expected the token '" + word + "' to be present, tokens=" + tokenDump(tokens));
-        return weights;
-    }
-
-    private static String tokenDump(WeightedTokens tokens) {
-        StringBuilder sb = new StringBuilder("[");
-        for (int i = 0; i < tokens.size(); i++) {
-            if (i > 0) sb.append(", ");
-            sb.append(tokens.getToken(i)).append('@').append(tokens.getWeight(i));
-        }
-        return sb.append("]").toString();
     }
 
     // ------------------------------------------------------------------
@@ -348,11 +344,11 @@ class TokenTaxonomyTest {
      * path tag {@code cell-segmentation}).
      */
     @SetJIPipeDocumentation(name = "Segment Cells",
-        description = "A stub node for token taxonomy testing.")
+            description = "A stub node for token taxonomy testing.")
     @ConfigureJIPipeNode(
-        function = {SegmentationCellBasedFunction.class, RoiMeasurementsFunction.class},
-        framework = Cellpose4Framework.class,
-        spatialDimensions = {JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D})
+            function = {SegmentationCellBasedFunction.class, RoiMeasurementsFunction.class},
+            framework = Cellpose4Framework.class,
+            spatialDimensions = {JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D})
     @JIPipeNodeTaxonomyTags("cells")
     @AddJIPipeInputSlot(value = JIPipeEmptyData.class)
     public static class ConvertedCellSegmenterNode extends JIPipeGraphNode {
@@ -379,7 +375,7 @@ class TokenTaxonomyTest {
      * an empty {@code @ConfigureJIPipeNode}.
      */
     @SetJIPipeDocumentation(name = "Unconverted Legacy Node",
-        description = "A legacy stub node.")
+            description = "A legacy stub node.")
     @ConfigureJIPipeNode
     public static class UnconvertedLegacyNode extends JIPipeGraphNode {
         public UnconvertedLegacyNode(JIPipeNodeInfo info) {

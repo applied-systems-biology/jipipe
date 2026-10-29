@@ -19,7 +19,6 @@ import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFamily;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultEdge;
 
-import java.util.Map;
 import java.util.function.Consumer;
 
 /**
@@ -41,6 +40,15 @@ import java.util.function.Consumer;
  */
 public class FamilyRelationSource implements NodeRelationSource {
 
+    /**
+     * Strips the {@code familyId + "#"} prefix from a step id to recover the
+     * node id it refers to.
+     */
+    private static String nodeId(String familyId, String stepId) {
+        String prefix = FamilyAssembler.stepId(familyId, "");
+        return stepId.startsWith(prefix) ? stepId.substring(prefix.length()) : stepId;
+    }
+
     @Override
     public void contribute(Consumer<Edge> sink) {
         FamilyAssembler assembler = JIPipe.getNodes().getFamilyAssembler();
@@ -54,14 +62,5 @@ public class FamilyRelationSource implements NodeRelationSource {
                 sink.accept(new Edge(fromNodeId, toNodeId));
             }
         }
-    }
-
-    /**
-     * Strips the {@code familyId + "#"} prefix from a step id to recover the
-     * node id it refers to.
-     */
-    private static String nodeId(String familyId, String stepId) {
-        String prefix = FamilyAssembler.stepId(familyId, "");
-        return stepId.startsWith(prefix) ? stepId.substring(prefix.length()) : stepId;
     }
 }

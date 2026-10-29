@@ -2,15 +2,23 @@
 
 **Work item:** #1305  
 **Branch:** `1305-instrumentation-layer` (in jipipe-3, off `master`)  
-**Date:** 2026-08-13  
+**Date:** 2026-08-13
 
 ## Overview
 
-A general-purpose, extensible instrumentation layer that exposes JIPipe project operations (queries, pipeline execution, modifications, search) via a WebSocket API for external automation and diagnostic tools. The layer extracts the underlying primitives currently embedded in the AI agent system (jipipe-2, branch `1290-ai-llm-integration`) into a standalone, AI-independent API. When the AI code is later merged onto this base, the AI agent will use the instrumentation API under the hood, and AI-specific commands/events will be registered as extensions to the same operation registry and event bus.
+A general-purpose, extensible instrumentation layer that exposes JIPipe project operations (queries, pipeline execution,
+modifications, search) via a WebSocket API for external automation and diagnostic tools. The layer extracts the
+underlying primitives currently embedded in the AI agent system (jipipe-2, branch `1290-ai-llm-integration`) into a
+standalone, AI-independent API. When the AI code is later merged onto this base, the AI agent will use the
+instrumentation API under the hood, and AI-specific commands/events will be registered as extensions to the same
+operation registry and event bus.
 
 ## Motivation
 
-The AI agent system in jipipe-2 already has the capabilities needed for external automation: running pipelines, modifying projects, extracting information, and a WebSocket-based monitor (`AgentMonitorServer`). These capabilities are tightly coupled to the AI agent's internal architecture (stages, approvals, sessions, LLM functions). By extracting the underlying primitives into a standalone instrumentation layer, we:
+The AI agent system in jipipe-2 already has the capabilities needed for external automation: running pipelines,
+modifying projects, extracting information, and a WebSocket-based monitor (`AgentMonitorServer`). These capabilities are
+tightly coupled to the AI agent's internal architecture (stages, approvals, sessions, LLM functions). By extracting the
+underlying primitives into a standalone instrumentation layer, we:
 
 1. Enable external tools (test harnesses, CI scripts, diagnostic dashboards) to control JIPipe without the AI agent
 2. Provide a clean, typed Java API that the AI agent delegates to, eliminating duplicated logic
@@ -22,10 +30,14 @@ The AI agent system in jipipe-2 already has the capabilities needed for external
 The layer combines a typed Java facade with a JSON-based operation registry:
 
 - **`InstrumentationAPI`** — typed Java methods for all built-in operations. The AI agent calls these directly.
-- **`InstrumentationOperation`** — interface for JSON-in/JSON-out operations. The WebSocket server dispatches to these. Built-in operations wrap `InstrumentationAPI` methods; plugin operations are fully custom.
-- **`InstrumentationOperationRegistry`** — holds all operations (built-in + plugin-registered). The WebSocket server and Java API both use the same underlying implementation.
-- **`InstrumentationEventBus`** — publish-subscribe event system. The WebSocket server subscribes and broadcasts events to clients.
-- **`InstrumentationJobManager`** — tracks async jobs (pipeline runs) with job IDs, progress, and completion notification via events.
+- **`InstrumentationOperation`** — interface for JSON-in/JSON-out operations. The WebSocket server dispatches to these.
+  Built-in operations wrap `InstrumentationAPI` methods; plugin operations are fully custom.
+- **`InstrumentationOperationRegistry`** — holds all operations (built-in + plugin-registered). The WebSocket server and
+  Java API both use the same underlying implementation.
+- **`InstrumentationEventBus`** — publish-subscribe event system. The WebSocket server subscribes and broadcasts events
+  to clients.
+- **`InstrumentationJobManager`** — tracks async jobs (pipeline runs) with job IDs, progress, and completion
+  notification via events.
 
 ### Data flow
 
@@ -116,7 +128,8 @@ public interface AsyncInstrumentationOperation extends InstrumentationOperation 
 }
 ```
 
-Operations like `run_node`, `run_compartment`, `run_pipeline` implement this. The server detects async operations and returns a `job_started` response immediately, then broadcasts `job_progress` and `job_completed` events.
+Operations like `run_node`, `run_compartment`, `run_pipeline` implement this. The server detects async operations and
+returns a `job_started` response immediately, then broadcasts `job_progress` and `job_completed` events.
 
 ### InstrumentationContext
 
@@ -140,7 +153,9 @@ public class InstrumentationContext {
 
 ### InstrumentationAPI
 
-The API is stateless for project-scoped operations — each method takes an `InstrumentationContext` (which carries the project). Project management operations (`listProjects`, `selectProject`, `openProject`, `newProject`) are handled by the `InstrumentationServer`, which tracks open project windows. Key methods:
+The API is stateless for project-scoped operations — each method takes an `InstrumentationContext` (which carries the
+project). Project management operations (`listProjects`, `selectProject`, `openProject`, `newProject`) are handled by
+the `InstrumentationServer`, which tracks open project windows. Key methods:
 
 ```java
 // Project management
@@ -180,55 +195,56 @@ JsonNode searchNodes(InstrumentationContext ctx, String query, int limit);
 
 ## WebSocket Protocol
 
-Same JSON message pattern as the current `AgentMonitorServer`. All messages are JSON objects with a `"type"` field. Commands may include an optional `"requestId"` for response correlation.
+Same JSON message pattern as the current `AgentMonitorServer`. All messages are JSON objects with a `"type"` field.
+Commands may include an optional `"requestId"` for response correlation.
 
 ### Commands (client to server)
 
-| Command | Parameters | Response type | Async? |
-|---|---|---|---|
-| `list_projects` | — | `project_list` | No |
-| `select_project` | `projectId` | `project_changed` | No |
-| `open_project` | `path` | `project_changed` | No |
-| `new_project` | — | `project_changed` | No |
-| `query_compartments` | — | `operation_result` | No |
-| `query_graph` | `compartmentId?` | `operation_result` | No |
-| `query_node` | `nodeId` | `operation_result` | No |
-| `query_data` | `nodeId, slotName, limit?` | `operation_result` | No |
-| `run_node` | `nodeId, mode` | `job_started` | Yes |
-| `run_compartment` | `compartmentId` | `job_started` | Yes |
-| `run_pipeline` | `mode` | `job_started` | Yes |
-| `add_node` | `compartmentId, nodeTypeId, x?, y?` | `operation_result` | No |
-| `remove_node` | `nodeId` | `operation_result` | No |
-| `add_connection` | `source, sourceSlot, target, targetSlot` | `operation_result` | No |
-| `remove_connection` | `source, sourceSlot, target, targetSlot` | `operation_result` | No |
-| `set_parameter` | `nodeId, key, value` | `operation_result` | No |
-| `set_project_metadata` | `name?, description?` | `operation_result` | No |
-| `add_compartment` | `name` | `operation_result` | No |
-| `rename_compartment` | `compartmentId, name` | `operation_result` | No |
-| `get_pipeline_map` | — | `operation_result` | No |
-| `get_segment_detail` | `segmentId` | `operation_result` | No |
-| `search_nodes` | `query, limit?` | `operation_result` | No |
-| `list_operations` | — | `operation_list` | No |
-| `get_job_status` | `jobId` | `operation_result` | No |
-| `cancel_job` | `jobId` | `operation_result` | No |
+| Command                | Parameters                               | Response type      | Async? |
+|------------------------|------------------------------------------|--------------------|--------|
+| `list_projects`        | —                                        | `project_list`     | No     |
+| `select_project`       | `projectId`                              | `project_changed`  | No     |
+| `open_project`         | `path`                                   | `project_changed`  | No     |
+| `new_project`          | —                                        | `project_changed`  | No     |
+| `query_compartments`   | —                                        | `operation_result` | No     |
+| `query_graph`          | `compartmentId?`                         | `operation_result` | No     |
+| `query_node`           | `nodeId`                                 | `operation_result` | No     |
+| `query_data`           | `nodeId, slotName, limit?`               | `operation_result` | No     |
+| `run_node`             | `nodeId, mode`                           | `job_started`      | Yes    |
+| `run_compartment`      | `compartmentId`                          | `job_started`      | Yes    |
+| `run_pipeline`         | `mode`                                   | `job_started`      | Yes    |
+| `add_node`             | `compartmentId, nodeTypeId, x?, y?`      | `operation_result` | No     |
+| `remove_node`          | `nodeId`                                 | `operation_result` | No     |
+| `add_connection`       | `source, sourceSlot, target, targetSlot` | `operation_result` | No     |
+| `remove_connection`    | `source, sourceSlot, target, targetSlot` | `operation_result` | No     |
+| `set_parameter`        | `nodeId, key, value`                     | `operation_result` | No     |
+| `set_project_metadata` | `name?, description?`                    | `operation_result` | No     |
+| `add_compartment`      | `name`                                   | `operation_result` | No     |
+| `rename_compartment`   | `compartmentId, name`                    | `operation_result` | No     |
+| `get_pipeline_map`     | —                                        | `operation_result` | No     |
+| `get_segment_detail`   | `segmentId`                              | `operation_result` | No     |
+| `search_nodes`         | `query, limit?`                          | `operation_result` | No     |
+| `list_operations`      | —                                        | `operation_list`   | No     |
+| `get_job_status`       | `jobId`                                  | `operation_result` | No     |
+| `cancel_job`           | `jobId`                                  | `operation_result` | No     |
 
 ### Events (server to client)
 
-| Event | Fields | Trigger |
-|---|---|---|
-| `project_list` | `projects: [...]` | `list_projects` command or window open/close |
-| `project_changed` | `projectId, name` | `select_project`, `open_project`, `new_project` |
-| `operation_result` | `requestId?, data: {...}` | Synchronous operation completes |
-| `operation_list` | `operations: [{id, description, async}]` | `list_operations` command |
-| `node_added` | `compartmentId, nodeId, nodeTypeId, name` | `add_node` operation |
-| `node_removed` | `nodeId` | `remove_node` operation |
-| `connection_changed` | `source, sourceSlot, target, targetSlot, action` | `add_connection`/`remove_connection` |
-| `parameter_changed` | `nodeId, key, value` | `set_parameter` operation |
-| `compartment_changed` | `compartmentId, name, action` | `add_compartment`/`rename_compartment` |
-| `job_started` | `jobId, operation, description, requestId?` | Async operation starts |
-| `job_progress` | `jobId, progress, message` | Async operation reports progress |
-| `job_completed` | `jobId, status, result?, error?` | Async operation finishes |
-| `error` | `requestId?, message` | Any operation fails |
+| Event                 | Fields                                           | Trigger                                         |
+|-----------------------|--------------------------------------------------|-------------------------------------------------|
+| `project_list`        | `projects: [...]`                                | `list_projects` command or window open/close    |
+| `project_changed`     | `projectId, name`                                | `select_project`, `open_project`, `new_project` |
+| `operation_result`    | `requestId?, data: {...}`                        | Synchronous operation completes                 |
+| `operation_list`      | `operations: [{id, description, async}]`         | `list_operations` command                       |
+| `node_added`          | `compartmentId, nodeId, nodeTypeId, name`        | `add_node` operation                            |
+| `node_removed`        | `nodeId`                                         | `remove_node` operation                         |
+| `connection_changed`  | `source, sourceSlot, target, targetSlot, action` | `add_connection`/`remove_connection`            |
+| `parameter_changed`   | `nodeId, key, value`                             | `set_parameter` operation                       |
+| `compartment_changed` | `compartmentId, name, action`                    | `add_compartment`/`rename_compartment`          |
+| `job_started`         | `jobId, operation, description, requestId?`      | Async operation starts                          |
+| `job_progress`        | `jobId, progress, message`                       | Async operation reports progress                |
+| `job_completed`       | `jobId, status, result?, error?`                 | Async operation finishes                        |
+| `error`               | `requestId?, message`                            | Any operation fails                             |
 
 ## Run Architecture
 
@@ -258,16 +274,17 @@ Extracts the core run logic from `JIPipeDesktopQuickRun` (which stays as a thin 
 
 **Configuration mapping:**
 
-| RunMode | storeToCache | storeToDisk | storeIntermediate | excludeSelected |
-|---|---|---|---|---|
-| UPDATE_CACHE | true | false | false | false |
-| CACHE_INTERMEDIATE | true | false | true | false |
-| UPDATE_PREDECESSOR_CACHE | true | false | false | true |
-| PIPELINE_CACHE | true | false | false | false |
-| PIPELINE_FILESYSTEM | true | true | false | false |
-| PIPELINE_DISCARD | false | false | false | false |
+| RunMode                  | storeToCache | storeToDisk | storeIntermediate | excludeSelected |
+|--------------------------|--------------|-------------|-------------------|-----------------|
+| UPDATE_CACHE             | true         | false       | false             | false           |
+| CACHE_INTERMEDIATE       | true         | false       | true              | false           |
+| UPDATE_PREDECESSOR_CACHE | true         | false       | false             | true            |
+| PIPELINE_CACHE           | true         | false       | false             | false           |
+| PIPELINE_FILESYSTEM      | true         | true        | false             | false           |
+| PIPELINE_DISCARD         | false        | false       | false             | false           |
 
-The predecessor-finding logic (checking cache availability, finding nodes that need re-execution) is currently in `JIPipeDesktopQuickRun.findPredecessorsWithoutCache()` and moves to `InstrumentationRunEngine`.
+The predecessor-finding logic (checking cache availability, finding nodes that need re-execution) is currently in
+`JIPipeDesktopQuickRun.findPredecessorsWithoutCache()` and moves to `InstrumentationRunEngine`.
 
 ## Event System
 
@@ -306,7 +323,9 @@ InstrumentationEvent
 
 ### Event broadcasting
 
-The `InstrumentationServer` subscribes to the `InstrumentationEventBus` for the currently selected project and serializes each event as JSON to all connected WebSocket clients. When the selected project changes, the server unsubscribes from the old project's event bus and subscribes to the new one.
+The `InstrumentationServer` subscribes to the `InstrumentationEventBus` for the currently selected project and
+serializes each event as JSON to all connected WebSocket clients. When the selected project changes, the server
+unsubscribes from the old project's event bus and subscribes to the new one.
 
 ## Job Manager
 
@@ -338,9 +357,9 @@ public class InstrumentationJob {
 1. Client sends command (e.g., `run_node`)
 2. Server finds operation in registry, detects it implements `AsyncInstrumentationOperation`
 3. Server calls `operation.executeAsync(ctx, params)` which:
-   - Creates a `InstrumentationJob` via `ctx.getJobManager().createJob("run_node", "Update cache: NodeName")`
-   - Spawns a background thread that runs the pipeline
-   - Returns the `InstrumentationJob` immediately
+    - Creates a `InstrumentationJob` via `ctx.getJobManager().createJob("run_node", "Update cache: NodeName")`
+    - Spawns a background thread that runs the pipeline
+    - Returns the `InstrumentationJob` immediately
 4. Server sends `job_started` event to client
 5. During execution, progress is reported via `job.updateProgress()` → server broadcasts `job_progress`
 6. On completion: `job.complete(result)` → server broadcasts `job_completed` with status `COMPLETED`
@@ -365,6 +384,7 @@ The `InstrumentationServer` is started via CLI flag:
 ```
 
 Lifecycle:
+
 1. `GuiCommand` parses `--instrumentation [port]` flag
 2. After JIPipe initializes and first project window opens, `InstrumentationServer` is created and started
 3. Server binds to `127.0.0.1:{port}` (configurable via system property `jipipe.instrumentation.bind`)
@@ -373,15 +393,16 @@ Lifecycle:
 
 ### Settings (InstrumentationApplicationSettings)
 
-| Setting | Type | Default | Description |
-|---|---|---|---|
-| `enable-instrumentation` | boolean | false | Enable instrumentation server |
-| `port` | int | 8780 | WebSocket port |
-| `auto-start` | boolean | false | Start server when JIPipe launches |
+| Setting                  | Type    | Default | Description                       |
+|--------------------------|---------|---------|-----------------------------------|
+| `enable-instrumentation` | boolean | false   | Enable instrumentation server     |
+| `port`                   | int     | 8780    | WebSocket port                    |
+| `auto-start`             | boolean | false   | Start server when JIPipe launches |
 
 ### Multiple projects
 
 The server tracks all open project windows. Clients:
+
 1. Call `list_projects` to receive all open projects
 2. Call `select_project` to subscribe to that project's event bus
 3. All subsequent commands operate on the selected project
@@ -389,7 +410,8 @@ The server tracks all open project windows. Clients:
 
 ### Multiple clients
 
-The server supports multiple simultaneous WebSocket connections. Each connection has its own selected project. Events from a project are broadcast to all clients that have that project selected.
+The server supports multiple simultaneous WebSocket connections. Each connection has its own selected project. Events
+from a project are broadcast to all clients that have that project selected.
 
 ### Desktop integration
 
@@ -412,26 +434,28 @@ protected void registerInstrumentationOperation(String id, InstrumentationOperat
 
 ### Built-in operations
 
-Registered by `InstrumentationPlugin` (extends `JIPipePrepackagedDefaultJavaPlugin`). This plugin is part of jipipe-core and is always loaded.
+Registered by `InstrumentationPlugin` (extends `JIPipePrepackagedDefaultJavaPlugin`). This plugin is part of jipipe-core
+and is always loaded.
 
 ### AI-registered operations (when AI is merged)
 
 The AI plugin registers additional operations:
 
-| Operation | Description |
-|---|---|
-| `send_message` | Send a message to the AI agent |
-| `create_session` | Create a new AI chat session |
-| `delete_session` | Delete an AI chat session |
-| `switch_mode` | Switch the AI agent's mode |
-| `respond_user_input` | Respond to an AI user input request |
-| `respond_stage_approval` | Respond to an AI stage approval request |
-| `search_pipeline` | Semantic search over pipeline segments (uses embeddings) |
-| `search_knowledge` | Search the knowledge database |
-| `search_api` | Search the API database |
-| `get_session_diagnostic` | Get AI session diagnostic info |
+| Operation                | Description                                              |
+|--------------------------|----------------------------------------------------------|
+| `send_message`           | Send a message to the AI agent                           |
+| `create_session`         | Create a new AI chat session                             |
+| `delete_session`         | Delete an AI chat session                                |
+| `switch_mode`            | Switch the AI agent's mode                               |
+| `respond_user_input`     | Respond to an AI user input request                      |
+| `respond_stage_approval` | Respond to an AI stage approval request                  |
+| `search_pipeline`        | Semantic search over pipeline segments (uses embeddings) |
+| `search_knowledge`       | Search the knowledge database                            |
+| `search_api`             | Search the API database                                  |
+| `get_session_diagnostic` | Get AI session diagnostic info                           |
 
-AI-specific events (message_added, state_changed, tool_call, llm_response, etc.) are published on the `InstrumentationEventBus` as custom event types and broadcast to WebSocket clients.
+AI-specific events (message_added, state_changed, tool_call, llm_response, etc.) are published on the
+`InstrumentationEventBus` as custom event types and broadcast to WebSocket clients.
 
 ## AI Agent Adaptation (jipipe-2)
 
@@ -439,20 +463,20 @@ When the instrumentation layer is merged into jipipe-2's AI branch (`1290-ai-llm
 
 ### Replaced components
 
-| Current component | Replaced by |
-|---|---|
-| `AgentMonitorServer` | `InstrumentationServer` |
-| `ProjectQueryService` | `InstrumentationAPI` query methods |
-| `AgentMonitorProtocol` | `InstrumentationProtocol` |
+| Current component      | Replaced by                        |
+|------------------------|------------------------------------|
+| `AgentMonitorServer`   | `InstrumentationServer`            |
+| `ProjectQueryService`  | `InstrumentationAPI` query methods |
+| `AgentMonitorProtocol` | `InstrumentationProtocol`          |
 
 ### Refactored components
 
-| Current component | Change |
-|---|---|
-| `RunFunctions` | Delegates to `InstrumentationAPI.runNode()` etc. User confirmation stays in AI code. |
-| `StageFunctions` | Uses `InstrumentationAPI` for graph operations (addNode, addConnection, etc.) via `InstrumentationContext` with `graphOverride` set to the stage's working graph. Stages/approvals stay AI-specific. |
-| `PipelineMapFunctions` | Map building delegates to `InstrumentationAPI.getPipelineMap()`. Semantic search stays as AI-registered operation. |
-| `JIPipeDesktopQuickRun` | Core run logic extracted to `InstrumentationRunEngine`. Desktop wrapper stays as thin UI adapter. |
+| Current component       | Change                                                                                                                                                                                               |
+|-------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `RunFunctions`          | Delegates to `InstrumentationAPI.runNode()` etc. User confirmation stays in AI code.                                                                                                                 |
+| `StageFunctions`        | Uses `InstrumentationAPI` for graph operations (addNode, addConnection, etc.) via `InstrumentationContext` with `graphOverride` set to the stage's working graph. Stages/approvals stay AI-specific. |
+| `PipelineMapFunctions`  | Map building delegates to `InstrumentationAPI.getPipelineMap()`. Semantic search stays as AI-registered operation.                                                                                   |
+| `JIPipeDesktopQuickRun` | Core run logic extracted to `InstrumentationRunEngine`. Desktop wrapper stays as thin UI adapter.                                                                                                    |
 
 ### What stays AI-specific
 
@@ -467,7 +491,8 @@ When the instrumentation layer is merged into jipipe-2's AI branch (`1290-ai-llm
 
 ### Error handling
 
-Commands that require a selected project (all query, execution, and modification commands) return an error if no project is selected:
+Commands that require a selected project (all query, execution, and modification commands) return an error if no project
+is selected:
 
 ```json
 {"type": "error", "requestId": "req-1", "message": "No project selected. Call list_projects and select_project first."}
@@ -490,6 +515,7 @@ Operation exceptions are caught and returned as errors with the exception messag
 ## Dependencies
 
 The instrumentation layer uses only existing jipipe-core dependencies:
+
 - **Jackson** — JSON serialization (already used throughout)
 - **java-websocket** — WebSocket server (already used by `AgentMonitorServer`)
 - **JIPipeGraphRun** — core pipeline execution (already in `api/run/`)

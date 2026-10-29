@@ -1,1 +1,70 @@
-{"edges":[{"source-node":"n0","source-slot":"Annotated paths","target-node":"n2","target-slot":"Files"},{"source-node":"n2","source-slot":"Image","target-node":"n3","target-slot":"Input"},{"source-node":"n3","source-slot":"Output","target-node":"n1","target-slot":"Input"},{"source-node":"n4","source-slot":"Filenames","target-node":"n0","target-slot":"Paths"}],"nodes":{"n0":{"jipipe:graph-compartment":"dd10bd13-b410-5a86-b0cd-20310216c69d","jipipe:metadata-v1":{"location/dd10bd13-b410-5a86-b0cd-20310216c69d/x":0,"location/dd10bd13-b410-5a86-b0cd-20310216c69d/y":4},"jipipe:node-info-id":"path-to-annotation-simple"},"n1":{"jipipe:graph-compartment":"dd10bd13-b410-5a86-b0cd-20310216c69d","jipipe:metadata-v1":{"location/dd10bd13-b410-5a86-b0cd-20310216c69d/x":0,"location/dd10bd13-b410-5a86-b0cd-20310216c69d/y":16},"jipipe:node-info-id":"ij1-threshold-auto2d"},"n2":{"jipipe:graph-compartment":"dd10bd13-b410-5a86-b0cd-20310216c69d","jipipe:metadata-v1":{"location/dd10bd13-b410-5a86-b0cd-20310216c69d/x":0,"location/dd10bd13-b410-5a86-b0cd-20310216c69d/y":8},"jipipe:node-info-id":"import-imagej-imgplus-from-file"},"n3":{"jipipe:graph-compartment":"dd10bd13-b410-5a86-b0cd-20310216c69d","jipipe:metadata-v1":{"location/dd10bd13-b410-5a86-b0cd-20310216c69d/x":0,"location/dd10bd13-b410-5a86-b0cd-20310216c69d/y":12},"jipipe:node-info-id":"ij1-blur-median2d"},"n4":{"jipipe:graph-compartment":"dd10bd13-b410-5a86-b0cd-20310216c69d","jipipe:metadata-v1":{"location/dd10bd13-b410-5a86-b0cd-20310216c69d/x":0,"location/dd10bd13-b410-5a86-b0cd-20310216c69d/y":0},"jipipe:node-info-id":"import-file-list"}}}
+{
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Annotated paths",
+      "target-node": "n2",
+      "target-slot": "Files"
+    },
+    {
+      "source-node": "n2",
+      "source-slot": "Image",
+      "target-node": "n3",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n3",
+      "source-slot": "Output",
+      "target-node": "n1",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n4",
+      "source-slot": "Filenames",
+      "target-node": "n0",
+      "target-slot": "Paths"
+    }
+  ],
+  "nodes": {
+    "n0": {
+      "jipipe:graph-compartment": "dd10bd13-b410-5a86-b0cd-20310216c69d",
+      "jipipe:metadata-v1": {
+        "location/dd10bd13-b410-5a86-b0cd-20310216c69d/x": 0,
+        "location/dd10bd13-b410-5a86-b0cd-20310216c69d/y": 4
+      },
+      "jipipe:node-info-id": "path-to-annotation-simple"
+    },
+    "n1": {
+      "jipipe:graph-compartment": "dd10bd13-b410-5a86-b0cd-20310216c69d",
+      "jipipe:metadata-v1": {
+        "location/dd10bd13-b410-5a86-b0cd-20310216c69d/x": 0,
+        "location/dd10bd13-b410-5a86-b0cd-20310216c69d/y": 16
+      },
+      "jipipe:node-info-id": "ij1-threshold-auto2d"
+    },
+    "n2": {
+      "jipipe:graph-compartment": "dd10bd13-b410-5a86-b0cd-20310216c69d",
+      "jipipe:metadata-v1": {
+        "location/dd10bd13-b410-5a86-b0cd-20310216c69d/x": 0,
+        "location/dd10bd13-b410-5a86-b0cd-20310216c69d/y": 8
+      },
+      "jipipe:node-info-id": "import-imagej-imgplus-from-file"
+    },
+    "n3": {
+      "jipipe:graph-compartment": "dd10bd13-b410-5a86-b0cd-20310216c69d",
+      "jipipe:metadata-v1": {
+        "location/dd10bd13-b410-5a86-b0cd-20310216c69d/x": 0,
+        "location/dd10bd13-b410-5a86-b0cd-20310216c69d/y": 12
+      },
+      "jipipe:node-info-id": "ij1-blur-median2d"
+    },
+    "n4": {
+      "jipipe:graph-compartment": "dd10bd13-b410-5a86-b0cd-20310216c69d",
+      "jipipe:metadata-v1": {
+        "location/dd10bd13-b410-5a86-b0cd-20310216c69d/x": 0,
+        "location/dd10bd13-b410-5a86-b0cd-20310216c69d/y": 0
+      },
+      "jipipe:node-info-id": "import-file-list"
+    }
+  }
+}

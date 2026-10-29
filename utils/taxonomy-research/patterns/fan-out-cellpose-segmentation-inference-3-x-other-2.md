@@ -35,26 +35,30 @@ Mined pattern `fan-out-cellpose-segmentation-inference-3-x-other-2` (shape `fan-
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| other | `cellpose-segmentation-inference-3.x` |
+| role  | node ids                                                                                                                       |
+|-------|--------------------------------------------------------------------------------------------------------------------------------|
+| other | `cellpose-segmentation-inference-3.x`                                                                                          |
 | other | `cellpose-segmentation-inference-3.x`, `ij1-blur-gaussian2d`, `ij1-roi-filter-statistics`, `ij1-roi-to-mask`, `ij1-roi-to-rgb` |
 
 ## Example graph
 
-Project: `AIAgentTests/03-ExampleWorkflows/AdrianFeile_VibrioOnChip_04.jip` (relative to `/data/JIPipe`), compartment `Preprocessing`.
+Project: `AIAgentTests/03-ExampleWorkflows/AdrianFeile_VibrioOnChip_04.jip` (relative to `/data/JIPipe`), compartment
+`Preprocessing`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `cellpose-segmentation-inference-3.x` | Cellpose segmentation (3.x) |
-| n1 | `ij1-roi-to-mask` | Convert 2D ROI to mask |
-| n2 | `ij1-roi-to-rgb` | Convert 2D ROI to RGB |
+| key | node id                               | name                        |
+|-----|---------------------------------------|-----------------------------|
+| n0  | `cellpose-segmentation-inference-3.x` | Cellpose segmentation (3.x) |
+| n1  | `ij1-roi-to-mask`                     | Convert 2D ROI to mask      |
+| n2  | `ij1-roi-to-rgb`                      | Convert 2D ROI to RGB       |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
+| from                        | slot  | to                     | slot  | data class   |
+|-----------------------------|-------|------------------------|-------|--------------|
 | Cellpose segmentation (3.x) | `ROI` | Convert 2D ROI to mask | `ROI` | `imagej-roi` |
 
 ## Template
 
-Proposed name `Cellpose segmentation (3.x) fans out to 5 target ids (roles: other)`, menu path `Patterns/Machine learning/Cellpose segmentation (3.x) fans out to 5 target ids (roles: other)` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/fan-out-cellpose-segmentation-inference-3-x-other-2.json`.
+Proposed name `Cellpose segmentation (3.x) fans out to 5 target ids (roles: other)`, menu path
+`Patterns/Machine learning/Cellpose segmentation (3.x) fans out to 5 target ids (roles: other)` (proposal only — not
+registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/fan-out-cellpose-segmentation-inference-3-x-other-2.json`.
 

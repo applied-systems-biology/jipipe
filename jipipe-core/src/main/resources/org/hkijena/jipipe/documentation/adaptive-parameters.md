@@ -1,16 +1,20 @@
 # Adaptive parameters
 
-*Summary:* Specific parameters are <i>adapted</i> to the properties (e.g., annotations) of the currently processed iteration step.
+*Summary:* Specific parameters are <i>adapted</i> to the properties (e.g., annotations) of the currently processed
+iteration step.
 
-To make a parameter adapt to annotations, click the ⏷ menu button next to the parameter help and select "Make parameter adaptive".
-Alternatively, you can click **Configure** and add custom entries into the list of overrides. 
+To make a parameter adapt to annotations, click the ⏷ menu button next to the parameter help and select "Make parameter
+adaptive".
+Alternatively, you can click **Configure** and add custom entries into the list of overrides.
 
-To remove an adaptive parameter, click the ⏷ menu button next to the parameter help and select "Make parameter static". Alternatively, 
+To remove an adaptive parameter, click the ⏷ menu button next to the parameter help and select "Make parameter static".
+Alternatively,
 remove the override in the **Configure** menu.
 
 Please note that the expression must return a compatible value or a string in JSON format.
 
-Custom parameter values are attached as annotations to generated outputs. You can find all settings in the <strong>Configure</strong> menu.
+Custom parameter values are attached as annotations to generated outputs. You can find all settings in the <strong>
+Configure</strong> menu.
 
 ## Parameter precedence
 

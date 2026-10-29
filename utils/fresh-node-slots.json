@@ -1,1514 +1,3079 @@
 {
-  "annotate-by-project-paths" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "annotate-data-with-image-properties" : {
-    "inputs" : [ "Data", "Image" ],
-    "outputs" : [ "Data" ]
-  },
-  "annotate-data-with-table-values" : {
-    "inputs" : [ "Data", "Table" ],
-    "outputs" : [ "Annotated data" ]
-  },
-  "annotate-filter-by-annotation" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "annotate-filter-by-annotation-if-else" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Matched", "Unmatched" ]
-  },
-  "annotate-remove" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "annotate-set" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "annotate-set-single" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "annotate-split-by-annotation" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "annotate-with-annotation-table" : {
-    "inputs" : [ "Data", "Annotations" ],
-    "outputs" : [ "Annotated data" ]
-  },
-  "annotate-with-bioformats" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "annotate-with-data" : {
-    "inputs" : [ "Input", "Annotation" ],
-    "outputs" : [ "Output" ]
-  },
-  "annotate-with-source-slot" : {
-    "inputs" : [ "Data" ],
-    "outputs" : [ "Annotated data" ]
-  },
-  "annotation-merge" : {
-    "inputs" : [ ],
-    "outputs" : [ ]
-  },
-  "annotation-to-path" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "cellpose-2" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Labels", "ROI" ]
-  },
-  "cellpose-denoise-inference-3.x" : {
-    "inputs" : [ "Input", "Model" ],
-    "outputs" : [ "Output" ]
-  },
-  "cellpose-inference-2.x" : {
-    "inputs" : [ "Input", "Model" ],
-    "outputs" : [ "Labels", "ROI" ]
-  },
-  "cellpose-segmentation-inference-3.x" : {
-    "inputs" : [ "Input", "Model" ],
-    "outputs" : [ "Labels", "ROI" ]
-  },
-  "cellpose-segmentation-inference-4.x" : {
-    "inputs" : [ "Input", "Model" ],
-    "outputs" : [ "Labels", "ROI" ]
-  },
-  "cellpose-segmentation-training-3.x" : {
-    "inputs" : [ "Training data", "Test data", "Pretrained model" ],
-    "outputs" : [ "Model" ]
-  },
-  "cellpose-training-2" : {
-    "inputs" : [ "Training data", "Test data" ],
-    "outputs" : [ "Model" ]
-  },
-  "cellpose-training-2.x" : {
-    "inputs" : [ "Training data", "Test data", "Pretrained model" ],
-    "outputs" : [ "Model" ]
-  },
-  "clij-pull-from-gpu" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "clij-push-to-gpu" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "clij:plugin:net.haesleinhuepf.clij2.plugins.AddImages" : {
-    "inputs" : [ "Summand1", "Summand2" ],
-    "outputs" : [ "Destination" ]
-  },
-  "clij:plugin:net.haesleinhuepf.clij2.plugins.AutomaticThreshold" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Destination" ]
-  },
-  "clij:plugin:net.haesleinhuepf.clij2.plugins.AverageNeighborDistanceMap" : {
-    "inputs" : [ ],
-    "outputs" : [ ],
-    "uninstantiable" : true
-  },
-  "clij:plugin:net.haesleinhuepf.clij2.plugins.BinaryFillHoles" : {
-    "inputs" : [ "Source" ],
-    "outputs" : [ "Destination" ]
-  },
-  "clij:plugin:net.haesleinhuepf.clij2.plugins.CentroidsOfLabels" : {
-    "inputs" : [ "Source" ],
-    "outputs" : [ "Pointlist Destination" ]
-  },
-  "clij:plugin:net.haesleinhuepf.clij2.plugins.ConnectedComponentsLabelingBox" : {
-    "inputs" : [ "Binary Input" ],
-    "outputs" : [ "Labeling Destination" ]
-  },
-  "clij:plugin:net.haesleinhuepf.clij2.plugins.ExcludeLabelsOnEdges" : {
-    "inputs" : [ "Label Map Input" ],
-    "outputs" : [ "Label Map Destination" ]
-  },
-  "clij:plugin:net.haesleinhuepf.clij2.plugins.ExtendedDepthOfFocusSobelProjection" : {
-    "inputs" : [ ],
-    "outputs" : [ ],
-    "uninstantiable" : true
-  },
-  "clij:plugin:net.haesleinhuepf.clij2.plugins.GaussianBlur2D" : {
-    "inputs" : [ "Source" ],
-    "outputs" : [ "Destination" ]
-  },
-  "clij:plugin:net.haesleinhuepf.clij2.plugins.ReduceLabelsToLabelEdges" : {
-    "inputs" : [ ],
-    "outputs" : [ ],
-    "uninstantiable" : true
-  },
-  "clij:plugin:net.haesleinhuepf.clijx.clij2wrappers.ExtendedDepthOfFocusSobelProjection" : {
-    "inputs" : [ ],
-    "outputs" : [ ],
-    "uninstantiable" : true
-  },
-  "convert-imagej-image" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "convert-parameters-data-to-results-table-data" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "converter" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ ]
-  },
-  "data-batch-slicer" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "data-to-annotation-table" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "distribute-data" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ ]
-  },
-  "download-files" : {
-    "inputs" : [ ],
-    "outputs" : [ "Output" ]
-  },
-  "duplicate" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "export-3d-scene-to-collada" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Exported file" ]
-  },
-  "export-data" : {
-    "inputs" : [ "Data", "Path" ],
-    "outputs" : [ "Path" ]
-  },
-  "export-data-by-parameter" : {
-    "inputs" : [ "Data" ],
-    "outputs" : [ "Output path" ]
-  },
-  "export-data-by-parameter-v2" : {
-    "inputs" : [ "Data" ],
-    "outputs" : [ "Output path" ]
-  },
-  "export-data-table" : {
-    "inputs" : [ "Data", "Path" ],
-    "outputs" : [ "Path" ]
-  },
-  "export-data-table-by-parameter" : {
-    "inputs" : [ "Data" ],
-    "outputs" : [ "Path" ]
-  },
-  "export-ilastik-hdf5-image" : {
-    "inputs" : [ "Image" ],
-    "outputs" : [ "HDF5 File" ]
-  },
-  "export-imagej-bioformats" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "export-imagej-bioformats-v2" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "export-roi-3d" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Exported file" ]
-  },
-  "external-imagej-macro" : {
-    "inputs" : [ ],
-    "outputs" : [ ]
-  },
-  "extract-data-annotation" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "feature-vesselness-meijering2d" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "filaments-connect-vertices-fast" : {
-    "inputs" : [ "Input", "Mask" ],
-    "outputs" : [ "Output" ]
-  },
-  "filaments-convert-roi2d-to-filaments" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "filaments-convert-to-labels" : {
-    "inputs" : [ "Input", "Reference" ],
-    "outputs" : [ "Output" ]
-  },
-  "filaments-convert-to-labels-v2" : {
-    "inputs" : [ "Input", "Reference" ],
-    "outputs" : [ "Output" ]
-  },
-  "filaments-convert-to-mask" : {
-    "inputs" : [ "Input", "Reference" ],
-    "outputs" : [ "Output" ]
-  },
-  "filaments-convert-to-rgb" : {
-    "inputs" : [ "Input", "Reference" ],
-    "outputs" : [ "Output" ]
-  },
-  "filaments-convert-to-roi" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "filaments-convert-to-roi3d" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "filaments-filter-components-by-properties" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "filaments-filter-filaments-at-border" : {
-    "inputs" : [ "Input", "Reference" ],
-    "outputs" : [ "Output" ]
-  },
-  "filaments-find-linear-vertex-order" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "filaments-fix-overlaps-non-branching" : {
-    "inputs" : [ "Input", "Mask" ],
-    "outputs" : [ "Output" ]
-  },
-  "filaments-from-json" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "filaments-measure-edges" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "filaments-measure-filaments" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "filaments-measure-vertices" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "filaments-remove-duplicate-vertices" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "filaments-set-overlay" : {
-    "inputs" : [ "Input", "Filaments" ],
-    "outputs" : [ "Output" ]
-  },
-  "filaments-set-vertex-intensity-from-image" : {
-    "inputs" : [ "Filaments", "Intensity" ],
-    "outputs" : [ "Output" ]
-  },
-  "filaments-set-vertex-thickness-from-image" : {
-    "inputs" : [ "Filaments", "Radius" ],
-    "outputs" : [ "Output" ]
-  },
-  "filaments-simplify" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "filaments-skeleton-to-filaments-2d" : {
-    "inputs" : [ "Skeleton" ],
-    "outputs" : [ "Filaments" ]
-  },
-  "filaments-smooth-downscale" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "filaments-split-into-connected-components" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "filaments-tsoax" : {
-    "inputs" : [ "Image" ],
-    "outputs" : [ "Filaments", "Snakes", "Raw" ]
-  },
-  "filaments-tsoax-2d" : {
-    "inputs" : [ "Image" ],
-    "outputs" : [ "Filaments", "Snakes" ]
-  },
-  "file-annotate-by-name" : {
-    "inputs" : [ "Files" ],
-    "outputs" : [ "Annotated files" ]
-  },
-  "folder-list-files" : {
-    "inputs" : [ "Folders" ],
-    "outputs" : [ "Files" ]
-  },
-  "folder-list-subfolders" : {
-    "inputs" : [ "Folders" ],
-    "outputs" : [ "Subfolders" ]
-  },
-  "folder-mkdir" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "generate-unique-annotation" : {
-    "inputs" : [ "Data" ],
-    "outputs" : [ "Annotated data" ]
-  },
-  "ij-convert-image-to-16-bit" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij-convert-image-to-32-bit" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij-convert-image-to-8-bit" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij-convert-image-to-hsb-colors" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij-convert-image-to-rgb-colors" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij-imgplus-to-gui" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij-import-stack" : {
-    "inputs" : [ "Folder" ],
-    "outputs" : [ "Image" ]
-  },
-  "ij-math-chamfer-distance-map-2d" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-analyze-annotate-by-image-statistics-expression" : {
-    "inputs" : [ "Image" ],
-    "outputs" : [ "Image" ]
-  },
-  "ij1-analyze-find-particles2d" : {
-    "inputs" : [ "Mask" ],
-    "outputs" : [ "ROI", "Measurements" ]
-  },
-  "ij1-analyze-image-statistics" : {
-    "inputs" : [ "Image", "ROI" ],
-    "outputs" : [ "Measurements" ]
-  },
-  "ij1-analyze-image-statistics-expression" : {
-    "inputs" : [ "Image" ],
-    "outputs" : [ "Measurements" ]
-  },
-  "ij1-analyze-statistics-histogram" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-analyze-statistics-histogram-key-value" : {
-    "inputs" : [ "Key", "Value" ],
-    "outputs" : [ "Histogram" ]
-  },
-  "ij1-apply-lut" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-background-rollingball2d" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-binary-binarize" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-binary-bitwise" : {
-    "inputs" : [ "Input 1", "Input 2" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-binary-connected-component-labeling-2d" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-binary-connected-component-labeling-3d" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-binary-dtwatershed2d" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-binary-hough-line-segments" : {
-    "inputs" : [ "Mask" ],
-    "outputs" : [ "Lines", "Peaks", "Mask", "Results", "Accumulator" ]
-  },
-  "ij1-binary-volume-opening-2d" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-blur-box2d" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-blur-gaussian2d" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-blur-gaussian3d" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-blur-median2d" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-blur-median2d-rgb" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-blur-median3d" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-calibration-copy-physical-dimensions" : {
-    "inputs" : [ "Source", "Target" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-calibration-draw-scale-bar" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-calibration-set-physical-dimensions" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-colocalization-coloc2" : {
-    "inputs" : [ "Channel 1", "Channel 2", "ROI" ],
-    "outputs" : [ "Results", "Plots", "Histograms" ]
-  },
-  "ij1-color-blend-images" : {
-    "inputs" : [ ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-color-combine-rgb" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-color-invert" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-color-invert-rgb" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-color-merge-channels" : {
-    "inputs" : [ ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-color-set-to-color" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-color-set-to-grayscale-value" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-color-split-channels" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ ]
-  },
-  "ij1-color-split-channels-2" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ ]
-  },
-  "ij1-color-to-rgb" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-contrast-apply-ij-per-slice" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-contrast-calibrate" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-contrast-clahe" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-contrast-histogram-enhancer" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-contrast-illumination-correction2d" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-convert-image-to-table" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-convert-table-to-image" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-dimensions-expression-slicer" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-dimensions-extended-depth-of-focus" : {
-    "inputs" : [ "Input", "Score" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-dimensions-hyper-stacksplitter" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-dimensions-inpput2montage" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-dimensions-input2montage-v2" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-dimensions-merge-2d-to-hyperstack" : {
-    "inputs" : [ "Slices" ],
-    "outputs" : [ "Hyperstack" ]
-  },
-  "ij1-dimensions-reorder" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-dimensions-reslice" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-dimensions-stack-to-2d" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-dimensions-stack2montage" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-dimensions-stackmerger" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-dimensions-stacks-to-dimension" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-dimensions-stacksplitter" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-dimensions-zproject" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-dimensions-zproject-2" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-enhance-bleach-correction" : {
-    "inputs" : [ "Input", "ROI" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-export-ome-zarr" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-extract-ome-image-xml" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-feature-featurej-derivatives" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-feature-laplacian-of-gaussian" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-feature-maxima-local-2d" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-feature-mfc-2d" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Input" ]
-  },
-  "ij1-feature-orientationj-2d" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Gradient-X", "Gradient-Y", "Orientation", "Energy", "Coherency" ]
-  },
-  "ij1-feature-vesselness-frangi" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-generate-filter-kernel-3d" : {
-    "inputs" : [ ],
-    "outputs" : [ "Kernel" ]
-  },
-  "ij1-generate-zero-image" : {
-    "inputs" : [ "Annotations" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-image-set-metadata-from-table" : {
-    "inputs" : [ "Image", "Metadata" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-labels-dilate-labels" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-labels-extract-statistics" : {
-    "inputs" : [ "Labels", "Image" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-labels-filter-by-overlap" : {
-    "inputs" : [ "Labels 1", "Labels 2" ],
-    "outputs" : [ "Labels 1", "Labels 2" ]
-  },
-  "ij1-labels-filter-by-statistics" : {
-    "inputs" : [ "Labels", "Image" ],
-    "outputs" : [ "Labels" ]
-  },
-  "ij1-labels-filter-filter-by-expression-3d" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-labels-get-label-boundaries" : {
-    "inputs" : [ "Labels" ],
-    "outputs" : [ "Boundaries" ]
-  },
-  "ij1-labels-overlap-statistics" : {
-    "inputs" : [ "Image 1", "Image 2" ],
-    "outputs" : [ "Total", "Per label" ]
-  },
-  "ij1-labels-remap" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-labels-remove-border-labels" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-labels-split-connected-components-2d" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-labels-to-mask" : {
-    "inputs" : [ "Labels" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-labels-to-rgb" : {
-    "inputs" : [ "Labels" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-labels-to-roi" : {
-    "inputs" : [ "Labels" ],
-    "outputs" : [ "ROI" ]
-  },
-  "ij1-math-divide-by-maximum" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-math-edt2d" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-math-fast-image-arithmetics" : {
-    "inputs" : [ "I1" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-math-generate-from-expression" : {
-    "inputs" : [ "Annotations" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-math-imagecalculator2d" : {
-    "inputs" : [ "Input 1", "Input 2" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-math-local-variance2d" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-math-math2d" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-math-transform2d" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-ml-labkit-segmentation" : {
-    "inputs" : [ "Raw", "Model" ],
-    "outputs" : [ "Labels", "Probabilities" ]
-  },
-  "ij1-morph-binary-fillholes2d" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-morph-binary-skeletonize2d" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-morph-operation2d" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-morph-operation3d" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-noise-despeckle2d" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-noise-removeoutliers2d" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-remove-lut" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-roi-calculator" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-roi-color-by-name" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-roi-color-statistics" : {
-    "inputs" : [ "ROI", "Reference" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-roi-convert-to-table" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-roi-count" : {
-    "inputs" : [ "Counted ROI" ],
-    "outputs" : [ "Counts" ]
-  },
-  "ij1-roi-draw-line" : {
-    "inputs" : [ "ROI", "Reference" ],
-    "outputs" : [ "ROI" ]
-  },
-  "ij1-roi-draw-oval" : {
-    "inputs" : [ "ROI", "Reference" ],
-    "outputs" : [ "ROI" ]
-  },
-  "ij1-roi-draw-rectangle" : {
-    "inputs" : [ "ROI", "Reference" ],
-    "outputs" : [ "ROI" ]
-  },
-  "ij1-roi-draw-text" : {
-    "inputs" : [ "ROI", "Reference" ],
-    "outputs" : [ "ROI" ]
-  },
-  "ij1-roi-enlarge-shrink" : {
-    "inputs" : [ "Input", "Reference" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-roi-explode" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-roi-extract-metadata" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-roi-filter-by-name" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-roi-filter-by-overlap" : {
-    "inputs" : [ "ROI 1", "ROI 2", "Reference" ],
-    "outputs" : [ "ROI 1", "ROI 2" ]
-  },
-  "ij1-roi-filter-statistics" : {
-    "inputs" : [ "ROI", "Reference" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-roi-from-mask" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-roi-from-table-point" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-roi-from-table-rectangular" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-roi-from-table-text" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-roi-generate-name" : {
-    "inputs" : [ "ROI", "Reference" ],
-    "outputs" : [ "ROI" ]
-  },
-  "ij1-roi-merge" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-roi-relation-2d" : {
-    "inputs" : [ "ROI 1", "ROI 2", "Reference" ],
-    "outputs" : [ "Measurements" ]
-  },
-  "ij1-roi-remove-overlay" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-roi-render-overlay" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-roi-set-metadata-from-table" : {
-    "inputs" : [ "ROI", "Metadata" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-roi-set-overlay" : {
-    "inputs" : [ "Input", "ROI" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-roi-set-properties" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-roi-set-properties-from-expressions" : {
-    "inputs" : [ "Input", "Reference" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-roi-split" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-roi-split-into-connected-components" : {
-    "inputs" : [ "Input", "Reference" ],
-    "outputs" : [ "Components" ]
-  },
-  "ij1-roi-statistics" : {
-    "inputs" : [ "ROI", "Reference" ],
-    "outputs" : [ "Measurements" ]
-  },
-  "ij1-roi-to-annotations" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-roi-to-labels-expression" : {
-    "inputs" : [ "ROI", "Reference" ],
-    "outputs" : [ "Labels" ]
-  },
-  "ij1-roi-to-labels-name" : {
-    "inputs" : [ "ROI", "Reference" ],
-    "outputs" : [ "Labels" ]
-  },
-  "ij1-roi-to-mask" : {
-    "inputs" : [ "ROI", "Image" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-roi-to-rgb" : {
-    "inputs" : [ "ROI", "Image" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-roi-to-rgb-unreferenced" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-segment-ridge-detector-2d" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Mask", "Lines", "Junctions" ]
-  },
-  "ij1-segment-seeded-watershed" : {
-    "inputs" : [ "Image", "Markers" ],
-    "outputs" : [ "Labels" ]
-  },
-  "ij1-set-lut-from-color-map" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-set-lut-from-colors" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-sharpen-laplacian2d" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-threshold-auto2d" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-threshold-expression2d-16u" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-threshold-expression2d-32f" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-threshold-local-auto2d-bernsen" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-threshold-local-auto2d-phansalkar" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-threshold-manual2d-16u" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-threshold-manual2d-8u" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-transform-crop2d" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-transform-equalize-dimensions" : {
-    "inputs" : [ "Input", "Reference" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-transform-equalize-dimensions-max-io" : {
-    "inputs" : [ "Data" ],
-    "outputs" : [ "Data" ]
-  },
-  "ij1-transform-equalize-expand2d" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-transform-rotate2d-free" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-transform-scale2d" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-transform-scale3d" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-transform-tile-2d" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-transform-tile-2d-v2" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-transform-un-tile-2d" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij1-turbo-reg-image-registration" : {
-    "inputs" : [ "Reference", "Input" ],
-    "outputs" : [ "Reference", "Registered", "Transform" ]
-  },
-  "ij3d-analyze-find-particles" : {
-    "inputs" : [ "Mask" ],
-    "outputs" : [ "ROI" ]
-  },
-  "ij3d-filter-roi3d-by-statistics" : {
-    "inputs" : [ "ROI", "Reference" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij3d-filter-roi3d-list" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij3d-labels-to-roi" : {
-    "inputs" : [ "Labels" ],
-    "outputs" : [ "ROI" ]
-  },
-  "ij3d-measure-pairwise-roi3d" : {
-    "inputs" : [ "ROI 1", "ROI 2", "Reference" ],
-    "outputs" : [ "Measurements" ]
-  },
-  "ij3d-measure-roi3d" : {
-    "inputs" : [ "ROI", "Reference" ],
-    "outputs" : [ "Measurements" ]
-  },
-  "ij3d-roi-change-properties" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij3d-roi-change-properties-from-expressions" : {
-    "inputs" : [ "Input", "Reference" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij3d-roi-change-properties-from-table" : {
-    "inputs" : [ "Input", "Metadata" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij3d-roi-color-by-statistics" : {
-    "inputs" : [ "ROI", "Reference" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij3d-roi-convert-to-3d-mesh" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij3d-roi-convert-to-labels" : {
-    "inputs" : [ "ROI", "Reference" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij3d-roi-convert-to-mask" : {
-    "inputs" : [ "ROI", "Reference" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij3d-roi-convert-to-rgb" : {
-    "inputs" : [ "ROI", "Image" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij3d-roi-filter-by-overlap" : {
-    "inputs" : [ "ROI 1", "ROI 2", "Reference" ],
-    "outputs" : [ "ROI 1", "ROI 2" ]
-  },
-  "ij3d-roi-outline" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij3d-roi-set-overlay" : {
-    "inputs" : [ "Input", "ROI" ],
-    "outputs" : [ "Output" ]
-  },
-  "ij3d-roi-split-explode" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "iji-export-image-to-web" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Exported file" ]
-  },
-  "iji-export-image-v2" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Exported file" ]
-  },
-  "iji-export-table" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Exported file" ]
-  },
-  "iji-export-table-as-xlsx" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Exported file" ]
-  },
-  "iji-export-table-as-xlsx-v2" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Exported file" ]
-  },
-  "iji-export-table-v2" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Exported file" ]
-  },
-  "ilastik-pixel-classification" : {
-    "inputs" : [ "Image", "Project" ],
-    "outputs" : [ "Simple Segmentation" ]
-  },
-  "image-properties-to-annotation" : {
-    "inputs" : [ "Image" ],
-    "outputs" : [ "Annotated image" ]
-  },
-  "import-cellpose-2.x-pretrained-model" : {
-    "inputs" : [ ],
-    "outputs" : [ "Output" ]
-  },
-  "import-cellpose-3.x-pretrained-denoise-model" : {
-    "inputs" : [ ],
-    "outputs" : [ "Output" ]
-  },
-  "import-cellpose-3.x-pretrained-segmentation-model" : {
-    "inputs" : [ ],
-    "outputs" : [ "Output" ]
-  },
-  "import-cellpose-4.x-pretrained-segmentation-model" : {
-    "inputs" : [ ],
-    "outputs" : [ "Output" ]
-  },
-  "import-cellpose-model" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "import-cellpose-model-v2" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "import-data-from-slot-folder" : {
-    "inputs" : [ "Data table folder" ],
-    "outputs" : [ "Data" ]
-  },
-  "import-data-table-from-archive" : {
-    "inputs" : [ "Archive" ],
-    "outputs" : [ "Data" ]
-  },
-  "import-file" : {
-    "inputs" : [ ],
-    "outputs" : [ "Filename" ]
-  },
-  "import-file-list" : {
-    "inputs" : [ ],
-    "outputs" : [ "Filenames" ]
-  },
-  "import-folder" : {
-    "inputs" : [ ],
-    "outputs" : [ "Folder path" ]
-  },
-  "import-folder-list" : {
-    "inputs" : [ ],
-    "outputs" : [ "Folder paths" ]
-  },
-  "import-imagej-bioformats" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "import-imagej-imgplus-from-file" : {
-    "inputs" : [ "Files" ],
-    "outputs" : [ "Image" ]
-  },
-  "import-imagej-results-table-from-file" : {
-    "inputs" : [ "Files" ],
-    "outputs" : [ "Results table" ]
-  },
-  "import-imagej-roi-from-file" : {
-    "inputs" : [ "Files" ],
-    "outputs" : [ "Output" ]
-  },
-  "import-json-from-file" : {
-    "inputs" : [ "File" ],
-    "outputs" : [ "Json" ]
-  },
-  "import-ome-zarr-from-uri-as-imgplus" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "import-ome-zarr-from-zip-directory-as-imgplus" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "import-roi-3d" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "json-annotate-with-json-data" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "json-extract-data-as-table-json-path" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "list-zarr-uri-datasets" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "mask-to-3d-mesh" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "merge-scene-3d" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "merge-slots" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "modify-and-merge-tables" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "modify-tables" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ome-annotate-data-with-metadata" : {
-    "inputs" : [ "Input", "OME XML" ],
-    "outputs" : [ "Output" ]
-  },
-  "ome-annotate-with-metadata" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "ome-image-from-image-plus" : {
-    "inputs" : [ "Image", "ROI" ],
-    "outputs" : [ "OME Image" ]
-  },
-  "omero-create-dataset" : {
-    "inputs" : [ "Project" ],
-    "outputs" : [ "Dataset" ]
-  },
-  "omero-download-image" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "omero-download-table" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "omero-list-dataset-ids" : {
-    "inputs" : [ "Projects" ],
-    "outputs" : [ "Datasets" ]
-  },
-  "omero-list-image-ids" : {
-    "inputs" : [ "Datasets" ],
-    "outputs" : [ "Images" ]
-  },
-  "omero-list-project-ids" : {
-    "inputs" : [ "Group" ],
-    "outputs" : [ "Projects" ]
-  },
-  "omero-upload-image" : {
-    "inputs" : [ "Images", "Target dataset" ],
-    "outputs" : [ "Images" ]
-  },
-  "omero-upload-table" : {
-    "inputs" : [ "Tables", "Target" ],
-    "outputs" : [ "Tables" ]
-  },
-  "omnipose" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Labels", "ROI" ]
-  },
-  "opencv-convert-depth" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "opencv-photo-inpainting" : {
-    "inputs" : [ "Input", "Mask" ],
-    "outputs" : [ "Output" ]
-  },
-  "parameters-define-table" : {
-    "inputs" : [ ],
-    "outputs" : [ "Parameters" ]
-  },
-  "parameters-merge" : {
-    "inputs" : [ "Input 1", "Input 2" ],
-    "outputs" : [ "Output" ]
-  },
-  "path-filter" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "path-to-annotation-simple" : {
-    "inputs" : [ "Paths" ],
-    "outputs" : [ "Annotated paths" ]
-  },
-  "plot-from-table" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "plot-table:plot-category-statistical-bar" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "plot-table:plot-category-statistical-line" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "plot-table:plot-histogram" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "plot-table:plot-xy-line" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "plot-table:plot-xy-scatter" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "project-user-directory" : {
-    "inputs" : [ ],
-    "outputs" : [ "Output" ]
-  },
-  "rename-annotation" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "set-imagej-bioformats-settings" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "table-add-annotation-columns" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "table-add-columns-generate" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "table-add-missing-rows-in-series" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "table-annotate-by-merged-columns" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "table-annotate-with-properties" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "table-apply-expression-per-row" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "table-apply-expression-per-row-v2" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "table-convert-columns" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "table-convert-to-histogram" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "table-convert-to-histogram-key-value" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "table-filter" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "table-filter-2" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "table-integrate-columns" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "table-merge-columns" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "table-merge-tables" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "table-process-columns" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "table-remove-columns" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "table-rename-columns" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "table-rename-columns-2" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "table-rename-columns-expression" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Input" ]
-  },
-  "table-slice-rows" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "table-sort" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "table-sort-columns" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "table-split-by-columns" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "table-to-parameters" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "tesseract-ocr" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Results" ]
-  },
-  "threshold-hessian2d" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "threshold-hough2d-fast" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Mask", "Accumulator", "Measurements" ]
-  },
-  "trackmate-create-spot-detector-mask-detector" : {
-    "inputs" : [ ],
-    "outputs" : [ "Spot detector" ]
-  },
-  "trackmate-create-spot-tracker-sparse-lap-tracker" : {
-    "inputs" : [ ],
-    "outputs" : [ "Spot tracker" ]
-  },
-  "trackmate-detector" : {
-    "inputs" : [ "Image", "Spot detector" ],
-    "outputs" : [ "Spots" ]
-  },
-  "trackmate-filter-spots" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "trackmate-filter-tracks" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "trackmate-measure-tracks" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "trackmate-spots-to-roi" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "trackmate-tracking" : {
-    "inputs" : [ "Spots", "Spot tracker" ],
-    "outputs" : [ "Tracks" ]
-  },
-  "trackmate-visualize-follow-spots" : {
-    "inputs" : [ "Image", "Tracks" ],
-    "outputs" : [ "Output" ]
-  },
-  "trackmate-visualize-spots" : {
-    "inputs" : [ "Spots", "Image" ],
-    "outputs" : [ "Output" ]
-  },
-  "trackmate-visualize-tracks" : {
-    "inputs" : [ "Tracks", "Image" ],
-    "outputs" : [ "Output" ]
-  },
-  "xml-annotate-with-xml-data" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "xml-extract-data-as-table-xpath" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
-  },
-  "xml-prettify" : {
-    "inputs" : [ "Input" ],
-    "outputs" : [ "Output" ]
+  "annotate-by-project-paths": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "annotate-data-with-image-properties": {
+    "inputs": [
+      "Data",
+      "Image"
+    ],
+    "outputs": [
+      "Data"
+    ]
+  },
+  "annotate-data-with-table-values": {
+    "inputs": [
+      "Data",
+      "Table"
+    ],
+    "outputs": [
+      "Annotated data"
+    ]
+  },
+  "annotate-filter-by-annotation": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "annotate-filter-by-annotation-if-else": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Matched",
+      "Unmatched"
+    ]
+  },
+  "annotate-remove": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "annotate-set": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "annotate-set-single": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "annotate-split-by-annotation": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "annotate-with-annotation-table": {
+    "inputs": [
+      "Data",
+      "Annotations"
+    ],
+    "outputs": [
+      "Annotated data"
+    ]
+  },
+  "annotate-with-bioformats": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "annotate-with-data": {
+    "inputs": [
+      "Input",
+      "Annotation"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "annotate-with-source-slot": {
+    "inputs": [
+      "Data"
+    ],
+    "outputs": [
+      "Annotated data"
+    ]
+  },
+  "annotation-merge": {
+    "inputs": [],
+    "outputs": []
+  },
+  "annotation-to-path": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "cellpose-2": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Labels",
+      "ROI"
+    ]
+  },
+  "cellpose-denoise-inference-3.x": {
+    "inputs": [
+      "Input",
+      "Model"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "cellpose-inference-2.x": {
+    "inputs": [
+      "Input",
+      "Model"
+    ],
+    "outputs": [
+      "Labels",
+      "ROI"
+    ]
+  },
+  "cellpose-segmentation-inference-3.x": {
+    "inputs": [
+      "Input",
+      "Model"
+    ],
+    "outputs": [
+      "Labels",
+      "ROI"
+    ]
+  },
+  "cellpose-segmentation-inference-4.x": {
+    "inputs": [
+      "Input",
+      "Model"
+    ],
+    "outputs": [
+      "Labels",
+      "ROI"
+    ]
+  },
+  "cellpose-segmentation-training-3.x": {
+    "inputs": [
+      "Training data",
+      "Test data",
+      "Pretrained model"
+    ],
+    "outputs": [
+      "Model"
+    ]
+  },
+  "cellpose-training-2": {
+    "inputs": [
+      "Training data",
+      "Test data"
+    ],
+    "outputs": [
+      "Model"
+    ]
+  },
+  "cellpose-training-2.x": {
+    "inputs": [
+      "Training data",
+      "Test data",
+      "Pretrained model"
+    ],
+    "outputs": [
+      "Model"
+    ]
+  },
+  "clij-pull-from-gpu": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "clij-push-to-gpu": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "clij:plugin:net.haesleinhuepf.clij2.plugins.AddImages": {
+    "inputs": [
+      "Summand1",
+      "Summand2"
+    ],
+    "outputs": [
+      "Destination"
+    ]
+  },
+  "clij:plugin:net.haesleinhuepf.clij2.plugins.AutomaticThreshold": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Destination"
+    ]
+  },
+  "clij:plugin:net.haesleinhuepf.clij2.plugins.AverageNeighborDistanceMap": {
+    "inputs": [],
+    "outputs": [],
+    "uninstantiable": true
+  },
+  "clij:plugin:net.haesleinhuepf.clij2.plugins.BinaryFillHoles": {
+    "inputs": [
+      "Source"
+    ],
+    "outputs": [
+      "Destination"
+    ]
+  },
+  "clij:plugin:net.haesleinhuepf.clij2.plugins.CentroidsOfLabels": {
+    "inputs": [
+      "Source"
+    ],
+    "outputs": [
+      "Pointlist Destination"
+    ]
+  },
+  "clij:plugin:net.haesleinhuepf.clij2.plugins.ConnectedComponentsLabelingBox": {
+    "inputs": [
+      "Binary Input"
+    ],
+    "outputs": [
+      "Labeling Destination"
+    ]
+  },
+  "clij:plugin:net.haesleinhuepf.clij2.plugins.ExcludeLabelsOnEdges": {
+    "inputs": [
+      "Label Map Input"
+    ],
+    "outputs": [
+      "Label Map Destination"
+    ]
+  },
+  "clij:plugin:net.haesleinhuepf.clij2.plugins.ExtendedDepthOfFocusSobelProjection": {
+    "inputs": [],
+    "outputs": [],
+    "uninstantiable": true
+  },
+  "clij:plugin:net.haesleinhuepf.clij2.plugins.GaussianBlur2D": {
+    "inputs": [
+      "Source"
+    ],
+    "outputs": [
+      "Destination"
+    ]
+  },
+  "clij:plugin:net.haesleinhuepf.clij2.plugins.ReduceLabelsToLabelEdges": {
+    "inputs": [],
+    "outputs": [],
+    "uninstantiable": true
+  },
+  "clij:plugin:net.haesleinhuepf.clijx.clij2wrappers.ExtendedDepthOfFocusSobelProjection": {
+    "inputs": [],
+    "outputs": [],
+    "uninstantiable": true
+  },
+  "convert-imagej-image": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "convert-parameters-data-to-results-table-data": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "converter": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": []
+  },
+  "data-batch-slicer": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "data-to-annotation-table": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "distribute-data": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": []
+  },
+  "download-files": {
+    "inputs": [],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "duplicate": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "export-3d-scene-to-collada": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Exported file"
+    ]
+  },
+  "export-data": {
+    "inputs": [
+      "Data",
+      "Path"
+    ],
+    "outputs": [
+      "Path"
+    ]
+  },
+  "export-data-by-parameter": {
+    "inputs": [
+      "Data"
+    ],
+    "outputs": [
+      "Output path"
+    ]
+  },
+  "export-data-by-parameter-v2": {
+    "inputs": [
+      "Data"
+    ],
+    "outputs": [
+      "Output path"
+    ]
+  },
+  "export-data-table": {
+    "inputs": [
+      "Data",
+      "Path"
+    ],
+    "outputs": [
+      "Path"
+    ]
+  },
+  "export-data-table-by-parameter": {
+    "inputs": [
+      "Data"
+    ],
+    "outputs": [
+      "Path"
+    ]
+  },
+  "export-ilastik-hdf5-image": {
+    "inputs": [
+      "Image"
+    ],
+    "outputs": [
+      "HDF5 File"
+    ]
+  },
+  "export-imagej-bioformats": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "export-imagej-bioformats-v2": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "export-roi-3d": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Exported file"
+    ]
+  },
+  "external-imagej-macro": {
+    "inputs": [],
+    "outputs": []
+  },
+  "extract-data-annotation": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "feature-vesselness-meijering2d": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "filaments-connect-vertices-fast": {
+    "inputs": [
+      "Input",
+      "Mask"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "filaments-convert-roi2d-to-filaments": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "filaments-convert-to-labels": {
+    "inputs": [
+      "Input",
+      "Reference"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "filaments-convert-to-labels-v2": {
+    "inputs": [
+      "Input",
+      "Reference"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "filaments-convert-to-mask": {
+    "inputs": [
+      "Input",
+      "Reference"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "filaments-convert-to-rgb": {
+    "inputs": [
+      "Input",
+      "Reference"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "filaments-convert-to-roi": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "filaments-convert-to-roi3d": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "filaments-filter-components-by-properties": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "filaments-filter-filaments-at-border": {
+    "inputs": [
+      "Input",
+      "Reference"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "filaments-find-linear-vertex-order": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "filaments-fix-overlaps-non-branching": {
+    "inputs": [
+      "Input",
+      "Mask"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "filaments-from-json": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "filaments-measure-edges": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "filaments-measure-filaments": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "filaments-measure-vertices": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "filaments-remove-duplicate-vertices": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "filaments-set-overlay": {
+    "inputs": [
+      "Input",
+      "Filaments"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "filaments-set-vertex-intensity-from-image": {
+    "inputs": [
+      "Filaments",
+      "Intensity"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "filaments-set-vertex-thickness-from-image": {
+    "inputs": [
+      "Filaments",
+      "Radius"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "filaments-simplify": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "filaments-skeleton-to-filaments-2d": {
+    "inputs": [
+      "Skeleton"
+    ],
+    "outputs": [
+      "Filaments"
+    ]
+  },
+  "filaments-smooth-downscale": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "filaments-split-into-connected-components": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "filaments-tsoax": {
+    "inputs": [
+      "Image"
+    ],
+    "outputs": [
+      "Filaments",
+      "Snakes",
+      "Raw"
+    ]
+  },
+  "filaments-tsoax-2d": {
+    "inputs": [
+      "Image"
+    ],
+    "outputs": [
+      "Filaments",
+      "Snakes"
+    ]
+  },
+  "file-annotate-by-name": {
+    "inputs": [
+      "Files"
+    ],
+    "outputs": [
+      "Annotated files"
+    ]
+  },
+  "folder-list-files": {
+    "inputs": [
+      "Folders"
+    ],
+    "outputs": [
+      "Files"
+    ]
+  },
+  "folder-list-subfolders": {
+    "inputs": [
+      "Folders"
+    ],
+    "outputs": [
+      "Subfolders"
+    ]
+  },
+  "folder-mkdir": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "generate-unique-annotation": {
+    "inputs": [
+      "Data"
+    ],
+    "outputs": [
+      "Annotated data"
+    ]
+  },
+  "ij-convert-image-to-16-bit": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij-convert-image-to-32-bit": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij-convert-image-to-8-bit": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij-convert-image-to-hsb-colors": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij-convert-image-to-rgb-colors": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij-imgplus-to-gui": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij-import-stack": {
+    "inputs": [
+      "Folder"
+    ],
+    "outputs": [
+      "Image"
+    ]
+  },
+  "ij-math-chamfer-distance-map-2d": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-analyze-annotate-by-image-statistics-expression": {
+    "inputs": [
+      "Image"
+    ],
+    "outputs": [
+      "Image"
+    ]
+  },
+  "ij1-analyze-find-particles2d": {
+    "inputs": [
+      "Mask"
+    ],
+    "outputs": [
+      "ROI",
+      "Measurements"
+    ]
+  },
+  "ij1-analyze-image-statistics": {
+    "inputs": [
+      "Image",
+      "ROI"
+    ],
+    "outputs": [
+      "Measurements"
+    ]
+  },
+  "ij1-analyze-image-statistics-expression": {
+    "inputs": [
+      "Image"
+    ],
+    "outputs": [
+      "Measurements"
+    ]
+  },
+  "ij1-analyze-statistics-histogram": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-analyze-statistics-histogram-key-value": {
+    "inputs": [
+      "Key",
+      "Value"
+    ],
+    "outputs": [
+      "Histogram"
+    ]
+  },
+  "ij1-apply-lut": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-background-rollingball2d": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-binary-binarize": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-binary-bitwise": {
+    "inputs": [
+      "Input 1",
+      "Input 2"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-binary-connected-component-labeling-2d": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-binary-connected-component-labeling-3d": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-binary-dtwatershed2d": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-binary-hough-line-segments": {
+    "inputs": [
+      "Mask"
+    ],
+    "outputs": [
+      "Lines",
+      "Peaks",
+      "Mask",
+      "Results",
+      "Accumulator"
+    ]
+  },
+  "ij1-binary-volume-opening-2d": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-blur-box2d": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-blur-gaussian2d": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-blur-gaussian3d": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-blur-median2d": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-blur-median2d-rgb": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-blur-median3d": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-calibration-copy-physical-dimensions": {
+    "inputs": [
+      "Source",
+      "Target"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-calibration-draw-scale-bar": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-calibration-set-physical-dimensions": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-colocalization-coloc2": {
+    "inputs": [
+      "Channel 1",
+      "Channel 2",
+      "ROI"
+    ],
+    "outputs": [
+      "Results",
+      "Plots",
+      "Histograms"
+    ]
+  },
+  "ij1-color-blend-images": {
+    "inputs": [],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-color-combine-rgb": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-color-invert": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-color-invert-rgb": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-color-merge-channels": {
+    "inputs": [],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-color-set-to-color": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-color-set-to-grayscale-value": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-color-split-channels": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": []
+  },
+  "ij1-color-split-channels-2": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": []
+  },
+  "ij1-color-to-rgb": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-contrast-apply-ij-per-slice": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-contrast-calibrate": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-contrast-clahe": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-contrast-histogram-enhancer": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-contrast-illumination-correction2d": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-convert-image-to-table": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-convert-table-to-image": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-dimensions-expression-slicer": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-dimensions-extended-depth-of-focus": {
+    "inputs": [
+      "Input",
+      "Score"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-dimensions-hyper-stacksplitter": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-dimensions-inpput2montage": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-dimensions-input2montage-v2": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-dimensions-merge-2d-to-hyperstack": {
+    "inputs": [
+      "Slices"
+    ],
+    "outputs": [
+      "Hyperstack"
+    ]
+  },
+  "ij1-dimensions-reorder": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-dimensions-reslice": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-dimensions-stack-to-2d": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-dimensions-stack2montage": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-dimensions-stackmerger": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-dimensions-stacks-to-dimension": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-dimensions-stacksplitter": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-dimensions-zproject": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-dimensions-zproject-2": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-enhance-bleach-correction": {
+    "inputs": [
+      "Input",
+      "ROI"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-export-ome-zarr": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-extract-ome-image-xml": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-feature-featurej-derivatives": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-feature-laplacian-of-gaussian": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-feature-maxima-local-2d": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-feature-mfc-2d": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Input"
+    ]
+  },
+  "ij1-feature-orientationj-2d": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Gradient-X",
+      "Gradient-Y",
+      "Orientation",
+      "Energy",
+      "Coherency"
+    ]
+  },
+  "ij1-feature-vesselness-frangi": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-generate-filter-kernel-3d": {
+    "inputs": [],
+    "outputs": [
+      "Kernel"
+    ]
+  },
+  "ij1-generate-zero-image": {
+    "inputs": [
+      "Annotations"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-image-set-metadata-from-table": {
+    "inputs": [
+      "Image",
+      "Metadata"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-labels-dilate-labels": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-labels-extract-statistics": {
+    "inputs": [
+      "Labels",
+      "Image"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-labels-filter-by-overlap": {
+    "inputs": [
+      "Labels 1",
+      "Labels 2"
+    ],
+    "outputs": [
+      "Labels 1",
+      "Labels 2"
+    ]
+  },
+  "ij1-labels-filter-by-statistics": {
+    "inputs": [
+      "Labels",
+      "Image"
+    ],
+    "outputs": [
+      "Labels"
+    ]
+  },
+  "ij1-labels-filter-filter-by-expression-3d": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-labels-get-label-boundaries": {
+    "inputs": [
+      "Labels"
+    ],
+    "outputs": [
+      "Boundaries"
+    ]
+  },
+  "ij1-labels-overlap-statistics": {
+    "inputs": [
+      "Image 1",
+      "Image 2"
+    ],
+    "outputs": [
+      "Total",
+      "Per label"
+    ]
+  },
+  "ij1-labels-remap": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-labels-remove-border-labels": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-labels-split-connected-components-2d": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-labels-to-mask": {
+    "inputs": [
+      "Labels"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-labels-to-rgb": {
+    "inputs": [
+      "Labels"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-labels-to-roi": {
+    "inputs": [
+      "Labels"
+    ],
+    "outputs": [
+      "ROI"
+    ]
+  },
+  "ij1-math-divide-by-maximum": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-math-edt2d": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-math-fast-image-arithmetics": {
+    "inputs": [
+      "I1"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-math-generate-from-expression": {
+    "inputs": [
+      "Annotations"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-math-imagecalculator2d": {
+    "inputs": [
+      "Input 1",
+      "Input 2"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-math-local-variance2d": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-math-math2d": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-math-transform2d": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-ml-labkit-segmentation": {
+    "inputs": [
+      "Raw",
+      "Model"
+    ],
+    "outputs": [
+      "Labels",
+      "Probabilities"
+    ]
+  },
+  "ij1-morph-binary-fillholes2d": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-morph-binary-skeletonize2d": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-morph-operation2d": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-morph-operation3d": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-noise-despeckle2d": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-noise-removeoutliers2d": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-remove-lut": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-roi-calculator": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-roi-color-by-name": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-roi-color-statistics": {
+    "inputs": [
+      "ROI",
+      "Reference"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-roi-convert-to-table": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-roi-count": {
+    "inputs": [
+      "Counted ROI"
+    ],
+    "outputs": [
+      "Counts"
+    ]
+  },
+  "ij1-roi-draw-line": {
+    "inputs": [
+      "ROI",
+      "Reference"
+    ],
+    "outputs": [
+      "ROI"
+    ]
+  },
+  "ij1-roi-draw-oval": {
+    "inputs": [
+      "ROI",
+      "Reference"
+    ],
+    "outputs": [
+      "ROI"
+    ]
+  },
+  "ij1-roi-draw-rectangle": {
+    "inputs": [
+      "ROI",
+      "Reference"
+    ],
+    "outputs": [
+      "ROI"
+    ]
+  },
+  "ij1-roi-draw-text": {
+    "inputs": [
+      "ROI",
+      "Reference"
+    ],
+    "outputs": [
+      "ROI"
+    ]
+  },
+  "ij1-roi-enlarge-shrink": {
+    "inputs": [
+      "Input",
+      "Reference"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-roi-explode": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-roi-extract-metadata": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-roi-filter-by-name": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-roi-filter-by-overlap": {
+    "inputs": [
+      "ROI 1",
+      "ROI 2",
+      "Reference"
+    ],
+    "outputs": [
+      "ROI 1",
+      "ROI 2"
+    ]
+  },
+  "ij1-roi-filter-statistics": {
+    "inputs": [
+      "ROI",
+      "Reference"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-roi-from-mask": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-roi-from-table-point": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-roi-from-table-rectangular": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-roi-from-table-text": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-roi-generate-name": {
+    "inputs": [
+      "ROI",
+      "Reference"
+    ],
+    "outputs": [
+      "ROI"
+    ]
+  },
+  "ij1-roi-merge": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-roi-relation-2d": {
+    "inputs": [
+      "ROI 1",
+      "ROI 2",
+      "Reference"
+    ],
+    "outputs": [
+      "Measurements"
+    ]
+  },
+  "ij1-roi-remove-overlay": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-roi-render-overlay": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-roi-set-metadata-from-table": {
+    "inputs": [
+      "ROI",
+      "Metadata"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-roi-set-overlay": {
+    "inputs": [
+      "Input",
+      "ROI"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-roi-set-properties": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-roi-set-properties-from-expressions": {
+    "inputs": [
+      "Input",
+      "Reference"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-roi-split": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-roi-split-into-connected-components": {
+    "inputs": [
+      "Input",
+      "Reference"
+    ],
+    "outputs": [
+      "Components"
+    ]
+  },
+  "ij1-roi-statistics": {
+    "inputs": [
+      "ROI",
+      "Reference"
+    ],
+    "outputs": [
+      "Measurements"
+    ]
+  },
+  "ij1-roi-to-annotations": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-roi-to-labels-expression": {
+    "inputs": [
+      "ROI",
+      "Reference"
+    ],
+    "outputs": [
+      "Labels"
+    ]
+  },
+  "ij1-roi-to-labels-name": {
+    "inputs": [
+      "ROI",
+      "Reference"
+    ],
+    "outputs": [
+      "Labels"
+    ]
+  },
+  "ij1-roi-to-mask": {
+    "inputs": [
+      "ROI",
+      "Image"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-roi-to-rgb": {
+    "inputs": [
+      "ROI",
+      "Image"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-roi-to-rgb-unreferenced": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-segment-ridge-detector-2d": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Mask",
+      "Lines",
+      "Junctions"
+    ]
+  },
+  "ij1-segment-seeded-watershed": {
+    "inputs": [
+      "Image",
+      "Markers"
+    ],
+    "outputs": [
+      "Labels"
+    ]
+  },
+  "ij1-set-lut-from-color-map": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-set-lut-from-colors": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-sharpen-laplacian2d": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-threshold-auto2d": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-threshold-expression2d-16u": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-threshold-expression2d-32f": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-threshold-local-auto2d-bernsen": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-threshold-local-auto2d-phansalkar": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-threshold-manual2d-16u": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-threshold-manual2d-8u": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-transform-crop2d": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-transform-equalize-dimensions": {
+    "inputs": [
+      "Input",
+      "Reference"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-transform-equalize-dimensions-max-io": {
+    "inputs": [
+      "Data"
+    ],
+    "outputs": [
+      "Data"
+    ]
+  },
+  "ij1-transform-equalize-expand2d": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-transform-rotate2d-free": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-transform-scale2d": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-transform-scale3d": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-transform-tile-2d": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-transform-tile-2d-v2": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-transform-un-tile-2d": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij1-turbo-reg-image-registration": {
+    "inputs": [
+      "Reference",
+      "Input"
+    ],
+    "outputs": [
+      "Reference",
+      "Registered",
+      "Transform"
+    ]
+  },
+  "ij3d-analyze-find-particles": {
+    "inputs": [
+      "Mask"
+    ],
+    "outputs": [
+      "ROI"
+    ]
+  },
+  "ij3d-filter-roi3d-by-statistics": {
+    "inputs": [
+      "ROI",
+      "Reference"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij3d-filter-roi3d-list": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij3d-labels-to-roi": {
+    "inputs": [
+      "Labels"
+    ],
+    "outputs": [
+      "ROI"
+    ]
+  },
+  "ij3d-measure-pairwise-roi3d": {
+    "inputs": [
+      "ROI 1",
+      "ROI 2",
+      "Reference"
+    ],
+    "outputs": [
+      "Measurements"
+    ]
+  },
+  "ij3d-measure-roi3d": {
+    "inputs": [
+      "ROI",
+      "Reference"
+    ],
+    "outputs": [
+      "Measurements"
+    ]
+  },
+  "ij3d-roi-change-properties": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij3d-roi-change-properties-from-expressions": {
+    "inputs": [
+      "Input",
+      "Reference"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij3d-roi-change-properties-from-table": {
+    "inputs": [
+      "Input",
+      "Metadata"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij3d-roi-color-by-statistics": {
+    "inputs": [
+      "ROI",
+      "Reference"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij3d-roi-convert-to-3d-mesh": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij3d-roi-convert-to-labels": {
+    "inputs": [
+      "ROI",
+      "Reference"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij3d-roi-convert-to-mask": {
+    "inputs": [
+      "ROI",
+      "Reference"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij3d-roi-convert-to-rgb": {
+    "inputs": [
+      "ROI",
+      "Image"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij3d-roi-filter-by-overlap": {
+    "inputs": [
+      "ROI 1",
+      "ROI 2",
+      "Reference"
+    ],
+    "outputs": [
+      "ROI 1",
+      "ROI 2"
+    ]
+  },
+  "ij3d-roi-outline": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij3d-roi-set-overlay": {
+    "inputs": [
+      "Input",
+      "ROI"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ij3d-roi-split-explode": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "iji-export-image-to-web": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Exported file"
+    ]
+  },
+  "iji-export-image-v2": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Exported file"
+    ]
+  },
+  "iji-export-table": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Exported file"
+    ]
+  },
+  "iji-export-table-as-xlsx": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Exported file"
+    ]
+  },
+  "iji-export-table-as-xlsx-v2": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Exported file"
+    ]
+  },
+  "iji-export-table-v2": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Exported file"
+    ]
+  },
+  "ilastik-pixel-classification": {
+    "inputs": [
+      "Image",
+      "Project"
+    ],
+    "outputs": [
+      "Simple Segmentation"
+    ]
+  },
+  "image-properties-to-annotation": {
+    "inputs": [
+      "Image"
+    ],
+    "outputs": [
+      "Annotated image"
+    ]
+  },
+  "import-cellpose-2.x-pretrained-model": {
+    "inputs": [],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "import-cellpose-3.x-pretrained-denoise-model": {
+    "inputs": [],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "import-cellpose-3.x-pretrained-segmentation-model": {
+    "inputs": [],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "import-cellpose-4.x-pretrained-segmentation-model": {
+    "inputs": [],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "import-cellpose-model": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "import-cellpose-model-v2": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "import-data-from-slot-folder": {
+    "inputs": [
+      "Data table folder"
+    ],
+    "outputs": [
+      "Data"
+    ]
+  },
+  "import-data-table-from-archive": {
+    "inputs": [
+      "Archive"
+    ],
+    "outputs": [
+      "Data"
+    ]
+  },
+  "import-file": {
+    "inputs": [],
+    "outputs": [
+      "Filename"
+    ]
+  },
+  "import-file-list": {
+    "inputs": [],
+    "outputs": [
+      "Filenames"
+    ]
+  },
+  "import-folder": {
+    "inputs": [],
+    "outputs": [
+      "Folder path"
+    ]
+  },
+  "import-folder-list": {
+    "inputs": [],
+    "outputs": [
+      "Folder paths"
+    ]
+  },
+  "import-imagej-bioformats": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "import-imagej-imgplus-from-file": {
+    "inputs": [
+      "Files"
+    ],
+    "outputs": [
+      "Image"
+    ]
+  },
+  "import-imagej-results-table-from-file": {
+    "inputs": [
+      "Files"
+    ],
+    "outputs": [
+      "Results table"
+    ]
+  },
+  "import-imagej-roi-from-file": {
+    "inputs": [
+      "Files"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "import-json-from-file": {
+    "inputs": [
+      "File"
+    ],
+    "outputs": [
+      "Json"
+    ]
+  },
+  "import-ome-zarr-from-uri-as-imgplus": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "import-ome-zarr-from-zip-directory-as-imgplus": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "import-roi-3d": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "json-annotate-with-json-data": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "json-extract-data-as-table-json-path": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "list-zarr-uri-datasets": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "mask-to-3d-mesh": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "merge-scene-3d": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "merge-slots": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "modify-and-merge-tables": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "modify-tables": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ome-annotate-data-with-metadata": {
+    "inputs": [
+      "Input",
+      "OME XML"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ome-annotate-with-metadata": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "ome-image-from-image-plus": {
+    "inputs": [
+      "Image",
+      "ROI"
+    ],
+    "outputs": [
+      "OME Image"
+    ]
+  },
+  "omero-create-dataset": {
+    "inputs": [
+      "Project"
+    ],
+    "outputs": [
+      "Dataset"
+    ]
+  },
+  "omero-download-image": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "omero-download-table": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "omero-list-dataset-ids": {
+    "inputs": [
+      "Projects"
+    ],
+    "outputs": [
+      "Datasets"
+    ]
+  },
+  "omero-list-image-ids": {
+    "inputs": [
+      "Datasets"
+    ],
+    "outputs": [
+      "Images"
+    ]
+  },
+  "omero-list-project-ids": {
+    "inputs": [
+      "Group"
+    ],
+    "outputs": [
+      "Projects"
+    ]
+  },
+  "omero-upload-image": {
+    "inputs": [
+      "Images",
+      "Target dataset"
+    ],
+    "outputs": [
+      "Images"
+    ]
+  },
+  "omero-upload-table": {
+    "inputs": [
+      "Tables",
+      "Target"
+    ],
+    "outputs": [
+      "Tables"
+    ]
+  },
+  "omnipose": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Labels",
+      "ROI"
+    ]
+  },
+  "opencv-convert-depth": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "opencv-photo-inpainting": {
+    "inputs": [
+      "Input",
+      "Mask"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "parameters-define-table": {
+    "inputs": [],
+    "outputs": [
+      "Parameters"
+    ]
+  },
+  "parameters-merge": {
+    "inputs": [
+      "Input 1",
+      "Input 2"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "path-filter": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "path-to-annotation-simple": {
+    "inputs": [
+      "Paths"
+    ],
+    "outputs": [
+      "Annotated paths"
+    ]
+  },
+  "plot-from-table": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "plot-table:plot-category-statistical-bar": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "plot-table:plot-category-statistical-line": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "plot-table:plot-histogram": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "plot-table:plot-xy-line": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "plot-table:plot-xy-scatter": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "project-user-directory": {
+    "inputs": [],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "rename-annotation": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "set-imagej-bioformats-settings": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "table-add-annotation-columns": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "table-add-columns-generate": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "table-add-missing-rows-in-series": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "table-annotate-by-merged-columns": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "table-annotate-with-properties": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "table-apply-expression-per-row": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "table-apply-expression-per-row-v2": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "table-convert-columns": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "table-convert-to-histogram": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "table-convert-to-histogram-key-value": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "table-filter": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "table-filter-2": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "table-integrate-columns": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "table-merge-columns": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "table-merge-tables": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "table-process-columns": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "table-remove-columns": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "table-rename-columns": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "table-rename-columns-2": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "table-rename-columns-expression": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Input"
+    ]
+  },
+  "table-slice-rows": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "table-sort": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "table-sort-columns": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "table-split-by-columns": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "table-to-parameters": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "tesseract-ocr": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Results"
+    ]
+  },
+  "threshold-hessian2d": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "threshold-hough2d-fast": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Mask",
+      "Accumulator",
+      "Measurements"
+    ]
+  },
+  "trackmate-create-spot-detector-mask-detector": {
+    "inputs": [],
+    "outputs": [
+      "Spot detector"
+    ]
+  },
+  "trackmate-create-spot-tracker-sparse-lap-tracker": {
+    "inputs": [],
+    "outputs": [
+      "Spot tracker"
+    ]
+  },
+  "trackmate-detector": {
+    "inputs": [
+      "Image",
+      "Spot detector"
+    ],
+    "outputs": [
+      "Spots"
+    ]
+  },
+  "trackmate-filter-spots": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "trackmate-filter-tracks": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "trackmate-measure-tracks": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "trackmate-spots-to-roi": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "trackmate-tracking": {
+    "inputs": [
+      "Spots",
+      "Spot tracker"
+    ],
+    "outputs": [
+      "Tracks"
+    ]
+  },
+  "trackmate-visualize-follow-spots": {
+    "inputs": [
+      "Image",
+      "Tracks"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "trackmate-visualize-spots": {
+    "inputs": [
+      "Spots",
+      "Image"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "trackmate-visualize-tracks": {
+    "inputs": [
+      "Tracks",
+      "Image"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "xml-annotate-with-xml-data": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "xml-extract-data-as-table-xpath": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
+  },
+  "xml-prettify": {
+    "inputs": [
+      "Input"
+    ],
+    "outputs": [
+      "Output"
+    ]
   }
 }

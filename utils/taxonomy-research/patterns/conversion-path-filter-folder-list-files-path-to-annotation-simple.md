@@ -36,28 +36,32 @@ Mined pattern `conversion-path-filter-folder-list-files-path-to-annotation-simpl
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| import | `path-filter` |
-| import | `folder-list-files` |
+| role     | node ids                    |
+|----------|-----------------------------|
+| import   | `path-filter`               |
+| import   | `folder-list-files`         |
 | annotate | `path-to-annotation-simple` |
 
 ## Example graph
 
-Project: `AIAgentTests/03-ExampleWorkflows/Angela_Roots_38.jip` (relative to `/data/JIPipe`), compartment `Preprocessing`.
+Project: `AIAgentTests/03-ExampleWorkflows/Angela_Roots_38.jip` (relative to `/data/JIPipe`), compartment
+`Preprocessing`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `path-filter` | Filter paths |
-| n1 | `folder-list-files` | List ZIP |
-| n2 | `path-to-annotation-simple` | Add path to annotations |
+| key | node id                     | name                    |
+|-----|-----------------------------|-------------------------|
+| n0  | `path-filter`               | Filter paths            |
+| n1  | `folder-list-files`         | List ZIP                |
+| n2  | `path-to-annotation-simple` | Add path to annotations |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
-| Filter paths | `Output` | List ZIP | `Folders` | `path` |
-| List ZIP | `Files` | Add path to annotations | `Paths` | `file` |
+| from         | slot     | to                      | slot      | data class |
+|--------------|----------|-------------------------|-----------|------------|
+| Filter paths | `Output` | List ZIP                | `Folders` | `path`     |
+| List ZIP     | `Files`  | Add path to annotations | `Paths`   | `file`     |
 
 ## Template
 
-Proposed name `Filter paths -> List files -> Annotate with file/directory name`, menu path `Patterns/Data Sources/Filter paths -> List files -> Annotate with file/directory name` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/conversion-path-filter-folder-list-files-path-to-annotation-simple.json`.
+Proposed name `Filter paths -> List files -> Annotate with file/directory name`, menu path
+`Patterns/Data Sources/Filter paths -> List files -> Annotate with file/directory name` (proposal only — not
+registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/conversion-path-filter-folder-list-files-path-to-annotation-simple.json`.
 

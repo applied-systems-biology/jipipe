@@ -27,11 +27,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * Dumper for the bundled System patterns' FRESH-node slot sets (Task 2, B1
@@ -65,7 +61,7 @@ import java.util.TreeSet;
 class FreshNodeSlotProbeTest {
 
     private static final String PATTERN_RESOURCE_DIR =
-        "/org/hkijena/jipipe/plugins/nodetemplate/patterns/";
+            "/org/hkijena/jipipe/plugins/nodetemplate/patterns/";
     private static final String SIDECAR_RESOURCE = PATTERN_RESOURCE_DIR + "system-templates.json";
 
     @BeforeAll
@@ -74,6 +70,18 @@ class FreshNodeSlotProbeTest {
         // module preinits the ImageJ1 legacy patcher before any test class
         // loads, so ensureInstance() here is safe.
         JIPipe.ensureInstance();
+    }
+
+    /**
+     * Reads a bundled resource from the classpath as a UTF-8 string.
+     */
+    private static String readResource(String path) throws Exception {
+        try (InputStream in = FreshNodeSlotProbeTest.class.getResourceAsStream(path)) {
+            if (in == null) {
+                throw new AssertionError("resource not found on the classpath: " + path);
+            }
+            return new String(in.readAllBytes(), StandardCharsets.UTF_8);
+        }
     }
 
     @Test
@@ -127,16 +135,6 @@ class FreshNodeSlotProbeTest {
         Files.createDirectories(dst.getParent());
         JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValue(dst.toFile(), out);
         System.out.println("FreshNodeSlotProbe: " + out.size()
-            + " bundled pattern node types -> " + dst);
-    }
-
-    /** Reads a bundled resource from the classpath as a UTF-8 string. */
-    private static String readResource(String path) throws Exception {
-        try (InputStream in = FreshNodeSlotProbeTest.class.getResourceAsStream(path)) {
-            if (in == null) {
-                throw new AssertionError("resource not found on the classpath: " + path);
-            }
-            return new String(in.readAllBytes(), StandardCharsets.UTF_8);
-        }
+                + " bundled pattern node types -> " + dst);
     }
 }

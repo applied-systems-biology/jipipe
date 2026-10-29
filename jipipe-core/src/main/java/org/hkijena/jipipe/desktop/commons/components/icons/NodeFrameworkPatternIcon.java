@@ -19,7 +19,6 @@ import org.hkijena.jipipe.desktop.commons.nodepatterns.NodePatternRenderer;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernThemeStyle;
 import org.hkijena.jipipe.utils.ThemeUtils;
 
-import javax.swing.*;
 import java.awt.*;
 
 /**

@@ -259,6 +259,15 @@ public class JIPipeDesktopProgressLoggerPanel extends JIPipeDesktopWorkbenchPane
     }
 
     /**
+     * Gets the current title.
+     *
+     * @return The current title
+     */
+    public String getTitle() {
+        return titleLabel.getText();
+    }
+
+    /**
      * Sets the title displayed in the header.
      *
      * @param title The new title
@@ -268,12 +277,12 @@ public class JIPipeDesktopProgressLoggerPanel extends JIPipeDesktopWorkbenchPane
     }
 
     /**
-     * Gets the current title.
+     * Checks if auto-scroll is enabled.
      *
-     * @return The current title
+     * @return True if auto-scroll is enabled
      */
-    public String getTitle() {
-        return titleLabel.getText();
+    public boolean isAutoScrollEnabled() {
+        return autoScrollEnabled;
     }
 
     /**
@@ -285,15 +294,6 @@ public class JIPipeDesktopProgressLoggerPanel extends JIPipeDesktopWorkbenchPane
         this.autoScrollEnabled = enabled;
         loggerPanel.setAutoScrollEnabled(enabled);
         updateAutoScrollButton();
-    }
-
-    /**
-     * Checks if auto-scroll is enabled.
-     *
-     * @return True if auto-scroll is enabled
-     */
-    public boolean isAutoScrollEnabled() {
-        return autoScrollEnabled;
     }
 
     /**

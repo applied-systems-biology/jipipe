@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.api.nodes.infos;
 
-import org.hkijena.jipipe.api.JIPipeNodeTaxonomyTags;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
+import org.hkijena.jipipe.api.JIPipeNodeTaxonomyTags;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
@@ -28,13 +28,10 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.junit.jupiter.api.Test;
 
-import javax.swing.Icon;
+import javax.swing.*;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Tests that {@link JIPipeJavaNodeInfo} extracts the taxonomy fields
@@ -45,6 +42,53 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * {@link NoFramework} framework.
  */
 class JIPipeJavaNodeInfoTaxonomyTest {
+
+    @Test
+    void convertedNodeExtractsTaxonomy() {
+        JIPipeJavaNodeInfo info = new JIPipeJavaNodeInfo("test-node", ConvertedStub.class);
+
+        // Primary function = first declared function
+        assertNotNull(info.getPrimaryFunction());
+        assertEquals("func-a", info.getPrimaryFunction().getId());
+
+        // Secondary functions = the rest
+        Set<JIPipeNodeTaxonomyFunction> secondary = info.getSecondaryFunctions();
+        assertEquals(1, secondary.size());
+        assertEquals("func-b", secondary.iterator().next().getId());
+
+        // Framework
+        assertTrue(info.getFramework() instanceof StubFramework,
+                "expected StubFramework, got: " + info.getFramework().getClass());
+        assertEquals("stub-framework", info.getFramework().getId());
+
+        // Spatial dimensions
+        assertEquals(Set.of(JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D, JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D),
+                info.getSpatialDimensions());
+
+        // Node-level taxonomy tags
+        assertEquals(Set.of("x"), info.getTaxonomyTags());
+
+        // Merged tags are only computed at registration (Task 7)
+        assertTrue(info.getMergedTags().isEmpty());
+    }
+
+    @Test
+    void unconvertedNodeHasNoFunction() {
+        JIPipeJavaNodeInfo info = new JIPipeJavaNodeInfo("legacy-node", UnconvertedStub.class);
+
+        // Unconverted: no primary function
+        assertNull(info.getPrimaryFunction());
+        assertTrue(info.getSecondaryFunctions().isEmpty());
+
+        // Framework defaults to NoFramework
+        assertNotNull(info.getFramework());
+        assertTrue(info.getFramework() instanceof NoFramework,
+                "expected NoFramework, got: " + info.getFramework().getClass());
+
+        // No spatial dimensions, no node-level tags
+        assertTrue(info.getSpatialDimensions().isEmpty());
+        assertTrue(info.getTaxonomyTags().isEmpty());
+    }
 
     /**
      * Minimal test implementation of {@link JIPipeNodeTaxonomyFunction}.
@@ -191,52 +235,5 @@ class JIPipeJavaNodeInfoTaxonomyTest {
         @Override
         public void run(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         }
-    }
-
-    @Test
-    void convertedNodeExtractsTaxonomy() {
-        JIPipeJavaNodeInfo info = new JIPipeJavaNodeInfo("test-node", ConvertedStub.class);
-
-        // Primary function = first declared function
-        assertNotNull(info.getPrimaryFunction());
-        assertEquals("func-a", info.getPrimaryFunction().getId());
-
-        // Secondary functions = the rest
-        Set<JIPipeNodeTaxonomyFunction> secondary = info.getSecondaryFunctions();
-        assertEquals(1, secondary.size());
-        assertEquals("func-b", secondary.iterator().next().getId());
-
-        // Framework
-        assertTrue(info.getFramework() instanceof StubFramework,
-            "expected StubFramework, got: " + info.getFramework().getClass());
-        assertEquals("stub-framework", info.getFramework().getId());
-
-        // Spatial dimensions
-        assertEquals(Set.of(JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D, JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D),
-            info.getSpatialDimensions());
-
-        // Node-level taxonomy tags
-        assertEquals(Set.of("x"), info.getTaxonomyTags());
-
-        // Merged tags are only computed at registration (Task 7)
-        assertTrue(info.getMergedTags().isEmpty());
-    }
-
-    @Test
-    void unconvertedNodeHasNoFunction() {
-        JIPipeJavaNodeInfo info = new JIPipeJavaNodeInfo("legacy-node", UnconvertedStub.class);
-
-        // Unconverted: no primary function
-        assertNull(info.getPrimaryFunction());
-        assertTrue(info.getSecondaryFunctions().isEmpty());
-
-        // Framework defaults to NoFramework
-        assertNotNull(info.getFramework());
-        assertTrue(info.getFramework() instanceof NoFramework,
-            "expected NoFramework, got: " + info.getFramework().getClass());
-
-        // No spatial dimensions, no node-level tags
-        assertTrue(info.getSpatialDimensions().isEmpty());
-        assertTrue(info.getTaxonomyTags().isEmpty());
     }
 }

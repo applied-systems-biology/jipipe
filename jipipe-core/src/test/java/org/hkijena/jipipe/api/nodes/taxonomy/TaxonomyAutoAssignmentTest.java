@@ -27,16 +27,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 
-import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyInputProfile.ANY;
-import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyInputProfile.NA;
-import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyInputProfile.PLANE_2D;
-import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyInputProfile.VOLUME_3D;
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyInputProfile.*;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Tests for {@link TaxonomyAutoAssignment}: the input-profile-derived spatial
@@ -62,33 +56,33 @@ class TaxonomyAutoAssignmentTest {
     void gaussianFilterNameMatchesFiltering() {
         // "filter"(8) + "gaussian"(1) both score filtering
         assertEquals(FilteringFunction.class,
-            JIPipe.getNodeTaxonomyService().inferFunction("3D Gaussian filter").getClass());
+                JIPipe.getNodeTaxonomyService().inferFunction("3D Gaussian filter").getClass());
     }
 
     @Test
     void medianFilterNameMatchesFiltering() {
         // "filter"(8) + "median"(1) both score filtering
         assertEquals(FilteringFunction.class,
-            JIPipe.getNodeTaxonomyService().inferFunction("Median filter").getClass());
+                JIPipe.getNodeTaxonomyService().inferFunction("Median filter").getClass());
     }
 
     @Test
     void segmentNameMatchesSegmentation() {
         assertEquals(SegmentationFunction.class,
-            JIPipe.getNodeTaxonomyService().inferFunction("Segment cells").getClass());
+                JIPipe.getNodeTaxonomyService().inferFunction("Segment cells").getClass());
     }
 
     @Test
     void unknownNameFallsBackToMiscellaneousUnassignedWithoutThrowing() {
         JIPipeNodeTaxonomyFunction function =
-            JIPipe.getNodeTaxonomyService().inferFunction("Some totally unknown operation xyz");
+                JIPipe.getNodeTaxonomyService().inferFunction("Some totally unknown operation xyz");
         assertEquals(MiscellaneousUnassignedFunction.class, function.getClass());
     }
 
     @Test
     void resampleNameMatchesResampling() {
         assertEquals(ResamplingFunction.class,
-            JIPipe.getNodeTaxonomyService().inferFunction("Resample").getClass());
+                JIPipe.getNodeTaxonomyService().inferFunction("Resample").getClass());
     }
 
     @Test
@@ -96,19 +90,19 @@ class TaxonomyAutoAssignmentTest {
         // "watershed" is deliberately NOT in any function's patterns:
         // asserts the fallback branch (the 6.0.0 behavior change)
         assertEquals(MiscellaneousUnassignedFunction.class,
-            JIPipe.getNodeTaxonomyService().inferFunction("Watershed").getClass());
+                JIPipe.getNodeTaxonomyService().inferFunction("Watershed").getClass());
     }
 
     @Test
     void colorNameMatchesColorStack() {
         assertEquals(ColorStackFunction.class,
-            JIPipe.getNodeTaxonomyService().inferFunction("Color convert").getClass());
+                JIPipe.getNodeTaxonomyService().inferFunction("Color convert").getClass());
     }
 
     @Test
     void nullNameFallsBackToMiscellaneousUnassignedWithoutThrowing() {
         assertEquals(MiscellaneousUnassignedFunction.class,
-            JIPipe.getNodeTaxonomyService().inferFunction(null).getClass());
+                JIPipe.getNodeTaxonomyService().inferFunction(null).getClass());
     }
 
     @Test
@@ -140,9 +134,9 @@ class TaxonomyAutoAssignmentTest {
     void firstImageInputAfterNonImageInputIsUsed() {
         // The NA first class (non-image input) is skipped; the ANY image class decides.
         Function<Class<?>, JIPipeNodeTaxonomyInputProfile> byClass = cls ->
-            cls == String.class ? NA : ANY;
+                cls == String.class ? NA : ANY;
         assertEquals(Set.of(SPATIAL_2D, SPATIAL_3D),
-            TaxonomyAutoAssignment.spatialForFirstImageInput(List.of(String.class, Integer.class), byClass));
+                TaxonomyAutoAssignment.spatialForFirstImageInput(List.of(String.class, Integer.class), byClass));
     }
 
     @Test
@@ -160,7 +154,7 @@ class TaxonomyAutoAssignmentTest {
     void plane2dFirstImageInputYieldsSpatial2d() {
         Function<Class<?>, JIPipeNodeTaxonomyInputProfile> byClass = cls -> PLANE_2D;
         assertEquals(Set.of(SPATIAL_2D),
-            TaxonomyAutoAssignment.spatialForFirstImageInput(List.of(String.class), byClass));
+                TaxonomyAutoAssignment.spatialForFirstImageInput(List.of(String.class), byClass));
     }
 
     @Test
@@ -183,8 +177,8 @@ class TaxonomyAutoAssignmentTest {
     @Test
     void missingResourceYieldsAnEmptyMapping() {
         TaxonomyAutoAssignment.ResourceMapping mapping =
-            TaxonomyAutoAssignment.ResourceMapping.load(TaxonomyAutoAssignmentTest.class,
-                "taxonomy/does-not-exist.json");
+                TaxonomyAutoAssignment.ResourceMapping.load(TaxonomyAutoAssignmentTest.class,
+                        "taxonomy/does-not-exist.json");
         assertTrue(mapping.isEmpty());
         assertNull(mapping.functionIdOf("anything"));
     }
@@ -193,11 +187,11 @@ class TaxonomyAutoAssignmentTest {
     void tagMappingLoadsAndLooksUpTags() {
         // Tag audit resource loader: key -> tags, lowercase + trimmed
         TaxonomyAutoAssignment.TagMapping mapping =
-            TaxonomyAutoAssignment.TagMapping.load(TaxonomyAutoAssignmentTest.class,
-                "taxonomy/test-tag-mapping.json");
+                TaxonomyAutoAssignment.TagMapping.load(TaxonomyAutoAssignmentTest.class,
+                        "taxonomy/test-tag-mapping.json");
         assertFalse(mapping.isEmpty());
         assertEquals(Set.of("segmentation", "watershed", "labeling"),
-            mapping.tagsOf("CLIJ2 Watershed"));
+                mapping.tagsOf("CLIJ2 Watershed"));
         assertEquals(Set.of("filtering", "median"), mapping.tagsOf("CLIJ2 Median"));
         // Unmapped / null keys yield the empty set (never null)
         assertTrue(mapping.tagsOf("CLIJ2 Unmapped").isEmpty());
@@ -207,8 +201,8 @@ class TaxonomyAutoAssignmentTest {
     @Test
     void missingResourceYieldsAnEmptyTagMapping() {
         TaxonomyAutoAssignment.TagMapping mapping =
-            TaxonomyAutoAssignment.TagMapping.load(TaxonomyAutoAssignmentTest.class,
-                "taxonomy/does-not-exist.json");
+                TaxonomyAutoAssignment.TagMapping.load(TaxonomyAutoAssignmentTest.class,
+                        "taxonomy/does-not-exist.json");
         assertTrue(mapping.isEmpty());
         assertTrue(mapping.tagsOf("anything").isEmpty());
     }

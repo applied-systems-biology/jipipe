@@ -34,35 +34,40 @@ template:
 
 # Pattern: Comment -> Annotate with file/directory name -> List subfolders -> Annotate with file/directory name
 
-Mined pattern `chain-4-jipipe-comment-path-to-annotation-simple-folder-list-subfolders-path-to-annotation-simple` (shape `chain`, support 26).
+Mined pattern `chain-4-jipipe-comment-path-to-annotation-simple-folder-list-subfolders-path-to-annotation-simple` (shape
+`chain`, support 26).
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| other | `jipipe:comment` |
+| role     | node ids                    |
+|----------|-----------------------------|
+| other    | `jipipe:comment`            |
 | annotate | `path-to-annotation-simple` |
-| import | `folder-list-subfolders` |
+| import   | `folder-list-subfolders`    |
 | annotate | `path-to-annotation-simple` |
 
 ## Example graph
 
 Project: `AIAgentTests/03-ExampleWorkflows/Clara_08_feet.jip` (relative to `/data/JIPipe`), compartment `File handler`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `jipipe:comment` | Comment |
-| n1 | `path-to-annotation-simple` | Add path to annotations #1 |
-| n2 | `folder-list-subfolders` | List subfolders |
-| n3 | `path-to-annotation-simple` | Add path to annotations #2 |
+| key | node id                     | name                       |
+|-----|-----------------------------|----------------------------|
+| n0  | `jipipe:comment`            | Comment                    |
+| n1  | `path-to-annotation-simple` | Add path to annotations #1 |
+| n2  | `folder-list-subfolders`    | List subfolders            |
+| n3  | `path-to-annotation-simple` | Add path to annotations #2 |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
-| Comment | `Comment` | Add path to annotations #1 | `Paths` | `jipipe:data` |
-| Add path to annotations #1 | `Annotated paths` | List subfolders | `Folders` | `path` |
-| List subfolders | `Subfolders` | Add path to annotations #2 | `Paths` | `folder` |
+| from                       | slot              | to                         | slot      | data class    |
+|----------------------------|-------------------|----------------------------|-----------|---------------|
+| Comment                    | `Comment`         | Add path to annotations #1 | `Paths`   | `jipipe:data` |
+| Add path to annotations #1 | `Annotated paths` | List subfolders            | `Folders` | `path`        |
+| List subfolders            | `Subfolders`      | Add path to annotations #2 | `Paths`   | `folder`      |
 
 ## Template
 
-Proposed name `Comment -> Annotate with file/directory name -> List subfolders -> Annotate with file/directory name`, menu path `Patterns/Graph / Project/Comment -> Annotate with file/directory name -> List subfolders -> Annotate with file/directory name` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/chain-4-jipipe-comment-path-to-annotation-simple-folder-list-subfolders-path-to-annotation-simple.json`.
+Proposed name `Comment -> Annotate with file/directory name -> List subfolders -> Annotate with file/directory name`,
+menu path
+`Patterns/Graph / Project/Comment -> Annotate with file/directory name -> List subfolders -> Annotate with file/directory name`
+(proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/chain-4-jipipe-comment-path-to-annotation-simple-folder-list-subfolders-path-to-annotation-simple.json`.
 

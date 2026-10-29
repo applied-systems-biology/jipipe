@@ -35,27 +35,31 @@ Mined pattern `fan-out-ij1-analyze-find-particles2d-core-io-1-other-1` (shape `f
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| other | `ij1-analyze-find-particles2d` |
-| core-io | `io-interface`, `jipipe:compartment-output` |
-| other | `ij1-color-set-to-color`, `ij1-roi-to-mask-unreferenced`, `ij1-roi-to-rgb` |
+| role    | node ids                                                                   |
+|---------|----------------------------------------------------------------------------|
+| other   | `ij1-analyze-find-particles2d`                                             |
+| core-io | `io-interface`, `jipipe:compartment-output`                                |
+| other   | `ij1-color-set-to-color`, `ij1-roi-to-mask-unreferenced`, `ij1-roi-to-rgb` |
 
 ## Example graph
 
-Project: `AIAgentTests/01-BasicWorkshop/JSC_2025_04_Kidney_Compartments/kidney.jip` (relative to `/data/JIPipe`), compartment `Glomeruli`.
+Project: `AIAgentTests/01-BasicWorkshop/JSC_2025_04_Kidney_Compartments/kidney.jip` (relative to `/data/JIPipe`),
+compartment `Glomeruli`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `ij1-analyze-find-particles2d` | Find particles 2D |
-| n1 | `jipipe:compartment-output` | Output |
-| n2 | `ij1-roi-to-rgb` | Convert ROI to RGB |
+| key | node id                        | name               |
+|-----|--------------------------------|--------------------|
+| n0  | `ij1-analyze-find-particles2d` | Find particles 2D  |
+| n1  | `jipipe:compartment-output`    | Output             |
+| n2  | `ij1-roi-to-rgb`               | Convert ROI to RGB |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
+| from              | slot           | to     | slot           | data class             |
+|-------------------|----------------|--------|----------------|------------------------|
 | Find particles 2D | `Measurements` | Output | `Measurements` | `imagej-results-table` |
 
 ## Template
 
-Proposed name `Find particles 2D fans out to 5 target ids (roles: core-io, other)`, menu path `Patterns/Images/Find particles 2D fans out to 5 target ids (roles: core-io, other)` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/fan-out-ij1-analyze-find-particles2d-core-io-1-other-1.json`.
+Proposed name `Find particles 2D fans out to 5 target ids (roles: core-io, other)`, menu path
+`Patterns/Images/Find particles 2D fans out to 5 target ids (roles: core-io, other)` (proposal only — not registered).
+`data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/fan-out-ij1-analyze-find-particles2d-core-io-1-other-1.json`.
 

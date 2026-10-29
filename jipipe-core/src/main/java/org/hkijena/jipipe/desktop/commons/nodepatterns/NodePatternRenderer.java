@@ -13,10 +13,7 @@
 
 package org.hkijena.jipipe.desktop.commons.nodepatterns;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
-import java.awt.Shape;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.Map;
 import java.util.Random;
@@ -37,17 +34,22 @@ import java.util.concurrent.ConcurrentHashMap;
  * bucket up via drawImage.
  */
 public final class NodePatternRenderer {
+    /**
+     * The canonical node body size the pattern is rendered at (the theme preview's node).
+     */
+    public static final int NODE_WIDTH = 150;
+    public static final int NODE_HEIGHT = 75;
     private static final Map<String, BufferedImage> MASK_CACHE = new ConcurrentHashMap<>();
     private static final Map<String, BufferedImage> TINT_CACHE = new ConcurrentHashMap<>();
     private static final int BUCKET = 8;
     private static final int MAX = 512;
-    /** The canonical node body size the pattern is rendered at (the theme preview's node). */
-    public static final int NODE_WIDTH = 150;
-    public static final int NODE_HEIGHT = 75;
 
-    private NodePatternRenderer() {}
+    private NodePatternRenderer() {
+    }
 
-    /** White-on-transparent mask for (style, seed, size), from the cache. */
+    /**
+     * White-on-transparent mask for (style, seed, size), from the cache.
+     */
     public static BufferedImage mask(String styleId, String seed, int width, int height) {
         NodePatternFamily fam = NodePatternStyles.family(styleId);
         if (fam == null) return null; // unknown/null style => no pattern (fail quiet)
@@ -57,7 +59,9 @@ public final class NodePatternRenderer {
         return MASK_CACHE.computeIfAbsent(key, k -> render(fam, w, h, new Random(seed.hashCode())));
     }
 
-    /** Paints the mask into (x,y,w,h), tinted with {@code ink} at {@code opacity}. */
+    /**
+     * Paints the mask into (x,y,w,h), tinted with {@code ink} at {@code opacity}.
+     */
     public static void paint(Graphics2D g, int x, int y, int w, int h,
                              String styleId, String seed, Color ink, float opacity) {
         BufferedImage m = mask(styleId, seed, w, h);
@@ -109,7 +113,9 @@ public final class NodePatternRenderer {
         }
     }
 
-    /** Clears both caches (test hook; not needed for theme changes — the mask is theme-independent). */
+    /**
+     * Clears both caches (test hook; not needed for theme changes — the mask is theme-independent).
+     */
     public static void invalidateCache() {
         MASK_CACHE.clear();
         TINT_CACHE.clear();
@@ -117,7 +123,9 @@ public final class NodePatternRenderer {
 
     // ---- internal ----
 
-    /** Reuses or builds the tinted copy of the white mask (ink + its alpha, at {@code opacity}). */
+    /**
+     * Reuses or builds the tinted copy of the white mask (ink + its alpha, at {@code opacity}).
+     */
     private static BufferedImage tint(String maskId, BufferedImage mask, Color ink, float opacity) {
         int w = mask.getWidth(), h = mask.getHeight();
         float o = Math.max(0f, Math.min(1f, opacity));
@@ -140,8 +148,13 @@ public final class NodePatternRenderer {
         });
     }
 
-    private static int bucket(int v) { return Math.max(1, (v / BUCKET) * BUCKET); }
-    private static int clamp(int v) { return Math.min(MAX, Math.max(1, v)); }
+    private static int bucket(int v) {
+        return Math.max(1, (v / BUCKET) * BUCKET);
+    }
+
+    private static int clamp(int v) {
+        return Math.min(MAX, Math.max(1, v));
+    }
 
     private static BufferedImage render(NodePatternFamily fam, int w, int h, Random rng) {
         BufferedImage img = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);

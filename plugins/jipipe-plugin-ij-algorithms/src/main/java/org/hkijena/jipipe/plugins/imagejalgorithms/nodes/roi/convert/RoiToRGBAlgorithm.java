@@ -13,8 +13,7 @@
 
 package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.convert;
 
-import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
-import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
+import com.fasterxml.jackson.databind.JsonNode;
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.gui.ImageCanvas;
@@ -25,16 +24,16 @@ import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.rois.RoiFiltersFunction;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
-import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.rois.RoiFiltersFunction;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
+import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
@@ -48,17 +47,18 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.NumberParameterS
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalDoubleParameter;
 import org.hkijena.jipipe.utils.BufferedImageUtils;
 
-import com.fasterxml.jackson.databind.JsonNode;
-
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.Collections;
+
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
 /**
  * Wrapper around {@link RoiDrawer}
  */
 @SetJIPipeDocumentation(name = "Convert 2D ROI to RGB", description = "Creates an RGB image that draws 2D ROIs as colored outlines, fills, and optional labels. It takes a 2D ROI list and an optional reference image; without a reference, it uses a blank RGB canvas. The output is an RGB image of the ROI visualization.")
-@ConfigureJIPipeNode(function = RoiFiltersFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
+@ConfigureJIPipeNode(function = RoiFiltersFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = Roi2dListData.class, name = "ROI", description = "The ROI", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", description = "The image where ROI are drawn on", create = true, optional = true)
 @AddJIPipeOutputSlot(value = ImagePlusColorRGBData.class, name = "Output", description = "The ROI visualization (RGB image)", create = true)
@@ -121,6 +121,18 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
         this.ignoreT = other.ignoreT;
         this.magnification = other.magnification;
         this.preferRenderViaOverlay = other.preferRenderViaOverlay;
+    }
+
+    /**
+     * The default label font, matching the legacy defaults (the old
+     * {@code RoiDrawer} label size of 9, plain style). The legacy white
+     * foreground lives in the {@code labelColor} default (disabled), not in
+     * the font.
+     */
+    private static JIPipeFontFamilySizeStyleParameter defaultLabelFont() {
+        JIPipeFontFamilySizeStyleParameter f = new JIPipeFontFamilySizeStyleParameter();
+        f.migrateFrom(JIPipeFontFamilySizeStyleParameter.defaultFamily(), 9, Font.PLAIN);
+        return f;
     }
 
     @Override
@@ -386,18 +398,6 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
     @JIPipeParameter("prefer-render-via-overlay")
     public void setPreferRenderViaOverlay(boolean preferRenderViaOverlay) {
         this.preferRenderViaOverlay = preferRenderViaOverlay;
-    }
-
-    /**
-     * The default label font, matching the legacy defaults (the old
-     * {@code RoiDrawer} label size of 9, plain style). The legacy white
-     * foreground lives in the {@code labelColor} default (disabled), not in
-     * the font.
-     */
-    private static JIPipeFontFamilySizeStyleParameter defaultLabelFont() {
-        JIPipeFontFamilySizeStyleParameter f = new JIPipeFontFamilySizeStyleParameter();
-        f.migrateFrom(JIPipeFontFamilySizeStyleParameter.defaultFamily(), 9, Font.PLAIN);
-        return f;
     }
 
     /**

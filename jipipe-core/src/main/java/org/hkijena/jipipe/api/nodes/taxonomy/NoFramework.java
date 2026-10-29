@@ -25,7 +25,9 @@ package org.hkijena.jipipe.api.nodes.taxonomy;
  */
 public class NoFramework implements JIPipeNodeTaxonomyFramework {
 
-    /** The stable id of the no-framework sentinel (see the stable-ID rule). */
+    /**
+     * The stable id of the no-framework sentinel (see the stable-ID rule).
+     */
     public static final String ID = "jipipe:framework:none";
 
     @Override

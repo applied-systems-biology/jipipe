@@ -52,15 +52,15 @@ public final class JIPipeProjectParts {
      * The 9 part keys in write order.
      */
     public static final List<String> PART_KEYS = List.of(
-        "metadata",
-        "dependencies",
-        "runtime-partitions",
-        "run-sets",
-        "settings",
-        "additional-metadata",
-        "graph",
-        "compartments",
-        "jipipe:doc:parameters"
+            "metadata",
+            "dependencies",
+            "runtime-partitions",
+            "run-sets",
+            "settings",
+            "additional-metadata",
+            "graph",
+            "compartments",
+            "jipipe:doc:parameters"
     );
 
     private JIPipeProjectParts() {
@@ -85,7 +85,7 @@ public final class JIPipeProjectParts {
     public static Map<String, JsonNode> sliceParts(JIPipeProject project) throws IOException {
         ObjectMapper mapper = JsonUtils.getObjectMapper();
         JsonNode monolith = mapper.readValue(
-            mapper.writerWithDefaultPrettyPrinter().writeValueAsString(project), JsonNode.class);
+                mapper.writerWithDefaultPrettyPrinter().writeValueAsString(project), JsonNode.class);
         Map<String, JsonNode> parts = new LinkedHashMap<>();
         for (String key : PART_KEYS) {
             if (monolith.has(key)) {
@@ -103,7 +103,7 @@ public final class JIPipeProjectParts {
      * part key mapped to its {@code parts} value. Missing part keys are
      * omitted, as monoliths legitimately omit them. No other fields.
      *
-     * @param parts        part key → part node (as from {@link #sliceParts})
+     * @param parts         part key → part node (as from {@link #sliceParts})
      * @param jipipeVersion the {@code jipipe:project-jipipe-version} value
      * @return the assembled monolith tree
      */

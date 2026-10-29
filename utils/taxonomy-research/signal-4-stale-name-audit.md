@@ -4,8 +4,8 @@
 serialized, candidates found by section 2 signal 4 need to be carefully
 investigated if it's even a signal or just an old name."
 
-**Verdict: confirmed — partially.** Signal 4 as defined in the plan
-(`label ≠ current registry name`) conflates two events that serialize
+**Verdict: confirmed — partially.** Signal 4 as defined in the plan (`label ≠ current registry name`) conflates two
+events that serialize
 identically into `jipipe:node:name`:
 
 1. a **user** renames a node instance (genuine naming signal), and
@@ -47,7 +47,7 @@ resolved name at save time, default or custom).
   signature of a dev rename:
 
   | type | stale default (share) | current registry name |
-  |---|---|---|
+    |---|---|---|
   | `path-to-annotation-simple` | "Add path to annotations" (93%) | Annotate with file/directory name |
   | `ij1-roi-set-overlay` | "Set overlay" (99%) | Set 2D overlay |
   | `ij1-threshold-auto2d` | "Auto threshold 2D" (98%) | Auto threshold 2D (8-bit) |
@@ -69,8 +69,7 @@ Traced every consumer of `nameEvidence`:
   writer (`merge-dag-patterns.py`); the (C) judge and the review-report
   generator never read it. It was *intended* as namer vocabulary (plan
   §3.2) but (C)'s `build_state` never included it — (C) saw
-  `titleEvidence` (human-authored group/note/compartment titles) +
-  **registry** node names only.
+  `titleEvidence` (human-authored group/note/compartment titles) + **registry** node names only.
 - The **(C) namer** therefore produced all 265 mined + 154 derived names
   from registry names + authored titles — **no shipped name or description
   carries a stale node name.** (Verified in the shipped states, e.g.
@@ -81,7 +80,7 @@ Traced every consumer of `nameEvidence`:
   distort grouping. (Recorded as a known limitation; (B) is frozen and
   reviewed, not re-run.)
 
-**Net: no re-mine, no (B)/(C) re-run, no re-ship.** The defect was in a
+**Net: no re-mine, no (B)/ (C) re-run, no re-ship.** The defect was in a
 write-only research field.
 
 ## 4. The fix (implemented this commit)
@@ -101,8 +100,8 @@ one:
 A label is evidence only if it deviates from **both** — i.e. it is a
 genuine per-instance user choice.
 
-**Regenerated `dag-clusters.json`:** the (B) re-run was 100% cache-only
-(all 624 representative texts already embedded — verified before running,
+**Regenerated `dag-clusters.json`:** the (B) re-run was 100% cache-only (all 624 representative texts already embedded —
+verified before running,
 zero endpoint calls). The diff proves the clusters are **byte-identical
 except `nameEvidence`** (and the `generated` timestamp):
 

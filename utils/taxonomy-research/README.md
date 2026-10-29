@@ -1,8 +1,7 @@
 # Taxonomy research — real-pipeline corpus study (6.0.0, work item 1324)
 
 Research artifacts for mining the real JIPipe pipeline corpus for node-taxonomy
-findings. Part of the taxonomy follow-up research plan
-(`.superpowers/sdd/2026-10-14-taxonomy-followup-research/`).
+findings. Part of the taxonomy follow-up research plan (`.superpowers/sdd/2026-10-14-taxonomy-followup-research/`).
 
 ## Corpus provenance
 
@@ -12,16 +11,16 @@ findings. Part of the taxonomy follow-up research plan
 
 File counts (actual, 2026-10-14):
 
-| Source | Count |
-|---|---|
-| `Example workflows/*.jip` (top-level files) | **59** |
-| `AIAgentTests/**/*.jip` (recursive) | **102** |
-| **Total `.jip` files dumped** | **161** |
+| Source                                      | Count   |
+|---------------------------------------------|---------|
+| `Example workflows/*.jip` (top-level files) | **59**  |
+| `AIAgentTests/**/*.jip` (recursive)         | **102** |
+| **Total `.jip` files dumped**               | **161** |
 
 **Discrepancy vs. the brief (61 + 102 = 163):** the brief's expected count
 `61` comes from `ls "/data/JIPipe/Example workflows/" | wc -l`, which counts
-directory entries, not `.jip` files — the directory also contains one subdirectory
-(`JIPipe.tmp.dir`) and one non-project file (`workflow-pattern-analysis.md`).
+directory entries, not `.jip` files — the directory also contains one subdirectory (`JIPipe.tmp.dir`) and one
+non-project file (`workflow-pattern-analysis.md`).
 The recursive `*.jip` count is 59. AIAgentTests matches (102). The dumper
 processes every `*.jip` it finds under both roots (161 files total).
 
@@ -90,8 +89,8 @@ shared detector class to every dynamically-registered detector node.
   `loadError`, `compartments[]` → `name`, `nodes[]` (`uid`, `id`, `name`,
   `slots.input[]`/`slots.output[]` with `name` + raw on-disk `dataClass` token),
   `edges[]` (`fromUid`, `fromSlot`, `dataClass`, `toUid`, `toSlot`).
-- `registry.json` — generated registry (~716 KB), byte-stable across runs
-  (nodes sorted by id; the `functions` array sorted by function id; the
+- `registry.json` — generated registry (~716 KB), byte-stable across runs (nodes sorted by id; the `functions` array
+  sorted by function id; the
   `families` array sorted by family id, its `steps` by node id, and each
   `after` array lexicographically; every registry set/array sorted
   lexicographically). Locked shape: `nodes[]` (`id`, `name`, `framework`,
@@ -105,8 +104,8 @@ shared detector class to every dynamically-registered detector node.
   on `dataType`; the `functions` block resolves each node's function leaf id
   to its top-level branch; the `families` block feeds the family-coverage
   analysis.
-- `report.md` — the combined research report. **Section ownership:** section N
-  (1–6) is owned by `analysis/t{N+1}_*.py` and is regenerated IN PLACE on
+- `report.md` — the combined research report. **Section ownership:** section N (1–6) is owned by `analysis/t{N+1}_*.py`
+  and is regenerated IN PLACE on
   re-run (each script replaces only its own `^## N. ` → next `^## `/EOF span;
   the rest of the file is untouched); section 7 + the executive summary are
   hand-written (native Task 9). Re-run order does not matter.
@@ -185,12 +184,11 @@ brief's assumed shape suggested) — the dumper adapts to what is real:
   output.
 - The main graph also holds per-compartment `jipipe:compartment-output` **proxy
   nodes** (one per compartment) that declare the compartment's input/output slot
-  interface. All 31,826 main-graph edges are re-homed into compartments by the
-  **target** node's compartment. Consequently, an edge whose source is another
+  interface. All 31,826 main-graph edges are re-homed into compartments by the **target** node's compartment.
+  Consequently, an edge whose source is another
   compartment's output proxy appears in the target's compartment, and its
   `fromUid` references a node of the source compartment (the selftest's edge
-  check resolves source uids project-wide for this reason).
-  *Known limitation:* the two empty template projects
+  check resolves source uids project-wide for this reason). *Known limitation:* the two empty template projects
   `AIAgentTests/06-CreatedProjects/EmptyProject/*.jip` store their
   inter-compartment wiring only as alias-based compartment-graph edges and have
   zero main-graph edges, so that wiring is absent from `corpus.json` (the

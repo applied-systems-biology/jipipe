@@ -16,14 +16,7 @@ package org.hkijena.jipipe.api.service.components;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyInferencePattern;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.MiscellaneousFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ColorStackFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.FilteringFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.MeasurementsFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.MergingSplittingFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.PreprocessingFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ResamplingFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.SegmentationFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ThresholdingFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.*;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.misc.MiscellaneousUnassignedFunction;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,18 +36,6 @@ import static org.junit.jupiter.api.Assertions.*;
 class NodeTaxonomyInferenceTest {
 
     private static final List<JIPipeNodeTaxonomyServiceComponent.IndexedKeyword> INDEX = buildIndex();
-
-    private static List<JIPipeNodeTaxonomyServiceComponent.IndexedKeyword> buildIndex() {
-        // a slice of the real aggregate index: enough to exercise every rule
-        List<JIPipeNodeTaxonomyServiceComponent.IndexedKeyword> list = new ArrayList<>();
-        list.add(new JIPipeNodeTaxonomyServiceComponent.IndexedKeyword("segment", "jipipe:function:segmentation", 9f));
-        list.add(new JIPipeNodeTaxonomyServiceComponent.IndexedKeyword("filter", "jipipe:function:filtering", 8f));
-        list.add(new JIPipeNodeTaxonomyServiceComponent.IndexedKeyword("median", "jipipe:function:filtering", 1f));
-        list.add(new JIPipeNodeTaxonomyServiceComponent.IndexedKeyword("color", "jipipe:function:color-stack", 2f));
-        list.add(new JIPipeNodeTaxonomyServiceComponent.IndexedKeyword("stack", "jipipe:function:merging-splitting", 3f));
-        return list;
-    }
-
     // (the brief sketched this as a static method, but scoreName takes a
     // Function parameter — a bare method name is not a valid expression, so
     // it is a static final field; every call site is unchanged)
@@ -67,6 +48,18 @@ class NodeTaxonomyInferenceTest {
                 case "jipipe:function:misc" -> new MiscellaneousFunction();
                 default -> null; // unregistered id -> soft fail
             };
+    private JIPipeNodeTaxonomyServiceComponent freshComponent;
+
+    private static List<JIPipeNodeTaxonomyServiceComponent.IndexedKeyword> buildIndex() {
+        // a slice of the real aggregate index: enough to exercise every rule
+        List<JIPipeNodeTaxonomyServiceComponent.IndexedKeyword> list = new ArrayList<>();
+        list.add(new JIPipeNodeTaxonomyServiceComponent.IndexedKeyword("segment", "jipipe:function:segmentation", 9f));
+        list.add(new JIPipeNodeTaxonomyServiceComponent.IndexedKeyword("filter", "jipipe:function:filtering", 8f));
+        list.add(new JIPipeNodeTaxonomyServiceComponent.IndexedKeyword("median", "jipipe:function:filtering", 1f));
+        list.add(new JIPipeNodeTaxonomyServiceComponent.IndexedKeyword("color", "jipipe:function:color-stack", 2f));
+        list.add(new JIPipeNodeTaxonomyServiceComponent.IndexedKeyword("stack", "jipipe:function:merging-splitting", 3f));
+        return list;
+    }
 
     @Test
     void singleKeywordWins() {
@@ -110,13 +103,6 @@ class NodeTaxonomyInferenceTest {
         assertEquals("jipipe:function:color-stack", fn.getId(), "tie -> smallest id");
     }
 
-    @Test
-    void unregisteredFunctionInIndexIsSkippedNotThrown() {
-        List<JIPipeNodeTaxonomyServiceComponent.IndexedKeyword> ghostIndex = List.of(
-                new JIPipeNodeTaxonomyServiceComponent.IndexedKeyword("segment", "jipipe:function:ghost", 9f));
-        assertNull(JIPipeNodeTaxonomyServiceComponent.scoreName("segment", ghostIndex, lookup));
-    }
-
     // ------------------------------------------------------------------
     // Instance-level inference on a fresh, un-booted component
     // (new JIPipeNodeTaxonomyServiceComponent(null) is legal for these
@@ -124,9 +110,126 @@ class NodeTaxonomyInferenceTest {
     // which register/unregister/inferFunction do not touch)
     // ------------------------------------------------------------------
 
-    private JIPipeNodeTaxonomyServiceComponent freshComponent;
+    @Test
+    void unregisteredFunctionInIndexIsSkippedNotThrown() {
+        List<JIPipeNodeTaxonomyServiceComponent.IndexedKeyword> ghostIndex = List.of(
+                new JIPipeNodeTaxonomyServiceComponent.IndexedKeyword("segment", "jipipe:function:ghost", 9f));
+        assertNull(JIPipeNodeTaxonomyServiceComponent.scoreName("segment", ghostIndex, lookup));
+    }
 
-    /** A "second plugin" function: test-local class, declared patterns only. */
+    @BeforeEach
+    void createFreshComponent() {
+        freshComponent = new JIPipeNodeTaxonomyServiceComponent(null);
+        // The 8 pattern-bearing functions + the two miscellaneous functions,
+        // registered flat (childrenOf/validation are not exercised here).
+        for (JIPipeNodeTaxonomyFunction function : new JIPipeNodeTaxonomyFunction[]{
+                new SegmentationFunction(),
+                new FilteringFunction(),
+                new ThresholdingFunction(),
+                new ResamplingFunction(),
+                new PreprocessingFunction(),
+                new MeasurementsFunction(),
+                new MergingSplittingFunction(),
+                new ColorStackFunction(),
+                new MiscellaneousFunction(),
+                new MiscellaneousUnassignedFunction()
+        }) {
+            freshComponent.registerFunction(function);
+        }
+    }
+
+    @AfterEach
+    void disposeFreshComponent() {
+        freshComponent = null;
+    }
+
+    @Test
+    void parityThreeDGaussianFilterIsFiltering() {
+        assertEquals(FilteringFunction.class,
+                freshComponent.inferFunction("3D Gaussian filter").getClass());
+    }
+
+    // (a) parity corpus — the exact names of the retired functionForName tests
+
+    @Test
+    void parityMedianFilterIsFiltering() {
+        assertEquals(FilteringFunction.class,
+                freshComponent.inferFunction("Median filter").getClass());
+    }
+
+    @Test
+    void paritySegmentCellsIsSegmentation() {
+        assertEquals(SegmentationFunction.class,
+                freshComponent.inferFunction("Segment cells").getClass());
+    }
+
+    @Test
+    void parityResampleIsResampling() {
+        assertEquals(ResamplingFunction.class,
+                freshComponent.inferFunction("Resample").getClass());
+    }
+
+    @Test
+    void parityColorConvertIsColorStack() {
+        assertEquals(ColorStackFunction.class,
+                freshComponent.inferFunction("Color convert").getClass());
+    }
+
+    @Test
+    void unknownNameFallsBackToMiscellaneousUnassigned() {
+        freshComponent.setInferenceFallback(new MiscellaneousUnassignedFunction());
+        assertEquals(MiscellaneousUnassignedFunction.class,
+                freshComponent.inferFunction("Some totally unknown operation xyz").getClass());
+    }
+
+    // (b) THE BEHAVIOR CHANGE — the fallback is MiscellaneousUnassignedFunction
+
+    @Test
+    void nameNotInPatternsFallsBackToMiscellaneousUnassigned() {
+        // "watershed" is deliberately NOT in any function's patterns
+        freshComponent.setInferenceFallback(new MiscellaneousUnassignedFunction());
+        assertEquals(MiscellaneousUnassignedFunction.class,
+                freshComponent.inferFunction("Watershed").getClass());
+    }
+
+    @Test
+    void nullNameFallsBackToMiscellaneousUnassignedWithoutThrowing() {
+        freshComponent.setInferenceFallback(new MiscellaneousUnassignedFunction());
+        assertEquals(MiscellaneousUnassignedFunction.class,
+                freshComponent.inferFunction(null).getClass());
+    }
+
+    @Test
+    void unregisteredFallbackYieldsNullWithoutThrowing() {
+        // set the fallback's id, then unregister its function: soft fail
+        freshComponent.setInferenceFallback(new MiscellaneousUnassignedFunction());
+        freshComponent.unregisterFunction(MiscellaneousUnassignedFunction.ID);
+        assertNull(freshComponent.inferFunction("Some totally unknown operation xyz"));
+    }
+
+    @Test
+    void registeredFunctionIsInferredAndResolvable() {
+        freshComponent.registerFunction(new ClusteryFunction());
+        assertEquals("test:function:clustery",
+                freshComponent.inferFunction("clustery thing").getId());
+        assertNotNull(freshComponent.functionById("test:function:clustery"));
+    }
+
+    // (c) extensibility — a "second plugin" registers a new function at runtime
+
+    @Test
+    void unregisteredFunctionContributesNothingToInference() {
+        freshComponent.registerFunction(new ClusteryFunction());
+        freshComponent.unregisterFunction("test:function:clustery");
+        // index rebuilt without the stale contribution: no registered function
+        // matches "clustery" and no fallback is set -> null (no exception)
+        assertNull(freshComponent.inferFunction("clustery thing"));
+        assertNull(freshComponent.functionById("test:function:clustery"));
+    }
+
+    /**
+     * A "second plugin" function: test-local class, declared patterns only.
+     */
     private static final class ClusteryFunction implements JIPipeNodeTaxonomyFunction {
         @Override
         public String getId() {
@@ -177,115 +280,5 @@ class NodeTaxonomyInferenceTest {
         public List<JIPipeNodeTaxonomyInferencePattern> getInferencePatterns() {
             return List.of(new JIPipeNodeTaxonomyInferencePattern("clustery", 9f));
         }
-    }
-
-    @BeforeEach
-    void createFreshComponent() {
-        freshComponent = new JIPipeNodeTaxonomyServiceComponent(null);
-        // The 8 pattern-bearing functions + the two miscellaneous functions,
-        // registered flat (childrenOf/validation are not exercised here).
-        for (JIPipeNodeTaxonomyFunction function : new JIPipeNodeTaxonomyFunction[]{
-                new SegmentationFunction(),
-                new FilteringFunction(),
-                new ThresholdingFunction(),
-                new ResamplingFunction(),
-                new PreprocessingFunction(),
-                new MeasurementsFunction(),
-                new MergingSplittingFunction(),
-                new ColorStackFunction(),
-                new MiscellaneousFunction(),
-                new MiscellaneousUnassignedFunction()
-        }) {
-            freshComponent.registerFunction(function);
-        }
-    }
-
-    @AfterEach
-    void disposeFreshComponent() {
-        freshComponent = null;
-    }
-
-    // (a) parity corpus — the exact names of the retired functionForName tests
-
-    @Test
-    void parityThreeDGaussianFilterIsFiltering() {
-        assertEquals(FilteringFunction.class,
-                freshComponent.inferFunction("3D Gaussian filter").getClass());
-    }
-
-    @Test
-    void parityMedianFilterIsFiltering() {
-        assertEquals(FilteringFunction.class,
-                freshComponent.inferFunction("Median filter").getClass());
-    }
-
-    @Test
-    void paritySegmentCellsIsSegmentation() {
-        assertEquals(SegmentationFunction.class,
-                freshComponent.inferFunction("Segment cells").getClass());
-    }
-
-    @Test
-    void parityResampleIsResampling() {
-        assertEquals(ResamplingFunction.class,
-                freshComponent.inferFunction("Resample").getClass());
-    }
-
-    @Test
-    void parityColorConvertIsColorStack() {
-        assertEquals(ColorStackFunction.class,
-                freshComponent.inferFunction("Color convert").getClass());
-    }
-
-    // (b) THE BEHAVIOR CHANGE — the fallback is MiscellaneousUnassignedFunction
-
-    @Test
-    void unknownNameFallsBackToMiscellaneousUnassigned() {
-        freshComponent.setInferenceFallback(new MiscellaneousUnassignedFunction());
-        assertEquals(MiscellaneousUnassignedFunction.class,
-                freshComponent.inferFunction("Some totally unknown operation xyz").getClass());
-    }
-
-    @Test
-    void nameNotInPatternsFallsBackToMiscellaneousUnassigned() {
-        // "watershed" is deliberately NOT in any function's patterns
-        freshComponent.setInferenceFallback(new MiscellaneousUnassignedFunction());
-        assertEquals(MiscellaneousUnassignedFunction.class,
-                freshComponent.inferFunction("Watershed").getClass());
-    }
-
-    @Test
-    void nullNameFallsBackToMiscellaneousUnassignedWithoutThrowing() {
-        freshComponent.setInferenceFallback(new MiscellaneousUnassignedFunction());
-        assertEquals(MiscellaneousUnassignedFunction.class,
-                freshComponent.inferFunction(null).getClass());
-    }
-
-    @Test
-    void unregisteredFallbackYieldsNullWithoutThrowing() {
-        // set the fallback's id, then unregister its function: soft fail
-        freshComponent.setInferenceFallback(new MiscellaneousUnassignedFunction());
-        freshComponent.unregisterFunction(MiscellaneousUnassignedFunction.ID);
-        assertNull(freshComponent.inferFunction("Some totally unknown operation xyz"));
-    }
-
-    // (c) extensibility — a "second plugin" registers a new function at runtime
-
-    @Test
-    void registeredFunctionIsInferredAndResolvable() {
-        freshComponent.registerFunction(new ClusteryFunction());
-        assertEquals("test:function:clustery",
-                freshComponent.inferFunction("clustery thing").getId());
-        assertNotNull(freshComponent.functionById("test:function:clustery"));
-    }
-
-    @Test
-    void unregisteredFunctionContributesNothingToInference() {
-        freshComponent.registerFunction(new ClusteryFunction());
-        freshComponent.unregisterFunction("test:function:clustery");
-        // index rebuilt without the stale contribution: no registered function
-        // matches "clustery" and no fallback is set -> null (no exception)
-        assertNull(freshComponent.inferFunction("clustery thing"));
-        assertNull(freshComponent.functionById("test:function:clustery"));
     }
 }

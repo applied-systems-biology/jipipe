@@ -13,12 +13,7 @@
 
 package org.hkijena.jipipe.api.nodes.database.relations;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * The pure, JIPipe-free relation index behind the Similar / Previous / Next
@@ -59,10 +54,35 @@ import java.util.Set;
  */
 public class NodeRelationIndex {
 
-    /** successor direction: from -> (to -> support) */
+    /**
+     * successor direction: from -> (to -> support)
+     */
     private final Map<String, Map<String, Integer>> nextSupport = new HashMap<>();
-    /** predecessor direction: to -> (from -> support) */
+    /**
+     * predecessor direction: to -> (from -> support)
+     */
     private final Map<String, Map<String, Integer>> previousSupport = new HashMap<>();
+
+    private static void increment(Map<String, Map<String, Integer>> direction,
+                                  String source, String target) {
+        direction.computeIfAbsent(source, id -> new HashMap<>())
+                .merge(target, 1, Integer::sum);
+    }
+
+    private static List<String> rankedIds(Map<String, Integer> supportByTarget) {
+        if (supportByTarget == null || supportByTarget.isEmpty()) {
+            return List.of();
+        }
+        List<Map.Entry<String, Integer>> entries = new ArrayList<>(supportByTarget.entrySet());
+        entries.sort(
+                Comparator.<Map.Entry<String, Integer>>comparingInt(Map.Entry::getValue).reversed()
+                        .thenComparing(Map.Entry::getKey));
+        List<String> result = new ArrayList<>(entries.size());
+        for (Map.Entry<String, Integer> entry : entries) {
+            result.add(entry.getKey());
+        }
+        return result;
+    }
 
     /**
      * Adds a single directed {@link Edge} ({@code to} runs after {@code from}).
@@ -130,26 +150,5 @@ public class NodeRelationIndex {
      */
     public List<String> previous(String nodeId) {
         return rankedIds(previousSupport.get(nodeId));
-    }
-
-    private static void increment(Map<String, Map<String, Integer>> direction,
-                                  String source, String target) {
-        direction.computeIfAbsent(source, id -> new HashMap<>())
-            .merge(target, 1, Integer::sum);
-    }
-
-    private static List<String> rankedIds(Map<String, Integer> supportByTarget) {
-        if (supportByTarget == null || supportByTarget.isEmpty()) {
-            return List.of();
-        }
-        List<Map.Entry<String, Integer>> entries = new ArrayList<>(supportByTarget.entrySet());
-        entries.sort(
-            Comparator.<Map.Entry<String, Integer>>comparingInt(Map.Entry::getValue).reversed()
-                .thenComparing(Map.Entry::getKey));
-        List<String> result = new ArrayList<>(entries.size());
-        for (Map.Entry<String, Integer> entry : entries) {
-            result.add(entry.getKey());
-        }
-        return result;
     }
 }

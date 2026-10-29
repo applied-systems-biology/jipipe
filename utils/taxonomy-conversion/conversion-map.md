@@ -9,8 +9,8 @@ non-obvious per-node decision in the per-module notes table at the bottom.
 
 ## 12 Conversion Rules
 
-1. `ImagesNodeTypeCategory` + menuPath → `images/` leaf by first menuPath segment
-   ("Deep learning"→`DeepLearningInferenceFunction`, "Thresholding"→`ThresholdingFunction`,
+1. `ImagesNodeTypeCategory` + menuPath → `images/` leaf by first menuPath segment ("Deep learning"→
+   `DeepLearningInferenceFunction`, "Thresholding"→`ThresholdingFunction`,
    "Morphology" on ROI output→`RoiMorphologyFunction`, etc.).
 2. `ImageJNodeTypeCategory` (257 nodes) → framework `ImageJ1Framework`, function by
    menuPath; spatial: "3D" in name/menuPath→`SPATIAL_3D`, "2D"→`SPATIAL_2D`, else both
@@ -27,7 +27,8 @@ non-obvious per-node decision in the per-module notes table at the bottom.
    (kept as a last-resort leaf).
 10. `InternalNodeTypeCategory` → `GraphDebugFunction`/`GraphWrappersFunction` by role.
 11. Framework by plugin: cellpose→`Cellpose{2,3,4}Framework` per subpackage; trackmate→`TrackMateFramework`;
-    clij→`ClijFramework`; opencv→`OpenCVFramework`; plots→`JFreeChartFramework`; weka/ilastik/omnipose→`JIPipeDLFramework`;
+    clij→`ClijFramework`; opencv→`OpenCVFramework`; plots→`JFreeChartFramework`; weka/ilastik/omnipose→
+    `JIPipeDLFramework`;
     ij2-discovered→`ImageJ2Framework`; ij/ij-3d/ij-algorithms→`ImageJ1Framework` (unless more specific);
     core plugins→`CoreFramework`; else leave `NoFramework` (flagged for Phase 3).
 12. Spatial: read the node's first image input slot — `Image2DData`/`d2`⇒`SPATIAL_2D`;
@@ -46,13 +47,13 @@ non-obvious per-node decision in the per-module notes table at the bottom.
   <module>\t<old-category-class>\t<menuPath-prefix-or->\t<FunctionLeaf>\t<FrameworkClass|->\t<spatial|->
   ```
 
-  - `<old-category-class>`: simple name, e.g. `TableNodeTypeCategory`.
-  - `<menuPath-prefix-or->`: prefix of the node's `menuPath` (newline-joined submenu
-    path, e.g. `Process\nFilters`), or `-` to match any/no menuPath. Specific prefixes
-    win over a `-` catch-all; list most-specific first.
-  - `<FunctionLeaf>` / `<FrameworkClass>`: simple class name (imports are fixed by
-    hand per batch, step 2 of the per-batch method).
-  - `<spatial>`: `SPATIAL_2D`, `SPATIAL_3D`, `SPATIAL_2D,SPATIAL_3D`, or `-` (omit field).
+    - `<old-category-class>`: simple name, e.g. `TableNodeTypeCategory`.
+    - `<menuPath-prefix-or->`: prefix of the node's `menuPath` (newline-joined submenu
+      path, e.g. `Process\nFilters`), or `-` to match any/no menuPath. Specific prefixes
+      win over a `-` catch-all; list most-specific first.
+    - `<FunctionLeaf>` / `<FrameworkClass>`: simple class name (imports are fixed by
+      hand per batch, step 2 of the per-batch method).
+    - `<spatial>`: `SPATIAL_2D`, `SPATIAL_3D`, `SPATIAL_2D,SPATIAL_3D`, or `-` (omit field).
 
 - What the script does NOT do (per-batch step 2, by hand): drop leftover
   `@AddJIPipeNodeAlias` (aliases become secondary `function[]` entries), fix
@@ -91,20 +92,20 @@ it does not appear in the 12 rules, so 19.x filament batches map its nodes via
 rule 9-style best-fit into the `filaments/` leaves (framework per rule 11).
 Also present but with 0 annotated nodes at scan time: none.
 
-| Old category (simple name) | Annotated nodes (grep 2026-10-09) |
-|---|---|
-| `ImagesNodeTypeCategory` | 424 |
-| `ImageJNodeTypeCategory` | 257 |
-| `DataSourceNodeTypeCategory` | 111 |
-| `RoiNodeTypeCategory` | 103 |
-| `MiscellaneousNodeTypeCategory` | 64 |
-| `AnnotationsNodeTypeCategory` | 59 |
-| `TableNodeTypeCategory` | 55 |
-| `FilamentsNodeTypeCategory` | 42 |
-| `ExportNodeTypeCategory` | 28 |
-| `FileSystemNodeTypeCategory` | 25 |
-| `InternalNodeTypeCategory` | (default; see note) |
-| `GraphAnnotationsNodeTypeCategory` | (canvas-note nodes) |
+| Old category (simple name)         | Annotated nodes (grep 2026-10-09) |
+|------------------------------------|-----------------------------------|
+| `ImagesNodeTypeCategory`           | 424                               |
+| `ImageJNodeTypeCategory`           | 257                               |
+| `DataSourceNodeTypeCategory`       | 111                               |
+| `RoiNodeTypeCategory`              | 103                               |
+| `MiscellaneousNodeTypeCategory`    | 64                                |
+| `AnnotationsNodeTypeCategory`      | 59                                |
+| `TableNodeTypeCategory`            | 55                                |
+| `FilamentsNodeTypeCategory`        | 42                                |
+| `ExportNodeTypeCategory`           | 28                                |
+| `FileSystemNodeTypeCategory`       | 25                                |
+| `InternalNodeTypeCategory`         | (default; see note)               |
+| `GraphAnnotationsNodeTypeCategory` | (canvas-note nodes)               |
 
 ## Per-module status
 
@@ -112,35 +113,35 @@ Counts are annotated `@ConfigureJIPipeNode` classes per the phase-1 plan.
 Status: `pending` → `converting` → `converted` (gate green). Update after each
 19.x batch.
 
-| module | node count | status |
-|---|---|---|
-| jipipe-core | 31 | converted |
-| jipipe-plugin-ij-algorithms | 424 | **converted (19.2a+b+c, 424 nodes); module gate zero unassigned** |
-| jipipe-plugin-ij | 80 | **converted (19.3, 80 nodes); module gate zero unassigned** |
-| jipipe-plugin-ij-3d | 62 | **converted (19.4, 62 nodes); module gate zero unassigned** |
-| jipipe-plugin-filaments + ij-filaments | 51+ | **converted (19.5, 51 nodes — one module, `plugins/jipipe-plugin-ij-filaments`); module gate zero unassigned** |
-| jipipe-plugin-tables | 48 | **converted (19.7, 48 nodes, function-only/NoFramework); module gate zero unassigned** |
-| jipipe-plugin-filesystem | 39 | **converted (19.6, 39 nodes, function-only/NoFramework); module gate zero unassigned** |
-| jipipe-plugin-annotations | 29 | **converted (19.8, 29 nodes, function-only/NoFramework); module gate zero unassigned** |
-| jipipe-plugin-utils | 28 | **converted (19.6, 28 nodes, function-only/NoFramework); module gate zero unassigned** |
-| jipipe-plugin-ij-omero | 26 | **converted (19.8, 26 nodes, function-only/NoFramework); module gate zero unassigned** |
-| jipipe-plugin-cellpose | 21 | **converted (19.9, 21 nodes, DL frameworks by subpackage); module gate zero unassigned** |
-| jipipe-plugin-ij-trackmate | 18 | **converted (19.10, 18 annotated + 14 runtime detector/tracker data sources = 32 registered; all TrackMateFramework); module gate zero unassigned** |
-| jipipe-plugin-strings | 15 | **converted (19.6, 15 nodes, function-only/NoFramework); module gate zero unassigned** |
-| jipipe-plugin-forms | 10 | **converted (19.7, 10 nodes, function-only/NoFramework); module gate zero unassigned** |
-| jipipe-plugin-ij-weka | 9 | **converted (19.11a, 9 nodes, all JIPipeDLFramework); module gate zero unassigned** |
-| jipipe-plugin-python | 9 | **converted (19.11c, 9 nodes, function-only/NoFramework-omitted); module gate zero unassigned** |
-| jipipe-plugin-ilastik | 8 | **converted (19.11a, 8 nodes, all JIPipeDLFramework); module gate zero unassigned** |
-| jipipe-plugin-scene-3d | 7 | **converted (19.11a, 7 nodes); framework FIXED in 19.11d: NoFramework-omitted → CoreFramework (plan's Task 19.11 line); module gate zero unassigned** |
-| jipipe-plugin-opencv | 6 | **converted (19.11a, 6 nodes, all OpenCVFramework); module gate zero unassigned** |
-| jipipe-plugin-r | 5 | **converted (19.11c, 5 nodes, function-only/NoFramework-omitted); module gate zero unassigned** |
-| jipipe-plugin-imp | 5 | **converted (19.11d, 5 nodes, all CoreFramework, spatial BOTH); module gate zero unassigned (first test in module)** |
-| jipipe-plugin-omnipose | 5 | **converted (19.9, 5 nodes, all JIPipeDLFramework); module gate zero unassigned** |
-| jipipe-plugin-clij | 4 | **converted (19.11b, 4 annotated + dynamic `CLIJCommandNodeInfo` defaults, all `ClijFramework`); module gate zero unassigned** |
-| jipipe-plugin-ij2 | 2 | **converted (19.11b, 2 annotated + dynamic `ImageJ2OpNodeInfo` defaults, all `ImageJ2Framework`); module gate zero unassigned** |
-| jipipe-plugin-ij-multi-template-matching | 1 | **converted (19.11c, 1 node, function-only/NoFramework-omitted, spatial both); module gate zero unassigned** |
-| jipipe-plugin-ij-ocr | 1 | **converted (19.11c, 1 node, function-only/NoFramework-omitted, spatial both); module gate zero unassigned** |
-| jipipe-plugin-plots | 1 | **converted (19.11b, 1 annotated + dynamic `PlotTables2AlgorithmInfo` defaults, all `JFreeChartFramework`, +`PlottingFamily` step); module gate zero unassigned** |
+| module                                   | node count | status                                                                                                                                                            |
+|------------------------------------------|------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| jipipe-core                              | 31         | converted                                                                                                                                                         |
+| jipipe-plugin-ij-algorithms              | 424        | **converted (19.2a+b+c, 424 nodes); module gate zero unassigned**                                                                                                 |
+| jipipe-plugin-ij                         | 80         | **converted (19.3, 80 nodes); module gate zero unassigned**                                                                                                       |
+| jipipe-plugin-ij-3d                      | 62         | **converted (19.4, 62 nodes); module gate zero unassigned**                                                                                                       |
+| jipipe-plugin-filaments + ij-filaments   | 51+        | **converted (19.5, 51 nodes — one module, `plugins/jipipe-plugin-ij-filaments`); module gate zero unassigned**                                                    |
+| jipipe-plugin-tables                     | 48         | **converted (19.7, 48 nodes, function-only/NoFramework); module gate zero unassigned**                                                                            |
+| jipipe-plugin-filesystem                 | 39         | **converted (19.6, 39 nodes, function-only/NoFramework); module gate zero unassigned**                                                                            |
+| jipipe-plugin-annotations                | 29         | **converted (19.8, 29 nodes, function-only/NoFramework); module gate zero unassigned**                                                                            |
+| jipipe-plugin-utils                      | 28         | **converted (19.6, 28 nodes, function-only/NoFramework); module gate zero unassigned**                                                                            |
+| jipipe-plugin-ij-omero                   | 26         | **converted (19.8, 26 nodes, function-only/NoFramework); module gate zero unassigned**                                                                            |
+| jipipe-plugin-cellpose                   | 21         | **converted (19.9, 21 nodes, DL frameworks by subpackage); module gate zero unassigned**                                                                          |
+| jipipe-plugin-ij-trackmate               | 18         | **converted (19.10, 18 annotated + 14 runtime detector/tracker data sources = 32 registered; all TrackMateFramework); module gate zero unassigned**               |
+| jipipe-plugin-strings                    | 15         | **converted (19.6, 15 nodes, function-only/NoFramework); module gate zero unassigned**                                                                            |
+| jipipe-plugin-forms                      | 10         | **converted (19.7, 10 nodes, function-only/NoFramework); module gate zero unassigned**                                                                            |
+| jipipe-plugin-ij-weka                    | 9          | **converted (19.11a, 9 nodes, all JIPipeDLFramework); module gate zero unassigned**                                                                               |
+| jipipe-plugin-python                     | 9          | **converted (19.11c, 9 nodes, function-only/NoFramework-omitted); module gate zero unassigned**                                                                   |
+| jipipe-plugin-ilastik                    | 8          | **converted (19.11a, 8 nodes, all JIPipeDLFramework); module gate zero unassigned**                                                                               |
+| jipipe-plugin-scene-3d                   | 7          | **converted (19.11a, 7 nodes); framework FIXED in 19.11d: NoFramework-omitted → CoreFramework (plan's Task 19.11 line); module gate zero unassigned**             |
+| jipipe-plugin-opencv                     | 6          | **converted (19.11a, 6 nodes, all OpenCVFramework); module gate zero unassigned**                                                                                 |
+| jipipe-plugin-r                          | 5          | **converted (19.11c, 5 nodes, function-only/NoFramework-omitted); module gate zero unassigned**                                                                   |
+| jipipe-plugin-imp                        | 5          | **converted (19.11d, 5 nodes, all CoreFramework, spatial BOTH); module gate zero unassigned (first test in module)**                                              |
+| jipipe-plugin-omnipose                   | 5          | **converted (19.9, 5 nodes, all JIPipeDLFramework); module gate zero unassigned**                                                                                 |
+| jipipe-plugin-clij                       | 4          | **converted (19.11b, 4 annotated + dynamic `CLIJCommandNodeInfo` defaults, all `ClijFramework`); module gate zero unassigned**                                    |
+| jipipe-plugin-ij2                        | 2          | **converted (19.11b, 2 annotated + dynamic `ImageJ2OpNodeInfo` defaults, all `ImageJ2Framework`); module gate zero unassigned**                                   |
+| jipipe-plugin-ij-multi-template-matching | 1          | **converted (19.11c, 1 node, function-only/NoFramework-omitted, spatial both); module gate zero unassigned**                                                      |
+| jipipe-plugin-ij-ocr                     | 1          | **converted (19.11c, 1 node, function-only/NoFramework-omitted, spatial both); module gate zero unassigned**                                                      |
+| jipipe-plugin-plots                      | 1          | **converted (19.11b, 1 annotated + dynamic `PlotTables2AlgorithmInfo` defaults, all `JFreeChartFramework`, +`PlottingFamily` step); module gate zero unassigned** |
 
 ## Per-module notes (append per batch)
 
@@ -148,51 +149,52 @@ Status: `pending` → `converting` → `converted` (gate green). Update after ea
 
 **Scope:** all `@ConfigureJIPipeNode` classes under `jipipe-core/src/main/java` (31) **plus** the
 programmatic `registerNodeType` node classes that lacked an annotation (1: `JIPipeProjectCompartment`).
-Every core node gets `framework = CoreFramework.class` (rule 11). No core node produces image data, so
-**none declares `spatialDimensions`**. No core node carries `@AddJIPipeNodeAlias` (grep: 0 matches), so
+Every core node gets `framework = CoreFramework.class` (rule 11). No core node produces image data, so **none declares
+`spatialDimensions`**. No core node carries `@AddJIPipeNodeAlias` (grep: 0 matches), so
 there are no alias→secondary-function conversions in this batch.
 
 **Per-node decision table** (node class → function → framework → spatial → rationale):
 
-| Node class | function | framework | spatial | rationale |
-|---|---|---|---|---|
-| `LoopStartNode` (api/looping) | `GraphDebugFunction` | Core | — | Deprecated loop scaffold (R4: loops→GraphDebug); generic `JIPipeData` in/out slots |
-| `LoopEndNode` (api/looping) | `GraphDebugFunction` | Core | — | Deprecated loop scaffold (R4); generic `JIPipeData` slots |
-| `JIPipeNodeGroup` (api/grouping) | `GraphWrappersFunction` | Core | — | Wraps a sub-pipeline (R4: grouping/wrapper scaffold) |
-| `GraphWrapperAlgorithmInput` (api/grouping) | `GraphWrappersFunction` | Core | — | Input plug of a node group (R4: wrappers) |
-| `GraphWrapperAlgorithmOutput` (api/grouping) | `GraphWrappersFunction` | Core | — | Output plug of a node group (R4: wrappers) |
-| `IOInterfaceAlgorithm` (api/compartments/algorithms) | `GraphDebugFunction` | Core | — | Internal pass-through node used by loops/compartments (R4: truly-internal) |
-| `JIPipeProjectCompartment` (api/compartments/algorithms) | `GraphWrappersFunction` | Core | — | Compartment container; `JIPipeCompartmentOutputData` slots (R4: compartments). **Added** `@ConfigureJIPipeNode` (was programmatic, no annotation) |
-| `JIPipeProjectCompartmentOutput` (api/compartments/algorithms) | `GraphWrappersFunction` | Core | — | Compartment output (R4: compartments) |
-| `JIPipeCommentNode` (plugins/core/nodes) | `GraphDebugFunction` | Core | — | Annotation-less comment node, no workload (R4: internal/debug) |
-| `ArrowGraphCanvasNote` (plugins/canvasnotes/nodes) | `AnnotationsEditFunction` | Core | — | Canvas note (rule 5: GraphAnnotations→AnnotationsEdit); no data slots |
-| `TextBoxGraphCanvasNote` (plugins/canvasnotes/nodes) | `AnnotationsEditFunction` | Core | — | Canvas note (rule 5) |
-| `GroupBoxGraphCanvasNote` (plugins/canvasnotes/nodes) | `AnnotationsEditFunction` | Core | — | Canvas note (rule 5); `@LabelAsJIPipeHidden` |
-| `ImageBoxGraphCanvasNote` (plugins/canvasnotes/nodes) | `AnnotationsEditFunction` | Core | — | Canvas note (rule 5); displays an image but is a graph annotation, not image-processing |
-| `FileDataSource` (plugins/filesystem/datasources) | `MiscDataFunction` | Core | — | DataSource→data leaf by output type (rule 6); emits `FileData`, not image → Misc; no spatial |
-| `FileListDataSource` (plugins/filesystem/datasources) | `MiscDataFunction` | Core | — | Emits `FileData` list → Misc |
-| `FolderDataSource` (plugins/filesystem/datasources) | `MiscDataFunction` | Core | — | Emits `FolderData` → Misc |
-| `FolderListDataSource` (plugins/filesystem/datasources) | `MiscDataFunction` | Core | — | Emits `FolderData` list → Misc |
-| `PathDataSource` (plugins/filesystem/datasources) | `MiscDataFunction` | Core | — | Emits `PathData` → Misc |
-| `PathListDataSource` (plugins/filesystem/datasources) | `MiscDataFunction` | Core | — | Emits `PathData` list → Misc |
-| `DefineParametersAlgorithm` (plugins/multiparameters/nodes) | `TableDataFunction` | Core | — | Source of `ParametersData` (formerly DataSource category) → tables data leaf (R4: parameters are a table type) |
-| `DefineParametersTableAlgorithm` (plugins/multiparameters/nodes) | `TableDataFunction` | Core | — | Source of `ParametersData` → tables data leaf |
-| `DefineParametersFromGlobalParametersAlgorithm` (plugins/multiparameters/nodes) | `TableDataFunction` | Core | — | Source of `ParametersData` (built from global params + optional data) → tables data leaf |
-| `GenerateParametersFromExpressionAlgorithm` (plugins/multiparameters/nodes) | `TableDataFunction` | Core | — | Source of `ParametersData` (built from expression + optional data) → tables data leaf |
-| `ExtractParametersAlgorithm` (plugins/multiparameters/nodes) | `TableDataFunction` | Core | — | Source of `ParametersData` (extracted from a node) → tables data leaf |
-| `DefineParametersFromTableAlgorithm` (plugins/multiparameters/nodes) | `TableTransformFunction` | Core | — | Table→parameters transform (formerly Table menuPath "Convert") → table transform leaf |
-| `ConvertParametersToTableAlgorithm` (plugins/multiparameters/nodes) | `TableTransformFunction` | Core | — | Parameters→`ResultsTableData` transform (formerly Misc menuPath "Convert") → table transform leaf |
-| `ParametersToAnnotationsAlgorithm` (plugins/multiparameters/nodes) | `TableTransformFunction` | Core | — | Parameters→annotations transform (formerly Annotations menuPath "For parameters"); the node operates on parameter/table data → table transform leaf (judgment call, see concerns) |
-| `AnnotationsToParametersAlgorithm` (plugins/multiparameters/nodes) | `TableTransformFunction` | Core | — | Annotations→parameters transform (formerly Misc menuPath "Parameters") → table transform leaf |
-| `MergeParametersAlgorithm` (plugins/multiparameters/nodes) | `TableJoinSplitFunction` | Core | — | Merges multiple `ParametersData` inputs (formerly Misc menuPath "Parameters") → join leaf |
-| `MultiplyParametersAlgorithm` (plugins/multiparameters/nodes) | `TableJoinSplitFunction` | Core | — | Cross-joins all `ParametersData` inputs (formerly Misc menuPath "Parameters") → join leaf |
-| `JIPipeDataFlowTunnel1Entrance` (plugins/tunnels/nodes/tunnel1) | `GraphWrappersFunction` | Core | — | Data-flow tunnel endpoint (R4: tunnels→GraphWrappers); generic `JIPipeData` slot |
-| `JIPipeDataFlowTunnel1Exit` (plugins/tunnels/nodes/tunnel1) | `GraphWrappersFunction` | Core | — | Data-flow tunnel endpoint (R4); generic `JIPipeData` slot |
+| Node class                                                                      | function                  | framework | spatial | rationale                                                                                                                                                                         |
+|---------------------------------------------------------------------------------|---------------------------|-----------|---------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `LoopStartNode` (api/looping)                                                   | `GraphDebugFunction`      | Core      | —       | Deprecated loop scaffold (R4: loops→GraphDebug); generic `JIPipeData` in/out slots                                                                                                |
+| `LoopEndNode` (api/looping)                                                     | `GraphDebugFunction`      | Core      | —       | Deprecated loop scaffold (R4); generic `JIPipeData` slots                                                                                                                         |
+| `JIPipeNodeGroup` (api/grouping)                                                | `GraphWrappersFunction`   | Core      | —       | Wraps a sub-pipeline (R4: grouping/wrapper scaffold)                                                                                                                              |
+| `GraphWrapperAlgorithmInput` (api/grouping)                                     | `GraphWrappersFunction`   | Core      | —       | Input plug of a node group (R4: wrappers)                                                                                                                                         |
+| `GraphWrapperAlgorithmOutput` (api/grouping)                                    | `GraphWrappersFunction`   | Core      | —       | Output plug of a node group (R4: wrappers)                                                                                                                                        |
+| `IOInterfaceAlgorithm` (api/compartments/algorithms)                            | `GraphDebugFunction`      | Core      | —       | Internal pass-through node used by loops/compartments (R4: truly-internal)                                                                                                        |
+| `JIPipeProjectCompartment` (api/compartments/algorithms)                        | `GraphWrappersFunction`   | Core      | —       | Compartment container; `JIPipeCompartmentOutputData` slots (R4: compartments). **Added** `@ConfigureJIPipeNode` (was programmatic, no annotation)                                 |
+| `JIPipeProjectCompartmentOutput` (api/compartments/algorithms)                  | `GraphWrappersFunction`   | Core      | —       | Compartment output (R4: compartments)                                                                                                                                             |
+| `JIPipeCommentNode` (plugins/core/nodes)                                        | `GraphDebugFunction`      | Core      | —       | Annotation-less comment node, no workload (R4: internal/debug)                                                                                                                    |
+| `ArrowGraphCanvasNote` (plugins/canvasnotes/nodes)                              | `AnnotationsEditFunction` | Core      | —       | Canvas note (rule 5: GraphAnnotations→AnnotationsEdit); no data slots                                                                                                             |
+| `TextBoxGraphCanvasNote` (plugins/canvasnotes/nodes)                            | `AnnotationsEditFunction` | Core      | —       | Canvas note (rule 5)                                                                                                                                                              |
+| `GroupBoxGraphCanvasNote` (plugins/canvasnotes/nodes)                           | `AnnotationsEditFunction` | Core      | —       | Canvas note (rule 5); `@LabelAsJIPipeHidden`                                                                                                                                      |
+| `ImageBoxGraphCanvasNote` (plugins/canvasnotes/nodes)                           | `AnnotationsEditFunction` | Core      | —       | Canvas note (rule 5); displays an image but is a graph annotation, not image-processing                                                                                           |
+| `FileDataSource` (plugins/filesystem/datasources)                               | `MiscDataFunction`        | Core      | —       | DataSource→data leaf by output type (rule 6); emits `FileData`, not image → Misc; no spatial                                                                                      |
+| `FileListDataSource` (plugins/filesystem/datasources)                           | `MiscDataFunction`        | Core      | —       | Emits `FileData` list → Misc                                                                                                                                                      |
+| `FolderDataSource` (plugins/filesystem/datasources)                             | `MiscDataFunction`        | Core      | —       | Emits `FolderData` → Misc                                                                                                                                                         |
+| `FolderListDataSource` (plugins/filesystem/datasources)                         | `MiscDataFunction`        | Core      | —       | Emits `FolderData` list → Misc                                                                                                                                                    |
+| `PathDataSource` (plugins/filesystem/datasources)                               | `MiscDataFunction`        | Core      | —       | Emits `PathData` → Misc                                                                                                                                                           |
+| `PathListDataSource` (plugins/filesystem/datasources)                           | `MiscDataFunction`        | Core      | —       | Emits `PathData` list → Misc                                                                                                                                                      |
+| `DefineParametersAlgorithm` (plugins/multiparameters/nodes)                     | `TableDataFunction`       | Core      | —       | Source of `ParametersData` (formerly DataSource category) → tables data leaf (R4: parameters are a table type)                                                                    |
+| `DefineParametersTableAlgorithm` (plugins/multiparameters/nodes)                | `TableDataFunction`       | Core      | —       | Source of `ParametersData` → tables data leaf                                                                                                                                     |
+| `DefineParametersFromGlobalParametersAlgorithm` (plugins/multiparameters/nodes) | `TableDataFunction`       | Core      | —       | Source of `ParametersData` (built from global params + optional data) → tables data leaf                                                                                          |
+| `GenerateParametersFromExpressionAlgorithm` (plugins/multiparameters/nodes)     | `TableDataFunction`       | Core      | —       | Source of `ParametersData` (built from expression + optional data) → tables data leaf                                                                                             |
+| `ExtractParametersAlgorithm` (plugins/multiparameters/nodes)                    | `TableDataFunction`       | Core      | —       | Source of `ParametersData` (extracted from a node) → tables data leaf                                                                                                             |
+| `DefineParametersFromTableAlgorithm` (plugins/multiparameters/nodes)            | `TableTransformFunction`  | Core      | —       | Table→parameters transform (formerly Table menuPath "Convert") → table transform leaf                                                                                             |
+| `ConvertParametersToTableAlgorithm` (plugins/multiparameters/nodes)             | `TableTransformFunction`  | Core      | —       | Parameters→`ResultsTableData` transform (formerly Misc menuPath "Convert") → table transform leaf                                                                                 |
+| `ParametersToAnnotationsAlgorithm` (plugins/multiparameters/nodes)              | `TableTransformFunction`  | Core      | —       | Parameters→annotations transform (formerly Annotations menuPath "For parameters"); the node operates on parameter/table data → table transform leaf (judgment call, see concerns) |
+| `AnnotationsToParametersAlgorithm` (plugins/multiparameters/nodes)              | `TableTransformFunction`  | Core      | —       | Annotations→parameters transform (formerly Misc menuPath "Parameters") → table transform leaf                                                                                     |
+| `MergeParametersAlgorithm` (plugins/multiparameters/nodes)                      | `TableJoinSplitFunction`  | Core      | —       | Merges multiple `ParametersData` inputs (formerly Misc menuPath "Parameters") → join leaf                                                                                         |
+| `MultiplyParametersAlgorithm` (plugins/multiparameters/nodes)                   | `TableJoinSplitFunction`  | Core      | —       | Cross-joins all `ParametersData` inputs (formerly Misc menuPath "Parameters") → join leaf                                                                                         |
+| `JIPipeDataFlowTunnel1Entrance` (plugins/tunnels/nodes/tunnel1)                 | `GraphWrappersFunction`   | Core      | —       | Data-flow tunnel endpoint (R4: tunnels→GraphWrappers); generic `JIPipeData` slot                                                                                                  |
+| `JIPipeDataFlowTunnel1Exit` (plugins/tunnels/nodes/tunnel1)                     | `GraphWrappersFunction`   | Core      | —       | Data-flow tunnel endpoint (R4); generic `JIPipeData` slot                                                                                                                         |
 
 (32 rows: 31 originally-annotated classes + the 1 programmatic `JIPipeProjectCompartment`. Only
 `tunnel1` exists — there are no `tunnel2`/`tunnel3` classes.)
 
 **Non-obvious decisions / judgment calls:**
+
 - **Multiparameters split into three leaves.** R4 said "`TablesFunction`/`TableTransformFunction` (or the
   most fitting tables leaf) as appropriate". All 11 operate on `ParametersData` (a table type). I applied
   the data-vs-transform-vs-join distinction: the 5 pure `ParametersData` *sources* (no table input, formerly
@@ -225,21 +227,22 @@ framework = CoreFramework` (it is a structural compartment container). The other
 log line `JIPipeNodesServiceComponent | Node taxonomy validation passed` (zero unassigned, zero errors).
 `mvn -q compile -pl jipipe-core` → exit 0.
 
-**Classpath caveat (affects what the gate covers):** several core-*package* node classes are actually
-*registered* by plugin modules, so they are not on jipipe-core's test classpath and the gate does not
+**Classpath caveat (affects what the gate covers):** several core- *package* node classes are actually *registered* by
+plugin modules, so they are not on jipipe-core's test classpath and the gate does not
 enumerate them individually — they are still converted and verified by the module-wide `mvn compile`:
+
 - `JIPipeNodeGroup`, `IOInterfaceAlgorithm`, `JIPipeCommentNode` are registered by **jipipe-plugin-utils**
   (`UtilitiesPlugin.registerNodeType("node-group"/"io-interface")`).
 - The 6 `plugins/filesystem/datasources` classes are registered by **jipipe-plugin-filesystem**
   (`FilesystemPlugin.registerNodeType("import-file"/"import-folder"/...)`).
 - `GroupBoxGraphCanvasNote` is not registered by any plugin (orphaned `@LabelAsJIPipeHidden` class); still
   converted for consistency.
-The gate covers the nodes registered by **core's own plugins** on the core test classpath —
-loops, wrappers, compartments, tunnels, multiparameters, and the canvas notes that `CanvasNotesPlugin`
-registers — and all of those passed with zero unassigned. The 10 classes above are registered by **separate
-plugin modules** (not on the core test classpath), so this gate does NOT enumerate them; they are still
-converted + compile-verified here and are re-covered by those modules' own gates (Task 19.6 for
-utils/filesystem).
+  The gate covers the nodes registered by **core's own plugins** on the core test classpath —
+  loops, wrappers, compartments, tunnels, multiparameters, and the canvas notes that `CanvasNotesPlugin`
+  registers — and all of those passed with zero unassigned. The 10 classes above are registered by **separate
+  plugin modules** (not on the core test classpath), so this gate does NOT enumerate them; they are still
+  converted + compile-verified here and are re-covered by those modules' own gates (Task 19.6 for
+  utils/filesystem).
 
 **Ripple compile fixes:** none required — removing `nodeTypeCategory`/`menuPath`/`…categories.*` imports from
 core node classes broke no other module (the legacy fields remain present on `@ConfigureJIPipeNode` and on
@@ -257,8 +260,8 @@ No `menuPath`/`nodeTypeCategory` was kept to "fix" the old panel.
 
 **Primary-category inventory (verified against the exact counts ruled by the controller, R1):**
 Images 312 · Roi 67 · DataSource 20 · Export 10 · Table 7 · Annotations 5 · Miscellaneous 2 · ImageJ 1.
-393 nodes have a `menuPath`; 31 do not (handled by category/role). The 239 `@AddJIPipeNodeAlias` entries
-(e.g. 9 in `Convert`-only nodes aliased under `Image\nType`) are **not** counted — only the primary
+393 nodes have a `menuPath`; 31 do not (handled by category/role). The 239 `@AddJIPipeNodeAlias` entries (e.g. 9 in
+`Convert`-only nodes aliased under `Image\nType`) are **not** counted — only the primary
 `@ConfigureJIPipeNode` block determines category and menuPath.
 
 **Framework (R2 / rule 11):** `ImageJ1Framework` for **all 424 nodes**. Zero nodes were classified as
@@ -272,19 +275,19 @@ the module-level rule stands. No node imports `net.imagej.*` (the SciJava/ImageJ
 `ResultsTableData`, `JIPipeData`, `FolderData`, `OMEXMLData`, `FileData` are skipped). Slot dimensionality
 comes from the data class's `@ImageTypeInfo(numDimensions=…)` / package: root-level
 `ImagePlusData`/`ImagePlusGreyscale*Data`/`ImagePlusColor*Data`/`OMEImageData` are **unconstrained**
-(`@ImageTypeInfo` without `numDimensions`) ⇒ both; `d2/…2D…` ⇒ 2D; `d3/…3D…` ⇒ 3D.
-**Corrected distribution: both 328 · SPATIAL_3D 16 · SPATIAL_2D 8 · absent 72.** Absent applies exactly
+(`@ImageTypeInfo` without `numDimensions`) ⇒ both; `d2/…2D…` ⇒ 2D; `d3/…3D…` ⇒ 3D. **Corrected distribution: both 328 ·
+SPATIAL_3D 16 · SPATIAL_2D 8 · absent 72.** Absent applies exactly
 to the 72 nodes with **no image input slot** (rule 12) — the data/table/ROI-geometry/GUI/export families,
 including the 22 no-image-input ROI nodes fixed in this revision (see (e) for the full bucket list).
 (`StackToDimensionMerger2Algorithm` and `FastImageArithmeticsAlgorithm` carry no
 `@AddJIPipeInputSlot` annotations but create image input slots **programmatically** —
-`restrictInputTo(ImagePlusData.class)` / `addInputSlot(…, ImagePlusGreyscaleData.class)` — so they are
-*not* absent and keep their group default `both`.) The per-node values are authoritative in
+`restrictInputTo(ImagePlusData.class)` / `addInputSlot(…, ImagePlusGreyscaleData.class)` — so they are *not* absent and
+keep their group default `both`.) The per-node values are authoritative in
 `ij-algorithms-final.json` (git-ignored, produced by the survey script); the TSV carries the **group
 default** and the chunks apply the per-node values from that table (55 deviations, see (e)).
 
-**Tooling constraint (affects the chunks, not the mapping):** `convert.py` matches rows on
-**(category, menuPath-prefix)** only — it cannot express per-node function overrides, and a
+**Tooling constraint (affects the chunks, not the mapping):** `convert.py` matches rows on **(category,
+menuPath-prefix)** only — it cannot express per-node function overrides, and a
 `(category, None)` catch-all row is only consulted when no specific prefix matches, so it cannot shadow
 specific groups the way a `-` menuPath could. Consequence: every node inside one `(category, menuPath)`
 group receives the **group row's leaf** from `convert.py`; where the decided per-node leaf differs (the
@@ -299,55 +302,55 @@ everywhere (omitted). Spatial = group default.
 
 **Images (312) + ImageJ (1) — rules 1/2, by first menuPath segment:**
 
-| menuPath (group) | n | leaf | spatial (group) | rationale for non-obvious |
-|---|---|---|---|---|
-| `Threshold` | 20 | `ThresholdingFunction` | both | |
-| `Threshold\nLocal` | 12 | `ThresholdingFunction` | both | |
-| `Threshold\nColor` | 4 | `ThresholdingFunction` | both | |
-| `Labels` | 20 | `SegmentationFunction` | both | labeling/label editing = object partitioning; CCL is the segmentation primitive |
-| `Labels\nFilter` | 6 | `FilteringFunction` | both | predicate removal of label objects |
-| `Labels\nMeasure` | 2 | `MeasurementsFunction` | both | per-label statistics |
-| `Labels\nConvert` | 3 | `ColorStackFunction` | both | label→mask/RGB/ROI **rendering** of the partition (judgment; flag Phase 3) |
-| `Labkit` | 1 | `DeepLearningInferenceFunction` | both | runs the Labkit ML segmenter (flag Phase 3: no labkit framework exists) |
-| `Math` | 15 | `FilteringFunction` | both | pixel-wise local transforms |
-| `Math\nLocal` | 19 | `FilteringFunction` | both | local min/max/mean/variance filters, maxima/minima extraction |
-| `Math\nDistance map` | 5 | `MeasurementsFunction` | both | distance = geometric measurement field (judgment; flag) |
-| `Morphology` | 13 | `FilteringFunction` | both | binary/gray morphology filters |
-| `Binary` | 10 | `FilteringFunction` | both | |
-| `Filter` | 6 | `FilteringFunction` | both | |
-| `Blur` | 5 | `FilteringFunction` | both | |
-| `FFT` | 5 | `FilteringFunction` | both | frequency-domain filtering (judgment; flag) |
-| `Noise` | 3 | `FilteringFunction` | both | |
-| `Edges` | 3 | `FilteringFunction` | both | |
-| `Sharpen` | 2 | `FilteringFunction` | both | |
-| `Convolve` | 2 | `FilteringFunction` | both | |
-| `Convert` | 18 | `ResamplingFunction` | both | bit-depth/type conversions; 3 overrides below |
-| `Dimensions` | 17 | `ResamplingFunction` | both | resample/split/merge across dimensions |
-| `Transform` | 19 | `ResamplingFunction` | both | crop/rotate/scale/warp = spatial resampling |
-| `Colors` | 17 | `ColorStackFunction` | both | |
-| `Colors\nConvert` | 1 | `ColorStackFunction` | both | |
-| `LUT` | 6 | `ColorStackFunction` | both | |
-| `Features` | 13 | `MeasurementsFunction` | both | vesselness/structure feature maps |
-| `Statistics` | 8 | `MeasurementsFunction` | both | |
-| `Analyze` | 5 | `MeasurementsFunction` | both | |
-| `Colocalization` | 1 | `MeasurementsFunction` | both | |
-| `Calibration` | 6 | `PreprocessingFunction` | both | physical calibration = prep (judgment; flag) |
-| `Contrast` | 4 | `PreprocessingFunction` | both | |
-| `Background` | 1 | `PreprocessingFunction` | both | |
-| `Masking` | 3 | `PreprocessingFunction` | both | |
-| `Montage` | 5 | `MergingSplittingFunction` | both | |
-| `Optical flow` | 3 | `MergingSplittingFunction` | **3D** | aligns 3D+time stacks into one (flag) |
-| `Registration` | 3 | `MergingSplittingFunction` | both | image alignment (flag) |
-| `ROI` | 8 | `MergingSplittingFunction` | both | overlay/extract/ROI-mask ops on images (flag) |
-| `Segment` | 3 | `SegmentationFunction` | both | |
-| `Detect` | 6 | `SegmentationFunction` | both | Hough/corner detector object finding (flag) |
-| `Forms` | 2 | `SegmentationFunction` | both | interactive mask/ROI drawing = manual segmentation (flag) |
-| `Metadata` | 3 | `MiscellaneousFunction` | both | metadata in/out, not measurements (flag) |
-| `Modify` | 1 | `MiscellaneousFunction` | both | set image properties from expressions |
-| *(no menuPath)* | 3 | `MiscellaneousFunction` | both | `RunImageJMacroAlgorithm` (macro runner — spatial **absent by deliberate choice**, see note below), `ImagePlusToGUI` (GUI bridge, leaf override → misc; spatial **both** — it has an `ImagePlusData` input, per rule 12), `MergeImagesAlgorithm` |
-| `Enhance` (ImageJ cat.) | 1 | `PreprocessingFunction` | both | `BleachCorrectionAlgorithm`, rule 2 by menuPath |
+| menuPath (group)        | n  | leaf                            | spatial (group) | rationale for non-obvious                                                                                                                                                                                                                        |
+|-------------------------|----|---------------------------------|-----------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `Threshold`             | 20 | `ThresholdingFunction`          | both            |                                                                                                                                                                                                                                                  |
+| `Threshold\nLocal`      | 12 | `ThresholdingFunction`          | both            |                                                                                                                                                                                                                                                  |
+| `Threshold\nColor`      | 4  | `ThresholdingFunction`          | both            |                                                                                                                                                                                                                                                  |
+| `Labels`                | 20 | `SegmentationFunction`          | both            | labeling/label editing = object partitioning; CCL is the segmentation primitive                                                                                                                                                                  |
+| `Labels\nFilter`        | 6  | `FilteringFunction`             | both            | predicate removal of label objects                                                                                                                                                                                                               |
+| `Labels\nMeasure`       | 2  | `MeasurementsFunction`          | both            | per-label statistics                                                                                                                                                                                                                             |
+| `Labels\nConvert`       | 3  | `ColorStackFunction`            | both            | label→mask/RGB/ROI **rendering** of the partition (judgment; flag Phase 3)                                                                                                                                                                       |
+| `Labkit`                | 1  | `DeepLearningInferenceFunction` | both            | runs the Labkit ML segmenter (flag Phase 3: no labkit framework exists)                                                                                                                                                                          |
+| `Math`                  | 15 | `FilteringFunction`             | both            | pixel-wise local transforms                                                                                                                                                                                                                      |
+| `Math\nLocal`           | 19 | `FilteringFunction`             | both            | local min/max/mean/variance filters, maxima/minima extraction                                                                                                                                                                                    |
+| `Math\nDistance map`    | 5  | `MeasurementsFunction`          | both            | distance = geometric measurement field (judgment; flag)                                                                                                                                                                                          |
+| `Morphology`            | 13 | `FilteringFunction`             | both            | binary/gray morphology filters                                                                                                                                                                                                                   |
+| `Binary`                | 10 | `FilteringFunction`             | both            |                                                                                                                                                                                                                                                  |
+| `Filter`                | 6  | `FilteringFunction`             | both            |                                                                                                                                                                                                                                                  |
+| `Blur`                  | 5  | `FilteringFunction`             | both            |                                                                                                                                                                                                                                                  |
+| `FFT`                   | 5  | `FilteringFunction`             | both            | frequency-domain filtering (judgment; flag)                                                                                                                                                                                                      |
+| `Noise`                 | 3  | `FilteringFunction`             | both            |                                                                                                                                                                                                                                                  |
+| `Edges`                 | 3  | `FilteringFunction`             | both            |                                                                                                                                                                                                                                                  |
+| `Sharpen`               | 2  | `FilteringFunction`             | both            |                                                                                                                                                                                                                                                  |
+| `Convolve`              | 2  | `FilteringFunction`             | both            |                                                                                                                                                                                                                                                  |
+| `Convert`               | 18 | `ResamplingFunction`            | both            | bit-depth/type conversions; 3 overrides below                                                                                                                                                                                                    |
+| `Dimensions`            | 17 | `ResamplingFunction`            | both            | resample/split/merge across dimensions                                                                                                                                                                                                           |
+| `Transform`             | 19 | `ResamplingFunction`            | both            | crop/rotate/scale/warp = spatial resampling                                                                                                                                                                                                      |
+| `Colors`                | 17 | `ColorStackFunction`            | both            |                                                                                                                                                                                                                                                  |
+| `Colors\nConvert`       | 1  | `ColorStackFunction`            | both            |                                                                                                                                                                                                                                                  |
+| `LUT`                   | 6  | `ColorStackFunction`            | both            |                                                                                                                                                                                                                                                  |
+| `Features`              | 13 | `MeasurementsFunction`          | both            | vesselness/structure feature maps                                                                                                                                                                                                                |
+| `Statistics`            | 8  | `MeasurementsFunction`          | both            |                                                                                                                                                                                                                                                  |
+| `Analyze`               | 5  | `MeasurementsFunction`          | both            |                                                                                                                                                                                                                                                  |
+| `Colocalization`        | 1  | `MeasurementsFunction`          | both            |                                                                                                                                                                                                                                                  |
+| `Calibration`           | 6  | `PreprocessingFunction`         | both            | physical calibration = prep (judgment; flag)                                                                                                                                                                                                     |
+| `Contrast`              | 4  | `PreprocessingFunction`         | both            |                                                                                                                                                                                                                                                  |
+| `Background`            | 1  | `PreprocessingFunction`         | both            |                                                                                                                                                                                                                                                  |
+| `Masking`               | 3  | `PreprocessingFunction`         | both            |                                                                                                                                                                                                                                                  |
+| `Montage`               | 5  | `MergingSplittingFunction`      | both            |                                                                                                                                                                                                                                                  |
+| `Optical flow`          | 3  | `MergingSplittingFunction`      | **3D**          | aligns 3D+time stacks into one (flag)                                                                                                                                                                                                            |
+| `Registration`          | 3  | `MergingSplittingFunction`      | both            | image alignment (flag)                                                                                                                                                                                                                           |
+| `ROI`                   | 8  | `MergingSplittingFunction`      | both            | overlay/extract/ROI-mask ops on images (flag)                                                                                                                                                                                                    |
+| `Segment`               | 3  | `SegmentationFunction`          | both            |                                                                                                                                                                                                                                                  |
+| `Detect`                | 6  | `SegmentationFunction`          | both            | Hough/corner detector object finding (flag)                                                                                                                                                                                                      |
+| `Forms`                 | 2  | `SegmentationFunction`          | both            | interactive mask/ROI drawing = manual segmentation (flag)                                                                                                                                                                                        |
+| `Metadata`              | 3  | `MiscellaneousFunction`         | both            | metadata in/out, not measurements (flag)                                                                                                                                                                                                         |
+| `Modify`                | 1  | `MiscellaneousFunction`         | both            | set image properties from expressions                                                                                                                                                                                                            |
+| *(no menuPath)*         | 3  | `MiscellaneousFunction`         | both            | `RunImageJMacroAlgorithm` (macro runner — spatial **absent by deliberate choice**, see note below), `ImagePlusToGUI` (GUI bridge, leaf override → misc; spatial **both** — it has an `ImagePlusData` input, per rule 12), `MergeImagesAlgorithm` |
+| `Enhance` (ImageJ cat.) | 1  | `PreprocessingFunction`         | both            | `BleachCorrectionAlgorithm`, rule 2 by menuPath                                                                                                                                                                                                  |
 
-Images/**Convert** per-node overrides (same group, different operation): `ConvertImageToHSBAlgorithm`,
+Images/ **Convert** per-node overrides (same group, different operation): `ConvertImageToHSBAlgorithm`,
 `ConvertImageToLABAlgorithm`, `ConvertImageToRGBAlgorithm` → `ColorStackFunction` (color-space
 conversion); `ImageToMatrixAlgorithm`, `ImageToTableColumnAlgorithm` → spatial 2D; `MatrixToImageAlgorithm`,
 `TableToImageAlgorithm`, `OMEMetadataToTableAlgorithm` → spatial absent (no image input).
@@ -361,21 +364,21 @@ policy for GUI-passthrough nodes is wanted.
 
 **Roi (67) — rule 3:**
 
-| menuPath | n | leaf | spatial (group) | rationale |
-|---|---|---|---|---|
-| `Convert` | 7 | `RoiFiltersFunction` | both | |
-| `Draw` | 4 | `RoiFiltersFunction` | both | |
-| `Filter` | 11 | `RoiFiltersFunction` | both | |
-| `Modify` | 13 | `RoiFiltersFunction` | both | |
-| `Metadata` | 4 | `RoiFiltersFunction` | both | |
-| `Transform` | 2 | `RoiFiltersFunction` | both | |
-| `Process` | 1 | `RoiFiltersFunction` | both | |
-| `Register` | 1 | `RoiFiltersFunction` | **2D** | input `ImagePlus2DData` |
-| `Merge` | 5 | `RoiIntersectionsFunction` | both | set union of ROI lists |
-| `Measure` | 4 | `RoiMeasurementsFunction` | both | |
-| `Outline` | 4 | `RoiMorphologyFunction` | **absent** | ROI-only geometry (outline/hull/band/interpolate) |
-| `Split` | 4 | `RoiMorphologyFunction` | both | decomposition of ROI shapes |
-| *(no menuPath)* | 7 | `RoiFiltersFunction` | **absent** | |
+| menuPath        | n  | leaf                       | spatial (group) | rationale                                         |
+|-----------------|----|----------------------------|-----------------|---------------------------------------------------|
+| `Convert`       | 7  | `RoiFiltersFunction`       | both            |                                                   |
+| `Draw`          | 4  | `RoiFiltersFunction`       | both            |                                                   |
+| `Filter`        | 11 | `RoiFiltersFunction`       | both            |                                                   |
+| `Modify`        | 13 | `RoiFiltersFunction`       | both            |                                                   |
+| `Metadata`      | 4  | `RoiFiltersFunction`       | both            |                                                   |
+| `Transform`     | 2  | `RoiFiltersFunction`       | both            |                                                   |
+| `Process`       | 1  | `RoiFiltersFunction`       | both            |                                                   |
+| `Register`      | 1  | `RoiFiltersFunction`       | **2D**          | input `ImagePlus2DData`                           |
+| `Merge`         | 5  | `RoiIntersectionsFunction` | both            | set union of ROI lists                            |
+| `Measure`       | 4  | `RoiMeasurementsFunction`  | both            |                                                   |
+| `Outline`       | 4  | `RoiMorphologyFunction`    | **absent**      | ROI-only geometry (outline/hull/band/interpolate) |
+| `Split`         | 4  | `RoiMorphologyFunction`    | both            | decomposition of ROI shapes                       |
+| *(no menuPath)* | 7  | `RoiFiltersFunction`       | **absent**      |                                                   |
 
 Roi per-node overrides: `ConvertRoiToTableAlgorithm`, `UnreferencedRoiToMaskAlgorithm`,
 `UnreferencedRoiToRGBAlgorithm` → spatial absent (no image input); `RoiFloodFillAlgorithm`,
@@ -428,14 +431,14 @@ labeling, math, morphology, binary, convert) and 19.2b (all other image analysis
 Sizes are 148 / 165 / 111 (sum 424) — within the "~140 each, close is fine" bar; 19.2c is a little light
 because the ROI/table/data/export/annotation families are a naturally smaller, coherent unit.
 
-| chunk | groups (category — menuPath) | nodes |
-|---|---|---|
-| **19.2a** (Images core) — **APPLIED** (148/148 converted; 91 same-leaf alias drops + 20 secondary `function[]` entries; 0 unresolved imports; contract-conformance vs `ij-algorithms-final.json` = 0 mismatches) | Images: `Threshold`(20), `Threshold\nLocal`(12), `Threshold\nColor`(4), `Labels`(20), `Labels\nFilter`(6), `Labels\nMeasure`(2), `Labels\nConvert`(3), `Labkit`(1), `Math`(15), `Math\nLocal`(19), `Math\nDistance map`(5), `Morphology`(13), `Binary`(10), `Convert`(18) | **148** |
-| **19.2b** (Images analysis + ImageJ) — **APPLIED** (165/165 converted; 83 same-leaf alias drops + 31 secondary `function[]` entries (1 node — `MergeImagesAlgorithm` — carries 2); 0 unresolved imports; contract-conformance vs `ij-algorithms-final.json` = 0 mismatches) | Images: `Dimensions`(17), `Transform`(19), `Colors`(17), `Colors\nConvert`(1), `LUT`(6), `Filter`(6), `Blur`(5), `FFT`(5), `Edges`(3), `Noise`(3), `Sharpen`(2), `Convolve`(2), `Features`(13), `Statistics`(8), `Analyze`(5), `Colocalization`(1), `Calibration`(6), `Contrast`(4), `Background`(1), `Masking`(3), `Montage`(5), `Optical flow`(3), `Registration`(3), `ROI`(8), `Segment`(3), `Detect`(6), `Forms`(2), `Metadata`(3), `Modify`(1), *(no menuPath)*`(3)`, and ImageJ: `Enhance`(1) | **165** |
+| chunk                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | groups (category — menuPath)                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | nodes   |
+|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------|
+| **19.2a** (Images core) — **APPLIED** (148/148 converted; 91 same-leaf alias drops + 20 secondary `function[]` entries; 0 unresolved imports; contract-conformance vs `ij-algorithms-final.json` = 0 mismatches)                                                                                                                                                                                                                                                                                                                                                  | Images: `Threshold`(20), `Threshold\nLocal`(12), `Threshold\nColor`(4), `Labels`(20), `Labels\nFilter`(6), `Labels\nMeasure`(2), `Labels\nConvert`(3), `Labkit`(1), `Math`(15), `Math\nLocal`(19), `Math\nDistance map`(5), `Morphology`(13), `Binary`(10), `Convert`(18)                                                                                                                                                                                                                           | **148** |
+| **19.2b** (Images analysis + ImageJ) — **APPLIED** (165/165 converted; 83 same-leaf alias drops + 31 secondary `function[]` entries (1 node — `MergeImagesAlgorithm` — carries 2); 0 unresolved imports; contract-conformance vs `ij-algorithms-final.json` = 0 mismatches)                                                                                                                                                                                                                                                                                       | Images: `Dimensions`(17), `Transform`(19), `Colors`(17), `Colors\nConvert`(1), `LUT`(6), `Filter`(6), `Blur`(5), `FFT`(5), `Edges`(3), `Noise`(3), `Sharpen`(2), `Convolve`(2), `Features`(13), `Statistics`(8), `Analyze`(5), `Colocalization`(1), `Calibration`(6), `Contrast`(4), `Background`(1), `Masking`(3), `Montage`(5), `Optical flow`(3), `Registration`(3), `ROI`(8), `Segment`(3), `Detect`(6), `Forms`(2), `Metadata`(3), `Modify`(1), *(no menuPath)*`(3)`, and ImageJ: `Enhance`(1) | **165** |
 | **19.2c** (Roi/Table/DataSource/Export/Annotations/Misc — runs the gate) — **APPLIED** (111/111 converted; 13 same-leaf alias drops + 16 secondary `function[]` entries (16 nodes, 1 each; `TransformRoiFromExpressionsAlgorithm` alone contributes 3 same-leaf drops); 0 unresolved imports; contract-conformance vs `ij-algorithms-final.json` = 0 mismatches; full-module gate `TaxonomyConversionReportTest` (`-Djipipe.taxonomy.report.module=org.hkijena.jipipe.plugins.imagejalgorithms`) = zero unassigned, and skips cleanly when the property is unset) | Roi: `Convert`(7), `Draw`(4), `Filter`(11), `Measure`(4), `Merge`(5), `Metadata`(4), `Modify`(13), `Outline`(4), `Process`(1), `Register`(1), `Split`(4), `Transform`(2), *(no menuPath)*`(7)` = 67; Table: `Convert`(6), *(no menuPath)*`(1)` = 7; DataSource: `Convolve`(1), *(no menuPath)*`(19)` = 20; Export: `Images`(3), `ROI`(2), `Tables`(4), *(no menuPath)*`(1)` = 10; Annotations: `For ROI`(1), `For all data`(1), `For images`(3) = 5; Miscellaneous: `Convert`(1), `Meta run`(1) = 2 | **111** |
 
-Each chunk compiles standalone against the same module classpath; the module gate
-(`TaxonomyConversionReportTest`, `-Djipipe.taxonomy.report.module=org.hkijena.jipipe.plugins.imagejalgorithms`)
+Each chunk compiles standalone against the same module classpath; the module gate (`TaxonomyConversionReportTest`,
+`-Djipipe.taxonomy.report.module=org.hkijena.jipipe.plugins.imagejalgorithms`)
 runs only in 19.2c, when all 424 are converted.
 
 #### (d) Dry-run proof (R6)
@@ -447,8 +450,8 @@ runs only in 19.2c, when all 424 are converted.
 #### (e) Per-node spatial deviations from the TSV group default (55 total)
 
 convert.py writes the TSV group default; the chunks must apply the per-node values from
-`ij-algorithms-final.json` (authoritative; the list below is a human-readable cross-check).
-**55 nodes** deviate, in four buckets:
+`ij-algorithms-final.json` (authoritative; the list below is a human-readable cross-check). **55 nodes** deviate, in
+four buckets:
 
 - **29 → absent** (no image input slot, rule 12 — including the 22 reviewer-named ROI nodes fixed in
   this revision): Roi/Filter `FilterRoi2dByNameAlgorithm`, `FilterRoi2dByOverlapAlgorithm`,
@@ -477,14 +480,15 @@ convert.py writes the TSV group default; the chunks must apply the per-node valu
   default is already 3D, so no override is needed.)
 - **7 → SPATIAL_2D** (2D-constrained first image input): `ImageToMatrixAlgorithm`,
   `ImageToTableColumnAlgorithm`, `FFT2DForwardTransform`, `FFT2DInverseTransform`,
-  `FFT2DSwapQuadrants`, `InputImagesToMontage`, `MontageToStackAlgorithm`.
-  (`RegisterRoiToImageByBrightnessAlgorithm` is also 2D, but its group default is already 2D.)
+  `FFT2DSwapQuadrants`, `InputImagesToMontage`, `MontageToStackAlgorithm`. (`RegisterRoiToImageByBrightnessAlgorithm` is
+  also 2D, but its group default is already 2D.)
 
 Consistency check: total 3D set = 13 overrides + 3 optical-flow = 16; total 2D set = 7 overrides +
 1 register = 8; total absent = 29 overrides + 43 group-default-absent = 72; total both =
+
 328. Leaf (function) overrides total **14 nodes** (3 Images/Convert→`ColorStackFunction`,
-3 DataSource→`TableDataFunction`, 4 DataSource→`RoiDataFunction`, 1 DataSource→`MiscDataFunction`,
-4 GUI bridges→`MiscellaneousFunction`, 1 Export→`ExportArchiveFunction` — all listed in (a)).
+     3 DataSource→`TableDataFunction`, 4 DataSource→`RoiDataFunction`, 1 DataSource→`MiscDataFunction`,
+     4 GUI bridges→`MiscellaneousFunction`, 1 Export→`ExportArchiveFunction` — all listed in (a)).
 
 #### (f) Flagged for Phase 3 audit
 
@@ -494,7 +498,8 @@ Consistency check: total 3D set = 13 overrides + 3 optical-flow = 16; total 2D s
 - `Calibration` → `PreprocessingFunction` (could be `MeasurementsFunction`).
 - `Optical flow` / `Registration` → `MergingSplittingFunction` (no dedicated registration leaf).
 - `Images/ROI` → `MergingSplittingFunction` (overlay/extract ops; partly ROI-domain).
-- `Detect` / `Forms` → `SegmentationFunction` (detection & interactive drawing; could be `MeasurementsFunction` / manual-annotation leaf).
+- `Detect` / `Forms` → `SegmentationFunction` (detection & interactive drawing; could be `MeasurementsFunction` /
+  manual-annotation leaf).
 - `Images/Metadata` → `MiscellaneousFunction` (could be `MeasurementsFunction` for the extract node).
 - `FFT` → `FilteringFunction` (could be `MeasurementsFunction` for transform-only nodes).
 - `RenderJIPipeProjectAlgorithm` → `PlotMiscFunction` (pipeline rendering; could be `MiscellaneousFunction`).
@@ -507,8 +512,8 @@ Consistency check: total 3D set = 13 overrides + 3 optical-flow = 16; total 2D s
 **Scope:** every `@ConfigureJIPipeNode` class under
 `plugins/jipipe-plugin-ij/src/main/java` (package `org.hkijena.jipipe.plugins.imagejdatatypes`).
 The module is **data-type wrappers + importers/exporters** of IJ1 `ImagePlus`/Bio-Formats images:
-54 `ImagePlus*Data` data-type classes (2D/3D/4D/5D, color/greyscale/mask, FFT) plus 26 algorithm classes
-(importers, export nodes, ROI/table sources, color-space/contrast/converter ops, macro + OME-XML
+54 `ImagePlus*Data` data-type classes (2D/3D/4D/5D, color/greyscale/mask, FFT) plus 26 algorithm classes (importers,
+export nodes, ROI/table sources, color-space/contrast/converter ops, macro + OME-XML
 sources, 3 annotation nodes).
 
 **Inventory (verified, matches controller R1):** 80 annotated files. Primary `nodeTypeCategory`
@@ -523,12 +528,13 @@ no IJ2-API wrapper node here, so the module-level rule holds without exception.
 **Spatial (R2 / rule 12):** from each node's first image input slot, or (for data-type wrappers and
 sources, which have no image *input*) the data's **declared dimensionality** from its `@ImageTypeInfo` /
 menuPath / data-class name:
+
 - `d2/*` classes, `ImagePlusFFT2DData` ⇒ `SPATIAL_2D` (12)
 - `d3/*` classes, `ImagePlusFFT3DData` ⇒ `SPATIAL_3D` (11)
-- unconstrained / `d4` / `d5` image data (bare `ImagePlus*` color+greyscale, `FFT4D/5D`, `FFT`) ⇒
-  **both** (dimensioned-wrapper ruling: the spatial set is closed to {2D,3D}) (51)
-- **absent** (no `spatialDimensions`): table/ROI/OME-XML/macro sources + the file-only annotation node
-  (no image dimensionality to declare) (6)
+- unconstrained / `d4` / `d5` image data (bare `ImagePlus*` color+greyscale, `FFT4D/5D`, `FFT`) ⇒ **both**
+  (dimensioned-wrapper ruling: the spatial set is closed to {2D,3D}) (51)
+- **absent** (no `spatialDimensions`): table/ROI/OME-XML/macro sources + the file-only annotation node (no image
+  dimensionality to declare) (6)
 
 **Distribution:** spatial 2D=12 · 3D=11 · both=51 · absent=6. Function leaves: `ImageDataFunction` 61 ·
 `MiscDataFunction` 3 · `ExportFileFormatsFunction` 3 · `ColorStackFunction` 3 · `AnnotationsEditFunction` 3 ·
@@ -547,65 +553,65 @@ Spatial comes from the `@ImageTypeInfo(numDimensions=…)` / package (no image *
 data type, so R2 uses the declared dimensionality). Grouped (full 80-row table is in the report; these
 groups cover all 50):
 
-| wrapper group | classes (n) | function | spatial | rationale |
-|---|---|---|---|---|
-| 2D image types (`d2`: base + Color{,HSB,LAB,RGB} + Greyscale{,8U,16U,32F,Mask}) | 10 | `ImageDataFunction` | **2D** | `@ImageTypeInfo(numDimensions=2)` / `d2` package |
-| 2D FFT (`ImagePlusFFT2DData`) | 1 | `ImageDataFunction` | **2D** | `numDimensions=2`, frequency-space 2D image |
-| 3D image types (`d3`: base + Color{,HSB,LAB,RGB} + Greyscale{,8U,16U,32F,Mask}) | 10 | `ImageDataFunction` | **3D** | `numDimensions=3` / `d3` package |
-| 3D FFT (`ImagePlusFFT3DData`) | 1 | `ImageDataFunction` | **3D** | `numDimensions=3`, frequency-space 3D image |
-| bare unconstrained color (`Color{,HSB,LAB,RGB}`, root) | 4 | `ImageDataFunction` | **both** | `@ImageTypeInfo` without `numDimensions` ⇒ unconstrained (dimensioned-wrapper ruling) |
-| bare unconstrained greyscale (`Greyscale{,8U,16U,32F,Mask}`, root) | 5 | `ImageDataFunction` | **both** | unconstrained `@ImageTypeInfo` ⇒ both |
-| 4D image types (`d4`: base + Color{,HSB,LAB,RGB} + Greyscale{,8U,16U,32F,Mask}) | 10 | `ImageDataFunction` | **both** | 4D (≥3) collapses to {2D,3D} — closed spatial set |
-| 5D image types (`d5`: base + Color{,HSB,LAB,RGB} + Greyscale{,8U,16U,32F,Mask}) | 10 | `ImageDataFunction` | **both** | 5D (≥3) collapses to {2D,3D} |
-| FFT `ImagePlusFFT4DData`, `ImagePlusFFT5DData`, `ImagePlusFFTData` | 3 | `ImageDataFunction` | **both** | 4D/5D ⇒ both; bare `FFT` unconstrained ⇒ both |
+| wrapper group                                                                   | classes (n) | function            | spatial  | rationale                                                                             |
+|---------------------------------------------------------------------------------|-------------|---------------------|----------|---------------------------------------------------------------------------------------|
+| 2D image types (`d2`: base + Color{,HSB,LAB,RGB} + Greyscale{,8U,16U,32F,Mask}) | 10          | `ImageDataFunction` | **2D**   | `@ImageTypeInfo(numDimensions=2)` / `d2` package                                      |
+| 2D FFT (`ImagePlusFFT2DData`)                                                   | 1           | `ImageDataFunction` | **2D**   | `numDimensions=2`, frequency-space 2D image                                           |
+| 3D image types (`d3`: base + Color{,HSB,LAB,RGB} + Greyscale{,8U,16U,32F,Mask}) | 10          | `ImageDataFunction` | **3D**   | `numDimensions=3` / `d3` package                                                      |
+| 3D FFT (`ImagePlusFFT3DData`)                                                   | 1           | `ImageDataFunction` | **3D**   | `numDimensions=3`, frequency-space 3D image                                           |
+| bare unconstrained color (`Color{,HSB,LAB,RGB}`, root)                          | 4           | `ImageDataFunction` | **both** | `@ImageTypeInfo` without `numDimensions` ⇒ unconstrained (dimensioned-wrapper ruling) |
+| bare unconstrained greyscale (`Greyscale{,8U,16U,32F,Mask}`, root)              | 5           | `ImageDataFunction` | **both** | unconstrained `@ImageTypeInfo` ⇒ both                                                 |
+| 4D image types (`d4`: base + Color{,HSB,LAB,RGB} + Greyscale{,8U,16U,32F,Mask}) | 10          | `ImageDataFunction` | **both** | 4D (≥3) collapses to {2D,3D} — closed spatial set                                     |
+| 5D image types (`d5`: base + Color{,HSB,LAB,RGB} + Greyscale{,8U,16U,32F,Mask}) | 10          | `ImageDataFunction` | **both** | 5D (≥3) collapses to {2D,3D}                                                          |
+| FFT `ImagePlusFFT4DData`, `ImagePlusFFT5DData`, `ImagePlusFFTData`              | 3           | `ImageDataFunction` | **both** | 4D/5D ⇒ both; bare `FFT` unconstrained ⇒ both                                         |
 
 #### (b) Images-category operational nodes (7) — rule 1 / R1
 
-| node | function | spatial | rationale |
-|---|---|---|---|
-| `ApplyDisplayContrastAlgorithm` | `PreprocessingFunction` | both | menuPath `Contrast`; applies brightness/contrast display range (precedent: ij-algorithms `Contrast`→`PreprocessingFunction`); first image input `ImagePlusData` (unconstrained) ⇒ both |
-| `DisplayRangeCalibrationAlgorithm` | `PreprocessingFunction` | both | menuPath `Contrast`; calibrates the display range; `ImagePlusData` in ⇒ both |
-| `ToRGBColorSpaceConverterAlgorithm` | `ColorStackFunction` | both | menuPath `Colors\nConvert`; color-space conversion (precedent: ij-algorithms `Colors\nConvert`→`ColorStackFunction`); `ImagePlusData` in ⇒ both |
-| `ToHSBColorSpaceConverterAlgorithm` | `ColorStackFunction` | both | color-space conversion; `ImagePlusData` in ⇒ both |
-| `ToLABColorSpaceConverterAlgorithm` | `ColorStackFunction` | both | color-space conversion; `ImagePlusData` in ⇒ both |
-| `ImportLUTAsRGBFromFileAlgorithm` | `ImageDataFunction` | **2D** | **R1 override — judged by data class + purpose, not the Images category.** No menuPath; imports a LUT as a *2D* RGB image (source), output `ImagePlus2DColorRGBData`. It produces image data (data-source role) rather than processing it, so it is the data leaf `ImageDataFunction`, spatial from the 2D output. Flagged for Phase 3 (see (d)). |
-| `ImageTypeConverter` | `ResamplingFunction` | both | **non-obvious.** No menuPath; converts an `ImagePlusData` image *into another ImagePlus data type* (bit-depth / 2D/3D / greyscale↔color) via a parameter. It is an in-place image type conversion, not a data source (it has an image input it transforms) — the ij-algorithms `Convert` group precedent is `ResamplingFunction`. `ImagePlusData` in ⇒ both. Flagged for Phase 3 (see (d)). |
+| node                                | function                | spatial | rationale                                                                                                                                                                                                                                                                                                                                                                                   |
+|-------------------------------------|-------------------------|---------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `ApplyDisplayContrastAlgorithm`     | `PreprocessingFunction` | both    | menuPath `Contrast`; applies brightness/contrast display range (precedent: ij-algorithms `Contrast`→`PreprocessingFunction`); first image input `ImagePlusData` (unconstrained) ⇒ both                                                                                                                                                                                                      |
+| `DisplayRangeCalibrationAlgorithm`  | `PreprocessingFunction` | both    | menuPath `Contrast`; calibrates the display range; `ImagePlusData` in ⇒ both                                                                                                                                                                                                                                                                                                                |
+| `ToRGBColorSpaceConverterAlgorithm` | `ColorStackFunction`    | both    | menuPath `Colors\nConvert`; color-space conversion (precedent: ij-algorithms `Colors\nConvert`→`ColorStackFunction`); `ImagePlusData` in ⇒ both                                                                                                                                                                                                                                             |
+| `ToHSBColorSpaceConverterAlgorithm` | `ColorStackFunction`    | both    | color-space conversion; `ImagePlusData` in ⇒ both                                                                                                                                                                                                                                                                                                                                           |
+| `ToLABColorSpaceConverterAlgorithm` | `ColorStackFunction`    | both    | color-space conversion; `ImagePlusData` in ⇒ both                                                                                                                                                                                                                                                                                                                                           |
+| `ImportLUTAsRGBFromFileAlgorithm`   | `ImageDataFunction`     | **2D**  | **R1 override — judged by data class + purpose, not the Images category.** No menuPath; imports a LUT as a *2D* RGB image (source), output `ImagePlus2DColorRGBData`. It produces image data (data-source role) rather than processing it, so it is the data leaf `ImageDataFunction`, spatial from the 2D output. Flagged for Phase 3 (see (d)).                                           |
+| `ImageTypeConverter`                | `ResamplingFunction`    | both    | **non-obvious.** No menuPath; converts an `ImagePlusData` image *into another ImagePlus data type* (bit-depth / 2D/3D / greyscale↔color) via a parameter. It is an in-place image type conversion, not a data source (it has an image input it transforms) — the ij-algorithms `Convert` group precedent is `ResamplingFunction`. `ImagePlusData` in ⇒ both. Flagged for Phase 3 (see (d)). |
 
 #### (c) DataSource (12), Export (4), Annotations (3) — rules 5/6/7, R1
 
 **DataSource (12) — rule 6, by OUTPUT type:**
 
-| node | function | spatial | output (rationale) |
-|---|---|---|---|
-| `BioFormatsImporterAlgorithm` | `ImageDataFunction` | both | `OMEImageData` (Bio-Formats image import; OME wraps an unconstrained `ImagePlus`) |
-| `ImportImageJSampleAlgorithm` | `ImageDataFunction` | both | `ImagePlusData` (ImageJ sample image; no input ⇒ source, unconstrained) |
-| `ImportImagePlusAlgorithm` | `ImageDataFunction` | both | `ImagePlusData` (image from file) |
-| `ImportOMEZARRFromURIAsImagePlusAlgorithm` | `ImageDataFunction` | both | `OMEImageData` (OME-Zarr from URI) |
-| `ImportOMEZARRFromZipDirectoryAsImagePlusAlgorithm` | `ImageDataFunction` | both | `OMEImageData` (OME-Zarr from zip dir) |
-| `NativeImageJImporterAlgorithm` | `ImageDataFunction` | both | `ImagePlusData` (ImageJ1 `IJ.open` import) |
-| `ImportResultsTableAlgorithm` | `TableDataFunction` | **absent** | `ResultsTableData` (results table from file ⇒ table leaf, no image) |
-| `ImportRoi2dAlgorithm` | `RoiDataFunction` | **absent** | `Roi2dListData` (ROI list from file ⇒ ROI leaf, no image) |
-| `ExtractRoi2dFromOMEImageAlgorithm` | `RoiDataFunction` | **both** | `Roi2dListData` **but** it takes an `OMEImageData` *input* (extracts ROIs from the OME image) ⇒ first image input OME (unconstrained) ⇒ both. ROI leaf by output, spatial by input. |
-| `BioFormatsExtractOMEXMLAlgorithm` | `MiscDataFunction` | **absent** | `OMEXMLData` (extends `XMLData`→`StringData`; OME-XML text, not image/table/ROI) |
-| `DefineImageJMacroAlgorithm` | `MiscDataFunction` | **absent** | `ImageJMacroData` (extends `StringData`; a macro text, not image) |
-| `ImportImageJMacroAlgorithm` | `MiscDataFunction` | **absent** | `ImageJMacroData` (macro text from file) |
+| node                                                | function            | spatial    | output (rationale)                                                                                                                                                                  |
+|-----------------------------------------------------|---------------------|------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `BioFormatsImporterAlgorithm`                       | `ImageDataFunction` | both       | `OMEImageData` (Bio-Formats image import; OME wraps an unconstrained `ImagePlus`)                                                                                                   |
+| `ImportImageJSampleAlgorithm`                       | `ImageDataFunction` | both       | `ImagePlusData` (ImageJ sample image; no input ⇒ source, unconstrained)                                                                                                             |
+| `ImportImagePlusAlgorithm`                          | `ImageDataFunction` | both       | `ImagePlusData` (image from file)                                                                                                                                                   |
+| `ImportOMEZARRFromURIAsImagePlusAlgorithm`          | `ImageDataFunction` | both       | `OMEImageData` (OME-Zarr from URI)                                                                                                                                                  |
+| `ImportOMEZARRFromZipDirectoryAsImagePlusAlgorithm` | `ImageDataFunction` | both       | `OMEImageData` (OME-Zarr from zip dir)                                                                                                                                              |
+| `NativeImageJImporterAlgorithm`                     | `ImageDataFunction` | both       | `ImagePlusData` (ImageJ1 `IJ.open` import)                                                                                                                                          |
+| `ImportResultsTableAlgorithm`                       | `TableDataFunction` | **absent** | `ResultsTableData` (results table from file ⇒ table leaf, no image)                                                                                                                 |
+| `ImportRoi2dAlgorithm`                              | `RoiDataFunction`   | **absent** | `Roi2dListData` (ROI list from file ⇒ ROI leaf, no image)                                                                                                                           |
+| `ExtractRoi2dFromOMEImageAlgorithm`                 | `RoiDataFunction`   | **both**   | `Roi2dListData` **but** it takes an `OMEImageData` *input* (extracts ROIs from the OME image) ⇒ first image input OME (unconstrained) ⇒ both. ROI leaf by output, spatial by input. |
+| `BioFormatsExtractOMEXMLAlgorithm`                  | `MiscDataFunction`  | **absent** | `OMEXMLData` (extends `XMLData`→`StringData`; OME-XML text, not image/table/ROI)                                                                                                    |
+| `DefineImageJMacroAlgorithm`                        | `MiscDataFunction`  | **absent** | `ImageJMacroData` (extends `StringData`; a macro text, not image)                                                                                                                   |
+| `ImportImageJMacroAlgorithm`                        | `MiscDataFunction`  | **absent** | `ImageJMacroData` (macro text from file)                                                                                                                                            |
 
 **Export (4) — rule 7:**
 
-| node | function | spatial | rationale |
-|---|---|---|---|
-| `BioFormatsExporterAlgorithm` | `ExportFileFormatsFunction` | both | writes `*.ome.tiff` (single file format); OME image input ⇒ both. (Deprecated sibling of `…2Algorithm`.) |
-| `BioFormatsExporter2Algorithm` | `ExportFileFormatsFunction` | both | writes `*.ome.tiff`; OME image input ⇒ both |
-| `SetBioFormatsExporterSettings` | `ExportFileFormatsFunction` | both | **non-obvious (flagged).** Configures the OME-TIFF exporter settings (pass-through `OMEImageData` in→out, no file written). It is not a file writer, but its whole purpose is preparing an OME-TIFF export and it sits under the `Images` export group, so it is grouped with the export-leaf family. `OMEImageData` in ⇒ both. |
-| `ExportImagePlusAsOMEZARRAlgorithm` | `ExportArchiveFunction` | both | **judgment.** "Writes an OME ZARR into a directory or **ZIP** file" — a ZARR archive, so the archive leaf per rule 7 (archive→`ExportArchiveFunction`). `OMEImageData` in ⇒ both. |
+| node                                | function                    | spatial | rationale                                                                                                                                                                                                                                                                                                                       |
+|-------------------------------------|-----------------------------|---------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `BioFormatsExporterAlgorithm`       | `ExportFileFormatsFunction` | both    | writes `*.ome.tiff` (single file format); OME image input ⇒ both. (Deprecated sibling of `…2Algorithm`.)                                                                                                                                                                                                                        |
+| `BioFormatsExporter2Algorithm`      | `ExportFileFormatsFunction` | both    | writes `*.ome.tiff`; OME image input ⇒ both                                                                                                                                                                                                                                                                                     |
+| `SetBioFormatsExporterSettings`     | `ExportFileFormatsFunction` | both    | **non-obvious (flagged).** Configures the OME-TIFF exporter settings (pass-through `OMEImageData` in→out, no file written). It is not a file writer, but its whole purpose is preparing an OME-TIFF export and it sits under the `Images` export group, so it is grouped with the export-leaf family. `OMEImageData` in ⇒ both. |
+| `ExportImagePlusAsOMEZARRAlgorithm` | `ExportArchiveFunction`     | both    | **judgment.** "Writes an OME ZARR into a directory or **ZIP** file" — a ZARR archive, so the archive leaf per rule 7 (archive→`ExportArchiveFunction`). `OMEImageData` in ⇒ both.                                                                                                                                               |
 
 **Annotations (3) — rule 5:**
 
-| node | function | spatial | rationale |
-|---|---|---|---|
-| `AnnotateDataWithImagePropertiesAlgorithm` | `AnnotationsEditFunction` | both | `For all data`; adds data annotations from an image's properties; image input `ImagePlusData` ⇒ both |
-| `BioFormatsAnnotatorAlgorithm` | `AnnotationsEditFunction` | **absent** | `For paths`; annotates `FileData` with OME metadata (no image data in/out) ⇒ absent |
-| `ImagePropertiesToAnnotationAlgorithm` | `AnnotationsEditFunction` | both | `For images`; adds annotations from image properties; `ImagePlusData` in ⇒ both |
+| node                                       | function                  | spatial    | rationale                                                                                            |
+|--------------------------------------------|---------------------------|------------|------------------------------------------------------------------------------------------------------|
+| `AnnotateDataWithImagePropertiesAlgorithm` | `AnnotationsEditFunction` | both       | `For all data`; adds data annotations from an image's properties; image input `ImagePlusData` ⇒ both |
+| `BioFormatsAnnotatorAlgorithm`             | `AnnotationsEditFunction` | **absent** | `For paths`; annotates `FileData` with OME metadata (no image data in/out) ⇒ absent                  |
+| `ImagePropertiesToAnnotationAlgorithm`     | `AnnotationsEditFunction` | both       | `For images`; adds annotations from image properties; `ImagePlusData` in ⇒ both                      |
 
 (All three *edit/add* annotations on existing data; none converts *between* annotation types, so
 `AnnotationsConvertFunction` is unused — same outcome as ij-algorithms §19.2.)
@@ -618,20 +624,20 @@ function leaf as the node's primary (image import/export/contrast/ROI/table/LUT 
 or a same-source `DataSourceNodeTypeCategory` alias). Per the A/B/C protocol (alias-leaf == primary-leaf →
 drop) **all 12 are deleted; no secondary `function[]` entries were added.**
 
-| node | alias (old category / menuPath) | alias leaf | action |
-|---|---|---|---|
-| `NativeImageJImporterAlgorithm` | DataSource / — | `ImageDataFunction` | drop (== primary) |
-| `NativeImageJImporterAlgorithm` | ImageJ / `File` | `ImageDataFunction` | drop (== primary) |
-| `BioFormatsImporterAlgorithm` | DataSource / — | `ImageDataFunction` | drop (== primary) |
-| `BioFormatsImporterAlgorithm` | ImageJ / `Plugins\nBio-Formats` | `ImageDataFunction` | drop (== primary) |
-| `ImportImagePlusAlgorithm` | ImageJ / `File` | `ImageDataFunction` | drop (== primary) |
-| `ImportRoi2dAlgorithm` | ImageJ / `File` | `RoiDataFunction` | drop (== primary) |
-| `ImportResultsTableAlgorithm` | ImageJ / `File` | `TableDataFunction` | drop (== primary) |
-| `ImportLUTAsRGBFromFileAlgorithm` | ImageJ / `File` | `ImageDataFunction` | drop (== primary) |
-| `BioFormatsExporterAlgorithm` | ImageJ / `Plugins\nBio-Formats` | `ExportFileFormatsFunction` | drop (== primary) |
-| `BioFormatsExporter2Algorithm` | ImageJ / `Plugins\nBio-Formats` | `ExportFileFormatsFunction` | drop (== primary) |
-| `ApplyDisplayContrastAlgorithm` | ImageJ / `Image\nAdjust` | `PreprocessingFunction` | drop (== primary) |
-| `DisplayRangeCalibrationAlgorithm` | ImageJ / `Image\nAdjust` | `PreprocessingFunction` | drop (== primary) |
+| node                               | alias (old category / menuPath) | alias leaf                  | action            |
+|------------------------------------|---------------------------------|-----------------------------|-------------------|
+| `NativeImageJImporterAlgorithm`    | DataSource / —                  | `ImageDataFunction`         | drop (== primary) |
+| `NativeImageJImporterAlgorithm`    | ImageJ / `File`                 | `ImageDataFunction`         | drop (== primary) |
+| `BioFormatsImporterAlgorithm`      | DataSource / —                  | `ImageDataFunction`         | drop (== primary) |
+| `BioFormatsImporterAlgorithm`      | ImageJ / `Plugins\nBio-Formats` | `ImageDataFunction`         | drop (== primary) |
+| `ImportImagePlusAlgorithm`         | ImageJ / `File`                 | `ImageDataFunction`         | drop (== primary) |
+| `ImportRoi2dAlgorithm`             | ImageJ / `File`                 | `RoiDataFunction`           | drop (== primary) |
+| `ImportResultsTableAlgorithm`      | ImageJ / `File`                 | `TableDataFunction`         | drop (== primary) |
+| `ImportLUTAsRGBFromFileAlgorithm`  | ImageJ / `File`                 | `ImageDataFunction`         | drop (== primary) |
+| `BioFormatsExporterAlgorithm`      | ImageJ / `Plugins\nBio-Formats` | `ExportFileFormatsFunction` | drop (== primary) |
+| `BioFormatsExporter2Algorithm`     | ImageJ / `Plugins\nBio-Formats` | `ExportFileFormatsFunction` | drop (== primary) |
+| `ApplyDisplayContrastAlgorithm`    | ImageJ / `Image\nAdjust`        | `PreprocessingFunction`     | drop (== primary) |
+| `DisplayRangeCalibrationAlgorithm` | ImageJ / `Image\nAdjust`        | `PreprocessingFunction`     | drop (== primary) |
 
 #### (e) Flagged for Phase 3 audit
 
@@ -686,8 +692,8 @@ drop) **all 12 are deleted; no secondary `function[]` entries were added.**
 apply + gate in one commit), mirroring §19.3.
 
 **Scope:** every `@ConfigureJIPipeNode` class under `plugins/jipipe-plugin-ij-3d/src/main/java`
-(base package `org.hkijena.jipipe.plugins.ij3d` = the gate prefix). The module is the **3D ImageJ Suite
-(mcib3d)** integration: Fast-3D filters, 3D segmentation/thresholding, 3D feature/measure nodes, and the
+(base package `org.hkijena.jipipe.plugins.ij3d` = the gate prefix). The module is the **3D ImageJ Suite (mcib3d)**
+integration: Fast-3D filters, 3D segmentation/thresholding, 3D feature/measure nodes, and the
 IJ3D-ROI (`Ij3dSuiteRoiListData`) measurement/filter/merge/split/convert family.
 
 **Inventory (verified, matches controller R1):** 62 annotated files. Primary `nodeTypeCategory`
@@ -718,20 +724,20 @@ optional `Reference`).
 
 #### (a) Images (32) — rules 1/R2: the 19.2 leaf table is the contract for shared segments
 
-| segment (menuPath) | n | leaf | spatial | rationale for non-obvious |
-|---|---|---|---|---|
-| `Threshold` | 7 | `ThresholdingFunction` | both | the 7 nodes (`Constant/Difference/GaussianFit/LocalMean Spot` + `Hysteresis` + `IterativeThreshold` + `Nuclei`) all sit under the `Threshold` menu and are threshold-driven → the 19.2 `Threshold` contract (`ThresholdingFunction`). Their "spot/nuclei" naming is a 3D-suite label, not a new operation type. |
-| `Math\nLocal` | 4 | `FilteringFunction` | both | Fast-3D local max/min/variance → 19.2 `Math\nLocal`→`FilteringFunction` contract |
-| `Blur` | 2 | `FilteringFunction` | both | Fast-3D mean/median → 19.2 `Blur`→`FilteringFunction` |
-| `Morphology` | 3 | `FilteringFunction` | both | Fast-3D open/close/top-hat → 19.2 `Morphology`→`FilteringFunction` |
-| `Edges` | 2 | `FilteringFunction` | both | Fast-3D adaptive/sobel → 19.2 `Edges`→`FilteringFunction` |
-| `Features` | 3 | `MeasurementsFunction` | both | `EdgeFilter3D`/`FindMaxima3D`/`SymmetryFilter3D` — feature/edge/maxima **maps** → 19.2 `Features`→`MeasurementsFunction` contract (flag Phase 3: `EdgeFilter3D`/`FindMaxima3D` read more like the 19.2 `Edges`→`FilteringFunction` group than a "measurement" — see (e)) |
-| `ROI` | 4 | `MergingSplittingFunction` | both | `Extract/Remove/Render/SetOverlay3D` → 19.2 `ROI`→`MergingSplittingFunction` contract (the IJ `Image\nOverlay` menu maps to the same group, per 19.2b) |
-| `Analyze` | 1 | `MeasurementsFunction` | both | `FindParticles3D` → 19.2 `Analyze`/`FindParticles2D`→`MeasurementsFunction` precedent (emits ROI + measurements, not a segmentation) |
-| `Labels` | 1 | `ColorStackFunction` | both | `Roi3dFromLabels` (labels→ROI) → matches the 19.2 `Labels\nConvert`→`ColorStackFunction` row (the operative `LabelsToROI` precedent); the plain 19.2 `Labels` row is `SegmentationFunction` — judged as a labels→ROI *conversion* op (flag Phase 3) |
-| `Math\nDistance map` | 2 | `MeasurementsFunction` | both | `DistanceMap3D`/`ErodedVolumeFraction3D` → 19.2 `Math\nDistance map`→`MeasurementsFunction` contract |
-| `Segment` | 1 | `SegmentationFunction` | both | `Watershed3DSegmentation` → 19.2 `Segment`→`SegmentationFunction` contract |
-| `Binary` | 2 | `FilteringFunction` | both | `Voronoi3D`/`Watershed3DSplitting` → 19.2 `Binary`→`FilteringFunction` contract |
+| segment (menuPath)   | n | leaf                       | spatial | rationale for non-obvious                                                                                                                                                                                                                                                                                       |
+|----------------------|---|----------------------------|---------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `Threshold`          | 7 | `ThresholdingFunction`     | both    | the 7 nodes (`Constant/Difference/GaussianFit/LocalMean Spot` + `Hysteresis` + `IterativeThreshold` + `Nuclei`) all sit under the `Threshold` menu and are threshold-driven → the 19.2 `Threshold` contract (`ThresholdingFunction`). Their "spot/nuclei" naming is a 3D-suite label, not a new operation type. |
+| `Math\nLocal`        | 4 | `FilteringFunction`        | both    | Fast-3D local max/min/variance → 19.2 `Math\nLocal`→`FilteringFunction` contract                                                                                                                                                                                                                                |
+| `Blur`               | 2 | `FilteringFunction`        | both    | Fast-3D mean/median → 19.2 `Blur`→`FilteringFunction`                                                                                                                                                                                                                                                           |
+| `Morphology`         | 3 | `FilteringFunction`        | both    | Fast-3D open/close/top-hat → 19.2 `Morphology`→`FilteringFunction`                                                                                                                                                                                                                                              |
+| `Edges`              | 2 | `FilteringFunction`        | both    | Fast-3D adaptive/sobel → 19.2 `Edges`→`FilteringFunction`                                                                                                                                                                                                                                                       |
+| `Features`           | 3 | `MeasurementsFunction`     | both    | `EdgeFilter3D`/`FindMaxima3D`/`SymmetryFilter3D` — feature/edge/maxima **maps** → 19.2 `Features`→`MeasurementsFunction` contract (flag Phase 3: `EdgeFilter3D`/`FindMaxima3D` read more like the 19.2 `Edges`→`FilteringFunction` group than a "measurement" — see (e))                                        |
+| `ROI`                | 4 | `MergingSplittingFunction` | both    | `Extract/Remove/Render/SetOverlay3D` → 19.2 `ROI`→`MergingSplittingFunction` contract (the IJ `Image\nOverlay` menu maps to the same group, per 19.2b)                                                                                                                                                          |
+| `Analyze`            | 1 | `MeasurementsFunction`     | both    | `FindParticles3D` → 19.2 `Analyze`/`FindParticles2D`→`MeasurementsFunction` precedent (emits ROI + measurements, not a segmentation)                                                                                                                                                                            |
+| `Labels`             | 1 | `ColorStackFunction`       | both    | `Roi3dFromLabels` (labels→ROI) → matches the 19.2 `Labels\nConvert`→`ColorStackFunction` row (the operative `LabelsToROI` precedent); the plain 19.2 `Labels` row is `SegmentationFunction` — judged as a labels→ROI *conversion* op (flag Phase 3)                                                             |
+| `Math\nDistance map` | 2 | `MeasurementsFunction`     | both    | `DistanceMap3D`/`ErodedVolumeFraction3D` → 19.2 `Math\nDistance map`→`MeasurementsFunction` contract                                                                                                                                                                                                            |
+| `Segment`            | 1 | `SegmentationFunction`     | both    | `Watershed3DSegmentation` → 19.2 `Segment`→`SegmentationFunction` contract                                                                                                                                                                                                                                      |
+| `Binary`             | 2 | `FilteringFunction`        | both    | `Voronoi3D`/`Watershed3DSplitting` → 19.2 `Binary`→`FilteringFunction` contract                                                                                                                                                                                                                                 |
 
 #### (b) Roi (27) — rule 3 / R2 (the 19.2 Roi table is the precedent)
 
@@ -740,20 +746,20 @@ Modify 5, Split 2, none 3 = 27). The `Convert`/`Filter`/`Metadata`/`Modify` rows
 contract; `Measure`/`Split`/no-menuPath carry per-node operation judgment (R2: Roi nodes are judged "per
 what the node does").
 
-| segment (menuPath) | n | leaf | spatial | rationale |
-|---|---|---|---|---|
-| `Convert` | 6 | `RoiFiltersFunction` | `Roi3dToLabels/Mask/RGB` = both (optional `Reference` image input); `Roi2dToRoi3d`/`Roi3dToRoi2d`/`Roi3dTo3DMesh` = absent (no image input) | 19.2 `Convert`→`RoiFiltersFunction`; spatial by image-input rule |
-| `Filter` | 4 | `RoiFiltersFunction` | `ByOverlap`/`ByOverlapOld`/`ByStatistics` = both (optional `Reference`); `FilterRoi3dLists` = absent (no image) | 19.2 `Filter`→`RoiFiltersFunction`; source-verified: the 3 that take an (optional) reference → both, the pure-list one → absent (mirrors ij-algorithms `FilterRoi2dByOverlapOld`=both vs `FilterRoi2dByOverlap`=absent) |
-| `Measure` | 3 | `ExtractRoi3dRelationStatistics` + `ExtractRoi3dStatistics` → `RoiMeasurementsFunction`; **`SplitRoi3dByStatistics` → `RoiMorphologyFunction`** (judgment, below) | all three = both (optional `Reference` image) | 19.2 `Measure`→`RoiMeasurementsFunction`; the one carve-out is a Split operation (see note) |
-| `Merge` | 1 | `RoiIntersectionsFunction` | absent (no image) | 19.2 `Merge`→`RoiIntersectionsFunction` (set-union of ROI lists) |
-| `Metadata` | 3 | `RoiFiltersFunction` | all absent (no image) | 19.2 `Metadata`→`RoiFiltersFunction` (precedent `ExtractROIMetadata`/`SetROIMetadataFromTable` etc. = absent, no image) |
-| `Modify` | 5 | `RoiFiltersFunction` | `Change…FromExpressions`/`Color…ByStatistics` = both (optional `Reference`); `Change…(no expr)`/`Change…FromTable`/`Color…ByName` = absent | 19.2 `Modify`→`RoiFiltersFunction` (precedent: the ones with an image reference → both, the pure-list ones → absent) |
-| `Split` | 2 | `RoiMorphologyFunction` | `ExplodeRoi3dList` = absent; `SplitRoi3dIntoConnectedComponents` = both (optional `Reference`) | 19.2 `Split`→`RoiMorphologyFunction` |
-| *(no menuPath)* | 3 | `OutlineRoi3d` = absent → `RoiMorphologyFunction`; `RemoveBorderRoi3d` = both → `RoiFiltersFunction`; `Roi3dCalculator` = absent → `RoiIntersectionsFunction` | per row | `Outline` → 19.2 `Outline`→`RoiMorphologyFunction` (geometry-only, no image ⇒ absent); `RemoveBorder` → 19.2 `RemoveBorderRoi2d`→`RoiFiltersFunction` (required `Reference` ⇒ both); `Roi3dCalculator` → logical AND/OR/XOR (set-union) → `RoiIntersectionsFunction`, no image ⇒ absent (judgment, flag Phase 3) |
+| segment (menuPath) | n | leaf                                                                                                                                                              | spatial                                                                                                                                     | rationale                                                                                                                                                                                                                                                                                                        |
+|--------------------|---|-------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `Convert`          | 6 | `RoiFiltersFunction`                                                                                                                                              | `Roi3dToLabels/Mask/RGB` = both (optional `Reference` image input); `Roi2dToRoi3d`/`Roi3dToRoi2d`/`Roi3dTo3DMesh` = absent (no image input) | 19.2 `Convert`→`RoiFiltersFunction`; spatial by image-input rule                                                                                                                                                                                                                                                 |
+| `Filter`           | 4 | `RoiFiltersFunction`                                                                                                                                              | `ByOverlap`/`ByOverlapOld`/`ByStatistics` = both (optional `Reference`); `FilterRoi3dLists` = absent (no image)                             | 19.2 `Filter`→`RoiFiltersFunction`; source-verified: the 3 that take an (optional) reference → both, the pure-list one → absent (mirrors ij-algorithms `FilterRoi2dByOverlapOld`=both vs `FilterRoi2dByOverlap`=absent)                                                                                          |
+| `Measure`          | 3 | `ExtractRoi3dRelationStatistics` + `ExtractRoi3dStatistics` → `RoiMeasurementsFunction`; **`SplitRoi3dByStatistics` → `RoiMorphologyFunction`** (judgment, below) | all three = both (optional `Reference` image)                                                                                               | 19.2 `Measure`→`RoiMeasurementsFunction`; the one carve-out is a Split operation (see note)                                                                                                                                                                                                                      |
+| `Merge`            | 1 | `RoiIntersectionsFunction`                                                                                                                                        | absent (no image)                                                                                                                           | 19.2 `Merge`→`RoiIntersectionsFunction` (set-union of ROI lists)                                                                                                                                                                                                                                                 |
+| `Metadata`         | 3 | `RoiFiltersFunction`                                                                                                                                              | all absent (no image)                                                                                                                       | 19.2 `Metadata`→`RoiFiltersFunction` (precedent `ExtractROIMetadata`/`SetROIMetadataFromTable` etc. = absent, no image)                                                                                                                                                                                          |
+| `Modify`           | 5 | `RoiFiltersFunction`                                                                                                                                              | `Change…FromExpressions`/`Color…ByStatistics` = both (optional `Reference`); `Change…(no expr)`/`Change…FromTable`/`Color…ByName` = absent  | 19.2 `Modify`→`RoiFiltersFunction` (precedent: the ones with an image reference → both, the pure-list ones → absent)                                                                                                                                                                                             |
+| `Split`            | 2 | `RoiMorphologyFunction`                                                                                                                                           | `ExplodeRoi3dList` = absent; `SplitRoi3dIntoConnectedComponents` = both (optional `Reference`)                                              | 19.2 `Split`→`RoiMorphologyFunction`                                                                                                                                                                                                                                                                             |
+| *(no menuPath)*    | 3 | `OutlineRoi3d` = absent → `RoiMorphologyFunction`; `RemoveBorderRoi3d` = both → `RoiFiltersFunction`; `Roi3dCalculator` = absent → `RoiIntersectionsFunction`     | per row                                                                                                                                     | `Outline` → 19.2 `Outline`→`RoiMorphologyFunction` (geometry-only, no image ⇒ absent); `RemoveBorder` → 19.2 `RemoveBorderRoi2d`→`RoiFiltersFunction` (required `Reference` ⇒ both); `Roi3dCalculator` → logical AND/OR/XOR (set-union) → `RoiIntersectionsFunction`, no image ⇒ absent (judgment, flag Phase 3) |
 
 **Note on `SplitRoi3dByStatisticsAlgorithm` (the one Measure-group carve-out):** its `menuPath` is
-`Measure` (so the controller's first-segment tally counts it in `Measure(3)`), but its operation is a
-**split** — "Split IJ3D ROI lists by statistics" (it measures per-ROI statistics, then classifies and
+`Measure` (so the controller's first-segment tally counts it in `Measure(3)`), but its operation is a **split** — "Split
+IJ3D ROI lists by statistics" (it measures per-ROI statistics, then classifies and
 emits split ROI lists; it lives in the `split/` package). Per R2's instruction to judge Roi nodes "per what
 the node does" and to match the 19.2 sibling `SplitRoi2dByStatisticsAlgorithm` (`Split`→`RoiMorphologyFunction`),
 it is assigned `RoiMorphologyFunction`, not the menuPath-literal `RoiMeasurementsFunction`. Flagged for
@@ -761,11 +767,11 @@ Phase 3 (see (e)).
 
 #### (c) Export (2) + DataSource (1) — rules 6/7
 
-| node | leaf | spatial | rationale |
-|---|---|---|---|
-| `ExportRoi3dAlgorithm` | `ExportArchiveFunction` | absent (no image) | writes `Ij3dSuiteRoiListData.save()` → a **ZIP** (data type is defined `glob:./*.zip`, "IJ3D Suite 3D ROI ZIP") → archive leaf (rule 7), mirroring ij-algorithms `ROI` export→`ExportArchiveFunction` |
-| `ExportRoi3dAlgorithm2` | `ExportArchiveFunction` | absent (no image) | same `.zip`/`.roi3d` archive writer (single-path variant) → `ExportArchiveFunction` |
-| `ImportRoi3dAlgorithm` | `RoiDataFunction` | absent (no image) | DataSource → data leaf by OUTPUT type (rule 6); emits `Ij3dSuiteRoiListData` from a `*.zip` → `RoiDataFunction`, no image input ⇒ absent (mirror of 19.3 `ImportRoi2dAlgorithm`) |
+| node                    | leaf                    | spatial           | rationale                                                                                                                                                                                             |
+|-------------------------|-------------------------|-------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `ExportRoi3dAlgorithm`  | `ExportArchiveFunction` | absent (no image) | writes `Ij3dSuiteRoiListData.save()` → a **ZIP** (data type is defined `glob:./*.zip`, "IJ3D Suite 3D ROI ZIP") → archive leaf (rule 7), mirroring ij-algorithms `ROI` export→`ExportArchiveFunction` |
+| `ExportRoi3dAlgorithm2` | `ExportArchiveFunction` | absent (no image) | same `.zip`/`.roi3d` archive writer (single-path variant) → `ExportArchiveFunction`                                                                                                                   |
+| `ImportRoi3dAlgorithm`  | `RoiDataFunction`       | absent (no image) | DataSource → data leaf by OUTPUT type (rule 6); emits `Ij3dSuiteRoiListData` from a `*.zip` → `RoiDataFunction`, no image input ⇒ absent (mirror of 19.3 `ImportRoi2dAlgorithm`)                      |
 
 #### (d) Aliases (3) — all dropped (alias-leaf == primary-leaf)
 
@@ -775,11 +781,11 @@ leaf): `Image\nOverlay` → 19.2 `ROI`→`MergingSplittingFunction` (== both ove
 three therefore map to a leaf identical to their primary's leaf and are **dropped** (no secondary
 `function[]` entries added), exactly as in §19.3.
 
-| node (primary leaf) | alias (old category / menuPath) | alias leaf | action |
-|---|---|---|---|
-| `ExtractOverlay3DAlgorithm` (MergingSplittingFunction) | ImageJ / `Image\nOverlay` | MergingSplittingFunction | drop (== primary; 19.2 `ROI`→MergingSplitting) |
-| `RemoveOverlay3DAlgorithm` (MergingSplittingFunction) | ImageJ / `Image\nOverlay` | MergingSplittingFunction | drop (== primary) |
-| `ExtractRoi3dStatisticsAlgorithm` (RoiMeasurementsFunction) | ImageJ / `Analyze` | RoiMeasurementsFunction | drop (== primary; `Analyze` = ROI-measure family) |
+| node (primary leaf)                                         | alias (old category / menuPath) | alias leaf               | action                                            |
+|-------------------------------------------------------------|---------------------------------|--------------------------|---------------------------------------------------|
+| `ExtractOverlay3DAlgorithm` (MergingSplittingFunction)      | ImageJ / `Image\nOverlay`       | MergingSplittingFunction | drop (== primary; 19.2 `ROI`→MergingSplitting)    |
+| `RemoveOverlay3DAlgorithm` (MergingSplittingFunction)       | ImageJ / `Image\nOverlay`       | MergingSplittingFunction | drop (== primary)                                 |
+| `ExtractRoi3dStatisticsAlgorithm` (RoiMeasurementsFunction) | ImageJ / `Analyze`              | RoiMeasurementsFunction  | drop (== primary; `Analyze` = ROI-measure family) |
 
 Note: the `Analyze` alias on `ExtractRoi3dStatistics` — the primary leaf is `RoiMeasurementsFunction`
 (rule 3), and the IJ `Analyze` menu in the ROI context is the "measure ROIs" operation, so the alias leaf
@@ -792,13 +798,13 @@ resolves to `RoiMeasurementsFunction` (not the image-side `MeasurementsFunction`
   `FilteringFunction` / `Math\nLocal`→`FilteringFunction` families (edge/maxima **filtering**, not
   table-style measurement). If the audit groups by operation rather than menu segment, both move to
   `FilteringFunction`.
-- **`SymmetryFilter3D` → `MeasurementsFunction`** — same segment-contract reasoning; its multiple outputs
-  (symmetry / edges / bin / binedge) blur the filtering-vs-measurement line.
+- **`SymmetryFilter3D` → `MeasurementsFunction`** — same segment-contract reasoning; its multiple outputs (symmetry /
+  edges / bin / binedge) blur the filtering-vs-measurement line.
 - **`FindParticles3D` → `MeasurementsFunction`** — follows the 19.2 `FindParticles2D` precedent (which
   itself is flagged). Emits an ROI list + measurements; `SegmentationFunction` is a reasonable alternative
   if the audit treats particle finding as object segmentation.
-- **`Roi3dFromLabels` → `ColorStackFunction`** — follows the 19.2 `Labels`→`ColorStackFunction` contract
-  (flagged there too). It produces an ROI list from a label image (labels→ROI), so `RoiDataFunction`-style
+- **`Roi3dFromLabels` → `ColorStackFunction`** — follows the 19.2 `Labels`→`ColorStackFunction` contract (flagged there
+  too). It produces an ROI list from a label image (labels→ROI), so `RoiDataFunction`-style
   or a labels-convert leaf are defensible alternatives.
 - **`Roi3dCalculator` → `RoiIntersectionsFunction`** — the AND/OR/XOR "logical operation over the whole
   list" is set-union/intersection semantics; `RoiFiltersFunction` is the alternative if "calculator" is
@@ -807,6 +813,7 @@ resolves to `RoiMeasurementsFunction` (not the image-side `MeasurementsFunction`
 #### (f) Test infrastructure (R4)
 
 The module had **no `src/test` and no JUnit deps**. Wired:
+
 - **`pom.xml`**: added `org.junit.jupiter:junit-jupiter` + `org.junit.platform:junit-platform-launcher`
   (test scope) — mirrors `plugins/jipipe-plugin-ij/pom.xml` verbatim.
 - Copied `jipipe-core/src/test/java/org/hkijena/jipipe/api/nodes/taxonomy/TaxonomyConversionReportTest.java`
@@ -823,8 +830,8 @@ The module had **no `src/test` and no JUnit deps**. Wired:
 test classpath does not include jipipe-core's test classes, so core's
 `ImageJLegacyPatcherLauncherSessionListener` is not on the classpath; without re-registering the patcher,
 any `ij.*` class loaded before the context is created makes the ImageJ2 legacy patcher
-(`net.imagej.patcher.LegacyInjector`) fail (`No _hooks field found in ij.IJ`), an order-dependent failure
-(AGENTS.md patcher contract). The ij-3d nodes reference `ij.ImagePlus`/mcib3d heavily, so this is required.
+(`net.imagej.patcher.LegacyInjector`) fail (`No _hooks field found in ij.IJ`), an order-dependent failure (AGENTS.md
+patcher contract). The ij-3d nodes reference `ij.ImagePlus`/mcib3d heavily, so this is required.
 
 #### (g) Gate result (R4/R5)
 
@@ -836,7 +843,7 @@ any `ij.*` class loaded before the context is created makes the ImageJ2 legacy p
   not yet assigned a taxonomy function — expected during conversion` is the **global** count across all
   on-classpath modules (most of which are not yet converted); it is *outside* the prefix-filtered failure
   set and is not in `errors()`, so the gate passes on this module alone, exactly as ruled (same shape as
-  §19.3(g)).
+  §19.3 (g)).
 - **Full module (no property):** `mvn test -pl plugins/jipipe-plugin-ij-3d` → **BUILD SUCCESS**,
   `Tests run: 1, Failures: 0, Errors: 0, Skipped: 1` — the gate **skips cleanly** (property unset).
 
@@ -873,8 +880,8 @@ torn out in Task 27's category rip-out.
 (verified), consistent with ij/ij-algorithms/ij-3d.
 
 **Spatial (R3 / rule 12 — settled ruling):** read from each node's **first image INPUT slot only** (a
-graph slot confers nothing — "first image input slot" = the first slot that is an image).
-**`Filaments3DGraphData` is a graph, not an image — it confers NO spatial** (same absent-precedent as
+graph slot confers nothing — "first image input slot" = the first slot that is an image). **`Filaments3DGraphData` is a
+graph, not an image — it confers NO spatial** (same absent-precedent as
 ROI-list/table/file/string inputs in prior modules). So: 3D-constrained image class ⇒ `SPATIAL_3D`;
 unconstrained `ImagePlus*` class ⇒ both; no image input ⇒ **absent**. The module has **19 image-input
 nodes — all non-absent (18 both + 1 3D)**; the **32 graph/table/ROI/file-only nodes are absent — that is
@@ -894,84 +901,84 @@ properties, statistics, `ResultsTableData` outputs ⇒ `FilamentQuantificationFu
 
 **`FilamentSmoothingFunction` (7):**
 
-| node (segment) | spatial | rationale |
-|---|---|---|
-| `SmoothFilamentsAlgorithm` (Process) | absent | "Applies a **smoothing** operation" on vertex locations — the namesake of the leaf |
-| `SimplifyFilamentsAlgorithm` (Process) | absent | "Removes all intermediate vertices (degree 2)" — curve simplification per R2's explicit example ("a 'simplify' curve op = Smoothing") |
+| node (segment)                               | spatial  | rationale                                                                                                                                                                                                                                                                    |
+|----------------------------------------------|----------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `SmoothFilamentsAlgorithm` (Process)         | absent   | "Applies a **smoothing** operation" on vertex locations — the namesake of the leaf                                                                                                                                                                                           |
+| `SimplifyFilamentsAlgorithm` (Process)       | absent   | "Removes all intermediate vertices (degree 2)" — curve simplification per R2's explicit example ("a 'simplify' curve op = Smoothing")                                                                                                                                        |
 | `FixOverlapsNonBranchingAlgorithm` (Process) | **both** | "fix filaments that are **merged together** by junctions" — straightening/separating overlapping **curves** (non-branching); R2's "remove overlapping filaments = Filtering" is the alternative → **flagged (c)**; optional `ImagePlusGreyscaleMaskData` *Mask* input ⇒ both |
-| `RemoveDuplicateVerticesAlgorithm` (Process) | absent | "removes all duplicates. Edges are preserved" — coalescing coincident **curve points**, not removing filament pieces; `FixOverlaps`' doc names this exact operation as its smoothing step; R2 alternative: Filtering → **flagged (c)** |
-| `SubdivideFilamentEdges` (Modify) | absent | "Inserts a vertex at the center of edges. The connectivity and shape is preserved" — curve **resampling/densification** (R2's resampling bucket) |
-| `FlattenFilamentsAlgorithm` (Modify) | absent | "Moves the Z of each vertex to zero … flattens 3D filaments into 2D" — 3D→2D **curve straightening** (no structural piece added/removed) |
-| `GrowEndVerticesAlgorithm` (Modify) | absent | "adds vertices to end points … grows them in the direction determined by the neighbor" — extends the **curve** beyond its endpoints (smooth/straight continuation); alternative: Filtering → **flagged (c)** |
+| `RemoveDuplicateVerticesAlgorithm` (Process) | absent   | "removes all duplicates. Edges are preserved" — coalescing coincident **curve points**, not removing filament pieces; `FixOverlaps`' doc names this exact operation as its smoothing step; R2 alternative: Filtering → **flagged (c)**                                       |
+| `SubdivideFilamentEdges` (Modify)            | absent   | "Inserts a vertex at the center of edges. The connectivity and shape is preserved" — curve **resampling/densification** (R2's resampling bucket)                                                                                                                             |
+| `FlattenFilamentsAlgorithm` (Modify)         | absent   | "Moves the Z of each vertex to zero … flattens 3D filaments into 2D" — 3D→2D **curve straightening** (no structural piece added/removed)                                                                                                                                     |
+| `GrowEndVerticesAlgorithm` (Modify)          | absent   | "adds vertices to end points … grows them in the direction determined by the neighbor" — extends the **curve** beyond its endpoints (smooth/straight continuation); alternative: Filtering → **flagged (c)**                                                                 |
 
 **`FilamentQuantificationFunction` (3):**
 
-| node (segment) | spatial | rationale |
-|---|---|---|
-| `MeasureEdgesAlgorithm` (Measure) | absent | "Stores all available information about the edges … into a **table**" (`ResultsTableData` out) — R2's measure/table bucket |
-| `MeasureFilamentsAlgorithm` (Measure) | absent | "Measures all components … produces measurements: number of vertices/edges/length/…" (`ResultsTableData` out) |
-| `MeasureVerticesAlgorithm` (Measure) | absent | "Stores all available information about the vertices into a **table**" (`ResultsTableData` out) |
+| node (segment)                        | spatial | rationale                                                                                                                  |
+|---------------------------------------|---------|----------------------------------------------------------------------------------------------------------------------------|
+| `MeasureEdgesAlgorithm` (Measure)     | absent  | "Stores all available information about the edges … into a **table**" (`ResultsTableData` out) — R2's measure/table bucket |
+| `MeasureFilamentsAlgorithm` (Measure) | absent  | "Measures all components … produces measurements: number of vertices/edges/length/…" (`ResultsTableData` out)              |
+| `MeasureVerticesAlgorithm` (Measure)  | absent  | "Stores all available information about the vertices into a **table**" (`ResultsTableData` out)                            |
 
 **`FilamentFilteringFunction` (32):**
 
-| node (segment) | spatial | rationale |
-|---|---|---|
-| `FilterFilamentEdgesByProperties` (Filter) | absent | "Filters filament **edges** by various properties" — structural filtering of edge pieces |
-| `FilterFilamentVerticesByProperties` (Filter) | absent | "Filters filament **vertices** by various properties" |
-| `FilterFilamentsByProperties` (Filter) | absent | "Filters filament **connected components** by various properties" |
-| `RemoveBorderFilaments` (Filter) | **both** | "Removes filament components near the image borders" — R2's "remove filaments" bucket (spatial from the required `ImagePlusData` reference slot) |
-| `ErodeEndVerticesAlgorithm` (Modify) | absent | "Iteratively **removes** vertices that have a degree of at most 1" — removes curve pieces (opposite of `GrowEndVertices` → Smoothing; the pair is kept consistent) |
-| `ConnectVerticesAlgorithm` (Modify) | **both** | "Connect existing vertices based on customizable criteria" (expression-filtered candidate edges) — joins curve pieces (optional `ImagePlusGreyscaleMaskData` *Mask* = first image input ⇒ both) |
-| `ConnectVerticesFastAlgorithm` (Modify) | **both** | same operation, distance-based fast variant |
-| `SplitFilamentsIntoConnectedComponentsAlgorithm` (Split) | absent | "Splits the filament graph into connected components" — R2's split bucket |
-| `SplitFilamentsIntoCyclesAlgorithm` (Split) | absent | "Splits the filament graph into cycles" |
-| `FilamentCyclesToComponentsAlgorithm` (Modify) | absent | "makes each cycle a component" — re-splits the graph at cycles (its doc explicitly distinguishes this from `Split … into cycles`) |
-| `MergeFilamentsAlgorithm` (Split) | absent | "Merges multiple filament graphs into one" — R2's join bucket; menuPath `Split` is the old panel's group, not the operation (same carve-out pattern as §19.4's `SplitRoi3dByStatistics`) |
-| `CopyFilamentsAcrossZCTAlgorithm` (Process) | **both** | "Copies a filament graph to other Z locations, channels, and frames" — duplicates curve pieces (spatial: optional `ImagePlusData` *Reference* = first image input ⇒ both; the graph slot confers nothing) |
-| `ConvertFilamentsToRoiAlgorithm` (Convert) | absent | "Converts filaments into 2D line ImageJ ROI" — emits an ROI list, no image input |
-| `ConvertFilamentCyclesToROIAlgorithm` (Convert) | absent | "Finds all cycles … converts each cycle into a 2D ROI" — cycle extraction + ROI output |
-| `ConvertFilamentsToRoi3dAlgorithm` (Convert) | absent | "Converts filaments into a 3D ROI" (`Ij3dSuiteRoiListData` out) |
-| `ConvertFilamentsToMaskAlgorithm` (Convert) | **both** | "Converts filaments into a mask" (`ImagePlusGreyscaleMaskData` out); required image input = the `ImagePlusData` *Reference* that determines mask size |
-| `ConvertFilamentsToLabelsAlgorithm` (Convert) | **both** | "Converts filaments into a labels image" (legacy, 3D-ROI intermediate) |
-| `ConvertFilamentsToLabels2Algorithm` (Convert) | **both** | "Converts filaments into a labels image" (non-legacy) |
-| `ConvertFilamentsToRGBAlgorithm` (Convert) | **both** | "Visualizes filaments by rendering them onto an RGB image" (`ImagePlusColorRGBData` out) |
-| `ConvertFilamentsTo3DMeshAlgorithm` (Convert) | absent | "Converts 3D filaments into a 3D scene" (`Scene3DData` out — a scene, not an image ⇒ no spatial per R3) |
-| `ChangeFilamentEdgePropertiesExpressionAlgorithm` (Modify) | absent | "override various properties of the **edges**" using expressions — attribute edit, no curve/structure change (flagged (c): no "property editing" leaf exists) |
-| `ChangeFilamentEdgePropertiesManuallyAlgorithm` (Modify) | absent | "override various properties of the **edges**" (manual) |
-| `ChangeFilamentVertexPropertiesExpressionAlgorithm` (Modify) | absent | "override various properties of the **vertices**" using expressions |
-| `ChangeFilamentVertexPropertiesManuallyAlgorithm` (Modify) | absent | "override various properties of the **vertices**" (manual) |
-| `SetFilamentMetadataToComponentIndexAlgorithm` (Modify) | absent | "writes the component index into a metadata field" — metadata edit |
-| `SetVertexMetadataFromImageAlgorithm` (Modify) | **both** | "Sets the vertex metadata … from the given input image" — writes into the graph; required `ImagePlusGreyscaleData` *Value* = first image input ⇒ both (graph slot confers nothing) |
-| `SetVertexPhysicalSizeFromImageAlgorithm` (Modify) | **both** | "Sets the physical voxel sizes of all vertices from the image" — required `ImagePlusGreyscaleData` first image input ⇒ both |
-| `SetVertexRadiusFromImageAlgorithm` (Modify) | **both** | "Sets the radius of each vertex from the image" — required `ImagePlusGreyscaleData` first image input ⇒ both |
-| `SetVertexValueFromImageAlgorithm` (Modify) | **both** | "Sets the value/intensity of each vertex from the image" — required `ImagePlusGreyscaleData` first image input ⇒ both |
-| `RemoveVertexValueBackupsAlgorithm` (Modify) | absent | "Removes value **backups** from vertices" — metadata removal (flagged (c): "removes" here targets backup metadata, not filament pieces) |
-| `RestoreVertexValueBackupAlgorithm` (Modify) | absent | "Restore value backups from vertices" — metadata restoration |
-| `FindLinearFilamentVertexOrderAlgorithm` (Modify) | absent | "find the order each vertex in that line … calculate the distance" — writes order/distance onto the graph (quantification-flavored but graph-in ⇒ Filtering; flagged (c)) |
+| node (segment)                                               | spatial  | rationale                                                                                                                                                                                                 |
+|--------------------------------------------------------------|----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `FilterFilamentEdgesByProperties` (Filter)                   | absent   | "Filters filament **edges** by various properties" — structural filtering of edge pieces                                                                                                                  |
+| `FilterFilamentVerticesByProperties` (Filter)                | absent   | "Filters filament **vertices** by various properties"                                                                                                                                                     |
+| `FilterFilamentsByProperties` (Filter)                       | absent   | "Filters filament **connected components** by various properties"                                                                                                                                         |
+| `RemoveBorderFilaments` (Filter)                             | **both** | "Removes filament components near the image borders" — R2's "remove filaments" bucket (spatial from the required `ImagePlusData` reference slot)                                                          |
+| `ErodeEndVerticesAlgorithm` (Modify)                         | absent   | "Iteratively **removes** vertices that have a degree of at most 1" — removes curve pieces (opposite of `GrowEndVertices` → Smoothing; the pair is kept consistent)                                        |
+| `ConnectVerticesAlgorithm` (Modify)                          | **both** | "Connect existing vertices based on customizable criteria" (expression-filtered candidate edges) — joins curve pieces (optional `ImagePlusGreyscaleMaskData` *Mask* = first image input ⇒ both)           |
+| `ConnectVerticesFastAlgorithm` (Modify)                      | **both** | same operation, distance-based fast variant                                                                                                                                                               |
+| `SplitFilamentsIntoConnectedComponentsAlgorithm` (Split)     | absent   | "Splits the filament graph into connected components" — R2's split bucket                                                                                                                                 |
+| `SplitFilamentsIntoCyclesAlgorithm` (Split)                  | absent   | "Splits the filament graph into cycles"                                                                                                                                                                   |
+| `FilamentCyclesToComponentsAlgorithm` (Modify)               | absent   | "makes each cycle a component" — re-splits the graph at cycles (its doc explicitly distinguishes this from `Split … into cycles`)                                                                         |
+| `MergeFilamentsAlgorithm` (Split)                            | absent   | "Merges multiple filament graphs into one" — R2's join bucket; menuPath `Split` is the old panel's group, not the operation (same carve-out pattern as §19.4's `SplitRoi3dByStatistics`)                  |
+| `CopyFilamentsAcrossZCTAlgorithm` (Process)                  | **both** | "Copies a filament graph to other Z locations, channels, and frames" — duplicates curve pieces (spatial: optional `ImagePlusData` *Reference* = first image input ⇒ both; the graph slot confers nothing) |
+| `ConvertFilamentsToRoiAlgorithm` (Convert)                   | absent   | "Converts filaments into 2D line ImageJ ROI" — emits an ROI list, no image input                                                                                                                          |
+| `ConvertFilamentCyclesToROIAlgorithm` (Convert)              | absent   | "Finds all cycles … converts each cycle into a 2D ROI" — cycle extraction + ROI output                                                                                                                    |
+| `ConvertFilamentsToRoi3dAlgorithm` (Convert)                 | absent   | "Converts filaments into a 3D ROI" (`Ij3dSuiteRoiListData` out)                                                                                                                                           |
+| `ConvertFilamentsToMaskAlgorithm` (Convert)                  | **both** | "Converts filaments into a mask" (`ImagePlusGreyscaleMaskData` out); required image input = the `ImagePlusData` *Reference* that determines mask size                                                     |
+| `ConvertFilamentsToLabelsAlgorithm` (Convert)                | **both** | "Converts filaments into a labels image" (legacy, 3D-ROI intermediate)                                                                                                                                    |
+| `ConvertFilamentsToLabels2Algorithm` (Convert)               | **both** | "Converts filaments into a labels image" (non-legacy)                                                                                                                                                     |
+| `ConvertFilamentsToRGBAlgorithm` (Convert)                   | **both** | "Visualizes filaments by rendering them onto an RGB image" (`ImagePlusColorRGBData` out)                                                                                                                  |
+| `ConvertFilamentsTo3DMeshAlgorithm` (Convert)                | absent   | "Converts 3D filaments into a 3D scene" (`Scene3DData` out — a scene, not an image ⇒ no spatial per R3)                                                                                                   |
+| `ChangeFilamentEdgePropertiesExpressionAlgorithm` (Modify)   | absent   | "override various properties of the **edges**" using expressions — attribute edit, no curve/structure change (flagged (c): no "property editing" leaf exists)                                             |
+| `ChangeFilamentEdgePropertiesManuallyAlgorithm` (Modify)     | absent   | "override various properties of the **edges**" (manual)                                                                                                                                                   |
+| `ChangeFilamentVertexPropertiesExpressionAlgorithm` (Modify) | absent   | "override various properties of the **vertices**" using expressions                                                                                                                                       |
+| `ChangeFilamentVertexPropertiesManuallyAlgorithm` (Modify)   | absent   | "override various properties of the **vertices**" (manual)                                                                                                                                                |
+| `SetFilamentMetadataToComponentIndexAlgorithm` (Modify)      | absent   | "writes the component index into a metadata field" — metadata edit                                                                                                                                        |
+| `SetVertexMetadataFromImageAlgorithm` (Modify)               | **both** | "Sets the vertex metadata … from the given input image" — writes into the graph; required `ImagePlusGreyscaleData` *Value* = first image input ⇒ both (graph slot confers nothing)                        |
+| `SetVertexPhysicalSizeFromImageAlgorithm` (Modify)           | **both** | "Sets the physical voxel sizes of all vertices from the image" — required `ImagePlusGreyscaleData` first image input ⇒ both                                                                               |
+| `SetVertexRadiusFromImageAlgorithm` (Modify)                 | **both** | "Sets the radius of each vertex from the image" — required `ImagePlusGreyscaleData` first image input ⇒ both                                                                                              |
+| `SetVertexValueFromImageAlgorithm` (Modify)                  | **both** | "Sets the value/intensity of each vertex from the image" — required `ImagePlusGreyscaleData` first image input ⇒ both                                                                                     |
+| `RemoveVertexValueBackupsAlgorithm` (Modify)                 | absent   | "Removes value **backups** from vertices" — metadata removal (flagged (c): "removes" here targets backup metadata, not filament pieces)                                                                   |
+| `RestoreVertexValueBackupAlgorithm` (Modify)                 | absent   | "Restore value backups from vertices" — metadata restoration                                                                                                                                              |
+| `FindLinearFilamentVertexOrderAlgorithm` (Modify)            | absent   | "find the order each vertex in that line … calculate the distance" — writes order/distance onto the graph (quantification-flavored but graph-in ⇒ Filtering; flagged (c))                                 |
 
 **`data/FilamentDataFunction` (from the 42? no — see (b)):** `ImportFilamentsFromJson` (DataSource),
 `ConvertROIToFilaments` (Roi) and the 6 Images-category nodes (except `SetOverlayFilaments`) — rule 6 /
-R2: filament-**data producers** belong to the data/ filament leaf.
+R2: filament- **data producers** belong to the data/ filament leaf.
 
 #### (b) The 9 non-`FilamentsNodeTypeCategory` nodes (R2)
 
-| node (old category / segment) | leaf | spatial | rationale |
-|---|---|---|---|
-| `ImportFilamentsFromJsonAlgorithm` (DataSource, no menuPath) | `FilamentDataFunction` | absent | R2/rule 6: data leaf by OUTPUT = `Filaments3DGraphData` ⇒ the data/ filament leaf; `FileData` in ⇒ no spatial (mirror of §19.3 `ImportRoi2d`) |
-| `ConvertROIToFilamentsAlgorithm` (Roi / Convert) | `FilamentDataFunction` | absent | R2: "converts 2D ROI into equivalent filaments" — a **filament-data producer**; the node belongs to the filament branch (its output is `Filaments3DGraphData`), so the data/ filament leaf over a rois/ leaf (flagged (c): a rois/ leaf is defensible) |
-| `SkeletonToFilaments2DAlgorithm` (Images / Convert) | `FilamentDataFunction` | **both** | "converts a binary skeleton into a filament … per Z/C/T slice (2D data)" — skeleton→filament **extraction** (image in ⇒ filament graph out); R2's images-branch suggestion (`SegmentationFunction`) is the alternative for extraction ops — chosen data/ leaf because the node's identity/branch is "filament production from a mask" (flagged (c)); `ImagePlusData` in ⇒ both |
-| `SkeletonToFilaments3DAlgorithm` (Images / Convert) | `FilamentDataFunction` | **both** | same node family, 3D variant ("per C/T stack"); `ImagePlusData` in ⇒ both |
-| `SkeletonToSimplifiedFilamentsFijiAlgorithm` (Images / Convert) | `FilamentDataFunction` | **3D** | "Extract filaments using Analyze Skeleton 2D/3D" (Fiji) — same extraction op; first input slot is the 3D-constrained `ImagePlus3DGreyscaleMaskData` *Skeleton* ⇒ `SPATIAL_3D` (the only 3D node in the module) |
-| `TSOAX2DAlgorithm` (Images / Analyze) | `FilamentDataFunction` | **both** | "Find and track filaments 2D+T (TSOAX)" — runs the TSOAX snake algorithm on a **greyscale** image to find/track filament paths (R2: arguably `FilteringFunction`/`SegmentationFunction` — flagged (c)); outputs filaments + snake table; `ImagePlusGreyscaleData` in ⇒ both |
-| `TSOAX3DAlgorithm` (Images / Analyze) | `FilamentDataFunction` | **both** | 3D+T TSOAX variant; same ruling (flagged (c)); `ImagePlusGreyscaleData` in ⇒ both |
-| `TSOAXResultAnalysisAlgorithm` (Miscellaneous / Analyze) | `FilamentDataFunction` | absent | "Parses existing results generated by TSOAX" — converts TSOAX's raw text output (`StringData` in) into a filament graph + table; R2's `FilamentQuantificationFunction` alternative rejected: it does not *quantify* an existing filament graph, it (re)constructs one from raw results (flagged (c)); no image input ⇒ absent |
-| `SetOverlayFilamentsAlgorithm` (Images / ROI) | `MergingSplittingFunction` | **both** | "Set filaments overlay" on an image — the 19.2 `ROI`→`MergingSplittingFunction` contract (same group as §19.4's `Extract/Remove/SetOverlay3D`); `ImagePlusData` in ⇒ both (R2's `MiscellaneousFunction` alternative is the flagged escape hatch) |
+| node (old category / segment)                                   | leaf                       | spatial  | rationale                                                                                                                                                                                                                                                                                                                                                                      |
+|-----------------------------------------------------------------|----------------------------|----------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `ImportFilamentsFromJsonAlgorithm` (DataSource, no menuPath)    | `FilamentDataFunction`     | absent   | R2/rule 6: data leaf by OUTPUT = `Filaments3DGraphData` ⇒ the data/ filament leaf; `FileData` in ⇒ no spatial (mirror of §19.3 `ImportRoi2d`)                                                                                                                                                                                                                                  |
+| `ConvertROIToFilamentsAlgorithm` (Roi / Convert)                | `FilamentDataFunction`     | absent   | R2: "converts 2D ROI into equivalent filaments" — a **filament-data producer**; the node belongs to the filament branch (its output is `Filaments3DGraphData`), so the data/ filament leaf over a rois/ leaf (flagged (c): a rois/ leaf is defensible)                                                                                                                         |
+| `SkeletonToFilaments2DAlgorithm` (Images / Convert)             | `FilamentDataFunction`     | **both** | "converts a binary skeleton into a filament … per Z/C/T slice (2D data)" — skeleton→filament **extraction** (image in ⇒ filament graph out); R2's images-branch suggestion (`SegmentationFunction`) is the alternative for extraction ops — chosen data/ leaf because the node's identity/branch is "filament production from a mask" (flagged (c)); `ImagePlusData` in ⇒ both |
+| `SkeletonToFilaments3DAlgorithm` (Images / Convert)             | `FilamentDataFunction`     | **both** | same node family, 3D variant ("per C/T stack"); `ImagePlusData` in ⇒ both                                                                                                                                                                                                                                                                                                      |
+| `SkeletonToSimplifiedFilamentsFijiAlgorithm` (Images / Convert) | `FilamentDataFunction`     | **3D**   | "Extract filaments using Analyze Skeleton 2D/3D" (Fiji) — same extraction op; first input slot is the 3D-constrained `ImagePlus3DGreyscaleMaskData` *Skeleton* ⇒ `SPATIAL_3D` (the only 3D node in the module)                                                                                                                                                                 |
+| `TSOAX2DAlgorithm` (Images / Analyze)                           | `FilamentDataFunction`     | **both** | "Find and track filaments 2D+T (TSOAX)" — runs the TSOAX snake algorithm on a **greyscale** image to find/track filament paths (R2: arguably `FilteringFunction`/`SegmentationFunction` — flagged (c)); outputs filaments + snake table; `ImagePlusGreyscaleData` in ⇒ both                                                                                                    |
+| `TSOAX3DAlgorithm` (Images / Analyze)                           | `FilamentDataFunction`     | **both** | 3D+T TSOAX variant; same ruling (flagged (c)); `ImagePlusGreyscaleData` in ⇒ both                                                                                                                                                                                                                                                                                              |
+| `TSOAXResultAnalysisAlgorithm` (Miscellaneous / Analyze)        | `FilamentDataFunction`     | absent   | "Parses existing results generated by TSOAX" — converts TSOAX's raw text output (`StringData` in) into a filament graph + table; R2's `FilamentQuantificationFunction` alternative rejected: it does not *quantify* an existing filament graph, it (re)constructs one from raw results (flagged (c)); no image input ⇒ absent                                                  |
+| `SetOverlayFilamentsAlgorithm` (Images / ROI)                   | `MergingSplittingFunction` | **both** | "Set filaments overlay" on an image — the 19.2 `ROI`→`MergingSplittingFunction` contract (same group as §19.4's `Extract/Remove/SetOverlay3D`); `ImagePlusData` in ⇒ both (R2's `MiscellaneousFunction` alternative is the flagged escape hatch)                                                                                                                               |
 
 #### (c) Flagged for Phase 3 audit
 
 - **`FixOverlapsNonBranching` → `FilamentSmoothingFunction`.** "fix filaments that are merged together by
-  junctions" reads as curve separation/straightening (Smoothing); R2's literal example
-  ("remove overlapping filaments" = Filtering) would put it in `FilamentFilteringFunction`.
+  junctions" reads as curve separation/straightening (Smoothing); R2's literal example ("remove overlapping filaments" =
+  Filtering) would put it in `FilamentFilteringFunction`.
 - **`RemoveDuplicateVertices` → `FilamentSmoothingFunction`.** Coalescing coincident curve points (the
   `FixOverlaps` doc names this operation as its smoothing step) vs. R2's "removing … curve pieces" =
   Filtering.
@@ -979,11 +986,11 @@ R2: filament-**data producers** belong to the data/ filament leaf.
   (Filtering). Its pair `ErodeEndVertices` is Filtering (removal) — if the audit prefers symmetry by
   "endpoint editing", `Grow` could move too.
 - **`ChangeFilament{Edge,Vertex}Properties{,Expression,Manually}` (4) + `SetFilamentMetadataToComponentIndex`
-  + `SetVertex{Metadata,PhysicalSize,Radius,Value}FromImage` (4) + `RemoveVertexValueBackups` +
-  `RestoreVertexValueBackup` (11 total) → `FilamentFilteringFunction`.** Attribute/metadata edits with no
-  curve or structure change; **no "property editing" leaf exists** in the filaments/ branch, so they take
-  the structural-edit leaf as the best fit. If the audit adds a filaments "properties/
-  metadata" leaf, all 11 move.
+    + `SetVertex{Metadata,PhysicalSize,Radius,Value}FromImage` (4) + `RemoveVertexValueBackups` +
+      `RestoreVertexValueBackup` (11 total) → `FilamentFilteringFunction`.** Attribute/metadata edits with no
+      curve or structure change; **no "property editing" leaf exists** in the filaments/ branch, so they take
+      the structural-edit leaf as the best fit. If the audit adds a filaments "properties/
+      metadata" leaf, all 11 move.
 - **`FindLinearFilamentVertexOrder` → `FilamentFilteringFunction`.** Computes vertex order/distance and
   writes it back onto the graph (quantification-flavored) but produces no table ⇒ Filtering by
   elimination (flagged).
@@ -1000,17 +1007,17 @@ R2: filament-**data producers** belong to the data/ filament leaf.
   producer (it edits an image) ⇒ `MergingSplittingFunction` per the 19.2 `ROI` contract.
 - **`ConvertROIToFilaments` → `FilamentDataFunction`.** R2 offered a rois/ leaf alternative; the data/
   leaf was chosen by output-branch identity (flagged).
-- **`TSOAXResultAnalysis` → `FilamentDataFunction`.** Reconstructs filaments from TSOAX raw output text
-  (flagged; `FilamentQuantificationFunction` was the R2 alternative if it "quantifies filaments" — it
+- **`TSOAXResultAnalysis` → `FilamentDataFunction`.** Reconstructs filaments from TSOAX raw output text (flagged;
+  `FilamentQuantificationFunction` was the R2 alternative if it "quantifies filaments" — it
   parses, it does not measure an existing graph).
-- **Spatial for non-image 3D data types (module-wide question).** 32/51 nodes are spatial-**absent**
+- **Spatial for non-image 3D data types (module-wide question).** 32/51 nodes are spatial- **absent**
   because their only data inputs are `Filaments3DGraphData` (a graph — not an image) plus
   table/ROI/file/string. Per R3 this is
   settled for this task; **Phase 3 should decide whether spatial should ever extend to non-image 3D data
   types** (e.g. filaments, scenes, 3D ROI lists). Do NOT change the semantics here.
 - **Spatial rule interpretation.** R3's "first IMAGE input slot" is read as "the first slot that is an
-  image" (graph slots confer no spatial). Applied uniformly, **all 19 image-input nodes are non-absent
-  (18 both + 1 3D)**; the 32 graph/table/ROI/file-only nodes are absent. For the 18 both-nodes whose
+  image" (graph slots confer no spatial). Applied uniformly, **all 19 image-input nodes are non-absent (18 both + 1
+  3D)**; the 32 graph/table/ROI/file-only nodes are absent. For the 18 both-nodes whose
   image is a slot *behind* the required graph slot (e.g. `RemoveBorderFilaments`: required graph + required
   `ImagePlusData` reference ⇒ both; the `SetVertex*FromImage` nodes: required graph + required
   `ImagePlusGreyscaleData` ⇒ both) this reading is what drives the assignment. If "first input slot" were
@@ -1020,6 +1027,7 @@ R2: filament-**data producers** belong to the data/ filament leaf.
 #### (d) Test infrastructure (R5)
 
 The module had **no `src/test` and no JUnit deps** (first test in this module). Wired:
+
 - **`pom.xml`**: added `org.junit.jupiter:junit-jupiter` + `org.junit.platform:junit-platform-launcher`
   (test scope) — mirrors `plugins/jipipe-plugin-ij/pom.xml`/`plugins/jipipe-plugin-ij-3d/pom.xml` verbatim.
 - Copied `jipipe-core/src/test/java/org/hkijena/jipipe/api/nodes/taxonomy/TaxonomyConversionReportTest.java`
@@ -1036,8 +1044,8 @@ The module had **no `src/test` and no JUnit deps** (first test in this module). 
 module's test classpath does not include jipipe-core's test classes, so core's
 `ImageJLegacyPatcherLauncherSessionListener` is not on the classpath; without re-registering the patcher,
 any `ij.*` class loaded before the context is created makes the ImageJ2 legacy patcher
-(`net.imagej.patcher.LegacyInjector`) fail (`No _hooks field found in ij.IJ`), an order-dependent failure
-(AGENTS.md patcher contract). This module's nodes/data types reference `ij.ImagePlus` and the Fiji
+(`net.imagej.patcher.LegacyInjector`) fail (`No _hooks field found in ij.IJ`), an order-dependent failure (AGENTS.md
+patcher contract). This module's nodes/data types reference `ij.ImagePlus` and the Fiji
 `AnalyzeSkeleton_` plugin heavily, so it is required.
 
 #### (e) Gate result (R5)
@@ -1050,32 +1058,33 @@ any `ij.*` class loaded before the context is created makes the ImageJ2 legacy p
   `JIPipeNodesServiceComponent | Node taxonomy: 680 nodes not yet assigned a taxonomy function — expected
   during conversion` is the **global** count across all on-classpath modules (most of which are not yet
   converted); it is *outside* the prefix-filtered failure set and is not in `errors()`, so the gate passes
-  on this module alone, exactly as ruled (same shape as §19.3(g)/§19.4(g)). (An unrelated
+  on this module alone, exactly as ruled (same shape as §19.3 (g)/§19.4 (g)). (An unrelated
   pre-existing `Unregistered parameter found: class ij.process.AutoThresholder$Method …
   NucleiSegmentation3DAlgorithm` ERROR log line comes from the dependency `jipipe-plugin-ij-3d`'s
   converted node, not from this module.)
 - **Full module (no property):** `mvn test -pl plugins/jipipe-plugin-ij-filaments` → **BUILD SUCCESS**,
   `Tests run: 1, Failures: 0, Errors: 0, Skipped: 1` — the gate **skips cleanly** (property unset).
 
-
 ### 19.6 — jipipe-plugin-filesystem + jipipe-plugin-strings + jipipe-plugin-utils (82 nodes)
 
 **Status:** converted — all 82 `@ConfigureJIPipeNode` nodes across the three modules rewritten to
-`function`-only; three module gates green (see Gate result below). Single-shot combined conversion
-(mapping + apply + 3 gates in one commit), mirroring §19.3/§19.4/§19.5.
+`function`-only; three module gates green (see Gate result below). Single-shot combined conversion (mapping + apply + 3
+gates in one commit), mirroring §19.3/§19.4/§19.5.
 
 **Scope / gate prefixes (verified, matches controller R1):**
-- `plugins/jipipe-plugin-filesystem/src/main` — base pkg `org.hkijena.jipipe.plugins.filesystem` — **39** annotated files.
+
+- `plugins/jipipe-plugin-filesystem/src/main` — base pkg `org.hkijena.jipipe.plugins.filesystem` — **39** annotated
+  files.
 - `plugins/jipipe-plugin-strings/src/main` — base pkg `org.hkijena.jipipe.plugins.strings` — **15** annotated files.
 - `plugins/jipipe-plugin-utils/src/main` — base pkg `org.hkijena.jipipe.plugins.utils` — **28** annotated files.
 
 **Primary-category inventory (verified by grep of `nodeTypeCategory =`):**
 
-| module | DataSource | FileSystemNodeTypeCategory | Miscellaneous | Export | Annotations | Table | total |
-|---|---|---|---|---|---|---|---|
-| filesystem | 10 | 16 | 1 | 6 | 5 | 1 | **39** |
-| strings | 4 | — | 7 | — | 3 | 1 | **15** |
-| utils | 1 | — | 24 | — | 3 | — | **28** |
+| module     | DataSource | FileSystemNodeTypeCategory | Miscellaneous | Export | Annotations | Table | total  |
+|------------|------------|----------------------------|---------------|--------|-------------|-------|--------|
+| filesystem | 10         | 16                         | 1             | 6      | 5           | 1     | **39** |
+| strings    | 4          | —                          | 7             | —      | 3           | 1     | **15** |
+| utils      | 1          | —                          | 24            | —      | 3           | —     | **28** |
 
 (`FileSystemNodeTypeCategory` is a **core** category class at `jipipe-core/…/api/nodes/categories/
 FileSystemNodeTypeCategory.java` — rule 8 — not module-local like the 19.5 `FilamentsNodeTypeCategory`.)
@@ -1123,36 +1132,36 @@ rule 6 (DataSource → data leaf by output); rule 7 (Export); rule 5 (Annotation
 
 **`MiscDataFunction` (25)** — the filesystem/path core. All read and/or emit `PathData` /
 `FileData` / `FolderData` / `JIPipeData` / `URIData` (no dedicated path/file/folder data leaf exists;
-`data/` = Image/Table/Roi/Filament/**Misc**). Assigned per the actual data role, not the menuPath
-(`Modify`/`Convert`/`ZARR`/`Extract`/`List`/`Filter` are filesystem operations, not taxonomy ops):
+`data/` = Image/Table/Roi/Filament/ **Misc**). Assigned per the actual data role, not the menuPath (`Modify`/`Convert`/
+`ZARR`/`Extract`/`List`/`Filter` are filesystem operations, not taxonomy ops):
 
-| node (old segment) | rationale for non-obvious |
-|---|---|
-| `ConcatenatePaths`, `ConcatenateByParameter`, `ModifyPath`, `ModifyPathWithExpression`, `RenameByString`, `RelativizePaths`, `RelativizeByParameter` (Modify) | path-string edits (rule 8 "else Misc") |
-| `ExtractFileName`, `ExtractParent` (Extract) | path decomposition → path/file data |
-| `FilterPaths` (Filter) | path predicate removal |
-| `CopyPath` | copies a file to a destination, emits the copied `PathData` (a path producer, not a "copy data" op) |
-| `CreateDirectory` | emits `FolderData` |
-| `ListFiles`, `ListSubfolders` (List) | emit `FileData`/`FolderData` lists |
-| `ConvertDataToOutputPath` (Misc/Convert, "Get output path") | computes the run's output path, emits `FolderData` (a data producer); **flag (e)** — could be export-flavored |
-| `DownloadFilesDataSource`, `OutputFolderDataSource`, `PathFromUserDataSource`, `ProjectUserPathDataSource`, `TemporaryFileDataSource`, `TemporaryFolderDataSource` (DataSource) | rule 6 by output (`FileData`/`FolderData`/`PathData`) → Misc |
-| `URIListDataSource` (DataSource) | emits `URIData` (a `StringData` subclass) → Misc (no image/table/ROI) |
-| `ImportDataRowFolder` (DataSource) | emits generic `JIPipeData` (one row from a row-folder) → Misc |
+| node (old segment)                                                                                                                                                              | rationale for non-obvious                                                                                     |
+|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------|
+| `ConcatenatePaths`, `ConcatenateByParameter`, `ModifyPath`, `ModifyPathWithExpression`, `RenameByString`, `RelativizePaths`, `RelativizeByParameter` (Modify)                   | path-string edits (rule 8 "else Misc")                                                                        |
+| `ExtractFileName`, `ExtractParent` (Extract)                                                                                                                                    | path decomposition → path/file data                                                                           |
+| `FilterPaths` (Filter)                                                                                                                                                          | path predicate removal                                                                                        |
+| `CopyPath`                                                                                                                                                                      | copies a file to a destination, emits the copied `PathData` (a path producer, not a "copy data" op)           |
+| `CreateDirectory`                                                                                                                                                               | emits `FolderData`                                                                                            |
+| `ListFiles`, `ListSubfolders` (List)                                                                                                                                            | emit `FileData`/`FolderData` lists                                                                            |
+| `ConvertDataToOutputPath` (Misc/Convert, "Get output path")                                                                                                                     | computes the run's output path, emits `FolderData` (a data producer); **flag (e)** — could be export-flavored |
+| `DownloadFilesDataSource`, `OutputFolderDataSource`, `PathFromUserDataSource`, `ProjectUserPathDataSource`, `TemporaryFileDataSource`, `TemporaryFolderDataSource` (DataSource) | rule 6 by output (`FileData`/`FolderData`/`PathData`) → Misc                                                  |
+| `URIListDataSource` (DataSource)                                                                                                                                                | emits `URIData` (a `StringData` subclass) → Misc (no image/table/ROI)                                         |
+| `ImportDataRowFolder` (DataSource)                                                                                                                                              | emits generic `JIPipeData` (one row from a row-folder) → Misc                                                 |
 
 **`TableDataFunction` (2)** — rule 8/6 by OUTPUT type: `ListZARRDirectoryZIPDatasetsAlgorithm`,
 `ListZARRURIDatasetsAlgorithm` (both `ZARR` segment) read a ZARR store and emit **`ResultsTableData`**
 (the dataset/group listing as a table) → the data/ table leaf (a refinement of rule 8's "leaf by what
 it reads/emits", mirroring §19.3's `ImportResultsTable`→`TableDataFunction`).
 
-**`TableTransformFunction` (1)** — `AnnotationTableToPaths` (Table/Convert): input is
-**`AnnotationTableData`** (a `ResultsTableData` subclass), output `PathData`. Rule 4 (Table category →
+**`TableTransformFunction` (1)** — `AnnotationTableToPaths` (Table/Convert): input is **`AnnotationTableData`** (a
+`ResultsTableData` subclass), output `PathData`. Rule 4 (Table category →
 `tables/`) wins because it *transforms a table* into paths (the annotation table is the primary data it
 consumes); **flag (e)** — MiscDataFunction is the alternative if judged by output (rule 8).
 
 **`ExportFileFormatsFunction` (6)** — rule 7: `ExportData`, `ExportDataByParameter`,
 `ExportDataByParameter2`, `ExportDataTable`, `ExportDataTableByParameter` (all write files via
-JIPipe's standard exporter → the file-format export leaf; the two DataTable variants write a data-table
-*directory*, still a file export, not a ZIP archive), plus `ConvertToExportedPath` ("Get export path" —
+JIPipe's standard exporter → the file-format export leaf; the two DataTable variants write a data-table *directory*,
+still a file export, not a ZIP archive), plus `ConvertToExportedPath` ("Get export path" —
 it does **not** write a file, it generates the export `PathData`; kept in the export family mirroring
 §19.3's `SetBioFormatsExporterSettings`; **flag (e)**).
 
@@ -1183,8 +1192,8 @@ string/text data leaf, so `data/` → Misc, mirroring §19.3's `DefineImageJMacr
 annotations to** JSON/text/XML data (annotation adders; the "For …" menuPath signals the target type,
 not a conversion).
 
-**`TableDataFunction` (3)** — the three table-**producers** that derive a `ResultsTableData` from a
-*non-table* input: `ExtractJsonDataAsTableAlgorithm` (JSON→table), `ExtractXPathDataAsTableAlgorithm`
+**`TableDataFunction` (3)** — the three table- **producers** that derive a `ResultsTableData` from a *non-table* input:
+`ExtractJsonDataAsTableAlgorithm` (JSON→table), `ExtractXPathDataAsTableAlgorithm`
 (XML→table), `TextDataToTableAlgorithm` (text→table). Rule 9 / §19.1 `TableDataFunction` precedent for
 "produce a table from non-table source"; **flag (e)** — `TableTransformFunction` is the alternative if
 the audit reads "as table" as a *conversion* of table data.
@@ -1192,7 +1201,7 @@ the audit reads "as table" as a *conversion* of table data.
 **`TableTransformFunction` (1)** — `TableToCSVTextAlgorithm` (Table/Convert): input **`ResultsTableData`**
 → `StringData`. A genuine table **transform** (table in, non-table out) under rule 4 — the only node
 here with a table *input*, so the tables/ transform leaf (consistent with the `TableDataFunction`
-producers above being table-*out* from non-table).
+producers above being table- *out* from non-table).
 
 **`MiscellaneousFunction` (4)** — rule 9 last-resort (no text/XML-processing leaf exists):
 `ProcessTextDataAlgorithm` (Text: expression-map text→text), `PrettifyXMLAlgorithm` (XML: reindent
@@ -1265,15 +1274,15 @@ annotation add/edit ops on data tables.
 Per the A/B/C protocol: map the alias's old category+menuPath to a leaf by the same rules; alias-leaf
 == primary-leaf → drop, else add as a **secondary** `function[]` entry (primary first).
 
-| node (primary leaf) | alias (old category / menuPath) | alias leaf | action |
-|---|---|---|---|
-| `ProjectUserPathDataSource` (MiscData) | DataSource / "Project user directory" | `MiscDataFunction` (rule 6, `FolderData` out) | **drop** (== primary) |
-| `ProjectUserPathDataSource` (MiscData) | DataSource / "Project user file" | `MiscDataFunction` (rule 6, file `PathData` out) | **drop** (== primary) |
-| `SimplePathAnnotationGenerator` (AnnotationsEdit) | Annotations / "For paths" | `AnnotationsEditFunction` (rule 5, adder) | **drop** (== primary) |
-| `MultiIterationStepCheckerAlgorithm` (Miscellaneous) | Miscellaneous / "Filter" ("Limit to iteration steps") | `MiscellaneousFunction` (== primary) | **drop** (== primary) |
-| `MultiIterationStepCheckerAlgorithm` (Miscellaneous) | Annotations / "Filter" ("Filter multiple data by annotation") | `AnnotationsEditFunction` (rule 5: filters/annotates by annotation) | **add secondary** → `function = { MiscellaneousFunction.class, AnnotationsEditFunction.class }` |
-| `SingleIterationStepCheckerAlgorithm` (Miscellaneous) | Miscellaneous / "Filter" ("Limit to iteration steps") | `MiscellaneousFunction` (== primary) | **drop** (== primary) |
-| `SingleIterationStepCheckerAlgorithm` (Miscellaneous) | Annotations / "Filter" ("Filter multiple data by annotation") | `AnnotationsEditFunction` (rule 5) | **add secondary** → `function = { MiscellaneousFunction.class, AnnotationsEditFunction.class }` |
+| node (primary leaf)                                   | alias (old category / menuPath)                               | alias leaf                                                          | action                                                                                          |
+|-------------------------------------------------------|---------------------------------------------------------------|---------------------------------------------------------------------|-------------------------------------------------------------------------------------------------|
+| `ProjectUserPathDataSource` (MiscData)                | DataSource / "Project user directory"                         | `MiscDataFunction` (rule 6, `FolderData` out)                       | **drop** (== primary)                                                                           |
+| `ProjectUserPathDataSource` (MiscData)                | DataSource / "Project user file"                              | `MiscDataFunction` (rule 6, file `PathData` out)                    | **drop** (== primary)                                                                           |
+| `SimplePathAnnotationGenerator` (AnnotationsEdit)     | Annotations / "For paths"                                     | `AnnotationsEditFunction` (rule 5, adder)                           | **drop** (== primary)                                                                           |
+| `MultiIterationStepCheckerAlgorithm` (Miscellaneous)  | Miscellaneous / "Filter" ("Limit to iteration steps")         | `MiscellaneousFunction` (== primary)                                | **drop** (== primary)                                                                           |
+| `MultiIterationStepCheckerAlgorithm` (Miscellaneous)  | Annotations / "Filter" ("Filter multiple data by annotation") | `AnnotationsEditFunction` (rule 5: filters/annotates by annotation) | **add secondary** → `function = { MiscellaneousFunction.class, AnnotationsEditFunction.class }` |
+| `SingleIterationStepCheckerAlgorithm` (Miscellaneous) | Miscellaneous / "Filter" ("Limit to iteration steps")         | `MiscellaneousFunction` (== primary)                                | **drop** (== primary)                                                                           |
+| `SingleIterationStepCheckerAlgorithm` (Miscellaneous) | Annotations / "Filter" ("Filter multiple data by annotation") | `AnnotationsEditFunction` (rule 5)                                  | **add secondary** → `function = { MiscellaneousFunction.class, AnnotationsEditFunction.class }` |
 
 **5 dropped, 2 secondary `function[]` entries** (the two iteration-step checkers — the only two
 multi-`function` nodes in this batch, primary-first per the §19.2/19.5 precedent).
@@ -1314,6 +1323,7 @@ multi-`function` nodes in this batch, primary-first per the §19.2/19.5 preceden
 #### (f) Test infrastructure
 
 All three modules had **no `src/test` and no JUnit deps** (first test in each). For EACH:
+
 - **`pom.xml`**: added `org.junit.jupiter:junit-jupiter` + `org.junit.platform:junit-platform-launcher`
   (test scope) — mirrors `plugins/jipipe-plugin-ij/pom.xml`/`-ij-3d`/`-ij-filaments` verbatim (inserted
   before `</dependencies>`; in `strings` after the `json-path` dependency).
@@ -1355,20 +1365,20 @@ transitively via jipipe-core → `net.imagej:imagej`.
   CoreFramework.class` in source (verified). Fix: `mvn -q -B install -pl jipipe-core -DskipTests`
   (refreshed the core jar; `javap` then showed `FileDataSource` with `function=[MiscDataFunction]`).
   As a secondary cleanup, `mvn -q -B install -pl plugins/jipipe-plugin-filesystem -DskipTests` was also
-  run so the utils gate's classpath (utils depends on filesystem) no longer saw a stale filesystem jar
-  (its initial global "39 nodes not yet assigned" line, = filesystem's count, disappeared). **No source
+  run so the utils gate's classpath (utils depends on filesystem) no longer saw a stale filesystem jar (its initial
+  global "39 nodes not yet assigned" line, = filesystem's count, disappeared). **No source
   files were changed by these installs** — they only refreshed the local `~/.m2` reactor artifacts so
   the specified no-`-am` gate commands reflect the current (converted) source.
 
 - **Gate (enabled), all three → BUILD SUCCESS, `Tests run: 1, Failures: 0`, "Node taxonomy validation
   passed", zero unassigned in the module prefix:**
-  - filesystem: `-Djipipe.taxonomy.report.module=org.hkijena.jipipe.plugins.filesystem`
-  - strings: `-Djipipe.taxonomy.report.module=org.hkijena.jipipe.plugins.strings`
-  - utils: `-Djipipe.taxonomy.report.module=org.hkijena.jipipe.plugins.utils`
-  (The utils module's classpath includes the now-converted filesystem + core, so no "N nodes not yet
-  assigned" global line remained; had any unconverted on-classpath module existed, that global count
-  would be *outside* the prefix-filtered failure set and not in `errors()`, per the §19.3/19.4/19.5
-  shape.)
+    - filesystem: `-Djipipe.taxonomy.report.module=org.hkijena.jipipe.plugins.filesystem`
+    - strings: `-Djipipe.taxonomy.report.module=org.hkijena.jipipe.plugins.strings`
+    - utils: `-Djipipe.taxonomy.report.module=org.hkijena.jipipe.plugins.utils`
+      (The utils module's classpath includes the now-converted filesystem + core, so no "N nodes not yet
+      assigned" global line remained; had any unconverted on-classpath module existed, that global count
+      would be *outside* the prefix-filtered failure set and not in `errors()`, per the §19.3/19.4/19.5
+      shape.)
 
 - **Gate (unset), all three → BUILD SUCCESS, `Tests run: 1, Failures: 0, Errors: 0, Skipped: 1`** — the
   gate **skips cleanly** (property unset), no `_hooks`/`LinkageError` patcher failure (listener works).
@@ -1379,29 +1389,36 @@ category buttons until Task 24 swaps in the new taxonomy browser. Intended (6.0.
 branch). No `menuPath`/`nodeTypeCategory` was kept to "fix" the old panel.
 
 **Byte-identity check (reviewer contract):** all 82 node files are byte-identical to base after
-stripping `import …;` lines and the `@ConfigureJIPipeNode(…)` / `@AddJIPipeNodeAlias(…)` lines
-(verified by a line-filter diff across `git show HEAD:<f>` vs head) — the change is annotations-only.
+stripping `import …;` lines and the `@ConfigureJIPipeNode(…)` / `@AddJIPipeNodeAlias(…)` lines (verified by a
+line-filter diff across `git show HEAD:<f>` vs head) — the change is annotations-only.
 
 ### 19.7 — jipipe-plugin-tables + jipipe-plugin-forms (58 nodes)
 
 **Status:** converted — all 58 `@ConfigureJIPipeNode` nodes across the two modules rewritten to
-`function`-only; two module gates green (see (g)). Single-shot combined conversion
-(mapping + apply + 2 gates in one commit), mirroring §19.6. This is the **same class of task as 19.6**:
+`function`-only; two module gates green (see (g)). Single-shot combined conversion (mapping + apply + 2 gates in one
+commit), mirroring §19.6. This is the **same class of task as 19.6**:
 these nodes get **only `function`** — **no `framework`, no `spatialDimensions`**.
 
 **Scope / gate prefixes (verified by grep, matches controller R1):**
-- `plugins/jipipe-plugin-tables/src/main` — base pkg `org.hkijena.jipipe.plugins.tables` (GATE PREFIX) — **48** annotated files. `TablesPlugin` registers **48** `registerNodeType` (1:1 with annotations).
-- `plugins/jipipe-plugin-forms/src/main` — base pkg `org.hkijena.jipipe.plugins.forms` (GATE PREFIX) — **10** annotated files. `FormsPlugin` registers **10** `registerNodeType` (1:1 with annotations).
+
+- `plugins/jipipe-plugin-tables/src/main` — base pkg `org.hkijena.jipipe.plugins.tables` (GATE PREFIX) — **48**
+  annotated files. `TablesPlugin` registers **48** `registerNodeType` (1:1 with annotations).
+- `plugins/jipipe-plugin-forms/src/main` — base pkg `org.hkijena.jipipe.plugins.forms` (GATE PREFIX) — **10** annotated
+  files. `FormsPlugin` registers **10** `registerNodeType` (1:1 with annotations).
 
 **Primary-category inventory (verified by grep of `nodeTypeCategory =`):**
 
-| module | Table | DataSource | Annotations | Miscellaneous | total |
-|---|---|---|---|---|---|
-| tables | 42 | 3 | 3 | — | **48** |
-| forms | — | 7 | — | 3 | **10** |
+| module | Table | DataSource | Annotations | Miscellaneous | total  |
+|--------|-------|------------|-------------|---------------|--------|
+| tables | 42    | 3          | 3           | —             | **48** |
+| forms  | —     | 7          | —           | 3             | **10** |
 
-First-menuPath segments (tables): none (22) · Transform (6) · Merge (5) · Filter (4) · Split (3) · Clustering (3) · Append (2) · "For tables" (2, the 2 Annotations ops — see below, the 3rd Annotations node carries "For all data") · "For all data" (1).
-**Note on the tables Annotations split:** the controller's "Annotations 3" = `AnnotateByTablePropertiesAlgorithm` ("For tables"), `AnnotateDataWithTableValues` ("For all data"), `ColumnsToAnnotationsAlgorithm` ("For tables"). So "For tables" (2) + "For all data" (1) covers the 3 Annotations-category nodes; the 42 Table + 3 DataSource = 45, + 3 Annotations = 48. ✓
+First-menuPath segments (tables): none (22) · Transform (6) · Merge (5) · Filter (4) · Split (3) · Clustering (3) ·
+Append (2) · "For tables" (2, the 2 Annotations ops — see below, the 3rd Annotations node carries "For all data") · "For
+all data" (1). **Note on the tables Annotations split:** the controller's "Annotations 3" =
+`AnnotateByTablePropertiesAlgorithm` ("For tables"), `AnnotateDataWithTableValues` ("For all data"),
+`ColumnsToAnnotationsAlgorithm` ("For tables"). So "For tables" (2) + "For all data" (1) covers the 3
+Annotations-category nodes; the 42 Table + 3 DataSource = 45, + 3 Annotations = 48. ✓
 
 **Aliases (verified by grep of `@AddJIPipeNodeAlias`):** tables **5 refs in 4 files**
 (`ApplyExpressionToTableByColumnAlgorithm` ×1, `RemoveColumnAlgorithm` ×1, `SortTableColumnsAlgorithm` ×1,
@@ -1413,7 +1430,7 @@ decisions in (d).
 **⚠️ tables/ vs data/ distinction (the single most-likely mistake — apply as ruled).**
 The `tables/` branch holds exactly **FIVE** *operation* leaves: `TableTransformFunction`,
 `TableFilterModifyFunction`, `TableJoinSplitFunction`, `TableAggregateFunction`,
-`TableExportFileFunction`. The table-**DATA** leaf lives in the **`data/`** branch —
+`TableExportFileFunction`. The table- **DATA** leaf lives in the **`data/`** branch —
 `data/TableDataFunction` ("Nodes that produce or load table data"). **There is NO
 `TableDataFunction` in `tables/`.** Do not confuse the table-DATA leaf (data/) with the
 table-OP leaves (tables/). The 3 tables `DataSourceNodeTypeCategory` nodes are table **producers**
@@ -1432,8 +1449,8 @@ writes `framework = NoFramework.class`, and **no** `NoFramework` import is added
 **Spatial — ABSENT for all 58 (rule 12, deliberate, not an omission).** None of the 58 nodes has an
 image input slot (controller-verified: zero `ImagePlus*`/`Image*`/`OME*` input values across both
 modules; the slots are `ResultsTableData`/`TableColumnData`/`AnnotationTableData`/`JIPipeData`/
-`FormData`). Rule 12's "non-image ⇒ absent" therefore applies to every node: `spatialDimensions` is
-**omitted entirely** on all 58, and there is **no** `SPATIAL_*` static import anywhere in both modules.
+`FormData`). Rule 12's "non-image ⇒ absent" therefore applies to every node: `spatialDimensions` is **omitted entirely**
+on all 58, and there is **no** `SPATIAL_*` static import anywhere in both modules.
 `grep -rl "spatialDimensions = " src/main` across both modules → **0**.
 
 So every converted node's annotation is exactly `@ConfigureJIPipeNode(function = <Leaf>.class)`, or
@@ -1444,8 +1461,8 @@ is never dropped.
 **Leaf distribution (primary, all 58):** `TableTransformFunction` 13 · `TableFilterModifyFunction` 13 ·
 `TableJoinSplitFunction` 8 · `TableAggregateFunction` 8 · `MiscDataFunction` 7 ·
 `TableDataFunction` 3 · `AnnotationsEditFunction` 3 · `MiscellaneousFunction` 3 ·
-`TableExportFileFunction` 0 · `AnnotationsConvertFunction` 0 (total 58).
-(No node here maps to the `tables/` export leaf or the `annotations/` convert leaf.)
+`TableExportFileFunction` 0 · `AnnotationsConvertFunction` 0 (total 58). (No node here maps to the `tables/` export leaf
+or the `annotations/` convert leaf.)
 
 ---
 
@@ -1458,65 +1475,65 @@ judged individually. **Tally: Transform 13 · FilterModify 13 · JoinSplit 8 · 
 
 **`TableTransformFunction` (13)** — transform/reshape/convert/compute-column ops (table in → reshaped table out):
 
-| node (menuPath) | rationale for non-obvious |
-|---|---|
-| `AddAnnotationColumnsAlgorithm` (Append) | adds column annotations to the table **as new columns** (a table reshape/column-add, not an annotation edit — the table data is modified) |
-| `ApplyExpressionToColumnsAlgorithm` (—) | compute new column values from expressions |
-| `ApplyExpressionToTableByColumnAlgorithm` (—) | generate table columns from expressions (**alias** → `TableDataFunction` secondary, see (d)) |
-| `ApplyExpressionPerRowAlgorithm` (—, @Deprecated) | per-row expression → new column values |
-| `ApplyExpressionPerRowAlgorithm2` (—) | per-row expression → new column values (v2) |
-| `ConvertAnnotationTableToAnnotatedTables` (—) | table in (`AnnotationTableData`) → table out, moving annotation columns into data annotations (a table **transform**, not an annotation-type conversion — the data type stays table) |
-| `ConvertColumnsAlgorithm` (—) | apply a converting function to column values |
-| `ColumnToNumericAlgorithm` (—) | convert columns to numeric |
-| `ColumnToStringAlgorithm` (—) | convert columns to string |
-| `GenerateColumnAlgorithm` (—) | **add/compute** a new column (**alias** dropped, see (d)) |
-| `AddMissingRowsInSeriesAlgorithm` (Append) | **reshape**: synthesizes missing series rows (a table transformation, not a join of multiple tables) — kept Transform despite the "Append" segment (flag (e)) |
-| `MeltTableAlgorithm` (Transform) | melt/unpivot columns↔rows (**alias** "Unpivot table" dropped, see (d)) |
-| `UnMeltTableAlgorithm` (Transform) | pivot: value column → separate columns |
+| node (menuPath)                                   | rationale for non-obvious                                                                                                                                                            |
+|---------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `AddAnnotationColumnsAlgorithm` (Append)          | adds column annotations to the table **as new columns** (a table reshape/column-add, not an annotation edit — the table data is modified)                                            |
+| `ApplyExpressionToColumnsAlgorithm` (—)           | compute new column values from expressions                                                                                                                                           |
+| `ApplyExpressionToTableByColumnAlgorithm` (—)     | generate table columns from expressions (**alias** → `TableDataFunction` secondary, see (d))                                                                                         |
+| `ApplyExpressionPerRowAlgorithm` (—, @Deprecated) | per-row expression → new column values                                                                                                                                               |
+| `ApplyExpressionPerRowAlgorithm2` (—)             | per-row expression → new column values (v2)                                                                                                                                          |
+| `ConvertAnnotationTableToAnnotatedTables` (—)     | table in (`AnnotationTableData`) → table out, moving annotation columns into data annotations (a table **transform**, not an annotation-type conversion — the data type stays table) |
+| `ConvertColumnsAlgorithm` (—)                     | apply a converting function to column values                                                                                                                                         |
+| `ColumnToNumericAlgorithm` (—)                    | convert columns to numeric                                                                                                                                                           |
+| `ColumnToStringAlgorithm` (—)                     | convert columns to string                                                                                                                                                            |
+| `GenerateColumnAlgorithm` (—)                     | **add/compute** a new column (**alias** dropped, see (d))                                                                                                                            |
+| `AddMissingRowsInSeriesAlgorithm` (Append)        | **reshape**: synthesizes missing series rows (a table transformation, not a join of multiple tables) — kept Transform despite the "Append" segment (flag (e))                        |
+| `MeltTableAlgorithm` (Transform)                  | melt/unpivot columns↔rows (**alias** "Unpivot table" dropped, see (d))                                                                                                               |
+| `UnMeltTableAlgorithm` (Transform)                | pivot: value column → separate columns                                                                                                                                               |
 
 **`TableFilterModifyFunction` (13)** — filter/modify/select/sort (modify) ops:
 
-| node (menuPath) | rationale for non-obvious |
-|---|---|
-| `FilterTableRowsAlgorithm` (Filter) | filter rows by expression |
-| `FilterTablesAlgorithm` (Filter) | filter whole tables by their properties |
-| `SliceTableRowsAlgorithm` (Filter) | select/slice specific rows |
-| `SortTableRowsAlgorithm` (—) | sort rows (a modify op) |
-| `SortTableColumnsAlgorithm` (—) | sort/reorder columns (a modify op; **alias** "Reorder table columns" dropped, see (d)) |
-| `RemoveColumnAlgorithm` (Filter) | remove columns by name (a modify op; **alias** "Filter table columns" dropped, see (d)) |
-| `RenameTableColumnsAlgorithm` (—, @Deprecated) | rename columns (a modify op) |
-| `RenameTableColumns2Algorithm` (—) | rename columns |
-| `RenameSingleColumnsAlgorithm` (—) | rename single `TableColumnData` |
-| `RenameTableColumnsToAnnotationAlgorithm` (—) | rename columns to annotation values (a table column **modify** op, not an annotation edit) |
-| `ModifyTableColumnNamesAlgorithm` (—) | rename/modify column names via expression |
-| `ModifyTablesScript` (—) | general per-table modification via Python script (table in/out) (flag (e)) |
-| `ModifyAndMergeTablesScript` (—) | modify & merge tables via Python script (table in/out) (flag (e)) |
+| node (menuPath)                                | rationale for non-obvious                                                                  |
+|------------------------------------------------|--------------------------------------------------------------------------------------------|
+| `FilterTableRowsAlgorithm` (Filter)            | filter rows by expression                                                                  |
+| `FilterTablesAlgorithm` (Filter)               | filter whole tables by their properties                                                    |
+| `SliceTableRowsAlgorithm` (Filter)             | select/slice specific rows                                                                 |
+| `SortTableRowsAlgorithm` (—)                   | sort rows (a modify op)                                                                    |
+| `SortTableColumnsAlgorithm` (—)                | sort/reorder columns (a modify op; **alias** "Reorder table columns" dropped, see (d))     |
+| `RemoveColumnAlgorithm` (Filter)               | remove columns by name (a modify op; **alias** "Filter table columns" dropped, see (d))    |
+| `RenameTableColumnsAlgorithm` (—, @Deprecated) | rename columns (a modify op)                                                               |
+| `RenameTableColumns2Algorithm` (—)             | rename columns                                                                             |
+| `RenameSingleColumnsAlgorithm` (—)             | rename single `TableColumnData`                                                            |
+| `RenameTableColumnsToAnnotationAlgorithm` (—)  | rename columns to annotation values (a table column **modify** op, not an annotation edit) |
+| `ModifyTableColumnNamesAlgorithm` (—)          | rename/modify column names via expression                                                  |
+| `ModifyTablesScript` (—)                       | general per-table modification via Python script (table in/out) (flag (e))                 |
+| `ModifyAndMergeTablesScript` (—)               | modify & merge tables via Python script (table in/out) (flag (e))                          |
 
 **`TableJoinSplitFunction` (8)** — merge/append/join/split ops:
 
-| node (menuPath) | rationale |
-|---|---|
-| `MergeColumnsAlgorithm` (Merge) | merge multiple `TableColumnData` into one table |
-| `MergeTableColumnsSimpleAlgorithm` (Merge) | merge multiple tables' columns into one |
-| `MergeTableColumnsSupplementAlgorithm` (Merge) | merge source columns into target by reference columns |
-| `MergeTableColumnsSupplementMergingAlgorithm` (Merge) | merge source columns into target (merging variant) |
-| `MergeTableRowsAlgorithm` (Merge) | merge multiple tables' rows into one |
-| `SplitTableByColumnsAlgorithm` (Split) | split a table into sub-tables by selected columns |
-| `SplitTableIntoColumnsAlgorithm` (Split) | split a table into individual `TableColumnData` |
-| `SplitTableIntoRowsAlgorithm` (Split) | split a table into individual row-tables |
+| node (menuPath)                                       | rationale                                             |
+|-------------------------------------------------------|-------------------------------------------------------|
+| `MergeColumnsAlgorithm` (Merge)                       | merge multiple `TableColumnData` into one table       |
+| `MergeTableColumnsSimpleAlgorithm` (Merge)            | merge multiple tables' columns into one               |
+| `MergeTableColumnsSupplementAlgorithm` (Merge)        | merge source columns into target by reference columns |
+| `MergeTableColumnsSupplementMergingAlgorithm` (Merge) | merge source columns into target (merging variant)    |
+| `MergeTableRowsAlgorithm` (Merge)                     | merge multiple tables' rows into one                  |
+| `SplitTableByColumnsAlgorithm` (Split)                | split a table into sub-tables by selected columns     |
+| `SplitTableIntoColumnsAlgorithm` (Split)              | split a table into individual `TableColumnData`       |
+| `SplitTableIntoRowsAlgorithm` (Split)                 | split a table into individual row-tables              |
 
 **`TableAggregateFunction` (8)** — grouping/aggregation/clustering ops:
 
-| node (menuPath) | rationale |
-|---|---|
-| `IntegrateColumnsAlgorithm` (—) | "Summarize table" — avg/stddev/median per column (aggregation) |
-| `ApplyExpressionPerLabelAlgorithm` (Transform) | "summarize all values assigned to a key into a single value" — a **grouping/aggregation** op (group-by-key) despite the "Transform" segment → Aggregate (flag (e), the debatable Transform-vs-Aggregate one) |
-| `TableColumnToCountAlgorithm` (Transform) | count occurrences per value → histogram table (aggregation) |
-| `TableToHistogram2Algorithm` (Transform) | histogram binning (aggregation) |
-| `TableToHistogramAlgorithm` (Transform, @Deprecated) | histogram binning (aggregation) |
-| `KMeansClusteringAlgorithm` (Clustering) | clustering (grouping op) |
-| `FuzzyKMeansClusteringAlgorithm` (Clustering) | fuzzy clustering (grouping op) |
-| `DBSCANClusteringAlgorithm` (Clustering) | density clustering (grouping op) |
+| node (menuPath)                                      | rationale                                                                                                                                                                                                    |
+|------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `IntegrateColumnsAlgorithm` (—)                      | "Summarize table" — avg/stddev/median per column (aggregation)                                                                                                                                               |
+| `ApplyExpressionPerLabelAlgorithm` (Transform)       | "summarize all values assigned to a key into a single value" — a **grouping/aggregation** op (group-by-key) despite the "Transform" segment → Aggregate (flag (e), the debatable Transform-vs-Aggregate one) |
+| `TableColumnToCountAlgorithm` (Transform)            | count occurrences per value → histogram table (aggregation)                                                                                                                                                  |
+| `TableToHistogram2Algorithm` (Transform)             | histogram binning (aggregation)                                                                                                                                                                              |
+| `TableToHistogramAlgorithm` (Transform, @Deprecated) | histogram binning (aggregation)                                                                                                                                                                              |
+| `KMeansClusteringAlgorithm` (Clustering)             | clustering (grouping op)                                                                                                                                                                                     |
+| `FuzzyKMeansClusteringAlgorithm` (Clustering)        | fuzzy clustering (grouping op)                                                                                                                                                                               |
+| `DBSCANClusteringAlgorithm` (Clustering)             | density clustering (grouping op)                                                                                                                                                                             |
 
 #### (b) jipipe-plugin-tables — 3 `DataSourceNodeTypeCategory` → `data/TableDataFunction` (rule 6 by OUTPUT)
 
@@ -1524,36 +1541,36 @@ All three output **`ResultsTableData`** → the table-DATA leaf in `data/` (**NO
 see the callout). Mirrors §19.1's `DefineParametersTableAlgorithm`→`TableDataFunction` and §19.6's
 `ListZARR*`→`TableDataFunction` producers.
 
-| node | rationale |
-|---|---|
-| `DefineTablesAlgorithm` | defines one or multiple tables (output `ResultsTableData`) |
+| node                                   | rationale                                                             |
+|----------------------------------------|-----------------------------------------------------------------------|
+| `DefineTablesAlgorithm`                | defines one or multiple tables (output `ResultsTableData`)            |
 | `GenerateTableFromExpressionAlgorithm` | generates a table's rows from expressions (output `ResultsTableData`) |
-| `TablesFromScript` | Python script generates a table (output `ResultsTableData`) |
+| `TablesFromScript`                     | Python script generates a table (output `ResultsTableData`)           |
 
 #### (c) jipipe-plugin-tables — 3 `AnnotationsNodeTypeCategory` → `annotations/` leaves (rule 5 by OP)
 
-| node (menuPath) | leaf | rationale |
-|---|---|---|
-| `AnnotateByTablePropertiesAlgorithm` (For tables) | `AnnotationsEditFunction` | **adds** row/column-count/column-name annotations to the table (an annotation adder) |
-| `AnnotateDataWithTableValues` (For all data) | `AnnotationsEditFunction` | **adds** annotations to the incoming (generic `JIPipeData`) data from table values (an annotation adder, not a type conversion) |
-| `ColumnsToAnnotationsAlgorithm` (For tables) | `AnnotationsEditFunction` | **copies** column values into annotations (adds/merges annotation entries; the data type stays a table) — *edit*, not a type conversion (flag (e)) |
+| node (menuPath)                                   | leaf                      | rationale                                                                                                                                          |
+|---------------------------------------------------|---------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
+| `AnnotateByTablePropertiesAlgorithm` (For tables) | `AnnotationsEditFunction` | **adds** row/column-count/column-name annotations to the table (an annotation adder)                                                               |
+| `AnnotateDataWithTableValues` (For all data)      | `AnnotationsEditFunction` | **adds** annotations to the incoming (generic `JIPipeData`) data from table values (an annotation adder, not a type conversion)                    |
+| `ColumnsToAnnotationsAlgorithm` (For tables)      | `AnnotationsEditFunction` | **copies** column values into annotations (adds/merges annotation entries; the data type stays a table) — *edit*, not a type conversion (flag (e)) |
 
 All three are annotation **editing/adding** ops (the target data type is unchanged) → `AnnotationsEditFunction`.
-None maps an annotation *type* to a different data type, so **no** `AnnotationsConvertFunction` is used here
-(that leaf is reserved for genuine annotation→other-data-type conversions, cf. §19.6 `AnnotationToPath`).
+None maps an annotation *type* to a different data type, so **no** `AnnotationsConvertFunction` is used here (that leaf
+is reserved for genuine annotation→other-data-type conversions, cf. §19.6 `AnnotationToPath`).
 
 #### (d) Aliases (5 references) — 4 dropped, 1 → secondary `function[]` (primary-first)
 
 Per the A/B/C protocol: map the alias's old category+menuPath to a leaf by the same rules; alias-leaf
 == primary-leaf → drop, else add as a **secondary** `function[]` entry (primary first).
 
-| node (primary leaf) | alias (old category / menuPath) | alias leaf | action |
-|---|---|---|---|
+| node (primary leaf)                                        | alias (old category / menuPath)                                                        | alias leaf                                                                                  | action                                                                                     |
+|------------------------------------------------------------|----------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------|
 | `ApplyExpressionToTableByColumnAlgorithm` (TableTransform) | `DataSourceNodeTypeCategory` / (no menuPath), "Generate table columns from expression" | `TableDataFunction` (rule 6 by OUTPUT: with no input it **generates** a `ResultsTableData`) | **add secondary** → `function = { TableTransformFunction.class, TableDataFunction.class }` |
-| `RemoveColumnAlgorithm` (TableFilterModify) | (default `InternalNodeTypeCategory`) / (no menuPath), "Filter table columns" | `TableFilterModifyFunction` (== primary; a column filter/modify op) | **drop** (== primary) |
-| `SortTableColumnsAlgorithm` (TableFilterModify) | (default) / (no menuPath), "Reorder table columns" | `TableFilterModifyFunction` (== primary; a column modify/reorder op) | **drop** (== primary) |
-| `GenerateColumnAlgorithm` (TableTransform) | `TableNodeTypeCategory` / "Append", "Add missing columns" | `TableTransformFunction` (== primary; adds/computes a column) | **drop** (== primary) |
-| `MeltTableAlgorithm` (TableTransform) | `TableNodeTypeCategory` / "Transform", "Unpivot table" | `TableTransformFunction` (== primary; unpivot = melt) | **drop** (== primary) |
+| `RemoveColumnAlgorithm` (TableFilterModify)                | (default `InternalNodeTypeCategory`) / (no menuPath), "Filter table columns"           | `TableFilterModifyFunction` (== primary; a column filter/modify op)                         | **drop** (== primary)                                                                      |
+| `SortTableColumnsAlgorithm` (TableFilterModify)            | (default) / (no menuPath), "Reorder table columns"                                     | `TableFilterModifyFunction` (== primary; a column modify/reorder op)                        | **drop** (== primary)                                                                      |
+| `GenerateColumnAlgorithm` (TableTransform)                 | `TableNodeTypeCategory` / "Append", "Add missing columns"                              | `TableTransformFunction` (== primary; adds/computes a column)                               | **drop** (== primary)                                                                      |
+| `MeltTableAlgorithm` (TableTransform)                      | `TableNodeTypeCategory` / "Transform", "Unpivot table"                                 | `TableTransformFunction` (== primary; unpivot = melt)                                       | **drop** (== primary)                                                                      |
 
 **4 dropped, 1 secondary `function[]` entry** (`ApplyExpressionToTableByColumnAlgorithm` — the only
 multi-`function` node in this batch, primary-first per the §19.2/19.5/19.6 precedent). The secondary is
@@ -1572,8 +1589,8 @@ whereas the primary is a **table transform** (consumes an optional input).
   (a `ResultsTableData` subclass) → `ResultsTableData`; it moves annotation columns into data annotations.
   Kept Transform (table in, table out, rule 4); `AnnotationsEditFunction` is the alternative if the
   annotation-producing side is weighted.
-- **`ColumnsToAnnotationsAlgorithm` → `AnnotationsEditFunction`.** Copies column values *into* annotations
-  (adds/merges annotation entries; data type stays a table). Kept Edit; `AnnotationsConvertFunction` is the
+- **`ColumnsToAnnotationsAlgorithm` → `AnnotationsEditFunction`.** Copies column values *into* annotations (adds/merges
+  annotation entries; data type stays a table). Kept Edit; `AnnotationsConvertFunction` is the
   alternative if "columns↔annotations" is read as a type conversion.
 - **`TableColumnToCountAlgorithm` / `TableToHistogram2Algorithm` / `TableToHistogramAlgorithm` →
   `TableAggregateFunction`** (menuPath "Transform"). Histogram/count ops are aggregations (group values into
@@ -1602,19 +1619,21 @@ table/image/roi/filament data → the Misc data leaf.)
 
 **`MiscellaneousFunction` (3)** — the **FormProcessors** (all `MiscellaneousNodeTypeCategory`, menuPath
 "Forms", each `extends JIPipeAlgorithm implements JIPipeIterationStepAlgorithm`; slots = `JIPipeData` in/out
+
 + `FormData` in/out, role Parameters). `SimpleIteratingFormProcessorAlgorithm`, `IteratingFormProcessorAlgorithm`,
-`MergingFormProcessorAlgorithm`. Each shows a UI during the run that lets a user **modify annotations** via
-form elements, then passes the (annotated) data through. Rule 9 best-fit: a **genuine no-specific-leaf**
-interactive-form-driven data-processing role (input `JIPipeData`+`FormData` → output `JIPipeData`+`FormData`).
-**Not** a `graph/` wrapper — it does not run/substitute a pipeline or wrap a graph; it is a per-iteration
-interactive annotation editor. Kept `MiscellaneousFunction` (the last-resort leaf). **Flag (e)** — if the audit
-reads "modify annotations via form" as an annotation-edit op, `AnnotationsEditFunction` is the alternative;
-this is a judgment call by nature.
+  `MergingFormProcessorAlgorithm`. Each shows a UI during the run that lets a user **modify annotations** via
+  form elements, then passes the (annotated) data through. Rule 9 best-fit: a **genuine no-specific-leaf**
+  interactive-form-driven data-processing role (input `JIPipeData`+`FormData` → output `JIPipeData`+`FormData`). **Not**
+  a `graph/` wrapper — it does not run/substitute a pipeline or wrap a graph; it is a per-iteration
+  interactive annotation editor. Kept `MiscellaneousFunction` (the last-resort leaf). **Flag (e)** — if the audit
+  reads "modify annotations via form" as an annotation-edit op, `AnnotationsEditFunction` is the alternative;
+  this is a judgment call by nature.
 
 #### (g) Test infrastructure + gate results (R1/R2/R3)
 
 Both modules had **no `src/test` and no JUnit deps** (first test in each). For EACH (mirror §19.6 / the
 `jipipe-plugin-ij` pom verbatim):
+
 - **`pom.xml`**: added `org.junit.jupiter:junit-jupiter` + `org.junit.platform:junit-platform-launcher`
   (test scope) — inserted before `</dependencies>` (verified byte-identical to the ij block by `diff`).
 - Copied `jipipe-core/src/test/java/org/hkijena/jipipe/api/nodes/taxonomy/TaxonomyConversionReportTest.java`
@@ -1629,34 +1648,36 @@ Both modules had **no `src/test` and no JUnit deps** (first test in each). For E
 **Why the listener is needed:** the gate calls `JIPipe.ensureInstance()` → ImageJ SciJava context. A module's
 test classpath does not include jipipe-core's test classes, so core's
 `ImageJLegacyPatcherLauncherSessionListener` is not on the classpath; without re-registering the patcher, any
-`ij.*` class loaded before the context is created makes the ImageJ2 legacy patcher
-(`net.imagej.patcher.LegacyInjector`) fail (`No _hooks field found in ij.IJ`), an order-dependent failure
-(AGENTS.md patcher contract). `net.imagej.patcher.LegacyInjector` is on the test classpath transitively via
+`ij.*` class loaded before the context is created makes the ImageJ2 legacy patcher (`net.imagej.patcher.LegacyInjector`)
+fail (`No _hooks field found in ij.IJ`), an order-dependent failure (AGENTS.md patcher contract).
+`net.imagej.patcher.LegacyInjector` is on the test classpath transitively via
 jipipe-core → `net.imagej:imagej`.
 
 **Compile:** `mvn -q -B compile -pl plugins/jipipe-plugin-tables,plugins/jipipe-plugin-forms -am` → **exit 0**
 (both in one reactor; host mvn).
 
-**Stale `~/.m2` jar (documented — the *core* gotcha was NOT hit).** The installed `jipipe-core` jar was
-**2026-10-10 03:52**, i.e. *after* the §19.1 core conversion commit `910aa020d6` (2026-10-09 21:07) — **fresh**,
+**Stale `~/.m2` jar (documented — the *core* gotcha was NOT hit).** The installed `jipipe-core` jar was **2026-10-10 03:
+52**, i.e. *after* the §19.1 core conversion commit `910aa020d6` (2026-10-09 21:07) — **fresh**,
 so no pre-19.1 core nodes surfaced as unassigned in either prefix (the §19.6 stale-core-jar condition did not
 recur). However, the installed `jipipe-plugin-{tables,strings,annotations}` jars are all dated **2026-09-25**
 (stale — pre-19.6, when only `tables`/`forms`/`annotations` were still unconverted among on-classpath deps).
 Because the gate runs with **no `-am`**, Maven resolves those dependency jars from `~/.m2` (not the reactor), so
 the *global* (unfiltered) "N nodes not yet assigned" log line reflects the **stale** dependency counts:
+
 - **tables gate:** global line = **29** = the **`jipipe-plugin-annotations`** module (tables' direct dep,
   unconverted in this Phase; 29 `@ConfigureJIPipeNode` files). None of these 29 are under the
   `org.hkijena.jipipe.plugins.tables` prefix, so the prefix-filtered assertion saw **zero** and passed.
 - **forms gate:** global line = **92** = 48 (stale `tables` jar, pre-conversion) + 15 (stale `strings` jar,
   pre-19.6) + 29 (`annotations`). None are under the `org.hkijena.jipipe.plugins.forms` prefix, so the
   prefix-filtered assertion saw **zero** and passed.
-No `mvn install` was required (and none was run): the prefix-filtered failure set is what must be zero, and it was.
-The global "N nodes not yet assigned" line is an **informational** SciJava log line (a different, looser metric
-than the gate's per-node `unassignedNodeIds()` filter) that is *outside* the filtered set and **not** in
-`errors()`, per the §19.3/19.4/19.5/19.6 shape.
+  No `mvn install` was required (and none was run): the prefix-filtered failure set is what must be zero, and it was.
+  The global "N nodes not yet assigned" line is an **informational** SciJava log line (a different, looser metric
+  than the gate's per-node `unassignedNodeIds()` filter) that is *outside* the filtered set and **not** in
+  `errors()`, per the §19.3/19.4/19.5/19.6 shape.
 
 **Gate (enabled), both → BUILD SUCCESS, `Tests run: 1, Failures: 0, Errors: 0, Skipped: 0`, zero unassigned in
 the module prefix:**
+
 - tables: `mvn test -pl plugins/jipipe-plugin-tables -Dtest=TaxonomyConversionReportTest
   -Djipipe.taxonomy.report.module=org.hkijena.jipipe.plugins.tables` → **Tests run: 1, Failures: 0, Errors: 0,
   Skipped: 0** (global "29 nodes not yet assigned" line present, outside prefix — documented above).
@@ -1686,20 +1707,21 @@ split (26 annotations nodes + 6 omero annotation nodes) and the OME-image spatia
 node).
 
 **Scope / gate prefixes (verified, matches controller R1):**
+
 - `plugins/jipipe-plugin-annotations/src/main` — base pkg **`org.hkijena.jipipe.plugins.annotation`**
   (SINGULAR = GATE PREFIX) — **29** annotated files (28 `algorithms/` + 1 `datasources/`).
   `ImplicitResultsTableDataConverter` is a `JIPipeDataConverter` (not a node — no `@ConfigureJIPipeNode`),
   `AnnotationFilterExpression` is an expression class (not a node) → both correctly **excluded**.
 - `plugins/jipipe-plugin-ij-omero/src/main` — base pkg **`org.hkijena.jipipe.plugins.omero`** (GATE PREFIX)
   — **26** annotated files (6 `annotate/` + 7 `datasources/` + 2 `download/` + 1 `manage/` + 8 `navigate/`
-  + 2 `upload/`).
+    + 2 `upload/`).
 
 **Primary-category inventory (verified by grep of `nodeTypeCategory =`):**
 
-| module | Annotations | DataSource | FileSystem | Export | Miscellaneous | total |
-|---|---|---|---|---|---|---|
-| annotations | 26 | 2 | — | — | 1 | **29** |
-| ij-omero | 6 | 9 | 9 | 2 | — | **26** |
+| module      | Annotations | DataSource | FileSystem | Export | Miscellaneous | total  |
+|-------------|-------------|------------|------------|--------|---------------|--------|
+| annotations | 26          | 2          | —          | —      | 1             | **29** |
+| ij-omero    | 6           | 9          | 9          | 2      | —             | **26** |
 
 (omero's `navigate/` = 8 nodes + `manage/OMEROCreateDataset` = **9** `FileSystemNodeTypeCategory`;
 `download/` = 2 nodes + 7 `datasources/` = **9** `DataSourceNodeTypeCategory` — the controller's "9
@@ -1726,6 +1748,7 @@ call IJ1 processing APIs, so rule 11's "else → NoFramework" still holds (OMERO
 is no OMERO framework leaf — it stays `NoFramework`).
 
 **Spatial:**
+
 - **annotations (29) — ABSENT on all 29 (rule 12, deliberate).** 0 files import `net.imagej.*`/`ij.*`; the
   per-node slot survey shows **zero** image input slots (every input is `JIPipeData` or a non-image
   reference/table type; the only non-`JIPipeData` input is `AnnotateWithAnnotationTable`'s
@@ -1752,8 +1775,8 @@ So every converted node's annotation is exactly `@ConfigureJIPipeNode(function =
 `MiscDataFunction` **16** (omero only: 7 DataSource + 8 navigate + 1 manage) · `TableDataFunction` **3**
 (2 annotations DataSources + 1 omero DataSource `DownloadOMEROTable`) · `AnnotationsConvertFunction` **2**
 (annotations module) · `ExportFileFormatsFunction` **2** (omero) · `MiscellaneousFunction` **1**
-(annotations `MergeDataSlots`) · `ImageDataFunction` **1** (omero `DownloadOMEROImage`). Total **55**.
-(Precise per-module per-node tables are in (a) and (b).)
+(annotations `MergeDataSlots`) · `ImageDataFunction` **1** (omero `DownloadOMEROImage`). Total **55**. (Precise
+per-module per-node tables are in (a) and (b).)
 
 ---
 
@@ -1767,44 +1790,44 @@ Each of the 26 is judged by its **actual operation** (read `@SetJIPipeDocumentat
 menuPath first segment ("For all data" / "For X" signals the annotation **target**, not the op — per the
 brief). Result: **24 Edit / 2 Convert**.
 
-**`AnnotationsEditFunction` (24)** — the add/set/modify/remove/rename/filter/merge/split/reorder ops
-(the annotation set on the data is edited; the data type is unchanged):
+**`AnnotationsEditFunction` (24)** — the add/set/modify/remove/rename/filter/merge/split/reorder ops (the annotation set
+on the data is edited; the data type is unchanged):
 
-| node (menuPath) | operation (rationale) |
-|---|---|
-| `AnnotateByExpression` (Modify) | **sets/edits** annotation values (expressions); 3 same-leaf aliases dropped (see (e)) |
-| `AnnotateByProjectPaths` (For all data) | **adds** annotations (project paths) |
-| `AnnotateWithAnnotationTable` (For all data) | **merges** matching annotations from an `AnnotationTableData` into the data's annotation set (the table is the *source*, the data's annotations are edited — not a data-type conversion) |
-| `AnnotateWithData` (For all data) | **adds** a data annotation pointing at the other input data |
-| `AnnotateWithDataString` (For all data) | **adds** a string annotation (data→string representation) |
-| `AnnotateWithSourceSlot` (For all data) | **adds** a string annotation (source-slot name/label) |
-| `ExtractAndReplaceAnnotation` (Modify) | **edits** annotation values (extract substrings + replace) |
-| `FilterByAnnotationIfElse` (Filter) | **filters** data by annotation value (If/Else split) |
-| `FilterByAnnotation` (Filter) | **filters** data by annotation value |
-| `GenerateRandomUniqueAnnotation` (For all data) | **adds** a random-unique annotation |
-| `GenerateUniqueAnnotation` (For all data) | **adds** a row-index-unique annotation |
-| `MergeAnnotations` (—) | **merges** the annotation sets of all inputs |
-| `ModifyAnnotationScript` (Modify) | **modifies** annotations via a Python script |
-| `OverwriteAnnotations` (—) | **copies/overwrites** annotations from source→target data |
-| `RemoveAnnotationAlgorithm` (Remove) | **removes** annotations by name/value |
-| `RemoveArrayAnnotationsAlgorithm` (Filter) | **removes** array-valued annotations/columns |
-| `RemoveDataAnnotations` (Remove) | **removes** data annotations by column name |
-| `RemoveNAAnnotationColumnsAlgorithm` (Filter) | **removes** annotation columns with missing values |
-| `RenameAnnotation` (Modify) | **renames** annotations |
-| `RenameDataAnnotation` (Modify) | **renames** data annotations |
-| `SetSingleAnnotation` (Modify) | **sets** a single annotation (expression) |
-| `SimplifyAnnotationsAlgorithm` (—) | **merges** iteration-step annotations into one + renames/deletes the sources (an annotation-set restructure, not a type conversion) |
-| `SplitByAnnotation` (Filter) | **splits/filters** the data by annotation value |
-| `SplitByAnnotationScript` (Filter) | **splits/filters** the data by annotation value (Python) |
+| node (menuPath)                                 | operation (rationale)                                                                                                                                                                    |
+|-------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `AnnotateByExpression` (Modify)                 | **sets/edits** annotation values (expressions); 3 same-leaf aliases dropped (see (e))                                                                                                    |
+| `AnnotateByProjectPaths` (For all data)         | **adds** annotations (project paths)                                                                                                                                                     |
+| `AnnotateWithAnnotationTable` (For all data)    | **merges** matching annotations from an `AnnotationTableData` into the data's annotation set (the table is the *source*, the data's annotations are edited — not a data-type conversion) |
+| `AnnotateWithData` (For all data)               | **adds** a data annotation pointing at the other input data                                                                                                                              |
+| `AnnotateWithDataString` (For all data)         | **adds** a string annotation (data→string representation)                                                                                                                                |
+| `AnnotateWithSourceSlot` (For all data)         | **adds** a string annotation (source-slot name/label)                                                                                                                                    |
+| `ExtractAndReplaceAnnotation` (Modify)          | **edits** annotation values (extract substrings + replace)                                                                                                                               |
+| `FilterByAnnotationIfElse` (Filter)             | **filters** data by annotation value (If/Else split)                                                                                                                                     |
+| `FilterByAnnotation` (Filter)                   | **filters** data by annotation value                                                                                                                                                     |
+| `GenerateRandomUniqueAnnotation` (For all data) | **adds** a random-unique annotation                                                                                                                                                      |
+| `GenerateUniqueAnnotation` (For all data)       | **adds** a row-index-unique annotation                                                                                                                                                   |
+| `MergeAnnotations` (—)                          | **merges** the annotation sets of all inputs                                                                                                                                             |
+| `ModifyAnnotationScript` (Modify)               | **modifies** annotations via a Python script                                                                                                                                             |
+| `OverwriteAnnotations` (—)                      | **copies/overwrites** annotations from source→target data                                                                                                                                |
+| `RemoveAnnotationAlgorithm` (Remove)            | **removes** annotations by name/value                                                                                                                                                    |
+| `RemoveArrayAnnotationsAlgorithm` (Filter)      | **removes** array-valued annotations/columns                                                                                                                                             |
+| `RemoveDataAnnotations` (Remove)                | **removes** data annotations by column name                                                                                                                                              |
+| `RemoveNAAnnotationColumnsAlgorithm` (Filter)   | **removes** annotation columns with missing values                                                                                                                                       |
+| `RenameAnnotation` (Modify)                     | **renames** annotations                                                                                                                                                                  |
+| `RenameDataAnnotation` (Modify)                 | **renames** data annotations                                                                                                                                                             |
+| `SetSingleAnnotation` (Modify)                  | **sets** a single annotation (expression)                                                                                                                                                |
+| `SimplifyAnnotationsAlgorithm` (—)              | **merges** iteration-step annotations into one + renames/deletes the sources (an annotation-set restructure, not a type conversion)                                                      |
+| `SplitByAnnotation` (Filter)                    | **splits/filters** the data by annotation value                                                                                                                                          |
+| `SplitByAnnotationScript` (Filter)              | **splits/filters** the data by annotation value (Python)                                                                                                                                 |
 
 **`AnnotationsConvertFunction` (2)** — the two nodes whose operation is a genuine annotation **type →
 other representation** conversion (the annotation *representation* itself changes; the data type is
 unchanged `JIPipeData` in/out):
 
-| node (menuPath) | operation (rationale) |
-|---|---|
-| `DataAnnotationToStringAnnotation` (For all data) | **converts data annotations to string annotations** (data-annotation → text-annotation **type** conversion; the doc is literally "Convert data annotations to a strings and generates a string annotation") |
-| `ExtractDataAnnotation` (—) | **converts a data annotation into the main data** (the doc is "Extracts a data annotation"; its `Annotate with current data` option "the current (main) data is **converted into an annotation** of the specified name") — a data↔annotation **representation** conversion. **Flag (f)** — the strongest Convert candidate is `DataAnnotationToStringAnnotation`; `ExtractDataAnnotation` is the one genuinely debatable (an "extract a column" reading would make it Edit) |
+| node (menuPath)                                   | operation (rationale)                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+|---------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `DataAnnotationToStringAnnotation` (For all data) | **converts data annotations to string annotations** (data-annotation → text-annotation **type** conversion; the doc is literally "Convert data annotations to a strings and generates a string annotation")                                                                                                                                                                                                                                                                 |
+| `ExtractDataAnnotation` (—)                       | **converts a data annotation into the main data** (the doc is "Extracts a data annotation"; its `Annotate with current data` option "the current (main) data is **converted into an annotation** of the specified name") — a data↔annotation **representation** conversion. **Flag (f)** — the strongest Convert candidate is `DataAnnotationToStringAnnotation`; `ExtractDataAnnotation` is the one genuinely debatable (an "extract a column" reading would make it Edit) |
 
 (The 3rd `ConvertToAnnotationTable` is **not** in the 26 Annotations nodes — it is a
 `DataSourceNodeTypeCategory` node, see below; its 2 "Annotations to table" aliases collapse to
@@ -1812,22 +1835,22 @@ unchanged `JIPipeData` in/out):
 
 **The 2 `DataSourceNodeTypeCategory` nodes (output `AnnotationTableData`) → `TableDataFunction` (rule 6 by
 output).** `AnnotationTableData` **is a table** (`extends ResultsTableData`), so rule 6's
-"`JIPipeDataTable` → `TableDataFunction`" applies — the table-**data** leaf in `data/` (NOT a `tables/`
+"`JIPipeDataTable` → `TableDataFunction`" applies — the table- **data** leaf in `data/` (NOT a `tables/`
 op leaf, per the §19.7 callout). `MiscDataFunction` (the "annotation-specific, not a generic data table"
 alternative) was rejected: `AnnotationTableData` is literally a `ResultsTableData` subclass, so it is a
 table. Mirrors §19.6 `AnnotationTableToPaths`' input-side and §19.3/§19.7 table producers. **Flag (f)** —
 both are "annotation-specific" tables; `MiscDataFunction` is the alternative if the audit reads
 annotation-tables as outside the generic table-data leaf.
 
-| node | leaf | rationale |
-|---|---|---|
-| `AnnotationTableFromFile` (no menuPath) | `TableDataFunction` | rule 6 by OUTPUT: emits `AnnotationTableData` (a `ResultsTableData` subclass) → the table-data leaf; `FileData` in ⇒ no spatial |
+| node                                     | leaf                                                                     | rationale                                                                                                                                                                                                                          |
+|------------------------------------------|--------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `AnnotationTableFromFile` (no menuPath)  | `TableDataFunction`                                                      | rule 6 by OUTPUT: emits `AnnotationTableData` (a `ResultsTableData` subclass) → the table-data leaf; `FileData` in ⇒ no spatial                                                                                                    |
 | `ConvertToAnnotationTable` (no menuPath) | `TableDataFunction` (primary) + `AnnotationsConvertFunction` (secondary) | rule 6 by OUTPUT: emits `AnnotationTableData` → table-data leaf (primary); its 2 "Annotations to table" aliases map to `AnnotationsConvertFunction` (rule 5 / rule 9 best-fit, both the *same* leaf) → **one secondary** (see (e)) |
 
 **The 1 `MiscellaneousNodeTypeCategory` node → `MiscellaneousFunction` (rule 9).**
 
-| node | leaf | rationale |
-|---|---|---|
+| node                           | leaf                    | rationale                                                                                                                                                                                                                                                                             |
+|--------------------------------|-------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `MergeDataSlots` (no menuPath) | `MiscellaneousFunction` | a **structural** pass-through ("Structural node that indicates that all inputs are merged into a single output … not needed outside structuring the pipeline") — generic `JIPipeData` in/out, no specific leaf (not a graph/compartment wrapper, not a table op) → rule 9 last-resort |
 
 #### (b) jipipe-plugin-ij-omero (26)
@@ -1837,11 +1860,11 @@ table/image/ROI/filament, and there is **NO OMERO data leaf in `data/`** (data/ 
 RoiData / FilamentData / **Misc**). Rule 6 (DataSource by output) and rule 8 (FileSystem by what it
 reads) both fall to `MiscDataFunction`. Spatial **absent** (reference inputs/outputs are not images).
 
-| node (category) | rationale |
-|---|---|
+| node (category)                                                                                                                                                                                                                                                 | rationale                                                                                                                       |
+|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------|
 | `OMERODatasetReferenceDataSource`, `OMEROGroupReferenceDataSource`, `OMEROImageReferenceDataSource`, `OMEROPlateReferenceDataSource`, `OMEROProjectReferenceDataSource`, `OMEROScreenReferenceDataSource`, `OMEROWellReferenceDataSource` (DataSource, "OMERO") | rule 6 by OUTPUT: emit `OMERO*ReferenceData` (metadata refs) → no OMERO data leaf ⇒ `MiscDataFunction`; no image input ⇒ absent |
-| `OMEROListProjects`, `OMEROListDatasets`, `OMEROListGroups`, `OMEROListPlates`, `OMEROListScreens`, `OMEROListWells`, `OMEROListDatasetImages`, `OMEROListWellImages` (FileSystem, "OMERO") | rule 8: list/navigate OMERO objects (ref in → ref out) → `MiscDataFunction`; refs are not images ⇒ absent |
-| `OMEROCreateDataset` (FileSystem, "OMERO") | rule 8: creates a dataset from a project ref (ref in → dataset ref out) → `MiscDataFunction`; refs not images ⇒ absent |
+| `OMEROListProjects`, `OMEROListDatasets`, `OMEROListGroups`, `OMEROListPlates`, `OMEROListScreens`, `OMEROListWells`, `OMEROListDatasetImages`, `OMEROListWellImages` (FileSystem, "OMERO")                                                                     | rule 8: list/navigate OMERO objects (ref in → ref out) → `MiscDataFunction`; refs are not images ⇒ absent                       |
+| `OMEROCreateDataset` (FileSystem, "OMERO")                                                                                                                                                                                                                      | rule 8: creates a dataset from a project ref (ref in → dataset ref out) → `MiscDataFunction`; refs not images ⇒ absent          |
 
 **`TableDataFunction` (1)** — `DownloadOMEROTableAlgorithm` (DataSource, no menuPath): rule 6 by OUTPUT —
 emits `ResultsTableData` ("Imports tables attached to an OMERO image as ImageJ table") → the table-data
@@ -1854,8 +1877,8 @@ ImageData for images); input `OMEROImageReferenceData` (a ref, **not** an image)
 different rules (leaf by image output, spatial by non-image input). This is the same *mechanism* as §19.3
 `ExtractRoi2dFromOMEImage` (leaf by ROI output, spatial by its OME-image input), but that node's image
 input makes it **both**, whereas DownloadOMEROImage's reference input makes it **absent**. ⚠️ **Phase-3
-rule-refinement flag:** the 19.3 image-*importing* DataSources (`ImportImagePlus`/`BioFormatsImporter`/…)
-are **both** (they emit an image from a non-image `FileData` input), so an image-*producing* source node
+rule-refinement flag:** the 19.3 image- *importing* DataSources (`ImportImagePlus`/`BioFormatsImporter`/…)
+are **both** (they emit an image from a non-image `FileData` input), so an image- *producing* source node
 like DownloadOMEROImage is arguably **both** by that same output-based reasoning — its **absent** here is
 the literal rule-12 (input-based) reading. Decide in Phase 3 whether image-producing source nodes declare
 their **OUTPUT's** spatial (if so, flip this node to **both**, harmonizing with the 19.3 importers).
@@ -1867,21 +1890,21 @@ not the op). None *converts* between annotation types, so `AnnotationsConvertFun
 omero. Spatial **absent** (refs are not images). Mirrors §19.3's `AnnotateDataWithImageProperties`/
 `ImagePropertiesToAnnotation` → `AnnotationsEditFunction`.
 
-| node | rationale |
-|---|---|
-| `AnnotateOMEROImageReference` | **adds** OMERO metadata to an image reference |
+| node                            | rationale                                      |
+|---------------------------------|------------------------------------------------|
+| `AnnotateOMEROImageReference`   | **adds** OMERO metadata to an image reference  |
 | `AnnotateOMERODatasetReference` | **adds** OMERO metadata to a dataset reference |
 | `AnnotateOMEROProjectReference` | **adds** OMERO metadata to a project reference |
-| `AnnotateOMEROPlateReference` | **adds** OMERO metadata to a plate reference |
-| `AnnotateOMEROWellReference` | **adds** OMERO metadata to a well reference |
-| `AnnotateOMEROScreenReference` | **adds** OMERO metadata to a screen reference |
+| `AnnotateOMEROPlateReference`   | **adds** OMERO metadata to a plate reference   |
+| `AnnotateOMEROWellReference`    | **adds** OMERO metadata to a well reference    |
+| `AnnotateOMEROScreenReference`  | **adds** OMERO metadata to a screen reference  |
 
 **`ExportFileFormatsFunction` (2)** — rule 7 (Export category).
 
-| node (menuPath) | leaf | spatial | rationale |
-|---|---|---|---|
+| node (menuPath)                      | leaf                        | spatial  | rationale                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+|--------------------------------------|-----------------------------|----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `UploadOMEROImageToDataset` (Images) | `ExportFileFormatsFunction` | **both** | **the one OME-image node.** Uploads an `OMEImageData` into an OMERO dataset (ref in + **`OMEImageData` input** → image ref out). It is in the **Export** category (rule 7 → the export file-format leaf, NOT the images/ processing leaves); it is not a ZIP/archive ⇒ not `ExportArchiveFunction`. First image *input* = unconstrained `OMEImageData` ⇒ **both** (rule 12). (A "put data into OMERO" reading makes it export-flavored; see (f).) |
-| `UploadOMEROTable` (Tables) | `ExportFileFormatsFunction` | absent | attaches a `ResultsTableData` to an OMERO image (table + ref in → annotation ref out); Export category ⇒ rule 7 file-format leaf; inputs are table + ref (no image) ⇒ **absent** |
+| `UploadOMEROTable` (Tables)          | `ExportFileFormatsFunction` | absent   | attaches a `ResultsTableData` to an OMERO image (table + ref in → annotation ref out); Export category ⇒ rule 7 file-format leaf; inputs are table + ref (no image) ⇒ **absent**                                                                                                                                                                                                                                                                  |
 
 **omero function tally:** `AnnotationsEditFunction` 6 · `MiscDataFunction` 16 · `TableDataFunction` 1 ·
 `ImageDataFunction` 1 · `ExportFileFormatsFunction` 2 = **26**. Spatial: absent 25 · both 1.
@@ -1902,8 +1925,8 @@ omero. Spatial **absent** (refs are not images). Mirrors §19.3's `AnnotateDataW
 
 #### (d) The 2 DataSource leaf choice (annotations)
 
-Both `DataSourceNodeTypeCategory` nodes output `AnnotationTableData` (a `ResultsTableData` subclass) →
-**`TableDataFunction`** (rule 6 by output; the table-**data** leaf in `data/`). `MiscDataFunction` (the
+Both `DataSourceNodeTypeCategory` nodes output `AnnotationTableData` (a `ResultsTableData` subclass) → **
+`TableDataFunction`** (rule 6 by output; the table- **data** leaf in `data/`). `MiscDataFunction` (the
 "annotation-specific, not a generic table" alternative) was rejected because `AnnotationTableData` is
 literally a table. **Flagged (f)** for Phase 3 (both are annotation-flavored tables).
 
@@ -1912,13 +1935,13 @@ literally a table. **Flagged (f)** for Phase 3 (both are annotation-flavored tab
 Per the A/B/C protocol: map the alias's old category+menuPath to a leaf by the same rules; alias-leaf ==
 primary-leaf → drop, else add as a **secondary** `function[]` entry (primary first).
 
-| node (primary leaf) | alias (old category / menuPath) | alias leaf | action |
-|---|---|---|---|
-| `AnnotateByExpression` (AnnotationsEdit) | (default `InternalNodeTypeCategory`) / "Set annotations" | `AnnotationsEditFunction` (rule 5, set/modify) | **drop** (== primary) |
-| `AnnotateByExpression` (AnnotationsEdit) | (default) / "Modify annotations" | `AnnotationsEditFunction` | **drop** (== primary) |
-| `AnnotateByExpression` (AnnotationsEdit) | (default) / "Edit annotations" | `AnnotationsEditFunction` | **drop** (== primary) |
-| `ConvertToAnnotationTable` (TableData) | `AnnotationsNodeTypeCategory` / "Annotations to table" | `AnnotationsConvertFunction` (rule 5: a genuine annotation→table **conversion**) | **add secondary** |
-| `ConvertToAnnotationTable` (TableData) | `MiscellaneousNodeTypeCategory` / "Annotations to table" | `AnnotationsConvertFunction` (rule 9 best-fit: the op is a conversion, not the Miscellaneous last-resort) | **collapses to the same secondary** |
+| node (primary leaf)                      | alias (old category / menuPath)                          | alias leaf                                                                                                | action                              |
+|------------------------------------------|----------------------------------------------------------|-----------------------------------------------------------------------------------------------------------|-------------------------------------|
+| `AnnotateByExpression` (AnnotationsEdit) | (default `InternalNodeTypeCategory`) / "Set annotations" | `AnnotationsEditFunction` (rule 5, set/modify)                                                            | **drop** (== primary)               |
+| `AnnotateByExpression` (AnnotationsEdit) | (default) / "Modify annotations"                         | `AnnotationsEditFunction`                                                                                 | **drop** (== primary)               |
+| `AnnotateByExpression` (AnnotationsEdit) | (default) / "Edit annotations"                           | `AnnotationsEditFunction`                                                                                 | **drop** (== primary)               |
+| `ConvertToAnnotationTable` (TableData)   | `AnnotationsNodeTypeCategory` / "Annotations to table"   | `AnnotationsConvertFunction` (rule 5: a genuine annotation→table **conversion**)                          | **add secondary**                   |
+| `ConvertToAnnotationTable` (TableData)   | `MiscellaneousNodeTypeCategory` / "Annotations to table" | `AnnotationsConvertFunction` (rule 9 best-fit: the op is a conversion, not the Miscellaneous last-resort) | **collapses to the same secondary** |
 
 The two `ConvertToAnnotationTable` aliases are **both** named "Annotations to table" and both map to
 `AnnotationsConvertFunction` (the Annotations alias by rule 5; the Miscellaneous alias by rule 9's
@@ -1936,20 +1959,20 @@ to a recognizable conversion op). They therefore collapse to **one** secondary:
   `AnnotationsEditFunction`. This is the one genuinely debatable node in the 26-way split — if the audit
   flips it, the split becomes 25 Edit / 1 Convert.
 - **`AnnotateWithAnnotationTable` → `AnnotationsEditFunction`.** It consumes an `AnnotationTableData`
-  input (annotation *source*), which superficially resembles "table→annotations". But its operation is to
-  **merge** matching annotations *into the data's annotation set* (the table is the source; the data is
+  input (annotation *source*), which superficially resembles "table→annotations". But its operation is to **merge**
+  matching annotations *into the data's annotation set* (the table is the source; the data is
   the target) — an annotation **edit**, not a data-type conversion. Kept Edit; `AnnotationsConvertFunction`
   is the alternative if "annotation-table → annotations" is read as a type conversion.
 - **The 2 annotations DataSources (`AnnotationTableFromFile`, `ConvertToAnnotationTable` primary) →
   `TableDataFunction`.** Both emit `AnnotationTableData` (a `ResultsTableData` subclass) → the table-data
   leaf by output (rule 6). `MiscDataFunction` is the alternative if the audit treats annotation-tables as
   outside the generic table-data leaf (they are "annotation-specific").
-- **`DownloadOMEROImageAlgorithm` → `ImageDataFunction`, spatial **absent**.** Leaf by its image OUTPUT
-  (rule 6); spatial by its non-image INPUT (a reference) — the two rules point differently here
-  (absent). Same *mechanism* as §19.3 `ExtractRoi2dFromOMEImage` (that one is **both** — it has an
+- **`DownloadOMEROImageAlgorithm` → `ImageDataFunction`, spatial **absent**.** Leaf by its image OUTPUT (rule 6);
+  spatial by its non-image INPUT (a reference) — the two rules point differently here (absent). Same *mechanism* as
+  §19.3 `ExtractRoi2dFromOMEImage` (that one is **both** — it has an
   OME-image input — whereas this is **absent**). ⚠️ Cross-module rule question (Phase 3): the 19.3
-  image-*importing* DataSources are **both** (image emitted from a `FileData` input), so an
-  image-*producing* source node may belong as **both** by output; decide whether to harmonize.
+  image- *importing* DataSources are **both** (image emitted from a `FileData` input), so an
+  image- *producing* source node may belong as **both** by output; decide whether to harmonize.
 - **`UploadOMEROImageToDatasetAlgorithm` → `ExportFileFormatsFunction` (both).** It is in the **Export**
   category, so rule 7 gives the export file-format leaf. A "put data into OMERO" (an external store)
   reading is export-flavored (kept); if the audit reads it as OMERO-side data management rather than a
@@ -1958,14 +1981,15 @@ to a recognizable conversion op). They therefore collapse to **one** secondary:
 - **omero `OMERO*ReferenceData` producers → `MiscDataFunction` (16 nodes).** No OMERO data leaf exists in
   `data/`; the references fall to the Misc data leaf (rules 6/8). If the audit adds an OMERO/external-
   object data leaf in Phase 3, these 16 would move.
-- **ij-omero `OMERO*ReferenceData` is not an image (spatial absent on 25/26).** Settled for this task
-  (rule 12: non-image ⇒ absent); consistent with §19.5's filament-graph and §19.6's path/file reference
+- **ij-omero `OMERO*ReferenceData` is not an image (spatial absent on 25/26).** Settled for this task (rule 12:
+  non-image ⇒ absent); consistent with §19.5's filament-graph and §19.6's path/file reference
   precedent. Phase 3 should confirm spatial never extends to OMERO reference types.
 
 #### (g) Test infrastructure + gate results
 
 Both modules had **no `src/test` and no JUnit deps** (first test in each). For EACH (mirror §19.6 / the
 `jipipe-plugin-ij`/`-ij-3d`/`-ij-filaments`/`-tables`/`-forms` pom verbatim):
+
 - **`pom.xml`**: added `org.junit.jupiter:junit-jupiter` + `org.junit.platform:junit-platform-launcher`
   (test scope) — inserted before `</dependencies>` (annotations: after the `jipipe-core` dependency;
   ij-omero: after the `com.zeroc:glacier2` dependency).
@@ -1983,16 +2007,16 @@ Both modules had **no `src/test` and no JUnit deps** (first test in each). For E
 module's test classpath does not include jipipe-core's test classes, so core's
 `ImageJLegacyPatcherLauncherSessionListener` is not on the classpath; without re-registering the patcher,
 any `ij.*` class loaded before the context is created makes the ImageJ2 legacy patcher
-(`net.imagej.patcher.LegacyInjector`) fail (`No _hooks field found in ij.IJ`), an order-dependent failure
-(AGENTS.md patcher contract). `net.imagej.patcher.LegacyInjector` is on the test classpath transitively
-via jipipe-core → `net.imagej:imagej`. The ij-omero gate in particular initializes the OMERO importer
-(which wraps `ij.ImagePlus` via loci Bio-Formats), so the patcher must run first.
+(`net.imagej.patcher.LegacyInjector`) fail (`No _hooks field found in ij.IJ`), an order-dependent failure (AGENTS.md
+patcher contract). `net.imagej.patcher.LegacyInjector` is on the test classpath transitively
+via jipipe-core → `net.imagej:imagej`. The ij-omero gate in particular initializes the OMERO importer (which wraps
+`ij.ImagePlus` via loci Bio-Formats), so the patcher must run first.
 
 **Compile:** `mvn -q -B compile -pl plugins/jipipe-plugin-annotations,plugins/jipipe-plugin-ij-omero -am`
 → **exit 0** (both in one reactor; host mvn).
 
-**Stale `~/.m2` jar (the *core* gotcha was NOT hit).** The installed `jipipe-core` SNAPSHOT jar is
-**2026-10-10 03:52** (after the §19.1 core conversion commit `910aa020d6` (2026-10-09 21:07)) — **fresh**
+**Stale `~/.m2` jar (the *core* gotcha was NOT hit).** The installed `jipipe-core` SNAPSHOT jar is **2026-10-10 03:52**
+(after the §19.1 core conversion commit `910aa020d6` (2026-10-09 21:07)) — **fresh**
 (it contains the 74 taxonomy function classes and the converted core nodes), so no pre-19.1 core node
 surfaced as unassigned in either prefix (the §19.6 stale-core condition did not recur). The gate prefix
 filter (`org.hkijena.jipipe.plugins.annotation` / `…omero`) does **not** cover any core package
@@ -2002,6 +2026,7 @@ assigned" line (see below) — no fix needed. No `mvn install` was run.
 
 **Gate (enabled), both → BUILD SUCCESS, `Tests run: 1, Failures: 0, Errors: 0, Skipped: 0`, zero unassigned
 in the module prefix:**
+
 - **annotations:** `mvn test -pl plugins/jipipe-plugin-annotations -Dtest=TaxonomyConversionReportTest
   -Djipipe.taxonomy.report.module=org.hkijena.jipipe.plugins.annotation` → **Tests run: 1, Failures: 0,
   Errors: 0, Skipped: 0**, log line `JIPipeNodesServiceComponent | Node taxonomy validation passed`
@@ -2013,12 +2038,12 @@ in the module prefix:**
   during conversion` is the **global** count across all on-classpath modules (the unconverted cellpose /
   trackmate / weka / ilastik / omnipose / clij / ij2 / ocr / plots / multi-template-matching / python /
   r / imp / scene-3d / opencv … modules + stale dependency jars); **none** are under the
-  `org.hkijena.jipipe.plugins.omero` prefix, so the prefix-filtered assertion saw **zero** and passed
-  (same shape as §19.3/19.4/19.5/19.6/19.7). The annotations classpath happens to have no unconverted
+  `org.hkijena.jipipe.plugins.omero` prefix, so the prefix-filtered assertion saw **zero** and passed (same shape as
+  §19.3/19.4/19.5/19.6/19.7). The annotations classpath happens to have no unconverted
   on-classpath module, so it reported a clean "validation passed" with no global count line.
 
-**Gate (unset), both → BUILD SUCCESS, `Tests run: 1, Failures: 0, Errors: 0, Skipped: 1`** — the gate
-**skips cleanly** (property unset), no `_hooks`/`LinkageError` patcher failure (listener works).
+**Gate (unset), both → BUILD SUCCESS, `Tests run: 1, Failures: 0, Errors: 0, Skipped: 1`** — the gate **skips cleanly**
+(property unset), no `_hooks`/`LinkageError` patcher failure (listener works).
 
 **Transition note understood:** the 55 converted nodes now fall back to `InternalNodeTypeCategory` via
 `getCategoryOf(nodeClass)` (`isVisibleInPipeline` false), so they are absent from the *old* add-node
@@ -2046,6 +2071,7 @@ distinctive elements: **(A)** framework is read **per node by subpackage** (cell
 `ij.ImagePlus`/`ImagePlus*Data` usage IS the spatial signal.
 
 **Scope / gate prefixes (verified, matches controller R1):**
+
 - `plugins/jipipe-plugin-cellpose/src/main` — base pkg **`org.hkijena.jipipe.plugins.cellpose`** (GATE
   PREFIX) — **21** annotated files (verified `grep -rl "@ConfigureJIPipeNode" src/main | wc -l` = 21,
   exactly one `@ConfigureJIPipeNode` per file). `CellposeUtils`/`CellposeImageInfo`/etc. are non-node
@@ -2056,10 +2082,10 @@ distinctive elements: **(A)** framework is read **per node by subpackage** (cell
 
 **Primary-category inventory (verified by grep of `nodeTypeCategory =`):**
 
-| module | Images ("Deep learning") | DataSource | total |
-|---|---|---|---|
-| cellpose | 13 | 8 | **21** |
-| omnipose | 4 | 1 | **5** |
+| module   | Images ("Deep learning") | DataSource | total  |
+|----------|--------------------------|------------|--------|
+| cellpose | 13                       | 8          | **21** |
+| omnipose | 4                        | 1          | **5**  |
 
 **Aliases (verified by grep of `@AddJIPipeNodeAlias`):** **0** in both modules → no alias→secondary-
 `function[]` conversions (step 2 of the per-batch method is a no-op here).
@@ -2070,20 +2096,21 @@ distinctive elements: **(A)** framework is read **per node by subpackage** (cell
 
 **The key check: exact per-framework counts (verified against each file's `package` line).**
 
-| framework (cellpose) | count | nodes (by subpackage) |
-|---|---|---|
-| `Cellpose2Framework` | **3** | `algorithms/cp2` → `Cellpose2SegmentationInferenceAlgorithm`, `Cellpose2TrainingAlgorithm`, `ImportPretrainedCellpose2ModelAlgorithm` |
-| `Cellpose3Framework` | **6** | `algorithms/cp3` → `Cellpose3SegmentationInferenceAlgorithm`, `Cellpose3SegmentationTrainingAlgorithm`, `Cellpose3DenoiseInferenceAlgorithm`, `Cellpose3DenoiseTrainingAlgorithm`, `ImportPretrainedCellpose3SegmentationModelAlgorithm`, `ImportPretrainedCellpose3DenoiseModelAlgorithm` |
-| `Cellpose4Framework` | **4** | `algorithms/cp4` → `Cellpose4SegmentationInferenceAlgorithm`, `Cellpose4SegmentationTrainingAlgorithm`, `Cellpose4SegmentationTraining2Algorithm`, `ImportPretrainedCellpose4SegmentationModelAlgorithm` |
-| **NoFramework (omitted)** | **8** | `algorithms` (base, 2): `ImportCellposeModelFromFileAlgorithm`, `ImportCellposeSizeModelFromFileAlgorithm` + `legacy/algorithms` (6): `Cellpose1InferenceAlgorithm`, `Cellpose1TrainingAlgorithm`, `LegacyCellpose2InferenceAlgorithm`, `LegacyCellpose2TrainingAlgorithm`, `ImportLegacyCellposeModelAlgorithm`, `ImportLegacyCellposeSizeModelAlgorithm` |
-| **cellpose total** | **21** | |
+| framework (cellpose)      | count  | nodes (by subpackage)                                                                                                                                                                                                                                                                                                                                      |
+|---------------------------|--------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `Cellpose2Framework`      | **3**  | `algorithms/cp2` → `Cellpose2SegmentationInferenceAlgorithm`, `Cellpose2TrainingAlgorithm`, `ImportPretrainedCellpose2ModelAlgorithm`                                                                                                                                                                                                                      |
+| `Cellpose3Framework`      | **6**  | `algorithms/cp3` → `Cellpose3SegmentationInferenceAlgorithm`, `Cellpose3SegmentationTrainingAlgorithm`, `Cellpose3DenoiseInferenceAlgorithm`, `Cellpose3DenoiseTrainingAlgorithm`, `ImportPretrainedCellpose3SegmentationModelAlgorithm`, `ImportPretrainedCellpose3DenoiseModelAlgorithm`                                                                 |
+| `Cellpose4Framework`      | **4**  | `algorithms/cp4` → `Cellpose4SegmentationInferenceAlgorithm`, `Cellpose4SegmentationTrainingAlgorithm`, `Cellpose4SegmentationTraining2Algorithm`, `ImportPretrainedCellpose4SegmentationModelAlgorithm`                                                                                                                                                   |
+| **NoFramework (omitted)** | **8**  | `algorithms` (base, 2): `ImportCellposeModelFromFileAlgorithm`, `ImportCellposeSizeModelFromFileAlgorithm` + `legacy/algorithms` (6): `Cellpose1InferenceAlgorithm`, `Cellpose1TrainingAlgorithm`, `LegacyCellpose2InferenceAlgorithm`, `LegacyCellpose2TrainingAlgorithm`, `ImportLegacyCellposeModelAlgorithm`, `ImportLegacyCellposeSizeModelAlgorithm` |
+| **cellpose total**        | **21** |                                                                                                                                                                                                                                                                                                                                                            |
 
-| framework (omnipose) | count | nodes |
-|---|---|---|
-| `JIPipeDLFramework` | **5** (all) | `algorithms` (3): `Omnipose0InferenceAlgorithm`, `Omnipose0TrainingAlgorithm`, `ImportPretrainedOmnipose0ModelAlgorithm` + `legacy/algorithms` (2): `LegacyOmnipose0InferenceAlgorithm`, `LegacyOmnipose0TrainingAlgorithm` |
-| **omnipose total** | **5** | |
+| framework (omnipose) | count       | nodes                                                                                                                                                                                                                       |
+|----------------------|-------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `JIPipeDLFramework`  | **5** (all) | `algorithms` (3): `Omnipose0InferenceAlgorithm`, `Omnipose0TrainingAlgorithm`, `ImportPretrainedOmnipose0ModelAlgorithm` + `legacy/algorithms` (2): `LegacyOmnipose0InferenceAlgorithm`, `LegacyOmnipose0TrainingAlgorithm` |
+| **omnipose total**   | **5**       |                                                                                                                                                                                                                             |
 
 **Rule 11 rationale (per framework):**
+
 - **cellpose → `Cellpose{2,3,4}Framework` per subpackage** (rule 11 literal). The node files live in
   three version subpackages; the **`package` statement is authoritative** (verified per file — not the
   directory name). `cp2`→`Cellpose2Framework`, `cp3`→`Cellpose3Framework`, `cp4`→`Cellpose4Framework`.
@@ -2093,8 +2120,8 @@ distinctive elements: **(A)** framework is read **per node by subpackage** (cell
   / `CellposeSizeModelData`, so no `CellposeN` framework fits → attribute **omitted** (the default is
   already `NoFramework`, `jipipe-core/…/api/ConfigureJIPipeNode.java:97`). **Flagged (f).**
 - **cellpose `legacy.algorithms` (Cellpose v1 + legacy-v2, 6) → NoFramework (OMIT).** No `Cellpose1Framework`
-  (or legacy framework) exists among the 12, so the 6 legacy nodes are **omitted** like the base importers.
-  **Flagged (f)** — this is the most debatable framework call in the batch (see (f)).
+  (or legacy framework) exists among the 12, so the 6 legacy nodes are **omitted** like the base importers. **Flagged (
+  f)** — this is the most debatable framework call in the batch (see (f)).
 - **omnipose → `JIPipeDLFramework` for ALL 5**, including the 2 `legacy.algorithms` (v1) nodes. Unlike
   cellpose, there is **no version split** for omnipose: rule 11 names omnipose → `JIPipeDLFramework`, and
   the general DL framework covers its legacy nodes (a `JIPipeDLFramework` "covers legacy" precedent, unlike
@@ -2108,9 +2135,9 @@ modules' node files incidentally `import ij.*` (cellpose 13 files, omnipose 4 fi
 `ij.IJ`, `ij.process.ImageProcessor`, …) for ImagePlus-level processing. **Do NOT** read this as
 "the node wraps IJ1 ⇒ `ImageJ1Framework`". Rule 11's framework table is **plugin-scoped, not
 import-scoped**: the framework is the *plugin's* deep-learning framework (`CellposeN`/`JIPipeDL`/
-NoFramework), regardless of the incidental `ij.*` usage. The `ij.*` imports instead feed **rule 12
-(spatial)** — the `ImagePlus*Data` first-image-input slot is what confers `SPATIAL_*`.
-**Verified: `grep -rl "ImageJ1Framework\|NoFramework" src/main` across both modules → 0** (no `ImageJ1Framework`
+NoFramework), regardless of the incidental `ij.*` usage. The `ij.*` imports instead feed **rule 12 (spatial)** — the
+`ImagePlus*Data` first-image-input slot is what confers `SPATIAL_*`. **Verified:
+`grep -rl "ImageJ1Framework\|NoFramework" src/main` across both modules → 0** (no `ImageJ1Framework`
 assigned to any DL node; no literal `NoFramework` token — it is expressed by *omitting* the attribute).
 
 ---
@@ -2123,6 +2150,7 @@ The three `jipipe-core/…/taxonomy/functions/deeplearning/` leaves (read `getNa
 `DeepLearningTrainingFunction` ("Deep learning training" — *training* a model).
 
 The split is by **operation**, not by category:
+
 - **Run-the-model nodes** (`ImagesNodeTypeCategory` + menuPath `"Deep learning"`, produce
   segmentation/masks/labels/flows/probabilities) → `DeepLearningInferenceFunction`.
 - **Model-importer nodes** (`DataSourceNodeTypeCategory`, `Import*Model`, read model FILES and output
@@ -2135,11 +2163,11 @@ The split is by **operation**, not by category:
 
 **Function split (verified by grep):**
 
-| module | Inference | Training | Models | total |
-|---|---|---|---|---|
-| cellpose | **6** | **7** | **8** | **21** |
-| omnipose | **2** | **2** | **1** | **5** |
-| **total** | **8** | **9** | **9** | **26** |
+| module    | Inference | Training | Models | total  |
+|-----------|-----------|----------|--------|--------|
+| cellpose  | **6**     | **7**    | **8**  | **21** |
+| omnipose  | **2**     | **2**    | **1**  | **5**  |
+| **total** | **8**     | **9**    | **9**  | **26** |
 
 Note the brief's "13 Inference (cellpose)" = **6 true inference + 7 training** lumped under the old
 "Deep learning" menuPath. The correct rule-11/`deeplearning/` split separates the 7 trainers (which is
@@ -2151,6 +2179,7 @@ training sub-count (and the omnipose "4 Inference" = 2 inference + 2 training) i
 #### (C) Spatial — by FIRST IMAGE INPUT slot (rule 12), per node
 
 Every inference/training node's spatial is read from its **first image input** `@AddJIPipeInputSlot`:
+
 - unconstrained `ImagePlusData` ⇒ **both** (`SPATIAL_2D, SPATIAL_3D`)
 - `ImagePlus3DData` / `ImagePlus3DGreyscaleData` (3D-specific) ⇒ **`SPATIAL_3D`** only
 - a 2D-specific class ⇒ `SPATIAL_2D`
@@ -2159,12 +2188,13 @@ Every inference/training node's spatial is read from its **first image input** `
 
 **Spatial distribution (verified by grep):**
 
-| module | both (2D+3D) | 3D only | 2D only | absent | total |
-|---|---|---|---|---|---|
-| cellpose | **11** | **2** | 0 | **8** | **21** |
-| omnipose | **4** | 0 | 0 | **1** | **5** |
+| module   | both (2D+3D) | 3D only | 2D only | absent | total  |
+|----------|--------------|---------|---------|--------|--------|
+| cellpose | **11**       | **2**   | 0       | **8**  | **21** |
+| omnipose | **4**        | 0       | 0       | **1**  | **5**  |
 
 **The 2 cellpose 3D-only cases (named):**
+
 - `legacy/algorithms/Cellpose1InferenceAlgorithm` — first image input `ImagePlus3DGreyscaleData` ⇒ `SPATIAL_3D`.
 - `legacy/algorithms/Cellpose1TrainingAlgorithm` — first image input `ImagePlus3DData` ⇒ `SPATIAL_3D`.
 
@@ -2177,42 +2207,42 @@ a 2D-specific class).
 
 #### (d) jipipe-plugin-cellpose (21) — per-node table
 
-| node (subpackage) | function | framework | spatial | note |
-|---|---|---|---|---|
-| `Cellpose2SegmentationInferenceAlgorithm` (cp2) | Inference | `Cellpose2Framework` | both | first input `ImagePlusData` |
-| `Cellpose2TrainingAlgorithm` (cp2) | **Training** | `Cellpose2Framework` | both | `--train`; first input `ImagePlusData` (flag f) |
-| `ImportPretrainedCellpose2ModelAlgorithm` (cp2) | Models | `Cellpose2Framework` | absent | DataSource, `CellposeModelData` out, `FileData`-free (model-file import) |
-| `Cellpose3SegmentationInferenceAlgorithm` (cp3) | Inference | `Cellpose3Framework` | both | first input `ImagePlusData` |
-| `Cellpose3SegmentationTrainingAlgorithm` (cp3) | **Training** | `Cellpose3Framework` | both | `--train`; first input `ImagePlusData` (flag f) |
-| `Cellpose3DenoiseInferenceAlgorithm` (cp3) | Inference | `Cellpose3Framework` | both | first input `ImagePlusData` |
-| `Cellpose3DenoiseTrainingAlgorithm` (cp3) | **Training** | `Cellpose3Framework` | both | `--train`; first input `ImagePlusData` (flag f) |
-| `ImportPretrainedCellpose3SegmentationModelAlgorithm` (cp3) | Models | `Cellpose3Framework` | absent | DataSource |
-| `ImportPretrainedCellpose3DenoiseModelAlgorithm` (cp3) | Models | `Cellpose3Framework` | absent | DataSource |
-| `Cellpose4SegmentationInferenceAlgorithm` (cp4) | Inference | `Cellpose4Framework` | both | first input `ImagePlusData` |
-| `Cellpose4SegmentationTrainingAlgorithm` (cp4) | **Training** | `Cellpose4Framework` | both | `--train`; first input `ImagePlusData` (flag f) |
-| `Cellpose4SegmentationTraining2Algorithm` (cp4) | **Training** | `Cellpose4Framework` | both | `--train`; first input `ImagePlusData` (flag f) |
-| `ImportPretrainedCellpose4SegmentationModelAlgorithm` (cp4) | Models | `Cellpose4Framework` | absent | DataSource |
-| `ImportCellposeModelFromFileAlgorithm` (base) | Models | —(NoFramework) | absent | version-agnostic importer (flag f) |
-| `ImportCellposeSizeModelFromFileAlgorithm` (base) | Models | —(NoFramework) | absent | version-agnostic importer (flag f) |
-| `Cellpose1InferenceAlgorithm` (legacy) | Inference | —(NoFramework) | **3D** | first input `ImagePlus3DGreyscaleData` (flag f) |
-| `Cellpose1TrainingAlgorithm` (legacy) | **Training** | —(NoFramework) | **3D** | first input `ImagePlus3DData` (flag f) |
-| `LegacyCellpose2InferenceAlgorithm` (legacy) | Inference | —(NoFramework) | both | first input `ImagePlusData` (flag f) |
-| `LegacyCellpose2TrainingAlgorithm` (legacy) | **Training** | —(NoFramework) | both | first input `ImagePlusData` (flag f) |
-| `ImportLegacyCellposeModelAlgorithm` (legacy) | Models | —(NoFramework) | absent | DataSource, `LegacyCellposeModelData` out (flag f) |
-| `ImportLegacyCellposeSizeModelAlgorithm` (legacy) | Models | —(NoFramework) | absent | DataSource, `LegacyCellposeSizeModelData` out (flag f) |
+| node (subpackage)                                           | function     | framework            | spatial | note                                                                     |
+|-------------------------------------------------------------|--------------|----------------------|---------|--------------------------------------------------------------------------|
+| `Cellpose2SegmentationInferenceAlgorithm` (cp2)             | Inference    | `Cellpose2Framework` | both    | first input `ImagePlusData`                                              |
+| `Cellpose2TrainingAlgorithm` (cp2)                          | **Training** | `Cellpose2Framework` | both    | `--train`; first input `ImagePlusData` (flag f)                          |
+| `ImportPretrainedCellpose2ModelAlgorithm` (cp2)             | Models       | `Cellpose2Framework` | absent  | DataSource, `CellposeModelData` out, `FileData`-free (model-file import) |
+| `Cellpose3SegmentationInferenceAlgorithm` (cp3)             | Inference    | `Cellpose3Framework` | both    | first input `ImagePlusData`                                              |
+| `Cellpose3SegmentationTrainingAlgorithm` (cp3)              | **Training** | `Cellpose3Framework` | both    | `--train`; first input `ImagePlusData` (flag f)                          |
+| `Cellpose3DenoiseInferenceAlgorithm` (cp3)                  | Inference    | `Cellpose3Framework` | both    | first input `ImagePlusData`                                              |
+| `Cellpose3DenoiseTrainingAlgorithm` (cp3)                   | **Training** | `Cellpose3Framework` | both    | `--train`; first input `ImagePlusData` (flag f)                          |
+| `ImportPretrainedCellpose3SegmentationModelAlgorithm` (cp3) | Models       | `Cellpose3Framework` | absent  | DataSource                                                               |
+| `ImportPretrainedCellpose3DenoiseModelAlgorithm` (cp3)      | Models       | `Cellpose3Framework` | absent  | DataSource                                                               |
+| `Cellpose4SegmentationInferenceAlgorithm` (cp4)             | Inference    | `Cellpose4Framework` | both    | first input `ImagePlusData`                                              |
+| `Cellpose4SegmentationTrainingAlgorithm` (cp4)              | **Training** | `Cellpose4Framework` | both    | `--train`; first input `ImagePlusData` (flag f)                          |
+| `Cellpose4SegmentationTraining2Algorithm` (cp4)             | **Training** | `Cellpose4Framework` | both    | `--train`; first input `ImagePlusData` (flag f)                          |
+| `ImportPretrainedCellpose4SegmentationModelAlgorithm` (cp4) | Models       | `Cellpose4Framework` | absent  | DataSource                                                               |
+| `ImportCellposeModelFromFileAlgorithm` (base)               | Models       | —(NoFramework)       | absent  | version-agnostic importer (flag f)                                       |
+| `ImportCellposeSizeModelFromFileAlgorithm` (base)           | Models       | —(NoFramework)       | absent  | version-agnostic importer (flag f)                                       |
+| `Cellpose1InferenceAlgorithm` (legacy)                      | Inference    | —(NoFramework)       | **3D**  | first input `ImagePlus3DGreyscaleData` (flag f)                          |
+| `Cellpose1TrainingAlgorithm` (legacy)                       | **Training** | —(NoFramework)       | **3D**  | first input `ImagePlus3DData` (flag f)                                   |
+| `LegacyCellpose2InferenceAlgorithm` (legacy)                | Inference    | —(NoFramework)       | both    | first input `ImagePlusData` (flag f)                                     |
+| `LegacyCellpose2TrainingAlgorithm` (legacy)                 | **Training** | —(NoFramework)       | both    | first input `ImagePlusData` (flag f)                                     |
+| `ImportLegacyCellposeModelAlgorithm` (legacy)               | Models       | —(NoFramework)       | absent  | DataSource, `LegacyCellposeModelData` out (flag f)                       |
+| `ImportLegacyCellposeSizeModelAlgorithm` (legacy)           | Models       | —(NoFramework)       | absent  | DataSource, `LegacyCellposeSizeModelData` out (flag f)                   |
 
 #### (e) jipipe-plugin-omnipose (5) — per-node table
 
 All 5 → `JIPipeDLFramework` (rule 11, uniform — no version split; the 2 legacy nodes included by
 controller ruling, flag f).
 
-| node (subpackage) | function | framework | spatial | note |
-|---|---|---|---|---|
-| `Omnipose0InferenceAlgorithm` (algorithms) | Inference | `JIPipeDLFramework` | both | first input `ImagePlusData` |
-| `Omnipose0TrainingAlgorithm` (algorithms) | **Training** | `JIPipeDLFramework` | both | `--train`; first input `ImagePlusData` (flag f) |
-| `LegacyOmnipose0InferenceAlgorithm` (legacy) | Inference | `JIPipeDLFramework` | both | first input `ImagePlusData` (flag f) |
-| `LegacyOmnipose0TrainingAlgorithm` (legacy) | **Training** | `JIPipeDLFramework` | both | `--train`; first input `ImagePlusData` (flag f) |
-| `ImportPretrainedOmnipose0ModelAlgorithm` (algorithms) | Models | `JIPipeDLFramework` | absent | DataSource, `CellposeModelData` out |
+| node (subpackage)                                      | function     | framework           | spatial | note                                            |
+|--------------------------------------------------------|--------------|---------------------|---------|-------------------------------------------------|
+| `Omnipose0InferenceAlgorithm` (algorithms)             | Inference    | `JIPipeDLFramework` | both    | first input `ImagePlusData`                     |
+| `Omnipose0TrainingAlgorithm` (algorithms)              | **Training** | `JIPipeDLFramework` | both    | `--train`; first input `ImagePlusData` (flag f) |
+| `LegacyOmnipose0InferenceAlgorithm` (legacy)           | Inference    | `JIPipeDLFramework` | both    | first input `ImagePlusData` (flag f)            |
+| `LegacyOmnipose0TrainingAlgorithm` (legacy)            | **Training** | `JIPipeDLFramework` | both    | `--train`; first input `ImagePlusData` (flag f) |
+| `ImportPretrainedOmnipose0ModelAlgorithm` (algorithms) | Models       | `JIPipeDLFramework` | absent  | DataSource, `CellposeModelData` out             |
 
 ---
 
@@ -2226,9 +2256,9 @@ controller ruling, flag f).
   `LegacyCellpose2TrainingAlgorithm`) and **2 omnipose nodes** (`Omnipose0TrainingAlgorithm`,
   `LegacyOmnipose0TrainingAlgorithm`) **train** models — verified by `arguments.add("--train")` and the
   `"Trains a … model"` docstrings. Per the brief's own escape hatch ("if you find a node that genuinely
-  trains, use it + record"), they are assigned `DeepLearningTrainingFunction`, giving the corrected split
-  **cellpose 6 Inference / 7 Training / 8 Models** and **omnipose 2 Inference / 2 Training / 1 Models**.
-  **Decision recorded, not silently absorbed** — if the audit prefers the brief's "lump under Inference",
+  trains, use it + record"), they are assigned `DeepLearningTrainingFunction`, giving the corrected split **cellpose 6
+  Inference / 7 Training / 8 Models** and **omnipose 2 Inference / 2 Training / 1 Models**. **Decision recorded, not
+  silently absorbed** — if the audit prefers the brief's "lump under Inference",
   revert the 9 `Training` rows to `Inference` (mechanical). This is the single material deviation.
 - **cellpose base-package importers (2) → NoFramework (omitted).** No version-agnostic cellpose framework
   exists among the 12. Kept NoFramework (omitted) per rule 11's "else → NoFramework". If Phase 3 adds a
@@ -2256,6 +2286,7 @@ controller ruling, flag f).
 **cellpose** (base pkg `org.hkijena.jipipe.plugins.cellpose`): pom **already** had
 `org.junit.jupiter:junit-jupiter` (test scope — pre-existing, for the pure-unit
 `CellposeVersionUtilsTest`, which touches **no** `ij.*`) but **not** `junit-platform-launcher`.
+
 - **`pom.xml`:** added **only** `org.junit.platform:junit-platform-launcher` (test scope) after the
   existing `junit-jupiter` dep.
 - Copied `jipipe-core/src/test/java/org/hkijena/jipipe/api/nodes/taxonomy/TaxonomyConversionReportTest.java`
@@ -2270,6 +2301,7 @@ controller ruling, flag f).
 
 **omnipose** (base pkg `org.hkijena.jipipe.plugins.omnipose`): pom had **no** JUnit deps (first test) →
 full wiring (mirror `jipipe-plugin-ij`/`-ij-3d`):
+
 - **`pom.xml`:** added `org.junit.jupiter:junit-jupiter` + `org.junit.platform:junit-platform-launcher`
   (both test scope) after the last dependency (`jipipe-plugin-cellpose`).
 - Copied the gate test → `plugins/jipipe-plugin-omnipose/src/test/java/org/hkijena/jipipe/api/nodes/
@@ -2291,8 +2323,8 @@ transitively via jipipe-core → `net.imagej:imagej`.
 → **exit 0** (both in one reactor; host mvn — the `Cellpose{2,3,4}Framework` / `JIPipeDLFramework` /
 `DeepLearning{Inference,Training,Models}Function` symbols all resolve against the installed core).
 
-**Stale `~/.m2` jar (the *core* gotcha was NOT hit).** The installed `jipipe-core` SNAPSHOT jar is
-**2026-10-10 03:52**, newer than the last jipipe-core taxonomy commit (`aeab2dcacbed`, 2026-10-09 20:19)
+**Stale `~/.m2` jar (the *core* gotcha was NOT hit).** The installed `jipipe-core` SNAPSHOT jar is **2026-10-10 03:52**,
+newer than the last jipipe-core taxonomy commit (`aeab2dcacbed`, 2026-10-09 20:19)
 — **fresh** (it contains the 74+ taxonomy function classes and the converted core nodes), so no pre-19.1
 core node surfaced as unassigned in either prefix (the §19.6 stale-core condition did not recur). The gate
 prefix filter (`org.hkijena.jipipe.plugins.cellpose` / `…omnipose`) does **not** cover any core package, so
@@ -2301,6 +2333,7 @@ inflate the informational global "N nodes not yet assigned" line (see below) —
 
 **Gate (enabled), both → BUILD SUCCESS, `Tests run: 1, Failures: 0, Errors: 0, Skipped: 0`, zero unassigned
 in the module prefix:**
+
 - **cellpose:** `mvn test -pl plugins/jipipe-plugin-cellpose -Dtest=TaxonomyConversionReportTest
   -Djipipe.taxonomy.report.module=org.hkijena.jipipe.plugins.cellpose` → **Tests run: 1, Failures: 0,
   Errors: 0, Skipped: 0**, **zero unassigned in the `…cellpose` prefix**. Log line
@@ -2308,19 +2341,19 @@ in the module prefix:**
   during conversion` is the **global** count across all on-classpath modules (the unconverted trackmate /
   weka / ilastik / clij / ij2 / ocr / plots / multi-template-matching / python / r / imp / scene-3d /
   opencv / omnipose-before-this-batch … modules + stale dependency jars); **none** are under the
-  `org.hkijena.jipipe.plugins.cellpose` prefix, so the prefix-filtered assertion saw **zero** and passed
-  (same shape as §19.3/19.4/19.5/19.6/19.7/19.8).
+  `org.hkijena.jipipe.plugins.cellpose` prefix, so the prefix-filtered assertion saw **zero** and passed (same shape as
+  §19.3/19.4/19.5/19.6/19.7/19.8).
 - **omnipose:** `mvn test -pl plugins/jipipe-plugin-omnipose -Dtest=TaxonomyConversionReportTest
   -Djipipe.taxonomy.report.module=org.hkijena.jipipe.plugins.omnipose` → **Tests run: 1, Failures: 0,
   Errors: 0, Skipped: 0**, **zero unassigned in the `…omnipose` prefix**. Log line
-  `Node taxonomy: 575 nodes not yet assigned a taxonomy function — expected during conversion` is the
-  **global** count (its classpath additionally includes the on-classpath cellpose module, but all 21
+  `Node taxonomy: 575 nodes not yet assigned a taxonomy function — expected during conversion` is the **global** count
+  (its classpath additionally includes the on-classpath cellpose module, but all 21
   cellpose nodes are now assigned, so they do not contribute; **none** are under the
   `org.hkijena.jipipe.plugins.omnipose` prefix) → assertion **zero**, passed.
 
-**Gate (unset), both → BUILD SUCCESS, `Tests run: 1, Failures: 0, Errors: 0, Skipped: 1`** — the gate
-**skips cleanly** (property unset), no `_hooks`/`LinkageError` patcher failure (listener works). The
-**cellpose** unset run additionally ran the pre-existing `CellposeVersionUtilsTest` → **Tests run: 4,
+**Gate (unset), both → BUILD SUCCESS, `Tests run: 1, Failures: 0, Errors: 0, Skipped: 1`** — the gate **skips cleanly**
+(property unset), no `_hooks`/`LinkageError` patcher failure (listener works). The **cellpose** unset run additionally
+ran the pre-existing `CellposeVersionUtilsTest` → **Tests run: 4,
 Failures: 0, Errors: 0, Skipped: 0** (module total `Tests run: 5, …, Skipped: 1` — the 1 skip is the
 gated gate), confirming the pre-existing test stays green.
 
@@ -2331,9 +2364,9 @@ unmerged branch). No `menuPath`/`nodeTypeCategory` was kept to "fix" the old pan
 
 **Byte-identity check (reviewer contract):** all 26 node files are byte-identical to base after stripping
 `import …;` lines and the `@ConfigureJIPipeNode(…)` line (verified by a line-filter diff across
-`git show HEAD:<f>` vs head — 26 files, 0 non-annotation changes) — the change is annotations-only.
-(Import re-arrangement: the new taxonomy imports — static `SPATIAL_*` (where spatial present) + framework
-(where framework present) + the `deeplearning/` leaf — are prepended to the import block and the
+`git show HEAD:<f>` vs head — 26 files, 0 non-annotation changes) — the change is annotations-only. (Import
+re-arrangement: the new taxonomy imports — static `SPATIAL_*` (where spatial present) + framework (where framework
+present) + the `deeplearning/` leaf — are prepended to the import block and the
 `…nodes.categories.*` import is dropped; this is the permitted import fixup, not a body change.)
 
 ### 19.10 — jipipe-plugin-ij-trackmate (18 annotated + 14 runtime = 32 registered nodes)
@@ -2341,18 +2374,18 @@ unmerged branch). No `menuPath`/`nodeTypeCategory` was kept to "fix" the old pan
 **Status:** converted — all 18 `@ConfigureJIPipeNode`-annotated nodes rewritten to
 `function`/`framework`/`spatialDimensions`, **plus** the 14 runtime-registered TrackMate
 detector/tracker data sources assigned via programmatic overrides; module gate green (see (e)).
-Single-shot module conversion (mapping + apply + gate in one commit), mirroring §19.5/§19.9.
-**Note:** the plan's "jipipe-plugin-trackmate" is the maven module
+Single-shot module conversion (mapping + apply + gate in one commit), mirroring §19.5/§19.9. **Note:** the plan's
+"jipipe-plugin-trackmate" is the maven module
 `plugins/jipipe-plugin-ij-trackmate` (base package `org.hkijena.jipipe.plugins.ijtrackmate` = the
 gate prefix).
 
 **The two distinctive elements (per controller):**
+
 - **(A) Framework = `TrackMateFramework` for ALL nodes (rule 11: trackmate→`TrackMateFramework`).**
   Every node gets `TrackMateFramework` — 18 by annotation + 14 by programmatic `getFramework()`
   override. **No `ImageJ1Framework`, no `NoFramework`.** 7 files incidentally `import ij.*`
-  (`ij.ImagePlus`, `ij.ImageStack`, `ij.process.*`) for ImagePlus-level rendering — that drives
-  **SPATIAL (rule 12), NOT framework**: rule 11's framework is plugin-scoped, not import-scoped
-  (same §19.9 `ij.*`-vs-framework distinction).
+  (`ij.ImagePlus`, `ij.ImageStack`, `ij.process.*`) for ImagePlus-level rendering — that drives **SPATIAL (rule 12), NOT
+  framework**: rule 11's framework is plugin-scoped, not import-scoped (same §19.9 `ij.*`-vs-framework distinction).
 - **(B) Function = the `tracking/` branch (4 leaves) by node OP**, with judgment for the
   render/convert nodes. The four `jipipe-core/…/taxonomy/functions/tracking/` leaves (read
   `getName()`): `TrackingDetectionFunction` ("Tracking: detection"), `TrackingLinkingFunction`
@@ -2377,9 +2410,9 @@ Nearest-neighbor) registered **programmatically at runtime**. These classes impl
 `JIPipeNodeInfo` **directly** (they are not `JIPipeMutableNodeInfo` and carry no
 `@ConfigureJIPipeNode`), so their core `getPrimaryFunction()` default returns `null`
 (`jipipe-core/…/api/nodes/JIPipeNodeInfo.java:312`) and `getInstanceClass()` returns
-`CreateSpotDetectorNode`/`CreateSpotTrackerNode` (both under the prefix). The gate
-(`TaxonomyConversionReportTest`) filters by `instanceClass.getName().startsWith(prefix)` and asserts
-**zero** unassigned — so the 14 runtime nodes are *inside* the filtered set and **fail the gate while
+`CreateSpotDetectorNode`/`CreateSpotTrackerNode` (both under the prefix). The gate (`TaxonomyConversionReportTest`)
+filters by `instanceClass.getName().startsWith(prefix)` and asserts **zero** unassigned — so the 14 runtime nodes are
+*inside* the filtered set and **fail the gate while
 unassigned**. The brief scoped this task to the 18 annotated files ("18 nodes"), but its own acceptance
 criterion ("zero unassigned in THAT prefix") and rule "Do NOT leave any node without a function" cannot
 both hold while the 14 stay `null`. **Decision: assign all 14** (see (c)); the module is genuinely
@@ -2393,26 +2426,26 @@ is forced by the gate's contract, not by judgment.
 
 #### (B) The 18 annotated nodes → the four `tracking/` leaves, by OP
 
-| node (old menuPath) | leaf | spatial | rationale |
-|---|---|---|---|
-| `SpotDetectorNode` (Tracking) | `TrackingDetectionFunction` | **both** | "Detect spots using TrackMate" — image + detector ⇒ `SpotsCollectionData`; the detection leaf |
-| `TrackingNode` (Tracking) | `TrackingLinkingFunction` | absent | "Track spots using TrackMate" — spots + tracker ⇒ `TrackCollectionData` (links spots into tracks); the linking leaf |
-| `SpotFilterNode` (Tracking\nFilter) | `TrackingFilteringFunction` | absent | "Filter TrackMate spots via expressions" — the filtering leaf |
-| `TrackFilterNode` (Tracking\nFilter) | `TrackingFilteringFunction` | absent | "Filter TrackMate spots via expressions" (tracks) — the filtering leaf |
-| `SplitSpotsNode` (Tracking\nSplit/Merge) | `TrackingFilteringFunction` | absent | "Creates a list for each individual spot" — splits the spot set; no `tracking/` split leaf ⇒ filtering (judgment, flagged (d)) |
-| `MergeSpotsNode` (Tracking\nSplit/Merge) | `TrackingFilteringFunction` | absent | "Merges spot lists" — joins spot sets; no `tracking/` split/merge leaf ⇒ filtering (judgment, flagged (d)) |
-| `SplitTracksNode` (Tracking\nSplit/Merge) | `TrackingFilteringFunction` | absent | "Creates a list for each individual track" — splits the track set ⇒ filtering (judgment, flagged (d)) |
-| `MergeTracksNode` (Tracking\nSplit/Merge) | `TrackingFilteringFunction` | absent | "Merges track lists" — joins track sets ⇒ filtering (judgment, flagged (d)) |
-| `MeasureSpotsNode` (Tracking\nMeasure) | `TrackingAnalysisFunction` | absent | "Measures the spots and outputs the results into a table" (`ResultsTableData` out) — the analysis leaf |
-| `MeasureTracksNode` (Tracking\nMeasure) | `TrackingAnalysisFunction` | absent | "Measures the tracks and outputs the results into a table" (`ResultsTableData` out) |
-| `MeasureEdgesNode` (Tracking\nMeasure) | `TrackingAnalysisFunction` | absent | "Measures the edges and outputs the results into a table" (`ResultsTableData` out) |
-| `MeasureBranchesNode` (Tracking\nMeasure) | `TrackingAnalysisFunction` | absent | "Analyzes each branch of all tracks" (`ResultsTableData` out) |
-| `SpotsToRGBNode` (Tracking\nVisualize) | `TrackingAnalysisFunction` | **both** | JUDGMENT — renders spots/tracks to RGB (see (c)) |
-| `TracksToRGBNode` (Tracking\nVisualize) | `TrackingAnalysisFunction` | **both** | JUDGMENT — renders tracks to RGB (see (c)) |
-| `TrackSchemeRendererNode` (Tracking\nVisualize) | `TrackingAnalysisFunction` | absent | JUDGMENT — renders the track scheme to an image (see (c)) |
-| `FollowSpotsPerTrackNode` (Tracking\nVisualize) | `TrackingAnalysisFunction` | **both** | JUDGMENT — per-track follow images (see (c)) |
-| `ConvertSpotsToRoiNode` (Tracking\nConvert) | `TrackingAnalysisFunction` | absent | JUDGMENT — spots ⇒ ROIs (see (c)) |
-| `ConvertTracksToRoiNode` (Tracking\nConvert) | `TrackingAnalysisFunction` | absent | JUDGMENT — tracks ⇒ ROI lists (see (c)) |
+| node (old menuPath)                             | leaf                        | spatial  | rationale                                                                                                                      |
+|-------------------------------------------------|-----------------------------|----------|--------------------------------------------------------------------------------------------------------------------------------|
+| `SpotDetectorNode` (Tracking)                   | `TrackingDetectionFunction` | **both** | "Detect spots using TrackMate" — image + detector ⇒ `SpotsCollectionData`; the detection leaf                                  |
+| `TrackingNode` (Tracking)                       | `TrackingLinkingFunction`   | absent   | "Track spots using TrackMate" — spots + tracker ⇒ `TrackCollectionData` (links spots into tracks); the linking leaf            |
+| `SpotFilterNode` (Tracking\nFilter)             | `TrackingFilteringFunction` | absent   | "Filter TrackMate spots via expressions" — the filtering leaf                                                                  |
+| `TrackFilterNode` (Tracking\nFilter)            | `TrackingFilteringFunction` | absent   | "Filter TrackMate spots via expressions" (tracks) — the filtering leaf                                                         |
+| `SplitSpotsNode` (Tracking\nSplit/Merge)        | `TrackingFilteringFunction` | absent   | "Creates a list for each individual spot" — splits the spot set; no `tracking/` split leaf ⇒ filtering (judgment, flagged (d)) |
+| `MergeSpotsNode` (Tracking\nSplit/Merge)        | `TrackingFilteringFunction` | absent   | "Merges spot lists" — joins spot sets; no `tracking/` split/merge leaf ⇒ filtering (judgment, flagged (d))                     |
+| `SplitTracksNode` (Tracking\nSplit/Merge)       | `TrackingFilteringFunction` | absent   | "Creates a list for each individual track" — splits the track set ⇒ filtering (judgment, flagged (d))                          |
+| `MergeTracksNode` (Tracking\nSplit/Merge)       | `TrackingFilteringFunction` | absent   | "Merges track lists" — joins track sets ⇒ filtering (judgment, flagged (d))                                                    |
+| `MeasureSpotsNode` (Tracking\nMeasure)          | `TrackingAnalysisFunction`  | absent   | "Measures the spots and outputs the results into a table" (`ResultsTableData` out) — the analysis leaf                         |
+| `MeasureTracksNode` (Tracking\nMeasure)         | `TrackingAnalysisFunction`  | absent   | "Measures the tracks and outputs the results into a table" (`ResultsTableData` out)                                            |
+| `MeasureEdgesNode` (Tracking\nMeasure)          | `TrackingAnalysisFunction`  | absent   | "Measures the edges and outputs the results into a table" (`ResultsTableData` out)                                             |
+| `MeasureBranchesNode` (Tracking\nMeasure)       | `TrackingAnalysisFunction`  | absent   | "Analyzes each branch of all tracks" (`ResultsTableData` out)                                                                  |
+| `SpotsToRGBNode` (Tracking\nVisualize)          | `TrackingAnalysisFunction`  | **both** | JUDGMENT — renders spots/tracks to RGB (see (c))                                                                               |
+| `TracksToRGBNode` (Tracking\nVisualize)         | `TrackingAnalysisFunction`  | **both** | JUDGMENT — renders tracks to RGB (see (c))                                                                                     |
+| `TrackSchemeRendererNode` (Tracking\nVisualize) | `TrackingAnalysisFunction`  | absent   | JUDGMENT — renders the track scheme to an image (see (c))                                                                      |
+| `FollowSpotsPerTrackNode` (Tracking\nVisualize) | `TrackingAnalysisFunction`  | **both** | JUDGMENT — per-track follow images (see (c))                                                                                   |
+| `ConvertSpotsToRoiNode` (Tracking\nConvert)     | `TrackingAnalysisFunction`  | absent   | JUDGMENT — spots ⇒ ROIs (see (c))                                                                                              |
+| `ConvertTracksToRoiNode` (Tracking\nConvert)    | `TrackingAnalysisFunction`  | absent   | JUDGMENT — tracks ⇒ ROI lists (see (c))                                                                                        |
 
 **Function distribution (the 18 annotated):** `TrackingFilteringFunction` **6** (2 filter + 2 split +
 2 merge) · `TrackingAnalysisFunction` **10** (4 measure + 6 judgment) · `TrackingDetectionFunction`
@@ -2420,29 +2453,29 @@ is forced by the gate's contract, not by judgment.
 
 #### (C) The 6 judgment nodes (render/convert) — no obvious `tracking/` leaf
 
-There is **no "tracking render" or "tracking export" leaf**, so these six are genuine best-fit picks.
-**All six take tracking data (`SpotsCollectionData`/`TrackCollectionData`) as their primary input and
-*visualize/export the result of tracking***; none produces new tracking state. The `tracking/` branch
+There is **no "tracking render" or "tracking export" leaf**, so these six are genuine best-fit picks. **All six take
+tracking data (`SpotsCollectionData`/`TrackCollectionData`) as their primary input and *visualize/export the result of
+tracking***; none produces new tracking state. The `tracking/` branch
 has no rendering/export leaf, and the cross-branch leaves (`images/` render-to-image, `rois/`
-convert-to-ROI) describe the *output* artifact rather than the node's identity. The chosen reading —
-**all six → `TrackingAnalysisFunction`** — is that the node *belongs to the tracking branch* and its
+convert-to-ROI) describe the *output* artifact rather than the node's identity. The chosen reading — **all six →
+`TrackingAnalysisFunction`** — is that the node *belongs to the tracking branch* and its
 operation is analyzing/visualizing tracking output. **This directly mirrors §19.5's filament
 precedent** (`ConvertFilamentsToRGB` → `FilamentDataFunction`, `ConvertFilamentsToRoi` →
 `FilamentDataFunction`, where the source-data's branch won over the `images/`/`rois/` output leaf).
 Each is **flagged for Phase 3 (d)**; the alternative cross-branch leaf is recorded per node.
 
-| node | assigned | first image input (rule 12) | cross-branch alternative (flagged) |
-|---|---|---|---|
-| `SpotsToRGBNode` | `TrackingAnalysisFunction` | optional `ImagePlusColorRGBData` *Image* (2nd slot) ⇒ **both** | `images/ColorStackFunction` (render-to-image) |
-| `TracksToRGBNode` | `TrackingAnalysisFunction` | optional `ImagePlusColorRGBData` *Image* (2nd slot) ⇒ **both** | `images/ColorStackFunction` (render-to-image) |
-| `TrackSchemeRendererNode` | `TrackingAnalysisFunction` | none (tracks ⇒ rendered scheme image) ⇒ **absent** | `images/` render-to-image leaf |
-| `FollowSpotsPerTrackNode` | `TrackingAnalysisFunction` | required `ImagePlusData` *Image* (1st slot) ⇒ **both** | `images/` render-to-image leaf |
-| `ConvertSpotsToRoiNode` | `TrackingAnalysisFunction` | none (spots ⇒ `Roi2dListData`) ⇒ **absent** | `rois/RoiFiltersFunction` (convert-to-ROI) |
-| `ConvertTracksToRoiNode` | `TrackingAnalysisFunction` | none (tracks ⇒ `Roi2dListData`) ⇒ **absent** | `rois/RoiFiltersFunction` (convert-to-ROI) |
+| node                      | assigned                   | first image input (rule 12)                                    | cross-branch alternative (flagged)            |
+|---------------------------|----------------------------|----------------------------------------------------------------|-----------------------------------------------|
+| `SpotsToRGBNode`          | `TrackingAnalysisFunction` | optional `ImagePlusColorRGBData` *Image* (2nd slot) ⇒ **both** | `images/ColorStackFunction` (render-to-image) |
+| `TracksToRGBNode`         | `TrackingAnalysisFunction` | optional `ImagePlusColorRGBData` *Image* (2nd slot) ⇒ **both** | `images/ColorStackFunction` (render-to-image) |
+| `TrackSchemeRendererNode` | `TrackingAnalysisFunction` | none (tracks ⇒ rendered scheme image) ⇒ **absent**             | `images/` render-to-image leaf                |
+| `FollowSpotsPerTrackNode` | `TrackingAnalysisFunction` | required `ImagePlusData` *Image* (1st slot) ⇒ **both**         | `images/` render-to-image leaf                |
+| `ConvertSpotsToRoiNode`   | `TrackingAnalysisFunction` | none (spots ⇒ `Roi2dListData`) ⇒ **absent**                    | `rois/RoiFiltersFunction` (convert-to-ROI)    |
+| `ConvertTracksToRoiNode`  | `TrackingAnalysisFunction` | none (tracks ⇒ `Roi2dListData`) ⇒ **absent**                   | `rois/RoiFiltersFunction` (convert-to-ROI)    |
 
-**Spatial (rule 12, first image INPUT slot):** 14 of 18 take only tracking data
-(`TrackCollectionData`/`SpotsCollectionData`/`SpotDetectorData`/`SpotTrackerData` — not images) ⇒
-**absent** (no `spatialDimensions` field). 4 have an image input ⇒ **both** (unconstrained
+**Spatial (rule 12, first image INPUT slot):** 14 of 18 take only tracking data (`TrackCollectionData`/
+`SpotsCollectionData`/`SpotDetectorData`/`SpotTrackerData` — not images) ⇒ **absent** (no `spatialDimensions` field). 4
+have an image input ⇒ **both** (unconstrained
 `ImagePlusData`/`ImagePlusColorRGBData`): `SpotDetectorNode`, `SpotsToRGBNode`, `TracksToRGBNode`,
 `FollowSpotsPerTrackNode`. **Distribution: absent = 14 · both = 4** (matches the brief's ~14/~4
 expectation). The two RGB renderers' `Image` slot is `ImagePlusColorRGBData` (2nd slot, behind the
@@ -2477,6 +2510,7 @@ The pom **already** had `org.junit.jupiter:junit-jupiter` + `org.junit.platform:
 `…/nodes/TrackMateFamilyStepsTest.java` (uses `FamilyAssembler`, touches no `ij.*`, no
 `ensureInstance`), was already present and **must stay green** (the module `mvn test` runs it + the gate).
 Added:
+
 - **Copied** `jipipe-core/src/test/java/org/hkijena/jipipe/api/nodes/taxonomy/TaxonomyConversionReportTest.java`
   → `plugins/jipipe-plugin-ij-trackmate/src/test/java/org/hkijena/jipipe/api/nodes/taxonomy/`
   (**byte-identical**, verified with `cmp`).
@@ -2516,8 +2550,8 @@ failure (AGENTS.md patcher contract). This module's render nodes reference `ij.I
   module total `Tests run: 6, Failures: 0, Errors: 0, Skipped: 1` — the gate **skips cleanly** (property
   unset, the 1 skip) and the pre-existing `TrackMateFamilyStepsTest` → `Tests run: 5, Failures: 0,
   Errors: 0, Skipped: 0` (**green**, module stays green). No `_hooks`/`LinkageError` (listener works).
-- **Stale-jar gotcha (19.6–19.9):** **not hit.** The enabled gate never surfaced any CORE
-  (`org.hkijena.jipipe.*`) node as globally-unassigned that this batch was expected to fix; the 545
+- **Stale-jar gotcha (19.6–19.9):** **not hit.** The enabled gate never surfaced any CORE (`org.hkijena.jipipe.*`) node
+  as globally-unassigned that this batch was expected to fix; the 545
   global count is purely the still-unconverted *other* modules + dependency jars and is outside the
   filtered prefix. No `mvn install -pl jipipe-core` was run and no jipipe-core source was touched.
 
@@ -2531,8 +2565,7 @@ failure (AGENTS.md patcher contract). This module's render nodes reference `ij.I
 correct — left byte-identical.** Verified by line-filter `git diff`: in every one of the 18 node files
 the *only* changed lines are the import block and the single `@ConfigureJIPipeNode(…)` line — **no
 `@JIPipeNodeTaxonomyFamilyStepAnnotation(family = TrackMateFamily.class, …)` line appears in any diff**
-(14/14 preserved). The 2 NodeInfo files changed only by the added imports + the two overridden methods
-(no other line).
+(14/14 preserved). The 2 NodeInfo files changed only by the added imports + the two overridden methods (no other line).
 
 **Transition note understood:** the 18 converted nodes now fall back to `InternalNodeTypeCategory` via
 `getCategoryOf(nodeClass)` (`isVisibleInPipeline` false), so they are absent from the *old* add-node
@@ -2543,19 +2576,20 @@ unmerged branch). No `menuPath`/`nodeTypeCategory` was kept to "fix" the old pan
 
 **Status:** converted — all 30 `@ConfigureJIPipeNode` nodes across the four modules rewritten to
 `function`/`framework`/`spatialDimensions`; four module gates green (see (g)). Single-shot combined
-conversion (mapping + apply + 4 gates in one commit), mirroring §19.6–§19.10.
-**Module-name note:** the plan's "weka (9)" is the maven module `plugins/jipipe-plugin-ij-weka` (base
+conversion (mapping + apply + 4 gates in one commit), mirroring §19.6–§19.10. **Module-name note:** the plan's "weka (9)
+" is the maven module `plugins/jipipe-plugin-ij-weka` (base
 pkg `org.hkijena.jipipe.plugins.ijweka` = gate prefix).
 
 **The four framework shapes (per controller ruling, rule 11):**
+
 - **ij-weka → `JIPipeDLFramework` × 9** (rule 11: weka→JIPipeDL). WEKA is *classical* ML (Trainable
   Weka Segmentation), but rule 11 puts weka under the DL framework and the `deeplearning/` branch is
   its consistent home — **flagged (f)** as "classical ML under `deeplearning/`".
 - **ilastik → `JIPipeDLFramework` × 8** (rule 11: ilastik→JIPipeDL).
 - **opencv → `OpenCVFramework` × 6** (rule 11: opencv→OpenCV).
 - **scene-3d → `CoreFramework` × 7** — the plan's Task 19.11 framework line explicitly says
-  `scene-3d→CoreFramework`, which **overrides** rule 11's generic "else leave `NoFramework`" fallback
-  (scene-3d is not on rule 11's named list). ⚠️ **19.11a recorded this as NoFramework (omitted) — a
+  `scene-3d→CoreFramework`, which **overrides** rule 11's generic "else leave `NoFramework`" fallback (scene-3d is not
+  on rule 11's named list). ⚠️ **19.11a recorded this as NoFramework (omitted) — a
   plan-reading miss** (it applied rule 11's "else" clause and missed the plan's explicit
   `scene-3d→CoreFramework` line). **Fixed in 19.11d**: all 7 nodes now carry
   `framework = CoreFramework.class` (+ the `…taxonomy.frameworks.CoreFramework` import); function +
@@ -2586,17 +2620,17 @@ Spatial by first image input slot (rule 12; the controller's input mix is confir
 `ImagePlus2DData`, 2× `ImagePlus2DGreyscaleMaskData`, 2× `ImagePlus3DData`, 1×
 `ImagePlus2DGreyscaleData` [2nd slot, labels], 1× unconstrained `ImagePlusData`).
 
-| node (old cat / menuPath) | function | spatial | rationale |
-|---|---|---|---|
-| `ImportWekaModelFromFileAlgorithm` (DataSource, —) | `DeepLearningModelsFunction` | absent | imports a `*.model`/`*.arff` **model file** ⇒ `WekaModelData` out; model *management* (not inference); first input `FileData` ⇒ no spatial |
-| `WekaClassification2DAlgorithm` (Images / Weka) | `DeepLearningInferenceFunction` | **both** | *runs* a trained model on an image ⇒ `ImagePlusData` (unconstrained) first input; the 2D in the name is the op target, but the slot is unconstrained ⇒ both (rule 12) |
-| `WekaClassification3DAlgorithm` (Images / Weka) | `DeepLearningInferenceFunction` | **3D** | runs a trained model on a 3D image ⇒ first input `ImagePlus3DData` ⇒ 3D |
-| `WekaTrainingLabels2DAlgorithm` (Images / Weka) | `DeepLearningTrainingFunction` | **2D** | *trains* a Weka classifier on 2D image + labels ⇒ `ImagePlus2DData` first input; out `WekaModelData` |
-| `WekaTrainingLabels2DAlgorithm2` (Images / Weka) | `DeepLearningTrainingFunction` | **2D** | multi-image variant of the above; first input `ImagePlus2DData` |
-| `WekaTrainingMask2DAlgorithm` (Images / Weka) | `DeepLearningTrainingFunction` | **2D** | trains on 2D image + mask ⇒ `ImagePlus2DData` first input (2nd slot `ImagePlus2DGreyscaleMaskData`) |
-| `WekaTrainingMask2DAlgorithm2` (Images / Weka) | `DeepLearningTrainingFunction` | **2D** | multi-image variant; first input `ImagePlus2DData` |
-| `WekaTrainingRoi2dAlgorithm` (Images / Weka) | `DeepLearningTrainingFunction` | **2D** | trains on 2D image + ROIs ⇒ `ImagePlus2DData` first input (2nd slot `Roi2dListData`, non-image, skipped) |
-| `WekaTrainingRoi3dAlgorithm` (Images / Weka) | `DeepLearningTrainingFunction` | **3D** | trains on 3D image + ROIs ⇒ `ImagePlus3DData` first input |
+| node (old cat / menuPath)                          | function                        | spatial  | rationale                                                                                                                                                             |
+|----------------------------------------------------|---------------------------------|----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `ImportWekaModelFromFileAlgorithm` (DataSource, —) | `DeepLearningModelsFunction`    | absent   | imports a `*.model`/`*.arff` **model file** ⇒ `WekaModelData` out; model *management* (not inference); first input `FileData` ⇒ no spatial                            |
+| `WekaClassification2DAlgorithm` (Images / Weka)    | `DeepLearningInferenceFunction` | **both** | *runs* a trained model on an image ⇒ `ImagePlusData` (unconstrained) first input; the 2D in the name is the op target, but the slot is unconstrained ⇒ both (rule 12) |
+| `WekaClassification3DAlgorithm` (Images / Weka)    | `DeepLearningInferenceFunction` | **3D**   | runs a trained model on a 3D image ⇒ first input `ImagePlus3DData` ⇒ 3D                                                                                               |
+| `WekaTrainingLabels2DAlgorithm` (Images / Weka)    | `DeepLearningTrainingFunction`  | **2D**   | *trains* a Weka classifier on 2D image + labels ⇒ `ImagePlus2DData` first input; out `WekaModelData`                                                                  |
+| `WekaTrainingLabels2DAlgorithm2` (Images / Weka)   | `DeepLearningTrainingFunction`  | **2D**   | multi-image variant of the above; first input `ImagePlus2DData`                                                                                                       |
+| `WekaTrainingMask2DAlgorithm` (Images / Weka)      | `DeepLearningTrainingFunction`  | **2D**   | trains on 2D image + mask ⇒ `ImagePlus2DData` first input (2nd slot `ImagePlus2DGreyscaleMaskData`)                                                                   |
+| `WekaTrainingMask2DAlgorithm2` (Images / Weka)     | `DeepLearningTrainingFunction`  | **2D**   | multi-image variant; first input `ImagePlus2DData`                                                                                                                    |
+| `WekaTrainingRoi2dAlgorithm` (Images / Weka)       | `DeepLearningTrainingFunction`  | **2D**   | trains on 2D image + ROIs ⇒ `ImagePlus2DData` first input (2nd slot `Roi2dListData`, non-image, skipped)                                                              |
+| `WekaTrainingRoi3dAlgorithm` (Images / Weka)       | `DeepLearningTrainingFunction`  | **3D**   | trains on 3D image + ROIs ⇒ `ImagePlus3DData` first input                                                                                                             |
 
 **Function split:** Inference **2** · Training **6** · Models **1** (total 9). **Spatial distribution:**
 2D **5** · 3D **2** · both **1** · absent **1** (total 9). (The 5 `SPATIAL_2D` = the four 2D-training
@@ -2611,19 +2645,19 @@ Function: the "Ilastik" menu nodes predict segmentation/features with a trained 
 `DeepLearningInferenceFunction`; the DataSource outputting `IlastikModelData` → `DeepLearningModelsFunction`;
 the other DataSource → rule 6 by output; the Export node → `ExportFileFormatsFunction`.
 
-| node (old cat / menuPath) | function | spatial | rationale |
-|---|---|---|---|
-| `IlastikPixelClassificationAlgorithm` (Images / Ilastik) | `DeepLearningInferenceFunction` | both | *runs* the trained pixel-classification workflow ⇒ segmentation/probabilities out; first input `ImagePlusData` (unconstrained) |
-| `IlastikAutoContextAlgorithm` (Images / Ilastik) | `DeepLearningInferenceFunction` | both | runs the autocontext (iterative) workflow; first input `ImagePlusData` (unconstrained) — see (f) re: commented registration |
-| `IlastikObjectClassificationAlgorithm` (Images / Ilastik) | `DeepLearningInferenceFunction` | both | runs the object-classification workflow; first input `ImagePlusData` — see (f) |
-| `IlastikPredictionMapsObjectClassificationAlgorithm` (Images / Ilastik) | `DeepLearningInferenceFunction` | both | object classification from prediction maps; first input `ImagePlusData` — see (f) |
-| `IlastikSegmentationImageObjectClassificationAlgorithm` (Images / Ilastik) | `DeepLearningInferenceFunction` | both | object classification from a segmentation image; first input `ImagePlusData` — see (f) |
-| `ImportIlastikModel` (DataSource, —) | `DeepLearningModelsFunction` | absent | imports an `*.ilp` **project/model file** ⇒ `IlastikModelData` out; model *management*; first input `FileData` ⇒ no spatial |
-| `ImportIlastikHDF5ImageAlgorithm` (DataSource, —) | `ImageDataFunction` | absent | rule 6 by **output**: emits `ImagePlusGreyscaleData` (an image) ⇒ the data/ **image** leaf; first input `FileData` ⇒ no spatial (it *reads* an HDF5 image, does not process an image input) |
-| `ExportIlastikHDF5ImageAlgorithm` (Export / Images) | `ExportFileFormatsFunction` | both | rule 7: writes an HDF5 **file format** (not a ZIP/`ROI` archive) ⇒ the file-format leaf; first image input `ImagePlusGreyscaleData` (unconstrained) ⇒ both. Carries the module's **1 alias** (see (c)) |
+| node (old cat / menuPath)                                                  | function                        | spatial | rationale                                                                                                                                                                                              |
+|----------------------------------------------------------------------------|---------------------------------|---------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `IlastikPixelClassificationAlgorithm` (Images / Ilastik)                   | `DeepLearningInferenceFunction` | both    | *runs* the trained pixel-classification workflow ⇒ segmentation/probabilities out; first input `ImagePlusData` (unconstrained)                                                                         |
+| `IlastikAutoContextAlgorithm` (Images / Ilastik)                           | `DeepLearningInferenceFunction` | both    | runs the autocontext (iterative) workflow; first input `ImagePlusData` (unconstrained) — see (f) re: commented registration                                                                            |
+| `IlastikObjectClassificationAlgorithm` (Images / Ilastik)                  | `DeepLearningInferenceFunction` | both    | runs the object-classification workflow; first input `ImagePlusData` — see (f)                                                                                                                         |
+| `IlastikPredictionMapsObjectClassificationAlgorithm` (Images / Ilastik)    | `DeepLearningInferenceFunction` | both    | object classification from prediction maps; first input `ImagePlusData` — see (f)                                                                                                                      |
+| `IlastikSegmentationImageObjectClassificationAlgorithm` (Images / Ilastik) | `DeepLearningInferenceFunction` | both    | object classification from a segmentation image; first input `ImagePlusData` — see (f)                                                                                                                 |
+| `ImportIlastikModel` (DataSource, —)                                       | `DeepLearningModelsFunction`    | absent  | imports an `*.ilp` **project/model file** ⇒ `IlastikModelData` out; model *management*; first input `FileData` ⇒ no spatial                                                                            |
+| `ImportIlastikHDF5ImageAlgorithm` (DataSource, —)                          | `ImageDataFunction`             | absent  | rule 6 by **output**: emits `ImagePlusGreyscaleData` (an image) ⇒ the data/ **image** leaf; first input `FileData` ⇒ no spatial (it *reads* an HDF5 image, does not process an image input)            |
+| `ExportIlastikHDF5ImageAlgorithm` (Export / Images)                        | `ExportFileFormatsFunction`     | both    | rule 7: writes an HDF5 **file format** (not a ZIP/`ROI` archive) ⇒ the file-format leaf; first image input `ImagePlusGreyscaleData` (unconstrained) ⇒ both. Carries the module's **1 alias** (see (c)) |
 
-**Function split:** Inference **5** · Models **1** · ImageData **1** · Export **1** (total 8).
-**Spatial distribution:** both **6** · absent **2** (total 8).
+**Function split:** Inference **5** · Models **1** · ImageData **1** · Export **1** (total 8). **Spatial distribution:**
+both **6** · absent **2** (total 8).
 
 #### (c) The ilastik alias (1) — DROPPED
 
@@ -2643,17 +2677,17 @@ The 4 image ops take `OpenCvImageData` (a 2D OpenCV `Mat` — `public class Open
 JIPipeData`, no `@ImageTypeInfo`; a 2D image type) ⇒ **`SPATIAL_2D`** (rule 12). The 2 kernel
 generators have **no input slots** ⇒ **absent**.
 
-| node (old cat / menuPath) | function | spatial | rationale |
-|---|---|---|---|
-| `BilateralFilterAlgorithm` (Images / Blur) | `FilteringFunction` | **2D** | bilateral **filter** (Blur menu) ⇒ the filtering leaf; first input `OpenCvImageData` (2D Mat) |
-| `ConvertTypeAlgorithm` (Images / Convert) | `ResamplingFunction` | **2D** | bit-depth/type conversion (ij-algorithms `Convert`→`ResamplingFunction` precedent) |
-| `ConvertDepthAlgorithm` (Images / Convert) | `ResamplingFunction` | **2D** | depth conversion (same `Convert` group) |
-| `InpaintingAlgorithm` (Images / Restore) | `PreprocessingFunction` | **2D** | restore/inpaint (content-aware fill) ⇒ the **preprocessing** leaf; first input `OpenCvImageData` |
-| `GaborKernelGenerator` (DataSource, —) | `ImageDataFunction` | absent | rule 6 by output: emits `OpenCvImageData` (an **image** — the Gabor kernel *as* a 2D image) ⇒ data/ image leaf (judgment, (f)); **no input slot** ⇒ absent |
-| `GaussianKernelGenerator` (DataSource, —) | `ImageDataFunction` | absent | same as Gabor — emits a Gaussian kernel as a 2D `OpenCvImageData`; no input ⇒ absent |
+| node (old cat / menuPath)                  | function                | spatial | rationale                                                                                                                                                  |
+|--------------------------------------------|-------------------------|---------|------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `BilateralFilterAlgorithm` (Images / Blur) | `FilteringFunction`     | **2D**  | bilateral **filter** (Blur menu) ⇒ the filtering leaf; first input `OpenCvImageData` (2D Mat)                                                              |
+| `ConvertTypeAlgorithm` (Images / Convert)  | `ResamplingFunction`    | **2D**  | bit-depth/type conversion (ij-algorithms `Convert`→`ResamplingFunction` precedent)                                                                         |
+| `ConvertDepthAlgorithm` (Images / Convert) | `ResamplingFunction`    | **2D**  | depth conversion (same `Convert` group)                                                                                                                    |
+| `InpaintingAlgorithm` (Images / Restore)   | `PreprocessingFunction` | **2D**  | restore/inpaint (content-aware fill) ⇒ the **preprocessing** leaf; first input `OpenCvImageData`                                                           |
+| `GaborKernelGenerator` (DataSource, —)     | `ImageDataFunction`     | absent  | rule 6 by output: emits `OpenCvImageData` (an **image** — the Gabor kernel *as* a 2D image) ⇒ data/ image leaf (judgment, (f)); **no input slot** ⇒ absent |
+| `GaussianKernelGenerator` (DataSource, —)  | `ImageDataFunction`     | absent  | same as Gabor — emits a Gaussian kernel as a 2D `OpenCvImageData`; no input ⇒ absent                                                                       |
 
-**Function split:** Resampling **2** · Filtering **1** · Preprocessing **1** · ImageData **2** (total 6).
-**Spatial distribution:** 2D **4** · absent **2** (total 6).
+**Function split:** Resampling **2** · Filtering **1** · Preprocessing **1** · ImageData **2** (total 6). **Spatial
+distribution:** 2D **4** · absent **2** (total 6).
 
 #### (e) jipipe-plugin-scene-3d (7) — CoreFramework (omitted in 19.11a, FIXED to CoreFramework in 19.11d — see §19.11d plan-correction note)
 
@@ -2661,18 +2695,18 @@ generators have **no input slots** ⇒ **absent**.
 `scene-3d→CoreFramework` — 19.11a had omitted the attribute as NoFramework, a plan-reading miss,
 corrected in 19.11d; function + spatial below are unchanged from 19.11a).
 
-| node (old cat / menuPath) | function | framework | spatial | rationale |
-|---|---|---|---|---|
-| `CreateLineMeshAlgorithm` (DataSource, —) | `MiscDataFunction` | `CoreFramework` | absent | rule 6 by output: emits `Scene3DData` — **no Scene3D data leaf exists** in `data/` (= Image/Table/Roi/Filament/**Misc**) ⇒ the data/ **misc** leaf (no-fit → misc); no image input |
-| `CreateSphereMeshAlgorithm` (DataSource, —) | `MiscDataFunction` | `CoreFramework` | absent | same — emits `Scene3DData` (a sphere mesh); no-fit → misc; no image input |
-| `ExportScene3DToColladaAlgorithm` (Export / 3D scenes) | `ExportFileFormatsFunction` | `CoreFramework` | absent | rule 7: writes a **Collada (DAE) file format** (single file, not a ZIP archive) ⇒ file-format leaf; input `Scene3DData` (non-image) ⇒ absent |
-| `ExportScene3DToColladaAlgorithm2` (Export / 3D scenes) | `ExportFileFormatsFunction` | `CoreFramework` | absent | same DAE exporter (v2, relative-to-project); `Scene3DData` in ⇒ absent |
-| `GroupSceneAlgorithm` (Misc / 3D Scenes) | `MiscellaneousFunction` | `CoreFramework` | absent | rule 9 last-resort: groups 3D-scene objects (no specific leaf fits `Scene3DData` manipulation); `Scene3DData` in (non-image) ⇒ absent |
-| `MergeScenesAlgorithm` (Misc / 3D Scenes) | `MiscellaneousFunction` | `CoreFramework` | absent | rule 9: merges `Scene3DData` scenes (no scene-merge leaf); non-image in ⇒ absent |
-| `MaskTo3DMeshAlgorithm` (Images / Binary) | `MiscellaneousFunction` | `CoreFramework` | **3D** | **judgment (f):** a 3D-scene-from-mask **generation** op (Marching cubes: `ImagePlus3DGreyscaleMaskData` → `Scene3DData`). Old menuPath `Binary` would rule 1 → a `images/` leaf, but the node's **output is a 3D scene, not an image**, and it is a *generation* op, not a binary image filter. Assigned `MiscellaneousFunction` (the generation/last-resort leaf) with spatial **3D** (first image input `ImagePlus3DGreyscaleMaskData` ⇒ 3D). |
+| node (old cat / menuPath)                               | function                    | framework       | spatial | rationale                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+|---------------------------------------------------------|-----------------------------|-----------------|---------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `CreateLineMeshAlgorithm` (DataSource, —)               | `MiscDataFunction`          | `CoreFramework` | absent  | rule 6 by output: emits `Scene3DData` — **no Scene3D data leaf exists** in `data/` (= Image/Table/Roi/Filament/**Misc**) ⇒ the data/ **misc** leaf (no-fit → misc); no image input                                                                                                                                                                                                                                                               |
+| `CreateSphereMeshAlgorithm` (DataSource, —)             | `MiscDataFunction`          | `CoreFramework` | absent  | same — emits `Scene3DData` (a sphere mesh); no-fit → misc; no image input                                                                                                                                                                                                                                                                                                                                                                        |
+| `ExportScene3DToColladaAlgorithm` (Export / 3D scenes)  | `ExportFileFormatsFunction` | `CoreFramework` | absent  | rule 7: writes a **Collada (DAE) file format** (single file, not a ZIP archive) ⇒ file-format leaf; input `Scene3DData` (non-image) ⇒ absent                                                                                                                                                                                                                                                                                                     |
+| `ExportScene3DToColladaAlgorithm2` (Export / 3D scenes) | `ExportFileFormatsFunction` | `CoreFramework` | absent  | same DAE exporter (v2, relative-to-project); `Scene3DData` in ⇒ absent                                                                                                                                                                                                                                                                                                                                                                           |
+| `GroupSceneAlgorithm` (Misc / 3D Scenes)                | `MiscellaneousFunction`     | `CoreFramework` | absent  | rule 9 last-resort: groups 3D-scene objects (no specific leaf fits `Scene3DData` manipulation); `Scene3DData` in (non-image) ⇒ absent                                                                                                                                                                                                                                                                                                            |
+| `MergeScenesAlgorithm` (Misc / 3D Scenes)               | `MiscellaneousFunction`     | `CoreFramework` | absent  | rule 9: merges `Scene3DData` scenes (no scene-merge leaf); non-image in ⇒ absent                                                                                                                                                                                                                                                                                                                                                                 |
+| `MaskTo3DMeshAlgorithm` (Images / Binary)               | `MiscellaneousFunction`     | `CoreFramework` | **3D**  | **judgment (f):** a 3D-scene-from-mask **generation** op (Marching cubes: `ImagePlus3DGreyscaleMaskData` → `Scene3DData`). Old menuPath `Binary` would rule 1 → a `images/` leaf, but the node's **output is a 3D scene, not an image**, and it is a *generation* op, not a binary image filter. Assigned `MiscellaneousFunction` (the generation/last-resort leaf) with spatial **3D** (first image input `ImagePlus3DGreyscaleMaskData` ⇒ 3D). |
 
-**Function split:** MiscData **2** · Export **2** · Miscellaneous **3** (total 7).
-**Spatial distribution:** 3D **1** · absent **6** (total 7).
+**Function split:** MiscData **2** · Export **2** · Miscellaneous **3** (total 7). **Spatial distribution:** 3D **1** ·
+absent **6** (total 7).
 
 ---
 
@@ -2683,14 +2717,14 @@ corrected in 19.11d; function + spatial below are unchanged from 19.11a).
   rule 11 places weka under `JIPipeDLFramework` and the `deeplearning/` function branch is their
   consistent home (Inference/Training/Models). **Flag for Phase 3**: if the audit prefers a dedicated
   "classical ML" framework or branch, all 9 move together (mechanical). Recorded, not silently absorbed.
-  - **RESOLVED (2026-10-12, human review of 1324):** renamed the whole branch instead of carving
-    out a classical-ML sub-branch — `jipipe:function:deep-learning` →
-    `jipipe:function:machine-learning` ("Deep Learning" → "Machine learning"), and the three
-    `deeplearning/` leaves → `machine-learning-{inference,training,models}` ("Machine learning
-    inference/training/models"), plus the `jipipe:family:deep-learning` workflow family. Weka,
-    LabelKit and ilastik (random-forest/classical) now sit under a correctly-named umbrella;
-    Cellpose/Omnipose remain deep-learning nodes (their descriptions still say so). Safe because
-    the taxonomy shipped with 6.0.0 (unreleased; no project file carries the old ids).
+    - **RESOLVED (2026-10-12, human review of 1324):** renamed the whole branch instead of carving
+      out a classical-ML sub-branch — `jipipe:function:deep-learning` →
+      `jipipe:function:machine-learning` ("Deep Learning" → "Machine learning"), and the three
+      `deeplearning/` leaves → `machine-learning-{inference,training,models}` ("Machine learning
+      inference/training/models"), plus the `jipipe:family:deep-learning` workflow family. Weka,
+      LabelKit and ilastik (random-forest/classical) now sit under a correctly-named umbrella;
+      Cellpose/Omnipose remain deep-learning nodes (their descriptions still say so). Safe because
+      the taxonomy shipped with 6.0.0 (unreleased; no project file carries the old ids).
 - **⚠️ opencv kernel generators → `ImageDataFunction`.** `GaborKernelGenerator`/`GaussianKernelGenerator`
   emit `OpenCvImageData`, which *is* an image type (a 2D `Mat`), so rule 6's "image→`ImageDataFunction`"
   (the leaned choice) is used. **Alternative:** `MiscDataFunction` (they are OpenCV-specific *kernel*
@@ -2716,15 +2750,16 @@ corrected in 19.11d; function + spatial below are unchanged from 19.11a).
   `import-ilastik-model`, `import-ilastik-hdf5-image`, `export-ilastik-hdf5-image`). All 8 are still
   converted (the 4 unregistered ones for consistency + the module-wide `mvn compile`), but the gate only
   enumerates the 4 registered — the 4 unregistered classes cannot surface as unassigned (they have no
-  registered node info). **Not a conversion gap**; recorded so the 4-vs-8 gate count is not misread.
-  (This is the inverse of §19.10's 18-annotated-vs-32-registered: here annotated > registered.)
+  registered node info). **Not a conversion gap**; recorded so the 4-vs-8 gate count is not misread. (This is the
+  inverse of §19.10's 18-annotated-vs-32-registered: here annotated > registered.)
 
 ---
 
 #### (g) Test infrastructure + gate results
 
-All four modules had **no `src/test` and no JUnit deps** (first test in each). For EACH
-(`ijweka`/`ilastik`/`opencv`/`scene3d`):
+All four modules had **no `src/test` and no JUnit deps** (first test in each). For EACH (`ijweka`/`ilastik`/`opencv`/
+`scene3d`):
+
 - **`pom.xml`:** added `org.junit.jupiter:junit-jupiter` + `org.junit.platform:junit-platform-launcher`
   (test scope), mirroring `plugins/jipipe-plugin-ij/pom.xml` verbatim (inserted before `</dependencies>`).
 - **Copied** `jipipe-core/src/test/java/org/hkijena/jipipe/api/nodes/taxonomy/
@@ -2756,23 +2791,23 @@ transitively via jipipe-core → `net.imagej:imagej`.
   2026-10-09 20:19) — **fresh** (contains the taxonomy function classes and the converted core nodes), so
   no pre-19.1 core node surfaced as unassigned in any of the four prefixes (the §19.6 stale-core
   condition did not recur). The gate prefix filters (`…ijweka`/`…ilastik`/`…opencv`/`…scene3d`) cover no
-  core package, so even a stale core jar could not inflate the prefix-filtered failure set. Stale
-  *dependency* jars only inflate the informational global "N nodes not yet assigned" line (see below) —
-  **no `mvn install -pl jipipe-core` was run and no jipipe-core source was touched.**
+  core package, so even a stale core jar could not inflate the prefix-filtered failure set. Stale *dependency* jars only
+  inflate the informational global "N nodes not yet assigned" line (see below) — **no `mvn install -pl jipipe-core` was
+  run and no jipipe-core source was touched.**
 
 - **Gate (enabled), all four → BUILD SUCCESS, `Tests run: 1, Failures: 0, Errors: 0, Skipped: 0`,
   zero unassigned in the module prefix:**
-  - **ij-weka:** `…-Djipipe.taxonomy.report.module=org.hkijena.jipipe.plugins.ijweka`
-  - **ilastik:** `…-Djipipe.taxonomy.report.module=org.hkijena.jipipe.plugins.ilastik`
-  - **opencv:** `…-Djipipe.taxonomy.report.module=org.hkijena.jipipe.plugins.opencv`
-  - **scene-3d:** `…-Djipipe.taxonomy.report.module=org.hkijena.jipipe.plugins.scene3d`
+    - **ij-weka:** `…-Djipipe.taxonomy.report.module=org.hkijena.jipipe.plugins.ijweka`
+    - **ilastik:** `…-Djipipe.taxonomy.report.module=org.hkijena.jipipe.plugins.ilastik`
+    - **opencv:** `…-Djipipe.taxonomy.report.module=org.hkijena.jipipe.plugins.opencv`
+    - **scene-3d:** `…-Djipipe.taxonomy.report.module=org.hkijena.jipipe.plugins.scene3d`
 
   The log line `JIPipeNodesServiceComponent | Node taxonomy: N nodes not yet assigned a taxonomy
   function — expected during conversion` is the **global** count across all on-classpath modules (the
   still-unconverted clij / ij2 / ocr / plots / multi-template-matching / python / r / imp … modules +
-  dependency jars); **none** are under any of the four prefixes, so the prefix-filtered assertion saw
-  **zero** and passed (same shape as §19.3–§19.10). Observed global counts: ij-weka **545** · ilastik
-  **545** · opencv **116** · scene-3d **116** (the opencv/scene-3d classpaths are smaller — no
+  dependency jars); **none** are under any of the four prefixes, so the prefix-filtered assertion saw **zero** and
+  passed (same shape as §19.3–§19.10). Observed global counts: ij-weka **545** · ilastik **545** · opencv **116** ·
+  scene-3d **116** (the opencv/scene-3d classpaths are smaller — no
   `jipipe-plugin-ij-algorithms` transitive dep — so their global unconverted count is lower; neither
   count is in the prefix-filtered set).
 
@@ -2782,8 +2817,8 @@ transitively via jipipe-core → `net.imagej:imagej`.
 
 **Byte-identity check (reviewer contract):** all 30 node files are byte-identical to base after
 stripping `import …;` lines and the `@ConfigureJIPipeNode(…)` line (and, for the 1 alias file, the
-`@AddJIPipeNodeAlias(…)` line) — verified by a line-filter diff across `git show HEAD:<f>` vs head
-(30 files, 0 non-annotation changes). The only permitted change is the annotation + import fixup.
+`@AddJIPipeNodeAlias(…)` line) — verified by a line-filter diff across `git show HEAD:<f>` vs head (30 files, 0
+non-annotation changes). The only permitted change is the annotation + import fixup.
 
 **Transition note understood:** the 30 converted nodes now fall back to `InternalNodeTypeCategory` via
 `getCategoryOf(nodeClass)` (`isVisibleInPipeline` false), so they are absent from the *old* add-node
@@ -2793,31 +2828,35 @@ unmerged branch). No `menuPath`/`nodeTypeCategory` was kept to "fix" the old pan
 ### 19.11c — jipipe-plugin-python (9) + jipipe-plugin-r (5) + jipipe-plugin-ij-multi-template-matching (1) + jipipe-plugin-ij-ocr (1) (16 nodes)
 
 **Status:** converted — all 16 `@ConfigureJIPipeNode` nodes across the four modules rewritten to
-`function` (plus `spatialDimensions` on the **2** image-input nodes only); four module gates green
-(see (g)). Single-shot combined conversion (mapping + apply + 4 gates in one commit), mirroring
+`function` (plus `spatialDimensions` on the **2** image-input nodes only); four module gates green (see (g)).
+Single-shot combined conversion (mapping + apply + 4 gates in one commit), mirroring
 §19.6–§19.11a.
 
 **These are the two remaining NON-ImageJ-function-only + two image-leaf modules of phase 1b.** Three of
 the four (python, r) are pure script-execution / script-data modules → **function-only, NoFramework,
-spatial absent** (the §19.6/§19.7 shape). The two image modules (ij-multi-template-matching, ij-ocr) are
-**also NoFramework** (rule 11: neither is on the named list and neither is the `ij`/`ij-3d`/`ij-algorithms`
+spatial absent** (the §19.6/§19.7 shape). The two image modules (ij-multi-template-matching, ij-ocr) are **also
+NoFramework** (rule 11: neither is on the named list and neither is the `ij`/`ij-3d`/`ij-algorithms`
 plugin — their single `ij.*` imports are incidental ImagePlus usage, §19.9/§19.10/§19.11a distinction) but
 **additionally declare `spatialDimensions`** (they have an image *input* slot).
 
 **Scope / gate prefixes (verified, matches controller R1):**
-- `plugins/jipipe-plugin-python/src/main` — base pkg `org.hkijena.jipipe.plugins.python` (GATE PREFIX) — **9** annotated files.
+
+- `plugins/jipipe-plugin-python/src/main` — base pkg `org.hkijena.jipipe.plugins.python` (GATE PREFIX) — **9** annotated
+  files.
 - `plugins/jipipe-plugin-r/src/main` — base pkg `org.hkijena.jipipe.plugins.r` (GATE PREFIX) — **5** annotated files.
-- `plugins/jipipe-plugin-ij-multi-template-matching/src/main` — base pkg `org.hkijena.jipipe.plugins.ijmultitemplatematching` (GATE PREFIX) — **1** annotated file.
-- `plugins/jipipe-plugin-ij-ocr/src/main` — base pkg `org.hkijena.jipipe.plugins.ijocr` (GATE PREFIX) — **1** annotated file.
+- `plugins/jipipe-plugin-ij-multi-template-matching/src/main` — base pkg
+  `org.hkijena.jipipe.plugins.ijmultitemplatematching` (GATE PREFIX) — **1** annotated file.
+- `plugins/jipipe-plugin-ij-ocr/src/main` — base pkg `org.hkijena.jipipe.plugins.ijocr` (GATE PREFIX) — **1** annotated
+  file.
 
 **Primary-category inventory (verified by grep of `nodeTypeCategory =`):**
 
-| module | Miscellaneous | DataSource | Images | total |
-|---|---|---|---|---|
-| python | 7 ("Python script") | 2 | — | **9** |
-| r | 2 ("R script") | 3 | — | **5** |
-| ij-multi-template-matching | — | — | 1 ("Analyze") | **1** |
-| ij-ocr | — | — | 1 ("OCR") | **1** |
+| module                     | Miscellaneous       | DataSource | Images        | total |
+|----------------------------|---------------------|------------|---------------|-------|
+| python                     | 7 ("Python script") | 2          | —             | **9** |
+| r                          | 2 ("R script")      | 3          | —             | **5** |
+| ij-multi-template-matching | —                   | —          | 1 ("Analyze") | **1** |
+| ij-ocr                     | —                   | —          | 1 ("OCR")     | **1** |
 
 **`ij.*` imports (verified):** python **0** files · r **0** files · ij-multi-template-matching **1** file
 (`MultiTemplateMatchingAlgorithm` — `ij.ImagePlus`/`ij.gui.Roi`/`ij.process.*`) · ij-ocr **1** file
@@ -2833,8 +2872,8 @@ None of these four modules is on rule 11's named list (cellpose/trackmate/clij/o
 ilastik/omnipose/ij2-discovered/ij/ij-3d/ij-algorithms), and none is a "core plugin". Rule 11's final
 clause — "else leave `NoFramework`" — therefore applies to every node. The `@ConfigureJIPipeNode.
 framework()` default is **already** `NoFramework.class` (`jipipe-core/…/api/ConfigureJIPipeNode.java:97`),
-so the attribute is **omitted entirely** — no node writes `framework = NoFramework.class`, and there is
-**no `NoFramework` import** anywhere. `grep -rl "framework = " src/main` across all four modules → **0**;
+so the attribute is **omitted entirely** — no node writes `framework = NoFramework.class`, and there is **no
+`NoFramework` import** anywhere. `grep -rl "framework = " src/main` across all four modules → **0**;
 `grep -rl "NoFramework\|ImageJ1Framework" src/main` across all four → **0**. (This is the mirror of
 §19.6/§19.7/§19.11a-scene-3d: function-only, NoFramework-omitted — the ijmtm/ijocr nodes get the *extra*
 `spatialDimensions` attribute only.)
@@ -2855,25 +2894,25 @@ is for nodes that wrap a *sub-pipeline/graph* (§19.1 `JIPipeProjectCompartment`
 `JIPipe.*` API is data-in/data-out, not graph execution) — the `JIPipeScriptAlgorithm` family — so the
 last-resort `MiscellaneousFunction` is the honest fit, exactly as the controller ruled):
 
-| node (old cat / menuPath) | function | spatial | rationale |
-|---|---|---|---|
-| `RunPythonScriptAlgorithm` (Misc / "Python script") | `MiscellaneousFunction` | absent | runs a Python script over the data slots (dedicated interpreter; `JIPipeParameterSlotAlgorithm`) — general script execution, no graph wrapper |
-| `RunIteratingPythonScriptAlgorithm` (Misc / "Python script") | `MiscellaneousFunction` | absent | per-iteration-step script; data slots in/out (`JIPipeIteratingAlgorithm`) |
-| `RunMergingPythonScriptAlgorithm` (Misc / "Python script") | `MiscellaneousFunction` | absent | merging-iteration script; data slots in/out (`JIPipeMergingAlgorithm`) |
-| `RunJythonScriptAlgorithm` (Misc / "Python script") | `MiscellaneousFunction` | absent | Jython (embedded interpreter) variant of the custom runner; data slots in/out |
-| `RunIteratingJythonScriptAlgorithm` (Misc / "Python script") | `MiscellaneousFunction` | absent | Jython per-iteration-step variant |
-| `RunMergingJythonScriptAlgorithm` (Misc / "Python script") | `MiscellaneousFunction` | absent | Jython merging variant |
-| `RunSimpleIteratingJythonScriptAlgorithm` (Misc / "Python script") | `MiscellaneousFunction` | absent | Jython single-input-slice variant |
+| node (old cat / menuPath)                                          | function                | spatial | rationale                                                                                                                                     |
+|--------------------------------------------------------------------|-------------------------|---------|-----------------------------------------------------------------------------------------------------------------------------------------------|
+| `RunPythonScriptAlgorithm` (Misc / "Python script")                | `MiscellaneousFunction` | absent  | runs a Python script over the data slots (dedicated interpreter; `JIPipeParameterSlotAlgorithm`) — general script execution, no graph wrapper |
+| `RunIteratingPythonScriptAlgorithm` (Misc / "Python script")       | `MiscellaneousFunction` | absent  | per-iteration-step script; data slots in/out (`JIPipeIteratingAlgorithm`)                                                                     |
+| `RunMergingPythonScriptAlgorithm` (Misc / "Python script")         | `MiscellaneousFunction` | absent  | merging-iteration script; data slots in/out (`JIPipeMergingAlgorithm`)                                                                        |
+| `RunJythonScriptAlgorithm` (Misc / "Python script")                | `MiscellaneousFunction` | absent  | Jython (embedded interpreter) variant of the custom runner; data slots in/out                                                                 |
+| `RunIteratingJythonScriptAlgorithm` (Misc / "Python script")       | `MiscellaneousFunction` | absent  | Jython per-iteration-step variant                                                                                                             |
+| `RunMergingJythonScriptAlgorithm` (Misc / "Python script")         | `MiscellaneousFunction` | absent  | Jython merging variant                                                                                                                        |
+| `RunSimpleIteratingJythonScriptAlgorithm` (Misc / "Python script") | `MiscellaneousFunction` | absent  | Jython single-input-slice variant                                                                                                             |
 
 **The 2 DataSource nodes → `MiscDataFunction`** (rule 6 by **output**: both emit `PythonScriptData`,
 which is a `StringData` subclass — **no python-script data leaf exists** in `data/` (= Image/Table/Roi/
-Filament/**Misc**) ⇒ the data/ **misc** leaf, mirroring §19.3's `DefineImageJMacroAlgorithm`/
+Filament/ **Misc**) ⇒ the data/ **misc** leaf, mirroring §19.3's `DefineImageJMacroAlgorithm`/
 `ImportImageJMacroAlgorithm` → `MiscDataFunction` for `StringData`-derived types):
 
-| node (old cat / menuPath) | function | spatial | rationale |
-|---|---|---|---|
-| `DefinePythonScriptAlgorithm` (DataSource, —) | `MiscDataFunction` | absent | rule 6 by output: emits `PythonScriptData` (a `StringData` subclass); no-fit → misc; generic `JIPipeData` "Annotations" input (non-image) |
-| `ImportPythonScriptAlgorithm` (DataSource, —) | `MiscDataFunction` | absent | rule 6 by output: emits `PythonScriptData` (script text from a `FileData` input); no-fit → misc |
+| node (old cat / menuPath)                     | function           | spatial | rationale                                                                                                                                 |
+|-----------------------------------------------|--------------------|---------|-------------------------------------------------------------------------------------------------------------------------------------------|
+| `DefinePythonScriptAlgorithm` (DataSource, —) | `MiscDataFunction` | absent  | rule 6 by output: emits `PythonScriptData` (a `StringData` subclass); no-fit → misc; generic `JIPipeData` "Annotations" input (non-image) |
+| `ImportPythonScriptAlgorithm` (DataSource, —) | `MiscDataFunction` | absent  | rule 6 by output: emits `PythonScriptData` (script text from a `FileData` input); no-fit → misc                                           |
 
 **Function split:** `MiscellaneousFunction` **7** · `MiscDataFunction` **2** (total 9). **Spatial:**
 absent **9** (total 9). **Aliases:** 0 (verified `grep "@AddJIPipeNodeAlias" src/main` → 0).
@@ -2888,20 +2927,20 @@ include an `ImagePlusColorRGBData` slot but rule 12 keys spatial off the first i
 was considered and rejected per node — these **run an R script over data slots** with the `JIPipe.*`
 data-in/data-out API, not a sub-pipeline wrapper):
 
-| node (old cat / menuPath) | function | spatial | rationale |
-|---|---|---|---|
-| `RunIteratingRScriptAlgorithm` (Misc / "R script") | `MiscellaneousFunction` | absent | runs an R script per iteration step over the data slots (in: `ResultsTableData`; out: `ImagePlusColorRGBData` + `ResultsTableData`) — general script execution, not a graph wrapper |
-| `RunMergingRScriptAlgorithm` (Misc / "R script") | `MiscellaneousFunction` | absent | runs an R script over merging iteration steps; same slots — general script execution |
+| node (old cat / menuPath)                          | function                | spatial | rationale                                                                                                                                                                           |
+|----------------------------------------------------|-------------------------|---------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `RunIteratingRScriptAlgorithm` (Misc / "R script") | `MiscellaneousFunction` | absent  | runs an R script per iteration step over the data slots (in: `ResultsTableData`; out: `ImagePlusColorRGBData` + `ResultsTableData`) — general script execution, not a graph wrapper |
+| `RunMergingRScriptAlgorithm` (Misc / "R script")   | `MiscellaneousFunction` | absent  | runs an R script over merging iteration steps; same slots — general script execution                                                                                                |
 
-**The 3 DataSource nodes → rule 6 by OUTPUT:** the 2 that emit `RScriptData` (a `StringData` subclass —
-**no R-script data leaf** in `data/`) → `MiscDataFunction`; the 1 that emits `ResultsTableData` →
+**The 3 DataSource nodes → rule 6 by OUTPUT:** the 2 that emit `RScriptData` (a `StringData` subclass — **no R-script
+data leaf** in `data/`) → `MiscDataFunction`; the 1 that emits `ResultsTableData` →
 `TableDataFunction`:
 
-| node (old cat / menuPath) | function | spatial | rationale |
-|---|---|---|---|
-| `DefineRScriptAlgorithm` (DataSource, —) | `MiscDataFunction` | absent | rule 6 by output: emits `RScriptData` (a `StringData` subclass); no-fit → misc (mirrors §19.3 `DefineImageJMacroAlgorithm`) |
-| `ImportRScriptAlgorithm` (DataSource, —) | `MiscDataFunction` | absent | rule 6 by output: emits `RScriptData` (script text from a `FileData` input); no-fit → misc |
-| `ImportRDatasetAlgorithm` (DataSource, —) | `TableDataFunction` | absent | rule 6 by output: "Imports a standard R data set (datasets package) **as table**" ⇒ emits **`ResultsTableData`** ⇒ the data/ **table** leaf (contrast the 2 `RScriptData` nodes) |
+| node (old cat / menuPath)                 | function            | spatial | rationale                                                                                                                                                                        |
+|-------------------------------------------|---------------------|---------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `DefineRScriptAlgorithm` (DataSource, —)  | `MiscDataFunction`  | absent  | rule 6 by output: emits `RScriptData` (a `StringData` subclass); no-fit → misc (mirrors §19.3 `DefineImageJMacroAlgorithm`)                                                      |
+| `ImportRScriptAlgorithm` (DataSource, —)  | `MiscDataFunction`  | absent  | rule 6 by output: emits `RScriptData` (script text from a `FileData` input); no-fit → misc                                                                                       |
+| `ImportRDatasetAlgorithm` (DataSource, —) | `TableDataFunction` | absent  | rule 6 by output: "Imports a standard R data set (datasets package) **as table**" ⇒ emits **`ResultsTableData`** ⇒ the data/ **table** leaf (contrast the 2 `RScriptData` nodes) |
 
 **Function split:** `MiscellaneousFunction` **2** · `MiscDataFunction` **2** · `TableDataFunction`
 **1** (total 5). **Spatial:** absent **5** (total 5). **Aliases:** 0 (verified).
@@ -2922,8 +2961,8 @@ batch — see (d)).
   `ImagePlus2DData` "Template" is slot #2). The first input is **unconstrained `ImagePlusData`** ⇒
   BOTH. (Confirmed: `ImagePlusData` is slot #1, not `ImagePlus2DData`.)
 
-| node (old cat / menuPath) | function | spatial | rationale |
-|---|---|---|---|
+| node (old cat / menuPath)                             | function               | spatial  | rationale                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+|-------------------------------------------------------|------------------------|----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `MultiTemplateMatchingAlgorithm` (Images / "Analyze") | `MeasurementsFunction` | **both** | **JUDGED (flag (e)):** template matching **locates** template instances in a target image and **measures** each match (outputs an `Roi2dListData` "ROI" list, a `ResultsTableData` "Measurements" table — *literally named "Measurements"* — and an "Assembled templates" image). `MeasurementsFunction` is chosen over `SegmentationFunction` because (1) the node's own **old menuPath is `Analyze`**, and the §19.2 ij-algorithms precedent maps the entire `Images/Analyze` group (5 nodes) → `MeasurementsFunction` (whereas `Images/Detect` → `SegmentationFunction`); (2) it reports *located, scored matches as measurements* (a results table) rather than partitioning the whole image into a label/mask (the "Segmentation" leaf's stated description, "Partitioning images into meaningful objects"). The `SegmentationFunction` (object-detection) reading is the flagged alternative. |
 
 **Function split:** `MeasurementsFunction` **1** (total 1). **Spatial:** both **1** (total 1).
@@ -2945,8 +2984,8 @@ function leaf is therefore **== the primary** (`MeasurementsFunction`) ⇒ **dro
 conversion. The other three modules: **0** aliases (verified). (Both the `ImageJNodeTypeCategory` and
 `ImagesNodeTypeCategory` imports became unused and were removed with the node/alias annotations.)
 
-**Flag (e) re the alias:** the alias is *framework*-flavored (ImageJ `Plugins` menu) rather than
-*function*-flavored, so one could argue it should have contributed a secondary **framework** (IJ1)
+**Flag (e) re the alias:** the alias is *framework*-flavored (ImageJ `Plugins` menu) rather than *function*-flavored, so
+one could argue it should have contributed a secondary **framework** (IJ1)
 rather than a secondary **function**. But rule 11 fixes the framework to **NoFramework** for this
 module (the controller ruled it is *not* an ImageJ plugin), so there is no IJ1 framework to add anyway
 — the alias is a pure function-leaf re-listing and is dropped. Recorded, not silently absorbed.
@@ -2956,15 +2995,15 @@ module (the controller ruled it is *not* an ImageJ plugin), so there is no IJ1 f
 `TesseractOCRAlgorithm` (old: `ImagesNodeTypeCategory`, menuPath `OCR`).
 
 - **Framework: OMITTED (NoFramework).** Not on rule 11's list and not the `ij`/`ij-3d`/`ij-algorithms`
-  plugin → else NoFramework; `ij.*` imports (`ij.IJ`/`ij.ImagePlus`) are incidental, driving
-  **SPATIAL only**, not framework.
+  plugin → else NoFramework; `ij.*` imports (`ij.IJ`/`ij.ImagePlus`) are incidental, driving **SPATIAL only**, not
+  framework.
 - **Function: `MiscellaneousFunction`** (JUDGED, see rationale) — OCR: image → text.
 - **Spatial: `spatialDimensions = { SPATIAL_2D, SPATIAL_3D }` (BOTH).** Rule 12 first image input slot:
   `@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input")`. `ImagePlusGreyscaleData`
   **extends unconstrained `ImagePlusData`** (no `numDimensions` in its `@ImageTypeInfo`) ⇒ BOTH.
 
-| node (old cat / menuPath) | function | spatial | rationale |
-|---|---|---|---|
+| node (old cat / menuPath)                | function                | spatial  | rationale                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+|------------------------------------------|-------------------------|----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `TesseractOCRAlgorithm` (Images / "OCR") | `MiscellaneousFunction` | **both** | **JUDGED (flag (f)):** OCR reads text out of an image (in: `ImagePlusGreyscaleData`; out: a `ResultsTableData` "Results" of the Tesseract TSV exporter). `MiscellaneousFunction` is chosen over `MeasurementsFunction` because OCR is **not** a measurement op — it does not measure geometric/intensity *properties* of objects (the `MeasurementsFunction` description, "Measuring properties of images and objects"); it **recognizes/extracts text**, which has **no clean taxonomy home** (no "OCR"/"text" leaf exists in `images/` or elsewhere). The `MeasurementsFunction` reading (it emits a "measurements" table) is the flagged alternative, but it would mislabel text extraction as image/object measurement. The honest last-resort leaf is `MiscellaneousFunction`. |
 
 **Function split:** `MiscellaneousFunction` **1** (total 1). **Spatial:** both **1** (total 1).
@@ -2974,7 +3013,7 @@ module (the controller ruled it is *not* an ImageJ plugin), so there is no IJ1 f
 #### (f) Flagged for Phase 3 audit (the 2 judged image nodes — main flags)
 
 - **⚠️ `MultiTemplateMatchingAlgorithm` → `MeasurementsFunction` (spatial BOTH).** Template *matching*
-  is an object-**detection** op, so `SegmentationFunction` ("detect objects"/partitioning) is the
+  is an object- **detection** op, so `SegmentationFunction` ("detect objects"/partitioning) is the
   defensible alternative. Chose `MeasurementsFunction` on (1) the node's own old menuPath `Analyze`
   (the §19.2 `Images/Analyze`→`MeasurementsFunction` precedent, vs `Images/Detect`→`SegmentationFunction`)
   and (2) its output being a *scored-match measurements table* + ROI list (located/measured instances),
@@ -2996,8 +3035,9 @@ module (the controller ruled it is *not* an ImageJ plugin), so there is no IJ1 f
 
 #### (g) Test infrastructure + gate results
 
-All four modules had **no `src/test` and no JUnit deps** (first test in each). For EACH
-(`python`/`r`/`ijmultitemplatematching`/`ijocr`):
+All four modules had **no `src/test` and no JUnit deps** (first test in each). For EACH (`python`/`r`/
+`ijmultitemplatematching`/`ijocr`):
+
 - **`pom.xml`:** added `org.junit.jupiter:junit-jupiter` + `org.junit.platform:junit-platform-launcher`
   (test scope), mirroring `plugins/jipipe-plugin-ij/pom.xml` verbatim (inserted before `</dependencies>`).
 - **Copied** `jipipe-core/src/test/java/org/hkijena/jipipe/api/nodes/taxonomy/
@@ -3026,8 +3066,8 @@ transitively via jipipe-core → `net.imagej:imagej`.
 
 - **Stale `~/.m2` core jar (the *core* gotcha was NOT hit).** The installed `jipipe-core`
   6.0.0-SNAPSHOT jar is dated **2026-10-10 03:52** (verified), newer than the last jipipe-core taxonomy
-  commit — **fresh** (contains the taxonomy function classes + converted core nodes). No CORE
-  (`org.hkijena.jipipe.*`) node surfaced as unassigned in any of the four prefixes (the §19.6
+  commit — **fresh** (contains the taxonomy function classes + converted core nodes). No CORE (`org.hkijena.jipipe.*`)
+  node surfaced as unassigned in any of the four prefixes (the §19.6
   stale-core condition did not recur). The gate prefixes (`…python`/`…r`/`…ijmultitemplatematching`/
   `…ijocr`) cover no core package, so even a stale core jar could not inflate the prefix-filtered
   failure set. Stale *dependency* jars only inflate the informational global "N nodes not yet assigned"
@@ -3035,16 +3075,19 @@ transitively via jipipe-core → `net.imagej:imagej`.
 
 - **Gate (enabled), all four → BUILD SUCCESS, `Tests run: 1, Failures: 0, Errors: 0, Skipped: 0`,
   zero unassigned in the module prefix:**
-  - **python:** `…-Djipipe.taxonomy.report.module=org.hkijena.jipipe.plugins.python` → log
-    `INFORMATION: JIPipeNodesServiceComponent | Node taxonomy validation passed` (the python classpath
-    carries no other unconverted module, so there is no global "N nodes" line at all — 0 unassigned).
-  - **r:** `…-Djipipe.taxonomy.report.module=org.hkijena.jipipe.plugins.r` → log `Node taxonomy: 116 nodes
+    - **python:** `…-Djipipe.taxonomy.report.module=org.hkijena.jipipe.plugins.python` → log
+      `INFORMATION: JIPipeNodesServiceComponent | Node taxonomy validation passed` (the python classpath
+      carries no other unconverted module, so there is no global "N nodes" line at all — 0 unassigned).
+    - **r:** `…-Djipipe.taxonomy.report.module=org.hkijena.jipipe.plugins.r` → log `Node taxonomy: 116 nodes
     not yet assigned a taxonomy function — expected during conversion` (global; none under the prefix).
-  - **ij-multi-template-matching:** `…-Djipipe.taxonomy.report.module=org.hkijena.jipipe.plugins.ijmultitemplatematching` → log `Node taxonomy: 116 nodes not yet assigned…` (global).
-  - **ij-ocr:** `…-Djipipe.taxonomy.report.module=org.hkijena.jipipe.plugins.ijocr` → log `Node taxonomy: 116 nodes not yet assigned…` (global).
+    - **ij-multi-template-matching:**
+      `…-Djipipe.taxonomy.report.module=org.hkijena.jipipe.plugins.ijmultitemplatematching` → log
+      `Node taxonomy: 116 nodes not yet assigned…` (global).
+    - **ij-ocr:** `…-Djipipe.taxonomy.report.module=org.hkijena.jipipe.plugins.ijocr` → log
+      `Node taxonomy: 116 nodes not yet assigned…` (global).
 
-  The `116` global count (r/ijmtm/ijocr classpaths; python's clean classpath shows none) is the
-  **global** count across all on-classpath modules (the still-unconverted clij / ij2 / plots / imp …
+  The `116` global count (r/ijmtm/ijocr classpaths; python's clean classpath shows none) is the **global** count across
+  all on-classpath modules (the still-unconverted clij / ij2 / plots / imp …
   modules + dependency jars); **none** are under any of the four prefixes, so the prefix-filtered
   assertion saw **zero** and passed (same shape as §19.3–§19.11a).
 
@@ -3053,8 +3096,8 @@ transitively via jipipe-core → `net.imagej:imagej`.
   module green.
 
 **Byte-identity check (reviewer contract):** all 16 node files are byte-identical to base after
-stripping `import …;` lines and the `@ConfigureJIPipeNode(…)` / `@AddJIPipeNodeAlias(…)` lines
-(verified by a line-filter diff across `git show HEAD:<f>` vs head) — the change is annotations-only.
+stripping `import …;` lines and the `@ConfigureJIPipeNode(…)` / `@AddJIPipeNodeAlias(…)` lines (verified by a
+line-filter diff across `git show HEAD:<f>` vs head) — the change is annotations-only.
 The only permitted change is the annotation + import fixup (plus, for the 2 image nodes, the 2
 `SPATIAL_*` static imports, and, for the 1 alias file, the removal of the now-unused
 `ImageJNodeTypeCategory` import).
@@ -3074,17 +3117,18 @@ zero unassigned; scene-3d gate re-run still zero unassigned.
 `scene-3d→CoreFramework` and lists `imp` as a module to convert. 19.11a (a) **missed imp entirely**
 (it was not in the 19.11a module list) and (b) **under-ruled scene-3d's framework** — it applied rule
 11's generic "else leave `NoFramework`" fallback and omitted the attribute, missing that the plan's
-explicit `scene-3d→CoreFramework` line **overrides** rule 11 for that module. 19.11d (a) converts imp
-(5 nodes, all `CoreFramework`) and (b) fixes scene-3d's 7 nodes to `CoreFramework`. The fix is
-**annotation-only** on scene-3d (function + spatial byte-identical to 19.11a's committed state); imp
+explicit `scene-3d→CoreFramework` line **overrides** rule 11 for that module. 19.11d (a) converts imp (5 nodes, all
+`CoreFramework`) and (b) fixes scene-3d's 7 nodes to `CoreFramework`. The fix is **annotation-only** on scene-3d
+(function + spatial byte-identical to 19.11a's committed state); imp
 is a full `nodeTypeCategory`/`menuPath` → `function`/`framework`/`spatialDimensions` conversion.
 
 **Scope / gate prefixes (verified, matches controller):**
+
 - `plugins/jipipe-plugin-scene-3d/src/main` — base pkg `org.hkijena.jipipe.plugins.scene3d` (GATE
-  PREFIX) — **7** annotated files (2 Create*Mesh DataSource, 2 Export*Collada, GroupScene, MergeScenes,
+  PREFIX) — **7** annotated files (2 Create *Mesh DataSource, 2 Export*Collada, GroupScene, MergeScenes,
   MaskTo3DMesh). **Fix only** (framework attribute + import).
-- `plugins/jipipe-plugin-imp/src/main` — base pkg `org.hkijena.jipipe.plugins.imp` (GATE PREFIX) —
-  **5** annotated files (the `nodes/` package). **Full convert.**
+- `plugins/jipipe-plugin-imp/src/main` — base pkg `org.hkijena.jipipe.plugins.imp` (GATE PREFIX) — **5** annotated files
+  (the `nodes/` package). **Full convert.**
 
 #### (A) scene-3d framework fix (7 nodes) — NoFramework (omitted) → `CoreFramework`
 
@@ -3093,15 +3137,15 @@ Every node's `@ConfigureJIPipeNode(function = <Leaf>.class[, spatialDimensions =
 org.hkijena.jipipe.api.nodes.taxonomy.frameworks.CoreFramework`). The `function` and `spatialDimensions`
 values are **unchanged** from 19.11a:
 
-| node | function (unchanged) | framework (FIXED) | spatial (unchanged) |
-|---|---|---|---|
-| `CreateLineMeshAlgorithm` | `MiscDataFunction` | NoFramework (omitted) → **`CoreFramework`** | absent |
-| `CreateSphereMeshAlgorithm` | `MiscDataFunction` | → **`CoreFramework`** | absent |
-| `ExportScene3DToColladaAlgorithm` | `ExportFileFormatsFunction` | → **`CoreFramework`** | absent |
-| `ExportScene3DToColladaAlgorithm2` | `ExportFileFormatsFunction` | → **`CoreFramework`** | absent |
-| `GroupSceneAlgorithm` | `MiscellaneousFunction` | → **`CoreFramework`** | absent |
-| `MergeScenesAlgorithm` | `MiscellaneousFunction` | → **`CoreFramework`** | absent |
-| `MaskTo3DMeshAlgorithm` | `MiscellaneousFunction` | → **`CoreFramework`** | **3D** |
+| node                               | function (unchanged)        | framework (FIXED)                           | spatial (unchanged) |
+|------------------------------------|-----------------------------|---------------------------------------------|---------------------|
+| `CreateLineMeshAlgorithm`          | `MiscDataFunction`          | NoFramework (omitted) → **`CoreFramework`** | absent              |
+| `CreateSphereMeshAlgorithm`        | `MiscDataFunction`          | → **`CoreFramework`**                       | absent              |
+| `ExportScene3DToColladaAlgorithm`  | `ExportFileFormatsFunction` | → **`CoreFramework`**                       | absent              |
+| `ExportScene3DToColladaAlgorithm2` | `ExportFileFormatsFunction` | → **`CoreFramework`**                       | absent              |
+| `GroupSceneAlgorithm`              | `MiscellaneousFunction`     | → **`CoreFramework`**                       | absent              |
+| `MergeScenesAlgorithm`             | `MiscellaneousFunction`     | → **`CoreFramework`**                       | absent              |
+| `MaskTo3DMeshAlgorithm`            | `MiscellaneousFunction`     | → **`CoreFramework`**                       | **3D**              |
 
 Verified `grep -rl "framework = CoreFramework" plugins/jipipe-plugin-scene-3d/src/main` → **7**;
 `grep -rl "nodeTypeCategory\|menuPath" src/main` → **0**; `grep -rl "NoFramework\|ImageJ1Framework"
@@ -3119,10 +3163,10 @@ plan names it `CoreFramework`). **No `ImageJ1Framework`.** Verified `grep -rl
 
 **Aliases (2) — both DROPPED (alias-leaf == primary-leaf):**
 
-| node (primary leaf) | alias (old category / name) | alias leaf | action |
-|---|---|---|---|
-| `ExportImpImageAlgorithm` (ExportFileFormats) | `ImageJNodeTypeCategory` / `File\nSave` | `ExportFileFormatsFunction` (rule 7: an IJ `File\nSave` image exporter = the file-format export leaf) | **drop** (== primary; the IJ re-listing of the same export — same shape as §19.3's 12/12 and §19.11a's ilastik `File\nSave` drop) |
-| `ImportImpImageAlgorithm` (ImageData) | `DataSourceNodeTypeCategory` / aliasName `Import image (Java)` (no menuPath) | `ImageDataFunction` (rule 6 by output: a DataSource emitting image data `ImpImageData` ⇒ the data/ image leaf) | **drop** (== primary; it is a same-source DataSource re-listing — same shape as §19.3's DataSource-alias drops, where an alias sharing the primary's output type maps to the same leaf) |
+| node (primary leaf)                           | alias (old category / name)                                                  | alias leaf                                                                                                     | action                                                                                                                                                                                  |
+|-----------------------------------------------|------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `ExportImpImageAlgorithm` (ExportFileFormats) | `ImageJNodeTypeCategory` / `File\nSave`                                      | `ExportFileFormatsFunction` (rule 7: an IJ `File\nSave` image exporter = the file-format export leaf)          | **drop** (== primary; the IJ re-listing of the same export — same shape as §19.3's 12/12 and §19.11a's ilastik `File\nSave` drop)                                                       |
+| `ImportImpImageAlgorithm` (ImageData)         | `DataSourceNodeTypeCategory` / aliasName `Import image (Java)` (no menuPath) | `ImageDataFunction` (rule 6 by output: a DataSource emitting image data `ImpImageData` ⇒ the data/ image leaf) | **drop** (== primary; it is a same-source DataSource re-listing — same shape as §19.3's DataSource-alias drops, where an alias sharing the primary's output type maps to the same leaf) |
 
 Both alias leaves collapse to the primary, so per the A/B/C protocol **both `@AddJIPipeNodeAlias` lines
 are deleted; no secondary `function[]` entries added.** Verified `grep "@AddJIPipeNodeAlias"
@@ -3130,13 +3174,13 @@ plugins/jipipe-plugin-imp/src/main` → **0** after conversion.
 
 **Per-node table (function by op, rule 6/7 + images-leaf judgment):**
 
-| node (old cat / menuPath) | function | spatial | rationale |
-|---|---|---|---|
-| `ImportImpImageAlgorithm` (DataSource, —) | `ImageDataFunction` | **both** | rule 6 by **output**: a DataSource emitting `ImpImageData` (image data) ⇒ the data/ **image** leaf (mirror of §19.11a ilastik `ImportIlastikHDF5Image`→`ImageDataFunction`); spatial from the `ImpImageData` image output (see spatial ruling below) |
-| `ExportImpImageAlgorithm` (Export / "Images") | `ExportFileFormatsFunction` | **both** | rule 7: exports `ImpImageData` → a non-JIPipe file format (PNG/JPEG/BMP/GIF) ⇒ the file-format leaf (not a ZIP archive); `ImpImageData` image input ⇒ both |
-| `ConvertImpImageToImagePlusAlgorithm` (Images / "IMP\nConvert") | `ResamplingFunction` | **both** | a genuine image **type/format conversion** (`ImpImageData` → `ImagePlusData`); the `images/` conversion leaf is `ResamplingFunction` (the ij-algorithms `Convert`→`ResamplingFunction` + opencv `ConvertType`/`ConvertDepth`→`ResamplingFunction` precedents) — chosen over a data/ leaf because the node **transforms** an image input rather than producing one; `ImpImageData` image input ⇒ both |
-| `SetImpAlphaChannelAlgorithm` (Images / "IMP") | `MergingSplittingFunction` | **both** | **judgment (e):** combines an `ImpImageData` image with an `ImpImageData` mask by **setting/merging the alpha channel** into the image (channel **combine**); the `images/` merge/combine leaf is `MergingSplittingFunction` |
-| `SplitImpAlphaChannelAlgorithm` (Images / "IMP") | `MergingSplittingFunction` | **both** | **judgment (e):** **splits** the alpha channel out of an `ImpImageData` into a dedicated `ImpImageData` (channel **split**); the `images/` split leaf is `MergingSplittingFunction` (the same leaf as its `Set` sibling, for consistency) |
+| node (old cat / menuPath)                                       | function                    | spatial  | rationale                                                                                                                                                                                                                                                                                                                                                                                            |
+|-----------------------------------------------------------------|-----------------------------|----------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `ImportImpImageAlgorithm` (DataSource, —)                       | `ImageDataFunction`         | **both** | rule 6 by **output**: a DataSource emitting `ImpImageData` (image data) ⇒ the data/ **image** leaf (mirror of §19.11a ilastik `ImportIlastikHDF5Image`→`ImageDataFunction`); spatial from the `ImpImageData` image output (see spatial ruling below)                                                                                                                                                 |
+| `ExportImpImageAlgorithm` (Export / "Images")                   | `ExportFileFormatsFunction` | **both** | rule 7: exports `ImpImageData` → a non-JIPipe file format (PNG/JPEG/BMP/GIF) ⇒ the file-format leaf (not a ZIP archive); `ImpImageData` image input ⇒ both                                                                                                                                                                                                                                           |
+| `ConvertImpImageToImagePlusAlgorithm` (Images / "IMP\nConvert") | `ResamplingFunction`        | **both** | a genuine image **type/format conversion** (`ImpImageData` → `ImagePlusData`); the `images/` conversion leaf is `ResamplingFunction` (the ij-algorithms `Convert`→`ResamplingFunction` + opencv `ConvertType`/`ConvertDepth`→`ResamplingFunction` precedents) — chosen over a data/ leaf because the node **transforms** an image input rather than producing one; `ImpImageData` image input ⇒ both |
+| `SetImpAlphaChannelAlgorithm` (Images / "IMP")                  | `MergingSplittingFunction`  | **both** | **judgment (e):** combines an `ImpImageData` image with an `ImpImageData` mask by **setting/merging the alpha channel** into the image (channel **combine**); the `images/` merge/combine leaf is `MergingSplittingFunction`                                                                                                                                                                         |
+| `SplitImpAlphaChannelAlgorithm` (Images / "IMP")                | `MergingSplittingFunction`  | **both** | **judgment (e):** **splits** the alpha channel out of an `ImpImageData` into a dedicated `ImpImageData` (channel **split**); the `images/` split leaf is `MergingSplittingFunction` (the same leaf as its `Set` sibling, for consistency)                                                                                                                                                            |
 
 **Function split:** `MergingSplittingFunction` **2** · `ImageDataFunction` **1** ·
 `ExportFileFormatsFunction` **1** · `ResamplingFunction` **1** (total 5).
@@ -3147,8 +3191,8 @@ input/output is `ImpImageData`, an **unconstrained ZCT hyperstack** image type (
 `numChannels`, `toImagePlus` builds a 3D `ImageStack`, `importData`/`exportData` round-trip ZCT
 `-z…c…t…` hyperstacks). Unconstrained image data ⇒ **both** (`SPATIAL_2D, SPATIAL_3D`) per the closed
 spatial set {2D, 3D} (the §19.3 dimensioned-wrapper ruling: "4D/5D (≥3) collapses to {2D, 3D}"; bare
-unconstrained `ImagePlus*` ⇒ both). The 19.11c "imp → classically 2D" hint was **not** applied: the
-*actual* `ImpImageData` supports 2D single images **and** ZCT hyperstacks (i.e. up to 3D), so it is
+unconstrained `ImagePlus*` ⇒ both). The 19.11c "imp → classically 2D" hint was **not** applied: the *actual*
+`ImpImageData` supports 2D single images **and** ZCT hyperstacks (i.e. up to 3D), so it is
 genuinely **unconstrained**, not classically-2D-only. The 5 nodes with an `ImpImageData` image
 input/output are **all 5** (Import by its image *output*; Export/Convert/Set/Split by their
 `ImpImageData` *input*). **`spatialDimensions = { SPATIAL_2D, SPATIAL_3D }` on all 5.**
@@ -3159,6 +3203,7 @@ input/output are **all 5** (Import by its image *output*; Export/Convert/Set/Spl
 
 The imp module had **no `src/test` and no JUnit deps** (first test). Wired (mirror §19.11a/19.11c /
 the `jipipe-plugin-ij` pom verbatim):
+
 - **`pom.xml`:** added `org.junit.jupiter:junit-jupiter` + `org.junit.platform:junit-platform-launcher`
   (test scope), mirroring `plugins/jipipe-plugin-ij/pom.xml` verbatim (inserted after the
   `jipipe-plugin-ij` dependency, before `</dependencies>`).
@@ -3186,8 +3231,8 @@ jipipe-core → `net.imagej:imagej`.
 - **Compile:** `mvn -q -B compile -pl plugins/jipipe-plugin-imp,plugins/jipipe-plugin-scene-3d -am`
   → **exit 0** (both in one reactor; host mvn).
 - **Stale `~/.m2` core jar (the *core* gotcha was NOT hit).** The installed `jipipe-core` 6.0.0-SNAPSHOT
-  jar is dated **2026-10-10 03:52** (verified), newer than the last jipipe-core taxonomy commit
-  (`aeab2dcacb`, 2026-10-09 20:19) — **fresh** (contains the 74+ taxonomy function/framework classes and
+  jar is dated **2026-10-10 03:52** (verified), newer than the last jipipe-core taxonomy commit (`aeab2dcacb`,
+  2026-10-09 20:19) — **fresh** (contains the 74+ taxonomy function/framework classes and
   the converted core nodes), so no pre-19.1 core node surfaced as unassigned in either prefix (the §19.6
   stale-core condition did not recur). The gate prefixes (`…imp` / `…scene3d`) cover no core package, so
   even a stale core jar could not inflate the prefix-filtered failure set. Stale *dependency* jars only
@@ -3218,34 +3263,34 @@ jipipe-core → `net.imagej:imagej`.
   out into a dedicated image) are both channel **combine/split** ops → the `images/`
   `MergingSplittingFunction` leaf. **Flagged:** `SetImpAlphaChannel` could alternatively be read as a
   `PreprocessingFunction` (it edits/prepares the image's alpha, not a structural merge of two
-  independent images into one montage); `SplitImpAlphaChannel` is the cleaner MergingSplitting fit
-  (a genuine split). If the audit groups alpha-channel editing under preprocessing, `Set` moves to
+  independent images into one montage); `SplitImpAlphaChannel` is the cleaner MergingSplitting fit (a genuine split). If
+  the audit groups alpha-channel editing under preprocessing, `Set` moves to
   `PreprocessingFunction` (framework + spatial unchanged).
 - **⚠️ imp spatial = BOTH on all 5 (the `ImpImageData` dimensionality judgment).** The brief offered a
   decision tree (classically-2D → `SPATIAL_2D`; unconstrained → BOTH; no-dimension-concept → absent).
   The **actual** `ImpImageData` is an **unconstrained ZCT hyperstack** (variable `numSlices`/
   `numFrames`/`numChannels`; `@ConfigureJIPipeDataCrate(inherits = ImagePlusData.class)`; `toImagePlus`
   builds a 3D `ImageStack`; `importData`/`exportData` round-trip ZCT `-z…c…t…` hyperstacks). It is
-  therefore **unconstrained** (2D single images up to 3D ZCT stacks), not classically-2D-only, so
-  **BOTH** (`SPATIAL_2D, SPATIAL_3D`) is the honest assignment per the §19.3 closed-set ruling
-  (unconstrained/≥3D collapses to {2D, 3D}). **Flagged:** if the audit reads "IMP" as a 2D flat-image
+  therefore **unconstrained** (2D single images up to 3D ZCT stacks), not classically-2D-only, so **BOTH**
+  (`SPATIAL_2D, SPATIAL_3D`) is the honest assignment per the §19.3 closed-set ruling (unconstrained/≥3D collapses to
+  {2D, 3D}). **Flagged:** if the audit reads "IMP" as a 2D flat-image
   format (the brief's "classically 2D 8/16-bit" hint) and disregards the ZCT hyperstack support, all 5
-  flip to `SPATIAL_2D` (mechanical). Also a **cross-module rule question** (echoing §19.8(f)): the
+  flip to `SPATIAL_2D` (mechanical). Also a **cross-module rule question** (echoing §19.8 (f)): the
   `ImportImpImageAlgorithm` node has **no image *input*** (its input is `FileData`); its spatial is
   taken from its `ImpImageData` **output** (unconstrained ⇒ both). The §19.3/§19.8 image-import
   DataSources (`ImportImagePlus`/`BioFormatsImporter`/`ImportIlastikHDF5Image`/`DownloadOMEROImage`)
-  treat image-*producing* sources' spatial by the **output**'s dimensionality, so this is consistent
+  treat image- *producing* sources' spatial by the **output**'s dimensionality, so this is consistent
   with those — but §19.8's literal rule-12 (input-based) reading would make the Import node **absent**.
   Decide in Phase 3 whether image-producing source nodes declare their OUTPUT's spatial (kept **both**
   here, harmonizing with the §19.3 importers).
 
 **Byte-identity check (reviewer contract):** all 5 imp node files are byte-identical to base after
-stripping `import …;` lines and the `@ConfigureJIPipeNode(…)` / `@AddJIPipeNodeAlias(…)` lines
-(annotations-only change: `nodeTypeCategory`/`menuPath` removed, `function`/`framework`/
+stripping `import …;` lines and the `@ConfigureJIPipeNode(…)` / `@AddJIPipeNodeAlias(…)` lines (annotations-only change:
+`nodeTypeCategory`/`menuPath` removed, `function`/`framework`/
 `spatialDimensions` added, `…categories.*` imports dropped, leaf + `CoreFramework` + 2 `SPATIAL_*`
 static imports added, the 2 alias lines deleted). All 7 scene-3d files differ from 19.11a's committed
-state **only** by the added `CoreFramework` import + the `framework = CoreFramework.class` attribute
-(function + spatial byte-identical).
+state **only** by the added `CoreFramework` import + the `framework = CoreFramework.class` attribute (function + spatial
+byte-identical).
 
 **Transition note understood:** the 5 converted imp nodes now fall back to `InternalNodeTypeCategory`
 via `getCategoryOf(nodeClass)` (`isVisibleInPipeline` false), so they are absent from the *old*
@@ -3262,15 +3307,16 @@ each module's zero-unassigned gate passes NOW. All 3 module gates green. **Dynam
 19.11b DEFAULTS pending Task 20** (see the Task-20 boundary note below). One commit.
 
 **Scope / gate prefixes (verified, matches controller):**
-- `plugins/jipipe-plugin-clij/src/main` — base pkg `org.hkijena.jipipe.plugins.clij2` (GATE PREFIX) —
-  **4** annotated files (`Clij2PushAlgorithm`, `Clij2PullAlgorithm`, `Clij2ExecuteKernelIterating`,
+
+- `plugins/jipipe-plugin-clij/src/main` — base pkg `org.hkijena.jipipe.plugins.clij2` (GATE PREFIX) — **4** annotated
+  files (`Clij2PushAlgorithm`, `Clij2PullAlgorithm`, `Clij2ExecuteKernelIterating`,
   `Clij2ExecuteKernelSimpleIterating`) + 1 dynamic class `CLIJCommandNodeInfo` (implements
   `JIPipeNodeInfo` directly). `grep -rl "implements JIPipeNodeInfo" src/main` → exactly 1.
-- `plugins/jipipe-plugin-ij2/src/main` — base pkg `org.hkijena.jipipe.plugins.imagej2` (GATE PREFIX) —
-  **2** annotated files (`CreateIJ2OutOfBoundsFactoryAlgorithm`, `CreateIJ2ShapeAlgorithm`) + 1 dynamic
+- `plugins/jipipe-plugin-ij2/src/main` — base pkg `org.hkijena.jipipe.plugins.imagej2` (GATE PREFIX) — **2** annotated
+  files (`CreateIJ2OutOfBoundsFactoryAlgorithm`, `CreateIJ2ShapeAlgorithm`) + 1 dynamic
   class `ImageJ2OpNodeInfo`. `grep -rl "implements JIPipeNodeInfo" src/main` → exactly 1.
-- `plugins/jipipe-plugin-plots/src/main` — base pkg `org.hkijena.jipipe.plugins.plots` (GATE PREFIX) —
-  **1** annotated file (`PlotTablesAlgorithm`) + 1 dynamic class `PlotTables2AlgorithmInfo`.
+- `plugins/jipipe-plugin-plots/src/main` — base pkg `org.hkijena.jipipe.plugins.plots` (GATE PREFIX) — **1** annotated
+  file (`PlotTablesAlgorithm`) + 1 dynamic class `PlotTables2AlgorithmInfo`.
   `grep -rl "implements JIPipeNodeInfo" src/main` → exactly 1.
 
 **Dynamic-coverage verification (the 19.10 lesson):** each dynamic NodeInfo's `getInstanceClass()`
@@ -3291,12 +3337,12 @@ Import `org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ClijFramework`. **No `I
 **Function (the 4 annotated) — by OP (CLIJ2 = GPU image processing; read each
 `@SetJIPipeDocumentation` + slots):**
 
-| node (old `ImagesNodeTypeCategory` / "CLIJ") | function | spatial | rationale |
-|---|---|---|---|
-| `Clij2ExecuteKernelSimpleIterating` | `FilteringFunction` | **both** | "Executes an OpenCL kernel via CLIJ2 to **process images**" — generic GPU image **processing/filtering** (any kernel, one input); the `images/` generic-processing leaf |
-| `Clij2ExecuteKernelIterating` | `FilteringFunction` | **both** | same op as the SimpleIterating sibling (multiple inputs); the `images/` generic-processing leaf (kept consistent with the sibling) |
-| `Clij2PushAlgorithm` | `MiscellaneousFunction` ⚠️ | **both** | "Converts an image **into a GPU image** managed by CLIJ" — moves image data **to** the GPU (a CPU→GPU **transfer/convert**, not a filter/measure/segment); there is **no transfer leaf** in the taxonomy, so the top-level `MiscellaneousFunction` is the honest last-resort |
-| `Clij2PullAlgorithm` | `MiscellaneousFunction` ⚠️ | **both** | "Converts a **GPU image** into a non-CLIJ image" — moves image data **from** the GPU (a GPU→CPU transfer, sibling of Push); same **no-transfer-leaf** reasoning |
+| node (old `ImagesNodeTypeCategory` / "CLIJ") | function                   | spatial  | rationale                                                                                                                                                                                                                                                                    |
+|----------------------------------------------|----------------------------|----------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `Clij2ExecuteKernelSimpleIterating`          | `FilteringFunction`        | **both** | "Executes an OpenCL kernel via CLIJ2 to **process images**" — generic GPU image **processing/filtering** (any kernel, one input); the `images/` generic-processing leaf                                                                                                      |
+| `Clij2ExecuteKernelIterating`                | `FilteringFunction`        | **both** | same op as the SimpleIterating sibling (multiple inputs); the `images/` generic-processing leaf (kept consistent with the sibling)                                                                                                                                           |
+| `Clij2PushAlgorithm`                         | `MiscellaneousFunction` ⚠️ | **both** | "Converts an image **into a GPU image** managed by CLIJ" — moves image data **to** the GPU (a CPU→GPU **transfer/convert**, not a filter/measure/segment); there is **no transfer leaf** in the taxonomy, so the top-level `MiscellaneousFunction` is the honest last-resort |
+| `Clij2PullAlgorithm`                         | `MiscellaneousFunction` ⚠️ | **both** | "Converts a **GPU image** into a non-CLIJ image" — moves image data **from** the GPU (a GPU→CPU transfer, sibling of Push); same **no-transfer-leaf** reasoning                                                                                                              |
 
 **Function distribution (the 4 annotated):** `FilteringFunction` **2** (both ExecuteKernel) ·
 `MiscellaneousFunction` **2** (Push + Pull). **0 nodes without a function.**
@@ -3323,10 +3369,10 @@ Import `org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ2Framework`.
 
 **Function (the 2 annotated) — rule 6 by OUTPUT:**
 
-| node (old `DataSourceNodeTypeCategory`) | function | spatial | rationale |
-|---|---|---|---|
-| `CreateIJ2OutOfBoundsFactoryAlgorithm` | `MiscDataFunction` | absent | rule 6 by output: emits `ImageJ2OutOfBoundsFactoryData` — an **IJ2-specific op-config** data type with **no** `data/` leaf ⇒ the `data/` **misc** leaf |
-| `CreateIJ2ShapeAlgorithm` | `MiscDataFunction` | absent | rule 6 by output: emits `ImageJ2ShapeData` — IJ2-specific op-config ⇒ the `data/` **misc** leaf (consistent with the sibling) |
+| node (old `DataSourceNodeTypeCategory`) | function           | spatial | rationale                                                                                                                                              |
+|-----------------------------------------|--------------------|---------|--------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `CreateIJ2OutOfBoundsFactoryAlgorithm`  | `MiscDataFunction` | absent  | rule 6 by output: emits `ImageJ2OutOfBoundsFactoryData` — an **IJ2-specific op-config** data type with **no** `data/` leaf ⇒ the `data/` **misc** leaf |
+| `CreateIJ2ShapeAlgorithm`               | `MiscDataFunction` | absent  | rule 6 by output: emits `ImageJ2ShapeData` — IJ2-specific op-config ⇒ the `data/` **misc** leaf (consistent with the sibling)                          |
 
 **Function distribution (the 2 annotated):** `MiscDataFunction` **2**. **0 without a function.**
 
@@ -3340,9 +3386,9 @@ plots→`JFreeChartFramework`). Import `org.hkijena.jipipe.api.nodes.taxonomy.fr
 
 **The 1 annotated node:**
 
-| node (old `TableNodeTypeCategory`) | function | spatial | rationale |
-|---|---|---|---|
-| `PlotTablesAlgorithm` ("Plot tables"; `ResultsTableData` in → `JFreeChartPlotData` out) | `PlotMiscFunction` | absent | the node's **plot type is user-selectable at runtime** (a `JIPipeDataInfoRef` over *all* `JFreeChartPlotData` subtypes: bar/line/pie/scatter/heatmap/histogram/box-and-whisker…) — it does **not** name a specific chart type in its docs, so the `plotting/` generic leaf "Other plots" (`PlotMiscFunction`) is the correct fit (not `PlotBarFunction`/`PlotLineFunction`/etc., which would wrongly specialize a general node) |
+| node (old `TableNodeTypeCategory`)                                                      | function           | spatial | rationale                                                                                                                                                                                                                                                                                                                                                                                                                       |
+|-----------------------------------------------------------------------------------------|--------------------|---------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `PlotTablesAlgorithm` ("Plot tables"; `ResultsTableData` in → `JFreeChartPlotData` out) | `PlotMiscFunction` | absent  | the node's **plot type is user-selectable at runtime** (a `JIPipeDataInfoRef` over *all* `JFreeChartPlotData` subtypes: bar/line/pie/scatter/heatmap/histogram/box-and-whisker…) — it does **not** name a specific chart type in its docs, so the `plotting/` generic leaf "Other plots" (`PlotMiscFunction`) is the correct fit (not `PlotBarFunction`/`PlotLineFunction`/etc., which would wrongly specialize a general node) |
 
 **Spatial (the 1 annotated):** **absent** — table→plot, no image input (rule 12).
 
@@ -3373,9 +3419,8 @@ is **distinct** from the primary `PlotMiscFunction` ⇒ kept as the primary-firs
 `function = { PlotMiscFunction.class, MeasurementsFunction.class }` (controller fix, applied to the code
 before the implementer's background commit landed). **Flagged (Minor):** if the audit reads the IJ
 "Analyze" re-listing of a *plotting* node as a menu artifact rather than a measurements op, the
-secondary is dropped (mechanical one-line change). Verified `grep "@AddJIPipeNodeAlias" src/main` → 0
-(the alias annotation is removed; the secondary lives in `@ConfigureJIPipeNode`). (clij + ij2 have
-**0** aliases.)
+secondary is dropped (mechanical one-line change). Verified `grep "@AddJIPipeNodeAlias" src/main` → 0 (the alias
+annotation is removed; the secondary lives in `@ConfigureJIPipeNode`). (clij + ij2 have **0** aliases.)
 
 #### (d) The 3 DYNAMIC NodeInfo records (19.10 accessor treatment — accessor-ONLY, no logic change)
 
@@ -3384,16 +3429,16 @@ imports + `getPrimaryFunction()` + `getFramework()`. **No spatial, no name-heuri
 touched** (mirrors `CreateSpotDetectorNodeInfo.java`). The framework is **final** (unambiguous); the
 primary function is a **defensible 19.11b DEFAULT** that Task 20 will refine.
 
-| module / class | `getInstanceClass()` (under gate prefix?) | `getFramework()` (final) | `getPrimaryFunction()` (19.11b default) | default rationale |
-|---|---|---|---|---|
-| clij — `CLIJCommandNodeInfo` | `CLIJCommandNode` (…clij2 ✓) | `new ClijFramework()` | `new MiscellaneousFunction()` | CLIJ2 commands are **varied GPU image ops** (filter/segment/convert/measure, discovered from macro plugins); no single leaf fits the whole set ⇒ Miscellaneous. **Task 20 refines by name** (e.g. "Gaussian filter"→`FilteringFunction`). |
-| ij2 — `ImageJ2OpNodeInfo` | `ImageJ2OpNode` (…imagej2 ✓) | `new ImageJ2Framework()` | `new MiscellaneousFunction()` | ImageJ2 **ops** are varied (coloc/convert/math/…) ⇒ Miscellaneous. **Task 20 refines by name.** |
-| plots — `PlotTables2AlgorithmInfo` | `PlotTables2Algorithm` (…plots ✓) | `new JFreeChartFramework()` | `new PlotMiscFunction()` | the node's **defining output is a JFreeChart plot** (one variant per plot data type), so a `plotting/` leaf is the better default than Miscellaneous (consistent with the annotated `PlotTablesAlgorithm`). Task 20 *may* refine per-variant. |
+| module / class                     | `getInstanceClass()` (under gate prefix?) | `getFramework()` (final)    | `getPrimaryFunction()` (19.11b default) | default rationale                                                                                                                                                                                                                             |
+|------------------------------------|-------------------------------------------|-----------------------------|-----------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| clij — `CLIJCommandNodeInfo`       | `CLIJCommandNode` (…clij2 ✓)             | `new ClijFramework()`       | `new MiscellaneousFunction()`           | CLIJ2 commands are **varied GPU image ops** (filter/segment/convert/measure, discovered from macro plugins); no single leaf fits the whole set ⇒ Miscellaneous. **Task 20 refines by name** (e.g. "Gaussian filter"→`FilteringFunction`).     |
+| ij2 — `ImageJ2OpNodeInfo`          | `ImageJ2OpNode` (…imagej2 ✓)             | `new ImageJ2Framework()`    | `new MiscellaneousFunction()`           | ImageJ2 **ops** are varied (coloc/convert/math/…) ⇒ Miscellaneous. **Task 20 refines by name.**                                                                                                                                               |
+| plots — `PlotTables2AlgorithmInfo` | `PlotTables2Algorithm` (…plots ✓)        | `new JFreeChartFramework()` | `new PlotMiscFunction()`                | the node's **defining output is a JFreeChart plot** (one variant per plot data type), so a `plotting/` leaf is the better default than Miscellaneous (consistent with the annotated `PlotTablesAlgorithm`). Task 20 *may* refine per-variant. |
 
-**Task-20 boundary (important — 19.11b is NOT Task 20):** 19.11b does **only** (1) convert the 7
-**static** annotated nodes (function/framework/spatial by the rules — code-defined, not discovered) and
-(2) add the **two accessor overrides** to each of the 3 dynamic NodeInfo classes with a defensible
-**default** function + the final framework, so each gate passes zero-unassigned **now**. It does **NOT**
+**Task-20 boundary (important — 19.11b is NOT Task 20):** 19.11b does **only** (1) convert the 7 **static** annotated
+nodes (function/framework/spatial by the rules — code-defined, not discovered) and (2) add the **two accessor
+overrides** to each of the 3 dynamic NodeInfo classes with a defensible **default** function + the final framework, so
+each gate passes zero-unassigned **now**. It does **NOT**
 build a `TaxonomyAutoAssignment` helper, does **NOT** parse node names, and does **NOT** add spatial to
 the dynamic nodes. **Task 20 ("IJ2/CLIJ auto-discovery assignment")** will later build
 `TaxonomyAutoAssignment` and refine the dynamic nodes' function by **name/menuPath heuristics** (default
@@ -3406,9 +3451,9 @@ The 3 dynamic functions above are therefore **19.11b defaults pending Task 20**.
   transfer image data to/from the GPU; there is **no transfer/IO leaf** in the current taxonomy, so the
   top-level Miscellaneous leaf is the honest last-resort (rule 9 shape). **Alternative:** a dedicated
   "GPU transfer / image IO" leaf (would need a new leaf) or, if the audit groups by the *unconstrained
-  image* input, an `images/` leaf — but Push/Pull do not filter/measure/segment. Recorded, not changed.
-  (The two `Clij2ExecuteKernel*` → `FilteringFunction` are the more solid judgment: generic GPU image
-  **processing** is the closest `images/` leaf.)
+  image* input, an `images/` leaf — but Push/Pull do not filter/measure/segment. Recorded, not changed. (The two
+  `Clij2ExecuteKernel*` → `FilteringFunction` are the more solid judgment: generic GPU image **processing** is the
+  closest `images/` leaf.)
 - **⚠️ Plots `PlotTablesAlgorithm` → `PlotMiscFunction`** (generic runtime-selectable plot type; see (c)).
 - **⚠️ Plots family-step (start step, `after={}`)** — see (c); re-decide chaining / membership in Phase 3.
 - **⚠️ The 3 dynamic defaults** (`CLIJCommandNodeInfo`/`ImageJ2OpNodeInfo` → `MiscellaneousFunction`,
@@ -3417,6 +3462,7 @@ The 3 dynamic functions above are therefore **19.11b defaults pending Task 20**.
 #### (f) Test infrastructure (first test in each of the 3 modules — none had `src/test` or JUnit deps)
 
 For EACH of clij / ij2 / plots (mirrors the `jipipe-plugin-ij` / `jipipe-plugin-imp` pom verbatim):
+
 - **`pom.xml`:** added `org.junit.jupiter:junit-jupiter` + `org.junit.platform:junit-platform-launcher`
   (test scope) before `</dependencies>`.
 - **Copied** `jipipe-core/src/test/java/org/hkijena/jipipe/api/nodes/taxonomy/
@@ -3434,8 +3480,8 @@ For EACH of clij / ij2 / plots (mirrors the `jipipe-plugin-ij` / `jipipe-plugin-
 **Why the listener is required:** the gate calls `JIPipe.ensureInstance()` → ImageJ SciJava context. A
 module's test classpath does not include jipipe-core's test classes, so core's
 `ImageJLegacyPatcherLauncherSessionListener` is not present; without re-registering the patcher, any
-`ij.*` class loaded before the context is created makes the ImageJ2 legacy patcher
-(`net.imagej.patcher.LegacyInjector`) fail (`No _hooks field found in ij.IJ`), an order-dependent
+`ij.*` class loaded before the context is created makes the ImageJ2 legacy patcher (`net.imagej.patcher.LegacyInjector`)
+fail (`No _hooks field found in ij.IJ`), an order-dependent
 failure (AGENTS.md patcher contract). `LegacyInjector` is on the test classpath transitively via
 jipipe-core → `net.imagej:imagej`.
 
@@ -3451,15 +3497,15 @@ jipipe-core → `net.imagej:imagej`.
 - **CLIJ gate (unset):** `mvn test -pl plugins/jipipe-plugin-clij` → **BUILD SUCCESS**, `Tests run: 1,
   Failures: 0, Errors: 0, Skipped: 1` — gate **skips cleanly** (property unset), module green.
 - **IJ2 gate (enabled):** `… module=org.hkijena.jipipe.plugins.imagej2` → **BUILD SUCCESS**, `Tests run:
-  1, Failures: 0, Errors: 0, Skipped: 0` — **zero unassigned** in the `…imagej2` prefix. The gate saw
-  **619** distinct `ij2:op:*` ids registered under the prefix (dynamic IJ2 ops) — **the dynamic-coverage
+  1, Failures: 0, Errors: 0, Skipped: 0` — **zero unassigned** in the `…imagej2` prefix. The gate saw **619** distinct
+  `ij2:op:*` ids registered under the prefix (dynamic IJ2 ops) — **the dynamic-coverage
   proof**: without the `ImageJ2OpNodeInfo` override these would all be listed as unassigned (RED).
   Global line `116 nodes not yet assigned`, none under `…imagej2`.
 - **IJ2 gate (unset):** `mvn test -pl plugins/jipipe-plugin-ij2` → **BUILD SUCCESS**, `Tests run: 1,
   Failures: 0, Errors: 0, Skipped: 1` — skipped cleanly, module green.
 - **PLOTS gate (enabled):** `… module=org.hkijena.jipipe.plugins.plots` → **BUILD SUCCESS**, `Tests run:
-  1, Failures: 0, Errors: 0, Skipped: 0` — **zero unassigned** in the `…plots` prefix. The gate saw
-  **11** distinct `plot-table:*` ids (the dynamic per-data-type plot variants) under the prefix — the
+  1, Failures: 0, Errors: 0, Skipped: 0` — **zero unassigned** in the `…plots` prefix. The gate saw **11** distinct
+  `plot-table:*` ids (the dynamic per-data-type plot variants) under the prefix — the
   dynamic-coverage proof for `PlotTables2AlgorithmInfo`. Global line `77 nodes not yet assigned`
   (plots' classpath pulls in a smaller set of on-classpath modules than clij/ij2), none under `…plots`.
 - **PLOTS gate (unset):** `mvn test -pl plugins/jipipe-plugin-plots` → **BUILD SUCCESS**, `Tests run: 1,

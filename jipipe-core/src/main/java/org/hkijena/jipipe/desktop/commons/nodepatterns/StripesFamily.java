@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.desktop.commons.nodepatterns;
 
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.awt.geom.Path2D;
 import java.util.Random;
 
@@ -36,7 +36,8 @@ public final class StripesFamily implements NodePatternFamily {
             Path2D p = new Path2D.Double();
             for (int y = -2; y <= h + 2; y += 2) {
                 double x = x0 + amp * Math.sin(y / h * Math.PI * 2 * k + ph);
-                if (y == -2) p.moveTo(x, y); else p.lineTo(x, y);
+                if (y == -2) p.moveTo(x, y);
+                else p.lineTo(x, y);
             }
             for (int y = h + 2; y >= -2; y -= 2) {
                 double x = x0 + stripW + amp * Math.sin(y / h * Math.PI * 2 * k + ph + 0.6);

@@ -17,12 +17,7 @@ import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 
 /**
@@ -50,6 +45,80 @@ public final class TaxonomyAutoAssignment {
     // ------------------------------------------------------------------
     // Resource-file mapping (JSON) for auto-discovered nodes
     // ------------------------------------------------------------------
+
+    /**
+     * Maps an input profile to the spatial dimensions it implies:
+     * {@code ANY} (unconstrained image data) ⇒ both 2D and 3D,
+     * {@code PLANE_2D} ⇒ 2D, {@code VOLUME_3D} ⇒ 3D, {@code NA} ⇒ none.
+     * Never throws ({@code null} ⇒ empty set).
+     *
+     * @param profile the derived input profile, may be {@code null}
+     * @return the implied spatial dimensions; never {@code null}
+     */
+    public static Set<JIPipeNodeTaxonomySpatialDimension> spatialFor(JIPipeNodeTaxonomyInputProfile profile) {
+        if (profile == null) {
+            return Collections.emptySet();
+        }
+        switch (profile) {
+            case ANY:
+                return Set.of(JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D, JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D);
+            case PLANE_2D:
+                return Set.of(JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D);
+            case VOLUME_3D:
+                return Set.of(JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D);
+            default: // NA
+                return Collections.emptySet();
+        }
+    }
+
+    // ------------------------------------------------------------------
+    // Resource-file tag mapping (JSON) for auto-discovered nodes
+    // ------------------------------------------------------------------
+
+    /**
+     * Derives the spatial dimensions from the data classes of a node's input
+     * slots, in declaration order: the <em>first</em> slot whose class maps
+     * to an image profile ({@code ANY}, {@code PLANE_2D}, or {@code VOLUME_3D})
+     * decides the node's spatial dimensions. Slots whose class maps to
+     * {@code NA} (non-image inputs such as tables, ROIs, or files) are
+     * skipped and confer no spatial dimension. If no input class is
+     * image-profiled (or the list is {@code null}/empty), the result is empty.
+     * <p>
+     * The lookup is passed as a parameter so this method stays pure and
+     * testable without a JIPipe instance; at the call sites it is the
+     * registered providers of the node service component
+     * ({@code JIPipe.getNodes()::inputProfileFor}), keeping the spatial
+     * dimensions derived rather than heuristic. A lookup that throws for a
+     * given class is treated as {@code NA} (skipped); this method never
+     * throws.
+     *
+     * @param inputClasses  the data classes of the node's input slots, in order, may be {@code null}
+     * @param profileLookup the function mapping a data class to its input profile
+     * @return the spatial dimensions implied by the first image input slot; never {@code null}
+     */
+    public static Set<JIPipeNodeTaxonomySpatialDimension> spatialForFirstImageInput(List<Class<?>> inputClasses,
+                                                                                    Function<Class<?>, JIPipeNodeTaxonomyInputProfile> profileLookup) {
+        if (inputClasses == null || profileLookup == null) {
+            return Collections.emptySet();
+        }
+        for (Class<?> inputClass : inputClasses) {
+            JIPipeNodeTaxonomyInputProfile profile;
+            try {
+                profile = profileLookup.apply(inputClass);
+            } catch (RuntimeException e) {
+                // A failing lookup is treated as NA: the slot is skipped.
+                continue;
+            }
+            if (profile == JIPipeNodeTaxonomyInputProfile.NA || profile == null) {
+                continue;
+            }
+            Set<JIPipeNodeTaxonomySpatialDimension> spatial = spatialFor(profile);
+            if (!spatial.isEmpty()) {
+                return spatial;
+            }
+        }
+        return Collections.emptySet();
+    }
 
     /**
      * A mapping from auto-discovered node keys (an op name, a command name,
@@ -145,10 +214,6 @@ public final class TaxonomyAutoAssignment {
         }
     }
 
-    // ------------------------------------------------------------------
-    // Resource-file tag mapping (JSON) for auto-discovered nodes
-    // ------------------------------------------------------------------
-
     /**
      * A mapping from auto-discovered node keys (an op name or a command
      * name) to a set of taxonomy tags, loaded from a JSON resource bundled
@@ -184,8 +249,8 @@ public final class TaxonomyAutoAssignment {
                     return mapping;
                 }
                 Map<String, List<String>> raw = JsonUtils.getObjectMapper()
-                    .readValue(stream, JsonUtils.getObjectMapper().getTypeFactory()
-                        .constructMapType(HashMap.class, String.class, List.class));
+                        .readValue(stream, JsonUtils.getObjectMapper().getTypeFactory()
+                                .constructMapType(HashMap.class, String.class, List.class));
                 for (Map.Entry<String, List<String>> e : raw.entrySet()) {
                     if (e.getValue() == null) {
                         continue;
@@ -237,7 +302,7 @@ public final class TaxonomyAutoAssignment {
     public static final class CuratedNodeTags {
 
         private static final TagMapping MAPPING =
-            TagMapping.load(CuratedNodeTags.class, "tags/curated-node-tags.json");
+                TagMapping.load(CuratedNodeTags.class, "tags/curated-node-tags.json");
 
         private CuratedNodeTags() {
         }
@@ -249,75 +314,5 @@ public final class TaxonomyAutoAssignment {
         public static Set<String> tagsOf(String nodeId) {
             return MAPPING.tagsOf(nodeId);
         }
-    }
-
-    /**
-     * Maps an input profile to the spatial dimensions it implies:
-     * {@code ANY} (unconstrained image data) ⇒ both 2D and 3D,
-     * {@code PLANE_2D} ⇒ 2D, {@code VOLUME_3D} ⇒ 3D, {@code NA} ⇒ none.
-     * Never throws ({@code null} ⇒ empty set).
-     *
-     * @param profile the derived input profile, may be {@code null}
-     * @return the implied spatial dimensions; never {@code null}
-     */
-    public static Set<JIPipeNodeTaxonomySpatialDimension> spatialFor(JIPipeNodeTaxonomyInputProfile profile) {
-        if (profile == null) {
-            return Collections.emptySet();
-        }
-        switch (profile) {
-            case ANY:
-                return Set.of(JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D, JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D);
-            case PLANE_2D:
-                return Set.of(JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D);
-            case VOLUME_3D:
-                return Set.of(JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D);
-            default: // NA
-                return Collections.emptySet();
-        }
-    }
-
-    /**
-     * Derives the spatial dimensions from the data classes of a node's input
-     * slots, in declaration order: the <em>first</em> slot whose class maps
-     * to an image profile ({@code ANY}, {@code PLANE_2D}, or {@code VOLUME_3D})
-     * decides the node's spatial dimensions. Slots whose class maps to
-     * {@code NA} (non-image inputs such as tables, ROIs, or files) are
-     * skipped and confer no spatial dimension. If no input class is
-     * image-profiled (or the list is {@code null}/empty), the result is empty.
-     * <p>
-     * The lookup is passed as a parameter so this method stays pure and
-     * testable without a JIPipe instance; at the call sites it is the
-     * registered providers of the node service component
-     * ({@code JIPipe.getNodes()::inputProfileFor}), keeping the spatial
-     * dimensions derived rather than heuristic. A lookup that throws for a
-     * given class is treated as {@code NA} (skipped); this method never
-     * throws.
-     *
-     * @param inputClasses  the data classes of the node's input slots, in order, may be {@code null}
-     * @param profileLookup the function mapping a data class to its input profile
-     * @return the spatial dimensions implied by the first image input slot; never {@code null}
-     */
-    public static Set<JIPipeNodeTaxonomySpatialDimension> spatialForFirstImageInput(List<Class<?>> inputClasses,
-                                                                                      Function<Class<?>, JIPipeNodeTaxonomyInputProfile> profileLookup) {
-        if (inputClasses == null || profileLookup == null) {
-            return Collections.emptySet();
-        }
-        for (Class<?> inputClass : inputClasses) {
-            JIPipeNodeTaxonomyInputProfile profile;
-            try {
-                profile = profileLookup.apply(inputClass);
-            } catch (RuntimeException e) {
-                // A failing lookup is treated as NA: the slot is skipped.
-                continue;
-            }
-            if (profile == JIPipeNodeTaxonomyInputProfile.NA || profile == null) {
-                continue;
-            }
-            Set<JIPipeNodeTaxonomySpatialDimension> spatial = spatialFor(profile);
-            if (!spatial.isEmpty()) {
-                return spatial;
-            }
-        }
-        return Collections.emptySet();
     }
 }

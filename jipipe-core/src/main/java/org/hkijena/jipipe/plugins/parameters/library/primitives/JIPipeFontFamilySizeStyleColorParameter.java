@@ -17,9 +17,7 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.databind.JsonNode;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.GraphicsEnvironment;
+import java.awt.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -63,17 +61,6 @@ public class JIPipeFontFamilySizeStyleColorParameter implements JIPipeFontValue,
         this.size = other.size;
         this.style = other.style;
         this.color = other.color;
-    }
-
-    /**
-     * Explicit field setter used by node migrations (#1339, Task 10) to move
-     * a node's former separate family/size/style/color parameters into one.
-     */
-    public void migrateFrom(String family, int size, int style, Color color) {
-        this.family = family != null ? family : JIPipeFontFamilySizeStyleParameter.defaultFamily();
-        this.size = size;
-        this.style = style;
-        this.color = color != null ? color : Color.WHITE;
     }
 
     /**
@@ -122,6 +109,25 @@ public class JIPipeFontFamilySizeStyleColorParameter implements JIPipeFontValue,
         return result;
     }
 
+    private static List<String> availableFamilies() {
+        try {
+            return Arrays.asList(GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames());
+        } catch (RuntimeException e) {
+            return List.of();
+        }
+    }
+
+    /**
+     * Explicit field setter used by node migrations (#1339, Task 10) to move
+     * a node's former separate family/size/style/color parameters into one.
+     */
+    public void migrateFrom(String family, int size, int style, Color color) {
+        this.family = family != null ? family : JIPipeFontFamilySizeStyleParameter.defaultFamily();
+        this.size = size;
+        this.style = style;
+        this.color = color != null ? color : Color.WHITE;
+    }
+
     /**
      * @return the font as an {@link Font} (the color is <em>not</em> part of
      * a {@link Font} — use {@link #getColor()} for it).
@@ -136,14 +142,6 @@ public class JIPipeFontFamilySizeStyleColorParameter implements JIPipeFontValue,
         return new Font(f, style, size);
     }
 
-    private static List<String> availableFamilies() {
-        try {
-            return Arrays.asList(GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames());
-        } catch (RuntimeException e) {
-            return List.of();
-        }
-    }
-
     @Override
     public JIPipeFontValue copy() {
         return new JIPipeFontFamilySizeStyleColorParameter(this);
@@ -154,7 +152,9 @@ public class JIPipeFontFamilySizeStyleColorParameter implements JIPipeFontValue,
         return family;
     }
 
-    /** @param family the font family name (null resets to the default family) */
+    /**
+     * @param family the font family name (null resets to the default family)
+     */
     @JsonSetter("family")
     public void setFamily(String family) {
         this.family = family != null ? family : JIPipeFontFamilySizeStyleParameter.defaultFamily();
@@ -175,7 +175,9 @@ public class JIPipeFontFamilySizeStyleColorParameter implements JIPipeFontValue,
         return style;
     }
 
-    /** @param style the {@link Font} style bit flags */
+    /**
+     * @param style the {@link Font} style bit flags
+     */
     @JsonSetter("style")
     public void setStyle(int style) {
         this.style = style;
@@ -186,7 +188,9 @@ public class JIPipeFontFamilySizeStyleColorParameter implements JIPipeFontValue,
         return color;
     }
 
-    /** @param color the text color (null resets to white) */
+    /**
+     * @param color the text color (null resets to white)
+     */
     @JsonSetter("color")
     public void setColor(Color color) {
         this.color = color != null ? color : Color.WHITE;

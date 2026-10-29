@@ -61,6 +61,35 @@ public class NewProjectWorkspaceLifecycleAuditTest {
     }
 
     /**
+     * Lists all jipx-workspace directories under a directory tree
+     * (recursively) — used to detect leaked workspaces.
+     */
+    private static List<Path> listWorkspaceDirs(Path root) throws Exception {
+        if (!Files.isDirectory(root)) {
+            return List.of();
+        }
+        try (Stream<Path> stream = Files.walk(root)) {
+            return stream.filter(p -> p.getFileName() != null
+                            && "jipx-workspace".equals(p.getFileName().toString()))
+                    .collect(Collectors.toList());
+        }
+    }
+
+    private static boolean zipContains(Path zip, String entryName) throws Exception {
+        try (java.util.zip.ZipFile zf = new java.util.zip.ZipFile(zip.toFile())) {
+            return zf.getEntry(entryName) != null;
+        }
+    }
+
+    private static byte[] extractZipEntry(Path zip, String entryName) throws Exception {
+        try (java.util.zip.ZipFile zf = new java.util.zip.ZipFile(zip.toFile())) {
+            java.util.zip.ZipEntry entry = zf.getEntry(entryName);
+            assertNotNull(entry);
+            return zf.getInputStream(entry).readAllBytes();
+        }
+    }
+
+    /**
      * The new-project → first-save lifecycle: the workspace binds AFTER the
      * save's {@code setWorkDirectory} pre-step (nothing touches it earlier),
      * a payload added between saves is preserved (only-compress), and close
@@ -182,34 +211,5 @@ public class NewProjectWorkspaceLifecycleAuditTest {
         assertEquals(workspaceDir, project.getWorkspace().getBaseDirectory());
         project.close(JIPipeProgressInfo.SILENT);
         assertFalse(Files.exists(workspaceDir), "close() must clean the globally-bound workspace");
-    }
-
-    /**
-     * Lists all jipx-workspace directories under a directory tree
-     * (recursively) — used to detect leaked workspaces.
-     */
-    private static List<Path> listWorkspaceDirs(Path root) throws Exception {
-        if (!Files.isDirectory(root)) {
-            return List.of();
-        }
-        try (Stream<Path> stream = Files.walk(root)) {
-            return stream.filter(p -> p.getFileName() != null
-                            && "jipx-workspace".equals(p.getFileName().toString()))
-                    .collect(Collectors.toList());
-        }
-    }
-
-    private static boolean zipContains(Path zip, String entryName) throws Exception {
-        try (java.util.zip.ZipFile zf = new java.util.zip.ZipFile(zip.toFile())) {
-            return zf.getEntry(entryName) != null;
-        }
-    }
-
-    private static byte[] extractZipEntry(Path zip, String entryName) throws Exception {
-        try (java.util.zip.ZipFile zf = new java.util.zip.ZipFile(zip.toFile())) {
-            java.util.zip.ZipEntry entry = zf.getEntry(entryName);
-            assertNotNull(entry);
-            return zf.getInputStream(entry).readAllBytes();
-        }
     }
 }

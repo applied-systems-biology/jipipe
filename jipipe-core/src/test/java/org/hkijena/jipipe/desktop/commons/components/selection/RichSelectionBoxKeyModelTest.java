@@ -13,21 +13,14 @@
 
 package org.hkijena.jipipe.desktop.commons.components.selection;
 
+import org.hkijena.jipipe.desktop.commons.components.selection.JIPipeDesktopRichSelectionBox.PopupKeyModel;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Set;
 
-import org.hkijena.jipipe.desktop.commons.components.selection.JIPipeDesktopRichSelectionBox.PopupKeyModel;
-
-import static java.awt.event.KeyEvent.VK_DOWN;
-import static java.awt.event.KeyEvent.VK_ENTER;
-import static java.awt.event.KeyEvent.VK_ESCAPE;
-import static java.awt.event.KeyEvent.VK_TAB;
-import static java.awt.event.KeyEvent.VK_UP;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static java.awt.event.KeyEvent.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * The keyboard decision matrix of the rich selection box's popup
@@ -50,12 +43,16 @@ class RichSelectionBoxKeyModelTest {
         return new JIPipeDesktopRichSelectionBox.Option<>(v, v, null, null);
     }
 
-    /** A non-option group header row of the single-pane list model. */
+    /**
+     * A non-option group header row of the single-pane list model.
+     */
     private static JIPipeDesktopRichSelectionBox.Option<String> hdr(String g) {
         return new JIPipeDesktopRichSelectionBox.Option<>("__group__:" + g, g, null, null);
     }
 
-    /** Two panes: pane 0 = [A, B], pane 1 = [C, D] (two-pane mode, no header rows). */
+    /**
+     * Two panes: pane 0 = [A, B], pane 1 = [C, D] (two-pane mode, no header rows).
+     */
     private static List<List<JIPipeDesktopRichSelectionBox.Option<?>>> panes() {
         return List.of(single("A", "B"), single("C", "D"));
     }

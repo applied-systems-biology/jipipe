@@ -36,27 +36,30 @@ Mined pattern `fan-in-jipipe-compartment-output-other-3` (shape `fan-in`, suppor
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| core-io | `jipipe:compartment-output` |
-| other | `ij-convert-image-to-rgb-colors`, `ij1-analyze-find-particles2d`, `ij1-blur-median2d`, `ij1-calibration-copy-physical-dimensions`, `ij1-color-blend-images`, `ij1-contrast-histogram-enhancer`, … (22 total) |
+| role    | node ids                                                                                                                                                                                                     |
+|---------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| core-io | `jipipe:compartment-output`                                                                                                                                                                                  |
+| other   | `ij-convert-image-to-rgb-colors`, `ij1-analyze-find-particles2d`, `ij1-blur-median2d`, `ij1-calibration-copy-physical-dimensions`, `ij1-color-blend-images`, `ij1-contrast-histogram-enhancer`, … (22 total) |
 
 ## Example graph
 
 Project: `AIAgentTests/02-AdvancedPipelines/Cryogels_01.jip` (relative to `/data/JIPipe`), compartment `Postprocessing`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `ij1-labels-to-rgb` | Convert labels to RGB: resutls after seeded watershed |
-| n1 | `ij1-roi-to-rgb` | Convert ROI to RGB:  results after watershed |
-| n2 | `ij1-roi-from-mask` | Mask to ROI |
-| n3 | `jipipe:compartment-output` | Output |
+| key | node id                     | name                                                  |
+|-----|-----------------------------|-------------------------------------------------------|
+| n0  | `ij1-labels-to-rgb`         | Convert labels to RGB: resutls after seeded watershed |
+| n1  | `ij1-roi-to-rgb`            | Convert ROI to RGB:  results after watershed          |
+| n2  | `ij1-roi-from-mask`         | Mask to ROI                                           |
+| n3  | `jipipe:compartment-output` | Output                                                |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
+| from        | slot     | to     | slot                   | data class   |
+|-------------|----------|--------|------------------------|--------------|
 | Mask to ROI | `Output` | Output | `ROIs after watershed` | `imagej-roi` |
 
 ## Template
 
-Proposed name `Compartment output fans in from 22 source ids (roles: other)`, menu path `Patterns/Graph / Project/Compartment output fans in from 22 source ids (roles: other)` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/fan-in-jipipe-compartment-output-other-3.json`.
+Proposed name `Compartment output fans in from 22 source ids (roles: other)`, menu path
+`Patterns/Graph / Project/Compartment output fans in from 22 source ids (roles: other)` (proposal only — not
+registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/fan-in-jipipe-compartment-output-other-3.json`.
 

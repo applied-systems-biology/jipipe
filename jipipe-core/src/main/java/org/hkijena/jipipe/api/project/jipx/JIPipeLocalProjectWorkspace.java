@@ -68,6 +68,22 @@ public class JIPipeLocalProjectWorkspace implements JIPipeProjectWorkspace {
         this.project = project;
     }
 
+    /**
+     * The default container entry path of a part: {@code project/} + the
+     * part key with {@code ':'} replaced by {@code '-'} + {@code .json}.
+     */
+    private static String defaultPartPath(String partKey) {
+        return "project/" + partKey.replace(':', '-') + ".json";
+    }
+
+    private static void writeJson(Path file, JsonNode node) throws IOException {
+        JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValue(file.toFile(), node);
+    }
+
+    private static String nowIso8601() {
+        return OffsetDateTime.now().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+    }
+
     @Override
     public Path getBaseDirectory() {
         return baseDirectory;
@@ -140,7 +156,7 @@ public class JIPipeLocalProjectWorkspace implements JIPipeProjectWorkspace {
             Path partFile = baseDirectory.resolve(entryPath);
             if (!Files.isRegularFile(partFile)) {
                 throw new IOException("Corrupt JIPX container: listed part file '" + entryPath
-                    + "' (part '" + partKey + "') is missing in " + baseDirectory);
+                        + "' (part '" + partKey + "') is missing in " + baseDirectory);
             }
             parts.put(partKey, mapper.readTree(partFile.toFile()));
         }
@@ -174,14 +190,6 @@ public class JIPipeLocalProjectWorkspace implements JIPipeProjectWorkspace {
     }
 
     /**
-     * The default container entry path of a part: {@code project/} + the
-     * part key with {@code ':'} replaced by {@code '-'} + {@code .json}.
-     */
-    private static String defaultPartPath(String partKey) {
-        return "project/" + partKey.replace(':', '-') + ".json";
-    }
-
-    /**
      * Reads (or initializes) the {@code workspace.json} state, applies the
      * given update, and writes it back.
      */
@@ -189,8 +197,8 @@ public class JIPipeLocalProjectWorkspace implements JIPipeProjectWorkspace {
         Path stateFile = baseDirectory.resolve(WORKSPACE_STATE_FILE_NAME);
         ObjectMapper mapper = JsonUtils.getObjectMapper();
         JsonNode existing = Files.isRegularFile(stateFile)
-            ? mapper.readTree(stateFile.toFile())
-            : mapper.createObjectNode();
+                ? mapper.readTree(stateFile.toFile())
+                : mapper.createObjectNode();
         ObjectNode state = existing.isObject() ? (ObjectNode) existing : mapper.createObjectNode();
         if (!state.has("origin-path")) {
             state.put("origin-path", "");
@@ -226,13 +234,5 @@ public class JIPipeLocalProjectWorkspace implements JIPipeProjectWorkspace {
             }
         }
         return "jip";
-    }
-
-    private static void writeJson(Path file, JsonNode node) throws IOException {
-        JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValue(file.toFile(), node);
-    }
-
-    private static String nowIso8601() {
-        return OffsetDateTime.now().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
     }
 }

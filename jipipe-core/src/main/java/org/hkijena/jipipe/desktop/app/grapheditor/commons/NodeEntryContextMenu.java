@@ -17,9 +17,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.entries.CreateNewNodesByTemplateDatabaseEntry;
 
-import javax.swing.Icon;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -48,9 +46,6 @@ import java.util.Set;
  */
 public final class NodeEntryContextMenu {
 
-    private NodeEntryContextMenu() {
-    }
-
     /**
      * The stable ids of the node-entry context-menu items. Both surfaces
      * wire their actions under these ids; the template ids are the exact
@@ -65,7 +60,6 @@ public final class NodeEntryContextMenu {
     public static final String COPY_TO_PROJECT = "copy-to-project";
     public static final String DELETE = "delete";
     public static final String CONFIGURE_TEMPLATES = "configure-templates";
-
     /**
      * The client-property key under which {@link #buildJPopupMenu(List, Map)}
      * tags each rendered {@link JMenuItem} with its spec id (a stable
@@ -73,19 +67,7 @@ public final class NodeEntryContextMenu {
      */
     public static final String SPEC_ID_KEY = "jipipe.node-entry-menu.spec-id";
 
-    /**
-     * A single context-menu item specification — the Swing-free contract
-     * both surfaces share.
-     *
-     * @param id      the stable item id (see the {@code INSERT_AT_CURSOR} ...
-     *                {@code CONFIGURE_TEMPLATES} constants)
-     * @param label   the user-facing label
-     * @param enabled whether the item is enabled (always {@code true} here —
-     *                an item's <em>presence</em>, not a disabled state, is
-     *                the signal; an unsupplied action simply omits the item,
-     *                see {@link #buildJPopupMenu(List, Map)})
-     */
-    public record MenuItemSpec(String id, String label, boolean enabled) {
+    private NodeEntryContextMenu() {
     }
 
     /**
@@ -124,29 +106,29 @@ public final class NodeEntryContextMenu {
         // --- Base items (every entry) ---
         specs.add(new MenuItemSpec(INSERT_AT_CURSOR, "Insert at cursor", true));
         specs.add(pinned.contains(entry.getId())
-            ? new MenuItemSpec(UNPIN, "Unpin", true)
-            : new MenuItemSpec(PIN, "Pin", true));
+                ? new MenuItemSpec(UNPIN, "Unpin", true)
+                : new MenuItemSpec(PIN, "Pin", true));
         specs.add(new MenuItemSpec(SHOW_DOC, "Show documentation", true));
         // --- Scope-gated template quick actions (template entries only) ---
         if (entry instanceof CreateNewNodesByTemplateDatabaseEntry template) {
             switch (template.getScope()) {
                 case Global -> specs.addAll(List.of(
-                    new MenuItemSpec(EDIT, "Edit template", true),
-                    new MenuItemSpec(COPY_TO_PROJECT, "Copy to Project", true),
-                    new MenuItemSpec(DELETE, "Delete template", true),
-                    new MenuItemSpec(CONFIGURE_TEMPLATES, "Configure templates", true)));
+                        new MenuItemSpec(EDIT, "Edit template", true),
+                        new MenuItemSpec(COPY_TO_PROJECT, "Copy to Project", true),
+                        new MenuItemSpec(DELETE, "Delete template", true),
+                        new MenuItemSpec(CONFIGURE_TEMPLATES, "Configure templates", true)));
                 case Project -> specs.addAll(List.of(
-                    new MenuItemSpec(EDIT, "Edit template", true),
-                    new MenuItemSpec(COPY_TO_GLOBAL, "Copy to Global", true),
-                    new MenuItemSpec(DELETE, "Delete template", true),
-                    new MenuItemSpec(CONFIGURE_TEMPLATES, "Configure templates", true)));
+                        new MenuItemSpec(EDIT, "Edit template", true),
+                        new MenuItemSpec(COPY_TO_GLOBAL, "Copy to Global", true),
+                        new MenuItemSpec(DELETE, "Delete template", true),
+                        new MenuItemSpec(CONFIGURE_TEMPLATES, "Configure templates", true)));
                 case System -> specs.addAll(List.of(
-                    new MenuItemSpec(COPY_TO_GLOBAL, "Copy to Global", true),
-                    new MenuItemSpec(CONFIGURE_TEMPLATES, "Configure templates", true)));
+                        new MenuItemSpec(COPY_TO_GLOBAL, "Copy to Global", true),
+                        new MenuItemSpec(CONFIGURE_TEMPLATES, "Configure templates", true)));
                 case Downloaded -> specs.addAll(List.of(
-                    new MenuItemSpec(COPY_TO_GLOBAL, "Copy to Your templates", true),
-                    new MenuItemSpec(DELETE, "Remove download", true),
-                    new MenuItemSpec(CONFIGURE_TEMPLATES, "Configure templates", true)));
+                        new MenuItemSpec(COPY_TO_GLOBAL, "Copy to Your templates", true),
+                        new MenuItemSpec(DELETE, "Remove download", true),
+                        new MenuItemSpec(CONFIGURE_TEMPLATES, "Configure templates", true)));
             }
         }
         return specs;
@@ -173,7 +155,7 @@ public final class NodeEntryContextMenu {
      * {@link #specs(JIPipeNodeDatabaseEntry, Set)} (which remains the
      * single-entry source of truth the compact-mode tree leaves call).
      *
-     * @param selected the selected entries (non-empty; the list's selection)
+     * @param selected  the selected entries (non-empty; the list's selection)
      * @param pinnedIds the currently pinned node ids; null-safe
      * @return the ordered item specs for the selection
      */
@@ -307,5 +289,20 @@ public final class NodeEntryContextMenu {
             case SHOW_DOC -> "Displays the documentation of this node";
             default -> label;
         };
+    }
+
+    /**
+     * A single context-menu item specification — the Swing-free contract
+     * both surfaces share.
+     *
+     * @param id      the stable item id (see the {@code INSERT_AT_CURSOR} ...
+     *                {@code CONFIGURE_TEMPLATES} constants)
+     * @param label   the user-facing label
+     * @param enabled whether the item is enabled (always {@code true} here —
+     *                an item's <em>presence</em>, not a disabled state, is
+     *                the signal; an unsupplied action simply omits the item,
+     *                see {@link #buildJPopupMenu(List, Map)})
+     */
+    public record MenuItemSpec(String id, String label, boolean enabled) {
     }
 }

@@ -26,7 +26,8 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -65,13 +66,78 @@ public class JIPipeDesktopFontParameterEditorUI<T extends JIPipeFontValue> exten
             Pattern.compile("mono|courier|consolas|menlo|dejavu sans mono|liberation mono|source code|fira code|jetbrains|inconsolata|ubunto? mono", Pattern.CASE_INSENSITIVE);
     private static final Pattern SERIF_PATTERN =
             Pattern.compile("serif|times|georgia|garamond|baskerville|nimbus roman|palatino|libre", Pattern.CASE_INSENSITIVE);
-
+    /**
+     * The dark preview tone.
+     */
+    private static final Color PREVIEW_DARK = new Color(0x20, 0x24, 0x29);
+    /**
+     * The light preview tone.
+     */
+    private static final Color PREVIEW_LIGHT = new Color(0xF2, 0xF2, 0xF2);
     private FontPreviewControl preview;
     private JPopupMenu popup;
 
     protected JIPipeDesktopFontParameterEditorUI(Class<T> clazz, InitializationParameters parameters) {
         super(clazz, parameters);
         initialize();
+    }
+
+    // ------------------------------------------------------------------
+    // Popout
+    // ------------------------------------------------------------------
+
+    /**
+     * Rough family classification (name-based; sans-serif is the catch-all).
+     */
+    private static String fontGroup(String family) {
+        if (MONO_PATTERN.matcher(family).find()) {
+            return "Monospace";
+        }
+        if (SERIF_PATTERN.matcher(family).find()) {
+            return "Serif";
+        }
+        return "Sans-serif";
+    }
+
+    /**
+     * The font preview's background, auto-selected so the font color is always
+     * readable (#1339): picks the theme tone (light or dark) that maximizes the
+     * contrast against the font color — light fonts get a dark background, dark
+     * fonts a light one. No more checkerboard; the background simply follows
+     * the text color. Pure (no Swing state), headless-testable.
+     *
+     * @param fontColor the font color that will be painted on top
+     * @return a background color with a guaranteed contrast against it
+     */
+    static Color previewBackground(Color fontColor) {
+        // Auto-contrast rule: pick whichever of the two fixed tones maximizes
+        // the WCAG contrast against the font color. A plain luminance > 0.5
+        // split would misplace mid-tone colors (e.g. olive, luminance ~0.49,
+        // where the dark tone gives ~7:1 but the light one only ~1.7:1); the
+        // direct contrast comparison always lands on the more readable tone.
+        double onDark = contrast(fontColor, PREVIEW_DARK);
+        double onLight = contrast(fontColor, PREVIEW_LIGHT);
+        return onDark >= onLight ? PREVIEW_DARK : PREVIEW_LIGHT;
+    }
+
+    /**
+     * WCAG contrast ratio (1..21) between two colors.
+     */
+    private static double contrast(Color a, Color b) {
+        double hi = Math.max(relLuminance(a), relLuminance(b));
+        double lo = Math.min(relLuminance(a), relLuminance(b));
+        return (hi + 0.05) / (lo + 0.05);
+    }
+
+    /**
+     * WCAG relative luminance of a color (0..1).
+     */
+    private static double relLuminance(Color c) {
+        double r = c.getRed() / 255.0, g = c.getGreen() / 255.0, b = c.getBlue() / 255.0;
+        r = r <= 0.03928 ? r / 12.92 : Math.pow((r + 0.055) / 1.055, 2.4);
+        g = g <= 0.03928 ? g / 12.92 : Math.pow((g + 0.055) / 1.055, 2.4);
+        b = b <= 0.03928 ? b / 12.92 : Math.pow((b + 0.055) / 1.055, 2.4);
+        return 0.2126 * r + 0.7152 * g + 0.0722 * b;
     }
 
     @Override
@@ -104,10 +170,6 @@ public class JIPipeDesktopFontParameterEditorUI<T extends JIPipeFontValue> exten
         });
         add(preview, BorderLayout.CENTER);
     }
-
-    // ------------------------------------------------------------------
-    // Popout
-    // ------------------------------------------------------------------
 
     private void togglePopup() {
         if (popup != null && popup.isVisible()) {
@@ -205,16 +267,9 @@ public class JIPipeDesktopFontParameterEditorUI<T extends JIPipeFontValue> exten
         return result;
     }
 
-    /** Rough family classification (name-based; sans-serif is the catch-all). */
-    private static String fontGroup(String family) {
-        if (MONO_PATTERN.matcher(family).find()) {
-            return "Monospace";
-        }
-        if (SERIF_PATTERN.matcher(family).find()) {
-            return "Serif";
-        }
-        return "Sans-serif";
-    }
+    // ------------------------------------------------------------------
+    // Preview painting
+    // ------------------------------------------------------------------
 
     private JComponent buildSizeSpinner() {
         JIPipeFontValue parameter = getParameter();
@@ -352,52 +407,6 @@ public class JIPipeDesktopFontParameterEditorUI<T extends JIPipeFontValue> exten
         preview.repaint();
     }
 
-    // ------------------------------------------------------------------
-    // Preview painting
-    // ------------------------------------------------------------------
-
-    /**
-     * The font preview's background, auto-selected so the font color is always
-     * readable (#1339): picks the theme tone (light or dark) that maximizes the
-     * contrast against the font color — light fonts get a dark background, dark
-     * fonts a light one. No more checkerboard; the background simply follows
-     * the text color. Pure (no Swing state), headless-testable.
-     *
-     * @param fontColor the font color that will be painted on top
-     * @return a background color with a guaranteed contrast against it
-     */
-    static Color previewBackground(Color fontColor) {
-        // Auto-contrast rule: pick whichever of the two fixed tones maximizes
-        // the WCAG contrast against the font color. A plain luminance > 0.5
-        // split would misplace mid-tone colors (e.g. olive, luminance ~0.49,
-        // where the dark tone gives ~7:1 but the light one only ~1.7:1); the
-        // direct contrast comparison always lands on the more readable tone.
-        double onDark = contrast(fontColor, PREVIEW_DARK);
-        double onLight = contrast(fontColor, PREVIEW_LIGHT);
-        return onDark >= onLight ? PREVIEW_DARK : PREVIEW_LIGHT;
-    }
-
-    /** WCAG contrast ratio (1..21) between two colors. */
-    private static double contrast(Color a, Color b) {
-        double hi = Math.max(relLuminance(a), relLuminance(b));
-        double lo = Math.min(relLuminance(a), relLuminance(b));
-        return (hi + 0.05) / (lo + 0.05);
-    }
-
-    /** The dark preview tone. */
-    private static final Color PREVIEW_DARK = new Color(0x20, 0x24, 0x29);
-    /** The light preview tone. */
-    private static final Color PREVIEW_LIGHT = new Color(0xF2, 0xF2, 0xF2);
-
-    /** WCAG relative luminance of a color (0..1). */
-    private static double relLuminance(Color c) {
-        double r = c.getRed() / 255.0, g = c.getGreen() / 255.0, b = c.getBlue() / 255.0;
-        r = r <= 0.03928 ? r / 12.92 : Math.pow((r + 0.055) / 1.055, 2.4);
-        g = g <= 0.03928 ? g / 12.92 : Math.pow((g + 0.055) / 1.055, 2.4);
-        b = b <= 0.03928 ? b / 12.92 : Math.pow((b + 0.055) / 1.055, 2.4);
-        return 0.2126 * r + 0.7152 * g + 0.0722 * b;
-    }
-
     /**
      * @return the color to paint the preview text with: the value's color when
      * it carries one, otherwise black (the no-color family members render
@@ -410,7 +419,9 @@ public class JIPipeDesktopFontParameterEditorUI<T extends JIPipeFontValue> exten
                 : Color.BLACK;
     }
 
-    /** The inline preview: sample text in the current font, scaled to the row. */
+    /**
+     * The inline preview: sample text in the current font, scaled to the row.
+     */
     private class FontPreviewControl extends JComponent {
         FontPreviewControl() {
             setToolTipText("Click to edit the font");
@@ -446,7 +457,9 @@ public class JIPipeDesktopFontParameterEditorUI<T extends JIPipeFontValue> exten
         }
     }
 
-    /** The larger preview band inside the popout (renders at true size, clipped). */
+    /**
+     * The larger preview band inside the popout (renders at true size, clipped).
+     */
     private class FontPreviewBand extends JComponent {
         @Override
         protected void paintComponent(Graphics g) {

@@ -162,7 +162,9 @@ public class JIPipeDesktopNumberParameterEditorUI extends JIPipeDesktopParameter
         return 1;
     }
 
-    /** Decimals for the slider's inline editor/tooltip: 0 for integral types, 2 for floating point. */
+    /**
+     * Decimals for the slider's inline editor/tooltip: 0 for integral types, 2 for floating point.
+     */
     private int valuePrecision() {
         Class<?> f = getParameterAccess().getFieldClass();
         if (f == float.class || f == Float.class || f == double.class || f == Double.class) {

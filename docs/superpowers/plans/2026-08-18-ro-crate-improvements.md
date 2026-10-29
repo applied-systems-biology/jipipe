@@ -1,23 +1,32 @@
 # Improved RO-Crate Generation Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:
+> executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Make RO-Crate Docker settings configurable, automate Docker image builds via CI, fix Workflow-RO-Crate 1.0 standards compliance, and add instrumentation support for remote RO-Crate creation.
+**Goal:** Make RO-Crate Docker settings configurable, automate Docker image builds via CI, fix Workflow-RO-Crate 1.0
+standards compliance, and add instrumentation support for remote RO-Crate creation.
 
-**Architecture:** Application-level defaults (`ROCrateApplicationSettings`) feed into a `ROCrateDockerSettings` parameter collection that is passed to `CreateROCrateRun`. The GUI publisher assistant and the instrumentation `create_ro_crate` operation both create `ROCrateDockerSettings` from these defaults (with per-export overrides). CI builds Docker images from the Linux64 prepackaged tar.gz and pushes to Docker Hub. A CI verification job creates an RO-Crate via instrumentation and validates/executes it with `cwltool`.
+**Architecture:** Application-level defaults (`ROCrateApplicationSettings`) feed into a `ROCrateDockerSettings`
+parameter collection that is passed to `CreateROCrateRun`. The GUI publisher assistant and the instrumentation
+`create_ro_crate` operation both create `ROCrateDockerSettings` from these defaults (with per-export overrides). CI
+builds Docker images from the Linux64 prepackaged tar.gz and pushes to Docker Hub. A CI verification job creates an
+RO-Crate via instrumentation and validates/executes it with `cwltool`.
 
-**Tech Stack:** Java 21, Maven, JIPipe plugin system, `contrib/jipipe-ro-crate-java-2.1.0`, WebSocket instrumentation API, Docker, `xvfb-run`, `cwltool`, GitLab CI, git-lfs
+**Tech Stack:** Java 21, Maven, JIPipe plugin system, `contrib/jipipe-ro-crate-java-2.1.0`, WebSocket instrumentation
+API, Docker, `xvfb-run`, `cwltool`, GitLab CI, git-lfs
 
 ## Global Constraints
 
 - Java 21 required
-- `dockerEnvVars` must be `StringAndStringPairParameterList` (not `Map<String, String>`) in all JIPipe parameter contexts
+- `dockerEnvVars` must be `StringAndStringPairParameterList` (not `Map<String, String>`) in all JIPipe parameter
+  contexts
 - Docker entrypoint uses `xvfb-run -a` (not a custom Xvfb script)
 - Docker image built from `JIPipe-*-Prepackaged-Linux64.tar.gz` (not from JARs)
 - Test data stored in-repo with git-lfs for large files
 - CWL version is v1.2
 - Workflow-RO-Crate profile 1.0 compliance target
-- Follow existing JIPipe plugin registration patterns (`JIPipePrepackagedDefaultJavaPlugin`, `registerApplicationSettingsSheet`, `registerInstrumentationOperation`)
+- Follow existing JIPipe plugin registration patterns (`JIPipePrepackagedDefaultJavaPlugin`,
+  `registerApplicationSettingsSheet`, `registerInstrumentationOperation`)
 
 ---
 
@@ -25,40 +34,43 @@
 
 ### New Files
 
-| File | Responsibility |
-|------|---------------|
-| `jipipe-core/src/main/java/org/hkijena/jipipe/plugins/publish/rocrate/ROCrateDockerSettings.java` | Parameter collection holding docker image, tag, env vars pair list. Provides `getEnvVarsAsMap()`. |
-| `jipipe-core/src/main/java/org/hkijena/jipipe/plugins/publish/rocrate/ROCrateApplicationSettings.java` | Application settings sheet with default Docker config. |
-| `jipipe-core/src/main/java/org/hkijena/jipipe/api/instrumentation/operations/ROCrateOperations.java` | `create_ro_crate` instrumentation operation. |
-| `dist/docker/Dockerfile` | Docker image definition using Linux64 prepackaged tar.gz + xvfb-run. |
-| `dist/docker/build.sh` | Build script for Docker image. |
-| `dist/docker/verify_ro_crate.py` | WebSocket client for CI RO-Crate creation + verification. |
-| `dist/docker/test-data/kidney.jip` | Test project (from JSC_2025_06_Kidney_Exports). |
-| `dist/docker/test-data/kidney_with_user_dirs.jip` | Test project with user dirs. |
-| `dist/docker/test-data/raw/` | Input data (git-lfs). |
-| `dist/docker/test-data/results/` | Expected output reference (git-lfs). |
+| File                                                                                                   | Responsibility                                                                                    |
+|--------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------|
+| `jipipe-core/src/main/java/org/hkijena/jipipe/plugins/publish/rocrate/ROCrateDockerSettings.java`      | Parameter collection holding docker image, tag, env vars pair list. Provides `getEnvVarsAsMap()`. |
+| `jipipe-core/src/main/java/org/hkijena/jipipe/plugins/publish/rocrate/ROCrateApplicationSettings.java` | Application settings sheet with default Docker config.                                            |
+| `jipipe-core/src/main/java/org/hkijena/jipipe/api/instrumentation/operations/ROCrateOperations.java`   | `create_ro_crate` instrumentation operation.                                                      |
+| `dist/docker/Dockerfile`                                                                               | Docker image definition using Linux64 prepackaged tar.gz + xvfb-run.                              |
+| `dist/docker/build.sh`                                                                                 | Build script for Docker image.                                                                    |
+| `dist/docker/verify_ro_crate.py`                                                                       | WebSocket client for CI RO-Crate creation + verification.                                         |
+| `dist/docker/test-data/kidney.jip`                                                                     | Test project (from JSC_2025_06_Kidney_Exports).                                                   |
+| `dist/docker/test-data/kidney_with_user_dirs.jip`                                                      | Test project with user dirs.                                                                      |
+| `dist/docker/test-data/raw/`                                                                           | Input data (git-lfs).                                                                             |
+| `dist/docker/test-data/results/`                                                                       | Expected output reference (git-lfs).                                                              |
 
 ### Modified Files
 
-| File | Changes |
-|------|---------|
-| `jipipe-core/.../publish/rocrate/CreateROCrateRun.java` | Accept `ROCrateDockerSettings`, use it in CWL generation, add standards compliance fixes |
-| `jipipe-core/.../publish/rocrate/ROCratePublisherAssistant.java` | Add advanced Docker settings section, pass to `CreateROCrateRun` |
-| `jipipe-core/.../publish/PublishPlugin.java` | Register `ROCrateApplicationSettings` |
-| `jipipe-core/.../api/instrumentation/InstrumentationAPI.java` | Add `createROCrate()` static method |
-| `jipipe-core/.../plugins/instrumentation/InstrumentationPlugin.java` | Register `create_ro_crate` operation |
-| `.gitlab-ci.yml` | Add `docker_build_push` and `verify_ro_crate` jobs |
-| `.gitattributes` | Configure git-lfs for test data |
+| File                                                                 | Changes                                                                                  |
+|----------------------------------------------------------------------|------------------------------------------------------------------------------------------|
+| `jipipe-core/.../publish/rocrate/CreateROCrateRun.java`              | Accept `ROCrateDockerSettings`, use it in CWL generation, add standards compliance fixes |
+| `jipipe-core/.../publish/rocrate/ROCratePublisherAssistant.java`     | Add advanced Docker settings section, pass to `CreateROCrateRun`                         |
+| `jipipe-core/.../publish/PublishPlugin.java`                         | Register `ROCrateApplicationSettings`                                                    |
+| `jipipe-core/.../api/instrumentation/InstrumentationAPI.java`        | Add `createROCrate()` static method                                                      |
+| `jipipe-core/.../plugins/instrumentation/InstrumentationPlugin.java` | Register `create_ro_crate` operation                                                     |
+| `.gitlab-ci.yml`                                                     | Add `docker_build_push` and `verify_ro_crate` jobs                                       |
+| `.gitattributes`                                                     | Configure git-lfs for test data                                                          |
 
 ---
 
 ## Task 1: ROCrateDockerSettings Parameter Collection
 
 **Files:**
+
 - Create: `jipipe-core/src/main/java/org/hkijena/jipipe/plugins/publish/rocrate/ROCrateDockerSettings.java`
 
 **Interfaces:**
-- Produces: `ROCrateDockerSettings` class with `getDockerImage()`, `getDockerTag()`, `getDockerEnvVars()` (returns `StringAndStringPairParameterList`), `getEnvVarsAsMap()` (returns `Map<String, String>`)
+
+- Produces: `ROCrateDockerSettings` class with `getDockerImage()`, `getDockerTag()`, `getDockerEnvVars()` (returns
+  `StringAndStringPairParameterList`), `getEnvVarsAsMap()` (returns `Map<String, String>`)
 
 - [ ] **Step 1: Write the ROCrateDockerSettings class**
 
@@ -159,12 +171,15 @@ git commit -m "Add ROCrateDockerSettings parameter collection"
 ## Task 2: ROCrateApplicationSettings
 
 **Files:**
+
 - Create: `jipipe-core/src/main/java/org/hkijena/jipipe/plugins/publish/rocrate/ROCrateApplicationSettings.java`
 - Modify: `jipipe-core/src/main/java/org/hkijena/jipipe/plugins/publish/PublishPlugin.java`
 
 **Interfaces:**
+
 - Consumes: `ROCrateDockerSettings` from Task 1
-- Produces: `ROCrateApplicationSettings` with `getInstance()` static method, `ID` field, and getters for `dockerImage`, `dockerTag`, `dockerEnvVars`
+- Produces: `ROCrateApplicationSettings` with `getInstance()` static method, `ID` field, and getters for `dockerImage`,
+  `dockerTag`, `dockerEnvVars`
 
 - [ ] **Step 1: Write the ROCrateApplicationSettings class**
 
@@ -282,6 +297,7 @@ registerApplicationSettingsSheet(new ROCrateApplicationSettings());
 ```
 
 Add the import:
+
 ```java
 import org.hkijena.jipipe.plugins.publish.rocrate.ROCrateApplicationSettings;
 ```
@@ -304,9 +320,11 @@ git commit -m "Add ROCrateApplicationSettings with default Docker config"
 ## Task 3: Refactor CreateROCrateRun for Docker Settings + Standards Compliance
 
 **Files:**
+
 - Modify: `jipipe-core/src/main/java/org/hkijena/jipipe/plugins/publish/rocrate/CreateROCrateRun.java`
 
 **Interfaces:**
+
 - Consumes: `ROCrateDockerSettings` from Task 1
 - Produces: `CreateROCrateRun` that accepts `ROCrateDockerSettings`, generates standards-compliant RO-Crate metadata
 
@@ -340,7 +358,8 @@ public CreateROCrateRun(JIPipeProject project, Path projectFile, Path roCrateFil
 }
 ```
 
-Keep the old constructor for backward compatibility, delegating to the new one with defaults from `ROCrateApplicationSettings`:
+Keep the old constructor for backward compatibility, delegating to the new one with defaults from
+`ROCrateApplicationSettings`:
 
 ```java
 public CreateROCrateRun(JIPipeProject project, Path projectFile, Path roCrateFile,
@@ -350,11 +369,12 @@ public CreateROCrateRun(JIPipeProject project, Path projectFile, Path roCrateFil
 }
 ```
 
-- [ ] **Step 2: Update createWorkflowCwl() to use Docker settings**
+- [ ] **Step 2: Update createWorkflowCwl () to use Docker settings**
 
 Replace the hardcoded Docker requirement section in `createWorkflowCwl()`:
 
 Old code (lines ~278-307):
+
 ```java
 String version = String.valueOf(VersionUtils.getJIPipeVersion());
 // ...
@@ -375,6 +395,7 @@ requirements.add(envReq);
 ```
 
 New code:
+
 ```java
 Map<String, Object> dockerReq = new LinkedHashMap<>();
 dockerReq.put("class", "DockerRequirement");
@@ -395,7 +416,8 @@ Remove the `String version = String.valueOf(VersionUtils.getJIPipeVersion());` l
 
 - [ ] **Step 3: Add CWL ComputerLanguage contextual entity**
 
-In `createROCrateBuilder()`, after the `JsonDescriptor` contextual entity is added, add the CWL language entity and Bioschemas guide entities:
+In `createROCrateBuilder()`, after the `JsonDescriptor` contextual entity is added, add the CWL language entity and
+Bioschemas guide entities:
 
 ```java
 private RoCrate.RoCrateBuilder createROCrateBuilder() {
@@ -432,11 +454,13 @@ private RoCrate.RoCrateBuilder createROCrateBuilder() {
 ```
 
 Add import:
+
 ```java
 import org.hkijena.jipipe.contrib.ro_crate.entities.contextual.ContextualEntity;
 ```
 
-Note: Also change `DateTimeFormatter.ISO_LOCAL_DATE` to `DateTimeFormatter.ISO_LOCAL_DATE_TIME` for the `datePublished` field.
+Note: Also change `DateTimeFormatter.ISO_LOCAL_DATE` to `DateTimeFormatter.ISO_LOCAL_DATE_TIME` for the `datePublished`
+field.
 
 - [ ] **Step 4: Add Bioschemas conformsTo and encodingFormat to the workflow entity**
 
@@ -464,6 +488,7 @@ private void addROCrateCwlWorkflow(RoCrate.RoCrateBuilder builder, Path tmpPath)
 - [ ] **Step 5: Add encodingFormat to other file entities**
 
 In `addProjectToROCrate()`, add encodingFormat to `project.jip`:
+
 ```java
 builder.addDataEntity(new FileEntity.FileEntityBuilder()
         .setId("./project.jip")
@@ -473,6 +498,7 @@ builder.addDataEntity(new FileEntity.FileEntityBuilder()
 ```
 
 In `copyProjectUserPaths()`, add encodingFormat to `project-user-paths.json`:
+
 ```java
 builder.addDataEntity(new FileEntity.FileEntityBuilder()
         .setId("project-user-paths.json")
@@ -482,6 +508,7 @@ builder.addDataEntity(new FileEntity.FileEntityBuilder()
 ```
 
 In `createDiagram()`, add encodingFormat to `diagram.png`:
+
 ```java
 builder.addDataEntity(new FileEntity.FileEntityBuilder()
         .setId("diagram.png")
@@ -495,9 +522,12 @@ builder.addDataEntity(new FileEntity.FileEntityBuilder()
 
 - [ ] **Step 6: Add keywords to the root data entity**
 
-In `addROCrateMainEntity()` or in `createROCrateBuilder()`, add keywords. The simplest approach is to add it in `createROCrateBuilder()` — but the root data entity is created by the builder. Add after `builder.build()` in `run()`, before `addROCrateMainEntity()`:
+In `addROCrateMainEntity()` or in `createROCrateBuilder()`, add keywords. The simplest approach is to add it in
+`createROCrateBuilder()` — but the root data entity is created by the builder. Add after `builder.build()` in `run()`,
+before `addROCrateMainEntity()`:
 
-Actually, the root data entity is accessible via `crate.getRootDataEntity()` after build. In `run()`, after `RoCrate crate = builder.build();`:
+Actually, the root data entity is accessible via `crate.getRootDataEntity()` after build. In `run()`, after
+`RoCrate crate = builder.build();`:
 
 ```java
 crate.getRootDataEntity().addProperty("keywords", "JIPipe");
@@ -520,15 +550,18 @@ git commit -m "Refactor CreateROCrateRun for Docker settings and RO-Crate standa
 ## Task 4: Update ROCratePublisherAssistant with Advanced Docker Settings
 
 **Files:**
+
 - Modify: `jipipe-core/src/main/java/org/hkijena/jipipe/plugins/publish/rocrate/ROCratePublisherAssistant.java`
 
 **Interfaces:**
+
 - Consumes: `ROCrateDockerSettings` from Task 1, `ROCrateApplicationSettings` from Task 2
 - Produces: Updated `ROCratePublisherAssistant` that passes Docker settings to `CreateROCrateRun`
 
 - [ ] **Step 1: Add dockerSettings to the Settings class**
 
-Add a `ROCrateDockerSettings` field to the `Settings` inner class, initialized from `ROCrateApplicationSettings` defaults:
+Add a `ROCrateDockerSettings` field to the `Settings` inner class, initialized from `ROCrateApplicationSettings`
+defaults:
 
 ```java
 public static class Settings extends AbstractJIPipeParameterCollection {
@@ -557,6 +590,7 @@ public static class Settings extends AbstractJIPipeParameterCollection {
 ```
 
 Add imports:
+
 ```java
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameterList;
 ```
@@ -590,17 +624,21 @@ git commit -m "Add advanced Docker settings to RO-Crate publisher assistant"
 ## Task 5: Instrumentation Operation — create_ro_crate
 
 **Files:**
+
 - Create: `jipipe-core/src/main/java/org/hkijena/jipipe/api/instrumentation/operations/ROCrateOperations.java`
 - Modify: `jipipe-core/src/main/java/org/hkijena/jipipe/api/instrumentation/InstrumentationAPI.java`
 - Modify: `jipipe-core/src/main/java/org/hkijena/jipipe/plugins/instrumentation/InstrumentationPlugin.java`
 
 **Interfaces:**
-- Consumes: `ROCrateDockerSettings` from Task 1, `ROCrateApplicationSettings` from Task 2, `CreateROCrateRun` from Task 3
+
+- Consumes: `ROCrateDockerSettings` from Task 1, `ROCrateApplicationSettings` from Task 2, `CreateROCrateRun` from Task
+  3
 - Produces: `create_ro_crate` WebSocket operation and `InstrumentationAPI.createROCrate()` static method
 
-- [ ] **Step 1: Add createROCrate() to InstrumentationAPI**
+- [ ] **Step 1: Add createROCrate () to InstrumentationAPI**
 
-Add the following static method to `InstrumentationAPI.java`. This method contains the business logic shared between the operation wrapper and the internal AI agent.
+Add the following static method to `InstrumentationAPI.java`. This method contains the business logic shared between the
+operation wrapper and the internal AI agent.
 
 ```java
 public static JsonNode createROCrate(InstrumentationContext ctx, String outputPath,
@@ -631,7 +669,8 @@ public static JsonNode createROCrate(InstrumentationContext ctx, String outputPa
 }
 ```
 
-Add a helper to get the project save path from the context. The instrumentation context provides access to the desktop project window. Add this method:
+Add a helper to get the project save path from the context. The instrumentation context provides access to the desktop
+project window. Add this method:
 
 ```java
 private static Path getProjectSavePath(InstrumentationContext ctx) {
@@ -647,6 +686,7 @@ private static Path getProjectSavePath(InstrumentationContext ctx) {
 Then update the `createROCrate` method to use `getProjectSavePath(ctx)` instead of `ctx.getProjectSavePath()`.
 
 Add imports to `InstrumentationAPI.java`:
+
 ```java
 import org.hkijena.jipipe.plugins.publish.rocrate.CreateROCrateRun;
 import org.hkijena.jipipe.plugins.publish.rocrate.ROCrateDockerSettings;
@@ -748,6 +788,7 @@ registerInstrumentationOperation("create_ro_crate", new ROCrateOperations.Create
 ```
 
 Add import:
+
 ```java
 import org.hkijena.jipipe.api.instrumentation.operations.ROCrateOperations;
 ```
@@ -771,10 +812,12 @@ git commit -m "Add create_ro_crate instrumentation operation"
 ## Task 6: Dockerfile and Build Script
 
 **Files:**
+
 - Create: `dist/docker/Dockerfile`
 - Create: `dist/docker/build.sh`
 
 **Interfaces:**
+
 - Produces: Docker image `appsysbiohkijena/jipipe:<version>` with `xvfb-run -a` entrypoint
 
 - [ ] **Step 1: Write the Dockerfile**
@@ -860,10 +903,12 @@ git commit -m "Add Dockerfile and build script for JIPipe Docker image"
 ## Task 7: CI Jobs — docker_build_push and verify_ro_crate
 
 **Files:**
+
 - Modify: `.gitlab-ci.yml`
 - Create: `dist/docker/verify_ro_crate.py`
 
 **Interfaces:**
+
 - Consumes: Docker image from Task 6, instrumentation operation from Task 5, test data
 
 - [ ] **Step 1: Write the verify_ro_crate.py script**
@@ -1078,6 +1123,7 @@ git commit -m "Add CI jobs for Docker build/push and RO-Crate verification"
 ## Task 8: Test Data Setup
 
 **Files:**
+
 - Create: `dist/docker/test-data/kidney.jip`
 - Create: `dist/docker/test-data/kidney_with_user_dirs.jip`
 - Create: `dist/docker/test-data/raw/` (git-lfs)
@@ -1102,6 +1148,7 @@ git lfs track "dist/docker/test-data/results/**"
 ```
 
 Write `.gitattributes`:
+
 ```
 dist/docker/test-data/raw/** filter=lfs diff=lfs merge=lfs -text
 dist/docker/test-data/results/** filter=lfs diff=lfs merge=lfs -text

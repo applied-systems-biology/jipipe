@@ -108,13 +108,13 @@ public final class JIPipeProjectCrate {
      * Builds the Workflow RO-Crate for the given project and runs the
      * compliance checklist.
      *
-     * @param project     the project to crate (its metadata drives the
-     *                    entity graph)
+     * @param project       the project to crate (its metadata drives the
+     *                      entity graph)
      * @param violationsOut collects the compliance violations; a
      *                      well-formed save leaves it empty
      * @return the built crate (validated by the library's JSON-schema
-     *         validator — violations are printed to {@code System.err} by
-     *         the library and intentionally left there)
+     * validator — violations are printed to {@code System.err} by
+     * the library and intentionally left there)
      * @throws JIPipeValidationRuntimeException if the crate cannot be built
      */
     public static RoCrate buildCrate(JIPipeProject project, List<String> violationsOut) {

@@ -44,52 +44,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 class SaveQueueSerializationTest {
 
-    /**
-     * A run that signals entry/exit and sleeps so that, if two runs ran
-     * concurrently, the overlap would be observable.
-     */
-    private static class TimedRun extends DefaultJIPipeRunnable {
-        private final String label;
-        private final long delayMs;
-        private final AtomicInteger active;
-        private final AtomicLong maxActive;
-        private final CountDownLatch finished;
-        private final CountDownLatch entered;
-
-        TimedRun(String label, long delayMs, AtomicInteger active, AtomicLong maxActive,
-                 CountDownLatch finished, CountDownLatch entered) {
-            this.label = label;
-            this.delayMs = delayMs;
-            this.active = active;
-            this.maxActive = maxActive;
-            this.finished = finished;
-            this.entered = entered;
-        }
-
-        @Override
-        public String getTaskLabel() {
-            return label;
-        }
-
-        @Override
-        public void run() {
-            int now = active.incrementAndGet();
-            maxActive.accumulateAndGet(now, Math::max);
-            if (entered != null) {
-                entered.countDown();
-            }
-            if (delayMs > 0) {
-                try {
-                    Thread.sleep(delayMs);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
-            }
-            active.decrementAndGet();
-            finished.countDown();
-        }
-    }
-
     @Test
     void sameExecutorSerializesTwoRuns() throws InterruptedException {
         JIPipeQueuedRunnableExecutor queue = new JIPipeQueuedRunnableExecutor("Save Test Project");
@@ -136,5 +90,51 @@ class SaveQueueSerializationTest {
         assertTrue(aFinished.await(10, TimeUnit.SECONDS), "Project A's save must complete");
         assertTrue(bFinished.await(10, TimeUnit.SECONDS), "Project B's save must complete");
         assertEquals(1L, maxActiveA.get(), "Project A's queue must stay serialized");
+    }
+
+    /**
+     * A run that signals entry/exit and sleeps so that, if two runs ran
+     * concurrently, the overlap would be observable.
+     */
+    private static class TimedRun extends DefaultJIPipeRunnable {
+        private final String label;
+        private final long delayMs;
+        private final AtomicInteger active;
+        private final AtomicLong maxActive;
+        private final CountDownLatch finished;
+        private final CountDownLatch entered;
+
+        TimedRun(String label, long delayMs, AtomicInteger active, AtomicLong maxActive,
+                 CountDownLatch finished, CountDownLatch entered) {
+            this.label = label;
+            this.delayMs = delayMs;
+            this.active = active;
+            this.maxActive = maxActive;
+            this.finished = finished;
+            this.entered = entered;
+        }
+
+        @Override
+        public String getTaskLabel() {
+            return label;
+        }
+
+        @Override
+        public void run() {
+            int now = active.incrementAndGet();
+            maxActive.accumulateAndGet(now, Math::max);
+            if (entered != null) {
+                entered.countDown();
+            }
+            if (delayMs > 0) {
+                try {
+                    Thread.sleep(delayMs);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+            active.decrementAndGet();
+            finished.countDown();
+        }
     }
 }

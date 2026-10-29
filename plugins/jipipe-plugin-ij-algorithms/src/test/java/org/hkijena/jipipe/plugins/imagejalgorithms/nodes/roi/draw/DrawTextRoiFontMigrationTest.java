@@ -24,7 +24,7 @@ import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.awt.Font;
+import java.awt.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 

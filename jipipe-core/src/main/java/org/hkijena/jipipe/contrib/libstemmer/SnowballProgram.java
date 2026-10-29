@@ -25,6 +25,7 @@ public class SnowballProgram implements Serializable {
         bra = cursor;
         ket = limit;
     }
+
     public SnowballProgram(SnowballProgram other) {
         current = other.current;
         cursor = other.cursor;

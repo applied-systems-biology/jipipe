@@ -31,13 +31,17 @@ public interface Microservice {
     String getName();
 
     void start();
+
     void stop();
 
     MicroserviceState getState();
+
     String getStateDetail();
+
     boolean isReady();
 
     List<Microservice> getDependencies();
+
     void addDependency(Microservice dependency);
 
     MicroserviceStateChangeEventEmitter getStateChangeEventEmitter();

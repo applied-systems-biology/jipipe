@@ -40,11 +40,10 @@ public class JIPipeLauncher {
             } else if (argsList.contains("render")) {
                 preprocessArgsListForSubCommand(argsList, "render");
                 RenderPipelineCommand.doRenderPipeline(argsList);
-            }
-            else if(argsList.contains("install-artifacts")) {
+            } else if (argsList.contains("install-artifacts")) {
                 preprocessArgsListForSubCommand(argsList, "install-artifacts");
                 DeployArtifactsCommand.doInstallArtifacts(argsList);
-            } else if(argsList.contains("screenshot-ui")) {
+            } else if (argsList.contains("screenshot-ui")) {
                 preprocessArgsListForSubCommand(argsList, "screenshot-ui");
                 keepRunning = true;
                 ScreenshotUiCommand.doScreenshotUi(argsList);
@@ -60,7 +59,7 @@ public class JIPipeLauncher {
             System.err.println(t);
             System.err.println(ExceptionUtils.getStackTrace(t));
         } finally {
-            if(!keepRunning) {
+            if (!keepRunning) {
                 Runtime.getRuntime().halt(0);
             }
         }

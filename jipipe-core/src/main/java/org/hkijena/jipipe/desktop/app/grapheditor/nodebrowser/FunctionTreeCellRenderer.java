@@ -15,11 +15,7 @@ package org.hkijena.jipipe.desktop.app.grapheditor.nodebrowser;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
-import org.hkijena.jipipe.api.nodes.taxonomy.FunctionRegistry;
-import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework;
-import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension;
-import org.hkijena.jipipe.api.nodes.taxonomy.NoFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.*;
 import org.hkijena.jipipe.desktop.commons.components.icons.ColoredCircleIcon;
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeNodeStateChips;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernThemeStyle;
@@ -170,12 +166,12 @@ public class FunctionTreeCellRenderer implements TreeCellRenderer {
             // its System/Global/Project children. Pure UI grouping — distinct
             // template icon, not a taxonomy function.
             label.setText(scopeNode.isRoot()
-                ? "Templates"
-                : scopeNode.getScope().name());
+                    ? "Templates"
+                    : scopeNode.getScope().name());
             label.setIcon(templateCircleIcon());
             label.setToolTipText(scopeNode.isRoot()
-                ? "Node templates grouped by storage scope"
-                : "Node templates stored in the " + scopeNode.getScope().name().toLowerCase() + " scope");
+                    ? "Node templates grouped by storage scope"
+                    : "Node templates stored in the " + scopeNode.getScope().name().toLowerCase() + " scope");
         } else if (userObject instanceof PatternsTreeNode patterns) {
             // The synthetic <function>/Patterns row: the function's node
             // templates, grouped below the function level (pure UI grouping,
@@ -184,7 +180,7 @@ public class FunctionTreeCellRenderer implements TreeCellRenderer {
             label.setText("Patterns");
             label.setIcon(templateCircleIcon());
             label.setToolTipText("Node template patterns filed under "
-                + (patterns.getFunction() != null ? patterns.getFunction().getName() : "this function"));
+                    + (patterns.getFunction() != null ? patterns.getFunction().getName() : "this function"));
         } else {
             // The root node
             label.setText("All functions");

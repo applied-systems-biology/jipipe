@@ -24,9 +24,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Verifies the 14 top-level {@link JIPipeNodeTaxonomyFunction} branches
@@ -47,20 +45,20 @@ class TopLevelBranchesTest {
      */
     private static List<JIPipeNodeTaxonomyFunction> all() {
         return List.of(
-            new DataSourcesFunction(),
-            new ImagesFunction(),
-            new RoisFunction(),
-            new FilamentsFunction(),
-            new TablesFunction(),
-            new StatisticsFunction(),
-            new TrackingFunction(),
-            new AnnotationsFunction(),
-            new MachineLearningFunction(),
-            new PlottingFunction(),
-            new ExportFunction(),
-            new GraphFunction(),
-            new MiscellaneousFunction(),
-            new ScriptingFunction()
+                new DataSourcesFunction(),
+                new ImagesFunction(),
+                new RoisFunction(),
+                new FilamentsFunction(),
+                new TablesFunction(),
+                new StatisticsFunction(),
+                new TrackingFunction(),
+                new AnnotationsFunction(),
+                new MachineLearningFunction(),
+                new PlottingFunction(),
+                new ExportFunction(),
+                new GraphFunction(),
+                new MiscellaneousFunction(),
+                new ScriptingFunction()
         );
     }
 
@@ -93,8 +91,8 @@ class TopLevelBranchesTest {
     @Test
     void idsAreUnique() {
         Set<String> ids = all().stream()
-            .map(JIPipeNodeTaxonomyFunction::getId)
-            .collect(Collectors.toSet());
+                .map(JIPipeNodeTaxonomyFunction::getId)
+                .collect(Collectors.toSet());
         assertEquals(14, ids.size());
     }
 
@@ -129,20 +127,20 @@ class TopLevelBranchesTest {
         // Drop-explicit group (spec B.5): the hue is the deterministic
         // auto-pick of the family cell for the function's stable id.
         assertEquals(TaxonomyHue.autoHue(HueCategory.GEOMETRY, FilamentsFunction.ID),
-            new FilamentsFunction().getColorHue());
+                new FilamentsFunction().getColorHue());
         assertEquals(TaxonomyHue.autoHue(HueCategory.ANALYSIS, StatisticsFunction.ID),
-            new StatisticsFunction().getColorHue());
+                new StatisticsFunction().getColorHue());
         assertEquals(TaxonomyHue.autoHue(HueCategory.ANALYSIS, TrackingFunction.ID),
-            new TrackingFunction().getColorHue());
+                new TrackingFunction().getColorHue());
         assertEquals(TaxonomyHue.autoHue(HueCategory.VISUALIZATION, PlottingFunction.ID),
-            new PlottingFunction().getColorHue());
+                new PlottingFunction().getColorHue());
         assertEquals(TaxonomyHue.autoHue(HueCategory.EXCHANGE, ExportFunction.ID),
-            new ExportFunction().getColorHue());
+                new ExportFunction().getColorHue());
         assertEquals(TaxonomyHue.autoHue(HueCategory.INTELLIGENCE, MachineLearningFunction.ID),
-            new MachineLearningFunction().getColorHue());
+                new MachineLearningFunction().getColorHue());
         // Promoted root: the first in-tree user of the auto-picker.
         assertEquals(TaxonomyHue.autoHue(HueCategory.INTELLIGENCE, ScriptingFunction.ID),
-            new ScriptingFunction().getColorHue());
+                new ScriptingFunction().getColorHue());
         // Graph stays transparent.
         assertNull(new GraphFunction().getColorHue());
     }
@@ -152,9 +150,9 @@ class TopLevelBranchesTest {
         // The 13 colored branches must not share a hue (Review Focus #3);
         // Graph is transparent (null) and excluded.
         Set<Float> hues = all().stream()
-            .map(JIPipeNodeTaxonomyFunction::getColorHue)
-            .filter(Objects::nonNull)
-            .collect(Collectors.toSet());
+                .map(JIPipeNodeTaxonomyFunction::getColorHue)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
         assertEquals(13, hues.size());
     }
 
@@ -162,7 +160,7 @@ class TopLevelBranchesTest {
     void allAreTopLevel() {
         for (JIPipeNodeTaxonomyFunction function : all()) {
             assertNull(function.getParent(),
-                "Expected " + function.getClass().getSimpleName() + " to be top-level (null parent)");
+                    "Expected " + function.getClass().getSimpleName() + " to be top-level (null parent)");
         }
     }
 

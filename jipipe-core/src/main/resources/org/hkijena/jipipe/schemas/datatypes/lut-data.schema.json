@@ -22,7 +22,9 @@
         "gradient-stops": {
           "type": "array",
           "description": "A list of gradient stops",
-          "items": { "$ref": "#/$defs/gradient-stop" }
+          "items": {
+            "$ref": "#/$defs/gradient-stop"
+          }
         }
       }
     },
@@ -30,8 +32,17 @@
       "type": "object",
       "description": "A gradient stop",
       "properties": {
-        "position": { "type": "number", "description": "A number ranging within [0, 1]", "minimum": 0, "maximum": 1 },
-        "color": {"type": "string", "description": "The color in HEX notation", "pattern": "^#[0-9A-Fa-f]{6}"}
+        "position": {
+          "type": "number",
+          "description": "A number ranging within [0, 1]",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "color": {
+          "type": "string",
+          "description": "The color in HEX notation",
+          "pattern": "^#[0-9A-Fa-f]{6}"
+        }
       }
     }
   }

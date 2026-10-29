@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.plugins.parameters.library.primitives;
 
-import java.awt.Color;
+import java.awt.*;
 
 /**
  * A {@link JIPipeFontValue} that also carries the {@link Color} to draw the
@@ -23,9 +23,13 @@ import java.awt.Color;
  */
 public interface JIPipeFontColorCapable {
 
-    /** @return the text color (never null) */
+    /**
+     * @return the text color (never null)
+     */
     Color getColor();
 
-    /** @param color the text color (null resets to white) */
+    /**
+     * @param color the text color (null resets to white)
+     */
     void setColor(Color color);
 }

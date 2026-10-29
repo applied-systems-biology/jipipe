@@ -108,15 +108,6 @@ public class JIPipeXManifest {
     }
 
     /**
-     * Serializes this manifest to a JSON tree.
-     *
-     * @return the manifest JSON tree
-     */
-    public JsonNode toJsonNode() {
-        return JsonUtils.getObjectMapper().valueToTree(this);
-    }
-
-    /**
      * Creates the default manifest for a container authored by JIPipe:
      * all 9 default parts at {@code project/<part key>.json} (file name
      * = part key with {@code ':'} replaced by {@code '-'}; the value
@@ -134,6 +125,15 @@ public class JIPipeXManifest {
             manifest.getParts().put("project/" + partKey.replace(':', '-') + ".json", partKey);
         }
         return manifest;
+    }
+
+    /**
+     * Serializes this manifest to a JSON tree.
+     *
+     * @return the manifest JSON tree
+     */
+    public JsonNode toJsonNode() {
+        return JsonUtils.getObjectMapper().valueToTree(this);
     }
 
     public int getFormatVersion() {

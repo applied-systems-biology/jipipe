@@ -23,6 +23,15 @@ class InstrumentationAPITest {
         JIPipe.ensureInstance();
     }
 
+    private static boolean hasNodeType(String id) {
+        try {
+            JIPipe.getNodes().getInfoById(id);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     private InstrumentationContext createContext(JIPipeProject project) {
         InstrumentationEventBus eventBus = new InstrumentationEventBus();
         InstrumentationJobManager jobManager = new InstrumentationJobManager(eventBus, "test");
@@ -99,14 +108,5 @@ class InstrumentationAPITest {
         // Results may be empty in minimal test environments where few plugins are loaded
         assumeTrue(result.get("results").size() > 0,
                 "No node types found for 'data' — minimal test environment");
-    }
-
-    private static boolean hasNodeType(String id) {
-        try {
-            JIPipe.getNodes().getInfoById(id);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
     }
 }

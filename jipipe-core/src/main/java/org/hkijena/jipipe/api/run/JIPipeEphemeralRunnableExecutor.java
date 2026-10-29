@@ -22,14 +22,13 @@ public class JIPipeEphemeralRunnableExecutor implements JIPipeRunnableExecutor {
 
     private final String name;
     private final AtomicLong generation = new AtomicLong(0);
-    private volatile JIPipeRunnableWorker currentWorker = null;
-    private volatile boolean silent = false;
-
     private final JIPipeRunnable.EnqueuedEventEmitter enqueuedEventEmitter = new JIPipeRunnable.EnqueuedEventEmitter();
     private final JIPipeRunnable.FinishedEventEmitter finishedEventEmitter = new JIPipeRunnable.FinishedEventEmitter();
     private final JIPipeRunnable.InterruptedEventEmitter interruptedEventEmitter = new JIPipeRunnable.InterruptedEventEmitter();
     private final JIPipeRunnable.ProgressEventEmitter progressEventEmitter = new JIPipeRunnable.ProgressEventEmitter();
     private final JIPipeRunnable.StartedEventEmitter startedEventEmitter = new JIPipeRunnable.StartedEventEmitter();
+    private volatile JIPipeRunnableWorker currentWorker = null;
+    private volatile boolean silent = false;
 
     public JIPipeEphemeralRunnableExecutor(String name) {
         this.name = name;

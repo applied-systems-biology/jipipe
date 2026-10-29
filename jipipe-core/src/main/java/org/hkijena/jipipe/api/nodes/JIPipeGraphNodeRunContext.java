@@ -75,7 +75,7 @@ public class JIPipeGraphNodeRunContext {
 
     public JIPipeDesktopProjectWorkbench getWorkbench() {
         JIPipeProject project = getProject();
-        if(project != null) {
+        if (project != null) {
             JIPipeDesktopProjectWindow window = JIPipeDesktopProjectWindow.getWindowFor(project);
             if (window != null) {
                 return window.getProjectWorkbench();

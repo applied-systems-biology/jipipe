@@ -24,7 +24,6 @@ import org.hkijena.jipipe.desktop.commons.components.color.JIPipeDesktopColorCho
 import org.hkijena.jipipe.desktop.commons.components.icons.OverlayJIPipeDesktopColorIcon;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterFormPanel;
-import org.hkijena.jipipe.desktop.commons.components.textfield.JIPipeDesktopDocumentChangeListener;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.*;
@@ -33,7 +32,6 @@ import org.hkijena.jipipe.utils.scripting.ScriptUtils;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.Border;
-import javax.swing.event.DocumentEvent;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.text.*;
 import javax.swing.text.html.HTML;
@@ -79,19 +77,6 @@ public class JIPipeDesktopHTMLEditor extends JIPipeDesktopWorkbenchPanel {
     private JButton insertImageButton;
     private JButton insertLinkButton;
 
-    /**
-     * The three view states (spec §8.2): WYSIWYG (the live editable HTML pane),
-     * Preview (a read-only render of the current HTML), and Source (a plain
-     * editable text area showing the raw markup). This is an internal view
-     * concern, separate from the legacy {@link Mode} (which callers use for
-     * toolbar density) and from the compact/expanded density toggle.
-     */
-    public enum View {
-        WYSIWYG,
-        PREVIEW,
-        SOURCE
-    }
-
     public JIPipeDesktopHTMLEditor(JIPipeDesktopWorkbench workbench, Mode mode, int flags) {
         super(workbench);
         this.enableDialogEditor = (flags & WITH_DIALOG_EDITOR_BUTTON) == WITH_DIALOG_EDITOR_BUTTON;
@@ -99,6 +84,90 @@ public class JIPipeDesktopHTMLEditor extends JIPipeDesktopWorkbenchPanel {
         initialize(flags);
         setMode(mode);
         initializeEvents();
+    }
+
+    /**
+     * Themes an editable combo to the JIPipe look (#1339): one rounded
+     * themed outline around the whole box, a flat (unbeveled) field, a flat
+     * arrow inside the same box, and a themed selection highlight. Without
+     * this, the editable font/size combos fall back to Metal's unthemed
+     * bevels — the dark outline around the field and the separate
+     * full-bordered arrow button the user reported.
+     */
+    private static void themeEditableComboBox(JComboBox<?> combo) {
+        // Force the (Metal) UI delegate to be installed so the editable field
+        // and the dropdown arrow button exist as child components — they are
+        // created lazily by the UI, not by the JComboBox constructor.
+        combo.getUI();
+        Color selBg = ThemeUtils.getCurrentStyle().getSelectionBackground();
+        Color selFg = ThemeUtils.getCurrentStyle().getTextForeground();
+        // One themed rounded outline around the whole combo (the theme sets
+        // ComboBox.background but not ComboBox.border, so Metal's bevel
+        // "EditorBorder" was drawn by the field instead — the dark outline).
+        Border fieldBorder = UIManager.getBorder("TextField.border");
+        combo.setBorder(fieldBorder);
+
+        // The combo's editable field + dropdown arrow (both created by the
+        // Metal UI): flatten them so they sit inside the single rounded box.
+        for (Component c : combo.getComponents()) {
+            JTextComponent tc = findTextComponent(c);
+            if (tc != null) {
+                tc.setBackground(ThemeUtils.getCurrentStyle().getFormBackground());
+                // Drop the Metal bevel, keep the themed field padding.
+                tc.setBorder(BorderFactory.createEmptyBorder(1, 2, 1, 2));
+                tc.setSelectionColor(selBg);
+                tc.setSelectedTextColor(selFg);
+            }
+            if (c instanceof JButton && c.getClass().getName().endsWith("ComboBoxButton")) {
+                // The opaque, beveled MetalComboBoxButton → flat arrow with no
+                // separate button frame.
+                JButton arrow = (JButton) c;
+                arrow.setOpaque(false);
+                arrow.setContentAreaFilled(false);
+                arrow.setBorderPainted(false);
+                arrow.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 4));
+                arrow.setFocusable(false);
+            }
+        }
+        // The dropdown popup's item selection (opaque renderer).
+        combo.setRenderer((list, value, index, isSelected, cellHasFocus) -> {
+            JLabel label = new JLabel(value == null ? "" : value.toString());
+            label.setOpaque(true);
+            label.setBackground(isSelected ? selBg : ThemeUtils.getCurrentStyle().getFormBackground());
+            label.setForeground(selFg);
+            return label;
+        });
+    }
+
+    /**
+     * Finds the first descendant {@link JTextComponent} (null if none).
+     */
+    private static JTextComponent findTextComponent(Component c) {
+        if (c instanceof JTextComponent)
+            return (JTextComponent) c;
+        if (c instanceof Container container) {
+            for (Component child : container.getComponents()) {
+                JTextComponent found = findTextComponent(child);
+                if (found != null)
+                    return found;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Makes a flat, 24×24 toolbar button (spec §8.2: toolbar buttons flat
+     * 24×24). Kept out of {@code UIUtils} (which only offers 25×25) so the row
+     * height stays 24px.
+     */
+    private static void makeToolbarButton24(AbstractButton b) {
+        b.setOpaque(false);
+        b.setContentAreaFilled(false);
+        b.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
+        b.setFocusable(false);
+        b.setPreferredSize(new Dimension(24, 24));
+        b.setMinimumSize(new Dimension(24, 24));
+        b.setMaximumSize(new Dimension(24, 24));
     }
 
     /**
@@ -154,6 +223,10 @@ public class JIPipeDesktopHTMLEditor extends JIPipeDesktopWorkbenchPanel {
         return expanded ? Mode.Full : Mode.Compact;
     }
 
+    public View getView() {
+        return view;
+    }
+
     /**
      * Switches the view (WYSIWYG / Preview / Source), syncing content between
      * the panes on each transition (spec §8.2).
@@ -173,11 +246,9 @@ public class JIPipeDesktopHTMLEditor extends JIPipeDesktopWorkbenchPanel {
         reloadEditor();
     }
 
-    public View getView() {
-        return view;
-    }
-
-    /** Cycles WYSIWYG → Preview → Source → WYSIWYG. */
+    /**
+     * Cycles WYSIWYG → Preview → Source → WYSIWYG.
+     */
     public void cycleView() {
         View next = switch (view) {
             case WYSIWYG -> View.PREVIEW;
@@ -187,7 +258,9 @@ public class JIPipeDesktopHTMLEditor extends JIPipeDesktopWorkbenchPanel {
         setView(next);
     }
 
-    /** Toggles the toolbar between the compact single row and the expanded toolbars. */
+    /**
+     * Toggles the toolbar between the compact single row and the expanded toolbars.
+     */
     public void toggleExpanded() {
         expanded = !expanded;
         updateDensityButton();
@@ -198,7 +271,9 @@ public class JIPipeDesktopHTMLEditor extends JIPipeDesktopWorkbenchPanel {
         return expanded;
     }
 
-    /** WYSIWYG -> Preview/Source: copy the rendered HTML into the target pane. */
+    /**
+     * WYSIWYG -> Preview/Source: copy the rendered HTML into the target pane.
+     */
     private void wysiwygToOut(View target) {
         String html;
         try {
@@ -220,7 +295,9 @@ public class JIPipeDesktopHTMLEditor extends JIPipeDesktopWorkbenchPanel {
         }
     }
 
-    /** Source -> WYSIWYG: parse the edited markup back into the document. */
+    /**
+     * Source -> WYSIWYG: parse the edited markup back into the document.
+     */
     private void sourceToWysiwyg() {
         setText(sourceArea.getText());
     }
@@ -868,88 +945,6 @@ public class JIPipeDesktopHTMLEditor extends JIPipeDesktopWorkbenchPanel {
         return button;
     }
 
-    /**
-     * Themes an editable combo to the JIPipe look (#1339): one rounded
-     * themed outline around the whole box, a flat (unbeveled) field, a flat
-     * arrow inside the same box, and a themed selection highlight. Without
-     * this, the editable font/size combos fall back to Metal's unthemed
-     * bevels — the dark outline around the field and the separate
-     * full-bordered arrow button the user reported.
-     */
-    private static void themeEditableComboBox(JComboBox<?> combo) {
-        // Force the (Metal) UI delegate to be installed so the editable field
-        // and the dropdown arrow button exist as child components — they are
-        // created lazily by the UI, not by the JComboBox constructor.
-        combo.getUI();
-        Color selBg = ThemeUtils.getCurrentStyle().getSelectionBackground();
-        Color selFg = ThemeUtils.getCurrentStyle().getTextForeground();
-        // One themed rounded outline around the whole combo (the theme sets
-        // ComboBox.background but not ComboBox.border, so Metal's bevel
-        // "EditorBorder" was drawn by the field instead — the dark outline).
-        Border fieldBorder = UIManager.getBorder("TextField.border");
-        combo.setBorder(fieldBorder);
-
-        // The combo's editable field + dropdown arrow (both created by the
-        // Metal UI): flatten them so they sit inside the single rounded box.
-        for (Component c : combo.getComponents()) {
-            JTextComponent tc = findTextComponent(c);
-            if (tc != null) {
-                tc.setBackground(ThemeUtils.getCurrentStyle().getFormBackground());
-                // Drop the Metal bevel, keep the themed field padding.
-                tc.setBorder(BorderFactory.createEmptyBorder(1, 2, 1, 2));
-                tc.setSelectionColor(selBg);
-                tc.setSelectedTextColor(selFg);
-            }
-            if (c instanceof JButton && c.getClass().getName().endsWith("ComboBoxButton")) {
-                // The opaque, beveled MetalComboBoxButton → flat arrow with no
-                // separate button frame.
-                JButton arrow = (JButton) c;
-                arrow.setOpaque(false);
-                arrow.setContentAreaFilled(false);
-                arrow.setBorderPainted(false);
-                arrow.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 4));
-                arrow.setFocusable(false);
-            }
-        }
-        // The dropdown popup's item selection (opaque renderer).
-        combo.setRenderer((list, value, index, isSelected, cellHasFocus) -> {
-            JLabel label = new JLabel(value == null ? "" : value.toString());
-            label.setOpaque(true);
-            label.setBackground(isSelected ? selBg : ThemeUtils.getCurrentStyle().getFormBackground());
-            label.setForeground(selFg);
-            return label;
-        });
-    }
-
-    /** Finds the first descendant {@link JTextComponent} (null if none). */
-    private static JTextComponent findTextComponent(Component c) {
-        if (c instanceof JTextComponent)
-            return (JTextComponent) c;
-        if (c instanceof Container container) {
-            for (Component child : container.getComponents()) {
-                JTextComponent found = findTextComponent(child);
-                if (found != null)
-                    return found;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Makes a flat, 24×24 toolbar button (spec §8.2: toolbar buttons flat
-     * 24×24). Kept out of {@code UIUtils} (which only offers 25×25) so the row
-     * height stays 24px.
-     */
-    private static void makeToolbarButton24(AbstractButton b) {
-        b.setOpaque(false);
-        b.setContentAreaFilled(false);
-        b.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
-        b.setFocusable(false);
-        b.setPreferredSize(new Dimension(24, 24));
-        b.setMinimumSize(new Dimension(24, 24));
-        b.setMaximumSize(new Dimension(24, 24));
-    }
-
     public String getPlainText() {
         Document document = wysiwygEditorPane.getDocument();
         try {
@@ -995,6 +990,19 @@ public class JIPipeDesktopHTMLEditor extends JIPipeDesktopWorkbenchPanel {
 
         // Workaround https://stackoverflow.com/questions/1527021/html-jtextpane-newline-support
 //        textPane.getDocument().putProperty(DefaultEditorKit.EndOfLineStringProperty, "<br/>\n");
+    }
+
+    /**
+     * The three view states (spec §8.2): WYSIWYG (the live editable HTML pane),
+     * Preview (a read-only render of the current HTML), and Source (a plain
+     * editable text area showing the raw markup). This is an internal view
+     * concern, separate from the legacy {@link Mode} (which callers use for
+     * toolbar density) and from the compact/expanded density toggle.
+     */
+    public enum View {
+        WYSIWYG,
+        PREVIEW,
+        SOURCE
     }
 
     public enum Mode {

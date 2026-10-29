@@ -1,1 +1,44 @@
-{"nodes":{"n0":{"jipipe:node-info-id":"folder-list-files","jipipe:graph-compartment":"01fc0c2a-031a-5a14-a605-001da38c5f5b","jipipe:node:name":"List files"},"n1":{"jipipe:node-info-id":"path-to-annotation-simple","jipipe:graph-compartment":"01fc0c2a-031a-5a14-a605-001da38c5f5b","jipipe:node:name":"Annotate with file/directory name"},"n2":{"jipipe:node-info-id":"path-filter","jipipe:graph-compartment":"01fc0c2a-031a-5a14-a605-001da38c5f5b","jipipe:node:name":"Filter paths"},"n3":{"jipipe:node-info-id":"import-imagej-imgplus-from-file","jipipe:graph-compartment":"01fc0c2a-031a-5a14-a605-001da38c5f5b","jipipe:node:name":"Import image"}},"edges":[{"source-node":"n0","source-slot":"Files","target-node":"n1","target-slot":"Paths"},{"source-node":"n1","source-slot":"Annotated paths","target-node":"n2","target-slot":"Input"},{"source-node":"n2","source-slot":"Output","target-node":"n3","target-slot":"Files"}]}
+{
+  "nodes": {
+    "n0": {
+      "jipipe:node-info-id": "folder-list-files",
+      "jipipe:graph-compartment": "01fc0c2a-031a-5a14-a605-001da38c5f5b",
+      "jipipe:node:name": "List files"
+    },
+    "n1": {
+      "jipipe:node-info-id": "path-to-annotation-simple",
+      "jipipe:graph-compartment": "01fc0c2a-031a-5a14-a605-001da38c5f5b",
+      "jipipe:node:name": "Annotate with file/directory name"
+    },
+    "n2": {
+      "jipipe:node-info-id": "path-filter",
+      "jipipe:graph-compartment": "01fc0c2a-031a-5a14-a605-001da38c5f5b",
+      "jipipe:node:name": "Filter paths"
+    },
+    "n3": {
+      "jipipe:node-info-id": "import-imagej-imgplus-from-file",
+      "jipipe:graph-compartment": "01fc0c2a-031a-5a14-a605-001da38c5f5b",
+      "jipipe:node:name": "Import image"
+    }
+  },
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Files",
+      "target-node": "n1",
+      "target-slot": "Paths"
+    },
+    {
+      "source-node": "n1",
+      "source-slot": "Annotated paths",
+      "target-node": "n2",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n2",
+      "source-slot": "Output",
+      "target-node": "n3",
+      "target-slot": "Files"
+    }
+  ]
+}

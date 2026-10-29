@@ -30,8 +30,8 @@ auto-assignment layer is a purpose-built, closed utility:
    inspectable per function.
 4. **Duplicated ID literals.** Only 31 of 90 function classes (and 1 of 17
    framework classes) carry a `public static final String ID` constant; the
-   rest hardcode the literal directly in `getId()`. The stable-ID rule
-   (AGENTS.md) wants one frozen literal per ID, referenceable from tests and
+   rest hardcode the literal directly in `getId()`. The stable-ID rule (AGENTS.md) wants one frozen literal per ID,
+   referenceable from tests and
    mapping resources.
 5. **Dead interface contract.** `JIPipeNodeTaxonomyFunction` carries
    `userCanCreate()`/`userCanDelete()` ("carried over from the node
@@ -80,9 +80,8 @@ patterns, so that:
 - No UI changes (function tree, browser, finder render exactly as today).
 - No change to node registration itself (`@ConfigureJIPipeNode`,
   `JIPipeJavaNodeInfo`, membership recording).
-- No change to the JSON exact-key mappings (`ResourceMapping`), tag mappings
-  (`TagMapping`, `CuratedNodeTags`), or the spatial-dimension derivation
-  (`spatialFor`, `spatialForFirstImageInput`) — those are data-driven
+- No change to the JSON exact-key mappings (`ResourceMapping`), tag mappings (`TagMapping`, `CuratedNodeTags`), or the
+  spatial-dimension derivation (`spatialFor`, `spatialForFirstImageInput`) — those are data-driven
   machinery, not the purpose-built switch, and stay in
   `TaxonomyAutoAssignment`.
 - No persistence changes (taxonomy is code-defined; projects store node IDs
@@ -91,19 +90,19 @@ patterns, so that:
 
 ## Current system (context)
 
-| Concern | Where |
-|---|---|
-| Function interface (id, name, parent, hue, tags, visibility flags, dead create/delete flags) | `api/nodes/taxonomy/JIPipeNodeTaxonomyFunction.java` (90 impls under `functions/`) |
-| Framework interface + 16 impls | `api/nodes/taxonomy/JIPipeNodeTaxonomyFramework.java`, `frameworks/` (+ `NoFramework` sentinel) |
-| In-memory registries (plain classes; hue resolution, tree validation, cycle detection) | `FunctionRegistry.java`, `FrameworkRegistry.java` |
-| Registry ownership + node taxonomy state | `api/service/components/nodes/TaxonomyResolver.java` (function/framework registries, `nodeFunctions`, families, input-profile providers, `enrichNodeInfos`, `validateTaxonomy`) |
-| Nodes service component | `api/service/components/JIPipeNodesServiceComponent.java` — `getFunctions()`/`getFrameworks()`/`inputProfileFor()`/`registerInputProfileProvider()` delegate to the resolver |
-| Core registration | `plugins/taxonomy/TaxonomyPlugin.java` — arrays of 13 top-level + 77 leaf functions and 16 frameworks, registered into `JIPipe.getNodes().getFunctions()/getFrameworks()`; then `registerSystemTemplates()` |
-| Auto-assignment utility | `api/nodes/taxonomy/TaxonomyAutoAssignment.java` (460 lines): `functionForName` (keyword if-chain), `functionForId` (~20-case switch), `functionForResource` (dead outside a test), `ResourceMapping`, `TagMapping`, `CuratedNodeTags`, `spatialFor*` |
-| Consumers of ID/name resolution | `plugins/jipipe-plugin-ij2/.../ImageJ2OpNodeInfo.java` (`getPrimaryFunction`, `getSpatialDimensions`), `plugins/jipipe-plugin-clij/.../CLIJCommandNodeInfo.java` (same shape) — both **lazy** (called at UI/validation time, and during `recordNodeMembership` while plugins still register) |
-| Consumers of the registries | ~19 files via `JIPipe.getNodes().getFunctions()/getFrameworks()` (desktop tree/browser, `ThemeUtils`, `JIPipeTaxonomyFunctionRef`, migration, expression syntax, tests, `TaxonomyValidationReport`) |
-| Service wiring | `JIPipeService` constructor creates ~24 `JIPipeServiceComponent`s + `components[]` array; static accessors `JIPipe.getNodes()` → `instance.getNodes()` (with `ensureInitialized()`) |
-| Behavior flags | `TaxonomyView.behaviorFlags(info)` reads `isVisibleInPipeline`/`isVisibleInCompartments`/`canExtract`/`isRunnable` off the **primary function** — consumed by node browser, delete context action, `JIPipeGraph` extraction, database entries |
+| Concern                                                                                      | Where                                                                                                                                                                                                                                                                                        |
+|----------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Function interface (id, name, parent, hue, tags, visibility flags, dead create/delete flags) | `api/nodes/taxonomy/JIPipeNodeTaxonomyFunction.java` (90 impls under `functions/`)                                                                                                                                                                                                           |
+| Framework interface + 16 impls                                                               | `api/nodes/taxonomy/JIPipeNodeTaxonomyFramework.java`, `frameworks/` (+ `NoFramework` sentinel)                                                                                                                                                                                              |
+| In-memory registries (plain classes; hue resolution, tree validation, cycle detection)       | `FunctionRegistry.java`, `FrameworkRegistry.java`                                                                                                                                                                                                                                            |
+| Registry ownership + node taxonomy state                                                     | `api/service/components/nodes/TaxonomyResolver.java` (function/framework registries, `nodeFunctions`, families, input-profile providers, `enrichNodeInfos`, `validateTaxonomy`)                                                                                                              |
+| Nodes service component                                                                      | `api/service/components/JIPipeNodesServiceComponent.java` — `getFunctions()`/`getFrameworks()`/`inputProfileFor()`/`registerInputProfileProvider()` delegate to the resolver                                                                                                                 |
+| Core registration                                                                            | `plugins/taxonomy/TaxonomyPlugin.java` — arrays of 13 top-level + 77 leaf functions and 16 frameworks, registered into `JIPipe.getNodes().getFunctions()/getFrameworks()`; then `registerSystemTemplates()`                                                                                  |
+| Auto-assignment utility                                                                      | `api/nodes/taxonomy/TaxonomyAutoAssignment.java` (460 lines): `functionForName` (keyword if-chain), `functionForId` (~20-case switch), `functionForResource` (dead outside a test), `ResourceMapping`, `TagMapping`, `CuratedNodeTags`, `spatialFor*`                                        |
+| Consumers of ID/name resolution                                                              | `plugins/jipipe-plugin-ij2/.../ImageJ2OpNodeInfo.java` (`getPrimaryFunction`, `getSpatialDimensions`), `plugins/jipipe-plugin-clij/.../CLIJCommandNodeInfo.java` (same shape) — both **lazy** (called at UI/validation time, and during `recordNodeMembership` while plugins still register) |
+| Consumers of the registries                                                                  | ~19 files via `JIPipe.getNodes().getFunctions()/getFrameworks()` (desktop tree/browser, `ThemeUtils`, `JIPipeTaxonomyFunctionRef`, migration, expression syntax, tests, `TaxonomyValidationReport`)                                                                                          |
+| Service wiring                                                                               | `JIPipeService` constructor creates ~24 `JIPipeServiceComponent`s + `components[]` array; static accessors `JIPipe.getNodes()` → `instance.getNodes()` (with `ensureInitialized()`)                                                                                                          |
+| Behavior flags                                                                               | `TaxonomyView.behaviorFlags(info)` reads `isVisibleInPipeline`/`isVisibleInCompartments`/`canExtract`/`isRunnable` off the **primary function** — consumed by node browser, delete context action, `JIPipeGraph` extraction, database entries                                                |
 
 ## Design
 
@@ -113,6 +112,7 @@ patterns, so that:
 extends JIPipeServiceComponent`.
 
 **Owns** (moved out of `TaxonomyResolver`):
+
 - `FunctionRegistry functionRegistry`
 - `FrameworkRegistry frameworkRegistry`
 - the inference index (below) + the inference fallback
@@ -149,6 +149,7 @@ FrameworkRegistry getFrameworkRegistry();
 rebuild on next `inferFunction`).
 
 **Wiring** — `JIPipeService`:
+
 - Constructor: `nodeTaxonomy = new JIPipeNodeTaxonomyServiceComponent(this);`
   created **before** `nodes` (construction order matters, see §3), added to the
   `components[]` array so postprocess/dispose cover it.
@@ -182,8 +183,8 @@ public void registerTaxonomyFramework(JIPipeNodeTaxonomyFramework framework) {
 }
 ```
 
-(Names carry the `Taxonomy` prefix to avoid clashing with expression
-*functions*; the component methods stay `registerFunction`/
+(Names carry the `Taxonomy` prefix to avoid clashing with expression *functions*; the component methods stay
+`registerFunction`/
 `registerFramework`.) **Immediate registration, no task scheduling** —
 unlike nodes there is no dependency graph to wait on: a function's parent is
 resolved by id at read time and tree validity is checked by
@@ -195,8 +196,8 @@ non-`JIPipeDefaultJavaPlugin` ones.
 `TaxonomyPlugin.register()` swaps `JIPipe.getNodes().getFunctions()` /
 `getFrameworks()` for `registerTaxonomyFunction(...)` in the existing
 13-top-level + 77-leaf loops and `registerTaxonomyFramework(...)` for the 16
-frameworks. The arrays stay; that is the only registration-site change.
-**`TaxonomyAutoAssignment.functionForId` is deleted** — the IJ2/CLIJ callers
+frameworks. The arrays stay; that is the only registration-site change. **`TaxonomyAutoAssignment.functionForId` is
+deleted** — the IJ2/CLIJ callers
 do `JIPipe.getNodeTaxonomyService().functionById(id)` instead (null if not
 yet registered → they keep their existing fallback). This is what makes
 adding a function a pure "declare class + register it" with no second edit
@@ -242,6 +243,7 @@ for each function, each pattern contributes `(lowercased keyword, function
 id, weight)` to a map. Rebuilt lazily after any register/unregister.
 
 **`inferFunction(String name)`:**
+
 1. `name` null/blank → fallback (§below).
 2. Lowercase with `Locale.ROOT`; for every indexed keyword that is a
    substring of the name, add its weight to that function's score.
@@ -257,17 +259,17 @@ id, weight)` to a map. Rebuilt lazily after any register/unregister.
 1–9) maps to weights `10 − ruleIndex`, so the earliest-matching rule in the
 old chain also carries the highest weight in the new scoring:
 
-| Weight | Function | Keywords (migrated 1:1, none added/removed) |
-|---|---|---|
-| 9 | `SegmentationFunction` | `segment` |
-| 8 | `FilteringFunction` | `filter` |
-| 7 | `ThresholdingFunction` | `threshold` |
-| 6 | `ResamplingFunction` | `resample`, `interpolat`, `resize`, `rescale`, `upscale`, `downscale` |
-| 5 | `PreprocessingFunction` | `inpaint`, `restore`, `denoise`, `deconvolv`, `preprocess`, `background`, `flatten` |
-| 4 | `MeasurementsFunction` | `measure`, `analyz`, `profile` |
-| 3 | `MergingSplittingFunction` | `merge`, `split`, `stack`, `concatenat`, `combine`, `montage` |
-| 2 | `ColorStackFunction` | `color`, `rgb`, `hsl`, `lut`, `colormap` |
-| 1 | `FilteringFunction` | `blur`, `smooth`, `erode`, `dilate`, `morpholog`, `gaussian`, `median` |
+| Weight | Function                   | Keywords (migrated 1:1, none added/removed)                                         |
+|--------|----------------------------|-------------------------------------------------------------------------------------|
+| 9      | `SegmentationFunction`     | `segment`                                                                           |
+| 8      | `FilteringFunction`        | `filter`                                                                            |
+| 7      | `ThresholdingFunction`     | `threshold`                                                                         |
+| 6      | `ResamplingFunction`       | `resample`, `interpolat`, `resize`, `rescale`, `upscale`, `downscale`               |
+| 5      | `PreprocessingFunction`    | `inpaint`, `restore`, `denoise`, `deconvolv`, `preprocess`, `background`, `flatten` |
+| 4      | `MeasurementsFunction`     | `measure`, `analyz`, `profile`                                                      |
+| 3      | `MergingSplittingFunction` | `merge`, `split`, `stack`, `concatenat`, `combine`, `montage`                       |
+| 2      | `ColorStackFunction`       | `color`, `rgb`, `hsl`, `lut`, `colormap`                                            |
+| 1      | `FilteringFunction`        | `blur`, `smooth`, `erode`, `dilate`, `morpholog`, `gaussian`, `median`              |
 
 (`MiscellaneousUnassignedFunction` declares **no** patterns — it is the
 fallback, not an inference target.)
@@ -297,8 +299,8 @@ unregistered id (callers keep their existing fall-through);
 pattern in `getSpatialDimensions` ("registration must not crash if the node
 service is not ready") and covers the registration-order hazard: IJ2/CLIJ
 depend on `CorePlugin` + `ImageJDataTypes` but **not** on `TaxonomyPlugin`,
-so their nodes can be resolved before the core taxonomy is registered
-(usually only during startup ordering; the lazy UI reads always see the
+so their nodes can be resolved before the core taxonomy is registered (usually only during startup ordering; the lazy UI
+reads always see the
 full registry).
 
 **`TaxonomyAutoAssignment` after the change** keeps exactly:
@@ -381,8 +383,8 @@ behavior byte-identical.
   before the nodes component (constructor injection). The `components[]`
   array and `postprocess` chain pick the taxonomy component up automatically.
 - **Ordering hazard is accepted, handled soft**: core taxonomy is not
-  guaranteed registered before IJ2/CLIJ `getPrimaryFunction()` runs
-  (`recordNodeMembership` during startup). Null results degrade to
+  guaranteed registered before IJ2/CLIJ `getPrimaryFunction()` runs (`recordNodeMembership` during startup). Null
+  results degrade to
   "unassigned" and are corrected by the lazy UI/validation reads — the same
   shape the existing spatial-derivation code already relies on.
 - **`ensureInitialized()` re-entrancy**: `TaxonomyPlugin.register()` runs

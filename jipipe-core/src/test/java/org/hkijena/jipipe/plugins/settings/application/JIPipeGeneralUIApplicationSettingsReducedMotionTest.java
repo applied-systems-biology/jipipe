@@ -4,7 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 // Pure/headless: constructs the sheet directly, never calls JIPipe.ensureInstance().
 // Pins the reduced-motion setting contract: default, serialization key, round-trip,

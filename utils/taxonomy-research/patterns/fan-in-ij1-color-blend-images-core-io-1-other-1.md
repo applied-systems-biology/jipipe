@@ -35,27 +35,31 @@ Mined pattern `fan-in-ij1-color-blend-images-core-io-1-other-1` (shape `fan-in`,
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| other | `ij1-color-blend-images` |
-| core-io | `io-interface`, `jipipe:compartment-output` |
-| other | `ij1-binary-connected-component-labeling-2d`, `ij1-contrast-histogram-enhancer`, `ij1-labels-dilate-labels`, `ij1-set-lut-from-color-map`, `ij1-threshold-auto2d`, `ij3d-roi-convert-to-rgb` |
+| role    | node ids                                                                                                                                                                                     |
+|---------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| other   | `ij1-color-blend-images`                                                                                                                                                                     |
+| core-io | `io-interface`, `jipipe:compartment-output`                                                                                                                                                  |
+| other   | `ij1-binary-connected-component-labeling-2d`, `ij1-contrast-histogram-enhancer`, `ij1-labels-dilate-labels`, `ij1-set-lut-from-color-map`, `ij1-threshold-auto2d`, `ij3d-roi-convert-to-rgb` |
 
 ## Example graph
 
-Project: `AIAgentTests/02-AdvancedPipelines/Paco_06.jip` (relative to `/data/JIPipe`), compartment `Quantification+Segmentation`.
+Project: `AIAgentTests/02-AdvancedPipelines/Paco_06.jip` (relative to `/data/JIPipe`), compartment
+`Quantification+Segmentation`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `jipipe:compartment-output` | Masks and ROIs |
-| n1 | `ij1-labels-dilate-labels` | Dilate labels |
-| n2 | `ij1-color-blend-images` | Blend images: Blend two images |
+| key | node id                     | name                           |
+|-----|-----------------------------|--------------------------------|
+| n0  | `jipipe:compartment-output` | Masks and ROIs                 |
+| n1  | `ij1-labels-dilate-labels`  | Dilate labels                  |
+| n2  | `ij1-color-blend-images`    | Blend images: Blend two images |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
+| from          | slot     | to                             | slot  | data class                 |
+|---------------|----------|--------------------------------|-------|----------------------------|
 | Dilate labels | `Output` | Blend images: Blend two images | `Top` | `imagej-imgplus-greyscale` |
 
 ## Template
 
-Proposed name `Blend images fans in from 8 source ids (roles: core-io, other)`, menu path `Patterns/Images/Blend images fans in from 8 source ids (roles: core-io, other)` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/fan-in-ij1-color-blend-images-core-io-1-other-1.json`.
+Proposed name `Blend images fans in from 8 source ids (roles: core-io, other)`, menu path
+`Patterns/Images/Blend images fans in from 8 source ids (roles: core-io, other)` (proposal only — not registered).
+`data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/fan-in-ij1-color-blend-images-core-io-1-other-1.json`.
 

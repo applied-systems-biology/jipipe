@@ -34,6 +34,18 @@ public class JIPipeOnnxEmbeddingAIModelRunner implements JIPipeEmbeddingAIModelR
         this.modelId = modelId;
     }
 
+    private static float[] extractEmbedding(Object raw, long[] attentionMask) {
+        if (raw instanceof float[][] matrix) {
+            return MathUtils.l2Normalize(matrix[0]);
+        }
+
+        if (raw instanceof float[][][] tokenEmbeddings) {
+            return AIUtils.meanPoolAndNormalize(tokenEmbeddings[0], attentionMask);
+        }
+
+        throw new IllegalStateException("Unsupported embedding output: " + raw.getClass());
+    }
+
     @Override
     public float[] embed(String text) {
         Encoding encoding = tokenizer.encode(text);
@@ -83,18 +95,6 @@ public class JIPipeOnnxEmbeddingAIModelRunner implements JIPipeEmbeddingAIModelR
         } catch (OrtException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private static float[] extractEmbedding(Object raw, long[] attentionMask) {
-        if (raw instanceof float[][] matrix) {
-            return MathUtils.l2Normalize(matrix[0]);
-        }
-
-        if (raw instanceof float[][][] tokenEmbeddings) {
-            return AIUtils.meanPoolAndNormalize(tokenEmbeddings[0], attentionMask);
-        }
-
-        throw new IllegalStateException("Unsupported embedding output: " + raw.getClass());
     }
 
     @Override

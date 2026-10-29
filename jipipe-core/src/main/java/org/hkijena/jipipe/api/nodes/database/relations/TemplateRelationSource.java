@@ -49,13 +49,34 @@ public class TemplateRelationSource implements NodeRelationSource {
 
     private static final Logger logger = LoggerFactory.getLogger(TemplateRelationSource.class);
 
-    /** The project whose project-scoped templates are mined in addition to
+    /**
+     * The project whose project-scoped templates are mined in addition to
      * System and Global templates. May be {@code null} (then only System and
-     * Global templates are mined). */
+     * Global templates are mined).
+     */
     private final JIPipeProject project;
 
     public TemplateRelationSource(JIPipeProject project) {
         this.project = project;
+    }
+
+    /**
+     * Resolves a template-graph node to its node-info id, or {@code null} if
+     * the node (or its info id) no longer resolves in the registry.
+     */
+    private static String resolvedNodeId(JIPipeGraphNode node) {
+        if (node == null || node.getInfo() == null) {
+            return null;
+        }
+        JIPipeNodeInfo info = node.getInfo();
+        if (info.getId() == null) {
+            return null;
+        }
+        return JIPipe.getNodes().hasNodeInfoWithId(info.getId()) ? info.getId() : null;
+    }
+
+    private static String idOr(JIPipeGraphNode node) {
+        return (node != null && node.getInfo() != null) ? node.getInfo().getId() : String.valueOf(node);
     }
 
     @Override
@@ -94,29 +115,10 @@ public class TemplateRelationSource implements NodeRelationSource {
             String toId = resolvedNodeId(targetNode);
             if (fromId == null || toId == null) {
                 logger.warn("Skipping stale template edge in template '{}': unresolved node info id (from='{}', to='{}')",
-                    templateName, idOr(sourceNode), idOr(targetNode));
+                        templateName, idOr(sourceNode), idOr(targetNode));
                 continue;
             }
             sink.accept(new Edge(fromId, toId));
         }
-    }
-
-    /**
-     * Resolves a template-graph node to its node-info id, or {@code null} if
-     * the node (or its info id) no longer resolves in the registry.
-     */
-    private static String resolvedNodeId(JIPipeGraphNode node) {
-        if (node == null || node.getInfo() == null) {
-            return null;
-        }
-        JIPipeNodeInfo info = node.getInfo();
-        if (info.getId() == null) {
-            return null;
-        }
-        return JIPipe.getNodes().hasNodeInfoWithId(info.getId()) ? info.getId() : null;
-    }
-
-    private static String idOr(JIPipeGraphNode node) {
-        return (node != null && node.getInfo() != null) ? node.getInfo().getId() : String.valueOf(node);
     }
 }

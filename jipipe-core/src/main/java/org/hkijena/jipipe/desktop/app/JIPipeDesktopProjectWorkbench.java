@@ -73,11 +73,11 @@ import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopProjectOverviewUI;
 import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopProjectSettingsUI;
 import org.hkijena.jipipe.desktop.commons.components.SplitButton;
 import org.hkijena.jipipe.desktop.commons.components.ai.JIPipeDesktopAIStatusControl;
-import org.hkijena.jipipe.desktop.commons.components.servers.JIPipeDesktopServerStatusControl;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.desktop.commons.components.project.JIPipeDesktopAccelerationOptionsControl;
 import org.hkijena.jipipe.desktop.commons.components.project.JIPipeDesktopArtifactsOptionsControl;
 import org.hkijena.jipipe.desktop.commons.components.project.JIPipeDesktopRecentProjectsMenu;
+import org.hkijena.jipipe.desktop.commons.components.servers.JIPipeDesktopServerStatusControl;
 import org.hkijena.jipipe.desktop.commons.components.support.JIPipeDesktopSupportAssistantWindow;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.desktop.commons.components.tools.JIPipeDesktopMemoryOptionsControl;
@@ -136,15 +136,14 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
     private final JIPipeDesktopNotificationButton notificationButton = new JIPipeDesktopNotificationButton(this);
     private final Map<JIPipeGraphNode, Timer> algorithmUpdateTimers = new WeakHashMap<>();
     private final JIPipeNodeDatabase nodeDatabase;
+    private final ProjectSavedEventEmitter projectSavedEventEmitter = new ProjectSavedEventEmitter();
+    private final ProjectSavingEventEmitter projectSavingEventEmitter = new ProjectSavingEventEmitter();
     public JIPipeDesktopTabPane documentTabPane;
     private JLabel statusText;
     private JIPipeDesktopReloadableValidityChecker validityCheckerPanel;
     private JIPipeDesktopPluginValidityCheckerPanel pluginValidityCheckerPanel;
     private boolean projectModified;
     private JButton openProjectOverviewButton;
-    private final ProjectSavedEventEmitter projectSavedEventEmitter = new ProjectSavedEventEmitter();
-    private final ProjectSavingEventEmitter projectSavingEventEmitter = new ProjectSavingEventEmitter();
-
     /**
      * The publish toolbar button (feature #753). Only created when the
      * publish menu has at least one entry. Carries the static FAIR badge:
@@ -599,7 +598,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         // Acceleration control
         statusBar.add(new JIPipeDesktopAccelerationOptionsControl(this));
 
-        if(AIApplicationSettings.getInstance().isEnableAI()) {
+        if (AIApplicationSettings.getInstance().isEnableAI()) {
             // AI control
             statusBar.add(new JIPipeDesktopAIStatusControl(this));
         }
@@ -1502,6 +1501,19 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         void onProjectSaved(ProjectSavedEvent event);
     }
 
+    /**
+     * Fired by the project window to tell the save button (and any other
+     * interested component) about the NON-MODAL JIPX save (feature #753):
+     * {@code saving=true} when the save started (stage = current phase, e.g.
+     * "writing"), {@code saving=false} when it finished (stage = the result
+     * flash text, e.g. "Saved ✓" / "Save failed ✗" / "Save cancelled").
+     * Emitted on the EDT (start) or from a worker thread for the live stage
+     * (the save button hops to the EDT before touching its components).
+     */
+    public interface ProjectSavingEventListener {
+        void onProjectSaving(ProjectSavingEvent event);
+    }
+
     public static class ProjectSavedEvent extends AbstractJIPipeEvent {
         public ProjectSavedEvent(JIPipeDesktopProjectWorkbench source) {
             super(source);
@@ -1514,19 +1526,6 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         protected void call(ProjectSavedEventListener listener, ProjectSavedEvent event) {
             listener.onProjectSaved(event);
         }
-    }
-
-    /**
-     * Fired by the project window to tell the save button (and any other
-     * interested component) about the NON-MODAL JIPX save (feature #753):
-     * {@code saving=true} when the save started (stage = current phase, e.g.
-     * "writing"), {@code saving=false} when it finished (stage = the result
-     * flash text, e.g. "Saved ✓" / "Save failed ✗" / "Save cancelled").
-     * Emitted on the EDT (start) or from a worker thread for the live stage
-     * (the save button hops to the EDT before touching its components).
-     */
-    public interface ProjectSavingEventListener {
-        void onProjectSaving(ProjectSavingEvent event);
     }
 
     public static class ProjectSavingEvent extends AbstractJIPipeEvent {

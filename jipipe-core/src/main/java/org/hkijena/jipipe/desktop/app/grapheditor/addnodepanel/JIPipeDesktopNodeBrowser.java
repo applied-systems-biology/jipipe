@@ -18,8 +18,8 @@ import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeNodeTemplate;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
-import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
+import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -32,8 +32,8 @@ import org.hkijena.jipipe.api.nodes.database.entries.TemplateScope;
 import org.hkijena.jipipe.api.nodes.taxonomy.FunctionRegistry;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.DataSourcesFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.TaxonomyView;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.DataSourcesFunction;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.run.JIPipeEphemeralRunnableExecutor;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
@@ -47,19 +47,18 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.events.JIPipeDe
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.events.JIPipeDesktopGraphCanvasUINodeSelectionChangedEventListener;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.JIPipeDesktopCompartmentsGraphEditorUI;
-import org.hkijena.jipipe.desktop.app.grapheditor.nodebrowser.NodeBrowserTreeController;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.JIPipeDesktopPipelineGraphEditorUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.nodebrowser.NodeBrowserTreeController;
 import org.hkijena.jipipe.desktop.app.grapheditor.templatemanage.TemplateManagementController;
 import org.hkijena.jipipe.desktop.app.grapheditor.templatemanage.TemplateManagementDialog;
 import org.hkijena.jipipe.desktop.commons.components.ai.JIPipeDesktopAISetupDialog;
 import org.hkijena.jipipe.desktop.commons.components.layouts.JIPipeDesktopWrapLayout;
-import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel.GroupHeaderPanel;
-import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormHelpPanel;
+import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeDesktopNodeDatabaseEntryListCellRenderer;
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeNodeStateChips;
-import org.hkijena.jipipe.desktop.commons.components.selection.JIPipeDesktopRichSelectionBox;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
+import org.hkijena.jipipe.desktop.commons.components.selection.JIPipeDesktopRichSelectionBox;
 import org.hkijena.jipipe.plugins.ai.AIApplicationSettings;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeGraphEditorUIApplicationSettings;
@@ -76,22 +75,10 @@ import javax.swing.event.TreeExpansionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import java.awt.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.datatransfer.Transferable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
+import java.awt.event.*;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * The adaptive node browser (Task 16), which replaces the old add-nodes
@@ -131,59 +118,61 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
      * crowd out the node list. Above this it scrolls internally.
      */
     private static final int MAX_FOLLOW_UP_BODY_PX = 110;
-
+    /**
+     * The expanded function branches as of the last save. Kept in memory
+     * only (the current run): it survives browser instances being
+     * recreated (panel close/reopen, editor tab recreation) — which is
+     * where the state was lost — without the brittleness of a
+     * settings-registry round-trip (JSON serialization, autosave timing,
+     * stale ids across versions).
+     */
+    private static volatile List<String> sessionExpandedFunctionIds = List.of();
     /**
      * The model holds all non-Swing browser state.
      */
     private final NodeBrowserModel model = new NodeBrowserModel();
     private final TemplateManagementController templateController = new TemplateManagementController();
-
     private final JIPipeNodeDatabase database;
     private final JIPipeDesktopGraphEditorUI graphEditorUI;
     private final boolean isCompartmentsEditor;
-
     // --- Toolbar (search + AI toggle lifted from the old add-nodes panel) ---
     private final JToolBar toolBar = new JToolBar();
     private final JIPipeEphemeralRunnableExecutor executor = new JIPipeEphemeralRunnableExecutor("Node browser");
     private final JIPipeDesktopSearchTextField searchField;
     private final JToggleButton aiSearchButton = new JToggleButton(JIPipe.RESOURCES.getIcon16("actions/ai.png"));
-    private boolean aiSearch;
-
     // --- Filter bar ---
     private final JPanel filterBar = new JPanel();
     private final JComboBox<Object> frameworkCombo = new JComboBox<>();
-    private JIPipeDesktopRichSelectionBox tagsBox;
-    private JIPipeDesktopRichSelectionBox dataTypeBox;
-    /** The result-kind filter box (1340); see {@link #initializeFilterBar()}. */
-    private JIPipeDesktopRichSelectionBox kindsBox;
     private final JToggleButton pinnedToggleButton = new JToggleButton(JIPipe.RESOURCES.getIcon16("actions/window-pin.png"));
     private final JToggleButton selectionOnlyButton = new JToggleButton(JIPipe.RESOURCES.getIcon16("actions/diagram-next.png"));
-
     // --- Tree (shared controller; see the nodebrowser package) ---
     private final NodeBrowserTreeController tree;
-
     // --- Results list ---
     private final JList<JIPipeNodeDatabaseEntry> resultList;
     private final JScrollPane resultScroll;
-
     // --- Follow-up strip ---
     private final JPanel followUpStrip = new JPanel();
     private final CustomStateLessToggleButton followUpToggle;
     private final JPanel followUpContent = new JPanel();
     private final JScrollPane followUpScroll;
+    // --- Layout containers (re-rendered per view) ---
+    private final JPanel bodyPanel = new JPanel();
+    private boolean aiSearch;
+    private JIPipeDesktopRichSelectionBox tagsBox;
+    private JIPipeDesktopRichSelectionBox dataTypeBox;
+    /**
+     * The result-kind filter box (1340); see {@link #initializeFilterBar()}.
+     */
+    private JIPipeDesktopRichSelectionBox kindsBox;
     /**
      * Mirrors the persisted {@code follow-up-nodes-expanded} setting: applied
      * on creation, updated on every toggle.
      */
     private boolean followUpExpanded = true;
-
-    // --- Layout containers (re-rendered per view) ---
-    private final JPanel bodyPanel = new JPanel();
     /**
      * The tier at the last view render ({@code -1} = none yet).
      */
     private int lastRenderedTier = -1;
-
     /**
      * Whether the tree-structure changes of {@link #rebuildNodeLeaves()} are
      * in flight — the selection listener must not re-query (and not wipe the
@@ -191,7 +180,6 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
      * {@link NodeBrowserTreeController#rebuildNodeLeaves(List)}).
      */
     private boolean selectionSuppressed;
-
     /**
      * Suspends the tree-expansion persistence while the browser applies
      * programmatic model changes (populate, state restore, node-leaf
@@ -199,7 +187,6 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
      * the user's saved state.
      */
     private boolean treeStateSavingSuspended;
-
     // --- Last search + facet filtered results (before the tree selection
     // filter): the single source of truth for the tree's node leaves (all
     // tiers) and the search highlights; see applyQueryResult ---
@@ -207,6 +194,10 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
     // --- Last fully filtered results (also the tree selection filter):
     // the results list's model + the reference-entry fallback ---
     private List<JIPipeNodeDatabaseEntry> lastFiltered = List.of();
+
+    // ------------------------------------------------------------------
+    // Toolbar (lifted from the old add-nodes panel's toolbar)
+    // ------------------------------------------------------------------
 
     /**
      * Creates a new node browser for the given workbench and graph editor.
@@ -457,10 +448,6 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
                 .subscribeWeak(event -> reloadList());
     }
 
-    // ------------------------------------------------------------------
-    // Toolbar (lifted from the old add-nodes panel's toolbar)
-    // ------------------------------------------------------------------
-
     private void initializeToolbar() {
         toolBar.setFloatable(false);
         toolBar.setBorder(null);
@@ -498,6 +485,10 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
         toolBar.add(configureTemplatesButton);
     }
 
+    // ------------------------------------------------------------------
+    // Filter bar
+    // ------------------------------------------------------------------
+
     /**
      * The gear's entry point (spec §8.3): opens the "Configure templates" modal
      * on the scope tab of the currently selected template entry, falling back
@@ -511,10 +502,6 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
         }
         openTemplateManagement(scope == null ? TemplateScope.Global : scope);
     }
-
-    // ------------------------------------------------------------------
-    // Filter bar
-    // ------------------------------------------------------------------
 
     private void initializeFilterBar() {
         filterBar.setLayout(new JIPipeDesktopWrapLayout(FlowLayout.LEFT));
@@ -637,12 +624,6 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
             reloadList();
         });
         filterBar.add(selectionOnlyButton);
-    }
-
-    /**
-     * A data-type filter option value: (data class, input-side or output-side).
-     */
-    private record TypedDataValue(Class<? extends JIPipeData> dataClass, boolean input) {
     }
 
     /**
@@ -1108,16 +1089,6 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
     // ------------------------------------------------------------------
 
     /**
-     * The expanded function branches as of the last save. Kept in memory
-     * only (the current run): it survives browser instances being
-     * recreated (panel close/reopen, editor tab recreation) — which is
-     * where the state was lost — without the brittleness of a
-     * settings-registry round-trip (JSON serialization, autosave timing,
-     * stale ids across versions).
-     */
-    private static volatile List<String> sessionExpandedFunctionIds = List.of();
-
-    /**
      * The expanded function ids saved during this run, empty on first use.
      */
     private List<String> loadTreeExpansionState() {
@@ -1131,12 +1102,6 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
     private void saveTreeExpansionState() {
         sessionExpandedFunctionIds = List.copyOf(tree.expandedFunctionIds());
     }
-
-    // ------------------------------------------------------------------
-    // Data-source menu (ported from the old add-nodes panel, which is
-    // deleted in this task; the per-category menus are not ported — the
-    // tree takes over the "see what's available" role)
-    // ------------------------------------------------------------------
 
     /**
      * Initializes the data-source quick menu: one submenu per data type
@@ -1212,6 +1177,12 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
         }
         while (changed);
     }
+
+    // ------------------------------------------------------------------
+    // Data-source menu (ported from the old add-nodes panel, which is
+    // deleted in this task; the per-category menus are not ported — the
+    // tree takes over the "see what's available" role)
+    // ------------------------------------------------------------------
 
     /**
      * Right-click trigger for the function tree (the {@code isPopupTrigger}
@@ -1303,10 +1274,6 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
         return false;
     }
 
-    // ------------------------------------------------------------------
-    // Context menu (lifted from old panel)
-    // ------------------------------------------------------------------
-
     private void initializeResultListContextMenu() {
         JPopupMenu contextMenu = new JPopupMenu();
         UIUtils.addRightClickPopupMenuToJList(resultList, contextMenu, () -> {
@@ -1334,6 +1301,10 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
             }
         });
     }
+
+    // ------------------------------------------------------------------
+    // Context menu (lifted from old panel)
+    // ------------------------------------------------------------------
 
     /**
      * The shared actions map for the node-entry context menu (spec §7.3):
@@ -1495,10 +1466,6 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
         helpPanel.showContent(entry.getName(), new MarkdownText("# " + entry.getName() + "\n\n" + entry.getDescription().getBody()));
     }
 
-    // ------------------------------------------------------------------
-    // Relation strip (next / previous / similar)
-    // ------------------------------------------------------------------
-
     /**
      * Populates (or collapses) the relation strip based on the current
      * canvas selection: when exactly one node is selected, the strip shows
@@ -1565,6 +1532,10 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
         followUpStrip.repaint();
     }
 
+    // ------------------------------------------------------------------
+    // Relation strip (next / previous / similar)
+    // ------------------------------------------------------------------
+
     private JIPipeNodeDatabaseEntry entryByOriginNodeId(String originNodeId) {
         for (JIPipeNodeDatabaseEntry entry : database.getEntries()) {
             if (originNodeId.equals(entry.getOriginNodeId())) {
@@ -1574,13 +1545,13 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
         return null;
     }
 
-    // ------------------------------------------------------------------
-    // Accessors (for Task 24 wiring)
-    // ------------------------------------------------------------------
-
     public NodeBrowserModel getModel() {
         return model;
     }
+
+    // ------------------------------------------------------------------
+    // Accessors (for Task 24 wiring)
+    // ------------------------------------------------------------------
 
     public JIPipeNodeDatabase getDatabase() {
         return database;
@@ -1598,6 +1569,12 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
             textField.requestFocus();
             searchField.grabAttentionAnimation();
         });
+    }
+
+    /**
+     * A data-type filter option value: (data class, input-side or output-side).
+     */
+    private record TypedDataValue(Class<? extends JIPipeData> dataClass, boolean input) {
     }
 
     // ------------------------------------------------------------------
@@ -1644,6 +1621,16 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
                     aiSearch ? JIPipeNodeDatabase.FLAG_USE_AI_SEARCH : null);
 
             SwingUtilities.invokeLater(() -> browser.applyQueryResult(queryResult, pinnedIds));
+        }
+    }
+
+    /**
+     * Sentinel for "no framework filter" in the framework combo.
+     */
+    private static class AllFrameworksSentinel {
+        @Override
+        public String toString() {
+            return "All frameworks";
         }
     }
 
@@ -1717,16 +1704,6 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
             JList<JIPipeNodeDatabaseEntry> list = new JList<>(model);
             list.setSelectedIndex(0);
             return delegate.createTransferable(list);
-        }
-    }
-
-    /**
-     * Sentinel for "no framework filter" in the framework combo.
-     */
-    private static class AllFrameworksSentinel {
-        @Override
-        public String toString() {
-            return "All frameworks";
         }
     }
 

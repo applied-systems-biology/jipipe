@@ -73,14 +73,13 @@ public class DataExportExpressionParameter extends JIPipeExpressionParameter {
     }
 
     public static DataExportExpressionParameter showPathChooser(Component parent, JIPipeWorkbench workbench, String title, PathType pathType, FileNameExtensionFilter... extensions) {
-       return showPathChooser(parent, workbench, title,  pathType, "", extensions);
+        return showPathChooser(parent, workbench, title, pathType, "", extensions);
     }
 
     public static DataExportExpressionParameter showPathChooser(Component parent, JIPipeWorkbench workbench, String title, PathType pathType, String currentExpression, FileNameExtensionFilter... extensions) {
-        if(JIPipeFileChooserApplicationSettings.getInstance().isUseLegacyDataExportPathChooser()) {
+        if (JIPipeFileChooserApplicationSettings.getInstance().isUseLegacyDataExportPathChooser()) {
             return showLegacyPathChooser(parent, workbench, title, pathType, extensions);
-        }
-        else {
+        } else {
             return showNewPathChooser(parent, workbench, title, pathType, currentExpression, extensions);
         }
     }
@@ -88,11 +87,11 @@ public class DataExportExpressionParameter extends JIPipeExpressionParameter {
     private static DataExportExpressionParameter showNewPathChooser(Component parent, JIPipeWorkbench workbench, String title, PathType pathType, String currentExpression, FileNameExtensionFilter[] extensions) {
         DataExportExpressionParameterEditorPathChooserUI ui = new DataExportExpressionParameterEditorPathChooserUI(SwingUtilities.getWindowAncestor(parent), title, workbench, pathType, extensions);
         UIUtils.addEscapeListener(ui);
-        if(!StringUtils.isNullOrEmpty(currentExpression)) {
+        if (!StringUtils.isNullOrEmpty(currentExpression)) {
             ui.tryImportCurrentExpression(currentExpression);
         }
         ui.pack();
-        ui.setSize(1024,768);
+        ui.setSize(1024, 768);
         ui.setLocationRelativeTo(parent);
         ui.setVisible(true);
         return ui.getOutputParameter();

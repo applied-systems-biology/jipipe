@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.plugins.parameters.ui.api;
 
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.selection.JIPipeDesktopRichSelectionBox;
 import org.hkijena.jipipe.plugins.parameters.api.enums.EnumParameterSettings;
@@ -25,11 +24,8 @@ import org.hkijena.jipipe.utils.ThemeUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
+import java.util.*;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * A parameter editor UI that works for all enumerations.
@@ -44,7 +40,9 @@ public class JIPipeDesktopEnumParameterEditorUI extends JIPipeDesktopParameterEd
     private JComboBox<Object> comboBox;
     private JIPipeDesktopRichSelectionBox selectionBox;
     private JIPipeEnumParameterItemInfo enumItemInfo = new JIPipeDefaultEnumItemInfo();
-    /** The enum constants, sorted by display label (computed once). */
+    /**
+     * The enum constants, sorted by display label (computed once).
+     */
     private Object[] sortedValues;
 
     public JIPipeDesktopEnumParameterEditorUI(InitializationParameters parameters) {

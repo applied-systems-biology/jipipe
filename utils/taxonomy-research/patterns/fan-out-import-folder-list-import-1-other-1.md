@@ -35,27 +35,30 @@ Mined pattern `fan-out-import-folder-list-import-1-other-1` (shape `fan-out`, su
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| import | `import-folder-list` |
+| role   | node ids                 |
+|--------|--------------------------|
+| import | `import-folder-list`     |
 | import | `folder-list-subfolders` |
-| other | `jipipe:comment` |
+| other  | `jipipe:comment`         |
 
 ## Example graph
 
 Project: `AIAgentTests/02-AdvancedPipelines/Cryogels_01.jip` (relative to `/data/JIPipe`), compartment `Preprocessing`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `import-folder-list` | Folder list |
-| n1 | `folder-list-subfolders` | List subfolders |
-| n2 | `jipipe:comment` | Comment |
+| key | node id                  | name            |
+|-----|--------------------------|-----------------|
+| n0  | `import-folder-list`     | Folder list     |
+| n1  | `folder-list-subfolders` | List subfolders |
+| n2  | `jipipe:comment`         | Comment         |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
-| Folder list | `Folder paths` | List subfolders | `Folders` | `folder` |
+| from        | slot           | to              | slot      | data class |
+|-------------|----------------|-----------------|-----------|------------|
+| Folder list | `Folder paths` | List subfolders | `Folders` | `folder`   |
 
 ## Template
 
-Proposed name `Folder list fans out to 2 target ids (roles: import, other)`, menu path `Patterns/Data Sources/Folder list fans out to 2 target ids (roles: import, other)` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/fan-out-import-folder-list-import-1-other-1.json`.
+Proposed name `Folder list fans out to 2 target ids (roles: import, other)`, menu path
+`Patterns/Data Sources/Folder list fans out to 2 target ids (roles: import, other)` (proposal only — not registered).
+`data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/fan-out-import-folder-list-import-1-other-1.json`.
 

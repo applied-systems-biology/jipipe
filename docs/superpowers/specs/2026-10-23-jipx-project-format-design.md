@@ -101,14 +101,14 @@ public interface JIPipeProjectWriter extends JIPipeProjectIO {
   `saveProject`: authors merge (`addAuthorsFromGlobalList`) → pretty-print
   via the global mapper. Writer/OutputStream variants stay as overloads.
 - **`JIPipeProjectIOs`** (static dispatcher, utils convention):
-  - `readerFromPath(Path)` — **content first**: ZIP magic bytes
-    (`ArchiveUtils.isZipFile`) → JIPX/crate reader in Phase 1; otherwise
-    JSON → legacy reader. Extension is a hint, not the gate (a `.jip` with
-    ZIP content is a mislabeled crate and is treated as such).
-  - `writerFromPath(Path)` — extension-driven: `.jipx` → JIPX writer,
-    `.jip` → legacy writer.
-  - `readerFromURI(URI)` / `writerFromURI(URI)` — later: download to temp →
-    `readerFromPath` (covers the GUI `importURL` flow); remote writers later.
+    - `readerFromPath(Path)` — **content first**: ZIP magic bytes (`ArchiveUtils.isZipFile`) → JIPX/crate reader in
+      Phase 1; otherwise
+      JSON → legacy reader. Extension is a hint, not the gate (a `.jip` with
+      ZIP content is a mislabeled crate and is treated as such).
+    - `writerFromPath(Path)` — extension-driven: `.jipx` → JIPX writer,
+      `.jip` → legacy writer.
+    - `readerFromURI(URI)` / `writerFromURI(URI)` — later: download to temp →
+      `readerFromPath` (covers the GUI `importURL` flow); remote writers later.
 - `JIPipeProject.loadProject/saveProject` become thin delegates to the
   legacy pair (all ~15 external call sites keep working unchanged; they
   migrate to the dispatcher gradually).
@@ -176,8 +176,8 @@ Decisions:
 - `external-environments` is **dropped** from JIPX — write-only cache, fully
   derivable from node parameters, never read.
 - **Load semantics unchanged**: the reader reassembles part files into the
-  exact tree `fromJson` consumes today; the entire upgrade machinery
-  (`JIPipeProjectUpgradable` fan-out + in-`fromJson` legacy fixes) works
+  exact tree `fromJson` consumes today; the entire upgrade machinery (`JIPipeProjectUpgradable` fan-out + in-`fromJson`
+  legacy fixes) works
   without modification. Version discipline: bump manifest `format-version`
   only when the *container* changes; per-project app-version upgrades
   continue through the existing mechanism.
@@ -189,8 +189,8 @@ Decisions:
 ### 5.1 Project workspace (always-on)
 
 When a project is open there is **always** a workspace directory — a real
-directory inside the project's existing locked temporary base directory
-(`<tempbase>/jipx-workspace`), covered by the existing `FileLocker` and
+directory inside the project's existing locked temporary base directory (`<tempbase>/jipx-workspace`), covered by the
+existing `FileLocker` and
 `close()`/cleanup lifecycle (orphaned workspaces die with the existing
 tmp-dir cleanup service).
 
@@ -210,8 +210,8 @@ tmp-dir cleanup service).
    the extraction is a code refactor, not a format change); update
    `jipx.json`; regenerate `README.md`; rebuild `ro-crate-metadata.json`
    with the contrib RO-Crate library (`RoCrateBuilder`).
-3. **Auto-fill + validate on save**: fill required-but-missing crate fields
-   (license from a **new** `JIPipeProjectIOApplicationSettings` default-license
+3. **Auto-fill + validate on save**: fill required-but-missing crate fields (license from a **new**
+   `JIPipeProjectIOApplicationSettings` default-license
    setting, `programmingLanguage`,
    `mainEntity` → `project/graph.json`, name/description from project
    metadata, keywords), run crate validation, collect violations.
@@ -232,12 +232,12 @@ saves are atomic moves.
 
 ### 5.3 Read path (`JIPipeXProjectReader`)
 
-1. Workspace is created and the `.jipx` extracted into it once
-   (`ArchiveUtils.decompressZipFile` / `JIPipeZIPReadDataStorage`).
+1. Workspace is created and the `.jipx` extracted into it once (`ArchiveUtils.decompressZipFile` /
+   `JIPipeZIPReadDataStorage`).
 2. Read `jipx.json`, reassemble the part tree, feed the existing
    `fromJson` (upgrades + legacy fixes apply unchanged).
-3. Assign workdir = ZIP's parent; run the reader-contract steps
-   (`validateUserPaths`, setting-gated env fix, `projectFile = path`).
+3. Assign workdir = ZIP's parent; run the reader-contract steps (`validateUserPaths`, setting-gated env fix,
+   `projectFile = path`).
 
 ### 5.4 VFS seam
 
@@ -263,8 +263,8 @@ which ties into the `history/` machinery of #1332.
 Rejected alternatives (for the record): ZIP FileSystem provider (in-place
 mutation of the artifact — no atomic save, no real `Path`s for
 ImageJ/native interop, no locking); in-memory FS like JimFS (defeats the
-`Files.copy` data story, doubles memory); a bespoke new VFS interface
-(the existing storage abstraction already provides the right shape).
+`Files.copy` data story, doubles memory); a bespoke new VFS interface (the existing storage abstraction already provides
+the right shape).
 
 ### 5.6 GUI threading
 
@@ -302,23 +302,23 @@ v1 conforms to base RO-Crate 1.1-DRAFT + Workflow RO-Crate profile 1.0
 
 ## 7. Migration & compatibility matrix (6.0.0)
 
-| Surface | Behavior |
-|---|---|
-| New project | Always `.jipx` (Save As filter order: jipx, jip) |
-| Save existing `.jip` (Ctrl+S / menu) | Office-style prompt **on save**: "Save as `.jipx` (recommended) / keep `.jip` / cancel" — per-save choice; choosing `.jipx` writes `<same-dir>/<same-name>.jipx`, updates the project's tracked file to it, and **leaves the old `.jip` untouched** on disk (no deletion); `.jip` keeps round-tripping |
-| Open | `readerFromPath` content sniff: `.jip` → legacy; `.jipx`/crate ZIP → JIPX; older projects keep opening |
-| CLI `run`, node loaders, templates | Accept both; template ZIPs (`.jip` inside) keep working |
-| Backups | New backups of `.jipx` projects are `.jipx` |
-| Post-run re-save (`JIPipeGraphRun`), save-and-cache | Re-save in the project's current format |
-| Legacy archive ZIP / `.crate.zip` publisher | Unchanged; "Open output folder" extended to find `jipx.json` next to `project.jip` |
-| Conversion | Open `.jip` → Save As `.jipx`; no auto-conversion |
+| Surface                                             | Behavior                                                                                                                                                                                                                                                                                               |
+|-----------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| New project                                         | Always `.jipx` (Save As filter order: jipx, jip)                                                                                                                                                                                                                                                       |
+| Save existing `.jip` (Ctrl+S / menu)                | Office-style prompt **on save**: "Save as `.jipx` (recommended) / keep `.jip` / cancel" — per-save choice; choosing `.jipx` writes `<same-dir>/<same-name>.jipx`, updates the project's tracked file to it, and **leaves the old `.jip` untouched** on disk (no deletion); `.jip` keeps round-tripping |
+| Open                                                | `readerFromPath` content sniff: `.jip` → legacy; `.jipx`/crate ZIP → JIPX; older projects keep opening                                                                                                                                                                                                 |
+| CLI `run`, node loaders, templates                  | Accept both; template ZIPs (`.jip` inside) keep working                                                                                                                                                                                                                                                |
+| Backups                                             | New backups of `.jipx` projects are `.jipx`                                                                                                                                                                                                                                                            |
+| Post-run re-save (`JIPipeGraphRun`), save-and-cache | Re-save in the project's current format                                                                                                                                                                                                                                                                |
+| Legacy archive ZIP / `.crate.zip` publisher         | Unchanged; "Open output folder" extended to find `jipx.json` next to `project.jip`                                                                                                                                                                                                                     |
+| Conversion                                          | Open `.jip` → Save As `.jipx`; no auto-conversion                                                                                                                                                                                                                                                      |
 
 ## 8. Testing strategy
 
 - **Phase 0 harness**: corpus round-trip fixpoint test (system-property
   gated, §3.2) — the primary safety net for "jip still reads".
-- **Unit tests (non-trivial contracts only)**: part reassembly equality
-  (monolith JSON ⇄ split parts, canonical-tree comparison); manifest
+- **Unit tests (non-trivial contracts only)**: part reassembly equality (monolith JSON ⇄ split parts, canonical-tree
+  comparison); manifest
   unknown-part preservation; ZIP self-verify failure path; reader sniff
   dispatch (`supports` decision table: jip / jipx / crate.zip / mislabeled);
   auto-fill of required crate fields; compliance-check fail-closed
@@ -341,8 +341,8 @@ v1 conforms to base RO-Crate 1.1-DRAFT + Workflow RO-Crate profile 1.0
   hooks only.
 - Formal published profile page/Profile Crate at jipipe.org (follow-up work
   item; URI reserved here).
-- Remote/URI writers; folder-format readers/writers; remote workspaces
-  (the `JIPipeProjectWorkspace` seam accommodates them later).
+- Remote/URI writers; folder-format readers/writers; remote workspaces (the `JIPipeProjectWorkspace` seam accommodates
+  them later).
 - Removing or deprecating `.jip` support.
 
 ## 10. Implementation phases (summary)
@@ -355,5 +355,5 @@ v1 conforms to base RO-Crate 1.1-DRAFT + Workflow RO-Crate profile 1.0
    part (de)serialization, project workspace + VFS seam, only-compress
    saves + self-verify, Swing-worker save), RO-Crate generation +
    auto-fill + validation, save prompt + migration UX, `workspace.json`
-   recovery hooks, extension-point adoption in call sites
-   (open/open-on-load, CLI, templates, backups, post-run re-save).
+   recovery hooks, extension-point adoption in call sites (open/open-on-load, CLI, templates, backups, post-run
+   re-save).

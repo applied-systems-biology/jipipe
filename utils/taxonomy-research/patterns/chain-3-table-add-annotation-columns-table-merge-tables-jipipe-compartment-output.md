@@ -32,32 +32,37 @@ template:
 
 # Pattern: Add annotations as columns -> Merge table rows -> Compartment output
 
-Mined pattern `chain-3-table-add-annotation-columns-table-merge-tables-jipipe-compartment-output` (shape `chain`, support 38).
+Mined pattern `chain-3-table-add-annotation-columns-table-merge-tables-jipipe-compartment-output` (shape `chain`,
+support 38).
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| other | `table-add-annotation-columns` |
-| other | `table-merge-tables` |
-| core-io | `jipipe:compartment-output` |
+| role    | node ids                       |
+|---------|--------------------------------|
+| other   | `table-add-annotation-columns` |
+| other   | `table-merge-tables`           |
+| core-io | `jipipe:compartment-output`    |
 
 ## Example graph
 
-Project: `AIAgentTests/02-AdvancedPipelines/JohannesBrendel_Supramolecular_17.jip` (relative to `/data/JIPipe`), compartment `Colocalization`.
+Project: `AIAgentTests/02-AdvancedPipelines/JohannesBrendel_Supramolecular_17.jip` (relative to `/data/JIPipe`),
+compartment `Colocalization`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `table-add-annotation-columns` | Add annotations as columns |
-| n1 | `table-merge-tables` | Merge table rows |
-| n2 | `jipipe:compartment-output` | Colocalization per component |
+| key | node id                        | name                         |
+|-----|--------------------------------|------------------------------|
+| n0  | `table-add-annotation-columns` | Add annotations as columns   |
+| n1  | `table-merge-tables`           | Merge table rows             |
+| n2  | `jipipe:compartment-output`    | Colocalization per component |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
-| Add annotations as columns | `Output` | Merge table rows | `Input` | `imagej-results-table` |
-| Merge table rows | `Output` | Colocalization per component | `Green vs. Magenta, STED` | `imagej-results-table` |
+| from                       | slot     | to                           | slot                      | data class             |
+|----------------------------|----------|------------------------------|---------------------------|------------------------|
+| Add annotations as columns | `Output` | Merge table rows             | `Input`                   | `imagej-results-table` |
+| Merge table rows           | `Output` | Colocalization per component | `Green vs. Magenta, STED` | `imagej-results-table` |
 
 ## Template
 
-Proposed name `Add annotations as columns -> Merge table rows -> Compartment output`, menu path `Patterns/Tables/Add annotations as columns -> Merge table rows -> Compartment output` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/chain-3-table-add-annotation-columns-table-merge-tables-jipipe-compartment-output.json`.
+Proposed name `Add annotations as columns -> Merge table rows -> Compartment output`, menu path
+`Patterns/Tables/Add annotations as columns -> Merge table rows -> Compartment output` (proposal only — not registered).
+`data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/chain-3-table-add-annotation-columns-table-merge-tables-jipipe-compartment-output.json`.
 

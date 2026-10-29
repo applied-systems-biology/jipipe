@@ -32,32 +32,36 @@ template:
 
 # Pattern: Filter IJ3D ROI by overlap (old) -> Set IJ3D ROI properties -> Convert IJ3D ROI to RGB
 
-Mined pattern `chain-3-ij3d-roi-filter-by-overlap-ij3d-roi-change-properties-ij3d-roi-convert-to-rgb` (shape `chain`, support 28).
+Mined pattern `chain-3-ij3d-roi-filter-by-overlap-ij3d-roi-change-properties-ij3d-roi-convert-to-rgb` (shape `chain`,
+support 28).
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
+| role  | node ids                     |
+|-------|------------------------------|
 | other | `ij3d-roi-filter-by-overlap` |
 | other | `ij3d-roi-change-properties` |
-| other | `ij3d-roi-convert-to-rgb` |
+| other | `ij3d-roi-convert-to-rgb`    |
 
 ## Example graph
 
 Project: `AIAgentTests/03-ExampleWorkflows/Annamaria_12.jip` (relative to `/data/JIPipe`), compartment `Colocalization`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `ij3d-roi-filter-by-overlap` | Filter 3D ROI by overlap |
-| n1 | `ij3d-roi-change-properties` | Set 3D ROI properties |
-| n2 | `ij3d-roi-convert-to-rgb` | Convert 3D ROI to RGB |
+| key | node id                      | name                     |
+|-----|------------------------------|--------------------------|
+| n0  | `ij3d-roi-filter-by-overlap` | Filter 3D ROI by overlap |
+| n1  | `ij3d-roi-change-properties` | Set 3D ROI properties    |
+| n2  | `ij3d-roi-convert-to-rgb`    | Convert 3D ROI to RGB    |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
-| Filter 3D ROI by overlap | `ROI 2` | Set 3D ROI properties | `Input` | `roi-3d-list` |
-| Set 3D ROI properties | `Output` | Convert 3D ROI to RGB | `ROI` | `roi-3d-list` |
+| from                     | slot     | to                    | slot    | data class    |
+|--------------------------|----------|-----------------------|---------|---------------|
+| Filter 3D ROI by overlap | `ROI 2`  | Set 3D ROI properties | `Input` | `roi-3d-list` |
+| Set 3D ROI properties    | `Output` | Convert 3D ROI to RGB | `ROI`   | `roi-3d-list` |
 
 ## Template
 
-Proposed name `Filter IJ3D ROI by overlap (old) -> Set IJ3D ROI properties -> Convert IJ3D ROI to RGB`, menu path `Patterns/ROIs/Filter IJ3D ROI by overlap (old) -> Set IJ3D ROI properties -> Convert IJ3D ROI to RGB` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/chain-3-ij3d-roi-filter-by-overlap-ij3d-roi-change-properties-ij3d-roi-convert-to-rgb.json`.
+Proposed name `Filter IJ3D ROI by overlap (old) -> Set IJ3D ROI properties -> Convert IJ3D ROI to RGB`, menu path
+`Patterns/ROIs/Filter IJ3D ROI by overlap (old) -> Set IJ3D ROI properties -> Convert IJ3D ROI to RGB` (proposal only —
+not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/chain-3-ij3d-roi-filter-by-overlap-ij3d-roi-change-properties-ij3d-roi-convert-to-rgb.json`.
 

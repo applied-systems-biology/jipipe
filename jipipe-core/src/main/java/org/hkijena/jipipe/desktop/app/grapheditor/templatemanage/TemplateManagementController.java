@@ -85,17 +85,17 @@ public class TemplateManagementController {
     public List<JIPipeNodeTemplate> forScope(JIPipeProject project, TemplateScope scope) {
         return switch (scope) {
             case System -> service.getGlobalTemplates().stream()
-                .filter(service::isPluginTemplate)
-                .toList();
+                    .filter(service::isPluginTemplate)
+                    .toList();
             case Global -> service.getGlobalTemplates().stream()
-                .filter(t -> service.isInGlobal(t) && !service.isPluginTemplate(t) && !service.isDownloadedTemplate(t))
-                .toList();
+                    .filter(t -> service.isInGlobal(t) && !service.isPluginTemplate(t) && !service.isDownloadedTemplate(t))
+                    .toList();
             case Downloaded -> service.getGlobalTemplates().stream()
-                .filter(t -> service.isInGlobal(t) && !service.isPluginTemplate(t) && service.isDownloadedTemplate(t))
-                .toList();
+                    .filter(t -> service.isInGlobal(t) && !service.isPluginTemplate(t) && service.isDownloadedTemplate(t))
+                    .toList();
             case Project -> project == null ?
-                List.of() :
-                List.copyOf(project.getMetadata().getNodeTemplates());
+                    List.of() :
+                    List.copyOf(project.getMetadata().getNodeTemplates());
         };
     }
 
@@ -116,8 +116,8 @@ public class TemplateManagementController {
      * @param to      the target scope (Global or Project)
      * @param t       the template to copy
      * @return whether the copy was actually stored (false when {@code to} is
-     *         System, the target project is missing, or an equal copy already
-     *         exists)
+     * System, the target project is missing, or an equal copy already
+     * exists)
      */
     public boolean copyTo(JIPipeProject project, TemplateScope from, TemplateScope to, JIPipeNodeTemplate t) {
         if (to == TemplateScope.System) {
@@ -182,10 +182,10 @@ public class TemplateManagementController {
      * hatch is copying it into the user's own templates, where the copy is
      * editable; publishing the local version back is a future feature).
      *
-     * @param project     the project; nullable
-     * @param scope       the scope the template is being edited in
-     * @param original    the live template object to mutate
-     * @param editedCopy  the copy carrying the edited values
+     * @param project    the project; nullable
+     * @param scope      the scope the template is being edited in
+     * @param original   the live template object to mutate
+     * @param editedCopy the copy carrying the edited values
      * @return whether the edit was applied (false for System and Downloaded scope)
      */
     public boolean edit(JIPipeProject project, TemplateScope scope, JIPipeNodeTemplate original, JIPipeNodeTemplate editedCopy) {
@@ -232,7 +232,7 @@ public class TemplateManagementController {
      * @param scope   the scope to import into (Global or Project; System is a no-op)
      * @param file    the source file
      * @return the templates that were read and stored (empty on a System import
-     *         or a parse failure)
+     * or a parse failure)
      */
     public List<JIPipeNodeTemplate> importTemplates(JIPipeProject project, TemplateScope scope, Path file) {
         if (scope == TemplateScope.System) {

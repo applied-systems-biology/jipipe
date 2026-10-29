@@ -68,7 +68,6 @@ import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 
 import javax.swing.*;
 import java.awt.event.MouseEvent;
-import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 

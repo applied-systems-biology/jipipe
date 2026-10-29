@@ -32,7 +32,6 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeGeneralDataApplicationSettings;
-import org.hkijena.jipipe.plugins.tunnels.nodes.JIPipeDataFlowTunnelExit;
 import org.hkijena.jipipe.utils.PathUtils;
 
 import java.util.*;
@@ -287,8 +286,8 @@ public class JIPipeDesktopQuickRun extends DefaultJIPipeRunnable implements JIPi
     }
 
     public String getOperationName() {
-        if(settings.isStoreToCache() && !settings.isSaveToDisk()) {
-            if(settings.isStoreIntermediateResults()) {
+        if (settings.isStoreToCache() && !settings.isSaveToDisk()) {
+            if (settings.isStoreIntermediateResults()) {
                 return "Cache intermediate results";
             }
             return "Update cache";
@@ -298,11 +297,10 @@ public class JIPipeDesktopQuickRun extends DefaultJIPipeRunnable implements JIPi
 
     @Override
     public String getTaskLabel() {
-        if(targetNodes.size() == 1) {
+        if (targetNodes.size() == 1) {
             return getOperationName() + ": " + targetNodes.getFirst().getDisplayName();
-        }
-        else if(!targetNodes.isEmpty()) {
-            return getOperationName() + ": " +  targetNodes.getFirst().getDisplayName() + " (+ " + (targetNodes.size() - 1) + ")";
+        } else if (!targetNodes.isEmpty()) {
+            return getOperationName() + ": " + targetNodes.getFirst().getDisplayName() + " (+ " + (targetNodes.size() - 1) + ")";
         }
         return "Run";
     }

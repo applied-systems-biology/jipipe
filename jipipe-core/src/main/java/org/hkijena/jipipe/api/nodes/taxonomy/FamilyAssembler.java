@@ -17,14 +17,7 @@ import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleDirectedGraph;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Collects {@link JIPipeNodeTaxonomyFamilyStepAnnotation}s into the
@@ -70,17 +63,25 @@ import java.util.Set;
  */
 public class FamilyAssembler {
 
-    /** node class → registered node ids, in registration order */
+    /**
+     * node class → registered node ids, in registration order
+     */
     private final Map<Class<?>, List<String>> classToNodeIds;
 
-    /** family class → (node id → step), insertion-ordered */
+    /**
+     * family class → (node id → step), insertion-ordered
+     */
     private final Map<Class<? extends JIPipeNodeTaxonomyFamily>,
-        Map<String, JIPipeNodeTaxonomyFamilyStep>> stepsByFamily = new LinkedHashMap<>();
+            Map<String, JIPipeNodeTaxonomyFamilyStep>> stepsByFamily = new LinkedHashMap<>();
 
-    /** family class → node ids in registration order (deterministic follow-up order) */
+    /**
+     * family class → node ids in registration order (deterministic follow-up order)
+     */
     private final Map<Class<? extends JIPipeNodeTaxonomyFamily>, List<String>> stepOrder = new LinkedHashMap<>();
 
-    /** family class → family id used in step ids, as first registered */
+    /**
+     * family class → family id used in step ids, as first registered
+     */
     private final Map<Class<? extends JIPipeNodeTaxonomyFamily>, String> familyIdByClass = new LinkedHashMap<>();
 
     /**
@@ -102,6 +103,15 @@ public class FamilyAssembler {
     public FamilyAssembler(Map<Class<?>, List<String>> classToNodeIds) {
         this.classToNodeIds = new LinkedHashMap<>();
         classToNodeIds.forEach((clazz, ids) -> this.classToNodeIds.put(clazz, new ArrayList<>(ids)));
+    }
+
+    /**
+     * @param familyId the family id
+     * @param nodeId   the node id
+     * @return the step id {@code familyId + "#" + nodeId}
+     */
+    public static String stepId(String familyId, String nodeId) {
+        return familyId + "#" + nodeId;
     }
 
     /**
@@ -138,13 +148,13 @@ public class FamilyAssembler {
         String previous = familyIdByClass.putIfAbsent(familyClass, familyId);
         if (previous != null && !previous.equals(familyId)) {
             throw new IllegalArgumentException(
-                "Conflicting family id for " + familyClass.getName() + ": '" + previous + "' and '" + familyId + "'");
+                    "Conflicting family id for " + familyClass.getName() + ": '" + previous + "' and '" + familyId + "'");
         }
         Map<String, JIPipeNodeTaxonomyFamilyStep> familySteps =
-            stepsByFamily.computeIfAbsent(familyClass, id -> new LinkedHashMap<>());
+                stepsByFamily.computeIfAbsent(familyClass, id -> new LinkedHashMap<>());
         if (familySteps.containsKey(nodeId)) {
             throw new IllegalArgumentException(
-                "Duplicate step for node id '" + nodeId + "' in family '" + familyId + "'");
+                    "Duplicate step for node id '" + nodeId + "' in family '" + familyId + "'");
         }
         // The raw after classes are stored, not resolved step ids:
         // resolution happens lazily at query time against the mapping in
@@ -152,7 +162,7 @@ public class FamilyAssembler {
         // late mapping updates do not break the edges.
         List<Class<?>> afterClasses = new ArrayList<>(Arrays.asList(annotation.after()));
         familySteps.put(nodeId, new JIPipeNodeTaxonomyFamilyStep(
-            familyId, annotation.label(), nodeId, annotation.purpose(), afterClasses));
+                familyId, annotation.label(), nodeId, annotation.purpose(), afterClasses));
         stepOrder.computeIfAbsent(familyClass, id -> new ArrayList<>()).add(nodeId);
     }
 
@@ -166,7 +176,7 @@ public class FamilyAssembler {
      */
     public void unregisterStep(String nodeId, String familyId) {
         for (Map.Entry<Class<? extends JIPipeNodeTaxonomyFamily>,
-            Map<String, JIPipeNodeTaxonomyFamilyStep>> familyEntry : stepsByFamily.entrySet()) {
+                Map<String, JIPipeNodeTaxonomyFamilyStep>> familyEntry : stepsByFamily.entrySet()) {
             String registeredFamilyId = familyIdByClass.get(familyEntry.getKey());
             if (!familyId.equals(registeredFamilyId)) {
                 continue;
@@ -249,7 +259,7 @@ public class FamilyAssembler {
      */
     public Set<JIPipeNodeTaxonomyFamilyStep> steps(JIPipeNodeTaxonomyFamily family) {
         Map<String, JIPipeNodeTaxonomyFamilyStep> familySteps =
-            stepsByFamily.getOrDefault(family.getClass(), Map.of());
+                stepsByFamily.getOrDefault(family.getClass(), Map.of());
         Set<JIPipeNodeTaxonomyFamilyStep> result = new LinkedHashSet<>();
         for (String nodeId : stepOrder.getOrDefault(family.getClass(), List.of())) {
             JIPipeNodeTaxonomyFamilyStep step = familySteps.get(nodeId);
@@ -271,10 +281,10 @@ public class FamilyAssembler {
     public List<String> followUps(String nodeId) {
         Set<String> seen = new LinkedHashSet<>();
         for (Map.Entry<Class<? extends JIPipeNodeTaxonomyFamily>,
-            Map<String, JIPipeNodeTaxonomyFamilyStep>> familyEntry : stepsByFamily.entrySet()) {
+                Map<String, JIPipeNodeTaxonomyFamilyStep>> familyEntry : stepsByFamily.entrySet()) {
             String stepId = stepId(familyIdByClass.get(familyEntry.getKey()), nodeId);
             for (String successorNodeId :
-                stepOrder.getOrDefault(familyEntry.getKey(), List.of())) {
+                    stepOrder.getOrDefault(familyEntry.getKey(), List.of())) {
                 JIPipeNodeTaxonomyFamilyStep successor = familyEntry.getValue().get(successorNodeId);
                 if (successor != null && successor.afterIds(this).contains(stepId)) {
                     seen.add(successorNodeId);
@@ -298,7 +308,7 @@ public class FamilyAssembler {
     public Set<String> siblingNodeIds(String nodeId) {
         Set<String> siblings = new LinkedHashSet<>();
         for (Map.Entry<Class<? extends JIPipeNodeTaxonomyFamily>,
-            Map<String, JIPipeNodeTaxonomyFamilyStep>> familyEntry : stepsByFamily.entrySet()) {
+                Map<String, JIPipeNodeTaxonomyFamilyStep>> familyEntry : stepsByFamily.entrySet()) {
             if (!familyEntry.getValue().containsKey(nodeId)) {
                 continue;
             }
@@ -325,13 +335,13 @@ public class FamilyAssembler {
      *
      * @param nodeId the node id
      * @return the family ids of every family that has a step for
-     *         {@code nodeId}, in family registration order; empty if the
-     *         node holds no steps
+     * {@code nodeId}, in family registration order; empty if the
+     * node holds no steps
      */
     public Set<String> familyIdsOf(String nodeId) {
         Set<String> familyIds = new LinkedHashSet<>();
         for (Map.Entry<Class<? extends JIPipeNodeTaxonomyFamily>,
-            Map<String, JIPipeNodeTaxonomyFamilyStep>> familyEntry : stepsByFamily.entrySet()) {
+                Map<String, JIPipeNodeTaxonomyFamilyStep>> familyEntry : stepsByFamily.entrySet()) {
             if (familyEntry.getValue().containsKey(nodeId)) {
                 String familyId = familyIdByClass.get(familyEntry.getKey());
                 if (familyId != null) {
@@ -359,32 +369,23 @@ public class FamilyAssembler {
     public Set<String> validate(Set<String> registeredNodeIds) {
         Set<String> errors = new LinkedHashSet<>();
         for (Map.Entry<Class<? extends JIPipeNodeTaxonomyFamily>,
-            Map<String, JIPipeNodeTaxonomyFamilyStep>> familyEntry : stepsByFamily.entrySet()) {
+                Map<String, JIPipeNodeTaxonomyFamilyStep>> familyEntry : stepsByFamily.entrySet()) {
             String familyId = familyIdByClass.get(familyEntry.getKey());
             for (JIPipeNodeTaxonomyFamilyStep step : familyEntry.getValue().values()) {
                 if (!registeredNodeIds.contains(step.nodeId())) {
                     errors.add("Workflow family step in family '" + familyId
-                        + "' references unregistered node id '" + step.nodeId() + "'");
+                            + "' references unregistered node id '" + step.nodeId() + "'");
                     continue;
                 }
                 for (String afterId : step.afterIds(this)) {
                     String predecessorNodeId = afterId.substring(familyId.length() + 1);
                     if (!familyEntry.getValue().containsKey(predecessorNodeId)) {
                         errors.add("Workflow family step '" + step.nodeId() + "' in family '" + familyId
-                            + "' references a missing predecessor step for node id '" + predecessorNodeId + "'");
+                                + "' references a missing predecessor step for node id '" + predecessorNodeId + "'");
                     }
                 }
             }
         }
         return errors;
-    }
-
-    /**
-     * @param familyId the family id
-     * @param nodeId   the node id
-     * @return the step id {@code familyId + "#" + nodeId}
-     */
-    public static String stepId(String familyId, String nodeId) {
-        return familyId + "#" + nodeId;
     }
 }

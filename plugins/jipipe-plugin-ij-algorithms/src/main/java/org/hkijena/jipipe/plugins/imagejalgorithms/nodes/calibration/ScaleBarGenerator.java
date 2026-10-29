@@ -530,18 +530,18 @@ public class ScaleBarGenerator {
             this.fontSize = fontSize;
         }
 
-        public void setFont(Font font) {
-            this.font = font;
-            if (font != null) {
-                this.fontSize = font.getSize();
-            }
-        }
-
         /**
          * @return the text font (family + size + style).
          */
         public Font getFont() {
             return font;
+        }
+
+        public void setFont(Font font) {
+            this.font = font;
+            if (font != null) {
+                this.fontSize = font.getSize();
+            }
         }
 
         public boolean isLabelAll() {

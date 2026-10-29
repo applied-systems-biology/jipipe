@@ -1,1 +1,98 @@
-{"nodes":{"n0":{"jipipe:graph-compartment":"DEFAULT","jipipe:metadata-v1":{"location/DEFAULT/x":1,"location/DEFAULT/y":1},"jipipe:node-info-id":"path-to-annotation-simple"},"n1":{"jipipe:graph-compartment":"DEFAULT","jipipe:metadata-v1":{"location/DEFAULT/x":1,"location/DEFAULT/y":21},"jipipe:node-info-id":"annotate-set-single"},"n2":{"jipipe:graph-compartment":"DEFAULT","jipipe:metadata-v1":{"location/DEFAULT/x":1,"location/DEFAULT/y":25},"jipipe:node-info-id":"annotate-filter-by-annotation-if-else"},"n3":{"jipipe:graph-compartment":"DEFAULT","jipipe:metadata-v1":{"location/DEFAULT/x":1,"location/DEFAULT/y":13},"jipipe:node-info-id":"annotate-set-single"},"n4":{"jipipe:graph-compartment":"DEFAULT","jipipe:metadata-v1":{"location/DEFAULT/x":1,"location/DEFAULT/y":9},"jipipe:node-info-id":"annotate-set-single"},"n5":{"jipipe:graph-compartment":"DEFAULT","jipipe:metadata-v1":{"location/DEFAULT/x":1,"location/DEFAULT/y":17},"jipipe:node-info-id":"annotate-set-single"},"n6":{"jipipe:graph-compartment":"DEFAULT","jipipe:metadata-v1":{"location/DEFAULT/x":1,"location/DEFAULT/y":5},"jipipe:node-info-id":"import-roi-3d"}},"edges":[{"source-node":"n0","source-slot":"Annotated paths","target-node":"n6","target-slot":"Input"},{"source-node":"n1","source-slot":"Output","target-node":"n2","target-slot":"Input"},{"source-node":"n3","source-slot":"Output","target-node":"n5","target-slot":"Input"},{"source-node":"n4","source-slot":"Output","target-node":"n3","target-slot":"Input"},{"source-node":"n5","source-slot":"Output","target-node":"n1","target-slot":"Input"},{"source-node":"n6","source-slot":"Output","target-node":"n4","target-slot":"Input"}]}
+{
+  "nodes": {
+    "n0": {
+      "jipipe:graph-compartment": "DEFAULT",
+      "jipipe:metadata-v1": {
+        "location/DEFAULT/x": 1,
+        "location/DEFAULT/y": 1
+      },
+      "jipipe:node-info-id": "path-to-annotation-simple"
+    },
+    "n1": {
+      "jipipe:graph-compartment": "DEFAULT",
+      "jipipe:metadata-v1": {
+        "location/DEFAULT/x": 1,
+        "location/DEFAULT/y": 21
+      },
+      "jipipe:node-info-id": "annotate-set-single"
+    },
+    "n2": {
+      "jipipe:graph-compartment": "DEFAULT",
+      "jipipe:metadata-v1": {
+        "location/DEFAULT/x": 1,
+        "location/DEFAULT/y": 25
+      },
+      "jipipe:node-info-id": "annotate-filter-by-annotation-if-else"
+    },
+    "n3": {
+      "jipipe:graph-compartment": "DEFAULT",
+      "jipipe:metadata-v1": {
+        "location/DEFAULT/x": 1,
+        "location/DEFAULT/y": 13
+      },
+      "jipipe:node-info-id": "annotate-set-single"
+    },
+    "n4": {
+      "jipipe:graph-compartment": "DEFAULT",
+      "jipipe:metadata-v1": {
+        "location/DEFAULT/x": 1,
+        "location/DEFAULT/y": 9
+      },
+      "jipipe:node-info-id": "annotate-set-single"
+    },
+    "n5": {
+      "jipipe:graph-compartment": "DEFAULT",
+      "jipipe:metadata-v1": {
+        "location/DEFAULT/x": 1,
+        "location/DEFAULT/y": 17
+      },
+      "jipipe:node-info-id": "annotate-set-single"
+    },
+    "n6": {
+      "jipipe:graph-compartment": "DEFAULT",
+      "jipipe:metadata-v1": {
+        "location/DEFAULT/x": 1,
+        "location/DEFAULT/y": 5
+      },
+      "jipipe:node-info-id": "import-roi-3d"
+    }
+  },
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Annotated paths",
+      "target-node": "n6",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n1",
+      "source-slot": "Output",
+      "target-node": "n2",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n3",
+      "source-slot": "Output",
+      "target-node": "n5",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n4",
+      "source-slot": "Output",
+      "target-node": "n3",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n5",
+      "source-slot": "Output",
+      "target-node": "n1",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n6",
+      "source-slot": "Output",
+      "target-node": "n4",
+      "target-slot": "Input"
+    }
+  ]
+}

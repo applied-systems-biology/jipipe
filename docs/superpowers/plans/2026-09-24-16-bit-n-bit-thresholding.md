@@ -1,22 +1,34 @@
 # 16-bit / n-bit Thresholding Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:
+> executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Add 16-bit and custom-bins (n-bit) auto-thresholding to JIPipe — a JIPipe-owned n-bin threshold engine, new 16-bit/custom-bins nodes, 16-bit local auto-thresholds, and n-bit histogram threshold expression functions — per spec `docs/superpowers/specs/2026-09-24-16-bit-n-bit-thresholding-design.md` (work item #1327).
+**Goal:** Add 16-bit and custom-bins (n-bit) auto-thresholding to JIPipe — a JIPipe-owned n-bin threshold engine, new
+16-bit/custom-bins nodes, 16-bit local auto-thresholds, and n-bit histogram threshold expression functions — per spec
+`docs/superpowers/specs/2026-09-24-16-bit-n-bit-thresholding-design.md` (work item #1327).
 
-**Architecture:** One threshold engine in `jipipe-core` (`AutoThresholdMethod` enum + `NBinsAutoThresholder` dispatcher + ported method implementations) shared by expression functions (core) and nodes (plugin-ij-algorithms). The engine delegates to ImageJ's `AutoThresholder` for ≤256-bin histograms (bit-identical fast path) and runs ported implementations on the populated sub-range for larger histograms. All new nodes write 8-bit masks.
+**Architecture:** One threshold engine in `jipipe-core` (`AutoThresholdMethod` enum + `NBinsAutoThresholder`
+dispatcher + ported method implementations) shared by expression functions (core) and nodes (plugin-ij-algorithms). The
+engine delegates to ImageJ's `AutoThresholder` for ≤256-bin histograms (bit-identical fast path) and runs ported
+implementations on the populated sub-range for larger histograms. All new nodes write 8-bit masks.
 
-**Tech Stack:** Java 21, Maven, ImageJ1 1.54p (already a dependency), JUnit 5 (test scope inherited from root pom at `pom.xml:342-348`).
+**Tech Stack:** Java 21, Maven, ImageJ1 1.54p (already a dependency), JUnit 5 (test scope inherited from root pom at
+`pom.xml:342-348`).
 
 ## Global Constraints
 
-- Enum constant names of `AutoThresholdMethod` are **exactly** ImageJ's: `Default, Huang, Intermodes, IsoData, IJ_IsoData, Li, MaxEntropy, Mean, MinError, Minimum, Moments, Otsu, Percentile, RenyiEntropy, Shanbhag, Triangle, Yen` (deserialization matches by constant `name()`).
+- Enum constant names of `AutoThresholdMethod` are **exactly** ImageJ's:
+  `Default, Huang, Intermodes, IsoData, IJ_IsoData, Li, MaxEntropy, Mean, MinError, Minimum, Moments, Otsu, Percentile, RenyiEntropy, Shanbhag, Triangle, Yen`
+  (deserialization matches by constant `name()`).
 - Existing node IDs, parameter IDs, expression function IDs must NOT change.
-- Existing `HISTOGRAM_THRESHOLD_*` functions keep exact current behavior when the new optional `nbins` argument is omitted (truncate to 256 bins).
+- Existing `HISTOGRAM_THRESHOLD_*` functions keep exact current behavior when the new optional `nbins` argument is
+  omitted (truncate to 256 bins).
 - Output of every new node: `ImagePlusGreyscaleMaskData` (8-bit 0/255 mask).
 - Node naming: comma-in-parenthesis, e.g. "Local auto threshold 2D (Bernsen, 8-bit)".
-- Every new Java file starts with the standard MIT license header (copy from `plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/threshold/AutoThreshold2DAlgorithm.java:1-12`).
-- Commands run from repo root `/data/src/jipipe-4` unless stated. Build: `mvn -q -pl <module> -am compile` (use `-o` if offline works; omit if it fails). Tests: `mvn -q -pl <module> test -Dtest=<Class>`.
+- Every new Java file starts with the standard MIT license header (copy from
+  `plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/threshold/AutoThreshold2DAlgorithm.java:1-12`).
+- Commands run from repo root `/data/src/jipipe-4` unless stated. Build: `mvn -q -pl <module> -am compile` (use `-o` if
+  offline works; omit if it fails). Tests: `mvn -q -pl <module> test -Dtest=<Class>`.
 - Commit after every task, message prefix `Threshold: ` to match spec work.
 
 ---
@@ -24,11 +36,15 @@
 ### Task 1: `AutoThresholdMethod` enum + item info
 
 **Files:**
+
 - Create: `jipipe-core/src/main/java/org/hkijena/jipipe/utils/threshold/AutoThresholdMethod.java`
 - Create: `jipipe-core/src/main/java/org/hkijena/jipipe/utils/threshold/AutoThresholdMethodEnumItemInfo.java`
 
 **Interfaces:**
-- Produces: `enum AutoThresholdMethod` with ImageJ's exact 17 constants; `AutoThresholdMethodEnumItemInfo implements JIPipeEnumParameterItemInfo` (`org.hkijena.jipipe.plugins.parameters.api.enums`).
+
+- Produces: `enum AutoThresholdMethod` with ImageJ's exact 17 constants;
+  `AutoThresholdMethodEnumItemInfo implements JIPipeEnumParameterItemInfo`
+  (`org.hkijena.jipipe.plugins.parameters.api.enums`).
 
 - [ ] **Step 1: Create the enum**
 
@@ -167,17 +183,25 @@ git commit -m "Threshold: add AutoThresholdMethod enum with enhanced item info"
 ### Task 2: Ported n-bit threshold method implementations
 
 **Files:**
+
 - Create: `jipipe-core/src/main/java/org/hkijena/jipipe/utils/threshold/NBinsThresholdMethods.java`
 
 **Interfaces:**
-- Produces: `public static int NBinsThresholdMethods.<method>(int[] histogram)` for all 17 methods — signatures identical to ImageJ's `AutoThresholder` static methods, but correct for any histogram length ≥ 2.
+
+- Produces: `public static int NBinsThresholdMethods.<method>(int[] histogram)` for all 17 methods — signatures
+  identical to ImageJ's `AutoThresholder` static methods, but correct for any histogram length ≥ 2.
 
 - [ ] **Step 1: Create the ported methods class**
 
-`NBinsThresholdMethods.java` — full content (with license header). This is a line-by-line port of ImageJ 1.54p `ij.process.AutoThresholder`'s static methods (source at `~/.m2/repository/net/imagej/ij/1.54p/ij-1.54p-sources.jar`, file `ij/process/AutoThresholder.java`, lines 190–1383), with these systematic changes:
+`NBinsThresholdMethods.java` — full content (with license header). This is a line-by-line port of ImageJ 1.54p
+`ij.process.AutoThresholder`'s static methods (source at `~/.m2/repository/net/imagej/ij/1.54p/ij-1.54p-sources.jar`,
+file `ij/process/AutoThresholder.java`, lines 190–1383), with these systematic changes:
+
 - `IJ.log(...)` calls removed (methods return -1/0 instead and the dispatcher decides).
-- Package-private `defaultIsoData`/`IJIsoData` (ImageJ lines 100–164) are ported as private methods (they back `Default` and `IJ_IsoData`).
-- No 255/256 constants remain — every loop/array bound is `data.length` (the ImageJ source already uses `data.length` throughout; verify while porting that no `256` or `255` literals remain).
+- Package-private `defaultIsoData`/`IJIsoData` (ImageJ lines 100–164) are ported as private methods (they back `Default`
+  and `IJ_IsoData`).
+- No 255/256 constants remain — every loop/array bound is `data.length` (the ImageJ source already uses `data.length`
+  throughout; verify while porting that no `256` or `255` literals remain).
 - `A`, `B`, `C`, `partialSum`, `bimodalTest` helpers are ported as private static.
 
 ```java
@@ -238,7 +262,10 @@ public final class NBinsThresholdMethods {
 }
 ```
 
-Porting rule: copy each ImageJ method body verbatim from the sources jar (`unzip -p ~/.m2/repository/net/imagej/ij/1.54p/ij-1.54p-sources.jar ij/process/AutoThresholder.java` to view it), delete `IJ.log` statements and the `import ij.IJ`, and rename `MinErrorI` to `MinError`. Do not "improve" any arithmetic — fidelity to ImageJ output is the requirement.
+Porting rule: copy each ImageJ method body verbatim from the sources jar
+(`unzip -p ~/.m2/repository/net/imagej/ij/1.54p/ij-1.54p-sources.jar ij/process/AutoThresholder.java` to view it),
+delete `IJ.log` statements and the `import ij.IJ`, and rename `MinErrorI` to `MinError`. Do not "improve" any
+arithmetic — fidelity to ImageJ output is the requirement.
 
 - [ ] **Step 2: Compile**
 
@@ -257,12 +284,18 @@ git commit -m "Threshold: port AutoThresholder methods to n-bin implementations"
 ### Task 3: `NBinsAutoThresholder` dispatcher + fidelity tests
 
 **Files:**
+
 - Create: `jipipe-core/src/main/java/org/hkijena/jipipe/utils/threshold/NBinsAutoThresholder.java`
 - Test: `jipipe-core/src/test/java/org/hkijena/jipipe/utils/threshold/NBinsAutoThresholderTest.java`
 
 **Interfaces:**
+
 - Consumes: `NBinsThresholdMethods.<method>(int[])` (Task 2), `AutoThresholdMethod` (Task 1).
-- Produces: `public static int NBinsAutoThresholder.getThreshold(AutoThresholdMethod method, int[] histogram)` — histogram length is the bin count; returns a bin index in `[0, histogram.length - 1]` or a negative ImageJ-parity sentinel (-1) for pathological input. Also `public static int getThreshold8U(AutoThresholdMethod, int[])` (≤256-bin fast path, exact ImageJ semantics including bilevel handling) and `public static int getThreshold16U(AutoThresholdMethod, int[])`.
+- Produces: `public static int NBinsAutoThresholder.getThreshold(AutoThresholdMethod method, int[] histogram)` —
+  histogram length is the bin count; returns a bin index in `[0, histogram.length - 1]` or a negative ImageJ-parity
+  sentinel (-1) for pathological input. Also `public static int getThreshold8U(AutoThresholdMethod, int[])` (≤256-bin
+  fast path, exact ImageJ semantics including bilevel handling) and
+  `public static int getThreshold16U(AutoThresholdMethod, int[])`.
 
 - [ ] **Step 1: Write the failing fidelity test**
 
@@ -488,7 +521,8 @@ public final class NBinsAutoThresholder {
 - [ ] **Step 4: Run tests to verify they pass**
 
 Run: `mvn -q -pl jipipe-core test -Dtest=NBinsAutoThresholderTest`
-Expected: 4 tests PASS. If `testFidelityWithImageJOn256Bins` fails for specific methods, the port of that method in Task 2 deviates from ImageJ — compare method bodies line-by-line against the sources jar and fix the port, not the test.
+Expected: 4 tests PASS. If `testFidelityWithImageJOn256Bins` fails for specific methods, the port of that method in Task
+2 deviates from ImageJ — compare method bodies line-by-line against the sources jar and fix the port, not the test.
 
 - [ ] **Step 5: Commit**
 
@@ -503,26 +537,44 @@ git commit -m "Threshold: add NBinsAutoThresholder engine with ImageJ fidelity t
 ### Task 4: Migrate `AutoThreshold2DAlgorithm` and enum registration to `AutoThresholdMethod`
 
 **Files:**
-- Modify: `plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/threshold/AutoThreshold2DAlgorithm.java`
-- Modify: `plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/ImageJAlgorithmsPlugin.java` (registration at lines 1060–1098)
+
+- Modify:
+  `plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/threshold/AutoThreshold2DAlgorithm.java`
+- Modify:
+  `plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/ImageJAlgorithmsPlugin.java`
+  (registration at lines 1060–1098)
 
 **Interfaces:**
+
 - Consumes: `AutoThresholdMethod`, `NBinsAutoThresholder.getThreshold(AutoThresholdMethod, int[])` (Tasks 1–3).
-- Produces: `AutoThreshold2DAlgorithm.getMethod()` returns `AutoThresholdMethod`; nested enum `AutoThreshold2DAlgorithm.SliceThresholdMode` unchanged (reused by other nodes and the new nodes).
+- Produces: `AutoThreshold2DAlgorithm.getMethod()` returns `AutoThresholdMethod`; nested enum
+  `AutoThreshold2DAlgorithm.SliceThresholdMode` unchanged (reused by other nodes and the new nodes).
 
 - [ ] **Step 1: Update `AutoThreshold2DAlgorithm`**
 
 Changes (keep everything else — parameters, slice modes, ROI/mask handling — byte-identical):
-1. Replace import `ij.process.AutoThresholder` with `org.hkijena.jipipe.utils.threshold.AutoThresholdMethod` and `org.hkijena.jipipe.utils.threshold.NBinsAutoThresholder`.
+
+1. Replace import `ij.process.AutoThresholder` with `org.hkijena.jipipe.utils.threshold.AutoThresholdMethod` and
+   `org.hkijena.jipipe.utils.threshold.NBinsAutoThresholder`.
 2. Field: `private AutoThresholdMethod method = AutoThresholdMethod.Default;`
 3. Getter/setter: change types `AutoThresholder.Method` → `AutoThresholdMethod` (parameter key `"method"` unchanged).
-4. In `runIteration`, delete `AutoThresholder autoThresholder = new AutoThresholder();` (line 106) and replace both call sites `autoThresholder.getThreshold(method, histogram)` (lines 134, 191) with `NBinsAutoThresholder.getThreshold(method, histogram)`; replace `autoThresholder.getThreshold(method, combinedHistogram)` (line 166) with `NBinsAutoThresholder.getThreshold(method, combinedHistogram)`.
-5. Update the class-level `@SetJIPipeDocumentation` name to `"Auto threshold 2D (8-bit)"` and append to the description: `" This node requires 8-bit images and uses 256 bins (one per pixel value). Use 'Auto threshold 2D (16-bit)' or 'Auto threshold 2D (custom bins)' for images with a higher bit depth."`
+4. In `runIteration`, delete `AutoThresholder autoThresholder = new AutoThresholder();` (line 106) and replace both call
+   sites `autoThresholder.getThreshold(method, histogram)` (lines 134, 191) with
+   `NBinsAutoThresholder.getThreshold(method, histogram)`; replace
+   `autoThresholder.getThreshold(method, combinedHistogram)` (line 166) with
+   `NBinsAutoThresholder.getThreshold(method, combinedHistogram)`.
+5. Update the class-level `@SetJIPipeDocumentation` name to `"Auto threshold 2D (8-bit)"` and append to the description:
+   `" This node requires 8-bit images and uses 256 bins (one per pixel value). Use 'Auto threshold 2D (16-bit)' or 'Auto threshold 2D (custom bins)' for images with a higher bit depth."`
 
 - [ ] **Step 2: Update the plugin registration**
 
 In `ImageJAlgorithmsPlugin.registerThresholdAlgorithms()`:
-1. Line 1069: `for (AutoThresholder.Method method : AutoThresholder.Method.values())` → `for (AutoThresholdMethod method : AutoThresholdMethod.values())` (add import `org.hkijena.jipipe.utils.threshold.AutoThresholdMethod`; the `registerNodeExample(AutoThreshold2DAlgorithm.class, method.name(), node -> node.setMethod(method))` body is unchanged since `method.name()` and `setMethod` still work).
+
+1. Line 1069: `for (AutoThresholder.Method method : AutoThresholder.Method.values())` →
+   `for (AutoThresholdMethod method : AutoThresholdMethod.values())` (add import
+   `org.hkijena.jipipe.utils.threshold.AutoThresholdMethod`; the
+   `registerNodeExample(AutoThreshold2DAlgorithm.class, method.name(), node -> node.setMethod(method))` body is
+   unchanged since `method.name()` and `setMethod` still work).
 2. Lines 1093–1094: replace
    ```java
    registerEnumParameterType(AutoThresholder.Method.class.getCanonicalName(), AutoThresholder.Method.class,
@@ -551,19 +603,27 @@ git commit -m "Threshold: port AutoThreshold2DAlgorithm to AutoThresholdMethod"
 ### Task 5: Migrate `NucleiSegmentation3DAlgorithm` (jipipe-plugin-ij-3d)
 
 **Files:**
-- Modify: `plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/segmentation/NucleiSegmentation3DAlgorithm.java`
+
+- Modify:
+  `plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/segmentation/NucleiSegmentation3DAlgorithm.java`
 
 **Interfaces:**
+
 - Consumes: `AutoThresholdMethod` (Task 1).
 
 - [ ] **Step 1: Update the node**
 
-mcib3d's `Segment3DNuclei.setMethod` requires `ij.process.AutoThresholder.Method`, so the node keeps converting at the boundary:
-1. Replace import `ij.process.AutoThresholder` (if only used for the enum — check the import list) with `org.hkijena.jipipe.utils.threshold.AutoThresholdMethod` **plus** keep/add `import ij.process.AutoThresholder;` (still needed for the conversion).
+mcib3d's `Segment3DNuclei.setMethod` requires `ij.process.AutoThresholder.Method`, so the node keeps converting at the
+boundary:
+
+1. Replace import `ij.process.AutoThresholder` (if only used for the enum — check the import list) with
+   `org.hkijena.jipipe.utils.threshold.AutoThresholdMethod` **plus** keep/add `import ij.process.AutoThresholder;`
+   (still needed for the conversion).
 2. Field: `private AutoThresholdMethod autoThresholdMethod = AutoThresholdMethod.Default;`
 3. Getter/setter types → `AutoThresholdMethod` (parameter key `"auto-threshold-method"` unchanged).
 4. Copy-constructor: type of `other.autoThresholdMethod` changes accordingly (no code change beyond types).
-5. In `runIteration`, line 67: `segment3DNuclei.setMethod(autoThresholdMethod)` → `segment3DNuclei.setMethod(AutoThresholder.Method.valueOf(autoThresholdMethod.name()))`.
+5. In `runIteration`, line 67: `segment3DNuclei.setMethod(autoThresholdMethod)` →
+   `segment3DNuclei.setMethod(AutoThresholder.Method.valueOf(autoThresholdMethod.name()))`.
 
 - [ ] **Step 2: Compile**
 
@@ -582,16 +642,26 @@ git commit -m "Threshold: port NucleiSegmentation3DAlgorithm to AutoThresholdMet
 ### Task 6: Rework `HistogramThresholdFunction` (optional nbins) + migrate 17 subclasses
 
 **Files:**
-- Modify: `jipipe-core/src/main/java/org/hkijena/jipipe/plugins/expressions/functions/statistics/HistogramThresholdFunction.java`
-- Modify: all 17 `HistogramThreshold*.java` in the same directory (`HistogramThresholdHuang`, `HistogramThresholdImageJDefault`, `HistogramThresholdIntermodes`, `HistogramThresholdImageJIsoData`, `HistogramThresholdIsoData`, `HistogramThresholdLi`, `HistogramThresholdMaxEntropy`, `HistogramThresholdMean`, `HistogramThresholdMinError`, `HistogramThresholdMinimum`, `HistogramThresholdMoments`, `HistogramThresholdOtsu`, `HistogramThresholdPercentile`, `HistogramThresholdRenyi`, `HistogramThresholdShanbhag`, `HistogramThresholdTriangle`, `HistogramThresholdYen`)
+
+- Modify:
+  `jipipe-core/src/main/java/org/hkijena/jipipe/plugins/expressions/functions/statistics/HistogramThresholdFunction.java`
+- Modify: all 17 `HistogramThreshold*.java` in the same directory (`HistogramThresholdHuang`,
+  `HistogramThresholdImageJDefault`, `HistogramThresholdIntermodes`, `HistogramThresholdImageJIsoData`,
+  `HistogramThresholdIsoData`, `HistogramThresholdLi`, `HistogramThresholdMaxEntropy`, `HistogramThresholdMean`,
+  `HistogramThresholdMinError`, `HistogramThresholdMinimum`, `HistogramThresholdMoments`, `HistogramThresholdOtsu`,
+  `HistogramThresholdPercentile`, `HistogramThresholdRenyi`, `HistogramThresholdShanbhag`, `HistogramThresholdTriangle`,
+  `HistogramThresholdYen`)
 
 **Interfaces:**
+
 - Consumes: `AutoThresholdMethod`, `NBinsAutoThresholder` (Tasks 1–3).
-- Produces: `protected abstract AutoThresholdMethod getMethod();` on `HistogramThresholdFunction`; subclasses no longer implement `calculateThreshold`.
+- Produces: `protected abstract AutoThresholdMethod getMethod();` on `HistogramThresholdFunction`; subclasses no longer
+  implement `calculateThreshold`.
 
 - [ ] **Step 1: Write the failing test**
 
-`jipipe-core/src/test/java/org/hkijena/jipipe/plugins/expressions/functions/statistics/HistogramThresholdFunctionTest.java` — full content (with license header):
+`jipipe-core/src/test/java/org/hkijena/jipipe/plugins/expressions/functions/statistics/HistogramThresholdFunctionTest.java` —
+full content (with license header):
 
 ```java
 package org.hkijena.jipipe.plugins.expressions.functions.statistics;
@@ -646,7 +716,8 @@ class HistogramThresholdFunctionTest {
 ```
 
 Run: `mvn -q -pl jipipe-core test -Dtest=HistogramThresholdFunctionTest`
-Expected: FAIL (the 2-argument `evaluate` call does not compile yet — `ExpressionFunction(name, 1)` accepts only 1 argument).
+Expected: FAIL (the 2-argument `evaluate` call does not compile yet — `ExpressionFunction(name, 1)` accepts only 1
+argument).
 
 - [ ] **Step 2: Rework the base class**
 
@@ -727,20 +798,30 @@ public abstract class HistogramThresholdFunction extends ExpressionFunction {
 - [ ] **Step 3: Migrate the 17 subclasses**
 
 Each subclass (e.g. `HistogramThresholdOtsu.java`) changes its overridden method from
+
 ```java
 @Override
 protected int calculateThreshold(int[] histogram) {
     return AUTO_THRESHOLDER.getThreshold(AutoThresholder.Method.Otsu, histogram);
 }
 ```
+
 to
+
 ```java
 @Override
 protected AutoThresholdMethod getMethod() {
     return AutoThresholdMethod.Otsu;
 }
 ```
-with imports `ij.process.AutoThresholder` removed and `org.hkijena.jipipe.utils.threshold.AutoThresholdMethod` added. Method-name mapping (subclass constant → `AutoThresholdMethod` constant): Default→Default, Huang→Huang, Intermodes→Intermodes, IsoData→IsoData, IJ_IsoData→IJ_IsoData, Li→Li, MaxEntropy→MaxEntropy, Mean→Mean, MinError→MinError, Minimum→Minimum, Moments→Moments, Otsu→Otsu, Percentile→Percentile, RenyiEntropy→RenyiEntropy, Shanbhag→Shanbhag, Triangle→Triangle, Yen→Yen (identical names — mechanical change). Subclasses with the `IJLogToJIPipeProgressInfoPump` wrapper (`HistogramThresholdIntermodes`, `HistogramThresholdMinimum`, `HistogramThresholdMinError`) drop it (ImageJ logging is no longer called; the ported methods do not log).
+
+with imports `ij.process.AutoThresholder` removed and `org.hkijena.jipipe.utils.threshold.AutoThresholdMethod` added.
+Method-name mapping (subclass constant → `AutoThresholdMethod` constant): Default→Default, Huang→Huang,
+Intermodes→Intermodes, IsoData→IsoData, IJ_IsoData→IJ_IsoData, Li→Li, MaxEntropy→MaxEntropy, Mean→Mean,
+MinError→MinError, Minimum→Minimum, Moments→Moments, Otsu→Otsu, Percentile→Percentile, RenyiEntropy→RenyiEntropy,
+Shanbhag→Shanbhag, Triangle→Triangle, Yen→Yen (identical names — mechanical change). Subclasses with the
+`IJLogToJIPipeProgressInfoPump` wrapper (`HistogramThresholdIntermodes`, `HistogramThresholdMinimum`,
+`HistogramThresholdMinError`) drop it (ImageJ logging is no longer called; the ported methods do not log).
 
 - [ ] **Step 4: Run tests**
 
@@ -760,12 +841,19 @@ git commit -m "Threshold: add optional nbins to histogram threshold functions"
 ### Task 7: New `HISTOGRAM_THRESHOLD_8_BIT_*` / `_16_BIT_*` expression functions
 
 **Files:**
-- Create: `jipipe-core/src/main/java/org/hkijena/jipipe/plugins/expressions/functions/statistics/HistogramThreshold8BitFunction.java`
-- Create: `jipipe-core/src/main/java/org/hkijena/jipipe/plugins/expressions/functions/statistics/HistogramThreshold16BitFunction.java`
-- Create: 34 subclasses (17 per variant), one file each, in the same directory. Naming: `HistogramThreshold8BitOtsu.java` (`"HISTOGRAM_THRESHOLD_8_BIT_OTSU"`), `HistogramThreshold16BitOtsu.java` (`"HISTOGRAM_THRESHOLD_16_BIT_OTSU"`), etc. — method suffix from Task 6 mapping.
-- Modify: `jipipe-core/src/main/java/org/hkijena/jipipe/plugins/expressions/ExpressionPlugin.java` (register after line 244)
+
+- Create:
+  `jipipe-core/src/main/java/org/hkijena/jipipe/plugins/expressions/functions/statistics/HistogramThreshold8BitFunction.java`
+- Create:
+  `jipipe-core/src/main/java/org/hkijena/jipipe/plugins/expressions/functions/statistics/HistogramThreshold16BitFunction.java`
+- Create: 34 subclasses (17 per variant), one file each, in the same directory. Naming:
+  `HistogramThreshold8BitOtsu.java` (`"HISTOGRAM_THRESHOLD_8_BIT_OTSU"`), `HistogramThreshold16BitOtsu.java`
+  (`"HISTOGRAM_THRESHOLD_16_BIT_OTSU"`), etc. — method suffix from Task 6 mapping.
+- Modify: `jipipe-core/src/main/java/org/hkijena/jipipe/plugins/expressions/ExpressionPlugin.java` (register after line
+  244)
 
 **Interfaces:**
+
 - Consumes: `AutoThresholdMethod`, `NBinsAutoThresholder.getThreshold8U/getThreshold16U` (Task 3).
 - Produces: 34 registered functions.
 
@@ -820,7 +908,10 @@ public abstract class HistogramThreshold8BitFunction extends ExpressionFunction 
 }
 ```
 
-`HistogramThreshold16BitFunction.java` — identical structure, but: array `new int[65536]`, truncation guard `i >= 65536`, calls `NBinsAutoThresholder.getThreshold16U(getMethod(), histogram)`, ParameterInfo text: "Array of size 65536 containing numbers. The array index represents the bin (pixel value) and the array value represents the count for this bin."
+`HistogramThreshold16BitFunction.java` — identical structure, but: array `new int[65536]`, truncation guard
+`i >= 65536`, calls `NBinsAutoThresholder.getThreshold16U(getMethod(), histogram)`, ParameterInfo text: "Array of size
+65536 containing numbers. The array index represents the bin (pixel value) and the array value represents the count for
+this bin."
 
 - [ ] **Step 2: Create the 34 subclasses**
 
@@ -846,7 +937,10 @@ public class HistogramThreshold8BitOtsu extends HistogramThreshold8BitFunction {
 }
 ```
 
-Function ID pattern: `HISTOGRAM_THRESHOLD_8_BIT_<CONSTANT>` and `HISTOGRAM_THRESHOLD_16_BIT_<CONSTANT>` where `<CONSTANT>` is the `AutoThresholdMethod` constant (e.g. `HISTOGRAM_THRESHOLD_8_BIT_IJ_ISODATA`, `HISTOGRAM_THRESHOLD_16_BIT_RENYIENTROPY`). Display name pattern: "Histogram threshold 8-bit (Otsu)" / "Histogram threshold 16-bit (Otsu)".
+Function ID pattern: `HISTOGRAM_THRESHOLD_8_BIT_<CONSTANT>` and `HISTOGRAM_THRESHOLD_16_BIT_<CONSTANT>` where
+`<CONSTANT>` is the `AutoThresholdMethod` constant (e.g. `HISTOGRAM_THRESHOLD_8_BIT_IJ_ISODATA`,
+`HISTOGRAM_THRESHOLD_16_BIT_RENYIENTROPY`). Display name pattern: "Histogram threshold 8-bit (Otsu)" / "Histogram
+threshold 16-bit (Otsu)".
 
 - [ ] **Step 3: Register in `ExpressionPlugin.register()`**
 
@@ -889,7 +983,8 @@ registerExpressionFunction(new HistogramThreshold16BitTriangle());
 registerExpressionFunction(new HistogramThreshold16BitYen());
 ```
 
-(Class names end with the Java constant, e.g. `HistogramThreshold8BitImageJIsoData` for `IJ_IsoData` — drop only the underscores.)
+(Class names end with the Java constant, e.g. `HistogramThreshold8BitImageJIsoData` for `IJ_IsoData` — drop only the
+underscores.)
 
 - [ ] **Step 4: Compile and run module tests**
 
@@ -908,16 +1003,23 @@ git commit -m "Threshold: add 8-bit/16-bit histogram threshold expression functi
 ### Task 8: `AutoThreshold2D16UAlgorithm` node
 
 **Files:**
-- Create: `plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/threshold/AutoThreshold2D16UAlgorithm.java`
-- Modify: `plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/ImageJAlgorithmsPlugin.java`
+
+- Create:
+  `plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/threshold/AutoThreshold2D16UAlgorithm.java`
+- Modify:
+  `plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/ImageJAlgorithmsPlugin.java`
 
 **Interfaces:**
-- Consumes: `AutoThresholdMethod`, `NBinsAutoThresholder.getThreshold16U` (Tasks 1, 3), `AutoThreshold2DAlgorithm.SliceThresholdMode` (Task 4), `ImageJAlgorithmUtils.getMaskProcessorFromMaskOrROI` (`plugins/.../utils/ImageJAlgorithmUtils.java:239`).
+
+- Consumes: `AutoThresholdMethod`, `NBinsAutoThresholder.getThreshold16U` (Tasks 1, 3),
+  `AutoThreshold2DAlgorithm.SliceThresholdMode` (Task 4), `ImageJAlgorithmUtils.getMaskProcessorFromMaskOrROI`
+  (`plugins/.../utils/ImageJAlgorithmUtils.java:239`).
 - Produces: node ID `ij1-threshold-auto2d-16u`.
 
 - [ ] **Step 1: Create the node**
 
-Model it on `AutoThreshold2DAlgorithm` (Task 4 state) + `CustomAutoThreshold2D16UAlgorithm`'s output writing. Full skeleton (with license header; implement following the referenced patterns):
+Model it on `AutoThreshold2DAlgorithm` (Task 4 state) + `CustomAutoThreshold2D16UAlgorithm`'s output writing. Full
+skeleton (with license header; implement following the referenced patterns):
 
 ```java
 package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.threshold;
@@ -1003,7 +1105,8 @@ public class AutoThreshold2D16UAlgorithm extends JIPipeIteratingAlgorithm {
 }
 ```
 
-**Important:** the last enum block is a note — delete it; the node uses `AutoThreshold2DAlgorithm.SliceThresholdMode` (as `CustomAutoThreshold2D16UAlgorithm` does at its line 69).
+**Important:** the last enum block is a note — delete it; the node uses `AutoThreshold2DAlgorithm.SliceThresholdMode`
+(as `CustomAutoThreshold2D16UAlgorithm` does at its line 69).
 
 - [ ] **Step 2: Register the node + per-method examples**
 
@@ -1033,13 +1136,21 @@ git commit -m "Threshold: add Auto threshold 2D (16-bit) node"
 ### Task 9: `AutoThreshold2DNBinsAlgorithm` node (custom bins)
 
 **Files:**
-- Create: `plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/threshold/AutoThreshold2DNBinsAlgorithm.java`
-- Modify: `plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/ImageJAlgorithmsPlugin.java`
-- Test: `plugins/jipipe-plugin-ij-algorithms/src/test/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/threshold/AutoThreshold2DNBinsAlgorithmTest.java`
+
+- Create:
+  `plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/threshold/AutoThreshold2DNBinsAlgorithm.java`
+- Modify:
+  `plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/ImageJAlgorithmsPlugin.java`
+- Test:
+  `plugins/jipipe-plugin-ij-algorithms/src/test/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/threshold/AutoThreshold2DNBinsAlgorithmTest.java`
 
 **Interfaces:**
-- Consumes: `AutoThresholdMethod`, `NBinsAutoThresholder.getThreshold` (Tasks 1, 3), `AutoThreshold2DAlgorithm.SliceThresholdMode` (Task 4).
-- Produces: node ID `ij1-threshold-auto2d-nbins`; static helper `public static int binIndex(double value, double min, double max, int nbins)` = `(int) Math.floor((value - min) / (max - min) * nbins)` clamped to `[0, nbins-1]`.
+
+- Consumes: `AutoThresholdMethod`, `NBinsAutoThresholder.getThreshold` (Tasks 1, 3),
+  `AutoThreshold2DAlgorithm.SliceThresholdMode` (Task 4).
+- Produces: node ID `ij1-threshold-auto2d-nbins`; static helper
+  `public static int binIndex(double value, double min, double max, int nbins)` =
+  `(int) Math.floor((value - min) / (max - min) * nbins)` clamped to `[0, nbins-1]`.
 
 - [ ] **Step 1: Write the failing test**
 
@@ -1203,18 +1314,32 @@ git commit -m "Threshold: add Auto threshold 2D (custom bins) node"
 ### Task 10: `PercentileThreshold16U2DAlgorithm` node
 
 **Files:**
-- Create: `plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/threshold/PercentileThreshold16U2DAlgorithm.java`
-- Modify: `plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/ImageJAlgorithmsPlugin.java`
+
+- Create:
+  `plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/threshold/PercentileThreshold16U2DAlgorithm.java`
+- Modify:
+  `plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/ImageJAlgorithmsPlugin.java`
 
 **Interfaces:**
+
 - Produces: node ID `ij1-threshold-percentile2d-16u`.
 
 - [ ] **Step 1: Create the node**
 
 Copy `PercentileThreshold8U2DAlgorithm` (`nodes/threshold/PercentileThreshold8U2DAlgorithm.java`) and change:
-1. Class name → `PercentileThreshold16U2DAlgorithm`; input slot `ImagePlusGreyscale8UData` → `ImagePlusGreyscale16UData`.
-2. `@SetJIPipeDocumentation` name → `"Percentile threshold 2D (16-bit)"`; description → "Thresholds the image with a threshold calculated from the image pixel values (percentile of the 65536-bin histogram). If higher-dimensional data is provided, the filter is applied to each 2D slice."
-3. In `runIteration`: input data class → `ImagePlusGreyscale16UData.class`; the slice loop reads `short[] pixels = (short[]) ip.getPixels();` and computes the histogram `int[] histogram = new int[65536]; for (short p : pixels) histogram[p & 0xFFFF]++;` then applies the existing percentile scan over `histogram` unchanged (sum until `sum >= sum * percentile / 100.0`, `thresh` = bin index). Since `ip.threshold(thresh)` on a `ShortProcessor` sets ≤thresh to 0 and >thresh to 255 (ImageJ semantics, `ShortProcessor.java:1202-1210`), the output mask is produced by the existing `ip.threshold(thresh)` call followed by `new ImagePlusGreyscaleMaskData(img)` (the mask type converts to 8-bit if needed — same as the 8U node).
+
+1. Class name → `PercentileThreshold16U2DAlgorithm`; input slot `ImagePlusGreyscale8UData` →
+   `ImagePlusGreyscale16UData`.
+2. `@SetJIPipeDocumentation` name → `"Percentile threshold 2D (16-bit)"`; description → "Thresholds the image with a
+   threshold calculated from the image pixel values (percentile of the 65536-bin histogram). If higher-dimensional data
+   is provided, the filter is applied to each 2D slice."
+3. In `runIteration`: input data class → `ImagePlusGreyscale16UData.class`; the slice loop reads
+   `short[] pixels = (short[]) ip.getPixels();` and computes the histogram
+   `int[] histogram = new int[65536]; for (short p : pixels) histogram[p & 0xFFFF]++;` then applies the existing
+   percentile scan over `histogram` unchanged (sum until `sum >= sum * percentile / 100.0`, `thresh` = bin index). Since
+   `ip.threshold(thresh)` on a `ShortProcessor` sets ≤thresh to 0 and >thresh to 255 (ImageJ semantics,
+   `ShortProcessor.java:1202-1210`), the output mask is produced by the existing `ip.threshold(thresh)` call followed by
+   `new ImagePlusGreyscaleMaskData(img)` (the mask type converts to 8-bit if needed — same as the 8U node).
 
 - [ ] **Step 2: Register the node**
 
@@ -1239,22 +1364,35 @@ git commit -m "Threshold: add Percentile threshold 2D (16-bit) node"
 ### Task 11: Local auto-threshold 16-bit nodes (Mean/Median/MidGrey/Otsu + 5 named)
 
 **Files:**
-- Create: `plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/threshold/local/LocalAutoThreshold16UUtils.java`
-- Create: `plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/threshold/local/LocalAutoThreshold2D16UAlgorithm.java`
-- Create: `plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/threshold/local/BernsenLocalAutoThreshold2D16UAlgorithm.java`
-- Create: `plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/threshold/local/ContrastLocalAutoThreshold2D16UAlgorithm.java`
-- Create: `plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/threshold/local/NiblackLocalAutoThreshold2D16UAlgorithm.java`
-- Create: `plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/threshold/local/PhansalkarLocalAutoThreshold2D16UAlgorithm.java`
-- Create: `plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/threshold/local/SauvolaLocalAutoThreshold2D16UAlgorithm.java`
-- Modify: `plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/ImageJAlgorithmsPlugin.java`
+
+- Create:
+  `plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/threshold/local/LocalAutoThreshold16UUtils.java`
+- Create:
+  `plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/threshold/local/LocalAutoThreshold2D16UAlgorithm.java`
+- Create:
+  `plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/threshold/local/BernsenLocalAutoThreshold2D16UAlgorithm.java`
+- Create:
+  `plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/threshold/local/ContrastLocalAutoThreshold2D16UAlgorithm.java`
+- Create:
+  `plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/threshold/local/NiblackLocalAutoThreshold2D16UAlgorithm.java`
+- Create:
+  `plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/threshold/local/PhansalkarLocalAutoThreshold2D16UAlgorithm.java`
+- Create:
+  `plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/threshold/local/SauvolaLocalAutoThreshold2D16UAlgorithm.java`
+- Modify:
+  `plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/ImageJAlgorithmsPlugin.java`
 
 **Interfaces:**
+
 - Consumes: `NBinsAutoThresholder` (for local Otsu), ImageJ `RankFilters` (existing dependency).
-- Produces: node IDs `ij1-threshold-local-auto2d-16u`, `ij1-threshold-local-auto2d-16u-bernsen|contrast|niblack|phansalkar|sauvola`; `LocalAutoThreshold16UUtils` shared static kernels.
+- Produces: node IDs `ij1-threshold-local-auto2d-16u`,
+  `ij1-threshold-local-auto2d-16u-bernsen|contrast|niblack|phansalkar|sauvola`; `LocalAutoThreshold16UUtils` shared
+  static kernels.
 
 - [ ] **Step 1: Create `LocalAutoThreshold16UUtils`**
 
-This class holds the 16-bit kernel implementations (with license header). The 8-bit originals' bodies are adapted per method. Key shared pieces:
+This class holds the 16-bit kernel implementations (with license header). The 8-bit originals' bodies are adapted per
+method. Key shared pieces:
 
 ```java
 package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.threshold.local;
@@ -1332,14 +1470,23 @@ public final class LocalAutoThreshold16UUtils {
 }
 ```
 
-Implement each kernel fully in the file following the referenced 8-bit source line ranges — the kernels are direct ports with `& 0xFFFF` masking and an explicit `out` array; no other logic changes. (The plan deliberately references the exact source lines: the implementer must read the 8-bit file listed in the task Files section and port it; the per-kernel notes above state every deviation from that source.)
+Implement each kernel fully in the file following the referenced 8-bit source line ranges — the kernels are direct ports
+with `& 0xFFFF` masking and an explicit `out` array; no other logic changes. (The plan deliberately references the exact
+source lines: the implementer must read the 8-bit file listed in the task Files section and port it; the per-kernel
+notes above state every deviation from that source.)
 
 - [ ] **Step 2: Create the 6 node classes**
 
-Each node mirrors its 8-bit counterpart exactly (same parameters, keys, defaults — except Sauvola `r` default 32768 as noted) with these changes:
+Each node mirrors its 8-bit counterpart exactly (same parameters, keys, defaults — except Sauvola `r` default 32768 as
+noted) with these changes:
+
 1. Input slot: `ImagePlusGreyscale8UData` → `ImagePlusGreyscale16UData`.
-2. `@SetJIPipeDocumentation` name: "(Mean/Median/MidGrey/Otsu, 16-bit)" / "(Bernsen, 16-bit)" / "(Contrast, 16-bit)" / "(Niblack, 16-bit)" / "(Phansalkar, 16-bit)" / "(Sauvola, 16-bit)".
-3. In `runIteration`: input class → 16U; per slice, create `ByteProcessor out = new ByteProcessor(ip.getWidth(), ip.getHeight());`, call the corresponding `LocalAutoThreshold16UUtils` kernel writing into `out`, then copy `out` into the output hyperstack via the Task 8 target-processor pattern, and output `new ImagePlusGreyscaleMaskData(outputImage)`.
+2. `@SetJIPipeDocumentation` name: "(Mean/Median/MidGrey/Otsu, 16-bit)" / "(Bernsen, 16-bit)" / "(Contrast, 16-bit)" / "
+   (Niblack, 16-bit)" / "(Phansalkar, 16-bit)" / "(Sauvola, 16-bit)".
+3. In `runIteration`: input class → 16U; per slice, create
+   `ByteProcessor out = new ByteProcessor(ip.getWidth(), ip.getHeight());`, call the corresponding
+   `LocalAutoThreshold16UUtils` kernel writing into `out`, then copy `out` into the output hyperstack via the Task 8
+   target-processor pattern, and output `new ImagePlusGreyscaleMaskData(outputImage)`.
    Structure per node:
    ```java
    ImagePlus img = inputData.getDuplicateImage();
@@ -1356,8 +1503,10 @@ Each node mirrors its 8-bit counterpart exactly (same parameters, keys, defaults
    }, progressInfo);
    iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(outputImage), progressInfo);
    ```
-4. `LocalAutoThreshold2D16UAlgorithm` (the selector node) keeps the `Method` enum {Mean, Median, MidGrey, Otsu} and dispatches to `LocalAutoThreshold16UUtils` kernels.
-5. Citations/aliases: keep the `@AddJIPipeCitation` entries; **do not** add `@AddJIPipeNodeAlias` (no ImageJ 16-bit equivalent).
+4. `LocalAutoThreshold2D16UAlgorithm` (the selector node) keeps the `Method` enum {Mean, Median, MidGrey, Otsu} and
+   dispatches to `LocalAutoThreshold16UUtils` kernels.
+5. Citations/aliases: keep the `@AddJIPipeCitation` entries; **do not** add `@AddJIPipeNodeAlias` (no ImageJ 16-bit
+   equivalent).
 
 - [ ] **Step 3: Register all 6 nodes**
 
@@ -1387,23 +1536,30 @@ git commit -m "Threshold: add 16-bit local auto threshold nodes"
 ### Task 12: Rename 8-bit local auto-threshold nodes (documentation only)
 
 **Files:**
-- Modify: `plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/threshold/local/LocalAutoThreshold2DAlgorithm.java` (line 46)
-- Modify: the 5 other files in that directory (`BernsenLocalAutoThreshold2DAlgorithm.java` line 42, `ContrastLocalAutoThreshold2DAlgorithm.java` line 42, `NiblackLocalAutoThreshold2DAlgorithm.java` line 43, `PhansalkarLocalAutoThreshold2DAlgorithm.java` line 44, `SauvolaLocalAutoThreshold2DAlgorithm.java` — find its `@SetJIPipeDocumentation` name line)
+
+- Modify:
+  `plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/threshold/local/LocalAutoThreshold2DAlgorithm.java`
+  (line 46)
+- Modify: the 5 other files in that directory (`BernsenLocalAutoThreshold2DAlgorithm.java` line 42,
+  `ContrastLocalAutoThreshold2DAlgorithm.java` line 42, `NiblackLocalAutoThreshold2DAlgorithm.java` line 43,
+  `PhansalkarLocalAutoThreshold2DAlgorithm.java` line 44, `SauvolaLocalAutoThreshold2DAlgorithm.java` — find its
+  `@SetJIPipeDocumentation` name line)
 
 **Interfaces:** none new — display-name-only change.
 
 - [ ] **Step 1: Update the `@SetJIPipeDocumentation` names**
 
-| File | Old name | New name |
-|---|---|---|
-| `LocalAutoThreshold2DAlgorithm.java` | `Local auto threshold 2D` | `Local auto threshold 2D (Mean/Median/MidGrey/Otsu, 8-bit)` |
-| `BernsenLocalAutoThreshold2DAlgorithm.java` | `Local auto threshold 2D (Bernsen)` | `Local auto threshold 2D (Bernsen, 8-bit)` |
-| `ContrastLocalAutoThreshold2DAlgorithm.java` | `Local auto threshold 2D (Contrast)` | `Local auto threshold 2D (Contrast, 8-bit)` |
-| `NiblackLocalAutoThreshold2DAlgorithm.java` | `Local auto threshold 2D (Niblack)` | `Local auto threshold 2D (Niblack, 8-bit)` |
-| `PhansalkarLocalAutoThreshold2DAlgorithm.java` | `Local auto threshold 2D (Phansalkar)` | `Local auto threshold 2D (Phansalkar, 8-bit)` |
-| `SauvolaLocalAutoThreshold2DAlgorithm.java` | `Local auto threshold 2D (Sauvola)` | `Local auto threshold 2D (Sauvola, 8-bit)` |
+| File                                           | Old name                               | New name                                                    |
+|------------------------------------------------|----------------------------------------|-------------------------------------------------------------|
+| `LocalAutoThreshold2DAlgorithm.java`           | `Local auto threshold 2D`              | `Local auto threshold 2D (Mean/Median/MidGrey/Otsu, 8-bit)` |
+| `BernsenLocalAutoThreshold2DAlgorithm.java`    | `Local auto threshold 2D (Bernsen)`    | `Local auto threshold 2D (Bernsen, 8-bit)`                  |
+| `ContrastLocalAutoThreshold2DAlgorithm.java`   | `Local auto threshold 2D (Contrast)`   | `Local auto threshold 2D (Contrast, 8-bit)`                 |
+| `NiblackLocalAutoThreshold2DAlgorithm.java`    | `Local auto threshold 2D (Niblack)`    | `Local auto threshold 2D (Niblack, 8-bit)`                  |
+| `PhansalkarLocalAutoThreshold2DAlgorithm.java` | `Local auto threshold 2D (Phansalkar)` | `Local auto threshold 2D (Phansalkar, 8-bit)`               |
+| `SauvolaLocalAutoThreshold2DAlgorithm.java`    | `Local auto threshold 2D (Sauvola)`    | `Local auto threshold 2D (Sauvola, 8-bit)`                  |
 
-Append to each description: `" This node requires 8-bit images. Use the corresponding 16-bit node for images with a higher bit depth."`
+Append to each description:
+`" This node requires 8-bit images. Use the corresponding 16-bit node for images with a higher bit depth."`
 
 - [ ] **Step 2: Compile and commit**
 
@@ -1420,14 +1576,20 @@ git commit -m "Threshold: clarify bit depth in local auto threshold node names"
 ### Task 13: End-to-end node smoke tests
 
 **Files:**
-- Create: `plugins/jipipe-plugin-ij-algorithms/src/test/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/threshold/AutoThreshold2D16UAlgorithmTest.java`
+
+- Create:
+  `plugins/jipipe-plugin-ij-algorithms/src/test/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/threshold/AutoThreshold2D16UAlgorithmTest.java`
 
 **Interfaces:**
+
 - Consumes: all nodes from Tasks 8–11.
 
 - [ ] **Step 1: Write the smoke tests**
 
-Full content (with license header). Pattern: bootstrap JIPipe (`JIPipe.ensureInstance()` in `@BeforeAll` — precedent `jipipe-core/src/test/java/org/hkijena/jipipe/api/instrumentation/InstrumentationAPITest.java:21-24`), create a node instance via `JIPipe.createNode(X.class)`, drive `runIteration` through a `JIPipeSingleIterationStep` obtained from the node's data-batch generation, and check the output mask:
+Full content (with license header). Pattern: bootstrap JIPipe (`JIPipe.ensureInstance()` in `@BeforeAll` — precedent
+`jipipe-core/src/test/java/org/hkijena/jipipe/api/instrumentation/InstrumentationAPITest.java:21-24`), create a node
+instance via `JIPipe.createNode(X.class)`, drive `runIteration` through a `JIPipeSingleIterationStep` obtained from the
+node's data-batch generation, and check the output mask:
 
 ```java
 package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.threshold;
@@ -1501,13 +1663,23 @@ class AutoThreshold2D16UAlgorithmTest {
 }
 ```
 
-**Note for the implementer:** the exact iteration-step wiring API (`setInputData(slot, data, progress)` vs slot `addData` + `getDataBatches`) must be adapted to what compiles — read `jipipe-core/src/main/java/org/hkijena/jipipe/api/nodes/iterationstep/JIPipeSingleIterationStep.java` (its `setInputData(JIPipeDataSlot, int)` at line 121 sets a row reference; the practical path is populating `node.getInputSlot("Input").addData(data, progress)` then running the node via its `run()`-family or `getDataBatches()` — check how `JIPipeIteratingAlgorithm.runIteration` is invoked from `run()` and use the smallest public entry point). The test's assertions (8-bit output, exact foreground count) are the contract; the wiring is mechanical.
+**Note for the implementer:** the exact iteration-step wiring API (`setInputData(slot, data, progress)` vs slot
+`addData` + `getDataBatches`) must be adapted to what compiles — read
+`jipipe-core/src/main/java/org/hkijena/jipipe/api/nodes/iterationstep/JIPipeSingleIterationStep.java` (its
+`setInputData(JIPipeDataSlot, int)` at line 121 sets a row reference; the practical path is populating
+`node.getInputSlot("Input").addData(data, progress)` then running the node via its `run()`-family or
+`getDataBatches()` — check how `JIPipeIteratingAlgorithm.runIteration` is invoked from `run()` and use the smallest
+public entry point). The test's assertions (8-bit output, exact foreground count) are the contract; the wiring is
+mechanical.
 
-Add a second test method `testCustomBinsNode()` in the same file for `AutoThreshold2DNBinsAlgorithm` on the same bimodal image with `nbins = 256` (bins span 0..65535, so bin width 256; bright mode ≈ bin 78, dark ≈ bin 3; Otsu separates them; expect the same 512 foreground pixels).
+Add a second test method `testCustomBinsNode()` in the same file for `AutoThreshold2DNBinsAlgorithm` on the same bimodal
+image with `nbins = 256` (bins span 0..65535, so bin width 256; bright mode ≈ bin 78, dark ≈ bin 3; Otsu separates them;
+expect the same 512 foreground pixels).
 
 - [ ] **Step 2: Run the tests**
 
-Run: `mvn -q -pl plugins/jipipe-plugin-ij-algorithms -am test -Dtest='AutoThreshold2D16UAlgorithmTest,AutoThreshold2DNBinsAlgorithmTest'`
+Run:
+`mvn -q -pl plugins/jipipe-plugin-ij-algorithms -am test -Dtest='AutoThreshold2D16UAlgorithmTest,AutoThreshold2DNBinsAlgorithmTest'`
 Expected: ALL PASS.
 
 - [ ] **Step 3: Commit**
@@ -1530,8 +1702,10 @@ Expected: BUILD SUCCESS, all tests pass (existing tests + all new tests).
 
 - [ ] **Step 2: Search for leftover 8-bit assumptions**
 
-Run: `rg -n "AutoThresholder\.Method" --iglob '!**/test/**' jipipe-core plugins | rg -v "NBinsAutoThresholder|AutoThresholdMethod|valueOf"`
-Expected: no matches (all production usages migrated). `AutoThresholder` class itself may still appear inside `NBinsAutoThresholder` (the fast path) — that is intended.
+Run:
+`rg -n "AutoThresholder\.Method" --iglob '!**/test/**' jipipe-core plugins | rg -v "NBinsAutoThresholder|AutoThresholdMethod|valueOf"`
+Expected: no matches (all production usages migrated). `AutoThresholder` class itself may still appear inside
+`NBinsAutoThresholder` (the fast path) — that is intended.
 
 - [ ] **Step 3: Final commit (if anything pending)**
 
@@ -1544,6 +1718,13 @@ git add -A && git commit -m "Threshold: 16-bit/n-bit thresholding complete" || t
 
 ## Self-Review Results
 
-- **Spec coverage:** enum with identical names + itemInfo (Task 1, 4, 5), n-bin engine with 8U/16U fast paths (Tasks 2–3), existing function optional nbins + 34 new functions (Tasks 6–7), 16-bit auto node (Task 8), custom-bins node with SliceThresholdMode-driven 32F ranges (Task 9), percentile 16-bit (Task 10), local 16-bit ports ×6 (Task 11), 8-bit renames (Tasks 4, 12), tests (Tasks 3, 6, 9, 13, 14). Expression-function IDs unchanged; node IDs unchanged; parameter keys unchanged.
-- **Placeholder scan:** Tasks 2 and 11 deliberately specify "port from ImageJ source at these exact lines" rather than inlining ~1000 lines into the plan — the referenced source is the authoritative content, available locally in the sources jar, and the porting rules (what to change, what to keep) are fully specified. All other code is complete.
-- **Type consistency:** `AutoThresholdMethod` used consistently; `getThreshold(AutoThresholdMethod, int[])` signature identical in Tasks 3–9; `SliceThresholdMode` referenced as `AutoThreshold2DAlgorithm.SliceThresholdMode`.
+- **Spec coverage:** enum with identical names + itemInfo (Task 1, 4, 5), n-bin engine with 8U/16U fast paths (Tasks
+  2–3), existing function optional nbins + 34 new functions (Tasks 6–7), 16-bit auto node (Task 8), custom-bins node
+  with SliceThresholdMode-driven 32F ranges (Task 9), percentile 16-bit (Task 10), local 16-bit ports ×6 (Task 11),
+  8-bit renames (Tasks 4, 12), tests (Tasks 3, 6, 9, 13, 14). Expression-function IDs unchanged; node IDs unchanged;
+  parameter keys unchanged.
+- **Placeholder scan:** Tasks 2 and 11 deliberately specify "port from ImageJ source at these exact lines" rather than
+  inlining ~1000 lines into the plan — the referenced source is the authoritative content, available locally in the
+  sources jar, and the porting rules (what to change, what to keep) are fully specified. All other code is complete.
+- **Type consistency:** `AutoThresholdMethod` used consistently; `getThreshold(AutoThresholdMethod, int[])` signature
+  identical in Tasks 3–9; `SliceThresholdMode` referenced as `AutoThreshold2DAlgorithm.SliceThresholdMode`.

@@ -1,1 +1,42 @@
-{"edges":[{"source-node":"n0","source-slot":"Image","target-node":"n2","target-slot":"Input"},{"source-node":"n1","source-slot":"Filenames","target-node":"n0","target-slot":"Files"}],"nodes":{"n0":{"jipipe:graph-compartment":"33ddf790-eee0-55bb-bf22-cec5da850e0f","jipipe:metadata-v1":{"location/33ddf790-eee0-55bb-bf22-cec5da850e0f/x":0,"location/33ddf790-eee0-55bb-bf22-cec5da850e0f/y":4},"jipipe:node-info-id":"import-imagej-imgplus-from-file"},"n1":{"jipipe:graph-compartment":"33ddf790-eee0-55bb-bf22-cec5da850e0f","jipipe:metadata-v1":{"location/33ddf790-eee0-55bb-bf22-cec5da850e0f/x":0,"location/33ddf790-eee0-55bb-bf22-cec5da850e0f/y":0},"jipipe:node-info-id":"import-file-list"},"n2":{"jipipe:graph-compartment":"33ddf790-eee0-55bb-bf22-cec5da850e0f","jipipe:metadata-v1":{"location/33ddf790-eee0-55bb-bf22-cec5da850e0f/x":0,"location/33ddf790-eee0-55bb-bf22-cec5da850e0f/y":8},"jipipe:node-info-id":"ij1-transform-scale2d"}}}
+{
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Image",
+      "target-node": "n2",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n1",
+      "source-slot": "Filenames",
+      "target-node": "n0",
+      "target-slot": "Files"
+    }
+  ],
+  "nodes": {
+    "n0": {
+      "jipipe:graph-compartment": "33ddf790-eee0-55bb-bf22-cec5da850e0f",
+      "jipipe:metadata-v1": {
+        "location/33ddf790-eee0-55bb-bf22-cec5da850e0f/x": 0,
+        "location/33ddf790-eee0-55bb-bf22-cec5da850e0f/y": 4
+      },
+      "jipipe:node-info-id": "import-imagej-imgplus-from-file"
+    },
+    "n1": {
+      "jipipe:graph-compartment": "33ddf790-eee0-55bb-bf22-cec5da850e0f",
+      "jipipe:metadata-v1": {
+        "location/33ddf790-eee0-55bb-bf22-cec5da850e0f/x": 0,
+        "location/33ddf790-eee0-55bb-bf22-cec5da850e0f/y": 0
+      },
+      "jipipe:node-info-id": "import-file-list"
+    },
+    "n2": {
+      "jipipe:graph-compartment": "33ddf790-eee0-55bb-bf22-cec5da850e0f",
+      "jipipe:metadata-v1": {
+        "location/33ddf790-eee0-55bb-bf22-cec5da850e0f/x": 0,
+        "location/33ddf790-eee0-55bb-bf22-cec5da850e0f/y": 8
+      },
+      "jipipe:node-info-id": "ij1-transform-scale2d"
+    }
+  }
+}

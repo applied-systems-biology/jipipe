@@ -24,11 +24,8 @@ import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeArtifactQueryP
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashSet;
+import java.util.*;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Parameter editor for {@link JIPipeArtifactQueryParameter}.

@@ -1,10 +1,16 @@
 # General Instrumentation Layer Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:
+> executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Build a WebSocket-based instrumentation layer in jipipe-core that exposes JIPipe project operations (queries, execution, modifications, search) for external automation tools, with a typed Java API that the AI agent will later delegate to.
+**Goal:** Build a WebSocket-based instrumentation layer in jipipe-core that exposes JIPipe project operations (queries,
+execution, modifications, search) for external automation tools, with a typed Java API that the AI agent will later
+delegate to.
 
-**Architecture:** Hybrid approach — a typed `InstrumentationAPI` Java facade provides built-in operations; an `InstrumentationOperation` interface enables plugin-registered WebSocket commands. An `InstrumentationEventBus` distributes project change events; an `InstrumentationJobManager` tracks async pipeline runs. A `InstrumentationServer` (WebSocket, localhost) dispatches commands to the operation registry and broadcasts events to clients.
+**Architecture:** Hybrid approach — a typed `InstrumentationAPI` Java facade provides built-in operations; an
+`InstrumentationOperation` interface enables plugin-registered WebSocket commands. An `InstrumentationEventBus`
+distributes project change events; an `InstrumentationJobManager` tracks async pipeline runs. A `InstrumentationServer`
+(WebSocket, localhost) dispatches commands to the operation registry and broadcasts events to clients.
 
 **Tech Stack:** Java 21, Maven, Jackson (JSON), java-websocket 1.5.7, JUnit 5, Mockito
 
@@ -91,14 +97,20 @@ src/test/java/org/hkijena/jipipe/api/instrumentation/
 ### Task 1: Add Dependencies and Service Infrastructure
 
 **Files:**
+
 - Modify: `jipipe-core/pom.xml` (add java-websocket and mockito dependencies)
-- Create: `jipipe-core/src/main/java/org/hkijena/jipipe/api/service/components/JIPipeInstrumentationServiceComponent.java`
+- Create:
+  `jipipe-core/src/main/java/org/hkijena/jipipe/api/service/components/JIPipeInstrumentationServiceComponent.java`
 - Modify: `jipipe-core/src/main/java/org/hkijena/jipipe/api/service/JIPipeService.java`
 - Modify: `jipipe-core/src/main/java/org/hkijena/jipipe/JIPipe.java`
 - Modify: `jipipe-core/src/main/java/org/hkijena/jipipe/JIPipeDefaultJavaPlugin.java`
 
 **Interfaces:**
-- Produces: `JIPipeInstrumentationServiceComponent` with `getOperationRegistry()` method, `JIPipe.getInstrumentation()` static accessor, `JIPipeDefaultJavaPlugin.registerInstrumentationOperation(String, InstrumentationOperation)` convenience method. (Note: `InstrumentationOperation` and `InstrumentationOperationRegistry` are created in Task 4 — this task creates a minimal placeholder interface so the service component compiles.)
+
+- Produces: `JIPipeInstrumentationServiceComponent` with `getOperationRegistry()` method, `JIPipe.getInstrumentation()`
+  static accessor, `JIPipeDefaultJavaPlugin.registerInstrumentationOperation(String, InstrumentationOperation)`
+  convenience method. (Note: `InstrumentationOperation` and `InstrumentationOperationRegistry` are created in Task 4 —
+  this task creates a minimal placeholder interface so the service component compiles.)
 
 - [ ] **Step 1: Add dependencies to jipipe-core/pom.xml**
 
@@ -316,13 +328,16 @@ git commit -m "Add instrumentation service infrastructure (#1305)"
 ### Task 2: Core Event System
 
 **Files:**
+
 - Create: `jipipe-core/src/main/java/org/hkijena/jipipe/api/instrumentation/InstrumentationEvent.java`
 - Create: `jipipe-core/src/main/java/org/hkijena/jipipe/api/instrumentation/InstrumentationEventBus.java`
 - Create: `jipipe-core/src/main/java/org/hkijena/jipipe/api/instrumentation/events/` (10 event classes)
 - Test: `jipipe-core/src/test/java/org/hkijena/jipipe/api/instrumentation/InstrumentationEventBusTest.java`
 
 **Interfaces:**
-- Produces: `InstrumentationEvent` base class with `getProjectId()`, `InstrumentationEventBus` with `subscribe(Class<T>, Consumer<T>)` and `publish(InstrumentationEvent)`, and 10 event subclasses.
+
+- Produces: `InstrumentationEvent` base class with `getProjectId()`, `InstrumentationEventBus` with
+  `subscribe(Class<T>, Consumer<T>)` and `publish(InstrumentationEvent)`, and 10 event subclasses.
 
 - [ ] **Step 1: Write the failing test**
 
@@ -455,6 +470,7 @@ public class InstrumentationEventBus {
 Create each file in `jipipe-core/src/main/java/org/hkijena/jipipe/api/instrumentation/events/`:
 
 `ProjectListChangedEvent.java`:
+
 ```java
 package org.hkijena.jipipe.api.instrumentation.events;
 
@@ -468,6 +484,7 @@ public class ProjectListChangedEvent extends InstrumentationEvent {
 ```
 
 `ProjectChangedEvent.java`:
+
 ```java
 package org.hkijena.jipipe.api.instrumentation.events;
 
@@ -488,6 +505,7 @@ public class ProjectChangedEvent extends InstrumentationEvent {
 ```
 
 `NodeAddedEvent.java`:
+
 ```java
 package org.hkijena.jipipe.api.instrumentation.events;
 
@@ -515,6 +533,7 @@ public class NodeAddedEvent extends InstrumentationEvent {
 ```
 
 `NodeRemovedEvent.java`:
+
 ```java
 package org.hkijena.jipipe.api.instrumentation.events;
 
@@ -533,6 +552,7 @@ public class NodeRemovedEvent extends InstrumentationEvent {
 ```
 
 `ConnectionChangedEvent.java`:
+
 ```java
 package org.hkijena.jipipe.api.instrumentation.events;
 
@@ -563,6 +583,7 @@ public class ConnectionChangedEvent extends InstrumentationEvent {
 ```
 
 `ParameterChangedEvent.java`:
+
 ```java
 package org.hkijena.jipipe.api.instrumentation.events;
 
@@ -587,6 +608,7 @@ public class ParameterChangedEvent extends InstrumentationEvent {
 ```
 
 `CompartmentChangedEvent.java`:
+
 ```java
 package org.hkijena.jipipe.api.instrumentation.events;
 
@@ -611,6 +633,7 @@ public class CompartmentChangedEvent extends InstrumentationEvent {
 ```
 
 `JobStartedEvent.java`:
+
 ```java
 package org.hkijena.jipipe.api.instrumentation.events;
 
@@ -635,6 +658,7 @@ public class JobStartedEvent extends InstrumentationEvent {
 ```
 
 `JobProgressEvent.java`:
+
 ```java
 package org.hkijena.jipipe.api.instrumentation.events;
 
@@ -659,6 +683,7 @@ public class JobProgressEvent extends InstrumentationEvent {
 ```
 
 `JobCompletedEvent.java`:
+
 ```java
 package org.hkijena.jipipe.api.instrumentation.events;
 
@@ -704,15 +729,20 @@ git commit -m "Add instrumentation event system (#1305)"
 ### Task 3: Job Manager and Context
 
 **Files:**
+
 - Create: `jipipe-core/src/main/java/org/hkijena/jipipe/api/instrumentation/InstrumentationJobStatus.java`
 - Create: `jipipe-core/src/main/java/org/hkijena/jipipe/api/instrumentation/InstrumentationJob.java`
 - Create: `jipipe-core/src/main/java/org/hkijena/jipipe/api/instrumentation/InstrumentationJobManager.java`
-- Modify: `jipipe-core/src/main/java/org/hkijena/jipipe/api/instrumentation/InstrumentationContext.java` (expand from Task 1 placeholder)
+- Modify: `jipipe-core/src/main/java/org/hkijena/jipipe/api/instrumentation/InstrumentationContext.java` (expand from
+  Task 1 placeholder)
 - Test: `jipipe-core/src/test/java/org/hkijena/jipipe/api/instrumentation/InstrumentationJobManagerTest.java`
 
 **Interfaces:**
+
 - Consumes: `InstrumentationEventBus` from Task 2, `InstrumentationJobStatus` (this task)
-- Produces: `InstrumentationJob` (id, status, progress, result, complete/fail/cancel methods), `InstrumentationJobManager` (createJob, getJob, cancelJob), expanded `InstrumentationContext` (with eventBus, jobManager, graphOverride)
+- Produces: `InstrumentationJob` (id, status, progress, result, complete/fail/cancel methods),
+  `InstrumentationJobManager` (createJob, getJob, cancelJob), expanded `InstrumentationContext` (with eventBus,
+  jobManager, graphOverride)
 
 - [ ] **Step 1: Write the failing test**
 
@@ -1044,12 +1074,16 @@ git commit -m "Add instrumentation job manager and context (#1305)"
 ### Task 4: Complete Operation Framework
 
 **Files:**
-- Modify: `jipipe-core/src/main/java/org/hkijena/jipipe/api/instrumentation/InstrumentationOperation.java` (already created in Task 1, no changes needed)
+
+- Modify: `jipipe-core/src/main/java/org/hkijena/jipipe/api/instrumentation/InstrumentationOperation.java` (already
+  created in Task 1, no changes needed)
 - Create: `jipipe-core/src/main/java/org/hkijena/jipipe/api/instrumentation/AsyncInstrumentationOperation.java`
 - Test: `jipipe-core/src/test/java/org/hkijena/jipipe/api/instrumentation/InstrumentationOperationRegistryTest.java`
 
 **Interfaces:**
-- Produces: `AsyncInstrumentationOperation` interface (extends InstrumentationOperation, adds `executeAsync`), tested registry.
+
+- Produces: `AsyncInstrumentationOperation` interface (extends InstrumentationOperation, adds `executeAsync`), tested
+  registry.
 
 - [ ] **Step 1: Write the failing test**
 
@@ -1155,13 +1189,17 @@ git commit -m "Add async operation interface and registry tests (#1305)"
 ### Task 5: Pipeline Map POJOs
 
 **Files:**
+
 - Create: `jipipe-core/src/main/java/org/hkijena/jipipe/api/instrumentation/pipeline_map/PipelineMap.java`
 - Create: `jipipe-core/src/main/java/org/hkijena/jipipe/api/instrumentation/pipeline_map/SegmentNode.java`
 - Create: `jipipe-core/src/main/java/org/hkijena/jipipe/api/instrumentation/pipeline_map/SegmentEdge.java`
 - Create: `jipipe-core/src/main/java/org/hkijena/jipipe/api/instrumentation/pipeline_map/SegmentStatus.java`
 
 **Interfaces:**
-- Produces: `PipelineMap` (POJO with root `SegmentNode`), `SegmentNode` (hierarchical segment with id, label, summary, children, nodeIds), `SegmentEdge` (connection between segments), `SegmentStatus` (enum). These are pure data classes with Jackson annotations.
+
+- Produces: `PipelineMap` (POJO with root `SegmentNode`), `SegmentNode` (hierarchical segment with id, label, summary,
+  children, nodeIds), `SegmentEdge` (connection between segments), `SegmentStatus` (enum). These are pure data classes
+  with Jackson annotations.
 
 - [ ] **Step 1: Create SegmentStatus enum**
 
@@ -1345,12 +1383,16 @@ git commit -m "Add pipeline map POJOs (#1305)"
 ### Task 6: RunMode and InstrumentationRunEngine
 
 **Files:**
+
 - Create: `jipipe-core/src/main/java/org/hkijena/jipipe/api/instrumentation/RunMode.java`
 - Create: `jipipe-core/src/main/java/org/hkijena/jipipe/api/instrumentation/InstrumentationRunEngine.java`
 
 **Interfaces:**
-- Consumes: `JIPipeProject`, `JIPipeGraphNode`, `JIPipeGraphRun`, `JIPipeGraphRunConfiguration` (existing core API classes), `InstrumentationJob` from Task 3
-- Produces: `RunMode` enum, `InstrumentationRunEngine` with `runNode(project, node, mode, job)` and `runPipeline(project, mode, job)` methods. Extracts core logic from `JIPipeDesktopQuickRun`.
+
+- Consumes: `JIPipeProject`, `JIPipeGraphNode`, `JIPipeGraphRun`, `JIPipeGraphRunConfiguration` (existing core API
+  classes), `InstrumentationJob` from Task 3
+- Produces: `RunMode` enum, `InstrumentationRunEngine` with `runNode(project, node, mode, job)` and
+  `runPipeline(project, mode, job)` methods. Extracts core logic from `JIPipeDesktopQuickRun`.
 
 - [ ] **Step 1: Create RunMode enum**
 
@@ -1611,12 +1653,17 @@ git commit -m "Add run mode enum and run engine (#1305)"
 ### Task 7: InstrumentationAPI
 
 **Files:**
+
 - Create: `jipipe-core/src/main/java/org/hkijena/jipipe/api/instrumentation/InstrumentationAPI.java`
 - Test: `jipipe-core/src/test/java/org/hkijena/jipipe/api/instrumentation/InstrumentationAPITest.java`
 
 **Interfaces:**
-- Consumes: `InstrumentationContext` (Task 3), `InstrumentationRunEngine` (Task 6), `InstrumentationJob` (Task 3), `RunMode` (Task 6), `PipelineMap` (Task 5), existing JIPipe core classes (`JIPipeProject`, `JIPipeGraph`, `JIPipeGraphNode`, `JIPipeDataSlot`, `JIPipeParameterAccess`, `JIPipeParameterTree`, `JIPipeNodeInfo`)
-- Produces: `InstrumentationAPI` — stateless service with typed methods for all built-in operations. Each method takes an `InstrumentationContext`.
+
+- Consumes: `InstrumentationContext` (Task 3), `InstrumentationRunEngine` (Task 6), `InstrumentationJob` (Task 3),
+  `RunMode` (Task 6), `PipelineMap` (Task 5), existing JIPipe core classes (`JIPipeProject`, `JIPipeGraph`,
+  `JIPipeGraphNode`, `JIPipeDataSlot`, `JIPipeParameterAccess`, `JIPipeParameterTree`, `JIPipeNodeInfo`)
+- Produces: `InstrumentationAPI` — stateless service with typed methods for all built-in operations. Each method takes
+  an `InstrumentationContext`.
 
 - [ ] **Step 1: Write the failing test**
 
@@ -2093,6 +2140,7 @@ git commit -m "Add instrumentation API facade (#1305)"
 ### Task 8: Built-in Operations
 
 **Files:**
+
 - Create: `jipipe-core/src/main/java/org/hkijena/jipipe/api/instrumentation/operations/QueryOperations.java`
 - Create: `jipipe-core/src/main/java/org/hkijena/jipipe/api/instrumentation/operations/ExecutionOperations.java`
 - Create: `jipipe-core/src/main/java/org/hkijena/jipipe/api/instrumentation/operations/ModificationOperations.java`
@@ -2100,8 +2148,10 @@ git commit -m "Add instrumentation API facade (#1305)"
 - Create: `jipipe-core/src/main/java/org/hkijena/jipipe/api/instrumentation/operations/ProjectOperations.java`
 
 **Interfaces:**
+
 - Consumes: `InstrumentationAPI` (Task 7), `InstrumentationOperation` (Task 1), `AsyncInstrumentationOperation` (Task 4)
-- Produces: 5 operation classes that wrap API methods as `InstrumentationOperation` instances. Each provides `getId()`, `getDescription()`, and `execute()` (or `executeAsync()`).
+- Produces: 5 operation classes that wrap API methods as `InstrumentationOperation` instances. Each provides `getId()`,
+  `getDescription()`, and `execute()` (or `executeAsync()`).
 
 - [ ] **Step 1: Create QueryOperations**
 
@@ -2456,11 +2506,15 @@ git commit -m "Add built-in instrumentation operations (#1305)"
 ### Task 9: InstrumentationPlugin
 
 **Files:**
+
 - Create: `jipipe-core/src/main/java/org/hkijena/jipipe/plugins/instrumentation/InstrumentationPlugin.java`
 
 **Interfaces:**
-- Consumes: All operation classes from Task 8, `JIPipePrepackagedDefaultJavaPlugin` (existing), `registerInstrumentationOperation()` from Task 1
-- Produces: `InstrumentationPlugin` — a SciJava `@Plugin` annotated class that registers all built-in operations during `register()`.
+
+- Consumes: All operation classes from Task 8, `JIPipePrepackagedDefaultJavaPlugin` (existing),
+  `registerInstrumentationOperation()` from Task 1
+- Produces: `InstrumentationPlugin` — a SciJava `@Plugin` annotated class that registers all built-in operations during
+  `register()`.
 
 - [ ] **Step 1: Create InstrumentationPlugin**
 
@@ -2559,13 +2613,18 @@ git commit -m "Add instrumentation plugin (#1305)"
 ### Task 10: WebSocket Protocol and Server
 
 **Files:**
+
 - Create: `jipipe-core/src/main/java/org/hkijena/jipipe/api/instrumentation/InstrumentationProtocol.java`
 - Create: `jipipe-core/src/main/java/org/hkijena/jipipe/api/instrumentation/InstrumentationServer.java`
 - Test: `jipipe-core/src/test/java/org/hkijena/jipipe/api/instrumentation/InstrumentationServerTest.java`
 
 **Interfaces:**
-- Consumes: `InstrumentationOperationRegistry` (Task 1/4), `InstrumentationEventBus` (Task 2), `InstrumentationJobManager` (Task 3), `InstrumentationContext` (Task 3), `AsyncInstrumentationOperation` (Task 4), `JIPipeDesktopProjectWindow` (existing)
-- Produces: `InstrumentationProtocol` (message type constants), `InstrumentationServer` (WebSocket server that dispatches commands to the registry and broadcasts events)
+
+- Consumes: `InstrumentationOperationRegistry` (Task 1/4), `InstrumentationEventBus` (Task 2),
+  `InstrumentationJobManager` (Task 3), `InstrumentationContext` (Task 3), `AsyncInstrumentationOperation` (Task 4),
+  `JIPipeDesktopProjectWindow` (existing)
+- Produces: `InstrumentationProtocol` (message type constants), `InstrumentationServer` (WebSocket server that
+  dispatches commands to the registry and broadcasts events)
 
 - [ ] **Step 1: Create InstrumentationProtocol**
 
@@ -2944,6 +3003,7 @@ public class InstrumentationServer extends WebSocketServer {
 ```
 
 Note: The `subscribe` method uses `java.util.function.Consumer`. Add the import:
+
 ```java
 import java.util.function.Consumer;
 ```
@@ -2965,12 +3025,16 @@ git commit -m "Add WebSocket instrumentation server and protocol (#1305)"
 ### Task 11: Settings and CLI Integration
 
 **Files:**
+
 - Create: `jipipe-core/src/main/java/org/hkijena/jipipe/api/instrumentation/InstrumentationApplicationSettings.java`
 - Modify: `jipipe-launcher/src/main/java/org/hkijena/jipipe/launcher/commands/GuiCommand.java`
 
 **Interfaces:**
-- Consumes: `InstrumentationServer` (Task 10), `JIPipeDesktopProjectWindow` (existing), application settings infrastructure (existing)
-- Produces: `InstrumentationApplicationSettings` (enable, port, auto-start), `--instrumentation` CLI flag in `GuiCommand`, server lifecycle in `WindowWatcher`.
+
+- Consumes: `InstrumentationServer` (Task 10), `JIPipeDesktopProjectWindow` (existing), application settings
+  infrastructure (existing)
+- Produces: `InstrumentationApplicationSettings` (enable, port, auto-start), `--instrumentation` CLI flag in
+  `GuiCommand`, server lifecycle in `WindowWatcher`.
 
 - [ ] **Step 1: Create InstrumentationApplicationSettings**
 
@@ -3017,7 +3081,8 @@ public class InstrumentationApplicationSettings extends JIPipeDefaultApplication
 }
 ```
 
-Also, register the settings in `InstrumentationPlugin.register()` by adding this line at the top of the `register()` method (Task 9):
+Also, register the settings in `InstrumentationPlugin.register()` by adding this line at the top of the `register()`
+method (Task 9):
 
 ```java
         registerApplicationSettingsSheet(new InstrumentationApplicationSettings());
@@ -3042,7 +3107,8 @@ Add static fields (after the class declaration):
     }
 ```
 
-In `startGui()`, add instrumentation flag parsing (inside the for loop, after the `--ai-agent-monitor` check if it exists, or after the existing flags):
+In `startGui()`, add instrumentation flag parsing (inside the for loop, after the `--ai-agent-monitor` check if it
+exists, or after the existing flags):
 
 ```java
             if ("--instrumentation".equals(argsList.get(i))) {

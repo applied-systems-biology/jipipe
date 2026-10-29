@@ -22,9 +22,7 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.JIPipeFontFamily
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * #1339, Task 2: the font parameter family is registered under the four
@@ -40,6 +38,13 @@ class FontRegistrationIdsTest {
     @BeforeAll
     static void boot() {
         JIPipe.ensureInstance();
+    }
+
+    private static void assertRegistered(String id, Class<?> expectedFieldClass) {
+        JIPipeParameterTypeInfo info = JIPipe.getParameterTypes().getInfoById(id);
+        assertNotNull(info, "parameter type '" + id + "' is not registered");
+        assertEquals(expectedFieldClass, info.getFieldClass(),
+                "'" + id + "' is bound to the wrong field class: " + info.getFieldClass());
     }
 
     @Test
@@ -66,12 +71,5 @@ class FontRegistrationIdsTest {
     void devFontIdIsGone() {
         assertNull(JIPipe.getParameterTypes().getInfoById("jipipe:font"),
                 "the dev 'jipipe:font' ID must be deleted (Review Focus #2)");
-    }
-
-    private static void assertRegistered(String id, Class<?> expectedFieldClass) {
-        JIPipeParameterTypeInfo info = JIPipe.getParameterTypes().getInfoById(id);
-        assertNotNull(info, "parameter type '" + id + "' is not registered");
-        assertEquals(expectedFieldClass, info.getFieldClass(),
-                "'" + id + "' is bound to the wrong field class: " + info.getFieldClass());
     }
 }

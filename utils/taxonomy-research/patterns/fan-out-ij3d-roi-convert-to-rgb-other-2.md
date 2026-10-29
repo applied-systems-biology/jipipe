@@ -35,26 +35,29 @@ Mined pattern `fan-out-ij3d-roi-convert-to-rgb-other-2` (shape `fan-out`, suppor
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| other | `ij3d-roi-convert-to-rgb` |
+| role  | node ids                                                             |
+|-------|----------------------------------------------------------------------|
+| other | `ij3d-roi-convert-to-rgb`                                            |
 | other | `ij1-calibration-copy-physical-dimensions`, `ij1-color-blend-images` |
 
 ## Example graph
 
 Project: `AIAgentTests/03-ExampleWorkflows/Annamaria_12.jip` (relative to `/data/JIPipe`), compartment `Colocalization`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `ij3d-roi-convert-to-rgb` | Convert 3D ROI to RGB |
-| n1 | `ij1-color-blend-images` | Blend images |
-| n2 | `ij1-calibration-copy-physical-dimensions` | Copy physical dimensions |
+| key | node id                                    | name                     |
+|-----|--------------------------------------------|--------------------------|
+| n0  | `ij3d-roi-convert-to-rgb`                  | Convert 3D ROI to RGB    |
+| n1  | `ij1-color-blend-images`                   | Blend images             |
+| n2  | `ij1-calibration-copy-physical-dimensions` | Copy physical dimensions |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
+| from                  | slot     | to           | slot      | data class                 |
+|-----------------------|----------|--------------|-----------|----------------------------|
 | Convert 3D ROI to RGB | `Output` | Blend images | `Magenta` | `imagej-imgplus-color-rgb` |
 
 ## Template
 
-Proposed name `Convert IJ3D ROI to RGB fans out to 2 target ids (roles: other)`, menu path `Patterns/ROIs/Convert IJ3D ROI to RGB fans out to 2 target ids (roles: other)` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/fan-out-ij3d-roi-convert-to-rgb-other-2.json`.
+Proposed name `Convert IJ3D ROI to RGB fans out to 2 target ids (roles: other)`, menu path
+`Patterns/ROIs/Convert IJ3D ROI to RGB fans out to 2 target ids (roles: other)` (proposal only — not registered).
+`data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/fan-out-ij3d-roi-convert-to-rgb-other-2.json`.
 

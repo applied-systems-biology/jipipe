@@ -38,29 +38,33 @@ Mined pattern `fan-in-jipipe-compartment-output-other-4` (shape `fan-in`, suppor
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| core-io | `jipipe:compartment-output` |
-| other | `cellpose-denoise-inference-3.x`, `cellpose-segmentation-inference-3.x`, `cpython-script-iterating`, `ij-multi-template-matching`, `ij1-analyze-find-particles2d`, `ij1-calibration-copy-physical-dimensions`, … (23 total) |
+| role    | node ids                                                                                                                                                                                                                    |
+|---------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| core-io | `jipipe:compartment-output`                                                                                                                                                                                                 |
+| other   | `cellpose-denoise-inference-3.x`, `cellpose-segmentation-inference-3.x`, `cpython-script-iterating`, `ij-multi-template-matching`, `ij1-analyze-find-particles2d`, `ij1-calibration-copy-physical-dimensions`, … (23 total) |
 
 ## Example graph
 
-Project: `AIAgentTests/02-AdvancedPipelines/Cryogels_01.jip` (relative to `/data/JIPipe`), compartment `Apply Cellpose Model 2`.
+Project: `AIAgentTests/02-AdvancedPipelines/Cryogels_01.jip` (relative to `/data/JIPipe`), compartment
+`Apply Cellpose Model 2`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `ij1-roi-filter-statistics` | Filter ROI by statistics |
-| n1 | `ij1-math-imagecalculator2d` | Image calculator 2D |
-| n2 | `ij1-roi-statistics` | Extract ROI statistics |
-| n3 | `ij1-roi-to-rgb` | Convert ROI to RGB: Cellpose results |
-| n4 | `jipipe:compartment-output` | Output |
+| key | node id                      | name                                 |
+|-----|------------------------------|--------------------------------------|
+| n0  | `ij1-roi-filter-statistics`  | Filter ROI by statistics             |
+| n1  | `ij1-math-imagecalculator2d` | Image calculator 2D                  |
+| n2  | `ij1-roi-statistics`         | Extract ROI statistics               |
+| n3  | `ij1-roi-to-rgb`             | Convert ROI to RGB: Cellpose results |
+| n4  | `jipipe:compartment-output`  | Output                               |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
-| Image calculator 2D | `Output` | Extract ROI statistics | `Reference` | `imagej-imgplus` |
-| Convert ROI to RGB: Cellpose results | `Output` | Output | `Overlay` | `imagej-imgplus-color-rgb` |
+| from                                 | slot     | to                     | slot        | data class                 |
+|--------------------------------------|----------|------------------------|-------------|----------------------------|
+| Image calculator 2D                  | `Output` | Extract ROI statistics | `Reference` | `imagej-imgplus`           |
+| Convert ROI to RGB: Cellpose results | `Output` | Output                 | `Overlay`   | `imagej-imgplus-color-rgb` |
 
 ## Template
 
-Proposed name `Compartment output fans in from 23 source ids (roles: other)`, menu path `Patterns/Graph / Project/Compartment output fans in from 23 source ids (roles: other)` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/fan-in-jipipe-compartment-output-other-4.json`.
+Proposed name `Compartment output fans in from 23 source ids (roles: other)`, menu path
+`Patterns/Graph / Project/Compartment output fans in from 23 source ids (roles: other)` (proposal only — not
+registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/fan-in-jipipe-compartment-output-other-4.json`.
 

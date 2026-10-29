@@ -76,6 +76,14 @@ class LegacyProjectWriterContractTest {
         JIPipe.ensureInstance();
     }
 
+    private static Map<UUID, String> nodeIdMapping(JIPipeGraph graph) {
+        Map<UUID, String> mapping = new HashMap<>();
+        for (JIPipeGraphNode n : graph.getGraphNodes()) {
+            mapping.put(n.getUUIDInParentGraph(), n.getInfo().getId());
+        }
+        return mapping;
+    }
+
     @Test
     void writerWritesLegacyProjectFormat() throws IOException, URISyntaxException {
         Path fixture = Path.of(LegacyProjectWriterContractTest.class.getResource(FIXTURE).toURI());
@@ -150,13 +158,5 @@ class LegacyProjectWriterContractTest {
         assertTrue(Files.isRegularFile(target2), "target file must be written");
         assertEquals(target2, p.getProjectFile(),
                 "saveProject(target2, true) must update the tracked project file");
-    }
-
-    private static Map<UUID, String> nodeIdMapping(JIPipeGraph graph) {
-        Map<UUID, String> mapping = new HashMap<>();
-        for (JIPipeGraphNode n : graph.getGraphNodes()) {
-            mapping.put(n.getUUIDInParentGraph(), n.getInfo().getId());
-        }
-        return mapping;
     }
 }

@@ -17,8 +17,7 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.databind.JsonNode;
 
-import java.awt.Font;
-import java.awt.GraphicsEnvironment;
+import java.awt.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -92,6 +91,14 @@ public class JIPipeFontFamilySizeParameter implements JIPipeFontValue {
         return result;
     }
 
+    private static List<String> availableFamilies() {
+        try {
+            return Arrays.asList(GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames());
+        } catch (RuntimeException e) {
+            return List.of();
+        }
+    }
+
     /**
      * @return the font as an {@link Font} with {@link Font#PLAIN} style
      * (unavailable families fall back to the default family).
@@ -106,14 +113,6 @@ public class JIPipeFontFamilySizeParameter implements JIPipeFontValue {
         return new Font(f, Font.PLAIN, size);
     }
 
-    private static List<String> availableFamilies() {
-        try {
-            return Arrays.asList(GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames());
-        } catch (RuntimeException e) {
-            return List.of();
-        }
-    }
-
     @Override
     public JIPipeFontValue copy() {
         return new JIPipeFontFamilySizeParameter(this);
@@ -124,7 +123,9 @@ public class JIPipeFontFamilySizeParameter implements JIPipeFontValue {
         return family;
     }
 
-    /** @param family the font family name (null resets to the default family) */
+    /**
+     * @param family the font family name (null resets to the default family)
+     */
     @JsonSetter("family")
     public void setFamily(String family) {
         this.family = family != null ? family : JIPipeFontFamilySizeStyleParameter.defaultFamily();

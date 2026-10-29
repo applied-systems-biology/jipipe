@@ -27,13 +27,19 @@ package org.hkijena.jipipe.api.nodes.taxonomy;
  */
 public final class TaxonomyHue {
 
-    /** FNV-1a 64-bit offset basis. */
+    /**
+     * FNV-1a 64-bit offset basis.
+     */
     private static final long FNV_OFFSET_BASIS = 0xcbf29ce484222325L;
 
-    /** FNV-1a 64-bit prime. */
+    /**
+     * FNV-1a 64-bit prime.
+     */
     private static final long FNV_PRIME = 0x100000001b3L;
 
-    /** Number of hue slots per Voronoi cell. */
+    /**
+     * Number of hue slots per Voronoi cell.
+     */
     private static final int SLOTS = 24;
 
     /**

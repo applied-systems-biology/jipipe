@@ -2,9 +2,10 @@ package org.hkijena.jipipe.desktop.commons.components.icons;
 
 import org.junit.jupiter.api.Test;
 
-import javax.swing.JPanel;
+import javax.swing.*;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 // Headless: Timer start/stop and isRunning() are screen-independent. We force the flag
 // via setReducedMotion and assert the animation decision, not the drawn pixels

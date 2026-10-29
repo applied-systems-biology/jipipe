@@ -460,11 +460,11 @@ public class JIPipeDesktopParameterFormPanel extends JIPipeDesktopFormPanel impl
                 if (isModifiable) {
                     JButton addButton = UIUtils.createParameterButton("Edit", JIPipe.RESOURCES.getIcon16("actions/edit.png"),
                             ThemeUtils.getCurrentStyle().getParameterActionHighlightedBackground(), e -> {
-                        JIPipeDesktopDynamicParameterEditorDialog dialog = new JIPipeDesktopDynamicParameterEditorDialog(SwingUtilities.getWindowAncestor(this), desktopWorkbench, (JIPipeDynamicParameterCollection) parameterCollection);
-                        dialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(this));
-                        dialog.setModal(true);
-                        dialog.setVisible(true);
-                    });
+                                JIPipeDesktopDynamicParameterEditorDialog dialog = new JIPipeDesktopDynamicParameterEditorDialog(SwingUtilities.getWindowAncestor(this), desktopWorkbench, (JIPipeDynamicParameterCollection) parameterCollection);
+                                dialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(this));
+                                dialog.setModal(true);
+                                dialog.setVisible(true);
+                            });
                     addButton.setToolTipText("Allows to add/remove parameters in this group");
                     groupHeaderPanel.addToEndOfTitlePanel(addButton);
                 }

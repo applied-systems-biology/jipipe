@@ -1,1 +1,62 @@
-{"edges":[{"source-node":"n1","source-slot":"Output","target-node":"n2","target-slot":"ROI 1"},{"source-node":"n1","source-slot":"Output","target-node":"n2","target-slot":"ROI 2"},{"source-node":"n2","source-slot":"Measurements","target-node":"n3","target-slot":"Input"},{"source-node":"n3","source-slot":"Output","target-node":"n0","target-slot":"Input"}],"nodes":{"n0":{"jipipe:graph-compartment":"9960aca3-679a-5e56-b07c-54f5ed4dba8f","jipipe:metadata-v1":{"location/9960aca3-679a-5e56-b07c-54f5ed4dba8f/x":0,"location/9960aca3-679a-5e56-b07c-54f5ed4dba8f/y":12},"jipipe:node-info-id":"iji-export-image-v2"},"n1":{"jipipe:graph-compartment":"9960aca3-679a-5e56-b07c-54f5ed4dba8f","jipipe:metadata-v1":{"location/9960aca3-679a-5e56-b07c-54f5ed4dba8f/x":0,"location/9960aca3-679a-5e56-b07c-54f5ed4dba8f/y":0},"jipipe:node-info-id":"trackmate-spots-to-roi"},"n2":{"jipipe:graph-compartment":"9960aca3-679a-5e56-b07c-54f5ed4dba8f","jipipe:metadata-v1":{"location/9960aca3-679a-5e56-b07c-54f5ed4dba8f/x":0,"location/9960aca3-679a-5e56-b07c-54f5ed4dba8f/y":4},"jipipe:node-info-id":"ij1-roi-relation-2d"},"n3":{"jipipe:graph-compartment":"9960aca3-679a-5e56-b07c-54f5ed4dba8f","jipipe:metadata-v1":{"location/9960aca3-679a-5e56-b07c-54f5ed4dba8f/x":0,"location/9960aca3-679a-5e56-b07c-54f5ed4dba8f/y":8},"jipipe:node-info-id":"plot-table:plot-histogram"}}}
+{
+  "edges": [
+    {
+      "source-node": "n1",
+      "source-slot": "Output",
+      "target-node": "n2",
+      "target-slot": "ROI 1"
+    },
+    {
+      "source-node": "n1",
+      "source-slot": "Output",
+      "target-node": "n2",
+      "target-slot": "ROI 2"
+    },
+    {
+      "source-node": "n2",
+      "source-slot": "Measurements",
+      "target-node": "n3",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n3",
+      "source-slot": "Output",
+      "target-node": "n0",
+      "target-slot": "Input"
+    }
+  ],
+  "nodes": {
+    "n0": {
+      "jipipe:graph-compartment": "9960aca3-679a-5e56-b07c-54f5ed4dba8f",
+      "jipipe:metadata-v1": {
+        "location/9960aca3-679a-5e56-b07c-54f5ed4dba8f/x": 0,
+        "location/9960aca3-679a-5e56-b07c-54f5ed4dba8f/y": 12
+      },
+      "jipipe:node-info-id": "iji-export-image-v2"
+    },
+    "n1": {
+      "jipipe:graph-compartment": "9960aca3-679a-5e56-b07c-54f5ed4dba8f",
+      "jipipe:metadata-v1": {
+        "location/9960aca3-679a-5e56-b07c-54f5ed4dba8f/x": 0,
+        "location/9960aca3-679a-5e56-b07c-54f5ed4dba8f/y": 0
+      },
+      "jipipe:node-info-id": "trackmate-spots-to-roi"
+    },
+    "n2": {
+      "jipipe:graph-compartment": "9960aca3-679a-5e56-b07c-54f5ed4dba8f",
+      "jipipe:metadata-v1": {
+        "location/9960aca3-679a-5e56-b07c-54f5ed4dba8f/x": 0,
+        "location/9960aca3-679a-5e56-b07c-54f5ed4dba8f/y": 4
+      },
+      "jipipe:node-info-id": "ij1-roi-relation-2d"
+    },
+    "n3": {
+      "jipipe:graph-compartment": "9960aca3-679a-5e56-b07c-54f5ed4dba8f",
+      "jipipe:metadata-v1": {
+        "location/9960aca3-679a-5e56-b07c-54f5ed4dba8f/x": 0,
+        "location/9960aca3-679a-5e56-b07c-54f5ed4dba8f/y": 8
+      },
+      "jipipe:node-info-id": "plot-table:plot-histogram"
+    }
+  }
+}

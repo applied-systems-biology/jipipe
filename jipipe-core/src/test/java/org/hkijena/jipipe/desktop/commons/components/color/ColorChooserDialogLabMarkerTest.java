@@ -53,6 +53,13 @@ class ColorChooserDialogLabMarkerTest {
         JIPipe.ensureInstance();
     }
 
+    /**
+     * The dialog's current color via its hex field (package-private seam).
+     */
+    private static Color dialogColor(JIPipeDesktopColorChooserDialog d) {
+        return org.hkijena.jipipe.utils.color.ColorSpaces.fromHex(d.getHexText());
+    }
+
     @Test
     void labMarkerFollowsRawPointerEvenWhenColorIsGamutClamped() {
         JIPipeDesktopColorChooserDialog d =
@@ -88,10 +95,5 @@ class ColorChooserDialogLabMarkerTest {
         assertTrue(differsFromPicked,
                 "the marker must differ from the picked color's clamped a/b (the old bug): marker=("
                         + marker[0] + ", " + marker[1] + ") pickedLab=(" + pickedLab[1] + ", " + pickedLab[2] + ")");
-    }
-
-    /** The dialog's current color via its hex field (package-private seam). */
-    private static Color dialogColor(JIPipeDesktopColorChooserDialog d) {
-        return org.hkijena.jipipe.utils.color.ColorSpaces.fromHex(d.getHexText());
     }
 }

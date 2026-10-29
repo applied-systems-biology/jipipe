@@ -10,8 +10,8 @@ Node templates live in a separate world from the node taxonomy:
 
 - They carry a `menuPath` (a holdover from the removed menu system) with no taxonomy meaning.
 - The Templates dock panel (`NodeTemplateBox`) is a parallel UI surface: its own list, its
-  own edit/organize actions, its own context menu — while the add-nodes panel / node finder
-  (tree + list + detail rail) is the taxonomy-driven surface.
+  own edit/organize actions, its own context menu — while the add-nodes panel / node finder (tree + list + detail rail)
+  is the taxonomy-driven surface.
 - Templates appear in the node database only as "create nodes" entries with **no function
   ids**, so they live in no tree branch and are invisible to function-based discovery.
 - The workflow-relation machinery is fragmented: `FamilyAssembler.followUps` (successors
@@ -54,15 +54,15 @@ Node templates live in a separate world from the node taxonomy:
 
 ## 4. Naming
 
-| Concept | Name |
-|---|---|
-| Template field (was `menuPath`) | `taxonomyFunction` (serialization key `taxonomy-function`); **value type: `JIPipeTaxonomyFunctionRef`** — a dedicated reference class (see §6), serialized as the plain function-id string or `null` |
-| Display name | **Taxonomy function** |
-| Parameter type id | `jipipe:taxonomy-function` (registered for `JIPipeTaxonomyFunctionRef`, NOT a String) |
-| Catch-all function leaf for unclassified templates | name "Templates", id `jipipe:function:templates`, **leaf under the `Miscellaneous` top-level branch** (a real registered function, stable literal id) |
-| Synthetic tree grouping | **Templates** branch (UI-only; children System/Global/Project; *not* a registered function) |
-| Entry badges | `Pattern` (graph ≥ 2 nodes) / `Custom` (graph = 1 node) |
-| Relation sources (pluggable, §10.2) | `FamilyRelationSource` + `TemplateRelationSource` (both `NodeRelationSource`s feeding one `NodeRelationIndex` directly; **no virtual family**, so `getFamilies()` and validation are untouched) |
+| Concept                                            | Name                                                                                                                                                                                                 |
+|----------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Template field (was `menuPath`)                    | `taxonomyFunction` (serialization key `taxonomy-function`); **value type: `JIPipeTaxonomyFunctionRef`** — a dedicated reference class (see §6), serialized as the plain function-id string or `null` |
+| Display name                                       | **Taxonomy function**                                                                                                                                                                                |
+| Parameter type id                                  | `jipipe:taxonomy-function` (registered for `JIPipeTaxonomyFunctionRef`, NOT a String)                                                                                                                |
+| Catch-all function leaf for unclassified templates | name "Templates", id `jipipe:function:templates`, **leaf under the `Miscellaneous` top-level branch** (a real registered function, stable literal id)                                                |
+| Synthetic tree grouping                            | **Templates** branch (UI-only; children System/Global/Project; *not* a registered function)                                                                                                          |
+| Entry badges                                       | `Pattern` (graph ≥ 2 nodes) / `Custom` (graph = 1 node)                                                                                                                                              |
+| Relation sources (pluggable, §10.2)                | `FamilyRelationSource` + `TemplateRelationSource` (both `NodeRelationSource`s feeding one `NodeRelationIndex` directly; **no virtual family**, so `getFamilies()` and validation are untouched)      |
 
 Naming rationale: "Taxonomy function" (not "function") avoids the collision with
 `JIPipeFunctionParameter` (a different, expression-related concept).
@@ -77,9 +77,9 @@ Naming rationale: "Taxonomy function" (not "function") avoids the collision with
   reference class serialized as the plain id string); the ref is nullable/unset =
   unclassified → the `jipipe:function:templates` catch-all governs placement.
 - **Scope is storage location, not a field** (unchanged from today):
-  - **System** — bundled resources, registered at plugin init (new; §10).
-  - **Global** — user dir `node-templates/` (`JIPipeNodeTemplatesServiceComponent`).
-  - **Project** — project metadata key `node-templates`.
+    - **System** — bundled resources, registered at plugin init (new; §10).
+    - **Global** — user dir `node-templates/` (`JIPipeNodeTemplatesServiceComponent`).
+    - **Project** — project metadata key `node-templates`.
 - `source` (free-string provenance, e.g. "User"/"Extension") is **retained unchanged**;
   System patterns use `source = "System (corpus-mined)"`. #1333 remote downloads slot into
   Global with their own source string — no model change needed.
@@ -96,14 +96,14 @@ through to the default string editor and present raw ids to the user.
 - **New class `JIPipeTaxonomyFunctionRef`** (in
   `org.hkijena.jipipe.plugins.parameters.library.taxonomy`, next to the other reference
   params):
-  - Wraps a `String` function id (nullable = unset).
-  - `@JsonSerialize`/`@JsonDeserialize` custom: writes the id string or `null` — the
-    on-disk format is a plain string, so template JSON stays human-readable and the
-    migration (§9) reads/writes the same key shape.
-  - `getId()` / `getFunction()` → resolves via `JIPipe.getNodes().getFunctions().byId(id)`;
-    unresolved id → the ref reports `isResolved() == false` and `getFunction() == null`
-    (never throws — stale-id resilience lives here, not at call sites).
-  - `equals`/`hashCode` on the id string; a no-arg constructor (unset).
+    - Wraps a `String` function id (nullable = unset).
+    - `@JsonSerialize`/`@JsonDeserialize` custom: writes the id string or `null` — the
+      on-disk format is a plain string, so template JSON stays human-readable and the
+      migration (§9) reads/writes the same key shape.
+    - `getId()` / `getFunction()` → resolves via `JIPipe.getNodes().getFunctions().byId(id)`;
+      unresolved id → the ref reports `isResolved() == false` and `getFunction() == null`
+      (never throws — stale-id resilience lives here, not at call sites).
+    - `equals`/`hashCode` on the id string; a no-arg constructor (unset).
 - **The template field** `JIPipeNodeTemplate.taxonomyFunction` is of this type
   (`@JIPipeParameter("taxonomy-function", uiOrder = -70)`, same position the old
   `menu-path` held). `JIPipeNodeTemplate` extends `AbstractJIPipeParameterCollection`, so
@@ -132,10 +132,11 @@ through to the default string editor and present raw ids to the user.
 ### 7.1 Entry extension
 
 `CreateNewNodesByTemplateDatabaseEntry` (extended in place):
+
 - New `TemplateScope` (System/Global/Project) set by the builder from the list a template
   came from; `locationInfo` = `Templates / <Scope>` (search tokens include the scope word).
-- `getFunctionIds()` returns `{ref.getId()}` when the `taxonomyFunction` ref is
-  **resolved**, else `{jipipe:function:templates}` (the catch-all leaf) — an unset/stale
+- `getFunctionIds()` returns `{ref.getId()}` when the `taxonomyFunction` ref is **resolved**, else
+  `{jipipe:function:templates}` (the catch-all leaf) — an unset/stale
   ref still yields a function, so templates are always in the tree (today: empty — the
   reason they are invisible).
 - **Badge:** `Pattern` if the template graph has ≥ 2 nodes, else `Custom`.
@@ -163,22 +164,22 @@ Templates ◈                              ← synthetic
 ```
 
 - **Dual placement, two mechanisms:**
-  - *Taxonomy-function placement* — driven by `getFunctionIds()` (§7.1) through the
-    existing tree path: a template with function *f* is a leaf under the *f* node
-    (the branch node if *f* is a branch, the leaf if *f* is a leaf; `null`/unresolved →
-    the `jipipe:function:templates` catch-all leaf).
-  - *Scope placement* — a special case in the tree **model** (not in `functionIds`): every
-    template entry is additionally listed under the synthetic `Templates / <scope>` branch
-    by its `TemplateScope`. This keeps the synthetic branch decoupled from the function
-    registry — it is pure UI grouping keyed on the entry type + scope.
-  - Selecting either the *f* subtree or the `Templates / <scope>` group lists the template
-    in the node list alongside regular entries (de-duplicated by entry id if both are
-    visible in the same query).
+    - *Taxonomy-function placement* — driven by `getFunctionIds()` (§7.1) through the
+      existing tree path: a template with function *f* is a leaf under the *f* node (the branch node if *f* is a branch,
+      the leaf if *f* is a leaf; `null`/unresolved →
+      the `jipipe:function:templates` catch-all leaf).
+    - *Scope placement* — a special case in the tree **model** (not in `functionIds`): every
+      template entry is additionally listed under the synthetic `Templates / <scope>` branch
+      by its `TemplateScope`. This keeps the synthetic branch decoupled from the function
+      registry — it is pure UI grouping keyed on the entry type + scope.
+    - Selecting either the *f* subtree or the `Templates / <scope>` group lists the template
+      in the node list alongside regular entries (de-duplicated by entry id if both are
+      visible in the same query).
 - All placements follow the node list's **relevance-ranked order** (the same order the
   add-nodes list already uses — the synthetic `Templates / <scope>` branch mirrors it);
   there is no separate ordering control for templates (user decision).
-- Badges render as small chips in the tree-leaf renderer and list cell renderer
-  (reusing existing template cell-renderer assets).
+- Badges render as small chips in the tree-leaf renderer and list cell renderer (reusing existing template cell-renderer
+  assets).
 - *Naming note:* the synthetic top-level `Templates` branch (System/Global/Project
   children) is distinct from the `jipipe:function:templates` catch-all **function leaf**
   (under Miscellaneous). They coexist without ambiguity — the synthetic branch is a
@@ -190,8 +191,8 @@ Compact mode (< 380 px, `NodeBrowserModel.TIER_COMPACT`) makes the tree take ove
 node-list role, but tree leaves currently have **no context menu** — Insert at cursor /
 Pin / Unpin / Show documentation are unreachable. Fix: **one shared menu-builder** used by
 the list and the tree leaves (parity is structural, not copy-paste). For
-Global/Project template entries the menu additionally carries the §8 quick actions
-(Edit / Copy / Delete / Configure templates); System entries carry the read-only set.
+Global/Project template entries the menu additionally carries the §8 quick actions (Edit / Copy / Delete / Configure
+templates); System entries carry the read-only set.
 
 ## 8. UI consolidation
 
@@ -274,10 +275,10 @@ JIPipeNodeDatabase.relations(entry, maxPerList)   // the new public API
 
 `NodeRelationSource` interface, two sources now:
 
-1. **`FamilyRelationSource`** — the family assembler's step graphs (adds the missing
-   *predecessor* direction alongside the existing successor query).
-2. **`TemplateRelationSource`** — mines **every** loaded template graph (System, Global,
-   *and* Project — the user directed "mine the full extent from the templates";
+1. **`FamilyRelationSource`** — the family assembler's step graphs (adds the missing *predecessor* direction alongside
+   the existing successor query).
+2. **`TemplateRelationSource`** — mines **every** loaded template graph (System, Global, *and* Project — the user
+   directed "mine the full extent from the templates";
    relations are per-entry database data, and the database already holds all scopes).
    Each in-template edge `A→B` contributes `next(A) += B` and `previous(B) += A`.
    Template edges feed the same relation index directly via
@@ -290,8 +291,8 @@ templates as source material — all attach without touching the model.
 
 ### 10.3 UI
 
-- The detail rail's two sections (Related / Follow-ups) become three: **Similar**,
-  **Previous steps**, **Next steps** (same click-to-navigate behavior; distinct icons).
+- The detail rail's two sections (Related / Follow-ups) become three: **Similar**, **Previous steps**, **Next steps**
+  (same click-to-navigate behavior; distinct icons).
 - The browser's follow-up strip becomes the same three-group strip (workflow successors
   first, as today).
 - `JIPipeNodeDatabase.followUps(entry)` and `related(entry, max)` are **removed**
@@ -303,12 +304,12 @@ templates as source material — all attach without touching the model.
   resources `jipipe-core/src/main/resources/org/hkijena/jipipe/plugins/nodetemplate/patterns/`.
 - A system-template registration step (taxonomy plugin `register()` loop using
   `registerNodeTemplate`) deserializes each, setting:
-  - `taxonomyFunction` = the pattern's **primary function branch** (deterministic rule:
-    the most common primary top-level branch among the pattern's nodes; ties →
-    lexicographic). The pattern docs' `tags` block is the source data.
-  - `name` = pattern name; `description` = corpus block (role sequence, wiring);
-    `source = "System (corpus-mined)"`.
-  - `colorHue`/icon derived from the function branch (visual clustering).
+    - `taxonomyFunction` = the pattern's **primary function branch** (deterministic rule:
+      the most common primary top-level branch among the pattern's nodes; ties →
+      lexicographic). The pattern docs' `tags` block is the source data.
+    - `name` = pattern name; `description` = corpus block (role sequence, wiring);
+      `source = "System (corpus-mined)"`.
+    - `colorHue`/icon derived from the function branch (visual clustering).
 - **Curation (added after the 1324 manual review):** a pattern ships only if
   it has a proper **derivable name of what it does**. From the 185 research
   artifacts, the statistical fan shapes ("X fans in from N source ids") and
@@ -325,33 +326,33 @@ templates as source material — all attach without touching the model.
 ## 12. Testing & verification
 
 - **Unit (jipipe-core):**
-  - Migration converter fixtures + round-trip (§9).
-  - `NodeRelationIndex`/`relations`: family + template merge, both directions, support
-    ranking, previous/next exclusion from similar, pluggability via a fake source,
-    stale-node-id skip (template edge whose node id no longer resolves → warn, skip,
-    never fail).
-  - `CreateNewNodesByTemplateDatabaseEntry` extension: function ids, scope, badge rule.
-  - `jipipe:taxonomy-function` parameter type / `JIPipeTaxonomyFunctionRef`: custom
-    serialization (id string ↔ ref, `null` ↔ unset), `isResolved()`/`getFunction()`
-    behavior for known/unknown ids, equals/hashCode on id, no-arg constructor.
-  - The `jipipe:function:templates` function passes the taxonomy gates
-    (`TaxonomyFullValidationTest`, per-module conversion report) — it is a normal
-    registered function leaf.
+    - Migration converter fixtures + round-trip (§9).
+    - `NodeRelationIndex`/`relations`: family + template merge, both directions, support
+      ranking, previous/next exclusion from similar, pluggability via a fake source,
+      stale-node-id skip (template edge whose node id no longer resolves → warn, skip,
+      never fail).
+    - `CreateNewNodesByTemplateDatabaseEntry` extension: function ids, scope, badge rule.
+    - `jipipe:taxonomy-function` parameter type / `JIPipeTaxonomyFunctionRef`: custom
+      serialization (id string ↔ ref, `null` ↔ unset), `isResolved()`/`getFunction()`
+      behavior for known/unknown ids, equals/hashCode on id, no-arg constructor.
+    - The `jipipe:function:templates` function passes the taxonomy gates (`TaxonomyFullValidationTest`, per-module
+      conversion report) — it is a normal
+      registered function leaf.
 - **Integration (jipipe-launcher, mirrors `RegistryDumperTest`):**
-  - All shipped patterns deserialize via `JIPipeNodeTemplate.getGraph()`
-    (generalizes the existing `TemplateDataDeserializationTest` from 1 to the
-    full shipped set), and the curation rules hold (no compartment sink, no
-    statistical fan name).
-  - Spot-check mined relations: `path-to-annotation-simple`'s next includes
-    `import-imagej-imgplus-from-file`; `folder-list-files`' previous is empty, next
-    includes `path-to-annotation-simple`.
-  - Registry dumper: `jipipe:function:templates` appears in `functions[]`; the
-    registry dumper's `families[]` output is unchanged by this feature (no new
-    family is introduced).
+    - All shipped patterns deserialize via `JIPipeNodeTemplate.getGraph()`
+      (generalizes the existing `TemplateDataDeserializationTest` from 1 to the
+      full shipped set), and the curation rules hold (no compartment sink, no
+      statistical fan name).
+    - Spot-check mined relations: `path-to-annotation-simple`'s next includes
+      `import-imagej-imgplus-from-file`; `folder-list-files`' previous is empty, next
+      includes `path-to-annotation-simple`.
+    - Registry dumper: `jipipe:function:templates` appears in `functions[]`; the
+      registry dumper's `families[]` output is unchanged by this feature (no new
+      family is introduced).
 - **UI:** context-menu parity — compact-mode tree leaf and list produce identical items
   for the same entry (the named bug); badge rendering in both renderers.
-- **Regression guards:** `TaxonomyFullValidationTest` green; jipipe-core suite green
-  (the removed `followUps`/`related` methods have their tests updated, not deleted).
+- **Regression guards:** `TaxonomyFullValidationTest` green; jipipe-core suite green (the removed `followUps`/`related`
+  methods have their tests updated, not deleted).
 
 ## 13. Out-of-scope seams for the future
 
@@ -361,7 +362,7 @@ templates as source material — all attach without touching the model.
   different mechanism later.
 - **Starter patterns:** template *source* nodes (no incoming in-template edge) are
   computable from the same template graph — a future relation kind ("starts like
-  this") or a new `NodeRelationSource` can surface them as "start candidates" with
-  **no index/model change** (the index already stores only next/previous support
+  this") or a new `NodeRelationSource` can surface them as "start candidates" with **no index/model change** (the index
+  already stores only next/previous support
   maps; `previous(id)` is already empty for source nodes).
 - **Template graph editing** in the management UI (canvas-based editing only).

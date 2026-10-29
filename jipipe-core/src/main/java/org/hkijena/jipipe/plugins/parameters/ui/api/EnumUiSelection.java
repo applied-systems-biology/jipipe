@@ -28,7 +28,9 @@ package org.hkijena.jipipe.plugins.parameters.ui.api;
  */
 public final class EnumUiSelection {
 
-    /** Option sets of at most this size use a plain combo box. */
+    /**
+     * Option sets of at most this size use a plain combo box.
+     */
     public static final int COMBO_MAX_VALUES = 5;
 
     private EnumUiSelection() {

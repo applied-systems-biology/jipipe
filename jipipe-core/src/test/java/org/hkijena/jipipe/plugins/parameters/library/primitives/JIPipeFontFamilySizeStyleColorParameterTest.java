@@ -16,10 +16,10 @@ package org.hkijena.jipipe.plugins.parameters.library.primitives;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.junit.jupiter.api.Test;
 
-import java.awt.Color;
-import java.awt.Font;
+import java.awt.*;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 /**
  * #1339, Task 2: the full font parameter model ({@link

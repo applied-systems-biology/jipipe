@@ -13,9 +13,6 @@
 
 package org.hkijena.jipipe.plugins.opencv.nodes;
 
-import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.OpenCVFramework;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.PreprocessingFunction;
 import org.bytedeco.javacpp.opencv_core;
 import org.bytedeco.javacpp.opencv_photo;
 import org.bytedeco.javacpp.opencv_xphoto;
@@ -30,6 +27,8 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.OpenCVFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.PreprocessingFunction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
@@ -37,8 +36,10 @@ import org.hkijena.jipipe.plugins.opencv.datatypes.OpenCvImageData;
 import org.hkijena.jipipe.plugins.opencv.utils.OpenCvImageUtils;
 import org.hkijena.jipipe.plugins.opencv.utils.OpenCvType;
 
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
+
 @SetJIPipeDocumentation(name = "Image inpainting", description = "Applies an algorithm for inpainting (content-aware fill) that attempts to fill in masked areas based on the surrounding image information")
-@ConfigureJIPipeNode(function = PreprocessingFunction.class, framework = OpenCVFramework.class, spatialDimensions = { SPATIAL_2D })
+@ConfigureJIPipeNode(function = PreprocessingFunction.class, framework = OpenCVFramework.class, spatialDimensions = {SPATIAL_2D})
 @AddJIPipeInputSlot(value = OpenCvImageData.class, name = "Input", create = true, description = "Input 8-bit, 16-bit unsigned or 32-bit float 1-channel or 8-bit 3-channel image. ")
 @AddJIPipeInputSlot(value = OpenCvImageData.class, name = "Mask", create = true, description = "Inpainting mask, 8-bit 1-channel image. Non-zero pixels indicate the area that needs to be inpainted.")
 @AddJIPipeOutputSlot(value = OpenCvImageData.class, name = "Output", create = true)

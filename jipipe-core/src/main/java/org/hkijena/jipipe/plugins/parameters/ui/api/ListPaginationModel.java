@@ -43,32 +43,44 @@ public final class ListPaginationModel {
         this.revealed = Math.min(pageSize, total);
     }
 
-    /** @return whether rows are paged (false for scroll-bar lists: all rows visible) */
+    /**
+     * @return whether rows are paged (false for scroll-bar lists: all rows visible)
+     */
     public boolean paginationEnabled() {
         return paginationEnabled;
     }
 
-    /** @return the number of rows currently visible (all rows when disabled) */
+    /**
+     * @return the number of rows currently visible (all rows when disabled)
+     */
     public int visibleCount() {
         return paginationEnabled ? Math.min(revealed, total) : total;
     }
 
-    /** @return how many rows remain hidden beyond the visible page */
+    /**
+     * @return how many rows remain hidden beyond the visible page
+     */
     public int loadMoreRemaining() {
         return paginationEnabled ? Math.max(0, total - visibleCount()) : 0;
     }
 
-    /** @return whether the "+k more" button should be shown */
+    /**
+     * @return whether the "+k more" button should be shown
+     */
     public boolean showLoadMore() {
         return loadMoreRemaining() > 0;
     }
 
-    /** @return whether the "Show less" button should be shown (list is expanded beyond one page) */
+    /**
+     * @return whether the "Show less" button should be shown (list is expanded beyond one page)
+     */
     public boolean showShowLess() {
         return paginationEnabled && visibleCount() > pageSize;
     }
 
-    /** Reveals another page (no-op when pagination is disabled or fully revealed). */
+    /**
+     * Reveals another page (no-op when pagination is disabled or fully revealed).
+     */
     public void loadMore() {
         if (!paginationEnabled) {
             return;
@@ -76,7 +88,9 @@ public final class ListPaginationModel {
         revealed = Math.min(revealed + pageSize, total);
     }
 
-    /** Collapses back to the first page (no-op when pagination is disabled). */
+    /**
+     * Collapses back to the first page (no-op when pagination is disabled).
+     */
     public void showLess() {
         if (!paginationEnabled) {
             return;
@@ -84,7 +98,9 @@ public final class ListPaginationModel {
         revealed = pageSize;
     }
 
-    /** @return the total number of rows, regardless of pagination */
+    /**
+     * @return the total number of rows, regardless of pagination
+     */
     public int size() {
         return total;
     }

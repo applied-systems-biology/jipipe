@@ -55,10 +55,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 class NodeBrowserModelTemplateTest {
 
     private static final String STUB_ID = "template-browser-model-test:stub-node";
-    /** A real, registry-registered branch the stub function ids can be filed under. */
+    /**
+     * A real, registry-registered branch the stub function ids can be filed under.
+     */
     private static final String IMAGES_FN_ID = "jipipe:function:images";
     private static final JIPipeMutableDependency TEST_DEPENDENCY =
-        new JIPipeMutableDependency("template-browser-model-test", "1.0.0", "template-browser-model-test");
+            new JIPipeMutableDependency("template-browser-model-test", "1.0.0", "template-browser-model-test");
 
     @BeforeAll
     static void boot() {

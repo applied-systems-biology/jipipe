@@ -34,35 +34,41 @@ template:
 
 # Pattern: Set LUT (color map) -> Compartment output -> Compartment output -> Compartment output
 
-Mined pattern `chain-4-ij1-set-lut-from-color-map-jipipe-compartment-output-jipipe-compartment-output-jipipe-compartment-output` (shape `chain`, support 30).
+Mined pattern
+`chain-4-ij1-set-lut-from-color-map-jipipe-compartment-output-jipipe-compartment-output-jipipe-compartment-output`
+(shape `chain`, support 30).
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| other | `ij1-set-lut-from-color-map` |
-| core-io | `jipipe:compartment-output` |
-| core-io | `jipipe:compartment-output` |
-| core-io | `jipipe:compartment-output` |
+| role    | node ids                     |
+|---------|------------------------------|
+| other   | `ij1-set-lut-from-color-map` |
+| core-io | `jipipe:compartment-output`  |
+| core-io | `jipipe:compartment-output`  |
+| core-io | `jipipe:compartment-output`  |
 
 ## Example graph
 
-Project: `AIAgentTests/03-ExampleWorkflows/Annamaria_12.jip` (relative to `/data/JIPipe`), compartment `Distances+Membrane+Particles`.
+Project: `AIAgentTests/03-ExampleWorkflows/Annamaria_12.jip` (relative to `/data/JIPipe`), compartment
+`Distances+Membrane+Particles`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `ij1-set-lut-from-color-map` | Set LUT (color map) |
-| n1 | `jipipe:compartment-output` | Mask |
-| n2 | `jipipe:compartment-output` | Output |
-| n3 | `jipipe:compartment-output` | Distances |
+| key | node id                      | name                |
+|-----|------------------------------|---------------------|
+| n0  | `ij1-set-lut-from-color-map` | Set LUT (color map) |
+| n1  | `jipipe:compartment-output`  | Mask                |
+| n2  | `jipipe:compartment-output`  | Output              |
+| n3  | `jipipe:compartment-output`  | Distances           |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
-| Set LUT (color map) | `Output` | Mask | `3D labels` | `imagej-imgplus-greyscale` |
-| Mask | `3D cell mask` | Output | `3D cell mask` | `imagej-imgplus-greyscale-mask` |
-| Output | `Green distances` | Distances | `Green to green closest distances` | `imagej-results-table` |
+| from                | slot              | to        | slot                               | data class                      |
+|---------------------|-------------------|-----------|------------------------------------|---------------------------------|
+| Set LUT (color map) | `Output`          | Mask      | `3D labels`                        | `imagej-imgplus-greyscale`      |
+| Mask                | `3D cell mask`    | Output    | `3D cell mask`                     | `imagej-imgplus-greyscale-mask` |
+| Output              | `Green distances` | Distances | `Green to green closest distances` | `imagej-results-table`          |
 
 ## Template
 
-Proposed name `Set LUT (color map) -> Compartment output -> Compartment output -> Compartment output`, menu path `Patterns/Images/Set LUT (color map) -> Compartment output -> Compartment output -> Compartment output` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/chain-4-ij1-set-lut-from-color-map-jipipe-compartment-output-jipipe-compartment-output-jipipe-compartment-output.json`.
+Proposed name `Set LUT (color map) -> Compartment output -> Compartment output -> Compartment output`, menu path
+`Patterns/Images/Set LUT (color map) -> Compartment output -> Compartment output -> Compartment output` (proposal only —
+not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/chain-4-ij1-set-lut-from-color-map-jipipe-compartment-output-jipipe-compartment-output-jipipe-compartment-output.json`.
 

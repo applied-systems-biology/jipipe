@@ -4,15 +4,12 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import javax.swing.JButton;
-import javax.swing.JTextField;
+import javax.swing.*;
 import javax.swing.text.DefaultCaret;
-import java.awt.Component;
-import java.awt.DefaultKeyboardFocusManager;
-import java.awt.KeyboardFocusManager;
+import java.awt.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 // Headless test of the global reduced-motion caret policy: a single "focusOwner"
 // listener on the keyboard focus manager re-applies the caret policy to whatever
@@ -20,13 +17,6 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 // setGlobalFocusOwner so the REAL property-change path can be driven headlessly
 // (verified against the Azul Zulu 21 sources that ship in the JIPipe distribution).
 class ThemeUtilsCaretMotionPolicyTest {
-
-    /** Exposes the protected setGlobalFocusOwner so tests can drive a real focus-owner change. */
-    static class TestFocusManager extends DefaultKeyboardFocusManager {
-        void forceFocusOwner(Component owner) {
-            setGlobalFocusOwner(owner);
-        }
-    }
 
     private TestFocusManager focusManager;
 
@@ -82,5 +72,14 @@ class ThemeUtilsCaretMotionPolicyTest {
         ThemeUtils.installCaretMotionPolicy();
         assertEquals(listenersAfterFirstInstall, focusManager.getPropertyChangeListeners("focusOwner").length,
                 "installing the policy twice must not register a second listener");
+    }
+
+    /**
+     * Exposes the protected setGlobalFocusOwner so tests can drive a real focus-owner change.
+     */
+    static class TestFocusManager extends DefaultKeyboardFocusManager {
+        void forceFocusOwner(Component owner) {
+            setGlobalFocusOwner(owner);
+        }
     }
 }

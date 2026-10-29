@@ -37,29 +37,33 @@ Mined pattern `fan-out-ij1-roi-filter-statistics-core-io-1-other-2` (shape `fan-
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| other | `ij1-roi-filter-statistics` |
-| core-io | `jipipe:compartment-output` |
-| other | `ij1-roi-enlarge-shrink`, `ij1-roi-merge`, `ij1-roi-statistics`, `ij1-roi-to-mask`, `ij1-roi-to-rgb` |
+| role    | node ids                                                                                             |
+|---------|------------------------------------------------------------------------------------------------------|
+| other   | `ij1-roi-filter-statistics`                                                                          |
+| core-io | `jipipe:compartment-output`                                                                          |
+| other   | `ij1-roi-enlarge-shrink`, `ij1-roi-merge`, `ij1-roi-statistics`, `ij1-roi-to-mask`, `ij1-roi-to-rgb` |
 
 ## Example graph
 
-Project: `AIAgentTests/02-AdvancedPipelines/Cryogels_01.jip` (relative to `/data/JIPipe`), compartment `Apply Cellpose Model 2`.
+Project: `AIAgentTests/02-AdvancedPipelines/Cryogels_01.jip` (relative to `/data/JIPipe`), compartment
+`Apply Cellpose Model 2`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `ij1-roi-filter-statistics` | Filter ROI by statistics |
-| n1 | `ij1-roi-statistics` | Extract ROI statistics |
-| n2 | `jipipe:compartment-output` | Output |
-| n3 | `ij1-roi-to-rgb` | Convert ROI to RGB: Cellpose results |
+| key | node id                     | name                                 |
+|-----|-----------------------------|--------------------------------------|
+| n0  | `ij1-roi-filter-statistics` | Filter ROI by statistics             |
+| n1  | `ij1-roi-statistics`        | Extract ROI statistics               |
+| n2  | `jipipe:compartment-output` | Output                               |
+| n3  | `ij1-roi-to-rgb`            | Convert ROI to RGB: Cellpose results |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
-| Filter ROI by statistics | `Output` | Extract ROI statistics | `ROI` | `imagej-roi` |
-| Extract ROI statistics | `Measurements` | Output | `ROI results` | `imagej-results-table` |
+| from                     | slot           | to                     | slot          | data class             |
+|--------------------------|----------------|------------------------|---------------|------------------------|
+| Filter ROI by statistics | `Output`       | Extract ROI statistics | `ROI`         | `imagej-roi`           |
+| Extract ROI statistics   | `Measurements` | Output                 | `ROI results` | `imagej-results-table` |
 
 ## Template
 
-Proposed name `Filter 2D ROI by statistics fans out to 6 target ids (roles: core-io, other)`, menu path `Patterns/ROIs/Filter 2D ROI by statistics fans out to 6 target ids (roles: core-io, other)` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/fan-out-ij1-roi-filter-statistics-core-io-1-other-2.json`.
+Proposed name `Filter 2D ROI by statistics fans out to 6 target ids (roles: core-io, other)`, menu path
+`Patterns/ROIs/Filter 2D ROI by statistics fans out to 6 target ids (roles: core-io, other)` (proposal only — not
+registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/fan-out-ij1-roi-filter-statistics-core-io-1-other-2.json`.
 

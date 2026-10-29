@@ -50,6 +50,16 @@ class JIPipeProjectFairCheckTest {
     }
 
     /**
+     * Test-only helper: true if any missing-item string mentions {@code word}
+     * (case-insensitive). Keeps the production {@link
+     * JIPipeProjectFairCheck} free of test-facing helpers.
+     */
+    private static boolean hasWord(List<String> missing, String word) {
+        String needle = word.toLowerCase(java.util.Locale.ROOT);
+        return missing.stream().anyMatch(s -> s.toLowerCase(java.util.Locale.ROOT).contains(needle));
+    }
+
+    /**
      * A fresh project has no license, no summary and no authors — all three
      * items must be flagged as missing.
      */
@@ -85,16 +95,6 @@ class JIPipeProjectFairCheckTest {
 
         assertTrue(missing.isEmpty(),
                 "A fully-populated project must be FAIR-complete, got missing: " + missing);
-    }
-
-    /**
-     * Test-only helper: true if any missing-item string mentions {@code word}
-     * (case-insensitive). Keeps the production {@link
-     * JIPipeProjectFairCheck} free of test-facing helpers.
-     */
-    private static boolean hasWord(List<String> missing, String word) {
-        String needle = word.toLowerCase(java.util.Locale.ROOT);
-        return missing.stream().anyMatch(s -> s.toLowerCase(java.util.Locale.ROOT).contains(needle));
     }
 
     /**

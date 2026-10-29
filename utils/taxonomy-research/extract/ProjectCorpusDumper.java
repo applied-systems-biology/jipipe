@@ -96,6 +96,14 @@ import java.util.stream.Stream;
 public final class ProjectCorpusDumper {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
+    private static final Path SELFTEST_1 =
+            Paths.get("/data/JIPipe/AIAgentTests/01-BasicWorkshop/lecture_02.jip");
+    private static final Path SELFTEST_2 =
+            Paths.get("/data/JIPipe/AIAgentTests/05-Homework-JSC2025/Homework_JSC_2025/Alternative1/hyphae_single.jip");
+
+    // ------------------------------------------------------------------
+    // Selftest
+    // ------------------------------------------------------------------
 
     private ProjectCorpusDumper() {
     }
@@ -117,15 +125,6 @@ public final class ProjectCorpusDumper {
         int failures = dumpCorpus(roots, Paths.get(args[args.length - 1]));
         System.exit(failures);
     }
-
-    // ------------------------------------------------------------------
-    // Selftest
-    // ------------------------------------------------------------------
-
-    private static final Path SELFTEST_1 =
-            Paths.get("/data/JIPipe/AIAgentTests/01-BasicWorkshop/lecture_02.jip");
-    private static final Path SELFTEST_2 =
-            Paths.get("/data/JIPipe/AIAgentTests/05-Homework-JSC2025/Homework_JSC_2025/Alternative1/hyphae_single.jip");
 
     /**
      * Asserts against the two smallest corpus files that (d) {@code loadable == true},
@@ -432,9 +431,9 @@ public final class ProjectCorpusDumper {
 
     static final class ProjectRecord {
         final String file;
+        final List<CompartmentRecord> compartments = new ArrayList<>();
         boolean loadable = true;
         String loadError;
-        final List<CompartmentRecord> compartments = new ArrayList<>();
 
         ProjectRecord(String file) {
             this.file = file;

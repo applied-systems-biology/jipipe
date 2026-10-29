@@ -35,6 +35,6 @@ class InputProfileTest {
     @Test
     void spatialDimensionIsClosed() {
         assertArrayEquals(new JIPipeNodeTaxonomySpatialDimension[]{SPATIAL_2D, SPATIAL_3D},
-            JIPipeNodeTaxonomySpatialDimension.values()); // no 4D/5D spatial exists
+                JIPipeNodeTaxonomySpatialDimension.values()); // no 4D/5D spatial exists
     }
 }

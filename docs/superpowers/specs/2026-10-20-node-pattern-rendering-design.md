@@ -1,7 +1,6 @@
 # Node Pattern Rendering (Phase 2, revised) — Design
 
-**Date:** 2026-10-20
-**Work item:** 1324 (node taxonomy & design)
+**Date:** 2026-10-20 **Work item:** 1324 (node taxonomy & design)
 **Supersedes:** the "Node rendering (Phase 2)" section of
 [`2026-10-08-node-taxonomy-redesign-design.md`](2026-10-08-node-taxonomy-redesign-design.md)
 (DiceBear port → Java2D formula engine). The Phase 1 data model is unchanged:
@@ -34,8 +33,8 @@ Evaluation of the real DiceBear 9.x/10.x output rejected that path:
 The approved pivot: a small **Java2D formula engine** — each style is a pure
 `paint(Graphics2D, w, h, Random)` formula (Vanta/KDE-structural inspiration:
 isocurves, voronoi membranes, kNN nets, hex tiling, wavy strata, space-filling
-curves, recursive subdivision). Color-neutrality and plane-filling are then
-**properties of the pipeline, not post-processing**, and are testable.
+curves, recursive subdivision). Color-neutrality and plane-filling are then **properties of the pipeline, not
+post-processing**, and are testable.
 
 ## Goals
 
@@ -77,6 +76,7 @@ public interface NodePatternFamily {
 ```
 
 Contract for every family (enforced by tests, §Testing):
+
 - draws only with the current paint (white) onto a transparent canvas;
 - reaches all four borders (overshoots the frame where the geometry is
   grid-based — one row/col of elements past each edge — so the motif is
@@ -111,32 +111,32 @@ public final class NodePatternRenderer {
   texture tolerates the interpolation). Mask cap 512×512.
 - The mask is **theme-independent** by construction (white ink) — changing
   ink color/opacity only changes the draw call, never the cache.
-- **Seed:** `new Random(seed.hashCode())` with `seed` = the framework id
-  (`String.hashCode()` is JLS-specified, `Random`'s LCG is fixed ⇒
+- **Seed:** `new Random(seed.hashCode())` with `seed` = the framework id (`String.hashCode()` is JLS-specified, `Random`
+  's LCG is fixed ⇒
   deterministic across JVMs and machines). Every node of a framework shares
   one signature; families never seed themselves.
 
 ### Style catalog (17 families, 12 mapped)
 
-| Id | Formula (from the validated prototype) | Mapped to |
-|---|---|---|
-| `blobs` | scattered smooth closed blobs (12-point quadratic splines), centers may overshoot the frame | Cellpose2/3/4 |
-| `net` | jittered-grid kNN graph (k=3, wrap-tolerant), nodes + edges | TrackMate, Comet |
-| `honeycomb` | wobbly hexagonal tiling + sparse cell dots (KDE *Canopee/Flow*) | cLij |
-| `triangles` | jittered-grid triangulation mesh (edges) | ImageJ1, ImageJ2 |
-| `waves` | isocurves of a 3-term periodic sine field (marching squares) | JFreeChart |
-| `patchwork` | recursive BSP subdivision, alternating fill/outline | Core |
-| `weave` | over/under rounded bands | OpenCV |
-| `stripes` | wavy vertical bands; frame-adjacent bands straight (border guarantee) | Python |
-| `cellular` | voronoi membranes as smooth wobbly closed outlines + border sites (KDE *Cluster* / Vanta *cells*) | Omnipose |
-| `dots` | dot grid, radius modulated by a periodic field, centers on the border grid | Ilastik |
-| `landscape` | stacked wavy strata drawn as **bands between consecutive curves** (no alpha stacking) | R |
-| `carpet` | Sierpinski carpet (space-filling fractal) | JIPipeDL |
-| `loops` | open arc loops on a jittered grid — *spare* | — |
-| `disco` | confetti polygons (3–5 sides) on a jittered grid — *spare* | — |
-| `hilbert` | space-filling Hilbert curve, order 6 (canonical inside-out `d2xy`) — *spare* | — |
-| `ripple` | radial fan + concentric circles from an interior point (Vanta *ripple*) — *spare* | — |
-| `flow` | flow-field line segments (Vanta *topology*) — *spare* | — |
+| Id          | Formula (from the validated prototype)                                                            | Mapped to        |
+|-------------|---------------------------------------------------------------------------------------------------|------------------|
+| `blobs`     | scattered smooth closed blobs (12-point quadratic splines), centers may overshoot the frame       | Cellpose2/3/4    |
+| `net`       | jittered-grid kNN graph (k=3, wrap-tolerant), nodes + edges                                       | TrackMate, Comet |
+| `honeycomb` | wobbly hexagonal tiling + sparse cell dots (KDE *Canopee/Flow*)                                   | cLij             |
+| `triangles` | jittered-grid triangulation mesh (edges)                                                          | ImageJ1, ImageJ2 |
+| `waves`     | isocurves of a 3-term periodic sine field (marching squares)                                      | JFreeChart       |
+| `patchwork` | recursive BSP subdivision, alternating fill/outline                                               | Core             |
+| `weave`     | over/under rounded bands                                                                          | OpenCV           |
+| `stripes`   | wavy vertical bands; frame-adjacent bands straight (border guarantee)                             | Python           |
+| `cellular`  | voronoi membranes as smooth wobbly closed outlines + border sites (KDE *Cluster* / Vanta *cells*) | Omnipose         |
+| `dots`      | dot grid, radius modulated by a periodic field, centers on the border grid                        | Ilastik          |
+| `landscape` | stacked wavy strata drawn as **bands between consecutive curves** (no alpha stacking)             | R                |
+| `carpet`    | Sierpinski carpet (space-filling fractal)                                                         | JIPipeDL         |
+| `loops`     | open arc loops on a jittered grid — *spare*                                                       | —                |
+| `disco`     | confetti polygons (3–5 sides) on a jittered grid — *spare*                                        | —                |
+| `hilbert`   | space-filling Hilbert curve, order 6 (canonical inside-out `d2xy`) — *spare*                      | —                |
+| `ripple`    | radial fan + concentric circles from an interior point (Vanta *ripple*) — *spare*                 | —                |
+| `flow`      | flow-field line segments (Vanta *topology*) — *spare*                                             | —                |
 
 Replaced/removed vs. the previous `getPatternStyleId()` values:
 `constellation` (sparse, rejected) → `net`; `shape-grid` → `waves`/`carpet`;
@@ -145,26 +145,25 @@ keep their ids. **`NoFramework.getPatternStyleId()` returns `null`** ⇒ no
 pattern, no badge (deliberate behavior change: framework-less nodes stay
 plain).
 
-The 17 families are 17 small named classes
-(`BlobsFamily`, `NetFamily`, …) ported from the validated prototype
+The 17 families are 17 small named classes (`BlobsFamily`, `NetFamily`, …) ported from the validated prototype
 (`PatternForge`, kept as the visual-evidence artifact, not shipped).
 
 ### Framework mapping (approved 2026-10-20)
 
-| Frameworks | Style |
-|---|---|
-| Cellpose2/3/4 | blobs |
-| TrackMate, Comet | net |
-| cLij | honeycomb |
+| Frameworks       | Style     |
+|------------------|-----------|
+| Cellpose2/3/4    | blobs     |
+| TrackMate, Comet | net       |
+| cLij             | honeycomb |
 | ImageJ1, ImageJ2 | triangles |
-| JFreeChart | waves |
-| Core | patchwork |
-| OpenCV | weave |
-| Python | stripes |
-| Omnipose | cellular |
-| Ilastik | dots |
-| R | landscape |
-| JIPipeDL | carpet |
+| JFreeChart       | waves     |
+| Core             | patchwork |
+| OpenCV           | weave     |
+| Python           | stripes   |
+| Omnipose         | cellular  |
+| Ilastik          | dots      |
+| R                | landscape |
+| JIPipeDL         | carpet    |
 
 Sharing a style across versions (Cellpose 2/3/4 → one silhouette) and across
 related trackers (TrackMate/Comet) is the point: the pattern is a family
@@ -202,12 +201,12 @@ if (style.isShowNodeFrameworkPattern() && fw != null
 `JIPipeDesktopModernThemeStyle` (persisted theme document, Jackson — new
 fields deserialize with defaults, old theme files unaffected):
 
-| Setting | Default |
-|---|---|
-| `showNodeFrameworkPattern` | `true` |
-| `nodePatternInk` | white |
-| `nodePatternOpacity` | `0.4f` (live-tuned for the light base theme; the dark bundled themes pin `0.15` explicitly) |
-| `showNodeFrameworkBadge` | `true` |
+| Setting                    | Default                                                                                     |
+|----------------------------|---------------------------------------------------------------------------------------------|
+| `showNodeFrameworkPattern` | `true`                                                                                      |
+| `nodePatternInk`           | white                                                                                       |
+| `nodePatternOpacity`       | `0.4f` (live-tuned for the light base theme; the dark bundled themes pin `0.15` explicitly) |
+| `showNodeFrameworkBadge`   | `true`                                                                                      |
 
 Theme editor: a "Node patterns" group in the node section (checkboxes +
 opacity slider + color picker). All off ⇒ today's look, per goal 6.
@@ -264,6 +263,7 @@ Continue on **`1324-node-taxonomy-core`** (MR !168) — the original plan's
 feature set lands in a single MR. (Confirm at spec review.)
 
 Suggested commit shape:
+
 1. `feat: node pattern engine (families, registry, mask renderer, theme settings)`
 2. `feat: paint framework pattern + badge on canvas nodes, minimap reuse`
 3. `test: pattern contracts (determinism, plane-filling, color-neutral, registry)`
@@ -271,12 +271,12 @@ Suggested commit shape:
 
 ## Risks & mitigations
 
-| Risk | Mitigation |
-|---|---|
-| A family looks bad at some node size/zoom | Mask buckets + `drawImage` scaling; the family formulas are size-parametric (grid counts derive from `w`/`h`), re-tune parameters in one class |
-| `String.hashCode()` seed distribution gives an unlucky realization for one framework | Per-framework seed salt (one-line constant) — deterministic, still stable |
-| Pattern hurts node text legibility | Default opacity 0.4 on light / 0.15 on dark (live-tuned via the theme editor preview; pinned per theme, see `NodePatternThemeSettingsTest.shippedThemesPinPatternOpacity`); theme slider; the title band paints over the pattern |
-| 17 families is too much code to maintain | ~40–80 lines each, pure Java2D, no shared mutable state; the 4 contract tests keep them honest without per-pixel test bloat |
+| Risk                                                                                 | Mitigation                                                                                                                                                                                                                       |
+|--------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| A family looks bad at some node size/zoom                                            | Mask buckets + `drawImage` scaling; the family formulas are size-parametric (grid counts derive from `w`/`h`), re-tune parameters in one class                                                                                   |
+| `String.hashCode()` seed distribution gives an unlucky realization for one framework | Per-framework seed salt (one-line constant) — deterministic, still stable                                                                                                                                                        |
+| Pattern hurts node text legibility                                                   | Default opacity 0.4 on light / 0.15 on dark (live-tuned via the theme editor preview; pinned per theme, see `NodePatternThemeSettingsTest.shippedThemesPinPatternOpacity`); theme slider; the title band paints over the pattern |
+| 17 families is too much code to maintain                                             | ~40–80 lines each, pure Java2D, no shared mutable state; the 4 contract tests keep them honest without per-pixel test bloat                                                                                                      |
 
 ## Decisions log (this design round, 2026-10-20)
 
@@ -291,8 +291,8 @@ Suggested commit shape:
 4. **Plane-filling is a tested contract** (border-band ink coverage).
 5. **Organic gap** covered by `cellular` (voronoi membranes) + `blobs`.
 6. **Fractal sources** covered by `carpet` (Sierpinski carpet) + `hilbert`
-   (space-filling curve); bounded-motif fractals (Sierpinski *triangle*, Koch
-   *snowflake*) excluded for the same reason as `constellation`.
+   (space-filling curve); bounded-motif fractals (Sierpinski *triangle*, Koch *snowflake*) excluded for the same reason
+   as `constellation`.
 7. **Mapping table** as above — approved.
 8. **Badge included** in this phase — approved.
 9. **No contrib module, no Batik, no dist changes** — consequence of (1).

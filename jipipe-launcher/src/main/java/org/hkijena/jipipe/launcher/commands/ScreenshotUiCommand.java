@@ -19,37 +19,31 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.api.runtimepartitioning.RuntimePartitionReferenceParameter;
 import org.hkijena.jipipe.api.service.JIPipeServiceInitializationSettings;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopDummyWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
-import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.color.JIPipeDesktopColorChooserDialog;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopHTMLEditor;
-import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
+import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.launcher.commands.screenshotui.ScreenshotRenderer;
+import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeParameterCollectionList;
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
 import org.hkijena.jipipe.plugins.parameters.library.filesystem.PathList;
+import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeArtifactQueryParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.matrix.Matrix2DFloat;
-import org.hkijena.jipipe.plugins.parameters.library.primitives.DynamicStringEnumParameter;
-import org.hkijena.jipipe.plugins.parameters.library.primitives.DynamicStringSetParameter;
-import org.hkijena.jipipe.plugins.parameters.library.primitives.JIPipeFontFamilySizeStyleColorParameter;
-import org.hkijena.jipipe.plugins.parameters.library.primitives.JIPipeFontFamilySizeStyleParameter;
-import org.hkijena.jipipe.plugins.parameters.library.primitives.NumberParameterSettings;
-import org.hkijena.jipipe.plugins.parameters.library.primitives.StringOrDouble;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.*;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.IntegerList;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalBooleanParameter;
-import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeArtifactQueryParameter;
 import org.hkijena.jipipe.plugins.parameters.library.references.IconRef;
 import org.hkijena.jipipe.plugins.parameters.library.references.JIPipeDataInfoRef;
 import org.hkijena.jipipe.plugins.parameters.library.references.JIPipeNodeInfoRef;
 import org.hkijena.jipipe.plugins.parameters.library.references.JIPipeParameterTypeInfoRef;
 import org.hkijena.jipipe.plugins.parameters.library.roi.FixedMargin;
 import org.hkijena.jipipe.plugins.parameters.library.roi.InnerMargin;
-import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
-import org.hkijena.jipipe.api.runtimepartitioning.RuntimePartitionReferenceParameter;
 import org.hkijena.jipipe.plugins.parameters.ui.api.JIPipeDesktopListEditorDialog;
 import org.hkijena.jipipe.plugins.parameters.ui.api.JIPipeListParameterEditorUI;
 import org.hkijena.jipipe.plugins.parameters.ui.library.JIPipeDesktopFontFamilySizeStyleColorParameterEditorUI;
@@ -65,11 +59,8 @@ import java.lang.annotation.Annotation;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
 /**
  * {@code JIPipeLauncher screenshot-ui --out <dir> [--only id1,id2]} — boots the
@@ -89,6 +80,31 @@ public class ScreenshotUiCommand {
      * color dialog are rendered separately (they are not nodes).
      */
     private static final Map<String, String> SHOWCASE = new LinkedHashMap<>();
+    /**
+     * S8 render-out audit (#1339 pass 2): a per-editor showcase set. For every
+     * parameter editor without a dedicated node showcase, a synthetic
+     * one-parameter collection ({@code <editor-...>} → field class) rendered
+     * at the standard panel width. The sweep checks the pass-1 form contract
+     * per editor: border present, consistent height family, left-aligned
+     * value, options/properties column, no self-drawn name, no clipping.
+     */
+    private static final Map<String, Class<?>> PER_EDITOR = new LinkedHashMap<>();
+    private static final int PANEL_WIDTH = 480;
+    private static final int DIALOG_WIDTH = 380;
+    private static final int DIALOG_HEIGHT = 560;
+    private static final int LIST_DIALOG_WIDTH = 640;
+    private static final int LIST_DIALOG_HEIGHT = 520;
+    /**
+     * Panel flags for the showcase capture. Deliberately WITHOUT
+     * {@code WITH_SCROLLING}: a JScrollPane reports a clipped preferred height
+     * (not its content's), which truncates an off-screen capture. The captured
+     * panel is the full, unscrolled form — which is what the VLM must see.
+     * (Ruling: Task 0.)
+     */
+    private static final int PANEL_FLAGS = JIPipeDesktopParameterFormPanel.WITH_DOCUMENTATION
+            | JIPipeDesktopFormPanel.DOCUMENTATION_BELOW
+            | JIPipeDesktopParameterFormPanel.WITH_SEARCH_BAR
+            | JIPipeDesktopFormPanel.DOCUMENTATION_EXTERNAL;
 
     static {
         SHOWCASE.put("panel-stack-to-montage", "ij1-dimensions-stack2montage-v2");
@@ -123,16 +139,6 @@ public class ScreenshotUiCommand {
         SHOWCASE.put("panel-html-text", "<html-text>");
     }
 
-    /**
-     * S8 render-out audit (#1339 pass 2): a per-editor showcase set. For every
-     * parameter editor without a dedicated node showcase, a synthetic
-     * one-parameter collection ({@code <editor-...>} → field class) rendered
-     * at the standard panel width. The sweep checks the pass-1 form contract
-     * per editor: border present, consistent height family, left-aligned
-     * value, options/properties column, no self-drawn name, no clipping.
-     */
-    private static final Map<String, Class<?>> PER_EDITOR = new LinkedHashMap<>();
-
     static {
         PER_EDITOR.put("editor-boolean", Boolean.class);
         PER_EDITOR.put("editor-number-field", Double.class);
@@ -163,24 +169,6 @@ public class ScreenshotUiCommand {
         // render family + size + style with NO color section.
         PER_EDITOR.put("editor-font-family-size-style", JIPipeFontFamilySizeStyleParameter.class);
     }
-
-    private static final int PANEL_WIDTH = 480;
-    private static final int DIALOG_WIDTH = 380;
-    private static final int DIALOG_HEIGHT = 560;
-    private static final int LIST_DIALOG_WIDTH = 640;
-    private static final int LIST_DIALOG_HEIGHT = 520;
-
-    /**
-     * Panel flags for the showcase capture. Deliberately WITHOUT
-     * {@code WITH_SCROLLING}: a JScrollPane reports a clipped preferred height
-     * (not its content's), which truncates an off-screen capture. The captured
-     * panel is the full, unscrolled form — which is what the VLM must see.
-     * (Ruling: Task 0.)
-     */
-    private static final int PANEL_FLAGS = JIPipeDesktopParameterFormPanel.WITH_DOCUMENTATION
-            | JIPipeDesktopFormPanel.DOCUMENTATION_BELOW
-            | JIPipeDesktopParameterFormPanel.WITH_SEARCH_BAR
-            | JIPipeDesktopFormPanel.DOCUMENTATION_EXTERNAL;
 
     private ScreenshotUiCommand() {
     }
@@ -277,120 +265,6 @@ public class ScreenshotUiCommand {
             JIPipeDesktopParameterFormPanel panel = new JIPipeDesktopParameterFormPanel(workbench, root, null, PANEL_FLAGS);
             ScreenshotRenderer.renderComponent(panel, PANEL_WIDTH, outDir.resolve(name + ".png"));
             rendered.add(name);
-        }
-    }
-
-    /**
-     * A minimal parameter collection exposing a single {@link JIPipeFontFamilySizeStyleColorParameter}
-     * (harness-only, #1339 — no node uses the font parameter until the Task 10
-     * migration). {@link JIPipeDynamicParameterCollection} instantiates the
-     * registered type automatically.
-     */
-    private static class FontParameterShowcase extends JIPipeDynamicParameterCollection {
-        FontParameterShowcase() {
-            addParameter("font", JIPipeFontFamilySizeStyleColorParameter.class, "Label font", "A font with family, size, style and text color");
-            // #1339 item 7: a non-default size proves the preview's trailing
-            // number tracks the parameter's size (not a hardcoded "12").
-            JIPipeFontFamilySizeStyleColorParameter font = getValue("font", JIPipeFontFamilySizeStyleColorParameter.class);
-            font.setSize(24);
-        }
-    }
-
-    /**
-     * A minimal parameter collection exposing a single {@link PathList} with a
-     * given number of entries (harness-only, #1339 pass 2 — the inline list
-     * editor's pagination/empty state have no populated node showcase).
-     */
-    private static class ListShowcase extends JIPipeDynamicParameterCollection {
-        ListShowcase(int itemCount) {
-            addParameter("files", PathList.class, "Files", "A list of files");
-            PathList list = getValue("files", PathList.class);
-            for (int i = 1; i <= itemCount; i++) {
-                list.add(Paths.get("/data/sample" + i + ".tif"));
-            }
-        }
-    }
-
-    /**
-     * A minimal parameter collection exposing a bounded (0–1) double annotated
-     * {@code style = SLIDER} at runtime (#1339 pass 2, S6). The proven pattern
-     * for a runtime annotation instance is {@code addParameter(..., annotations)}.
-     * The value is set to 0.5 so the slider thumb is visibly centered — the VLM
-     * verifies the thumb position matches the value.
-     */
-    private static class NumberSliderShowcase extends JIPipeDynamicParameterCollection {
-        NumberSliderShowcase() {
-            JIPipeMutableParameterAccess access = addParameter("opacity", Double.class, "Opacity", "A 0-1 opacity",
-                    new NumberParameterSettings() {
-                        @Override
-                        public Class<? extends Annotation> annotationType() {
-                            return NumberParameterSettings.class;
-                        }
-
-                        @Override
-                        public double min() {
-                            return 0;
-                        }
-
-                        @Override
-                        public double max() {
-                            return 1;
-                        }
-
-                        @Override
-                        public double step() {
-                            return 0.01;
-                        }
-
-                        @Override
-                        public NumberParameterSettings.Style style() {
-                            return NumberParameterSettings.Style.SLIDER;
-                        }
-                    });
-            access.set(0.5);
-            // A second, clearly-different value so a VLM can confirm the thumb
-            // position tracks the value (0.2 should sit well left of 0.5).
-            JIPipeMutableParameterAccess low = addParameter("low", Double.class, "Low", "A 0-1 opacity (verification)",
-                    new NumberParameterSettings() {
-                        @Override
-                        public Class<? extends Annotation> annotationType() {
-                            return NumberParameterSettings.class;
-                        }
-
-                        @Override
-                        public double min() {
-                            return 0;
-                        }
-
-                        @Override
-                        public double max() {
-                            return 1;
-                        }
-
-                        @Override
-                        public double step() {
-                            return 0.01;
-                        }
-
-                        @Override
-                        public NumberParameterSettings.Style style() {
-                            return NumberParameterSettings.Style.SLIDER;
-                        }
-                    });
-            low.set(0.2);
-        }
-    }
-
-    /**
-     * A minimal parameter collection exposing a single {@link HTMLText} with
-     * sample rich content (#1339 pass 2, S7) — the modernized compact-toolbar
-     * HTML widget has no node showcase in the default set, so a synthetic one
-     * renders it for the VLM loop.
-     */
-    private static class HtmlTextShowcase extends JIPipeDynamicParameterCollection {
-        HtmlTextShowcase() {
-            JIPipeMutableParameterAccess access = addParameter("description", HTMLText.class, "Description", "An HTML description");
-            access.set(new HTMLText("<html><body><p>Hello <b>world</b>, this is a <i>rich</i> description.</p></body></html>"));
         }
     }
 
@@ -592,5 +466,119 @@ public class ScreenshotUiCommand {
             }
         }
         return new ArrayList<>();
+    }
+
+    /**
+     * A minimal parameter collection exposing a single {@link JIPipeFontFamilySizeStyleColorParameter}
+     * (harness-only, #1339 — no node uses the font parameter until the Task 10
+     * migration). {@link JIPipeDynamicParameterCollection} instantiates the
+     * registered type automatically.
+     */
+    private static class FontParameterShowcase extends JIPipeDynamicParameterCollection {
+        FontParameterShowcase() {
+            addParameter("font", JIPipeFontFamilySizeStyleColorParameter.class, "Label font", "A font with family, size, style and text color");
+            // #1339 item 7: a non-default size proves the preview's trailing
+            // number tracks the parameter's size (not a hardcoded "12").
+            JIPipeFontFamilySizeStyleColorParameter font = getValue("font", JIPipeFontFamilySizeStyleColorParameter.class);
+            font.setSize(24);
+        }
+    }
+
+    /**
+     * A minimal parameter collection exposing a single {@link PathList} with a
+     * given number of entries (harness-only, #1339 pass 2 — the inline list
+     * editor's pagination/empty state have no populated node showcase).
+     */
+    private static class ListShowcase extends JIPipeDynamicParameterCollection {
+        ListShowcase(int itemCount) {
+            addParameter("files", PathList.class, "Files", "A list of files");
+            PathList list = getValue("files", PathList.class);
+            for (int i = 1; i <= itemCount; i++) {
+                list.add(Paths.get("/data/sample" + i + ".tif"));
+            }
+        }
+    }
+
+    /**
+     * A minimal parameter collection exposing a bounded (0–1) double annotated
+     * {@code style = SLIDER} at runtime (#1339 pass 2, S6). The proven pattern
+     * for a runtime annotation instance is {@code addParameter(..., annotations)}.
+     * The value is set to 0.5 so the slider thumb is visibly centered — the VLM
+     * verifies the thumb position matches the value.
+     */
+    private static class NumberSliderShowcase extends JIPipeDynamicParameterCollection {
+        NumberSliderShowcase() {
+            JIPipeMutableParameterAccess access = addParameter("opacity", Double.class, "Opacity", "A 0-1 opacity",
+                    new NumberParameterSettings() {
+                        @Override
+                        public Class<? extends Annotation> annotationType() {
+                            return NumberParameterSettings.class;
+                        }
+
+                        @Override
+                        public double min() {
+                            return 0;
+                        }
+
+                        @Override
+                        public double max() {
+                            return 1;
+                        }
+
+                        @Override
+                        public double step() {
+                            return 0.01;
+                        }
+
+                        @Override
+                        public NumberParameterSettings.Style style() {
+                            return NumberParameterSettings.Style.SLIDER;
+                        }
+                    });
+            access.set(0.5);
+            // A second, clearly-different value so a VLM can confirm the thumb
+            // position tracks the value (0.2 should sit well left of 0.5).
+            JIPipeMutableParameterAccess low = addParameter("low", Double.class, "Low", "A 0-1 opacity (verification)",
+                    new NumberParameterSettings() {
+                        @Override
+                        public Class<? extends Annotation> annotationType() {
+                            return NumberParameterSettings.class;
+                        }
+
+                        @Override
+                        public double min() {
+                            return 0;
+                        }
+
+                        @Override
+                        public double max() {
+                            return 1;
+                        }
+
+                        @Override
+                        public double step() {
+                            return 0.01;
+                        }
+
+                        @Override
+                        public NumberParameterSettings.Style style() {
+                            return NumberParameterSettings.Style.SLIDER;
+                        }
+                    });
+            low.set(0.2);
+        }
+    }
+
+    /**
+     * A minimal parameter collection exposing a single {@link HTMLText} with
+     * sample rich content (#1339 pass 2, S7) — the modernized compact-toolbar
+     * HTML widget has no node showcase in the default set, so a synthetic one
+     * renders it for the VLM loop.
+     */
+    private static class HtmlTextShowcase extends JIPipeDynamicParameterCollection {
+        HtmlTextShowcase() {
+            JIPipeMutableParameterAccess access = addParameter("description", HTMLText.class, "Description", "An HTML description");
+            access.set(new HTMLText("<html><body><p>Hello <b>world</b>, this is a <i>rich</i> description.</p></body></html>"));
+        }
     }
 }

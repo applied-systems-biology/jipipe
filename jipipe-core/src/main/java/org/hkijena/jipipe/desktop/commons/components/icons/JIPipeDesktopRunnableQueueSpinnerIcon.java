@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.desktop.commons.components.icons;
 
-import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
+import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeRunnableExecutor;
 
 import java.awt.*;

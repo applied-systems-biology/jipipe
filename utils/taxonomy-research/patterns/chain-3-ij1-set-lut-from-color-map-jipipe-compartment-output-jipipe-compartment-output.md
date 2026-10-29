@@ -32,32 +32,37 @@ template:
 
 # Pattern: Set LUT (color map) -> Compartment output -> Compartment output
 
-Mined pattern `chain-3-ij1-set-lut-from-color-map-jipipe-compartment-output-jipipe-compartment-output` (shape `chain`, support 38).
+Mined pattern `chain-3-ij1-set-lut-from-color-map-jipipe-compartment-output-jipipe-compartment-output` (shape `chain`,
+support 38).
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| other | `ij1-set-lut-from-color-map` |
-| core-io | `jipipe:compartment-output` |
-| core-io | `jipipe:compartment-output` |
+| role    | node ids                     |
+|---------|------------------------------|
+| other   | `ij1-set-lut-from-color-map` |
+| core-io | `jipipe:compartment-output`  |
+| core-io | `jipipe:compartment-output`  |
 
 ## Example graph
 
-Project: `AIAgentTests/02-AdvancedPipelines/Paco_06.jip` (relative to `/data/JIPipe`), compartment `File handler+Segmentation`.
+Project: `AIAgentTests/02-AdvancedPipelines/Paco_06.jip` (relative to `/data/JIPipe`), compartment
+`File handler+Segmentation`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `ij1-set-lut-from-color-map` | Set LUT (color map): label |
-| n1 | `jipipe:compartment-output` | Channels |
-| n2 | `jipipe:compartment-output` | Masks and ROIs |
+| key | node id                      | name                       |
+|-----|------------------------------|----------------------------|
+| n0  | `ij1-set-lut-from-color-map` | Set LUT (color map): label |
+| n1  | `jipipe:compartment-output`  | Channels                   |
+| n2  | `jipipe:compartment-output`  | Masks and ROIs             |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
-| Set LUT (color map): label | `Output` | Channels | `Label` | `imagej-imgplus-greyscale` |
-| Channels | `Label` | Masks and ROIs | `Label` | `imagej-imgplus-greyscale` |
+| from                       | slot     | to             | slot    | data class                 |
+|----------------------------|----------|----------------|---------|----------------------------|
+| Set LUT (color map): label | `Output` | Channels       | `Label` | `imagej-imgplus-greyscale` |
+| Channels                   | `Label`  | Masks and ROIs | `Label` | `imagej-imgplus-greyscale` |
 
 ## Template
 
-Proposed name `Set LUT (color map) -> Compartment output -> Compartment output`, menu path `Patterns/Images/Set LUT (color map) -> Compartment output -> Compartment output` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/chain-3-ij1-set-lut-from-color-map-jipipe-compartment-output-jipipe-compartment-output.json`.
+Proposed name `Set LUT (color map) -> Compartment output -> Compartment output`, menu path
+`Patterns/Images/Set LUT (color map) -> Compartment output -> Compartment output` (proposal only — not registered).
+`data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/chain-3-ij1-set-lut-from-color-map-jipipe-compartment-output-jipipe-compartment-output.json`.
 

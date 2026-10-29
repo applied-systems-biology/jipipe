@@ -20,11 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Tests {@link FamilyAssembler}: graph building from
@@ -43,61 +39,19 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 class FamilyAssemblerTest {
 
-    /** Test literal for the TrackMate stub family's stable id. */
+    /**
+     * Test literal for the TrackMate stub family's stable id.
+     */
     private static final String TM_FAMILY_ID = "jipipe:family:trackmate";
 
-    /** Test literal for the simple-model stub family's stable id. */
+    /**
+     * Test literal for the simple-model stub family's stable id.
+     */
     private static final String SM_FAMILY_ID = "jipipe:family:simple-model";
 
     // ------------------------------------------------------------------
     // Stub node types
     // ------------------------------------------------------------------
-
-    /** Stub node with node id "detect" (equals its simple name). */
-    static class DetectSpots {
-    }
-
-    /** Stub node with node id "track" (equals its simple name). */
-    static class TrackSpots {
-    }
-
-    // ------------------------------------------------------------------
-    // Stub taxonomy families
-    // ------------------------------------------------------------------
-
-    private static class Tm implements JIPipeNodeTaxonomyFamily {
-        @Override
-        public String getId() {
-            return "trackmate";
-        }
-
-        @Override
-        public String getName() {
-            return "TrackMate";
-        }
-
-        @Override
-        public String getDescription() {
-            return "TrackMate workflow";
-        }
-    }
-
-    private static class Sm implements JIPipeNodeTaxonomyFamily {
-        @Override
-        public String getId() {
-            return "simple-model";
-        }
-
-        @Override
-        public String getName() {
-            return "Simple model";
-        }
-
-        @Override
-        public String getDescription() {
-            return "Simple model workflow";
-        }
-    }
 
     /**
      * An assembler for the two-step TrackMate scenario: detect → track,
@@ -106,16 +60,53 @@ class FamilyAssemblerTest {
      */
     private static FamilyAssembler twoStepAssembler() {
         FamilyAssembler assembler = new FamilyAssembler(Map.of(
-            DetectSpots.class, List.of("detect"),
-            TrackSpots.class, List.of("track")));
+                DetectSpots.class, List.of("detect"),
+                TrackSpots.class, List.of("track")));
         assembler.addStep("detect", TM_FAMILY_ID, step(Tm.class, "Detect spots"));
         assembler.addStep("track", TM_FAMILY_ID, step(Tm.class, "Track spots", DetectSpots.class));
         return assembler;
     }
 
+    private static JIPipeNodeTaxonomyFamilyStep step(Set<JIPipeNodeTaxonomyFamilyStep> steps, String nodeId) {
+        return steps.stream().filter(s -> s.nodeId().equals(nodeId)).findFirst().orElseThrow();
+    }
+
     // ------------------------------------------------------------------
-    // Test cases
+    // Stub taxonomy families
     // ------------------------------------------------------------------
+
+    /**
+     * Builds an annotation instance with the given family, label and successors.
+     */
+    private static JIPipeNodeTaxonomyFamilyStepAnnotation step(
+            Class<? extends JIPipeNodeTaxonomyFamily> family, String label, Class<?>... after) {
+        return new JIPipeNodeTaxonomyFamilyStepAnnotation() {
+            @Override
+            public Class<? extends JIPipeNodeTaxonomyFamily> family() {
+                return family;
+            }
+
+            @Override
+            public String label() {
+                return label;
+            }
+
+            @Override
+            public Class<?>[] after() {
+                return after;
+            }
+
+            @Override
+            public String purpose() {
+                return "";
+            }
+
+            @Override
+            public Class<? extends JIPipeNodeTaxonomyFamilyStepAnnotation> annotationType() {
+                return JIPipeNodeTaxonomyFamilyStepAnnotation.class;
+            }
+        };
+    }
 
     /**
      * graphBuiltFromAnnotations: 2 steps + 1 edge, direction
@@ -155,6 +146,10 @@ class FamilyAssemblerTest {
         assertTrue(assembler.followUps("track").isEmpty(), "terminal step has no follow-ups");
     }
 
+    // ------------------------------------------------------------------
+    // Test cases
+    // ------------------------------------------------------------------
+
     /**
      * danglingStepRejected: a step whose node id is not registered
      * produces a validate() error naming that node id.
@@ -167,7 +162,7 @@ class FamilyAssemblerTest {
         Set<String> errors = assembler.validate(Set.of("track"));
         assertFalse(errors.isEmpty(), "expected at least one dangling-step error");
         assertTrue(errors.stream().anyMatch(e -> e.contains("detect")),
-            "error must name the dangling node id 'detect', got: " + errors);
+                "error must name the dangling node id 'detect', got: " + errors);
 
         // With all steps' node ids registered, validation passes.
         assertTrue(assembler.validate(Set.of("detect", "track")).isEmpty());
@@ -189,9 +184,9 @@ class FamilyAssemblerTest {
         assembler.addStep("filter", SM_FAMILY_ID, step(Sm.class, "Filter (simple model)"));
 
         assertTrue(assembler.steps(tm).stream().anyMatch(s -> s.nodeId().equals("filter")),
-            "filter must appear in the TrackMate family");
+                "filter must appear in the TrackMate family");
         assertTrue(assembler.steps(sm).stream().anyMatch(s -> s.nodeId().equals("filter")),
-            "filter must appear in the simple-model family");
+                "filter must appear in the simple-model family");
         assertTrue(assembler.graph(tm).containsVertex("jipipe:family:trackmate#filter"));
         assertTrue(assembler.graph(sm).containsVertex("jipipe:family:simple-model#filter"));
     }
@@ -203,7 +198,7 @@ class FamilyAssemblerTest {
     @Test
     void annotationIsRepeatable() {
         JIPipeNodeTaxonomyFamilyStepAnnotation[] annotations =
-            RepeatableHost.class.getAnnotationsByType(JIPipeNodeTaxonomyFamilyStepAnnotation.class);
+                RepeatableHost.class.getAnnotationsByType(JIPipeNodeTaxonomyFamilyStepAnnotation.class);
         assertEquals(2, annotations.length, "expected both family annotations on one type");
         assertTrue(Arrays.stream(annotations).anyMatch(a -> a.family() == Tm.class));
         assertTrue(Arrays.stream(annotations).anyMatch(a -> a.family() == Sm.class));
@@ -211,7 +206,7 @@ class FamilyAssemblerTest {
         // A node class without any family step annotations contributes nothing.
         FamilyAssembler assembler = new FamilyAssembler();
         for (JIPipeNodeTaxonomyFamilyStepAnnotation a :
-            NoSteps.class.getAnnotationsByType(JIPipeNodeTaxonomyFamilyStepAnnotation.class)) {
+                NoSteps.class.getAnnotationsByType(JIPipeNodeTaxonomyFamilyStepAnnotation.class)) {
             assembler.addStep("none", "jipipe:family:dummy", a);
         }
         assertEquals(0, assembler.steps(new Tm()).size());
@@ -227,8 +222,8 @@ class FamilyAssemblerTest {
     @Test
     void afterResolvedByInjectedMapping() {
         FamilyAssembler assembler = new FamilyAssembler(Map.of(
-            DetectSpots.class, List.of("tm-detect"),
-            TrackSpots.class, List.of("tm-track")));
+                DetectSpots.class, List.of("tm-detect"),
+                TrackSpots.class, List.of("tm-track")));
         assembler.addStep("tm-detect", TM_FAMILY_ID, step(Tm.class, "Detect spots"));
         assembler.addStep("tm-track", TM_FAMILY_ID, step(Tm.class, "Track spots", DetectSpots.class));
         Tm tm = new Tm();
@@ -247,8 +242,8 @@ class FamilyAssemblerTest {
     @Test
     void explicitFamilyIdInStepIds() {
         FamilyAssembler assembler = new FamilyAssembler(Map.of(
-            DetectSpots.class, List.of("detect"),
-            TrackSpots.class, List.of("track")));
+                DetectSpots.class, List.of("detect"),
+                TrackSpots.class, List.of("track")));
         assembler.addStep("detect", TM_FAMILY_ID, step(Tm.class, "Detect spots"));
         assembler.addStep("track", TM_FAMILY_ID, step(Tm.class, "Track spots", DetectSpots.class));
         Tm tm = new Tm();
@@ -260,7 +255,7 @@ class FamilyAssemblerTest {
 
         // A conflicting family id for the same family class is rejected.
         assertThrows(IllegalArgumentException.class,
-            () -> assembler.addStep("detect", "jipipe:family:other", step(Tm.class, "Detect spots")));
+                () -> assembler.addStep("detect", "jipipe:family:other", step(Tm.class, "Detect spots")));
     }
 
     /**
@@ -291,12 +286,12 @@ class FamilyAssemblerTest {
         // added later, not the (stale) simple-name fallback.
         assembler.addStep("track", TM_FAMILY_ID, step(Tm.class, "Track spots", DetectSpots.class));
         assertEquals(List.of(), assembler.followUps("detect"),
-            "no edge while the predecessor mapping is unknown");
+                "no edge while the predecessor mapping is unknown");
         assembler.addStep("detect", TM_FAMILY_ID, step(Tm.class, "Detect spots"));
         assembler.updateClassToNodeId(Map.of(DetectSpots.class, List.of("detect")));
 
         assertEquals(List.of("track"), assembler.followUps("detect"),
-            "the edge must appear once the mapping knows the predecessor's id");
+                "the edge must appear once the mapping knows the predecessor's id");
         JIPipeNodeTaxonomyFamilyStep track = step(assembler.steps(new Tm()), "track");
         assertEquals(List.of("jipipe:family:trackmate#detect"), track.afterIds(assembler));
     }
@@ -309,67 +304,82 @@ class FamilyAssemblerTest {
     @Test
     void afterClassMappedToMultipleNodeIds() {
         FamilyAssembler assembler = new FamilyAssembler(Map.of(
-            DetectSpots.class, List.of("detect-dog", "detect-log")));
+                DetectSpots.class, List.of("detect-dog", "detect-log")));
         assembler.addStep("detect-dog", TM_FAMILY_ID, step(Tm.class, "Detect (DoG)"));
         assembler.addStep("detect-log", TM_FAMILY_ID, step(Tm.class, "Detect (LoG)"));
         assembler.addStep("track", TM_FAMILY_ID, step(Tm.class, "Track spots", DetectSpots.class));
 
         assertEquals(List.of("track"), assembler.followUps("detect-dog"),
-            "every detector instance must link to tracking");
+                "every detector instance must link to tracking");
         assertEquals(List.of("track"), assembler.followUps("detect-log"));
         JIPipeNodeTaxonomyFamilyStep track = step(assembler.steps(new Tm()), "track");
         assertEquals(List.of("jipipe:family:trackmate#detect-dog", "jipipe:family:trackmate#detect-log"),
-            track.afterIds(assembler));
+                track.afterIds(assembler));
         var graph = assembler.graph(new Tm());
         assertEquals(2, graph.edgeSet().size(), "one edge per resolved predecessor id");
+    }
+
+    /**
+     * Stub node with node id "detect" (equals its simple name).
+     */
+    static class DetectSpots {
+    }
+
+    /**
+     * Stub node with node id "track" (equals its simple name).
+     */
+    static class TrackSpots {
     }
 
     // ------------------------------------------------------------------
     // Helpers
     // ------------------------------------------------------------------
 
-    private static JIPipeNodeTaxonomyFamilyStep step(Set<JIPipeNodeTaxonomyFamilyStep> steps, String nodeId) {
-        return steps.stream().filter(s -> s.nodeId().equals(nodeId)).findFirst().orElseThrow();
+    private static class Tm implements JIPipeNodeTaxonomyFamily {
+        @Override
+        public String getId() {
+            return "trackmate";
+        }
+
+        @Override
+        public String getName() {
+            return "TrackMate";
+        }
+
+        @Override
+        public String getDescription() {
+            return "TrackMate workflow";
+        }
     }
 
-    /** Builds an annotation instance with the given family, label and successors. */
-    private static JIPipeNodeTaxonomyFamilyStepAnnotation step(
-        Class<? extends JIPipeNodeTaxonomyFamily> family, String label, Class<?>... after) {
-        return new JIPipeNodeTaxonomyFamilyStepAnnotation() {
-            @Override
-            public Class<? extends JIPipeNodeTaxonomyFamily> family() {
-                return family;
-            }
+    private static class Sm implements JIPipeNodeTaxonomyFamily {
+        @Override
+        public String getId() {
+            return "simple-model";
+        }
 
-            @Override
-            public String label() {
-                return label;
-            }
+        @Override
+        public String getName() {
+            return "Simple model";
+        }
 
-            @Override
-            public Class<?>[] after() {
-                return after;
-            }
-
-            @Override
-            public String purpose() {
-                return "";
-            }
-
-            @Override
-            public Class<? extends JIPipeNodeTaxonomyFamilyStepAnnotation> annotationType() {
-                return JIPipeNodeTaxonomyFamilyStepAnnotation.class;
-            }
-        };
+        @Override
+        public String getDescription() {
+            return "Simple model workflow";
+        }
     }
 
-    /** A node type annotated with steps for two families (@Repeatable). */
+    /**
+     * A node type annotated with steps for two families (@Repeatable).
+     */
     @JIPipeNodeTaxonomyFamilyStepAnnotation(family = Tm.class, label = "Filter (TrackMate)", purpose = "Filter spots")
     @JIPipeNodeTaxonomyFamilyStepAnnotation(family = Sm.class, label = "Filter (simple model)", purpose = "Filter spots")
     private static class RepeatableHost {
     }
 
-    /** A node type without any family step annotations. */
+    /**
+     * A node type without any family step annotations.
+     */
     private static class NoSteps {
     }
 }

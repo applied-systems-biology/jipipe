@@ -35,27 +35,30 @@ Mined pattern `fan-out-ij1-roi-filter-statistics-core-io-1-other-1` (shape `fan-
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| other | `ij1-roi-filter-statistics` |
-| core-io | `jipipe:compartment-output` |
-| other | `ij1-roi-to-mask`, `ij1-roi-to-rgb` |
+| role    | node ids                            |
+|---------|-------------------------------------|
+| other   | `ij1-roi-filter-statistics`         |
+| core-io | `jipipe:compartment-output`         |
+| other   | `ij1-roi-to-mask`, `ij1-roi-to-rgb` |
 
 ## Example graph
 
 Project: `AIAgentTests/03-ExampleWorkflows/Clara_08_feet.jip` (relative to `/data/JIPipe`), compartment `Segmentation`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `ij1-roi-filter-statistics` | Filter 2D ROI by statistics: Filter ROI by area and circularity |
-| n1 | `jipipe:compartment-output` | ROIs |
-| n2 | `ij1-roi-to-rgb` | Convert ROI to RGB: TL overlay flows |
+| key | node id                     | name                                                            |
+|-----|-----------------------------|-----------------------------------------------------------------|
+| n0  | `ij1-roi-filter-statistics` | Filter 2D ROI by statistics: Filter ROI by area and circularity |
+| n1  | `jipipe:compartment-output` | ROIs                                                            |
+| n2  | `ij1-roi-to-rgb`            | Convert ROI to RGB: TL overlay flows                            |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
+| from                                                            | slot     | to   | slot           | data class   |
+|-----------------------------------------------------------------|----------|------|----------------|--------------|
 | Filter 2D ROI by statistics: Filter ROI by area and circularity | `Output` | ROIs | `Green spores` | `imagej-roi` |
 
 ## Template
 
-Proposed name `Filter 2D ROI by statistics fans out to 3 target ids (roles: core-io, other)`, menu path `Patterns/ROIs/Filter 2D ROI by statistics fans out to 3 target ids (roles: core-io, other)` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/fan-out-ij1-roi-filter-statistics-core-io-1-other-1.json`.
+Proposed name `Filter 2D ROI by statistics fans out to 3 target ids (roles: core-io, other)`, menu path
+`Patterns/ROIs/Filter 2D ROI by statistics fans out to 3 target ids (roles: core-io, other)` (proposal only — not
+registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/fan-out-ij1-roi-filter-statistics-core-io-1-other-1.json`.
 

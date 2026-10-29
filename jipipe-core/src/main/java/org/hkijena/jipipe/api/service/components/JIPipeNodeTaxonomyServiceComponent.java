@@ -13,20 +13,11 @@
 
 package org.hkijena.jipipe.api.service.components;
 
-import org.hkijena.jipipe.api.nodes.taxonomy.FrameworkRegistry;
-import org.hkijena.jipipe.api.nodes.taxonomy.FunctionRegistry;
-import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework;
-import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyInferencePattern;
+import org.hkijena.jipipe.api.nodes.taxonomy.*;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.api.service.JIPipeServiceComponent;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 
 /**
@@ -60,6 +51,49 @@ public final class JIPipeNodeTaxonomyServiceComponent extends JIPipeServiceCompo
 
     public JIPipeNodeTaxonomyServiceComponent(JIPipeService service) {
         super(service);
+    }
+
+    /**
+     * Scores {@code name} (already lowercased with Locale.ROOT, or null) against
+     * the aggregate keyword index.
+     *
+     * @param name         the display name, or null
+     * @param index        every (keyword, functionId, weight) contribution
+     * @param functionById live-id lookup (returns null for unregistered ids)
+     * @return the highest-scoring REGISTERED function — ties break to the
+     * lexicographically smallest function id; unregistered ids are
+     * skipped (never thrown); no matched keyword -> null
+     */
+    public static JIPipeNodeTaxonomyFunction scoreName(String name,
+                                                       List<IndexedKeyword> index,
+                                                       Function<String, JIPipeNodeTaxonomyFunction> functionById) {
+        if (name == null || name.isBlank()) {
+            return null;
+        }
+        Map<String, Float> scores = new HashMap<>();
+        for (IndexedKeyword entry : index) {
+            if (entry.keyword() == null || !name.contains(entry.keyword())) {
+                continue;
+            }
+            // Unregistered ids are skipped (soft fail — never thrown)
+            if (functionById.apply(entry.functionId()) == null) {
+                continue;
+            }
+            scores.merge(entry.functionId(), entry.weight(), Float::sum);
+        }
+        JIPipeNodeTaxonomyFunction winner = null;
+        String winnerId = null;
+        float winnerScore = 0f;
+        for (Map.Entry<String, Float> entry : scores.entrySet()) {
+            if (winnerId == null
+                    || entry.getValue() > winnerScore
+                    || (entry.getValue() == winnerScore && entry.getKey().compareTo(winnerId) < 0)) {
+                winnerId = entry.getKey();
+                winnerScore = entry.getValue();
+                winner = functionById.apply(winnerId);
+            }
+        }
+        return winner;
     }
 
     /**
@@ -261,48 +295,5 @@ public final class JIPipeNodeTaxonomyServiceComponent extends JIPipeServiceCompo
      * @param weight     the contribution of one occurrence to that function's score
      */
     public record IndexedKeyword(String keyword, String functionId, float weight) {
-    }
-
-    /**
-     * Scores {@code name} (already lowercased with Locale.ROOT, or null) against
-     * the aggregate keyword index.
-     *
-     * @param name         the display name, or null
-     * @param index        every (keyword, functionId, weight) contribution
-     * @param functionById live-id lookup (returns null for unregistered ids)
-     * @return the highest-scoring REGISTERED function — ties break to the
-     * lexicographically smallest function id; unregistered ids are
-     * skipped (never thrown); no matched keyword -> null
-     */
-    public static JIPipeNodeTaxonomyFunction scoreName(String name,
-                                                       List<IndexedKeyword> index,
-                                                       Function<String, JIPipeNodeTaxonomyFunction> functionById) {
-        if (name == null || name.isBlank()) {
-            return null;
-        }
-        Map<String, Float> scores = new HashMap<>();
-        for (IndexedKeyword entry : index) {
-            if (entry.keyword() == null || !name.contains(entry.keyword())) {
-                continue;
-            }
-            // Unregistered ids are skipped (soft fail — never thrown)
-            if (functionById.apply(entry.functionId()) == null) {
-                continue;
-            }
-            scores.merge(entry.functionId(), entry.weight(), Float::sum);
-        }
-        JIPipeNodeTaxonomyFunction winner = null;
-        String winnerId = null;
-        float winnerScore = 0f;
-        for (Map.Entry<String, Float> entry : scores.entrySet()) {
-            if (winnerId == null
-                    || entry.getValue() > winnerScore
-                    || (entry.getValue() == winnerScore && entry.getKey().compareTo(winnerId) < 0)) {
-                winnerId = entry.getKey();
-                winnerScore = entry.getValue();
-                winner = functionById.apply(winnerId);
-            }
-        }
-        return winner;
     }
 }

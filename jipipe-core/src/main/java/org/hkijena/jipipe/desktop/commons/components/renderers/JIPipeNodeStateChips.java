@@ -119,7 +119,7 @@ public final class JIPipeNodeStateChips {
      *
      * @param entry the entry to label
      * @return a chip reading the entry's badge, or {@code null} when the entry
-     *         is not a template entry
+     * is not a template entry
      */
     public static JComponent templateBadge(JIPipeNodeDatabaseEntry entry) {
         if (!(entry instanceof CreateNewNodesByTemplateDatabaseEntry template)) {

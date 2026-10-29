@@ -71,15 +71,20 @@ public final class JIPipeDesktopListEditorDialog extends JDialog {
     private static final int HEIGHT = 520;
 
     private final JIPipeListParameterEditorUI listEditor;
-    /** The dialog's own full-list rows (each view keeps its own row list). */
+    /**
+     * The dialog's own full-list rows (each view keeps its own row list).
+     */
     private final List<JIPipeListParameterEditorUI.EntryComponents> rows = new ArrayList<>();
-    /** Modal-local selection (the pass-1 grip selection, re-implemented). */
+    /**
+     * Modal-local selection (the pass-1 grip selection, re-implemented).
+     */
     private final Set<JIPipeListParameterEditorUI.EntryComponents> selected = new HashSet<>();
-    /** Last clicked row, for Shift range selection. */
-    private int lastClickedIndex = -1;
-
     private final JPanel body = new JPanel();
     private final JIPipeDesktopSearchTextField searchField = new JIPipeDesktopSearchTextField();
+    /**
+     * Last clicked row, for Shift range selection.
+     */
+    private int lastClickedIndex = -1;
 
     /**
      * Creates the modal for the given list editor. The parameter is edited
@@ -125,6 +130,39 @@ public final class JIPipeDesktopListEditorDialog extends JDialog {
         if (owner != null) {
             setLocationRelativeTo(owner);
         }
+    }
+
+    /**
+     * An icon-only parameter action button in the dialog's symbol toolbar
+     * (#1339) — the standardized filled rounded button.
+     */
+    private static JButton iconButton(String icon, String tooltip, ActionListener action) {
+        return UIUtils.createParameterIconButton(JIPipe.RESOURCES.getIcon16(icon), tooltip, action);
+    }
+
+    private static JButton iconButton(String icon, String tooltip) {
+        return iconButton(icon, tooltip, e -> {
+        });
+    }
+
+    /**
+     * Disposes every {@link Disposable} below the component (depth first,
+     * bottom up), then removes all children. The row panels hold nested
+     * editors (one per item) that must be released on rebuild — the
+     * shallow-dispose helpers would leak them.
+     */
+    private static void disposeDescendants(Container container) {
+        Component[] children = container.getComponents();
+        for (int i = children.length - 1; i >= 0; --i) {
+            Component child = children[i];
+            if (child instanceof Container) {
+                disposeDescendants((Container) child);
+            }
+            if (child instanceof Disposable) {
+                ((Disposable) child).dispose();
+            }
+        }
+        container.removeAll();
     }
 
     /**
@@ -248,7 +286,9 @@ public final class JIPipeDesktopListEditorDialog extends JDialog {
         rebuildRows();
     }
 
-    /** Top bar: the search field above the icon toolbar (Add + bulk ops). */
+    /**
+     * Top bar: the search field above the icon toolbar (Add + bulk ops).
+     */
     private JComponent buildToolbar() {
         JPanel toolbar = new JPanel(new GridBagLayout());
         toolbar.setOpaque(false);
@@ -312,19 +352,8 @@ public final class JIPipeDesktopListEditorDialog extends JDialog {
     }
 
     /**
-     * An icon-only parameter action button in the dialog's symbol toolbar
-     * (#1339) — the standardized filled rounded button.
+     * The single Close button, bottom-right (Close-only — no OK/Cancel).
      */
-    private static JButton iconButton(String icon, String tooltip, ActionListener action) {
-        return UIUtils.createParameterIconButton(JIPipe.RESOURCES.getIcon16(icon), tooltip, action);
-    }
-
-    private static JButton iconButton(String icon, String tooltip) {
-        return iconButton(icon, tooltip, e -> {
-        });
-    }
-
-    /** The single Close button, bottom-right (Close-only — no OK/Cancel). */
     private JComponent buildCloseRow() {
         JPanel closeRow = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
         closeRow.setOpaque(false);
@@ -332,25 +361,5 @@ public final class JIPipeDesktopListEditorDialog extends JDialog {
         closeButton.addActionListener(e -> dispose());
         closeRow.add(closeButton);
         return closeRow;
-    }
-
-    /**
-     * Disposes every {@link Disposable} below the component (depth first,
-     * bottom up), then removes all children. The row panels hold nested
-     * editors (one per item) that must be released on rebuild — the
-     * shallow-dispose helpers would leak them.
-     */
-    private static void disposeDescendants(Container container) {
-        Component[] children = container.getComponents();
-        for (int i = children.length - 1; i >= 0; --i) {
-            Component child = children[i];
-            if (child instanceof Container) {
-                disposeDescendants((Container) child);
-            }
-            if (child instanceof Disposable) {
-                ((Disposable) child).dispose();
-            }
-        }
-        container.removeAll();
     }
 }

@@ -64,11 +64,11 @@ public class ThinBackupsRun extends DefaultJIPipeRunnable {
 
         getProgressInfo().log("-> Collected " + itemsToDelete.size() + " items to delete");
 
-        if(itemsToDelete.isEmpty()) {
+        if (itemsToDelete.isEmpty()) {
             return;
         }
 
-        if(interactive) {
+        if (interactive) {
             for (int i = 5; i >= 0; i--) {
                 getProgressInfo().log("Will continue in " + i + " seconds before deleting backups");
                 try {
@@ -99,7 +99,7 @@ public class ThinBackupsRun extends DefaultJIPipeRunnable {
                                             List<JIPipeProjectBackupItem> itemsToDelete,
                                             LocalDateTime now,
                                             JIPipeBackupApplicationSettings.CleanupSettings settings, JIPipeProgressInfo progressInfo) {
-        
+
         List<JIPipeProjectBackupItem> backupItems = backupItemCollection.getBackupItemList();
         if (backupItems.isEmpty()) {
             return;
@@ -114,11 +114,11 @@ public class ThinBackupsRun extends DefaultJIPipeRunnable {
         // Always keep the newest backup overall
         itemsToKeep.add(backupItems.getFirst());
 
-        Multimap<Long,JIPipeProjectBackupItem> bucketYears = HashMultimap.create();
-        Multimap<Long,JIPipeProjectBackupItem> bucketMonths = HashMultimap.create();
-        Multimap<Long,JIPipeProjectBackupItem> bucketWeeks = HashMultimap.create();
-        Multimap<Long,JIPipeProjectBackupItem> bucketDays = HashMultimap.create();
-        Multimap<Long,JIPipeProjectBackupItem> bucketHours = HashMultimap.create();
+        Multimap<Long, JIPipeProjectBackupItem> bucketYears = HashMultimap.create();
+        Multimap<Long, JIPipeProjectBackupItem> bucketMonths = HashMultimap.create();
+        Multimap<Long, JIPipeProjectBackupItem> bucketWeeks = HashMultimap.create();
+        Multimap<Long, JIPipeProjectBackupItem> bucketDays = HashMultimap.create();
+        Multimap<Long, JIPipeProjectBackupItem> bucketHours = HashMultimap.create();
 
         for (JIPipeProjectBackupItem backupItem : backupItems) {
             LocalDateTime backupTime = backupItem.getBackupTime();
@@ -136,17 +136,16 @@ public class ThinBackupsRun extends DefaultJIPipeRunnable {
             ruleMatched = tryBucket(ageInHours, settings.getKeepBackupsPerHour(), bucketHours, backupItem, ruleMatched);
 
             // For very young backups (less than 1 h, we keep them)
-            if(ageInHours == 0) {
+            if (ageInHours == 0) {
                 itemsToKeep.add(backupItem);
             }
 
-            if(!ruleMatched) {
-                if(settings.getMaxAgeDays().isEnabled()) {
-                    if(ageInDays > settings.getMaxAgeDays().getContent()) {
+            if (!ruleMatched) {
+                if (settings.getMaxAgeDays().isEnabled()) {
+                    if (ageInDays > settings.getMaxAgeDays().getContent()) {
                         itemsToKeep.add(backupItem);
                     }
-                }
-                else {
+                } else {
                     // No deletion
                     itemsToKeep.add(backupItem);
                 }
@@ -160,7 +159,7 @@ public class ThinBackupsRun extends DefaultJIPipeRunnable {
         expandBucket(bucketDays, itemsToKeep);
         expandBucket(bucketHours, itemsToKeep);
 
-        progressInfo.log("Keeping " + itemsToKeep.size() + "/" + backupItems.size() + " [Y" + bucketYears.size() + "M" +  bucketMonths.size() + "W" + bucketWeeks.size() + "d" +  bucketDays.size() + "h" + bucketHours.size() + "]");
+        progressInfo.log("Keeping " + itemsToKeep.size() + "/" + backupItems.size() + " [Y" + bucketYears.size() + "M" + bucketMonths.size() + "W" + bucketWeeks.size() + "d" + bucketDays.size() + "h" + bucketHours.size() + "]");
 
         // Mark all items not in itemsToKeep for deletion
         for (JIPipeProjectBackupItem backupItem : backupItems) {
@@ -177,11 +176,11 @@ public class ThinBackupsRun extends DefaultJIPipeRunnable {
     }
 
     private boolean tryBucket(long age, OptionalIntegerParameter keep, Multimap<Long, JIPipeProjectBackupItem> bucket, JIPipeProjectBackupItem backupItem, boolean alreadyMatched) {
-        if(alreadyMatched) {
+        if (alreadyMatched) {
             return alreadyMatched;
         }
-        if(age >= 1 && keep.isEnabled()) {
-            if(bucket.get(age).size() < keep.getContent()) {
+        if (age >= 1 && keep.isEnabled()) {
+            if (bucket.get(age).size() < keep.getContent()) {
                 bucket.put(age, backupItem);
             }
             return true;

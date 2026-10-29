@@ -1,1 +1,56 @@
-{"edges":[{"source-node":"n1","source-slot":"Output","target-node":"n0","target-slot":"Input"},{"source-node":"n2","source-slot":"Filenames","target-node":"n3","target-slot":"Files"},{"source-node":"n3","source-slot":"Image","target-node":"n1","target-slot":"Input"}],"nodes":{"n0":{"jipipe:graph-compartment":"a8ccf8ff-75e3-581b-b3e8-b3b919a3eb03","jipipe:metadata-v1":{"location/a8ccf8ff-75e3-581b-b3e8-b3b919a3eb03/x":0,"location/a8ccf8ff-75e3-581b-b3e8-b3b919a3eb03/y":12},"jipipe:node-info-id":"ij1-threshold-manual2d-16u"},"n1":{"jipipe:graph-compartment":"a8ccf8ff-75e3-581b-b3e8-b3b919a3eb03","jipipe:metadata-v1":{"location/a8ccf8ff-75e3-581b-b3e8-b3b919a3eb03/x":0,"location/a8ccf8ff-75e3-581b-b3e8-b3b919a3eb03/y":8},"jipipe:node-info-id":"ij1-remove-lut"},"n2":{"jipipe:graph-compartment":"a8ccf8ff-75e3-581b-b3e8-b3b919a3eb03","jipipe:metadata-v1":{"location/a8ccf8ff-75e3-581b-b3e8-b3b919a3eb03/x":0,"location/a8ccf8ff-75e3-581b-b3e8-b3b919a3eb03/y":0},"jipipe:node-info-id":"import-file-list"},"n3":{"jipipe:graph-compartment":"a8ccf8ff-75e3-581b-b3e8-b3b919a3eb03","jipipe:metadata-v1":{"location/a8ccf8ff-75e3-581b-b3e8-b3b919a3eb03/x":0,"location/a8ccf8ff-75e3-581b-b3e8-b3b919a3eb03/y":4},"jipipe:node-info-id":"import-imagej-imgplus-from-file"}}}
+{
+  "edges": [
+    {
+      "source-node": "n1",
+      "source-slot": "Output",
+      "target-node": "n0",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n2",
+      "source-slot": "Filenames",
+      "target-node": "n3",
+      "target-slot": "Files"
+    },
+    {
+      "source-node": "n3",
+      "source-slot": "Image",
+      "target-node": "n1",
+      "target-slot": "Input"
+    }
+  ],
+  "nodes": {
+    "n0": {
+      "jipipe:graph-compartment": "a8ccf8ff-75e3-581b-b3e8-b3b919a3eb03",
+      "jipipe:metadata-v1": {
+        "location/a8ccf8ff-75e3-581b-b3e8-b3b919a3eb03/x": 0,
+        "location/a8ccf8ff-75e3-581b-b3e8-b3b919a3eb03/y": 12
+      },
+      "jipipe:node-info-id": "ij1-threshold-manual2d-16u"
+    },
+    "n1": {
+      "jipipe:graph-compartment": "a8ccf8ff-75e3-581b-b3e8-b3b919a3eb03",
+      "jipipe:metadata-v1": {
+        "location/a8ccf8ff-75e3-581b-b3e8-b3b919a3eb03/x": 0,
+        "location/a8ccf8ff-75e3-581b-b3e8-b3b919a3eb03/y": 8
+      },
+      "jipipe:node-info-id": "ij1-remove-lut"
+    },
+    "n2": {
+      "jipipe:graph-compartment": "a8ccf8ff-75e3-581b-b3e8-b3b919a3eb03",
+      "jipipe:metadata-v1": {
+        "location/a8ccf8ff-75e3-581b-b3e8-b3b919a3eb03/x": 0,
+        "location/a8ccf8ff-75e3-581b-b3e8-b3b919a3eb03/y": 0
+      },
+      "jipipe:node-info-id": "import-file-list"
+    },
+    "n3": {
+      "jipipe:graph-compartment": "a8ccf8ff-75e3-581b-b3e8-b3b919a3eb03",
+      "jipipe:metadata-v1": {
+        "location/a8ccf8ff-75e3-581b-b3e8-b3b919a3eb03/x": 0,
+        "location/a8ccf8ff-75e3-581b-b3e8-b3b919a3eb03/y": 4
+      },
+      "jipipe:node-info-id": "import-imagej-imgplus-from-file"
+    }
+  }
+}

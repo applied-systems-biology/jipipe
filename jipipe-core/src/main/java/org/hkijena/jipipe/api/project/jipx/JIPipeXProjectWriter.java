@@ -31,11 +31,7 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -114,6 +110,154 @@ public class JIPipeXProjectWriter implements JIPipeProjectWriter {
      */
     public static final String PART_SUFFIX = ".jipx.part";
 
+    /**
+     * Writes a generated {@code README.md} for the container: the project
+     * name as a markdown heading, the project summary/description as
+     * plain text, and the generator line.
+     */
+    static String generateReadme(JIPipeProject project) {
+        StringBuilder readme = new StringBuilder();
+        readme.append("# ").append(StringUtils.nullToEmpty(project.getMetadata().getName())).append("\n\n");
+        String summary = project.getMetadata().getSummary() == null ? "" : project.getMetadata().getSummary().toPlainText();
+        String description = project.getMetadata().getDescription() == null ? "" : project.getMetadata().getDescription().toPlainText();
+        String body = StringUtils.isNullOrEmpty(summary) ? description : summary;
+        readme.append(StringUtils.nullToEmpty(body).trim()).append("\n\n");
+        readme.append("Created with JIPipe ").append(JIPipe.getJIPipeVersion()).append(".\n");
+        return readme.toString();
+    }
+
+    /**
+     * Zips the workspace directory into a JIPX container with
+     * {@link ZipOutputStream} (no wrapper root). Entry order:
+     * {@code ro-crate-metadata.json}, {@code jipx.json}, {@code README.md},
+     * the part files in manifest parts-table order, then every remaining
+     * file sorted by path (unknown/payload entries — deterministic).
+     *
+     * @param workspace    the materialized workspace to zip
+     * @param target       the part file to write
+     * @param progressInfo the progress info
+     * @throws IOException triggered by zip I/O
+     */
+    private static void zipWorkspace(JIPipeProjectWorkspace workspace, Path target, JIPipeProgressInfo progressInfo) throws IOException {
+        Path baseDirectory = workspace.getBaseDirectory();
+        progressInfo.log("Zipping JIPX workspace " + baseDirectory + " into " + target + " ...");
+        JIPipeXManifest manifest = workspace.getManifest();
+
+        // Workspace-relative entry paths in the spec'd order.
+        Map<String, Path> orderedEntries = new LinkedHashMap<>();
+        orderedEntries.put(CRATE_METADATA_FILE_NAME, baseDirectory.resolve(CRATE_METADATA_FILE_NAME));
+        orderedEntries.put(JIPipeXManifest.MANIFEST_FILE_NAME, baseDirectory.resolve(JIPipeXManifest.MANIFEST_FILE_NAME));
+        orderedEntries.put(README_FILE_NAME, baseDirectory.resolve(README_FILE_NAME));
+        // The part files in manifest parts-table order.
+        for (String partPath : manifest.getParts().keySet()) {
+            orderedEntries.put(partPath, baseDirectory.resolve(partPath));
+        }
+        // Every remaining file (unknown/payload entries), sorted by path.
+        List<Path> remaining = new ArrayList<>();
+        try (Stream<Path> walk = Files.walk(baseDirectory)) {
+            walk.filter(Files::isRegularFile).forEach(file -> {
+                String relative = baseDirectory.relativize(file).toString().replace(java.io.File.separatorChar, '/');
+                if (!orderedEntries.containsKey(relative)) {
+                    remaining.add(file);
+                }
+            });
+        }
+        remaining.sort(Comparator.comparing(file -> baseDirectory.relativize(file).toString().replace(java.io.File.separatorChar, '/')));
+        for (Path file : remaining) {
+            orderedEntries.put(baseDirectory.relativize(file).toString().replace(java.io.File.separatorChar, '/'), file);
+        }
+
+        try (OutputStream out = Files.newOutputStream(target);
+             ZipOutputStream zip = new ZipOutputStream(out)) {
+            for (Map.Entry<String, Path> entry : orderedEntries.entrySet()) {
+                zip.putNextEntry(new ZipEntry(entry.getKey()));
+                Files.copy(entry.getValue(), zip);
+                zip.closeEntry();
+            }
+            zip.finish();
+        }
+    }
+
+    /**
+     * The self-verification seam of the write path: re-opens the
+     * container with {@link ZipFile} and asserts its internal
+     * consistency —
+     * <ul>
+     * <li>the {@code jipx.json} entry exists and parses as JSON,</li>
+     * <li>every part listed in the manifest's parts table exists in the
+     * container and parses as JSON (a missing listed part is a corrupt
+     * container),</li>
+     * <li>the {@code ro-crate-metadata.json} entry exists and parses as
+     * JSON.</li>
+     * </ul>
+     * Any failure throws a {@link JIPipeValidationRuntimeException}
+     * naming the FIRST problem.
+     *
+     * @param zipPath      the container to verify
+     * @param progressInfo the progress info
+     * @throws IOException triggered by zip I/O
+     */
+    public static void selfVerifyZip(Path zipPath, JIPipeProgressInfo progressInfo) throws IOException {
+        progressInfo.log("Self-verifying JIPX container " + zipPath + " ...");
+        try (ZipFile zip = new ZipFile(zipPath.toFile())) {
+            // (1) The manifest.
+            ZipEntry manifestEntry = zip.getEntry(JIPipeXManifest.MANIFEST_FILE_NAME);
+            if (manifestEntry == null) {
+                throw new JIPipeValidationRuntimeException(new IllegalStateException(
+                        "missing " + JIPipeXManifest.MANIFEST_FILE_NAME + " entry"),
+                        "Invalid JIPX container",
+                        "The container " + zipPath + " has no " + JIPipeXManifest.MANIFEST_FILE_NAME + " entry.",
+                        "The container was written by JIPipe and is internally inconsistent — delete it and save the project again.");
+            }
+            JsonNode manifestJson;
+            try (InputStream is = zip.getInputStream(manifestEntry)) {
+                manifestJson = JsonUtils.getObjectMapper().readTree(is);
+            } catch (Exception e) {
+                throw new JIPipeValidationRuntimeException(e, "Invalid JIPX container",
+                        "The " + JIPipeXManifest.MANIFEST_FILE_NAME + " entry of " + zipPath + " does not parse as JSON: " + e.getMessage(),
+                        "The container was written by JIPipe and is internally inconsistent — delete it and save the project again.");
+            }
+            JIPipeXManifest manifest = JIPipeXManifest.fromJsonNode(manifestJson);
+
+            // (2) Every listed part exists and parses as JSON.
+            for (String partPath : manifest.getParts().keySet()) {
+                ZipEntry partEntry = zip.getEntry(partPath);
+                if (partEntry == null) {
+                    throw new JIPipeValidationRuntimeException(new IllegalStateException(
+                            "missing listed part entry " + partPath),
+                            "Invalid JIPX container",
+                            "The " + JIPipeXManifest.MANIFEST_FILE_NAME + " manifest of " + zipPath + " lists the part entry '"
+                                    + partPath + "', but it is missing from the container.",
+                            "The container was written by JIPipe and is internally inconsistent — delete it and save the project again.");
+                }
+                try (InputStream is = zip.getInputStream(partEntry)) {
+                    JsonUtils.getObjectMapper().readTree(is);
+                } catch (Exception e) {
+                    throw new JIPipeValidationRuntimeException(e, "Invalid JIPX container",
+                            "The part entry '" + partPath + "' of " + zipPath + " does not parse as JSON: " + e.getMessage(),
+                            "The container was written by JIPipe and is internally inconsistent — delete it and save the project again.");
+                }
+            }
+
+            // (3) The crate metadata.
+            ZipEntry crateEntry = zip.getEntry(CRATE_METADATA_FILE_NAME);
+            if (crateEntry == null) {
+                throw new JIPipeValidationRuntimeException(new IllegalStateException(
+                        "missing " + CRATE_METADATA_FILE_NAME + " entry"),
+                        "Invalid JIPX container",
+                        "The container " + zipPath + " has no " + CRATE_METADATA_FILE_NAME + " entry.",
+                        "The container was written by JIPipe and is internally inconsistent — delete it and save the project again.");
+            }
+            try (InputStream is = zip.getInputStream(crateEntry)) {
+                JsonUtils.getObjectMapper().readTree(is);
+            } catch (Exception e) {
+                throw new JIPipeValidationRuntimeException(e, "Invalid JIPX container",
+                        "The " + CRATE_METADATA_FILE_NAME + " entry of " + zipPath + " does not parse as JSON: " + e.getMessage(),
+                        "The container was written by JIPipe and is internally inconsistent — delete it and save the project again.");
+            }
+        }
+    }
+
     @Override
     public String getId() {
         return JIPipeXProjectReader.FORMAT_ID;
@@ -149,9 +293,9 @@ public class JIPipeXProjectWriter implements JIPipeProjectWriter {
      * reported into {@code violationsOut} (when non-null, the violations
      * are NOT logged via the progress info — the caller presents them).
      *
-     * @param project      the project to write
-     * @param target       the target file (replaced atomically)
-     * @param progressInfo the progress info
+     * @param project       the project to write
+     * @param target        the target file (replaced atomically)
+     * @param progressInfo  the progress info
      * @param violationsOut the list that receives the compliance
      *                      violations, or null for log mode
      * @throws IOException triggered by file or zip I/O
@@ -242,154 +386,6 @@ public class JIPipeXProjectWriter implements JIPipeProjectWriter {
 
             // (8) Mark the workspace saved from the new origin.
             workspace.markSaved(project.getProjectFile() != null ? project.getProjectFile() : target);
-        }
-    }
-
-    /**
-     * Writes a generated {@code README.md} for the container: the project
-     * name as a markdown heading, the project summary/description as
-     * plain text, and the generator line.
-     */
-    static String generateReadme(JIPipeProject project) {
-        StringBuilder readme = new StringBuilder();
-        readme.append("# ").append(StringUtils.nullToEmpty(project.getMetadata().getName())).append("\n\n");
-        String summary = project.getMetadata().getSummary() == null ? "" : project.getMetadata().getSummary().toPlainText();
-        String description = project.getMetadata().getDescription() == null ? "" : project.getMetadata().getDescription().toPlainText();
-        String body = StringUtils.isNullOrEmpty(summary) ? description : summary;
-        readme.append(StringUtils.nullToEmpty(body).trim()).append("\n\n");
-        readme.append("Created with JIPipe ").append(JIPipe.getJIPipeVersion()).append(".\n");
-        return readme.toString();
-    }
-
-    /**
-     * Zips the workspace directory into a JIPX container with
-     * {@link ZipOutputStream} (no wrapper root). Entry order:
-     * {@code ro-crate-metadata.json}, {@code jipx.json}, {@code README.md},
-     * the part files in manifest parts-table order, then every remaining
-     * file sorted by path (unknown/payload entries — deterministic).
-     *
-     * @param workspace the materialized workspace to zip
-     * @param target    the part file to write
-     * @param progressInfo the progress info
-     * @throws IOException triggered by zip I/O
-     */
-    private static void zipWorkspace(JIPipeProjectWorkspace workspace, Path target, JIPipeProgressInfo progressInfo) throws IOException {
-        Path baseDirectory = workspace.getBaseDirectory();
-        progressInfo.log("Zipping JIPX workspace " + baseDirectory + " into " + target + " ...");
-        JIPipeXManifest manifest = workspace.getManifest();
-
-        // Workspace-relative entry paths in the spec'd order.
-        Map<String, Path> orderedEntries = new LinkedHashMap<>();
-        orderedEntries.put(CRATE_METADATA_FILE_NAME, baseDirectory.resolve(CRATE_METADATA_FILE_NAME));
-        orderedEntries.put(JIPipeXManifest.MANIFEST_FILE_NAME, baseDirectory.resolve(JIPipeXManifest.MANIFEST_FILE_NAME));
-        orderedEntries.put(README_FILE_NAME, baseDirectory.resolve(README_FILE_NAME));
-        // The part files in manifest parts-table order.
-        for (String partPath : manifest.getParts().keySet()) {
-            orderedEntries.put(partPath, baseDirectory.resolve(partPath));
-        }
-        // Every remaining file (unknown/payload entries), sorted by path.
-        List<Path> remaining = new ArrayList<>();
-        try (Stream<Path> walk = Files.walk(baseDirectory)) {
-            walk.filter(Files::isRegularFile).forEach(file -> {
-                String relative = baseDirectory.relativize(file).toString().replace(java.io.File.separatorChar, '/');
-                if (!orderedEntries.containsKey(relative)) {
-                    remaining.add(file);
-                }
-            });
-        }
-        remaining.sort(Comparator.comparing(file -> baseDirectory.relativize(file).toString().replace(java.io.File.separatorChar, '/')));
-        for (Path file : remaining) {
-            orderedEntries.put(baseDirectory.relativize(file).toString().replace(java.io.File.separatorChar, '/'), file);
-        }
-
-        try (OutputStream out = Files.newOutputStream(target);
-             ZipOutputStream zip = new ZipOutputStream(out)) {
-            for (Map.Entry<String, Path> entry : orderedEntries.entrySet()) {
-                zip.putNextEntry(new ZipEntry(entry.getKey()));
-                Files.copy(entry.getValue(), zip);
-                zip.closeEntry();
-            }
-            zip.finish();
-        }
-    }
-
-    /**
-     * The self-verification seam of the write path: re-opens the
-     * container with {@link ZipFile} and asserts its internal
-     * consistency —
-     * <ul>
-     * <li>the {@code jipx.json} entry exists and parses as JSON,</li>
-     * <li>every part listed in the manifest's parts table exists in the
-     * container and parses as JSON (a missing listed part is a corrupt
-     * container),</li>
-     * <li>the {@code ro-crate-metadata.json} entry exists and parses as
-     * JSON.</li>
-     * </ul>
-     * Any failure throws a {@link JIPipeValidationRuntimeException}
-     * naming the FIRST problem.
-     *
-     * @param zipPath the container to verify
-     * @param progressInfo the progress info
-     * @throws IOException triggered by zip I/O
-     */
-    public static void selfVerifyZip(Path zipPath, JIPipeProgressInfo progressInfo) throws IOException {
-        progressInfo.log("Self-verifying JIPX container " + zipPath + " ...");
-        try (ZipFile zip = new ZipFile(zipPath.toFile())) {
-            // (1) The manifest.
-            ZipEntry manifestEntry = zip.getEntry(JIPipeXManifest.MANIFEST_FILE_NAME);
-            if (manifestEntry == null) {
-                throw new JIPipeValidationRuntimeException(new IllegalStateException(
-                        "missing " + JIPipeXManifest.MANIFEST_FILE_NAME + " entry"),
-                        "Invalid JIPX container",
-                        "The container " + zipPath + " has no " + JIPipeXManifest.MANIFEST_FILE_NAME + " entry.",
-                        "The container was written by JIPipe and is internally inconsistent — delete it and save the project again.");
-            }
-            JsonNode manifestJson;
-            try (InputStream is = zip.getInputStream(manifestEntry)) {
-                manifestJson = JsonUtils.getObjectMapper().readTree(is);
-            } catch (Exception e) {
-                throw new JIPipeValidationRuntimeException(e, "Invalid JIPX container",
-                        "The " + JIPipeXManifest.MANIFEST_FILE_NAME + " entry of " + zipPath + " does not parse as JSON: " + e.getMessage(),
-                        "The container was written by JIPipe and is internally inconsistent — delete it and save the project again.");
-            }
-            JIPipeXManifest manifest = JIPipeXManifest.fromJsonNode(manifestJson);
-
-            // (2) Every listed part exists and parses as JSON.
-            for (String partPath : manifest.getParts().keySet()) {
-                ZipEntry partEntry = zip.getEntry(partPath);
-                if (partEntry == null) {
-                    throw new JIPipeValidationRuntimeException(new IllegalStateException(
-                            "missing listed part entry " + partPath),
-                            "Invalid JIPX container",
-                            "The " + JIPipeXManifest.MANIFEST_FILE_NAME + " manifest of " + zipPath + " lists the part entry '"
-                                    + partPath + "', but it is missing from the container.",
-                            "The container was written by JIPipe and is internally inconsistent — delete it and save the project again.");
-                }
-                try (InputStream is = zip.getInputStream(partEntry)) {
-                    JsonUtils.getObjectMapper().readTree(is);
-                } catch (Exception e) {
-                    throw new JIPipeValidationRuntimeException(e, "Invalid JIPX container",
-                            "The part entry '" + partPath + "' of " + zipPath + " does not parse as JSON: " + e.getMessage(),
-                            "The container was written by JIPipe and is internally inconsistent — delete it and save the project again.");
-                }
-            }
-
-            // (3) The crate metadata.
-            ZipEntry crateEntry = zip.getEntry(CRATE_METADATA_FILE_NAME);
-            if (crateEntry == null) {
-                throw new JIPipeValidationRuntimeException(new IllegalStateException(
-                        "missing " + CRATE_METADATA_FILE_NAME + " entry"),
-                        "Invalid JIPX container",
-                        "The container " + zipPath + " has no " + CRATE_METADATA_FILE_NAME + " entry.",
-                        "The container was written by JIPipe and is internally inconsistent — delete it and save the project again.");
-            }
-            try (InputStream is = zip.getInputStream(crateEntry)) {
-                JsonUtils.getObjectMapper().readTree(is);
-            } catch (Exception e) {
-                throw new JIPipeValidationRuntimeException(e, "Invalid JIPX container",
-                        "The " + CRATE_METADATA_FILE_NAME + " entry of " + zipPath + " does not parse as JSON: " + e.getMessage(),
-                        "The container was written by JIPipe and is internally inconsistent — delete it and save the project again.");
-            }
         }
     }
 

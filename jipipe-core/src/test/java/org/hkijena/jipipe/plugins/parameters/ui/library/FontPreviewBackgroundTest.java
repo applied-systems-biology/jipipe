@@ -15,7 +15,7 @@ package org.hkijena.jipipe.plugins.parameters.ui.library;
 
 import org.junit.jupiter.api.Test;
 
-import java.awt.Color;
+import java.awt.*;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -35,7 +35,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * headless-testable, theme-independent.
  */
 class FontPreviewBackgroundTest {
-    /** WCAG relative luminance (0..1). */
+    /**
+     * WCAG relative luminance (0..1).
+     */
     private static double relLum(Color c) {
         double r = c.getRed() / 255.0, g = c.getGreen() / 255.0, b = c.getBlue() / 255.0;
         r = r <= 0.03928 ? r / 12.92 : Math.pow((r + 0.055) / 1.055, 2.4);
@@ -44,7 +46,9 @@ class FontPreviewBackgroundTest {
         return 0.2126 * r + 0.7152 * g + 0.0722 * b;
     }
 
-    /** WCAG contrast ratio (1..21). */
+    /**
+     * WCAG contrast ratio (1..21).
+     */
     private static double contrast(Color a, Color b) {
         double hi = Math.max(relLum(a), relLum(b));
         double lo = Math.min(relLum(a), relLum(b));

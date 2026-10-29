@@ -20,7 +20,7 @@ import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationSettingsSheetCate
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationsSettingsSheet;
 import org.hkijena.jipipe.utils.StringUtils;
 
-import javax.swing.Icon;
+import javax.swing.*;
 
 /**
  * Settings for the JIPipe project file formats (the .jipx container and

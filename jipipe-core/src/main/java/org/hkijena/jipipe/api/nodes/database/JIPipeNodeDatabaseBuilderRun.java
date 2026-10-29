@@ -20,9 +20,9 @@ import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeExample;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.database.entries.*;
 import org.hkijena.jipipe.api.nodes.taxonomy.TaxonomyView;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.GraphFunction;
-import org.hkijena.jipipe.api.nodes.database.entries.*;
 import org.hkijena.jipipe.api.service.components.JIPipeNodesServiceComponent;
 
 import java.util.ArrayList;
@@ -132,8 +132,8 @@ public class JIPipeNodeDatabaseBuilderRun extends DefaultJIPipeRunnable {
         }
         if (JIPipe.getNodeTemplates().isInGlobal(template)) {
             return JIPipe.getNodeTemplates().isDownloadedTemplate(template)
-                ? TemplateScope.Downloaded
-                : TemplateScope.Global;
+                    ? TemplateScope.Downloaded
+                    : TemplateScope.Global;
         }
         return TemplateScope.Project;
     }

@@ -2,11 +2,12 @@ package org.hkijena.jipipe.desktop.commons.theme.ui;
 
 import org.junit.jupiter.api.Test;
 
-import javax.swing.JProgressBar;
-import java.awt.Graphics2D;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 // Headless regression guard: the app's custom ProgressBarUI (installed for all JProgressBars in
 // the modern theme) must install and paint an indeterminate bar without throwing. We do NOT

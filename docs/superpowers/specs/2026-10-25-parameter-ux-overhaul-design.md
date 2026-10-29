@@ -1,7 +1,9 @@
 # Parameter Editor & Form Panel UX Overhaul — Design
 
-**Date:** 2026-10-25 · **Branch:** `1339-parameter-ux-overhaul` · **Work item:** [#1339](https://asb-git.hki-jena.de/RGerst/jipipe/-/work_items/1339) (milestone 6.0.0)
-**Related:** [#1124](https://asb-git.hki-jena.de/RGerst/jipipe/-/work_items/1124) new code editor — *follow-up, this spec leaves seams only*
+**Date:** 2026-10-25 · **Branch:** `1339-parameter-ux-overhaul` · **Work
+item:** [#1339](https://asb-git.hki-jena.de/RGerst/jipipe/-/work_items/1339) (milestone 6.0.0)
+**Related:** [#1124](https://asb-git.hki-jena.de/RGerst/jipipe/-/work_items/1124) new code editor — *follow-up, this
+spec leaves seams only*
 **State:** design approved in conversation (visual-companion iteration, 2026-10-24/25)
 
 ## 1. Problem
@@ -16,8 +18,8 @@ The node parameter panel is the most-used UI surface in JIPipe. Its current stat
   Result: the same panel mixes two row shapes with no visible rule.
 - **Enum editors are stale.** `JIPipeDesktopEnumParameterEditorUI` /
   `…DynamicEnumParameterEditorUI` = `JComboBox` + a search button opening a **modal**
-  pick dialog (`JIPipeDesktopPickEnumValueDialog`). The new panel API
-  (`JIPipeDesktopRichSelectionBox` — searchable popup, icons, grouping, no OK) was
+  pick dialog (`JIPipeDesktopPickEnumValueDialog`). The new panel API (`JIPipeDesktopRichSelectionBox` — searchable
+  popup, icons, grouping, no OK) was
   built for the node browser and its own Javadoc names these editors as the planned
   next use case.
 - **Dynamic set editors confuse users.** Vertical checkbox list with a *persisted*
@@ -58,17 +60,17 @@ The node parameter panel is the most-used UI surface in JIPipe. Its current stat
 
 ## 4. Decisions (user rulings during design)
 
-| # | Decision |
-|---|----------|
-| D1 | **Layout: option B — rule by complexity.** Scalar editors (number, string, enum, boolean, color, expression, optional, quantity…) keep a compact inline row `label … control … ?`. Compound editors (list, matrix, collection, code) get name-above + full-width control. Exception: the dynamic-set editor's *new* control is a compact selection box, so it stays inline (its old self-header disappears). Every editor gets its name from the form panel; **no editor draws its own name anymore.** |
-| D2 | **Enum:** values ≤ 5 → plain combo (no search button). Values > 5 → single-select `JIPipeDesktopRichSelectionBox` (closes on pick; no modal). Threshold constant `COMBO_MAX_VALUES = 5`. |
-| D3 | **Dynamic enums, editability per case:** `JIPipeDynamicEnumParameter.isEditable()` (overridden per class, default `false`) — editable ones **keep the (editable) combo** in all cases; non-editable ones follow D2. |
-| D4 | **Dynamic set:** multi-select `RichSelectionBox`; button shows count summary ("Measurements (3)"); Clear doubles as select-none; live toggle; grouped rows where the set's item info defines groups. **The persisted `collapsed` field is removed** from the model (lenient deserialization of old projects). |
-| D5 | **List editor:** compact footer (＋ Add + count) instead of the always-visible toolbar; per-row grip (click/ctrl/shift select, drag or right-click to reorder/delete) + item editor + delete; empty-state hint; `@ListParameterSettings.withScrollBar` behavior preserved. |
-| D6 | **`FontParameter` is a dedicated class** (user ruling: class-driven, not annotation-driven, because node-side annotations may drop in complex cases while the parameter class stays): `family + size + style + color`, all always present. |
-| D7 | **Font editor:** the inline row shows the **preview only** (font rendered in itself); clicking opens a **popout panel** (live preview band + family search + size + style + **embedded** color row + `Custom…`). **No popout-over-popout:** `Custom…` opens the full color dialog as its own window; the popout closes first; on OK the popout reopens with the updated font. |
+| #  | Decision                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+|----|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| D1 | **Layout: option B — rule by complexity.** Scalar editors (number, string, enum, boolean, color, expression, optional, quantity…) keep a compact inline row `label … control … ?`. Compound editors (list, matrix, collection, code) get name-above + full-width control. Exception: the dynamic-set editor's *new* control is a compact selection box, so it stays inline (its old self-header disappears). Every editor gets its name from the form panel; **no editor draws its own name anymore.**                           |
+| D2 | **Enum:** values ≤ 5 → plain combo (no search button). Values > 5 → single-select `JIPipeDesktopRichSelectionBox` (closes on pick; no modal). Threshold constant `COMBO_MAX_VALUES = 5`.                                                                                                                                                                                                                                                                                                                                         |
+| D3 | **Dynamic enums, editability per case:** `JIPipeDynamicEnumParameter.isEditable()` (overridden per class, default `false`) — editable ones **keep the (editable) combo** in all cases; non-editable ones follow D2.                                                                                                                                                                                                                                                                                                              |
+| D4 | **Dynamic set:** multi-select `RichSelectionBox`; button shows count summary ("Measurements (3)"); Clear doubles as select-none; live toggle; grouped rows where the set's item info defines groups. **The persisted `collapsed` field is removed** from the model (lenient deserialization of old projects).                                                                                                                                                                                                                    |
+| D5 | **List editor:** compact footer (＋ Add + count) instead of the always-visible toolbar; per-row grip (click/ctrl/shift select, drag or right-click to reorder/delete) + item editor + delete; empty-state hint; `@ListParameterSettings.withScrollBar` behavior preserved.                                                                                                                                                                                                                                                       |
+| D6 | **`FontParameter` is a dedicated class** (user ruling: class-driven, not annotation-driven, because node-side annotations may drop in complex cases while the parameter class stays): `family + size + style + color`, all always present.                                                                                                                                                                                                                                                                                       |
+| D7 | **Font editor:** the inline row shows the **preview only** (font rendered in itself); clicking opens a **popout panel** (live preview band + family search + size + style + **embedded** color row + `Custom…`). **No popout-over-popout:** `Custom…` opens the full color dialog as its own window; the popout closes first; on OK the popout reopens with the updated font.                                                                                                                                                    |
 | D8 | **Color dialog:** spaces **RGB / HSB / LAB** (two-way sync; hex `#RRGGBB`/`#RRGGBBAA` always available); **alpha** support (checkerboard swatches, α rail when the parameter is alpha-capable); **palettes**: pure colors, black/white/greys, **GNOME HIG named palette** (12 hues × 5 steps, real values from developer.gnome.org/hig), **last selected** (auto), **saved** (user, star-to-save, persisted in app settings); still modal with OK/Cancel. LAB: 2D a/b plane + L rail; out-of-gamut clamps to nearest sRGB on OK. |
-| D9 | **#1124 is a follow-up** on the same milestone; this branch ships the overhaul first. |
+| D9 | **#1124 is a follow-up** on the same milestone; this branch ships the overhaul first.                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 
 ## 5. Part 1 — Layout foundation (option B)
 
@@ -88,13 +90,13 @@ The node parameter panel is the most-used UI surface in JIPipe. Its current stat
   `CONTROL_STYLE_*` constants remain for the existing grouping sort; their meaning
   is preserved, not redefined.
 - `JIPipeDesktopFormPanel` rendering:
-  - **Inline:** unchanged 3-column grid — label WEST, editor CENTER (weightx 1,
-    fill HORIZONTAL), properties component (help `?` + options menu trigger) EAST.
-  - **Stacked:** a new row shape — label (and the properties component) on one line
-    WEST/EAST of each other, editor full-width below spanning all three columns
-    (the old "wide" grid rows keep working; the label line reuses the same
-    label/properties helpers so fonts, help tooltips, and the options menu are
-    identical between shapes).
+    - **Inline:** unchanged 3-column grid — label WEST, editor CENTER (weightx 1,
+      fill HORIZONTAL), properties component (help `?` + options menu trigger) EAST.
+    - **Stacked:** a new row shape — label (and the properties component) on one line
+      WEST/EAST of each other, editor full-width below spanning all three columns (the old "wide" grid rows keep
+      working; the label line reuses the same
+      label/properties helpers so fonts, help tooltips, and the options menu are
+      identical between shapes).
 - Group headers, pinned parameters, search bar, collapse carets, and the
   label/without-label separation sorting stay as-is; the sort comparator's
   "label-less editors grouped first" clause is removed (there are no label-less
@@ -105,14 +107,14 @@ The node parameter panel is the most-used UI surface in JIPipe. Its current stat
 Every editor that today draws its own name stops doing so; the form panel supplies
 the label:
 
-| Editor | Today | After |
-|---|---|---|
-| `JIPipeDesktopBooleanParameterEditorUI` | name-as-checkbox-text (wide) / combo mode (`@BooleanParameterSettings(comboBoxStyle=true)`, custom `trueLabel`/`falseLabel`) — dual inconsistency | **checkbox → switch (inline)** for the default case; `comboBoxStyle=true` booleans (e.g. "By dilation"/"By erosion", "value > threshold"/"value < threshold") **keep their 2-value combo**, rendered inline with `trueLabel`/`falseLabel` as the items. Name from the label column in both modes — the inconsistency (name embedded in the widget) is gone |
-| `JIPipeDesktopListParameterEditorUI` | self-header with name label | name from label column; header toolbar → compact footer (Part 4) |
-| `JIPipeDesktopParameterCollectionListEditorUI` | same | same |
-| `JIPipeDesktopDynamicSetParameterEditorUI` | self-header + Collapse/All/None | replaced by the selection box (Part 3) |
-| `JIPipeDesktopMatrix2DParameterEditorUI` | self-header | name from label column, stacked |
-| Margin editors (`…MarginParameterEditorUI`, `…FixedMargin…`, `InnerMarginEditorUIDesktop`) | label-off, self headers | name from label column (stacked — margin editors are multi-field) |
+| Editor                                                                                     | Today                                                                                                                                             | After                                                                                                                                                                                                                                                                                                                                                      |
+|--------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `JIPipeDesktopBooleanParameterEditorUI`                                                    | name-as-checkbox-text (wide) / combo mode (`@BooleanParameterSettings(comboBoxStyle=true)`, custom `trueLabel`/`falseLabel`) — dual inconsistency | **checkbox → switch (inline)** for the default case; `comboBoxStyle=true` booleans (e.g. "By dilation"/"By erosion", "value > threshold"/"value < threshold") **keep their 2-value combo**, rendered inline with `trueLabel`/`falseLabel` as the items. Name from the label column in both modes — the inconsistency (name embedded in the widget) is gone |
+| `JIPipeDesktopListParameterEditorUI`                                                       | self-header with name label                                                                                                                       | name from label column; header toolbar → compact footer (Part 4)                                                                                                                                                                                                                                                                                           |
+| `JIPipeDesktopParameterCollectionListEditorUI`                                             | same                                                                                                                                              | same                                                                                                                                                                                                                                                                                                                                                       |
+| `JIPipeDesktopDynamicSetParameterEditorUI`                                                 | self-header + Collapse/All/None                                                                                                                   | replaced by the selection box (Part 3)                                                                                                                                                                                                                                                                                                                     |
+| `JIPipeDesktopMatrix2DParameterEditorUI`                                                   | self-header                                                                                                                                       | name from label column, stacked                                                                                                                                                                                                                                                                                                                            |
+| Margin editors (`…MarginParameterEditorUI`, `…FixedMargin…`, `InnerMarginEditorUIDesktop`) | label-off, self headers                                                                                                                           | name from label column (stacked — margin editors are multi-field)                                                                                                                                                                                                                                                                                          |
 
 Everything else (≈51 editors) already uses the 3-col row and needs no structural
 change beyond the audit pass (Part 6).
@@ -141,8 +143,7 @@ else if (n <= COMBO_MAX_VALUES /*5*/)           -> plain JComboBox, no search bu
 else                                            -> single-select RichSelectionBox      [D2]
 ```
 
-The editor rebuilds its control when the value count crosses the threshold
-(dynamic enums change at runtime).
+The editor rebuilds its control when the value count crosses the threshold (dynamic enums change at runtime).
 
 ### 6.2 RichSelectionBox adoption
 
@@ -152,8 +153,7 @@ The editor rebuilds its control when the value count crosses the threshold
   `Option<T>`. **Small extension to `Option`: add an optional `tooltip` field**
   (constructor overload + list-cell renderer) — enum items already carry tooltips
   and the box currently drops them.
-- Grouping: enums whose item info defines groups render group headers in the popup
-  (the box already supports this).
+- Grouping: enums whose item info defines groups render group headers in the popup (the box already supports this).
 - The button's idle text shows the current value's label (+ icon); for multi-value
   displays it reuses the summary-label mechanism.
 
@@ -172,13 +172,13 @@ issue's enum scope, but they get the audit pass (Part 6) for label/consistency.
 - The editor becomes a **multi-select `RichSelectionBox`** (name from the label
   column, per Part 1 — the box sits inline; the box's button width is bounded by
   the summary-label mechanism, so the row stays compact).
-  - Button: icon (checkbox-checked when non-empty) + "Count summary (n)" / first
-    few names when empty-ish (existing legacy-label mode).
-  - Popup: live multi-toggle (no OK), Clear = select none, group headers where the
-    set's `JIPipeEnumParameterItemInfo` defines groups.
-  - "Select all": the popup's Clear handles none; **all** = re-click Clear state is
-    ambiguous, so add a small "Select all" action inside the popup header row next
-    to Clear (two flat buttons, same visual family).
+    - Button: icon (checkbox-checked when non-empty) + "Count summary (n)" / first
+      few names when empty-ish (existing legacy-label mode).
+    - Popup: live multi-toggle (no OK), Clear = select none, group headers where the
+      set's `JIPipeEnumParameterItemInfo` defines groups.
+    - "Select all": the popup's Clear handles none; **all** = re-click Clear state is
+      ambiguous, so add a small "Select all" action inside the popup header row next
+      to Clear (two flat buttons, same visual family).
 - `JIPipeDynamicSetParameter.collapsed` field **deleted**. The Jackson deserializer
   accepts and ignores a legacy `collapsed` key (one lenient line — 6.0.0 carries no
   legacy compat, but we don't reject old files either).
@@ -190,8 +190,8 @@ issue's enum scope, but they get the audit pass (Part 6) for label/consistency.
 `JIPipeDesktopParameterCollectionListEditorUI.java`.
 
 - Name moves to the label column (Part 1); the self-header's name label is removed.
-- **Compact footer** replaces the always-visible toolbar: `＋ Add` + count label
-  ("3 paths") + a `⋯` menu (Select all / Invert / Clear list). Reorder is no longer
+- **Compact footer** replaces the always-visible toolbar: `＋ Add` + count label ("3 paths") + a `⋯` menu (Select all /
+  Invert / Clear list). Reorder is no longer
   a global toggle: the grip supports drag-reorder, and the right-click menu keeps
   Delete / Move up / Move down (existing menu, kept).
 - Rows keep: grip (click / Ctrl / Shift selection with background highlight —
@@ -234,18 +234,17 @@ public class JIPipeFontParameter {
 - **Inline row:** one control = live preview (a sample string rendered in the
   chosen family/size/style/color, e.g. "Aa Label text 12"), clickable.
 - **Popout** (same popup family as the RichSelectionBox, positioned over the row):
-  - top: large preview band (sample text + numbers)
-  - Family → opens the panel-API search popup (system font families, grouped by
-    serif/sans/mono)
-  - Size → number field + spinner (reuses the number editor's formatting)
-  - Style → B / I toggles
-  - Color → **embedded**: current swatch + pure-colors mini-row + recent colors +
-    `Custom…` button
-  - `Custom…` / current-swatch → opens the full color dialog (Part 6) as its own
-    window; the popout **closes first** (no stacked popups); on return, the popout
-    reopens with focus on the preview, showing the updated font.
-- Live: every change updates the preview band immediately and pushes the parameter
-  (existing `setParameter` event flow).
+    - top: large preview band (sample text + numbers)
+    - Family → opens the panel-API search popup (system font families, grouped by
+      serif/sans/mono)
+    - Size → number field + spinner (reuses the number editor's formatting)
+    - Style → B / I toggles
+    - Color → **embedded**: current swatch + pure-colors mini-row + recent colors +
+      `Custom…` button
+    - `Custom…` / current-swatch → opens the full color dialog (Part 6) as its own
+      window; the popout **closes first** (no stacked popups); on return, the popout
+      reopens with focus on the preview, showing the updated font.
+- Live: every change updates the preview band immediately and pushes the parameter (existing `setParameter` event flow).
 
 ### 9.3 Migration (per-node, idempotent)
 
@@ -255,8 +254,8 @@ notifications)` with the raw node JSON. Each affected node:
 
 1. Replace the split fields/getters with one `JIPipeFontParameter` field +
    `@JIPipeParameter("<key>")` (new key per node, e.g. `label-font`).
-2. Override `onDeserialized`: if the raw JSON still contains the legacy keys
-   (`label-font-family`, `label-font-size`, `label-font-style`, and the node's
+2. Override `onDeserialized`: if the raw JSON still contains the legacy keys (`label-font-family`, `label-font-size`,
+   `label-font-style`, and the node's
    legacy color key), compose them into the new parameter; afterwards the legacy
    keys are gone on the next save (deserialization no longer writes them).
 
@@ -284,31 +283,30 @@ editors inherit it).
 - Modal `JDialog`, ~380×560, OK/Cancel.
 - **Space tabs:** RGB / HSB / LAB, editing the same underlying color (two-way sync
   through a single `Color` state; hex + swatch always visible).
-  - **RGB:** R/G/B/A sliders.
-  - **HSB:** 2D saturation×value well + hue / sat / bright rails.
-  - **LAB (CIE L\*a\*b\*):** 2D a/b chromaticity plane (crosshair axes, corner
-    tags) + L rail (0–100); a/b rails for numeric entry; **out-of-gamut values
-    clamp to the nearest sRGB on OK** (with the clamped value shown in the hex
-    readout live).
-  - Hex field: `#RRGGBB` or `#RRGGBBAA`; typing updates all widgets.
+    - **RGB:** R/G/B/A sliders.
+    - **HSB:** 2D saturation×value well + hue / sat / bright rails.
+    - **LAB (CIE L\*a\*b\*):** 2D a/b chromaticity plane (crosshair axes, corner
+      tags) + L rail (0–100); a/b rails for numeric entry; **out-of-gamut values
+      clamp to the nearest sRGB on OK** (with the clamped value shown in the hex
+      readout live).
+    - Hex field: `#RRGGBB` or `#RRGGBBAA`; typing updates all widgets.
 - **Alpha:** α rail + checkerboard behind the swatch, shown only when the caller
   passes `withTransparency` (from `ColorParameterSettings`) — pure colors are
   rendered on the checkerboard.
 - **Palettes** (below the picker, same set in every space):
-  - *Pure colors* — black, white, grey, + the 9–10 pure hues.
-  - *GNOME HIG* — the 12 hues × 5 steps named palette (real values from
-    developer.gnome.org/hig; shipped as a bundled resource so tooltips show names,
-    e.g. "Blue 3").
-  - *Last selected* — most recent ~8 picks, auto-tracked.
-  - *Saved* — user colors (star-to-save from the dialog; persisted in app settings
-    with an optional name; delete on right-click).
+    - *Pure colors* — black, white, grey, + the 9–10 pure hues.
+    - *GNOME HIG* — the 12 hues × 5 steps named palette (real values from
+      developer.gnome.org/hig; shipped as a bundled resource so tooltips show names,
+      e.g. "Blue 3").
+    - *Last selected* — most recent ~8 picks, auto-tracked.
+    - *Saved* — user colors (star-to-save from the dialog; persisted in app settings
+      with an optional name; delete on right-click).
 - **Persistence:** recents + saved colors live in application settings (JSON),
   shared by all color editors and the font popout.
 
 ### 10.2 Consumers
 
-- `JIPipeDesktopColorParameterEditorUI` — the swatch button now opens this dialog
-  (via `UIUtils.selectColor`).
+- `JIPipeDesktopColorParameterEditorUI` — the swatch button now opens this dialog (via `UIUtils.selectColor`).
 - `JIPipeFontParameterEditorUI` — `Custom…` (Part 5).
 - Any future color usage (e.g. canvas notes) inherits it.
 
@@ -337,8 +335,8 @@ Tests only for non-trivial logic:
 1. **Color space math** — RGB↔HSB and RGB↔LAB round-trips (tolerance 0.5/255),
    LAB→sRGB **gamut clamping** (e.g. L=100, a=+100, b=+100 clamps correctly),
    hex parse/format incl. 8-digit alpha. Pure functions, no UI.
-2. **FontParameter** — serialization round-trip (`family/size/style/color`), and
-   **migration**: feed a legacy node JSON (split keys, no new key) through
+2. **FontParameter** — serialization round-trip (`family/size/style/color`), and **migration**: feed a legacy node JSON
+   (split keys, no new key) through
    `fromJson` → composed parameter matches expected; feed an already-migrated JSON
    → idempotent (no double-migration); legacy keys absent after re-serialization.
 3. **Enum threshold rule** — the selection decision (editable / ≤5 combo / >5 box)
@@ -355,12 +353,14 @@ UI verification of every panel change is by the user in the app (standing ruling
 ## 13. Component / file summary
 
 **New**
+
 - `JIPipeFontParameter` (+ editor UI) — Part 5
 - `JIPipeDesktopColorChooserDialog` (+ space math, palette resources, settings
   persistence for recents/saved) — Part 6
 - `isUIInline()` on the editor base class; stacked-row rendering in the form panel — Part 1
 
 **Changed**
+
 - `JIPipeDesktopFormPanel` / `JIPipeDesktopParameterFormPanel` (layout, sort
   clause), `JIPipeDesktopParameterEditorUI` (contract)
 - 8–9 self-header editors (de-embedded names; boolean → switch)
@@ -370,6 +370,7 @@ UI verification of every panel change is by the user in the app (standing ruling
   (delegate), `JIPipeDynamicSetParameter` (−collapsed), ~8 nodes (+font migration)
 
 **Deleted**
+
 - `JIPipeDesktopPickEnumValueDialog`, `JIPipeDesktopPickDynamicEnumValueDialog`
   (after verifying zero remaining callers)
 

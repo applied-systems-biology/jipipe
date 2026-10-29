@@ -24,27 +24,17 @@ import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseBuilderRun;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.relations.NodeRelations;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
-import org.hkijena.jipipe.api.service.components.JIPipeNodesServiceComponent;
 import org.hkijena.jipipe.api.service.components.JIPipeNodeTemplatesServiceComponent;
+import org.hkijena.jipipe.api.service.components.JIPipeNodesServiceComponent;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Integration gate for shipping the corpus-mined workflow patterns as bundled
@@ -133,12 +123,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 class SystemPatternTemplatesTest {
 
-    /** The shipped patterns are registered under this bundled resource dir. */
+    /**
+     * The shipped patterns are registered under this bundled resource dir.
+     */
     static final String PATTERN_RESOURCE_DIR =
-        "/org/hkijena/jipipe/plugins/nodetemplate/patterns/";
+            "/org/hkijena/jipipe/plugins/nodetemplate/patterns/";
     static final String SIDECAR_RESOURCE = PATTERN_RESOURCE_DIR + "system-templates.json";
 
-    /** Exactly 420 distinct patterns ship: 24 linear (node-sequence, from
+    /**
+     * Exactly 420 distinct patterns ship: 24 linear (node-sequence, from
      * the 185 research artifacts, curation + 25 collapsed shape-label
      * duplicates, then Option C (ruling 2026-19) drops the 32 node+edge
      * sub-paths of already-shipped DAG patterns and the 8 plumbing
@@ -146,13 +139,16 @@ class SystemPatternTemplatesTest {
      * io-interface drops from the B2 ruling — 5 mined + 1 derived — minus
      * the 4 sealed-slot drops from Ruling 13, and minus the 16 item-3c
      * drops — 5 JIPipe-scripting patterns, 2 tunnel patterns, 9 degenerate
-     * multi-component harvest artifacts). */
+     * multi-component harvest artifacts).
+     */
     static final int EXPECTED_SYSTEM_TEMPLATES = 420;
 
-    /** The flagship mined pattern (a Data Sources chain): list a folder's
+    /**
+     * The flagship mined pattern (a Data Sources chain): list a folder's
      * files and import them as 2D ROIs (one of the 24 Option-C linear
      * patterns; the old flagship "… -> Import image" is a sub-path of a
-     * shipped DAG and was dropped by Option C). */
+     * shipped DAG and was dropped by Option C).
+     */
     static final String FLAGSHIP = "chain-3-folder-list-files-path-to-annotation-simple-import-imagej-roi-from-file";
     static final String FLAGSHIP_NODE = "path-to-annotation-simple";
     static final String FLAGSHIP_NEXT_NAME = "Import ROI";
@@ -167,7 +163,9 @@ class SystemPatternTemplatesTest {
         JIPipe.ensureInstance();
     }
 
-    /** All plugin-registered (System-scope) templates. */
+    /**
+     * All plugin-registered (System-scope) templates.
+     */
     private static List<JIPipeNodeTemplate> systemTemplates() {
         JIPipeNodeTemplatesServiceComponent service = JIPipe.getNodeTemplates();
         List<JIPipeNodeTemplate> result = new ArrayList<>();
@@ -179,7 +177,9 @@ class SystemPatternTemplatesTest {
         return result;
     }
 
-    /** Reads a bundled resource from the classpath as a UTF-8 string. */
+    /**
+     * Reads a bundled resource from the classpath as a UTF-8 string.
+     */
     private static String readResource(String path) throws Exception {
         try (InputStream in = SystemPatternTemplatesTest.class.getResourceAsStream(path)) {
             assertNotNull(in, "resource not found on the classpath: " + path);
@@ -187,32 +187,117 @@ class SystemPatternTemplatesTest {
         }
     }
 
+    /**
+     * Finds the registered System template by its (unique) display name.
+     */
+    private static JIPipeNodeTemplate templateByName(String name) {
+        for (JIPipeNodeTemplate t : systemTemplates()) {
+            if (name.equals(t.getName())) {
+                return t;
+            }
+        }
+        throw new AssertionError("no registered System template named: " + name);
+    }
+
+    private static Set<String> nodeIds(JIPipeGraph graph) {
+        Set<String> ids = new HashSet<>();
+        if (graph != null) {
+            for (JIPipeGraphNode node : graph.getGraphNodes()) {
+                ids.add(node.getInfo().getId());
+            }
+        }
+        return ids;
+    }
+
+    /**
+     * Reads the bundled sidecar and returns its entries (pattern id → object).
+     */
+    private static List<Map.Entry<String, JsonNode>> sidecarEntries() throws Exception {
+        List<Map.Entry<String, JsonNode>> entries = new ArrayList<>();
+        for (Map.Entry<String, JsonNode> entry :
+                new ObjectMapper().readTree(readResource(SIDECAR_RESOURCE)).properties()) {
+            entries.add(entry);
+        }
+        return entries;
+    }
+
+    /**
+     * Canonical RESOLVABLE node-info-id multiset (sorted, comma-joined) of a
+     * bundled raw graph resource: the node ids that the running test JVM's
+     * registry actually resolves (see {@code everyPatternGraphDeserializes}
+     * for why version-gated cLij2 kernels are filtered). Repeated node types
+     * are preserved (multiset, not set) so they still disambiguate same-name
+     * patterns.
+     */
+    private static String resolvableNodeInfoIds(String raw, JIPipeNodesServiceComponent nodes) throws Exception {
+        JsonNode nodesJson = new ObjectMapper().readTree(raw).get("nodes");
+        List<String> ids = new ArrayList<>();
+        nodesJson.forEach(n -> ids.add(n.get("jipipe:node-info-id").asText()));
+        ids.removeIf(id -> !nodes.hasNodeInfoWithId(id));
+        Collections.sort(ids);
+        return String.join(",", ids);
+    }
+
+    /**
+     * Element count of a comma-joined id list ("" counts as 0).
+     */
+    private static int countNodeInfoIds(String commaJoined) {
+        return commaJoined.isEmpty() ? 0 : commaJoined.split(",", -1).length;
+    }
+
+    /**
+     * Canonical node-info-id multiset (sorted, comma-joined) of a loaded graph.
+     */
+    private static String nodeInfoIds(JIPipeGraph graph) {
+        List<String> ids = new ArrayList<>();
+        if (graph != null) {
+            for (JIPipeGraphNode node : graph.getGraphNodes()) {
+                ids.add(node.getInfo().getId());
+            }
+        }
+        Collections.sort(ids);
+        return String.join(",", ids);
+    }
+
+    private static JIPipeNodeDatabaseEntry entryByOriginNodeId(JIPipeNodeDatabase database, String nodeId) {
+        for (JIPipeNodeDatabaseEntry entry : database.getEntries()) {
+            if (nodeId.equals(entry.getOriginNodeId())) {
+                return entry;
+            }
+        }
+        return null;
+    }
+
+    private static String names(List<JIPipeNodeDatabaseEntry> entries) {
+        return entries.stream().map(JIPipeNodeDatabaseEntry::getName).toList().toString();
+    }
+
     @Test
     void allSystemPatternsAreRegistered() {
         List<JIPipeNodeTemplate> templates = systemTemplates();
         assertEquals(EXPECTED_SYSTEM_TEMPLATES, templates.size(),
-            "the curation + dedup from the 185 research artifacts is pinned "
-                + "to an exact count (fan shapes + compartment sinks excluded, "
-                + "shape-label duplicates collapsed); got "
-                + templates.size() + " System (plugin) templates");
+                "the curation + dedup from the 185 research artifacts is pinned "
+                        + "to an exact count (fan shapes + compartment sinks excluded, "
+                        + "shape-label duplicates collapsed); got "
+                        + templates.size() + " System (plugin) templates");
 
         // The flagship must be among them (it is one of the shipped patterns).
         boolean flagshipPresent = false;
         for (JIPipeNodeTemplate t : templates) {
             if (t.getData() != null && t.getData().contains("folder-list-files")
-                && t.getGraph() != null
-                && t.getGraph().getNodeCount() == 3) {
+                    && t.getGraph() != null
+                    && t.getGraph().getNodeCount() == 3) {
                 // Identify the flagship by its node set (stable identity).
                 Set<String> ids = nodeIds(t.getGraph());
                 if (ids.equals(Set.of("folder-list-files", "path-to-annotation-simple",
-                    "import-imagej-roi-from-file"))) {
+                        "import-imagej-roi-from-file"))) {
                     flagshipPresent = true;
                     break;
                 }
             }
         }
         assertTrue(flagshipPresent,
-            "the flagship pattern " + FLAGSHIP + " must be registered as a System template");
+                "the flagship pattern " + FLAGSHIP + " must be registered as a System template");
 
         // --- functionId pins (sidecar-driven; end-to-end for the rule) ---
         // Flagship: complete node set is folder-list-files -> data,
@@ -222,31 +307,25 @@ class SystemPatternTemplatesTest {
         // flagship functionId is data and that the rule ran over the complete node
         // set (a truncated/example-subgraph source would give a different set).
         assertEquals("jipipe:function:data",
-            templateByName("Load 2D ROIs from a folder")
-                .getTaxonomyFunction().getId(),
-            "the flagship pattern's function must be jipipe:function:data "
-                + "(complete node set {data:2, annotations:1} -> most-common data)");
+                templateByName("Load 2D ROIs from a folder")
+                        .getTaxonomyFunction().getId(),
+                "the flagship pattern's function must be jipipe:function:data "
+                        + "(complete node set {data:2, annotations:1} -> most-common data)");
 
         // Tie-break pin: this 3-node pattern is a GENUINE 3-way tie
         // (annotations/data/rois all at max count), so the winner is the
         // lexicographically-first id = jipipe:function:annotations. This pins
         // the "ties -> lexicographically first" rule end-to-end.
         assertEquals("jipipe:function:annotations",
-            templateByName("Import 2D ROIs and convert them to masks")
-                .getTaxonomyFunction().getId(),
-            "the 3-way-tie pattern must resolve to the lexicographically-first "
-                + "branch jipipe:function:annotations");
+                templateByName("Import 2D ROIs and convert them to masks")
+                        .getTaxonomyFunction().getId(),
+                "the 3-way-tie pattern must resolve to the lexicographically-first "
+                        + "branch jipipe:function:annotations");
     }
 
-    /** Finds the registered System template by its (unique) display name. */
-    private static JIPipeNodeTemplate templateByName(String name) {
-        for (JIPipeNodeTemplate t : systemTemplates()) {
-            if (name.equals(t.getName())) {
-                return t;
-            }
-        }
-        throw new AssertionError("no registered System template named: " + name);
-    }
+    // ------------------------------------------------------------------
+    // Helpers
+    // ------------------------------------------------------------------
 
     @Test
     void everyPatternGraphDeserializes() throws Exception {
@@ -287,8 +366,8 @@ class SystemPatternTemplatesTest {
             String identity = name + " || " + resolvable;
             if (nodeCountByIdentity.containsKey(identity)) {
                 throw new IllegalStateException("identity '" + identity
-                    + "' is shared by two bundled resources; (name, resolvable-"
-                    + "node-ids) is no longer a unique key");
+                        + "' is shared by two bundled resources; (name, resolvable-"
+                        + "node-ids) is no longer a unique key");
             }
             nodeCountByIdentity.put(identity, countNodeInfoIds(resolvable));
         }
@@ -307,23 +386,23 @@ class SystemPatternTemplatesTest {
             String identity = t.getName() + " || " + nodeInfoIds(graph);
             Integer expected = nodeCountByIdentity.get(identity);
             assertNotNull(expected,
-                "template '" + t.getName() + "' (loaded node ids "
-                    + nodeInfoIds(graph) + ") is not one of the shipped patterns "
-                    + "— a bundled node the test JVM can resolve was dropped by fromJson");
+                    "template '" + t.getName() + "' (loaded node ids "
+                            + nodeInfoIds(graph) + ") is not one of the shipped patterns "
+                            + "— a bundled node the test JVM can resolve was dropped by fromJson");
 
             // (ii) silent-empty guard: the loaded node count equals the number
             //      of bundled nodes the test JVM can resolve. (A fromJson that
             //      silently empties the graph yields 0, which cannot equal a
             //      non-empty resolvable count.)
             assertEquals(expected, graph.getNodeCount(),
-                "template '" + t.getName() + "' must load all " + expected
-                    + " resolvable nodes (an empty/short graph means fromJson dropped nodes silently)");
+                    "template '" + t.getName() + "' must load all " + expected
+                            + " resolvable nodes (an empty/short graph means fromJson dropped nodes silently)");
 
             // (iii) every loaded node id is a registry id in the test JVM.
             for (JIPipeGraphNode node : graph.getGraphNodes()) {
                 String id = node.getInfo().getId();
                 assertTrue(nodes.hasNodeInfoWithId(id),
-                    "template '" + t.getName() + "' references unregistered node id: " + id);
+                        "template '" + t.getName() + "' references unregistered node id: " + id);
             }
         }
     }
@@ -334,13 +413,13 @@ class SystemPatternTemplatesTest {
             var ref = t.getTaxonomyFunction();
             assertNotNull(ref, "template '" + t.getName() + "' has no taxonomy function");
             assertTrue(ref.isResolved(),
-                "template '" + t.getName() + "' taxonomy function id '" + ref.getId()
-                    + "' does not resolve to a registered function");
+                    "template '" + t.getName() + "' taxonomy function id '" + ref.getId()
+                            + "' does not resolve to a registered function");
             JIPipeNodeTaxonomyFunction fn = ref.getFunction();
             assertNotNull(fn, "template '" + t.getName() + "' resolved to a null function");
             assertNull(fn.getParent(),
-                "template '" + t.getName() + "' function '" + fn.getId()
-                    + "' is not a top-level branch (parent " + (fn.getParent() != null ? fn.getParent().getId() : "null") + ")");
+                    "template '" + t.getName() + "' function '" + fn.getId()
+                            + "' is not a top-level branch (parent " + (fn.getParent() != null ? fn.getParent().getId() : "null") + ")");
         }
     }
 
@@ -365,8 +444,8 @@ class SystemPatternTemplatesTest {
             }
         }
         assertTrue(found,
-            "next(" + FLAGSHIP_NODE + ") must contain an entry named '" + FLAGSHIP_NEXT_NAME
-                + "' (mined from the flagship pattern); got: " + names(relations.next()));
+                "next(" + FLAGSHIP_NODE + ") must contain an entry named '" + FLAGSHIP_NEXT_NAME
+                        + "' (mined from the flagship pattern); got: " + names(relations.next()));
     }
 
     @Test
@@ -389,7 +468,7 @@ class SystemPatternTemplatesTest {
             }
         }
         assertTrue(dupes.isEmpty(),
-            "no two shipped System templates may share (name, graph data); duplicates: " + dupes);
+                "no two shipped System templates may share (name, graph data); duplicates: " + dupes);
     }
 
     @Test
@@ -407,9 +486,9 @@ class SystemPatternTemplatesTest {
                 }
             }
             assertFalse(hasCompartmentSink,
-                "shipped pattern '" + t.getName() + "' contains a compartment-output sink");
+                    "shipped pattern '" + t.getName() + "' contains a compartment-output sink");
             assertFalse(t.getName().matches(".*fans (in from|out to) \\d+.*"),
-                "shipped pattern name is a statistical fan name: " + t.getName());
+                    "shipped pattern name is a statistical fan name: " + t.getName());
         }
     }
 
@@ -435,7 +514,7 @@ class SystemPatternTemplatesTest {
             for (JIPipeGraphNode node : graph.getGraphNodes()) {
                 String key = StringUtils.nullToEmpty(graph.getCompartmentUUIDOf(node));
                 assertNotNull(node.getNodeUILocationWithin(key),
-                    f + ": node " + node.getName() + " has no resolvable location (compartment key " + key + ")");
+                        f + ": node " + node.getName() + " has no resolvable location (compartment key " + key + ")");
             }
         }
     }
@@ -497,86 +576,15 @@ class SystemPatternTemplatesTest {
                 String sourceId = infoIdOfNode.get(edge.get("source-node").asText());
                 String targetId = infoIdOfNode.get(edge.get("target-node").asText());
                 if (sourceId != null && nodes.hasNodeInfoWithId(sourceId)
-                    && targetId != null && nodes.hasNodeInfoWithId(targetId)) {
+                        && targetId != null && nodes.hasNodeInfoWithId(targetId)) {
                     resolvableRawEdges++;
                 }
             }
 
             int loadedEdges = graph.getSlotEdges().size();
             assertEquals(resolvableRawEdges, loadedEdges,
-                f + ": " + (resolvableRawEdges - loadedEdges) + " edge(s) dropped on load (missing slot / missing node)");
+                    f + ": " + (resolvableRawEdges - loadedEdges) + " edge(s) dropped on load (missing slot / missing node)");
         }
-    }
-
-    // ------------------------------------------------------------------
-    // Helpers
-    // ------------------------------------------------------------------
-
-    private static Set<String> nodeIds(JIPipeGraph graph) {
-        Set<String> ids = new HashSet<>();
-        if (graph != null) {
-            for (JIPipeGraphNode node : graph.getGraphNodes()) {
-                ids.add(node.getInfo().getId());
-            }
-        }
-        return ids;
-    }
-
-    /** Reads the bundled sidecar and returns its entries (pattern id → object). */
-    private static List<Map.Entry<String, JsonNode>> sidecarEntries() throws Exception {
-        List<Map.Entry<String, JsonNode>> entries = new ArrayList<>();
-        for (Map.Entry<String, JsonNode> entry :
-            new ObjectMapper().readTree(readResource(SIDECAR_RESOURCE)).properties()) {
-            entries.add(entry);
-        }
-        return entries;
-    }
-
-    /**
-     * Canonical RESOLVABLE node-info-id multiset (sorted, comma-joined) of a
-     * bundled raw graph resource: the node ids that the running test JVM's
-     * registry actually resolves (see {@code everyPatternGraphDeserializes}
-     * for why version-gated cLij2 kernels are filtered). Repeated node types
-     * are preserved (multiset, not set) so they still disambiguate same-name
-     * patterns.
-     */
-    private static String resolvableNodeInfoIds(String raw, JIPipeNodesServiceComponent nodes) throws Exception {
-        JsonNode nodesJson = new ObjectMapper().readTree(raw).get("nodes");
-        List<String> ids = new ArrayList<>();
-        nodesJson.forEach(n -> ids.add(n.get("jipipe:node-info-id").asText()));
-        ids.removeIf(id -> !nodes.hasNodeInfoWithId(id));
-        Collections.sort(ids);
-        return String.join(",", ids);
-    }
-
-    /** Element count of a comma-joined id list ("" counts as 0). */
-    private static int countNodeInfoIds(String commaJoined) {
-        return commaJoined.isEmpty() ? 0 : commaJoined.split(",", -1).length;
-    }
-
-    /** Canonical node-info-id multiset (sorted, comma-joined) of a loaded graph. */
-    private static String nodeInfoIds(JIPipeGraph graph) {
-        List<String> ids = new ArrayList<>();
-        if (graph != null) {
-            for (JIPipeGraphNode node : graph.getGraphNodes()) {
-                ids.add(node.getInfo().getId());
-            }
-        }
-        Collections.sort(ids);
-        return String.join(",", ids);
-    }
-
-    private static JIPipeNodeDatabaseEntry entryByOriginNodeId(JIPipeNodeDatabase database, String nodeId) {
-        for (JIPipeNodeDatabaseEntry entry : database.getEntries()) {
-            if (nodeId.equals(entry.getOriginNodeId())) {
-                return entry;
-            }
-        }
-        return null;
-    }
-
-    private static String names(List<JIPipeNodeDatabaseEntry> entries) {
-        return entries.stream().map(JIPipeNodeDatabaseEntry::getName).toList().toString();
     }
 
     /**

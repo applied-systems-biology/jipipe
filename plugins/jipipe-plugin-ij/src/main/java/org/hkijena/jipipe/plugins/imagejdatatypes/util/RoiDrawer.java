@@ -65,16 +65,6 @@ public class RoiDrawer extends AbstractJIPipeParameterCollection {
     private boolean ignoreT = false;
     private RoiLabelColorMode labelColorMode = RoiLabelColorMode.FIXED;
 
-    /**
-     * Determines the label foreground per ROI.
-     */
-    public enum RoiLabelColorMode {
-        /** Use the explicit {@code labelForeground} for all labels. */
-        FIXED,
-        /** Use each ROI's effective line color as the label foreground. */
-        FROM_ROI_LINE;
-    }
-
     public RoiDrawer() {
     }
 
@@ -180,14 +170,6 @@ public class RoiDrawer extends AbstractJIPipeParameterCollection {
     }
 
     /**
-     * Sets an explicit label font (overrides the family/size pair). Passing
-     * {@code null} falls back to the family/size.
-     */
-    public void setLabelFont(Font labelFont) {
-        this.labelFontOverride = labelFont;
-    }
-
-    /**
      * @return the effective label font — the explicit override when set,
      * otherwise the font built from the family/size pair.
      */
@@ -199,11 +181,11 @@ public class RoiDrawer extends AbstractJIPipeParameterCollection {
     }
 
     /**
-     * The label foreground mode. This is a rendering mode set by the consumer
-     * node (e.g. {@code RoiToRGB}), not a user-facing parameter.
+     * Sets an explicit label font (overrides the family/size pair). Passing
+     * {@code null} falls back to the family/size.
      */
-    public void setLabelColorMode(RoiLabelColorMode mode) {
-        this.labelColorMode = mode;
+    public void setLabelFont(Font labelFont) {
+        this.labelFontOverride = labelFont;
     }
 
     /**
@@ -211,6 +193,14 @@ public class RoiDrawer extends AbstractJIPipeParameterCollection {
      */
     public RoiLabelColorMode getLabelColorMode() {
         return labelColorMode;
+    }
+
+    /**
+     * The label foreground mode. This is a rendering mode set by the consumer
+     * node (e.g. {@code RoiToRGB}), not a user-facing parameter.
+     */
+    public void setLabelColorMode(RoiLabelColorMode mode) {
+        this.labelColorMode = mode;
     }
 
     /**
@@ -736,5 +726,19 @@ public class RoiDrawer extends AbstractJIPipeParameterCollection {
         roi.setFillColor(oldFillColor);
         roi.setStrokeColor(oldStrokeColor);
         roi.setStrokeWidth(oldLineWidth);
+    }
+
+    /**
+     * Determines the label foreground per ROI.
+     */
+    public enum RoiLabelColorMode {
+        /**
+         * Use the explicit {@code labelForeground} for all labels.
+         */
+        FIXED,
+        /**
+         * Use each ROI's effective line color as the label foreground.
+         */
+        FROM_ROI_LINE;
     }
 }

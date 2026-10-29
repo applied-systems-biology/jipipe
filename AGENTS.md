@@ -2,11 +2,13 @@
 
 ## Project Overview
 
-JIPipe is a graphical batch processing language for image analysis built on Java 21 with Maven as the build system. It uses a monolithic architecture with internal code separation rather than user-facing plugins.
+JIPipe is a graphical batch processing language for image analysis built on Java 21 with Maven as the build system. It
+uses a monolithic architecture with internal code separation rather than user-facing plugins.
 
 ## Build System
 
 ### Prerequisites
+
 - **Java 21** (required)
 - **Maven 3.8+**
 - ImageJ/Fiji integration (for full functionality)
@@ -36,50 +38,78 @@ mvn clean compile
 ## Project Structure
 
 ### Main Modules
+
 - **`jipipe-core/`** - Core framework and plugin system
-- **`jipipe-desktop/`** - Desktop application UI  
+- **`jipipe-desktop/`** - Desktop application UI
 - **`jipipe-cli/`** - Command-line interface
 
 ### Plugin System (Internal)
+
 The project uses a Java-based plugin architecture for internal code organization:
 
 #### Key Classes:
-- **[`JIPipeJavaPlugin`](jipipe-core/src/main/java/org/hkijena/jipipe/JIPipeJavaPlugin.java:29)** - Main plugin interface
-- **[`JIPipeDefaultJavaPlugin`](jipipe-core/src/main/java/org/hkijena/jipipe/JIPipeDefaultJavaPlugin.java:101)** - Base implementation with convenient registration methods
-- **[`JIPipePrepackagedDefaultJavaPlugin`](jipipe-core/src/main/java/org/hkijena/jipipe/plugins/JIPipePrepackagedDefaultJavaPlugin.java:30)** - Internal plugin with preconfigured authors
+
+- **[`JIPipeJavaPlugin`](jipipe-core/src/main/java/org/hkijena/jipipe/JIPipeJavaPlugin.java:29)** - Main plugin
+  interface
+- **[`JIPipeDefaultJavaPlugin`](jipipe-core/src/main/java/org/hkijena/jipipe/JIPipeDefaultJavaPlugin.java:101)** - Base
+  implementation with convenient registration methods
+- **[
+  `JIPipePrepackagedDefaultJavaPlugin`](jipipe-core/src/main/java/org/hkijena/jipipe/plugins/JIPipePrepackagedDefaultJavaPlugin.java:30)** -
+  Internal plugin with preconfigured authors
 
 #### Core Plugins (in jipipe-core):
-- [`CorePlugin`](jipipe-core/src/main/java/org/hkijena/jipipe/plugins/core/CorePlugin.java:60) - Essential algorithms and data types
-- [`StandardParametersPlugin`](jipipe-core/src/main/java/org/hkijena/jipipe/plugins/parameters/StandardParametersPlugin.java:110) - Parameter system
-- [`ExpressionPlugin`](jipipe-core/src/main/java/org/hkijena/jipipe/plugins/expressions/ExpressionPlugin.java:48) - Expression evaluation
+
+- [`CorePlugin`](jipipe-core/src/main/java/org/hkijena/jipipe/plugins/core/CorePlugin.java:60) - Essential algorithms
+  and data types
+- [
+  `StandardParametersPlugin`](jipipe-core/src/main/java/org/hkijena/jipipe/plugins/parameters/StandardParametersPlugin.java:110) -
+  Parameter system
+- [`ExpressionPlugin`](jipipe-core/src/main/java/org/hkijena/jipipe/plugins/expressions/ExpressionPlugin.java:48) -
+  Expression evaluation
 - And many others...
 
 ### Plugin Directories (Code Organization)
+
 The `plugins/` directory contains additional modules for functionality separation:
+
 - File system data sources
-- Python integration  
+- Python integration
 - Plotting capabilities
 - Data environments
 - etc.
 
 ### Node taxonomy (6.0.0)
 
-Since 6.0.0, node categorization no longer uses the legacy `JIPipeNodeTypeCategory` / `menuPath` system (removed entirely). Nodes are assigned to a **function tree** + **framework** + **spatial dimensions** + **tags** (see the `api/nodes/taxonomy/` package):
+Since 6.0.0, node categorization no longer uses the legacy `JIPipeNodeTypeCategory` / `menuPath` system (removed
+entirely). Nodes are assigned to a **function tree** + **framework** + **spatial dimensions** + **tags** (see the
+`api/nodes/taxonomy/` package):
 
-- **Functions** — `org.hkijena.jipipe.api.nodes.taxonomy.functions`: a tree of 13 top-level branches (Images, Tables, Data sources, Tracking, …) with 48 leaves. Assign a node with `@ConfigureJIPipeNode(function = {SomeLeafFunction.class, OptionalSecondaryFunction.class})` — the first entry is the primary function, the rest are secondary (analogous to former menu aliases).
-- **Frameworks** — `org.hkijena.jipipe.api.nodes.taxonomy.frameworks` (e.g. `CoreFramework`): `@ConfigureJIPipeNode(framework = CoreFramework.class)`.
-- **Spatial dimensions / tags** — `@ConfigureJIPipeNode(spatialDimensions = {SPATIAL_2D})` (constants of `JIPipeNodeTaxonomySpatialDimension`, a closed set: 2D/3D) and `@JIPipeNodeTaxonomyTags("…")`.
+- **Functions** — `org.hkijena.jipipe.api.nodes.taxonomy.functions`: a tree of 13 top-level branches (Images, Tables,
+  Data sources, Tracking, …) with 48 leaves. Assign a node with
+  `@ConfigureJIPipeNode(function = {SomeLeafFunction.class, OptionalSecondaryFunction.class})` — the first entry is the
+  primary function, the rest are secondary (analogous to former menu aliases).
+- **Frameworks** — `org.hkijena.jipipe.api.nodes.taxonomy.frameworks` (e.g. `CoreFramework`):
+  `@ConfigureJIPipeNode(framework = CoreFramework.class)`.
+- **Spatial dimensions / tags** — `@ConfigureJIPipeNode(spatialDimensions = {SPATIAL_2D})` (constants of
+  `JIPipeNodeTaxonomySpatialDimension`, a closed set: 2D/3D) and `@JIPipeNodeTaxonomyTags("…")`.
 
 Rules:
-- Function/framework IDs are registration IDs and are persisted in saved projects — use **stable string literals**, never code-derived values (the same rule as node/data-type IDs, below).
-- Every registered node **must** have a primary function. This is enforced by the branch gate `TaxonomyFullValidationTest` (jipipe-launcher; runs the production validation over the entire registry and fails on any unassigned node) and by the per-module `TaxonomyConversionReportTest` gates (run with `-Djipipe.taxonomy.report.module=<java-package-prefix>`).
-- Conversion decision record: `utils/taxonomy-conversion/conversion-map.md`. Design spec: `docs/superpowers/specs/2026-10-08-node-taxonomy-redesign-design.md`.
+
+- Function/framework IDs are registration IDs and are persisted in saved projects — use **stable string literals**,
+  never code-derived values (the same rule as node/data-type IDs, below).
+- Every registered node **must** have a primary function. This is enforced by the branch gate
+  `TaxonomyFullValidationTest` (jipipe-launcher; runs the production validation over the entire registry and fails on
+  any unassigned node) and by the per-module `TaxonomyConversionReportTest` gates (run with
+  `-Djipipe.taxonomy.report.module=<java-package-prefix>`).
+- Conversion decision record: `utils/taxonomy-conversion/conversion-map.md`. Design spec:
+  `docs/superpowers/specs/2026-10-08-node-taxonomy-redesign-design.md`.
 
 ## Development Patterns
 
 ### Creating a New Algorithm Node
 
-1. **Create algorithm class** extending [`JIPipeGraphNode`](jipipe-core/src/main/java/org/hkijena/jipipe/api/nodes/JIPipeGraphNode.java)
+1. **Create algorithm class** extending [
+   `JIPipeGraphNode`](jipipe-core/src/main/java/org/hkijena/jipipe/api/nodes/JIPipeGraphNode.java)
 2. **Register in plugin** using convenient methods:
 
 ```java
@@ -107,7 +137,8 @@ registerDatatype("my-data-type", MyData.class, icon,
 
 ### Plugin Registration Methods
 
-The [`JIPipeDefaultJavaPlugin`](jipipe-core/src/main/java/org/hkijena/jipipe/JIPipeDefaultJavaPlugin.java:101) provides convenient methods for:
+The [`JIPipeDefaultJavaPlugin`](jipipe-core/src/main/java/org/hkijena/jipipe/JIPipeDefaultJavaPlugin.java:101) provides
+convenient methods for:
 
 - **Node registration**: `registerNodeType()`, `registerAnnotationNodeType()`
 - **Data types**: `registerDatatype()`, `registerDatatypeOperation()`
@@ -119,7 +150,9 @@ The [`JIPipeDefaultJavaPlugin`](jipipe-core/src/main/java/org/hkijena/jipipe/JIP
 ## Testing
 
 ### Current Test Infrastructure
-Only the [`contrib/jipipe-ro-crate-java-2.1.0`](contrib/jipipe-ro-crate-java-2.1.0/pom.xml) module has JUnit 5 tests configured.
+
+Only the [`contrib/jipipe-ro-crate-java-2.1.0`](contrib/jipipe-ro-crate-java-2.1.0/pom.xml) module has JUnit 5 tests
+configured.
 
 ```bash
 # Run all available tests
@@ -130,6 +163,7 @@ mvn test -Dtest=MyTestClass
 ```
 
 ### Adding Tests
+
 For new modules, add JUnit 5 dependencies and create `src/test/java` structure following the contrib module pattern.
 
 ### Test Policy: Do Not Test Trivial Things (IMPORTANT)
@@ -176,32 +210,51 @@ tests should be designed aware of plugins").
   invariants hold (valid parent chains, unique top-level hues, ...). Extra
   IDs contributed by plugins are legitimate, not failures.
 - **Exact counts are still correct for single-source ship sets:** artifacts
-  generated in one place whose membership is fully controlled by core
-  (e.g. the bundled `system-templates.json` + pattern files in
+  generated in one place whose membership is fully controlled by core (e.g. the bundled `system-templates.json` +
+  pattern files in
   `SystemPatternTemplatesTest`). The distinction is *who can add entries*:
   a generator output has one owner; a service registry has many.
 
 ### ImageJ Legacy Patcher Constraint (IMPORTANT)
-The ImageJ2 legacy patcher (`net.imagej.patcher.LegacyInjector`) bytecode-patches ImageJ1 (`ij.*`) classes for ImageJ1/2 cross-compatibility. **Patching is only possible while the affected classes are not yet initialized.**
 
-- Any test that touches `ij.*` classes (e.g. `new ij.process.AutoThresholder()`, `ShortProcessor`, `IJ.*`) loads them **unpatched** if the patcher has not run yet.
-- If a *later* test then creates the SciJava context (`JIPipe.ensureInstance()` → `new net.imagej.ImageJ()`), `LegacyService` fails with `No _hooks field found in ij.IJ` — **an order-dependent failure** (passes locally in one order, fails in CI in another).
-- **Protection already in place:** [`ImageJLegacyPatcherLauncherSessionListener`](jipipe-core/src/test/java/org/hkijena/jipipe/ImageJLegacyPatcherLauncherSessionListener.java) is a JUnit 5 `LauncherSessionListener` (registered via `jipipe-core/src/test/resources/META-INF/services/`) that calls `LegacyInjector.preinit()` at launcher-session start, before any test class is loaded. Do not remove it or its service-file registration.
+The ImageJ2 legacy patcher (`net.imagej.patcher.LegacyInjector`) bytecode-patches ImageJ1 (`ij.*`) classes for ImageJ1/2
+cross-compatibility. **Patching is only possible while the affected classes are not yet initialized.**
+
+- Any test that touches `ij.*` classes (e.g. `new ij.process.AutoThresholder()`, `ShortProcessor`, `IJ.*`) loads them
+  **unpatched** if the patcher has not run yet.
+- If a *later* test then creates the SciJava context (`JIPipe.ensureInstance()` → `new net.imagej.ImageJ()`),
+  `LegacyService` fails with `No _hooks field found in ij.IJ` — **an order-dependent failure** (passes locally in one
+  order, fails in CI in another).
+- **Protection already in place:** [
+  `ImageJLegacyPatcherLauncherSessionListener`](jipipe-core/src/test/java/org/hkijena/jipipe/ImageJLegacyPatcherLauncherSessionListener.java)
+  is a JUnit 5 `LauncherSessionListener` (registered via `jipipe-core/src/test/resources/META-INF/services/`) that calls
+  `LegacyInjector.preinit()` at launcher-session start, before any test class is loaded. Do not remove it or its
+  service-file registration.
 - **Rules for new tests:**
-  - Do NOT call `LegacyInjector.preinit()` yourself, and do NOT add `--add-opens`/javaagent workarounds — the listener already handles this for the whole suite.
-  - If you add a test that initializes ImageJ1 classes *before* any `JIPipe.ensureInstance()` test runs, keep the listener intact; if you observe `No _hooks field found in ij.IJ`, the listener registration or ordering is broken — check the service file first.
-  - When adding a new module with tests that use `ij.*` or `JIPipe.ensureInstance()`, mirror the jipipe-core setup: `junit-platform-launcher` test dependency + a `LauncherSessionListener` service registration (or extend the core listener's module).
-  - Regression guard: [`ImageJ1ClassLoadingOrderTest`](jipipe-core/src/test/java/org/hkijena/jipipe/utils/threshold/ImageJ1ClassLoadingOrderTest.java) loads ImageJ1 classes before `JIPipe.ensureInstance()` to catch ordering regressions.
+    - Do NOT call `LegacyInjector.preinit()` yourself, and do NOT add `--add-opens`/javaagent workarounds — the listener
+      already handles this for the whole suite.
+    - If you add a test that initializes ImageJ1 classes *before* any `JIPipe.ensureInstance()` test runs, keep the
+      listener intact; if you observe `No _hooks field found in ij.IJ`, the listener registration or ordering is
+      broken — check the service file first.
+    - When adding a new module with tests that use `ij.*` or `JIPipe.ensureInstance()`, mirror the jipipe-core setup:
+      `junit-platform-launcher` test dependency + a `LauncherSessionListener` service registration (or extend the core
+      listener's module).
+    - Regression guard: [
+      `ImageJ1ClassLoadingOrderTest`](jipipe-core/src/test/java/org/hkijena/jipipe/utils/threshold/ImageJ1ClassLoadingOrderTest.java)
+      loads ImageJ1 classes before `JIPipe.ensureInstance()` to catch ordering regressions.
 - **Never "fix" this by excluding the failing test** — the underlying patcher ordering is the actual contract.
 
 ## IDE Development
 
 ### Main Class for Debugging
+
 - **Desktop**: [`JIPipeDesktopMain`](jipipe-desktop/src/main/java/org/hkijena/jipipe/desktop/JIPipeDesktopMain.java)
 - **CLI**: Available in jipipe-cli module
 
 ### Required VM Options (for ImageJ integration)
+
 When debugging in IDE, add these VM arguments:
+
 ```
 --add-opens=java.base/java.lang=ALL-UNNAMED
 --add-opens=java.desktop/javax.swing=ALL-UNNAMED
@@ -214,79 +267,133 @@ When debugging in IDE, add these VM arguments:
 Follow GitLab branch naming conventions: `<issue-id>-<name-in-kebab-case>`
 
 Examples:
+
 - `1310-cellpose-42-models-actionable-errors`
 - `1308-ro-crate-improvements`
 
 ### General Principles
-1. **Follow existing patterns** - The codebase has consistent patterns for plugin registration and algorithm implementation
-2. **Use the provided convenience methods** from `JIPipeDefaultJavaPlugin` rather than direct registry access when possible
+
+1. **Follow existing patterns** - The codebase has consistent patterns for plugin registration and algorithm
+   implementation
+2. **Use the provided convenience methods** from `JIPipeDefaultJavaPlugin` rather than direct registry access when
+   possible
 3. **Implement proper metadata** - All plugins should define name, description, authors, etc.
 4. **Handle dependencies gracefully** - Use the scheduling system for node registration
 
 ### Registered IDs Must Be Stable String Literals (IMPORTANT)
-Registration IDs (node types, data types, parameter types, expression functions, ...) are **persisted in saved projects and pipelines** (e.g. as `field-class-id` in project JSON). They must never be derived from code:
-- **Never** use `SomeClass.class.getCanonicalName()`, `.getName()`, or any other code-derived value as a registration ID. A rename/refactor would silently break every saved project that uses the ID.
+
+Registration IDs (node types, data types, parameter types, expression functions, ...) are **persisted in saved projects
+and pipelines** (e.g. as `field-class-id` in project JSON). They must never be derived from code:
+
+- **Never** use `SomeClass.class.getCanonicalName()`, `.getName()`, or any other code-derived value as a registration
+  ID. A rename/refactor would silently break every saved project that uses the ID.
 - **Always** use an explicit string literal ID (e.g. `"ij1-threshold-local-auto2d-16u:method"`).
-- **Exception:** IDs for third-party features that are integrated automatically (e.g. discovered ImageJ plugins) may be generated from the third-party's own identifiers — never from JIPipe's Java code.
-- If you inherit a legacy code-derived ID, freeze its current value as a string literal (projects contain it verbatim) and keep it unchanged.
+- **Exception:** IDs for third-party features that are integrated automatically (e.g. discovered ImageJ plugins) may be
+  generated from the third-party's own identifiers — never from JIPipe's Java code.
+- If you inherit a legacy code-derived ID, freeze its current value as a string literal (projects contain it verbatim)
+  and keep it unchanged.
 
 ### Plugin Development Best Practices
+
 1. **Extend `JIPipePrepackagedDefaultJavaPlugin`** for internal core plugins (preconfigured authors)
 2. **Extend `JIPipeDefaultJavaPlugin`** for custom development
-3. **Use proper resource loading** via [`ResourceUtils`](jipipe-core/src/main/java/org/hkijena/jipipe/utils/ResourceUtils.java)
+3. **Use proper resource loading** via [
+   `ResourceUtils`](jipipe-core/src/main/java/org/hkijena/jipipe/utils/ResourceUtils.java)
 4. **Follow the registration pattern**: implement `register()` method, call superclass methods in `postprocess()`
 
 ### Important Notes
-- The JSON-based plugin system ([`JIPipeJsonPlugin`](jipipe-core/src/main/java/org/hkijena/jipipe/JIPipeJsonPlugin.java)) is **unused** - the project pivoted to Java-only plugins for internal code organization
+
+- The JSON-based plugin system ([
+  `JIPipeJsonPlugin`](jipipe-core/src/main/java/org/hkijena/jipipe/JIPipeJsonPlugin.java)) is **unused** - the project
+  pivoted to Java-only plugins for internal code organization
 - Plugin management is kept away from users - it's purely for development organization and authorship tracking
-- All core functionality uses the [`JIPipeJavaPlugin`](jipipe-core/src/main/java/org/hkijena/jipipe/JIPipeJavaPlugin.java:29) interface system
+- All core functionality uses the [
+  `JIPipeJavaPlugin`](jipipe-core/src/main/java/org/hkijena/jipipe/JIPipeJavaPlugin.java:29) interface system
 
 ## Dependencies
 
 ### Key External Libraries
+
 - **ImageJ/Fiji** - Image processing foundation
-- **Jackson** - JSON serialization/deserialization  
+- **Jackson** - JSON serialization/deserialization
 - **SciJava** - Plugin framework and context injection
 - **SLF4J** - Logging
 - **JGraphT** - Graph algorithms for data flow
 
 ### Internal Dependencies
-The project uses a multi-module Maven structure with careful dependency management. Core plugins depend on each other in a specific order during initialization.
+
+The project uses a multi-module Maven structure with careful dependency management. Core plugins depend on each other in
+a specific order during initialization.
 
 ## Instrumentation System
 
-JIPipe includes a WebSocket-based instrumentation API for external automation and diagnostics (used by the AI agent and test harnesses). The server runs on `127.0.0.1:8780` by default and is started by the GUI launcher with `--instrumentation [port]` or when auto-start is enabled in settings.
+JIPipe includes a WebSocket-based instrumentation API for external automation and diagnostics (used by the AI agent and
+test harnesses). The server runs on `127.0.0.1:8780` by default and is started by the GUI launcher with
+`--instrumentation [port]` or when auto-start is enabled in settings.
 
 ### Key Classes
-- **[`InstrumentationServer`](jipipe-core/src/main/java/org/hkijena/jipipe/api/instrumentation/InstrumentationServer.java)** - WebSocket server (extends `WebSocketServer`), handles client connections and message dispatch
-- **[`InstrumentationProtocol`](jipipe-core/src/main/java/org/hkijena/jipipe/api/instrumentation/InstrumentationProtocol.java)** - Message type constants (commands and events)
-- **[`InstrumentationOperation`](jipipe-core/src/main/java/org/hkijena/jipipe/api/instrumentation/InstrumentationOperation.java)** - Core operation interface: `getId()`, `getDescription()`, `execute()`
-- **[`AsyncInstrumentationOperation`](jipipe-core/src/main/java/org/hkijena/jipipe/api/instrumentation/AsyncInstrumentationOperation.java)** - Extension for long-running operations; returns a job ID immediately
-- **[`InstrumentationAPI`](jipipe-core/src/main/java/org/hkijena/jipipe/api/instrumentation/InstrumentationAPI.java)** - Stateless service class with all business logic; shared between the WebSocket layer and the internal AI agent
-- **[`InstrumentationOperationRegistry`](jipipe-core/src/main/java/org/hkijena/jipipe/api/instrumentation/InstrumentationOperationRegistry.java)** - `ConcurrentHashMap`-backed registry mapping string IDs to operations
-- **[`InstrumentationContext`](jipipe-core/src/main/java/org/hkijena/jipipe/api/instrumentation/InstrumentationContext.java)** - Immutable context passed to operations (project, progress info, event bus, job manager)
-- **[`InstrumentationApplicationSettings`](jipipe-core/src/main/java/org/hkijena/jipipe/api/instrumentation/InstrumentationApplicationSettings.java)** - Settings: enable/disable, port (default 8780), auto-start
+
+- **[
+  `InstrumentationServer`](jipipe-core/src/main/java/org/hkijena/jipipe/api/instrumentation/InstrumentationServer.java)** -
+  WebSocket server (extends `WebSocketServer`), handles client connections and message dispatch
+- **[
+  `InstrumentationProtocol`](jipipe-core/src/main/java/org/hkijena/jipipe/api/instrumentation/InstrumentationProtocol.java)** -
+  Message type constants (commands and events)
+- **[
+  `InstrumentationOperation`](jipipe-core/src/main/java/org/hkijena/jipipe/api/instrumentation/InstrumentationOperation.java)** -
+  Core operation interface: `getId()`, `getDescription()`, `execute()`
+- **[
+  `AsyncInstrumentationOperation`](jipipe-core/src/main/java/org/hkijena/jipipe/api/instrumentation/AsyncInstrumentationOperation.java)** -
+  Extension for long-running operations; returns a job ID immediately
+- **[`InstrumentationAPI`](jipipe-core/src/main/java/org/hkijena/jipipe/api/instrumentation/InstrumentationAPI.java)** -
+  Stateless service class with all business logic; shared between the WebSocket layer and the internal AI agent
+- **[
+  `InstrumentationOperationRegistry`](jipipe-core/src/main/java/org/hkijena/jipipe/api/instrumentation/InstrumentationOperationRegistry.java)** -
+  `ConcurrentHashMap`-backed registry mapping string IDs to operations
+- **[
+  `InstrumentationContext`](jipipe-core/src/main/java/org/hkijena/jipipe/api/instrumentation/InstrumentationContext.java)** -
+  Immutable context passed to operations (project, progress info, event bus, job manager)
+- **[
+  `InstrumentationApplicationSettings`](jipipe-core/src/main/java/org/hkijena/jipipe/api/instrumentation/InstrumentationApplicationSettings.java)** -
+  Settings: enable/disable, port (default 8780), auto-start
 
 ### Protocol
-All messages are JSON objects with a `"type"` field. Clients send commands; the server responds with `operation_result` (sync) or `job_started`/`job_progress`/`job_completed` (async). Clients must call `select_project` before most operations. Key commands: `list_projects`, `select_project`, `query_graph`, `query_node`, `run_node`, `run_compartment`, `run_pipeline`, `add_node`, `remove_node`, `add_connection`, `remove_connection`, `set_parameter`, `set_project_metadata`, `add_compartment`, `rename_compartment`, `get_pipeline_map`, `search_nodes`, `list_operations`, `get_job_status`, `cancel_job`.
+
+All messages are JSON objects with a `"type"` field. Clients send commands; the server responds with `operation_result`
+(sync) or `job_started`/`job_progress`/`job_completed` (async). Clients must call `select_project` before most
+operations. Key commands: `list_projects`, `select_project`, `query_graph`, `query_node`, `run_node`, `run_compartment`,
+`run_pipeline`, `add_node`, `remove_node`, `add_connection`, `remove_connection`, `set_parameter`,
+`set_project_metadata`, `add_compartment`, `rename_compartment`, `get_pipeline_map`, `search_nodes`, `list_operations`,
+`get_job_status`, `cancel_job`.
 
 ### Adding a New Operation
-1. Create a static inner class implementing `InstrumentationOperation` (or `AsyncInstrumentationOperation` for long-running tasks) in a file under `api/instrumentation/operations/`
-2. Register it in [`InstrumentationPlugin.register()`](jipipe-core/src/main/java/org/hkijena/jipipe/plugins/instrumentation/InstrumentationPlugin.java) via `registerInstrumentationOperation(id, operation)`
+
+1. Create a static inner class implementing `InstrumentationOperation` (or `AsyncInstrumentationOperation` for
+   long-running tasks) in a file under `api/instrumentation/operations/`
+2. Register it in [
+   `InstrumentationPlugin.register()`](jipipe-core/src/main/java/org/hkijena/jipipe/plugins/instrumentation/InstrumentationPlugin.java)
+   via `registerInstrumentationOperation(id, operation)`
 3. Delegate business logic to `InstrumentationAPI` static methods so it's reusable by the AI agent
 4. Fire events via `ctx.getEventBus().publish(...)` so connected clients are notified of changes
-5. Use `ctx.getGraph()` (not `ctx.getProject().getGraph()`) to respect the graph override mechanism used by the AI agent's stage system
+5. Use `ctx.getGraph()` (not `ctx.getProject().getGraph()`) to respect the graph override mechanism used by the AI
+   agent's stage system
 
 ## Distribution Build Scripts
 
-The ZIP build scripts (`dist/zip/build.sh`, `dist/zip/build-release.sh`, `dist/zip/build-no-dependencies.sh`) are **generated files** — do not edit them directly.
+The ZIP build scripts (`dist/zip/build.sh`, `dist/zip/build-release.sh`, `dist/zip/build-no-dependencies.sh`) are
+**generated files** — do not edit them directly.
 
 ### How to add or update an external dependency
 
-1. Add the dependency to [`dist/dist-info.json`](dist/dist-info.json) under the `"dependencies"` object, mapping the jar filename to its Maven Central download URL
+1. Add the dependency to [`dist/dist-info.json`](dist/dist-info.json) under the `"dependencies"` object, mapping the jar
+   filename to its Maven Central download URL
 2. Run `python3 dist/generate-dist-scripts.py` (from the `dist/` directory) to regenerate all build scripts
-3. If the dependency is also needed in the `jipipe-distribution-files` repo, add the jar to `scripts/plugin-dependencies/` in that repo
+3. If the dependency is also needed in the `jipipe-distribution-files` repo, add the jar to
+   `scripts/plugin-dependencies/` in that repo
 
 ### Key files
-- **[`dist/dist-info.json`](dist/dist-info.json)** - Source of truth for external dependencies, contrib modules, and JIPipe modules
-- **[`dist/generate-dist-scripts.py`](dist/generate-dist-scripts.py)** - Generator script that produces the build shell scripts from `dist-info.json`
+
+- **[`dist/dist-info.json`](dist/dist-info.json)** - Source of truth for external dependencies, contrib modules, and
+  JIPipe modules
+- **[`dist/generate-dist-scripts.py`](dist/generate-dist-scripts.py)** - Generator script that produces the build shell
+  scripts from `dist-info.json`

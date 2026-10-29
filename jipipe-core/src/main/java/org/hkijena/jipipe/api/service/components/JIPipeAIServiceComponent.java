@@ -1,7 +1,5 @@
 package org.hkijena.jipipe.api.service.components;
 
-import org.hkijena.jipipe.api.nodes.database.embeddings.JIPipeGlobalEmbeddingSearch;
-
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -14,6 +12,7 @@ import org.hkijena.jipipe.api.microservice.AbstractMicroservice;
 import org.hkijena.jipipe.api.microservice.MicroserviceState;
 import org.hkijena.jipipe.api.microservice.ServiceAwareEphemeralExecutor;
 import org.hkijena.jipipe.api.microservice.ServiceAwareQueuedExecutor;
+import org.hkijena.jipipe.api.nodes.database.embeddings.JIPipeGlobalEmbeddingSearch;
 import org.hkijena.jipipe.api.run.JIPipeRunnableExecutor;
 import org.hkijena.jipipe.api.servers.JIPipeServerLease;
 import org.hkijena.jipipe.api.service.JIPipeService;

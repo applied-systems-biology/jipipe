@@ -31,12 +31,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -150,16 +145,181 @@ class JipxRoundTripFixpointTest {
         JIPipe.ensureInstance();
     }
 
+    /**
+     * Loads a project from the given path with an empty, throwaway validation
+     * report and notification inbox, through the format dispatcher — the
+     * same entry point every load site in the code base uses (legacy JSON
+     * reader for plain files, JIPX reader for ZIP content).
+     */
+    private static JIPipeProject load(Path path, UnspecifiedValidationReportContext context) throws IOException {
+        return JIPipeProject.loadProject(path, context,
+                new JIPipeValidationReport(), new JIPipeNotificationInbox(), JIPipeProgressInfo.SILENT);
+    }
+
+    /**
+     * The full monolith serialization of a project as a JSON tree —
+     * {@code readValue(writeValueAsString(project))}. Used to compare the
+     * legacy-fixpoint model (M1) with the model loaded back from the JIPX
+     * container (M2): both models are serialized the same way, so the
+     * comparison isolates the JIPX write→read round trip itself.
+     */
+    private static JsonNode monolithTree(JIPipeProject project) throws IOException {
+        String json = JsonUtils.getObjectMapper().writeValueAsString(project);
+        return JsonUtils.getObjectMapper().readValue(json, JsonNode.class);
+    }
+
+    /**
+     * The JIPX crate validity check (boolean only — see the class javadoc:
+     * the crate content is deliberately NOT compared byte-wise because
+     * {@code datePublished} is non-deterministic by design):
+     * <ul>
+     * <li><code>ro-crate-metadata.json</code> exists in the container and
+     * parses as JSON;</li>
+     * <li>its root <code>./</code> entity has a <code>mainEntity</code>
+     * property (== <code>project/graph.json</code>, the manifest's main
+     * graph part) and a <code>license</code> property;</li>
+     * <li><code>jipx.json</code> exists and parses as JSON.</li>
+     * </ul>
+     */
+    private static boolean crateValid(Path jipxPath) throws IOException {
+        try (ZipFile zip = new ZipFile(jipxPath.toFile())) {
+            // The manifest.
+            ZipEntry manifestEntry = zip.getEntry(JIPipeXManifest.MANIFEST_FILE_NAME);
+            if (manifestEntry == null) {
+                return false;
+            }
+            try (InputStream is = zip.getInputStream(manifestEntry)) {
+                JsonUtils.getObjectMapper().readTree(is);
+            } catch (Exception e) {
+                return false;
+            }
+            // The crate metadata.
+            ZipEntry crateEntry = zip.getEntry(JIPipeXProjectWriter.CRATE_METADATA_FILE_NAME);
+            if (crateEntry == null) {
+                return false;
+            }
+            JsonNode crate;
+            try (InputStream is = zip.getInputStream(crateEntry)) {
+                crate = JsonUtils.getObjectMapper().readTree(is);
+            } catch (Exception e) {
+                return false;
+            }
+            JsonNode rootEntity = null;
+            JsonNode graph = crate.path("@graph");
+            if (graph.isArray()) {
+                for (JsonNode entity : graph) {
+                    if (entity.isObject() && "./".equals(entity.path("@id").asText())) {
+                        rootEntity = entity;
+                        break;
+                    }
+                }
+            }
+            // mainEntity / license are written by the crate as RO-Crate id
+            // references ({ "@id": "..." }), so resolve the @id sub-field.
+            if (rootEntity == null
+                    || !JIPipeXManifest.MAIN_GRAPH.equals(resolveId(rootEntity.path("mainEntity")))
+                    || resolveId(rootEntity.path("license")) == null) {
+                return false;
+            }
+            return true;
+        }
+    }
+
+    /**
+     * Resolves an RO-Crate id reference to its id string: a plain string is
+     * returned as-is; an object with an <code>@id</code> field returns that
+     * field; anything else (missing, other types) returns null.
+     */
+    private static String resolveId(JsonNode node) {
+        if (node == null || node.isNull() || node.isMissingNode()) {
+            return null;
+        }
+        if (node.isTextual()) {
+            return node.asText();
+        }
+        if (node.isObject()) {
+            JsonNode id = node.get("@id");
+            return id != null && id.isTextual() ? id.asText() : null;
+        }
+        return null;
+    }
+
+    /**
+     * Canonical form of a JSON tree for order-insensitive comparison
+     * (DUPLICATED from the phase 0 gate {@code CorpusRoundTripFixpointTest}
+     * by design — that file is the verified baseline and keeps zero diff;
+     * two test files sharing the canonical helper is acceptable for tests):
+     * objects are re-emitted with fields sorted by key; arrays have each
+     * element canonicalized and are then sorted by the element's canonical
+     * string form (multiset equality, order erased); scalars are unchanged.
+     */
+    private static JsonNode canonical(JsonNode node) {
+        if (node == null) {
+            return null;
+        }
+        if (node.isObject()) {
+            ObjectNode out = JsonUtils.getObjectMapper().createObjectNode();
+            for (Map.Entry<String, JsonNode> field : new TreeMap<>(fields(node)).entrySet()) {
+                out.set(field.getKey(), canonical(field.getValue()));
+            }
+            return out;
+        }
+        if (node.isArray()) {
+            ArrayNode out = JsonUtils.getObjectMapper().createArrayNode();
+            List<JsonNode> items = new ArrayList<>();
+            for (JsonNode element : node) {
+                items.add(canonical(element));
+            }
+            items.sort(Comparator.comparing(JsonNode::toString));
+            for (JsonNode element : items) {
+                out.add(element);
+            }
+            return out;
+        }
+        return node;
+    }
+
+    private static Map<String, JsonNode> fields(JsonNode object) {
+        Map<String, JsonNode> fields = new LinkedHashMap<>();
+        object.fields().forEachRemaining(e -> fields.put(e.getKey(), e.getValue()));
+        return fields;
+    }
+
+    private static long countTopLevelJipFiles(Path corpus) throws IOException {
+        try (Stream<Path> stream = Files.list(corpus)) {
+            return stream
+                    .filter(Files::isRegularFile)
+                    .filter(p -> endsWithJip(p.getFileName().toString()))
+                    .count();
+        }
+    }
+
+    private static boolean endsWithJip(String fileName) {
+        return fileName.length() >= 4 && fileName.regionMatches(true, fileName.length() - 4, ".jip", 0, 4);
+    }
+
+    /**
+     * One-line exception summary (the phase 0 pattern):
+     * <code>Class: message</code>, whitespace-collapsed, 500-char cap.
+     * Diagnostic only — known to flap for JDK NPE helpful-message forms;
+     * never part of any comparison.
+     */
+    private static String errorLine(Throwable e) {
+        String message = e.getMessage() == null ? e.getClass().getName() : e.getMessage();
+        String oneLine = e.getClass().getName() + ": " + message.replaceAll("\\s+", " ").trim();
+        return oneLine.length() > 500 ? oneLine.substring(0, 500) : oneLine;
+    }
+
     @Test
     void jipxRoundTripFixpoint(@TempDir Path tmp) throws IOException {
         String corpusProp = System.getProperty("jipipe.jipx.roundtrip.corpus");
         assumeTrue(corpusProp != null && !corpusProp.isBlank(),
-            "No -Djipipe.jipx.roundtrip.corpus=<dir> given; skipping JIPX corpus round-trip harness");
+                "No -Djipipe.jipx.roundtrip.corpus=<dir> given; skipping JIPX corpus round-trip harness");
         Path corpus = Path.of(corpusProp).toAbsolutePath().normalize();
         assertTrue(Files.isDirectory(corpus), "Corpus directory does not exist: " + corpus);
 
         Path reportPath = Path.of(System.getProperty("jipipe.jipx.roundtrip.report",
-            corpus.resolve(".roundtrip").resolve("jipx.json").toString())).toAbsolutePath().normalize();
+                corpus.resolve(".roundtrip").resolve("jipx.json").toString())).toAbsolutePath().normalize();
         // -1 (unbounded) only when the property is ABSENT; a present-but-malformed
         // value must fail loudly rather than silently fall back.
         int limit = -1;
@@ -173,10 +333,10 @@ class JipxRoundTripFixpointTest {
         List<Path> inputs;
         try (Stream<Path> stream = Files.walk(corpus)) {
             inputs = stream
-                .filter(Files::isRegularFile)
-                .filter(p -> endsWithJip(p.getFileName().toString()))
-                .sorted(Comparator.comparing(Path::toString))
-                .collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
+                    .filter(Files::isRegularFile)
+                    .filter(p -> endsWithJip(p.getFileName().toString()))
+                    .sorted(Comparator.comparing(Path::toString))
+                    .collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
         }
         if (limit > 0) {
             inputs = new ArrayList<>(inputs.subList(0, Math.min(limit, inputs.size())));
@@ -322,8 +482,8 @@ class JipxRoundTripFixpointTest {
         // The harness must not have polluted the corpus.
         long topLevelCountAfter = countTopLevelJipFiles(corpus);
         assertEquals(topLevelCountBefore, topLevelCountAfter,
-            "Corpus pollution: top-level *.jip count of " + corpus + " changed from "
-                + topLevelCountBefore + " to " + topLevelCountAfter);
+                "Corpus pollution: top-level *.jip count of " + corpus + " changed from "
+                        + topLevelCountBefore + " to " + topLevelCountAfter);
 
         // The done-gate assertion: for every project the legacy cycle loaded
         // (outcome OK), the JIPX round trip must have been model-equivalent,
@@ -358,9 +518,9 @@ class JipxRoundTripFixpointTest {
             }
         }
         assertTrue(jipxGateFailures.isEmpty(),
-            "JIPX round-trip gate FAILED for " + jipxGateFailures.size() + " entr"
-                + (jipxGateFailures.size() == 1 ? "y" : "ies") + ":\n  "
-                + String.join("\n  ", jipxGateFailures));
+                "JIPX round-trip gate FAILED for " + jipxGateFailures.size() + " entr"
+                        + (jipxGateFailures.size() == 1 ? "y" : "ies") + ":\n  "
+                        + String.join("\n  ", jipxGateFailures));
 
         report.put("totalFiles", entries.size());
         ArrayNode entriesNode = report.putArray("entries");
@@ -372,171 +532,6 @@ class JipxRoundTripFixpointTest {
         Files.createDirectories(reportPath.getParent());
         JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValue(reportPath.toFile(), report);
         System.out.println("[jipx-roundtrip] Report written to " + reportPath
-            + " (" + entries.size() + " files, outcomes: " + outcomes + ")");
-    }
-
-    /**
-     * Loads a project from the given path with an empty, throwaway validation
-     * report and notification inbox, through the format dispatcher — the
-     * same entry point every load site in the code base uses (legacy JSON
-     * reader for plain files, JIPX reader for ZIP content).
-     */
-    private static JIPipeProject load(Path path, UnspecifiedValidationReportContext context) throws IOException {
-        return JIPipeProject.loadProject(path, context,
-            new JIPipeValidationReport(), new JIPipeNotificationInbox(), JIPipeProgressInfo.SILENT);
-    }
-
-    /**
-     * The full monolith serialization of a project as a JSON tree —
-     * {@code readValue(writeValueAsString(project))}. Used to compare the
-     * legacy-fixpoint model (M1) with the model loaded back from the JIPX
-     * container (M2): both models are serialized the same way, so the
-     * comparison isolates the JIPX write→read round trip itself.
-     */
-    private static JsonNode monolithTree(JIPipeProject project) throws IOException {
-        String json = JsonUtils.getObjectMapper().writeValueAsString(project);
-        return JsonUtils.getObjectMapper().readValue(json, JsonNode.class);
-    }
-
-    /**
-     * The JIPX crate validity check (boolean only — see the class javadoc:
-     * the crate content is deliberately NOT compared byte-wise because
-     * {@code datePublished} is non-deterministic by design):
-     * <ul>
-     * <li><code>ro-crate-metadata.json</code> exists in the container and
-     * parses as JSON;</li>
-     * <li>its root <code>./</code> entity has a <code>mainEntity</code>
-     * property (== <code>project/graph.json</code>, the manifest's main
-     * graph part) and a <code>license</code> property;</li>
-     * <li><code>jipx.json</code> exists and parses as JSON.</li>
-     * </ul>
-     */
-    private static boolean crateValid(Path jipxPath) throws IOException {
-        try (ZipFile zip = new ZipFile(jipxPath.toFile())) {
-            // The manifest.
-            ZipEntry manifestEntry = zip.getEntry(JIPipeXManifest.MANIFEST_FILE_NAME);
-            if (manifestEntry == null) {
-                return false;
-            }
-            try (InputStream is = zip.getInputStream(manifestEntry)) {
-                JsonUtils.getObjectMapper().readTree(is);
-            } catch (Exception e) {
-                return false;
-            }
-            // The crate metadata.
-            ZipEntry crateEntry = zip.getEntry(JIPipeXProjectWriter.CRATE_METADATA_FILE_NAME);
-            if (crateEntry == null) {
-                return false;
-            }
-            JsonNode crate;
-            try (InputStream is = zip.getInputStream(crateEntry)) {
-                crate = JsonUtils.getObjectMapper().readTree(is);
-            } catch (Exception e) {
-                return false;
-            }
-            JsonNode rootEntity = null;
-            JsonNode graph = crate.path("@graph");
-            if (graph.isArray()) {
-                for (JsonNode entity : graph) {
-                    if (entity.isObject() && "./".equals(entity.path("@id").asText())) {
-                        rootEntity = entity;
-                        break;
-                    }
-                }
-            }
-            // mainEntity / license are written by the crate as RO-Crate id
-            // references ({ "@id": "..." }), so resolve the @id sub-field.
-            if (rootEntity == null
-                    || !JIPipeXManifest.MAIN_GRAPH.equals(resolveId(rootEntity.path("mainEntity")))
-                    || resolveId(rootEntity.path("license")) == null) {
-                return false;
-            }
-            return true;
-        }
-    }
-
-    /**
-     * Resolves an RO-Crate id reference to its id string: a plain string is
-     * returned as-is; an object with an <code>@id</code> field returns that
-     * field; anything else (missing, other types) returns null.
-     */
-    private static String resolveId(JsonNode node) {
-        if (node == null || node.isNull() || node.isMissingNode()) {
-            return null;
-        }
-        if (node.isTextual()) {
-            return node.asText();
-        }
-        if (node.isObject()) {
-            JsonNode id = node.get("@id");
-            return id != null && id.isTextual() ? id.asText() : null;
-        }
-        return null;
-    }
-
-    /**
-     * Canonical form of a JSON tree for order-insensitive comparison
-     * (DUPLICATED from the phase 0 gate {@code CorpusRoundTripFixpointTest}
-     * by design — that file is the verified baseline and keeps zero diff;
-     * two test files sharing the canonical helper is acceptable for tests):
-     * objects are re-emitted with fields sorted by key; arrays have each
-     * element canonicalized and are then sorted by the element's canonical
-     * string form (multiset equality, order erased); scalars are unchanged.
-     */
-    private static JsonNode canonical(JsonNode node) {
-        if (node == null) {
-            return null;
-        }
-        if (node.isObject()) {
-            ObjectNode out = JsonUtils.getObjectMapper().createObjectNode();
-            for (Map.Entry<String, JsonNode> field : new TreeMap<>(fields(node)).entrySet()) {
-                out.set(field.getKey(), canonical(field.getValue()));
-            }
-            return out;
-        }
-        if (node.isArray()) {
-            ArrayNode out = JsonUtils.getObjectMapper().createArrayNode();
-            List<JsonNode> items = new ArrayList<>();
-            for (JsonNode element : node) {
-                items.add(canonical(element));
-            }
-            items.sort(Comparator.comparing(JsonNode::toString));
-            for (JsonNode element : items) {
-                out.add(element);
-            }
-            return out;
-        }
-        return node;
-    }
-
-    private static Map<String, JsonNode> fields(JsonNode object) {
-        Map<String, JsonNode> fields = new LinkedHashMap<>();
-        object.fields().forEachRemaining(e -> fields.put(e.getKey(), e.getValue()));
-        return fields;
-    }
-
-    private static long countTopLevelJipFiles(Path corpus) throws IOException {
-        try (Stream<Path> stream = Files.list(corpus)) {
-            return stream
-                .filter(Files::isRegularFile)
-                .filter(p -> endsWithJip(p.getFileName().toString()))
-                .count();
-        }
-    }
-
-    private static boolean endsWithJip(String fileName) {
-        return fileName.length() >= 4 && fileName.regionMatches(true, fileName.length() - 4, ".jip", 0, 4);
-    }
-
-    /**
-     * One-line exception summary (the phase 0 pattern):
-     * <code>Class: message</code>, whitespace-collapsed, 500-char cap.
-     * Diagnostic only — known to flap for JDK NPE helpful-message forms;
-     * never part of any comparison.
-     */
-    private static String errorLine(Throwable e) {
-        String message = e.getMessage() == null ? e.getClass().getName() : e.getMessage();
-        String oneLine = e.getClass().getName() + ": " + message.replaceAll("\\s+", " ").trim();
-        return oneLine.length() > 500 ? oneLine.substring(0, 500) : oneLine;
+                + " (" + entries.size() + " files, outcomes: " + outcomes + ")");
     }
 }

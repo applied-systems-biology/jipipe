@@ -21,15 +21,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
+import java.util.*;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -57,487 +50,42 @@ import java.util.function.Supplier;
 public class JIPipeDesktopRichSelectionBox extends JButton {
 
     /**
-     * One selectable option of the box.
-     *
-     * @param <T> the caller's value type carried by the option
+     * Marker prefix of a group-header row value (single-pane list mode).
      */
-    public static class Option<T> {
-        private final T value;
-        private final String displayText;
-        private final String searchText;
-        private final Icon icon;
-        private final String group;
-        private final String tooltip;
-
-        /**
-         * @param value       the caller's value (returned to the change consumer)
-         * @param displayText the row text
-         * @param icon        the row icon (nullable)
-         * @param group       the section group (nullable; rendered as group
-         *                    headers / panes)
-         */
-        public Option(T value, String displayText, Icon icon, String group) {
-            this(value, displayText, icon, group, null);
-        }
-
-        /**
-         * @param value       the caller's value (returned to the change consumer)
-         * @param displayText the row text
-         * @param icon        the row icon (nullable)
-         * @param group       the section group (nullable; rendered as group
-         *                    headers / panes)
-         * @param tooltip     the row tooltip (nullable; shown on hover)
-         */
-        public Option(T value, String displayText, Icon icon, String group, String tooltip) {
-            this.value = value;
-            this.displayText = displayText;
-            this.icon = icon;
-            this.group = group;
-            this.tooltip = tooltip;
-            this.searchText = displayText.toLowerCase(Locale.ROOT);
-        }
-
-        public T getValue() {
-            return value;
-        }
-
-        public String getDisplayText() {
-            return displayText;
-        }
-
-        public Icon getIcon() {
-            return icon;
-        }
-
-        public String getGroup() {
-            return group;
-        }
-
-        /** The row tooltip, or null. */
-        public String getTooltip() {
-            return tooltip;
-        }
-
-        /** The lower-cased display text, for case-insensitive substring search. */
-        String getSearchText() {
-            return searchText;
-        }
-    }
-
-    /**
-     * The keyboard decision matrix of the popup (see #1339): a headless,
-     * Swing-free state machine that the search field and the pane lists
-     * delegate to. The box constructs one per popup open and syncs it on
-     * every focus move, filter change, and list selection change;
-     * {@link #onKey(int, boolean)} returns the {@link KeyAction} to apply.
-     * <p>
-     * The model knows the pane models as {@link Option} lists — including the
-     * non-option group-header rows of the single-pane list mode, which are
-     * marked via {@code headerRows} (one boolean per row of pane 0). Header
-     * rows are skipped by arrow navigation and Enter on one is a no-op.
-     * <p>
-     * Two-pane mode has no header rows (each pane IS one group).
-     */
-    static final class PopupKeyModel {
-
-        /** Where the keyboard focus is inside the popup. */
-        public enum Focus { SEARCH, LIST }
-
-        /** What the box must do in response to a key. */
-        public enum KeyAction {
-            /** Nothing (e.g. Enter on a header row, arrow at the edge). */
-            NOOP,
-            /** Move keyboard focus to the list at ({@code pane}, {@code row}). */
-            FOCUS_LIST,
-            /** Move keyboard focus to the search field. */
-            FOCUS_SEARCH,
-            /** Move the list's selection within its pane to {@code row} (popup stays open). */
-            MOVE_ROW,
-            /** Single-select: confirm the first visible option (or the highlighted
-             * match row if one is pending) and close the popup. */
-            SELECT_FIRST_AND_CLOSE,
-            /** Single-select: confirm the option at the focused row and close. */
-            SELECT_ROW_AND_CLOSE,
-            /** Multi-select: toggle the option at the focused row; popup stays open. */
-            TOGGLE_ROW,
-            /** Close the popup, keeping the selection as-is (Esc; multi-Enter in search). */
-            CLOSE_KEEP
-        }
-
-        /** A {@link KeyAction} with its target pane and row (both -1 when not applicable). */
-        public record KeyActionResult(KeyAction type, int pane, int row) {
-        }
-
-        private final boolean multiSelect;
-        private List<List<Option<?>>> paneOptions;
-        private List<Boolean> headerRows = List.of();
-        private final Set<Object> selectedValues = new LinkedHashSet<>();
-
-        private Focus focus = Focus.SEARCH;
-        private int focusPane = 0;
-        private int focusRow = -1;
-        /**
-         * The option row a filtered match highlights while the user types in
-         * the search field (or -1 if none): single-select Enter in search
-         * confirms this option instead of the first visible one.
-         */
-        private int pendingConfirmPane = -1;
-        private int pendingConfirmRow = -1;
-        /** Whether the closing (multi-Enter in search) fired the selection handler. */
-        private boolean fireHandlerOnClose = false;
-
-        /**
-         * @param multiSelect whether the box allows more than one selected option
-         * @param twoPane     whether the popup renders two side-by-side panes
-         * @param paneOptions the visible options of each pane, in display order
-         *                    (one list for single-pane, two for two-pane);
-         *                    single-pane list mode may contain header rows
-         * @param headerRows  per-row (pane 0 only) whether the row is a
-         *                    non-option group header (empty for two-pane / ungrouped)
-         * @param selected    the currently selected values
-         */
-        public PopupKeyModel(boolean multiSelect, boolean twoPane,
-                             List<List<Option<?>>> paneOptions, List<Boolean> headerRows,
-                             Set<?> selected) {
-            this.multiSelect = multiSelect;
-            this.paneOptions = paneOptions;
-            this.headerRows = headerRows == null ? List.of() : headerRows;
-            this.selectedValues.addAll(selected);
-        }
-
-        // -- state sync (called by the box) ------------------------------
-
-        /**
-         * The filter changed and the box rebuilt the pane models: re-point
-         * the model's row views at the new contents and reset navigation to
-         * the search field.
-         */
-        public void modelsRebuilt(List<List<Option<?>>> newPaneOptions, List<Boolean> newHeaderRows) {
-            this.paneOptions = newPaneOptions;
-            this.headerRows = newHeaderRows == null ? List.of() : newHeaderRows;
-            focus = Focus.SEARCH;
-            focusRow = -1;
-            // A rebuild invalidates any previously highlighted match row (the
-            // lists may still show a stale selection that no longer belongs to
-            // the filtered contents); Enter-in-search falls back to the first
-            // visible option until the user moves the cursor again.
-            pendingConfirmPane = -1;
-            pendingConfirmRow = -1;
-        }
-
-        /**
-         * Sets the focus region (the box calls this on focus moves, and the
-         * headless test calls it to position the cursor):
-         * <ul>
-         *   <li>{@code LIST} at the given pane + row (the list's selected row);</li>
-         *   <li>{@code SEARCH} — the search field has focus. If {@code row >= 0},
-         *       that (pane, row) is the match row a single-select Enter should
-         *       confirm (the box reports the first filtered match here); if
-         *       {@code row < 0}, no specific row is pending and Enter confirms
-         *       the first visible option.</li>
-         * </ul>
-         */
-        public void setFocus(Focus region, int pane, int row) {
-            focus = region;
-            if (region == Focus.LIST) {
-                focusPane = pane;
-                focusRow = row;
-            } else {
-                focusPane = 0;
-                focusRow = -1;
-                if (row >= 0) {
-                    pendingConfirmPane = pane;
-                    pendingConfirmRow = row;
-                } else {
-                    pendingConfirmPane = -1;
-                    pendingConfirmRow = -1;
-                }
-            }
-        }
-
-        /** The box moved keyboard focus to the search field (no pending match row). */
-        public void focusSearch() {
-            setFocus(Focus.SEARCH, -1, -1);
-        }
-
-        /** The box moved keyboard focus to the list at the given pane. */
-        public void focusList(int pane) {
-            focus = Focus.LIST;
-            focusPane = pane;
-        }
-
-        /** The focused list's selection interval is now at this row (of its pane). */
-        public void setFocusRow(int row) {
-            focusRow = row;
-        }
-
-        /** The box (re)applied its selection state to the model. */
-        public void selectionChanged(Set<?> selected) {
-            selectedValues.clear();
-            selectedValues.addAll(selected);
-        }
-
-        // -- queries -------------------------------------------------------
-
-        public Focus focus() {
-            return focus;
-        }
-
-        public int focusPane() {
-            return focusPane;
-        }
-
-        public int focusRow() {
-            return focusRow;
-        }
-
-        /** An unmodifiable view of the current selection values. */
-        public Set<Object> getSelectedValues() {
-            return Collections.unmodifiableSet(selectedValues);
-        }
-
-        /**
-         * Whether the just-processed close action (multi-Enter in search)
-         * must fire the selection handler with the current selection.
-         * Esc never sets this.
-         */
-        public boolean fireHandlerOnClose() {
-            return fireHandlerOnClose;
-        }
-
-        // -- the decision matrix ------------------------------------------
-
-        /**
-         * Handles a key event on the search field or one of the pane lists.
-         *
-         * @param keyCode the key's {@code KeyEvent.VK_*} code
-         * @param shift   whether Shift was held (for Tab direction)
-         * @return the action to apply (and its target pane/row where applicable)
-         */
-        public KeyActionResult onKey(int keyCode, boolean shift) {
-            return onKey(keyCode, shift, false);
-        }
-
-        public KeyActionResult onKey(int keyCode, boolean shift, boolean ctrl) {
-            fireHandlerOnClose = false;
-            switch (keyCode) {
-                case KeyEvent.VK_ESCAPE:
-                    return new KeyActionResult(KeyAction.CLOSE_KEEP, -1, -1);
-                case KeyEvent.VK_TAB:
-                    return tab(shift);
-                case KeyEvent.VK_ENTER:
-                    return enter();
-                case KeyEvent.VK_DOWN:
-                    return down();
-                case KeyEvent.VK_UP:
-                    return up();
-                default:
-                    return new KeyActionResult(KeyAction.NOOP, -1, -1);
-            }
-        }
-
-        private KeyActionResult enter() {
-            if (focus == Focus.SEARCH) {
-                if (multiSelect) {
-                    // Close, keeping the current toggles, and fire the
-                    // handler with the current selection (Clear-button path).
-                    fireHandlerOnClose = true;
-                    return new KeyActionResult(KeyAction.CLOSE_KEEP, -1, -1);
-                }
-                // Confirm the pending match row if one was reported, else the
-                // first visible option.
-                int[] target = pendingConfirmRow >= 0 && pendingConfirmValue() != null
-                        ? new int[]{pendingConfirmPane, pendingConfirmRow}
-                        : firstOption();
-                if (target == null) {
-                    return new KeyActionResult(KeyAction.NOOP, -1, -1);
-                }
-                selectedValues.clear();
-                selectedValues.add(paneOptions.get(target[0]).get(target[1]).getValue());
-                return new KeyActionResult(KeyAction.SELECT_FIRST_AND_CLOSE, target[0], target[1]);
-            }
-            // focus == LIST
-            int row = focusRow;
-            List<Option<?>> pane = paneOptions.get(focusPane);
-            if (row < 0 || row >= pane.size() || isHeader(row)) {
-                return new KeyActionResult(KeyAction.NOOP, -1, -1);
-            }
-            Object value = pane.get(row).getValue();
-            if (multiSelect) {
-                // Toggle; popup stays open.
-                if (!selectedValues.add(value)) {
-                    selectedValues.remove(value);
-                }
-                return new KeyActionResult(KeyAction.TOGGLE_ROW, focusPane, row);
-            }
-            selectedValues.clear();
-            selectedValues.add(value);
-            return new KeyActionResult(KeyAction.SELECT_ROW_AND_CLOSE, focusPane, row);
-        }
-
-        private KeyActionResult down() {
-            if (focus == Focus.SEARCH) {
-                int row = firstOptionRow(0);
-                if (row < 0) {
-                    return new KeyActionResult(KeyAction.NOOP, -1, -1);
-                }
-                focus = Focus.LIST;
-                focusPane = 0;
-                focusRow = row;
-                return new KeyActionResult(KeyAction.FOCUS_LIST, 0, row);
-            }
-            // focus == LIST
-            int row = nextOptionRow(focusRow + 1);
-            if (row < 0) {
-                return new KeyActionResult(KeyAction.NOOP, -1, -1);
-            }
-            focusRow = row;
-            return new KeyActionResult(KeyAction.MOVE_ROW, focusPane, row);
-        }
-
-        private KeyActionResult up() {
-            if (focus == Focus.LIST) {
-                int row = prevOptionRow(focusRow - 1);
-                if (row >= 0) {
-                    focusRow = row;
-                    return new KeyActionResult(KeyAction.MOVE_ROW, focusPane, row);
-                }
-                // No option above: return to the search field.
-                focus = Focus.SEARCH;
-                return new KeyActionResult(KeyAction.FOCUS_SEARCH, -1, -1);
-            }
-            return new KeyActionResult(KeyAction.NOOP, -1, -1);
-        }
-
-        private KeyActionResult tab(boolean shift) {
-            int panes = paneOptions.size();
-            int next;
-            if (focus == Focus.SEARCH) {
-                next = shift ? panes - 1 : 0;
-            } else if (shift) {
-                next = focusPane - 1;
-            } else {
-                next = focusPane + 1;
-            }
-            // The focus cycle is SEARCH -> pane 0 -> pane 1 -> … -> SEARCH.
-            // Stepping forward past the last pane, or backward past the first,
-            // wraps to the search field.
-            if (next >= panes || next < 0) {
-                focus = Focus.SEARCH;
-                return new KeyActionResult(KeyAction.FOCUS_SEARCH, -1, -1);
-            }
-            int row = firstOptionRow(next);
-            focus = Focus.LIST;
-            focusPane = next;
-            focusRow = row;
-            return new KeyActionResult(KeyAction.FOCUS_LIST, next, row);
-        }
-
-        // -- option/row helpers -------------------------------------------
-
-        private boolean isHeader(int row) {
-            return !headerRows.isEmpty() && row < headerRows.size() && headerRows.get(row);
-        }
-
-        private Object pendingConfirmValue() {
-            if (pendingConfirmPane < 0 || pendingConfirmPane >= paneOptions.size()) {
-                return null;
-            }
-            List<Option<?>> pane = paneOptions.get(pendingConfirmPane);
-            if (pendingConfirmRow < 0 || pendingConfirmRow >= pane.size() || isHeader(pendingConfirmRow)) {
-                return null;
-            }
-            return pane.get(pendingConfirmRow).getValue();
-        }
-
-        /** The first visible option as {pane, row}, or null if there is none. */
-        private int[] firstOption() {
-            for (int p = 0; p < paneOptions.size(); p++) {
-                for (int i = 0; i < paneOptions.get(p).size(); i++) {
-                    if (!isHeader(i)) {
-                        return new int[]{p, i};
-                    }
-                }
-            }
-            return null;
-        }
-
-        private int firstOptionRow(int pane) {
-            List<Option<?>> p = paneOptions.get(pane);
-            for (int i = 0; i < p.size(); i++) {
-                if (!isHeader(i)) {
-                    return i;
-                }
-            }
-            return -1;
-        }
-
-        private int nextOptionRow(int from) {
-            List<Option<?>> p = paneOptions.get(focusPane);
-            for (int i = Math.max(from, 0); i < p.size(); i++) {
-                if (!isHeader(i)) {
-                    return i;
-                }
-            }
-            return -1;
-        }
-
-        private int prevOptionRow(int from) {
-            List<Option<?>> p = paneOptions.get(focusPane);
-            for (int i = Math.min(from, p.size() - 1); i >= 0; i--) {
-                if (!isHeader(i)) {
-                    return i;
-                }
-            }
-            return -1;
-        }
-    }
-
-    /** Marker prefix of a group-header row value (single-pane list mode). */
     private static final String GROUP_HEADER_MARKER = "__group__:";
-
     private static final int POPUP_WIDTH = 300;
     private static final int POPUP_HEIGHT = 380;
-    /** Fast wheel scrolling (Swing's default unit increment is glacial). */
+    /**
+     * Fast wheel scrolling (Swing's default unit increment is glacial).
+     */
     private static final int SCROLL_UNIT_INCREMENT = 48;
-
     private final String baseLabel;
-    /** The compact label of a non-empty selection (null = legacy label, see the constructor). */
+    /**
+     * The compact label of a non-empty selection (null = legacy label, see the constructor).
+     */
     private final String summaryLabel;
     private final Font baseFont;
     private final boolean multiSelect;
     private final boolean twoPaneGroups;
     private final Supplier<List<Option<?>>> optionsSupplier;
     private final Consumer<List<Option<?>>> selectionHandler;
-
     private final JPopupMenu popup = new JPopupMenu();
     private final JTextField searchField = new JTextField();
     /**
-     * The keyboard decision matrix of the currently open popup (null when the
-     * popup is closed, see {@link #showPopup()}/{@link #buildKeyModel()}).
+     * Resets the selection to empty ("show all"); sits right of the search bar.
      */
-    private PopupKeyModel keyModel = null;
-    /** Resets the selection to empty ("show all"); sits right of the search bar. */
     private final JButton clearButton = new JButton("Clear");
-    /** (Optional) selects all current options; sits left of the Clear button. Enabled only when {@link #setHasSelectAll(boolean)}. */
-    private final JButton selectAllButton = new JButton("Select all");
-    /** Whether the popup header shows the "Select all" button (see {@link #setHasSelectAll(boolean)}). */
-    private boolean hasSelectAll = false;
     /**
-     * When true, the button shows a compact count ("n selected") instead of the
-     * selected option texts / summary label. Used by editors that already show
-     * the parameter name in a separate label column, so the button must not
-     * repeat it (#1339).
+     * (Optional) selects all current options; sits left of the Clear button. Enabled only when {@link #setHasSelectAll(boolean)}.
      */
-    private boolean countOnly = false;
-    /** One per distinct group (two-pane mode) or a single list (list mode). */
+    private final JButton selectAllButton = new JButton("Select all");
+    /**
+     * One per distinct group (two-pane mode) or a single list (list mode).
+     */
     private final List<JList<Option<?>>> paneLists = new ArrayList<>();
     private final List<DefaultListModel<Option<?>>> paneModels = new ArrayList<>();
     private final Set<Object> selectedValues = new LinkedHashSet<>();
     private final Map<Object, Option<?>> optionsByValue = new LinkedHashMap<>();
-    /** The options of the last (or current) popup open. */
-    private List<Option<?>> currentOptions = List.of();
-
     private final DocumentListener searchFilterListener = new DocumentListener() {
         @Override
         public void insertUpdate(DocumentEvent e) {
@@ -554,7 +102,6 @@ public class JIPipeDesktopRichSelectionBox extends JButton {
             applyFilter();
         }
     };
-
     /**
      * Routes the popup's navigation keys to the key model. Shared by the
      * search field and every pane list: {@link #dispatchPopupKey(KeyEvent)}
@@ -579,56 +126,26 @@ public class JIPipeDesktopRichSelectionBox extends JButton {
         public void keyTyped(KeyEvent e) {
         }
     };
-
     /**
-     * Stamps the model's focus from the event source and asks it what to do
-     * with the key; applies the returned action to the components.
+     * The keyboard decision matrix of the currently open popup (null when the
+     * popup is closed, see {@link #showPopup()}/{@link #buildKeyModel()}).
      */
-    private void dispatchPopupKey(KeyEvent e) {
-        if (keyModel == null) {
-            return;
-        }
-        int code = e.getKeyCode();
-        if (code != KeyEvent.VK_DOWN && code != KeyEvent.VK_UP && code != KeyEvent.VK_ENTER
-                && code != KeyEvent.VK_ESCAPE && code != KeyEvent.VK_TAB) {
-            return;
-        }
-        Component source = e.getComponent();
-        if (source == searchField) {
-            // A single-select Enter-in-search confirms the highlighted match
-            // row if one is currently selected (refreshListSelection keeps the
-            // row of the current selection highlighted while the user filters),
-            // else the first filtered option.
-            int pane = -1;
-            int row = -1;
-            for (int p = 0; p < paneLists.size(); p++) {
-                int idx = paneLists.get(p).getSelectedIndex();
-                if (idx >= 0 && idx < paneModels.get(p).size()
-                        && !isGroupHeader(paneModels.get(p).get(idx))) {
-                    pane = p;
-                    row = idx;
-                    break;
-                }
-            }
-            keyModel.setFocus(PopupKeyModel.Focus.SEARCH, pane, row);
-        } else {
-            int pane = paneLists.indexOf(source);
-            if (pane < 0) {
-                return;
-            }
-            JList<?> list = (JList<?>) source;
-            // The list's current selection is the cursor row (-1 if it was
-            // cleared, e.g. the highlighted row was filtered out); the model
-            // treats -1 as "no row", so Enter is a no-op and the arrows re-land
-            // on the first/previous option.
-            keyModel.setFocus(PopupKeyModel.Focus.LIST, pane, list.getSelectedIndex());
-        }
-        PopupKeyModel.KeyActionResult result = keyModel.onKey(code, e.isShiftDown());
-        if (result.type() != PopupKeyModel.KeyAction.NOOP) {
-            e.consume();
-            applyPopupKeyAction(result);
-        }
-    }
+    private PopupKeyModel keyModel = null;
+    /**
+     * Whether the popup header shows the "Select all" button (see {@link #setHasSelectAll(boolean)}).
+     */
+    private boolean hasSelectAll = false;
+    /**
+     * When true, the button shows a compact count ("n selected") instead of the
+     * selected option texts / summary label. Used by editors that already show
+     * the parameter name in a separate label column, so the button must not
+     * repeat it (#1339).
+     */
+    private boolean countOnly = false;
+    /**
+     * The options of the last (or current) popup open.
+     */
+    private List<Option<?>> currentOptions = List.of();
 
     /**
      * Creates a rich selection box (single-pane list mode).
@@ -659,18 +176,18 @@ public class JIPipeDesktopRichSelectionBox extends JButton {
      * Creates a rich selection box.
      *
      * @param baseLabel        the label shown when nothing is selected (e.g.
-     *                          "All data")
+     *                         "All data")
      * @param summaryLabel     the compact label used while options are
-     *                          selected, rendered as
-     *                          {@code "<summaryLabel> (<count>)"} (e.g.
-     *                          "Data" → "Data (3)"), so the button width
-     *                          stays bounded no matter how many options are
-     *                          picked; {@code null} keeps the legacy label
-     *                          (the first three selected option texts)
+     *                         selected, rendered as
+     *                         {@code "<summaryLabel> (<count>)"} (e.g.
+     *                         "Data" → "Data (3)"), so the button width
+     *                         stays bounded no matter how many options are
+     *                         picked; {@code null} keeps the legacy label
+     *                         (the first three selected option texts)
      * @param multiSelect      whether more than one option can be selected
      * @param twoPaneGroups    render the option groups as side-by-side panes
-     *                          (e.g. "Input" | "Output") instead of a single
-     *                          list with group headers
+     *                         (e.g. "Input" | "Output") instead of a single
+     *                         list with group headers
      * @param optionsSupplier  evaluated every time the popup opens (fresh options)
      * @param selectionHandler called with the new selection on every change
      */
@@ -732,6 +249,81 @@ public class JIPipeDesktopRichSelectionBox extends JButton {
         });
     }
 
+    private static JScrollPane makeScroll(JComponent view) {
+        JScrollPane scroll = new JScrollPane(view);
+        scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        scroll.getVerticalScrollBar().setUnitIncrement(SCROLL_UNIT_INCREMENT);
+        return scroll;
+    }
+
+    private static boolean isGroupHeader(Option<?> option) {
+        return option.getValue() instanceof String s && s.startsWith(GROUP_HEADER_MARKER);
+    }
+
+    private static Option<String> groupHeader(String group) {
+        return new Option<>(GROUP_HEADER_MARKER + group, group, null, null);
+    }
+
+    private static List<String> distinctGroups(List<Option<?>> options) {
+        List<String> groups = new ArrayList<>();
+        for (Option<?> option : options) {
+            if (option.getGroup() != null && !groups.contains(option.getGroup())) {
+                groups.add(option.getGroup());
+            }
+        }
+        return groups;
+    }
+
+    /**
+     * Stamps the model's focus from the event source and asks it what to do
+     * with the key; applies the returned action to the components.
+     */
+    private void dispatchPopupKey(KeyEvent e) {
+        if (keyModel == null) {
+            return;
+        }
+        int code = e.getKeyCode();
+        if (code != KeyEvent.VK_DOWN && code != KeyEvent.VK_UP && code != KeyEvent.VK_ENTER
+                && code != KeyEvent.VK_ESCAPE && code != KeyEvent.VK_TAB) {
+            return;
+        }
+        Component source = e.getComponent();
+        if (source == searchField) {
+            // A single-select Enter-in-search confirms the highlighted match
+            // row if one is currently selected (refreshListSelection keeps the
+            // row of the current selection highlighted while the user filters),
+            // else the first filtered option.
+            int pane = -1;
+            int row = -1;
+            for (int p = 0; p < paneLists.size(); p++) {
+                int idx = paneLists.get(p).getSelectedIndex();
+                if (idx >= 0 && idx < paneModels.get(p).size()
+                        && !isGroupHeader(paneModels.get(p).get(idx))) {
+                    pane = p;
+                    row = idx;
+                    break;
+                }
+            }
+            keyModel.setFocus(PopupKeyModel.Focus.SEARCH, pane, row);
+        } else {
+            int pane = paneLists.indexOf(source);
+            if (pane < 0) {
+                return;
+            }
+            JList<?> list = (JList<?>) source;
+            // The list's current selection is the cursor row (-1 if it was
+            // cleared, e.g. the highlighted row was filtered out); the model
+            // treats -1 as "no row", so Enter is a no-op and the arrows re-land
+            // on the first/previous option.
+            keyModel.setFocus(PopupKeyModel.Focus.LIST, pane, list.getSelectedIndex());
+        }
+        PopupKeyModel.KeyActionResult result = keyModel.onKey(code, e.isShiftDown());
+        if (result.type() != PopupKeyModel.KeyAction.NOOP) {
+            e.consume();
+            applyPopupKeyAction(result);
+        }
+    }
+
     /**
      * Shows a "Select all" button next to the popup's "Clear" button when
      * {@code true} (it selects every current option through the normal
@@ -753,6 +345,17 @@ public class JIPipeDesktopRichSelectionBox extends JButton {
     }
 
     /**
+     * @return the currently selected values (unmodifiable)
+     */
+    public Set<Object> getSelectedValues() {
+        return Collections.unmodifiableSet(selectedValues);
+    }
+
+    // ------------------------------------------------------------------
+    // Popup
+    // ------------------------------------------------------------------
+
+    /**
      * Sets the selection programmatically (no change event is fired).
      *
      * @param values the selected values (may be empty)
@@ -763,11 +366,6 @@ public class JIPipeDesktopRichSelectionBox extends JButton {
             selectedValues.addAll(values);
         }
         updateText();
-    }
-
-    /** @return the currently selected values (unmodifiable) */
-    public Set<Object> getSelectedValues() {
-        return Collections.unmodifiableSet(selectedValues);
     }
 
     /**
@@ -786,10 +384,6 @@ public class JIPipeDesktopRichSelectionBox extends JButton {
         }
         updateText();
     }
-
-    // ------------------------------------------------------------------
-    // Popup
-    // ------------------------------------------------------------------
 
     private void showPopup() {
         currentOptions = optionsSupplier.get();
@@ -885,14 +479,6 @@ public class JIPipeDesktopRichSelectionBox extends JButton {
         keyModel.modelsRebuilt(snapshot.paneViews(), snapshot.headerRows());
     }
 
-    /**
-     * A plain-data snapshot of the current pane models: each pane's visible
-     * options in display order, plus per-row (pane 0) header flags — the input
-     * the key model needs (it must not hold the live {@link DefaultListModel}s).
-     */
-    private record KeyModelSnapshot(List<List<Option<?>>> paneViews, List<Boolean> headerRows) {
-    }
-
     private KeyModelSnapshot snapshotPaneModels() {
         List<List<Option<?>>> paneViews = new ArrayList<>();
         List<Boolean> headers = new ArrayList<>();
@@ -952,7 +538,9 @@ public class JIPipeDesktopRichSelectionBox extends JButton {
         }
     }
 
-    /** Copies the key model's selection values into the box's selectedValues. */
+    /**
+     * Copies the key model's selection values into the box's selectedValues.
+     */
     private void syncModelSelectionToBox() {
         if (keyModel == null) {
             return;
@@ -980,13 +568,6 @@ public class JIPipeDesktopRichSelectionBox extends JButton {
     private void closePopup() {
         keyModel = null;
         popup.setVisible(false);
-    }
-
-    private static JScrollPane makeScroll(JComponent view) {
-        JScrollPane scroll = new JScrollPane(view);
-        scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        scroll.getVerticalScrollBar().setUnitIncrement(SCROLL_UNIT_INCREMENT);
-        return scroll;
     }
 
     private JList<Option<?>> createPaneList() {
@@ -1198,21 +779,486 @@ public class JIPipeDesktopRichSelectionBox extends JButton {
     // Group headers
     // ------------------------------------------------------------------
 
-    private static boolean isGroupHeader(Option<?> option) {
-        return option.getValue() instanceof String s && s.startsWith(GROUP_HEADER_MARKER);
+    /**
+     * One selectable option of the box.
+     *
+     * @param <T> the caller's value type carried by the option
+     */
+    public static class Option<T> {
+        private final T value;
+        private final String displayText;
+        private final String searchText;
+        private final Icon icon;
+        private final String group;
+        private final String tooltip;
+
+        /**
+         * @param value       the caller's value (returned to the change consumer)
+         * @param displayText the row text
+         * @param icon        the row icon (nullable)
+         * @param group       the section group (nullable; rendered as group
+         *                    headers / panes)
+         */
+        public Option(T value, String displayText, Icon icon, String group) {
+            this(value, displayText, icon, group, null);
+        }
+
+        /**
+         * @param value       the caller's value (returned to the change consumer)
+         * @param displayText the row text
+         * @param icon        the row icon (nullable)
+         * @param group       the section group (nullable; rendered as group
+         *                    headers / panes)
+         * @param tooltip     the row tooltip (nullable; shown on hover)
+         */
+        public Option(T value, String displayText, Icon icon, String group, String tooltip) {
+            this.value = value;
+            this.displayText = displayText;
+            this.icon = icon;
+            this.group = group;
+            this.tooltip = tooltip;
+            this.searchText = displayText.toLowerCase(Locale.ROOT);
+        }
+
+        public T getValue() {
+            return value;
+        }
+
+        public String getDisplayText() {
+            return displayText;
+        }
+
+        public Icon getIcon() {
+            return icon;
+        }
+
+        public String getGroup() {
+            return group;
+        }
+
+        /**
+         * The row tooltip, or null.
+         */
+        public String getTooltip() {
+            return tooltip;
+        }
+
+        /**
+         * The lower-cased display text, for case-insensitive substring search.
+         */
+        String getSearchText() {
+            return searchText;
+        }
     }
 
-    private static Option<String> groupHeader(String group) {
-        return new Option<>(GROUP_HEADER_MARKER + group, group, null, null);
-    }
+    /**
+     * The keyboard decision matrix of the popup (see #1339): a headless,
+     * Swing-free state machine that the search field and the pane lists
+     * delegate to. The box constructs one per popup open and syncs it on
+     * every focus move, filter change, and list selection change;
+     * {@link #onKey(int, boolean)} returns the {@link KeyAction} to apply.
+     * <p>
+     * The model knows the pane models as {@link Option} lists — including the
+     * non-option group-header rows of the single-pane list mode, which are
+     * marked via {@code headerRows} (one boolean per row of pane 0). Header
+     * rows are skipped by arrow navigation and Enter on one is a no-op.
+     * <p>
+     * Two-pane mode has no header rows (each pane IS one group).
+     */
+    static final class PopupKeyModel {
 
-    private static List<String> distinctGroups(List<Option<?>> options) {
-        List<String> groups = new ArrayList<>();
-        for (Option<?> option : options) {
-            if (option.getGroup() != null && !groups.contains(option.getGroup())) {
-                groups.add(option.getGroup());
+        private final boolean multiSelect;
+        private final Set<Object> selectedValues = new LinkedHashSet<>();
+        private List<List<Option<?>>> paneOptions;
+        private List<Boolean> headerRows = List.of();
+        private Focus focus = Focus.SEARCH;
+        private int focusPane = 0;
+        private int focusRow = -1;
+        /**
+         * The option row a filtered match highlights while the user types in
+         * the search field (or -1 if none): single-select Enter in search
+         * confirms this option instead of the first visible one.
+         */
+        private int pendingConfirmPane = -1;
+        private int pendingConfirmRow = -1;
+        /**
+         * Whether the closing (multi-Enter in search) fired the selection handler.
+         */
+        private boolean fireHandlerOnClose = false;
+        /**
+         * @param multiSelect whether the box allows more than one selected option
+         * @param twoPane     whether the popup renders two side-by-side panes
+         * @param paneOptions the visible options of each pane, in display order
+         *                    (one list for single-pane, two for two-pane);
+         *                    single-pane list mode may contain header rows
+         * @param headerRows  per-row (pane 0 only) whether the row is a
+         *                    non-option group header (empty for two-pane / ungrouped)
+         * @param selected    the currently selected values
+         */
+        public PopupKeyModel(boolean multiSelect, boolean twoPane,
+                             List<List<Option<?>>> paneOptions, List<Boolean> headerRows,
+                             Set<?> selected) {
+            this.multiSelect = multiSelect;
+            this.paneOptions = paneOptions;
+            this.headerRows = headerRows == null ? List.of() : headerRows;
+            this.selectedValues.addAll(selected);
+        }
+
+        /**
+         * The filter changed and the box rebuilt the pane models: re-point
+         * the model's row views at the new contents and reset navigation to
+         * the search field.
+         */
+        public void modelsRebuilt(List<List<Option<?>>> newPaneOptions, List<Boolean> newHeaderRows) {
+            this.paneOptions = newPaneOptions;
+            this.headerRows = newHeaderRows == null ? List.of() : newHeaderRows;
+            focus = Focus.SEARCH;
+            focusRow = -1;
+            // A rebuild invalidates any previously highlighted match row (the
+            // lists may still show a stale selection that no longer belongs to
+            // the filtered contents); Enter-in-search falls back to the first
+            // visible option until the user moves the cursor again.
+            pendingConfirmPane = -1;
+            pendingConfirmRow = -1;
+        }
+
+        /**
+         * Sets the focus region (the box calls this on focus moves, and the
+         * headless test calls it to position the cursor):
+         * <ul>
+         *   <li>{@code LIST} at the given pane + row (the list's selected row);</li>
+         *   <li>{@code SEARCH} — the search field has focus. If {@code row >= 0},
+         *       that (pane, row) is the match row a single-select Enter should
+         *       confirm (the box reports the first filtered match here); if
+         *       {@code row < 0}, no specific row is pending and Enter confirms
+         *       the first visible option.</li>
+         * </ul>
+         */
+        public void setFocus(Focus region, int pane, int row) {
+            focus = region;
+            if (region == Focus.LIST) {
+                focusPane = pane;
+                focusRow = row;
+            } else {
+                focusPane = 0;
+                focusRow = -1;
+                if (row >= 0) {
+                    pendingConfirmPane = pane;
+                    pendingConfirmRow = row;
+                } else {
+                    pendingConfirmPane = -1;
+                    pendingConfirmRow = -1;
+                }
             }
         }
-        return groups;
+
+        /**
+         * The box moved keyboard focus to the search field (no pending match row).
+         */
+        public void focusSearch() {
+            setFocus(Focus.SEARCH, -1, -1);
+        }
+
+        // -- state sync (called by the box) ------------------------------
+
+        /**
+         * The box moved keyboard focus to the list at the given pane.
+         */
+        public void focusList(int pane) {
+            focus = Focus.LIST;
+            focusPane = pane;
+        }
+
+        /**
+         * The focused list's selection interval is now at this row (of its pane).
+         */
+        public void setFocusRow(int row) {
+            focusRow = row;
+        }
+
+        /**
+         * The box (re)applied its selection state to the model.
+         */
+        public void selectionChanged(Set<?> selected) {
+            selectedValues.clear();
+            selectedValues.addAll(selected);
+        }
+
+        public Focus focus() {
+            return focus;
+        }
+
+        public int focusPane() {
+            return focusPane;
+        }
+
+        public int focusRow() {
+            return focusRow;
+        }
+
+        // -- queries -------------------------------------------------------
+
+        /**
+         * An unmodifiable view of the current selection values.
+         */
+        public Set<Object> getSelectedValues() {
+            return Collections.unmodifiableSet(selectedValues);
+        }
+
+        /**
+         * Whether the just-processed close action (multi-Enter in search)
+         * must fire the selection handler with the current selection.
+         * Esc never sets this.
+         */
+        public boolean fireHandlerOnClose() {
+            return fireHandlerOnClose;
+        }
+
+        /**
+         * Handles a key event on the search field or one of the pane lists.
+         *
+         * @param keyCode the key's {@code KeyEvent.VK_*} code
+         * @param shift   whether Shift was held (for Tab direction)
+         * @return the action to apply (and its target pane/row where applicable)
+         */
+        public KeyActionResult onKey(int keyCode, boolean shift) {
+            return onKey(keyCode, shift, false);
+        }
+
+        public KeyActionResult onKey(int keyCode, boolean shift, boolean ctrl) {
+            fireHandlerOnClose = false;
+            switch (keyCode) {
+                case KeyEvent.VK_ESCAPE:
+                    return new KeyActionResult(KeyAction.CLOSE_KEEP, -1, -1);
+                case KeyEvent.VK_TAB:
+                    return tab(shift);
+                case KeyEvent.VK_ENTER:
+                    return enter();
+                case KeyEvent.VK_DOWN:
+                    return down();
+                case KeyEvent.VK_UP:
+                    return up();
+                default:
+                    return new KeyActionResult(KeyAction.NOOP, -1, -1);
+            }
+        }
+
+        private KeyActionResult enter() {
+            if (focus == Focus.SEARCH) {
+                if (multiSelect) {
+                    // Close, keeping the current toggles, and fire the
+                    // handler with the current selection (Clear-button path).
+                    fireHandlerOnClose = true;
+                    return new KeyActionResult(KeyAction.CLOSE_KEEP, -1, -1);
+                }
+                // Confirm the pending match row if one was reported, else the
+                // first visible option.
+                int[] target = pendingConfirmRow >= 0 && pendingConfirmValue() != null
+                        ? new int[]{pendingConfirmPane, pendingConfirmRow}
+                        : firstOption();
+                if (target == null) {
+                    return new KeyActionResult(KeyAction.NOOP, -1, -1);
+                }
+                selectedValues.clear();
+                selectedValues.add(paneOptions.get(target[0]).get(target[1]).getValue());
+                return new KeyActionResult(KeyAction.SELECT_FIRST_AND_CLOSE, target[0], target[1]);
+            }
+            // focus == LIST
+            int row = focusRow;
+            List<Option<?>> pane = paneOptions.get(focusPane);
+            if (row < 0 || row >= pane.size() || isHeader(row)) {
+                return new KeyActionResult(KeyAction.NOOP, -1, -1);
+            }
+            Object value = pane.get(row).getValue();
+            if (multiSelect) {
+                // Toggle; popup stays open.
+                if (!selectedValues.add(value)) {
+                    selectedValues.remove(value);
+                }
+                return new KeyActionResult(KeyAction.TOGGLE_ROW, focusPane, row);
+            }
+            selectedValues.clear();
+            selectedValues.add(value);
+            return new KeyActionResult(KeyAction.SELECT_ROW_AND_CLOSE, focusPane, row);
+        }
+
+        // -- the decision matrix ------------------------------------------
+
+        private KeyActionResult down() {
+            if (focus == Focus.SEARCH) {
+                int row = firstOptionRow(0);
+                if (row < 0) {
+                    return new KeyActionResult(KeyAction.NOOP, -1, -1);
+                }
+                focus = Focus.LIST;
+                focusPane = 0;
+                focusRow = row;
+                return new KeyActionResult(KeyAction.FOCUS_LIST, 0, row);
+            }
+            // focus == LIST
+            int row = nextOptionRow(focusRow + 1);
+            if (row < 0) {
+                return new KeyActionResult(KeyAction.NOOP, -1, -1);
+            }
+            focusRow = row;
+            return new KeyActionResult(KeyAction.MOVE_ROW, focusPane, row);
+        }
+
+        private KeyActionResult up() {
+            if (focus == Focus.LIST) {
+                int row = prevOptionRow(focusRow - 1);
+                if (row >= 0) {
+                    focusRow = row;
+                    return new KeyActionResult(KeyAction.MOVE_ROW, focusPane, row);
+                }
+                // No option above: return to the search field.
+                focus = Focus.SEARCH;
+                return new KeyActionResult(KeyAction.FOCUS_SEARCH, -1, -1);
+            }
+            return new KeyActionResult(KeyAction.NOOP, -1, -1);
+        }
+
+        private KeyActionResult tab(boolean shift) {
+            int panes = paneOptions.size();
+            int next;
+            if (focus == Focus.SEARCH) {
+                next = shift ? panes - 1 : 0;
+            } else if (shift) {
+                next = focusPane - 1;
+            } else {
+                next = focusPane + 1;
+            }
+            // The focus cycle is SEARCH -> pane 0 -> pane 1 -> … -> SEARCH.
+            // Stepping forward past the last pane, or backward past the first,
+            // wraps to the search field.
+            if (next >= panes || next < 0) {
+                focus = Focus.SEARCH;
+                return new KeyActionResult(KeyAction.FOCUS_SEARCH, -1, -1);
+            }
+            int row = firstOptionRow(next);
+            focus = Focus.LIST;
+            focusPane = next;
+            focusRow = row;
+            return new KeyActionResult(KeyAction.FOCUS_LIST, next, row);
+        }
+
+        private boolean isHeader(int row) {
+            return !headerRows.isEmpty() && row < headerRows.size() && headerRows.get(row);
+        }
+
+        private Object pendingConfirmValue() {
+            if (pendingConfirmPane < 0 || pendingConfirmPane >= paneOptions.size()) {
+                return null;
+            }
+            List<Option<?>> pane = paneOptions.get(pendingConfirmPane);
+            if (pendingConfirmRow < 0 || pendingConfirmRow >= pane.size() || isHeader(pendingConfirmRow)) {
+                return null;
+            }
+            return pane.get(pendingConfirmRow).getValue();
+        }
+
+        /**
+         * The first visible option as {pane, row}, or null if there is none.
+         */
+        private int[] firstOption() {
+            for (int p = 0; p < paneOptions.size(); p++) {
+                for (int i = 0; i < paneOptions.get(p).size(); i++) {
+                    if (!isHeader(i)) {
+                        return new int[]{p, i};
+                    }
+                }
+            }
+            return null;
+        }
+
+        // -- option/row helpers -------------------------------------------
+
+        private int firstOptionRow(int pane) {
+            List<Option<?>> p = paneOptions.get(pane);
+            for (int i = 0; i < p.size(); i++) {
+                if (!isHeader(i)) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        private int nextOptionRow(int from) {
+            List<Option<?>> p = paneOptions.get(focusPane);
+            for (int i = Math.max(from, 0); i < p.size(); i++) {
+                if (!isHeader(i)) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        private int prevOptionRow(int from) {
+            List<Option<?>> p = paneOptions.get(focusPane);
+            for (int i = Math.min(from, p.size() - 1); i >= 0; i--) {
+                if (!isHeader(i)) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        /**
+         * Where the keyboard focus is inside the popup.
+         */
+        public enum Focus {SEARCH, LIST}
+
+        /**
+         * What the box must do in response to a key.
+         */
+        public enum KeyAction {
+            /**
+             * Nothing (e.g. Enter on a header row, arrow at the edge).
+             */
+            NOOP,
+            /**
+             * Move keyboard focus to the list at ({@code pane}, {@code row}).
+             */
+            FOCUS_LIST,
+            /**
+             * Move keyboard focus to the search field.
+             */
+            FOCUS_SEARCH,
+            /**
+             * Move the list's selection within its pane to {@code row} (popup stays open).
+             */
+            MOVE_ROW,
+            /**
+             * Single-select: confirm the first visible option (or the highlighted
+             * match row if one is pending) and close the popup.
+             */
+            SELECT_FIRST_AND_CLOSE,
+            /**
+             * Single-select: confirm the option at the focused row and close.
+             */
+            SELECT_ROW_AND_CLOSE,
+            /**
+             * Multi-select: toggle the option at the focused row; popup stays open.
+             */
+            TOGGLE_ROW,
+            /**
+             * Close the popup, keeping the selection as-is (Esc; multi-Enter in search).
+             */
+            CLOSE_KEEP
+        }
+
+        /**
+         * A {@link KeyAction} with its target pane and row (both -1 when not applicable).
+         */
+        public record KeyActionResult(KeyAction type, int pane, int row) {
+        }
+    }
+
+    /**
+     * A plain-data snapshot of the current pane models: each pane's visible
+     * options in display order, plus per-row (pane 0) header flags — the input
+     * the key model needs (it must not hold the live {@link DefaultListModel}s).
+     */
+    private record KeyModelSnapshot(List<List<Option<?>>> paneViews, List<Boolean> headerRows) {
     }
 }

@@ -22,7 +22,8 @@ import static org.junit.jupiter.api.Assertions.*;
  * rows the inline list view shows, with "+k more" / "Show less" transitions.
  */
 class ListPaginationModelTest {
-    @Test void loadMoreRevealsPageSizeAtATime() {
+    @Test
+    void loadMoreRevealsPageSizeAtATime() {
         ListPaginationModel m = new ListPaginationModel(12, 5, true);
         assertEquals(5, m.visibleCount());
         assertEquals(7, m.loadMoreRemaining());
@@ -38,24 +39,32 @@ class ListPaginationModelTest {
         m.loadMore();                 // at the end: no-op
         assertEquals(12, m.visibleCount());
     }
-    @Test void showLessCollapsesBackToPageSize() {
+
+    @Test
+    void showLessCollapsesBackToPageSize() {
         ListPaginationModel m = new ListPaginationModel(12, 5, true);
-        m.loadMore(); m.loadMore();
+        m.loadMore();
+        m.loadMore();
         m.showLess();
         assertEquals(5, m.visibleCount());
         assertTrue(m.showLoadMore());
         assertFalse(new ListPaginationModel(3, 5, true).showLoadMore()); // n < pageSize
     }
-    @Test void withScrollBarDisablesPagination() {
+
+    @Test
+    void withScrollBarDisablesPagination() {
         ListPaginationModel m = new ListPaginationModel(50, 5, false);
         assertEquals(50, m.visibleCount());   // all rows, scrolling body
         assertEquals(0, m.loadMoreRemaining());
-        m.loadMore(); m.showLess();           // no-ops
+        m.loadMore();
+        m.showLess();           // no-ops
         assertEquals(50, m.visibleCount());
         assertFalse(m.showLoadMore());
         assertFalse(m.showShowLess());
     }
-    @Test void emptyList() {
+
+    @Test
+    void emptyList() {
         ListPaginationModel m = new ListPaginationModel(0, 5, true);
         assertEquals(0, m.visibleCount());
         assertFalse(m.showLoadMore());

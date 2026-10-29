@@ -13,14 +13,19 @@
 
 package org.hkijena.jipipe.desktop.commons.nodepatterns;
 
-import java.awt.BasicStroke;
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.awt.geom.Arc2D;
 import java.awt.geom.Path2D;
 import java.util.Random;
 
-/** Scattered open loop motifs on a jittered grid. */
+/**
+ * Scattered open loop motifs on a jittered grid.
+ */
 public final class LoopsFamily implements NodePatternFamily {
+    private static double toDeg(double rad) {
+        return Math.toDegrees(rad);
+    }
+
     @Override
     public void paint(Graphics2D g, int w, int h, Random rng) {
         int n = 6;
@@ -38,6 +43,4 @@ public final class LoopsFamily implements NodePatternFamily {
                 g.draw(p);
             }
     }
-
-    private static double toDeg(double rad) { return Math.toDegrees(rad); }
 }

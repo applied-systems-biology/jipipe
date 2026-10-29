@@ -15,13 +15,7 @@ package org.hkijena.jipipe.api.nodes.taxonomy;
 
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * In-memory registry of {@link JIPipeNodeTaxonomyFramework}s.
@@ -98,7 +92,7 @@ public class FrameworkRegistry {
         for (Map.Entry<String, List<String>> entry : namesPerId.entrySet()) {
             if (entry.getValue().size() > 1) {
                 errors.add("Duplicate taxonomy framework id " + entry.getKey()
-                    + " in frameworks: " + String.join(", ", entry.getValue()));
+                        + " in frameworks: " + String.join(", ", entry.getValue()));
             }
         }
 
@@ -108,7 +102,7 @@ public class FrameworkRegistry {
                 errors.add("Taxonomy framework " + framework.getId() + " has an empty abbreviation");
             } else if (abbreviation.length() > 4) {
                 errors.add("Taxonomy framework " + framework.getId()
-                    + " has an abbreviation longer than 4 characters: " + abbreviation);
+                        + " has an abbreviation longer than 4 characters: " + abbreviation);
             }
         }
         return errors;

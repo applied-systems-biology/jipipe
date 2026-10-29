@@ -36,28 +36,32 @@ Mined pattern `chain-3-folder-list-subfolders-path-to-annotation-simple-path-fil
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| import | `folder-list-subfolders` |
+| role     | node ids                    |
+|----------|-----------------------------|
+| import   | `folder-list-subfolders`    |
 | annotate | `path-to-annotation-simple` |
-| import | `path-filter` |
+| import   | `path-filter`               |
 
 ## Example graph
 
-Project: `AIAgentTests/03-ExampleWorkflows/Angela_Roots_38.jip` (relative to `/data/JIPipe`), compartment `Preprocessing`.
+Project: `AIAgentTests/03-ExampleWorkflows/Angela_Roots_38.jip` (relative to `/data/JIPipe`), compartment
+`Preprocessing`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `folder-list-subfolders` | List subfolders |
-| n1 | `path-to-annotation-simple` | Add path to annotations |
-| n2 | `path-filter` | Filter paths |
+| key | node id                     | name                    |
+|-----|-----------------------------|-------------------------|
+| n0  | `folder-list-subfolders`    | List subfolders         |
+| n1  | `path-to-annotation-simple` | Add path to annotations |
+| n2  | `path-filter`               | Filter paths            |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
-| List subfolders | `Subfolders` | Add path to annotations | `Paths` | `folder` |
-| Add path to annotations | `Annotated paths` | Filter paths | `Input` | `path` |
+| from                    | slot              | to                      | slot    | data class |
+|-------------------------|-------------------|-------------------------|---------|------------|
+| List subfolders         | `Subfolders`      | Add path to annotations | `Paths` | `folder`   |
+| Add path to annotations | `Annotated paths` | Filter paths            | `Input` | `path`     |
 
 ## Template
 
-Proposed name `List subfolders -> Annotate with file/directory name -> Filter paths`, menu path `Patterns/Data Sources/List subfolders -> Annotate with file/directory name -> Filter paths` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/chain-3-folder-list-subfolders-path-to-annotation-simple-path-filter.json`.
+Proposed name `List subfolders -> Annotate with file/directory name -> Filter paths`, menu path
+`Patterns/Data Sources/List subfolders -> Annotate with file/directory name -> Filter paths` (proposal only — not
+registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/chain-3-folder-list-subfolders-path-to-annotation-simple-path-filter.json`.
 

@@ -84,7 +84,7 @@ public class StandardSettingsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerApplicationSettingsSheet(new JIPipeProjectAuthorsApplicationSettings());
         registerApplicationSettingsSheet(new JIPipeDefaultEnvironmentsApplicationSettings());
         registerApplicationSettingsSheet(new JIPipeHardwareAccelerationApplicationSettings());
-        registerApplicationSettingsSheet(  new JIPipeAutoSaveApplicationSettings());
+        registerApplicationSettingsSheet(new JIPipeAutoSaveApplicationSettings());
         registerApplicationSettingsSheet(new JIPipeProjectIOApplicationSettings());
 
         // UI

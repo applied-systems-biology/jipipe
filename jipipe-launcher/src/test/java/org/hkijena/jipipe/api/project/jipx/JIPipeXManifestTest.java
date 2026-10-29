@@ -35,9 +35,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Tests for {@link JIPipeXManifest} (JIPX container manifest) and the
@@ -66,11 +64,11 @@ class JIPipeXManifestTest {
 
         // (1) Fields
         assertEquals(JIPipeXManifest.FORMAT_VERSION, manifest.getFormatVersion(),
-            "Default manifest must use format version " + JIPipeXManifest.FORMAT_VERSION);
+                "Default manifest must use format version " + JIPipeXManifest.FORMAT_VERSION);
         assertEquals(1, JIPipeXManifest.FORMAT_VERSION, "FORMAT_VERSION must be 1");
         assertEquals("test-version", manifest.getJipipeVersion());
         assertEquals(JIPipeXManifest.MAIN_GRAPH, manifest.getMainGraph(),
-            "Default manifest must use the main-graph constant");
+                "Default manifest must use the main-graph constant");
         assertEquals("project/graph.json", JIPipeXManifest.MAIN_GRAPH, "MAIN_GRAPH constant value");
         assertTrue(manifest.getUnknown().isEmpty(), "Default manifest has no unknown parts");
 
@@ -78,17 +76,17 @@ class JIPipeXManifestTest {
         // with ':' replaced by '-' in the FILE name only (the value keeps
         // the real part key).
         assertEquals(JIPipeProjectParts.PART_KEYS.size(), manifest.getParts().size(),
-            "Default manifest must list all 9 parts");
+                "Default manifest must list all 9 parts");
         for (String key : JIPipeProjectParts.PART_KEYS) {
             String expectedPath = "project/" + key.replace(':', '-') + ".json";
             assertEquals(key, manifest.getParts().get(expectedPath),
-                "Part file " + expectedPath + " must map to key '" + key + "'");
+                    "Part file " + expectedPath + " must map to key '" + key + "'");
         }
         assertEquals("project/jipipe-doc-parameters.json",
-            manifest.getParts().keySet().stream().filter(k -> k.contains("jipipe-doc-parameters")).findFirst().orElse(""),
-            "Part file naming: jipipe:doc:parameters -> project/jipipe-doc-parameters.json");
+                manifest.getParts().keySet().stream().filter(k -> k.contains("jipipe-doc-parameters")).findFirst().orElse(""),
+                "Part file naming: jipipe:doc:parameters -> project/jipipe-doc-parameters.json");
         assertEquals("jipipe:doc:parameters", manifest.getParts().get("project/jipipe-doc-parameters.json"),
-            "The manifest value keeps the real part key");
+                "The manifest value keeps the real part key");
 
         // (3) Round-trip through the JSON tree: the manifest is identical
         // after toJsonNode() -> fromJsonNode().
@@ -98,9 +96,9 @@ class JIPipeXManifestTest {
         assertEquals(manifest.getJipipeVersion(), roundTripped.getJipipeVersion());
         assertEquals(manifest.getMainGraph(), roundTripped.getMainGraph());
         assertEquals(manifest.getParts(), roundTripped.getParts(),
-            "Parts table must survive the JSON round-trip");
+                "Parts table must survive the JSON round-trip");
         assertEquals(manifest.getUnknown(), roundTripped.getUnknown(),
-            "Unknown map must survive the JSON round-trip");
+                "Unknown map must survive the JSON round-trip");
     }
 
     @Test
@@ -110,7 +108,7 @@ class JIPipeXManifestTest {
 
         JIPipeXManifest roundTripped = JIPipeXManifest.fromJsonNode(manifest.toJsonNode());
         assertEquals("data/foo.tiff", roundTripped.getUnknown().get("data/foo.tiff"),
-            "Unknown parts must be preserved verbatim on round-trip");
+                "Unknown parts must be preserved verbatim on round-trip");
         assertEquals(1, roundTripped.getUnknown().size());
     }
 
@@ -122,13 +120,13 @@ class JIPipeXManifestTest {
         UnspecifiedValidationReportContext ctx = new UnspecifiedValidationReportContext();
         Path path = Path.of(JIPipeXManifestTest.class.getResource(FIXTURE).toURI());
         JIPipeProject project = JIPipeProject.loadProject(path, ctx, new JIPipeValidationReport(),
-            new JIPipeNotificationInbox(), JIPipeProgressInfo.SILENT);
+                new JIPipeNotificationInbox(), JIPipeProgressInfo.SILENT);
         project.setWorkDirectory(workDir);
 
         // Non-vacuity: the loaded graph must have 1+ nodes.
         Set<UUID> nodeUuids = project.getGraph().getGraphNodeUUIDs();
         assertFalse(nodeUuids.isEmpty(),
-            "Fixture loaded 0 nodes — table-add-columns-generate not resolved; test would be vacuous");
+                "Fixture loaded 0 nodes — table-add-columns-generate not resolved; test would be vacuous");
 
         JIPipeProjectWorkspace workspace = project.getWorkspace();
         assertTrue(Files.exists(workspace.getBaseDirectory()), "getWorkspace() must create the base directory");
@@ -142,25 +140,25 @@ class JIPipeXManifestTest {
         JIPipeXManifest manifest = workspace.getManifest();
         assertEquals(JIPipeXManifest.FORMAT_VERSION, manifest.getFormatVersion());
         assertEquals(JIPipe.getJIPipeVersion(), manifest.getJipipeVersion(),
-            "Materialized manifest must carry the current JIPipe version");
+                "Materialized manifest must carry the current JIPipe version");
         Map<String, JsonNode> slice = JIPipeProjectParts.sliceParts(project);
         assertEquals(slice.size(), manifest.getParts().size(),
-            "The manifest must list exactly the parts present in the slice");
+                "The manifest must list exactly the parts present in the slice");
         for (String entryPath : manifest.getParts().keySet()) {
             assertTrue(Files.isRegularFile(workspace.getBaseDirectory().resolve(entryPath)),
-                "Part file " + entryPath + " must exist after materialization");
+                    "Part file " + entryPath + " must exist after materialization");
         }
 
         // The workspace.json state: origin-format derived from the project
         // file extension (.jipipe fixture -> "jip"), not dirty after
         // materialization, no origin-path.
         ObjectNode state = (ObjectNode) JsonUtils.getObjectMapper()
-            .readValue(workspace.getBaseDirectory().resolve("workspace.json").toFile(), JsonNode.class);
+                .readValue(workspace.getBaseDirectory().resolve("workspace.json").toFile(), JsonNode.class);
         assertEquals("jip", state.path("origin-format").asText(),
-            "Legacy (non-.jipx) project file must yield origin-format 'jip'");
+                "Legacy (non-.jipx) project file must yield origin-format 'jip'");
         assertEquals("", state.path("origin-path").asText());
         assertFalse(state.path("dirty").asBoolean(),
-            "Workspace must not be dirty right after materialization");
+                "Workspace must not be dirty right after materialization");
         assertFalse(state.path("last-save").asText().isEmpty(), "last-save must be set");
 
         // Idempotency: a payload file placed in the workspace survives
@@ -172,29 +170,29 @@ class JIPipeXManifestTest {
 
         workspace.materializeFromModel(JIPipeProgressInfo.SILENT);
         assertTrue(Files.isRegularFile(payload),
-            "Re-materialization must never delete unknown/payload files");
+                "Re-materialization must never delete unknown/payload files");
         assertEquals("payload content v1", Files.readString(payload),
-            "Re-materialization must never rewrite payload files");
+                "Re-materialization must never rewrite payload files");
         for (String entryPath : manifest.getParts().keySet()) {
             assertTrue(Files.isRegularFile(workspace.getBaseDirectory().resolve(entryPath)),
-                "Part file " + entryPath + " must still exist after re-materialization");
+                    "Part file " + entryPath + " must still exist after re-materialization");
         }
 
         // State transitions: markDirty() -> dirty=true; markSaved(path)
         // -> dirty=false, origin-path set, origin-format retained.
         workspace.markDirty();
         state = (ObjectNode) JsonUtils.getObjectMapper()
-            .readValue(workspace.getBaseDirectory().resolve("workspace.json").toFile(), JsonNode.class);
+                .readValue(workspace.getBaseDirectory().resolve("workspace.json").toFile(), JsonNode.class);
         assertTrue(state.path("dirty").asBoolean(), "markDirty() must set dirty=true");
 
         workspace.markSaved(path);
         state = (ObjectNode) JsonUtils.getObjectMapper()
-            .readValue(workspace.getBaseDirectory().resolve("workspace.json").toFile(), JsonNode.class);
+                .readValue(workspace.getBaseDirectory().resolve("workspace.json").toFile(), JsonNode.class);
         assertFalse(state.path("dirty").asBoolean(), "markSaved() must clear dirty");
         assertEquals(path.toString(), state.path("origin-path").asText(),
-            "markSaved() must record the origin path");
+                "markSaved() must record the origin path");
         assertEquals("jip", state.path("origin-format").asText(),
-            "markSaved() must not touch the origin format");
+                "markSaved() must not touch the origin format");
     }
 
     @Test
@@ -208,7 +206,7 @@ class JIPipeXManifestTest {
         UnspecifiedValidationReportContext ctx = new UnspecifiedValidationReportContext();
         Path path = Path.of(JIPipeXManifestTest.class.getResource(FIXTURE).toURI());
         JIPipeProject project = JIPipeProject.loadProject(path, ctx, new JIPipeValidationReport(),
-            new JIPipeNotificationInbox(), JIPipeProgressInfo.SILENT);
+                new JIPipeNotificationInbox(), JIPipeProgressInfo.SILENT);
         project.setWorkDirectory(workDir);
 
         JIPipeProjectWorkspace workspace = project.getWorkspace();
@@ -217,7 +215,7 @@ class JIPipeXManifestTest {
         // (1) Fresh materialization (no unknown entries yet).
         workspace.materializeFromModel(JIPipeProgressInfo.SILENT);
         assertTrue(workspace.getManifest().getUnknown().isEmpty(),
-            "Fresh materialization must have no unknown entries");
+                "Fresh materialization must have no unknown entries");
 
         // (2) Simulate the EXTRACTION of a FOREIGN .jipx into this
         // workspace: a container with a manifest carrying an unknown
@@ -237,7 +235,7 @@ class JIPipeXManifestTest {
         }
         workspace.extractFromZip(foreignZip, JIPipeProgressInfo.SILENT);
         assertEquals("data/foo.tiff", workspace.getManifest().getUnknown().get("data/foo.tiff"),
-            "The extracted foreign manifest must carry the unknown entry");
+                "The extracted foreign manifest must carry the unknown entry");
 
         // (3) Re-save = re-materialize from the model over the extracted
         // workspace.
@@ -248,11 +246,11 @@ class JIPipeXManifestTest {
         Path payload = baseDir.resolve("data/foo.tiff");
         JIPipeXManifest result = workspace.getManifest();
         assertEquals("data/foo.tiff", result.getUnknown().get("data/foo.tiff"),
-            "Unknown manifest entries from the extracted workspace must survive re-materialization");
+                "Unknown manifest entries from the extracted workspace must survive re-materialization");
         assertTrue(Files.isRegularFile(payload),
-            "The foreign payload file must survive re-materialization");
+                "The foreign payload file must survive re-materialization");
         assertEquals("foreign payload", Files.readString(payload),
-            "The foreign payload file must be rewritten verbatim (only-compress)");
+                "The foreign payload file must be rewritten verbatim (only-compress)");
     }
 
     @Test
@@ -260,7 +258,7 @@ class JIPipeXManifestTest {
         UnspecifiedValidationReportContext ctx = new UnspecifiedValidationReportContext();
         Path path = Path.of(JIPipeXManifestTest.class.getResource(FIXTURE).toURI());
         JIPipeProject project = JIPipeProject.loadProject(path, ctx, new JIPipeValidationReport(),
-            new JIPipeNotificationInbox(), JIPipeProgressInfo.SILENT);
+                new JIPipeNotificationInbox(), JIPipeProgressInfo.SILENT);
         project.setWorkDirectory(workDir);
 
         JIPipeProjectWorkspace workspace = project.getWorkspace();
@@ -269,13 +267,13 @@ class JIPipeXManifestTest {
         Map<String, JsonNode> parts = workspace.readParts();
         Map<String, JsonNode> expected = JIPipeProjectParts.sliceParts(project);
         assertEquals(expected.keySet(), parts.keySet(),
-            "readParts() must return exactly the listed part keys");
+                "readParts() must return exactly the listed part keys");
         for (Map.Entry<String, JsonNode> entry : expected.entrySet()) {
             if ("dependencies".equals(entry.getKey())) {
                 continue; // HashSet-serialized dependencies: order-insensitive (see JIPipeProjectPartsTest)
             }
             assertEquals(entry.getValue(), parts.get(entry.getKey()),
-                "Part '" + entry.getKey() + "' must be byte-for-byte the monolith field");
+                    "Part '" + entry.getKey() + "' must be byte-for-byte the monolith field");
         }
 
         // A listed part file that is missing (corrupt container) must throw
@@ -287,7 +285,7 @@ class JIPipeXManifestTest {
             assertFalse(true, "readParts() must throw when a listed part file is missing");
         } catch (IOException e) {
             assertTrue(e.getMessage().contains("graph.json") || e.getMessage().contains("part"),
-                "The error must name the missing part: " + e.getMessage());
+                    "The error must name the missing part: " + e.getMessage());
         }
     }
 
@@ -296,10 +294,10 @@ class JIPipeXManifestTest {
         UnspecifiedValidationReportContext ctx = new UnspecifiedValidationReportContext();
         Path path = Path.of(JIPipeXManifestTest.class.getResource(FIXTURE).toURI());
         JIPipeProject project = JIPipeProject.loadProject(path, ctx, new JIPipeValidationReport(),
-            new JIPipeNotificationInbox(), JIPipeProgressInfo.SILENT);
+                new JIPipeNotificationInbox(), JIPipeProgressInfo.SILENT);
         project.setWorkDirectory(workDir);
         project.close(JIPipeProgressInfo.SILENT);
         assertEquals(null, project.getWorkspace(),
-            "getWorkspace() must return null for disposed projects");
+                "getWorkspace() must return null for disposed projects");
     }
 }

@@ -44,41 +44,21 @@ public class JIPipeDesktopColorChooserDialog extends JDialog {
     // Public entry point (same contract as JColorChooser.showDialog)
     // ------------------------------------------------------------------
 
-    /**
-     * Shows the dialog modally.
-     *
-     * @param parent           the parent component
-     * @param title            the window title
-     * @param initial          the initial color
-     * @param withTransparency whether to show the alpha rail + checkerboard
-     * @return the chosen color, or {@code null} if the user cancelled
-     */
-    public static Color show(Component parent, String title, Color initial, boolean withTransparency) {
-        Window owner = parent instanceof Window w ? w
-                : (parent != null ? SwingUtilities.getWindowAncestor(parent) : null);
-        JIPipeDesktopColorChooserDialog dialog = new JIPipeDesktopColorChooserDialog(owner, title,
-                initial != null ? initial : Color.WHITE, withTransparency);
-        dialog.setVisible(true);
-        return dialog.result;
-    }
+    private final boolean withTransparency;
 
     // ------------------------------------------------------------------
     // State
     // ------------------------------------------------------------------
-
-    private Color currentColor;
-    private final boolean withTransparency;
-    private Color result;
-
     private final JTextField hexField = new JTextField(12);
     private final JTabbedPane spaceTabs = new JTabbedPane();
-    private boolean updating = false;
-
     // RGB rails
     private final ColorRail rRail = new ColorRail(0, 255, i -> new Color((int) i, 0, 0));
     private final ColorRail gRail = new ColorRail(0, 255, i -> new Color(0, (int) i, 0));
     private final ColorRail blueRail = new ColorRail(0, 255, i -> new Color(0, 0, (int) i));
-
+    private final JPanel savedRow;
+    private Color currentColor;
+    private Color result;
+    private boolean updating = false;
     // HSB
     private HsbWell hsbWell;
     private ColorRail hueRail;
@@ -92,12 +72,6 @@ public class JIPipeDesktopColorChooserDialog extends JDialog {
     private ColorRail blueRailLab;
 
     private CheckerSwatch currentSwatch;
-    private final JPanel savedRow;
-
-    // ------------------------------------------------------------------
-    // Construction
-    // ------------------------------------------------------------------
-
     /**
      * Creates the dialog (owner may be null; the dialog is not shown by this
      * constructor — use {@link #show} or {@code setVisible(true)}).
@@ -141,16 +115,144 @@ public class JIPipeDesktopColorChooserDialog extends JDialog {
         refresh();
     }
 
-    /** Shows the LAB tab (used by the screenshot harness). */
-    public void showLabTab() {
-        spaceTabs.setSelectedIndex(2);
-        refresh();
+    // ------------------------------------------------------------------
+    // Construction
+    // ------------------------------------------------------------------
+
+    /**
+     * Shows the dialog modally.
+     *
+     * @param parent           the parent component
+     * @param title            the window title
+     * @param initial          the initial color
+     * @param withTransparency whether to show the alpha rail + checkerboard
+     * @return the chosen color, or {@code null} if the user cancelled
+     */
+    public static Color show(Component parent, String title, Color initial, boolean withTransparency) {
+        Window owner = parent instanceof Window w ? w
+                : (parent != null ? SwingUtilities.getWindowAncestor(parent) : null);
+        JIPipeDesktopColorChooserDialog dialog = new JIPipeDesktopColorChooserDialog(owner, title,
+                initial != null ? initial : Color.WHITE, withTransparency);
+        dialog.setVisible(true);
+        return dialog.result;
+    }
+
+    /**
+     * A tab component with the standard JIPipe tab padding (the same border
+     * {@link org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane} applies to its document tabs), so the pill is
+     * comfortably sized instead of hugging the label text (#1339).
+     */
+    private static JComponent createPaddedTabComponent(String title) {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setOpaque(false);
+        panel.setBorder(BorderFactory.createEmptyBorder(4, 6, 4, 6));
+        panel.add(new JLabel(title), BorderLayout.CENTER);
+        return panel;
     }
 
     // ------------------------------------------------------------------
     // Test seams (package-private; drive the input plumbing without
     // Swing-structure assertions — see ColorChooserDialogRefreshTest).
     // ------------------------------------------------------------------
+
+    private static Component sectionLabel(String text) {
+        JLabel l = new JLabel(text);
+        l.setAlignmentX(0f);
+        l.setBorder(BorderFactory.createEmptyBorder(6, 0, 2, 0));
+        l.setFont(l.getFont().deriveFont(Font.BOLD));
+        l.setOpaque(false);
+        return l;
+    }
+
+    /**
+     * Item 8: the full swatch tooltip — name (if any), {@code #RRGGBB},
+     * {@code RGB(r, g, b)}, {@code HSB(h°, s%, b%)}, {@code L*a*b*(L, a, b)}.
+     * Shared by every swatch source (pure, HIG, last selected, saved) and the
+     * current-swatch header, so the format stays in one place.
+     */
+    private static String colorTooltip(NamedColor c) {
+        Color color = c.getColor();
+        double[] hsb = ColorSpaces.toHsb(color);
+        double[] lab = ColorSpaces.toLab(color);
+        return String.join(System.lineSeparator(),
+                c.getName() != null ? c.getName() : " (unnamed)",
+                ColorSpaces.toHex(color),
+                String.format("RGB(%d, %d, %d)", color.getRed(), color.getGreen(), color.getBlue()),
+                String.format("HSB(%.0f°, %.0f%%, %.0f%%)", hsb[0], hsb[1], hsb[2]),
+                String.format("L*a*b*(%.1f, %.1f, %.1f)", lab[0], lab[1], lab[2]));
+    }
+
+    private static JButton swatchButton(NamedColor c) {
+        JButton b = new JButton();
+        b.setPreferredSize(new Dimension(18, 18));
+        b.setMaximumSize(new Dimension(18, 18));
+        b.setMinimumSize(new Dimension(18, 18));
+        b.setBorder(BorderFactory.createLineBorder(new Color(110, 110, 110), 1, true));
+        b.setBackground(c.getColor());
+        b.setContentAreaFilled(true);
+        b.setFocusable(false);
+        b.setToolTipText(colorTooltip(c));
+        return b;
+    }
+
+    private static JPanel railPanel() {
+        JPanel p = new JPanel();
+        p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
+        p.setOpaque(false);
+        return p;
+    }
+
+    /**
+     * Item 5: the 16 4-bit colors (standard 4-bit cube order: B, G, R planes),
+     * rendered untitled alongside the GNOME HIG palette.
+     */
+    private static List<NamedColor> pureColors() {
+        String[] data = {
+                "000000", "550000", "AA0000", "FF0000",
+                "005500", "00AA00", "00FF00", "555500",
+                "AAAA00", "FFFF00", "000055", "0000AA",
+                "0000FF", "550055", "AA00AA", "FF00FF",
+        };
+        List<NamedColor> out = new ArrayList<>();
+        for (String hex : data) {
+            out.add(new NamedColor(ColorSpaces.fromHex("#" + hex), null));
+        }
+        return out;
+    }
+
+    /**
+     * The GNOME HIG / libadwaita named palette: 9 hue families × 5 steps
+     * (values from the GNOME HIG palette page / libadwaita {@code _palette.scss}).
+     */
+    private static List<NamedColor> gnomeHig() {
+        String[] names = {"Blue", "Green", "Yellow", "Orange", "Red", "Purple", "Brown", "Light", "Dark"};
+        String[][] rows = {
+                {"#99c1f1", "#62a0ea", "#3584e4", "#1c71d8", "#1a5fb4"},
+                {"#8ff0a4", "#57e389", "#33d17a", "#2ec27e", "#26a269"},
+                {"#f9f06b", "#f8e45c", "#f6d32d", "#f5c211", "#e5a50a"},
+                {"#ffbe6f", "#ffa348", "#ff7800", "#e66100", "#c64600"},
+                {"#f66151", "#ed333b", "#e01b24", "#c01c28", "#a51d2d"},
+                {"#dc8add", "#c061cb", "#9141ac", "#813d9c", "#613583"},
+                {"#cdab8f", "#b5835a", "#986a44", "#865e3c", "#63452c"},
+                {"#ffffff", "#f6f5f4", "#deddda", "#c0bfbc", "#9a9996"},
+                {"#77767b", "#5e5c64", "#3d3846", "#241f31", "#000000"},
+        };
+        List<NamedColor> out = new ArrayList<>();
+        for (int r = 0; r < names.length; r++) {
+            for (int s = 0; s < rows[r].length; s++) {
+                out.add(new NamedColor(ColorSpaces.fromHex(rows[r][s]), names[r] + " " + (s + 1)));
+            }
+        }
+        return out;
+    }
+
+    /**
+     * Shows the LAB tab (used by the screenshot harness).
+     */
+    public void showLabTab() {
+        spaceTabs.setSelectedIndex(2);
+        refresh();
+    }
 
     String getHexText() {
         return hexField.getText();
@@ -186,6 +288,10 @@ public class JIPipeDesktopColorChooserDialog extends JDialog {
         return header;
     }
 
+    // ------------------------------------------------------------------
+    // Palettes
+    // ------------------------------------------------------------------
+
     private JComponent buildSpaceTabs() {
         spaceTabs.addTab("RGB", buildRgbPanel());
         spaceTabs.addTab("HSB", buildHsbPanel());
@@ -204,19 +310,6 @@ public class JIPipeDesktopColorChooserDialog extends JDialog {
             spaceTabs.setTabComponentAt(i, createPaddedTabComponent(spaceTabs.getTitleAt(i)));
         }
         return spaceTabs;
-    }
-
-    /**
-     * A tab component with the standard JIPipe tab padding (the same border
-     * {@link JIPipeDesktopTabPane} applies to its document tabs), so the pill is
-     * comfortably sized instead of hugging the label text (#1339).
-     */
-    private static JComponent createPaddedTabComponent(String title) {
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setOpaque(false);
-        panel.setBorder(BorderFactory.createEmptyBorder(4, 6, 4, 6));
-        panel.add(new JLabel(title), BorderLayout.CENTER);
-        return panel;
     }
 
     private JPanel buildRgbPanel() {
@@ -325,10 +418,6 @@ public class JIPipeDesktopColorChooserDialog extends JDialog {
         return p;
     }
 
-    // ------------------------------------------------------------------
-    // Palettes
-    // ------------------------------------------------------------------
-
     private JPanel buildPalettes() {
         // A viewport-width-tracking panel: its preferred width follows the
         // scroll viewport, so the FlowLayout rows below actually WRAP to a new
@@ -367,39 +456,9 @@ public class JIPipeDesktopColorChooserDialog extends JDialog {
         return p;
     }
 
-    /**
-     * A palette container whose preferred/minimum width follow the enclosing
-     * scroll viewport (#1339). Without this, the swatch rows keep their
-     * unwrapped preferred width and the scroll pane clips them at the right
-     * edge instead of wrapping them onto the next line.
-     */
-    private class ScrollablePalettePanel extends JPanel implements Scrollable {
-        @Override
-        public Dimension getPreferredScrollableViewportSize() {
-            return new Dimension(0, 200);
-        }
-
-        @Override
-        public int getScrollableUnitIncrement(Rectangle visibleRect, int orientation, int direction) {
-            return 16;
-        }
-
-        @Override
-        public int getScrollableBlockIncrement(Rectangle visibleRect, int orientation, int direction) {
-            return 80;
-        }
-
-        @Override
-        public boolean getScrollableTracksViewportWidth() {
-            // Force the width to the viewport width → the FlowLayout rows wrap.
-            return true;
-        }
-
-        @Override
-        public boolean getScrollableTracksViewportHeight() {
-            return false;
-        }
-    }
+    // ------------------------------------------------------------------
+    // Color state
+    // ------------------------------------------------------------------
 
     private void fillSavedRow() {
         // Item 6: the saved swatches wrap like the other rows (item 1:
@@ -424,15 +483,6 @@ public class JIPipeDesktopColorChooserDialog extends JDialog {
         savedRow.repaint();
     }
 
-    private static Component sectionLabel(String text) {
-        JLabel l = new JLabel(text);
-        l.setAlignmentX(0f);
-        l.setBorder(BorderFactory.createEmptyBorder(6, 0, 2, 0));
-        l.setFont(l.getFont().deriveFont(Font.BOLD));
-        l.setOpaque(false);
-        return l;
-    }
-
     /**
      * Item 6: one shared left margin for swatch rows and section titles
      * (the titles are bare, the rows carry a matching left inset); swatch
@@ -455,41 +505,6 @@ public class JIPipeDesktopColorChooserDialog extends JDialog {
         return p;
     }
 
-    /**
-     * Item 8: the full swatch tooltip — name (if any), {@code #RRGGBB},
-     * {@code RGB(r, g, b)}, {@code HSB(h°, s%, b%)}, {@code L*a*b*(L, a, b)}.
-     * Shared by every swatch source (pure, HIG, last selected, saved) and the
-     * current-swatch header, so the format stays in one place.
-     */
-    private static String colorTooltip(NamedColor c) {
-        Color color = c.getColor();
-        double[] hsb = ColorSpaces.toHsb(color);
-        double[] lab = ColorSpaces.toLab(color);
-        return String.join(System.lineSeparator(),
-                c.getName() != null ? c.getName() : " (unnamed)",
-                ColorSpaces.toHex(color),
-                String.format("RGB(%d, %d, %d)", color.getRed(), color.getGreen(), color.getBlue()),
-                String.format("HSB(%.0f°, %.0f%%, %.0f%%)", hsb[0], hsb[1], hsb[2]),
-                String.format("L*a*b*(%.1f, %.1f, %.1f)", lab[0], lab[1], lab[2]));
-    }
-
-    private static JButton swatchButton(NamedColor c) {
-        JButton b = new JButton();
-        b.setPreferredSize(new Dimension(18, 18));
-        b.setMaximumSize(new Dimension(18, 18));
-        b.setMinimumSize(new Dimension(18, 18));
-        b.setBorder(BorderFactory.createLineBorder(new Color(110, 110, 110), 1, true));
-        b.setBackground(c.getColor());
-        b.setContentAreaFilled(true);
-        b.setFocusable(false);
-        b.setToolTipText(colorTooltip(c));
-        return b;
-    }
-
-    // ------------------------------------------------------------------
-    // Color state
-    // ------------------------------------------------------------------
-
     private void setColorLab(double l, double a, double b) {
         setColor(ColorSpaces.fromLab(l, a, b));
     }
@@ -503,6 +518,10 @@ public class JIPipeDesktopColorChooserDialog extends JDialog {
         currentColor = c;
         refresh();
     }
+
+    // ------------------------------------------------------------------
+    // Rail plumbing
+    // ------------------------------------------------------------------
 
     private void refresh() {
         if (updating) {
@@ -565,17 +584,6 @@ public class JIPipeDesktopColorChooserDialog extends JDialog {
         } catch (RuntimeException e) {
             hexField.setText(ColorSpaces.toHex(currentColor));
         }
-    }
-
-    // ------------------------------------------------------------------
-    // Rail plumbing
-    // ------------------------------------------------------------------
-
-    private static JPanel railPanel() {
-        JPanel p = new JPanel();
-        p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
-        p.setOpaque(false);
-        return p;
     }
 
     private JPanel railRow(String label, ColorRail rail, DoubleConsumer onChange) {
@@ -647,61 +655,92 @@ public class JIPipeDesktopColorChooserDialog extends JDialog {
         }
     }
 
-    /** An alpha rail: fully transparent (left, 0) → opaque (right, 255) over a checkerboard. */
-    private ColorRail alphaRail() {
-        return new ColorRail(0, 255, i -> new Color(0, 0, 0, (int) i), true);
-    }
-
     // ------------------------------------------------------------------
     // Palette data
     // ------------------------------------------------------------------
 
     /**
-     * Item 5: the 16 4-bit colors (standard 4-bit cube order: B, G, R planes),
-     * rendered untitled alongside the GNOME HIG palette.
+     * An alpha rail: fully transparent (left, 0) → opaque (right, 255) over a checkerboard.
      */
-    private static List<NamedColor> pureColors() {
-        String[] data = {
-                "000000", "550000", "AA0000", "FF0000",
-                "005500", "00AA00", "00FF00", "555500",
-                "AAAA00", "FFFF00", "000055", "0000AA",
-                "0000FF", "550055", "AA00AA", "FF00FF",
-        };
-        List<NamedColor> out = new ArrayList<>();
-        for (String hex : data) {
-            out.add(new NamedColor(ColorSpaces.fromHex("#" + hex), null));
-        }
-        return out;
+    private ColorRail alphaRail() {
+        return new ColorRail(0, 255, i -> new Color(0, 0, 0, (int) i), true);
     }
 
     /**
-     * The GNOME HIG / libadwaita named palette: 9 hue families × 5 steps
-     * (values from the GNOME HIG palette page / libadwaita {@code _palette.scss}).
+     * A color swatch with a checkerboard behind it (shows alpha).
      */
-    private static List<NamedColor> gnomeHig() {
-        String[] names = {"Blue", "Green", "Yellow", "Orange", "Red", "Purple", "Brown", "Light", "Dark"};
-        String[][] rows = {
-                {"#99c1f1", "#62a0ea", "#3584e4", "#1c71d8", "#1a5fb4"},
-                {"#8ff0a4", "#57e389", "#33d17a", "#2ec27e", "#26a269"},
-                {"#f9f06b", "#f8e45c", "#f6d32d", "#f5c211", "#e5a50a"},
-                {"#ffbe6f", "#ffa348", "#ff7800", "#e66100", "#c64600"},
-                {"#f66151", "#ed333b", "#e01b24", "#c01c28", "#a51d2d"},
-                {"#dc8add", "#c061cb", "#9141ac", "#813d9c", "#613583"},
-                {"#cdab8f", "#b5835a", "#986a44", "#865e3c", "#63452c"},
-                {"#ffffff", "#f6f5f4", "#deddda", "#c0bfbc", "#9a9996"},
-                {"#77767b", "#5e5c64", "#3d3846", "#241f31", "#000000"},
-        };
-        List<NamedColor> out = new ArrayList<>();
-        for (int r = 0; r < names.length; r++) {
-            for (int s = 0; s < rows[r].length; s++) {
-                out.add(new NamedColor(ColorSpaces.fromHex(rows[r][s]), names[r] + " " + (s + 1)));
-            }
+    private static class CheckerSwatch extends JComponent {
+        private Color c;
+
+        CheckerSwatch(int w, int h) {
+            setPreferredSize(new Dimension(w, h));
+            setMinimumSize(new Dimension(w, h));
         }
-        return out;
+
+        void setColor(Color c) {
+            this.c = c;
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            int w = getWidth(), h = getHeight();
+            int sq = 6;
+            for (int y = 0; y < h; y += sq) {
+                for (int x = 0; x < w; x += sq) {
+                    boolean light = ((x / sq + y / sq) & 1) == 0;
+                    g.setColor(light ? new Color(0xdd, 0xdd, 0xdd) : new Color(0xbb, 0xbb, 0xbb));
+                    g.fillRect(x, y, Math.min(sq, w - x), Math.min(sq, h - y));
+                }
+            }
+            if (c != null) {
+                g.setColor(c);
+                g.fillRect(0, 0, w, h);
+            }
+            g.setColor(new Color(110, 110, 110));
+            g.drawRect(0, 0, w - 1, h - 1);
+        }
     }
 
     // ------------------------------------------------------------------
     // Color rail (custom slider)
+    // ------------------------------------------------------------------
+
+    /**
+     * A palette container whose preferred/minimum width follow the enclosing
+     * scroll viewport (#1339). Without this, the swatch rows keep their
+     * unwrapped preferred width and the scroll pane clips them at the right
+     * edge instead of wrapping them onto the next line.
+     */
+    private class ScrollablePalettePanel extends JPanel implements Scrollable {
+        @Override
+        public Dimension getPreferredScrollableViewportSize() {
+            return new Dimension(0, 200);
+        }
+
+        @Override
+        public int getScrollableUnitIncrement(Rectangle visibleRect, int orientation, int direction) {
+            return 16;
+        }
+
+        @Override
+        public int getScrollableBlockIncrement(Rectangle visibleRect, int orientation, int direction) {
+            return 80;
+        }
+
+        @Override
+        public boolean getScrollableTracksViewportWidth() {
+            // Force the width to the viewport width → the FlowLayout rows wrap.
+            return true;
+        }
+
+        @Override
+        public boolean getScrollableTracksViewportHeight() {
+            return false;
+        }
+    }
+
+    // ------------------------------------------------------------------
+    // 2D wells
     // ------------------------------------------------------------------
 
     /**
@@ -712,12 +751,13 @@ public class JIPipeDesktopColorChooserDialog extends JDialog {
     private class ColorRail extends JComponent {
         private final double min;
         private final double max;
-        private IntFunction<Color> gradient;
         private final boolean checkerboard;
+        private IntFunction<Color> gradient;
         private double value;
         private List<DoubleConsumer> listeners = new ArrayList<>();
         private BufferedImage image;
         private boolean gradientDirty = true;
+        private double[] gradientKey;
 
         ColorRail(double min, double max, IntFunction<Color> gradient) {
             this(min, max, gradient, false);
@@ -762,6 +802,10 @@ public class JIPipeDesktopColorChooserDialog extends JDialog {
             setValue(min + frac * (max - min));
         }
 
+        double getValue() {
+            return value;
+        }
+
         void setValue(double v) {
             v = Math.max(min, Math.min(max, v));
             if (v == value) {
@@ -774,15 +818,13 @@ public class JIPipeDesktopColorChooserDialog extends JDialog {
             }
         }
 
-        double getValue() {
-            return value;
-        }
-
         void addChangeListener(DoubleConsumer l) {
             listeners.add(l);
         }
 
-        /** Replaces the (color-dependent) gradient function and repaints. */
+        /**
+         * Replaces the (color-dependent) gradient function and repaints.
+         */
         void repaintGradient(IntFunction<Color> newGradient) {
             if (newGradient != null) {
                 this.gradient = newGradient;
@@ -805,8 +847,6 @@ public class JIPipeDesktopColorChooserDialog extends JDialog {
             gradientKey = key != null ? key.clone() : null;
             repaintGradient(newGradient);
         }
-
-        private double[] gradientKey;
 
         private void ensureImage() {
             if (!gradientDirty) {
@@ -865,11 +905,9 @@ public class JIPipeDesktopColorChooserDialog extends JDialog {
         }
     }
 
-    // ------------------------------------------------------------------
-    // 2D wells
-    // ------------------------------------------------------------------
-
-    /** Saturation × brightness well at the current hue (HSB space). */
+    /**
+     * Saturation × brightness well at the current hue (HSB space).
+     */
     private class HsbWell extends JComponent {
         private BufferedImage bg;
         private double bgHue = Double.NaN;
@@ -932,7 +970,9 @@ public class JIPipeDesktopColorChooserDialog extends JDialog {
         }
     }
 
-    /** a/b chromaticity plane at the current L (LAB space, clamped to sRGB). */
+    /**
+     * a/b chromaticity plane at the current L (LAB space, clamped to sRGB).
+     */
     private class LabWell extends JComponent {
         private BufferedImage bg;
         private double bgL = Double.NaN;
@@ -971,7 +1011,9 @@ public class JIPipeDesktopColorChooserDialog extends JDialog {
             setColor(ColorSpaces.fromLab(L, a, b));
         }
 
-        /** @return the a/b the marker is drawn at (pointer position or color's own). */
+        /**
+         * @return the a/b the marker is drawn at (pointer position or color's own).
+         */
         double[] markerAb() {
             if (Double.isNaN(pointerA) || Double.isNaN(pointerB)) {
                 double[] lab = ColorSpaces.toLab(currentColor);
@@ -1031,39 +1073,6 @@ public class JIPipeDesktopColorChooserDialog extends JDialog {
                 }
                 bgL = L;
             }
-        }
-    }
-
-    /** A color swatch with a checkerboard behind it (shows alpha). */
-    private static class CheckerSwatch extends JComponent {
-        private Color c;
-
-        CheckerSwatch(int w, int h) {
-            setPreferredSize(new Dimension(w, h));
-            setMinimumSize(new Dimension(w, h));
-        }
-
-        void setColor(Color c) {
-            this.c = c;
-        }
-
-        @Override
-        protected void paintComponent(Graphics g) {
-            int w = getWidth(), h = getHeight();
-            int sq = 6;
-            for (int y = 0; y < h; y += sq) {
-                for (int x = 0; x < w; x += sq) {
-                    boolean light = ((x / sq + y / sq) & 1) == 0;
-                    g.setColor(light ? new Color(0xdd, 0xdd, 0xdd) : new Color(0xbb, 0xbb, 0xbb));
-                    g.fillRect(x, y, Math.min(sq, w - x), Math.min(sq, h - y));
-                }
-            }
-            if (c != null) {
-                g.setColor(c);
-                g.fillRect(0, 0, w, h);
-            }
-            g.setColor(new Color(110, 110, 110));
-            g.drawRect(0, 0, w - 1, h - 1);
         }
     }
 }

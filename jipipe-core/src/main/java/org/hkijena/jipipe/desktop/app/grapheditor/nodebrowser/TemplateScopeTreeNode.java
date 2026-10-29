@@ -66,7 +66,7 @@ public final class TemplateScopeTreeNode {
 
     /**
      * @return the template scope this row groups, or {@code null} for the
-     *         {@link #ROOT} header
+     * {@link #ROOT} header
      */
     public TemplateScope getScope() {
         return scope;
@@ -74,8 +74,8 @@ public final class TemplateScopeTreeNode {
 
     /**
      * @return {@code true} for the {@link #ROOT} header (scope {@code null}),
-     *         which forwards to its scope children rather than listing
-     *         entries itself
+     * which forwards to its scope children rather than listing
+     * entries itself
      */
     public boolean isRoot() {
         return scope == null;

@@ -35,27 +35,31 @@ Mined pattern `fan-in-node-group-import-1-other-1` (shape `fan-in`, support 40).
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| other | `node-group` |
+| role   | node ids                                       |
+|--------|------------------------------------------------|
+| other  | `node-group`                                   |
 | import | `import-folder-list`, `project-user-directory` |
-| other | `jipipe:comment` |
+| other  | `jipipe:comment`                               |
 
 ## Example graph
 
-Project: `AIAgentTests/03-ExampleWorkflows/Angela_Roots_38.jip` (relative to `/data/JIPipe`), compartment `Preprocessing and edges`.
+Project: `AIAgentTests/03-ExampleWorkflows/Angela_Roots_38.jip` (relative to `/data/JIPipe`), compartment
+`Preprocessing and edges`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `project-user-directory` | Project user directory |
-| n1 | `jipipe:comment` | Comment |
-| n2 | `node-group` | READ: folders, subfolders and files, with subfolder output |
+| key | node id                  | name                                                       |
+|-----|--------------------------|------------------------------------------------------------|
+| n0  | `project-user-directory` | Project user directory                                     |
+| n1  | `jipipe:comment`         | Comment                                                    |
+| n2  | `node-group`             | READ: folders, subfolders and files, with subfolder output |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
+| from    | slot      | to                                                         | slot           | data class    |
+|---------|-----------|------------------------------------------------------------|----------------|---------------|
 | Comment | `Comment` | READ: folders, subfolders and files, with subfolder output | `Input folder` | `jipipe:data` |
 
 ## Template
 
-Proposed name `Group fans in from 3 source ids (roles: import, other)`, menu path `Patterns/Graph / Project/Group fans in from 3 source ids (roles: import, other)` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/fan-in-node-group-import-1-other-1.json`.
+Proposed name `Group fans in from 3 source ids (roles: import, other)`, menu path
+`Patterns/Graph / Project/Group fans in from 3 source ids (roles: import, other)` (proposal only — not registered).
+`data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/fan-in-node-group-import-1-other-1.json`.
 

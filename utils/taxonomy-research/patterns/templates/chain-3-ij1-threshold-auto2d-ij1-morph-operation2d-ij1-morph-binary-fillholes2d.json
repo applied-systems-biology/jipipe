@@ -1,1 +1,33 @@
-{"nodes":{"n0":{"jipipe:node-info-id":"ij1-threshold-auto2d","jipipe:graph-compartment":"bea5256b-5df7-58b8-be72-5228e3d12f2a","jipipe:node:name":"Auto threshold 2D"},"n1":{"jipipe:node-info-id":"ij1-morph-operation2d","jipipe:graph-compartment":"bea5256b-5df7-58b8-be72-5228e3d12f2a","jipipe:node:name":"Morphological operation 2D: Dilate"},"n2":{"jipipe:node-info-id":"ij1-morph-binary-fillholes2d","jipipe:graph-compartment":"bea5256b-5df7-58b8-be72-5228e3d12f2a","jipipe:node:name":"Morphological hole filling 2D"}},"edges":[{"source-node":"n0","source-slot":"Output","target-node":"n1","target-slot":"Input"},{"source-node":"n1","source-slot":"Output","target-node":"n2","target-slot":"Input"}]}
+{
+  "nodes": {
+    "n0": {
+      "jipipe:node-info-id": "ij1-threshold-auto2d",
+      "jipipe:graph-compartment": "bea5256b-5df7-58b8-be72-5228e3d12f2a",
+      "jipipe:node:name": "Auto threshold 2D"
+    },
+    "n1": {
+      "jipipe:node-info-id": "ij1-morph-operation2d",
+      "jipipe:graph-compartment": "bea5256b-5df7-58b8-be72-5228e3d12f2a",
+      "jipipe:node:name": "Morphological operation 2D: Dilate"
+    },
+    "n2": {
+      "jipipe:node-info-id": "ij1-morph-binary-fillholes2d",
+      "jipipe:graph-compartment": "bea5256b-5df7-58b8-be72-5228e3d12f2a",
+      "jipipe:node:name": "Morphological hole filling 2D"
+    }
+  },
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Output",
+      "target-node": "n1",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n1",
+      "source-slot": "Output",
+      "target-node": "n2",
+      "target-slot": "Input"
+    }
+  ]
+}

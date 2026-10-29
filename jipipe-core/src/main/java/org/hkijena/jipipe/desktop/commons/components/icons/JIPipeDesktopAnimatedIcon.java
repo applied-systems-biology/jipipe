@@ -110,10 +110,6 @@ public class JIPipeDesktopAnimatedIcon implements Icon, JIPipeApplicationSetting
         return reducedMotion;
     }
 
-    public double getOpacity() {
-        return opacity;
-    }
-
     public void setReducedMotion(boolean reducedMotion) {
         this.reducedMotion = reducedMotion;
         if (reducedMotion) {
@@ -131,6 +127,10 @@ public class JIPipeDesktopAnimatedIcon implements Icon, JIPipeApplicationSetting
         if (parent != null) {
             parent.repaint();
         }
+    }
+
+    public double getOpacity() {
+        return opacity;
     }
 
     @Override

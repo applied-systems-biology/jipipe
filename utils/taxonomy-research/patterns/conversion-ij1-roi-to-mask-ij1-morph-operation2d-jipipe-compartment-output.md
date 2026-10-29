@@ -32,32 +32,36 @@ template:
 
 # Pattern: Convert 2D ROI to mask -> Morphological operation 2D -> Compartment output
 
-Mined pattern `conversion-ij1-roi-to-mask-ij1-morph-operation2d-jipipe-compartment-output` (shape `conversion`, support 36).
+Mined pattern `conversion-ij1-roi-to-mask-ij1-morph-operation2d-jipipe-compartment-output` (shape `conversion`, support
+36).
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| other | `ij1-roi-to-mask` |
-| other | `ij1-morph-operation2d` |
+| role    | node ids                    |
+|---------|-----------------------------|
+| other   | `ij1-roi-to-mask`           |
+| other   | `ij1-morph-operation2d`     |
 | core-io | `jipipe:compartment-output` |
 
 ## Example graph
 
 Project: `AIAgentTests/02-AdvancedPipelines/Cryogels_01.jip` (relative to `/data/JIPipe`), compartment `Preprocessing`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `ij1-roi-to-mask` | Convert ROI to mask |
-| n1 | `ij1-morph-operation2d` | Morphological operation 2D |
-| n2 | `jipipe:compartment-output` | Output |
+| key | node id                     | name                       |
+|-----|-----------------------------|----------------------------|
+| n0  | `ij1-roi-to-mask`           | Convert ROI to mask        |
+| n1  | `ij1-morph-operation2d`     | Morphological operation 2D |
+| n2  | `jipipe:compartment-output` | Output                     |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
-| Convert ROI to mask | `Output` | Morphological operation 2D | `Input` | `imagej-imgplus-greyscale-mask` |
-| Morphological operation 2D | `Output` | Output | `Mask` | `imagej-imgplus` |
+| from                       | slot     | to                         | slot    | data class                      |
+|----------------------------|----------|----------------------------|---------|---------------------------------|
+| Convert ROI to mask        | `Output` | Morphological operation 2D | `Input` | `imagej-imgplus-greyscale-mask` |
+| Morphological operation 2D | `Output` | Output                     | `Mask`  | `imagej-imgplus`                |
 
 ## Template
 
-Proposed name `Convert 2D ROI to mask -> Morphological operation 2D -> Compartment output`, menu path `Patterns/ROIs/Convert 2D ROI to mask -> Morphological operation 2D -> Compartment output` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/conversion-ij1-roi-to-mask-ij1-morph-operation2d-jipipe-compartment-output.json`.
+Proposed name `Convert 2D ROI to mask -> Morphological operation 2D -> Compartment output`, menu path
+`Patterns/ROIs/Convert 2D ROI to mask -> Morphological operation 2D -> Compartment output` (proposal only — not
+registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/conversion-ij1-roi-to-mask-ij1-morph-operation2d-jipipe-compartment-output.json`.
 

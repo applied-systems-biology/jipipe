@@ -23,7 +23,7 @@ import org.hkijena.jipipe.api.nodes.taxonomy.TaxonomyView.BehaviorFlags;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.junit.jupiter.api.Test;
 
-import javax.swing.Icon;
+import javax.swing.*;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -44,6 +44,118 @@ class TaxonomyViewTest {
     // ---------------------------------------------------------------------
     // Stubs
     // ---------------------------------------------------------------------
+
+    /**
+     * A converted info: primary leaf "Filtering" under root "Images" + one secondary.
+     */
+    private static JIPipeNodeInfo convertedInfo() {
+        TestFunction root = new TestFunction("jipipe:function:images", "Images", 186f / 360f,
+                null, true, true, true, true);
+        // Distinct flag values so the assertions are meaningful.
+        TestFunction primary = new TestFunction("jipipe:function:images:filtering", "Filtering", null,
+                root, true, false, true, false);
+        TestFunction secondary = new TestFunction("jipipe:function:statistics", "Statistics", 300f / 360f,
+                null, false, false, false, true);
+        return new TestInfo("Gaussian Blur", primary, Set.of(secondary));
+    }
+
+    /**
+     * An unconverted info: no primary function (fn-null defensive state).
+     */
+    private static JIPipeNodeInfo unconvertedInfo() {
+        return new TestInfo("My Node", null, Collections.emptySet());
+    }
+
+    // ---------------------------------------------------------------------
+    // Fixtures
+    // ---------------------------------------------------------------------
+
+    @Test
+    void functionDisplayNameConvertedUsesPrimaryFunctionName() {
+        assertEquals("Filtering", TaxonomyView.functionDisplayName(convertedInfo()));
+    }
+
+    @Test
+    void functionDisplayNameUnconvertedFallsBackToInternal() {
+        // fn-null defensive state (only reachable via JIPipeEmptyNodeInfo,
+        // never a registered node): the display name is the constant
+        // "Internal", not a legacy category name.
+        assertEquals("Internal", TaxonomyView.functionDisplayName(unconvertedInfo()));
+    }
+
+    // ---------------------------------------------------------------------
+    // functionDisplayName
+    // ---------------------------------------------------------------------
+
+    @Test
+    void locationPathConvertedIsFunctionChainPlusNodeName() {
+        assertEquals("Images > Filtering > Gaussian Blur",
+                TaxonomyView.locationPath(convertedInfo()));
+    }
+
+    @Test
+    void locationPathUnconvertedIsNodeNameOnly() {
+        // fn-null defensive state: the location path is just the node name
+        // (no category / menu path branch prefix).
+        assertEquals("My Node", TaxonomyView.locationPath(unconvertedInfo()));
+    }
+
+    // ---------------------------------------------------------------------
+    // locationPath
+    // ---------------------------------------------------------------------
+
+    @Test
+    void behaviorFlagsConvertedReadPrimaryFunctionFlags() {
+        BehaviorFlags flags = TaxonomyView.behaviorFlags(convertedInfo());
+        assertEquals(true, flags.isVisibleInPipeline());
+        assertEquals(false, flags.isVisibleInCompartments());
+        assertEquals(true, flags.canExtract());
+        assertEquals(false, flags.isRunnable());
+    }
+
+    @Test
+    void behaviorFlagsUnconvertedFallsBackToSafeDefaults() {
+        // fn-null defensive state: the safe defaults (all true) — the
+        // 21a null-category default. canExtract / isRunnable mirror the
+        // taxonomy defaults; the two visibility flags are permissive true.
+        BehaviorFlags flags = TaxonomyView.behaviorFlags(unconvertedInfo());
+        assertEquals(true, flags.isVisibleInPipeline());
+        assertEquals(true, flags.isVisibleInCompartments());
+        assertEquals(true, flags.canExtract());
+        assertEquals(true, flags.isRunnable());
+    }
+
+    // ---------------------------------------------------------------------
+    // behaviorFlags
+    // ---------------------------------------------------------------------
+
+    @Test
+    void searchIdsConvertedIsPrimaryPlusSecondaryFunctionIds() {
+        Set<String> ids = TaxonomyView.searchIds(convertedInfo());
+        assertEquals(Set.of("jipipe:function:images:filtering", "jipipe:function:statistics"), ids);
+    }
+
+    @Test
+    void searchIdsUnconvertedIsEmpty() {
+        // fn-null defensive state: no legacy category id — the search ids are
+        // empty (the new defensive default).
+        Set<String> ids = TaxonomyView.searchIds(unconvertedInfo());
+        assertTrue(ids.isEmpty());
+    }
+
+    // ---------------------------------------------------------------------
+    // searchIds
+    // ---------------------------------------------------------------------
+
+    @Test
+    void searchIdsConvertedWithNoSecondaryIsOnlyPrimaryId() {
+        TestFunction root = new TestFunction("jipipe:function:images", "Images", 186f / 360f,
+                null, true, true, true, true);
+        TestFunction primary = new TestFunction("jipipe:function:images:filtering", "Filtering", null,
+                root, true, false, true, false);
+        JIPipeNodeInfo info = new TestInfo("Solo", primary, Collections.emptySet());
+        assertEquals(Set.of("jipipe:function:images:filtering"), TaxonomyView.searchIds(info));
+    }
 
     /**
      * Minimal {@link JIPipeNodeTaxonomyFunction} stub with controllable
@@ -210,113 +322,5 @@ class TaxonomyViewTest {
         public Set<JIPipeNodeTaxonomyFunction> getSecondaryFunctions() {
             return secondary;
         }
-    }
-
-    // ---------------------------------------------------------------------
-    // Fixtures
-    // ---------------------------------------------------------------------
-
-    /** A converted info: primary leaf "Filtering" under root "Images" + one secondary. */
-    private static JIPipeNodeInfo convertedInfo() {
-        TestFunction root = new TestFunction("jipipe:function:images", "Images", 186f / 360f,
-                null, true, true, true, true);
-        // Distinct flag values so the assertions are meaningful.
-        TestFunction primary = new TestFunction("jipipe:function:images:filtering", "Filtering", null,
-                root, true, false, true, false);
-        TestFunction secondary = new TestFunction("jipipe:function:statistics", "Statistics", 300f / 360f,
-                null, false, false, false, true);
-        return new TestInfo("Gaussian Blur", primary, Set.of(secondary));
-    }
-
-    /** An unconverted info: no primary function (fn-null defensive state). */
-    private static JIPipeNodeInfo unconvertedInfo() {
-        return new TestInfo("My Node", null, Collections.emptySet());
-    }
-
-    // ---------------------------------------------------------------------
-    // functionDisplayName
-    // ---------------------------------------------------------------------
-
-    @Test
-    void functionDisplayNameConvertedUsesPrimaryFunctionName() {
-        assertEquals("Filtering", TaxonomyView.functionDisplayName(convertedInfo()));
-    }
-
-    @Test
-    void functionDisplayNameUnconvertedFallsBackToInternal() {
-        // fn-null defensive state (only reachable via JIPipeEmptyNodeInfo,
-        // never a registered node): the display name is the constant
-        // "Internal", not a legacy category name.
-        assertEquals("Internal", TaxonomyView.functionDisplayName(unconvertedInfo()));
-    }
-
-    // ---------------------------------------------------------------------
-    // locationPath
-    // ---------------------------------------------------------------------
-
-    @Test
-    void locationPathConvertedIsFunctionChainPlusNodeName() {
-        assertEquals("Images > Filtering > Gaussian Blur",
-                TaxonomyView.locationPath(convertedInfo()));
-    }
-
-    @Test
-    void locationPathUnconvertedIsNodeNameOnly() {
-        // fn-null defensive state: the location path is just the node name
-        // (no category / menu path branch prefix).
-        assertEquals("My Node", TaxonomyView.locationPath(unconvertedInfo()));
-    }
-
-    // ---------------------------------------------------------------------
-    // behaviorFlags
-    // ---------------------------------------------------------------------
-
-    @Test
-    void behaviorFlagsConvertedReadPrimaryFunctionFlags() {
-        BehaviorFlags flags = TaxonomyView.behaviorFlags(convertedInfo());
-        assertEquals(true, flags.isVisibleInPipeline());
-        assertEquals(false, flags.isVisibleInCompartments());
-        assertEquals(true, flags.canExtract());
-        assertEquals(false, flags.isRunnable());
-    }
-
-    @Test
-    void behaviorFlagsUnconvertedFallsBackToSafeDefaults() {
-        // fn-null defensive state: the safe defaults (all true) — the
-        // 21a null-category default. canExtract / isRunnable mirror the
-        // taxonomy defaults; the two visibility flags are permissive true.
-        BehaviorFlags flags = TaxonomyView.behaviorFlags(unconvertedInfo());
-        assertEquals(true, flags.isVisibleInPipeline());
-        assertEquals(true, flags.isVisibleInCompartments());
-        assertEquals(true, flags.canExtract());
-        assertEquals(true, flags.isRunnable());
-    }
-
-    // ---------------------------------------------------------------------
-    // searchIds
-    // ---------------------------------------------------------------------
-
-    @Test
-    void searchIdsConvertedIsPrimaryPlusSecondaryFunctionIds() {
-        Set<String> ids = TaxonomyView.searchIds(convertedInfo());
-        assertEquals(Set.of("jipipe:function:images:filtering", "jipipe:function:statistics"), ids);
-    }
-
-    @Test
-    void searchIdsUnconvertedIsEmpty() {
-        // fn-null defensive state: no legacy category id — the search ids are
-        // empty (the new defensive default).
-        Set<String> ids = TaxonomyView.searchIds(unconvertedInfo());
-        assertTrue(ids.isEmpty());
-    }
-
-    @Test
-    void searchIdsConvertedWithNoSecondaryIsOnlyPrimaryId() {
-        TestFunction root = new TestFunction("jipipe:function:images", "Images", 186f / 360f,
-                null, true, true, true, true);
-        TestFunction primary = new TestFunction("jipipe:function:images:filtering", "Filtering", null,
-                root, true, false, true, false);
-        JIPipeNodeInfo info = new TestInfo("Solo", primary, Collections.emptySet());
-        assertEquals(Set.of("jipipe:function:images:filtering"), TaxonomyView.searchIds(info));
     }
 }

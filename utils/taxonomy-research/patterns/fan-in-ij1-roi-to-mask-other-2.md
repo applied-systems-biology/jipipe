@@ -35,26 +35,28 @@ Mined pattern `fan-in-ij1-roi-to-mask-other-2` (shape `fan-in`, support 30).
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| other | `ij1-roi-to-mask` |
+| role  | node ids                                                                                                                                                                                         |
+|-------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| other | `ij1-roi-to-mask`                                                                                                                                                                                |
 | other | `cellpose-inference-2.x`, `cellpose-segmentation-inference-3.x`, `ij1-analyze-find-particles2d`, `ij1-blur-gaussian2d`, `ij1-color-split-channels-2`, `ij1-math-imagecalculator2d`, … (14 total) |
 
 ## Example graph
 
 Project: `AIAgentTests/02-AdvancedPipelines/Paco_06.jip` (relative to `/data/JIPipe`), compartment `Segmentation`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `ij1-roi-enlarge-shrink` | Enlarge/shrink 2D ROI |
-| n1 | `cellpose-segmentation-inference-3.x` | Cellpose segmentation (3.x) |
-| n2 | `ij1-roi-to-mask` | Convert 2D ROI to mask |
+| key | node id                               | name                        |
+|-----|---------------------------------------|-----------------------------|
+| n0  | `ij1-roi-enlarge-shrink`              | Enlarge/shrink 2D ROI       |
+| n1  | `cellpose-segmentation-inference-3.x` | Cellpose segmentation (3.x) |
+| n2  | `ij1-roi-to-mask`                     | Convert 2D ROI to mask      |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
+| from                        | slot            | to                     | slot    | data class                 |
+|-----------------------------|-----------------|------------------------|---------|----------------------------|
 | Cellpose segmentation (3.x) | `Probabilities` | Convert 2D ROI to mask | `Image` | `imagej-imgplus-greyscale` |
 
 ## Template
 
-Proposed name `Convert 2D ROI to mask fans in from 14 source ids (roles: other)`, menu path `Patterns/ROIs/Convert 2D ROI to mask fans in from 14 source ids (roles: other)` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/fan-in-ij1-roi-to-mask-other-2.json`.
+Proposed name `Convert 2D ROI to mask fans in from 14 source ids (roles: other)`, menu path
+`Patterns/ROIs/Convert 2D ROI to mask fans in from 14 source ids (roles: other)` (proposal only — not registered).
+`data` = the minimal JIPipeGraph JSON; the full object is written to `templates/fan-in-ij1-roi-to-mask-other-2.json`.
 

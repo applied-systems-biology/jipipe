@@ -27,8 +27,8 @@ import org.hkijena.jipipe.api.project.io.JIPipeLegacyProjectWriter;
 import org.hkijena.jipipe.api.project.io.JIPipeProjectIOs;
 import org.hkijena.jipipe.api.project.io.JIPipeProjectPeek;
 import org.hkijena.jipipe.api.project.jipx.JIPipeXProjectWriter;
-import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
+import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.service.components.JIPipePluginsServiceComponent;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
@@ -167,6 +167,30 @@ public class JIPipeDesktopProjectWindow extends JFrame {
      */
     public static Set<JIPipeDesktopProjectWindow> getOpenWindows() {
         return Collections.unmodifiableSet(OPEN_WINDOWS);
+    }
+
+    /**
+     * The SAVING stage label for the save button, derived from the writer's
+     * progress log. Returns {@code null} for log lines that do not indicate a
+     * new stage (e.g. the initial progress frame, per-part zips).
+     */
+    private static String mapSaveStage(String statusMessage) {
+        if (statusMessage == null) {
+            return null;
+        }
+        if (statusMessage.startsWith("Materialize")) {
+            return "writing";
+        }
+        if (statusMessage.startsWith("Zipping")) {
+            return "compressing";
+        }
+        if (statusMessage.startsWith("Self-verifying")) {
+            return "verifying";
+        }
+        if (statusMessage.startsWith("Re-check")) {
+            return "verifying";
+        }
+        return null;
     }
 
     private void initialize() {
@@ -803,30 +827,6 @@ public class JIPipeDesktopProjectWindow extends JFrame {
     }
 
     /**
-     * The SAVING stage label for the save button, derived from the writer's
-     * progress log. Returns {@code null} for log lines that do not indicate a
-     * new stage (e.g. the initial progress frame, per-part zips).
-     */
-    private static String mapSaveStage(String statusMessage) {
-        if (statusMessage == null) {
-            return null;
-        }
-        if (statusMessage.startsWith("Materialize")) {
-            return "writing";
-        }
-        if (statusMessage.startsWith("Zipping")) {
-            return "compressing";
-        }
-        if (statusMessage.startsWith("Self-verifying")) {
-            return "verifying";
-        }
-        if (statusMessage.startsWith("Re-check")) {
-            return "verifying";
-        }
-        return null;
-    }
-
-    /**
      * EDT bookkeeping for a JIPX save that just finished (feature #753).
      */
     private void onSaveFinished(JIPipeRunnable run, Throwable[] failure, String[] failureStage,
@@ -995,7 +995,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
     }
 
     private void closeCurrentProject() {
-        if(project != null && projectWorkbench != null) {
+        if (project != null && projectWorkbench != null) {
             JIPipeRunnable runnable = new DefaultJIPipeRunnable() {
                 @Override
                 public String getTaskLabel() {
@@ -1304,7 +1304,9 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                     Path finalProjectFile = basePath.resolve(uniqueFileNameNoExt + extension);
                     PathUtils.copyFile(outputFile, finalProjectFile);
 
-                    SwingUtilities.invokeLater(() -> { openProject(finalProjectFile, forceCurrentWindow); });
+                    SwingUtilities.invokeLater(() -> {
+                        openProject(finalProjectFile, forceCurrentWindow);
+                    });
                 }
             }
         };

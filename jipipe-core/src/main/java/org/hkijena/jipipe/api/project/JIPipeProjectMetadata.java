@@ -18,10 +18,10 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependencyList;
 import org.hkijena.jipipe.api.JIPipeNodeTemplateList;
 import org.hkijena.jipipe.api.JIPipeStandardMetadata;
-import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
-import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.OptionalJIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
+import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -32,17 +32,6 @@ import org.hkijena.jipipe.plugins.settings.application.JIPipeProjectAuthorsAppli
  * Metadata for a {@link JIPipeProject}
  */
 public class JIPipeProjectMetadata extends JIPipeStandardMetadata {
-    private JIPipeImageJUpdateSiteDependencyList updateSiteDependencies = new JIPipeImageJUpdateSiteDependencyList();
-    private String templateDescription = "";
-    private JIPipeProjectPermissions permissions = new JIPipeProjectPermissions();
-    private JIPipeProjectUserPaths userPaths = new JIPipeProjectUserPaths();
-    private JIPipeDynamicParameterCollection globalParameters = new JIPipeDynamicParameterCollection(true);
-    private JIPipeNodeTemplateList nodeTemplates = new JIPipeNodeTemplateList();
-    private boolean restoreTabs = true;
-    private boolean autoAddAuthors = true;
-    private boolean showCompartmentsRunPanelInOverview = true;
-    private boolean showCompartmentsInOverview = true;
-
     /**
      * Fired when the project's author list is mutated through a path that does
      * NOT go through the parameter commit (feature #753). The canonical editor
@@ -56,6 +45,16 @@ public class JIPipeProjectMetadata extends JIPipeStandardMetadata {
      * {@link JIPipeStandardMetadata}.
      */
     private final AuthorsChangedEventEmitter authorsChangedEventEmitter = new AuthorsChangedEventEmitter();
+    private JIPipeImageJUpdateSiteDependencyList updateSiteDependencies = new JIPipeImageJUpdateSiteDependencyList();
+    private String templateDescription = "";
+    private JIPipeProjectPermissions permissions = new JIPipeProjectPermissions();
+    private JIPipeProjectUserPaths userPaths = new JIPipeProjectUserPaths();
+    private JIPipeDynamicParameterCollection globalParameters = new JIPipeDynamicParameterCollection(true);
+    private JIPipeNodeTemplateList nodeTemplates = new JIPipeNodeTemplateList();
+    private boolean restoreTabs = true;
+    private boolean autoAddAuthors = true;
+    private boolean showCompartmentsRunPanelInOverview = true;
+    private boolean showCompartmentsInOverview = true;
 
     public AuthorsChangedEventEmitter getAuthorsChangedEventEmitter() {
         return authorsChangedEventEmitter;
@@ -201,6 +200,10 @@ public class JIPipeProjectMetadata extends JIPipeStandardMetadata {
         this.showCompartmentsInOverview = showCompartmentsInOverview;
     }
 
+    public interface AuthorsChangedEventListener {
+        void onAuthorsChanged(AuthorsChangedEvent event);
+    }
+
     /**
      * A change to the project's author list (feature #753).
      */
@@ -208,10 +211,6 @@ public class JIPipeProjectMetadata extends JIPipeStandardMetadata {
         public AuthorsChangedEvent(JIPipeProjectMetadata source) {
             super(source);
         }
-    }
-
-    public interface AuthorsChangedEventListener {
-        void onAuthorsChanged(AuthorsChangedEvent event);
     }
 
     public static class AuthorsChangedEventEmitter extends JIPipeEventEmitter<AuthorsChangedEvent, AuthorsChangedEventListener> {

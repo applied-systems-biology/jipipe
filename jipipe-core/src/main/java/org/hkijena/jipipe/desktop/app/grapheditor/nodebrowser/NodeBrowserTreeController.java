@@ -28,13 +28,8 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
+import java.util.*;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Supplier;
 
 /**
@@ -113,6 +108,34 @@ public class NodeBrowserTreeController extends JPanel {
         add(treeToolbar, BorderLayout.SOUTH);
     }
 
+    private static boolean hasNodesUnder(JIPipeNodeTaxonomyFunction function, FunctionRegistry registry, Set<String> populated) {
+        if (populated.contains(function.getId())) {
+            return true;
+        }
+        for (JIPipeNodeTaxonomyFunction child : registry.children(function)) {
+            if (hasNodesUnder(child, registry, populated)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * The primary taxonomy function of the given entry, or {@code null}.
+     * <p>
+     * {@link JIPipeNodeDatabaseEntry#getFunctionIds()} is a {@link LinkedHashSet}
+     * with the primary id added first (see
+     * {@code CreateNewNodeByInfoDatabaseEntry.initializeTaxonomyFacets}), so
+     * the first element is the primary function.
+     */
+    public static JIPipeNodeTaxonomyFunction primaryFunctionOf(JIPipeNodeDatabaseEntry entry) {
+        Set<String> ids = entry.getFunctionIds();
+        if (ids.isEmpty()) {
+            return null;
+        }
+        return JIPipe.getNodes().getFunctions().byId(ids.iterator().next());
+    }
+
     public JTree getTree() {
         return tree;
     }
@@ -164,6 +187,12 @@ public class NodeBrowserTreeController extends JPanel {
         populateTree(role, List.of());
     }
 
+    // ------------------------------------------------------------------
+    // Expansion-state persistence (call site decides WHEN to save/restore;
+    // the ids are the stable taxonomy function ids — safe to persist, see
+    // the project's stable-ID rule)
+    // ------------------------------------------------------------------
+
     /**
      * Populates the tree with the live function registry and attaches the
      * given entries as node leaves (the full current result set — see
@@ -181,7 +210,7 @@ public class NodeBrowserTreeController extends JPanel {
         Set<String> populated;
         if (entries.isEmpty()) {
             populated = NodeBrowserModel.populatedFunctionIds(
-                JIPipe.getNodes().getRegisteredNodeInfos().values(), role);
+                    JIPipe.getNodes().getRegisteredNodeInfos().values(), role);
         } else {
             // Prune by the entries themselves: a function branch stays when
             // any entry is filed under it (primary or secondary). This keeps
@@ -205,7 +234,7 @@ public class NodeBrowserTreeController extends JPanel {
         // pruned by the node-info logic. It carries all three scopes
         // (System/Global/Project) regardless of population.
         DefaultMutableTreeNode templatesBranch =
-            new DefaultMutableTreeNode(TemplateScopeTreeNode.ROOT);
+                new DefaultMutableTreeNode(TemplateScopeTreeNode.ROOT);
         for (TemplateScope scope : TemplateScope.values()) {
             templatesBranch.add(new DefaultMutableTreeNode(TemplateScopeTreeNode.forScope(scope)));
         }
@@ -229,12 +258,6 @@ public class NodeBrowserTreeController extends JPanel {
         return node;
     }
 
-    // ------------------------------------------------------------------
-    // Expansion-state persistence (call site decides WHEN to save/restore;
-    // the ids are the stable taxonomy function ids — safe to persist, see
-    // the project's stable-ID rule)
-    // ------------------------------------------------------------------
-
     /**
      * The stable ids of all currently expanded function branches (function
      * rows only — the root's expansion is implicit and entry leaves are
@@ -249,8 +272,8 @@ public class NodeBrowserTreeController extends JPanel {
 
     private void collectExpandedFunctionIds(DefaultMutableTreeNode node, List<String> ids) {
         if (node.getUserObject() instanceof JIPipeNodeTaxonomyFunction function
-            && node.getPath() != null
-            && tree.isExpanded(new TreePath(node.getPath()))) {
+                && node.getPath() != null
+                && tree.isExpanded(new TreePath(node.getPath()))) {
             ids.add(function.getId());
         }
         for (int i = 0; i < node.getChildCount(); i++) {
@@ -277,10 +300,14 @@ public class NodeBrowserTreeController extends JPanel {
         restoreExpandedFunctionIds((DefaultMutableTreeNode) treeModel.getRoot(), wanted);
     }
 
+    // ------------------------------------------------------------------
+    // Node leaves (compact single-pane of the node browser)
+    // ------------------------------------------------------------------
+
     private void restoreExpandedFunctionIds(DefaultMutableTreeNode node, Set<String> wanted) {
         if (node.getPath() != null
-            && node.getUserObject() instanceof JIPipeNodeTaxonomyFunction function
-            && wanted.remove(function.getId())) {
+                && node.getUserObject() instanceof JIPipeNodeTaxonomyFunction function
+                && wanted.remove(function.getId())) {
             // JTree.expandPath expands every node on the path, so the
             // root/ancestors follow along automatically.
             tree.expandPath(new TreePath(node.getPath()));
@@ -291,22 +318,6 @@ public class NodeBrowserTreeController extends JPanel {
             }
         }
     }
-
-    private static boolean hasNodesUnder(JIPipeNodeTaxonomyFunction function, FunctionRegistry registry, Set<String> populated) {
-        if (populated.contains(function.getId())) {
-            return true;
-        }
-        for (JIPipeNodeTaxonomyFunction child : registry.children(function)) {
-            if (hasNodesUnder(child, registry, populated)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    // ------------------------------------------------------------------
-    // Node leaves (compact single-pane of the node browser)
-    // ------------------------------------------------------------------
 
     /**
      * Whether any function branch currently carries entry (node-leaf)
@@ -388,6 +399,11 @@ public class NodeBrowserTreeController extends JPanel {
         }
     }
 
+    // ------------------------------------------------------------------
+    // Tree path + selection helpers (shared by the crosshairs action, the
+    // search highlights and the call sites' selection listeners)
+    // ------------------------------------------------------------------
+
     /**
      * Recursively attaches the entries that list each function node's own
      * id as direct children of that node. The tree ROOT carries a String
@@ -405,7 +421,7 @@ public class NodeBrowserTreeController extends JPanel {
         for (int i = functionNode.getChildCount() - 1; i >= 0; i--) {
             Object child = functionNode.getChildAt(i);
             if (child instanceof DefaultMutableTreeNode mtn
-                && (mtn.getUserObject() instanceof JIPipeNodeDatabaseEntry
+                    && (mtn.getUserObject() instanceof JIPipeNodeDatabaseEntry
                     || mtn.getUserObject() instanceof PatternsTreeNode)) {
                 functionNode.remove(i);
             }
@@ -438,10 +454,10 @@ public class NodeBrowserTreeController extends JPanel {
             }
             if (hasTemplate) {
                 DefaultMutableTreeNode patternsChild =
-                    new DefaultMutableTreeNode(new PatternsTreeNode(function));
+                        new DefaultMutableTreeNode(new PatternsTreeNode(function));
                 for (JIPipeNodeDatabaseEntry entry : entries) {
                     if (entry instanceof CreateNewNodesByTemplateDatabaseEntry
-                        && entry.getFunctionIds().contains(functionId)) {
+                            && entry.getFunctionIds().contains(functionId)) {
                         patternsChild.add(new DefaultMutableTreeNode(entry));
                     }
                 }
@@ -454,7 +470,7 @@ public class NodeBrowserTreeController extends JPanel {
             TemplateScope scope = scopeNode.getScope();
             for (JIPipeNodeDatabaseEntry entry : entries) {
                 if (entry instanceof CreateNewNodesByTemplateDatabaseEntry template
-                    && template.getScope() == scope) {
+                        && template.getScope() == scope) {
                     functionNode.add(new DefaultMutableTreeNode(entry));
                 }
             }
@@ -474,7 +490,7 @@ public class NodeBrowserTreeController extends JPanel {
         // the function forwarding, so Templates/System was empty in every
         // tier).
         if (userObject instanceof TemplateScopeTreeNode
-            || userObject instanceof String) {
+                || userObject instanceof String) {
             for (int i = 0; i < functionNode.getChildCount(); i++) {
                 Object child = functionNode.getChildAt(i);
                 if (child instanceof DefaultMutableTreeNode mtn && mtn.getUserObject() instanceof TemplateScopeTreeNode) {
@@ -483,11 +499,6 @@ public class NodeBrowserTreeController extends JPanel {
             }
         }
     }
-
-    // ------------------------------------------------------------------
-    // Tree path + selection helpers (shared by the crosshairs action, the
-    // search highlights and the call sites' selection listeners)
-    // ------------------------------------------------------------------
 
     /**
      * The {@link TreePath} to the first node leaf (depth-first, in tree
@@ -521,8 +532,8 @@ public class NodeBrowserTreeController extends JPanel {
                 // branches (templates attached under Templates/<scope>) and
                 // the synthetic <function>/Patterns rows.
                 if (mtn.getUserObject() instanceof JIPipeNodeTaxonomyFunction
-                    || mtn.getUserObject() instanceof TemplateScopeTreeNode
-                    || mtn.getUserObject() instanceof PatternsTreeNode) {
+                        || mtn.getUserObject() instanceof TemplateScopeTreeNode
+                        || mtn.getUserObject() instanceof PatternsTreeNode) {
                     TreePath found = findFirstNodeLeafPath(mtn, path);
                     if (found != null) {
                         return found;
@@ -576,8 +587,8 @@ public class NodeBrowserTreeController extends JPanel {
         }
         Object last = path.getLastPathComponent();
         if (last instanceof DefaultMutableTreeNode mtn
-            && mtn.getUserObject() instanceof TemplateScopeTreeNode scopeNode
-            && !scopeNode.isRoot()) {
+                && mtn.getUserObject() instanceof TemplateScopeTreeNode scopeNode
+                && !scopeNode.isRoot()) {
             return scopeNode.getScope();
         }
         return null;
@@ -596,7 +607,7 @@ public class NodeBrowserTreeController extends JPanel {
         }
         Object last = path.getLastPathComponent();
         if (last instanceof DefaultMutableTreeNode mtn
-            && mtn.getUserObject() instanceof PatternsTreeNode patterns) {
+                && mtn.getUserObject() instanceof PatternsTreeNode patterns) {
             return patterns.getFunction();
         }
         return null;
@@ -738,8 +749,8 @@ public class NodeBrowserTreeController extends JPanel {
             // (templates attached under Templates/<scope>) and the synthetic
             // <function>/Patterns rows.
             if (mtn.getUserObject() instanceof JIPipeNodeTaxonomyFunction
-                || mtn.getUserObject() instanceof TemplateScopeTreeNode
-                || mtn.getUserObject() instanceof PatternsTreeNode) {
+                    || mtn.getUserObject() instanceof TemplateScopeTreeNode
+                    || mtn.getUserObject() instanceof PatternsTreeNode) {
                 TreePath found = findNodeLeafRow(mtn, path, entry);
                 if (found != null) {
                     return found;
@@ -747,22 +758,6 @@ public class NodeBrowserTreeController extends JPanel {
             }
         }
         return null;
-    }
-
-    /**
-     * The primary taxonomy function of the given entry, or {@code null}.
-     * <p>
-     * {@link JIPipeNodeDatabaseEntry#getFunctionIds()} is a {@link LinkedHashSet}
-     * with the primary id added first (see
-     * {@code CreateNewNodeByInfoDatabaseEntry.initializeTaxonomyFacets}), so
-     * the first element is the primary function.
-     */
-    public static JIPipeNodeTaxonomyFunction primaryFunctionOf(JIPipeNodeDatabaseEntry entry) {
-        Set<String> ids = entry.getFunctionIds();
-        if (ids.isEmpty()) {
-            return null;
-        }
-        return JIPipe.getNodes().getFunctions().byId(ids.iterator().next());
     }
 
     // ------------------------------------------------------------------

@@ -25,6 +25,14 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class ColorSpacesTest {
 
+    private static boolean near(int got, int want) {
+        return near(got, want, 0.5);
+    }
+
+    private static boolean near(int got, int want, double tol) {
+        return Math.abs(got - want) <= tol;
+    }
+
     @Test
     void hsbRoundTrip() {
         Color c = new Color(59, 157, 255);
@@ -46,7 +54,7 @@ class ColorSpacesTest {
         Color c = new Color(59, 157, 255);
         double[] lab = ColorSpaces.toLab(c);
         Color back = ColorSpaces.fromLab(lab[0], lab[1], lab[2]);
-        assertTrue(near(back.getRed(), c.getRed(), 1.0),   "R " + back.getRed() + " vs " + c.getRed());
+        assertTrue(near(back.getRed(), c.getRed(), 1.0), "R " + back.getRed() + " vs " + c.getRed());
         assertTrue(near(back.getGreen(), c.getGreen(), 1.0), "G " + back.getGreen() + " vs " + c.getGreen());
         assertTrue(near(back.getBlue(), c.getBlue(), 1.0), "B " + back.getBlue() + " vs " + c.getBlue());
     }
@@ -66,13 +74,5 @@ class ColorSpacesTest {
         Color c = ColorSpaces.fromHex("#3b9dffb3");
         assertEquals(0x3b, c.getRed());
         assertEquals(0xb3, c.getAlpha());
-    }
-
-    private static boolean near(int got, int want) {
-        return near(got, want, 0.5);
-    }
-
-    private static boolean near(int got, int want, double tol) {
-        return Math.abs(got - want) <= tol;
     }
 }

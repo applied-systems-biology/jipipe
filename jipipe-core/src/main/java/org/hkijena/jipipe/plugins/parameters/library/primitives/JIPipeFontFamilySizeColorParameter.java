@@ -17,9 +17,7 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.databind.JsonNode;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.GraphicsEnvironment;
+import java.awt.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -105,6 +103,14 @@ public class JIPipeFontFamilySizeColorParameter implements JIPipeFontValue, JIPi
         return result;
     }
 
+    private static List<String> availableFamilies() {
+        try {
+            return Arrays.asList(GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames());
+        } catch (RuntimeException e) {
+            return List.of();
+        }
+    }
+
     /**
      * @return the font as an {@link Font} with {@link Font#PLAIN} style
      * (unavailable families fall back to the default family; the color is
@@ -120,14 +126,6 @@ public class JIPipeFontFamilySizeColorParameter implements JIPipeFontValue, JIPi
         return new Font(f, Font.PLAIN, size);
     }
 
-    private static List<String> availableFamilies() {
-        try {
-            return Arrays.asList(GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames());
-        } catch (RuntimeException e) {
-            return List.of();
-        }
-    }
-
     @Override
     public JIPipeFontValue copy() {
         return new JIPipeFontFamilySizeColorParameter(this);
@@ -138,7 +136,9 @@ public class JIPipeFontFamilySizeColorParameter implements JIPipeFontValue, JIPi
         return family;
     }
 
-    /** @param family the font family name (null resets to the default family) */
+    /**
+     * @param family the font family name (null resets to the default family)
+     */
     @JsonSetter("family")
     public void setFamily(String family) {
         this.family = family != null ? family : JIPipeFontFamilySizeStyleParameter.defaultFamily();
@@ -159,7 +159,9 @@ public class JIPipeFontFamilySizeColorParameter implements JIPipeFontValue, JIPi
         return color;
     }
 
-    /** @param color the text color (null resets to white) */
+    /**
+     * @param color the text color (null resets to white)
+     */
     @JsonSetter("color")
     public void setColor(Color color) {
         this.color = color != null ? color : Color.WHITE;

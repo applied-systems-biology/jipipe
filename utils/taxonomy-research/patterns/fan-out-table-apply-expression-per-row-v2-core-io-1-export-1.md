@@ -36,28 +36,32 @@ Mined pattern `fan-out-table-apply-expression-per-row-v2-core-io-1-export-1` (sh
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| other | `table-apply-expression-per-row-v2` |
-| core-io | `jipipe:compartment-output` |
-| export | `iji-export-table-as-xlsx-v2`, `iji-export-table-v2` |
+| role    | node ids                                             |
+|---------|------------------------------------------------------|
+| other   | `table-apply-expression-per-row-v2`                  |
+| core-io | `jipipe:compartment-output`                          |
+| export  | `iji-export-table-as-xlsx-v2`, `iji-export-table-v2` |
 
 ## Example graph
 
-Project: `AIAgentTests/03-ExampleWorkflows/Clara_08_feet.jip` (relative to `/data/JIPipe`), compartment `Phagocytic meassures`.
+Project: `AIAgentTests/03-ExampleWorkflows/Clara_08_feet.jip` (relative to `/data/JIPipe`), compartment
+`Phagocytic meassures`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `table-apply-expression-per-row-v2` | Apply expression per row |
-| n1 | `iji-export-table-v2` | Export table: per image spores |
-| n2 | `jipipe:compartment-output` | Phagocytic measures |
+| key | node id                             | name                           |
+|-----|-------------------------------------|--------------------------------|
+| n0  | `table-apply-expression-per-row-v2` | Apply expression per row       |
+| n1  | `iji-export-table-v2`               | Export table: per image spores |
+| n2  | `jipipe:compartment-output`         | Phagocytic measures            |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
-| Apply expression per row | `Output` | Export table: per image spores | `Input` | `imagej-results-table` |
-| Export table: per image spores | `Exported file` | Phagocytic measures | `Results from JIPipe native` | `file` |
+| from                           | slot            | to                             | slot                         | data class             |
+|--------------------------------|-----------------|--------------------------------|------------------------------|------------------------|
+| Apply expression per row       | `Output`        | Export table: per image spores | `Input`                      | `imagej-results-table` |
+| Export table: per image spores | `Exported file` | Phagocytic measures            | `Results from JIPipe native` | `file`                 |
 
 ## Template
 
-Proposed name `Apply expression per row fans out to 3 target ids (roles: core-io, export)`, menu path `Patterns/Tables/Apply expression per row fans out to 3 target ids (roles: core-io, export)` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/fan-out-table-apply-expression-per-row-v2-core-io-1-export-1.json`.
+Proposed name `Apply expression per row fans out to 3 target ids (roles: core-io, export)`, menu path
+`Patterns/Tables/Apply expression per row fans out to 3 target ids (roles: core-io, export)` (proposal only — not
+registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/fan-out-table-apply-expression-per-row-v2-core-io-1-export-1.json`.
 

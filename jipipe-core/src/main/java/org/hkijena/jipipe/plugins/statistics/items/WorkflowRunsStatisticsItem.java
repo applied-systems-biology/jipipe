@@ -3,8 +3,8 @@ package org.hkijena.jipipe.plugins.statistics.items;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.IntNode;
 import org.hkijena.jipipe.api.run.JIPipeGraphRun;
-import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
+import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.service.components.JIPipeStatisticsServiceComponent;
 import org.hkijena.jipipe.desktop.app.quickrun.JIPipeDesktopQuickRun;
 import org.hkijena.jipipe.plugins.statistics.JIPipeStatisticsItem;
@@ -15,21 +15,44 @@ public class WorkflowRunsStatisticsItem implements JIPipeStatisticsItem {
     private JIPipeStatisticsServiceComponent service;
 
     @Override
-    public String getId() { return "workflow-runs"; }
+    public String getId() {
+        return "workflow-runs";
+    }
+
     @Override
-    public String getName() { return "Workflow runs"; }
+    public String getName() {
+        return "Workflow runs";
+    }
+
     @Override
-    public String getDescription() { return "Number of times the user ran a workflow"; }
+    public String getDescription() {
+        return "Number of times the user ran a workflow";
+    }
+
     @Override
-    public StatisticsPrivacyLevel getRequiredPrivacyLevel() { return StatisticsPrivacyLevel.RoughProjects; }
+    public StatisticsPrivacyLevel getRequiredPrivacyLevel() {
+        return StatisticsPrivacyLevel.RoughProjects;
+    }
+
     @Override
-    public JsonNode serialize() { return IntNode.valueOf(count); }
+    public JsonNode serialize() {
+        return IntNode.valueOf(count);
+    }
+
     @Override
-    public void deserialize(JsonNode node) { if (node != null && !node.isNull()) count = node.asInt(); }
+    public void deserialize(JsonNode node) {
+        if (node != null && !node.isNull()) count = node.asInt();
+    }
+
     @Override
-    public void reset() { count = 0; }
+    public void reset() {
+        count = 0;
+    }
+
     @Override
-    public boolean isTimeTracked() { return true; }
+    public boolean isTimeTracked() {
+        return true;
+    }
 
     @Override
     public void initialize(JIPipeStatisticsServiceComponent service) {
@@ -46,11 +69,17 @@ public class WorkflowRunsStatisticsItem implements JIPipeStatisticsItem {
     }
 
     @Override
-    public String getIcon32() { return "actions/debug-run.png"; }
+    public String getIcon32() {
+        return "actions/debug-run.png";
+    }
+
     @Override
     public org.hkijena.jipipe.desktop.commons.components.cards.JIPipeDesktopCardVariant getCardVariant() {
         return org.hkijena.jipipe.desktop.commons.components.cards.JIPipeDesktopCardVariant.Success;
     }
+
     @Override
-    public int getDefaultColumnSpan() { return 6; }
+    public int getDefaultColumnSpan() {
+        return 6;
+    }
 }

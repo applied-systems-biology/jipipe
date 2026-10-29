@@ -30,32 +30,36 @@ template:
 
 # Pattern: File list -> Annotate with file/directory name -> other
 
-Mined pattern `annotation-sandwich-import-file-list-path-to-annotation-simple-other` (shape `annotation-sandwich`, support 4).
+Mined pattern `annotation-sandwich-import-file-list-path-to-annotation-simple-other` (shape `annotation-sandwich`,
+support 4).
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| import | `import-file-list` |
+| role     | node ids                    |
+|----------|-----------------------------|
+| import   | `import-file-list`          |
 | annotate | `path-to-annotation-simple` |
-| other | `import-cellpose-model-v2` |
+| other    | `import-cellpose-model-v2`  |
 
 ## Example graph
 
 Project: `AIAgentTests/03-ExampleWorkflows/Angela_Roots_38.jip` (relative to `/data/JIPipe`), compartment `Nodules`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `import-file-list` | File list |
-| n1 | `path-to-annotation-simple` | Add path to annotations |
-| n2 | `import-cellpose-model-v2` | Import Cellpose model from file |
+| key | node id                     | name                            |
+|-----|-----------------------------|---------------------------------|
+| n0  | `import-file-list`          | File list                       |
+| n1  | `path-to-annotation-simple` | Add path to annotations         |
+| n2  | `import-cellpose-model-v2`  | Import Cellpose model from file |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
-| File list | `Filenames` | Add path to annotations | `Paths` | `file` |
-| Add path to annotations | `Annotated paths` | Import Cellpose model from file | `Input` | `path` |
+| from                    | slot              | to                              | slot    | data class |
+|-------------------------|-------------------|---------------------------------|---------|------------|
+| File list               | `Filenames`       | Add path to annotations         | `Paths` | `file`     |
+| Add path to annotations | `Annotated paths` | Import Cellpose model from file | `Input` | `path`     |
 
 ## Template
 
-Proposed name `File list -> Annotate with file/directory name -> other`, menu path `Patterns/Data Sources/File list -> Annotate with file/directory name -> other` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/annotation-sandwich-import-file-list-path-to-annotation-simple-other.json`.
+Proposed name `File list -> Annotate with file/directory name -> other`, menu path
+`Patterns/Data Sources/File list -> Annotate with file/directory name -> other` (proposal only — not registered).
+`data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/annotation-sandwich-import-file-list-path-to-annotation-simple-other.json`.
 

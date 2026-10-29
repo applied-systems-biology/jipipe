@@ -35,26 +35,30 @@ Mined pattern `fan-in-ij1-threshold-auto2d-other-2` (shape `fan-in`, support 26)
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| other | `ij1-threshold-auto2d` |
+| role  | node ids                                                                                                                                                  |
+|-------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|
+| other | `ij1-threshold-auto2d`                                                                                                                                    |
 | other | `cellpose-inference-2.x`, `filaments-convert-to-mask`, `ij1-background-rollingball2d`, `ij1-blur-gaussian3d`, `jipipe:comment`, `parameters-define-table` |
 
 ## Example graph
 
-Project: `AIAgentTests/02-AdvancedPipelines/JohannesBrendel_Supramolecular_17.jip` (relative to `/data/JIPipe`), compartment `Segmentation and colocalization`.
+Project: `AIAgentTests/02-AdvancedPipelines/JohannesBrendel_Supramolecular_17.jip` (relative to `/data/JIPipe`),
+compartment `Segmentation and colocalization`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `filaments-convert-to-mask` | Convert filaments to mask |
-| n1 | `cellpose-inference-2.x` | Cellpose prediction (2.x) |
-| n2 | `ij1-threshold-auto2d` | Auto threshold 2D |
+| key | node id                     | name                      |
+|-----|-----------------------------|---------------------------|
+| n0  | `filaments-convert-to-mask` | Convert filaments to mask |
+| n1  | `cellpose-inference-2.x`    | Cellpose prediction (2.x) |
+| n2  | `ij1-threshold-auto2d`      | Auto threshold 2D         |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
+| from                      | slot            | to                | slot    | data class                 |
+|---------------------------|-----------------|-------------------|---------|----------------------------|
 | Cellpose prediction (2.x) | `Probabilities` | Auto threshold 2D | `Input` | `imagej-imgplus-greyscale` |
 
 ## Template
 
-Proposed name `Auto threshold 2D (8-bit) fans in from 6 source ids (roles: other)`, menu path `Patterns/Images/Auto threshold 2D (8-bit) fans in from 6 source ids (roles: other)` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/fan-in-ij1-threshold-auto2d-other-2.json`.
+Proposed name `Auto threshold 2D (8-bit) fans in from 6 source ids (roles: other)`, menu path
+`Patterns/Images/Auto threshold 2D (8-bit) fans in from 6 source ids (roles: other)` (proposal only — not registered).
+`data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/fan-in-ij1-threshold-auto2d-other-2.json`.
 

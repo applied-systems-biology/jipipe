@@ -15,12 +15,7 @@ package org.hkijena.jipipe.api.nodes.taxonomy;
 
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * The result of a full taxonomy validation pass: the combined errors of the
@@ -56,7 +51,7 @@ public final class TaxonomyValidationReport {
      * The immutable result: no errors and no unassigned nodes.
      */
     private static final TaxonomyValidationReport NO_FINDINGS =
-        new TaxonomyValidationReport(List.of(), List.of());
+            new TaxonomyValidationReport(List.of(), List.of());
 
     private final List<String> errors;
     private final List<String> unassignedNodeIds;
@@ -64,35 +59,6 @@ public final class TaxonomyValidationReport {
     private TaxonomyValidationReport(List<String> errors, List<String> unassignedNodeIds) {
         this.errors = errors;
         this.unassignedNodeIds = unassignedNodeIds;
-    }
-
-    /**
-     * @return {@code true} if the taxonomy is valid, i.e.
-     * {@link #errors()} is empty. Unassigned (not yet converted) nodes
-     * do not affect this: they are the expected state during the
-     * conversion, not a validation failure.
-     */
-    public boolean ok() {
-        return errors.isEmpty();
-    }
-
-    /**
-     * @return the validation errors (function tree, framework set,
-     * family steps, and node→function/framework membership); empty if
-     * the taxonomy is valid. The list is unmodifiable.
-     */
-    public List<String> errors() {
-        return errors;
-    }
-
-    /**
-     * @return the ids of nodes whose primary function is
-     * {@code null}, i.e. nodes that are not yet converted to the
-     * taxonomy and would vanish from the function-based browser. The
-     * list is unmodifiable; empty if every node is converted.
-     */
-    public List<String> unassignedNodeIds() {
-        return unassignedNodeIds;
     }
 
     /**
@@ -194,13 +160,13 @@ public final class TaxonomyValidationReport {
             }
             if (functions.byId(primary.getId()) == null) {
                 errors.add("Node '" + info.getId() + "' points at taxonomy function '"
-                    + primary.getId() + "' that is not registered in the function registry");
+                        + primary.getId() + "' that is not registered in the function registry");
             }
             JIPipeNodeTaxonomyFramework framework = info.getFramework();
             if (framework != null && !(framework instanceof NoFramework)
-                && frameworks.byId(framework.getId()) == null) {
+                    && frameworks.byId(framework.getId()) == null) {
                 errors.add("Node '" + info.getId() + "' points at taxonomy framework '"
-                    + framework.getId() + "' that is not registered in the framework registry");
+                        + framework.getId() + "' that is not registered in the framework registry");
             }
         }
 
@@ -208,7 +174,36 @@ public final class TaxonomyValidationReport {
             return NO_FINDINGS;
         }
         return new TaxonomyValidationReport(
-            Collections.unmodifiableList(new ArrayList<>(errors)),
-            Collections.unmodifiableList(unassignedNodeIds));
+                Collections.unmodifiableList(new ArrayList<>(errors)),
+                Collections.unmodifiableList(unassignedNodeIds));
+    }
+
+    /**
+     * @return {@code true} if the taxonomy is valid, i.e.
+     * {@link #errors()} is empty. Unassigned (not yet converted) nodes
+     * do not affect this: they are the expected state during the
+     * conversion, not a validation failure.
+     */
+    public boolean ok() {
+        return errors.isEmpty();
+    }
+
+    /**
+     * @return the validation errors (function tree, framework set,
+     * family steps, and node→function/framework membership); empty if
+     * the taxonomy is valid. The list is unmodifiable.
+     */
+    public List<String> errors() {
+        return errors;
+    }
+
+    /**
+     * @return the ids of nodes whose primary function is
+     * {@code null}, i.e. nodes that are not yet converted to the
+     * taxonomy and would vanish from the function-based browser. The
+     * list is unmodifiable; empty if every node is converted.
+     */
+    public List<String> unassignedNodeIds() {
+        return unassignedNodeIds;
     }
 }

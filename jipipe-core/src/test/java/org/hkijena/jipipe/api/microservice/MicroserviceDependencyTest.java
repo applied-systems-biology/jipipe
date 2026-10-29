@@ -19,21 +19,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class MicroserviceDependencyTest {
 
-    static class TestService extends AbstractMicroservice {
-        volatile boolean startCalled = false;
-        boolean throwOnStart = false;
-
-        TestService(String name) {
-            super(name);
-        }
-
-        @Override
-        protected void onStart() throws Exception {
-            startCalled = true;
-            if (throwOnStart) throw new RuntimeException("dep failed");
-        }
-    }
-
     @Test
     void startStartsDependenciesFirst() {
         TestService dep = new TestService("Dependency");
@@ -123,5 +108,20 @@ class MicroserviceDependencyTest {
         b.addDependency(a);  // B depends on A
         c.addDependency(b);  // C depends on B
         assertThrows(IllegalArgumentException.class, () -> a.addDependency(c));
+    }
+
+    static class TestService extends AbstractMicroservice {
+        volatile boolean startCalled = false;
+        boolean throwOnStart = false;
+
+        TestService(String name) {
+            super(name);
+        }
+
+        @Override
+        protected void onStart() throws Exception {
+            startCalled = true;
+            if (throwOnStart) throw new RuntimeException("dep failed");
+        }
     }
 }

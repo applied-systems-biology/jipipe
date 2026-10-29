@@ -49,6 +49,21 @@ public class JIPipeOrasRemoteArtifactSource extends JIPipeRemoteArtifactSource {
         this.ociReference = other.ociReference;
     }
 
+    private static String extractRegistryHost(String ociReference) {
+        if (ociReference == null) {
+            return null;
+        }
+        int slashIndex = ociReference.indexOf('/');
+        if (slashIndex <= 0) {
+            return null;
+        }
+        String host = ociReference.substring(0, slashIndex);
+        if (host.contains(".") || host.contains(":") || host.equals("localhost")) {
+            return host;
+        }
+        return null;
+    }
+
     @Override
     @JsonGetter("type")
     public JIPipeRemoteArtifactSourceType getType() {
@@ -106,21 +121,6 @@ public class JIPipeOrasRemoteArtifactSource extends JIPipeRemoteArtifactSource {
 
     public void setOciReference(String ociReference) {
         this.ociReference = ociReference;
-    }
-
-    private static String extractRegistryHost(String ociReference) {
-        if (ociReference == null) {
-            return null;
-        }
-        int slashIndex = ociReference.indexOf('/');
-        if (slashIndex <= 0) {
-            return null;
-        }
-        String host = ociReference.substring(0, slashIndex);
-        if (host.contains(".") || host.contains(":") || host.equals("localhost")) {
-            return host;
-        }
-        return null;
     }
 
     public static class DownloadProgressSidecarTask extends PeriodicProcessSidecarTask {

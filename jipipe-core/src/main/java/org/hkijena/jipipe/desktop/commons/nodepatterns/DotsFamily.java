@@ -13,11 +13,13 @@
 
 package org.hkijena.jipipe.desktop.commons.nodepatterns;
 
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.util.Random;
 
-/** Modulated dot grid (Vanta 'dots' look); centers on the border grid so dots clip at the frame edges and the field continues beyond the tile. */
+/**
+ * Modulated dot grid (Vanta 'dots' look); centers on the border grid so dots clip at the frame edges and the field continues beyond the tile.
+ */
 public final class DotsFamily implements NodePatternFamily {
     @Override
     public void paint(Graphics2D g, int w, int h, Random rng) {

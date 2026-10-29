@@ -17,10 +17,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.junit.jupiter.api.Test;
 
-import java.awt.Color;
-import java.awt.Font;
+import java.awt.*;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * #1339: the shared legacy font-migration logic that every migrated node's

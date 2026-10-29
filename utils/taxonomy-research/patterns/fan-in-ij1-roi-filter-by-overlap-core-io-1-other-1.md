@@ -36,28 +36,32 @@ Mined pattern `fan-in-ij1-roi-filter-by-overlap-core-io-1-other-1` (shape `fan-i
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| other | `ij1-roi-filter-by-overlap` |
-| core-io | `jipipe:compartment-output` |
-| other | `ij1-analyze-find-particles2d`, `ij1-roi-filter-by-overlap`, `ij1-roi-filter-statistics`, `ij1-roi-merge`, `ij1-roi-outline`, `ij1-roi-set-properties` |
+| role    | node ids                                                                                                                                               |
+|---------|--------------------------------------------------------------------------------------------------------------------------------------------------------|
+| other   | `ij1-roi-filter-by-overlap`                                                                                                                            |
+| core-io | `jipipe:compartment-output`                                                                                                                            |
+| other   | `ij1-analyze-find-particles2d`, `ij1-roi-filter-by-overlap`, `ij1-roi-filter-statistics`, `ij1-roi-merge`, `ij1-roi-outline`, `ij1-roi-set-properties` |
 
 ## Example graph
 
-Project: `AIAgentTests/03-ExampleWorkflows/Clara_08_feet.jip` (relative to `/data/JIPipe`), compartment `ROI processing+Segmentation`.
+Project: `AIAgentTests/03-ExampleWorkflows/Clara_08_feet.jip` (relative to `/data/JIPipe`), compartment
+`ROI processing+Segmentation`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `jipipe:compartment-output` | ROIs |
-| n1 | `ij1-roi-filter-by-overlap` | Filter ROI by overlap #1 |
-| n2 | `ij1-roi-filter-by-overlap` | Filter ROI by overlap #2 |
+| key | node id                     | name                     |
+|-----|-----------------------------|--------------------------|
+| n0  | `jipipe:compartment-output` | ROIs                     |
+| n1  | `ij1-roi-filter-by-overlap` | Filter ROI by overlap #1 |
+| n2  | `ij1-roi-filter-by-overlap` | Filter ROI by overlap #2 |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
-| ROIs | `Green spores` | Filter ROI by overlap #1 | `ROI 1` | `imagej-roi` |
-| Filter ROI by overlap #1 | `ROI 1` | Filter ROI by overlap #2 | `ROI 1` | `imagej-roi` |
+| from                     | slot           | to                       | slot    | data class   |
+|--------------------------|----------------|--------------------------|---------|--------------|
+| ROIs                     | `Green spores` | Filter ROI by overlap #1 | `ROI 1` | `imagej-roi` |
+| Filter ROI by overlap #1 | `ROI 1`        | Filter ROI by overlap #2 | `ROI 1` | `imagej-roi` |
 
 ## Template
 
-Proposed name `Filter 2D ROI by overlap (old) fans in from 7 source ids (roles: core-io, other)`, menu path `Patterns/ROIs/Filter 2D ROI by overlap (old) fans in from 7 source ids (roles: core-io, other)` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/fan-in-ij1-roi-filter-by-overlap-core-io-1-other-1.json`.
+Proposed name `Filter 2D ROI by overlap (old) fans in from 7 source ids (roles: core-io, other)`, menu path
+`Patterns/ROIs/Filter 2D ROI by overlap (old) fans in from 7 source ids (roles: core-io, other)` (proposal only — not
+registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/fan-in-ij1-roi-filter-by-overlap-core-io-1-other-1.json`.
 

@@ -31,8 +31,8 @@ import org.hkijena.jipipe.plugins.cellpose.algorithms.cp2.Cellpose2TrainingAlgor
 import org.hkijena.jipipe.plugins.cellpose.algorithms.cp2.ImportPretrainedCellpose2ModelAlgorithm;
 import org.hkijena.jipipe.plugins.cellpose.algorithms.cp3.*;
 import org.hkijena.jipipe.plugins.cellpose.algorithms.cp4.Cellpose4SegmentationInferenceAlgorithm;
-import org.hkijena.jipipe.plugins.cellpose.algorithms.cp4.Cellpose4SegmentationTrainingAlgorithm;
 import org.hkijena.jipipe.plugins.cellpose.algorithms.cp4.Cellpose4SegmentationTraining2Algorithm;
+import org.hkijena.jipipe.plugins.cellpose.algorithms.cp4.Cellpose4SegmentationTrainingAlgorithm;
 import org.hkijena.jipipe.plugins.cellpose.algorithms.cp4.ImportPretrainedCellpose4SegmentationModelAlgorithm;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeModelData;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeSizeModelData;

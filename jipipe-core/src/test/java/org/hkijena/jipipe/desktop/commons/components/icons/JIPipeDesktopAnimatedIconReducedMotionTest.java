@@ -2,8 +2,7 @@ package org.hkijena.jipipe.desktop.commons.components.icons;
 
 import org.junit.jupiter.api.Test;
 
-import javax.swing.ImageIcon;
-import javax.swing.JPanel;
+import javax.swing.*;
 import java.awt.image.BufferedImage;
 
 import static org.junit.jupiter.api.Assertions.*;

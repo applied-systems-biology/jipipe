@@ -18,8 +18,12 @@ package org.hkijena.jipipe.plugins.parameters.ui.api;
  * (#1339).
  */
 public enum EnumUiMode {
-    /** A plain {@link javax.swing.JComboBox} (possibly editable) with no search button. */
+    /**
+     * A plain {@link javax.swing.JComboBox} (possibly editable) with no search button.
+     */
     COMBO,
-    /** The {@link org.hkijena.jipipe.desktop.commons.components.selection.JIPipeDesktopRichSelectionBox} popup. */
+    /**
+     * The {@link org.hkijena.jipipe.desktop.commons.components.selection.JIPipeDesktopRichSelectionBox} popup.
+     */
     BOX
 }

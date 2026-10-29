@@ -36,28 +36,31 @@ Mined pattern `fan-out-ij3d-labels-to-roi-core-io-1-other-2` (shape `fan-out`, s
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| other | `ij3d-labels-to-roi` |
-| core-io | `jipipe:compartment-output` |
-| other | `ij3d-filter-roi3d-by-statistics`, `ij3d-measure-roi3d`, `ij3d-roi-change-properties`, `ij3d-roi-convert-to-rgb`, `ij3d-roi-filter-by-overlap`, `ij3d-roi-split-explode` |
+| role    | node ids                                                                                                                                                                 |
+|---------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| other   | `ij3d-labels-to-roi`                                                                                                                                                     |
+| core-io | `jipipe:compartment-output`                                                                                                                                              |
+| other   | `ij3d-filter-roi3d-by-statistics`, `ij3d-measure-roi3d`, `ij3d-roi-change-properties`, `ij3d-roi-convert-to-rgb`, `ij3d-roi-filter-by-overlap`, `ij3d-roi-split-explode` |
 
 ## Example graph
 
 Project: `AIAgentTests/03-ExampleWorkflows/Annamaria_12.jip` (relative to `/data/JIPipe`), compartment `Membrane`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `ij3d-labels-to-roi` | Labels to 3D ROI |
-| n1 | `jipipe:compartment-output` | Mask |
-| n2 | `ij3d-roi-split-explode` | Split into individual 3D ROI lists |
-| n3 | `ij3d-measure-roi3d` | Extract ROI 3D statistics |
+| key | node id                     | name                               |
+|-----|-----------------------------|------------------------------------|
+| n0  | `ij3d-labels-to-roi`        | Labels to 3D ROI                   |
+| n1  | `jipipe:compartment-output` | Mask                               |
+| n2  | `ij3d-roi-split-explode`    | Split into individual 3D ROI lists |
+| n3  | `ij3d-measure-roi3d`        | Extract ROI 3D statistics          |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
+| from             | slot  | to   | slot                | data class    |
+|------------------|-------|------|---------------------|---------------|
 | Labels to 3D ROI | `ROI` | Mask | `3D cell membranes` | `roi-3d-list` |
 
 ## Template
 
-Proposed name `IJ3D Labels to 3D ROI fans out to 7 target ids (roles: core-io, other)`, menu path `Patterns/Images/IJ3D Labels to 3D ROI fans out to 7 target ids (roles: core-io, other)` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/fan-out-ij3d-labels-to-roi-core-io-1-other-2.json`.
+Proposed name `IJ3D Labels to 3D ROI fans out to 7 target ids (roles: core-io, other)`, menu path
+`Patterns/Images/IJ3D Labels to 3D ROI fans out to 7 target ids (roles: core-io, other)` (proposal only — not
+registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/fan-out-ij3d-labels-to-roi-core-io-1-other-2.json`.
 

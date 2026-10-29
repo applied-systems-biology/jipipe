@@ -13,8 +13,6 @@
 
 package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.threshold;
 
-import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
-import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ByteProcessor;
@@ -26,12 +24,15 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
-import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ThresholdingFunction;
+import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ThresholdingFunction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterSettings;
@@ -52,6 +53,9 @@ import org.hkijena.jipipe.utils.threshold.NBinsAutoThresholder;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
+
 /**
  * Thresholding node that thresholds via an auto threshold applied to a histogram with a custom number of bins
  */
@@ -62,17 +66,10 @@ import java.util.List;
         "the whole image's minimum/maximum, and 'Combine thresholds per slice' computes per-slice thresholds " +
         "that are combined via the expression. The threshold is mapped back to a pixel value via the bin range. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@ConfigureJIPipeNode(function = ThresholdingFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
+@ConfigureJIPipeNode(function = ThresholdingFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Output", create = true)
 public class AutoThreshold2DNBinsAlgorithm extends JIPipeIteratingAlgorithm {
-
-    public static int binIndex(double value, double min, double max, int nbins) {
-        if (max <= min)
-            return 0;
-        int index = (int) Math.floor((value - min) / (max - min) * nbins);
-        return Math.min(nbins - 1, Math.max(0, index));
-    }
 
     private AutoThresholdMethod method = AutoThresholdMethod.Default;
     private int nbins = 256;
@@ -82,7 +79,6 @@ public class AutoThreshold2DNBinsAlgorithm extends JIPipeIteratingAlgorithm {
     private JIPipeExpressionParameter thresholdCombinationExpression = new JIPipeExpressionParameter("MIN(thresholds)");
     private ImageROITargetArea sourceArea = ImageROITargetArea.WholeImage;
     private JIPipeTextAnnotationMergeMode thresholdAnnotationStrategy = JIPipeTextAnnotationMergeMode.OverwriteExisting;
-
     /**
      * @param info the info
      */
@@ -107,6 +103,41 @@ public class AutoThreshold2DNBinsAlgorithm extends JIPipeIteratingAlgorithm {
         this.sourceArea = other.sourceArea;
         this.thresholdAnnotationStrategy = other.thresholdAnnotationStrategy;
         ImageJAlgorithmUtils.updateROIOrMaskSlot(sourceArea, getSlotConfiguration());
+    }
+
+    public static int binIndex(double value, double min, double max, int nbins) {
+        if (max <= min)
+            return 0;
+        int index = (int) Math.floor((value - min) / (max - min) * nbins);
+        return Math.min(nbins - 1, Math.max(0, index));
+    }
+
+    /**
+     * Inverts a slice over the given range (v -> (min + max) - v).
+     * <p>
+     * This is applied when the background is bright, so that foreground pixels become bright.
+     * {@link ShortProcessor#invert()} cannot be used for 16-bit inputs: unless the (off by default)
+     * {@code Prefs.fullRange16bitInversions} preference is set, it inverts around the
+     * current min/max display range (v -> max + min - v of the slice's data range).
+     *
+     * @param ip  the processor to invert in-place
+     * @param min the minimum of the range used for binning
+     * @param max the maximum of the range used for binning
+     */
+    private static void invert(ImageProcessor ip, double min, double max) {
+        if (ip instanceof ShortProcessor) {
+            short[] pixels = (short[]) ip.getPixels();
+            for (int i = 0; i < pixels.length; i++) {
+                pixels[i] = (short) (65535 - (pixels[i] & 0xffff));
+            }
+        } else if (ip instanceof FloatProcessor) {
+            float[] pixels = (float[]) ip.getPixels();
+            for (int i = 0; i < pixels.length; i++) {
+                pixels[i] = (float) ((min + max) - pixels[i]);
+            }
+        } else {
+            ip.invert();
+        }
     }
 
     @Override
@@ -312,34 +343,6 @@ public class AutoThreshold2DNBinsAlgorithm extends JIPipeIteratingAlgorithm {
      */
     private double mapToValue(int t, double min, double max) {
         return min + (t + 1) * (max - min) / nbins;
-    }
-
-    /**
-     * Inverts a slice over the given range (v -> (min + max) - v).
-     * <p>
-     * This is applied when the background is bright, so that foreground pixels become bright.
-     * {@link ShortProcessor#invert()} cannot be used for 16-bit inputs: unless the (off by default)
-     * {@code Prefs.fullRange16bitInversions} preference is set, it inverts around the
-     * current min/max display range (v -> max + min - v of the slice's data range).
-     *
-     * @param ip  the processor to invert in-place
-     * @param min the minimum of the range used for binning
-     * @param max the maximum of the range used for binning
-     */
-    private static void invert(ImageProcessor ip, double min, double max) {
-        if (ip instanceof ShortProcessor) {
-            short[] pixels = (short[]) ip.getPixels();
-            for (int i = 0; i < pixels.length; i++) {
-                pixels[i] = (short) (65535 - (pixels[i] & 0xffff));
-            }
-        } else if (ip instanceof FloatProcessor) {
-            float[] pixels = (float[]) ip.getPixels();
-            for (int i = 0; i < pixels.length; i++) {
-                pixels[i] = (float) ((min + max) - pixels[i]);
-            }
-        } else {
-            ip.invert();
-        }
     }
 
     private int[] getHistogram(ImageProcessor ip, ImageProcessor foregroundMask, double min, double max) {

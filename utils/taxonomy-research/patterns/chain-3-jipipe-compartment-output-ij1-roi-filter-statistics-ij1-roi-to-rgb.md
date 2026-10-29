@@ -36,28 +36,32 @@ Mined pattern `chain-3-jipipe-compartment-output-ij1-roi-filter-statistics-ij1-r
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
+| role    | node ids                    |
+|---------|-----------------------------|
 | core-io | `jipipe:compartment-output` |
-| other | `ij1-roi-filter-statistics` |
-| other | `ij1-roi-to-rgb` |
+| other   | `ij1-roi-filter-statistics` |
+| other   | `ij1-roi-to-rgb`            |
 
 ## Example graph
 
-Project: `AIAgentTests/03-ExampleWorkflows/Angela_Roots_38.jip` (relative to `/data/JIPipe`), compartment `Nodules+Preprocessing and edges`.
+Project: `AIAgentTests/03-ExampleWorkflows/Angela_Roots_38.jip` (relative to `/data/JIPipe`), compartment
+`Nodules+Preprocessing and edges`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `jipipe:compartment-output` | Raw and masked images |
-| n1 | `ij1-roi-filter-statistics` | Filter ROI by statistics |
-| n2 | `ij1-roi-to-rgb` | Convert ROI to RGB |
+| key | node id                     | name                     |
+|-----|-----------------------------|--------------------------|
+| n0  | `jipipe:compartment-output` | Raw and masked images    |
+| n1  | `ij1-roi-filter-statistics` | Filter ROI by statistics |
+| n2  | `ij1-roi-to-rgb`            | Convert ROI to RGB       |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
-| Raw and masked images | `Masked raw image` | Filter ROI by statistics | `Reference` | `imagej-imgplus` |
-| Filter ROI by statistics | `Output` | Convert ROI to RGB | `ROI` | `imagej-roi` |
+| from                     | slot               | to                       | slot        | data class       |
+|--------------------------|--------------------|--------------------------|-------------|------------------|
+| Raw and masked images    | `Masked raw image` | Filter ROI by statistics | `Reference` | `imagej-imgplus` |
+| Filter ROI by statistics | `Output`           | Convert ROI to RGB       | `ROI`       | `imagej-roi`     |
 
 ## Template
 
-Proposed name `Compartment output -> Filter 2D ROI by statistics -> Convert 2D ROI to RGB`, menu path `Patterns/Graph / Project/Compartment output -> Filter 2D ROI by statistics -> Convert 2D ROI to RGB` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/chain-3-jipipe-compartment-output-ij1-roi-filter-statistics-ij1-roi-to-rgb.json`.
+Proposed name `Compartment output -> Filter 2D ROI by statistics -> Convert 2D ROI to RGB`, menu path
+`Patterns/Graph / Project/Compartment output -> Filter 2D ROI by statistics -> Convert 2D ROI to RGB` (proposal only —
+not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/chain-3-jipipe-compartment-output-ij1-roi-filter-statistics-ij1-roi-to-rgb.json`.
 

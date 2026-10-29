@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.plugins.parameters.library.primitives;
 
-import java.awt.Font;
+import java.awt.*;
 
 /**
  * The common contract of the font parameter family (#1339): every member
@@ -28,21 +28,33 @@ import java.awt.Font;
  */
 public interface JIPipeFontValue {
 
-    /** @return the font family name (never null) */
+    /**
+     * @return the font family name (never null)
+     */
     String getFamily();
 
-    /** @param family the font family name (null resets to the default family) */
+    /**
+     * @param family the font family name (null resets to the default family)
+     */
     void setFamily(String family);
 
-    /** @return the font size in points */
+    /**
+     * @return the font size in points
+     */
     int getSize();
 
-    /** @param size the font size in points */
+    /**
+     * @param size the font size in points
+     */
     void setSize(int size);
 
-    /** @return the font as an {@link Font} (color, if present, is <em>not</em> part of a {@link Font}) */
+    /**
+     * @return the font as an {@link Font} (color, if present, is <em>not</em> part of a {@link Font})
+     */
     Font toFont();
 
-    /** @return an independent copy of this value */
+    /**
+     * @return an independent copy of this value
+     */
     JIPipeFontValue copy();
 }

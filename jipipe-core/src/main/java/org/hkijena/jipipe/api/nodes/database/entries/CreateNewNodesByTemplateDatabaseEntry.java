@@ -56,6 +56,43 @@ public class CreateNewNodesByTemplateDatabaseEntry extends DefaultJIPipeNodeData
         initializeTokens();
     }
 
+    /**
+     * Re-keys every node of a template graph (a fresh {@code duplicate()} of
+     * the template's stored graph) into the target canvas compartment, so a
+     * subsequent {@link JIPipeGraph#mergeWith} inserts them into a compartment
+     * the canvas actually renders (instead of the template's own phantom one).
+     * <p>
+     * Stored location metadata is re-keyed from the old compartment to the
+     * new one: the canvas resolves stored locations under the node's CURRENT
+     * compartment (the same lookup {@code pasteNodes} performs when it
+     * re-anchors pasted nodes at the cursor), so a location left under the
+     * template's own compartment would never resolve after the merge. The
+     * stale entry is removed so it does not bloat saved projects.
+     * <p>
+     * Nodes whose source compartment already equals the target (the common
+     * case for user-authored templates, which store the empty/default
+     * compartment) are left untouched.
+     *
+     * @param graph             the duplicated template graph to fix up (mutated in place)
+     * @param targetCompartment the canvas' compartment (null = the default/main compartment)
+     */
+    static void rekeyTemplateGraphToCompartment(JIPipeGraph graph, UUID targetCompartment) {
+        String targetCompartmentKey = targetCompartment == null ? "_" : targetCompartment.toString();
+        for (JIPipeGraphNode node : graph.getGraphNodes()) {
+            UUID sourceUuid = graph.getCompartmentUUIDOf(node);
+            String sourceCompartmentKey = sourceUuid == null ? "_" : sourceUuid.toString();
+            if (!sourceCompartmentKey.equals(targetCompartmentKey)) {
+                Point location = node.getNodeUILocationWithin(sourceCompartmentKey);
+                graph.setCompartment(node.getUUIDInParentGraph(), targetCompartment);
+                if (location != null) {
+                    node.setNodeUILocationWithin(targetCompartmentKey, location);
+                    node.getNodeMetadata().clearEntriesWithPathPrefix(
+                            JIPipePathMetadataStore.key("location", sourceCompartmentKey));
+                }
+            }
+        }
+    }
+
     private void initializeTokens() {
         tokens.add(template.getName(), WeightedTokens.WEIGHT_NAME);
         tokens.add(getLocationInfos().get(0), WeightedTokens.WEIGHT_NAME);
@@ -138,9 +175,9 @@ public class CreateNewNodesByTemplateDatabaseEntry extends DefaultJIPipeNodeData
         // not helpful in the 2-pane list).
         JIPipeTaxonomyFunctionRef ref = template.getTaxonomyFunction();
         if (ref != null && ref.isResolved() && ref.getFunction() != null
-            && !TemplatesFunction.ID.equals(ref.getId())) {
+                && !TemplatesFunction.ID.equals(ref.getId())) {
             return Collections.singletonList(
-                CreateNewNodeByInfoDatabaseEntry.functionChainLocation(ref.getFunction()));
+                    CreateNewNodeByInfoDatabaseEntry.functionChainLocation(ref.getFunction()));
         }
         return Collections.singletonList("Templates / " + scope.name());
     }
@@ -196,43 +233,6 @@ public class CreateNewNodesByTemplateDatabaseEntry extends DefaultJIPipeNodeData
             }
         }
         return nodeUISet;
-    }
-
-    /**
-     * Re-keys every node of a template graph (a fresh {@code duplicate()} of
-     * the template's stored graph) into the target canvas compartment, so a
-     * subsequent {@link JIPipeGraph#mergeWith} inserts them into a compartment
-     * the canvas actually renders (instead of the template's own phantom one).
-     * <p>
-     * Stored location metadata is re-keyed from the old compartment to the
-     * new one: the canvas resolves stored locations under the node's CURRENT
-     * compartment (the same lookup {@code pasteNodes} performs when it
-     * re-anchors pasted nodes at the cursor), so a location left under the
-     * template's own compartment would never resolve after the merge. The
-     * stale entry is removed so it does not bloat saved projects.
-     * <p>
-     * Nodes whose source compartment already equals the target (the common
-     * case for user-authored templates, which store the empty/default
-     * compartment) are left untouched.
-     *
-     * @param graph           the duplicated template graph to fix up (mutated in place)
-     * @param targetCompartment the canvas' compartment (null = the default/main compartment)
-     */
-    static void rekeyTemplateGraphToCompartment(JIPipeGraph graph, UUID targetCompartment) {
-        String targetCompartmentKey = targetCompartment == null ? "_" : targetCompartment.toString();
-        for (JIPipeGraphNode node : graph.getGraphNodes()) {
-            UUID sourceUuid = graph.getCompartmentUUIDOf(node);
-            String sourceCompartmentKey = sourceUuid == null ? "_" : sourceUuid.toString();
-            if (!sourceCompartmentKey.equals(targetCompartmentKey)) {
-                Point location = node.getNodeUILocationWithin(sourceCompartmentKey);
-                graph.setCompartment(node.getUUIDInParentGraph(), targetCompartment);
-                if (location != null) {
-                    node.setNodeUILocationWithin(targetCompartmentKey, location);
-                    node.getNodeMetadata().clearEntriesWithPathPrefix(
-                        JIPipePathMetadataStore.key("location", sourceCompartmentKey));
-                }
-            }
-        }
     }
 
     @Override

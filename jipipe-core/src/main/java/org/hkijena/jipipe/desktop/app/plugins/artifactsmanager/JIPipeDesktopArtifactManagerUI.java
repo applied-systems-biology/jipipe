@@ -19,8 +19,8 @@ import org.hkijena.jipipe.api.artifacts.*;
 import org.hkijena.jipipe.api.artifacts.sources.JIPipeHttpRemoteArtifactSource;
 import org.hkijena.jipipe.api.artifacts.sources.JIPipeLocalRemoteArtifactSource;
 import org.hkijena.jipipe.api.artifacts.sources.JIPipeOrasRemoteArtifactSource;
-import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
+import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.service.components.JIPipeArtifactsServiceComponent;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
@@ -200,11 +200,9 @@ public class JIPipeDesktopArtifactManagerUI extends JIPipeDesktopWorkbenchPanel 
                         artifactEntryJList.repaint(50);
                     }), new JLabel("Status"));
                 }
-            }
-            else if(artifact instanceof JIPipeLocalArtifact localArtifact && localArtifact.isReadOnly()) {
+            } else if (artifact instanceof JIPipeLocalArtifact localArtifact && localArtifact.isReadOnly()) {
                 propertyPanel.addToForm(UIUtils.createJLabel("Read-only", JIPipe.RESOURCES.getIcon16("actions/system-lock-screen.png")), new JLabel("Status"));
-            }
-            else {
+            } else {
                 if (selectedValue.isToggleInstallationStatus()) {
                     propertyPanel.addToForm(UIUtils.createLeftAlignedButton("Keep installed", JIPipe.RESOURCES.getIcon16("emblems/checkbox-unchecked.png"), () -> {
                         selectedValue.setToggleInstallationStatus(false);

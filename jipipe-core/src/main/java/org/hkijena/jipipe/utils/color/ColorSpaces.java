@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.utils.color;
 
-import java.awt.Color;
+import java.awt.*;
 
 /**
  * Pure color-space conversions for the modern color dialog (#1339):
@@ -32,7 +32,9 @@ public final class ColorSpaces {
     private static final double ZN = 1.08883;
     private static final double LAB_EPSILON = 0.008856; // (6/29)^3
     private static final double LAB_KAPPA = 903.3;      // 3*(6/29)^2 + 4/29 (≈ 841*(29/18)^3 / ... standard 903.3)
-    /** Upper bound of the gamut-clamp search (converges in far fewer). */
+    /**
+     * Upper bound of the gamut-clamp search (converges in far fewer).
+     */
     private static final int CLAMP_MAX_ITERATIONS = 200;
 
     private ColorSpaces() {
@@ -42,14 +44,18 @@ public final class ColorSpaces {
     // HSB (h 0-360, s 0-100, b 0-100)
     // ------------------------------------------------------------------
 
-    /** @return {hue 0-360, saturation 0-100, brightness 0-100} */
+    /**
+     * @return {hue 0-360, saturation 0-100, brightness 0-100}
+     */
     public static double[] toHsb(Color c) {
         float[] hsb = new float[3];
         Color.RGBtoHSB(c.getRed(), c.getGreen(), c.getBlue(), hsb);
         return new double[]{hsb[0] * 360.0, hsb[1] * 100.0, hsb[2] * 100.0};
     }
 
-    /** Inputs are wrapped/clipped into range (h mod 360, s/b clamped to [0,100]). */
+    /**
+     * Inputs are wrapped/clipped into range (h mod 360, s/b clamped to [0,100]).
+     */
     public static Color fromHsb(double h, double s, double b) {
         h = ((h % 360.0) + 360.0) % 360.0;
         s = clamp(s, 0.0, 100.0);
@@ -62,7 +68,9 @@ public final class ColorSpaces {
     // CIE L*a*b* (D65), L 0-100
     // ------------------------------------------------------------------
 
-    /** @return {L 0-100, a, b} in CIE L*a*b* (D65) */
+    /**
+     * @return {L 0-100, a, b} in CIE L*a*b* (D65)
+     */
     public static double[] toLab(Color c) {
         double r = srgbToLinear(c.getRed() / 255.0);
         double g = srgbToLinear(c.getGreen() / 255.0);
@@ -124,11 +132,9 @@ public final class ColorSpaces {
         return toSrgbColor(clamp01(finalLin[0]), clamp01(finalLin[1]), clamp01(finalLin[2]));
     }
 
-    private interface LabToLinear {
-        double[] convert(double L, double a, double b);
-    }
-
-    /** Sum of squared out-of-range linear-RGB channels (0 when in gamut). */
+    /**
+     * Sum of squared out-of-range linear-RGB channels (0 when in gamut).
+     */
     private static double gamutViolation(double[] lin) {
         double v = 0;
         for (double c : lin) {
@@ -156,17 +162,19 @@ public final class ColorSpaces {
         return (gamutViolation(f.convert(plus, aPlus, bPlus)) - gamutViolation(f.convert(minus, aMinus, bMinus))) / (2.0 * eps);
     }
 
-    // ------------------------------------------------------------------
-    // Hex (#RGB / #RRGGBB / #RRGGBBAA, '#' optional)
-    // ------------------------------------------------------------------
-
-    /** @return {@code #RRGGBB} when alpha is 255, else {@code #RRGGBBAA} */
+    /**
+     * @return {@code #RRGGBB} when alpha is 255, else {@code #RRGGBBAA}
+     */
     public static String toHex(Color c) {
         if (c.getAlpha() == 255) {
             return String.format("#%02X%02X%02X", c.getRed(), c.getGreen(), c.getBlue());
         }
         return String.format("#%02X%02X%02X%02X", c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha());
     }
+
+    // ------------------------------------------------------------------
+    // Hex (#RGB / #RRGGBB / #RRGGBBAA, '#' optional)
+    // ------------------------------------------------------------------
 
     /**
      * Parses {@code #RGB}, {@code #RRGGBB} or {@code #RRGGBBAA} (with or
@@ -201,16 +209,16 @@ public final class ColorSpaces {
         throw new IllegalArgumentException("Invalid hex color: " + s);
     }
 
-    // ------------------------------------------------------------------
-    // Internals
-    // ------------------------------------------------------------------
-
     private static double labF(double t) {
         if (t > LAB_EPSILON) {
             return Math.cbrt(t);
         }
         return (LAB_KAPPA * t + 16.0) / 116.0;
     }
+
+    // ------------------------------------------------------------------
+    // Internals
+    // ------------------------------------------------------------------
 
     private static double labFInverse(double t) {
         double t3 = t * t * t;
@@ -272,5 +280,9 @@ public final class ColorSpaces {
 
     private static double clamp01(double v) {
         return clamp(v, 0.0, 1.0);
+    }
+
+    private interface LabToLinear {
+        double[] convert(double L, double a, double b);
     }
 }

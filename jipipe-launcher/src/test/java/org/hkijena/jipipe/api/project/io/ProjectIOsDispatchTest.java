@@ -62,6 +62,51 @@ class ProjectIOsDispatchTest {
         JIPipe.ensureInstance();
     }
 
+    /**
+     * Builds a minimal JIPX container (no wrapper root): {@code jipx.json}
+     * (the default manifest, pruned to the parts written), {@code
+     * project/metadata.json} ({@code {"name": "Peek"}}), and — when
+     * {@code withDependencies} — {@code project/dependencies.json}
+     * ({@code []}).
+     */
+    private static Path writeJipxZip(Path zipPath, boolean withDependencies) throws IOException {
+        JsonNode metadata = new com.fasterxml.jackson.databind.ObjectMapper()
+                .readTree("{\"name\": \"Peek\"}");
+        JsonNode dependencies = new com.fasterxml.jackson.databind.ObjectMapper()
+                .createArrayNode();
+        JIPipeXManifest manifest = JIPipeXManifest.defaultManifest(JIPipe.getJIPipeVersion());
+        manifest.getParts().clear();
+        manifest.getParts().put("project/metadata.json", "metadata");
+        if (withDependencies) {
+            manifest.getParts().put("project/dependencies.json", "dependencies");
+        }
+        try (ZipOutputStream zos = new ZipOutputStream(Files.newOutputStream(zipPath))) {
+            putZipEntry(zos, "jipx.json", manifest.toJsonNode());
+            putZipEntry(zos, "project/metadata.json", metadata);
+            if (withDependencies) {
+                putZipEntry(zos, "project/dependencies.json", dependencies);
+            }
+        }
+        return zipPath;
+    }
+
+    private static void putZipEntry(ZipOutputStream zos, String entryName, JsonNode node) throws IOException {
+        zos.putNextEntry(new ZipEntry(entryName));
+        zos.write(node.toString().getBytes(java.nio.charset.StandardCharsets.UTF_8));
+        zos.closeEntry();
+    }
+
+    private static Path writeZipMagicFile(Path dir, String fileName) throws IOException {
+        Path path = dir.resolve(fileName);
+        List<Integer> bytes = List.of(0x50, 0x4B, 0x03, 0x04, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05);
+        byte[] zipMagic = new byte[bytes.size()];
+        for (int i = 0; i < bytes.size(); i++) {
+            zipMagic[i] = (byte) bytes.get(i).intValue();
+        }
+        Files.write(path, zipMagic);
+        return path;
+    }
+
     @Test
     void readsDispatchByContent() throws IOException {
         Path jip = tmp.resolve("project.jip");
@@ -160,50 +205,5 @@ class ProjectIOsDispatchTest {
         JIPipeProjectPeek peek = JIPipeProjectIOs.peek(jipx);
         assertTrue(peek.getDependencies().isEmpty());
         assertTrue("Peek".equals(peek.getMetadata().getName()));
-    }
-
-    /**
-     * Builds a minimal JIPX container (no wrapper root): {@code jipx.json}
-     * (the default manifest, pruned to the parts written), {@code
-     * project/metadata.json} ({@code {"name": "Peek"}}), and — when
-     * {@code withDependencies} — {@code project/dependencies.json}
-     * ({@code []}).
-     */
-    private static Path writeJipxZip(Path zipPath, boolean withDependencies) throws IOException {
-        JsonNode metadata = new com.fasterxml.jackson.databind.ObjectMapper()
-                .readTree("{\"name\": \"Peek\"}");
-        JsonNode dependencies = new com.fasterxml.jackson.databind.ObjectMapper()
-                .createArrayNode();
-        JIPipeXManifest manifest = JIPipeXManifest.defaultManifest(JIPipe.getJIPipeVersion());
-        manifest.getParts().clear();
-        manifest.getParts().put("project/metadata.json", "metadata");
-        if (withDependencies) {
-            manifest.getParts().put("project/dependencies.json", "dependencies");
-        }
-        try (ZipOutputStream zos = new ZipOutputStream(Files.newOutputStream(zipPath))) {
-            putZipEntry(zos, "jipx.json", manifest.toJsonNode());
-            putZipEntry(zos, "project/metadata.json", metadata);
-            if (withDependencies) {
-                putZipEntry(zos, "project/dependencies.json", dependencies);
-            }
-        }
-        return zipPath;
-    }
-
-    private static void putZipEntry(ZipOutputStream zos, String entryName, JsonNode node) throws IOException {
-        zos.putNextEntry(new ZipEntry(entryName));
-        zos.write(node.toString().getBytes(java.nio.charset.StandardCharsets.UTF_8));
-        zos.closeEntry();
-    }
-
-    private static Path writeZipMagicFile(Path dir, String fileName) throws IOException {
-        Path path = dir.resolve(fileName);
-        List<Integer> bytes = List.of(0x50, 0x4B, 0x03, 0x04, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05);
-        byte[] zipMagic = new byte[bytes.size()];
-        for (int i = 0; i < bytes.size(); i++) {
-            zipMagic[i] = (byte) bytes.get(i).intValue();
-        }
-        Files.write(path, zipMagic);
-        return path;
     }
 }

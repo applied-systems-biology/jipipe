@@ -27,7 +27,6 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopMenuExtension;
 import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
-import org.hkijena.jipipe.desktop.commons.components.color.JIPipeDesktopColorChooserDialog;
 import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopHTMLEditor;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
@@ -37,11 +36,11 @@ import org.hkijena.jipipe.desktop.commons.components.validation.JIPipeDesktopVal
 import org.hkijena.jipipe.desktop.commons.components.window.JIPipeDesktopAlwaysOnTopToggle;
 import org.hkijena.jipipe.desktop.commons.notifications.JIPipeDesktopGenericNotificationInboxUI;
 import org.hkijena.jipipe.desktop.commons.theme.helpers.JIPipeDesktopIslandPanel;
+import org.hkijena.jipipe.desktop.commons.theme.ui.JIPipeDesktopRoundedButtonUI;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeGeneralDataApplicationSettings;
 import org.hkijena.jipipe.utils.ui.ListSelectionMode;
-import org.hkijena.jipipe.desktop.commons.theme.ui.JIPipeDesktopRoundedButtonUI;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 import org.jdesktop.swingx.JXTable;
 import org.scijava.Disposable;
@@ -90,7 +89,13 @@ public class UIUtils {
     public static final JMenuItem MENU_ITEM_SEPARATOR = null;
     public static final Color COLOR_ERROR = new Color(0xa51d2d);
     public static final Color COLOR_SUCCESS = ThemeUtils.getCurrentStyle().getSuccessColor();
-
+    /**
+     * Height of a standard JIPipe button (see {@link #createParameterButton}),
+     * measured from the theme's {@code Button.font} + {@code Button.border}.
+     * Parameter header rows are raised to at least this height so the row
+     * action buttons line up across all editors (#1339).
+     */
+    public static final int STANDARD_BUTTON_HEIGHT = 27;
 
     public static Window getWindowOrWindowAncestor(Component component) {
         if (component instanceof Window) {
@@ -237,18 +242,10 @@ public class UIUtils {
      * actually visible against both light and dark panel backgrounds.
      */
     public static Border createLeftAccentBorder() {
-        return BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0,16,0,0),
+        return BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 16, 0, 0),
                 BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, ThemeUtils.getCurrentStyle().getBorderColor()),
-                        BorderFactory.createEmptyBorder(0,8,0,0)));
+                        BorderFactory.createEmptyBorder(0, 8, 0, 0)));
     }
-
-    /**
-     * Height of a standard JIPipe button (see {@link #createParameterButton}),
-     * measured from the theme's {@code Button.font} + {@code Button.border}.
-     * Parameter header rows are raised to at least this height so the row
-     * action buttons line up across all editors (#1339).
-     */
-    public static final int STANDARD_BUTTON_HEIGHT = 27;
 
     /**
      * The standardized **parameter action button** (#1339): used by every
@@ -321,7 +318,9 @@ public class UIUtils {
         return createParameterIconButton(icon, tooltip, ThemeUtils.getCurrentStyle().getParameterActionBackground(), action);
     }
 
-    /** Icon-only variant with an explicit fill (see {@link #createParameterButton}). */
+    /**
+     * Icon-only variant with an explicit fill (see {@link #createParameterButton}).
+     */
     public static JButton createParameterIconButton(Icon icon, String tooltip, Color fill, ActionListener action) {
         JButton b = createParameterButton("", icon, fill, action);
         b.setToolTipText(tooltip);

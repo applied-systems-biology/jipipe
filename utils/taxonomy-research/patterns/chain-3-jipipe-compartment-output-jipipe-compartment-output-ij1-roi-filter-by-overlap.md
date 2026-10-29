@@ -32,32 +32,37 @@ template:
 
 # Pattern: Compartment output -> Compartment output -> Filter 2D ROI by overlap (old)
 
-Mined pattern `chain-3-jipipe-compartment-output-jipipe-compartment-output-ij1-roi-filter-by-overlap` (shape `chain`, support 26).
+Mined pattern `chain-3-jipipe-compartment-output-jipipe-compartment-output-ij1-roi-filter-by-overlap` (shape `chain`,
+support 26).
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
+| role    | node ids                    |
+|---------|-----------------------------|
 | core-io | `jipipe:compartment-output` |
 | core-io | `jipipe:compartment-output` |
-| other | `ij1-roi-filter-by-overlap` |
+| other   | `ij1-roi-filter-by-overlap` |
 
 ## Example graph
 
-Project: `AIAgentTests/02-AdvancedPipelines/Cryogels_01.jip` (relative to `/data/JIPipe`), compartment `Apply Cellpose Model 2+Quality check+ROI management`.
+Project: `AIAgentTests/02-AdvancedPipelines/Cryogels_01.jip` (relative to `/data/JIPipe`), compartment
+`Apply Cellpose Model 2+Quality check+ROI management`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `jipipe:compartment-output` | Output #1 |
-| n1 | `jipipe:compartment-output` | Output #2 |
-| n2 | `ij1-roi-filter-by-overlap` | Filter ROI by overlap |
+| key | node id                     | name                  |
+|-----|-----------------------------|-----------------------|
+| n0  | `jipipe:compartment-output` | Output #1             |
+| n1  | `jipipe:compartment-output` | Output #2             |
+| n2  | `ij1-roi-filter-by-overlap` | Filter ROI by overlap |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
-| Output #1 | `ROIs` | Output #2 | `Model2 ROI` | `imagej-roi` |
-| Output #2 | `Merged ROIs` | Filter ROI by overlap | `ROI 2` | `imagej-roi` |
+| from      | slot          | to                    | slot         | data class   |
+|-----------|---------------|-----------------------|--------------|--------------|
+| Output #1 | `ROIs`        | Output #2             | `Model2 ROI` | `imagej-roi` |
+| Output #2 | `Merged ROIs` | Filter ROI by overlap | `ROI 2`      | `imagej-roi` |
 
 ## Template
 
-Proposed name `Compartment output -> Compartment output -> Filter 2D ROI by overlap (old)`, menu path `Patterns/Graph / Project/Compartment output -> Compartment output -> Filter 2D ROI by overlap (old)` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/chain-3-jipipe-compartment-output-jipipe-compartment-output-ij1-roi-filter-by-overlap.json`.
+Proposed name `Compartment output -> Compartment output -> Filter 2D ROI by overlap (old)`, menu path
+`Patterns/Graph / Project/Compartment output -> Compartment output -> Filter 2D ROI by overlap (old)` (proposal only —
+not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/chain-3-jipipe-compartment-output-jipipe-compartment-output-ij1-roi-filter-by-overlap.json`.
 

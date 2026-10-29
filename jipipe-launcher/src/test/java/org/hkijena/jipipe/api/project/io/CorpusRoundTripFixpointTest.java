@@ -30,13 +30,7 @@ import org.junit.jupiter.api.io.TempDir;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -136,16 +130,107 @@ class CorpusRoundTripFixpointTest {
         JIPipe.ensureInstance();
     }
 
+    /**
+     * Loads a project from the given path with an empty, throwaway validation
+     * report and notification inbox.
+     */
+    private static JIPipeProject load(Path path, UnspecifiedValidationReportContext context) throws IOException {
+        return JIPipeProject.loadProject(path, context,
+                new JIPipeValidationReport(), new JIPipeNotificationInbox(), JIPipeProgressInfo.STDOUT);
+    }
+
+    /**
+     * Collects the top-level keys that are added, removed, or changed between
+     * the two trees (diagnostic only, never fails the run). Values are
+     * compared in their canonical form, so array-order-only differences do
+     * not count as changes.
+     */
+    private static List<String> topLevelChangedKeys(JsonNode a, JsonNode b) {
+        TreeSet<String> changed = new TreeSet<>();
+        if (a == null || b == null || !a.isObject() || !b.isObject()) {
+            return new ArrayList<>(changed);
+        }
+        Map<String, JsonNode> fieldsA = fields(a);
+        Map<String, JsonNode> fieldsB = fields(b);
+        TreeSet<String> unionKeys = new TreeSet<>(fieldsA.keySet());
+        unionKeys.addAll(fieldsB.keySet());
+        for (String key : unionKeys) {
+            JsonNode va = fieldsA.get(key);
+            JsonNode vb = fieldsB.get(key);
+            if (va == null || vb == null || !canonical(va).equals(canonical(vb))) {
+                changed.add(key);
+            }
+        }
+        return new ArrayList<>(changed);
+    }
+
+    /**
+     * Canonical form of a JSON tree for order-insensitive comparison:
+     * objects are re-emitted with fields sorted by key; arrays have each
+     * element canonicalized and are then sorted by the element's canonical
+     * string form (multiset equality, order erased); scalars are unchanged.
+     */
+    private static JsonNode canonical(JsonNode node) {
+        if (node == null) {
+            return null;
+        }
+        if (node.isObject()) {
+            ObjectNode out = JsonUtils.getObjectMapper().createObjectNode();
+            for (Map.Entry<String, JsonNode> field : new TreeMap<>(fields(node)).entrySet()) {
+                out.set(field.getKey(), canonical(field.getValue()));
+            }
+            return out;
+        }
+        if (node.isArray()) {
+            ArrayNode out = JsonUtils.getObjectMapper().createArrayNode();
+            List<JsonNode> items = new ArrayList<>();
+            for (JsonNode element : node) {
+                items.add(canonical(element));
+            }
+            items.sort(Comparator.comparing(JsonNode::toString));
+            for (JsonNode element : items) {
+                out.add(element);
+            }
+            return out;
+        }
+        return node;
+    }
+
+    private static Map<String, JsonNode> fields(JsonNode object) {
+        Map<String, JsonNode> fields = new LinkedHashMap<>();
+        object.fields().forEachRemaining(e -> fields.put(e.getKey(), e.getValue()));
+        return fields;
+    }
+
+    private static long countTopLevelJipFiles(Path corpus) throws IOException {
+        try (Stream<Path> stream = Files.list(corpus)) {
+            return stream
+                    .filter(Files::isRegularFile)
+                    .filter(p -> endsWithJip(p.getFileName().toString()))
+                    .count();
+        }
+    }
+
+    private static boolean endsWithJip(String fileName) {
+        return fileName.length() >= 4 && fileName.regionMatches(true, fileName.length() - 4, ".jip", 0, 4);
+    }
+
+    private static String errorLine(Throwable e) {
+        String message = e.getMessage() == null ? e.getClass().getName() : e.getMessage();
+        String oneLine = e.getClass().getName() + ": " + message.replaceAll("\\s+", " ").trim();
+        return oneLine.length() > 500 ? oneLine.substring(0, 500) : oneLine;
+    }
+
     @Test
     void corpusRoundTripFixpoint(@TempDir Path tmp) throws IOException {
         String corpusProp = System.getProperty("jipipe.jip.roundtrip.corpus");
         assumeTrue(corpusProp != null && !corpusProp.isBlank(),
-            "No -Djipipe.jip.roundtrip.corpus=<dir> given; skipping corpus round-trip fixpoint harness");
+                "No -Djipipe.jip.roundtrip.corpus=<dir> given; skipping corpus round-trip fixpoint harness");
         Path corpus = Path.of(corpusProp).toAbsolutePath().normalize();
         assertTrue(Files.isDirectory(corpus), "Corpus directory does not exist: " + corpus);
 
         Path reportPath = Path.of(System.getProperty("jipipe.jip.roundtrip.report",
-            corpus.resolve(".roundtrip").resolve("report.json").toString())).toAbsolutePath().normalize();
+                corpus.resolve(".roundtrip").resolve("report.json").toString())).toAbsolutePath().normalize();
         // -1 (unbounded) only when the property is ABSENT; a present-but-malformed
         // value must fail loudly rather than silently fall back.
         int limit = -1;
@@ -159,10 +244,10 @@ class CorpusRoundTripFixpointTest {
         List<Path> inputs;
         try (Stream<Path> stream = Files.walk(corpus)) {
             inputs = stream
-                .filter(Files::isRegularFile)
-                .filter(p -> endsWithJip(p.getFileName().toString()))
-                .sorted(Comparator.comparing(Path::toString))
-                .collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
+                    .filter(Files::isRegularFile)
+                    .filter(p -> endsWithJip(p.getFileName().toString()))
+                    .sorted(Comparator.comparing(Path::toString))
+                    .collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
         }
         if (limit > 0) {
             inputs = new ArrayList<>(inputs.subList(0, Math.min(limit, inputs.size())));
@@ -273,8 +358,8 @@ class CorpusRoundTripFixpointTest {
         // The harness must not have polluted the corpus.
         long topLevelCountAfter = countTopLevelJipFiles(corpus);
         assertEquals(topLevelCountBefore, topLevelCountAfter,
-            "Corpus pollution: top-level *.jip count of " + corpus + " changed from "
-                + topLevelCountBefore + " to " + topLevelCountAfter);
+                "Corpus pollution: top-level *.jip count of " + corpus + " changed from "
+                        + topLevelCountBefore + " to " + topLevelCountAfter);
 
         report.put("totalFiles", entries.size());
         ArrayNode entriesNode = report.putArray("entries");
@@ -286,97 +371,6 @@ class CorpusRoundTripFixpointTest {
         Files.createDirectories(reportPath.getParent());
         JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValue(reportPath.toFile(), report);
         System.out.println("[jipx-roundtrip] Report written to " + reportPath
-            + " (" + entries.size() + " files, outcomes: " + outcomes + ")");
-    }
-
-    /**
-     * Loads a project from the given path with an empty, throwaway validation
-     * report and notification inbox.
-     */
-    private static JIPipeProject load(Path path, UnspecifiedValidationReportContext context) throws IOException {
-        return JIPipeProject.loadProject(path, context,
-            new JIPipeValidationReport(), new JIPipeNotificationInbox(), JIPipeProgressInfo.STDOUT);
-    }
-
-    /**
-     * Collects the top-level keys that are added, removed, or changed between
-     * the two trees (diagnostic only, never fails the run). Values are
-     * compared in their canonical form, so array-order-only differences do
-     * not count as changes.
-     */
-    private static List<String> topLevelChangedKeys(JsonNode a, JsonNode b) {
-        TreeSet<String> changed = new TreeSet<>();
-        if (a == null || b == null || !a.isObject() || !b.isObject()) {
-            return new ArrayList<>(changed);
-        }
-        Map<String, JsonNode> fieldsA = fields(a);
-        Map<String, JsonNode> fieldsB = fields(b);
-        TreeSet<String> unionKeys = new TreeSet<>(fieldsA.keySet());
-        unionKeys.addAll(fieldsB.keySet());
-        for (String key : unionKeys) {
-            JsonNode va = fieldsA.get(key);
-            JsonNode vb = fieldsB.get(key);
-            if (va == null || vb == null || !canonical(va).equals(canonical(vb))) {
-                changed.add(key);
-            }
-        }
-        return new ArrayList<>(changed);
-    }
-
-    /**
-     * Canonical form of a JSON tree for order-insensitive comparison:
-     * objects are re-emitted with fields sorted by key; arrays have each
-     * element canonicalized and are then sorted by the element's canonical
-     * string form (multiset equality, order erased); scalars are unchanged.
-     */
-    private static JsonNode canonical(JsonNode node) {
-        if (node == null) {
-            return null;
-        }
-        if (node.isObject()) {
-            ObjectNode out = JsonUtils.getObjectMapper().createObjectNode();
-            for (Map.Entry<String, JsonNode> field : new TreeMap<>(fields(node)).entrySet()) {
-                out.set(field.getKey(), canonical(field.getValue()));
-            }
-            return out;
-        }
-        if (node.isArray()) {
-            ArrayNode out = JsonUtils.getObjectMapper().createArrayNode();
-            List<JsonNode> items = new ArrayList<>();
-            for (JsonNode element : node) {
-                items.add(canonical(element));
-            }
-            items.sort(Comparator.comparing(JsonNode::toString));
-            for (JsonNode element : items) {
-                out.add(element);
-            }
-            return out;
-        }
-        return node;
-    }
-
-    private static Map<String, JsonNode> fields(JsonNode object) {
-        Map<String, JsonNode> fields = new LinkedHashMap<>();
-        object.fields().forEachRemaining(e -> fields.put(e.getKey(), e.getValue()));
-        return fields;
-    }
-
-    private static long countTopLevelJipFiles(Path corpus) throws IOException {
-        try (Stream<Path> stream = Files.list(corpus)) {
-            return stream
-                .filter(Files::isRegularFile)
-                .filter(p -> endsWithJip(p.getFileName().toString()))
-                .count();
-        }
-    }
-
-    private static boolean endsWithJip(String fileName) {
-        return fileName.length() >= 4 && fileName.regionMatches(true, fileName.length() - 4, ".jip", 0, 4);
-    }
-
-    private static String errorLine(Throwable e) {
-        String message = e.getMessage() == null ? e.getClass().getName() : e.getMessage();
-        String oneLine = e.getClass().getName() + ": " + message.replaceAll("\\s+", " ").trim();
-        return oneLine.length() > 500 ? oneLine.substring(0, 500) : oneLine;
+                + " (" + entries.size() + " files, outcomes: " + outcomes + ")");
     }
 }

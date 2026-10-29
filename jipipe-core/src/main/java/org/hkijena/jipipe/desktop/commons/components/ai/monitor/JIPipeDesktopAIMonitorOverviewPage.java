@@ -53,6 +53,23 @@ public class JIPipeDesktopAIMonitorOverviewPage extends JIPipeDesktopAIMonitorPa
         refreshTimer.start();
     }
 
+    /**
+     * Renders a model state to a human-readable string.
+     *
+     * @param status the microservice state
+     * @param detail the state detail (e.g., "Idle" or "Busy")
+     * @return human-readable status text
+     */
+    private static String renderStatus(MicroserviceState status, String detail) {
+        return switch (status) {
+            case Stopped -> "Not loaded";
+            case Starting -> "Loading...";
+            case Ready -> "Busy".equals(detail) ? "Busy" : "Ready";
+            case Stopping -> "Shutting down...";
+            case Failed -> "Error";
+        };
+    }
+
     private void onRefreshTimer(ActionEvent e) {
         if (isDisplayable()) {
             refresh();
@@ -138,23 +155,6 @@ public class JIPipeDesktopAIMonitorOverviewPage extends JIPipeDesktopAIMonitorPa
     }
 
     /**
-     * Renders a model state to a human-readable string.
-     *
-     * @param status the microservice state
-     * @param detail the state detail (e.g., "Idle" or "Busy")
-     * @return human-readable status text
-     */
-    private static String renderStatus(MicroserviceState status, String detail) {
-        return switch (status) {
-            case Stopped -> "Not loaded";
-            case Starting -> "Loading...";
-            case Ready -> "Busy".equals(detail) ? "Busy" : "Ready";
-            case Stopping -> "Shutting down...";
-            case Failed -> "Error";
-        };
-    }
-
-    /**
      * Represents a section in the overview page for one AI model.
      * Each section has its own status, model type, model ID, error label,
      * and start/stop buttons.
@@ -167,9 +167,9 @@ public class JIPipeDesktopAIMonitorOverviewPage extends JIPipeDesktopAIMonitorPa
         final JLabel modelTypeLabel = new JLabel();
         final JLabel modelIdLabel = new JLabel();
         final JLabel errorLabel = new JLabel();
+        final String name;
         JButton startButton;
         JButton stopButton;
-        final String name;
 
         ModelSection(String name, Icon icon) {
             this.name = name;

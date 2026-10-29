@@ -26,21 +26,19 @@ import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdow
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeNodeStateChips;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
+import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernThemeStyle;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.CustomStateLessToggleButton;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernThemeStyle;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -97,29 +95,16 @@ import java.util.Set;
  */
 public class NodeFinderDetailRail extends JPanel {
 
-    /**
-     * Callback for entry clicks in the rail's "Similar" / "Previous steps" /
-     * "Next steps" lists: the dialog selects the entry in the center list.
-     */
-    @FunctionalInterface
-    public interface EntrySelector {
-        void select(JIPipeNodeDatabaseEntry entry);
-    }
-
     private static final int FRAMEWORK_CHIP_WIDTH = 52;
     private static final int FRAMEWORK_CHIP_HEIGHT = 16;
     private static final String CARD_EMPTY = "empty";
     private static final String CARD_CONTENT = "content";
-
     private final JIPipeNodeDatabase database;
     private final EntrySelector entrySelector;
     private final CardLayout cardLayout = new CardLayout();
-    private JPanel cards;
-
     private final JLabel emptyLabel = new JLabel("Select a node to see details, similar nodes and workflow steps.",
-        SwingConstants.CENTER);
+            SwingConstants.CENTER);
     private final JPanel contentPanel = new JPanel();
-
     private final JLabel nameLabel = new JLabel();
     /**
      * The framework badge: a small non-opaque panel that paints a rounded
@@ -138,16 +123,22 @@ public class NodeFinderDetailRail extends JPanel {
             super.paintComponent(g);
         }
     };
-    private Color frameworkChipColor;
     private final JLabel frameworkChipLabel = new JLabel();
     private final JLabel tagsLabel = new JLabel();
     private final JLabel profileLabel = new JLabel();
     private final JPanel stateChips = new JPanel(new FlowLayout(FlowLayout.LEFT, 3, 0));
-
     // --- Tabs + pages (the shared tab pane, same component + style as the
     // AI monitor's tabs — see JIPipeDesktopAIMonitorWindow) ---
     private final JIPipeDesktopTabPane tabPane = new JIPipeDesktopTabPane(true, JIPipeDesktopTabPane.Style.TopPill);
     private final JIPipeDesktopMarkdownReader documentationReader = new JIPipeDesktopMarkdownReader(false);
+    private final RelatedSection similarSection =
+            new RelatedSection("Similar", JIPipe.RESOURCES.getIcon16("actions/tag.png"));
+    private final RelatedSection previousSection =
+            new RelatedSection("Previous steps", JIPipe.RESOURCES.getIcon16("actions/diagram-predecessor.png"));
+    private final RelatedSection nextSection =
+            new RelatedSection("Next steps", JIPipe.RESOURCES.getIcon16("actions/diagram-successor.png"));
+    private JPanel cards;
+    private Color frameworkChipColor;
     // --- Related page: one scrollable form with the three relation lists as
     // collapsible sections (the "Configure node templates" manager's
     // GroupHeaderPanel + card rows, adapted from a wrapping grid to a
@@ -155,13 +146,6 @@ public class NodeFinderDetailRail extends JPanel {
     private JList<JIPipeNodeDatabaseEntry> similarList;
     private JList<JIPipeNodeDatabaseEntry> previousList;
     private JList<JIPipeNodeDatabaseEntry> nextList;
-    private final RelatedSection similarSection =
-        new RelatedSection("Similar", JIPipe.RESOURCES.getIcon16("actions/tag.png"));
-    private final RelatedSection previousSection =
-        new RelatedSection("Previous steps", JIPipe.RESOURCES.getIcon16("actions/diagram-predecessor.png"));
-    private final RelatedSection nextSection =
-        new RelatedSection("Next steps", JIPipe.RESOURCES.getIcon16("actions/diagram-successor.png"));
-
     private JIPipeNodeDatabaseEntry currentEntry;
     /**
      * Guards the similar/previous/next list selection listeners while the
@@ -169,7 +153,6 @@ public class NodeFinderDetailRail extends JPanel {
      * (center list → rail → center list).
      */
     private boolean updatingLists;
-
     /**
      * Creates a new detail rail.
      *
@@ -184,6 +167,14 @@ public class NodeFinderDetailRail extends JPanel {
         initialize();
     }
 
+    @Nullable
+    private static JIPipeNodeInfo entryNodeInfo(JIPipeNodeDatabaseEntry entry) {
+        if (entry instanceof CreateNewNodeByInfoDatabaseEntry byInfo) {
+            return byInfo.getNodeInfo();
+        }
+        return null;
+    }
+
     private void initialize() {
         setLayout(new BorderLayout());
 
@@ -191,7 +182,7 @@ public class NodeFinderDetailRail extends JPanel {
         emptyLabel.setForeground(Color.GRAY);
         JPanel emptyPanel = new JPanel(new GridBagLayout());
         emptyPanel.add(emptyLabel, new GridBagConstraints(0, 0, 1, 1, 1, 1, GridBagConstraints.CENTER,
-            GridBagConstraints.BOTH, new Insets(40, 20, 40, 20), 0, 0));
+                GridBagConstraints.BOTH, new Insets(40, 20, 40, 20), 0, 0));
 
         // Content state: the header block (name + chips + tags + profile)
         // stays fixed above the tab bar; the tab pages scroll internally.
@@ -312,7 +303,7 @@ public class NodeFinderDetailRail extends JPanel {
         if (spatial.isEmpty()) {
             builder.append("N/A");
         } else if (spatial.contains(JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D)
-            && spatial.contains(JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D)) {
+                && spatial.contains(JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D)) {
             builder.append("2D, 3D");
         } else if (spatial.contains(JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D)) {
             builder.append("3D");
@@ -372,13 +363,13 @@ public class NodeFinderDetailRail extends JPanel {
 
     private void initializeTabs() {
         tabPane.addTab("Documentation", JIPipe.RESOURCES.getIcon16("actions/help-info.png"),
-            documentationReader, JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
+                documentationReader, JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
         // The Similar / Previous steps / Next steps lists are merged into one
         // "Related" page (three collapsible sections) — the three separate
         // tabs cluttered the narrow rail's pill row and hid the groups from
         // each other.
         tabPane.addTab("Related", JIPipe.RESOURCES.getIcon16("actions/link.png"),
-            buildRelatedPage(), JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
+                buildRelatedPage(), JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
     }
 
     // ------------------------------------------------------------------
@@ -447,6 +438,19 @@ public class NodeFinderDetailRail extends JPanel {
     // ------------------------------------------------------------------
 
     /**
+     * Callback for entry clicks in the rail's "Similar" / "Previous steps" /
+     * "Next steps" lists: the dialog selects the entry in the center list.
+     */
+    @FunctionalInterface
+    public interface EntrySelector {
+        void select(JIPipeNodeDatabaseEntry entry);
+    }
+
+    // ------------------------------------------------------------------
+    // The card row renderer (the manager's rounded card, single-column)
+    // ------------------------------------------------------------------
+
+    /**
      * A section of the "Related" page: the shared {@code GroupHeaderPanel}
      * header (title + icon, the flat collapse caret of the parameter forms
      * at the start, the live entry count at the end — the "Configure node
@@ -459,7 +463,9 @@ public class NodeFinderDetailRail extends JPanel {
      * layout).
      */
     private class RelatedSection {
-        /** The relation list's row height (the manager's grid cards are 66 px). */
+        /**
+         * The relation list's row height (the manager's grid cards are 66 px).
+         */
         private static final int CARD_ROW_HEIGHT = 46;
 
         private final String title;
@@ -529,10 +535,10 @@ public class NodeFinderDetailRail extends JPanel {
             formPanel.addWideToForm(this.listHost);
 
             this.collapseButton = new CustomStateLessToggleButton("",
-                JIPipe.RESOURCES.getIcon16("actions/caret-right.png"),
-                "",
-                JIPipe.RESOURCES.getIcon16("actions/caret-down.png"),
-                true);
+                    JIPipe.RESOURCES.getIcon16("actions/caret-right.png"),
+                    "",
+                    JIPipe.RESOURCES.getIcon16("actions/caret-down.png"),
+                    true);
             UIUtils.makeButtonFlat25x25(collapseButton);
             collapseButton.setOpaque(false); // no toggled/pressed background
             collapseButton.setFocusPainted(false);
@@ -583,7 +589,11 @@ public class NodeFinderDetailRail extends JPanel {
     }
 
     // ------------------------------------------------------------------
-    // The card row renderer (the manager's rounded card, single-column)
+    // Actions
+    // ------------------------------------------------------------------
+
+    // ------------------------------------------------------------------
+    // Helpers
     // ------------------------------------------------------------------
 
     /**
@@ -685,21 +695,5 @@ public class NodeFinderDetailRail extends JPanel {
             }
             return "";
         }
-    }
-
-    // ------------------------------------------------------------------
-    // Actions
-    // ------------------------------------------------------------------
-
-    // ------------------------------------------------------------------
-    // Helpers
-    // ------------------------------------------------------------------
-
-    @Nullable
-    private static JIPipeNodeInfo entryNodeInfo(JIPipeNodeDatabaseEntry entry) {
-        if (entry instanceof CreateNewNodeByInfoDatabaseEntry byInfo) {
-            return byInfo.getNodeInfo();
-        }
-        return null;
     }
 }

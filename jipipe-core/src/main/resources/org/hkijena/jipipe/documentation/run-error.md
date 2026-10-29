@@ -16,5 +16,5 @@ There can be a variety of reason leading to the issue, such as:
 
 You can find suggested actions for each error on the left-hand side.
 
-To contact a plugin author, find the plugin in `Plugins > Manage plugins` to 
+To contact a plugin author, find the plugin in `Plugins > Manage plugins` to
 get the contact details.

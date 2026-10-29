@@ -1,1 +1,220 @@
-{"edges":[{"source-node":"n1","source-slot":"Output","target-node":"n0","target-slot":"ROI"},{"source-node":"n2","source-slot":"Output","target-node":"n5","target-slot":"Model"},{"source-node":"n3","source-slot":"Filenames","target-node":"n2","target-slot":"Input"},{"source-node":"n4","source-slot":"Output","target-node":"n6","target-slot":"Model"},{"source-node":"n5","source-slot":"Flows XY","target-node":"n6","target-slot":"Input"},{"source-node":"n6","source-slot":"ROI","target-node":"n1","target-slot":"ROI"}],"nodes":{"n0":{"jipipe:graph-compartment":"ec3a93b7-5b37-5052-a90c-419e42a35005","jipipe:metadata-v1":{"location/ec3a93b7-5b37-5052-a90c-419e42a35005/x":0,"location/ec3a93b7-5b37-5052-a90c-419e42a35005/y":26},"jipipe:node-info-id":"ij1-roi-to-rgb"},"n1":{"jipipe:graph-compartment":"ec3a93b7-5b37-5052-a90c-419e42a35005","jipipe:metadata-v1":{"location/ec3a93b7-5b37-5052-a90c-419e42a35005/x":0,"location/ec3a93b7-5b37-5052-a90c-419e42a35005/y":22},"jipipe:node-info-id":"ij1-roi-filter-statistics"},"n2":{"jipipe:graph-compartment":"ec3a93b7-5b37-5052-a90c-419e42a35005","jipipe:metadata-v1":{"location/ec3a93b7-5b37-5052-a90c-419e42a35005/x":0,"location/ec3a93b7-5b37-5052-a90c-419e42a35005/y":4},"jipipe:node-info-id":"import-cellpose-model-v2"},"n3":{"jipipe:graph-compartment":"ec3a93b7-5b37-5052-a90c-419e42a35005","jipipe:metadata-v1":{"location/ec3a93b7-5b37-5052-a90c-419e42a35005/x":0,"location/ec3a93b7-5b37-5052-a90c-419e42a35005/y":0},"jipipe:node-info-id":"import-file-list"},"n4":{"jipipe:graph-compartment":"ec3a93b7-5b37-5052-a90c-419e42a35005","jipipe:metadata-v1":{"location/ec3a93b7-5b37-5052-a90c-419e42a35005/x":0,"location/ec3a93b7-5b37-5052-a90c-419e42a35005/y":14},"jipipe:node-info-id":"import-cellpose-3.x-pretrained-segmentation-model"},"n5":{"jipipe:graph-compartment":"ec3a93b7-5b37-5052-a90c-419e42a35005","jipipe:metadata-v1":{"location/ec3a93b7-5b37-5052-a90c-419e42a35005/x":0,"location/ec3a93b7-5b37-5052-a90c-419e42a35005/y":8},"jipipe:node-info-id":"cellpose-segmentation-inference-3.x","jipipe:slot-configuration":{"input":{"Input":{"slot-data-type":"imagej-imgplus","slot-type":"Input","name":"Input","custom-name":null,"description":"The input images","is-virtual":false,"save-outputs":true,"is-optional":false},"Model":{"slot-data-type":"cellpose-model-v2","slot-type":"Input","name":"Model","custom-name":null,"description":"The models (pretrained/custom). All workloads are repeated per model. To provide a pretrained model, use 'Pretrained Cellpose 3.x segmentation model'","is-virtual":false,"save-outputs":true,"is-optional":false}},"output":{"ROI":{"slot-data-type":"imagej-roi","slot-type":"Output","name":"ROI","custom-name":null,"description":"ROI of the segmented areas","is-virtual":false,"save-outputs":true,"is-optional":false},"Labels":{"slot-data-type":"imagej-imgplus-greyscale","slot-type":"Output","name":"Labels","custom-name":null,"description":"A grayscale image where each connected component is assigned a unique value","is-virtual":false,"save-outputs":true,"is-optional":false},"Probabilities":{"slot-data-type":"imagej-imgplus-greyscale","slot-type":"Output","name":"Probabilities","custom-name":null,"description":"An image indicating the cell probabilities for each pixel","is-virtual":false,"save-outputs":true,"is-optional":false},"Flows XY":{"slot-data-type":"imagej-imgplus","slot-type":"Output","name":"Flows XY","custom-name":null,"description":"An RGB image that indicates the x and y flow of each pixel","is-virtual":false,"save-outputs":true,"is-optional":false}}},"enable-3d-segmentation":true,"suppress-logs":false,"diameter-annotation":{"content":"Diameter","enabled":true},"cleanup-afterwards":true,"diameter":{"content":100.0,"enabled":true},"enable-multichannel":true,"threshold-parameters/stitch-threshold":{"content":0.0,"enabled":false},"threshold-parameters/cell-probability-threshold":0.0,"threshold-parameters/flow-threshold":0.4,"threshold-parameters/exclude-on-edges":false,"enhancement-parameters/normalize-percentile":{"content":{"x":1,"y":99},"enabled":false},"enhancement-parameters/anisotropy":{"content":1.0,"enabled":false},"enhancement-parameters/normalize":true,"enhancement-parameters/interpolate":true,"enhancement-parameters/niter":0,"enhancement-parameters/flow-3d-smoothing":0.0,"enhancement-parameters/resample":true,"output-parameters/output-roi":true,"output-parameters/output-probabilities":true,"output-parameters/output-labels":true,"output-parameters/output-flows-xy":true,"output-parameters/output-flows-z":false,"output-parameters/output-flows-d":false,"gpu-parameters/enable-gpu":true,"gpu-parameters/gpu-device":{"content":0,"enabled":false},"channel-parameters/invert":false,"channel-parameters/nuclear-channel":{"content":0,"enabled":false},"channel-parameters/segmented-channel":{"content":0,"enabled":false},"channel-parameters/all-channels":false},"n6":{"jipipe:graph-compartment":"ec3a93b7-5b37-5052-a90c-419e42a35005","jipipe:metadata-v1":{"location/ec3a93b7-5b37-5052-a90c-419e42a35005/x":0,"location/ec3a93b7-5b37-5052-a90c-419e42a35005/y":18},"jipipe:node-info-id":"cellpose-segmentation-inference-3.x"}}}
+{
+  "edges": [
+    {
+      "source-node": "n1",
+      "source-slot": "Output",
+      "target-node": "n0",
+      "target-slot": "ROI"
+    },
+    {
+      "source-node": "n2",
+      "source-slot": "Output",
+      "target-node": "n5",
+      "target-slot": "Model"
+    },
+    {
+      "source-node": "n3",
+      "source-slot": "Filenames",
+      "target-node": "n2",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n4",
+      "source-slot": "Output",
+      "target-node": "n6",
+      "target-slot": "Model"
+    },
+    {
+      "source-node": "n5",
+      "source-slot": "Flows XY",
+      "target-node": "n6",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n6",
+      "source-slot": "ROI",
+      "target-node": "n1",
+      "target-slot": "ROI"
+    }
+  ],
+  "nodes": {
+    "n0": {
+      "jipipe:graph-compartment": "ec3a93b7-5b37-5052-a90c-419e42a35005",
+      "jipipe:metadata-v1": {
+        "location/ec3a93b7-5b37-5052-a90c-419e42a35005/x": 0,
+        "location/ec3a93b7-5b37-5052-a90c-419e42a35005/y": 26
+      },
+      "jipipe:node-info-id": "ij1-roi-to-rgb"
+    },
+    "n1": {
+      "jipipe:graph-compartment": "ec3a93b7-5b37-5052-a90c-419e42a35005",
+      "jipipe:metadata-v1": {
+        "location/ec3a93b7-5b37-5052-a90c-419e42a35005/x": 0,
+        "location/ec3a93b7-5b37-5052-a90c-419e42a35005/y": 22
+      },
+      "jipipe:node-info-id": "ij1-roi-filter-statistics"
+    },
+    "n2": {
+      "jipipe:graph-compartment": "ec3a93b7-5b37-5052-a90c-419e42a35005",
+      "jipipe:metadata-v1": {
+        "location/ec3a93b7-5b37-5052-a90c-419e42a35005/x": 0,
+        "location/ec3a93b7-5b37-5052-a90c-419e42a35005/y": 4
+      },
+      "jipipe:node-info-id": "import-cellpose-model-v2"
+    },
+    "n3": {
+      "jipipe:graph-compartment": "ec3a93b7-5b37-5052-a90c-419e42a35005",
+      "jipipe:metadata-v1": {
+        "location/ec3a93b7-5b37-5052-a90c-419e42a35005/x": 0,
+        "location/ec3a93b7-5b37-5052-a90c-419e42a35005/y": 0
+      },
+      "jipipe:node-info-id": "import-file-list"
+    },
+    "n4": {
+      "jipipe:graph-compartment": "ec3a93b7-5b37-5052-a90c-419e42a35005",
+      "jipipe:metadata-v1": {
+        "location/ec3a93b7-5b37-5052-a90c-419e42a35005/x": 0,
+        "location/ec3a93b7-5b37-5052-a90c-419e42a35005/y": 14
+      },
+      "jipipe:node-info-id": "import-cellpose-3.x-pretrained-segmentation-model"
+    },
+    "n5": {
+      "jipipe:graph-compartment": "ec3a93b7-5b37-5052-a90c-419e42a35005",
+      "jipipe:metadata-v1": {
+        "location/ec3a93b7-5b37-5052-a90c-419e42a35005/x": 0,
+        "location/ec3a93b7-5b37-5052-a90c-419e42a35005/y": 8
+      },
+      "jipipe:node-info-id": "cellpose-segmentation-inference-3.x",
+      "jipipe:slot-configuration": {
+        "input": {
+          "Input": {
+            "slot-data-type": "imagej-imgplus",
+            "slot-type": "Input",
+            "name": "Input",
+            "custom-name": null,
+            "description": "The input images",
+            "is-virtual": false,
+            "save-outputs": true,
+            "is-optional": false
+          },
+          "Model": {
+            "slot-data-type": "cellpose-model-v2",
+            "slot-type": "Input",
+            "name": "Model",
+            "custom-name": null,
+            "description": "The models (pretrained/custom). All workloads are repeated per model. To provide a pretrained model, use 'Pretrained Cellpose 3.x segmentation model'",
+            "is-virtual": false,
+            "save-outputs": true,
+            "is-optional": false
+          }
+        },
+        "output": {
+          "ROI": {
+            "slot-data-type": "imagej-roi",
+            "slot-type": "Output",
+            "name": "ROI",
+            "custom-name": null,
+            "description": "ROI of the segmented areas",
+            "is-virtual": false,
+            "save-outputs": true,
+            "is-optional": false
+          },
+          "Labels": {
+            "slot-data-type": "imagej-imgplus-greyscale",
+            "slot-type": "Output",
+            "name": "Labels",
+            "custom-name": null,
+            "description": "A grayscale image where each connected component is assigned a unique value",
+            "is-virtual": false,
+            "save-outputs": true,
+            "is-optional": false
+          },
+          "Probabilities": {
+            "slot-data-type": "imagej-imgplus-greyscale",
+            "slot-type": "Output",
+            "name": "Probabilities",
+            "custom-name": null,
+            "description": "An image indicating the cell probabilities for each pixel",
+            "is-virtual": false,
+            "save-outputs": true,
+            "is-optional": false
+          },
+          "Flows XY": {
+            "slot-data-type": "imagej-imgplus",
+            "slot-type": "Output",
+            "name": "Flows XY",
+            "custom-name": null,
+            "description": "An RGB image that indicates the x and y flow of each pixel",
+            "is-virtual": false,
+            "save-outputs": true,
+            "is-optional": false
+          }
+        }
+      },
+      "enable-3d-segmentation": true,
+      "suppress-logs": false,
+      "diameter-annotation": {
+        "content": "Diameter",
+        "enabled": true
+      },
+      "cleanup-afterwards": true,
+      "diameter": {
+        "content": 100.0,
+        "enabled": true
+      },
+      "enable-multichannel": true,
+      "threshold-parameters/stitch-threshold": {
+        "content": 0.0,
+        "enabled": false
+      },
+      "threshold-parameters/cell-probability-threshold": 0.0,
+      "threshold-parameters/flow-threshold": 0.4,
+      "threshold-parameters/exclude-on-edges": false,
+      "enhancement-parameters/normalize-percentile": {
+        "content": {
+          "x": 1,
+          "y": 99
+        },
+        "enabled": false
+      },
+      "enhancement-parameters/anisotropy": {
+        "content": 1.0,
+        "enabled": false
+      },
+      "enhancement-parameters/normalize": true,
+      "enhancement-parameters/interpolate": true,
+      "enhancement-parameters/niter": 0,
+      "enhancement-parameters/flow-3d-smoothing": 0.0,
+      "enhancement-parameters/resample": true,
+      "output-parameters/output-roi": true,
+      "output-parameters/output-probabilities": true,
+      "output-parameters/output-labels": true,
+      "output-parameters/output-flows-xy": true,
+      "output-parameters/output-flows-z": false,
+      "output-parameters/output-flows-d": false,
+      "gpu-parameters/enable-gpu": true,
+      "gpu-parameters/gpu-device": {
+        "content": 0,
+        "enabled": false
+      },
+      "channel-parameters/invert": false,
+      "channel-parameters/nuclear-channel": {
+        "content": 0,
+        "enabled": false
+      },
+      "channel-parameters/segmented-channel": {
+        "content": 0,
+        "enabled": false
+      },
+      "channel-parameters/all-channels": false
+    },
+    "n6": {
+      "jipipe:graph-compartment": "ec3a93b7-5b37-5052-a90c-419e42a35005",
+      "jipipe:metadata-v1": {
+        "location/ec3a93b7-5b37-5052-a90c-419e42a35005/x": 0,
+        "location/ec3a93b7-5b37-5052-a90c-419e42a35005/y": 18
+      },
+      "jipipe:node-info-id": "cellpose-segmentation-inference-3.x"
+    }
+  }
+}

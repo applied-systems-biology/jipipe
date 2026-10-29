@@ -62,15 +62,15 @@ class TemplateManagementControllerTest {
 
     private static final String STUB_ID = "template-mgmt-ctrl-test:stub-node";
     private static final JIPipeMutableDependency TEST_DEPENDENCY =
-        new JIPipeMutableDependency("template-mgmt-ctrl-test", "1.0.0", "template-mgmt-ctrl-test");
-
-    private final TemplateManagementController controller = new TemplateManagementController();
-
-    /** The user-owned templates this test adds to the (shared) global store, cleaned up in {@link #cleanup()}. */
+            new JIPipeMutableDependency("template-mgmt-ctrl-test", "1.0.0", "template-mgmt-ctrl-test");
+    /**
+     * The user-owned templates this test adds to the (shared) global store, cleaned up in {@link #cleanup()}.
+     */
     private static final List<JIPipeNodeTemplate> addedGlobal = new ArrayList<>();
-    /** The plugin (System-scope) templates this test registers via addFromPlugin, removed in {@link #cleanup()}. */
+    /**
+     * The plugin (System-scope) templates this test registers via addFromPlugin, removed in {@link #cleanup()}.
+     */
     private static final List<JIPipeNodeTemplate> addedPlugin = new ArrayList<>();
-
     /**
      * Throwaway base for the JIPipe user dir. {@link #boot()} points the shared
      * singleton's {@code overrideUserDirBase} here so every global-template
@@ -85,6 +85,7 @@ class TemplateManagementControllerTest {
      * {@link #cleanup()} restores the override and deletes the temp dir.
      */
     private static Path tempUserDirBase;
+    private final TemplateManagementController controller = new TemplateManagementController();
 
     @BeforeAll
     static void boot() throws Exception {
@@ -125,7 +126,9 @@ class TemplateManagementControllerTest {
         deleteRecursivelyQuietly(tempUserDirBase);
     }
 
-    /** Best-effort recursive delete of the temp user-dir base. */
+    /**
+     * Best-effort recursive delete of the temp user-dir base.
+     */
     private static void deleteRecursivelyQuietly(Path root) {
         if (root == null) {
             return;
@@ -165,13 +168,13 @@ class TemplateManagementControllerTest {
 
         // A same-named copy now lives in the project metadata ...
         assertThat(project.getMetadata().getNodeTemplates())
-            .anySatisfy(p -> assertThat(p.getName()).isEqualTo(name));
+                .anySatisfy(p -> assertThat(p.getName()).isEqualTo(name));
         // ... the original is still Global (a copy, not a move) ...
         assertThat(controller.forScope(null, TemplateScope.Global))
-            .anySatisfy(g -> assertThat(g.getName()).isEqualTo(name));
+                .anySatisfy(g -> assertThat(g.getName()).isEqualTo(name));
         // ... a distinct object, so the project copy is not the global one.
         JIPipeNodeTemplate projectCopy = project.getMetadata().getNodeTemplates().stream()
-            .filter(t -> t.getName().equals(name)).findFirst().orElseThrow();
+                .filter(t -> t.getName().equals(name)).findFirst().orElseThrow();
         assertThat(projectCopy).isNotSameAs(global);
         // ... and a refresh fired.
         assertThat(refresh[0]).isTrue();
@@ -183,17 +186,17 @@ class TemplateManagementControllerTest {
         JIPipeNodeTemplate projectTemplate = tmpl("Delete Me Target");
         JIPipe.getNodeTemplates().addToProject(projectTemplate, project);
         assertThat(controller.forScope(project, TemplateScope.Project))
-            .anySatisfy(t -> assertThat(t.getName()).isEqualTo("Delete Me Target"));
+                .anySatisfy(t -> assertThat(t.getName()).isEqualTo("Delete Me Target"));
 
         boolean ok = controller.delete(project, TemplateScope.Project, projectTemplate);
 
         assertThat(ok).isTrue();
         assertThat(project.getMetadata().getNodeTemplates().stream()
-            .map(JIPipeNodeTemplate::getName))
-            .doesNotContain("Delete Me Target");
+                .map(JIPipeNodeTemplate::getName))
+                .doesNotContain("Delete Me Target");
         assertThat(controller.forScope(project, TemplateScope.Project).stream()
-            .map(JIPipeNodeTemplate::getName))
-            .doesNotContain("Delete Me Target");
+                .map(JIPipeNodeTemplate::getName))
+                .doesNotContain("Delete Me Target");
     }
 
     @Test
@@ -208,12 +211,12 @@ class TemplateManagementControllerTest {
         addedPlugin.add(system);
         assertThat(JIPipe.getNodeTemplates().isPluginTemplate(system)).isTrue();
         assertThat(controller.forScope(null, TemplateScope.System))
-            .anySatisfy(t -> assertThat(t.getName()).isEqualTo(system.getName()));
+                .anySatisfy(t -> assertThat(t.getName()).isEqualTo(system.getName()));
 
         // Delete is a no-op (returns false) — the template stays in the System scope.
         assertThat(controller.delete(null, TemplateScope.System, system)).isFalse();
         assertThat(controller.forScope(null, TemplateScope.System))
-            .anySatisfy(t -> assertThat(t.getName()).isEqualTo(system.getName()));
+                .anySatisfy(t -> assertThat(t.getName()).isEqualTo(system.getName()));
 
         // Edit is also a no-op (returns false) — the original is untouched.
         JIPipeNodeTemplate editedCopy = new JIPipeNodeTemplate(system);
@@ -237,7 +240,7 @@ class TemplateManagementControllerTest {
         JIPipe.getNodeTemplates().addFromPlugin(pattern);
         addedPlugin.add(pattern);
         assertThat(controller.forScope(null, TemplateScope.System))
-            .anySatisfy(t -> assertThat(t.getName()).isEqualTo("Escaped Pattern"));
+                .anySatisfy(t -> assertThat(t.getName()).isEqualTo("Escaped Pattern"));
 
         boolean ok = controller.copyTo(null, TemplateScope.System, TemplateScope.Global, pattern);
         assertThat(ok).isTrue();
@@ -248,12 +251,12 @@ class TemplateManagementControllerTest {
         // ... and it is NOT a plugin template (classified Global, not System) —
         // the identity-based pluginTemplates set + the user re-stamp make this hold.
         JIPipeNodeTemplate globalCopy = globalScope.stream()
-            .filter(t -> t.getName().equals("Escaped Pattern")).findFirst().orElseThrow();
+                .filter(t -> t.getName().equals("Escaped Pattern")).findFirst().orElseThrow();
         assertThat(JIPipe.getNodeTemplates().isPluginTemplate(globalCopy)).isFalse();
         addedGlobal.add(globalCopy);
         // ... and the original is STILL in the System scope (a copy, not a move).
         assertThat(controller.forScope(null, TemplateScope.System))
-            .anySatisfy(t -> assertThat(t.getName()).isEqualTo("Escaped Pattern"));
+                .anySatisfy(t -> assertThat(t.getName()).isEqualTo("Escaped Pattern"));
     }
 
     @Test
@@ -290,11 +293,11 @@ class TemplateManagementControllerTest {
         assertThat(imported.get(0).getName()).isEqualTo(original.getName());
 
         assertThat(project.getMetadata().getNodeTemplates().stream()
-            .map(JIPipeNodeTemplate::getName))
-            .contains(original.getName());
+                .map(JIPipeNodeTemplate::getName))
+                .contains(original.getName());
         // The imported copy is a distinct object from the original global one.
         JIPipeNodeTemplate projectCopy = project.getMetadata().getNodeTemplates().stream()
-            .filter(t -> t.getName().equals(original.getName())).findFirst().orElseThrow();
+                .filter(t -> t.getName().equals(original.getName())).findFirst().orElseThrow();
         assertThat(projectCopy).isNotSameAs(original);
     }
 
@@ -328,12 +331,12 @@ class TemplateManagementControllerTest {
         JIPipe.getNodeTemplates().addFromPlugin(pattern);
         addedPlugin.add(pattern);
         assertThat(controller.forScope(null, TemplateScope.System))
-            .anySatisfy(t -> assertThat(t.getName()).isEqualTo("Keep Me Bundled"));
+                .anySatisfy(t -> assertThat(t.getName()).isEqualTo("Keep Me Bundled"));
 
         boolean ok = controller.copyTo(null, TemplateScope.System, TemplateScope.Global, pattern);
         assertThat(ok).isTrue();
         JIPipeNodeTemplate copy = controller.forScope(null, TemplateScope.Global).stream()
-            .filter(t -> t.getName().equals("Keep Me Bundled")).findFirst().orElseThrow();
+                .filter(t -> t.getName().equals("Keep Me Bundled")).findFirst().orElseThrow();
         assertThat(copy).isNotSameAs(pattern);
         addedGlobal.add(copy);
 
@@ -342,11 +345,11 @@ class TemplateManagementControllerTest {
 
         // The copy is gone from Global ...
         assertThat(controller.forScope(null, TemplateScope.Global).stream()
-            .map(JIPipeNodeTemplate::getName)).doesNotContain("Keep Me Bundled");
+                .map(JIPipeNodeTemplate::getName)).doesNotContain("Keep Me Bundled");
         // ... AND the bundled original is still in the System scope (pre-fix it
         // was the one evicted from the in-memory list).
         assertThat(controller.forScope(null, TemplateScope.System))
-            .anySatisfy(t -> assertThat(t.getName()).isEqualTo("Keep Me Bundled"));
+                .anySatisfy(t -> assertThat(t.getName()).isEqualTo("Keep Me Bundled"));
     }
 
     @Test
@@ -400,7 +403,9 @@ class TemplateManagementControllerTest {
     // Helpers
     // ------------------------------------------------------------------
 
-    /** Counts regular files in the global template storage dir (0 when absent). */
+    /**
+     * Counts regular files in the global template storage dir (0 when absent).
+     */
     private long countStorageFiles() throws Exception {
         Path dir = JIPipe.getNodeTemplates().getStoragePath();
         if (!Files.isDirectory(dir)) {
@@ -411,7 +416,9 @@ class TemplateManagementControllerTest {
         }
     }
 
-    /** Adds a unique-named template to the global store, tracking it for cleanup. */
+    /**
+     * Adds a unique-named template to the global store, tracking it for cleanup.
+     */
     private JIPipeNodeTemplate addUniqueGlobal(String baseName) {
         String name = baseName + " " + System.nanoTime();
         JIPipeNodeTemplate template = tmpl(name);
@@ -421,7 +428,9 @@ class TemplateManagementControllerTest {
         return template;
     }
 
-    /** Builds a real template whose graph holds one stub node under the given name. */
+    /**
+     * Builds a real template whose graph holds one stub node under the given name.
+     */
     private JIPipeNodeTemplate tmpl(String name) {
         JIPipeGraph graph = new JIPipeGraph();
         graph.insertNode(JIPipe.getNodes().getInfoById(STUB_ID).newInstance());
@@ -437,7 +446,9 @@ class TemplateManagementControllerTest {
     // the local version is the future #1333 feature)
     // ------------------------------------------------------------------
 
-    /** Adds a template to the global store whose source is a repository URL (a downloaded template). */
+    /**
+     * Adds a template to the global store whose source is a repository URL (a downloaded template).
+     */
     private JIPipeNodeTemplate addUniqueDownloaded(String baseName) {
         String name = baseName + " " + System.nanoTime();
         JIPipeNodeTemplate template = tmpl(name);
@@ -459,8 +470,8 @@ class TemplateManagementControllerTest {
         // user-sourced one is in Global and NOT in Downloaded.
         assertThat(controller.forScope(null, TemplateScope.Downloaded)).contains(downloaded);
         assertThat(controller.forScope(null, TemplateScope.Global))
-            .contains(user)
-            .doesNotContain(downloaded);
+                .contains(user)
+                .doesNotContain(downloaded);
         assertThat(controller.forScope(null, TemplateScope.Downloaded)).doesNotContain(user);
         // ... and neither leaks into System or Project.
         assertThat(controller.forScope(null, TemplateScope.System)).doesNotContain(downloaded, user);
@@ -474,8 +485,8 @@ class TemplateManagementControllerTest {
         edited.setDescription(new HTMLText("edited"));
 
         assertThat(controller.edit(null, TemplateScope.Downloaded, downloaded, edited))
-            .as("editing a downloaded template is rejected (read-only repository artifact)")
-            .isFalse();
+                .as("editing a downloaded template is rejected (read-only repository artifact)")
+                .isFalse();
         assertThat(downloaded.getDescription().getHtml()).doesNotContain("edited");
     }
 
@@ -489,8 +500,8 @@ class TemplateManagementControllerTest {
 
         // The copy is a USER-owned template (source re-stamped) ...
         JIPipeNodeTemplate copy = controller.forScope(null, TemplateScope.Global).stream()
-            .filter(t -> t.getName().equals(downloaded.getName()))
-            .findFirst().orElseThrow();
+                .filter(t -> t.getName().equals(downloaded.getName()))
+                .findFirst().orElseThrow();
         assertThat(copy).isNotSameAs(downloaded);
         assertThat(copy.getSource()).isEqualTo(JIPipeNodeTemplate.SOURCE_USER);
         // ... the downloaded original is untouched and still read-only scoped,
@@ -498,8 +509,8 @@ class TemplateManagementControllerTest {
         assertThat(downloaded.getSource()).isNotEqualTo(JIPipeNodeTemplate.SOURCE_USER);
         assertThat(controller.forScope(null, TemplateScope.Downloaded)).contains(downloaded);
         assertThat(controller.copyTo(project, TemplateScope.Global, TemplateScope.Downloaded, copy))
-            .as("Downloaded is a valid source, never a target")
-            .isFalse();
+                .as("Downloaded is a valid source, never a target")
+                .isFalse();
 
         // Tidy: remove the user copy we just made (the addedGlobal cleanup
         // tracks the downloaded original, not the copy).
@@ -511,8 +522,8 @@ class TemplateManagementControllerTest {
         JIPipeNodeTemplate downloaded = addUniqueDownloaded("Downloaded Removable");
 
         assertThat(controller.delete(null, TemplateScope.Downloaded, downloaded))
-            .as("removing a download is allowed (re-obtainable via 'Get more')")
-            .isTrue();
+                .as("removing a download is allowed (re-obtainable via 'Get more')")
+                .isTrue();
         assertThat(controller.forScope(null, TemplateScope.Downloaded)).doesNotContain(downloaded);
         assertThat(JIPipe.getNodeTemplates().isInGlobal(downloaded)).isFalse();
     }

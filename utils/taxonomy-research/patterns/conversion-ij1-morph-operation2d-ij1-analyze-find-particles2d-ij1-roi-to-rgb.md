@@ -32,32 +32,37 @@ template:
 
 # Pattern: Morphological operation 2D -> Find particles 2D -> Convert 2D ROI to RGB
 
-Mined pattern `conversion-ij1-morph-operation2d-ij1-analyze-find-particles2d-ij1-roi-to-rgb` (shape `conversion`, support 38).
+Mined pattern `conversion-ij1-morph-operation2d-ij1-analyze-find-particles2d-ij1-roi-to-rgb` (shape `conversion`,
+support 38).
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| other | `ij1-morph-operation2d` |
+| role  | node ids                       |
+|-------|--------------------------------|
+| other | `ij1-morph-operation2d`        |
 | other | `ij1-analyze-find-particles2d` |
-| other | `ij1-roi-to-rgb` |
+| other | `ij1-roi-to-rgb`               |
 
 ## Example graph
 
-Project: `AIAgentTests/01-BasicWorkshop/JSC_2025_03_Kidney_Basic/kidney.jip` (relative to `/data/JIPipe`), compartment `Analysis`.
+Project: `AIAgentTests/01-BasicWorkshop/JSC_2025_03_Kidney_Basic/kidney.jip` (relative to `/data/JIPipe`), compartment
+`Analysis`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `ij1-morph-operation2d` | Morphological operation 2D: Erode |
-| n1 | `ij1-analyze-find-particles2d` | Find particles 2D |
-| n2 | `ij1-roi-to-rgb` | Convert ROI to RGB |
+| key | node id                        | name                              |
+|-----|--------------------------------|-----------------------------------|
+| n0  | `ij1-morph-operation2d`        | Morphological operation 2D: Erode |
+| n1  | `ij1-analyze-find-particles2d` | Find particles 2D                 |
+| n2  | `ij1-roi-to-rgb`               | Convert ROI to RGB                |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
-| Morphological operation 2D: Erode | `Output` | Find particles 2D | `Mask` | `imagej-imgplus` |
-| Find particles 2D | `ROI` | Convert ROI to RGB | `ROI` | `imagej-roi` |
+| from                              | slot     | to                 | slot   | data class       |
+|-----------------------------------|----------|--------------------|--------|------------------|
+| Morphological operation 2D: Erode | `Output` | Find particles 2D  | `Mask` | `imagej-imgplus` |
+| Find particles 2D                 | `ROI`    | Convert ROI to RGB | `ROI`  | `imagej-roi`     |
 
 ## Template
 
-Proposed name `Morphological operation 2D -> Find particles 2D -> Convert 2D ROI to RGB`, menu path `Patterns/Images/Morphological operation 2D -> Find particles 2D -> Convert 2D ROI to RGB` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/conversion-ij1-morph-operation2d-ij1-analyze-find-particles2d-ij1-roi-to-rgb.json`.
+Proposed name `Morphological operation 2D -> Find particles 2D -> Convert 2D ROI to RGB`, menu path
+`Patterns/Images/Morphological operation 2D -> Find particles 2D -> Convert 2D ROI to RGB` (proposal only — not
+registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/conversion-ij1-morph-operation2d-ij1-analyze-find-particles2d-ij1-roi-to-rgb.json`.
 

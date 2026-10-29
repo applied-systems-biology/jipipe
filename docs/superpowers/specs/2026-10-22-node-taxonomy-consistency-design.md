@@ -1,6 +1,7 @@
 # Node taxonomy consistency — frameworks, hues, auto-hue — Design
 
-**Date:** 2026-10-22 · **Branch:** `1324-node-taxonomy-core` · **State:** approved design (user "yes" to the consolidated plan)
+**Date:** 2026-10-22 · **Branch:** `1324-node-taxonomy-core` · **State:** approved design (user "yes" to the
+consolidated plan)
 
 ## Context
 
@@ -10,8 +11,8 @@ presence-based tests), an audit of the *content* — which framework each node
 declares, and which hue each function branch carries — found systematic
 inconsistencies:
 
-- A **framework** = the coherent project / suite / toolkit a node wraps
-  (external *or* JIPipe-exclusive). TrackMate and Cellpose are dedicated
+- A **framework** = the coherent project / suite / toolkit a node wraps (external *or* JIPipe-exclusive). TrackMate and
+  Cellpose are dedicated
   frameworks; other equally-coherent suites are misfiled under unrelated
   parents, untracked, or parked under a placeholder.
 - **Conceptually-similar function branches should carry visually-similar
@@ -25,8 +26,7 @@ inconsistencies:
 1. A framework models a **coherent tool / suite / toolkit** — it does not
    need to be external (JIPipe-exclusive suites like Filaments *are*
    frameworks), and it must not be a **hallucination**: a framework whose
-   tool has no nodes in the repo and no raison d'être is dead weight and is
-   **deleted**, not kept.
+   tool has no nodes in the repo and no raison d'être is dead weight and is **deleted**, not kept.
 2. JIPipe's own core infrastructure (tables, filesystem, annotations,
    utils, strings, forms, ~175 core nodes) is **not** tagged with
    `CoreFramework` — core infra stays untracked (`NoFramework`). Reason:
@@ -43,20 +43,19 @@ All follow the exact shape of `IlastikFramework` (final class, frozen
 pattern style id, optional description), placed in
 `org.hkijena.jipipe.api.nodes.taxonomy.frameworks`:
 
-| Class | ID | Name | Abbr | Pattern style | Notes |
-|---|---|---|---|---|---|
-| `WekaFramework` | `jipipe:framework:weka` | `Weka` | `WEKA` | `cellular` | IJ Trainable Weka Filter / Weka toolkit |
-| `FilamentsFramework` | `jipipe:framework:filaments` | `Filaments` | `FILA` | `flow` | JIPipe-exclusive filament suite (51 nodes) |
-| `IJ3DFramework` | `jipipe:framework:ij3d` | `IJ3D` | `3D` | `hilbert` | ImageJ 3D Suite / 3D Viewer (62 nodes) |
-| `OmeroFramework` | `jipipe:framework:omero` | `OMERO` | `OMRO` | `stripes` | OMERO data platform (26 nodes) |
-| `Scene3DFramework` | `jipipe:framework:scene-3d` | `Scene 3D` | `S3D` | `landscape` | JIPipe-exclusive 3D-scene suite (7 nodes) |
+| Class                | ID                           | Name        | Abbr   | Pattern style | Notes                                      |
+|----------------------|------------------------------|-------------|--------|---------------|--------------------------------------------|
+| `WekaFramework`      | `jipipe:framework:weka`      | `Weka`      | `WEKA` | `cellular`    | IJ Trainable Weka Filter / Weka toolkit    |
+| `FilamentsFramework` | `jipipe:framework:filaments` | `Filaments` | `FILA` | `flow`        | JIPipe-exclusive filament suite (51 nodes) |
+| `IJ3DFramework`      | `jipipe:framework:ij3d`      | `IJ3D`      | `3D`   | `hilbert`     | ImageJ 3D Suite / 3D Viewer (62 nodes)     |
+| `OmeroFramework`     | `jipipe:framework:omero`     | `OMERO`     | `OMRO` | `stripes`     | OMERO data platform (26 nodes)             |
+| `Scene3DFramework`   | `jipipe:framework:scene-3d`  | `Scene 3D`  | `S3D`  | `landscape`   | JIPipe-exclusive 3D-scene suite (7 nodes)  |
 
 Pattern styles reuse the existing `NodePatternStyles` catalog (`stripes`,
 `net`, `cellular`, `carpet`, `hilbert`, `landscape`, `waves`, `weave`,
 `patchwork`, `loops`, `disco`, `triangles`, `blobs`, `dots`, `honeycomb`,
 `ripple`, `flow`); the style per framework is fixed in the table above.
-Abbreviations must stay unique across the registry
-(`FrameworksTest` pins uniqueness).
+Abbreviations must stay unique across the registry (`FrameworksTest` pins uniqueness).
 
 ### A.3 Reassignments (~168 `@ConfigureJIPipeNode(framework = …)` edits)
 
@@ -86,8 +85,8 @@ it would churn the id set again). `CometFramework` is **deleted** (A.4).
 ### A.5 Tests
 
 - `FrameworksTest`: update the class-literal list (16 → 20: −Comet, +Weka,
-  +Filaments, +IJ3D, +Omero, +Scene3D), update the exact-size pins
-  (16 → 20) and add the per-framework asserts (name, abbreviation,
+  +Filaments, +IJ3D, +Omero, +Scene3D), update the exact-size pins (16 → 20) and add the per-framework asserts (name,
+  abbreviation,
   pattern style id) for the five new classes, delete the Comet asserts.
   This test pins the **single-source ship set** of core frameworks, so exact
   counts are correct here (AGENTS.md: one owner, one generator).
@@ -97,8 +96,8 @@ it would churn the id set again). `CometFramework` is **deleted** (A.4).
   registry.
 - A new plugin-aware verification (assert in a test, or a scripted probe
   compiled into the plan): every node in the ship set declares one of the
-  registered frameworks — no node left on `JIPipeDLFramework` except none
-  (zero), `CometFramework` gone. Form: a grep gate + the presence test
+  registered frameworks — no node left on `JIPipeDLFramework` except none (zero), `CometFramework` gone. Form: a grep
+  gate + the presence test
   asserting `JIPipe.getNodeTaxonomyService().frameworkById(...)` for the new
   ids.
 - Full core + launcher suites green.
@@ -119,19 +118,18 @@ it would churn the id set again). `CometFramework` is **deleted** (A.4).
 ### B.1 Principles
 
 1. **Research-anchored categories, not mirrored branches.** The number and
-   hue of the categories come from human color categorization research
-   (Berlin & Kay basic color terms; Sturges & Whitfield 1995, "Locating
-   basic colours in the Munsell space"): humans reliably distinguish
-   **6 hue-only families** at the focal hues **red 0°, orange 30°,
+   hue of the categories come from human color categorization research (Berlin & Kay basic color terms; Sturges &
+   Whitfield 1995, "Locating
+   basic colours in the Munsell space"): humans reliably distinguish **6 hue-only families** at the focal hues **red 0°,
+   orange 30°,
    yellow 60°, green 120°, blue 240°, purple 300°**. (The 8 basic
-   chromatic categories include pink and brown, which are distinguished by
-   *lightness*, not hue — unusable as hue anchors because the taxonomy
-   already encodes lightness as tree-depth shading.) Data-viz guidance
-   (Munzner; Berkeley data-viz guide) independently caps categorical hue
+   chromatic categories include pink and brown, which are distinguished by *lightness*, not hue — unusable as hue
+   anchors because the taxonomy
+   already encodes lightness as tree-depth shading.) Data-viz guidance (Munzner; Berkeley data-viz guide) independently
+   caps categorical hue
    palettes at ~6. Hue acuity is non-uniform (weak green/blue, acute
    red-orange-yellow), so the families' Voronoi cells are intentionally
-   uneven: wide cells (green, blue) where humans are weak, narrow cells
-   (red, orange, yellow) where humans are acute.
+   uneven: wide cells (green, blue) where humans are weak, narrow cells (red, orange, yellow) where humans are acute.
 2. **Determinism is the contract.** The auto-picked hue is a pure function
    of `(HueCategory, stable id)` — same input → same hue on every install,
    in every plugin configuration, in any registration order. No
@@ -142,8 +140,8 @@ it would churn the id set again). `CometFramework` is **deleted** (A.4).
    no migration.
 4. **Hue is defined by top-level branches only** (existing contract):
    leaves return `null` and inherit + depth-shade via
-   `FunctionRegistry.baseHue()`/`shadeDepth()`. A top-level `null` means
-   *transparent* (theme panel background — `Graph` today). The
+   `FunctionRegistry.baseHue()`/`shadeDepth()`. A top-level `null` means *transparent* (theme panel background — `Graph`
+   today). The
    auto-picker only ever produces top-level hues.
 5. **Explicit hue wins; category is the default path.** A root that keeps
    an explicit `getColorHue()` keeps it. A root with only a category gets
@@ -158,14 +156,14 @@ fields `(String label, float anchorDeg)`; the Voronoi cell of each
 category spans from the midpoint to the previous anchor to the midpoint
 to the next (wrapping):
 
-| Constant | Label | Anchor | Cell (deg) | Covers |
-|---|---|---|---|---|
-| `GEOMETRY` | `Geometry` | red **0°** | [330, 15) | regions, shapes, ROIs, filaments, skeletons, surfaces |
-| `ANALYSIS` | `Analysis` | orange **30°** | [15, 45) | statistics, measurement, quantification, tracking/motion analysis |
-| `VISUALIZATION` | `Visualization` | yellow **60°** | [45, 90) | plotting, charts, figures |
-| `EXCHANGE` | `Exchange` | green **120°** | [90, 180) | input, sources, export, data platforms, metadata transport |
-| `DATA` | `Data` | blue **240°** | [180, 270) | **pixel data and tabular data** — the concept-wise smallest category, generalized from "Images" so tables fall in (user ruling) |
-| `INTELLIGENCE` | `Intelligence` | purple **300°** | [270, 330) | machine learning, annotations, scripting, expressions, automation |
+| Constant        | Label           | Anchor          | Cell (deg) | Covers                                                                                                                          |
+|-----------------|-----------------|-----------------|------------|---------------------------------------------------------------------------------------------------------------------------------|
+| `GEOMETRY`      | `Geometry`      | red **0°**      | [330, 15)  | regions, shapes, ROIs, filaments, skeletons, surfaces                                                                           |
+| `ANALYSIS`      | `Analysis`      | orange **30°**  | [15, 45)   | statistics, measurement, quantification, tracking/motion analysis                                                               |
+| `VISUALIZATION` | `Visualization` | yellow **60°**  | [45, 90)   | plotting, charts, figures                                                                                                       |
+| `EXCHANGE`      | `Exchange`      | green **120°**  | [90, 180)  | input, sources, export, data platforms, metadata transport                                                                      |
+| `DATA`          | `Data`          | blue **240°**   | [180, 270) | **pixel data and tabular data** — the concept-wise smallest category, generalized from "Images" so tables fall in (user ruling) |
+| `INTELLIGENCE`  | `Intelligence`  | purple **300°** | [270, 330) | machine learning, annotations, scripting, expressions, automation                                                               |
 
 Historic color pins land as: ROI/Geometry = red (0°, exact), Inputs/Exchange
 = green (Data sources 136° in-cell, Export moves in-cell), Images+Tables =
@@ -185,16 +183,16 @@ public static Float autoHue(HueCategory category, String stableId)
 
 - Input: `(category, id)`; output normalized hue `0..1`.
 - Algorithm (exact, so the implementation and the test agree):
-  1. `long h = fnv1a64(category.name() + "\u0000" + stableId)` — FNV-1a
-     64-bit (offset basis `0xcbf29ce484222325L`, prime `0x100000001b3L`).
-  2. `int slot = (int) Math.floorMod(h, SLOTS)` with `SLOTS = 24`.
-  3. `float spread = (slot * 0.381966011250105f) % 1f` — golden-angle
-     fraction (137.508°/360°): consecutive slots maximally spread inside
-     the cell.
-  4. `hue = (cellStartDeg + spread * cellWidthDeg) / 360f`, normalized to
-     `0..1` (wrap `((x % 360) + 360) % 360` before dividing).
-  Every id maps into its category's cell — conceptually similar functions
-  are visually adjacent by construction.
+    1. `long h = fnv1a64(category.name() + "\u0000" + stableId)` — FNV-1a
+       64-bit (offset basis `0xcbf29ce484222325L`, prime `0x100000001b3L`).
+    2. `int slot = (int) Math.floorMod(h, SLOTS)` with `SLOTS = 24`.
+    3. `float spread = (slot * 0.381966011250105f) % 1f` — golden-angle
+       fraction (137.508°/360°): consecutive slots maximally spread inside
+       the cell.
+    4. `hue = (cellStartDeg + spread * cellWidthDeg) / 360f`, normalized to
+       `0..1` (wrap `((x % 360) + 360) % 360` before dividing).
+       Every id maps into its category's cell — conceptually similar functions
+       are visually adjacent by construction.
 - Pure static: no registry access, no state.
 
 ### B.4 Interface default methods
@@ -226,21 +224,21 @@ category is the one-line opt-in.
 
 ### B.5 Function-class migration (90 classes)
 
-| Root | Before | After |
-|---|---|---|
-| `RoisFunction` | explicit 0° | keeps explicit **0°** + `GEOMETRY` (on-anchor) |
-| `FilamentsFunction` | explicit 40° | **drops explicit hue**, `GEOMETRY` → auto-pick lands in red cell, next to ROIs (user ask) |
-| `StatisticsFunction` | explicit 60° | **drops explicit hue**, `ANALYSIS` (orange cell) |
-| `TrackingFunction` | explicit 165° | **drops explicit hue**, `ANALYSIS` (orange cell — big move, approved: "for ML and tracking and plotting it's fine") |
-| `PlottingFunction` | explicit 155° | **drops explicit hue**, `VISUALIZATION` (yellow cell) |
-| `DataSourcesFunction` | explicit 136° | keeps explicit **136°** (historic green pin) + `EXCHANGE` |
-| `ExportFunction` | explicit 22° | **drops explicit hue**, `EXCHANGE` (green cell) |
-| `ImagesFunction` | explicit 186° | keeps explicit **186°** (historic blue pin) + `DATA` |
-| `TablesFunction` | explicit 216° | keeps explicit **216°** (historic) + `DATA` (tables fall in — user ruling) |
-| `MachineLearningFunction` | explicit 200° | **drops explicit hue**, `INTELLIGENCE` (purple cell — approved) |
-| `AnnotationsFunction` | explicit 264° | keeps explicit **264°** (historic purple pin) + `INTELLIGENCE` (fits with intelligence — user ruling) |
-| `MiscellaneousFunction` | explicit 50° | keeps explicit **50°** hard-coded, **no category** (user ruling: hard-code to historic value) |
-| `GraphFunction` | explicit null | keeps explicit null (transparent) — no category |
+| Root                      | Before        | After                                                                                                               |
+|---------------------------|---------------|---------------------------------------------------------------------------------------------------------------------|
+| `RoisFunction`            | explicit 0°   | keeps explicit **0°** + `GEOMETRY` (on-anchor)                                                                      |
+| `FilamentsFunction`       | explicit 40°  | **drops explicit hue**, `GEOMETRY` → auto-pick lands in red cell, next to ROIs (user ask)                           |
+| `StatisticsFunction`      | explicit 60°  | **drops explicit hue**, `ANALYSIS` (orange cell)                                                                    |
+| `TrackingFunction`        | explicit 165° | **drops explicit hue**, `ANALYSIS` (orange cell — big move, approved: "for ML and tracking and plotting it's fine") |
+| `PlottingFunction`        | explicit 155° | **drops explicit hue**, `VISUALIZATION` (yellow cell)                                                               |
+| `DataSourcesFunction`     | explicit 136° | keeps explicit **136°** (historic green pin) + `EXCHANGE`                                                           |
+| `ExportFunction`          | explicit 22°  | **drops explicit hue**, `EXCHANGE` (green cell)                                                                     |
+| `ImagesFunction`          | explicit 186° | keeps explicit **186°** (historic blue pin) + `DATA`                                                                |
+| `TablesFunction`          | explicit 216° | keeps explicit **216°** (historic) + `DATA` (tables fall in — user ruling)                                          |
+| `MachineLearningFunction` | explicit 200° | **drops explicit hue**, `INTELLIGENCE` (purple cell — approved)                                                     |
+| `AnnotationsFunction`     | explicit 264° | keeps explicit **264°** (historic purple pin) + `INTELLIGENCE` (fits with intelligence — user ruling)               |
+| `MiscellaneousFunction`   | explicit 50°  | keeps explicit **50°** hard-coded, **no category** (user ruling: hard-code to historic value)                       |
+| `GraphFunction`           | explicit null | keeps explicit null (transparent) — no category                                                                     |
 
 New/changed structure: **`ScriptingFunction` is promoted to top-level**
 (currently a child of Miscellaneous) with `INTELLIGENCE` category and
@@ -256,8 +254,8 @@ default produces exactly that.
 ### B.6 Consumer impact (verified — none beyond defaults)
 
 - `FunctionRegistry.baseHue()`/`shadeDepth()`/`validate()` — unchanged;
-  `validate()`'s distinct-top-level-hue rule still guards auto-picked hues
-  (two ids colliding on one slot → boot error → explicit-override escape
+  `validate()`'s distinct-top-level-hue rule still guards auto-picked hues (two ids colliding on one slot → boot error →
+  explicit-override escape
   hatch; ~24 slots per cell makes this rare).
 - `ThemeUtils.resolveFunctionHue` — unchanged; transparent/broken
   fallbacks still correct.
@@ -275,8 +273,8 @@ Non-trivial logic only:
 4. Interface-default integration: leaf → null; top-level with category →
    in-cell hue; top-level without category → null (transparent);
    explicit hue/category declarations win.
-5. Ship-set guard: no two **auto-picked** top-level hues collide
-   (boot-time `validate()` twin, cheap because the ship set is closed).
+5. Ship-set guard: no two **auto-picked** top-level hues collide (boot-time `validate()` twin, cheap because the ship
+   set is closed).
 
 No rendering/Swing tests.
 
@@ -291,8 +289,8 @@ No rendering/Swing tests.
 1. Framework classes (5 new + delete Comet) + registrations — green.
 2. Node re-annotations (~168) — compile + suite; the ij-3d/filaments/weka/
    ilastik/omnipose/omero/scene-3d modules compile against the new imports.
-3. `HueCategory` + `TaxonomyHue` + interface default methods — green
-   (defaults change nothing yet: every root still has an explicit
+3. `HueCategory` + `TaxonomyHue` + interface default methods — green (defaults change nothing yet: every root still has
+   an explicit
    `getColorHue()`).
 4. Function-class migration: 13 roots get categories (per B.5 table),
    6 roots drop their explicit hue (auto-pick), 77 leaf overrides deleted,
@@ -305,14 +303,13 @@ No rendering/Swing tests.
 
 ## Success criteria
 
-- Every suite green at every step; no exact-count pins on live registries
-  (FrameworksTest pins the core ship set — a single-source set — which is
+- Every suite green at every step; no exact-count pins on live registries (FrameworksTest pins the core ship set — a
+  single-source set — which is
   the sanctioned exception).
 - The five new frameworks appear in the node browser with distinct chips;
   ilastik/Omnipose/Weka nodes no longer show JIPipeDL.
 - Filaments renders red, adjacent to ROIs; ML purple; Tracking/Statistics
-  orange; Plotting yellow; Export green — every family coherent
-  (user-verifiable in the running app).
+  orange; Plotting yellow; Export green — every family coherent (user-verifiable in the running app).
 - A plugin author adding a top-level function overrides only
   `getHueCategory()` and gets a deterministic, category-adjacent hue;
   setting nothing yields transparent.

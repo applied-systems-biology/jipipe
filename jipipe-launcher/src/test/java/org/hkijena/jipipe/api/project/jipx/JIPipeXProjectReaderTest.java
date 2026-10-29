@@ -34,17 +34,10 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Tests for {@link JIPipeXProjectReader}, the JIPX container reader.
@@ -72,6 +65,86 @@ class JIPipeXProjectReaderTest {
         // module preinits the ImageJ1 legacy patcher before any test class
         // loads, so ensureInstance() here is safe. Idempotent.
         JIPipe.ensureInstance();
+    }
+
+    private static Path fixturePath() throws URISyntaxException {
+        return Path.of(JIPipeXProjectReaderTest.class.getResource(FIXTURE).toURI());
+    }
+
+    private static Map<String, JsonNode> loadFixtureParts() throws IOException, URISyntaxException {
+        UnspecifiedValidationReportContext ctx = new UnspecifiedValidationReportContext();
+        JIPipeProject fixtureProject = JIPipeProject.loadProject(fixturePath(), ctx,
+                new JIPipeValidationReport(), new JIPipeNotificationInbox(), JIPipeProgressInfo.SILENT);
+        return JIPipeProjectParts.sliceParts(fixtureProject);
+    }
+
+    /**
+     * Builds a throwaway JIPX container from the basic-images fixture:
+     * slices the fixture's parts, writes them under {@code project/} at the
+     * default manifest file names, writes {@code jipx.json} (the default
+     * manifest) at the container root, and zips the result with NO wrapper
+     * root directory. (Test-local — the production writer in Task 4 does
+     * not reuse this helper.)
+     */
+    private static Path buildJipxFromFixture(Path jipxPath) throws IOException, URISyntaxException {
+        Map<String, JsonNode> parts = loadFixtureParts();
+        Path staging = jipxPath.getParent().resolve(jipxPath.getFileName() + "-staging");
+        writeParts(staging, parts);
+        JIPipeXManifest manifest = JIPipeXManifest.defaultManifest(JIPipe.getJIPipeVersion());
+        // Only list the parts actually present in the fixture's slice.
+        manifest.getParts().entrySet().removeIf(e -> !parts.containsKey(e.getValue()));
+        writeJson(staging.resolve(JIPipeXManifest.MANIFEST_FILE_NAME), manifest.toJsonNode());
+        try (ZipFile zip = new ZipFile(jipxPath.toFile())) {
+            for (Path entryFile : listFiles(staging)) {
+                zip.addFile(entryFile.toFile(), fileNameInZipParams(staging, entryFile));
+            }
+        }
+        return jipxPath;
+    }
+
+    private static void writeParts(Path staging, Map<String, JsonNode> parts) throws IOException {
+        Files.createDirectories(staging);
+        for (Map.Entry<String, JsonNode> entry : parts.entrySet()) {
+            Path partFile = staging.resolve("project").resolve(entry.getKey().replace(':', '-') + ".json");
+            Files.createDirectories(partFile.getParent());
+            writeJson(partFile, entry.getValue());
+        }
+    }
+
+    private static List<Path> listFiles(Path dir) throws IOException {
+        List<Path> files = new ArrayList<>();
+        try (Stream<Path> walk = Files.walk(dir)) {
+            walk.filter(Files::isRegularFile).sorted().forEach(files::add);
+        }
+        return files;
+    }
+
+    /**
+     * Zip parameters that store the file under its path relative to the
+     * staging root — zip4j's plain {@code addFile} would strip the parent
+     * directory from the entry name.
+     */
+    private static ZipParameters fileNameInZipParams(Path staging, Path file) {
+        ZipParameters parameters = new ZipParameters();
+        parameters.setFileNameInZip(
+                staging.relativize(file).toString().replace(java.io.File.separatorChar, '/'));
+        return parameters;
+    }
+
+    private static void writeJson(Path file, JsonNode node) throws IOException {
+        JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValue(file.toFile(), node);
+    }
+
+    // ---------------------------------------------------------------------
+    // Helpers
+    // ---------------------------------------------------------------------
+
+    private static Map<UUID, String> nodeIdMapping(JIPipeGraph graph) {
+        Map<UUID, String> mapping = new HashMap<>();
+        for (JIPipeGraphNode n : graph.getGraphNodes()) {
+            mapping.put(n.getUUIDInParentGraph(), n.getInfo().getId());
+        }
+        return mapping;
     }
 
     @Test
@@ -192,10 +265,6 @@ class JIPipeXProjectReaderTest {
         assertFalse(reader.supports(nonZip), "A non-ZIP .jipx file must not be supported by the JIPX reader");
     }
 
-    // ---------------------------------------------------------------------
-    // Helpers
-    // ---------------------------------------------------------------------
-
     /**
      * Builds a container whose manifest omits the given required part
      * (the part file is still written, just not listed) and asserts the
@@ -229,81 +298,5 @@ class JIPipeXProjectReaderTest {
                 "Expected the exception to name the missing required part '" + requiredPart + "', got: " + e.getMessage());
         assertFalse(e instanceof NullPointerException,
                 "The reader must not reach a NullPointerException for a missing required part: " + e);
-    }
-
-    private static Path fixturePath() throws URISyntaxException {
-        return Path.of(JIPipeXProjectReaderTest.class.getResource(FIXTURE).toURI());
-    }
-
-    private static Map<String, JsonNode> loadFixtureParts() throws IOException, URISyntaxException {
-        UnspecifiedValidationReportContext ctx = new UnspecifiedValidationReportContext();
-        JIPipeProject fixtureProject = JIPipeProject.loadProject(fixturePath(), ctx,
-                new JIPipeValidationReport(), new JIPipeNotificationInbox(), JIPipeProgressInfo.SILENT);
-        return JIPipeProjectParts.sliceParts(fixtureProject);
-    }
-
-    /**
-     * Builds a throwaway JIPX container from the basic-images fixture:
-     * slices the fixture's parts, writes them under {@code project/} at the
-     * default manifest file names, writes {@code jipx.json} (the default
-     * manifest) at the container root, and zips the result with NO wrapper
-     * root directory. (Test-local — the production writer in Task 4 does
-     * not reuse this helper.)
-     */
-    private static Path buildJipxFromFixture(Path jipxPath) throws IOException, URISyntaxException {
-        Map<String, JsonNode> parts = loadFixtureParts();
-        Path staging = jipxPath.getParent().resolve(jipxPath.getFileName() + "-staging");
-        writeParts(staging, parts);
-        JIPipeXManifest manifest = JIPipeXManifest.defaultManifest(JIPipe.getJIPipeVersion());
-        // Only list the parts actually present in the fixture's slice.
-        manifest.getParts().entrySet().removeIf(e -> !parts.containsKey(e.getValue()));
-        writeJson(staging.resolve(JIPipeXManifest.MANIFEST_FILE_NAME), manifest.toJsonNode());
-        try (ZipFile zip = new ZipFile(jipxPath.toFile())) {
-            for (Path entryFile : listFiles(staging)) {
-                zip.addFile(entryFile.toFile(), fileNameInZipParams(staging, entryFile));
-            }
-        }
-        return jipxPath;
-    }
-
-    private static void writeParts(Path staging, Map<String, JsonNode> parts) throws IOException {
-        Files.createDirectories(staging);
-        for (Map.Entry<String, JsonNode> entry : parts.entrySet()) {
-            Path partFile = staging.resolve("project").resolve(entry.getKey().replace(':', '-') + ".json");
-            Files.createDirectories(partFile.getParent());
-            writeJson(partFile, entry.getValue());
-        }
-    }
-
-    private static List<Path> listFiles(Path dir) throws IOException {
-        List<Path> files = new ArrayList<>();
-        try (Stream<Path> walk = Files.walk(dir)) {
-            walk.filter(Files::isRegularFile).sorted().forEach(files::add);
-        }
-        return files;
-    }
-
-    /**
-     * Zip parameters that store the file under its path relative to the
-     * staging root — zip4j's plain {@code addFile} would strip the parent
-     * directory from the entry name.
-     */
-    private static ZipParameters fileNameInZipParams(Path staging, Path file) {
-        ZipParameters parameters = new ZipParameters();
-        parameters.setFileNameInZip(
-                staging.relativize(file).toString().replace(java.io.File.separatorChar, '/'));
-        return parameters;
-    }
-
-    private static void writeJson(Path file, JsonNode node) throws IOException {
-        JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValue(file.toFile(), node);
-    }
-
-    private static Map<UUID, String> nodeIdMapping(JIPipeGraph graph) {
-        Map<UUID, String> mapping = new HashMap<>();
-        for (JIPipeGraphNode n : graph.getGraphNodes()) {
-            mapping.put(n.getUUIDInParentGraph(), n.getInfo().getId());
-        }
-        return mapping;
     }
 }

@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.desktop.commons.components.color;
 
-import java.awt.Color;
+import java.awt.*;
 import java.util.Objects;
 
 /**
@@ -34,7 +34,9 @@ public final class NamedColor {
         return color;
     }
 
-    /** The name, or null. */
+    /**
+     * The name, or null.
+     */
     public String getName() {
         return name;
     }

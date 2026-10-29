@@ -1,1 +1,27 @@
-{"nodes":{"n0":{"jipipe:node-info-id":"table-merge-tables","jipipe:graph-compartment":"0c145980-e5ae-53fb-8200-2d2078fb0ac2","jipipe:node:name":"Merge table rows"},"n1":{"jipipe:node-info-id":"jipipe:compartment-output","jipipe:graph-compartment":"0c145980-e5ae-53fb-8200-2d2078fb0ac2","jipipe:node:name":"Processed curves"},"n2":{"jipipe:node-info-id":"iji-export-table-as-xlsx-v2","jipipe:graph-compartment":"0c145980-e5ae-53fb-8200-2d2078fb0ac2","jipipe:node:name":"Export table as XLSX: root widths summary empirical"}},"edges":[{"source-node":"n0","source-slot":"Output","target-node":"n1","target-slot":"Mean empirical values"}]}
+{
+  "nodes": {
+    "n0": {
+      "jipipe:node-info-id": "table-merge-tables",
+      "jipipe:graph-compartment": "0c145980-e5ae-53fb-8200-2d2078fb0ac2",
+      "jipipe:node:name": "Merge table rows"
+    },
+    "n1": {
+      "jipipe:node-info-id": "jipipe:compartment-output",
+      "jipipe:graph-compartment": "0c145980-e5ae-53fb-8200-2d2078fb0ac2",
+      "jipipe:node:name": "Processed curves"
+    },
+    "n2": {
+      "jipipe:node-info-id": "iji-export-table-as-xlsx-v2",
+      "jipipe:graph-compartment": "0c145980-e5ae-53fb-8200-2d2078fb0ac2",
+      "jipipe:node:name": "Export table as XLSX: root widths summary empirical"
+    }
+  },
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Output",
+      "target-node": "n1",
+      "target-slot": "Mean empirical values"
+    }
+  ]
+}

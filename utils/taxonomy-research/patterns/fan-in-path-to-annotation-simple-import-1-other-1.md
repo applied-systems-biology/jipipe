@@ -35,27 +35,30 @@ Mined pattern `fan-in-path-to-annotation-simple-import-1-other-1` (shape `fan-in
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| annotate | `path-to-annotation-simple` |
-| import | `import-folder-list`, `project-user-directory` |
-| other | `jipipe:comment` |
+| role     | node ids                                       |
+|----------|------------------------------------------------|
+| annotate | `path-to-annotation-simple`                    |
+| import   | `import-folder-list`, `project-user-directory` |
+| other    | `jipipe:comment`                               |
 
 ## Example graph
 
 Project: `AIAgentTests/03-ExampleWorkflows/Clara_08_feet.jip` (relative to `/data/JIPipe`), compartment `File handler`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `project-user-directory` | Project user directory |
-| n1 | `jipipe:comment` | Comment |
-| n2 | `path-to-annotation-simple` | Add path to annotations |
+| key | node id                     | name                    |
+|-----|-----------------------------|-------------------------|
+| n0  | `project-user-directory`    | Project user directory  |
+| n1  | `jipipe:comment`            | Comment                 |
+| n2  | `path-to-annotation-simple` | Add path to annotations |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
+| from    | slot      | to                      | slot    | data class    |
+|---------|-----------|-------------------------|---------|---------------|
 | Comment | `Comment` | Add path to annotations | `Paths` | `jipipe:data` |
 
 ## Template
 
-Proposed name `Annotate with file/directory name fans in from 3 source ids (roles: import, other)`, menu path `Patterns/Annotations/Annotate with file/directory name fans in from 3 source ids (roles: import, other)` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/fan-in-path-to-annotation-simple-import-1-other-1.json`.
+Proposed name `Annotate with file/directory name fans in from 3 source ids (roles: import, other)`, menu path
+`Patterns/Annotations/Annotate with file/directory name fans in from 3 source ids (roles: import, other)` (proposal
+only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/fan-in-path-to-annotation-simple-import-1-other-1.json`.
 

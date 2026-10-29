@@ -1,1 +1,56 @@
-{"edges":[{"source-node":"n1","source-slot":"Output","target-node":"n2","target-slot":"Input"},{"source-node":"n7","source-slot":"Output","target-node":"n2","target-slot":"Input"},{"source-node":"n9","source-slot":"Output","target-node":"n2","target-slot":"Input"}],"nodes":{"n1":{"jipipe:graph-compartment":"343770b8-c411-593c-b5b2-9dbe40b7c73a","jipipe:metadata-v1":{"location/343770b8-c411-593c-b5b2-9dbe40b7c73a/x":0,"location/343770b8-c411-593c-b5b2-9dbe40b7c73a/y":11},"jipipe:node-info-id":"ij1-roi-to-rgb"},"n2":{"jipipe:graph-compartment":"343770b8-c411-593c-b5b2-9dbe40b7c73a","jipipe:metadata-v1":{"location/343770b8-c411-593c-b5b2-9dbe40b7c73a/x":10,"location/343770b8-c411-593c-b5b2-9dbe40b7c73a/y":22},"jipipe:node-info-id":"ij1-dimensions-inpput2montage"},"n7":{"jipipe:graph-compartment":"343770b8-c411-593c-b5b2-9dbe40b7c73a","jipipe:metadata-v1":{"location/343770b8-c411-593c-b5b2-9dbe40b7c73a/x":9,"location/343770b8-c411-593c-b5b2-9dbe40b7c73a/y":11},"jipipe:node-info-id":"ij1-roi-to-rgb"},"n9":{"jipipe:graph-compartment":"343770b8-c411-593c-b5b2-9dbe40b7c73a","jipipe:metadata-v1":{"location/343770b8-c411-593c-b5b2-9dbe40b7c73a/x":20,"location/343770b8-c411-593c-b5b2-9dbe40b7c73a/y":11},"jipipe:node-info-id":"ij1-roi-to-rgb"}}}
+{
+  "edges": [
+    {
+      "source-node": "n1",
+      "source-slot": "Output",
+      "target-node": "n2",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n7",
+      "source-slot": "Output",
+      "target-node": "n2",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n9",
+      "source-slot": "Output",
+      "target-node": "n2",
+      "target-slot": "Input"
+    }
+  ],
+  "nodes": {
+    "n1": {
+      "jipipe:graph-compartment": "343770b8-c411-593c-b5b2-9dbe40b7c73a",
+      "jipipe:metadata-v1": {
+        "location/343770b8-c411-593c-b5b2-9dbe40b7c73a/x": 0,
+        "location/343770b8-c411-593c-b5b2-9dbe40b7c73a/y": 11
+      },
+      "jipipe:node-info-id": "ij1-roi-to-rgb"
+    },
+    "n2": {
+      "jipipe:graph-compartment": "343770b8-c411-593c-b5b2-9dbe40b7c73a",
+      "jipipe:metadata-v1": {
+        "location/343770b8-c411-593c-b5b2-9dbe40b7c73a/x": 10,
+        "location/343770b8-c411-593c-b5b2-9dbe40b7c73a/y": 22
+      },
+      "jipipe:node-info-id": "ij1-dimensions-inpput2montage"
+    },
+    "n7": {
+      "jipipe:graph-compartment": "343770b8-c411-593c-b5b2-9dbe40b7c73a",
+      "jipipe:metadata-v1": {
+        "location/343770b8-c411-593c-b5b2-9dbe40b7c73a/x": 9,
+        "location/343770b8-c411-593c-b5b2-9dbe40b7c73a/y": 11
+      },
+      "jipipe:node-info-id": "ij1-roi-to-rgb"
+    },
+    "n9": {
+      "jipipe:graph-compartment": "343770b8-c411-593c-b5b2-9dbe40b7c73a",
+      "jipipe:metadata-v1": {
+        "location/343770b8-c411-593c-b5b2-9dbe40b7c73a/x": 20,
+        "location/343770b8-c411-593c-b5b2-9dbe40b7c73a/y": 11
+      },
+      "jipipe:node-info-id": "ij1-roi-to-rgb"
+    }
+  }
+}

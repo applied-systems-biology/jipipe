@@ -13,18 +13,18 @@
 
 package org.hkijena.jipipe.plugins.canvasnotes.nodes;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.annotation.JIPipeGraphCanvasNote;
+import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopAnnotationGraphNodeUI;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.JIPipeFontFamilySizeStyleColorParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.JIPipeFontFamilySizeStyleParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
-import com.fasterxml.jackson.databind.JsonNode;
-import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.plugins.parameters.library.roi.Anchor;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -76,6 +76,22 @@ public abstract class DefaultTextBoxGraphCanvasNote extends JIPipeGraphCanvasNot
         registerSubParameter(contentStyle);
 
         registerSubParameter(textLocation);
+    }
+
+    /**
+     * @return the given font scaled by {@code zoom} (minimum size 1)
+     */
+    private static Font scaledFont(Font font, double zoom) {
+        return font.deriveFont((float) Math.max(1, font.getSize() * zoom));
+    }
+
+    /**
+     * @return a title font (the default family, plain, black) at the given size
+     */
+    private static JIPipeFontFamilySizeStyleColorParameter titleFontWithSize(int size) {
+        JIPipeFontFamilySizeStyleColorParameter f = new JIPipeFontFamilySizeStyleColorParameter();
+        f.migrateFrom(JIPipeFontFamilySizeStyleParameter.defaultFamily(), size, Font.PLAIN, Color.BLACK);
+        return f;
     }
 
     @SetJIPipeDocumentation(name = "Text location", description = "The following settings determine the location of the title and content")
@@ -362,22 +378,6 @@ public abstract class DefaultTextBoxGraphCanvasNote extends JIPipeGraphCanvasNot
     }
 
     protected abstract int getBorderThickness();
-
-    /**
-     * @return the given font scaled by {@code zoom} (minimum size 1)
-     */
-    private static Font scaledFont(Font font, double zoom) {
-        return font.deriveFont((float) Math.max(1, font.getSize() * zoom));
-    }
-
-    /**
-     * @return a title font (the default family, plain, black) at the given size
-     */
-    private static JIPipeFontFamilySizeStyleColorParameter titleFontWithSize(int size) {
-        JIPipeFontFamilySizeStyleColorParameter f = new JIPipeFontFamilySizeStyleColorParameter();
-        f.migrateFrom(JIPipeFontFamilySizeStyleParameter.defaultFamily(), size, Font.PLAIN, Color.BLACK);
-        return f;
-    }
 
     /**
      * #1339: migrate the legacy split title/content font parameters

@@ -1,467 +1,467 @@
 [
- {
-  "nodeId": "import-imagej-imgplus-from-file",
-  "frequency": 44,
-  "current": "Loads an image using the best-matching method."
- },
- {
-  "nodeId": "import-file-list",
-  "frequency": 41,
-  "current": "Converts each provided path into file data."
- },
- {
-  "nodeId": "plot-table:plot-histogram",
-  "frequency": 27,
-  "current": "<no source description>"
- },
- {
-  "nodeId": "ij1-color-blend-images",
-  "frequency": 20,
-  "current": "Overlays greyscale or RGB images."
- },
- {
-  "nodeId": "import-folder-list",
-  "frequency": 18,
-  "current": "Converts each provided path into folder data."
- },
- {
-  "nodeId": "table-remove-columns",
-  "frequency": 17,
-  "current": "Removes one or multiple columns by name"
- },
- {
-  "nodeId": "graph-wrapper:input",
-  "frequency": 15,
-  "current": "Acts as input of a node group."
- },
- {
-  "nodeId": "graph-wrapper:output",
-  "frequency": 15,
-  "current": "Acts as output of a node group."
- },
- {
-  "nodeId": "import-imagej-bioformats",
-  "frequency": 15,
-  "current": "Imports images via the Bio-Formats plugin"
- },
- {
-  "nodeId": "ij1-roi-filter-statistics",
-  "frequency": 13,
-  "current": "Filters the ROI list elements via statistics."
- },
- {
-  "nodeId": "folder-list-files",
-  "frequency": 12,
-  "current": "Lists all files in the input folder"
- },
- {
-  "nodeId": "plot-table:plot-xy-scatter",
-  "frequency": 11,
-  "current": "<no source description>"
- },
- {
-  "nodeId": "ij1-roi-set-overlay",
-  "frequency": 11,
-  "current": "Set overlay ROIs"
- },
- {
-  "nodeId": "annotate-filter-by-annotation",
-  "frequency": 10,
-  "current": "Filters data based on the annotation value."
- },
- {
-  "nodeId": "table-rename-columns-2",
-  "frequency": 10,
-  "current": "Renames columns"
- },
- {
-  "nodeId": "ij3d-analyze-find-particles",
-  "frequency": 9,
-  "current": "Finds 3D particles within a mask image"
- },
- {
-  "nodeId": "filaments-convert-to-mask",
-  "frequency": 9,
-  "current": "Converts filaments into a 3D ROI"
- },
- {
-  "nodeId": "iji-export-table-v2",
-  "frequency": 9,
-  "current": "Exports a results table to CSV/XLSX"
- },
- {
-  "nodeId": "annotate-remove",
-  "frequency": 7,
-  "current": "Removes annotations by name or value"
- },
- {
-  "nodeId": "clij:plugin:net.haesleinhuepf.clij2.plugins.ExtendedDepthOfFocusSobelProjection",
-  "frequency": 7,
-  "current": "<no source description>"
- },
- {
-  "nodeId": "ij-convert-image-to-8-bit",
-  "frequency": 7,
-  "current": "Converts an image into 8-bit"
- },
- {
-  "nodeId": "plot-table:plot-xy-line",
-  "frequency": 6,
-  "current": "<no source description>"
- },
- {
-  "nodeId": "folder-list-subfolders",
-  "frequency": 5,
-  "current": "Lists all subfolders"
- },
- {
-  "nodeId": "io-interface",
-  "frequency": 5,
-  "current": "Passes its input to its output without changes."
- },
- {
-  "nodeId": "trackmate-detector",
-  "frequency": 5,
-  "current": "Detect spots using TrackMate"
- },
- {
-  "nodeId": "ij3d-roi-change-properties",
-  "frequency": 5,
-  "current": "Sets the properties of all 3D ROI"
- },
- {
-  "nodeId": "annotate-with-data",
-  "frequency": 5,
-  "current": "Annotates the incoming data with the other data."
- },
- {
-  "nodeId": "trackmate-filter-tracks",
-  "frequency": 4,
-  "current": "Filter TrackMate spots via expressions"
- },
- {
-  "nodeId": "trackmate-tracking",
-  "frequency": 4,
-  "current": "Track spots using TrackMate"
- },
- {
-  "nodeId": "ij3d-labels-to-roi",
-  "frequency": 4,
-  "current": "Converts a label image into 3D ROI"
- },
- {
-  "nodeId": "ij1-generate-zero-image",
-  "frequency": 4,
-  "current": "Creates a new image that is black."
- },
- {
-  "nodeId": "clij:plugin:net.haesleinhuepf.clij2.plugins.GaussianBlur2D",
-  "frequency": 4,
-  "current": "<no source description>"
- },
- {
-  "nodeId": "import-cellpose-model-v2",
-  "frequency": 3,
-  "current": "Imports a Cellpose model from a file"
- },
- {
-  "nodeId": "ij3d-roi-convert-to-mask",
-  "frequency": 3,
-  "current": "Converts 3D ROI lists to a mask"
- },
- {
-  "nodeId": "ij-convert-image-to-32-bit",
-  "frequency": 3,
-  "current": "Converts an image into 32-bit"
- },
- {
-  "nodeId": "trackmate-filter-spots",
-  "frequency": 3,
-  "current": "Filter TrackMate spots via expressions"
- },
- {
-  "nodeId": "table-filter-2",
-  "frequency": 3,
-  "current": "Filters tables by their properties."
- },
- {
-  "nodeId": "rename-annotation",
-  "frequency": 3,
-  "current": "Renames one or multiple annotations."
- },
- {
-  "nodeId": "table-sort",
-  "frequency": 3,
-  "current": "Sorts the table rows by columns"
- },
- {
-  "nodeId": "plot-table:plot-pie-2d",
-  "frequency": 3,
-  "current": "<no source description>"
- },
- {
-  "nodeId": "ij1-remove-lut",
-  "frequency": 3,
-  "current": "Removes LUT information from the input image."
- },
- {
-  "nodeId": "ij1-roi-render-overlay",
-  "frequency": 3,
-  "current": "Renders the overlay ROI of an image to RGB"
- },
- {
-  "nodeId": "ij3d-roi-color-by-statistics",
-  "frequency": 2,
-  "current": "Sets the 3D ROI item colors by measurements."
- },
- {
-  "nodeId": "trackmate-create-spot-tracker-sparse-lap-tracker",
-  "frequency": 2,
-  "current": "<no source description>"
- },
- {
-  "nodeId": "trackmate-create-spot-detector-mask-detector",
-  "frequency": 2,
-  "current": "<no source description>"
- },
- {
-  "nodeId": "ij1-labels-to-mask",
-  "frequency": 2,
-  "current": "Converts a label image to a mask"
- },
- {
-  "nodeId": "ij1-labels-filter-filter-by-expression-3d",
-  "frequency": 2,
-  "current": "Filters labels with a filter expression."
- },
- {
-  "nodeId": "ij1-roi-remove-overlay",
-  "frequency": 2,
-  "current": "Remove overlay ROIs"
- },
- {
-  "nodeId": "ij1-transform-tile",
-  "frequency": 2,
-  "current": "<no source description>"
- },
- {
-  "nodeId": "export-3d-scene-to-collada",
-  "frequency": 2,
-  "current": "Exports a 3D scene to Collada 1.4.1 (DAE)"
- },
- {
-  "nodeId": "trackmate-spots-to-roi",
-  "frequency": 2,
-  "current": "Converts TrackMate spots into ROI"
- },
- {
-  "nodeId": "clij:plugin:net.haesleinhuepf.clijx.clij2wrappers.ExtendedDepthOfFocusSobelProjection",
-  "frequency": 2,
-  "current": "<no source description>"
- },
- {
-  "nodeId": "ij-convert-image-to-rgb-colors",
-  "frequency": 2,
-  "current": "Converts an image into RGB colors"
- },
- {
-  "nodeId": "ij1-roi-from-table-text",
-  "frequency": 2,
-  "current": "Converts data from a table to text ROIs."
- },
- {
-  "nodeId": "omero-upload-image",
-  "frequency": 2,
-  "current": "Uploads an image into an OMERO dataset."
- },
- {
-  "nodeId": "ij1-extract-ome-image-xml",
-  "frequency": 1,
-  "current": "Extracts the OME metadata XML from an OME image"
- },
- {
-  "nodeId": "xml-prettify",
-  "frequency": 1,
-  "current": "Prettifies/formats the input XML data"
- },
- {
-  "nodeId": "ij3d-filter-roi3d-by-statistics",
-  "frequency": 1,
-  "current": "Filters the 3D ROI list elements via statistics."
- },
- {
-  "nodeId": "extract-data-annotation",
-  "frequency": 1,
-  "current": "Extracts a data annotation."
- },
- {
-  "nodeId": "trackmate-visualize-spots",
-  "frequency": 1,
-  "current": "Visualizes spots"
- },
- {
-  "nodeId": "trackmate-visualize-track-scheme",
-  "frequency": 1,
-  "current": "Renders the track scheme as image"
- },
- {
-  "nodeId": "trackmate-visualize-tracks",
-  "frequency": 1,
-  "current": "Visualizes tracks"
- },
- {
-  "nodeId": "plot-table:plot-category-statistical-line",
-  "frequency": 1,
-  "current": "<no source description>"
- },
- {
-  "nodeId": "plot-table:plot-category-statistical-bar",
-  "frequency": 1,
-  "current": "<no source description>"
- },
- {
-  "nodeId": "plot-table:plot-box-and-whisker",
-  "frequency": 1,
-  "current": "<no source description>"
- },
- {
-  "nodeId": "clij:plugin:net.haesleinhuepf.clij2.plugins.ExcludeLabelsOnEdges",
-  "frequency": 1,
-  "current": "<no source description>"
- },
- {
-  "nodeId": "graph-annotation-image",
-  "frequency": 1,
-  "current": "<no source description>"
- },
- {
-  "nodeId": "import-cellpose-model",
-  "frequency": 1,
-  "current": "Imports a Cellpose model from a file"
- },
- {
-  "nodeId": "ij1-roi-enlarge-shrink",
-  "frequency": 1,
-  "current": "Enlarges or shrinks each input ROI"
- },
- {
-  "nodeId": "clij:plugin:net.haesleinhuepf.clij2.plugins.ReduceLabelsToLabelEdges",
-  "frequency": 1,
-  "current": "<no source description>"
- },
- {
-  "nodeId": "create-jipipe2ai-generation-model",
-  "frequency": 1,
-  "current": "<no source description>"
- },
- {
-  "nodeId": "jipipe2ai-train-generation-model",
-  "frequency": 1,
-  "current": "<no source description>"
- },
- {
-  "nodeId": "jipipe2ai-predict-generation",
-  "frequency": 1,
-  "current": "<no source description>"
- },
- {
-  "nodeId": "clij:plugin:net.haesleinhuepf.clij2.plugins.Mask",
-  "frequency": 1,
-  "current": "<no source description>"
- },
- {
-  "nodeId": "clij:plugin:net.haesleinhuepf.clij2.plugins.AddImages",
-  "frequency": 1,
-  "current": "<no source description>"
- },
- {
-  "nodeId": "import-folder",
-  "frequency": 1,
-  "current": "Converts the path parameter into folder data."
- },
- {
-  "nodeId": "jipipe2ai-train-image-model",
-  "frequency": 1,
-  "current": "<no source description>"
- },
- {
-  "nodeId": "jipipe2ai-predict-image",
-  "frequency": 1,
-  "current": "<no source description>"
- },
- {
-  "nodeId": "create-jipipe2ai-segmentation-model",
-  "frequency": 1,
-  "current": "<no source description>"
- },
- {
-  "nodeId": "import-json-from-file",
-  "frequency": 1,
-  "current": "Imports JSON data from a file"
- },
- {
-  "nodeId": "ij3d-roi-convert-to-3d-mesh",
-  "frequency": 1,
-  "current": "Converts 3D ROI into a 3D scene."
- },
- {
-  "nodeId": "ij1-roi-color-by-name",
-  "frequency": 1,
-  "current": "Sets the ROI item colors by their name."
- },
- {
-  "nodeId": "deep-learning-train-image-model",
-  "frequency": 1,
-  "current": "<no source description>"
- },
- {
-  "nodeId": "ij1-roi-draw-text",
-  "frequency": 1,
-  "current": "Draws a text ROI"
- },
- {
-  "nodeId": "filaments-convert-to-roi3d",
-  "frequency": 1,
-  "current": "Converts filaments into a 3D ROI"
- },
- {
-  "nodeId": "omero-download-image",
-  "frequency": 1,
-  "current": "Imports an image from OMERO into ImageJ"
- },
- {
-  "nodeId": "omero-upload-table",
-  "frequency": 1,
-  "current": "Attaches a table to an OMERO image"
- },
- {
-  "nodeId": "import-file",
-  "frequency": 1,
-  "current": "Converts the path parameter into file data."
- },
- {
-  "nodeId": "table-rename-columns",
-  "frequency": 1,
-  "current": "Renames columns"
- },
- {
-  "nodeId": "text-process-expression",
-  "frequency": 1,
-  "current": "Processes text with an expression."
- },
- {
-  "nodeId": "table-to-csv-text",
-  "frequency": 1,
-  "current": "Converts a table to a text in CSV format"
- },
- {
-  "nodeId": "import-ome-zarr-from-directory-as-imgplus",
-  "frequency": 1,
-  "current": "<no source description>"
- },
- {
-  "nodeId": "ij1-export-ome-zarr",
-  "frequency": 1,
-  "current": "Writes an OME ZARR into a directory or ZIP file"
- }
+  {
+    "nodeId": "import-imagej-imgplus-from-file",
+    "frequency": 44,
+    "current": "Loads an image using the best-matching method."
+  },
+  {
+    "nodeId": "import-file-list",
+    "frequency": 41,
+    "current": "Converts each provided path into file data."
+  },
+  {
+    "nodeId": "plot-table:plot-histogram",
+    "frequency": 27,
+    "current": "<no source description>"
+  },
+  {
+    "nodeId": "ij1-color-blend-images",
+    "frequency": 20,
+    "current": "Overlays greyscale or RGB images."
+  },
+  {
+    "nodeId": "import-folder-list",
+    "frequency": 18,
+    "current": "Converts each provided path into folder data."
+  },
+  {
+    "nodeId": "table-remove-columns",
+    "frequency": 17,
+    "current": "Removes one or multiple columns by name"
+  },
+  {
+    "nodeId": "graph-wrapper:input",
+    "frequency": 15,
+    "current": "Acts as input of a node group."
+  },
+  {
+    "nodeId": "graph-wrapper:output",
+    "frequency": 15,
+    "current": "Acts as output of a node group."
+  },
+  {
+    "nodeId": "import-imagej-bioformats",
+    "frequency": 15,
+    "current": "Imports images via the Bio-Formats plugin"
+  },
+  {
+    "nodeId": "ij1-roi-filter-statistics",
+    "frequency": 13,
+    "current": "Filters the ROI list elements via statistics."
+  },
+  {
+    "nodeId": "folder-list-files",
+    "frequency": 12,
+    "current": "Lists all files in the input folder"
+  },
+  {
+    "nodeId": "plot-table:plot-xy-scatter",
+    "frequency": 11,
+    "current": "<no source description>"
+  },
+  {
+    "nodeId": "ij1-roi-set-overlay",
+    "frequency": 11,
+    "current": "Set overlay ROIs"
+  },
+  {
+    "nodeId": "annotate-filter-by-annotation",
+    "frequency": 10,
+    "current": "Filters data based on the annotation value."
+  },
+  {
+    "nodeId": "table-rename-columns-2",
+    "frequency": 10,
+    "current": "Renames columns"
+  },
+  {
+    "nodeId": "ij3d-analyze-find-particles",
+    "frequency": 9,
+    "current": "Finds 3D particles within a mask image"
+  },
+  {
+    "nodeId": "filaments-convert-to-mask",
+    "frequency": 9,
+    "current": "Converts filaments into a 3D ROI"
+  },
+  {
+    "nodeId": "iji-export-table-v2",
+    "frequency": 9,
+    "current": "Exports a results table to CSV/XLSX"
+  },
+  {
+    "nodeId": "annotate-remove",
+    "frequency": 7,
+    "current": "Removes annotations by name or value"
+  },
+  {
+    "nodeId": "clij:plugin:net.haesleinhuepf.clij2.plugins.ExtendedDepthOfFocusSobelProjection",
+    "frequency": 7,
+    "current": "<no source description>"
+  },
+  {
+    "nodeId": "ij-convert-image-to-8-bit",
+    "frequency": 7,
+    "current": "Converts an image into 8-bit"
+  },
+  {
+    "nodeId": "plot-table:plot-xy-line",
+    "frequency": 6,
+    "current": "<no source description>"
+  },
+  {
+    "nodeId": "folder-list-subfolders",
+    "frequency": 5,
+    "current": "Lists all subfolders"
+  },
+  {
+    "nodeId": "io-interface",
+    "frequency": 5,
+    "current": "Passes its input to its output without changes."
+  },
+  {
+    "nodeId": "trackmate-detector",
+    "frequency": 5,
+    "current": "Detect spots using TrackMate"
+  },
+  {
+    "nodeId": "ij3d-roi-change-properties",
+    "frequency": 5,
+    "current": "Sets the properties of all 3D ROI"
+  },
+  {
+    "nodeId": "annotate-with-data",
+    "frequency": 5,
+    "current": "Annotates the incoming data with the other data."
+  },
+  {
+    "nodeId": "trackmate-filter-tracks",
+    "frequency": 4,
+    "current": "Filter TrackMate spots via expressions"
+  },
+  {
+    "nodeId": "trackmate-tracking",
+    "frequency": 4,
+    "current": "Track spots using TrackMate"
+  },
+  {
+    "nodeId": "ij3d-labels-to-roi",
+    "frequency": 4,
+    "current": "Converts a label image into 3D ROI"
+  },
+  {
+    "nodeId": "ij1-generate-zero-image",
+    "frequency": 4,
+    "current": "Creates a new image that is black."
+  },
+  {
+    "nodeId": "clij:plugin:net.haesleinhuepf.clij2.plugins.GaussianBlur2D",
+    "frequency": 4,
+    "current": "<no source description>"
+  },
+  {
+    "nodeId": "import-cellpose-model-v2",
+    "frequency": 3,
+    "current": "Imports a Cellpose model from a file"
+  },
+  {
+    "nodeId": "ij3d-roi-convert-to-mask",
+    "frequency": 3,
+    "current": "Converts 3D ROI lists to a mask"
+  },
+  {
+    "nodeId": "ij-convert-image-to-32-bit",
+    "frequency": 3,
+    "current": "Converts an image into 32-bit"
+  },
+  {
+    "nodeId": "trackmate-filter-spots",
+    "frequency": 3,
+    "current": "Filter TrackMate spots via expressions"
+  },
+  {
+    "nodeId": "table-filter-2",
+    "frequency": 3,
+    "current": "Filters tables by their properties."
+  },
+  {
+    "nodeId": "rename-annotation",
+    "frequency": 3,
+    "current": "Renames one or multiple annotations."
+  },
+  {
+    "nodeId": "table-sort",
+    "frequency": 3,
+    "current": "Sorts the table rows by columns"
+  },
+  {
+    "nodeId": "plot-table:plot-pie-2d",
+    "frequency": 3,
+    "current": "<no source description>"
+  },
+  {
+    "nodeId": "ij1-remove-lut",
+    "frequency": 3,
+    "current": "Removes LUT information from the input image."
+  },
+  {
+    "nodeId": "ij1-roi-render-overlay",
+    "frequency": 3,
+    "current": "Renders the overlay ROI of an image to RGB"
+  },
+  {
+    "nodeId": "ij3d-roi-color-by-statistics",
+    "frequency": 2,
+    "current": "Sets the 3D ROI item colors by measurements."
+  },
+  {
+    "nodeId": "trackmate-create-spot-tracker-sparse-lap-tracker",
+    "frequency": 2,
+    "current": "<no source description>"
+  },
+  {
+    "nodeId": "trackmate-create-spot-detector-mask-detector",
+    "frequency": 2,
+    "current": "<no source description>"
+  },
+  {
+    "nodeId": "ij1-labels-to-mask",
+    "frequency": 2,
+    "current": "Converts a label image to a mask"
+  },
+  {
+    "nodeId": "ij1-labels-filter-filter-by-expression-3d",
+    "frequency": 2,
+    "current": "Filters labels with a filter expression."
+  },
+  {
+    "nodeId": "ij1-roi-remove-overlay",
+    "frequency": 2,
+    "current": "Remove overlay ROIs"
+  },
+  {
+    "nodeId": "ij1-transform-tile",
+    "frequency": 2,
+    "current": "<no source description>"
+  },
+  {
+    "nodeId": "export-3d-scene-to-collada",
+    "frequency": 2,
+    "current": "Exports a 3D scene to Collada 1.4.1 (DAE)"
+  },
+  {
+    "nodeId": "trackmate-spots-to-roi",
+    "frequency": 2,
+    "current": "Converts TrackMate spots into ROI"
+  },
+  {
+    "nodeId": "clij:plugin:net.haesleinhuepf.clijx.clij2wrappers.ExtendedDepthOfFocusSobelProjection",
+    "frequency": 2,
+    "current": "<no source description>"
+  },
+  {
+    "nodeId": "ij-convert-image-to-rgb-colors",
+    "frequency": 2,
+    "current": "Converts an image into RGB colors"
+  },
+  {
+    "nodeId": "ij1-roi-from-table-text",
+    "frequency": 2,
+    "current": "Converts data from a table to text ROIs."
+  },
+  {
+    "nodeId": "omero-upload-image",
+    "frequency": 2,
+    "current": "Uploads an image into an OMERO dataset."
+  },
+  {
+    "nodeId": "ij1-extract-ome-image-xml",
+    "frequency": 1,
+    "current": "Extracts the OME metadata XML from an OME image"
+  },
+  {
+    "nodeId": "xml-prettify",
+    "frequency": 1,
+    "current": "Prettifies/formats the input XML data"
+  },
+  {
+    "nodeId": "ij3d-filter-roi3d-by-statistics",
+    "frequency": 1,
+    "current": "Filters the 3D ROI list elements via statistics."
+  },
+  {
+    "nodeId": "extract-data-annotation",
+    "frequency": 1,
+    "current": "Extracts a data annotation."
+  },
+  {
+    "nodeId": "trackmate-visualize-spots",
+    "frequency": 1,
+    "current": "Visualizes spots"
+  },
+  {
+    "nodeId": "trackmate-visualize-track-scheme",
+    "frequency": 1,
+    "current": "Renders the track scheme as image"
+  },
+  {
+    "nodeId": "trackmate-visualize-tracks",
+    "frequency": 1,
+    "current": "Visualizes tracks"
+  },
+  {
+    "nodeId": "plot-table:plot-category-statistical-line",
+    "frequency": 1,
+    "current": "<no source description>"
+  },
+  {
+    "nodeId": "plot-table:plot-category-statistical-bar",
+    "frequency": 1,
+    "current": "<no source description>"
+  },
+  {
+    "nodeId": "plot-table:plot-box-and-whisker",
+    "frequency": 1,
+    "current": "<no source description>"
+  },
+  {
+    "nodeId": "clij:plugin:net.haesleinhuepf.clij2.plugins.ExcludeLabelsOnEdges",
+    "frequency": 1,
+    "current": "<no source description>"
+  },
+  {
+    "nodeId": "graph-annotation-image",
+    "frequency": 1,
+    "current": "<no source description>"
+  },
+  {
+    "nodeId": "import-cellpose-model",
+    "frequency": 1,
+    "current": "Imports a Cellpose model from a file"
+  },
+  {
+    "nodeId": "ij1-roi-enlarge-shrink",
+    "frequency": 1,
+    "current": "Enlarges or shrinks each input ROI"
+  },
+  {
+    "nodeId": "clij:plugin:net.haesleinhuepf.clij2.plugins.ReduceLabelsToLabelEdges",
+    "frequency": 1,
+    "current": "<no source description>"
+  },
+  {
+    "nodeId": "create-jipipe2ai-generation-model",
+    "frequency": 1,
+    "current": "<no source description>"
+  },
+  {
+    "nodeId": "jipipe2ai-train-generation-model",
+    "frequency": 1,
+    "current": "<no source description>"
+  },
+  {
+    "nodeId": "jipipe2ai-predict-generation",
+    "frequency": 1,
+    "current": "<no source description>"
+  },
+  {
+    "nodeId": "clij:plugin:net.haesleinhuepf.clij2.plugins.Mask",
+    "frequency": 1,
+    "current": "<no source description>"
+  },
+  {
+    "nodeId": "clij:plugin:net.haesleinhuepf.clij2.plugins.AddImages",
+    "frequency": 1,
+    "current": "<no source description>"
+  },
+  {
+    "nodeId": "import-folder",
+    "frequency": 1,
+    "current": "Converts the path parameter into folder data."
+  },
+  {
+    "nodeId": "jipipe2ai-train-image-model",
+    "frequency": 1,
+    "current": "<no source description>"
+  },
+  {
+    "nodeId": "jipipe2ai-predict-image",
+    "frequency": 1,
+    "current": "<no source description>"
+  },
+  {
+    "nodeId": "create-jipipe2ai-segmentation-model",
+    "frequency": 1,
+    "current": "<no source description>"
+  },
+  {
+    "nodeId": "import-json-from-file",
+    "frequency": 1,
+    "current": "Imports JSON data from a file"
+  },
+  {
+    "nodeId": "ij3d-roi-convert-to-3d-mesh",
+    "frequency": 1,
+    "current": "Converts 3D ROI into a 3D scene."
+  },
+  {
+    "nodeId": "ij1-roi-color-by-name",
+    "frequency": 1,
+    "current": "Sets the ROI item colors by their name."
+  },
+  {
+    "nodeId": "deep-learning-train-image-model",
+    "frequency": 1,
+    "current": "<no source description>"
+  },
+  {
+    "nodeId": "ij1-roi-draw-text",
+    "frequency": 1,
+    "current": "Draws a text ROI"
+  },
+  {
+    "nodeId": "filaments-convert-to-roi3d",
+    "frequency": 1,
+    "current": "Converts filaments into a 3D ROI"
+  },
+  {
+    "nodeId": "omero-download-image",
+    "frequency": 1,
+    "current": "Imports an image from OMERO into ImageJ"
+  },
+  {
+    "nodeId": "omero-upload-table",
+    "frequency": 1,
+    "current": "Attaches a table to an OMERO image"
+  },
+  {
+    "nodeId": "import-file",
+    "frequency": 1,
+    "current": "Converts the path parameter into file data."
+  },
+  {
+    "nodeId": "table-rename-columns",
+    "frequency": 1,
+    "current": "Renames columns"
+  },
+  {
+    "nodeId": "text-process-expression",
+    "frequency": 1,
+    "current": "Processes text with an expression."
+  },
+  {
+    "nodeId": "table-to-csv-text",
+    "frequency": 1,
+    "current": "Converts a table to a text in CSV format"
+  },
+  {
+    "nodeId": "import-ome-zarr-from-directory-as-imgplus",
+    "frequency": 1,
+    "current": "<no source description>"
+  },
+  {
+    "nodeId": "ij1-export-ome-zarr",
+    "frequency": 1,
+    "current": "Writes an OME ZARR into a directory or ZIP file"
+  }
 ]

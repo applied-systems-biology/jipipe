@@ -32,32 +32,38 @@ template:
 
 # Pattern: Pretrained Cellpose 3.x segmentation model -> Cellpose segmentation (3.x) -> Filter 2D ROI by statistics
 
-Mined pattern `chain-3-import-cellpose-3-x-pretrained-segmentation-model-cellpose-segmentation-inference-3-x-ij1-roi-filter-statistics` (shape `chain`, support 28).
+Mined pattern
+`chain-3-import-cellpose-3-x-pretrained-segmentation-model-cellpose-segmentation-inference-3-x-ij1-roi-filter-statistics`
+(shape `chain`, support 28).
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
+| role  | node ids                                            |
+|-------|-----------------------------------------------------|
 | other | `import-cellpose-3.x-pretrained-segmentation-model` |
-| other | `cellpose-segmentation-inference-3.x` |
-| other | `ij1-roi-filter-statistics` |
+| other | `cellpose-segmentation-inference-3.x`               |
+| other | `ij1-roi-filter-statistics`                         |
 
 ## Example graph
 
 Project: `AIAgentTests/02-AdvancedPipelines/Paco_06.jip` (relative to `/data/JIPipe`), compartment `Segmentation`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `import-cellpose-3.x-pretrained-segmentation-model` | Pretrained Cellpose 3.x segmentation model |
-| n1 | `cellpose-segmentation-inference-3.x` | Cellpose segmentation (3.x) |
-| n2 | `ij1-roi-filter-statistics` | Filter 2D ROI by statistics |
+| key | node id                                             | name                                       |
+|-----|-----------------------------------------------------|--------------------------------------------|
+| n0  | `import-cellpose-3.x-pretrained-segmentation-model` | Pretrained Cellpose 3.x segmentation model |
+| n1  | `cellpose-segmentation-inference-3.x`               | Cellpose segmentation (3.x)                |
+| n2  | `ij1-roi-filter-statistics`                         | Filter 2D ROI by statistics                |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
+| from                                       | slot     | to                          | slot    | data class          |
+|--------------------------------------------|----------|-----------------------------|---------|---------------------|
 | Pretrained Cellpose 3.x segmentation model | `Output` | Cellpose segmentation (3.x) | `Model` | `cellpose-model-v2` |
-| Cellpose segmentation (3.x) | `ROI` | Filter 2D ROI by statistics | `ROI` | `imagej-roi` |
+| Cellpose segmentation (3.x)                | `ROI`    | Filter 2D ROI by statistics | `ROI`   | `imagej-roi`        |
 
 ## Template
 
-Proposed name `Pretrained Cellpose 3.x segmentation model -> Cellpose segmentation (3.x) -> Filter 2D ROI by statistics`, menu path `Patterns/Machine learning/Pretrained Cellpose 3.x segmentation model -> Cellpose segmentation (3.x) -> Filter 2D ROI by statistics` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/chain-3-import-cellpose-3-x-pretrained-segmentation-model-cellpose-segmentation-inference-3-x-ij1-roi-filter-statistics.json`.
+Proposed name
+`Pretrained Cellpose 3.x segmentation model -> Cellpose segmentation (3.x) -> Filter 2D ROI by statistics`, menu path
+`Patterns/Machine learning/Pretrained Cellpose 3.x segmentation model -> Cellpose segmentation (3.x) -> Filter 2D ROI by statistics`
+(proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/chain-3-import-cellpose-3-x-pretrained-segmentation-model-cellpose-segmentation-inference-3-x-ij1-roi-filter-statistics.json`.
 

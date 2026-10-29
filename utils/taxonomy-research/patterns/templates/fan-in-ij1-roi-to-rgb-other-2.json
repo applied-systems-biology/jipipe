@@ -1,1 +1,27 @@
-{"nodes":{"n0":{"jipipe:node-info-id":"ij1-analyze-find-particles2d","jipipe:graph-compartment":"538a6a7c-e617-52ba-b9b9-657e487f38f6","jipipe:node:name":"Find particles 2D: Circ >= 0.7, no size limits"},"n1":{"jipipe:node-info-id":"ij1-roi-to-rgb","jipipe:graph-compartment":"538a6a7c-e617-52ba-b9b9-657e487f38f6","jipipe:node:name":"Convert 2D ROI to RGB #1"},"n2":{"jipipe:node-info-id":"ij1-roi-to-rgb","jipipe:graph-compartment":"538a6a7c-e617-52ba-b9b9-657e487f38f6","jipipe:node:name":"Convert 2D ROI to RGB #2"}},"edges":[{"source-node":"n1","source-slot":"Output","target-node":"n2","target-slot":"Image"}]}
+{
+  "nodes": {
+    "n0": {
+      "jipipe:node-info-id": "ij1-analyze-find-particles2d",
+      "jipipe:graph-compartment": "538a6a7c-e617-52ba-b9b9-657e487f38f6",
+      "jipipe:node:name": "Find particles 2D: Circ >= 0.7, no size limits"
+    },
+    "n1": {
+      "jipipe:node-info-id": "ij1-roi-to-rgb",
+      "jipipe:graph-compartment": "538a6a7c-e617-52ba-b9b9-657e487f38f6",
+      "jipipe:node:name": "Convert 2D ROI to RGB #1"
+    },
+    "n2": {
+      "jipipe:node-info-id": "ij1-roi-to-rgb",
+      "jipipe:graph-compartment": "538a6a7c-e617-52ba-b9b9-657e487f38f6",
+      "jipipe:node:name": "Convert 2D ROI to RGB #2"
+    }
+  },
+  "edges": [
+    {
+      "source-node": "n1",
+      "source-slot": "Output",
+      "target-node": "n2",
+      "target-slot": "Image"
+    }
+  ]
+}

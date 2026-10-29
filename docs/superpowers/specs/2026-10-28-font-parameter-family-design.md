@@ -9,23 +9,23 @@ font+color, font+style+color). The merged class leaks a color into nodes whose t
 color legitimately comes from elsewhere (e.g. the ROI's line color), and a style
 into nodes that only set family/size.
 
-Canonical example: **Convert 2D ROI to RGB** (`RoiToRGBAlgorithm`) has a label
-*font* (family + size, maybe style) but its label *color* belongs to the ROI / an
+Canonical example: **Convert 2D ROI to RGB** (`RoiToRGBAlgorithm`) has a label *font* (family + size, maybe style) but
+its label *color* belongs to the ROI / an
 optional override — not the font value.
 
 ## Investigation: how the label text color is actually derived
 
 Traced every `JIPipeFontParameter` consumer:
 
-| Node (param key) | font fields genuinely used | where the **text color** comes from today |
-|---|---|---|
-| `RoiToRGBAlgorithm` (`label-font`) | family, size, style | **`labelFont.getColor()`** (always the font's color). But the node already computes a per-ROI *effective line color* (`overrideLineColor` if enabled, else `roi.getStrokeColor()`) — that is the color the label should follow. |
-| `DrawTextRoiAlgorithm` (`font`) | family, size, style | **NOT the font.** The `TextRoi`'s color comes from the registered sub-param `VisualLocationROIProperties.lineColor` (`OptionalColorParameter`, default enabled/yellow). `font.getColor()` is never called. |
-| `TableToTextROIAlgorithm` (`font`) | family, size, style | **NOT the font.** Same as above (`VisualROIProperties.lineColor`). |
-| `DrawScaleBarAlgorithm` (`text-settings/font`) | family, size, style, color | `textSettings.getFont().getColor()` (default BOLD WHITE). |
-| `DrawScaleBarRoiAlgorithm` (`text-settings/font`) | family, size, style, color | same as above. |
-| `MontageCreator.LabelParameters` (`label-font`; used by `StackToMontage2Algorithm` + `InputImagesToMontage2`) | family, size, color | `labelParameters.labelFont.getColor()`. |
-| `DefaultTextBoxGraphCanvasNote` (`title-style/font`, `content-style/font`) | family, size, style, color | `titleStyle.getColor()` / `contentStyle.getColor()` (default BLACK). |
+| Node (param key)                                                                                              | font fields genuinely used | where the **text color** comes from today                                                                                                                                                                                       |
+|---------------------------------------------------------------------------------------------------------------|----------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `RoiToRGBAlgorithm` (`label-font`)                                                                            | family, size, style        | **`labelFont.getColor()`** (always the font's color). But the node already computes a per-ROI *effective line color* (`overrideLineColor` if enabled, else `roi.getStrokeColor()`) — that is the color the label should follow. |
+| `DrawTextRoiAlgorithm` (`font`)                                                                               | family, size, style        | **NOT the font.** The `TextRoi`'s color comes from the registered sub-param `VisualLocationROIProperties.lineColor` (`OptionalColorParameter`, default enabled/yellow). `font.getColor()` is never called.                      |
+| `TableToTextROIAlgorithm` (`font`)                                                                            | family, size, style        | **NOT the font.** Same as above (`VisualROIProperties.lineColor`).                                                                                                                                                              |
+| `DrawScaleBarAlgorithm` (`text-settings/font`)                                                                | family, size, style, color | `textSettings.getFont().getColor()` (default BOLD WHITE).                                                                                                                                                                       |
+| `DrawScaleBarRoiAlgorithm` (`text-settings/font`)                                                             | family, size, style, color | same as above.                                                                                                                                                                                                                  |
+| `MontageCreator.LabelParameters` (`label-font`; used by `StackToMontage2Algorithm` + `InputImagesToMontage2`) | family, size, color        | `labelParameters.labelFont.getColor()`.                                                                                                                                                                                         |
+| `DefaultTextBoxGraphCanvasNote` (`title-style/font`, `content-style/font`)                                    | family, size, style, color | `titleStyle.getColor()` / `contentStyle.getColor()` (default BLACK).                                                                                                                                                            |
 
 Consequence: only the scale-bar nodes, the montage nodes, and the canvas note
 truly need **font+style+color**. `RoiToRGB` needs **font+style** (color from ROI /
@@ -41,11 +41,11 @@ All in `org.hkijena.jipipe.plugins.parameters.library.primitives`. Each class ha
 stable string-literal registration ID (persisted in saved projects — never
 code-derived).
 
-| Class | Fields | Registration ID |
-|---|---|---|
-| `JIPipeFontFamilySizeParameter` | family, size | `jipipe:font-family-size` |
-| `JIPipeFontFamilySizeStyleParameter` | family, size, style | `jipipe:font-family-size-style` |
-| `JIPipeFontFamilySizeColorParameter` | family, size, color | `jipipe:font-family-size-color` |
+| Class                                     | Fields                     | Registration ID                       |
+|-------------------------------------------|----------------------------|---------------------------------------|
+| `JIPipeFontFamilySizeParameter`           | family, size               | `jipipe:font-family-size`             |
+| `JIPipeFontFamilySizeStyleParameter`      | family, size, style        | `jipipe:font-family-size-style`       |
+| `JIPipeFontFamilySizeColorParameter`      | family, size, color        | `jipipe:font-family-size-color`       |
 | `JIPipeFontFamilySizeStyleColorParameter` | family, size, style, color | `jipipe:font-family-size-style-color` |
 
 **Naming rationale:** the base `FontFamilySize` makes explicit that the *family* is
@@ -61,10 +61,10 @@ parameter type's **registration ID** (`JIPipeMutableParameterAccess`), and on lo
 resolved via `JIPipe.getParameterTypes().getInfoById(...)` — which throws
 `Unknown parameter type ID` for an id that no longer exists. So changing the ID
 means projects saved *during this branch's development* (carrying
-`field-class-id: "jipipe:font"`) fail to load until re-saved. Accepted consequence
-(branch unmerged, per user ruling). **Pre-#1339 legacy projects are unaffected**:
-they contain no `label-font`/`font` access at all — only the split legacy keys
-(`label-font-family`, `label-size`, …), which the per-node `onDeserialized`
+`field-class-id: "jipipe:font"`) fail to load until re-saved. Accepted consequence (branch unmerged, per user ruling).
+**Pre-#1339 legacy projects are unaffected**:
+they contain no `label-font`/`font` access at all — only the split legacy keys (`label-font-family`, `label-size`, …),
+which the per-node `onDeserialized`
 migration reads directly from the raw JSON.
 
 **Common abstraction** so the adaptive editor and `toFont()` callers depend on one
@@ -83,8 +83,8 @@ public interface JIPipeFontColorCapable { Color getColor(); void setColor(Color 
 ```
 
 Each class is a plain Jackson-serializable value (as the current
-`JIPipeFontParameter` is): non-null fields with defaults, lenient deserialization
-(missing key → default), `equals`/`hashCode`/`copy()`.
+`JIPipeFontParameter` is): non-null fields with defaults, lenient deserialization (missing key → default), `equals`/
+`hashCode`/`copy()`.
 
 ### 2. One adaptive editor
 
@@ -111,15 +111,15 @@ concrete value via the access's field class, so the base works unchanged.
 
 ### 3. The per-node remapping
 
-| Node | before | after |
-|---|---|---|
-| `RoiToRGBAlgorithm` | `JIPipeFontParameter labelFont`, label foreground = `labelFont.getColor()` | `JIPipeFontFamilySizeStyleParameter labelFont` + new `OptionalColorParameter labelColor` (default **disabled**) |
-| `DrawTextRoiAlgorithm` | `JIPipeFontParameter font` | `JIPipeFontFamilySizeStyleParameter font` (color was already from `VisualLocationROIProperties` — no behavior change) |
-| `TableToTextROIAlgorithm` | `JIPipeFontParameter font` | `JIPipeFontFamilySizeStyleParameter font` (same) |
-| `DrawScaleBarAlgorithm` `TextSettings` | `JIPipeFontParameter font` | `JIPipeFontFamilySizeStyleColorParameter font` |
-| `DrawScaleBarRoiAlgorithm` `TextSettings` | `JIPipeFontParameter font` | `JIPipeFontFamilySizeStyleColorParameter font` |
-| `MontageCreator.LabelParameters` | `JIPipeFontParameter labelFont` | `JIPipeFontFamilySizeStyleColorParameter labelFont` |
-| `DefaultTextBoxGraphCanvasNote` (title + content) | `JIPipeFontParameter font` ×2 | `JIPipeFontFamilySizeStyleColorParameter font` ×2 |
+| Node                                              | before                                                                     | after                                                                                                                 |
+|---------------------------------------------------|----------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------|
+| `RoiToRGBAlgorithm`                               | `JIPipeFontParameter labelFont`, label foreground = `labelFont.getColor()` | `JIPipeFontFamilySizeStyleParameter labelFont` + new `OptionalColorParameter labelColor` (default **disabled**)       |
+| `DrawTextRoiAlgorithm`                            | `JIPipeFontParameter font`                                                 | `JIPipeFontFamilySizeStyleParameter font` (color was already from `VisualLocationROIProperties` — no behavior change) |
+| `TableToTextROIAlgorithm`                         | `JIPipeFontParameter font`                                                 | `JIPipeFontFamilySizeStyleParameter font` (same)                                                                      |
+| `DrawScaleBarAlgorithm` `TextSettings`            | `JIPipeFontParameter font`                                                 | `JIPipeFontFamilySizeStyleColorParameter font`                                                                        |
+| `DrawScaleBarRoiAlgorithm` `TextSettings`         | `JIPipeFontParameter font`                                                 | `JIPipeFontFamilySizeStyleColorParameter font`                                                                        |
+| `MontageCreator.LabelParameters`                  | `JIPipeFontParameter labelFont`                                            | `JIPipeFontFamilySizeStyleColorParameter labelFont`                                                                   |
+| `DefaultTextBoxGraphCanvasNote` (title + content) | `JIPipeFontParameter font` ×2                                              | `JIPipeFontFamilySizeStyleColorParameter font` ×2                                                                     |
 
 `JIPipeFontFamilySizeParameter` (bare font) is defined for completeness but not yet used.
 
@@ -142,6 +142,7 @@ computed for the outline), the per-ROI label foreground is:
 `mode == FROM_ROI_LINE ? effectiveLineColor : labelForeground`.
 
 `RoiToRGBAlgorithm` sets:
+
 - `labelColor.isEnabled()` → `FIXED` + `setLabelForeground(labelColor.getContent())`
 - else → `FROM_ROI_LINE`
 
@@ -169,13 +170,14 @@ The branch is unmerged, so the only real-world projects are **pre-#1339 legacy**
 - scale-bar / montage / canvas-note: legacy family/size/style/color →
   `JIPipeFontFamilySizeStyleColorParameter`.
 
-`JIPipeFontParameter.composeFromLegacy` generalizes to target a concrete class
-(e.g. a `composeFromLegacy(..., targetClass)` overload, or a per-class
+`JIPipeFontParameter.composeFromLegacy` generalizes to target a concrete class (e.g. a
+`composeFromLegacy(..., targetClass)` overload, or a per-class
 `fromLegacy` static).
 
 ## Files
 
 **New (jipipe-core, `plugins/parameters/library/primitives/`):**
+
 - `JIPipeFontValue`, `JIPipeFontStyleCapable`, `JIPipeFontColorCapable`
 - `JIPipeFontFamilySizeParameter`
 - `JIPipeFontFamilySizeStyleParameter`
@@ -183,18 +185,21 @@ The branch is unmerged, so the only real-world projects are **pre-#1339 legacy**
 - `JIPipeFontFamilySizeStyleColorParameter` (renamed `JIPipeFontParameter`)
 
 **Modified (jipipe-core):**
+
 - `JIPipeDesktopFontParameterEditorUI` → generic adaptive base + 4 thin subclasses
-- `StandardParametersPlugin` → register the 4 types under the 4 new IDs
-  (`jipipe:font-family-size[-style][-color]`); the development-only `jipipe:font`
+- `StandardParametersPlugin` → register the 4 types under the 4 new IDs (`jipipe:font-family-size[-style][-color]`); the
+  development-only `jipipe:font`
   registration is replaced
 - `DefaultTextBoxGraphCanvasNote` → remap ×2 to the full type + migration
 - tests: `JIPipeFontParameterTest` / `FontParameterMigrationTest` follow the rename;
   round-trip tests added for the 3 new classes
 
 **Modified (plugins/jipipe-plugin-ij):**
+
 - `RoiDrawer` → `RoiLabelColorMode` + per-ROI effective-line-color label
 
 **Modified (plugins/jipipe-plugin-ij-algorithms):**
+
 - `RoiToRGBAlgorithm` → size-style font + `labelColor` + drawer mode + migration
 - `DrawTextRoiAlgorithm`, `TableToTextROIAlgorithm` → size-style font + migration
 - `DrawScaleBarAlgorithm`, `DrawScaleBarRoiAlgorithm` → full type + migration
@@ -203,8 +208,8 @@ The branch is unmerged, so the only real-world projects are **pre-#1339 legacy**
 
 ## Testing (TDD for the non-trivial pure logic; no Swing-structure tests)
 
-- Round-trip + lenient-deserialization + `toFont()` for each of the 4 classes
-  (extend the existing `JIPipeFontParameterTest` pattern).
+- Round-trip + lenient-deserialization + `toFont()` for each of the 4 classes (extend the existing
+  `JIPipeFontParameterTest` pattern).
 - `RoiDrawer` label-color mode: a pure unit test that `FROM_ROI_LINE` yields the
   effective line color per ROI and `FIXED` yields the explicit color (and that the
   default remains `FIXED`, so standalone usages are unchanged).
@@ -213,8 +218,8 @@ The branch is unmerged, so the only real-world projects are **pre-#1339 legacy**
   test). `RoiToRGB` specifically: legacy `label-foreground` lands in `labelColor`
   **enabled**, the font value carries **no** color, and a fresh node has
   `labelColor` disabled.
-- Editor adaptivity verified via the screenshot harness: render the full type
-  (color section present) and the size-style type (color section absent) through a
+- Editor adaptivity verified via the screenshot harness: render the full type (color section present) and the size-style
+  type (color section absent) through a
   synthetic showcase; VLM-confirmed.
 
 ## Decisions (all resolved — approved for implementation)

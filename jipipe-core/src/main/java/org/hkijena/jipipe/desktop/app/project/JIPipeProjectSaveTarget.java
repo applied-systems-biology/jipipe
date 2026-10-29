@@ -44,22 +44,6 @@ import java.nio.file.Path;
  */
 public final class JIPipeProjectSaveTarget {
 
-    /**
-     * The save-target decision
-     */
-    public enum SaveTarget {
-        /**
-         * The current save target is a legacy {@code .jip} file —
-         * show the per-save JIPX migration prompt before saving.
-         */
-        JIPX_PROMPT,
-        /**
-         * Proceed directly (untitled projects go to the chooser,
-         * {@code .jipx} projects save in place).
-         */
-        DIRECT
-    }
-
     private JIPipeProjectSaveTarget() {
     }
 
@@ -149,5 +133,21 @@ public final class JIPipeProjectSaveTarget {
         // history) reports its projects as incompatible here. Until then,
         // every project is expressible in the legacy format.
         return true;
+    }
+
+    /**
+     * The save-target decision
+     */
+    public enum SaveTarget {
+        /**
+         * The current save target is a legacy {@code .jip} file —
+         * show the per-save JIPX migration prompt before saving.
+         */
+        JIPX_PROMPT,
+        /**
+         * Proceed directly (untitled projects go to the chooser,
+         * {@code .jipx} projects save in place).
+         */
+        DIRECT
     }
 }

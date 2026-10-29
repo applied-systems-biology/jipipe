@@ -32,32 +32,37 @@ template:
 
 # Pattern: Auto threshold 2D (8-bit) -> Morphological operation 2D -> Morphological hole filling 2D
 
-Mined pattern `chain-3-ij1-threshold-auto2d-ij1-morph-operation2d-ij1-morph-binary-fillholes2d` (shape `chain`, support 28).
+Mined pattern `chain-3-ij1-threshold-auto2d-ij1-morph-operation2d-ij1-morph-binary-fillholes2d` (shape `chain`, support
+28).
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| other | `ij1-threshold-auto2d` |
-| other | `ij1-morph-operation2d` |
+| role  | node ids                       |
+|-------|--------------------------------|
+| other | `ij1-threshold-auto2d`         |
+| other | `ij1-morph-operation2d`        |
 | other | `ij1-morph-binary-fillholes2d` |
 
 ## Example graph
 
-Project: `AIAgentTests/01-BasicWorkshop/JSC_2025_03_Kidney_Basic/kidney.jip` (relative to `/data/JIPipe`), compartment `Analysis`.
+Project: `AIAgentTests/01-BasicWorkshop/JSC_2025_03_Kidney_Basic/kidney.jip` (relative to `/data/JIPipe`), compartment
+`Analysis`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `ij1-threshold-auto2d` | Auto threshold 2D |
-| n1 | `ij1-morph-operation2d` | Morphological operation 2D: Dilate |
-| n2 | `ij1-morph-binary-fillholes2d` | Morphological hole filling 2D |
+| key | node id                        | name                               |
+|-----|--------------------------------|------------------------------------|
+| n0  | `ij1-threshold-auto2d`         | Auto threshold 2D                  |
+| n1  | `ij1-morph-operation2d`        | Morphological operation 2D: Dilate |
+| n2  | `ij1-morph-binary-fillholes2d` | Morphological hole filling 2D      |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
-| Auto threshold 2D | `Output` | Morphological operation 2D: Dilate | `Input` | `imagej-imgplus-greyscale-mask` |
-| Morphological operation 2D: Dilate | `Output` | Morphological hole filling 2D | `Input` | `imagej-imgplus` |
+| from                               | slot     | to                                 | slot    | data class                      |
+|------------------------------------|----------|------------------------------------|---------|---------------------------------|
+| Auto threshold 2D                  | `Output` | Morphological operation 2D: Dilate | `Input` | `imagej-imgplus-greyscale-mask` |
+| Morphological operation 2D: Dilate | `Output` | Morphological hole filling 2D      | `Input` | `imagej-imgplus`                |
 
 ## Template
 
-Proposed name `Auto threshold 2D (8-bit) -> Morphological operation 2D -> Morphological hole filling 2D`, menu path `Patterns/Images/Auto threshold 2D (8-bit) -> Morphological operation 2D -> Morphological hole filling 2D` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/chain-3-ij1-threshold-auto2d-ij1-morph-operation2d-ij1-morph-binary-fillholes2d.json`.
+Proposed name `Auto threshold 2D (8-bit) -> Morphological operation 2D -> Morphological hole filling 2D`, menu path
+`Patterns/Images/Auto threshold 2D (8-bit) -> Morphological operation 2D -> Morphological hole filling 2D` (proposal
+only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/chain-3-ij1-threshold-auto2d-ij1-morph-operation2d-ij1-morph-binary-fillholes2d.json`.
 

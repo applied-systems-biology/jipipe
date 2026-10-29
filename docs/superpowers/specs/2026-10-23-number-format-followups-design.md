@@ -1,7 +1,7 @@
 # Design: number-format converter follow-ups (ROMAN / SCIENTIFIC / BASE)
 
-**Issue:** [#1336](https://asb-git.hki-jena.de/RGerst/jipipe/-/work_items/1336) (follow-up checklist) · **Date:** 2026-10-23
-**Builds on:** `NUM_TO_LETTERS` (branch `1336-num-to-letters`, MR !173) — same pattern, same package.
+**Issue:** [#1336](https://asb-git.hki-jena.de/RGerst/jipipe/-/work_items/1336) (follow-up checklist) · **Date:**
+2026-10-23 **Builds on:** `NUM_TO_LETTERS` (branch `1336-num-to-letters`, MR !173) — same pattern, same package.
 
 ## Intent
 
@@ -12,8 +12,8 @@ auto-convert, optional args with defaults, fail-closed `IllegalArgumentException
 
 ## Goals / non-goals
 
-**In scope (this change):** the three functions below, each with a passing test class.
-**Non-goals:** no UI work, no new parameters, no i18n, no locale-specific digit symbols.
+**In scope (this change):** the three functions below, each with a passing test class. **Non-goals:** no UI work, no new
+parameters, no i18n, no locale-specific digit symbols.
 
 ## Constraints (inherited)
 
@@ -57,11 +57,11 @@ choice per function is the **argument list + defaults**, pinned below.
 - Output is a **normalized** `mantissa E exponent` string: exponent **not zero-padded**,
   no `+` sign for positive exponents, `-` kept for negative. This matches the issue's
   examples, not raw `String.format("%..E")`:
-  - `0.00012` → `"1.2E-4"` (raw would be `1.2E-04`)
-  - `1500` → `"1.5E3"` (raw would be `1.5E+03`)
-  - `1000` → `"1.0E3"`; `1234.5678` with `decimals=3` → `"1.235E3"`
-- Implementation: `String.format("%.<d>E", value)` then post-process the exponent part
-  (after `E`): strip a leading `+`, strip leading zeros (keep at least one digit, keep `-`).
+    - `0.00012` → `"1.2E-4"` (raw would be `1.2E-04`)
+    - `1500` → `"1.5E3"` (raw would be `1.5E+03`)
+    - `1000` → `"1.0E3"`; `1234.5678` with `decimals=3` → `"1.235E3"`
+- Implementation: `String.format("%.<d>E", value)` then post-process the exponent part (after `E`): strip a leading `+`,
+  strip leading zeros (keep at least one digit, keep `-`).
 
 ### 3. Base conversion — `BASE_CONVERT(value, [toBase], [fromBase])`
 

@@ -1,1 +1,48 @@
-{"nodes":{"n0":{"jipipe:node-info-id":"import-imagej-results-table-from-file","jipipe:graph-compartment":"DEFAULT","jipipe:metadata-v1":{"location/DEFAULT/x":1,"location/DEFAULT/y":1}},"n1":{"jipipe:node-info-id":"ij1-roi-from-table-point","jipipe:graph-compartment":"DEFAULT","jipipe:metadata-v1":{"location/DEFAULT/x":1,"location/DEFAULT/y":5}},"n2":{"jipipe:node-info-id":"ij1-roi-set-metadata-from-table","jipipe:graph-compartment":"DEFAULT","jipipe:metadata-v1":{"location/DEFAULT/x":1,"location/DEFAULT/y":9}}},"edges":[{"source-node":"n0","source-slot":"Results table","target-node":"n1","target-slot":"Input"},{"source-node":"n0","source-slot":"Results table","target-node":"n2","target-slot":"Metadata"},{"source-node":"n1","source-slot":"Output","target-node":"n2","target-slot":"ROI"}]}
+{
+  "nodes": {
+    "n0": {
+      "jipipe:node-info-id": "import-imagej-results-table-from-file",
+      "jipipe:graph-compartment": "DEFAULT",
+      "jipipe:metadata-v1": {
+        "location/DEFAULT/x": 1,
+        "location/DEFAULT/y": 1
+      }
+    },
+    "n1": {
+      "jipipe:node-info-id": "ij1-roi-from-table-point",
+      "jipipe:graph-compartment": "DEFAULT",
+      "jipipe:metadata-v1": {
+        "location/DEFAULT/x": 1,
+        "location/DEFAULT/y": 5
+      }
+    },
+    "n2": {
+      "jipipe:node-info-id": "ij1-roi-set-metadata-from-table",
+      "jipipe:graph-compartment": "DEFAULT",
+      "jipipe:metadata-v1": {
+        "location/DEFAULT/x": 1,
+        "location/DEFAULT/y": 9
+      }
+    }
+  },
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Results table",
+      "target-node": "n1",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n0",
+      "source-slot": "Results table",
+      "target-node": "n2",
+      "target-slot": "Metadata"
+    },
+    {
+      "source-node": "n1",
+      "source-slot": "Output",
+      "target-node": "n2",
+      "target-slot": "ROI"
+    }
+  ]
+}

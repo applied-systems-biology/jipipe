@@ -32,13 +32,13 @@ public class StaticDebouncer implements Disposable {
         timer.setRepeats(false);
     }
 
+    public StaticDebouncer(long delay, Runnable runnable) {
+        this(delay, TimeUnit.MILLISECONDS, runnable);
+    }
+
     private void doRun() {
         lastFireTime.set(System.currentTimeMillis());
         runnable.run();
-    }
-
-    public StaticDebouncer(long delay, Runnable runnable) {
-        this(delay, TimeUnit.MILLISECONDS, runnable);
     }
 
     public Runnable getRunnable() {
@@ -47,10 +47,9 @@ public class StaticDebouncer implements Disposable {
 
     public void debounce() {
         long timeDiff = System.currentTimeMillis() - lastFireTime.get();
-        if(timeDiff > intervalMillis) {
+        if (timeDiff > intervalMillis) {
             doRun();
-        }
-        else {
+        } else {
             timer.restart();
         }
     }

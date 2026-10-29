@@ -1,7 +1,6 @@
 package org.hkijena.jipipe.api.service.components;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.hkijena.jipipe.plugins.statistics.JIPipeStatisticsItem;
@@ -22,13 +21,41 @@ class JIPipeStatisticsServiceComponentTest {
     private JIPipeStatisticsItem createCounterItem(String id) {
         return new JIPipeStatisticsItem() {
             int value = 0;
-            @Override public String getId() { return id; }
-            @Override public String getName() { return id; }
-            @Override public String getDescription() { return id; }
-            @Override public StatisticsPrivacyLevel getRequiredPrivacyLevel() { return StatisticsPrivacyLevel.RoughProjects; }
-            @Override public JsonNode serialize() { return JsonNodeFactory.instance.numberNode(value); }
-            @Override public void deserialize(JsonNode node) { if (node != null && !node.isNull()) value = node.asInt(); }
-            @Override public void reset() { value = 0; }
+
+            @Override
+            public String getId() {
+                return id;
+            }
+
+            @Override
+            public String getName() {
+                return id;
+            }
+
+            @Override
+            public String getDescription() {
+                return id;
+            }
+
+            @Override
+            public StatisticsPrivacyLevel getRequiredPrivacyLevel() {
+                return StatisticsPrivacyLevel.RoughProjects;
+            }
+
+            @Override
+            public JsonNode serialize() {
+                return JsonNodeFactory.instance.numberNode(value);
+            }
+
+            @Override
+            public void deserialize(JsonNode node) {
+                if (node != null && !node.isNull()) value = node.asInt();
+            }
+
+            @Override
+            public void reset() {
+                value = 0;
+            }
         };
     }
 

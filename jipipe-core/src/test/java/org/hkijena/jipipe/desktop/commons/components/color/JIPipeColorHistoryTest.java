@@ -16,11 +16,11 @@ package org.hkijena.jipipe.desktop.commons.components.color;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-import java.awt.Color;
+import java.awt.*;
 import java.nio.file.Path;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * The color-history persistence behind the color dialog (#1339): recent-color

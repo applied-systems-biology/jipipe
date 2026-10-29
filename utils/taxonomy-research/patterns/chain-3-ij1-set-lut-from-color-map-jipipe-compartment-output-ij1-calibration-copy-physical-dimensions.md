@@ -32,32 +32,37 @@ template:
 
 # Pattern: Set LUT (color map) -> Compartment output -> Copy physical dimensions
 
-Mined pattern `chain-3-ij1-set-lut-from-color-map-jipipe-compartment-output-ij1-calibration-copy-physical-dimensions` (shape `chain`, support 30).
+Mined pattern `chain-3-ij1-set-lut-from-color-map-jipipe-compartment-output-ij1-calibration-copy-physical-dimensions`
+(shape `chain`, support 30).
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| other | `ij1-set-lut-from-color-map` |
-| core-io | `jipipe:compartment-output` |
-| other | `ij1-calibration-copy-physical-dimensions` |
+| role    | node ids                                   |
+|---------|--------------------------------------------|
+| other   | `ij1-set-lut-from-color-map`               |
+| core-io | `jipipe:compartment-output`                |
+| other   | `ij1-calibration-copy-physical-dimensions` |
 
 ## Example graph
 
-Project: `AIAgentTests/03-ExampleWorkflows/Annamaria_12.jip` (relative to `/data/JIPipe`), compartment `Membrane+Particles`.
+Project: `AIAgentTests/03-ExampleWorkflows/Annamaria_12.jip` (relative to `/data/JIPipe`), compartment
+`Membrane+Particles`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `ij1-set-lut-from-color-map` | Set LUT (color map) |
-| n1 | `jipipe:compartment-output` | Mask |
-| n2 | `ij1-calibration-copy-physical-dimensions` | Copy physical dimensions |
+| key | node id                                    | name                     |
+|-----|--------------------------------------------|--------------------------|
+| n0  | `ij1-set-lut-from-color-map`               | Set LUT (color map)      |
+| n1  | `jipipe:compartment-output`                | Mask                     |
+| n2  | `ij1-calibration-copy-physical-dimensions` | Copy physical dimensions |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
-| Set LUT (color map) | `Output` | Mask | `3D labels` | `imagej-imgplus-greyscale` |
-| Mask | `Green trimmed` | Copy physical dimensions | `Source` | `imagej-imgplus` |
+| from                | slot            | to                       | slot        | data class                 |
+|---------------------|-----------------|--------------------------|-------------|----------------------------|
+| Set LUT (color map) | `Output`        | Mask                     | `3D labels` | `imagej-imgplus-greyscale` |
+| Mask                | `Green trimmed` | Copy physical dimensions | `Source`    | `imagej-imgplus`           |
 
 ## Template
 
-Proposed name `Set LUT (color map) -> Compartment output -> Copy physical dimensions`, menu path `Patterns/Images/Set LUT (color map) -> Compartment output -> Copy physical dimensions` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/chain-3-ij1-set-lut-from-color-map-jipipe-compartment-output-ij1-calibration-copy-physical-dimensions.json`.
+Proposed name `Set LUT (color map) -> Compartment output -> Copy physical dimensions`, menu path
+`Patterns/Images/Set LUT (color map) -> Compartment output -> Copy physical dimensions` (proposal only — not
+registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/chain-3-ij1-set-lut-from-color-map-jipipe-compartment-output-ij1-calibration-copy-physical-dimensions.json`.
 

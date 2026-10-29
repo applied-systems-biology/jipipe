@@ -1,1 +1,33 @@
-{"nodes":{"n0":{"jipipe:node-info-id":"jipipe:compartment-output","jipipe:graph-compartment":"85f41830-92ae-59fa-8fc2-c0c4eb83da76","jipipe:node:name":"Raw and masked images"},"n1":{"jipipe:node-info-id":"ij1-roi-filter-statistics","jipipe:graph-compartment":"85f41830-92ae-59fa-8fc2-c0c4eb83da76","jipipe:node:name":"Filter ROI by statistics"},"n2":{"jipipe:node-info-id":"ij1-roi-to-rgb","jipipe:graph-compartment":"85f41830-92ae-59fa-8fc2-c0c4eb83da76","jipipe:node:name":"Convert ROI to RGB"}},"edges":[{"source-node":"n0","source-slot":"Masked raw image","target-node":"n1","target-slot":"Reference"},{"source-node":"n1","source-slot":"Output","target-node":"n2","target-slot":"ROI"}]}
+{
+  "nodes": {
+    "n0": {
+      "jipipe:node-info-id": "jipipe:compartment-output",
+      "jipipe:graph-compartment": "85f41830-92ae-59fa-8fc2-c0c4eb83da76",
+      "jipipe:node:name": "Raw and masked images"
+    },
+    "n1": {
+      "jipipe:node-info-id": "ij1-roi-filter-statistics",
+      "jipipe:graph-compartment": "85f41830-92ae-59fa-8fc2-c0c4eb83da76",
+      "jipipe:node:name": "Filter ROI by statistics"
+    },
+    "n2": {
+      "jipipe:node-info-id": "ij1-roi-to-rgb",
+      "jipipe:graph-compartment": "85f41830-92ae-59fa-8fc2-c0c4eb83da76",
+      "jipipe:node:name": "Convert ROI to RGB"
+    }
+  },
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Masked raw image",
+      "target-node": "n1",
+      "target-slot": "Reference"
+    },
+    {
+      "source-node": "n1",
+      "source-slot": "Output",
+      "target-node": "n2",
+      "target-slot": "ROI"
+    }
+  ]
+}

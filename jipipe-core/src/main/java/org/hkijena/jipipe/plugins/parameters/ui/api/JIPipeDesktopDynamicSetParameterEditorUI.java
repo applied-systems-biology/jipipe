@@ -19,9 +19,9 @@ import org.hkijena.jipipe.plugins.parameters.api.options.DynamicSetParameterSett
 import org.hkijena.jipipe.plugins.parameters.api.options.JIPipeDynamicSetParameter;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 
-import javax.swing.*;
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 import java.util.function.Supplier;
 
 /**

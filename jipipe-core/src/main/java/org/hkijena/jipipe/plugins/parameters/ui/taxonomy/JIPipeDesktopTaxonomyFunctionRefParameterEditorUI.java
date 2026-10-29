@@ -13,12 +13,12 @@
 
 package org.hkijena.jipipe.plugins.parameters.ui.taxonomy;
 
+import com.google.common.html.HtmlEscapers;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.taxonomy.FunctionRegistry;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.nodebrowser.NodeBrowserTreeController;
-import com.google.common.html.HtmlEscapers;
 import org.hkijena.jipipe.desktop.commons.components.textfield.JIPipeDesktopDocumentChangeListener;
 import org.hkijena.jipipe.plugins.parameters.library.taxonomy.JIPipeTaxonomyFunctionRef;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -50,11 +50,67 @@ public class JIPipeDesktopTaxonomyFunctionRefParameterEditorUI extends JIPipeDes
 
     private JButton currentlyDisplayed;
     private JDialog pickerDialog;
+    private NodeBrowserTreeController treeController;
+    private JTextField filterField;
+    private JTree tree;
 
     public JIPipeDesktopTaxonomyFunctionRefParameterEditorUI(InitializationParameters parameters) {
         super(JIPipeTaxonomyFunctionRef.class, parameters);
         initialize();
         reload();
+    }
+
+    /**
+     * The icon for a resolved function: the function's own icon, or the
+     * icon of its closest ancestor that carries one (leaf functions have no
+     * icon of their own — falling back to the branch icon instead of the
+     * "not set" emblem, which wrongly signalled an error for a selected
+     * function).
+     */
+    private static Icon displayIcon(JIPipeNodeTaxonomyFunction function) {
+        Set<String> visited = new HashSet<>();
+        JIPipeNodeTaxonomyFunction current = function;
+        while (current != null && visited.add(current.getId())) {
+            Icon icon = current.getIcon();
+            if (icon != null) {
+                return icon;
+            }
+            current = current.getParent();
+        }
+        return JIPipe.RESOURCES.getIcon16("actions/tag.png");
+    }
+
+    // ------------------------------------------------------------------
+    // Picker dialog (lazily built; the tree is refreshed on every open so it
+    // always reflects the live registry and the current filter)
+    // ------------------------------------------------------------------
+
+    /**
+     * Recursively builds a (filtered) tree node for a function.
+     *
+     * @return the node, or {@code null} when the function and its subtree are
+     * both filtered out (so empty branches are not shown)
+     */
+    private static DefaultMutableTreeNode buildFunctionTreeNode(JIPipeNodeTaxonomyFunction function,
+                                                                FunctionRegistry registry,
+                                                                Set<JIPipeNodeTaxonomyFunction> matched,
+                                                                boolean ancestorMatched) {
+        boolean selfMatched = matched.contains(function);
+        boolean keep = ancestorMatched || selfMatched;
+
+        DefaultMutableTreeNode node = new DefaultMutableTreeNode(function);
+        for (JIPipeNodeTaxonomyFunction child : registry.children(function)) {
+            DefaultMutableTreeNode childNode = buildFunctionTreeNode(child, registry, matched, ancestorMatched || selfMatched);
+            if (childNode != null) {
+                node.add(childNode);
+            }
+        }
+
+        // A non-matching branch with no visible descendants is pruned
+        if (!keep && node.getChildCount() == 0) {
+            return null;
+        }
+        return node;
     }
 
     private void initialize() {
@@ -88,39 +144,10 @@ public class JIPipeDesktopTaxonomyFunctionRefParameterEditorUI extends JIPipeDes
         }
     }
 
-    /**
-     * The icon for a resolved function: the function's own icon, or the
-     * icon of its closest ancestor that carries one (leaf functions have no
-     * icon of their own — falling back to the branch icon instead of the
-     * "not set" emblem, which wrongly signalled an error for a selected
-     * function).
-     */
-    private static Icon displayIcon(JIPipeNodeTaxonomyFunction function) {
-        Set<String> visited = new HashSet<>();
-        JIPipeNodeTaxonomyFunction current = function;
-        while (current != null && visited.add(current.getId())) {
-            Icon icon = current.getIcon();
-            if (icon != null) {
-                return icon;
-            }
-            current = current.getParent();
-        }
-        return JIPipe.RESOURCES.getIcon16("actions/tag.png");
-    }
-
     @Override
     public boolean isUILabelEnabled() {
         return true;
     }
-
-    // ------------------------------------------------------------------
-    // Picker dialog (lazily built; the tree is refreshed on every open so it
-    // always reflects the live registry and the current filter)
-    // ------------------------------------------------------------------
-
-    private NodeBrowserTreeController treeController;
-    private JTextField filterField;
-    private JTree tree;
 
     private void openPicker() {
         if (pickerDialog == null) {
@@ -236,34 +263,6 @@ public class JIPipeDesktopTaxonomyFunctionRefParameterEditorUI extends JIPipeDes
         treeModel.reload();
         // Keep the top level open so the tree is usable immediately
         treeController.getTree().expandPath(new TreePath(new Object[]{root}));
-    }
-
-    /**
-     * Recursively builds a (filtered) tree node for a function.
-     *
-     * @return the node, or {@code null} when the function and its subtree are
-     * both filtered out (so empty branches are not shown)
-     */
-    private static DefaultMutableTreeNode buildFunctionTreeNode(JIPipeNodeTaxonomyFunction function,
-                                                                FunctionRegistry registry,
-                                                                Set<JIPipeNodeTaxonomyFunction> matched,
-                                                                boolean ancestorMatched) {
-        boolean selfMatched = matched.contains(function);
-        boolean keep = ancestorMatched || selfMatched;
-
-        DefaultMutableTreeNode node = new DefaultMutableTreeNode(function);
-        for (JIPipeNodeTaxonomyFunction child : registry.children(function)) {
-            DefaultMutableTreeNode childNode = buildFunctionTreeNode(child, registry, matched, ancestorMatched || selfMatched);
-            if (childNode != null) {
-                node.add(childNode);
-            }
-        }
-
-        // A non-matching branch with no visible descendants is pruned
-        if (!keep && node.getChildCount() == 0) {
-            return null;
-        }
-        return node;
     }
 
     private void confirmSelection() {

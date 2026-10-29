@@ -1,1 +1,42 @@
-{"edges":[{"source-node":"n1","source-slot":"Dataset","target-node":"n2","target-slot":"Target dataset"},{"source-node":"n2","source-slot":"Images","target-node":"n0","target-slot":"Target"}],"nodes":{"n0":{"jipipe:graph-compartment":"f1da2267-e8ac-53ee-b799-df8b25377f66","jipipe:metadata-v1":{"location/f1da2267-e8ac-53ee-b799-df8b25377f66/x":0,"location/f1da2267-e8ac-53ee-b799-df8b25377f66/y":9},"jipipe:node-info-id":"omero-upload-table"},"n1":{"jipipe:graph-compartment":"f1da2267-e8ac-53ee-b799-df8b25377f66","jipipe:metadata-v1":{"location/f1da2267-e8ac-53ee-b799-df8b25377f66/x":6,"location/f1da2267-e8ac-53ee-b799-df8b25377f66/y":0},"jipipe:node-info-id":"omero-create-dataset"},"n2":{"jipipe:graph-compartment":"f1da2267-e8ac-53ee-b799-df8b25377f66","jipipe:metadata-v1":{"location/f1da2267-e8ac-53ee-b799-df8b25377f66/x":4,"location/f1da2267-e8ac-53ee-b799-df8b25377f66/y":5},"jipipe:node-info-id":"omero-upload-image"}}}
+{
+  "edges": [
+    {
+      "source-node": "n1",
+      "source-slot": "Dataset",
+      "target-node": "n2",
+      "target-slot": "Target dataset"
+    },
+    {
+      "source-node": "n2",
+      "source-slot": "Images",
+      "target-node": "n0",
+      "target-slot": "Target"
+    }
+  ],
+  "nodes": {
+    "n0": {
+      "jipipe:graph-compartment": "f1da2267-e8ac-53ee-b799-df8b25377f66",
+      "jipipe:metadata-v1": {
+        "location/f1da2267-e8ac-53ee-b799-df8b25377f66/x": 0,
+        "location/f1da2267-e8ac-53ee-b799-df8b25377f66/y": 9
+      },
+      "jipipe:node-info-id": "omero-upload-table"
+    },
+    "n1": {
+      "jipipe:graph-compartment": "f1da2267-e8ac-53ee-b799-df8b25377f66",
+      "jipipe:metadata-v1": {
+        "location/f1da2267-e8ac-53ee-b799-df8b25377f66/x": 6,
+        "location/f1da2267-e8ac-53ee-b799-df8b25377f66/y": 0
+      },
+      "jipipe:node-info-id": "omero-create-dataset"
+    },
+    "n2": {
+      "jipipe:graph-compartment": "f1da2267-e8ac-53ee-b799-df8b25377f66",
+      "jipipe:metadata-v1": {
+        "location/f1da2267-e8ac-53ee-b799-df8b25377f66/x": 4,
+        "location/f1da2267-e8ac-53ee-b799-df8b25377f66/y": 5
+      },
+      "jipipe:node-info-id": "omero-upload-image"
+    }
+  }
+}

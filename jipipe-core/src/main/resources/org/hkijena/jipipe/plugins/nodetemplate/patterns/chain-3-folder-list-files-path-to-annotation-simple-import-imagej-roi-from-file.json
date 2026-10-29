@@ -1,1 +1,42 @@
-{"nodes":{"n0":{"jipipe:node-info-id":"folder-list-files","jipipe:graph-compartment":"5bf674df-e195-527e-a56c-ad320a921613","jipipe:metadata-v1":{"location/5bf674df-e195-527e-a56c-ad320a921613/x":1,"location/5bf674df-e195-527e-a56c-ad320a921613/y":1}},"n1":{"jipipe:node-info-id":"path-to-annotation-simple","jipipe:graph-compartment":"5bf674df-e195-527e-a56c-ad320a921613","jipipe:metadata-v1":{"location/5bf674df-e195-527e-a56c-ad320a921613/x":1,"location/5bf674df-e195-527e-a56c-ad320a921613/y":5}},"n2":{"jipipe:node-info-id":"import-imagej-roi-from-file","jipipe:graph-compartment":"5bf674df-e195-527e-a56c-ad320a921613","jipipe:metadata-v1":{"location/5bf674df-e195-527e-a56c-ad320a921613/x":1,"location/5bf674df-e195-527e-a56c-ad320a921613/y":9}}},"edges":[{"source-node":"n0","source-slot":"Files","target-node":"n1","target-slot":"Paths"},{"source-node":"n1","source-slot":"Annotated paths","target-node":"n2","target-slot":"Files"}]}
+{
+  "nodes": {
+    "n0": {
+      "jipipe:node-info-id": "folder-list-files",
+      "jipipe:graph-compartment": "5bf674df-e195-527e-a56c-ad320a921613",
+      "jipipe:metadata-v1": {
+        "location/5bf674df-e195-527e-a56c-ad320a921613/x": 1,
+        "location/5bf674df-e195-527e-a56c-ad320a921613/y": 1
+      }
+    },
+    "n1": {
+      "jipipe:node-info-id": "path-to-annotation-simple",
+      "jipipe:graph-compartment": "5bf674df-e195-527e-a56c-ad320a921613",
+      "jipipe:metadata-v1": {
+        "location/5bf674df-e195-527e-a56c-ad320a921613/x": 1,
+        "location/5bf674df-e195-527e-a56c-ad320a921613/y": 5
+      }
+    },
+    "n2": {
+      "jipipe:node-info-id": "import-imagej-roi-from-file",
+      "jipipe:graph-compartment": "5bf674df-e195-527e-a56c-ad320a921613",
+      "jipipe:metadata-v1": {
+        "location/5bf674df-e195-527e-a56c-ad320a921613/x": 1,
+        "location/5bf674df-e195-527e-a56c-ad320a921613/y": 9
+      }
+    }
+  },
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Files",
+      "target-node": "n1",
+      "target-slot": "Paths"
+    },
+    {
+      "source-node": "n1",
+      "source-slot": "Annotated paths",
+      "target-node": "n2",
+      "target-slot": "Files"
+    }
+  ]
+}

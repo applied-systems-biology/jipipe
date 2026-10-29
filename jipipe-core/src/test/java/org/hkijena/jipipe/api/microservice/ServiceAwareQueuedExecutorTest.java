@@ -24,40 +24,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ServiceAwareQueuedExecutorTest {
 
-    static class TestService extends AbstractMicroservice {
-        TestService() { super("Test"); }
-
-        @Override
-        protected void onStart() throws Exception { }
-    }
-
-    static class CountingRun extends DefaultJIPipeRunnable {
-        final CountDownLatch latch;
-        final AtomicInteger counter;
-        final long delayMs;
-
-        CountingRun(CountDownLatch latch, AtomicInteger counter, long delayMs) {
-            this.latch = latch;
-            this.counter = counter;
-            this.delayMs = delayMs;
-        }
-
-        @Override
-        public String getTaskLabel() { return "Counting"; }
-
-        @Override
-        public void run() {
-            counter.incrementAndGet();
-            if (delayMs > 0) {
-                try { Thread.sleep(delayMs); } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    return;
-                }
-            }
-            latch.countDown();
-        }
-    }
-
     @Test
     void tasksExecuteWhenServiceReady() throws Exception {
         TestService service = new TestService();
@@ -147,7 +113,9 @@ class ServiceAwareQueuedExecutorTest {
             final int idx = i;
             exec.enqueue(new DefaultJIPipeRunnable() {
                 @Override
-                public String getTaskLabel() { return "Task " + idx; }
+                public String getTaskLabel() {
+                    return "Task " + idx;
+                }
 
                 @Override
                 public void run() {
@@ -161,6 +129,47 @@ class ServiceAwareQueuedExecutorTest {
         // Tasks should execute in order 1,2,3,4,5
         for (int i = 0; i < 5; i++) {
             assertEquals(i + 1, results[i]);
+        }
+    }
+
+    static class TestService extends AbstractMicroservice {
+        TestService() {
+            super("Test");
+        }
+
+        @Override
+        protected void onStart() throws Exception {
+        }
+    }
+
+    static class CountingRun extends DefaultJIPipeRunnable {
+        final CountDownLatch latch;
+        final AtomicInteger counter;
+        final long delayMs;
+
+        CountingRun(CountDownLatch latch, AtomicInteger counter, long delayMs) {
+            this.latch = latch;
+            this.counter = counter;
+            this.delayMs = delayMs;
+        }
+
+        @Override
+        public String getTaskLabel() {
+            return "Counting";
+        }
+
+        @Override
+        public void run() {
+            counter.incrementAndGet();
+            if (delayMs > 0) {
+                try {
+                    Thread.sleep(delayMs);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    return;
+                }
+            }
+            latch.countDown();
         }
     }
 }

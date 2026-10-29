@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.plugins.parameters.ui.api;
 
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.selection.JIPipeDesktopRichSelectionBox;
 import org.hkijena.jipipe.plugins.parameters.api.enums.DynamicEnumParameterSettings;
@@ -24,11 +23,8 @@ import org.hkijena.jipipe.utils.ThemeUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
+import java.util.*;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Supplier;
 
 /**
@@ -46,9 +42,13 @@ public class JIPipeDesktopDynamicEnumParameterEditorUI extends JIPipeDesktopPara
 
     private JComboBox<Object> comboBox;
     private JIPipeDesktopRichSelectionBox selectionBox;
-    /** The mode the currently shown control was built for (null = not built). */
+    /**
+     * The mode the currently shown control was built for (null = not built).
+     */
     private EnumUiMode currentMode;
-    /** Guards programmatic {@code setSelectedItem} from re-firing the action listener. */
+    /**
+     * Guards programmatic {@code setSelectedItem} from re-firing the action listener.
+     */
     private boolean isReloading = false;
 
     public JIPipeDesktopDynamicEnumParameterEditorUI(InitializationParameters parameters) {
@@ -88,7 +88,9 @@ public class JIPipeDesktopDynamicEnumParameterEditorUI extends JIPipeDesktopPara
         // The control is created in reload() (which runs after super()).
     }
 
-    /** The allowed values of the parameter (from the parameter or the settings supplier). */
+    /**
+     * The allowed values of the parameter (from the parameter or the settings supplier).
+     */
     private Object[] allowedValues(JIPipeDynamicEnumParameter<Object> parameter) {
         if (parameter.getAllowedValues() != null) {
             return parameter.getAllowedValues().toArray();

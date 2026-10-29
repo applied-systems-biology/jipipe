@@ -140,7 +140,7 @@ public class JIPipeGlobalEmbeddingSearch {
      * @return the embedding vector, or null if stale or missing
      */
     public float[] getVerifiedEmbedding(String modelId, String nodeId,
-                                         JIPipeNodeDatabaseEntry entry) {
+                                        JIPipeNodeDatabaseEntry entry) {
         String text = JIPipeEmbeddingDatabase.entryToText(entry);
         return embeddingDatabase.getVerifiedEmbedding(modelId, nodeId, text);
     }

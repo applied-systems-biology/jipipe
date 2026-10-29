@@ -15,14 +15,14 @@ from you.
 **The step (C) LLM never saw any node *descriptions*.** It only got each node
 's short display name (e.g. "Add path to annotations", "Convert 2D ROI to
 RGB") plus the slot wiring. The research `registry.json` I built for the
-mining pipeline is *structure-only* (id, name, functions, slots) — it carries
-**0** of the 1510 node descriptions, even though 300 of the 326 node types
+mining pipeline is *structure-only* (id, name, functions, slots) — it carries **0** of the 1510 node descriptions, even
+though 300 of the 326 node types
 the 270 patterns actually use **do have real descriptions in the source**.
 
 So the model was forced to infer what each step does from its label and the
 JIPipe slot vocabulary. That is exactly why:
-- names describe JIPipe *mechanics* ("annotated paths") instead of the
-  *outcome* a biologist gets,
+
+- names describe JIPipe *mechanics* ("annotated paths") instead of the *outcome* a biologist gets,
 - "ROI" is used unqualified (the model can't see that the 2D and 3D ROI nodes
   are different data types from the name alone), and
 - descriptions are thin and sometimes don't say what a node actually does.
@@ -49,6 +49,7 @@ types with an extractable source description         : 300 (92%)
                             Converts mask images into ROI by applying a connected
                             components algorithm and generates measurements. …
 ```
+
 (the 26 without a source description are mostly `clij:plugin:*`, `jipipe2ai-*`
 and a few auto-registered nodes — a fallback to the node name is fine for those.)
 
@@ -60,21 +61,22 @@ Measured: 8 of 270 names contain a JIPipe-internal or image-analysis-jargon term
 a biologist wouldn't map to an outcome. The flagship is the worst (support 92,
 so it's the most visible):
 
-| cluster | support | current name | problem |
-|---|---|---|---|
-| 0001 | **92** | *List folder contents with **annotated paths*** | "annotated paths" is JIPipe's `path`-data-with-annotations mechanic, not what the biologist gets (a list of files/ROIs) |
-| 0010 | 20 | *Cellpose segmentation to cleaned mask **hyperstack*** | "hyperstack" is a data-format term, not an outcome |
-| 0015 | 14 | *Folder-based image import with **path annotations*** | same "path annotation" mechanic |
-| 0023 | 10 | *Preprocess imported image **hyperstacks*** | "hyperstack" |
-| 0025 | 10 | *Import images with source **path annotation*** | "path annotation" |
-| 0101 | 4  | *Import images from folders with **path annotations*** | "path annotation" |
-| 0193 | 2  | *ROI mask **hyperstack*** | "hyperstack" |
-| 0233 | 1  | *Import **file paths** as annotation table* | "paths" (mild) |
+| cluster | support | current name                                           | problem                                                                                                                 |
+|---------|---------|--------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------|
+| 0001    | **92**  | *List folder contents with **annotated paths***        | "annotated paths" is JIPipe's `path`-data-with-annotations mechanic, not what the biologist gets (a list of files/ROIs) |
+| 0010    | 20      | *Cellpose segmentation to cleaned mask **hyperstack*** | "hyperstack" is a data-format term, not an outcome                                                                      |
+| 0015    | 14      | *Folder-based image import with **path annotations***  | same "path annotation" mechanic                                                                                         |
+| 0023    | 10      | *Preprocess imported image **hyperstacks***            | "hyperstack"                                                                                                            |
+| 0025    | 10      | *Import images with source **path annotation***        | "path annotation"                                                                                                       |
+| 0101    | 4       | *Import images from folders with **path annotations*** | "path annotation"                                                                                                       |
+| 0193    | 2       | *ROI mask **hyperstack***                              | "hyperstack"                                                                                                            |
+| 0233    | 1       | *Import **file paths** as annotation table*            | "paths" (mild)                                                                                                          |
 
 The deeper pattern (your example): the name describes **how JIPipe moves the
 data** (path → annotate → …) rather than **what the analyst achieves**.
 
 **Proposed fix (prompt rules, applied on re-run):**
+
 1. Name the *outcome*, not the mechanism. Ask "what does a user end up with?"
    — "Load images and ROIs from a folder", not "List folder contents with
    annotated paths".
@@ -93,12 +95,12 @@ data** (path → annotate → …) rather than **what the analyst achieves**.
 Measured across all 71 ROI-named patterns (node-type is the ground truth:
 `ij1-roi*` = 2D ROI, `ij3d-roi3d*` = 3D ROI — different data types):
 
-| category | count |
-|---|---|
-| properly qualified "2D ROI"/"3D ROI" in the name | 14 |
+| category                                                                         | count  |
+|----------------------------------------------------------------------------------|--------|
+| properly qualified "2D ROI"/"3D ROI" in the name                                 | 14     |
 | bare "ROI", graph is **one** type, name doesn't say which (43 are 2D, 10 are 3D) | **56** |
-| bare "ROI", graph **genuinely mixes** 2D + 3D ROI nodes | **1** |
-| bare "ROI", no ROI-typed node identifiable by id | 3 |
+| bare "ROI", graph **genuinely mixes** 2D + 3D ROI nodes                          | **1**  |
+| bare "ROI", no ROI-typed node identifiable by id                                 | 3      |
 
 The 56 single-type-but-unqualified ones are exactly your "the other type is
 usually derivable" case — the name silently implies the pattern works for both
@@ -121,6 +123,7 @@ its graph runs `ij1-roi-to-mask` / `ij1-roi-to-rgb` (2D) **and**
 dimensionalities — needs a manual look.
 
 **Proposed fix (prompt rule + a data-side note):**
+
 - Rule: whenever the pattern touches ROI nodes, the name **must** say `2D ROI`
   or `3D ROI` (or `2D/3D` only if it truly operates on both, with the
   description explaining the conversion). The LLM is given each node's
@@ -150,10 +153,11 @@ is being annotated** (the concrete input → concrete output). Example:
      → sets *what*? "expression-based" is an implementation detail.
 ```
 
-This is the same root cause: the model had the node *names* but not the node
-*descriptions*, so it paraphrased the names instead of stating function.
+This is the same root cause: the model had the node *names* but not the node *descriptions*, so it paraphrased the names
+instead of stating function.
 
 **Proposed fix (the main one):**
+
 1. Extend the structure-only `registry.json` to carry each node's source
    `description` (a one-off change to the `RegistryDumperTest`-style dump, or
    a direct extract from the `@SetJIPipeDocumentation` annotations — 92%
@@ -181,11 +185,12 @@ This is the same root cause: the model had the node *names* but not the node
 ## Issue 4 — Two audiences: bioinformaticians and biologists
 
 This is a rule, not a bug, but it's the lens the other three are seen through.
-A name/description that only an image-analysis programmer understands
-("annotated paths", "expression-based annotation setters") fails half the
+A name/description that only an image-analysis programmer understands ("annotated paths", "expression-based annotation
+setters") fails half the
 audience; one that over-simplifies fails the other.
 
 **Proposed fix (prompt rule):**
+
 - *Name*: plain outcome, short, usable by a biologist *and* precise enough for
   a bioinformatician. Prefer the biological object ("cells", "objects",
   "particles") over the data type where it's the same thing to a biologist.
@@ -193,24 +198,24 @@ audience; one that over-simplifies fails the other.
   specifics (data types, node functions) as a second sentence. Two audiences,
   one description, ordered general → specific.
 - Worked example (re-run target), flagship 0001:
-  - *before*: "List folder contents with annotated paths" /
-    "Enumerates subfolders and files under an input folder, annotates each
-    path with file/directory names, and outputs filtered annotated paths…"
-  - *after* (illustrative of the rule, not the final string): "Load images and
-    ROIs from a folder" / "Recursively lists the images and ROI files in a
-    folder and turns each into an image or ROI, ready for analysis. (JIPipe:
-    folder list → path-to-annotation → importers.)"
+    - *before*: "List folder contents with annotated paths" /
+      "Enumerates subfolders and files under an input folder, annotates each
+      path with file/directory names, and outputs filtered annotated paths…"
+    - *after* (illustrative of the rule, not the final string): "Load images and
+      ROIs from a folder" / "Recursively lists the images and ROI files in a
+      folder and turns each into an image or ROI, ready for analysis. (JIPipe:
+      folder list → path-to-annotation → importers.)"
 
 ---
 
 ## What this means for the pipeline
 
-| step | status |
-|---|---|
-| (A) harvest | unchanged — candidates and their source layouts are correct |
-| (B) merge | unchanged — the 324 families are correct (they're structural) |
+| step                   | status                                                                                                                                                                                                  |
+|------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| (A) harvest            | unchanged — candidates and their source layouts are correct                                                                                                                                             |
+| (B) merge              | unchanged — the 324 families are correct (they're structural)                                                                                                                                           |
 | (C) gate/name/classify | **re-run** with (i) node descriptions in the state and (ii) the four prompt rules. Gate decisions will shift a little (the model now has real function evidence), names/descriptions will change a lot. |
-| (D) ship | **blocked** on the (C) re-run + your decisions below |
+| (D) ship               | **blocked** on the (C) re-run + your decisions below                                                                                                                                                    |
 
 The (C) re-run is ~324 LLM calls again (~30–60 min; the descriptions make the
 prompts longer but well within context). It regenerates `dag-judgments.json`

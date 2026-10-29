@@ -28,22 +28,36 @@ package org.hkijena.jipipe.api.nodes.taxonomy;
  */
 public enum HueCategory {
 
-    /** Red anchor (0°) — regions, shapes, ROIs, filaments, skeletons, surfaces. Cell [330°, 15°). */
+    /**
+     * Red anchor (0°) — regions, shapes, ROIs, filaments, skeletons, surfaces. Cell [330°, 15°).
+     */
     GEOMETRY("Geometry", 0f),
-    /** Orange anchor (30°) — statistics, measurement, quantification, tracking/motion analysis. Cell [15°, 45°). */
+    /**
+     * Orange anchor (30°) — statistics, measurement, quantification, tracking/motion analysis. Cell [15°, 45°).
+     */
     ANALYSIS("Analysis", 30f),
-    /** Yellow anchor (60°) — plotting, charts, figures. Cell [45°, 90°). */
+    /**
+     * Yellow anchor (60°) — plotting, charts, figures. Cell [45°, 90°).
+     */
     VISUALIZATION("Visualization", 60f),
-    /** Green anchor (120°) — input, sources, export, data platforms, metadata transport. Cell [90°, 180°). */
+    /**
+     * Green anchor (120°) — input, sources, export, data platforms, metadata transport. Cell [90°, 180°).
+     */
     EXCHANGE("Exchange", 120f),
-    /** Blue anchor (240°) — pixel data and tabular data. Cell [180°, 270°). */
+    /**
+     * Blue anchor (240°) — pixel data and tabular data. Cell [180°, 270°).
+     */
     DATA("Data", 240f),
-    /** Purple anchor (300°) — machine learning, annotations, scripting, expressions, automation. Cell [270°, 330°). */
+    /**
+     * Purple anchor (300°) — machine learning, annotations, scripting, expressions, automation. Cell [270°, 330°).
+     */
     INTELLIGENCE("Intelligence", 300f);
 
     private final String label;
 
-    /** The focal hue anchor of this family in degrees ({@code 0..360}). */
+    /**
+     * The focal hue anchor of this family in degrees ({@code 0..360}).
+     */
     private final float anchorDeg;
 
     HueCategory(String label, float anchorDeg) {

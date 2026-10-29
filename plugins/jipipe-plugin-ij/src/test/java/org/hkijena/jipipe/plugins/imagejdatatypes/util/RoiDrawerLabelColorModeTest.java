@@ -18,7 +18,7 @@ import ij.gui.ShapeRoi;
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
 import org.junit.jupiter.api.Test;
 
-import java.awt.Color;
+import java.awt.*;
 import java.awt.geom.Rectangle2D;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

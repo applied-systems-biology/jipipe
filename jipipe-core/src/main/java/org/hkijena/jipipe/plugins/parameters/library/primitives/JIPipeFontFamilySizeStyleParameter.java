@@ -18,9 +18,7 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.GraphicsEnvironment;
+import java.awt.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -38,6 +36,25 @@ import java.util.Objects;
  * the other family members call.
  */
 public class JIPipeFontFamilySizeStyleParameter implements JIPipeFontValue, JIPipeFontStyleCapable {
+
+    private String family = defaultFamily();
+    private int size = 12;
+    private int style = Font.PLAIN;
+
+    /**
+     * Creates a new instance with the default font (default family, size 12,
+     * plain).
+     */
+    public JIPipeFontFamilySizeStyleParameter() {
+    }
+    /**
+     * Copies another font parameter.
+     */
+    public JIPipeFontFamilySizeStyleParameter(JIPipeFontFamilySizeStyleParameter other) {
+        this.family = other.family;
+        this.size = other.size;
+        this.style = other.style;
+    }
 
     /**
      * The legacy font-style enum name used by the old split parameters
@@ -93,38 +110,6 @@ public class JIPipeFontFamilySizeStyleParameter implements JIPipeFontValue, JIPi
         return new Font("Dialog", Font.PLAIN, 12).getFamily();
     }
 
-    private String family = defaultFamily();
-    private int size = 12;
-    private int style = Font.PLAIN;
-
-    /**
-     * Creates a new instance with the default font (default family, size 12,
-     * plain).
-     */
-    public JIPipeFontFamilySizeStyleParameter() {
-    }
-
-    /**
-     * Copies another font parameter.
-     */
-    public JIPipeFontFamilySizeStyleParameter(JIPipeFontFamilySizeStyleParameter other) {
-        this.family = other.family;
-        this.size = other.size;
-        this.style = other.style;
-    }
-
-    /**
-     * Explicit field setter used by node migrations (#1339, Task 10) to move
-     * a node's former separate family/size/style parameters into one
-     * (the no-color variant of the full font parameter's
-     * {@code migrateFrom}).
-     */
-    public void migrateFrom(String family, int size, int style) {
-        this.family = family != null ? family : defaultFamily();
-        this.size = size;
-        this.style = style;
-    }
-
     /**
      * Composes the legacy split font fields (from a raw node/collection JSON
      * object) into a single {@link JIPipeFontFamilySizeStyleParameter} for a
@@ -167,6 +152,26 @@ public class JIPipeFontFamilySizeStyleParameter implements JIPipeFontValue, JIPi
         return result;
     }
 
+    private static List<String> availableFamilies() {
+        try {
+            return Arrays.asList(GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames());
+        } catch (RuntimeException e) {
+            return List.of();
+        }
+    }
+
+    /**
+     * Explicit field setter used by node migrations (#1339, Task 10) to move
+     * a node's former separate family/size/style parameters into one
+     * (the no-color variant of the full font parameter's
+     * {@code migrateFrom}).
+     */
+    public void migrateFrom(String family, int size, int style) {
+        this.family = family != null ? family : defaultFamily();
+        this.size = size;
+        this.style = style;
+    }
+
     /**
      * @return the font as an {@link Font} (unavailable families fall back to
      * the default family).
@@ -181,14 +186,6 @@ public class JIPipeFontFamilySizeStyleParameter implements JIPipeFontValue, JIPi
         return new Font(f, style, size);
     }
 
-    private static List<String> availableFamilies() {
-        try {
-            return Arrays.asList(GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames());
-        } catch (RuntimeException e) {
-            return List.of();
-        }
-    }
-
     @Override
     public JIPipeFontValue copy() {
         return new JIPipeFontFamilySizeStyleParameter(this);
@@ -199,7 +196,9 @@ public class JIPipeFontFamilySizeStyleParameter implements JIPipeFontValue, JIPi
         return family;
     }
 
-    /** @param family the font family name (null resets to the default family) */
+    /**
+     * @param family the font family name (null resets to the default family)
+     */
     @JsonSetter("family")
     public void setFamily(String family) {
         this.family = family != null ? family : defaultFamily();
@@ -220,7 +219,9 @@ public class JIPipeFontFamilySizeStyleParameter implements JIPipeFontValue, JIPi
         return style;
     }
 
-    /** @param style the {@link Font} style bit flags */
+    /**
+     * @param style the {@link Font} style bit flags
+     */
     @JsonSetter("style")
     public void setStyle(int style) {
         this.style = style;

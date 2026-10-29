@@ -1,1 +1,33 @@
-{"nodes":{"n0":{"jipipe:node-info-id":"ij3d-labels-to-roi","jipipe:graph-compartment":"12fbdfd7-4a2e-5604-b945-b9956341bb24","jipipe:node:name":"IJ3D Labels to 3D ROI"},"n1":{"jipipe:node-info-id":"jipipe:compartment-output","jipipe:graph-compartment":"12fbdfd7-4a2e-5604-b945-b9956341bb24","jipipe:node:name":"For analysis"},"n2":{"jipipe:node-info-id":"ij3d-measure-roi3d","jipipe:graph-compartment":"12fbdfd7-4a2e-5604-b945-b9956341bb24","jipipe:node:name":"Extract ROI 3D statistics"}},"edges":[{"source-node":"n0","source-slot":"ROI","target-node":"n1","target-slot":"Bacteria from blue"},{"source-node":"n1","source-slot":"Bacteria from blue","target-node":"n2","target-slot":"ROI"}]}
+{
+  "nodes": {
+    "n0": {
+      "jipipe:node-info-id": "ij3d-labels-to-roi",
+      "jipipe:graph-compartment": "12fbdfd7-4a2e-5604-b945-b9956341bb24",
+      "jipipe:node:name": "IJ3D Labels to 3D ROI"
+    },
+    "n1": {
+      "jipipe:node-info-id": "jipipe:compartment-output",
+      "jipipe:graph-compartment": "12fbdfd7-4a2e-5604-b945-b9956341bb24",
+      "jipipe:node:name": "For analysis"
+    },
+    "n2": {
+      "jipipe:node-info-id": "ij3d-measure-roi3d",
+      "jipipe:graph-compartment": "12fbdfd7-4a2e-5604-b945-b9956341bb24",
+      "jipipe:node:name": "Extract ROI 3D statistics"
+    }
+  },
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "ROI",
+      "target-node": "n1",
+      "target-slot": "Bacteria from blue"
+    },
+    {
+      "source-node": "n1",
+      "source-slot": "Bacteria from blue",
+      "target-node": "n2",
+      "target-slot": "ROI"
+    }
+  ]
+}

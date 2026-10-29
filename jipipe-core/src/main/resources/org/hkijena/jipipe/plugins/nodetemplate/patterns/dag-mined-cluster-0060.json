@@ -1,1 +1,56 @@
-{"edges":[{"source-node":"n1","source-slot":"Measurements","target-node":"n0","target-slot":"Data"},{"source-node":"n1","source-slot":"Measurements","target-node":"n3","target-slot":"Input"},{"source-node":"n3","source-slot":"Output","target-node":"n2","target-slot":"Input"}],"nodes":{"n0":{"jipipe:graph-compartment":"67a1eafe-45d8-563e-9499-bc6356d1fbf0","jipipe:metadata-v1":{"location/67a1eafe-45d8-563e-9499-bc6356d1fbf0/x":0,"location/67a1eafe-45d8-563e-9499-bc6356d1fbf0/y":4},"jipipe:node-info-id":"export-data-by-parameter-v2"},"n1":{"jipipe:graph-compartment":"67a1eafe-45d8-563e-9499-bc6356d1fbf0","jipipe:metadata-v1":{"location/67a1eafe-45d8-563e-9499-bc6356d1fbf0/x":0,"location/67a1eafe-45d8-563e-9499-bc6356d1fbf0/y":0},"jipipe:node-info-id":"ij3d-measure-pairwise-roi3d"},"n2":{"jipipe:graph-compartment":"67a1eafe-45d8-563e-9499-bc6356d1fbf0","jipipe:metadata-v1":{"location/67a1eafe-45d8-563e-9499-bc6356d1fbf0/x":0,"location/67a1eafe-45d8-563e-9499-bc6356d1fbf0/y":12},"jipipe:node-info-id":"iji-export-image-v2"},"n3":{"jipipe:graph-compartment":"67a1eafe-45d8-563e-9499-bc6356d1fbf0","jipipe:metadata-v1":{"location/67a1eafe-45d8-563e-9499-bc6356d1fbf0/x":0,"location/67a1eafe-45d8-563e-9499-bc6356d1fbf0/y":8},"jipipe:node-info-id":"plot-table:plot-histogram"}}}
+{
+  "edges": [
+    {
+      "source-node": "n1",
+      "source-slot": "Measurements",
+      "target-node": "n0",
+      "target-slot": "Data"
+    },
+    {
+      "source-node": "n1",
+      "source-slot": "Measurements",
+      "target-node": "n3",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n3",
+      "source-slot": "Output",
+      "target-node": "n2",
+      "target-slot": "Input"
+    }
+  ],
+  "nodes": {
+    "n0": {
+      "jipipe:graph-compartment": "67a1eafe-45d8-563e-9499-bc6356d1fbf0",
+      "jipipe:metadata-v1": {
+        "location/67a1eafe-45d8-563e-9499-bc6356d1fbf0/x": 0,
+        "location/67a1eafe-45d8-563e-9499-bc6356d1fbf0/y": 4
+      },
+      "jipipe:node-info-id": "export-data-by-parameter-v2"
+    },
+    "n1": {
+      "jipipe:graph-compartment": "67a1eafe-45d8-563e-9499-bc6356d1fbf0",
+      "jipipe:metadata-v1": {
+        "location/67a1eafe-45d8-563e-9499-bc6356d1fbf0/x": 0,
+        "location/67a1eafe-45d8-563e-9499-bc6356d1fbf0/y": 0
+      },
+      "jipipe:node-info-id": "ij3d-measure-pairwise-roi3d"
+    },
+    "n2": {
+      "jipipe:graph-compartment": "67a1eafe-45d8-563e-9499-bc6356d1fbf0",
+      "jipipe:metadata-v1": {
+        "location/67a1eafe-45d8-563e-9499-bc6356d1fbf0/x": 0,
+        "location/67a1eafe-45d8-563e-9499-bc6356d1fbf0/y": 12
+      },
+      "jipipe:node-info-id": "iji-export-image-v2"
+    },
+    "n3": {
+      "jipipe:graph-compartment": "67a1eafe-45d8-563e-9499-bc6356d1fbf0",
+      "jipipe:metadata-v1": {
+        "location/67a1eafe-45d8-563e-9499-bc6356d1fbf0/x": 0,
+        "location/67a1eafe-45d8-563e-9499-bc6356d1fbf0/y": 8
+      },
+      "jipipe:node-info-id": "plot-table:plot-histogram"
+    }
+  }
+}

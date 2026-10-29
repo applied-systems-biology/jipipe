@@ -10,7 +10,6 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.plugins.ai.environments.EmbeddingModelEnvironment;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeArtifactQueryParameter;
-import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.WebUtils;
@@ -19,12 +18,12 @@ import javax.swing.*;
 import java.awt.*;
 
 public class ModelConfigurationComponent extends JPanel {
-    private JIPipeParameterCollection parameterCollection;
     private final JIPipeDesktopWorkbench workbench;
     private final JPopupMenu configureMenu = new JPopupMenu();
     private final JLabel titleLabel = new JLabel("Title");
     private final JLabel infoPrivacyLabel = new JLabel(JIPipe.RESOURCES.getIcon16("actions/user-shield.png"));
     private final JLabel infoPerformanceLabel = new JLabel(JIPipe.RESOURCES.getIcon16("actions/speedometer.png"));
+    private JIPipeParameterCollection parameterCollection;
 
     public ModelConfigurationComponent(JIPipeParameterCollection parameterCollection, JIPipeDesktopWorkbench workbench) {
         this.parameterCollection = parameterCollection;
@@ -117,8 +116,8 @@ public class ModelConfigurationComponent extends JPanel {
                         JIPipeDesktopParameterFormPanel.WITH_SCROLLING | JIPipeDesktopParameterFormPanel.WITH_DOCUMENTATION |
                         JIPipeDesktopParameterFormPanel.DOCUMENTATION_NO_UI);
         if (result) {
-           parameterCollection = parameter;
-           updateLabels();
+            parameterCollection = parameter;
+            updateLabels();
         }
     }
 

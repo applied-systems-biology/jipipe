@@ -7,14 +7,17 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class JIPipeValidationReportEntryTest {
 
     @Test
     public void testEntryWithActions() {
-        JIPipeNotificationAction action1 = new JIPipeNotificationAction("Update", "Update tooltip", null, wb -> {});
-        JIPipeNotificationAction action2 = new JIPipeNotificationAction("Fix", "Fix tooltip", null, wb -> {});
+        JIPipeNotificationAction action1 = new JIPipeNotificationAction("Update", "Update tooltip", null, wb -> {
+        });
+        JIPipeNotificationAction action2 = new JIPipeNotificationAction("Fix", "Fix tooltip", null, wb -> {
+        });
         JIPipeValidationReportEntry entry = new JIPipeValidationReportEntry(
                 JIPipeValidationReportEntryLevel.Error,
                 new UnspecifiedValidationReportContext(),

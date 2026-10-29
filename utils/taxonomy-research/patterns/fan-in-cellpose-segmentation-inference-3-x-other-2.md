@@ -35,26 +35,29 @@ Mined pattern `fan-in-cellpose-segmentation-inference-3-x-other-2` (shape `fan-i
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| other | `cellpose-segmentation-inference-3.x` |
+| role  | node ids                                                                                                                                                                                                                           |
+|-------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| other | `cellpose-segmentation-inference-3.x`                                                                                                                                                                                              |
 | other | `cellpose-denoise-inference-3.x`, `cellpose-segmentation-inference-3.x`, `cellpose-segmentation-training-3.x`, `clij:plugin:net.haesleinhuepf.clij2.plugins.GaussianBlur2D`, `distribute-data`, `ij1-blur-gaussian2d`, … (9 total) |
 
 ## Example graph
 
 Project: `AIAgentTests/02-AdvancedPipelines/Paco_06.jip` (relative to `/data/JIPipe`), compartment `Segmentation`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `clij:plugin:net.haesleinhuepf.clij2.plugins.GaussianBlur2D` | CLIJ2 Gaussian Blur 2D |
-| n1 | `import-cellpose-3.x-pretrained-segmentation-model` | Pretrained Cellpose 3.x segmentation model |
-| n2 | `cellpose-segmentation-inference-3.x` | Cellpose segmentation (3.x) |
+| key | node id                                                      | name                                       |
+|-----|--------------------------------------------------------------|--------------------------------------------|
+| n0  | `clij:plugin:net.haesleinhuepf.clij2.plugins.GaussianBlur2D` | CLIJ2 Gaussian Blur 2D                     |
+| n1  | `import-cellpose-3.x-pretrained-segmentation-model`          | Pretrained Cellpose 3.x segmentation model |
+| n2  | `cellpose-segmentation-inference-3.x`                        | Cellpose segmentation (3.x)                |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
+| from                                       | slot     | to                          | slot    | data class          |
+|--------------------------------------------|----------|-----------------------------|---------|---------------------|
 | Pretrained Cellpose 3.x segmentation model | `Output` | Cellpose segmentation (3.x) | `Model` | `cellpose-model-v2` |
 
 ## Template
 
-Proposed name `Cellpose segmentation (3.x) fans in from 9 source ids (roles: other)`, menu path `Patterns/Machine learning/Cellpose segmentation (3.x) fans in from 9 source ids (roles: other)` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/fan-in-cellpose-segmentation-inference-3-x-other-2.json`.
+Proposed name `Cellpose segmentation (3.x) fans in from 9 source ids (roles: other)`, menu path
+`Patterns/Machine learning/Cellpose segmentation (3.x) fans in from 9 source ids (roles: other)` (proposal only — not
+registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/fan-in-cellpose-segmentation-inference-3-x-other-2.json`.
 

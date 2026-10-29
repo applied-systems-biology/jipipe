@@ -80,14 +80,14 @@ class TaxonomyFullValidationTest {
         JIPipeNodesServiceComponent nodes = JIPipe.getNodes();
         Map<String, JIPipeNodeInfo> nodeInfos = nodes.getRegisteredNodeInfos();
         System.out.println("TaxonomyFullValidationTest: " + nodeInfos.size()
-            + " registered nodes in the registry (full gate)");
+                + " registered nodes in the registry (full gate)");
 
         TaxonomyValidationReport report = TaxonomyValidationReport.run(
-            nodes.getFunctions(),
-            nodes.getFrameworks(),
-            nodeInfos,
-            nodes.getFamilyAssembler(),
-            nodeInfos.keySet());
+                nodes.getFunctions(),
+                nodes.getFrameworks(),
+                nodeInfos,
+                nodes.getFamilyAssembler(),
+                nodeInfos.keySet());
 
         // (1) Production-parity validity: function tree + framework set +
         // family steps + node -> function/framework membership. NOTE: ok()
@@ -100,8 +100,8 @@ class TaxonomyFullValidationTest {
         List<String> unassigned = new ArrayList<>(report.unassignedNodeIds());
         Collections.sort(unassigned);
         assertTrue(unassigned.isEmpty(),
-            "Taxonomy conversion is INCOMPLETE: " + unassigned.size()
-                + " registered node(s) have no primary taxonomy function:\n  "
-                + String.join("\n  ", unassigned));
+                "Taxonomy conversion is INCOMPLETE: " + unassigned.size()
+                        + " registered node(s) have no primary taxonomy function:\n  "
+                        + String.join("\n  ", unassigned));
     }
 }

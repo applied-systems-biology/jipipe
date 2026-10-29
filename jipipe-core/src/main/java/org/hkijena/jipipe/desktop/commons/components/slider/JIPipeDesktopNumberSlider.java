@@ -16,7 +16,6 @@ package org.hkijena.jipipe.desktop.commons.components.slider;
 import org.hkijena.jipipe.utils.ThemeUtils;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
@@ -42,19 +41,20 @@ import java.util.Locale;
  */
 public class JIPipeDesktopNumberSlider extends JComponent {
 
-    /** Track height in px (visual; the component itself is the hit target). */
+    /**
+     * Track height in px (visual; the component itself is the hit target).
+     */
     private static final int TRACK_HEIGHT = 6;
-    /** Thumb diameter in px. */
+    /**
+     * Thumb diameter in px.
+     */
     private static final int THUMB_SIZE = 12;
-
+    private final ChangeListenerModel changeListeners = new ChangeListenerModel();
     private double value;
     private double min;
     private double max;
     private double step;
     private int precision;
-
-    private final ChangeListenerModel changeListeners = new ChangeListenerModel();
-
     private JTextField inlineEdit;   // non-null while the inline editor is open
     private double inlineEditOrigin;  // the value to revert to if the edit is cancelled
 
@@ -211,6 +211,10 @@ public class JIPipeDesktopNumberSlider extends JComponent {
     // Public API
     // ------------------------------------------------------------------
 
+    private static void roundedFill(Graphics2D g2, int x, int y, int w, int h, int arc) {
+        g2.fillRoundRect(x, y, w, h, arc, arc);
+    }
+
     public double getValue() {
         return value;
     }
@@ -251,13 +255,13 @@ public class JIPipeDesktopNumberSlider extends JComponent {
         changeListeners.add(l);
     }
 
-    public void removeChangeListener(ChangeListener l) {
-        changeListeners.remove(l);
-    }
-
     // ------------------------------------------------------------------
     // Input plumbing
     // ------------------------------------------------------------------
+
+    public void removeChangeListener(ChangeListener l) {
+        changeListeners.remove(l);
+    }
 
     private boolean isInlineEditing() {
         return inlineEdit != null;
@@ -286,14 +290,14 @@ public class JIPipeDesktopNumberSlider extends JComponent {
         changeListeners.fire(this);
     }
 
+    // ------------------------------------------------------------------
+    // Inline text editor (double-click / F2)
+    // ------------------------------------------------------------------
+
     private void updateTooltip() {
         setToolTipText(String.format(Locale.ROOT, "%s (%s – %s, %s)",
                 format(value, precision), format(min, precision), format(max, precision), format(step, precision)));
     }
-
-    // ------------------------------------------------------------------
-    // Inline text editor (double-click / F2)
-    // ------------------------------------------------------------------
 
     private void openInlineEdit() {
         if (isInlineEditing()) {
@@ -348,6 +352,10 @@ public class JIPipeDesktopNumberSlider extends JComponent {
         repaint();
     }
 
+    // ------------------------------------------------------------------
+    // Painting
+    // ------------------------------------------------------------------
+
     private void revertInline() {
         if (!isInlineEditing()) {
             return;
@@ -359,10 +367,6 @@ public class JIPipeDesktopNumberSlider extends JComponent {
         repaint();
         requestFocusInWindow();
     }
-
-    // ------------------------------------------------------------------
-    // Painting
-    // ------------------------------------------------------------------
 
     @Override
     protected void paintComponent(Graphics g) {
@@ -422,11 +426,9 @@ public class JIPipeDesktopNumberSlider extends JComponent {
         return (int) Math.round(1 + frac * (w - 2));
     }
 
-    private static void roundedFill(Graphics2D g2, int x, int y, int w, int h, int arc) {
-        g2.fillRoundRect(x, y, w, h, arc, arc);
-    }
-
-    /** Minimal ChangeListener container. */
+    /**
+     * Minimal ChangeListener container.
+     */
     private static class ChangeListenerModel {
         private final List<ChangeListener> listeners = java.util.Collections.synchronizedList(new java.util.ArrayList<>());
 

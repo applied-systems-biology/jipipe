@@ -18,12 +18,7 @@ import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
 import org.hkijena.jipipe.desktop.commons.components.selection.JIPipeDesktopRichSelectionBox;
 import org.hkijena.jipipe.utils.json.JIPipePathMetadataStore;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * The filterable <em>kinds</em> of node-database entries, used by the
@@ -70,6 +65,9 @@ public enum NodeEntryKind {
     CUSTOM_USER("Custom (user)", "actions/template.png", "Templates",
             "Single-node template setups you created or downloaded");
 
+    private static final String SETTINGS_DATABASE = "node-db";
+    private static final JIPipePathMetadataStore.Key SETTINGS_KEY =
+            JIPipePathMetadataStore.key("node-browser-kinds");
     private final String label;
     private final String icon;
     private final String group;
@@ -80,24 +78,6 @@ public enum NodeEntryKind {
         this.icon = icon;
         this.group = group;
         this.tooltip = tooltip;
-    }
-
-    public String getLabel() {
-        return label;
-    }
-
-    /** @return the 16px icon resource path (see {@code JIPipe.RESOURCES.getIcon16}) */
-    public String getIcon() {
-        return icon;
-    }
-
-    /** @return the option group this kind is listed under in the filter box */
-    public String getGroup() {
-        return group;
-    }
-
-    public String getTooltip() {
-        return tooltip;
     }
 
     /**
@@ -170,15 +150,6 @@ public enum NodeEntryKind {
         return kind == null || kinds.contains(kind);
     }
 
-    // ------------------------------------------------------------------
-    // Persistence (shared setting of the node browser + node finder dialog,
-    // the same settings-registry pattern as the pinned node ids)
-    // ------------------------------------------------------------------
-
-    private static final String SETTINGS_DATABASE = "node-db";
-    private static final JIPipePathMetadataStore.Key SETTINGS_KEY =
-            JIPipePathMetadataStore.key("node-browser-kinds");
-
     /**
      * The kind filter selection persisted for this user (empty = show all
      * kinds). Loaded on demand; unknown stored names are skipped.
@@ -215,5 +186,32 @@ public enum NodeEntryKind {
         }
         JIPipe.getSettings().putIntoRegistry(SETTINGS_DATABASE, SETTINGS_KEY, stored);
         JIPipe.getSettings().save();
+    }
+
+    // ------------------------------------------------------------------
+    // Persistence (shared setting of the node browser + node finder dialog,
+    // the same settings-registry pattern as the pinned node ids)
+    // ------------------------------------------------------------------
+
+    public String getLabel() {
+        return label;
+    }
+
+    /**
+     * @return the 16px icon resource path (see {@code JIPipe.RESOURCES.getIcon16})
+     */
+    public String getIcon() {
+        return icon;
+    }
+
+    /**
+     * @return the option group this kind is listed under in the filter box
+     */
+    public String getGroup() {
+        return group;
+    }
+
+    public String getTooltip() {
+        return tooltip;
     }
 }

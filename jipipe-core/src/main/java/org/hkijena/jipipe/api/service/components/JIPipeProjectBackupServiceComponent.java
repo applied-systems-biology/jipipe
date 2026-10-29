@@ -7,8 +7,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.backups.JIPipeProjectBackupSessionInfo;
 import org.hkijena.jipipe.api.backups.ThinBackupsRun;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
+import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.api.service.JIPipeServiceComponent;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;
@@ -28,22 +28,22 @@ import java.time.format.DateTimeFormatter;
  * Service responsible for handling project backups
  */
 public class JIPipeProjectBackupServiceComponent extends JIPipeServiceComponent implements JIPipeParameterCollection.ParameterChangedEventListener {
-    private Timer backupTimer;
     private final JIPipeQueuedRunnableExecutor queue = new JIPipeQueuedRunnableExecutor("Backups");
+    private Timer backupTimer;
 
     public JIPipeProjectBackupServiceComponent(JIPipeService service) {
         super(service);
     }
 
     public void restartTimer() {
-        if(backupTimer != null) {
+        if (backupTimer != null) {
             backupTimer.stop();
             backupTimer = null;
         }
 
         // Start backup service
         JIPipeBackupApplicationSettings settings = getSettings();
-        if(settings.isEnableBackups()) {
+        if (settings.isEnableBackups()) {
             backupTimer = new Timer(settings.getBackupDelay() * 60 * 1000, e -> backupAll());
             backupTimer.setRepeats(true);
             backupTimer.start();
@@ -63,7 +63,7 @@ public class JIPipeProjectBackupServiceComponent extends JIPipeServiceComponent 
     }
 
     public void backup(JIPipeDesktopProjectWindow window) {
-        if(window.getProject().isDisposed()) {
+        if (window.getProject().isDisposed()) {
             return;
         }
         String name = "untitled";
@@ -71,7 +71,7 @@ public class JIPipeProjectBackupServiceComponent extends JIPipeServiceComponent 
             name = window.getProjectSavePath().getFileName().toString();
         }
         JIPipe.getInstance().getProjectBackup().getQueue().cancelIf(runnable -> {
-            if(runnable instanceof CreateBackupRun createBackupRun) {
+            if (runnable instanceof CreateBackupRun createBackupRun) {
                 return createBackupRun.window == window;
             }
             return false;
@@ -122,14 +122,14 @@ public class JIPipeProjectBackupServiceComponent extends JIPipeServiceComponent 
     public void postprocess(JIPipeProgressInfo progressInfo) {
         getSettings().getParameterChangedEventEmitter().subscribe(this);
         restartTimer();
-        if(getSettings().getCleanupSettings().isEnableAutoCleanupOnStartup()) {
+        if (getSettings().getCleanupSettings().isEnableAutoCleanupOnStartup()) {
             scheduleCleanup();
         }
     }
 
     @Override
     public void onParameterChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
-        if("enable-backups".equals(event.getKey()) || "backup-delay".equals(event.getKey())) {
+        if ("enable-backups".equals(event.getKey()) || "backup-delay".equals(event.getKey())) {
             restartTimer();
         }
     }

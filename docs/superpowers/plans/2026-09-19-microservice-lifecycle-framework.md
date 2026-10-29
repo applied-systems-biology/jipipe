@@ -1,10 +1,16 @@
 # Microservice Lifecycle Framework Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:
+> executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Create a general microservice lifecycle framework that separates infrastructure lifecycle from work execution, then migrate the AI service and server service to use it, eliminating the search freeze root cause.
+**Goal:** Create a general microservice lifecycle framework that separates infrastructure lifecycle from work execution,
+then migrate the AI service and server service to use it, eliminating the search freeze root cause.
 
-**Architecture:** A `Microservice` interface with `AbstractMicroservice` base class manages lifecycle states (Stopped/Starting/Ready/Stopping/Failed) and declared dependencies. Two new executor implementations (`ServiceAwareQueuedExecutor` for FIFO, `ServiceAwareEphemeralExecutor` for latest-wins) gate work dispatch on `Microservice.isReady()`. The AI service and server service are migrated to use this framework, replacing their current mixed lifecycle/work queues.
+**Architecture:** A `Microservice` interface with `AbstractMicroservice` base class manages lifecycle states
+(Stopped/Starting/Ready/Stopping/Failed) and declared dependencies. Two new executor implementations
+(`ServiceAwareQueuedExecutor` for FIFO, `ServiceAwareEphemeralExecutor` for latest-wins) gate work dispatch on
+`Microservice.isReady()`. The AI service and server service are migrated to use this framework, replacing their current
+mixed lifecycle/work queues.
 
 **Tech Stack:** Java 21, Maven, JUnit 5, Swing (SwingWorker-based executors)
 
@@ -77,14 +83,17 @@ jipipe-core/.../api/servers/JIPipeServerEventListener.java
 ## Task 1: Add JUnit 5 to jipipe-core
 
 **Files:**
+
 - Modify: `jipipe-core/pom.xml`
 
 **Interfaces:**
+
 - Produces: JUnit 5 available as test dependency in `jipipe-core`
 
 - [ ] **Step 1: Add JUnit 5 dependency to pom.xml**
 
-Add the following to the `<dependencies>` section of `jipipe-core/pom.xml`, after the last existing dependency (before `</dependencies>`):
+Add the following to the `<dependencies>` section of `jipipe-core/pom.xml`, after the last existing dependency (before
+`</dependencies>`):
 
 ```xml
         <dependency>
@@ -126,9 +135,11 @@ git commit -m "Add JUnit 5 test dependency to jipipe-core (#1322)"
 ## Task 2: Create MicroserviceState enum
 
 **Files:**
+
 - Create: `jipipe-core/src/main/java/org/hkijena/jipipe/api/microservice/MicroserviceState.java`
 
 **Interfaces:**
+
 - Produces: `MicroserviceState` enum with values `Stopped`, `Starting`, `Ready`, `Stopping`, `Failed`
 
 - [ ] **Step 1: Create the enum**
@@ -194,12 +205,15 @@ git commit -m "Add MicroserviceState enum (#1322)"
 ## Task 3: Create Microservice event system
 
 **Files:**
+
 - Create: `jipipe-core/src/main/java/org/hkijena/jipipe/api/microservice/MicroserviceStateChangeEvent.java`
 - Create: `jipipe-core/src/main/java/org/hkijena/jipipe/api/microservice/MicroserviceStateChangeListener.java`
 - Create: `jipipe-core/src/main/java/org/hkijena/jipipe/api/microservice/MicroserviceStateChangeEventEmitter.java`
 
 **Interfaces:**
-- Consumes: `AbstractJIPipeEvent` from `org.hkijena.jipipe.api.events`, `JIPipeEventEmitter` from `org.hkijena.jipipe.api.events`, `MicroserviceState` from Task 2
+
+- Consumes: `AbstractJIPipeEvent` from `org.hkijena.jipipe.api.events`, `JIPipeEventEmitter` from
+  `org.hkijena.jipipe.api.events`, `MicroserviceState` from Task 2
 - Produces: `MicroserviceStateChangeEvent`, `MicroserviceStateChangeListener`, `MicroserviceStateChangeEventEmitter`
 
 - [ ] **Step 1: Create the event class**
@@ -337,10 +351,12 @@ git commit -m "Add MicroserviceStateChangeEvent system (#1322)"
 ## Task 4: Create Microservice interface and AbstractMicroservice base class
 
 **Files:**
+
 - Create: `jipipe-core/src/main/java/org/hkijena/jipipe/api/microservice/Microservice.java`
 - Create: `jipipe-core/src/main/java/org/hkijena/jipipe/api/microservice/AbstractMicroservice.java`
 
 **Interfaces:**
+
 - Consumes: `MicroserviceState` (Task 2), `MicroserviceStateChangeEventEmitter` (Task 3)
 - Produces: `Microservice` interface, `AbstractMicroservice` base class
 
@@ -652,9 +668,11 @@ git commit -m "Add Microservice interface and AbstractMicroservice base class (#
 ## Task 5: Write AbstractMicroservice tests
 
 **Files:**
+
 - Create: `jipipe-core/src/test/java/org/hkijena/jipipe/api/microservice/AbstractMicroserviceTest.java`
 
 **Interfaces:**
+
 - Consumes: `AbstractMicroservice` (Task 4), `MicroserviceState` (Task 2), `MicroserviceStateChangeEvent` (Task 3)
 - Produces: Test class verifying lifecycle correctness
 
@@ -880,9 +898,11 @@ git commit -m "Add AbstractMicroservice tests (#1322)"
 ## Task 6: Write MicroserviceDependency tests
 
 **Files:**
+
 - Create: `jipipe-core/src/test/java/org/hkijena/jipipe/api/microservice/MicroserviceDependencyTest.java`
 
 **Interfaces:**
+
 - Consumes: `AbstractMicroservice` (Task 4), `MicroserviceState` (Task 2)
 - Produces: Test class verifying dependency resolution
 
@@ -1022,10 +1042,13 @@ git commit -m "Add MicroserviceDependency tests (#1322)"
 ## Task 7: Create ServiceAwareQueuedExecutor
 
 **Files:**
+
 - Create: `jipipe-core/src/main/java/org/hkijena/jipipe/api/microservice/ServiceAwareQueuedExecutor.java`
 
 **Interfaces:**
-- Consumes: `Microservice` (Task 4), `MicroserviceState` (Task 2), `MicroserviceStateChangeEvent` (Task 3), `JIPipeRunnableExecutor` interface, `JIPipeRunnableWorker`, `JIPipeRunnable`
+
+- Consumes: `Microservice` (Task 4), `MicroserviceState` (Task 2), `MicroserviceStateChangeEvent` (Task 3),
+  `JIPipeRunnableExecutor` interface, `JIPipeRunnableWorker`, `JIPipeRunnable`
 - Produces: `ServiceAwareQueuedExecutor` implementing `JIPipeRunnableExecutor`
 
 - [ ] **Step 1: Create the executor**
@@ -1313,10 +1336,13 @@ git commit -m "Add ServiceAwareQueuedExecutor (#1322)"
 ## Task 8: Create ServiceAwareEphemeralExecutor
 
 **Files:**
+
 - Create: `jipipe-core/src/main/java/org/hkijena/jipipe/api/microservice/ServiceAwareEphemeralExecutor.java`
 
 **Interfaces:**
-- Consumes: `Microservice` (Task 4), `MicroserviceState` (Task 2), `MicroserviceStateChangeEvent` (Task 3), `JIPipeRunnableExecutor` interface, `JIPipeRunnableWorker`, `JIPipeRunnable`
+
+- Consumes: `Microservice` (Task 4), `MicroserviceState` (Task 2), `MicroserviceStateChangeEvent` (Task 3),
+  `JIPipeRunnableExecutor` interface, `JIPipeRunnableWorker`, `JIPipeRunnable`
 - Produces: `ServiceAwareEphemeralExecutor` implementing `JIPipeRunnableExecutor`
 
 - [ ] **Step 1: Create the executor**
@@ -1577,9 +1603,11 @@ git commit -m "Add ServiceAwareEphemeralExecutor (#1322)"
 ## Task 9: Write ServiceAwareQueuedExecutor tests
 
 **Files:**
+
 - Create: `jipipe-core/src/test/java/org/hkijena/jipipe/api/microservice/ServiceAwareQueuedExecutorTest.java`
 
 **Interfaces:**
+
 - Consumes: `ServiceAwareQueuedExecutor` (Task 7), `AbstractMicroservice` (Task 4), `DefaultJIPipeRunnable`
 - Produces: Test class verifying readiness gating
 
@@ -1760,9 +1788,11 @@ git commit -m "Add ServiceAwareQueuedExecutor tests (#1322)"
 ## Task 10: Write ServiceAwareEphemeralExecutor tests
 
 **Files:**
+
 - Create: `jipipe-core/src/test/java/org/hkijena/jipipe/api/microservice/ServiceAwareEphemeralExecutorTest.java`
 
 **Interfaces:**
+
 - Consumes: `ServiceAwareEphemeralExecutor` (Task 8), `AbstractMicroservice` (Task 4), `DefaultJIPipeRunnable`
 - Produces: Test class verifying latest-wins + readiness gating
 
@@ -1910,18 +1940,22 @@ git commit -m "Add ServiceAwareEphemeralExecutor tests (#1322)"
 ## Task 11: Migrate JIPipeServerInstance to AbstractMicroservice
 
 **Files:**
+
 - Modify: `jipipe-core/src/main/java/org/hkijena/jipipe/api/servers/JIPipeServerInstance.java`
 - Modify: `jipipe-core/src/main/java/org/hkijena/jipipe/plugins/embeddingserver/EmbeddingServerInstance.java`
-- Modify: `jipipe-core/src/main/java/org/hkijena/jipipe/api/servers/GenericProcessServerInstance.java` (if it exists and overrides start/stop)
+- Modify: `jipipe-core/src/main/java/org/hkijena/jipipe/api/servers/GenericProcessServerInstance.java` (if it exists and
+  overrides start/stop)
 - Delete: `jipipe-core/src/main/java/org/hkijena/jipipe/api/servers/JIPipeServerState.java`
 
 **Interfaces:**
+
 - Consumes: `AbstractMicroservice` (Task 4), `MicroserviceState` (Task 2)
 - Produces: `JIPipeServerInstance` now extends `AbstractMicroservice`
 
-- [ ] **Step 1: Rename existing start()/stop() methods**
+- [ ] **Step 1: Rename existing start ()/stop () methods**
 
 In `JIPipeServerInstance.java`:
+
 - Rename the abstract `start()` method to `startProcess()`
 - Rename the abstract `stop()` method to `stopProcess()`
 - Add `onStart()` that calls `startProcess()` and health check
@@ -2005,7 +2039,9 @@ public abstract class JIPipeServerInstance<TEnv extends JIPipeEnvironment> exten
 
 - [ ] **Step 2: Update EmbeddingServerInstance to use renamed methods**
 
-In `EmbeddingServerInstance.java`, rename `start()` to `startProcess()` and `stop()` to `stopProcess()`. Remove any direct `setState()` calls and `JIPipeServerState` references. The `setStateDetail()` calls replace the old state management.
+In `EmbeddingServerInstance.java`, rename `start()` to `startProcess()` and `stop()` to `stopProcess()`. Remove any
+direct `setState()` calls and `JIPipeServerState` references. The `setStateDetail()` calls replace the old state
+management.
 
 - [ ] **Step 3: Update GenericProcessServerInstance if it exists**
 
@@ -2014,16 +2050,20 @@ Apply the same rename pattern (`start()` → `startProcess()`, `stop()` → `sto
 - [ ] **Step 4: Update JIPipeServerServiceComponent**
 
 In `JIPipeServerServiceComponent.java`:
+
 - Replace all `instance.getState()` checks that used `JIPipeServerState` with `MicroserviceState` checks
 - Replace `instance.setState(JIPipeServerState.X)` calls — these are now handled by `Microservice.start()`/`stop()`
-- Replace `instance.start()` with `instance.startProcess()` or `instance.start()` (the Microservice.start() which calls onStart() which calls startProcess())
+- Replace `instance.start()` with `instance.startProcess()` or `instance.start()` (the Microservice.start () which calls
+  onStart () which calls startProcess ())
 - Remove `JIPipeServerState` imports, `JIPipeServerEvent` imports
 - Replace `fireStateChanged(instance, oldState, newState)` with the microservice's own event system
-- The `acquireLease()` method should call `instance.start()` (the Microservice lifecycle method) instead of `startInstance()`
+- The `acquireLease()` method should call `instance.start()` (the Microservice lifecycle method) instead of
+  `startInstance()`
 
 - [ ] **Step 5: Delete JIPipeServerState.java and related event files**
 
 Delete:
+
 - `jipipe-core/src/main/java/org/hkijena/jipipe/api/servers/JIPipeServerState.java`
 - `jipipe-core/src/main/java/org/hkijena/jipipe/api/servers/JIPipeServerEvent.java`
 - `jipipe-core/src/main/java/org/hkijena/jipipe/api/servers/JIPipeServerEventEmitter.java`
@@ -2032,6 +2072,7 @@ Delete:
 - [ ] **Step 6: Update server monitor UI components**
 
 Update any files that import `JIPipeServerState`:
+
 - `JIPipeDesktopServerMonitorOverviewPage.java` — replace `JIPipeServerState` checks with `MicroserviceState`
 - `JIPipeDesktopServerStatusControl.java` — same
 
@@ -2052,17 +2093,22 @@ git commit -m "Migrate JIPipeServerInstance to AbstractMicroservice, delete JIPi
 ## Task 12: Migrate JIPipeAIServiceComponent to microservice framework
 
 **Files:**
+
 - Modify: `jipipe-core/src/main/java/org/hkijena/jipipe/api/service/components/JIPipeAIServiceComponent.java`
 - Delete: `jipipe-core/src/main/java/org/hkijena/jipipe/api/ai/JIPipeAIModelRunnerStatus.java`
 
 **Interfaces:**
-- Consumes: `AbstractMicroservice` (Task 4), `ServiceAwareQueuedExecutor` (Task 7), `ServiceAwareEphemeralExecutor` (Task 8), `MicroserviceState` (Task 2)
+
+- Consumes: `AbstractMicroservice` (Task 4), `ServiceAwareQueuedExecutor` (Task 7), `ServiceAwareEphemeralExecutor`
+  (Task 8), `MicroserviceState` (Task 2)
 - Produces: Refactored `JIPipeAIServiceComponent` with `EmbeddingModelService` inner class
 
 - [ ] **Step 1: Create EmbeddingModelService as inner class**
 
 In `JIPipeAIServiceComponent.java`, add an inner class `EmbeddingModelService extends AbstractMicroservice` that:
-- Has `onStart()` that does what `startEmbeddingModelNow()` currently does (resolve artifact, acquire lease or create runner)
+
+- Has `onStart()` that does what `startEmbeddingModelNow()` currently does (resolve artifact, acquire lease or create
+  runner)
 - Has `onStop()` that does what `stopEmbeddingModelNow()` currently does (release lease, shutdown runner)
 - Has a `embedNow(String text)` method that delegates to lease/runner
 - Has a `getModelId()` method
@@ -2071,22 +2117,26 @@ In `JIPipeAIServiceComponent.java`, add an inner class `EmbeddingModelService ex
 - [ ] **Step 2: Replace the mixed queue with service-aware executors**
 
 Replace:
+
 ```java
 private final JIPipeQueuedRunnableExecutor taskQueue = new JIPipeQueuedRunnableExecutor("AI Service");
 ```
 
 With:
+
 ```java
 private final EmbeddingModelService embeddingModelService;
 private final ServiceAwareQueuedExecutor embedQueue;
 private final ServiceAwareEphemeralExecutor searchQueue;
 ```
 
-Initialize them in the constructor. The `embedQueue` is used for batch embed operations (e.g., `tryEmbed()`), and the `searchQueue` is used for AI search operations.
+Initialize them in the constructor. The `embedQueue` is used for batch embed operations (e.g., `tryEmbed()`), and the
+`searchQueue` is used for AI search operations.
 
 - [ ] **Step 3: Remove old task classes and methods**
 
 Remove:
+
 - `LoadEmbeddingModelTask` inner class
 - `UnloadEmbeddingModelTask` inner class
 - `EmbedTextTask` inner class
@@ -2113,6 +2163,7 @@ Remove:
 - [ ] **Step 5: Delete JIPipeAIModelRunnerStatus.java**
 
 Delete the file. Update all references:
+
 - `JIPipeAIModelRunner.java` — change `getStatus()` return type to `MicroserviceState`
 - `JIPipeAPIEmbeddingAIModelRunner.java` — update status field and references
 - `JIPipeOnnxEmbeddingAIModelRunner.java` — update status field and references
@@ -2120,7 +2171,9 @@ Delete the file. Update all references:
 - [ ] **Step 6: Update AI monitor UI components**
 
 Update all files importing `JIPipeAIModelRunnerStatus`:
-- `JIPipeDesktopAIMonitorOverviewPage.java` — subscribe to `MicroserviceStateChangeEvent`, replace status checks with `MicroserviceState`
+
+- `JIPipeDesktopAIMonitorOverviewPage.java` — subscribe to `MicroserviceStateChangeEvent`, replace status checks with
+  `MicroserviceState`
 - `JIPipeDesktopAIStatusControl.java` — same
 - `JIPipeDesktopAIMonitorLogPage.java` — same
 - `JIPipeDesktopAIMonitorEmbeddingLogPage.java` — same
@@ -2128,6 +2181,7 @@ Update all files importing `JIPipeAIModelRunnerStatus`:
 - `ModelConfigurationComponent.java` — same
 
 Replace patterns:
+
 - `JIPipeAIModelRunnerStatus.Unloaded` / `Failed` → `MicroserviceState.Stopped` / `Failed`
 - `JIPipeAIModelRunnerStatus.Loading` → `MicroserviceState.Starting`
 - `JIPipeAIModelRunnerStatus.Idle` / `Busy` → `MicroserviceState.Ready`
@@ -2150,23 +2204,28 @@ git commit -m "Migrate JIPipeAIServiceComponent to microservice framework, delet
 ## Task 13: Migrate JIPipeAINodeDatabaseSearch to use ServiceAwareEphemeralExecutor
 
 **Files:**
+
 - Modify: `jipipe-core/src/main/java/org/hkijena/jipipe/api/nodes/database/JIPipeAINodeDatabaseSearch.java`
 
 **Interfaces:**
+
 - Consumes: `ServiceAwareEphemeralExecutor` (Task 8), refactored `JIPipeAIServiceComponent` (Task 12)
 - Produces: Cleaned-up AI search without workarounds
 
 - [ ] **Step 1: Remove the submitEmbedFunction workaround**
 
-Remove the single-task `submitEmbedFunction` pattern from `internalQuery()`. Replace with a simple enqueue on the search ephemeral executor (or direct execution if already on a worker thread).
+Remove the single-task `submitEmbedFunction` pattern from `internalQuery()`. Replace with a simple enqueue on the search
+ephemeral executor (or direct execution if already on a worker thread).
 
 The search should:
+
 1. Pre-filter candidates (unchanged)
 2. Create a `SearchRun` task that does: ensure embeddings, embed query, score, sort
 3. Enqueue the `SearchRun` on a `ServiceAwareEphemeralExecutor` gated on the embedding model microservice
 4. Block on the result
 
 Remove:
+
 - `SEARCH_TOTAL_TIMEOUT_SECONDS` constant
 - The `submitEmbedFunction` lambda
 - The `JIPipeAIModelRunnerStatus` status check inside the lambda
@@ -2174,6 +2233,7 @@ Remove:
 - [ ] **Step 2: Simplify internalQuery**
 
 The `internalQuery()` method should:
+
 1. Check AI availability (unchanged)
 2. Pre-filter candidates (unchanged)
 3. Handle empty query (unchanged)
@@ -2181,11 +2241,14 @@ The `internalQuery()` method should:
 5. Get the search executor from the AI service (or accept it as a constructor parameter)
 6. Enqueue a search task and block on the result
 
-The search task body (running on the ephemeral executor's worker thread) uses `tryEmbed()` for the query and `ensureEmbeddingsForEntries()` for entries. These now go through the `ServiceAwareQueuedExecutor` which handles readiness gating.
+The search task body (running on the ephemeral executor's worker thread) uses `tryEmbed()` for the query and
+`ensureEmbeddingsForEntries()` for entries. These now go through the `ServiceAwareQueuedExecutor` which handles
+readiness gating.
 
 - [ ] **Step 3: Remove ensureEmbeddingsForEntriesWithEmbedder if no longer needed**
 
-If the `ensureEmbeddingsForEntriesWithEmbedder` method in `JIPipeEmbeddingDatabase` is no longer used (check with grep), remove it and the corresponding method in `JIPipeGlobalEmbeddingSearch`.
+If the `ensureEmbeddingsForEntriesWithEmbedder` method in `JIPipeEmbeddingDatabase` is no longer used (check with grep),
+remove it and the corresponding method in `JIPipeGlobalEmbeddingSearch`.
 
 - [ ] **Step 4: Verify it compiles**
 
@@ -2209,6 +2272,7 @@ git commit -m "Migrate AI search to ServiceAwareEphemeralExecutor, remove workar
 ## Task 14: Final cleanup and verification
 
 **Files:**
+
 - Various (cleanup of dead imports, dead code)
 
 - [ ] **Step 1: Search for remaining references to deleted types**
@@ -2218,7 +2282,8 @@ Expected: No results (only comments are OK)
 
 - [ ] **Step 2: Search for remaining references to removed methods**
 
-Run: `rg "submitEmbedFunction|EmbedFunctionTask|LoadEmbeddingModelTask|UnloadEmbeddingModelTask|waitForEmbeddingModelReady" -g "*.java"`
+Run:
+`rg "submitEmbedFunction|EmbedFunctionTask|LoadEmbeddingModelTask|UnloadEmbeddingModelTask|waitForEmbeddingModelReady" -g "*.java"`
 Expected: No results
 
 - [ ] **Step 3: Full compile**
@@ -2243,6 +2308,7 @@ git commit -m "Final cleanup: remove dead code and imports (#1322)"
 ## Self-Review Notes
 
 **Spec coverage:**
+
 - MicroserviceState enum → Task 2 ✓
 - Microservice interface + AbstractMicroservice → Task 4 ✓
 - MicroserviceStateChangeEvent system → Task 3 ✓
@@ -2259,4 +2325,6 @@ git commit -m "Final cleanup: remove dead code and imports (#1322)"
 
 **Placeholder scan:** No TBDs, TODOs, or "implement later" in any step. All code blocks are complete.
 
-**Type consistency:** `MicroserviceState` values used consistently. `Microservice` interface methods match across tasks. `AbstractMicroservice` constructor takes `String name` consistently. Executor methods match `JIPipeRunnableExecutor` interface.
+**Type consistency:** `MicroserviceState` values used consistently. `Microservice` interface methods match across tasks.
+`AbstractMicroservice` constructor takes `String name` consistently. Executor methods match `JIPipeRunnableExecutor`
+interface.

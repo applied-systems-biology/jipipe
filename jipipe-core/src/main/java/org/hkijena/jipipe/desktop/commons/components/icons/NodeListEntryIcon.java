@@ -40,11 +40,17 @@ import java.awt.image.BufferedImage;
  * scaled DOWN (aspect-preserving) only if it is larger than the region.
  */
 public class NodeListEntryIcon implements Icon {
-    /** The bar width (a little more than the 16px node icons). */
+    /**
+     * The bar width (a little more than the 16px node icons).
+     */
     public static final int WIDTH = 22;
-    /** The upper region reserved for the node icon (its height). */
+    /**
+     * The upper region reserved for the node icon (its height).
+     */
     private static final int ICON_REGION = 22;
-    /** The top margin above the node icon region. */
+    /**
+     * The top margin above the node icon region.
+     */
     private static final int TOP_MARGIN = 3;
     private static final int ARC = 6;
 
@@ -60,12 +66,12 @@ public class NodeListEntryIcon implements Icon {
         this.height = height;
     }
 
-    public void setFillColor(Color c) {
-        this.background = c;
-    }
-
     public Color getFillColor() {
         return background;
+    }
+
+    public void setFillColor(Color c) {
+        this.background = c;
     }
 
     /**

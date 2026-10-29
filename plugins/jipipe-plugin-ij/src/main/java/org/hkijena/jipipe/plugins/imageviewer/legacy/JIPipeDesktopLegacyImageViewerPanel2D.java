@@ -92,6 +92,7 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
     private final JIPipeQueuedRunnableExecutor viewerRunnerQueue = new JIPipeQueuedRunnableExecutor("Image Viewer 2D");
     private final List<CompositeLayer> orderedCompositeBlendLayers = new ArrayList<>();
     private final Map<Integer, CompositeLayer> compositeBlendLayers = new HashMap<>();
+    private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
     private ImagePlusData image;
     private ImageCanvas zoomedDummyCanvas;
     private ImageCanvas exportDummyCanvas;
@@ -245,7 +246,7 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
         }
         refreshSliders();
         uploadSliceToCanvas();
-    }    private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
+    }
 
     private void initializeAnimationControls() {
         animationTimer.setRepeats(true);
@@ -1082,8 +1083,6 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
             return channel;
         }
     }
-
-
 
 
 }

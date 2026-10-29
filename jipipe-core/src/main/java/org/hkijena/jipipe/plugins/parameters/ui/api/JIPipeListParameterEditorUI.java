@@ -20,7 +20,6 @@ import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPan
 import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeListParameter;
 import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeListParameterItemParameterAccess;
 import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameterSettings;
-import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -56,16 +55,21 @@ import java.util.List;
  */
 @SuppressWarnings("rawtypes")
 public abstract class JIPipeListParameterEditorUI extends JIPipeDesktopParameterEditorUI<JIPipeListParameter> {
-    /** Rows shown per page in the inline (non-scrolling) list view. */
+    /**
+     * Rows shown per page in the inline (non-scrolling) list view.
+     */
     static final int PAGE_SIZE = 5;
-    /** Custom drag flavor so only grips drag onto list rows (in-JVM identity). */
+    /**
+     * Custom drag flavor so only grips drag onto list rows (in-JVM identity).
+     */
     private static final DataFlavor GRIP_DRAG_FLAVOR =
             new DataFlavor(String.class, "JIPipeListGripDrag");
 
     private final JLabel emptyLabel = UIUtils.createInfoLabel("This list is empty", "Click <i>Add</i> to insert a new item.");
     private final JLabel countLabel = new JLabel("");
-    private JIPipeDesktopFormPanel formPanel;
-    /** Current pagination state; rebuilt in {@link #reload()}. */
+    /**
+     * Current pagination state; rebuilt in {@link #reload()}.
+     */
     ListPaginationModel pagination;
     /**
      * Invoked after a structural change to the row order (grip drag or the
@@ -76,11 +80,34 @@ public abstract class JIPipeListParameterEditorUI extends JIPipeDesktopParameter
      * it null (the parameter write already reloads it).
      */
     Runnable afterRowOrderChanged;
+    private JIPipeDesktopFormPanel formPanel;
 
     protected JIPipeListParameterEditorUI(Class<?> parameterClass, InitializationParameters parameters) {
         super((Class<JIPipeListParameter>) parameterClass, parameters);
         initializeBase();
         reload();
+    }
+
+    /**
+     * Moves the item at {@code from} to be at position {@code to} (the
+     * position in the list <em>before</em> the removal; i.e. the row index the
+     * drop would insert at). Adjusts for the shift caused by the removal and
+     * clamps to the valid range.
+     *
+     * @return true if a move happened, false if the indices were out of bounds
+     */
+    public static boolean moveItem(JIPipeListParameter list, int from, int to) {
+        if (list == null || from < 0 || from >= list.size()) {
+            return false;
+        }
+        Object value = list.remove(from);
+        int adjusted = to;
+        if (adjusted > from) {
+            adjusted--;
+        }
+        adjusted = Math.max(0, Math.min(adjusted, list.size()));
+        list.add(adjusted, value);
+        return true;
     }
 
     /**
@@ -189,7 +216,7 @@ public abstract class JIPipeListParameterEditorUI extends JIPipeDesktopParameter
      * parameter type's own editor UI (plain lists) or a nested mini form
      * panel (collection lists).
      *
-     * @param index the item's index in the list
+     * @param index  the item's index in the list
      * @param access the parameter access for this item
      * @return the content component (added at gridx=1 by {@link #buildListRow})
      */
@@ -222,7 +249,9 @@ public abstract class JIPipeListParameterEditorUI extends JIPipeDesktopParameter
         updateCountLabel();
     }
 
-    /** @return whether the inline view paginates (false for scroll-bar lists) */
+    /**
+     * @return whether the inline view paginates (false for scroll-bar lists)
+     */
     private boolean paginationEnabled() {
         ListParameterSettings settings = getParameterAccess().getAnnotationOfType(ListParameterSettings.class);
         return settings == null || !settings.withScrollBar();
@@ -374,28 +403,6 @@ public abstract class JIPipeListParameterEditorUI extends JIPipeDesktopParameter
         setParameter(parameter, true);
     }
 
-    /**
-     * Moves the item at {@code from} to be at position {@code to} (the
-     * position in the list <em>before</em> the removal; i.e. the row index the
-     * drop would insert at). Adjusts for the shift caused by the removal and
-     * clamps to the valid range.
-     *
-     * @return true if a move happened, false if the indices were out of bounds
-     */
-    public static boolean moveItem(JIPipeListParameter list, int from, int to) {
-        if (list == null || from < 0 || from >= list.size()) {
-            return false;
-        }
-        Object value = list.remove(from);
-        int adjusted = to;
-        if (adjusted > from) {
-            adjusted--;
-        }
-        adjusted = Math.max(0, Math.min(adjusted, list.size()));
-        list.add(adjusted, value);
-        return true;
-    }
-
     private void moveEntryTo(int from, int to) {
         if (moveItem(getParameter(), from, to)) {
             setParameter(getParameter(), true);
@@ -403,6 +410,76 @@ public abstract class JIPipeListParameterEditorUI extends JIPipeDesktopParameter
                 afterRowOrderChanged.run();
             }
         }
+    }
+
+    /**
+     * Grip activation behavior:
+     * <ul>
+     * <li>{@code MENU} — the inline view: the grip's left click opens the
+     * per-row menu (Delete / Move up / Move down), like the right click.</li>
+     * <li>{@code SELECT} — the modal view: the grip's left click is forwarded
+     * to {@link ListRowCallbacks#onGripActivate} (single / Ctrl-toggle /
+     * Shift-range selection over the caller's own state).</li>
+     * </ul>
+     * The right click opens the per-row menu for both.
+     */
+    enum RowGripBehavior {
+        MENU, SELECT
+    }
+
+    /**
+     * Callbacks a caller of {@link #buildListRow} supplies so the row stays
+     * stateless — the modal editor owns its selection state.
+     */
+    interface ListRowCallbacks {
+        /**
+         * The grip's left click (SELECT behavior).
+         *
+         * @param index the row's item index in the list
+         * @param shift Shift was pressed (range from the last clicked row)
+         * @param ctrl  Ctrl was pressed (toggle)
+         */
+        void onGripActivate(int index, boolean shift, boolean ctrl);
+    }
+
+    /**
+     * Carries the dragged row's identity over the custom flavor (in-JVM).
+     */
+    private static class GripTransferable implements Transferable {
+        private final EntryComponents entry;
+
+        GripTransferable(EntryComponents entry) {
+            this.entry = entry;
+        }
+
+        @Override
+        public DataFlavor[] getTransferDataFlavors() {
+            return new DataFlavor[]{GRIP_DRAG_FLAVOR};
+        }
+
+        @Override
+        public boolean isDataFlavorSupported(DataFlavor flavor) {
+            return GRIP_DRAG_FLAVOR.equals(flavor);
+        }
+
+        @Override
+        public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException {
+            if (!GRIP_DRAG_FLAVOR.equals(flavor)) {
+                throw new UnsupportedFlavorException(flavor);
+            }
+            return entry;
+        }
+    }
+
+    /**
+     * One built list row: its panel, the grip button, and a selection flag.
+     * Package-visible so the modal editor (Task 4) can hold its own
+     * {@code List<EntryComponents>} of rows built via {@link #buildListRow}.
+     */
+    static class EntryComponents {
+        JPanel entryPanel;
+        JButton grip;
+        boolean selected;
     }
 
     /**
@@ -462,73 +539,5 @@ public abstract class JIPipeListParameterEditorUI extends JIPipeDesktopParameter
             moveEntryTo(sourceIndex, before ? targetIndex : targetIndex + 1);
             return true;
         }
-    }
-
-    /** Carries the dragged row's identity over the custom flavor (in-JVM). */
-    private static class GripTransferable implements Transferable {
-        private final EntryComponents entry;
-
-        GripTransferable(EntryComponents entry) {
-            this.entry = entry;
-        }
-
-        @Override
-        public DataFlavor[] getTransferDataFlavors() {
-            return new DataFlavor[]{GRIP_DRAG_FLAVOR};
-        }
-
-        @Override
-        public boolean isDataFlavorSupported(DataFlavor flavor) {
-            return GRIP_DRAG_FLAVOR.equals(flavor);
-        }
-
-        @Override
-        public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException {
-            if (!GRIP_DRAG_FLAVOR.equals(flavor)) {
-                throw new UnsupportedFlavorException(flavor);
-            }
-            return entry;
-        }
-    }
-
-    /**
-     * One built list row: its panel, the grip button, and a selection flag.
-     * Package-visible so the modal editor (Task 4) can hold its own
-     * {@code List<EntryComponents>} of rows built via {@link #buildListRow}.
-     */
-    static class EntryComponents {
-        JPanel entryPanel;
-        JButton grip;
-        boolean selected;
-    }
-
-    /**
-     * Grip activation behavior:
-     * <ul>
-     * <li>{@code MENU} — the inline view: the grip's left click opens the
-     * per-row menu (Delete / Move up / Move down), like the right click.</li>
-     * <li>{@code SELECT} — the modal view: the grip's left click is forwarded
-     * to {@link ListRowCallbacks#onGripActivate} (single / Ctrl-toggle /
-     * Shift-range selection over the caller's own state).</li>
-     * </ul>
-     * The right click opens the per-row menu for both.
-     */
-    enum RowGripBehavior {
-        MENU, SELECT
-    }
-
-    /**
-     * Callbacks a caller of {@link #buildListRow} supplies so the row stays
-     * stateless — the modal editor owns its selection state.
-     */
-    interface ListRowCallbacks {
-        /**
-         * The grip's left click (SELECT behavior).
-         *
-         * @param index the row's item index in the list
-         * @param shift Shift was pressed (range from the last clicked row)
-         * @param ctrl  Ctrl was pressed (toggle)
-         */
-        void onGripActivate(int index, boolean shift, boolean ctrl);
     }
 }

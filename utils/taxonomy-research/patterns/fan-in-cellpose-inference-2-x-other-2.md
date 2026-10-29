@@ -35,26 +35,30 @@ Mined pattern `fan-in-cellpose-inference-2-x-other-2` (shape `fan-in`, support 3
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| other | `cellpose-inference-2.x` |
+| role  | node ids                                                                                                                                                                                             |
+|-------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| other | `cellpose-inference-2.x`                                                                                                                                                                             |
 | other | `cellpose-2`, `cellpose-inference-2.x`, `ij1-contrast-illumination-correction2d`, `ij1-dimensions-stacks-to-dimension`, `ij1-math-divide-by-maximum`, `ij1-math-fast-image-arithmetics`, … (8 total) |
 
 ## Example graph
 
-Project: `AIAgentTests/02-AdvancedPipelines/Cryogels_01.jip` (relative to `/data/JIPipe`), compartment `Apply Cellpose Model 1`.
+Project: `AIAgentTests/02-AdvancedPipelines/Cryogels_01.jip` (relative to `/data/JIPipe`), compartment
+`Apply Cellpose Model 1`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `import-cellpose-model-v2` | Import Cellpose model from file |
-| n1 | `ij1-math-fast-image-arithmetics` | Fast image arithmetics 2D |
-| n2 | `cellpose-inference-2.x` | Cellpose segmentation (2.x) |
+| key | node id                           | name                            |
+|-----|-----------------------------------|---------------------------------|
+| n0  | `import-cellpose-model-v2`        | Import Cellpose model from file |
+| n1  | `ij1-math-fast-image-arithmetics` | Fast image arithmetics 2D       |
+| n2  | `cellpose-inference-2.x`          | Cellpose segmentation (2.x)     |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
+| from                      | slot     | to                          | slot    | data class                 |
+|---------------------------|----------|-----------------------------|---------|----------------------------|
 | Fast image arithmetics 2D | `Output` | Cellpose segmentation (2.x) | `Input` | `imagej-imgplus-greyscale` |
 
 ## Template
 
-Proposed name `Cellpose segmentation (2.x) fans in from 8 source ids (roles: other)`, menu path `Patterns/Machine learning/Cellpose segmentation (2.x) fans in from 8 source ids (roles: other)` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/fan-in-cellpose-inference-2-x-other-2.json`.
+Proposed name `Cellpose segmentation (2.x) fans in from 8 source ids (roles: other)`, menu path
+`Patterns/Machine learning/Cellpose segmentation (2.x) fans in from 8 source ids (roles: other)` (proposal only — not
+registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/fan-in-cellpose-inference-2-x-other-2.json`.
 

@@ -27,8 +27,6 @@ public class SpinnerIcon implements Icon, JIPipeApplicationSettingsServiceCompon
 
     public static final int ANIMATION_DELAY = 80;
     private final Timer timer;
-    private boolean reducedMotion;
-    private boolean shouldAnimate = false;
     private final int numLines = 14;
     private final double[] x1Locations = new double[numLines];
     private final double[] y1Locations = new double[numLines];
@@ -36,9 +34,11 @@ public class SpinnerIcon implements Icon, JIPipeApplicationSettingsServiceCompon
     private final double[] y2Locations = new double[numLines];
     private final Color[] colors;
     private final Color baseColor;
+    private final int size;
+    private boolean reducedMotion;
+    private boolean shouldAnimate = false;
     private Component parent;
     private int colorShift = 0;
-    private final int size;
 
     public SpinnerIcon(Component parent) {
         this(parent, 16);
@@ -93,23 +93,20 @@ public class SpinnerIcon implements Icon, JIPipeApplicationSettingsServiceCompon
         Graphics2D graphics2D = (Graphics2D) g;
         graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         graphics2D.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
-        if(reducedMotion) {
+        if (reducedMotion) {
             ImageIcon hourglass;
-            if(getIconWidth() > 22 || getIconHeight() > 22 ) {
-                hourglass= JIPipe.RESOURCES.getIcon32("actions/hourglass-half.png");
-            }
-            else {
-                hourglass= JIPipe.RESOURCES.getIcon16("actions/hourglass-half.png");
+            if (getIconWidth() > 22 || getIconHeight() > 22) {
+                hourglass = JIPipe.RESOURCES.getIcon32("actions/hourglass-half.png");
+            } else {
+                hourglass = JIPipe.RESOURCES.getIcon16("actions/hourglass-half.png");
             }
             graphics2D.drawImage(hourglass.getImage(), x, y, getIconWidth(), getIconHeight(), null);
-        }
-        else if(timer.isRunning()) {
+        } else if (timer.isRunning()) {
             for (int i = 0; i < numLines; i++) {
                 graphics2D.setColor(colors[(numLines - i - 1 + colorShift) % numLines]);
                 graphics2D.draw(new Line2D.Double(x + x1Locations[i], y + y1Locations[i], x + x2Locations[i], y + y2Locations[i]));
             }
-        }
-        else {
+        } else {
             graphics2D.setColor(baseColor);
             graphics2D.drawOval(1, 1, getIconWidth() - 2, getIconHeight() - 2);
         }

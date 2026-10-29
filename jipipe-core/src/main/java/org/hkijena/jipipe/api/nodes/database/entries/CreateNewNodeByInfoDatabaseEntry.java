@@ -20,7 +20,6 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.database.DefaultJIPipeNodeDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabasePipelineVisibility;
 import org.hkijena.jipipe.api.nodes.database.WeightedTokens;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeClassification;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.NoFramework;
@@ -89,29 +88,6 @@ public class CreateNewNodeByInfoDatabaseEntry extends DefaultJIPipeNodeDatabaseE
     }
 
     /**
-     * Populates {@link #locationInfos} from the node's taxonomy (Task 26a).
-     * <p>
-     * The primary function contributes the function chain root→leaf,
-     * {@code \n}-joined, no node name — e.g. {@code "Data Sources\nImage data"}.
-     * The 21b node-finder + entry-list renderers do {@code .replace("\n", " > ")},
-     * and the search/embedding consume the raw form. Secondary functions each
-     * contribute their own chain (they replace the removed alias location
-     * entries). A node with no primary function contributes nothing — it
-     * should not exist post-conversion; do NOT read the legacy category.
-     */
-    private void initializeLocationInfos() {
-        JIPipeNodeTaxonomyFunction primary = nodeInfo.getPrimaryFunction();
-        if (primary != null) {
-            locationInfos.add(functionChainLocation(primary));
-        }
-        for (JIPipeNodeTaxonomyFunction secondary : nodeInfo.getSecondaryFunctions()) {
-            if (secondary != null) {
-                locationInfos.add(functionChainLocation(secondary));
-            }
-        }
-    }
-
-    /**
      * The {@code \n}-joined function chain (root→leaf) for the given leaf
      * function, e.g. {@code "Data Sources\nImage data"}. Guards against a
      * cyclic parent chain so it always terminates.
@@ -136,34 +112,6 @@ public class CreateNewNodeByInfoDatabaseEntry extends DefaultJIPipeNodeDatabaseE
             sb.append(names.get(i));
         }
         return sb.toString();
-    }
-
-    private void initializeSlots() {
-        for (AddJIPipeInputSlot inputSlot : nodeInfo.getInputSlots()) {
-            if (!StringUtils.isNullOrEmpty(inputSlot.name())) {
-                inputSlots.put(inputSlot.name(), new JIPipeDataSlotInfo(inputSlot.value(),
-                        JIPipeSlotType.Input,
-                        inputSlot.name(),
-                        inputSlot.description()));
-            }
-        }
-        for (AddJIPipeOutputSlot outputSlot : nodeInfo.getOutputSlots()) {
-            if (!StringUtils.isNullOrEmpty(outputSlot.name())) {
-                outputSlots.put(outputSlot.name(), new JIPipeDataSlotInfo(outputSlot.value(),
-                        JIPipeSlotType.Output,
-                        outputSlot.name(),
-                        outputSlot.description()));
-            }
-        }
-    }
-
-    private void initializeTokens() {
-        tokens.add(nodeInfo.getName(), WeightedTokens.WEIGHT_NAME);
-        tokens.add(nodeInfo.getDescription().getBody(), WeightedTokens.WEIGHT_DESCRIPTION);
-        // Task 18: feed the new taxonomy into the search tokens ADDITIVELY.
-        // For unconverted nodes (no function, NoFramework, no tags) this
-        // adds nothing, so the legacy token set is unchanged.
-        addTaxonomyTokens(tokens, nodeInfo);
     }
 
     /**
@@ -233,6 +181,57 @@ public class CreateNewNodeByInfoDatabaseEntry extends DefaultJIPipeNodeDatabaseE
             weight = Math.max(WeightedTokens.WEIGHT_FUNCTION_TOP, weight - 2);
             current = current.getParent();
         }
+    }
+
+    /**
+     * Populates {@link #locationInfos} from the node's taxonomy (Task 26a).
+     * <p>
+     * The primary function contributes the function chain root→leaf,
+     * {@code \n}-joined, no node name — e.g. {@code "Data Sources\nImage data"}.
+     * The 21b node-finder + entry-list renderers do {@code .replace("\n", " > ")},
+     * and the search/embedding consume the raw form. Secondary functions each
+     * contribute their own chain (they replace the removed alias location
+     * entries). A node with no primary function contributes nothing — it
+     * should not exist post-conversion; do NOT read the legacy category.
+     */
+    private void initializeLocationInfos() {
+        JIPipeNodeTaxonomyFunction primary = nodeInfo.getPrimaryFunction();
+        if (primary != null) {
+            locationInfos.add(functionChainLocation(primary));
+        }
+        for (JIPipeNodeTaxonomyFunction secondary : nodeInfo.getSecondaryFunctions()) {
+            if (secondary != null) {
+                locationInfos.add(functionChainLocation(secondary));
+            }
+        }
+    }
+
+    private void initializeSlots() {
+        for (AddJIPipeInputSlot inputSlot : nodeInfo.getInputSlots()) {
+            if (!StringUtils.isNullOrEmpty(inputSlot.name())) {
+                inputSlots.put(inputSlot.name(), new JIPipeDataSlotInfo(inputSlot.value(),
+                        JIPipeSlotType.Input,
+                        inputSlot.name(),
+                        inputSlot.description()));
+            }
+        }
+        for (AddJIPipeOutputSlot outputSlot : nodeInfo.getOutputSlots()) {
+            if (!StringUtils.isNullOrEmpty(outputSlot.name())) {
+                outputSlots.put(outputSlot.name(), new JIPipeDataSlotInfo(outputSlot.value(),
+                        JIPipeSlotType.Output,
+                        outputSlot.name(),
+                        outputSlot.description()));
+            }
+        }
+    }
+
+    private void initializeTokens() {
+        tokens.add(nodeInfo.getName(), WeightedTokens.WEIGHT_NAME);
+        tokens.add(nodeInfo.getDescription().getBody(), WeightedTokens.WEIGHT_DESCRIPTION);
+        // Task 18: feed the new taxonomy into the search tokens ADDITIVELY.
+        // For unconverted nodes (no function, NoFramework, no tags) this
+        // adds nothing, so the legacy token set is unchanged.
+        addTaxonomyTokens(tokens, nodeInfo);
     }
 
     @Override

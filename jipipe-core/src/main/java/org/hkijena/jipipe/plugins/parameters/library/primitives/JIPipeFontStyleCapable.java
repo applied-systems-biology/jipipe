@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.plugins.parameters.library.primitives;
 
-import java.awt.Font;
+import java.awt.*;
 
 /**
  * A {@link JIPipeFontValue} that also carries a {@link Font} style
@@ -22,9 +22,13 @@ import java.awt.Font;
  */
 public interface JIPipeFontStyleCapable {
 
-    /** @return the style bit flags */
+    /**
+     * @return the style bit flags
+     */
     int getStyle();
 
-    /** @param style the style bit flags */
+    /**
+     * @param style the style bit flags
+     */
     void setStyle(int style);
 }

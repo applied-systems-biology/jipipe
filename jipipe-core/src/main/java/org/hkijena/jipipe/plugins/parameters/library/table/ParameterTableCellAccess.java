@@ -27,11 +27,11 @@ import java.util.List;
  */
 public class ParameterTableCellAccess implements JIPipeParameterAccess {
 
-    private JIPipePathMetadataStore metadata = new JIPipePathMetadataStore();
     private final JIPipeParameterAccess parent;
     private final ParameterTable table;
     private final int row;
     private final int column;
+    private JIPipePathMetadataStore metadata = new JIPipePathMetadataStore();
 
     /**
      * Creates a new instance

@@ -26,7 +26,6 @@ import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
 
 import javax.swing.*;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Set;
 

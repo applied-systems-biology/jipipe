@@ -14,8 +14,6 @@
 package org.hkijena.jipipe.plugins.cef;
 
 import me.friwi.jcefmaven.CefAppBuilder;
-import me.friwi.jcefmaven.CefInitializationException;
-import me.friwi.jcefmaven.UnsupportedPlatformException;
 import org.cef.CefApp;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;

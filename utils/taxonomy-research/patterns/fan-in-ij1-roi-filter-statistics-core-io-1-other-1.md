@@ -35,27 +35,31 @@ Mined pattern `fan-in-ij1-roi-filter-statistics-core-io-1-other-1` (shape `fan-i
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| other | `ij1-roi-filter-statistics` |
-| core-io | `jipipe:compartment-output` |
-| other | `cellpose-2`, `cellpose-inference-2.x`, `cellpose-segmentation-inference-3.x`, `ij1-analyze-find-particles2d`, `ij1-math-divide-by-maximum`, `ij1-roi-combine`, … (9 total) |
+| role    | node ids                                                                                                                                                                    |
+|---------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| other   | `ij1-roi-filter-statistics`                                                                                                                                                 |
+| core-io | `jipipe:compartment-output`                                                                                                                                                 |
+| other   | `cellpose-2`, `cellpose-inference-2.x`, `cellpose-segmentation-inference-3.x`, `ij1-analyze-find-particles2d`, `ij1-math-divide-by-maximum`, `ij1-roi-combine`, … (9 total) |
 
 ## Example graph
 
-Project: `AIAgentTests/01-BasicWorkshop/JSC_2025_08_ROI_Labels_Filaments/Kidney/kidney.jip` (relative to `/data/JIPipe`), compartment `File Handling+Glomeruli`.
+Project: `AIAgentTests/01-BasicWorkshop/JSC_2025_08_ROI_Labels_Filaments/Kidney/kidney.jip` (relative to
+`/data/JIPipe`), compartment `File Handling+Glomeruli`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `jipipe:compartment-output` | Output |
-| n1 | `ij1-analyze-find-particles2d` | Find particles 2D |
-| n2 | `ij1-roi-filter-statistics` | Filter ROI by statistics |
+| key | node id                        | name                     |
+|-----|--------------------------------|--------------------------|
+| n0  | `jipipe:compartment-output`    | Output                   |
+| n1  | `ij1-analyze-find-particles2d` | Find particles 2D        |
+| n2  | `ij1-roi-filter-statistics`    | Filter ROI by statistics |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
+| from              | slot  | to                       | slot  | data class   |
+|-------------------|-------|--------------------------|-------|--------------|
 | Find particles 2D | `ROI` | Filter ROI by statistics | `ROI` | `imagej-roi` |
 
 ## Template
 
-Proposed name `Filter 2D ROI by statistics fans in from 10 source ids (roles: core-io, other)`, menu path `Patterns/ROIs/Filter 2D ROI by statistics fans in from 10 source ids (roles: core-io, other)` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/fan-in-ij1-roi-filter-statistics-core-io-1-other-1.json`.
+Proposed name `Filter 2D ROI by statistics fans in from 10 source ids (roles: core-io, other)`, menu path
+`Patterns/ROIs/Filter 2D ROI by statistics fans in from 10 source ids (roles: core-io, other)` (proposal only — not
+registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/fan-in-ij1-roi-filter-statistics-core-io-1-other-1.json`.
 

@@ -35,26 +35,28 @@ Mined pattern `fan-in-ij1-roi-to-rgb-other-2` (shape `fan-in`, support 53).
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| other | `ij1-roi-to-rgb` |
+| role  | node ids                                                                                                                                                                                                     |
+|-------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| other | `ij1-roi-to-rgb`                                                                                                                                                                                             |
 | other | `cellpose-2`, `cellpose-inference-2.x`, `cellpose-segmentation-inference-3.x`, `clij:plugin:net.haesleinhuepf.clij2.plugins.GaussianBlur2D`, `distribute-data`, `ij1-analyze-find-particles2d`, … (27 total) |
 
 ## Example graph
 
 Project: `AIAgentTests/01-BasicWorkshop/lecture_03.jip` (relative to `/data/JIPipe`), compartment `Analysis`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `ij1-analyze-find-particles2d` | Find particles 2D: Circ >= 0.7, no size limits |
-| n1 | `ij1-roi-to-rgb` | Convert 2D ROI to RGB #1 |
-| n2 | `ij1-roi-to-rgb` | Convert 2D ROI to RGB #2 |
+| key | node id                        | name                                           |
+|-----|--------------------------------|------------------------------------------------|
+| n0  | `ij1-analyze-find-particles2d` | Find particles 2D: Circ >= 0.7, no size limits |
+| n1  | `ij1-roi-to-rgb`               | Convert 2D ROI to RGB #1                       |
+| n2  | `ij1-roi-to-rgb`               | Convert 2D ROI to RGB #2                       |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
+| from                     | slot     | to                       | slot    | data class                 |
+|--------------------------|----------|--------------------------|---------|----------------------------|
 | Convert 2D ROI to RGB #1 | `Output` | Convert 2D ROI to RGB #2 | `Image` | `imagej-imgplus-color-rgb` |
 
 ## Template
 
-Proposed name `Convert 2D ROI to RGB fans in from 27 source ids (roles: other)`, menu path `Patterns/ROIs/Convert 2D ROI to RGB fans in from 27 source ids (roles: other)` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/fan-in-ij1-roi-to-rgb-other-2.json`.
+Proposed name `Convert 2D ROI to RGB fans in from 27 source ids (roles: other)`, menu path
+`Patterns/ROIs/Convert 2D ROI to RGB fans in from 27 source ids (roles: other)` (proposal only — not registered).
+`data` = the minimal JIPipeGraph JSON; the full object is written to `templates/fan-in-ij1-roi-to-rgb-other-2.json`.
 

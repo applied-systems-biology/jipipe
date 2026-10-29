@@ -35,27 +35,31 @@ Mined pattern `fan-out-ij1-morph-operation2d-annotate-1-core-io-1` (shape `fan-o
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| other | `ij1-morph-operation2d` |
-| annotate | `annotate-with-data` |
-| core-io | `jipipe:compartment-output` |
+| role     | node ids                    |
+|----------|-----------------------------|
+| other    | `ij1-morph-operation2d`     |
+| annotate | `annotate-with-data`        |
+| core-io  | `jipipe:compartment-output` |
 
 ## Example graph
 
-Project: `AIAgentTests/03-ExampleWorkflows/CellposeTraining.jip` (relative to `/data/JIPipe`), compartment `Cellpose training`.
+Project: `AIAgentTests/03-ExampleWorkflows/CellposeTraining.jip` (relative to `/data/JIPipe`), compartment
+`Cellpose training`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `ij1-morph-operation2d` | Morphological operation 2D |
-| n1 | `jipipe:compartment-output` | Output |
-| n2 | `annotate-with-data` | Annotate with data |
+| key | node id                     | name                       |
+|-----|-----------------------------|----------------------------|
+| n0  | `ij1-morph-operation2d`     | Morphological operation 2D |
+| n1  | `jipipe:compartment-output` | Output                     |
+| n2  | `annotate-with-data`        | Annotate with data         |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
+| from                       | slot     | to     | slot   | data class       |
+|----------------------------|----------|--------|--------|------------------|
 | Morphological operation 2D | `Output` | Output | `Mask` | `imagej-imgplus` |
 
 ## Template
 
-Proposed name `Morphological operation 2D fans out to 2 target ids (roles: annotate, core-io)`, menu path `Patterns/Images/Morphological operation 2D fans out to 2 target ids (roles: annotate, core-io)` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/fan-out-ij1-morph-operation2d-annotate-1-core-io-1.json`.
+Proposed name `Morphological operation 2D fans out to 2 target ids (roles: annotate, core-io)`, menu path
+`Patterns/Images/Morphological operation 2D fans out to 2 target ids (roles: annotate, core-io)` (proposal only — not
+registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/fan-out-ij1-morph-operation2d-annotate-1-core-io-1.json`.
 

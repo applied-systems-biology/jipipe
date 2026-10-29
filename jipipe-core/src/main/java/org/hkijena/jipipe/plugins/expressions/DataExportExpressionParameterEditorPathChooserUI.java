@@ -11,10 +11,10 @@ import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.icons.JIPipeDesktopDualIcon;
 import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterFormPanel;
+import org.hkijena.jipipe.plugins.expressions.ui.ExpressionBuilderSyntaxChecker;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
-import org.hkijena.jipipe.plugins.expressions.ui.ExpressionBuilderSyntaxChecker;
 import org.hkijena.jipipe.utils.*;
 import org.hkijena.jipipe.utils.scripting.ScriptUtils;
 
@@ -52,8 +52,16 @@ public class DataExportExpressionParameterEditorPathChooserUI extends JDialog {
         onEntriesUpdated();
     }
 
+    private static String normalizeRootString(Path root) {
+        String rootStr = root.toString().replace('\\', '/');
+        while (rootStr.length() > 1 && rootStr.endsWith("/")) {
+            rootStr = rootStr.substring(0, rootStr.length() - 1);
+        }
+        return rootStr;
+    }
+
     private void initialize() {
-         setBackground(ThemeUtils.getCurrentStyle().getWindowBackground());
+        setBackground(ThemeUtils.getCurrentStyle().getWindowBackground());
         setTitle(title);
         setModal(true);
         setIconImage(UIUtils.getJIPipeIcon128());
@@ -93,7 +101,7 @@ public class DataExportExpressionParameterEditorPathChooserUI extends JDialog {
         expressionEditor.setEditable(false);
 
         // Wrapper panels
-        JPanel entryWrapperPanel = new JPanel(new BorderLayout(8,8));
+        JPanel entryWrapperPanel = new JPanel(new BorderLayout(8, 8));
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
         toolBar.add(UIUtils.createButton("Auto-guess from path", "Simulate a file saving procedure and automatically design appropriate settings", JIPipe.RESOURCES.getIcon16("actions/wand-magic-sparkles.png"), this::tryAutoPopulateFromPath));
@@ -101,7 +109,7 @@ public class DataExportExpressionParameterEditorPathChooserUI extends JDialog {
         entryWrapperPanel.add(entryPanelScrollPane, BorderLayout.CENTER);
         entryWrapperPanel.add(UIUtils.createJLabel("Click the path items to change their contents", JIPipe.RESOURCES.getIcon16("actions/input-mouse-click-left.png")), BorderLayout.SOUTH);
 
-        JPanel previewWrapperPanel = new JPanel(new BorderLayout(8,8));
+        JPanel previewWrapperPanel = new JPanel(new BorderLayout(8, 8));
         previewWrapperPanel.add(UIUtils.createJLabel("Preview", JIPipe.RESOURCES.getIcon16("actions/preview.png")), BorderLayout.NORTH);
         previewWrapperPanel.add(new JScrollPane(expressionEditor), BorderLayout.CENTER);
         previewWrapperPanel.add(new ExpressionBuilderSyntaxChecker(expressionEditor), BorderLayout.SOUTH);
@@ -121,43 +129,43 @@ public class DataExportExpressionParameterEditorPathChooserUI extends JDialog {
 
     private void tryAutoPopulateFromPath() {
         Path path = JIPipeDesktop.saveFile(this, workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Simulate saving", HTMLText.EMPTY, extensions);
-        if(path != null) {
+        if (path != null) {
             path = path.toAbsolutePath();
-            
+
             JIPipeProject project = workbench.getProject();
             List<Entry> newDirectoryEntries = new ArrayList<>();
             Entry newLastEntry = new Entry();
-            
+
             // Try to match against project directory or user paths
             boolean matched = false;
-            
-            if(project != null) {
+
+            if (project != null) {
                 Path projectPath = project.getWorkDirectory();
-                
+
                 // Check if path is within the project directory
-                if(projectPath != null && path.startsWith(projectPath)) {
+                if (projectPath != null && path.startsWith(projectPath)) {
                     matched = true;
                     Entry rootEntry = new Entry();
                     rootEntry.sourceType = EntrySourceType.ProjectDirectory;
                     newDirectoryEntries.add(rootEntry);
-                    
+
                     // Add relative path components
                     Path relativePath = projectPath.relativize(path);
                     addRelativePathEntries(relativePath, newDirectoryEntries, newLastEntry);
                 }
-                
+
                 // Check if path is within a project user path
-                if(!matched && projectPath != null) {
-                    for(Map.Entry<String, Path> userPathEntry : project.getMetadata().getUserPaths().getDirectoryMap(projectPath).entrySet()) {
+                if (!matched && projectPath != null) {
+                    for (Map.Entry<String, Path> userPathEntry : project.getMetadata().getUserPaths().getDirectoryMap(projectPath).entrySet()) {
                         Path userPath = userPathEntry.getValue();
-                        if(path.startsWith(userPath)) {
+                        if (path.startsWith(userPath)) {
                             matched = true;
-                            
+
                             Entry rootEntry = new Entry();
                             rootEntry.sourceType = EntrySourceType.ProjectUserPath;
                             rootEntry.content = userPathEntry.getKey();
                             newDirectoryEntries.add(rootEntry);
-                            
+
                             // Add relative path components
                             Path relativePath = userPath.relativize(path);
                             addRelativePathEntries(relativePath, newDirectoryEntries, newLastEntry);
@@ -166,73 +174,73 @@ public class DataExportExpressionParameterEditorPathChooserUI extends JDialog {
                     }
                 }
             }
-            
+
             // If no match found, use custom entries for the full path
-            if(!matched) {
+            if (!matched) {
                 Path parent = path.getParent();
                 String fileName = path.getFileName() != null ? path.getFileName().toString() : "";
-                
+
                 Path root = path.getRoot();
-                if(root != null) {
+                if (root != null) {
                     Entry rootEntry = new Entry();
                     rootEntry.sourceType = EntrySourceType.Custom;
                     rootEntry.content = normalizeRootString(root);
                     newDirectoryEntries.add(rootEntry);
                 }
-                
-                if(parent != null) {
-                    for(Path component : parent) {
+
+                if (parent != null) {
+                    for (Path component : parent) {
                         Entry entry = new Entry();
                         entry.sourceType = EntrySourceType.Custom;
                         entry.content = component.toString();
                         newDirectoryEntries.add(entry);
                     }
                 }
-                
+
                 newLastEntry.sourceType = EntrySourceType.Custom;
                 newLastEntry.content = fileName;
             }
-            
+
             // Ensure at least one directory entry exists
-            if(newDirectoryEntries.isEmpty()) {
+            if (newDirectoryEntries.isEmpty()) {
                 Entry defaultEntry = new Entry();
                 defaultEntry.sourceType = EntrySourceType.ProjectDirectory;
                 newDirectoryEntries.add(defaultEntry);
             }
-            
+
             // Apply the new configuration
             directoryEntryList = newDirectoryEntries;
             lastEntry = newLastEntry;
             onEntriesUpdated();
         }
     }
-    
+
     /**
      * Adds entries from a relative path, splitting directories and the final filename.
      *
-     * @param relativePath the relative path to process
+     * @param relativePath     the relative path to process
      * @param directoryEntries list to add directory entries to
-     * @param lastEntry the last entry (filename) to populate
+     * @param lastEntry        the last entry (filename) to populate
      */
     private void addRelativePathEntries(Path relativePath, List<Entry> directoryEntries, Entry lastEntry) {
         // Convert path to use forward slashes for consistency
         String pathStr = relativePath.toString().replace('\\', '/');
-        
+
         // Split into components
         String[] components = pathStr.split("/");
-        
+
         // All but the last component are directories
-        for(int i = 0; i < components.length - 1; i++) {
-            if(!components[i].isEmpty()) {
+        for (int i = 0; i < components.length - 1; i++) {
+            if (!components[i].isEmpty()) {
                 Entry entry = new Entry();
                 entry.sourceType = EntrySourceType.Custom;
                 entry.content = components[i];
                 directoryEntries.add(entry);
             }
         }
-        
+
         // The last component is the filename
-        if(components.length > 0 && !components[components.length - 1].isEmpty()) {
+        if (components.length > 0 && !components[components.length - 1].isEmpty()) {
             lastEntry.sourceType = EntrySourceType.Custom;
             lastEntry.content = components[components.length - 1];
         } else {
@@ -269,10 +277,9 @@ public class DataExportExpressionParameterEditorPathChooserUI extends JDialog {
             }
             break;
             case ProjectUserPath: {
-                if(ScriptUtils.isValidVariableName(firstEntry.content)) {
+                if (ScriptUtils.isValidVariableName(firstEntry.content)) {
                     sb.append("project_user_path.").append(firstEntry.content);
-                }
-                else {
+                } else {
                     sb.append("project_user_paths @ \"").append(ScriptUtils.escapeString(firstEntry.content)).append("\"");
                 }
             }
@@ -297,7 +304,8 @@ public class DataExportExpressionParameterEditorPathChooserUI extends JDialog {
                 sb.append("\"").append(ScriptUtils.escapeString(firstEntry.content)).append("\"");
             }
             break;
-            default: return "INVALID_EXPRESSION";
+            default:
+                return "INVALID_EXPRESSION";
         }
 
         // Resolve intermediate entries
@@ -328,7 +336,8 @@ public class DataExportExpressionParameterEditorPathChooserUI extends JDialog {
                     sb.append("\"").append(ScriptUtils.escapeString(entry.content)).append("\"");
                 }
                 break;
-                default: return "INVALID_EXPRESSION";
+                default:
+                    return "INVALID_EXPRESSION";
             }
         }
 
@@ -341,10 +350,9 @@ public class DataExportExpressionParameterEditorPathChooserUI extends JDialog {
             }
             break;
             case Variable: {
-                if(ScriptUtils.isValidVariableName(lastEntry.content)) {
+                if (ScriptUtils.isValidVariableName(lastEntry.content)) {
                     sb.append(lastEntry.content);
-                }
-                else {
+                } else {
                     sb.append("$\"").append(ScriptUtils.escapeString(lastEntry.content)).append("\"");
                 }
             }
@@ -365,7 +373,8 @@ public class DataExportExpressionParameterEditorPathChooserUI extends JDialog {
                 sb.append("\"").append(ScriptUtils.escapeString(lastEntry.content)).append("\"");
             }
             break;
-            default: return "INVALID_EXPRESSION";
+            default:
+                return "INVALID_EXPRESSION";
         }
 
         sb.append(")");
@@ -469,10 +478,10 @@ public class DataExportExpressionParameterEditorPathChooserUI extends JDialog {
                     JIPipe.RESOURCES.getIcon16("actions/preferences-system-symbolic.png"),
                     () -> {
                         JIPipeProject project = workbench.getProject();
-                        if(project != null) {
+                        if (project != null) {
                             Map<String, Path> userPathMap = project.getUserPathMap();
 
-                            if(userPathMap.isEmpty()) {
+                            if (userPathMap.isEmpty()) {
                                 JOptionPane.showMessageDialog(this, "No project directories configured. Please visit the project settings.", "Select project user path", JOptionPane.ERROR_MESSAGE);
                                 return;
                             }
@@ -484,7 +493,7 @@ public class DataExportExpressionParameterEditorPathChooserUI extends JDialog {
                                     null,
                                     userPathMap.keySet().toArray(new String[0]),
                                     userPathMap.keySet().iterator().next());
-                            if(selected instanceof String) {
+                            if (selected instanceof String) {
                                 entry.sourceType = EntrySourceType.ProjectUserPath;
                                 entry.content = (String) selected;
                                 onEntriesUpdated();
@@ -667,14 +676,13 @@ public class DataExportExpressionParameterEditorPathChooserUI extends JDialog {
                 }));
     }
 
-
     public DataExportExpressionParameter getOutputParameter() {
         return outputParameter;
     }
 
     private boolean tryGenerateOutputParameter() {
         String s = buildExpression();
-        if(!StringUtils.isNullOrEmpty(s) && !"INVALID_EXPRESSION".equals(s)) {
+        if (!StringUtils.isNullOrEmpty(s) && !"INVALID_EXPRESSION".equals(s)) {
             outputParameter = new DataExportExpressionParameter(s);
             return true;
         }
@@ -750,7 +758,7 @@ public class DataExportExpressionParameterEditorPathChooserUI extends JDialog {
         String fileName = p.getFileName() != null ? p.getFileName().toString() : "";
 
         Path root = p.getRoot();
-        if(root != null) {
+        if (root != null) {
             Entry rootEntry = new Entry();
             rootEntry.sourceType = EntrySourceType.Custom;
             rootEntry.content = normalizeRootString(root);
@@ -902,8 +910,8 @@ public class DataExportExpressionParameterEditorPathChooserUI extends JDialog {
         // Check for project_user_paths @ "key" format
         if (argument.startsWith("project_user_paths @ ") || argument.startsWith("project_user_paths@")) {
             String keyPart = argument.contains(" @ ")
-                ? argument.substring("project_user_paths @ ".length())
-                : argument.substring("project_user_paths@".length());
+                    ? argument.substring("project_user_paths @ ".length())
+                    : argument.substring("project_user_paths@".length());
             // Extract the key from quotes
             String key = extractQuotedString(keyPart);
             if (key != null) {
@@ -1009,20 +1017,6 @@ public class DataExportExpressionParameterEditorPathChooserUI extends JDialog {
         return null;
     }
 
-    private static String normalizeRootString(Path root) {
-        String rootStr = root.toString().replace('\\', '/');
-        while (rootStr.length() > 1 && rootStr.endsWith("/")) {
-            rootStr = rootStr.substring(0, rootStr.length() - 1);
-        }
-        return rootStr;
-    }
-
-    private static class Entry {
-        private EntrySourceType sourceType;
-        private String content = "";
-        private JoinedVariablesEntry joinedVariables;
-    }
-
     private enum EntrySourceType {
         ProjectDirectory,
         ProjectUserPath,
@@ -1031,5 +1025,11 @@ public class DataExportExpressionParameterEditorPathChooserUI extends JDialog {
         Variable,
         JoinedVariables,
         Auto
+    }
+
+    private static class Entry {
+        private EntrySourceType sourceType;
+        private String content = "";
+        private JoinedVariablesEntry joinedVariables;
     }
 }

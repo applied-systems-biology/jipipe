@@ -1,1 +1,56 @@
-{"edges":[{"source-node":"n1","source-slot":"Measurements","target-node":"n3","target-slot":"Input"},{"source-node":"n2","source-slot":"Output","target-node":"n0","target-slot":"ROI"},{"source-node":"n2","source-slot":"Output","target-node":"n1","target-slot":"ROI"}],"nodes":{"n0":{"jipipe:graph-compartment":"d9e0b318-bb1d-59c2-9548-32dadb22a099","jipipe:metadata-v1":{"location/d9e0b318-bb1d-59c2-9548-32dadb22a099/x":0,"location/d9e0b318-bb1d-59c2-9548-32dadb22a099/y":4},"jipipe:node-info-id":"ij1-roi-to-rgb"},"n1":{"jipipe:graph-compartment":"d9e0b318-bb1d-59c2-9548-32dadb22a099","jipipe:metadata-v1":{"location/d9e0b318-bb1d-59c2-9548-32dadb22a099/x":0,"location/d9e0b318-bb1d-59c2-9548-32dadb22a099/y":8},"jipipe:node-info-id":"ij1-roi-statistics"},"n2":{"jipipe:graph-compartment":"d9e0b318-bb1d-59c2-9548-32dadb22a099","jipipe:metadata-v1":{"location/d9e0b318-bb1d-59c2-9548-32dadb22a099/x":0,"location/d9e0b318-bb1d-59c2-9548-32dadb22a099/y":0},"jipipe:node-info-id":"ij1-roi-merge"},"n3":{"jipipe:graph-compartment":"d9e0b318-bb1d-59c2-9548-32dadb22a099","jipipe:metadata-v1":{"location/d9e0b318-bb1d-59c2-9548-32dadb22a099/x":0,"location/d9e0b318-bb1d-59c2-9548-32dadb22a099/y":12},"jipipe:node-info-id":"table-merge-tables"}}}
+{
+  "edges": [
+    {
+      "source-node": "n1",
+      "source-slot": "Measurements",
+      "target-node": "n3",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n2",
+      "source-slot": "Output",
+      "target-node": "n0",
+      "target-slot": "ROI"
+    },
+    {
+      "source-node": "n2",
+      "source-slot": "Output",
+      "target-node": "n1",
+      "target-slot": "ROI"
+    }
+  ],
+  "nodes": {
+    "n0": {
+      "jipipe:graph-compartment": "d9e0b318-bb1d-59c2-9548-32dadb22a099",
+      "jipipe:metadata-v1": {
+        "location/d9e0b318-bb1d-59c2-9548-32dadb22a099/x": 0,
+        "location/d9e0b318-bb1d-59c2-9548-32dadb22a099/y": 4
+      },
+      "jipipe:node-info-id": "ij1-roi-to-rgb"
+    },
+    "n1": {
+      "jipipe:graph-compartment": "d9e0b318-bb1d-59c2-9548-32dadb22a099",
+      "jipipe:metadata-v1": {
+        "location/d9e0b318-bb1d-59c2-9548-32dadb22a099/x": 0,
+        "location/d9e0b318-bb1d-59c2-9548-32dadb22a099/y": 8
+      },
+      "jipipe:node-info-id": "ij1-roi-statistics"
+    },
+    "n2": {
+      "jipipe:graph-compartment": "d9e0b318-bb1d-59c2-9548-32dadb22a099",
+      "jipipe:metadata-v1": {
+        "location/d9e0b318-bb1d-59c2-9548-32dadb22a099/x": 0,
+        "location/d9e0b318-bb1d-59c2-9548-32dadb22a099/y": 0
+      },
+      "jipipe:node-info-id": "ij1-roi-merge"
+    },
+    "n3": {
+      "jipipe:graph-compartment": "d9e0b318-bb1d-59c2-9548-32dadb22a099",
+      "jipipe:metadata-v1": {
+        "location/d9e0b318-bb1d-59c2-9548-32dadb22a099/x": 0,
+        "location/d9e0b318-bb1d-59c2-9548-32dadb22a099/y": 12
+      },
+      "jipipe:node-info-id": "table-merge-tables"
+    }
+  }
+}

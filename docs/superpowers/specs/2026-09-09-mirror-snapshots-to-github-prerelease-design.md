@@ -101,7 +101,7 @@ Script steps:
    predicate; fail if empty.
 4. Auth: `gh` reads the `GH_TOKEN` env var automatically.
 5. Delete-and-recreate (see §4):
-   - `gh release view <VERSION>`; if present, `gh release delete --yes`.
+    - `gh release view <VERSION>`; if present, `gh release delete --yes`.
 6. Create + upload:
    ```
    gh release create "<VERSION>" \
@@ -125,9 +125,9 @@ master commit → distribution_package
 
 New CI/CD variable (GitLab → Settings → CI/CD → Variables, masked):
 
-| Name | Masked | Value |
-|------|--------|-------|
-| `GH_TOKEN` | yes | GitHub **fine-grained** PAT with `Contents: Read and write` on `applied-systems-biology/jipipe` only |
+| Name       | Masked | Value                                                                                                |
+|------------|--------|------------------------------------------------------------------------------------------------------|
+| `GH_TOKEN` | yes    | GitHub **fine-grained** PAT with `Contents: Read and write` on `applied-systems-biology/jipipe` only |
 
 Token guidance:
 
@@ -163,8 +163,8 @@ Verification is intrinsic to the CI job (no JUnit applies to CI YAML):
   ```
   gh release view <VERSION> --json assets --jq '.assets[].name'
   ```
-  and assert all 5 expected filenames are present; fail if any are missing.
-  (Delete-and-recreate means a re-run recovers.)
+  and assert all 5 expected filenames are present; fail if any are missing. (Delete-and-recreate means a re-run
+  recovers.)
 - Confirm the release is queryable after creation.
 - **Manual smoke test** on first master merge: inspect
   `https://github.com/applied-systems-biology/jipipe/releases` — confirm the "Pre-release"

@@ -86,7 +86,8 @@ public class JIPipeDesktopStatisticsButton extends JButton implements JIPipeDesk
         JIPipe.getInstance().getApplicationSettings().saveLater();
 
         if (settings.isEnabled() && settings.getPrivacyLevel() != StatisticsPrivacyLevel.None) {
-            StatisticsReporter.sendNow(success -> {});
+            StatisticsReporter.sendNow(success -> {
+            });
         }
 
         removeFromStatusBar();
@@ -103,7 +104,8 @@ public class JIPipeDesktopStatisticsButton extends JButton implements JIPipeDesk
             JIPipe.getInstance().getApplicationSettings().saveLater();
 
             if (settings.isEnabled() && settings.getPrivacyLevel() != StatisticsPrivacyLevel.None) {
-                StatisticsReporter.sendNow(success -> {});
+                StatisticsReporter.sendNow(success -> {
+                });
             }
 
             removeFromStatusBar();

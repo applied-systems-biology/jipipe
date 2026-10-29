@@ -101,6 +101,115 @@ public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
     }
 
     /**
+     * Compute cosine similarity between two vectors.
+     * Handles edge cases (null vectors, zero vectors, different lengths) by returning 0.
+     *
+     * @param a the first vector
+     * @param b the second vector
+     * @return the cosine similarity in range [-1, 1], or 0 if inputs are invalid
+     */
+    public static double cosineSimilarity(float[] a, float[] b) {
+        if (a == null || b == null || a.length != b.length || a.length == 0) {
+            return 0.0;
+        }
+
+        double dotProduct = 0.0;
+        double normA = 0.0;
+        double normB = 0.0;
+
+        for (int i = 0; i < a.length; i++) {
+            dotProduct += a[i] * b[i];
+            normA += (double) a[i] * a[i];
+            normB += (double) b[i] * b[i];
+        }
+
+        if (normA == 0.0 || normB == 0.0) {
+            return 0.0;
+        }
+
+        return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
+    }
+
+    /**
+     * Determine if an entry is globally cacheable (stable ID, not project-specific).
+     * Global entries are stored in the application-wide singleton database.
+     * Local entries are stored in the per-project transient database.
+     *
+     * @param entry the node database entry
+     * @return true if the entry should be stored in the global database
+     */
+    public static boolean isGlobalEntry(JIPipeNodeDatabaseEntry entry) {
+        String id = entry.getId();
+        if (id == null) return false;
+        return id.startsWith("create-node-by-info:") ||
+                id.startsWith("create-node-by-example:") ||
+                id.startsWith("create-node-custom:");
+    }
+
+    /**
+     * Split a list of entries into global and local groups.
+     *
+     * @param entries the entries to split
+     * @return an {@link EntrySplit} containing the two groups
+     */
+    private static EntrySplit splitEntries(List<JIPipeNodeDatabaseEntry> entries) {
+        List<JIPipeNodeDatabaseEntry> global = new ArrayList<>();
+        List<JIPipeNodeDatabaseEntry> local = new ArrayList<>();
+        for (JIPipeNodeDatabaseEntry entry : entries) {
+            if (isGlobalEntry(entry)) {
+                global.add(entry);
+            } else {
+                local.add(entry);
+            }
+        }
+        return new EntrySplit(global, local);
+    }
+
+    /**
+     * Compute the best (minimum) type distance between an entry's slots and a target data type.
+     * <p>
+     * When looking for an input slot match, we check the entry's output slots
+     * (because the entry's output connects to the target input).
+     * When looking for an output slot match, we check the entry's input slots
+     * (because the target output connects to the entry's input).
+     *
+     * @param entry          the node database entry
+     * @param targetSlotType the target slot type
+     * @param targetDataType the target data type
+     * @return the best (minimum) type distance, or {@link Integer#MAX_VALUE} if no compatible slots
+     */
+    private static int bestTypeDistance(JIPipeNodeDatabaseEntry entry, JIPipeSlotType targetSlotType, Class<? extends JIPipeData> targetDataType) {
+        int best = Integer.MAX_VALUE;
+        Map<String, JIPipeDataSlotInfo> map = (targetSlotType == JIPipeSlotType.Input) ? entry.getOutputSlots() : entry.getInputSlots();
+        if (map == null) {
+            return Integer.MAX_VALUE;
+        }
+        for (Map.Entry<String, JIPipeDataSlotInfo> si : map.entrySet()) {
+            int d = dataTypeDistance(si.getValue().getDataClass(), targetDataType);
+            if (d >= 0 && d < best) best = d;
+        }
+        return best;
+    }
+
+    /**
+     * Compute the type distance between two data types.
+     * Mirrors the logic in {@link JIPipeEnhancedNodeDatabaseSearch}.
+     *
+     * @param from the source data type
+     * @param to   the target data type
+     * @return the type distance (0 = same type, higher = further away)
+     */
+    private static int dataTypeDistance(Class<? extends JIPipeData> from, Class<? extends JIPipeData> to) {
+        if (from == to) {
+            return 0;
+        } else if (to.isAssignableFrom(from)) {
+            return ReflectionUtils.getClassDistance(to, from);
+        } else {
+            return JIPipe.getDataTypes().getConversionDistance(from, to) * 5;
+        }
+    }
+
+    /**
      * Gets the progress info for AI embedding operations.
      * Returns the embedding progress info from the AI service if available,
      * otherwise falls back to {@link JIPipeProgressInfo#SILENT}.
@@ -118,6 +227,15 @@ public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
     }
 
     /**
+     * Gets the current list of entries.
+     *
+     * @return an unmodifiable view of the entries
+     */
+    public List<JIPipeNodeDatabaseEntry> getEntries() {
+        return Collections.unmodifiableList(entries);
+    }
+
+    /**
      * Sets the list of node database entries to search through.
      * The fallback search receives entries from its own {@code JIPipeNodeDatabase} reference.
      *
@@ -125,15 +243,6 @@ public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
      */
     public void setEntries(List<JIPipeNodeDatabaseEntry> entries) {
         this.entries = entries != null ? new ArrayList<>(entries) : new ArrayList<>();
-    }
-
-    /**
-     * Gets the current list of entries.
-     *
-     * @return an unmodifiable view of the entries
-     */
-    public List<JIPipeNodeDatabaseEntry> getEntries() {
-        return Collections.unmodifiableList(entries);
     }
 
     /**
@@ -155,7 +264,6 @@ public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
         return globalEmbeddingSearch;
     }
 
-
     /**
      * Gets the current model ID used by this search instance.
      * This may be non-null even if the AI service model is not currently loaded,
@@ -172,6 +280,8 @@ public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
         updateUsageCount(userSelected);
     }
 
+    // ===== Entry Classification =====
+
     @Override
     public List<JIPipeNodeDatabaseEntry> query(String text, JIPipeNodeDatabasePipelineVisibility role, boolean allowExisting, boolean allowNew, Set<String> pinnedIds, Object... flags) {
         List<JIPipeNodeDatabaseEntry> result = internalQuery(text, role, allowExisting, allowNew, pinnedIds, null, null);
@@ -182,6 +292,8 @@ public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
     public void confirmQuery(String text, JIPipeNodeDatabasePipelineVisibility role, boolean allowExisting, boolean allowNew, JIPipeSlotType targetSlotType, Class<? extends JIPipeData> targetDataType, JIPipeNodeDatabaseEntry userSelected) {
         updateUsageCount(userSelected);
     }
+
+    // ===== Internal Methods =====
 
     @Override
     public List<JIPipeNodeDatabaseEntry> query(String text, JIPipeNodeDatabasePipelineVisibility role, boolean allowExisting, boolean allowNew, JIPipeSlotType targetSlotType, Class<? extends JIPipeData> targetDataType, Object... flags) {
@@ -228,75 +340,6 @@ public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
     }
 
     /**
-     * Compute cosine similarity between two vectors.
-     * Handles edge cases (null vectors, zero vectors, different lengths) by returning 0.
-     *
-     * @param a the first vector
-     * @param b the second vector
-     * @return the cosine similarity in range [-1, 1], or 0 if inputs are invalid
-     */
-    public static double cosineSimilarity(float[] a, float[] b) {
-        if (a == null || b == null || a.length != b.length || a.length == 0) {
-            return 0.0;
-        }
-
-        double dotProduct = 0.0;
-        double normA = 0.0;
-        double normB = 0.0;
-
-        for (int i = 0; i < a.length; i++) {
-            dotProduct += a[i] * b[i];
-            normA += (double) a[i] * a[i];
-            normB += (double) b[i] * b[i];
-        }
-
-        if (normA == 0.0 || normB == 0.0) {
-            return 0.0;
-        }
-
-        return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
-    }
-
-    // ===== Entry Classification =====
-
-    /**
-     * Determine if an entry is globally cacheable (stable ID, not project-specific).
-     * Global entries are stored in the application-wide singleton database.
-     * Local entries are stored in the per-project transient database.
-     *
-     * @param entry the node database entry
-     * @return true if the entry should be stored in the global database
-     */
-    public static boolean isGlobalEntry(JIPipeNodeDatabaseEntry entry) {
-        String id = entry.getId();
-        if (id == null) return false;
-        return id.startsWith("create-node-by-info:") ||
-               id.startsWith("create-node-by-example:") ||
-               id.startsWith("create-node-custom:");
-    }
-
-    /**
-     * Split a list of entries into global and local groups.
-     *
-     * @param entries the entries to split
-     * @return an {@link EntrySplit} containing the two groups
-     */
-    private static EntrySplit splitEntries(List<JIPipeNodeDatabaseEntry> entries) {
-        List<JIPipeNodeDatabaseEntry> global = new ArrayList<>();
-        List<JIPipeNodeDatabaseEntry> local = new ArrayList<>();
-        for (JIPipeNodeDatabaseEntry entry : entries) {
-            if (isGlobalEntry(entry)) {
-                global.add(entry);
-            } else {
-                local.add(entry);
-            }
-        }
-        return new EntrySplit(global, local);
-    }
-
-    // ===== Internal Methods =====
-
-    /**
      * Internal query implementation that handles both query overloads.
      * <p>
      * Returns {@code null} if AI is unavailable or the search fails,
@@ -311,12 +354,12 @@ public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
      * model becomes Ready.
      */
     private List<JIPipeNodeDatabaseEntry> internalQuery(String text,
-                                                         JIPipeNodeDatabasePipelineVisibility role,
-                                                         boolean allowExisting,
-                                                         boolean allowNew,
-                                                         Set<String> pinnedIds,
-                                                         JIPipeSlotType targetSlotType,
-                                                         Class<? extends JIPipeData> targetDataType) {
+                                                        JIPipeNodeDatabasePipelineVisibility role,
+                                                        boolean allowExisting,
+                                                        boolean allowNew,
+                                                        Set<String> pinnedIds,
+                                                        JIPipeSlotType targetSlotType,
+                                                        Class<? extends JIPipeData> targetDataType) {
         // Check if AI is available
         if (!isAIAvailable()) {
             return null;
@@ -449,50 +492,6 @@ public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
     private void updateUsageCount(JIPipeNodeDatabaseEntry userSelected) {
         if (userSelected != null && !StringUtils.isNullOrEmpty(userSelected.getId())) {
             USAGE_COUNTS.merge(userSelected.getId(), 1L, Long::sum);
-        }
-    }
-
-    /**
-     * Compute the best (minimum) type distance between an entry's slots and a target data type.
-     * <p>
-     * When looking for an input slot match, we check the entry's output slots
-     * (because the entry's output connects to the target input).
-     * When looking for an output slot match, we check the entry's input slots
-     * (because the target output connects to the entry's input).
-     *
-     * @param entry          the node database entry
-     * @param targetSlotType the target slot type
-     * @param targetDataType the target data type
-     * @return the best (minimum) type distance, or {@link Integer#MAX_VALUE} if no compatible slots
-     */
-    private static int bestTypeDistance(JIPipeNodeDatabaseEntry entry, JIPipeSlotType targetSlotType, Class<? extends JIPipeData> targetDataType) {
-        int best = Integer.MAX_VALUE;
-        Map<String, JIPipeDataSlotInfo> map = (targetSlotType == JIPipeSlotType.Input) ? entry.getOutputSlots() : entry.getInputSlots();
-        if (map == null) {
-            return Integer.MAX_VALUE;
-        }
-        for (Map.Entry<String, JIPipeDataSlotInfo> si : map.entrySet()) {
-            int d = dataTypeDistance(si.getValue().getDataClass(), targetDataType);
-            if (d >= 0 && d < best) best = d;
-        }
-        return best;
-    }
-
-    /**
-     * Compute the type distance between two data types.
-     * Mirrors the logic in {@link JIPipeEnhancedNodeDatabaseSearch}.
-     *
-     * @param from the source data type
-     * @param to   the target data type
-     * @return the type distance (0 = same type, higher = further away)
-     */
-    private static int dataTypeDistance(Class<? extends JIPipeData> from, Class<? extends JIPipeData> to) {
-        if (from == to) {
-            return 0;
-        } else if (to.isAssignableFrom(from)) {
-            return ReflectionUtils.getClassDistance(to, from);
-        } else {
-            return JIPipe.getDataTypes().getConversionDistance(from, to) * 5;
         }
     }
 

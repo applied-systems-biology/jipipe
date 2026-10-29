@@ -3,11 +3,21 @@ package org.hkijena.jipipe.desktop.commons.theme;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.junit.jupiter.api.Test;
 
-import java.awt.Color;
+import java.awt.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class NodePatternThemeSettingsTest {
+
+    private static float shippedThemeOpacity(String themeId) throws Exception {
+        try (java.io.InputStream in = NodePatternThemeSettingsTest.class
+                .getResourceAsStream("/org/hkijena/jipipe/styles/" + themeId + ".json")) {
+            assertNotNull(in, "bundled theme file not found: " + themeId);
+            JIPipeDesktopModernThemeStyle style = JsonUtils.getObjectMapper()
+                    .readValue(in, JIPipeDesktopModernThemeStyle.class);
+            return style.getNodePatternOpacity();
+        }
+    }
 
     // Defaults on a fresh style — the base "JIPipe Light" theme is built from
     // exactly this, so these defaults ARE the light theme's values
@@ -72,15 +82,5 @@ class NodePatternThemeSettingsTest {
         assertEquals(0.15f, shippedThemeOpacity("JIPipe Dark"), 1e-6);
         assertEquals(0.15f, shippedThemeOpacity("JIPipe Dark Neon"), 1e-6);
         assertEquals(0.15f, shippedThemeOpacity("JIPipe Dark High Contrast"), 1e-6);
-    }
-
-    private static float shippedThemeOpacity(String themeId) throws Exception {
-        try (java.io.InputStream in = NodePatternThemeSettingsTest.class
-                .getResourceAsStream("/org/hkijena/jipipe/styles/" + themeId + ".json")) {
-            assertNotNull(in, "bundled theme file not found: " + themeId);
-            JIPipeDesktopModernThemeStyle style = JsonUtils.getObjectMapper()
-                    .readValue(in, JIPipeDesktopModernThemeStyle.class);
-            return style.getNodePatternOpacity();
-        }
     }
 }

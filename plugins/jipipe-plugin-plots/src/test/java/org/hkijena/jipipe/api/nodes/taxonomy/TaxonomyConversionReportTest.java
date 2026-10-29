@@ -90,9 +90,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * framework references) so a batch cannot "convert" into a broken registry.
  */
 @EnabledIfSystemProperty(named = "jipipe.taxonomy.report.module", matches = ".+",
-    disabledReason =
-    "Conversion gate: enabled only when -Djipipe.taxonomy.report.module=<package-prefix> is set "
-        + "(see class Javadoc for the per-module invocation).")
+        disabledReason =
+                "Conversion gate: enabled only when -Djipipe.taxonomy.report.module=<package-prefix> is set "
+                        + "(see class Javadoc for the per-module invocation).")
 class TaxonomyConversionReportTest {
 
     /**
@@ -113,32 +113,32 @@ class TaxonomyConversionReportTest {
     @Test
     void moduleHasNoUnconvertedNodes() {
         TaxonomyValidationReport report = TaxonomyValidationReport.run(
-            JIPipe.getNodes().getFunctions(),
-            JIPipe.getNodes().getFrameworks(),
-            JIPipe.getNodes().getRegisteredNodeInfos());
+                JIPipe.getNodes().getFunctions(),
+                JIPipe.getNodes().getFrameworks(),
+                JIPipe.getNodes().getRegisteredNodeInfos());
 
         // Hard errors (broken function tree, dangling framework/function
         // references) must never be shipped by a conversion batch.
         assertTrue(report.errors().isEmpty(),
-            "Taxonomy validation errors while converting '" + modulePrefix + "': " + report.errors());
+                "Taxonomy validation errors while converting '" + modulePrefix + "': " + report.errors());
 
         // The gate itself: every node of this module must be converted
         // (have a primary function). Filter by instance-class package
         // prefix — registration path (annotation vs. programmatic) is
         // irrelevant here.
         List<String> unassignedInModule = report.unassignedNodeIds().stream()
-            .filter(nodeId -> {
-                JIPipeNodeInfo info = JIPipe.getNodes().getRegisteredNodeInfos().get(nodeId);
-                return info != null
-                    && info.getInstanceClass().getName().startsWith(modulePrefix);
-            })
-            .sorted()
-            .collect(Collectors.toList());
+                .filter(nodeId -> {
+                    JIPipeNodeInfo info = JIPipe.getNodes().getRegisteredNodeInfos().get(nodeId);
+                    return info != null
+                            && info.getInstanceClass().getName().startsWith(modulePrefix);
+                })
+                .sorted()
+                .collect(Collectors.toList());
 
         assertTrue(unassignedInModule.isEmpty(),
-            "Module '" + modulePrefix + "' still has " + unassignedInModule.size()
-                + " node(s) without a taxonomy function:\n  "
-                + String.join("\n  ", unassignedInModule)
-                + "\nRun utils/taxonomy-conversion/convert.py with the module's map.tsv, then re-run this gate.");
+                "Module '" + modulePrefix + "' still has " + unassignedInModule.size()
+                        + " node(s) without a taxonomy function:\n  "
+                        + String.join("\n  ", unassignedInModule)
+                        + "\nRun utils/taxonomy-conversion/convert.py with the module's map.tsv, then re-run this gate.");
     }
 }

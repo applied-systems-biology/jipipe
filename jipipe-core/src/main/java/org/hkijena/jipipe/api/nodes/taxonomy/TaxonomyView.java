@@ -42,21 +42,6 @@ public final class TaxonomyView {
     }
 
     /**
-     * The four behavior flags that gate where and how a node appears and
-     * can be manipulated, read from the primary taxonomy function.
-     *
-     * @param isVisibleInPipeline    whether the node shows in the pipeline editor
-     * @param isVisibleInCompartments whether the node shows in the compartment editor
-     * @param canExtract             whether the node can be extracted (copied) from a graph
-     * @param isRunnable             whether the node can be run
-     */
-    public record BehaviorFlags(boolean isVisibleInPipeline,
-                                boolean isVisibleInCompartments,
-                                boolean canExtract,
-                                boolean isRunnable) {
-    }
-
-    /**
      * The display name for the node's function.
      * <p>
      * A primary function present: its name. Otherwise (the fn-null
@@ -240,5 +225,20 @@ public final class TaxonomyView {
             result.add(leafFirst.get(i));
         }
         return result;
+    }
+
+    /**
+     * The four behavior flags that gate where and how a node appears and
+     * can be manipulated, read from the primary taxonomy function.
+     *
+     * @param isVisibleInPipeline     whether the node shows in the pipeline editor
+     * @param isVisibleInCompartments whether the node shows in the compartment editor
+     * @param canExtract              whether the node can be extracted (copied) from a graph
+     * @param isRunnable              whether the node can be run
+     */
+    public record BehaviorFlags(boolean isVisibleInPipeline,
+                                boolean isVisibleInCompartments,
+                                boolean canExtract,
+                                boolean isRunnable) {
     }
 }

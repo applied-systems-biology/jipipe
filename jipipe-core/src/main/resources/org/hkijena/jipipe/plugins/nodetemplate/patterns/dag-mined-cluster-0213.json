@@ -1,1 +1,28 @@
-{"edges":[{"source-node":"n0","source-slot":"Output","target-node":"n2","target-slot":"Mask"}],"nodes":{"n0":{"jipipe:graph-compartment":"43f37784-414c-5a1a-81a0-ddbdd226971c","jipipe:metadata-v1":{"location/43f37784-414c-5a1a-81a0-ddbdd226971c/x":0,"location/43f37784-414c-5a1a-81a0-ddbdd226971c/y":5},"jipipe:node-info-id":"ij1-threshold-auto2d"},"n2":{"jipipe:graph-compartment":"43f37784-414c-5a1a-81a0-ddbdd226971c","jipipe:metadata-v1":{"location/43f37784-414c-5a1a-81a0-ddbdd226971c/x":0,"location/43f37784-414c-5a1a-81a0-ddbdd226971c/y":9},"jipipe:node-info-id":"ij1-analyze-find-particles2d"}}}
+{
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Output",
+      "target-node": "n2",
+      "target-slot": "Mask"
+    }
+  ],
+  "nodes": {
+    "n0": {
+      "jipipe:graph-compartment": "43f37784-414c-5a1a-81a0-ddbdd226971c",
+      "jipipe:metadata-v1": {
+        "location/43f37784-414c-5a1a-81a0-ddbdd226971c/x": 0,
+        "location/43f37784-414c-5a1a-81a0-ddbdd226971c/y": 5
+      },
+      "jipipe:node-info-id": "ij1-threshold-auto2d"
+    },
+    "n2": {
+      "jipipe:graph-compartment": "43f37784-414c-5a1a-81a0-ddbdd226971c",
+      "jipipe:metadata-v1": {
+        "location/43f37784-414c-5a1a-81a0-ddbdd226971c/x": 0,
+        "location/43f37784-414c-5a1a-81a0-ddbdd226971c/y": 9
+      },
+      "jipipe:node-info-id": "ij1-analyze-find-particles2d"
+    }
+  }
+}

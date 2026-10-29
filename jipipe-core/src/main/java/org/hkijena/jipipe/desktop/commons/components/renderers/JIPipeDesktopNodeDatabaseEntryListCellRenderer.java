@@ -15,9 +15,9 @@ package org.hkijena.jipipe.desktop.commons.components.renderers;
 
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
-import org.hkijena.jipipe.api.nodes.taxonomy.TaxonomyView;
 import org.hkijena.jipipe.api.nodes.database.entries.CreateNewNodeByExampleDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.entries.CreateNewNodeByInfoDatabaseEntry;
+import org.hkijena.jipipe.api.nodes.taxonomy.TaxonomyView;
 import org.hkijena.jipipe.desktop.commons.components.icons.NodeListEntryIcon;
 import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -44,6 +44,30 @@ public class JIPipeDesktopNodeDatabaseEntryListCellRenderer extends JPanel imple
         setOpaque(true);
         setBorder(BorderFactory.createEmptyBorder(0, 4, 0, 4));
         initialize();
+    }
+
+    /**
+     * The location row for the given entry (Task 21b).
+     * <p>
+     * Node-info-carrying entries that wrap a <em>converted</em> node (a
+     * non-null primary function) show the taxonomy function path
+     * ({@link TaxonomyView#locationPath}). Every other entry — unconverted
+     * node entries, existing pipeline nodes, compartments, and templates —
+     * keeps the stored {@link JIPipeNodeDatabaseEntry#getLocationInfos()
+     * location info} byte-equivalent to before, so no unconverted node's
+     * visible location changes.
+     */
+    private static String locationOf(JIPipeNodeDatabaseEntry obj) {
+        JIPipeNodeInfo info = null;
+        if (obj instanceof CreateNewNodeByInfoDatabaseEntry) {
+            info = ((CreateNewNodeByInfoDatabaseEntry) obj).getNodeInfo();
+        } else if (obj instanceof CreateNewNodeByExampleDatabaseEntry) {
+            info = ((CreateNewNodeByExampleDatabaseEntry) obj).getExample().getNodeInfo();
+        }
+        if (info != null && info.getPrimaryFunction() != null) {
+            return TaxonomyView.locationPath(info);
+        }
+        return obj.getLocationInfos().get(0).replace("\n", " > ");
     }
 
     private void initialize() {
@@ -138,29 +162,5 @@ public class JIPipeDesktopNodeDatabaseEntryListCellRenderer extends JPanel imple
         }
 
         return this;
-    }
-
-    /**
-     * The location row for the given entry (Task 21b).
-     * <p>
-     * Node-info-carrying entries that wrap a <em>converted</em> node (a
-     * non-null primary function) show the taxonomy function path
-     * ({@link TaxonomyView#locationPath}). Every other entry — unconverted
-     * node entries, existing pipeline nodes, compartments, and templates —
-     * keeps the stored {@link JIPipeNodeDatabaseEntry#getLocationInfos()
-     * location info} byte-equivalent to before, so no unconverted node's
-     * visible location changes.
-     */
-    private static String locationOf(JIPipeNodeDatabaseEntry obj) {
-        JIPipeNodeInfo info = null;
-        if (obj instanceof CreateNewNodeByInfoDatabaseEntry) {
-            info = ((CreateNewNodeByInfoDatabaseEntry) obj).getNodeInfo();
-        } else if (obj instanceof CreateNewNodeByExampleDatabaseEntry) {
-            info = ((CreateNewNodeByExampleDatabaseEntry) obj).getExample().getNodeInfo();
-        }
-        if (info != null && info.getPrimaryFunction() != null) {
-            return TaxonomyView.locationPath(info);
-        }
-        return obj.getLocationInfos().get(0).replace("\n", " > ");
     }
 }

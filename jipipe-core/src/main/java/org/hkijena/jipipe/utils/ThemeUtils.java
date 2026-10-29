@@ -3,11 +3,9 @@ package org.hkijena.jipipe.utils;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.Theme;
-import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
+import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.taxonomy.FunctionRegistry;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
@@ -19,6 +17,8 @@ import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopUIThemeBrightness;
 import org.hkijena.jipipe.desktop.commons.theme.ui.*;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeGeneralUIApplicationSettings;
 import org.hkijena.jipipe.utils.json.JsonUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import javax.swing.plaf.metal.MetalLookAndFeel;
@@ -36,8 +36,8 @@ import java.util.List;
 import java.util.Set;
 
 public class ThemeUtils {
-    private static final Logger LOG = LoggerFactory.getLogger(ThemeUtils.class);
     public static final String DEFAULT_STYLE_ID = "JIPipe Light";
+    private static final Logger LOG = LoggerFactory.getLogger(ThemeUtils.class);
     private static final AvailableThemesChangedEventEmitter CHANGED_EVENT_EMITTER = new AvailableThemesChangedEventEmitter();
     public static Theme RSYNTAX_THEME_LIGHT;
     public static Theme RSYNTAX_THEME_DARK;
@@ -46,6 +46,7 @@ public class ThemeUtils {
     private static JIPipeDesktopUITheme CURRENT_THEME = JIPipeDesktopUITheme.Modern;
     private static JIPipeDesktopModernThemeStyle CURRENT_STYLE = new JIPipeDesktopModernThemeStyle();
     private static List<String> AVAILABLE_STYLE_IDS;
+    private static boolean CARET_MOTION_POLICY_INSTALLED = false;
 
     public static boolean isUsingDarkTheme() {
         return CURRENT_THEME == JIPipeDesktopUITheme.Modern && CURRENT_STYLE.getBrightness() == JIPipeDesktopUIThemeBrightness.Dark;
@@ -83,8 +84,6 @@ public class ThemeUtils {
         }
         defaultCaret.setBlinkRate(reducedMotion ? 0 : 500);
     }
-
-    private static boolean CARET_MOTION_POLICY_INSTALLED = false;
 
     /**
      * Installs the global reduced-motion caret policy: a single "focusOwner" listener on the
@@ -463,20 +462,6 @@ public class ThemeUtils {
         return Color.getHSBColor(hsb[0], hsb[1], hsb[2]);
     }
 
-    /** The three hue-resolution outcomes for a function. */
-    private enum HueMode {
-        /** The parent chain ends at a hue-null root: render transparently. */
-        Transparent,
-        /** A cycle or other resolution failure: fall back to a neutral hue. */
-        Broken,
-        /** A hue was resolved normally from the chain. */
-        Normal
-    }
-
-    /** The outcome of resolving a function's hue and shading depth. */
-    private record FunctionHue(HueMode mode, float baseHue, int depth) {
-    }
-
     /**
      * Resolves the base hue and shading depth for a function, handling the
      * three edge cases:
@@ -557,8 +542,32 @@ public class ThemeUtils {
         CHANGED_EVENT_EMITTER.emit(new AvailableThemesChangedEvent(null));
     }
 
+    /**
+     * The three hue-resolution outcomes for a function.
+     */
+    private enum HueMode {
+        /**
+         * The parent chain ends at a hue-null root: render transparently.
+         */
+        Transparent,
+        /**
+         * A cycle or other resolution failure: fall back to a neutral hue.
+         */
+        Broken,
+        /**
+         * A hue was resolved normally from the chain.
+         */
+        Normal
+    }
+
     public interface AvailableThemesChangedEventListener {
         void onAvailableThemesChanged(AvailableThemesChangedEvent event);
+    }
+
+    /**
+     * The outcome of resolving a function's hue and shading depth.
+     */
+    private record FunctionHue(HueMode mode, float baseHue, int depth) {
     }
 
     public static class AvailableThemesChangedEvent extends AbstractJIPipeEvent {

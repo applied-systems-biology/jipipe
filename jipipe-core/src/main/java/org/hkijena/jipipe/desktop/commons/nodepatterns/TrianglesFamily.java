@@ -13,12 +13,13 @@
 
 package org.hkijena.jipipe.desktop.commons.nodepatterns;
 
-import java.awt.BasicStroke;
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.awt.geom.Line2D;
 import java.util.Random;
 
-/** Jittered grid triangulation (edges); border points are snapped onto the edges so the mesh fills the whole area. */
+/**
+ * Jittered grid triangulation (edges); border points are snapped onto the edges so the mesh fills the whole area.
+ */
 public final class TrianglesFamily implements NodePatternFamily {
     @Override
     public void paint(Graphics2D g, int w, int h, Random rng) {
@@ -35,8 +36,10 @@ public final class TrianglesFamily implements NodePatternFamily {
         // snap border points onto the edges so the mesh fills the whole area
         for (int i = 0; i <= n; i++)
             for (int j = 0; j <= n; j++) {
-                if (i == 0) px[i][j] = 0; else if (i == n) px[i][j] = w;
-                if (j == 0) py[i][j] = 0; else if (j == n) py[i][j] = h;
+                if (i == 0) px[i][j] = 0;
+                else if (i == n) px[i][j] = w;
+                if (j == 0) py[i][j] = 0;
+                else if (j == n) py[i][j] = h;
             }
         g.setStroke(new BasicStroke(1.3f));
         for (int i = 0; i < n; i++)

@@ -16,7 +16,6 @@ package org.hkijena.jipipe.desktop.commons.components.color.palette;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.json.JIPipePathMetadataStore;
 
-import java.nio.file.Path;
 import java.util.*;
 
 public class JIPipeDesktopRegistryBackedColorPaletteUserColorStorage implements JIPipeDesktopColorPaletteUserColorStorage {
