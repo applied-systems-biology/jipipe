@@ -21,7 +21,7 @@ reviewed; Task 9 is implemented and green but NOT yet reviewed — review it fir
 ## Current state
 
 - **Branch:** `1345-modern-settings-system` (off `master`), pushed to `origin`
-- **Test baseline:** `jipipe-core` suite = **638 run, 0 failures, 0 errors, 1 pre-existing skip** at the current head (`4052a14359`). (The skip is the property-gated `TaxonomyConversionReportTest`, unrelated.)
+- **Test baseline:** `jipipe-core` suite = **644 run, 0 failures, 0 errors, 1 pre-existing skip** at the current head (`db24d2aee2`). (The skip is the property-gated `TaxonomyConversionReportTest`, unrelated.)
 - **Java:** the box default is Java 25; the project needs Java 21. Point `JAVA_HOME` at Java 21 before running Maven.
 - **Build gate:** `mvn test -pl jipipe-core -q` must stay green at every commit.
 
