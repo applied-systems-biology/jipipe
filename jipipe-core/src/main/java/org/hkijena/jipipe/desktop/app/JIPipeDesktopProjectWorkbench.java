@@ -80,8 +80,7 @@ import org.hkijena.jipipe.desktop.commons.components.project.JIPipeDesktopRecent
 import org.hkijena.jipipe.desktop.commons.components.servers.JIPipeDesktopServerStatusControl;
 import org.hkijena.jipipe.desktop.commons.components.support.JIPipeDesktopSupportAssistantWindow;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
-import org.hkijena.jipipe.desktop.commons.components.tools.JIPipeDesktopMemoryOptionsControl;
-import org.hkijena.jipipe.desktop.commons.components.tools.JIPipeDesktopMemoryStatusUI;
+import org.hkijena.jipipe.desktop.commons.components.tools.JIPipeDesktopMemoryManager;
 import org.hkijena.jipipe.desktop.commons.components.validation.JIPipeDesktopReloadableValidityChecker;
 import org.hkijena.jipipe.desktop.commons.notifications.JIPipeDesktopNotificationButton;
 import org.hkijena.jipipe.desktop.commons.notifications.JIPipeDesktopWorkbenchNotificationInboxUI;
@@ -131,7 +130,6 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
     private final JIPipeDesktopProjectWindow window;
     private final JIPipeProject project;
     private final Context context;
-    private final JIPipeDesktopMemoryOptionsControl memoryOptionsControl;
     private final JIPipeNotificationInbox notificationInbox = new JIPipeNotificationInbox();
     private final JIPipeDesktopNotificationButton notificationButton = new JIPipeDesktopNotificationButton(this);
     private final Map<JIPipeGraphNode, Timer> algorithmUpdateTimers = new WeakHashMap<>();
@@ -163,7 +161,6 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         this.window = window;
         this.project = project;
         this.context = context;
-        this.memoryOptionsControl = new JIPipeDesktopMemoryOptionsControl(this);
         this.nodeDatabase = new JIPipeNodeDatabase(project);
         initialize(showIntroduction, isNewProject);
 
@@ -586,12 +583,6 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
             statusBar.add(statisticsButton);
         }
 
-        // Memory control
-        JButton optionsButton = memoryOptionsControl.createOptionsButton();
-        UIUtils.makeButtonFlat(optionsButton);
-        statusBar.add(optionsButton);
-        statusBar.add(Box.createHorizontalStrut(4));
-
         // Artifacts control
         statusBar.add(new JIPipeDesktopArtifactsOptionsControl(this));
 
@@ -607,7 +598,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         statusBar.add(new JIPipeDesktopServerStatusControl(this));
 
         // Memory meter
-        statusBar.add(new JIPipeDesktopMemoryStatusUI());
+        statusBar.add(new JIPipeDesktopMemoryManager(this));
 
         add(statusBar, BorderLayout.SOUTH);
     }

@@ -17,6 +17,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.backups.JIPipeProjectBackupItem;
 import org.hkijena.jipipe.api.backups.JIPipeProjectBackupItemCollection;
 import org.hkijena.jipipe.desktop.app.resultanalysis.JIPipeDesktopResultAlgorithmTree;
+import org.hkijena.jipipe.utils.StringUtils;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -52,7 +53,10 @@ public class JIPipeDesktopBackupManagerTreeCellRenderer extends JLabel implement
             } else if (userObject instanceof JIPipeProjectBackupItem) {
                 JIPipeProjectBackupItem backupItem = (JIPipeProjectBackupItem) userObject;
                 setIcon(backupIcon);
-                setText(backupItem.getBackupTime().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+                String time = backupItem.getBackupTime().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+                // Snapshot rows also show the backup size; legacy file rows
+                // stay time-only
+                setText(backupItem.isSnapshot() ? time + " — " + StringUtils.formatSize(backupItem.getTotalSizeBytes()) : time);
             } else {
                 setIcon(rootIcon);
                 setText("Backups");
