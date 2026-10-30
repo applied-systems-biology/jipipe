@@ -16,7 +16,11 @@ package org.hkijena.jipipe.settings;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.settings.SettingsBinding;
+import org.hkijena.jipipe.api.settings.SettingsDocument;
 import org.hkijena.jipipe.api.settings.SettingsScope;
+import org.hkijena.jipipe.desktop.commons.components.color.palette.JIPipeDesktopColorPalette;
+import org.hkijena.jipipe.desktop.commons.components.color.palette.JIPipeDesktopColorPaletteUI;
+import org.hkijena.jipipe.desktop.commons.components.color.palette.JIPipeDesktopRegistryBackedColorPaletteUserColorStorage;
 import org.hkijena.jipipe.plugins.settings.SettingsKeys;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.junit.jupiter.api.BeforeAll;
@@ -67,6 +71,43 @@ class SettingsPaletteKeysTest {
                 b.set(original);
             }
             b.close();
+        }
+    }
+
+    /**
+     * Fix round (Finding 1): the palette storage is reconstructed on every
+     * context-panel rebuild (every node selection with a note tool active), so
+     * its {@code dispose()} must close the binding it holds. Observed through
+     * the Task 15 listener seam on the live application document, and pinned
+     * over several construct+dispose cycles (the rebuild path).
+     * <p>
+     * The note tool palette is created with flags {@code NONE}, which keeps
+     * background selection enabled, so its storage path is
+     * {@code user-palette-colors/fg-bg}.
+     */
+    @Test
+    void disposingThePaletteStorageClosesItsBinding() {
+        JIPipe.ensureInstance();
+        SettingsDocument document = JIPipe.getSettingsService().document(SettingsScope.APPLICATION);
+        String path = SettingsDocument.listenerPathForTesting("registry:ui-palette", "user-palette-colors/fg-bg");
+        int baseline = document.pathListenerCount(path);
+        try {
+            for (int i = 0; i < 5; i++) {
+                JIPipeDesktopColorPaletteUI paletteUI = new JIPipeDesktopColorPaletteUI(
+                        null, JIPipeDesktopColorPaletteUI.NONE, JIPipeDesktopColorPalette.PASTEL);
+                JIPipeDesktopRegistryBackedColorPaletteUserColorStorage storage =
+                        new JIPipeDesktopRegistryBackedColorPaletteUserColorStorage(paletteUI);
+                assertEquals(baseline + 1, document.pathListenerCount(path),
+                        "a live palette storage holds exactly one path listener");
+                storage.dispose();
+                assertEquals(baseline, document.pathListenerCount(path),
+                        "dispose() must close the binding");
+                storage.dispose();
+                assertEquals(baseline, document.pathListenerCount(path),
+                        "dispose() must be idempotent");
+            }
+        } finally {
+            assertEquals(baseline, document.pathListenerCount(path));
         }
     }
 }

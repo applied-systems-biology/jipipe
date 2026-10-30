@@ -20,6 +20,8 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class JIPipeDesktopGraphEditorContextPanelIsland extends JIPipeDesktopWorkbenchPanel {
     private final JIPipeDesktopGraphEditorUI graphEditorUI;
@@ -57,5 +59,46 @@ public abstract class JIPipeDesktopGraphEditorContextPanelIsland extends JIPipeD
 
     public JIPipeDesktopGraphEditorUI getGraphEditorUI() {
         return graphEditorUI;
+    }
+
+    /**
+     * Releases any resources the island holds (e.g. settings bindings opened by
+     * a form field of the island). Called by
+     * {@link JIPipeDesktopGraphEditorContextPanel} when the island is torn down
+     * — on every context-panel rebuild the previous pass's islands are
+     * disposed exactly once, because a rebuild replaces every island.
+     * <p>
+     * Must be idempotent: subclasses that hold a resource close it and null the
+     * reference (closing is idempotent), so a repeated call is a no-op.
+     */
+    public void dispose() {
+    }
+
+    /**
+     * Separates the islands of the previous rebuild pass from the pass that is
+     * about to be built: returns the previous entries and clears the tracking
+     * list. The caller then {@link #disposeAll(List) disposes} the returned
+     * islands, so every rebuild releases the previous islands' resources
+     * exactly once.
+     *
+     * @param tracked the context panel's island list
+     * @param <T>     the island type
+     * @return the islands of the previous pass, in insertion order
+     */
+    public static <T extends JIPipeDesktopGraphEditorContextPanelIsland> List<T> takePreviousAndClear(List<T> tracked) {
+        List<T> previous = new ArrayList<>(tracked);
+        tracked.clear();
+        return previous;
+    }
+
+    /**
+     * Disposes the given islands (see {@link #dispose()}).
+     *
+     * @param islands the islands to dispose, in order
+     */
+    public static void disposeAll(List<? extends JIPipeDesktopGraphEditorContextPanelIsland> islands) {
+        for (JIPipeDesktopGraphEditorContextPanelIsland island : islands) {
+            island.dispose();
+        }
     }
 }

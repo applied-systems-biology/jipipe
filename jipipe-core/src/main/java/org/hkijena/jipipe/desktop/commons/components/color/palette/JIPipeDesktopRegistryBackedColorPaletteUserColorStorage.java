@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.settings.SettingsBinding;
 import org.hkijena.jipipe.plugins.settings.SettingsKeys;
 import org.hkijena.jipipe.utils.json.JIPipePathMetadataStore;
 import org.hkijena.jipipe.utils.json.JsonUtils;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -46,13 +47,17 @@ public class JIPipeDesktopRegistryBackedColorPaletteUserColorStorage implements 
     public JIPipeDesktopRegistryBackedColorPaletteUserColorStorage(JIPipeDesktopColorPaletteUI paletteUI) {
         this.paletteUI = paletteUI;
         this.registryStoragePath = getRegistryStoragePath(paletteUI);
+        // Bind eagerly, once per instance: the binding must not depend on a
+        // static-cache miss (a second storage for the same path would then
+        // never own a binding, and its dispose() would release nothing).
+        this.colorsBinding = JIPipe.isInstantiated() ? JIPipe.getSettingsService().bind(getKey(registryStoragePath)) : null;
         this.paletteColors = loadFromRegistry(getDatabaseId(), registryStoragePath);
     }
 
     /**
-     * Returns the binding to this storage's palette setting, registering the
-     * palette's key on first use. Created once per storage instance — never
-     * per read/write — because a binding owns a document path listener.
+     * Returns the binding to this storage's palette setting, created once per
+     * storage instance in the constructor — never per read/write — because a
+     * binding owns a document path listener.
      * <p>
      * Without a running settings service (e.g. headless tests) no binding is
      * created and the palette works in memory.
@@ -81,10 +86,16 @@ public class JIPipeDesktopRegistryBackedColorPaletteUserColorStorage implements 
     }
 
     /**
+     * Maps a palette storage sub-path to the frozen settings key of that
+     * palette variant. Unknown paths fall back to the foreground
+     * ({@code fg}) key with a warning instead of throwing: the mapping is
+     * called from the storage's constructor, so a future palette variant must
+     * not turn into a constructor-time crash.
+     *
      * @param registryStoragePath this storage's palette variant sub-path
      * @return the settings key for this storage's palette variant
      */
-    private static JIPipeSettingKey<JsonNode> getKey(JIPipePathMetadataStore.Key registryStoragePath) {
+    public static JIPipeSettingKey<JsonNode> getKey(JIPipePathMetadataStore.Key registryStoragePath) {
         String path = String.join("/", registryStoragePath.getItems());
         switch (path) {
             case "user-palette-colors/fg-a":
@@ -96,7 +107,9 @@ public class JIPipeDesktopRegistryBackedColorPaletteUserColorStorage implements 
             case "user-palette-colors/fg":
                 return SettingsKeys.USER_PALETTE_COLORS_FG;
             default:
-                throw new IllegalStateException("Unexpected palette storage path: " + path);
+                LoggerFactory.getLogger(JIPipeDesktopRegistryBackedColorPaletteUserColorStorage.class)
+                        .warn("Unknown palette storage path '{}'; falling back to the foreground palette setting", path);
+                return SettingsKeys.USER_PALETTE_COLORS_FG;
         }
     }
 

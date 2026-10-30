@@ -53,6 +53,11 @@ public class TextBoxNoteGraphNodeToolProperties extends JIPipeDesktopFormGraphEd
     private final JIPipeDesktopParameterEditorUI<Anchor> anchorParameterEditorUI;
     private final JButton pickPresetButton;
     private final JButton editPresetButton;
+    /**
+     * The registry-backed user colors, whose settings binding is closed when
+     * the island is disposed (the island is rebuilt on every node selection).
+     */
+    private final JIPipeDesktopRegistryBackedColorPaletteUserColorStorage registryUserColors;
 
     public TextBoxNoteGraphNodeToolProperties(JIPipeDesktopGraphEditorUI graphEditorUI, TextBoxNoteGraphNodeTool tool) {
         super(graphEditorUI, tool);
@@ -70,7 +75,8 @@ public class TextBoxNoteGraphNodeToolProperties extends JIPipeDesktopFormGraphEd
 
         // Initialize palette
         this.paletteUI = new JIPipeDesktopColorPaletteUI(getDesktopWorkbench(), JIPipeDesktopColorPaletteUI.NONE, JIPipeDesktopColorPalette.PASTEL);
-        this.paletteUI.setUserColors(new JIPipeDesktopRegistryBackedColorPaletteUserColorStorage(paletteUI));
+        this.registryUserColors = new JIPipeDesktopRegistryBackedColorPaletteUserColorStorage(paletteUI);
+        this.paletteUI.setUserColors(registryUserColors);
         this.paletteUI.getSelectedEventEmitter().subscribe(this);
         this.paletteUI.setSelectedColor(LAST_COLOR);
 
@@ -80,6 +86,14 @@ public class TextBoxNoteGraphNodeToolProperties extends JIPipeDesktopFormGraphEd
         anchorParameterEditorUI.setParameter(LAST_ANCHOR, true);
 
         onPresetChanged();
+    }
+
+    @Override
+    public void dispose() {
+        if (registryUserColors != null) {
+            registryUserColors.dispose();
+        }
+        super.dispose();
     }
 
     private void renamePreset() {
