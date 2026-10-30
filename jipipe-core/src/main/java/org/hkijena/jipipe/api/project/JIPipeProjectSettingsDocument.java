@@ -24,6 +24,7 @@ import org.hkijena.jipipe.api.settings.SettingsScope;
 import org.hkijena.jipipe.utils.VersionUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
+import java.util.Iterator;
 import java.util.Objects;
 import java.util.function.Predicate;
 
@@ -35,8 +36,9 @@ import java.util.function.Predicate;
  * with the same rules as the application document:
  * <ul>
  * <li>blocks are the project settings sheets, keyed {@code "sheet:<sheetId>"};</li>
- * <li>{@code $schema}/{@code $meta} carry the format version and the
- * bookkeeping metadata;</li>
+ * <li>{@code $schema} carries the format version and {@code $meta} carries
+ * {@code written-by-version} — and nothing else, so a project file is
+ * save-deterministic (see {@link #stampMeta(String)});</li>
  * <li>blocks whose sheet is not known to this version are <em>pass-through</em>:
  * they survive load→save verbatim, so a project saved by a newer JIPipe with
  * additional project sheets opens and saves without losing those sheets.</li>
@@ -46,7 +48,10 @@ import java.util.function.Predicate;
  * is a flat object whose top-level keys are the <em>unprefixed</em> sheet ids
  * ({@code {"org.hkijena.jipipe:project-io": {...}}}) and that has no
  * {@code $schema}. {@link #fromJson(JsonNode, Predicate)} auto-detects the
- * shape through the presence of {@code $schema} and upgrades the legacy shape
+ * shape through the presence of {@code $schema} <em>together with</em>
+ * {@code $meta} or a {@code sheet:}-prefixed key (so a legacy object that
+ * merely happens to contain a literal {@code "$schema"} key is still read as
+ * legacy) and upgrades the legacy shape
  * by prefixing <em>every</em> top-level key with {@code "sheet:"} — registered
  * or not, so an unknown sheet of an old project is preserved exactly like an
  * unknown sheet of a new project.
@@ -107,19 +112,49 @@ public final class JIPipeProjectSettingsDocument {
             throw new IllegalArgumentException("A project settings object must be a JSON object, but got: "
                     + settingsObject.getNodeType());
         }
-        JsonNode source = settingsObject.has(SCHEMA_FIELD) ? settingsObject : upgradeLegacyShape((ObjectNode) settingsObject);
+        JsonNode source = isNewShape(settingsObject) ? settingsObject : upgradeLegacyShape((ObjectNode) settingsObject);
         JIPipeProjectSettingsDocument result = new JIPipeProjectSettingsDocument(registeredBlock);
-        result.document = SettingsDocumentIO.fromJson(SettingsScope.PROJECT, source,
-                Objects.requireNonNull(registeredBlock, "registeredBlock").and(JIPipeProjectSettingsDocument::isSheetPath));
+        result.document = SettingsDocumentIO.fromJson(SettingsScope.PROJECT, source, registeredBlock.and(JIPipeProjectSettingsDocument::isSheetPath));
         return result;
     }
 
     /**
+     * Discriminates the two shapes. A new-shape document always carries the
+     * corroborating markers JIPipe itself writes, so {@code $schema} alone is
+     * not enough: a hand-edited or third-party legacy object may contain a
+     * literal {@code "$schema"} key (e.g. a JSON-Schema reference), and
+     * misreading it as new-shape would silently drop every sheet block.
+     *
+     * @param settingsObject the project's {@code "settings"} node
+     * @return {@code true} iff the node has {@code $schema} <em>and</em>
+     * ({@code $meta} or at least one {@code sheet:}-prefixed key)
+     */
+    private static boolean isNewShape(JsonNode settingsObject) {
+        if (!settingsObject.has(SCHEMA_FIELD) || !settingsObject.isObject()) {
+            return false;
+        }
+        if (settingsObject.has("$meta")) {
+            return true;
+        }
+        Iterator<String> fields = settingsObject.fieldNames();
+        while (fields.hasNext()) {
+            if (fields.next().startsWith(SHEET_PREFIX)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Rewrites the legacy unprefixed shape into the new prefixed shape:
-     * every top-level key other than the reserved {@code $}-fields becomes
-     * {@code "sheet:<key>"}, keeping its value verbatim. Keys that are already
-     * {@code sheet:}-prefixed are kept unchanged (defensive: a mixed object is
-     * never produced by JIPipe, but must not gain a double prefix).
+     * <em>every</em> top-level key becomes {@code "sheet:<key>"}, keeping its
+     * value verbatim. Nothing is dropped — a legacy object can only reach here
+     * when it carries no {@code $meta} and no {@code sheet:} block, so any
+     * {@code $}-key it does contain (e.g. a stray {@code "$schema"} reference)
+     * is data, not a document field, and is preserved as a pass-through block
+     * {@code "sheet:$schema"}. Keys already {@code sheet:}-prefixed are kept
+     * unchanged (defensive: a mixed object is never produced by JIPipe, but
+     * must not gain a double prefix).
      *
      * @param legacy the legacy settings object (not modified)
      * @return a new object in the new shape, without {@code $schema}/{@code $meta}
@@ -127,9 +162,6 @@ public final class JIPipeProjectSettingsDocument {
     private static ObjectNode upgradeLegacyShape(ObjectNode legacy) {
         ObjectNode upgraded = JsonUtils.getObjectMapper().createObjectNode();
         legacy.fields().forEachRemaining(entry -> {
-            if (entry.getKey().startsWith("$")) {
-                return; // reserved fields ($schema/$meta) are never sheet ids
-            }
             String path = entry.getKey().startsWith(SHEET_PREFIX) ? entry.getKey() : SHEET_PREFIX + entry.getKey();
             upgraded.set(path, entry.getValue().deepCopy());
         });
@@ -217,26 +249,31 @@ public final class JIPipeProjectSettingsDocument {
     }
 
     /**
-     * Writes the {@code $meta} bookkeeping fields into the document and
-     * normalizes {@code $schema} to version 2.
+     * Sets the project {@code $meta} and normalizes {@code $schema} to
+     * version 2.
      * <p>
-     * <b>Deliberately timestamp-free.</b> Saving a project must be a fixpoint
-     * (loading and re-saving a project produces the same JSON), so no wall
-     * clock value may enter the project file: a {@code written-at} timestamp
-     * would make every save differ from the previous one and every project a
-     * permanent diff. The application settings file (one owner, written by a
-     * desktop app) stamps timestamps; a project file (shared, version
-     * controlled) records only who wrote it, which is stable for a given
-     * JIPipe version and editor.
+     * <b>The project {@code $meta} contract: exactly {@code written-by-version}
+     * — nothing else.</b> Project settings are shared and version-controlled,
+     * and saving a project must be deterministic: loading and saving a project
+     * (in any version, in any process, at any time) must produce the same JSON.
+     * Every other bookkeeping field would violate that:
+     * <ul>
+     * <li>{@code written-at} — a wall clock makes every single save a diff;</li>
+     * <li>{@code writer-id} — a per-instance random id makes the <em>first</em>
+     * save of every upgraded project a spurious one-line diff. That id exists
+     * for multi-process conflict detection between settings files that one
+     * process may write, which does not apply to a project file.</li>
+     * </ul>
+     * The application settings file keeps its own, richer {@code $meta}
+     * (timestamps, writer id) — it is single-owner and not diffed; that
+     * contract lives in the settings service, not here.
      *
      * @param writtenByVersion the JIPipe version that writes the project
      */
     public void stampMeta(String writtenByVersion) {
-        ObjectNode meta = document.meta();
+        ObjectNode meta = JsonUtils.getObjectMapper().createObjectNode();
         meta.put("written-by-version", Objects.requireNonNull(writtenByVersion, "writtenByVersion"));
-        if (!meta.has("writer-id")) {
-            meta.put("writer-id", document.writerId());
-        }
+        document.setBlock("$meta", meta);
         if (document.schemaVersion() != 2) {
             document.setSchemaVersion(2);
         }
