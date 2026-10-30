@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.api.settings;
 
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.BooleanNode;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.junit.jupiter.api.Test;
@@ -92,6 +93,26 @@ class SettingsDocumentTest {
         assertTrue(paths.contains("registry:node-db"));
         assertFalse(paths.contains("$schema"));
         assertFalse(paths.contains("$meta"));
+    }
+
+    @Test void arrayElementsAreAddressableByIndex() {
+        // A list-valued block (e.g. state:recent-projects, a JSON array of path
+        // strings) must be readable element by element: JsonNode#get(String)
+        // only addresses object fields, so the document resolves a numeric
+        // segment against an array as its index.
+        SettingsDocument d = new SettingsDocument(SettingsScope.APPLICATION);
+        ArrayNode list = JsonUtils.getObjectMapper().createArrayNode();
+        list.add("/tmp/a.jip");
+        list.add("/tmp/b.jip");
+        d.setBlock("state:recent-projects", list);
+
+        assertEquals("/tmp/a.jip", d.get("state:recent-projects", "0").asText());
+        assertEquals("/tmp/b.jip", d.get("state:recent-projects", "1").asText());
+        assertTrue(d.has("state:recent-projects", "1"));
+        assertTrue(d.get("state:recent-projects", "2").isMissingNode(), "past the end is absent");
+        assertTrue(d.get("state:recent-projects", "first").isMissingNode(),
+                "a non-numeric segment is not an array index");
+        assertTrue(d.get("absent:thing", "0").isMissingNode());
     }
 
     @Test void subPathsListsAllNestedPaths() {

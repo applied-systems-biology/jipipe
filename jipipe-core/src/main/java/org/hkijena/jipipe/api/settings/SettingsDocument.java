@@ -48,6 +48,11 @@ import java.util.function.Predicate;
  * empty segments are ignored, so {@code "a//b"} and {@code "a/b"} denote the
  * same location. An empty sub-path addresses the whole block.
  * <p>
+ * Array elements are addressed by their decimal index: a block holding a JSON
+ * array (e.g. the {@code state:recent-projects} list) reads element {@code i}
+ * as {@code get(blockPath, String.valueOf(i))}. Reads of array elements are
+ * supported; writes through a sub-path always address object fields.
+ * <p>
  * A block is <em>pass-through</em> when its kind is unknown or its id is not
  * registered; pass-through blocks are stored and written back verbatim, and
  * reading or writing their sub-paths is allowed but only raw. The
@@ -381,12 +386,36 @@ public final class SettingsDocument {
     private JsonNode node(List<String> segments) {
         JsonNode current = root;
         for (String segment : segments) {
-            current = current.get(segment);
+            if (current.isArray() && isArrayIndex(segment)) {
+                // Arrays are addressable by numeric index, so a list-valued
+                // block (e.g. "state:recent-projects") can be read as
+                // ("state:recent-projects", "0"). JsonNode#get(String) only
+                // addresses object fields and would yield a MissingNode here.
+                current = current.get(Integer.parseInt(segment));
+            } else {
+                current = current.get(segment);
+            }
             if (current == null) {
                 return MissingNode.getInstance();
             }
         }
         return current;
+    }
+
+    /**
+     * @param segment a sub-path segment
+     * @return whether the segment is a non-negative decimal array index
+     */
+    private static boolean isArrayIndex(String segment) {
+        if (segment.isEmpty()) {
+            return false;
+        }
+        for (int i = 0; i < segment.length(); i++) {
+            if (segment.charAt(i) < '0' || segment.charAt(i) > '9') {
+                return false;
+            }
+        }
+        return true;
     }
 
     private synchronized ObjectNode objectAt(List<String> segments, int depth) {

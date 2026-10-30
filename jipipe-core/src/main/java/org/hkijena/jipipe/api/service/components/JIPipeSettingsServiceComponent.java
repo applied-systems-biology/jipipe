@@ -331,6 +331,15 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
      */
     private final ThreadLocal<ChangeOrigin> foreignMergeOrigin = ThreadLocal.withInitial(() -> ChangeOrigin.LOCAL_PROGRAMMATIC);
     /**
+     * Documents currently being written quiescently on this thread (see
+     * {@link #beginQuiescentWrite}): document → nesting depth. Mutations of a
+     * listed document emit no change event and do not count as local changes
+     * for the duration. Thread-local, because only the writing thread must see
+     * it; the write itself goes through the document's own lock.
+     */
+    private final ThreadLocal<Map<SettingsDocument, Integer>> quiescentWrites =
+            ThreadLocal.withInitial(java.util.HashMap::new);
+    /**
      * The thread that performed the last foreign merge, for
      * {@link #getLastMergeThreadNameForTesting()}.
      */
@@ -507,6 +516,11 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
             attachPathListeners(doc);
             recordSyncPoint(doc);
             startWatchingFor(scope, doc);
+            if (scope == SettingsScope.APPLICATION) {
+                // Sheets attached before the document existed have to be
+                // seeded into (and synced with) this fresh document.
+                ensureAttachedSheetsSeeded(doc);
+            }
         }
         return doc;
     }
@@ -1096,6 +1110,76 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
     }
 
     /**
+     * Writes a whole block into the given document as bookkeeping content,
+     * not as a user-visible setting change: no change event is emitted for it
+     * and the block is not marked as locally changed (so a foreign merge
+     * cannot treat it as a conflicting local edit). The write is still a
+     * normal {@link SettingsDocument#setBlock(String, JsonNode)}, so the file
+     * watcher, the merge baseline and the save path see it.
+     * <p>
+     * Used by the recent-projects list, whose {@link #getLegacyChangedEventEmitter()}
+     * mirror already reports changes and whose per-item diff carries no
+     * meaning for subscribers.
+     * <p>
+     * Thread-safety: the whole cycle (mark quiescent → write) holds the
+     * component monitor, so a mutation from another thread (e.g. a sheet edit
+     * on the EDT) can never run while the document is marked quiescent — its
+     * events and local-change tracking are therefore never suppressed.
+     *
+     * @param doc the document to write to
+     * @param blockPath the block to replace
+     * @param value the new block value
+     */
+    public synchronized void writeQuiescently(SettingsDocument doc, String blockPath, JsonNode value) {
+        beginQuiescentWrite(doc);
+        try {
+            doc.setBlock(blockPath, value);
+        } finally {
+            endQuiescentWrite(doc);
+        }
+    }
+
+    /**
+     * Marks the given document as being written quiescently (see
+     * {@link #writeQuiescently}): until the matching {@link #endQuiescentWrite}
+     * on the same thread, its mutations emit no change events and do not count
+     * as local changes.
+     *
+     * @param doc the document
+     */
+    private void beginQuiescentWrite(SettingsDocument doc) {
+        Map<SettingsDocument, Integer> depth = quiescentWrites.get();
+        depth.merge(doc, 1, Integer::sum);
+    }
+
+    /**
+     * Ends a quiescent write started with {@link #beginQuiescentWrite}.
+     *
+     * @param doc the document
+     */
+    private void endQuiescentWrite(SettingsDocument doc) {
+        Map<SettingsDocument, Integer> depth = quiescentWrites.get();
+        Integer current = depth.get(doc);
+        if (current == null || current <= 1) {
+            depth.remove(doc);
+            if (depth.isEmpty()) {
+                quiescentWrites.remove();
+            }
+        } else {
+            depth.put(doc, current - 1);
+        }
+    }
+
+    /**
+     * @param doc the document
+     * @return whether the current thread is inside a quiescent write of the document
+     */
+    private boolean isQuiescent(SettingsDocument doc) {
+        Map<SettingsDocument, Integer> depth = quiescentWrites.get();
+        return !depth.isEmpty() && depth.containsKey(doc);
+    }
+
+    /**
      * Marks the given block as locally changed whenever its content is
      * mutated at the given sub-path <em>or</em> as a whole block, so the
      * per-block merge ({@link SettingsDocumentMerger}) knows which blocks
@@ -1142,6 +1226,9 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
             return;
         }
         doc.addPathListener(path, newValue -> {
+            if (isQuiescent(doc)) {
+                return; // bookkeeping write (e.g. the recent-projects list)
+            }
             if (foreignMergeOrigin.get() == ChangeOrigin.EXTERNAL_FILE) {
                 // The merge's own write of an adopted/conflicted block is not
                 // a local change: marking the block locally changed would make
@@ -1168,6 +1255,14 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
      * sheet onto the {@code "sheet:<id>"} block of the APPLICATION document.
      * Safe to call before the document exists: the document is materialized
      * (lazily) on demand.
+     * <p>
+     * <b>Document-later case.</b> When the APPLICATION document is created
+     * <em>after</em> this call (a sheet registered very early in startup, or
+     * a component constructed on a profile that is migrated afterwards), the
+     * fresh document is seeded from the sheet's current values and the
+     * bridge is re-created against it — see {@link #ensureAttachedSheetsSeeded}.
+     * Without that, the sheet would hold an unsaved state the document never
+     * sees.
      *
      * @param sheet the sheet to bridge
      */
@@ -1176,9 +1271,51 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
         // Materializing the document is lazy and idempotent, so this is safe
         // to call before the document exists (e.g. at sheet registration
         // time): the bridge is created against the fresh, loaded document.
-        SettingsSheetBridge bridge = attachBridge(document(SettingsScope.APPLICATION), sheet);
+        SettingsDocument doc = document(SettingsScope.APPLICATION);
+        SettingsSheetBridge bridge = attachBridge(doc, sheet);
         attachedBridges.put(sheet, bridge);
         attachedBridgedSheetIds.add(sheet.getId());
+    }
+
+    /**
+     * @param sheet the sheet
+     * @return whether a bridge for the sheet is currently attached to the
+     * live APPLICATION document
+     */
+    public synchronized boolean isSheetAttached(JIPipeApplicationSettingsSheet sheet) {
+        return attachedBridges.containsKey(sheet);
+    }
+
+    /**
+     * Attaches a sheet bridge to the live APPLICATION document. If the
+     * document was created after some sheets were attached, that creation
+     * re-attaches them here (see {@link #attachSheet}).
+     */
+    private void ensureAttachedSheetsSeeded(SettingsDocument doc) {
+        for (JIPipeApplicationSettingsSheet sheet : unbridgedSheets(doc)) {
+            attachedBridges.put(sheet, attachBridge(doc, sheet));
+            attachedBridgedSheetIds.add(sheet.getId());
+        }
+    }
+
+    /**
+     * @param doc the live APPLICATION document
+     * @return the sheets whose bridge is missing or points at a replaced
+     * document, in registration order
+     */
+    private java.util.List<JIPipeApplicationSettingsSheet> unbridgedSheets(SettingsDocument doc) {
+        java.util.List<JIPipeApplicationSettingsSheet> result = new java.util.ArrayList<>();
+        JIPipeService service = getService();
+        if (service == null) {
+            return result; // testing component without a service: nothing registers sheets
+        }
+        for (JIPipeApplicationSettingsSheet sheet : service.getApplicationSettings().getRegisteredSheets().values()) {
+            SettingsSheetBridge bridge = attachedBridges.get(sheet);
+            if (bridge == null || bridge.document() != doc) {
+                result.add(sheet);
+            }
+        }
+        return result;
     }
 
     /**
@@ -1246,10 +1383,15 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
             // pre-save read-merge-write check starts from it.
             lastKnownFileStates.put(scope, store.fingerprint());
             if (scope == SettingsScope.APPLICATION) {
-                // Re-create every bridge on the fresh document and attach it.
+                // Re-create every bridge on the fresh document and attach it:
+                // the already-bridged sheets (including ones that are not in
+                // the service's registry, e.g. in unit tests) plus every
+                // registered sheet that never got a bridge (e.g. attached
+                // before the document existed).
                 for (JIPipeApplicationSettingsSheet sheet : bridgedSheets) {
                     attachedBridges.put(sheet, attachBridge(fresh, sheet));
                 }
+                ensureAttachedSheetsSeeded(fresh);
             }
         }
         if (getProgressInfo() != null) {
@@ -1771,6 +1913,15 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
      * the default {@link ChangeOrigin#LOCAL_PROGRAMMATIC}.
      */
     private void onPathChanged(SettingsDocument doc, String path, JsonNode newValue) {
+        if (isQuiescent(doc)) {
+            // Bookkeeping write: keep the "old value" baseline current, but do
+            // not report it as a setting change.
+            Map<String, JsonNode> cache = lastValues.get(doc);
+            if (cache != null) {
+                cache.put(path, newValue);
+            }
+            return;
+        }
         Map<String, JsonNode> valueCache = lastValues.get(doc);
         if (valueCache == null) {
             return;

@@ -925,6 +925,13 @@ public class JIPipePathMetadataStore {
             return items.length;
         }
 
+        /**
+         * @return the normalized key items (empty segments removed), in order
+         */
+        public String[] getItems() {
+            return items;
+        }
+
         public String getName(int i) {
             return items[i];
         }

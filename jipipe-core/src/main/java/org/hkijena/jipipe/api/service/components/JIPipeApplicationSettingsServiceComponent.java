@@ -13,74 +13,161 @@
 
 package org.hkijena.jipipe.api.service.components;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.MissingNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableBiMap;
-import ij.IJ;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.api.service.JIPipeServiceComponent;
 import org.hkijena.jipipe.api.settings.JIPipeApplicationSettingsSheet;
+import org.hkijena.jipipe.api.settings.JIPipeSettingKey;
 import org.hkijena.jipipe.api.settings.JIPipeSettingsSheet;
+import org.hkijena.jipipe.api.settings.SettingsDocument;
+import org.hkijena.jipipe.api.settings.SettingsFileStore;
+import org.hkijena.jipipe.api.settings.SettingsKind;
+import org.hkijena.jipipe.api.settings.SettingsScope;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.json.JIPipePathMetadataStore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import javax.swing.Timer;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
 
 /**
- * Registry for settings.
- * Settings are organized in "sheets" (parameter collections)
+ * Legacy facade for application settings: the sheet registry plus the
+ * registry-database API.
+ * <p>
+ * <b>This component no longer stores anything itself.</b> Since the modern
+ * settings system (Task 13 of the 2026 settings redesign) every value lives in
+ * the {@link SettingsScope#APPLICATION} document owned by
+ * {@link JIPipeSettingsServiceComponent}:
+ * <ul>
+ * <li>{@link #register(JIPipeApplicationSettingsSheet)} keeps the lookup maps
+ * ({@link #getById}, {@link #getByType}, {@link #getRegisteredSheets}) and
+ * forwards the sheet to {@link JIPipeSettingsServiceComponent#attachSheet}, so
+ * its values are projected onto the {@code "sheet:<id>"} block.</li>
+ * <li>{@link #putIntoRegistry}, {@link #getFromRegistry} and
+ * {@link #getListFromRegistry} read and write the {@code "registry:<db>"}
+ * block.</li>
+ * <li>{@link #save()}, {@link #saveLater()} and {@link #reload()} delegate to
+ * the same component.</li>
+ * </ul>
+ * The signatures are unchanged, so every existing caller keeps working.
+ * <p>
+ * <b>No per-call bindings.</b> A {@code SettingsBinding} registers a path
+ * listener on the (long-lived) document and must be closed; creating one per
+ * registry read would leak one listener per call (Task 5 review). The registry
+ * methods therefore use the document's own get/set API, and they register the
+ * {@code registry:<db>} block once per component instance through
+ * {@link JIPipeSettingsServiceComponent#registerKey}, so its changes are
+ * observed and re-emitted like any other setting's.
+ * <p>
+ * <b>File formats.</b> {@link #getSheetsFile(boolean)} still names
+ * {@code settings.json}, which now holds the scoped document
+ * ({@code $schema}/{@code $meta} plus prefixed blocks) instead of the legacy
+ * flat sheet map; {@link #getRegistryFile(String, boolean)} no longer names a
+ * file on its own, because all registry databases live in that one document —
+ * it resolves to it.
  */
 public final class JIPipeApplicationSettingsServiceComponent extends JIPipeServiceComponent {
+    private static final Logger logger = LoggerFactory.getLogger(JIPipeApplicationSettingsServiceComponent.class);
+    private static final String REGISTRY_PREFIX = SettingsKind.REGISTRY.prefix() + ":";
+    private static final String SHEET_PREFIX = SettingsKind.SHEET.prefix() + ":";
 
     private final BiMap<String, JIPipeApplicationSettingsSheet> registeredSheets = HashBiMap.create();
     private final Map<Class<? extends JIPipeApplicationSettingsSheet>, JIPipeApplicationSettingsSheet> registeredSheetsByType = new HashMap<>();
-    private final Map<String, JIPipePathMetadataStore> registryDatabases = new HashMap<>();
-    private final Timer saveLaterTimer;
+    /**
+     * Registry block paths ({@code "registry:<db>"}) already registered with
+     * the settings service, so a block is observed exactly once.
+     */
+    private final Map<String, Boolean> observedRegistryBlocks = new LinkedHashMap<>();
     private final ChangedEventEmitter changedEventEmitter = new ChangedEventEmitter();
 
     public JIPipeApplicationSettingsServiceComponent(JIPipeService service) {
         super(service);
-        this.saveLaterTimer = new Timer(250, (e) -> {
-            save();
-        });
-        this.saveLaterTimer.setRepeats(false);
     }
 
+    /**
+     * Subscribes the legacy aggregate emitter to the new component's aggregate
+     * event once the service is fully constructed, so every pre-existing
+     * subscriber keeps receiving changes (sheet edits, registry writes,
+     * external file changes). Not done in the constructor: this component is
+     * created before the settings component is assigned on the service, so a
+     * constructor-time call would re-enter the initialization.
+     */
+    @Override
+    public void postprocess(JIPipeProgressInfo progressInfo) {
+        getSettingsService().getLegacyChangedEventEmitter()
+                .subscribeLambda((emitter, event) -> changedEventEmitter.emit(new ChangedEvent(this)));
+    }
 
     /**
-     * Gets the raw property files Json node
+     * Gets the raw {@code sheet:<id>} blocks of the application settings file
+     * as they are on disk, keyed by sheet ID (the block prefix is stripped, so
+     * the result has the shape of the legacy flat settings file).
+     * <p>
+     * Works before settings sheets are registered and before the JIPipe
+     * service is initialized (splash screen, early startup), so it reads the
+     * file directly. If the file is absent or malformed, the in-memory
+     * document is consulted as a fallback.
      *
-     * @return the node. Never null.
+     * @return the node keyed by sheet ID. Never null.
      */
     public static JsonNode getRawSheetsNode() {
         Path propertyFile = getSheetsFile(false);
         if (Files.exists(propertyFile)) {
             try {
-                return JsonUtils.getObjectMapper().readTree(propertyFile.toFile());
-            } catch (IOException e) {
+                JsonNode node = JsonUtils.getObjectMapper().readTree(propertyFile.toFile());
+                if (node != null && node.isObject()) {
+                    return sheetBlocks(node);
+                }
+            } catch (Exception e) {
+                logger.debug("Could not read the raw settings file {}", propertyFile, e);
+            }
+        }
+        if (JIPipe.isInstantiated() && JIPipe.getInstance() != null) {
+            try {
+                SettingsDocument doc = JIPipe.getInstance().getSettings().document(SettingsScope.APPLICATION);
+                return sheetBlocks(doc.snapshotJson());
+            } catch (RuntimeException e) {
                 return MissingNode.getInstance();
             }
         }
         return MissingNode.getInstance();
     }
 
+    /**
+     * @param documentRoot a settings document's root
+     * @return a copy holding only the {@code sheet:} blocks, keyed by sheet ID
+     * (legacy flat shape used by the raw readers)
+     */
+    private static ObjectNode sheetBlocks(JsonNode documentRoot) {
+        ObjectNode result = JsonUtils.getObjectMapper().createObjectNode();
+        documentRoot.fields().forEachRemaining(entry -> {
+            if (entry.getKey().startsWith(SHEET_PREFIX)) {
+                result.set(entry.getKey().substring(SHEET_PREFIX.length()), entry.getValue());
+            }
+        });
+        return result;
+    }
 
     /**
-     * Return the global settings sheets file
+     * Return the global settings file.
      *
      * @param loadFromOldProfile if the settings can be loaded from an old profile
      * @return the path
@@ -90,26 +177,32 @@ public final class JIPipeApplicationSettingsServiceComponent extends JIPipeServi
     }
 
     /**
-     * Return the registry settings file for the specific key
+     * Returns the file the given registry database is persisted to.
+     * <p>
+     * All registry databases now live in the single application settings
+     * document ({@link #getSheetsFile(boolean)}), as {@code registry:<key>}
+     * blocks; no {@code settings-db-<key>.json} file is written or read any
+     * more.
      *
      * @param databaseKey        the database key
      * @param loadFromOldProfile if the settings can be loaded from an old profile
-     * @return the path
+     * @return the application settings file
      */
     public static Path getRegistryFile(String databaseKey, boolean loadFromOldProfile) {
         if (!isValidRegistryDatabaseKey(databaseKey)) {
             throw new IllegalArgumentException("Invalid database key: " + databaseKey);
         }
-        return JIPipe.getJIPipeUserDir(loadFromOldProfile).resolve("settings-db-" + databaseKey + ".json");
+        return getSheetsFile(loadFromOldProfile);
     }
 
     public static boolean isValidRegistryDatabaseKey(String databaseKey) {
         return databaseKey.equals(databaseKey.toLowerCase(Locale.ROOT)) && StringUtils.isFilesystemCompatible(databaseKey);
     }
 
-
     /**
-     * Registers a new settings sheet
+     * Registers a new settings sheet. The sheet's values are projected onto
+     * the {@code "sheet:<id>"} block of the application settings document (the
+     * bridge is attached by the settings service).
      *
      * @param sheet the sheet
      */
@@ -125,6 +218,7 @@ public final class JIPipeApplicationSettingsServiceComponent extends JIPipeServi
         }
         registeredSheets.put(sheet.getId(), sheet);
         registeredSheetsByType.put(sheet.getClass(), sheet);
+        getSettingsService().attachSheet(sheet);
         getProgressInfo().log("Registered application settings sheet id=" + sheet.getId() + " in category '" + sheet.getCategory() + "' object=" + sheet);
     }
 
@@ -165,105 +259,76 @@ public final class JIPipeApplicationSettingsServiceComponent extends JIPipeServi
         return ImmutableBiMap.copyOf(registeredSheets);
     }
 
-
     /**
-     * Saves the settings to the specified file
-     *
-     * @param file the file path
-     */
-    private void saveSheets(Path file) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file.toFile()))) {
-            JsonFactory factory = JsonUtils.getObjectMapper().getFactory();
-            JsonGenerator generator = factory.createGenerator(writer);
-            generator.useDefaultPrettyPrinter();
-            generator.writeStartObject();
-            for (Map.Entry<String, JIPipeApplicationSettingsSheet> entry : registeredSheets.entrySet()) {
-                generator.writeObjectFieldStart(entry.getKey());
-                entry.getValue().serializeToJsonGenerator(generator);
-                generator.writeEndObject();
-            }
-            generator.writeEndObject();
-            generator.close();
-        } catch (IOException e) {
-            IJ.handleException(e);
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Saves the settings to the default settings file
+     * Saves the settings: the registered sheets are flushed into the
+     * application settings document and every file-backed document is written
+     * atomically. Delegates to {@link JIPipeSettingsServiceComponent#save()}.
      */
     public void save() {
-        saveSheets(getSheetsFile(false));
-        saveRegistries();
-        changedEventEmitter.emit(new ChangedEvent(this));
-    }
-
-    private void saveRegistries() {
-        for (Map.Entry<String, JIPipePathMetadataStore> entry : registryDatabases.entrySet()) {
-            try {
-                Path path = getRegistryFile(entry.getKey(), false);
-                JsonUtils.saveToFile(entry.getValue(), path);
-            } catch (Exception e) {
-                IJ.handleException(e);
-                e.printStackTrace();
-            }
-        }
+        getSettingsService().save();
     }
 
     /**
-     * Loads settings from the specified file
-     *
-     * @param file the file
+     * Coalesces rapid changes into a single save after a short quiet period.
+     * Delegates to {@link JIPipeSettingsServiceComponent#saveLater()}.
      */
-    private void loadSheets(Path file) {
-        if (!Files.isRegularFile(file)) {
-            return;
-        }
-        try {
-            JsonNode objectNode = JsonUtils.getObjectMapper().readTree(file.toFile());
-            for (Map.Entry<String, JIPipeApplicationSettingsSheet> entry : registeredSheets.entrySet()) {
-                if (objectNode.has(entry.getKey())) {
-                    try {
-                        entry.getValue().deserializeFromJsonNode(objectNode.get(entry.getKey()));
-                    } catch (Throwable e) {
-                        IJ.handleException(e);
-                        e.printStackTrace();
-                    }
-                }
-            }
-        } catch (Throwable e) {
-            IJ.handleException(e);
-            e.printStackTrace();
-        } finally {
-            changedEventEmitter.emit(new ChangedEvent(this));
-        }
+    public void saveLater() {
+        getSettingsService().saveLater();
     }
 
     /**
-     * Puts an object into the registry
+     * Reloads the settings from the default file if it exists and re-attaches
+     * every sheet bridge to the fresh document, so the registered sheet
+     * instances show the reloaded values.
+     */
+    public void reload() {
+        getSettingsService().reload();
+    }
+
+    /**
+     * Puts an object into the registry.
+     * <p>
+     * The value is written to the {@code <key>} sub-path of the
+     * {@code "registry:<databaseKey>"} block of the application settings
+     * document. Like before, the write is debounced ({@link #saveLater()}).
      *
      * @param databaseKey the database key
      * @param registryKey the registry key
-     * @param value       the value
+     * @param value       the value; {@code null} removes the entry
      */
     public void putIntoRegistry(String databaseKey, JIPipePathMetadataStore.Key registryKey, Object value) {
         if (!isValidRegistryDatabaseKey(databaseKey)) {
             throw new IllegalArgumentException("Invalid database key: " + databaseKey);
         }
-        JIPipePathMetadataStore store = registryDatabases.get(databaseKey);
-        if (store == null) {
-            store = new JIPipePathMetadataStore();
-            registryDatabases.put(databaseKey, store);
+        String blockPath = REGISTRY_PREFIX + databaseKey;
+        String subPath = subPathOf(registryKey);
+        SettingsDocument document = getSettingsService().document(SettingsScope.APPLICATION);
+        registerRegistryBlock(blockPath, subPath);
+        if (value == null) {
+            document.remove(blockPath, subPath);
+        } else {
+            document.set(blockPath, subPath, valueToTree(value));
         }
-
-        store.putObject(registryKey, value);
-
         saveLater();
     }
 
     /**
-     * Gets an object from the registry
+     * Gets an object from the registry.
+     * <p>
+     * Reads the {@code <key>} sub-path of the {@code "registry:<databaseKey>"}
+     * block of the application settings document and converts it to
+     * {@code type}. The {@code destructive} flag keeps its exact historic
+     * meaning, which is two rules and not one:
+     * <ul>
+     * <li>an <em>absent</em> location is always seeded with the default, for
+     * both flag values (the legacy store wrote whenever the key was
+     * missing);</li>
+     * <li>an <em>existing</em> location whose value yields {@code null}
+     * (a stored JSON null, or a value that cannot be converted to
+     * {@code type}) is rewritten with the default only when
+     * {@code destructive} is {@code true}; with {@code false} it is left
+     * untouched.</li>
+     * </ul>
      *
      * @param databaseKey  the database key
      * @param registryKey  the registry key
@@ -276,44 +341,50 @@ public final class JIPipeApplicationSettingsServiceComponent extends JIPipeServi
         if (!isValidRegistryDatabaseKey(databaseKey)) {
             throw new IllegalArgumentException("Invalid database key: " + databaseKey);
         }
-        boolean changed = false;
-        JIPipePathMetadataStore store = registryDatabases.get(databaseKey);
-        if (store == null) {
-            store = new JIPipePathMetadataStore();
+        String blockPath = REGISTRY_PREFIX + databaseKey;
+        String subPath = subPathOf(registryKey);
+        SettingsDocument document = getSettingsService().document(SettingsScope.APPLICATION);
+        registerRegistryBlock(blockPath, subPath);
 
-            // Try to load from file
-            try {
-                Path registryFile = getRegistryFile(databaseKey, false);
-                if (Files.isRegularFile(registryFile)) {
-                    store = JsonUtils.readFromFile(registryFile, JIPipePathMetadataStore.class);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            registryDatabases.put(databaseKey, store);
-            changed = true;
+        JsonNode node = document.get(blockPath, subPath);
+        T value = null;
+        if (!node.isMissingNode() && !node.isNull()) {
+            value = convert(blockPath, subPath, node, type);
         }
-
-        T object = store.getObject(registryKey, type);
-        if (object == null) {
-            object = defaultValue;
-
-            if (destructive || !store.containsKey(registryKey)) {
-                store.putObject(registryKey, object);
-                changed = true;
+        if (value == null) {
+            value = defaultValue;
+            // destructive: rewrite the location even if a value exists but did
+            // not convert; otherwise only a genuinely absent location is seeded
+            if (destructive) {
+                writeRegistryValue(document, blockPath, subPath, value);
+                saveLater();
+            } else if (!document.has(blockPath, subPath)) {
+                writeRegistryValue(document, blockPath, subPath, value);
+                saveLater();
             }
         }
-
-        if (changed) {
-            saveLater();
-        }
-
-        return object;
+        return value;
     }
 
     /**
-     * Gets a list object from the registry
+     * Writes a registry value back into the document, or removes the location
+     * when the value is {@code null}.
+     */
+    private static void writeRegistryValue(SettingsDocument document, String blockPath, String subPath, Object value) {
+        if (value == null) {
+            document.remove(blockPath, subPath);
+        } else {
+            document.set(blockPath, subPath, valueToTree(value));
+        }
+    }
+
+    /**
+     * Gets a list object from the registry.
+     * <p>
+     * Reads the {@code <key>} sub-path of the {@code "registry:<databaseKey>"}
+     * block of the application settings document as a list. The default is an
+     * empty list; the {@code destructive} flag keeps its historic meaning (see
+     * {@link #getFromRegistry(String, JIPipePathMetadataStore.Key, Class, Object, boolean)}).
      *
      * @param databaseKey the database key
      * @param registryKey the registry key
@@ -325,52 +396,118 @@ public final class JIPipeApplicationSettingsServiceComponent extends JIPipeServi
         if (!isValidRegistryDatabaseKey(databaseKey)) {
             throw new IllegalArgumentException("Invalid database key: " + databaseKey);
         }
-        boolean changed = false;
-        JIPipePathMetadataStore store = registryDatabases.get(databaseKey);
-        if (store == null) {
-            store = new JIPipePathMetadataStore();
+        String blockPath = REGISTRY_PREFIX + databaseKey;
+        String subPath = subPathOf(registryKey);
+        SettingsDocument document = getSettingsService().document(SettingsScope.APPLICATION);
+        registerRegistryBlock(blockPath, subPath);
 
-            // Try to load from file
+        List<T> object = null;
+        JsonNode node = document.get(blockPath, subPath);
+        if (node.isArray()) {
             try {
-                Path registryFile = getRegistryFile(databaseKey, false);
-                if (Files.isRegularFile(registryFile)) {
-                    store = JsonUtils.readFromFile(registryFile, JIPipePathMetadataStore.class);
-                }
+                object = JsonUtils.getObjectMapper().readerForListOf(type).readValue(node);
             } catch (Exception e) {
-                e.printStackTrace();
+                object = null;
             }
-
-            registryDatabases.put(databaseKey, store);
-            changed = true;
+        } else if (!node.isMissingNode() && !node.isNull()) {
+            // A single value where a list is expected (e.g. "a" for ["a"]):
+            // keep the legacy tolerance instead of dropping the stored data.
+            T single = convert(blockPath, subPath, node, type);
+            if (single != null) {
+                object = new ArrayList<>();
+                object.add(single);
+            }
         }
-
-        List<T> object = store.getList(registryKey, type);
         if (object == null) {
             object = new ArrayList<>();
-
-            if (destructive || !store.containsKey(registryKey)) {
-                store.putObject(registryKey, object);
-                changed = true;
+            if (destructive || !document.has(blockPath, subPath)) {
+                document.set(blockPath, subPath, JsonUtils.getObjectMapper().valueToTree(object));
+                saveLater();
             }
         }
-
-        if (changed) {
-            saveLater();
-        }
-
         return object;
     }
 
     /**
-     * Reloads the settings from the default file if it exists
+     * Registers a {@code registry:<db>} block and one sub-path with the
+     * settings service exactly once, so its changes are observed and re-emitted
+     * as change events. Registering a key never creates a binding (and with it
+     * a path listener per call) — see the class documentation.
+     *
+     * @param blockPath the registry block path
+     * @param subPath   the sub-path read or written
      */
-    public void reload() {
-        loadSheets(getSheetsFile(false));
-        registryDatabases.clear();
+    private void registerRegistryBlock(String blockPath, String subPath) {
+        JIPipeSettingsServiceComponent settings = getSettingsService();
+        if (subPath == null || subPath.isEmpty()) {
+            return;
+        }
+        String location = blockPath + "/" + subPath;
+        if (observedRegistryBlocks.put(location, Boolean.TRUE) != null) {
+            return;
+        }
+        settings.registerKey(JIPipeSettingKey.object(blockPath, subPath, JsonNode.class));
     }
 
-    public void saveLater() {
-        saveLaterTimer.restart();
+    /**
+     * @param registryKey the registry key
+     * @return the slash-separated sub-path within the registry block
+     */
+    private static String subPathOf(JIPipePathMetadataStore.Key registryKey) {
+        Objects.requireNonNull(registryKey, "registryKey");
+        return String.join("/", registryKey.getItems());
+    }
+
+    /**
+     * Converts a stored value to the requested type. A value that cannot be
+     * converted yields {@code null}, which makes the caller fall back to the
+     * default exactly like the legacy store did.
+     */
+    private static <T> T convert(String blockPath, String subPath, JsonNode node, Class<T> type) {
+        try {
+            if (type == JsonNode.class) {
+                @SuppressWarnings("unchecked")
+                T asNode = (T) node;
+                return asNode;
+            }
+            T value = JsonUtils.getObjectMapper().treeToValue(node, type);
+            if (value == null && type == String.class && node.isContainerNode()) {
+                // The legacy store serialized non-string objects to their JSON
+                // text when a String was requested.
+                @SuppressWarnings("unchecked")
+                T text = (T) JsonUtils.toJsonString(node);
+                return text;
+            }
+            return value;
+        } catch (Exception e) {
+            logger.debug("Could not convert registry value at {}/{} to {}", blockPath, subPath, type, e);
+            return null;
+        }
+    }
+
+    /**
+     * Converts a value to its stored JSON form. {@link JsonNode} values are
+     * stored as they are (they are copied, so a caller mutating its node does
+     * not mutate the document).
+     */
+    private static JsonNode valueToTree(Object value) {
+        if (value instanceof JsonNode node) {
+            return node.deepCopy();
+        }
+        return JsonUtils.getObjectMapper().valueToTree(value);
+    }
+
+    /**
+     * @return the modern settings component every value is stored in
+     */
+    private JIPipeSettingsServiceComponent getSettingsService() {
+        JIPipeService service = getService();
+        if (service != null) {
+            return service.getSettings();
+        }
+        // Only reachable from a test-constructed component without a service.
+        JIPipeService instance = JIPipe.getInstance();
+        return instance.getSettings();
     }
 
     public ChangedEventEmitter getChangedEventEmitter() {

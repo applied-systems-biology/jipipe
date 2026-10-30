@@ -100,8 +100,33 @@ public final class JIPipe {
         return instance.getImageJDataAdapters();
     }
 
+    /**
+     * The legacy application-settings facade: the sheet registry, the
+     * registry-database API and the aggregate change event. All values are
+     * stored in the modern scoped settings service
+     * ({@link #getSettingsService()}).
+     *
+     * @return the application settings component
+     */
     public static JIPipeApplicationSettingsServiceComponent getSettings() {
         return instance.getApplicationSettings();
+    }
+
+    /**
+     * The modern scoped-settings service component: one settings document per
+     * scope plus the typed key/binding API and the sheet bridges.
+     *
+     * @return the settings service component
+     */
+    public static JIPipeSettingsServiceComponent getSettingsService() {
+        return instance.getSettings();
+    }
+
+    /**
+     * @return the registry of recently opened projects
+     */
+    public static JIPipeRecentProjectsRegistry getRecentProjects() {
+        return instance.getRecentProjects();
     }
 
     public static JIPipeNodesServiceComponent getNodes() {

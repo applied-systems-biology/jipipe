@@ -25,6 +25,9 @@ import org.hkijena.jipipe.api.service.components.JIPipeEnvironmentsServiceCompon
 import org.hkijena.jipipe.api.service.components.nodes.JIPipeNodeRegistrationTask;
 import org.hkijena.jipipe.api.service.events.JIPipePluginDiscoveredEvent;
 import org.hkijena.jipipe.api.service.events.JIPipePluginRegisteredEvent;
+import org.hkijena.jipipe.api.settings.SettingsBlockPath;
+import org.hkijena.jipipe.api.settings.SettingsMigration;
+import org.hkijena.jipipe.api.settings.SettingsScope;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
@@ -46,8 +49,10 @@ import org.scijava.service.AbstractService;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.function.Predicate;
 
 public class JIPipeServiceDefaultInitializer extends JIPipeServiceInitializer {
     private final JIPipeInitializationReport issues;
@@ -282,9 +287,13 @@ public class JIPipeServiceDefaultInitializer extends JIPipeServiceInitializer {
         registerNodeExamplesFromFileSystem();
         registerProjectTemplatesFromFileSystem();
 
-        // Reload settings
+        // Reload settings. The settings document is prepared (profile migration,
+        // interrupted-migration recovery, cross-version carry-over) before it is
+        // first loaded; the legacy facade's reload() delegates to the same
+        // component, so this loads every sheet bridge and the registry blocks.
         getProgressInfo().setProgress(4);
         getProgressInfo().log("Loading settings ...");
+        prepareApplicationSettingsDocument();
         getService().getApplicationSettings().reload();
 
         // Required as the reload deletes the allowed values
@@ -375,6 +384,37 @@ public class JIPipeServiceDefaultInitializer extends JIPipeServiceInitializer {
 
         // Mark log as read
         JIPipeDesktopRunnableLogsCollection.getInstance().markAllAsRead();
+    }
+
+    private void prepareApplicationSettingsDocument() {
+        Path userDir = JIPipe.getJIPipeUserDir(false);
+        // The startup wiring of the modern settings system, in this order:
+        // (a) a 5.x profile is migrated, (b) an interrupted migration is
+        // recovered, (c) unknown blocks are carried over from sibling version
+        // profiles — all BEFORE the first document(APPLICATION) materialization,
+        // because recovered content only reaches this session through a load.
+        try {
+            // TODO(#1345 Task 14): pass SettingsScopes.scopeByBlock() here once
+            // that scope map exists; until then every migrated block defaults to
+            // APPLICATION, which is the safe choice.
+            Map<String, SettingsScope> scopeByBlock = Map.of();
+            // "Registered" means the block kind is known; Task 14 refines this
+            // if needed.
+            Predicate<String> registeredBlock = path -> new SettingsBlockPath(path).kind() != null;
+            if (SettingsMigration.needsMigration(userDir)) {
+                getProgressInfo().log("Migrating legacy settings in " + userDir + " ...");
+                SettingsMigration.migrateLegacyProfile(userDir, registeredBlock, scopeByBlock, getProgressInfo());
+            }
+            SettingsMigration.recoverFromInterruptedMigration(userDir, registeredBlock, scopeByBlock, getProgressInfo());
+            Set<String> recovered = getService().getSettings().runCarryOver();
+            if (!recovered.isEmpty()) {
+                getProgressInfo().log("Recovered " + recovered.size() + " settings block(s) from a previous profile version");
+            }
+        } catch (RuntimeException e) {
+            // Settings recovery is a convenience: it must never prevent startup.
+            getProgressInfo().log("Could not prepare the settings file (" + e + "); continuing with the current content");
+            e.printStackTrace();
+        }
     }
 
     private void validateParameterTypes(JIPipeInitializationReport issues) {

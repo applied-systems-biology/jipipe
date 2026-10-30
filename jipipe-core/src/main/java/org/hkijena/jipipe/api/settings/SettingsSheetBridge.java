@@ -118,6 +118,13 @@ public final class SettingsSheetBridge {
     }
 
     /**
+     * @return the document this bridge is attached to
+     */
+    public SettingsDocument document() {
+        return document;
+    }
+
+    /**
      * Starts syncing the two sides. If the block is absent in the document,
      * the sheet's current values are serialized into it first (a fresh
      * profile behaves like the old defaults), and then the bridge subscribes
