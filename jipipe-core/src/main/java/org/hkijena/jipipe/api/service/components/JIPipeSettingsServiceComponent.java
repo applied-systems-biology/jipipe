@@ -33,6 +33,7 @@ import org.hkijena.jipipe.api.settings.SettingsFileStore.FileFingerprint;
 import org.hkijena.jipipe.api.settings.SettingsFileWatching;
 import org.hkijena.jipipe.api.settings.SettingsScope;
 import org.hkijena.jipipe.api.settings.SettingsSheetBridge;
+import org.hkijena.jipipe.plugins.settings.SettingsScopes;
 import org.hkijena.jipipe.utils.VersionUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.slf4j.Logger;
@@ -48,6 +49,7 @@ import java.nio.file.StandardCopyOption;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -59,6 +61,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
 
 /**
  * The scoped settings service component: the single owner of the
@@ -290,6 +293,14 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
      * the merge paths and {@code reload}/{@code dispose}.
      */
     private final Map<SettingsDocument, Set<String>> localChangeTrackedBlocks = new LinkedHashMap<>();
+    /**
+     * The process-wide write guard consulted by {@link #canWrite}: {@code null}
+     * means "permit every write". A plain predicate rather than a policy
+     * implementation, because the future #1102 runtime host owns the policy
+     * (see {@link #setWriteGuard}). Volatile: read from whatever thread writes
+     * a setting (typically the EDT), replaced from the runtime host's thread.
+     */
+    private volatile Predicate<JIPipeSettingKey<?>> writeGuard;
 
     private final SettingsChangedEventEmitter changedEventEmitter = new SettingsChangedEventEmitter();
     private final LegacyChangedEventEmitter legacyChangedEventEmitter = new LegacyChangedEventEmitter();
@@ -1104,9 +1115,90 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
         SettingsDocument doc = document(key.scope());
         registerKey(key);
         SettingsBinding<T> binding = new SettingsBinding<>(doc, key);
+        // The write guard is a lambda over this component, so it always sees
+        // the currently installed guard (setWriteGuard may run after bind).
+        binding.setWriteGuard(this::canWrite);
         trackedBindings.add(binding);
         observeBlockWrites(doc, key.blockPath(), key.subPath());
         return binding;
+    }
+
+    /**
+     * The single choke point for setting writes through the typed-key path:
+     * every {@link SettingsBinding} handed out by {@link #bind(JIPipeSettingKey)}
+     * consults it ({@link SettingsBinding#set(Object)} and
+     * {@link SettingsBinding#reset()}) before mutating a document, and a
+     * rejection throws
+     * {@link org.hkijena.jipipe.api.settings.SettingsAccessDeniedException}
+     * without touching the document.
+     * <p>
+     * <b>Sheet-bridge writes are not covered yet.</b> A
+     * {@link SettingsSheetBridge} holds a sheet, not keys, and no key exists at
+     * most sheet sub-paths, so the bridge cannot be routed through this check
+     * without inventing one key per sheet parameter. Its writes become guarded
+     * once sheet parameters are keyified (the per-key migration); until then a
+     * write through the sheet bridge bypasses the guard.
+     * <p>
+     * <b>Today this returns {@code true} for every key</b>: the runtime
+     * document is local, so there is no remote administrator that a
+     * {@link SettingsAccessPolicy#RUNTIME_ADMIN} or
+     * {@link SettingsAccessPolicy#READ_ONLY} policy would protect the value
+     * from. The method exists so the future #1102 runtime host can override the
+     * decision in one place: it installs a {@link #setWriteGuard} predicate and
+     * the guard becomes the policy check — the {@link JIPipeSettingKey#access()}
+     * policy is what that predicate is expected to enforce (e.g. reject
+     * user-originated writes to {@code RUNTIME_ADMIN} and every write to
+     * {@code READ_ONLY} while a remote runtime owns the document).
+     *
+     * @param key the setting about to be written
+     * @return whether the write is permitted
+     */
+    public synchronized boolean canWrite(JIPipeSettingKey<?> key) {
+        Objects.requireNonNull(key, "key");
+        Predicate<JIPipeSettingKey<?>> guard = writeGuard;
+        return guard == null || guard.test(key);
+    }
+
+    /**
+     * Installs the process-wide write guard that {@link #canWrite} consults:
+     * the seam the #1102 runtime host uses to protect settings it owns. The
+     * guard receives every key whose value is about to be written through a
+     * binding; returning {@code false} rejects the write with
+     * a {@link org.hkijena.jipipe.api.settings.SettingsAccessDeniedException}.
+     * <p>
+     * There is exactly one guard per component (i.e. per settings service):
+     * installing a new one replaces the previous one, and it also governs
+     * bindings handed out earlier — they hold a live reference to this
+     * component, not a copy of the guard.
+     * <p>
+     * {@code null} clears the guard, i.e. every key is writable again.
+     *
+     * @param guard the guard, or {@code null} to permit every write
+     */
+    public synchronized void setWriteGuard(Predicate<JIPipeSettingKey<?>> guard) {
+        this.writeGuard = guard;
+    }
+
+    /**
+     * The block → scope routing map used to migrate a legacy profile's blocks
+     * into the scoped documents: the runtime-scoped blocks of the registered
+     * keys (a key declared with {@code scope(RUNTIME)} makes its whole block
+     * runtime-scoped) layered over the static fallback
+     * {@link SettingsScopes#scopeByBlock()} for not-yet-keyified blocks.
+     * Registered keys win over the static map.
+     * <p>
+     * Blocks absent from the result are {@link SettingsScope#APPLICATION}.
+     *
+     * @return an immutable routing map containing only {@link SettingsScope#RUNTIME} entries
+     */
+    public synchronized Map<String, SettingsScope> effectiveScopeByBlock() {
+        Map<String, SettingsScope> result = new LinkedHashMap<>(SettingsScopes.scopeByBlock());
+        for (JIPipeSettingKey<?> key : registeredKeys.values()) {
+            if (key.scope() == SettingsScope.RUNTIME) {
+                result.put(key.blockPath(), SettingsScope.RUNTIME);
+            }
+        }
+        return Collections.unmodifiableMap(result);
     }
 
     /**

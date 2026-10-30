@@ -464,10 +464,12 @@ public class JIPipeServiceDefaultInitializer extends JIPipeServiceInitializer {
      */
     private void prepareApplicationSettingsDocument() {
         Path userDir = JIPipe.getJIPipeUserDir(false);
-        // TODO(#1345 Task 14): pass SettingsScopes.scopeByBlock() here once that
-        // scope map exists; until then every migrated block defaults to
-        // APPLICATION, which is the safe choice.
-        Map<String, SettingsScope> scopeByBlock = Map.of();
+        // Runtime-scoped blocks (threads, temp/cache dirs, environments,
+        // hardware acceleration, artifact directories) are routed into
+        // runtime-settings.json; everything else is application-scoped. The
+        // component merges the scopes of already-registered keys over the
+        // static fallback, so keyified blocks take precedence.
+        Map<String, SettingsScope> scopeByBlock = getService().getSettings().effectiveScopeByBlock();
         // "Registered" means the block kind is known; Task 14 refines this if
         // needed.
         Predicate<String> registeredBlock = path -> new SettingsBlockPath(path).kind() != null;

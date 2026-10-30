@@ -90,12 +90,22 @@ public final class SettingsBinding<T> {
      * listener and receive no further events.
      */
     private volatile boolean closed;
+    /**
+     * The access-policy guard consulted before every document mutation (see
+     * {@link #setWriteGuard(SettingsWriteGuard)}). Read by whichever thread
+     * writes; hence volatile.
+     */
+    private volatile SettingsWriteGuard writeGuard = SettingsWriteGuard.ALLOW_ALL;
 
     /**
      * Creates a binding for the given key over the given document. The
      * binding immediately registers a path listener on the document for its
      * (normalized) key path. Call {@link #close()} when the binding is no
      * longer needed and the document may outlive it.
+     * <p>
+     * The binding is created without a write guard (every write permitted);
+     * the owning {@code JIPipeSettingsServiceComponent} installs its guard via
+     * {@link #setWriteGuard(SettingsWriteGuard)} right after construction.
      *
      * @param document the settings document to read from and write to
      * @param key the typed key of the setting
@@ -108,6 +118,27 @@ public final class SettingsBinding<T> {
         this.listener = this::handleDocumentChange;
         this.lastKnown = get();
         document.addPathListener(pathWithSubPath, listener);
+    }
+
+    /**
+     * Installs the access-policy guard consulted by {@link #set(Object)} and
+     * {@link #reset()} before the document is mutated. A denied write throws
+     * {@link SettingsAccessDeniedException} and leaves the document untouched.
+     * <p>
+     * Set by the owning settings component; a binding used stand-alone keeps
+     * the permissive default.
+     *
+     * @param writeGuard the guard, or {@code null} to permit every write
+     */
+    public void setWriteGuard(SettingsWriteGuard writeGuard) {
+        this.writeGuard = writeGuard == null ? SettingsWriteGuard.ALLOW_ALL : writeGuard;
+    }
+
+    /**
+     * @return the access-policy guard consulted before every write
+     */
+    public SettingsWriteGuard writeGuard() {
+        return writeGuard;
     }
 
     /**
@@ -145,6 +176,7 @@ public final class SettingsBinding<T> {
                     "Cannot set a null value for " + pathWithSubPath
                             + ": its default is non-null, so null cannot be distinguished from \"reset\"");
         }
+        checkWriteAllowed();
         if (Objects.equals(value, key.defaultValue())) {
             document.remove(key.blockPath(), key.subPath());
         } else {
@@ -155,10 +187,23 @@ public final class SettingsBinding<T> {
     /**
      * Removes the sub-path from the document, so the setting reads its
      * default again. Subscribers fire when the effective value changes.
-     * Works on closed bindings too (it never touched the listener).
+     * Works on closed bindings too (it never touched the listener). A reset
+     * is a write: it is rejected by the write guard like {@link #set(Object)}.
      */
     public void reset() {
+        checkWriteAllowed();
         document.remove(key.blockPath(), key.subPath());
+    }
+
+    /**
+     * Rejects the write with a {@link SettingsAccessDeniedException} when the
+     * installed guard denies it. Called before any document mutation, so a
+     * rejected write never leaves a partial change behind.
+     */
+    private void checkWriteAllowed() {
+        if (!writeGuard.test(key)) {
+            throw new SettingsAccessDeniedException(key.blockPath(), key.subPath(), key.access());
+        }
     }
 
     /**
