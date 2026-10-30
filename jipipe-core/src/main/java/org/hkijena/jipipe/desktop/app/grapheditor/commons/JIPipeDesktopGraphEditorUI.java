@@ -397,7 +397,7 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
                 new JIPipeDesktopGenericListCellRenderer<>(kv -> new JIPipeDesktopGenericListCellRenderer.RenderedItem(JIPipe.RESOURCES.getIcon16("actions/sidebar.png"), kv.getKey())),
                 ListSelectionMode.MultipleInterval);
         getDockStateTemplates().removeAll(toDelete);
-        JIPipe.getSettings().save();
+        saveDockStateTemplates();
     }
 
     private void createDockStateTemplate() {
@@ -405,8 +405,26 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
         if (!StringUtils.isNullOrEmpty(newValue)) {
             JIPipeDesktopDockPanel.State currentState = getDockPanel().getCurrentState();
             getDockStateTemplates().add(new StringAndStringPairParameter(newValue, JsonUtils.toJsonString(currentState)));
-            JIPipe.getSettings().save();
+            saveDockStateTemplates();
         }
+    }
+
+    /**
+     * Writes the layout template list modified in place by
+     * {@link #manageDockStateTemplates()}/{@link #createDockStateTemplate()} to
+     * its setting. The list is the live value read from the setting, so it has
+     * to go back through the binding — an explicit settings save alone does
+     * not see the in-place change.
+     */
+    private void saveDockStateTemplates() {
+        StringAndStringPairParameterList templates = getDockStateTemplates();
+        if (templates == null) {
+            return;
+        }
+        if (JIPipe.isInstantiated()) {
+            JIPipe.getSettingsService().bind(SettingsKeys.DOCK_LAYOUT_TEMPLATES).set(templates);
+        }
+        JIPipe.getSettings().save();
     }
 
     protected abstract void restoreDefaultDockState();
