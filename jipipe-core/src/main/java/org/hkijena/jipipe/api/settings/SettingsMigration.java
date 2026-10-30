@@ -76,9 +76,22 @@ import java.util.function.Predicate;
  * {@code <profileDir>/settings-migration-backup/} — an existing file there is
  * never overwritten, a name clash gets a {@code -1}, {@code -2}, … suffix — and
  * the new documents are written through {@link SettingsFileStore} (temp file +
- * atomic rename), so a crash never leaves a half-written profile. If writing a
- * new document fails, the legacy files are restored from the backup. A call
- * with no legacy input is a no-op and does not touch the backup directory.
+ * atomic rename), so a crash never leaves a half-written profile.
+ * <p>
+ * The backup moves are <b>all-or-nothing</b>: if any legacy file cannot be
+ * moved, every already-moved file is restored to its original name and the
+ * migration aborts before writing anything, leaving the profile exactly as it
+ * was found so the next start retries. If writing a new document fails after
+ * the moves, the legacy files are likewise restored. A call with no legacy
+ * input is a no-op and does not touch the backup directory.
+ * <p>
+ * After a successful write, the legacy inputs that were moved into the backup
+ * directory are deleted again, while the directory itself and any
+ * {@code .bad-*} corruption backups stay. This is what lets
+ * {@link #recoverFromInterruptedMigration(Path, Predicate, Map, JIPipeProgressInfo)}
+ * tell a crashed migration (the backup still holds the user's only copy)
+ * apart from a user who deliberately deleted their settings after a
+ * successful migration (the stale backup must not resurrect them).
  * <p>
  * <b>Partially migrated profiles.</b> If a new-format {@code settings.json}
  * (one with {@code $schema}) already exists while legacy files are still
@@ -174,23 +187,38 @@ public final class SettingsMigration {
         Path runtimeFile = profileDir.resolve(RUNTIME_FILE_NAME);
         Path backupDir = profileDir.resolve(BACKUP_DIRECTORY_NAME);
 
-        // Legacy files to move into the backup (see the write order below).
-        List<Path> legacyFilesToMove = new ArrayList<>();
+        // Legacy content to read. Corrupt files are renamed to .bad-<timestamp>
+        // right away and end up in `legacyFiles` as that preserved name.
+        List<Path> legacyFiles = new ArrayList<>();
+
+        Path recentProjectsFile = profileDir.resolve(RECENT_PROJECTS_FILE_NAME);
+        if (Files.isRegularFile(recentProjectsFile)) {
+            legacyFiles.add(recentProjectsFile);
+        }
+        legacyFiles.addAll(registryFiles(profileDir));
 
         // --- Old settings.json: top-level sheet IDs, no prefix ---
         Map<String, JsonNode> sheetBlocks = new LinkedHashMap<>();
         boolean settingsJsonMigrated = isLegacySettingsFile(settingsFile);
         if (settingsJsonMigrated) {
-            JsonNode parsed = parseOrPreserve(settingsFile, true, legacyFilesToMove, progress);
+            legacyFiles.add(settingsFile);
+        }
+        if (legacyFiles.isEmpty()) {
+            return;
+        }
+        for (Path file : legacyFiles) {
+            progress.log("Migrating legacy settings file " + file.getFileName());
+        }
+        if (settingsJsonMigrated) {
+            JsonNode parsed = parseOrPreserve(settingsFile, true, legacyFiles, progress);
             if (parsed instanceof ObjectNode) {
                 parsed.fields().forEachRemaining(entry -> {
-                    if (!entry.getKey().startsWith("$")) {
+                    if (entry.getKey().startsWith("$")) {
+                        progress.log("Skipping reserved field '" + entry.getKey() + "' of the legacy settings file");
+                    } else {
                         sheetBlocks.put(SHEET_PREFIX + entry.getKey(), entry.getValue());
                     }
                 });
-            }
-            if (Files.isRegularFile(settingsFile)) {
-                legacyFilesToMove.add(settingsFile);
             }
         }
 
@@ -201,33 +229,58 @@ public final class SettingsMigration {
             if (key == null) {
                 continue;
             }
-            JsonNode parsed = parseOrPreserve(registryFile, false, legacyFilesToMove, progress);
+            JsonNode parsed = parseOrPreserve(registryFile, false, legacyFiles, progress);
             if (parsed != null) {
                 registryBlocks.put(REGISTRY_PREFIX + key, parsed);
-            }
-            if (Files.isRegularFile(registryFile)) {
-                legacyFilesToMove.add(registryFile);
             }
         }
 
         // --- recent-projects.txt: state:recent-projects ---
-        JsonNode recentProjectsBlock = null;
-        Path recentProjectsFile = profileDir.resolve(RECENT_PROJECTS_FILE_NAME);
+        Map<String, JsonNode> routed = new LinkedHashMap<>(sheetBlocks);
+        routed.putAll(registryBlocks);
         if (Files.isRegularFile(recentProjectsFile)) {
-            recentProjectsBlock = readRecentProjects(recentProjectsFile, progress);
-            legacyFilesToMove.add(recentProjectsFile);
+            routed.put(RECENT_PROJECTS_BLOCK, readRecentProjects(recentProjectsFile, progress));
         }
 
-        legacyFilesToMove.removeIf(f -> !Files.isRegularFile(f));
-        if (legacyFilesToMove.isEmpty() && !settingsJsonMigrated) {
+        legacyFiles.removeIf(f -> !Files.isRegularFile(f));
+        if (legacyFiles.isEmpty() && !settingsJsonMigrated) {
             return;
         }
 
+        migrateInto(profileDir, registeredBlock, scopeByBlock, progress,
+                settingsFile, runtimeFile, backupDir, routed, settingsJsonMigrated, legacyFiles);
+    }
+
+    /**
+     * Writes the routed blocks into the profile's documents (merging with what
+     * already exists) and cleans up the backup set on success.
+     *
+     * @param settingsFile the application document
+     * @param runtimeFile the runtime document
+     * @param backupDir the backup directory
+     * @param routed the migrated blocks with their <em>new</em> block paths
+     * @param applicationFromScratch whether {@code settingsFile} held legacy
+     *                               content (so it must be rewritten even when
+     *                               {@code routed} is empty)
+     * @param legacyFiles the legacy files to move into the backup; they are
+     *                    restored and the whole operation is aborted if any
+     *                    move fails
+     */
+    private static void migrateInto(Path profileDir,
+                                    Predicate<String> registeredBlock,
+                                    Map<String, SettingsScope> scopeByBlock,
+                                    JIPipeProgressInfo progress,
+                                    Path settingsFile,
+                                    Path runtimeFile,
+                                    Path backupDir,
+                                    Map<String, JsonNode> routed,
+                                    boolean applicationFromScratch,
+                                    List<Path> legacyFiles) {
         // Load the documents that already exist (a partial or foreign
         // new-format profile) so the remaining legacy parts can be merged in.
         SettingsDocument application = null;
         SettingsDocument runtime = null;
-        if (!settingsJsonMigrated && Files.isRegularFile(settingsFile)) {
+        if (!applicationFromScratch && Files.isRegularFile(settingsFile)) {
             application = new SettingsFileStore(settingsFile, SettingsScope.APPLICATION, registeredBlock).load();
         }
         if (Files.isRegularFile(runtimeFile)) {
@@ -238,12 +291,7 @@ public final class SettingsMigration {
         }
 
         // Route every migrated block to its scope and merge it in.
-        Map<String, JsonNode> routed = new LinkedHashMap<>(sheetBlocks);
-        routed.putAll(registryBlocks);
-        if (recentProjectsBlock != null) {
-            routed.put(RECENT_PROJECTS_BLOCK, recentProjectsBlock);
-        }
-        boolean applicationChanged = settingsJsonMigrated;
+        boolean applicationChanged = applicationFromScratch;
         boolean runtimeChanged = false;
         for (Map.Entry<String, JsonNode> entry : routed.entrySet()) {
             String blockPath = entry.getKey();
@@ -262,17 +310,14 @@ public final class SettingsMigration {
         // Every bit of legacy content is in memory by now. The legacy files are
         // moved into the backup first because the new settings.json reuses the
         // legacy file's name: it has to be moved while it still holds the
-        // legacy bytes. The new documents are then written atomically; if that
-        // write fails, the legacy files are restored from the backup so the
-        // profile is never left worse off than before.
-        Instant now = Instant.now();
-        Map<Path, Path> backups = new LinkedHashMap<>();
-        for (Path legacyFile : legacyFilesToMove) {
-            Path backup = moveToBackup(legacyFile, backupDir, progress);
-            if (backup != null) {
-                backups.put(legacyFile, backup);
-            }
+        // legacy bytes. The moves are all-or-nothing — a partial backup set
+        // would let the write below overwrite the file that failed to move.
+        List<BackupMove> backups = moveAllToBackup(legacyFiles, backupDir, progress);
+        if (backups == null) {
+            return;
         }
+
+        Instant now = Instant.now();
         try {
             if (applicationChanged) {
                 stampMeta(application, now);
@@ -285,24 +330,168 @@ public final class SettingsMigration {
                 progress.log("Wrote migrated runtime settings to " + runtimeFile);
             }
         } catch (RuntimeException e) {
-            restoreFromBackup(backups, progress, e);
+            progress.log("Could not write the migrated settings (" + e + "); restoring the legacy files");
+            restoreAll(backups, progress);
             throw e;
         }
+
+        // Success: the documents hold everything, so the legacy inputs in the
+        // backup must no longer look like an interrupted migration.
+        // Corruption backups (.bad-*) and unrelated user files stay.
+        removeMigratedBackups(backups, progress);
     }
 
     /**
-     * Puts the legacy files back where they were after the new documents could
-     * not be written, so the next start simply retries the migration.
+     * Recovers from a migration that was interrupted between moving the legacy
+     * files into {@code settings-migration-backup/} and writing the new
+     * documents. Without this pass, such a profile has no
+     * {@code settings.json}, so {@link #needsMigration(Path)} is {@code false}
+     * forever and the application would run on an empty document while the
+     * user's whole profile sits in the backup directory.
+     * <p>
+     * The pass fires only when <em>all</em> of the following hold:
+     * <ul>
+     *     <li>the profile directory has no legacy input left
+     *     ({@link #needsMigration(Path)} is {@code false}),</li>
+     *     <li>the backup directory exists and still contains legacy-format
+     *     input (an old-shape {@code settings.json}, a {@code settings-db-*.json},
+     *     or a {@code recent-projects.txt}), and</li>
+     *     <li>a file-backed document is missing: {@code settings.json} for a
+     *     full recovery, or {@code runtime-settings.json} while the backup
+     *     input contains blocks that route to {@link SettingsScope#RUNTIME}
+     *     for a partial recovery.</li>
+     * </ul>
+     * Recovery only <em>reads</em> the backup — it never moves those files
+     * again, as they are the user's only copy — migrates them with the same
+     * rules as {@link #migrateLegacyProfile(Path, Predicate, Map, JIPipeProgressInfo)},
+     * and merges into any existing document with the existing-blocks-win rule,
+     * so content written meanwhile is never clobbered. Writes go through the
+     * same atomic {@link SettingsFileStore}.
+     * <p>
+     * Because a successful migration deletes the legacy inputs from the
+     * backup, a profile whose backup only holds stale inputs (or only
+     * {@code .bad-*} corruption backups) does <em>not</em> trigger a recovery.
+     *
+     * @param profileDir the profile directory to check
+     * @param registeredBlock the registration predicate (see
+     *                        {@link #migrateLegacyProfile(Path, Predicate, Map, JIPipeProgressInfo)})
+     * @param scopeByBlock the scope routing map, keyed by the new block path
+     * @param progress receives a loud log line when a recovery happens
+     * @return whether any document was written
      */
-    private static void restoreFromBackup(Map<Path, Path> backups, JIPipeProgressInfo progress, RuntimeException cause) {
-        progress.log("Could not write the migrated settings (" + cause + "); restoring the legacy files");
-        for (Map.Entry<Path, Path> entry : backups.entrySet()) {
-            try {
-                Files.move(entry.getValue(), entry.getKey(), StandardCopyOption.REPLACE_EXISTING);
-            } catch (IOException e) {
-                progress.log("Could not restore " + entry.getKey().getFileName() + " from the backup: " + e);
+    public static boolean recoverFromInterruptedMigration(Path profileDir,
+                                                          Predicate<String> registeredBlock,
+                                                          Map<String, SettingsScope> scopeByBlock,
+                                                          JIPipeProgressInfo progress) {
+        Objects.requireNonNull(profileDir, "profileDir");
+        Objects.requireNonNull(registeredBlock, "registeredBlock");
+        Objects.requireNonNull(scopeByBlock, "scopeByBlock");
+        Objects.requireNonNull(progress, "progress");
+
+        if (needsMigration(profileDir)) {
+            // A normal migration is (still) pending; it handles everything.
+            return false;
+        }
+        Path settingsFile = profileDir.resolve(SETTINGS_FILE_NAME);
+        Path runtimeFile = profileDir.resolve(RUNTIME_FILE_NAME);
+        Path backupDir = profileDir.resolve(BACKUP_DIRECTORY_NAME);
+        if (!Files.isDirectory(backupDir)) {
+            return false;
+        }
+        boolean applicationMissing = !Files.isRegularFile(settingsFile);
+        boolean runtimeMissing = !Files.isRegularFile(runtimeFile);
+        if (!applicationMissing && !runtimeMissing) {
+            return false;
+        }
+
+        // Read the legacy input from the backup. Files there are never moved,
+        // never renamed and never modified, so a failure to parse one simply
+        // skips it (and the profile stays untouched).
+        Map<String, JsonNode> routed = new LinkedHashMap<>();
+        Path backupSettings = backupDir.resolve(SETTINGS_FILE_NAME);
+        if (isLegacySettingsFile(backupSettings)) {
+            JsonNode parsed = readTreeOrNull(backupSettings);
+            if (parsed instanceof ObjectNode) {
+                parsed.fields().forEachRemaining(entry -> {
+                    if (!entry.getKey().startsWith("$")) {
+                        routed.put(SHEET_PREFIX + entry.getKey(), entry.getValue());
+                    }
+                });
             }
         }
+        for (Path registryFile : registryFiles(backupDir)) {
+            String key = registryKeyOf(registryFile);
+            JsonNode parsed = readTreeOrNull(registryFile);
+            if (key != null && parsed instanceof ObjectNode) {
+                routed.put(REGISTRY_PREFIX + key, parsed);
+            }
+        }
+        Path backupRecentProjects = backupDir.resolve(RECENT_PROJECTS_FILE_NAME);
+        if (Files.isRegularFile(backupRecentProjects)) {
+            routed.put(RECENT_PROJECTS_BLOCK, readRecentProjects(backupRecentProjects, progress));
+        }
+        if (routed.isEmpty()) {
+            return false;
+        }
+
+        // Decide between a full and a partial recovery.
+        if (!applicationMissing) {
+            boolean runtimeBlocksInBackup = routed.keySet().stream()
+                    .anyMatch(blockPath -> routeTo(blockPath, scopeByBlock) == SettingsScope.RUNTIME);
+            if (!runtimeMissing || !runtimeBlocksInBackup) {
+                // The application document exists and either the runtime
+                // document exists too or nothing would go into it, so there is
+                // no interrupted migration to recover from.
+                return false;
+            }
+        }
+
+        progress.log("An interrupted settings migration was detected in " + profileDir
+                + ": the legacy settings are in " + backupDir + " but "
+                + (applicationMissing ? "settings.json" : "runtime-settings.json")
+                + " is missing. Recovering the settings now.");
+
+        SettingsDocument application = null;
+        SettingsDocument runtime = null;
+        boolean applicationChanged = applicationMissing;
+        boolean runtimeChanged = false;
+        if (!applicationMissing) {
+            application = new SettingsFileStore(settingsFile, SettingsScope.APPLICATION, registeredBlock).load();
+        }
+        if (!runtimeMissing) {
+            runtime = new SettingsFileStore(runtimeFile, SettingsScope.RUNTIME, registeredBlock).load();
+        }
+        for (Map.Entry<String, JsonNode> entry : routed.entrySet()) {
+            String blockPath = entry.getKey();
+            if (routeTo(blockPath, scopeByBlock) == SettingsScope.RUNTIME) {
+                if (runtime == null) {
+                    runtime = new SettingsDocument(SettingsScope.RUNTIME, registeredBlock);
+                }
+                mergeBlock(runtime, blockPath, entry.getValue(), progress);
+                runtimeChanged = true;
+            } else if (applicationMissing) {
+                if (application == null) {
+                    application = new SettingsDocument(SettingsScope.APPLICATION, registeredBlock);
+                }
+                mergeBlock(application, blockPath, entry.getValue(), progress);
+            }
+            // A full recovery recreates the application document; a partial one
+            // leaves the existing application document untouched, because the
+            // migration that wrote it already carried these blocks.
+        }
+
+        Instant now = Instant.now();
+        if (applicationChanged && application != null) {
+            stampMeta(application, now);
+            new SettingsFileStore(settingsFile, SettingsScope.APPLICATION, registeredBlock).save(application);
+            progress.log("Recovered the application settings into " + settingsFile);
+        }
+        if (runtimeChanged && runtime != null) {
+            stampMeta(runtime, now);
+            new SettingsFileStore(runtimeFile, SettingsScope.RUNTIME, registeredBlock).save(runtime);
+            progress.log("Recovered the runtime settings into " + runtimeFile);
+        }
+        return applicationChanged || runtimeChanged;
     }
 
     /**
@@ -481,25 +670,110 @@ public final class SettingsMigration {
     }
 
     /**
-     * Moves a file into the backup directory without ever overwriting an
-     * existing file there.
+     * Moves every legacy file into the backup directory, all-or-nothing: if
+     * any move fails, the files moved so far are put back (in reverse order,
+     * under their original names) and {@code null} is returned. The caller
+     * must then abort without writing anything.
+     * <p>
+     * The restore target for a moved file is its original name in the profile
+     * directory. A corrupt file that was preserved before the moves already
+     * carries a unique {@code .bad-<timestamp>} name, so it cannot collide
+     * with the legacy name of any other file.
      *
-     * @return the file's new location, or {@code null} if the move failed
+     * @return the completed moves in order, or {@code null} if a move failed
      */
-    private static Path moveToBackup(Path file, Path backupDir, JIPipeProgressInfo progress) {
-        try {
-            Files.createDirectories(backupDir);
-            Path target = firstFreeName(backupDir.resolve(file.getFileName().toString()));
+    private static List<BackupMove> moveAllToBackup(List<Path> legacyFiles, Path backupDir, JIPipeProgressInfo progress) {
+        List<BackupMove> moves = new ArrayList<>();
+        for (Path legacyFile : legacyFiles) {
+            Path target;
             try {
-                Files.move(file, target, StandardCopyOption.ATOMIC_MOVE);
-            } catch (AtomicMoveNotSupportedException e) {
-                Files.move(file, target);
+                Files.createDirectories(backupDir);
+                target = firstFreeName(backupDir.resolve(legacyFile.getFileName().toString()));
+                try {
+                    Files.move(legacyFile, target, StandardCopyOption.ATOMIC_MOVE);
+                } catch (AtomicMoveNotSupportedException e) {
+                    Files.move(legacyFile, target);
+                }
+            } catch (IOException e) {
+                progress.log("Could not move legacy settings file " + legacyFile.getFileName()
+                        + " to the backup directory (" + e + "); aborting the migration, nothing was changed");
+                restoreAll(moves, progress);
+                return null;
             }
-            progress.log("Moved legacy settings file " + file.getFileName() + " to " + target);
-            return target;
-        } catch (IOException e) {
-            progress.log("Could not move legacy settings file " + file.getFileName() + " to the backup directory: " + e);
+            progress.log("Moved legacy settings file " + legacyFile.getFileName() + " to " + target);
+            moves.add(new BackupMove(legacyFile, target));
+        }
+        return moves;
+    }
+
+    /**
+     * Puts moved legacy files back under their original names, most recent
+     * move first. A plain move back can fail for the same reason the move
+     * failed (e.g. a read-only backup directory), so a failed move falls back
+     * to copying the bytes and deleting the backup copy.
+     */
+    private static void restoreAll(List<BackupMove> moves, JIPipeProgressInfo progress) {
+        for (int i = moves.size() - 1; i >= 0; i--) {
+            BackupMove move = moves.get(i);
+            try {
+                Files.move(move.backup(), move.original(), StandardCopyOption.REPLACE_EXISTING);
+                continue;
+            } catch (IOException e) {
+                progress.log("Could not move " + move.original().getFileName() + " back (" + e + "); copying it instead");
+            }
+            try {
+                Files.copy(move.backup(), move.original(), StandardCopyOption.REPLACE_EXISTING);
+                try {
+                    Files.deleteIfExists(move.backup());
+                } catch (IOException e) {
+                    progress.log("Restored " + move.original().getFileName()
+                            + ", but could not remove the backup copy " + move.backup() + ": " + e);
+                }
+            } catch (IOException e) {
+                progress.log("Could not restore " + move.original().getFileName()
+                        + " from the backup; its only copy stays in " + move.backup());
+            }
+        }
+    }
+
+    /**
+     * Deletes the legacy inputs a successful migration moved into the backup,
+     * so they can no longer be mistaken for an interrupted migration (see
+     * {@link #recoverFromInterruptedMigration(Path, Predicate, Map, JIPipeProgressInfo)}).
+     * Corruption backups ({@code .bad-*}) and unrelated files stay, as does
+     * the directory itself.
+     */
+    private static void removeMigratedBackups(List<BackupMove> moves, JIPipeProgressInfo progress) {
+        for (BackupMove move : moves) {
+            if (move.backup().getFileName().toString().contains(BAD_MARKER)) {
+                continue;
+            }
+            try {
+                Files.deleteIfExists(move.backup());
+            } catch (IOException e) {
+                progress.log("Could not remove the migrated legacy copy " + move.backup() + ": " + e);
+            }
+        }
+    }
+
+    /**
+     * Reads and parses a JSON tree, returning {@code null} instead of throwing.
+     * Used for the backup directory, which is read-only for recovery.
+     */
+    private static JsonNode readTreeOrNull(Path file) {
+        try {
+            return JsonUtils.getObjectMapper().readTree(Files.readString(file, StandardCharsets.UTF_8));
+        } catch (IOException | RuntimeException e) {
             return null;
         }
+    }
+
+    /**
+     * One legacy file's trip into the backup directory.
+     *
+     * @param original the file's location in the profile directory
+     * @param backup the file's location in the backup directory
+     */
+    private record BackupMove(Path original, Path backup) {
     }
 }
