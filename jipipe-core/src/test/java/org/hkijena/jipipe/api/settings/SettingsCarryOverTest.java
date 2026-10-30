@@ -96,6 +96,51 @@ class SettingsCarryOverTest {
         JsonNode global = read(current.resolve("settings.json"));
         assertFalse(global.has("sheet:org.hkijena.jipipe:general-ui"),
                 "a registered block is never recovered from a sibling");
+        assertTrue(global.has("sheet:new-feature-x"),
+                "the sibling's unregistered block IS recovered: the registration predicate is consulted, "
+                        + "not merely the local absence");
+    }
+
+    @Test void registeredBlockPresentLocallyKeepsItsLocalValue() throws Exception {
+        Path base = Files.createDirectories(tempDir.resolve("profiles"));
+        Path current = Files.createDirectories(base.resolve("6.0.0"));
+        Path newer = Files.createDirectories(base.resolve("6.1.0"));
+        Files.writeString(current.resolve("settings.json"),
+                "{\"$schema\":2,\"sheet:org.hkijena.jipipe:general-ui\":{\"theme\":\"Dark\"}}");
+        Files.writeString(newer.resolve("settings.json"),
+                "{\"$schema\":2,\"sheet:org.hkijena.jipipe:general-ui\":{\"theme\":\"Light\"}}");
+
+        // The predicate says this block is registered, so only the local value may survive.
+        Set<String> recovered = SettingsCarryOver.recoverUnknownBlocks(
+                current.resolve("settings.json"), base, "6.0.0",
+                p -> p.equals("sheet:org.hkijena.jipipe:general-ui"));
+
+        assertEquals(Set.of(), recovered, "nothing is recovered: the block is registered and present locally");
+        assertEquals("Dark",
+                read(current.resolve("settings.json")).get("sheet:org.hkijena.jipipe:general-ui").get("theme").asText(),
+                "the local value wins over a registered block's sibling value, independent of the registration check");
+    }
+
+    @Test void numericVersionOrderDecidesTheWinner() throws Exception {
+        Path base = Files.createDirectories(tempDir.resolve("profiles"));
+        Path current = Files.createDirectories(base.resolve("6.0.0"));
+        Path lowestButLongest = Files.createDirectories(base.resolve("6.9.0"));
+        Path numericallyNewest = Files.createDirectories(base.resolve("6.10.0"));
+        Files.writeString(lowestButLongest.resolve("settings.json"),
+                "{\"$schema\":2,\"sheet:new-feature-x\":{\"by\":\"6.9.0\"}}");
+        Files.writeString(numericallyNewest.resolve("settings.json"),
+                "{\"$schema\":2,\"sheet:new-feature-x\":{\"by\":\"6.10.0\"}}");
+
+        // The predicate is deliberately NOT consulted for the kind here: both dirs hold the same
+        // unknown block, so only the version ordering can decide. 6.10.0 must beat 6.9.0
+        // (a plain string comparison would pick "6.9.0" > "6.10.0").
+        Set<String> recovered = SettingsCarryOver.recoverUnknownBlocks(
+                current.resolve("settings.json"), base, "6.0.0", p -> !p.equals("sheet:new-feature-x"));
+
+        assertEquals(Set.of("sheet:new-feature-x"), recovered);
+        assertEquals("6.10.0",
+                read(current.resolve("settings.json")).get("sheet:new-feature-x").get("by").asText(),
+                "versions must be compared numerically: 6.10.0 is newer than 6.9.0");
     }
 
     @Test void corruptAndUnreadableSiblingsAreSkipped() throws Exception {

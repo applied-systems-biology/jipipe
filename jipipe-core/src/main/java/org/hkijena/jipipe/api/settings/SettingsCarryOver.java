@@ -288,5 +288,4 @@ public final class SettingsCarryOver {
         meta.put("written-at", META_TIMESTAMP.format(Instant.now()));
         meta.put("writer-id", document.writerId());
     }
-
-    }
+}
