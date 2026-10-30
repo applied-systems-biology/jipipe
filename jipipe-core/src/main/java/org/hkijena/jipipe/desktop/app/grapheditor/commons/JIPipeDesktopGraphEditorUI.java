@@ -23,6 +23,7 @@ import org.hkijena.jipipe.api.grapheditortool.tools.DefaultGraphEditorTool;
 import org.hkijena.jipipe.api.history.JIPipeHistoryJournal;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.taxonomy.TaxonomyView;
+import org.hkijena.jipipe.api.settings.SettingsBinding;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
@@ -46,6 +47,7 @@ import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairPa
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameterList;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeGraphEditorUIApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.SettingsKeys;
 import org.hkijena.jipipe.utils.*;
 import org.hkijena.jipipe.utils.json.JIPipePathMetadataStore;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -109,6 +111,14 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
     private final JIPipeDesktopDockPanel dockPanel = new JIPipeDesktopDockPanel();
     private final List<JButton> contextToolbarButtons = new ArrayList<>();
     private final JIPipeDesktopGraphEditorContextPanel contextPanel = new JIPipeDesktopGraphEditorContextPanel(this);
+    /**
+     * The live binding to {@link SettingsKeys#SHOW_DOCK_TOOLBAR_LABELS}. Bound
+     * once with this editor, subscribed for live updates and written through
+     * when the dock panel's own toggle changes. Deliberately not closed with
+     * the panel: the settings service owns the binding (see
+     * {@link SettingsKeys}).
+     */
+    private SettingsBinding<Boolean> showDockToolbarLabelsBinding;
     private JScrollPane scrollPane;
     private Point panningOffset = null;
     private Point panningScrollbarOffset = null;
@@ -222,12 +232,7 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
 
         dockPanel.setMainComponent(mainPanel);
         dockPanel.getStateSavedEventEmitter().subscribe(this);
-        dockPanel.setShowToolbarLabels(JIPipe.getSettings().getFromRegistry("ui-graph-editor", JIPipePathMetadataStore.key("any", "dock", "show-labels"), Boolean.class, true, true));
-        dockPanel.getParameterChangedEventEmitter().subscribeLambda((emitter, event) -> {
-            if ("show-toolbar-labels".equals(event.getKey())) {
-                JIPipe.getSettings().putIntoRegistry("ui-graph-editor", JIPipePathMetadataStore.key("any", "dock", "show-labels"), dockPanel.isShowToolbarLabels());
-            }
-        });
+        initializeShowDockToolbarLabels();
         dockPanel.addDockPanel(DOCK_CONTEXT_PANEL,
                 "Tools",
                 JIPipe.RESOURCES.getIcon24("actions/tools-wizard.png"),
@@ -248,6 +253,42 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
         initializeEditingToolbar(JIPipeDesktopActionGraphEditorTool.class);
         toolBar.addSeparator();
         initializeCommonToolbar();
+    }
+
+    /**
+     * Connects the dock panel's "show toolbar labels" toggle to
+     * {@link SettingsKeys#SHOW_DOCK_TOOLBAR_LABELS}.
+     * <p>
+     * The binding is the single source of truth: the stored value is applied
+     * to the panel at construction, every change made by any other view (a
+     * second graph editor, the settings UI, a merged foreign write) is
+     * re-applied live, and the panel's own toggle is written through. The
+     * echo of an applied value is inert: the binding never reports a value
+     * equal to the current one, and applying compares before it touches the
+     * panel.
+     */
+    private void initializeShowDockToolbarLabels() {
+        if (!JIPipe.isInstantiated()) {
+            return;
+        }
+        showDockToolbarLabelsBinding = JIPipe.getSettingsService().bind(SettingsKeys.SHOW_DOCK_TOOLBAR_LABELS);
+        applyShowDockToolbarLabels(showDockToolbarLabelsBinding.get());
+        showDockToolbarLabelsBinding.subscribe(this::applyShowDockToolbarLabels);
+        dockPanel.getParameterChangedEventEmitter().subscribeLambda((emitter, event) -> {
+            if ("show-toolbar-labels".equals(event.getKey())) {
+                showDockToolbarLabelsBinding.set(dockPanel.isShowToolbarLabels());
+            }
+        });
+    }
+
+    /**
+     * @param showLabels the stored value; applied to the dock panel only when
+     *                   it differs from what the panel shows
+     */
+    private void applyShowDockToolbarLabels(boolean showLabels) {
+        if (dockPanel.isShowToolbarLabels() != showLabels) {
+            dockPanel.setShowToolbarLabels(showLabels);
+        }
     }
 
     private void initializeCommonToolbar() {

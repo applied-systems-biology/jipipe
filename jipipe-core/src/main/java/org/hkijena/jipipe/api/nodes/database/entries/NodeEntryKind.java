@@ -16,7 +16,7 @@ package org.hkijena.jipipe.api.nodes.database.entries;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
 import org.hkijena.jipipe.desktop.commons.components.selection.JIPipeDesktopRichSelectionBox;
-import org.hkijena.jipipe.utils.json.JIPipePathMetadataStore;
+import org.hkijena.jipipe.plugins.settings.SettingsKeys;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -53,7 +53,7 @@ import java.util.Set;
  * <p>
  * This enum is free of any Swing and {@code JIPipe} instance dependency in
  * {@link #of} / {@link #matches} so it can be unit-tested in isolation;
- * only the persistence helpers below touch the settings registry.
+ * only the persistence helpers below touch the settings service.
  */
 public enum NodeEntryKind {
 
@@ -172,28 +172,29 @@ public enum NodeEntryKind {
 
     // ------------------------------------------------------------------
     // Persistence (shared setting of the node browser + node finder dialog,
-    // the same settings-registry pattern as the pinned node ids)
+    // the same settings key as the pinned node ids)
     // ------------------------------------------------------------------
-
-    private static final String SETTINGS_DATABASE = "node-db";
-    private static final JIPipePathMetadataStore.Key SETTINGS_KEY =
-            JIPipePathMetadataStore.key("node-browser-kinds");
 
     /**
      * The kind filter selection persisted for this user (empty = show all
      * kinds). Loaded on demand; unknown stored names are skipped.
+     * <p>
+     * Requires the settings service to be running (the node browser and the
+     * node finder only exist inside a running JIPipe); the stored value is
+     * read through a live binding to {@link SettingsKeys#NODE_BROWSER_KINDS}.
      *
      * @return the persisted kinds, possibly empty
      */
     public static Set<NodeEntryKind> loadKinds() {
-        List<String> stored = JIPipe.getSettings().getListFromRegistry(
-                SETTINGS_DATABASE, SETTINGS_KEY, String.class, true);
+        List<String> stored = JIPipe.getSettingsService().bind(SettingsKeys.NODE_BROWSER_KINDS).get();
         Set<NodeEntryKind> kinds = new LinkedHashSet<>();
-        for (String name : stored) {
-            try {
-                kinds.add(NodeEntryKind.valueOf(name));
-            } catch (IllegalArgumentException ignored) {
-                // A stored name this version does not know — skip it.
+        if (stored != null) {
+            for (String name : stored) {
+                try {
+                    kinds.add(NodeEntryKind.valueOf(name));
+                } catch (IllegalArgumentException ignored) {
+                    // A stored name this version does not know — skip it.
+                }
             }
         }
         return Collections.unmodifiableSet(kinds);
@@ -213,7 +214,9 @@ public enum NodeEntryKind {
                 stored.add(kind.name());
             }
         }
-        JIPipe.getSettings().putIntoRegistry(SETTINGS_DATABASE, SETTINGS_KEY, stored);
+        JIPipe.getSettingsService().bind(SettingsKeys.NODE_BROWSER_KINDS).set(stored);
+        // The binding only schedules a debounced save; this setting was
+        // always written synchronously, so keep the explicit flush.
         JIPipe.getSettings().save();
     }
 }

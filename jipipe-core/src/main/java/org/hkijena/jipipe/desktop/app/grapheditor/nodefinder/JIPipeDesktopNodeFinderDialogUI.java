@@ -30,6 +30,7 @@ import org.hkijena.jipipe.api.nodes.database.entries.TemplateScope;
 import org.hkijena.jipipe.api.nodes.taxonomy.FunctionRegistry;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
 import org.hkijena.jipipe.api.run.JIPipeEphemeralRunnableExecutor;
+import org.hkijena.jipipe.api.settings.SettingsBinding;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.grapheditor.addnodepanel.NodeBrowserModel;
 import org.hkijena.jipipe.desktop.app.grapheditor.nodebrowser.NodeBrowserTreeController;
@@ -41,10 +42,10 @@ import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchT
 import org.hkijena.jipipe.desktop.commons.components.selection.JIPipeDesktopRichSelectionBox;
 import org.hkijena.jipipe.desktop.commons.components.slots.JIPipeDesktopAddAlgorithmSlotPanel;
 import org.hkijena.jipipe.plugins.ai.AIApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.SettingsKeys;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeGraphEditorUIApplicationSettings;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.utils.json.JIPipePathMetadataStore;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -105,6 +106,12 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
     private final JScrollPane scrollPane = new JScrollPane(nodeList);
     private final JIPipeEphemeralRunnableExecutor executor = new JIPipeEphemeralRunnableExecutor("Node finder");
     private final NodeBrowserModel model = new NodeBrowserModel();
+    /**
+     * The live binding to {@link SettingsKeys#PINNED_NODE_IDS}, shared with
+     * the node browser. Kept for the life of the dialog and never closed here:
+     * the settings service owns it (see {@link SettingsKeys}).
+     */
+    private final SettingsBinding<List<String>> pinnedNodeIdsBinding;
     /**
      * The result-kind filter box (1340): the SAME shared, persisted setting
      * as the node browser's "Kinds" box (see {@link NodeEntryKind#loadKinds()}),
@@ -176,6 +183,7 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
     public JIPipeDesktopNodeFinderDialogUI(JIPipeDesktopGraphCanvasUI canvasUI, JIPipeDataSlot querySlot) {
         this.canvasUI = canvasUI;
         this.querySlot = querySlot;
+        this.pinnedNodeIdsBinding = JIPipe.getSettingsService().bind(SettingsKeys.PINNED_NODE_IDS);
 
         // Function tree (left zone; shared controller: the tree, the slim
         // control bar under it, the search-match highlighting, the
@@ -261,7 +269,8 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
     }
 
     public Set<String> getPinnedNodeDatabaseEntries() {
-        return new HashSet<>(JIPipe.getSettings().getListFromRegistry("node-db", JIPipePathMetadataStore.key("pinned-node-ids"), String.class, true));
+        List<String> pinned = pinnedNodeIdsBinding.get();
+        return pinned == null ? new HashSet<>() : new HashSet<>(pinned);
     }
 
     public JIPipeDataSlot getQuerySlot() {
