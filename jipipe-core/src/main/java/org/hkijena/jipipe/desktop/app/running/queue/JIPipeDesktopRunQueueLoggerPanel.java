@@ -4,14 +4,15 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeRunnableExecutor;
 import org.hkijena.jipipe.api.run.JIPipeRunnableWorker;
+import org.hkijena.jipipe.api.settings.SettingsBinding;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.commons.components.LoggerPanel;
 import org.hkijena.jipipe.desktop.commons.components.icons.JIPipeDesktopRunnableQueueSpinnerIcon;
+import org.hkijena.jipipe.plugins.settings.SettingsKeys;
 import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.debounce.StaticDebouncer;
-import org.hkijena.jipipe.utils.json.JIPipePathMetadataStore;
 
 import javax.swing.*;
 import java.awt.*;
@@ -42,13 +43,26 @@ public class JIPipeDesktopRunQueueLoggerPanel extends JIPipeDesktopWorkbenchPane
     private String batchedStatusText = "Ready ...";
     private int batchedProgressCurrent = 0;
     private int batchedProgressMax = 0;
+    /**
+     * The binding to {@link SettingsKeys#RUN_QUEUE_SHOW_LOG}: created once per
+     * panel instance and released by {@link #dispose()}.
+     */
+    private SettingsBinding<Boolean> showLogBinding;
 
     public JIPipeDesktopRunQueueLoggerPanel(JIPipeDesktopWorkbench desktopWorkbench, JIPipeRunnableExecutor queue) {
         super(desktopWorkbench);
         this.queue = queue;
         this.progressDebouncer = new StaticDebouncer(250, this::updateProgress);
         this.spinnerIcon = new JIPipeDesktopRunnableQueueSpinnerIcon(this, queue, 32);
-        this.showLogCheckbox.setSelected(JIPipe.getSettings().getFromRegistry("ui-general", JIPipePathMetadataStore.key("logger-panel", "show-log"), Boolean.class, Boolean.TRUE, true));
+        // One binding per panel instance: the panel owns it and releases it in
+        // dispose(). Without a running settings service the checkbox simply
+        // starts checked and keeps its value in memory.
+        if (JIPipe.isInstantiated()) {
+            showLogBinding = JIPipe.getSettingsService().bind(SettingsKeys.RUN_QUEUE_SHOW_LOG);
+            applyShowLog(showLogBinding.get());
+        } else {
+            showLogCheckbox.setSelected(true);
+        }
 
         initialize();
 
@@ -66,6 +80,34 @@ public class JIPipeDesktopRunQueueLoggerPanel extends JIPipeDesktopWorkbenchPane
         addHeaderPanelComponent(showLogCheckbox);
         updateHeader();
         updateLoggerVisibility();
+    }
+
+    /**
+     * Applies the setting to the checkbox. Compares before touching the
+     * checkbox, so the echo of our own write (and of a re-applied equal
+     * value) does nothing.
+     *
+     * @param showLog the stored value
+     */
+    private void applyShowLog(boolean showLog) {
+        if (showLogCheckbox.isSelected() != showLog) {
+            showLogCheckbox.setSelected(showLog);
+        }
+        updateLoggerVisibility();
+    }
+
+    /**
+     * Releases the show-log binding (its document path listener) with the
+     * panel. Called by {@link JIPipeDesktopRunExecuteUI} when its dialog is
+     * disposed; panels hosted in a long-lived dock (the graph editor log)
+     * keep their binding for the workbench's lifetime, which is bounded by
+     * one panel per editor.
+     */
+    public void dispose() {
+        if (showLogBinding != null) {
+            showLogBinding.close();
+            showLogBinding = null;
+        }
     }
 
     private void initialize() {
@@ -103,7 +145,9 @@ public class JIPipeDesktopRunQueueLoggerPanel extends JIPipeDesktopWorkbenchPane
         UIUtils.addReloadablePopupMenuToButton(queueButton, queuePopupMenu,  this::reloadQueuePopupMenu);
 
         showLogCheckbox.addActionListener(e -> {
-            JIPipe.getSettings().putIntoRegistry("ui-general", JIPipePathMetadataStore.key("logger-panel", "show-log"), showLogCheckbox.isSelected());
+            if (showLogBinding != null) {
+                showLogBinding.set(showLogCheckbox.isSelected());
+            }
             updateLoggerVisibility();
         });
     }

@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.plugins.settings;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.jipipe.api.settings.JIPipeSettingKey;
 import org.hkijena.jipipe.api.settings.SettingsScope;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameterList;
@@ -134,6 +135,73 @@ public final class SettingsKeys {
     // NodeEntryKind.loadKinds()/saveKinds(), which must not bind (per-call).
     // It is declared here to document the frozen location for a consumer that
     // can own and close a binding.
+
+    // ------------------------------------------------------------------
+    // Color palette (registry DB "ui-palette")
+    // ------------------------------------------------------------------
+
+    /**
+     * The user's saved palette colors for the foreground-only palette
+     * (alpha selection disabled).
+     * <p>
+     * <b>Stored as a raw JSON node.</b> The list elements are
+     * {@link org.hkijena.jipipe.desktop.commons.components.color.palette.JIPipeDesktopColorPaletteColor}
+     * values, and a {@code JIPipeSettingKey} takes a single {@code Class}:
+     * {@code List.class} would hand out {@code List<LinkedHashMap>} elements,
+     * which do <em>not</em> re-serialize to the stored shape. The JSON node is
+     * the exact stored value (byte-identical to the legacy
+     * {@code getListFromRegistry}/{@code putIntoRegistry} shape), and the
+     * consumer converts it with the typed list reader it always used.
+     */
+    public static final JIPipeSettingKey<JsonNode> USER_PALETTE_COLORS_FG =
+            JIPipeSettingKey.object("registry:ui-palette", "user-palette-colors/fg", JsonNode.class)
+                    .scope(SettingsScope.APPLICATION)
+                    .name("User palette colors")
+                    .description("Colors the user saved in the foreground color palette");
+
+    /**
+     * The user's saved palette colors for the foreground palette with alpha
+     * selection (see {@link #USER_PALETTE_COLORS_FG}).
+     */
+    public static final JIPipeSettingKey<JsonNode> USER_PALETTE_COLORS_FG_A =
+            JIPipeSettingKey.object("registry:ui-palette", "user-palette-colors/fg-a", JsonNode.class)
+                    .scope(SettingsScope.APPLICATION)
+                    .name("User palette colors (with alpha)")
+                    .description("Colors the user saved in the foreground color palette with alpha selection");
+
+    /**
+     * The user's saved palette colors for the foreground/background palette
+     * (see {@link #USER_PALETTE_COLORS_FG}).
+     */
+    public static final JIPipeSettingKey<JsonNode> USER_PALETTE_COLORS_FG_BG =
+            JIPipeSettingKey.object("registry:ui-palette", "user-palette-colors/fg-bg", JsonNode.class)
+                    .scope(SettingsScope.APPLICATION)
+                    .name("User palette colors (foreground and background)")
+                    .description("Colors the user saved in the foreground/background color palette");
+
+    /**
+     * The user's saved palette colors for the foreground/background palette
+     * with alpha selection (see {@link #USER_PALETTE_COLORS_FG}).
+     */
+    public static final JIPipeSettingKey<JsonNode> USER_PALETTE_COLORS_FG_BG_A =
+            JIPipeSettingKey.object("registry:ui-palette", "user-palette-colors/fg-bg-a", JsonNode.class)
+                    .scope(SettingsScope.APPLICATION)
+                    .name("User palette colors (foreground, background, alpha)")
+                    .description("Colors the user saved in the foreground/background color palette with alpha selection");
+
+    // ------------------------------------------------------------------
+    // Run queue (registry DB "ui-general")
+    // ------------------------------------------------------------------
+
+    /**
+     * Whether the run queue logger panel shows its log.
+     */
+    public static final JIPipeSettingKey<Boolean> RUN_QUEUE_SHOW_LOG =
+            JIPipeSettingKey.bool("registry:ui-general", "logger-panel/show-log", Boolean.class)
+                    .defaultValue(true)
+                    .scope(SettingsScope.APPLICATION)
+                    .name("Show run queue log")
+                    .description("Whether the run queue logger panel shows its log");
 
     private SettingsKeys() {
     }

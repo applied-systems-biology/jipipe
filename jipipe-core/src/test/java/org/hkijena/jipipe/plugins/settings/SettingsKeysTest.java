@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.service.components.JIPipeSettingsServiceComponent;
 import org.hkijena.jipipe.api.settings.SettingsBinding;
 import org.hkijena.jipipe.api.settings.SettingsDocument;
 import org.hkijena.jipipe.api.settings.SettingsScope;
+import org.hkijena.jipipe.desktop.commons.components.color.palette.JIPipeDesktopColorPaletteColor;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameter;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameterList;
 import org.hkijena.jipipe.utils.json.JIPipePathMetadataStore;
@@ -25,6 +26,7 @@ import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import java.awt.*;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -174,6 +176,125 @@ class SettingsKeysTest {
             assertEquals(JsonUtils.getObjectMapper().valueToTree(ids),
                     settings.document(SettingsScope.APPLICATION).get("registry:node-db", "pinned-node-ids"));
             assertEquals(ids, binding.get());
+        } finally {
+            settings.dispose();
+        }
+    }
+
+    @Test
+    void paletteKeysAddressTheLegacyRegistryLocations() {
+        assertEquals("registry:ui-palette", SettingsKeys.USER_PALETTE_COLORS_FG.blockPath());
+        assertEquals("user-palette-colors/fg", SettingsKeys.USER_PALETTE_COLORS_FG.subPath());
+        assertEquals("user-palette-colors/fg-a", SettingsKeys.USER_PALETTE_COLORS_FG_A.subPath());
+        assertEquals("user-palette-colors/fg-bg", SettingsKeys.USER_PALETTE_COLORS_FG_BG.subPath());
+        assertEquals("user-palette-colors/fg-bg-a", SettingsKeys.USER_PALETTE_COLORS_FG_BG_A.subPath());
+        for (var key : List.of(SettingsKeys.USER_PALETTE_COLORS_FG, SettingsKeys.USER_PALETTE_COLORS_FG_A,
+                SettingsKeys.USER_PALETTE_COLORS_FG_BG, SettingsKeys.USER_PALETTE_COLORS_FG_BG_A)) {
+            assertEquals("registry:ui-palette", key.blockPath());
+            assertEquals(JsonNode.class, key.type());
+            assertEquals(SettingsScope.APPLICATION, key.scope());
+        }
+
+        assertEquals("registry:ui-general", SettingsKeys.RUN_QUEUE_SHOW_LOG.blockPath());
+        assertEquals("logger-panel/show-log", SettingsKeys.RUN_QUEUE_SHOW_LOG.subPath());
+        assertEquals(Boolean.class, SettingsKeys.RUN_QUEUE_SHOW_LOG.type());
+        assertEquals(true, SettingsKeys.RUN_QUEUE_SHOW_LOG.defaultValue());
+        assertEquals(SettingsScope.APPLICATION, SettingsKeys.RUN_QUEUE_SHOW_LOG.scope());
+    }
+
+    /**
+     * Migration-safety pin for the user palette colors: the stored JSON must
+     * be byte-identical to the legacy {@code putIntoRegistry} shape, and the
+     * consumer's read (the typed list reader) must reproduce the same JSON
+     * again.
+     * <p>
+     * The value type is deliberately a raw {@link JsonNode}: a
+     * {@code List.class} key hands out {@code LinkedHashMap} elements, whose
+     * re-serialization is not the stored shape (and {@code Color} is
+     * serialized as a hex string, so a map round-trip changes it).
+     */
+    @Test
+    void userPaletteColorsRoundTripIsJsonIdenticalToTheLegacyShape(@TempDir Path userDir) throws Exception {
+        JIPipeSettingsServiceComponent settings = JIPipeSettingsServiceComponent.forTesting(userDir);
+        try {
+            // The legacy putIntoRegistry wrote valueToTree(List<JIPipeDesktopColorPaletteColor>).
+            List<JIPipeDesktopColorPaletteColor> legacy = new ArrayList<>();
+            legacy.add(new JIPipeDesktopColorPaletteColor(new Color(255, 0, 0)));
+            legacy.add(new JIPipeDesktopColorPaletteColor(new Color(0, 255, 0), null));
+            legacy.add(new JIPipeDesktopColorPaletteColor(new Color(0, 0, 255), new Color(200, 200, 200)));
+            JsonNode legacyJson = JsonUtils.getObjectMapper().valueToTree(legacy);
+
+            SettingsBinding<JsonNode> binding = settings.bind(SettingsKeys.USER_PALETTE_COLORS_FG);
+            binding.set(legacyJson);
+            JsonNode stored = settings.document(SettingsScope.APPLICATION)
+                    .get("registry:ui-palette", "user-palette-colors/fg");
+            assertEquals(legacyJson, stored, "the stored JSON must be identical to the legacy putIntoRegistry shape");
+            assertEquals(JsonUtils.getObjectMapper().valueToTree(legacy),
+                    JsonUtils.getObjectMapper().valueToTree(binding.get()));
+
+            // The consumer read: the typed list reader of the concrete element type.
+            List<JIPipeDesktopColorPaletteColor> readBack =
+                    JsonUtils.getObjectMapper().readerForListOf(JIPipeDesktopColorPaletteColor.class).readValue(binding.get());
+            assertEquals(legacy.size(), readBack.size());
+            for (int i = 0; i < legacy.size(); i++) {
+                assertEquals(legacy.get(i).getForeground(), readBack.get(i).getForeground());
+                assertEquals(legacy.get(i).getBackground(), readBack.get(i).getBackground());
+            }
+            assertEquals(legacyJson, JsonUtils.getObjectMapper().valueToTree(readBack),
+                    "the (opaque) colors must serialize to the same JSON again");
+
+            // And writing the consumer's list again through the binding is byte-stable.
+            binding.set(JsonUtils.getObjectMapper().valueToTree(readBack));
+            assertEquals(JsonUtils.getObjectMapper().valueToTree(readBack), settings.document(SettingsScope.APPLICATION)
+                    .get("registry:ui-palette", "user-palette-colors/fg"));
+        } finally {
+            settings.dispose();
+        }
+    }
+
+    /**
+     * <b>Known legacy lossiness — pinned so it does not change silently.</b>
+     * {@code ColorUtils.hexStringToColor} parses the alpha digits of a
+     * {@code #RRGGBBAA} hex string as a <em>decimal</em> integer, so reading
+     * a stored color back through the consumer's typed list reader does not
+     * reproduce translucent colors (alpha 128 → 80, i.e. 0x50). This is the
+     * behavior the storage had before the keyification (the legacy
+     * {@code getListFromRegistry} used the same reader on the same JSON), so
+     * it is pinned here rather than changed.
+     */
+    @Test
+    void translucentPaletteColorsAreReadWithTheLegacyAlphaParsing(@TempDir Path userDir) throws Exception {
+        JIPipeSettingsServiceComponent settings = JIPipeSettingsServiceComponent.forTesting(userDir);
+        try {
+            List<JIPipeDesktopColorPaletteColor> legacy = new ArrayList<>();
+            legacy.add(new JIPipeDesktopColorPaletteColor(new Color(10, 20, 30, 128), new Color(200, 200, 200)));
+            JsonNode legacyJson = JsonUtils.getObjectMapper().valueToTree(legacy);
+            assertEquals("#0A141E80", legacyJson.get(0).get("foreground").asText());
+
+            SettingsBinding<JsonNode> binding = settings.bind(SettingsKeys.USER_PALETTE_COLORS_FG_A);
+            binding.set(legacyJson);
+            assertEquals(legacyJson, settings.document(SettingsScope.APPLICATION)
+                    .get("registry:ui-palette", "user-palette-colors/fg-a"));
+            List<JIPipeDesktopColorPaletteColor> readBack =
+                    JsonUtils.getObjectMapper().readerForListOf(JIPipeDesktopColorPaletteColor.class).readValue(binding.get());
+            assertEquals(new Color(10, 20, 30, 80), readBack.get(0).getForeground(),
+                    "legacy alpha parsing: the hex alpha digits are read as decimal (128 stored as 0x80 -> 0x50)");
+        } finally {
+            settings.dispose();
+        }
+    }
+
+    /**
+     * An absent palette setting reads back as the (null) key default; the
+     * consumer treats that as "no stored colors" instead of failing.
+     */
+    @Test
+    void absentUserPaletteColorsReadAsNull(@TempDir Path userDir) {
+        JIPipeSettingsServiceComponent settings = JIPipeSettingsServiceComponent.forTesting(userDir);
+        try {
+            SettingsBinding<JsonNode> binding = settings.bind(SettingsKeys.USER_PALETTE_COLORS_FG_BG_A);
+            assertTrue(binding.get() == null || binding.get().isNull());
+            assertFalse(binding.isModified());
         } finally {
             settings.dispose();
         }
