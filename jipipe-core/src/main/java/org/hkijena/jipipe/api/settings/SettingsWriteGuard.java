@@ -20,10 +20,17 @@ import java.util.function.Predicate;
  * <p>
  * The settings service component is the owner and installer of the guard (see
  * {@code JIPipeSettingsServiceComponent#setWriteGuard}); it injects it into
- * every {@link SettingsBinding} (at bind time) and every
- * {@link SettingsSheetBridge} (at attach time), and both query it
+ * every {@link SettingsBinding} (at bind time), and {@link
+ * SettingsBinding#set(Object)} / {@link SettingsBinding#reset()} query it
  * <em>before</em> they mutate the document. A denied write throws
  * {@link SettingsAccessDeniedException} and leaves the document untouched.
+ * <p>
+ * <b>Coverage.</b> Only the typed-key write path is routed through the guard.
+ * Raw parameter writes through a {@link SettingsSheetBridge} (the sheet
+ * projection of a settings block) are <em>not</em> yet routed through it: a
+ * bridge holds a sheet, not keys, and no key exists at most sheet sub-paths,
+ * so it cannot be checked without inventing a key per sheet parameter. Those
+ * writes become guarded once the sheets are keyified (Tasks 15/16).
  * <p>
  * The predicate semantics are "may write": {@code test(key) == true} permits
  * the write, {@code false} rejects it.

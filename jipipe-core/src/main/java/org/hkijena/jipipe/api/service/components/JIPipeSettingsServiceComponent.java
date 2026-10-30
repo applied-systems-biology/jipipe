@@ -1193,7 +1193,10 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
      */
     public synchronized Map<String, SettingsScope> effectiveScopeByBlock() {
         Map<String, SettingsScope> result = new LinkedHashMap<>(SettingsScopes.scopeByBlock());
-        for (JIPipeSettingKey<?> key : registeredKeys.values()) {
+        // Iterate a defensive copy of the registered keys (the registeredKeys()
+        // accessor) rather than the live map, so a concurrent reader cannot
+        // observe a partially-mutated LinkedHashMap.
+        for (JIPipeSettingKey<?> key : registeredKeys()) {
             if (key.scope() == SettingsScope.RUNTIME) {
                 result.put(key.blockPath(), SettingsScope.RUNTIME);
             }

@@ -62,7 +62,7 @@ public final class SettingsScopes {
             "sheet:org.hkijena.jipipe:artifacts", SettingsScope.RUNTIME,
             // Downloader processes and their locations (JIPipeDownloadsApplicationSettings)
             "sheet:org.hkijena.jipipe:downloads", SettingsScope.RUNTIME,
-            // Statistics report upload target (JIPipeStatisticsApplicationSettings)
+            // Usage statistics collection and reporting (JIPipeStatisticsApplicationSettings)
             "sheet:org.hkijena.jipipe:statistics", SettingsScope.RUNTIME
             // TODO(#1345): add genuinely execution-state registry blocks here
             //  (e.g. an AI remote-backend database, once it exists). The UI
