@@ -462,6 +462,12 @@ public final class JIPipe {
      * @param exitCode the exit code
      */
     public static void exitLater(int exitCode) {
+        if (instance != null) {
+            // A runner may have forced extension options before startup
+            // (silent, fast init). Those live only for this process: put the
+            // user's stored values back before the shutdown save.
+            instance.getApplicationSettings().restoreExtensionSettingsOverrides();
+        }
         if (instance != null && instance.isAutosaveSettings()) {
             instance.getApplicationSettings().save();
         }
@@ -500,6 +506,11 @@ public final class JIPipe {
      * Auto-saves application settings if they are enabled
      */
     public static void autoSaveSettings() {
+        if (instance != null) {
+            // Never persist a runner's per-process extension options over the
+            // user's stored values (see exitLater).
+            instance.getApplicationSettings().restoreExtensionSettingsOverrides();
+        }
         if (instance != null && instance.isAutosaveSettings()) {
             instance.getApplicationSettings().save();
         }

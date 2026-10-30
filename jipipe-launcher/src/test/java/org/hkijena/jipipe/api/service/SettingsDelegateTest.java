@@ -15,20 +15,27 @@ package org.hkijena.jipipe.api.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.service.components.JIPipeApplicationSettingsServiceComponent;
 import org.hkijena.jipipe.api.settings.JIPipeSettingKey;
 import org.hkijena.jipipe.api.settings.SettingsDocument;
 import org.hkijena.jipipe.api.settings.SettingsScope;
+import org.hkijena.jipipe.api.settings.SettingsBlockPath;
+import org.hkijena.jipipe.api.settings.SettingsMigration;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeExtensionApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeGeneralUIApplicationSettings;
 import org.hkijena.jipipe.utils.json.JIPipePathMetadataStore;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.nio.file.Path;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -122,6 +129,19 @@ class SettingsDelegateTest {
                 "an absent list location is seeded with the empty list");
         assertTrue(JIPipe.getSettings().getListFromRegistry("delegate-destructive",
                 JIPipePathMetadataStore.key("list-null-b"), String.class, false).isEmpty());
+
+        // Minor (Task 13 review): putIntoRegistry(key, null) removes the
+        // location, so the next read sees absence and seeds the default again.
+        JIPipe.getSettings().putIntoRegistry("delegate-destructive",
+                JIPipePathMetadataStore.key("null-b"), null);
+        assertFalse(doc.has("registry:delegate-destructive", "null-b"),
+                "putIntoRegistry(key, null) removes the location");
+        writes.clear();
+        assertEquals(Boolean.TRUE, JIPipe.getSettings().getFromRegistry("delegate-destructive",
+                JIPipePathMetadataStore.key("null-b"), Boolean.class, Boolean.TRUE, false));
+        assertTrue(doc.has("registry:delegate-destructive", "null-b"),
+                "an absent location is seeded with the default again");
+        assertEquals(List.of("null-b=true"), writes, "exactly one seeding write");
 
         doc.removeBlock("registry:delegate-destructive");
     }
@@ -237,20 +257,74 @@ class SettingsDelegateTest {
         assertEquals(1, fired.get(), "the legacy emitter must re-emit the new aggregate change event");
     }
 
+    /**
+     * Finding 1 (Task 13 review): the extension settings are read raw from the
+     * settings file <em>before</em> the service is initialized (they drive the
+     * pre-activation checks and the theme), so that read must happen
+     * <b>after</b> the profile migration. This pins the post-migration state:
+     * the raw reader and the loaded document agree on the extension sheet.
+     */
     @Test
-    void legacyFormatFilesAreMigratedOnStartup() {
-        Path userDir = JIPipe.getJIPipeUserDir(false);
-        assertTrue(java.nio.file.Files.isDirectory(userDir), "the profile directory must exist after startup");
+    void rawExtensionSettingsMatchTheLoadedDocumentAfterStartup() {
+        JsonNode raw = JIPipeApplicationSettingsServiceComponent.getRawSheetsNode();
+        assertTrue(raw.has(JIPipeExtensionApplicationSettings.ID),
+                "the raw reader must expose the extension sheet after the startup migration");
+        JsonNode inDocument = JIPipe.getSettingsService().document(SettingsScope.APPLICATION)
+                .getBlock("sheet:" + JIPipeExtensionApplicationSettings.ID);
+        assertTrue(inDocument.isObject(), "the extension sheet must have a document block");
+        assertEquals(inDocument, raw.get(JIPipeExtensionApplicationSettings.ID),
+                "the raw reader and the loaded document must agree on the extension settings");
 
-        // A migrated profile: no legacy file may be left behind; the
-        // application document lives in settings.json with a $schema marker.
-        assertFalse(java.nio.file.Files.exists(userDir.resolve("recent-projects.txt")),
-                "recent-projects.txt must be migrated away");
-        try (var stream = java.nio.file.Files.list(userDir)) {
-            assertTrue(stream.noneMatch(p -> p.getFileName().toString().startsWith("settings-db-")),
-                    "settings-db-*.json files must be migrated away");
-        } catch (java.io.IOException e) {
-            fail(e);
-        }
+        // And the pre-startup instance the initializer builds carries the stored
+        // values (not the class defaults) — the exact property Finding 1 broke.
+        JIPipeExtensionApplicationSettings fromRaw = JIPipeExtensionApplicationSettings.getInstanceFromRaw();
+        JIPipeExtensionApplicationSettings fromDocument = JIPipeExtensionApplicationSettings.getInstance();
+        assertEquals(fromDocument.isSilent(), fromRaw.isSilent(),
+                "the raw instance must carry the stored 'silent' value");
+        assertEquals(fromDocument.isValidateNodeTypes(), fromRaw.isValidateNodeTypes(),
+                "the raw instance must carry the stored 'validate node types' value");
+    }
+
+    /**
+     * The raw reader is file-authoritative: while the profile is still in the
+     * legacy (5.x flat) shape it exposes no {@code sheet:} blocks — the values
+     * are not visible before the migration, which is the documented pre-startup
+     * blindness. After the migration the same file yields them.
+     * <p>
+     * Finding 1(d) of the Task 13 review. Runs against a temp profile through
+     * the migration statics, so it does not depend on the developer's profile.
+     */
+    @Test
+    void rawReaderSeesLegacyValuesOnlyAfterTheMigration(@TempDir Path tempProfile) throws Exception {
+        // Build a legacy profile: flat settings.json + settings-db + recent projects.
+        Files.writeString(tempProfile.resolve("settings.json"),
+                "{\"" + JIPipeExtensionApplicationSettings.ID + "\":{\"silent\":true}}");
+        Files.writeString(tempProfile.resolve("settings-db-node-db.json"), "{\"pinned-node-ids\":[\"n1\"]}");
+        Files.writeString(tempProfile.resolve("recent-projects.txt"), "/a/b.jip\n");
+
+        // Legacy shape: the migration is needed and the raw file holds
+        // unprefixed sheet IDs.
+        assertTrue(SettingsMigration.needsMigration(tempProfile));
+        JsonNode legacyFile = JsonUtils.getObjectMapper().readTree(
+                Files.readString(tempProfile.resolve("settings.json")));
+        assertTrue(legacyFile.has(JIPipeExtensionApplicationSettings.ID),
+                "the fixture is a legacy flat settings file");
+
+        // Run the startup preparation's migration step (the same public
+        // static the initializer calls; its full fail-loud wrapper is covered
+        // in jipipe-core's SettingsStartupPreparationTest).
+        SettingsMigration.migrateLegacyProfile(tempProfile,
+                path -> new SettingsBlockPath(path).kind() != null, Map.of(), JIPipeProgressInfo.SILENT);
+
+        // After: new shape, the extension block moved to its prefixed name,
+        // and the migration is done.
+        assertFalse(SettingsMigration.needsMigration(tempProfile));
+        JsonNode migrated = JsonUtils.getObjectMapper().readTree(
+                Files.readString(tempProfile.resolve("settings.json")));
+        assertTrue(migrated.has("$schema"), "the migrated file is a new-format document");
+        assertTrue(migrated.get("sheet:" + JIPipeExtensionApplicationSettings.ID).get("silent").asBoolean(),
+                "the extension sheet is readable after the migration");
+        assertFalse(Files.exists(tempProfile.resolve("recent-projects.txt")),
+                "the legacy recent-projects file is migrated away");
     }
 }

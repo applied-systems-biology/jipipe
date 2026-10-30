@@ -22,6 +22,7 @@ import org.hkijena.jipipe.api.artifacts.JIPipeLocalArtifact;
 import org.hkijena.jipipe.api.artifacts.JIPipeRemoteArtifact;
 import org.hkijena.jipipe.api.environments.JIPipeArtifactEnvironment;
 import org.hkijena.jipipe.api.service.JIPipeService;
+import org.hkijena.jipipe.api.service.components.JIPipeApplicationSettingsServiceComponent;
 import org.hkijena.jipipe.api.service.JIPipeServiceInitializationSettings;
 import org.hkijena.jipipe.api.service.JIPipeServiceMode;
 import org.hkijena.jipipe.api.service.components.JIPipeEnvironmentsServiceComponent;
@@ -66,6 +67,11 @@ public class DeployArtifactsCommand {
         JIPipeExtensionApplicationSettings extensionSettings = JIPipeExtensionApplicationSettings.getInstanceFromRaw();
         extensionSettings.setSilent(true);
         extensionSettings.setValidateNodeTypes(false);
+        // The raw read above happens before the settings are loaded (and may
+        // happen before the one-time profile migration); record the options
+        // forced here so they reach the loaded settings and are not written
+        // over the user's stored values on shutdown.
+        JIPipeApplicationSettingsServiceComponent.captureExtensionSettingsOverridesFromRaw(extensionSettings);
         service.ensureInitialized();
 
         // Query the repository

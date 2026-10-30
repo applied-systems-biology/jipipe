@@ -14,6 +14,8 @@
 package org.hkijena.jipipe.api.service.components;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
@@ -135,6 +137,15 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
 
     private static final DateTimeFormatter META_TIMESTAMP =
             DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'").withZone(ZoneOffset.UTC);
+    /**
+     * The {@code $meta} field holding the bounded write log (see
+     * {@link #writeQuiescently(SettingsDocument, String, JsonNode, String)}).
+     */
+    private static final String CHANGE_LOG_FIELD = "changes";
+    /**
+     * Maximum number of entries kept in the {@code $meta} write log.
+     */
+    private static final int MAX_CHANGE_LOG_ENTRIES = 50;
     /**
      * Backup marker and timestamp format for a corrupt foreign settings file,
      * identical to {@code SettingsFileStore}'s recovery convention
@@ -1109,33 +1120,54 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
         return binding;
     }
 
-    /**
-     * Writes a whole block into the given document as bookkeeping content,
-     * not as a user-visible setting change: no change event is emitted for it
-     * and the block is not marked as locally changed (so a foreign merge
-     * cannot treat it as a conflicting local edit). The write is still a
-     * normal {@link SettingsDocument#setBlock(String, JsonNode)}, so the file
-     * watcher, the merge baseline and the save path see it.
-     * <p>
-     * Used by the recent-projects list, whose {@link #getLegacyChangedEventEmitter()}
-     * mirror already reports changes and whose per-item diff carries no
-     * meaning for subscribers.
-     * <p>
-     * Thread-safety: the whole cycle (mark quiescent → write) holds the
-     * component monitor, so a mutation from another thread (e.g. a sheet edit
-     * on the EDT) can never run while the document is marked quiescent — its
-     * events and local-change tracking are therefore never suppressed.
-     *
-     * @param doc the document to write to
-     * @param blockPath the block to replace
-     * @param value the new block value
-     */
     public synchronized void writeQuiescently(SettingsDocument doc, String blockPath, JsonNode value) {
         beginQuiescentWrite(doc);
         try {
             doc.setBlock(blockPath, value);
         } finally {
             endQuiescentWrite(doc);
+        }
+    }
+
+    /**
+     * Writes a whole block quiescently and records a one-line note in the
+     * document's {@code $meta} write log, so an automated write over stored
+     * values stays auditable in the file.
+     * <p>
+     * The log is a bounded ring of the last {@value #MAX_CHANGE_LOG_ENTRIES}
+     * entries under {@code $meta.changes}, each
+     * {@code {"at": <utc timestamp>, "block": <path>, "note": <text>}}.
+     *
+     * @param doc the document to write to
+     * @param blockPath the block to replace; a {@code null} value removes it
+     * @param value the new block value, or {@code null} to remove the block
+     * @param note the change-log note
+     */
+    public synchronized void writeQuiescently(SettingsDocument doc, String blockPath, JsonNode value, String note) {
+        writeQuiescently(doc, blockPath, value);
+        appendChangeLog(doc, blockPath, note);
+    }
+
+    /**
+     * Appends one entry to the bounded {@code $meta.changes} write log.
+     *
+     * @param doc the document
+     * @param blockPath the block that was written, or {@code null}
+     * @param note the human-readable note
+     */
+    private void appendChangeLog(SettingsDocument doc, String blockPath, String note) {
+        if (note == null || note.isBlank()) {
+            return;
+        }
+        ObjectNode meta = doc.meta();
+        ArrayNode changes = meta.get(CHANGE_LOG_FIELD) instanceof ArrayNode a
+                ? a : meta.putArray(CHANGE_LOG_FIELD);
+        ObjectNode entry = changes.addObject();
+        entry.put("at", META_TIMESTAMP.format(Instant.now()));
+        entry.put("block", blockPath == null ? "" : blockPath);
+        entry.put("note", note);
+        while (changes.size() > MAX_CHANGE_LOG_ENTRIES) {
+            changes.remove(0);
         }
     }
 

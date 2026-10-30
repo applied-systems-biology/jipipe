@@ -23,6 +23,8 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.api.service.JIPipeServiceComponent;
 import org.hkijena.jipipe.api.settings.JIPipeApplicationSettingsSheet;
@@ -32,6 +34,7 @@ import org.hkijena.jipipe.api.settings.SettingsDocument;
 import org.hkijena.jipipe.api.settings.SettingsFileStore;
 import org.hkijena.jipipe.api.settings.SettingsKind;
 import org.hkijena.jipipe.api.settings.SettingsScope;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeExtensionApplicationSettings;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.json.JIPipePathMetadataStore;
@@ -88,6 +91,11 @@ public final class JIPipeApplicationSettingsServiceComponent extends JIPipeServi
     private static final Logger logger = LoggerFactory.getLogger(JIPipeApplicationSettingsServiceComponent.class);
     private static final String REGISTRY_PREFIX = SettingsKind.REGISTRY.prefix() + ":";
     private static final String SHEET_PREFIX = SettingsKind.SHEET.prefix() + ":";
+    /**
+     * The block of the extension settings sheet, the one sheet whose values
+     * command runners force before startup.
+     */
+    private static final String EXTENSION_SETTINGS_BLOCK = SHEET_PREFIX + JIPipeExtensionApplicationSettings.ID;
 
     private final BiMap<String, JIPipeApplicationSettingsSheet> registeredSheets = HashBiMap.create();
     private final Map<Class<? extends JIPipeApplicationSettingsSheet>, JIPipeApplicationSettingsSheet> registeredSheetsByType = new HashMap<>();
@@ -97,6 +105,12 @@ public final class JIPipeApplicationSettingsServiceComponent extends JIPipeServi
      */
     private final Map<String, Boolean> observedRegistryBlocks = new LinkedHashMap<>();
     private final ChangedEventEmitter changedEventEmitter = new ChangedEventEmitter();
+    /**
+     * The options a caller forced on a pre-startup raw extension settings
+     * instance (key → JSON value), re-applied after the load and removed again
+     * on shutdown. Empty in the common case (no runner).
+     */
+    private final Map<String, JsonNode> extensionSettingsOverrides = new LinkedHashMap<>();
 
     public JIPipeApplicationSettingsServiceComponent(JIPipeService service) {
         super(service);
@@ -123,32 +137,62 @@ public final class JIPipeApplicationSettingsServiceComponent extends JIPipeServi
      * <p>
      * Works before settings sheets are registered and before the JIPipe
      * service is initialized (splash screen, early startup), so it reads the
-     * file directly. If the file is absent or malformed, the in-memory
-     * document is consulted as a fallback.
+     * file directly.
+     * <p>
+     * <b>Contract — preferred before the profile migration has run.</b> The
+     * file is read first and is <em>authoritative</em> whenever it is parseable:
+     * <ul>
+     * <li>new-format document ({@code $schema} present) → its {@code sheet:}
+     * blocks, readable;</li>
+     * <li>legacy 5.x flat file (unprefixed sheet IDs) → an <b>empty</b> object:
+     * the values are not visible here because the 5.x profile has not been
+     * migrated yet, and the caller must treat that as "defaults". After the
+     * migration (which runs early in startup, before contexts that read this)
+     * the same file yields the values.</li>
+     * </ul>
+     * The in-memory document is consulted <em>only</em> when the file is
+     * absent or unparseable — never to paper over the legacy shape (the
+     * document would be the pre-migration state, so mixing the two would make
+     * the result depend on whether anything materialized the document yet).
      *
      * @return the node keyed by sheet ID. Never null.
      */
     public static JsonNode getRawSheetsNode() {
         Path propertyFile = getSheetsFile(false);
-        if (Files.exists(propertyFile)) {
+        if (Files.isRegularFile(propertyFile)) {
+            JsonNode node;
             try {
-                JsonNode node = JsonUtils.getObjectMapper().readTree(propertyFile.toFile());
-                if (node != null && node.isObject()) {
-                    return sheetBlocks(node);
-                }
+                node = JsonUtils.getObjectMapper().readTree(propertyFile.toFile());
             } catch (Exception e) {
-                logger.debug("Could not read the raw settings file {}", propertyFile, e);
+                logger.debug("Could not read the raw settings file {}; falling back to the in-memory document",
+                        propertyFile, e);
+                return inMemoryRawSheetsNode();
             }
-        }
-        if (JIPipe.isInstantiated() && JIPipe.getInstance() != null) {
-            try {
-                SettingsDocument doc = JIPipe.getInstance().getSettings().document(SettingsScope.APPLICATION);
-                return sheetBlocks(doc.snapshotJson());
-            } catch (RuntimeException e) {
-                return MissingNode.getInstance();
+            if (node != null && node.isObject()) {
+                return sheetBlocks(node);
             }
+            logger.debug("The raw settings file {} is not a JSON object; falling back to the in-memory document",
+                    propertyFile);
         }
-        return MissingNode.getInstance();
+        return inMemoryRawSheetsNode();
+    }
+
+    /**
+     * @return the {@code sheet:<id>} blocks of the in-memory application
+     * document, or {@link MissingNode} when the service is not initialized
+     * (see {@link #getRawSheetsNode()} for when this fallback is used)
+     */
+    private static JsonNode inMemoryRawSheetsNode() {
+        if (!JIPipe.isInstantiated() || JIPipe.getInstance() == null) {
+            return MissingNode.getInstance();
+        }
+        try {
+            SettingsDocument doc = JIPipe.getInstance().getSettings().document(SettingsScope.APPLICATION);
+            return sheetBlocks(doc.snapshotJson());
+        } catch (RuntimeException e) {
+            logger.debug("Could not read the raw settings from the in-memory document", e);
+            return MissingNode.getInstance();
+        }
     }
 
     /**
@@ -157,7 +201,27 @@ public final class JIPipeApplicationSettingsServiceComponent extends JIPipeServi
      * (legacy flat shape used by the raw readers)
      */
     private static ObjectNode sheetBlocks(JsonNode documentRoot) {
+        return rawSheetsOf(documentRoot);
+    }
+
+    /**
+     * The <em>file-shape contract</em> of the raw settings reader, extracted so
+     * it can be pinned without a profile or a JIPipe service: a settings
+     * document's {@code sheet:} blocks, keyed by sheet ID (the legacy flat
+     * shape).
+     * <p>
+     * A legacy 5.x flat document has no {@code sheet:} blocks, so the result is
+     * <b>empty</b> — before the profile migration has run, raw readers see
+     * defaults. A non-object document yields an empty object.
+     *
+     * @param documentRoot a settings document's root (may be {@code null})
+     * @return a copy holding only the {@code sheet:} blocks, keyed by sheet ID
+     */
+    static ObjectNode rawSheetsOf(JsonNode documentRoot) {
         ObjectNode result = JsonUtils.getObjectMapper().createObjectNode();
+        if (documentRoot == null || !documentRoot.isObject()) {
+            return result;
+        }
         documentRoot.fields().forEachRemaining(entry -> {
             if (entry.getKey().startsWith(SHEET_PREFIX)) {
                 result.set(entry.getKey().substring(SHEET_PREFIX.length()), entry.getValue());
@@ -177,16 +241,21 @@ public final class JIPipeApplicationSettingsServiceComponent extends JIPipeServi
     }
 
     /**
-     * Returns the file the given registry database is persisted to.
+     * Returns the file the registry data is persisted to.
      * <p>
-     * All registry databases now live in the single application settings
-     * document ({@link #getSheetsFile(boolean)}), as {@code registry:<key>}
-     * blocks; no {@code settings-db-<key>.json} file is written or read any
-     * more.
+     * <b>There is no per-database file any more.</b> Every registry database
+     * lives as a {@code registry:<key>} block inside the single application
+     * settings document ({@link #getSheetsFile(boolean)}); no
+     * {@code settings-db-<key>.json} file is written, read or migrated from
+     * here (the 5.x migration reads those files once, in
+     * {@code SettingsMigration}). This method exists only for signature
+     * compatibility with pre-6.0 callers and always returns that document's
+     * file, regardless of {@code databaseKey}.
      *
-     * @param databaseKey        the database key
-     * @param loadFromOldProfile if the settings can be loaded from an old profile
-     * @return the application settings file
+     * @param databaseKey        the database key; only validated, it does not
+     *                           select a file
+     * @param loadFromOldProfile if the file of an older profile may be returned
+     * @return the application settings file (the same for every database key)
      */
     public static Path getRegistryFile(String databaseKey, boolean loadFromOldProfile) {
         if (!isValidRegistryDatabaseKey(databaseKey)) {
@@ -257,6 +326,124 @@ public final class JIPipeApplicationSettingsServiceComponent extends JIPipeServi
 
     public BiMap<String, JIPipeApplicationSettingsSheet> getRegisteredSheets() {
         return ImmutableBiMap.copyOf(registeredSheets);
+    }
+
+    /**
+     * Applies the in-memory extension-settings overrides to the loaded
+     * {@code sheet:org.hkijena.jipipe:extensions} block.
+     * <p>
+     * Command runners ({@code JIPipeGUICommand}, {@code JIPipeRunCommand}, the
+     * launcher's headless commands, …) build their options
+     * <em>before</em> JIPipe is initialized — some of them before the one-time
+     * profile migration has run — and may force options such as "silent" or
+     * "fast init" on that pre-startup instance. {@link #restoreExtensionSettingsOverrides()}
+     * records those forced flags so this call can apply them to the document
+     * after the load, i.e. after the stored values are in place.
+     * <p>
+     * The stored (user) values are never modified: the overrides are a
+     * per-process startup option. Without any recorded override this is a
+     * no-op.
+     */
+    public void installExtensionSettingsOverrides() {
+        if (extensionSettingsOverrides.isEmpty()) {
+            return;
+        }
+        JIPipeSettingsServiceComponent settings = getSettingsService();
+        SettingsDocument document = settings.document(SettingsScope.APPLICATION);
+        settings.writeQuiescently(document, EXTENSION_SETTINGS_BLOCK, mergedExtensionSettingsBlock(),
+                "Applied " + extensionSettingsOverrides.size() + " extension setting(s) forced before startup");
+        getProgressInfo().log("Applied " + extensionSettingsOverrides.size()
+                + " extension settings override(s) forced before startup to the loaded settings");
+    }
+
+    /**
+     * @return the extension settings block with every recorded override applied,
+     * taken from the live document (a detached copy)
+     */
+    private ObjectNode mergedExtensionSettingsBlock() {
+        JsonNode block = getSettingsService().document(SettingsScope.APPLICATION).getBlock(EXTENSION_SETTINGS_BLOCK);
+        ObjectNode merged = block instanceof ObjectNode object ? object.deepCopy()
+                : JsonUtils.getObjectMapper().createObjectNode();
+        extensionSettingsOverrides.forEach(merged::set);
+        return merged;
+    }
+
+    /**
+     * Records the options a caller forced on a pre-startup raw extension
+     * settings instance, so {@link #installExtensionSettingsOverrides()} can
+     * re-apply them after the settings are loaded — at which point they would
+     * otherwise be overwritten by the stored values.
+     * <p>
+     * Only the options that differ from the defaults (i.e. were forced) are
+     * recorded, so a plain raw read (splash screen, early theme choice) does
+     * not write anything later.
+     *
+     * @param raw the raw instance a caller configured before startup
+     */
+    public void captureExtensionSettingsOverrides(JIPipeExtensionApplicationSettings raw) {
+        Objects.requireNonNull(raw, "raw");
+        JIPipeExtensionApplicationSettings defaults = new JIPipeExtensionApplicationSettings();
+        for (Map.Entry<String, JIPipeParameterAccess> entry :
+                new JIPipeParameterTree(raw).getParameters().entrySet()) {
+            Object value = entry.getValue().get(Object.class);
+            JIPipeParameterAccess defaultAccess = new JIPipeParameterTree(defaults).getParameters().get(entry.getKey());
+            Object defaultValue = defaultAccess == null ? null : defaultAccess.get(Object.class);
+            if (Objects.equals(value, defaultValue)) {
+                continue; // not forced
+            }
+            if (StringUtils.isNullOrEmpty(entry.getKey())) {
+                continue;
+            }
+            extensionSettingsOverrides.put(entry.getKey(), JsonUtils.getObjectMapper().valueToTree(value).deepCopy());
+        }
+        if (!extensionSettingsOverrides.isEmpty()) {
+            getProgressInfo().log("Recorded extension settings override(s) forced before startup: "
+                    + extensionSettingsOverrides.keySet());
+        }
+    }
+
+    /**
+     * Captures the overrides a caller forced on the given raw instance (see
+     * {@link #captureExtensionSettingsOverrides(JIPipeExtensionApplicationSettings)}),
+     * so shutdown saves do not persist a runner's per-process options over the
+     * user's stored values.
+     *
+     * @param raw the raw instance a caller configured before startup
+     */
+    public static void captureExtensionSettingsOverridesFromRaw(JIPipeExtensionApplicationSettings raw) {
+        if (JIPipe.isInstantiated() && JIPipe.getInstance() != null) {
+            JIPipe.getInstance().getApplicationSettings().captureExtensionSettingsOverrides(raw);
+        }
+    }
+
+    /**
+     * Removes the overrides recorded by {@link #captureExtensionSettingsOverrides(JIPipeExtensionApplicationSettings)}
+     * from the in-memory document, so a later save writes the user's stored
+     * values again instead of a runner's per-process startup options.
+     */
+    public void restoreExtensionSettingsOverrides() {
+        if (extensionSettingsOverrides.isEmpty()) {
+            return;
+        }
+        JIPipeSettingsServiceComponent settings = getSettingsService();
+        SettingsDocument document = settings.document(SettingsScope.APPLICATION);
+        settings.writeQuiescently(document, EXTENSION_SETTINGS_BLOCK, restoredExtensionSettingsBlock(),
+                "Restored the stored extension settings after the startup overrides");
+        extensionSettingsOverrides.clear();
+    }
+
+    /**
+     * @return the extension settings block with the overrides removed, or
+     * {@code null} (remove the whole block) when nothing else was recorded
+     */
+    private ObjectNode restoredExtensionSettingsBlock() {
+        JsonNode block = getSettingsService().document(SettingsScope.APPLICATION).getBlock(EXTENSION_SETTINGS_BLOCK);
+        if (!(block instanceof ObjectNode object)) {
+            return null;
+        }
+        ObjectNode restored = object.deepCopy();
+        extensionSettingsOverrides.keySet().forEach(restored::remove);
+        return restored.size() == 0 ? null : restored;
     }
 
     /**

@@ -7,6 +7,7 @@ import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.project.JIPipeProjectUserPaths;
 import org.hkijena.jipipe.api.service.JIPipeService;
+import org.hkijena.jipipe.api.service.components.JIPipeApplicationSettingsServiceComponent;
 import org.hkijena.jipipe.api.service.JIPipeServiceInitializationSettings;
 import org.hkijena.jipipe.api.service.JIPipeServiceMode;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
@@ -97,6 +98,11 @@ public class CreateROCrateCommand {
         JIPipeService service = JIPipe.createInstance(ij.context(), initializationSettings);
         JIPipeExtensionApplicationSettings extensionSettings = JIPipeExtensionApplicationSettings.getInstanceFromRaw();
         extensionSettings.setSilent(true);
+        // The raw read above happens before the settings are loaded (and may
+        // happen before the one-time profile migration); record the options
+        // forced here so they reach the loaded settings and are not written
+        // over the user's stored values on shutdown.
+        JIPipeApplicationSettingsServiceComponent.captureExtensionSettingsOverridesFromRaw(extensionSettings);
         if (fastInit) {
             extensionSettings.setValidateNodeTypes(false);
         }
