@@ -31,10 +31,14 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
 /**
@@ -60,10 +64,12 @@ import java.util.function.Predicate;
  * exactly one of the new documents: registered and unregistered sheet IDs alike
  * are prefixed with {@code sheet:} (unknown ones become pass-through blocks so
  * a newer version can still read them), and non-object top-level values are
- * kept verbatim. A legacy file that cannot be parsed is renamed to
- * {@code <name>.bad-<timestamp>} and treated as absent, then moved into the
- * backup directory with the other legacy files — its content is never
- * destroyed and no exception escapes this class.
+ * kept verbatim. A legacy file that cannot be parsed is recognised as such
+ * but <em>not</em> renamed at scan time: it is moved into the backup directory
+ * under its original name with the other legacy files, and only then renamed
+ * there to {@code <name>.bad-<timestamp>}. A failed migration therefore
+ * restores every original name, and its content is never destroyed — no
+ * exception escapes this class.
  * <p>
  * <b>Scope routing.</b> Each resulting block is routed to
  * {@link SettingsScope#APPLICATION} or {@link SettingsScope#RUNTIME} according
@@ -125,7 +131,57 @@ public final class SettingsMigration {
     private static final DateTimeFormatter BACKUP_TIMESTAMP =
             DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH-mm-ss'Z'").withZone(ZoneOffset.UTC);
 
+    /**
+     * The move operation used for backup moves and restores.
+     * <p>
+     * <b>Testing only.</b> Replaced via {@link #setMoveOperationForTesting(BiFunction)}
+     * so tests can inject deterministic move failures instead of relying on
+     * file permissions (which behave differently for root, on Windows, and
+     * under fakeroot). Always {@code null} in production, in which case
+     * {@link #defaultMove(Path, Path)} is used — i.e. today's behaviour
+     * exactly.
+     */
+    private static volatile BiFunction<Path, Path, Path> moveOperationForTesting;
+
     private SettingsMigration() {
+    }
+
+    /**
+     * <b>Testing only.</b> Replaces the move operation used for backup moves
+     * and restores, so a test can inject a failure at a deterministic point.
+     * <p>
+     * The default ({@code null}) is {@link #defaultMove(Path, Path)}: an atomic
+     * move with a non-atomic fallback. Production code never sets this. Tests
+     * must reset it (pass {@code null}) after each test, e.g. in
+     * {@code @AfterEach}, so the override cannot leak into other tests.
+     *
+     * @param moveOperation the replacement, or {@code null} to restore the default
+     */
+    static void setMoveOperationForTesting(BiFunction<Path, Path, Path> moveOperation) {
+        moveOperationForTesting = moveOperation;
+    }
+
+    /**
+     * The production move operation: an {@link StandardCopyOption#ATOMIC_MOVE}
+     * with a plain replace fallback for file systems that do not support it.
+     * Package-visible so a testing override can delegate to the real behaviour.
+     *
+     * @param source the file to move
+     * @param target the destination
+     * @return the destination
+     * @throws IOException if the move fails
+     */
+    static Path defaultMove(Path source, Path target) throws IOException {
+        try {
+            return Files.move(source, target, StandardCopyOption.ATOMIC_MOVE);
+        } catch (AtomicMoveNotSupportedException e) {
+            return Files.move(source, target);
+        }
+    }
+
+    private static Path move(Path source, Path target) throws IOException {
+        BiFunction<Path, Path, Path> override = moveOperationForTesting;
+        return override != null ? override.apply(source, target) : defaultMove(source, target);
     }
 
     /**
@@ -187,9 +243,12 @@ public final class SettingsMigration {
         Path runtimeFile = profileDir.resolve(RUNTIME_FILE_NAME);
         Path backupDir = profileDir.resolve(BACKUP_DIRECTORY_NAME);
 
-        // Legacy content to read. Corrupt files are renamed to .bad-<timestamp>
-        // right away and end up in `legacyFiles` as that preserved name.
+        // Legacy content to read. Corrupt files are only RECORDED here: the
+        // .bad-<timestamp> rename happens inside the backup directory after
+        // every move succeeded, so a rollback restores original names and
+        // needsMigration() stays accurate.
         List<Path> legacyFiles = new ArrayList<>();
+        Set<Path> corruptFiles = new LinkedHashSet<>();
 
         Path recentProjectsFile = profileDir.resolve(RECENT_PROJECTS_FILE_NAME);
         if (Files.isRegularFile(recentProjectsFile)) {
@@ -210,7 +269,7 @@ public final class SettingsMigration {
             progress.log("Migrating legacy settings file " + file.getFileName());
         }
         if (settingsJsonMigrated) {
-            JsonNode parsed = parseOrPreserve(settingsFile, true, legacyFiles, progress);
+            JsonNode parsed = parseOrPreserve(settingsFile, true, corruptFiles, progress);
             if (parsed instanceof ObjectNode) {
                 parsed.fields().forEachRemaining(entry -> {
                     if (entry.getKey().startsWith("$")) {
@@ -229,7 +288,7 @@ public final class SettingsMigration {
             if (key == null) {
                 continue;
             }
-            JsonNode parsed = parseOrPreserve(registryFile, false, legacyFiles, progress);
+            JsonNode parsed = parseOrPreserve(registryFile, false, corruptFiles, progress);
             if (parsed != null) {
                 registryBlocks.put(REGISTRY_PREFIX + key, parsed);
             }
@@ -248,7 +307,7 @@ public final class SettingsMigration {
         }
 
         migrateInto(profileDir, registeredBlock, scopeByBlock, progress,
-                settingsFile, runtimeFile, backupDir, routed, settingsJsonMigrated, legacyFiles);
+                settingsFile, runtimeFile, backupDir, routed, settingsJsonMigrated, legacyFiles, corruptFiles);
     }
 
     /**
@@ -265,6 +324,9 @@ public final class SettingsMigration {
      * @param legacyFiles the legacy files to move into the backup; they are
      *                    restored and the whole operation is aborted if any
      *                    move fails
+     * @param corruptFiles the subset of {@code legacyFiles} that could not be
+     *                     parsed; their backup copies are renamed to
+     *                     {@code .bad-<timestamp>} once every move succeeded
      */
     private static void migrateInto(Path profileDir,
                                     Predicate<String> registeredBlock,
@@ -275,7 +337,8 @@ public final class SettingsMigration {
                                     Path backupDir,
                                     Map<String, JsonNode> routed,
                                     boolean applicationFromScratch,
-                                    List<Path> legacyFiles) {
+                                    List<Path> legacyFiles,
+                                    Set<Path> corruptFiles) {
         // Load the documents that already exist (a partial or foreign
         // new-format profile) so the remaining legacy parts can be merged in.
         SettingsDocument application = null;
@@ -315,6 +378,20 @@ public final class SettingsMigration {
         List<BackupMove> backups = moveAllToBackup(legacyFiles, backupDir, progress);
         if (backups == null) {
             return;
+        }
+
+        // All moves succeeded, so the corrupt inputs can now be preserved under
+        // their .bad-<timestamp> name — inside the backup directory, where a
+        // rollback never has to deal with them.
+        Map<Path, Path> backupByOriginal = new HashMap<>();
+        for (BackupMove move : backups) {
+            backupByOriginal.put(move.original().toAbsolutePath().normalize(), move.backup());
+        }
+        for (Path corruptFile : corruptFiles) {
+            Path backup = backupByOriginal.get(corruptFile);
+            if (backup != null) {
+                renameCorruptBackup(backup, progress);
+            }
         }
 
         Instant now = Instant.now();
@@ -579,20 +656,21 @@ public final class SettingsMigration {
 
     /**
      * Parses a legacy settings file. A file that cannot be parsed (invalid
-     * JSON, an unexpected node type, an IO error) is preserved next to itself
-     * as {@code <name>.bad-<timestamp>} and treated as absent.
+     * JSON, an unexpected node type, an IO error) is <em>recorded</em> as
+     * corrupt and treated as absent. The {@code <name>.bad-<timestamp>} rename
+     * happens only later, inside the backup directory, once every legacy file
+     * has been moved there — so a rollback always restores the original name
+     * and {@link #needsMigration(Path)} stays accurate in every interleaving.
      *
      * @param file the file to parse
      * @param expectObject whether a JSON object is required
-     * @param legacyFiles receives the backup of an unparsable file, if any, so
-     *                    it is moved into the backup directory together with
-     *                    the other legacy files
+     * @param corruptFiles receives the file if it cannot be parsed
      * @param progress the progress info
      * @return the parsed node, or {@code null} if the file could not be parsed
      */
     private static JsonNode parseOrPreserve(Path file,
                                             boolean expectObject,
-                                            List<Path> legacyFiles,
+                                            Set<Path> corruptFiles,
                                             JIPipeProgressInfo progress) {
         try {
             JsonNode node = JsonUtils.getObjectMapper().readTree(Files.readString(file, StandardCharsets.UTF_8));
@@ -601,34 +679,29 @@ public final class SettingsMigration {
             }
             return node;
         } catch (IOException | RuntimeException e) {
-            Path backup = preserveAsBad(file, progress);
-            if (backup != null) {
-                legacyFiles.add(backup);
-            }
+            progress.log("Settings file " + file.getFileName() + " is not valid settings JSON ("
+                    + e.getMessage() + "); it will be preserved as a .bad-<timestamp> backup");
+            corruptFiles.add(file.toAbsolutePath().normalize());
             return null;
         }
     }
 
     /**
-     * Preserves a legacy file that cannot be parsed, using the same
-     * {@code <name>.bad-<timestamp>} convention as {@link SettingsFileStore}.
-     *
-     * @return the backup path, or {@code null} if even the backup failed
+     * Renames the backup copy of a corrupt legacy file to
+     * {@code <name>.bad-<timestamp>}, using the same convention as
+     * {@link SettingsFileStore}. Runs only after every legacy file has been
+     * moved into the backup directory, so the profile directory never holds a
+     * {@code .bad-*} file.
      */
-    private static Path preserveAsBad(Path file, JIPipeProgressInfo progress) {
-        Path backup = firstFreeName(file.resolveSibling(file.getFileName() + BAD_MARKER + BACKUP_TIMESTAMP.format(Instant.now())));
+    private static void renameCorruptBackup(Path backupFile, JIPipeProgressInfo progress) {
+        Path bad = firstFreeName(backupFile.resolveSibling(backupFile.getFileName() + BAD_MARKER
+                + BACKUP_TIMESTAMP.format(Instant.now())));
         try {
-            try {
-                Files.move(file, backup, StandardCopyOption.ATOMIC_MOVE);
-            } catch (AtomicMoveNotSupportedException e) {
-                Files.move(file, backup);
-            }
-            progress.log("Settings file " + file.getFileName() + " is not valid settings JSON; preserved as " + backup.getFileName());
-            return backup;
+            Files.move(backupFile, bad);
+            progress.log("Preserved the corrupt settings file as " + bad.getFileName());
         } catch (IOException e) {
-            progress.log("Settings file " + file.getFileName() + " is not valid settings JSON and could not be preserved ("
-                    + e + "); it is left in place");
-            return null;
+            progress.log("Could not rename the corrupt settings backup " + backupFile + " (" + e
+                    + "); it stays under its original name");
         }
     }
 
@@ -676,9 +749,10 @@ public final class SettingsMigration {
      * must then abort without writing anything.
      * <p>
      * The restore target for a moved file is its original name in the profile
-     * directory. A corrupt file that was preserved before the moves already
-     * carries a unique {@code .bad-<timestamp>} name, so it cannot collide
-     * with the legacy name of any other file.
+     * directory. Nothing is renamed before the moves complete: corrupt inputs
+     * are only recognised as such and renamed to {@code .bad-<timestamp>}
+     * inside the backup directory afterwards (see {@link #renameCorruptBackup}),
+     * so a rollback always restores original names.
      *
      * @return the completed moves in order, or {@code null} if a move failed
      */
@@ -689,12 +763,9 @@ public final class SettingsMigration {
             try {
                 Files.createDirectories(backupDir);
                 target = firstFreeName(backupDir.resolve(legacyFile.getFileName().toString()));
-                try {
-                    Files.move(legacyFile, target, StandardCopyOption.ATOMIC_MOVE);
-                } catch (AtomicMoveNotSupportedException e) {
-                    Files.move(legacyFile, target);
-                }
-            } catch (IOException e) {
+                move(legacyFile, target);
+            } catch (IOException | RuntimeException e) {
+                // RuntimeException covers a testing override that throws.
                 progress.log("Could not move legacy settings file " + legacyFile.getFileName()
                         + " to the backup directory (" + e + "); aborting the migration, nothing was changed");
                 restoreAll(moves, progress);
@@ -711,6 +782,14 @@ public final class SettingsMigration {
      * move first. A plain move back can fail for the same reason the move
      * failed (e.g. a read-only backup directory), so a failed move falls back
      * to copying the bytes and deleting the backup copy.
+     * <p>
+     * <b>Residual:</b> if the copy succeeds but the subsequent delete of the
+     * backup copy fails, the file exists both in the profile directory and in
+     * the backup (logged). That is harmless — the profile is restored, and the
+     * leftover backup copy is exactly what a later
+     * {@link #recoverFromInterruptedMigration(Path, Predicate, Map, JIPipeProgressInfo)}
+     * would treat as recoverable input, i.e. it can only ever duplicate a
+     * value, never lose one.
      */
     private static void restoreAll(List<BackupMove> moves, JIPipeProgressInfo progress) {
         for (int i = moves.size() - 1; i >= 0; i--) {

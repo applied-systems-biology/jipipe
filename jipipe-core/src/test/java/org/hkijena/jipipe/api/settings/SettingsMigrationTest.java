@@ -16,6 +16,7 @@ package org.hkijena.jipipe.api.settings;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.utils.json.JsonUtils;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -23,6 +24,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -30,9 +32,21 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SettingsMigrationTest {
-    private static final Path BACKUP_NAME = Path.of(SettingsMigration.BACKUP_DIRECTORY_NAME);
-
     @TempDir Path tempDir;
+
+    @AfterEach
+    void resetMoveSeam() {
+        SettingsMigration.setMoveOperationForTesting(null);
+    }
+
+    /** {@code defaultMove} in the unchecked shape the move seam uses. */
+    private static Path moveUnchecked(Path source, Path target) {
+        try {
+            return SettingsMigration.defaultMove(source, target);
+        } catch (java.io.IOException e) {
+            throw new java.io.UncheckedIOException(e);
+        }
+    }
 
     private static JsonNode read(Path file) throws Exception {
         return JsonUtils.getObjectMapper().readTree(Files.readString(file));
@@ -179,6 +193,10 @@ class SettingsMigrationTest {
         assertEquals(corrupt, Files.readString(bad), "the corrupt file's bytes must be preserved");
         assertEquals(List.of(bad.getFileName().toString()), fileNames(backup),
                 ".bad-* files stay in the backup; the cleaned-out legacy inputs are gone");
+        try (var s = Files.list(p)) {
+            assertTrue(s.noneMatch(f -> f.getFileName().toString().contains(".bad-")),
+                    "the .bad-* file lives in the BACKUP directory, not in the profile");
+        }
 
         JsonNode global = read(p.resolve("settings.json"));
         assertEquals(2, global.get("$schema").asInt(), "a fresh new-format document replaces the corrupt one");
@@ -315,31 +333,29 @@ class SettingsMigrationTest {
         Files.writeString(p.resolve("recent-projects.txt"), "/a/b.jip\n");
         Files.writeString(p.resolve("settings-db-node-db.json"), "{\"k\":\"v\"}");
         Files.writeString(p.resolve("settings-db-runtime.json"), "{\"threads\":4}");
-        // A read-only backup directory: creating it succeeds, moving into it fails.
-        Path backup = Files.createDirectory(p.resolve(SettingsMigration.BACKUP_DIRECTORY_NAME));
-        assertTrue(backup.toFile().setWritable(false, false), "could not make the backup dir read-only");
+        // Every move into the backup fails.
+        SettingsMigration.setMoveOperationForTesting((source, target) -> {
+            throw new java.io.UncheckedIOException(new java.io.IOException("backup move fails by test request"));
+        });
 
-        try {
-            SettingsMigration.migrateLegacyProfile(p, b -> true, Map.of(), JIPipeProgressInfo.SILENT);
+        SettingsMigration.migrateLegacyProfile(p, b -> true, Map.of(), JIPipeProgressInfo.SILENT);
 
-            // No file may be touched: not moved, not rewritten, not deleted.
-            assertEquals(legacySettings, Files.readString(p.resolve("settings.json")),
-                    "every legacy file (incl. $ fields) must be byte-identical after a failed backup");
-            assertEquals("/a/b.jip\n", Files.readString(p.resolve("recent-projects.txt")));
-            assertEquals("{\"k\":\"v\"}", Files.readString(p.resolve("settings-db-node-db.json")));
-            assertEquals("{\"threads\":4}", Files.readString(p.resolve("settings-db-runtime.json")));
-            assertFalse(Files.exists(p.resolve("runtime-settings.json")),
-                    "an aborted migration must not write the runtime document either");
-            assertTrue(SettingsMigration.needsMigration(p), "the profile stays migratable, so the next start retries");
-        } finally {
-            backup.toFile().setWritable(true, false);
-        }
+        // No file may be touched: not moved, not rewritten, not deleted.
+        assertEquals(legacySettings, Files.readString(p.resolve("settings.json")),
+                "every legacy file (incl. $ fields) must be byte-identical after a failed backup");
+        assertEquals("/a/b.jip\n", Files.readString(p.resolve("recent-projects.txt")));
+        assertEquals("{\"k\":\"v\"}", Files.readString(p.resolve("settings-db-node-db.json")));
+        assertEquals("{\"threads\":4}", Files.readString(p.resolve("settings-db-runtime.json")));
+        assertFalse(Files.exists(p.resolve("runtime-settings.json")),
+                "an aborted migration must not write the runtime document either");
+        assertTrue(SettingsMigration.needsMigration(p), "the profile stays migratable, so the next start retries");
     }
 
     /**
      * The all-or-nothing guarantee also covers a failure in the middle of the
-     * move sequence: files moved before the failure are restored. The failure
-     * is injected through the progress callback, which runs between moves.
+     * move sequence: files moved before the failure are restored under their
+     * original names and nothing is written. Injected through the move seam,
+     * so the test is platform-independent.
      */
     @Test void aFailedLaterMoveRestoresTheAlreadyMovedFiles() throws Exception {
         Path p = tempDir;
@@ -347,28 +363,64 @@ class SettingsMigrationTest {
         String legacyRecent = "/a/b.jip\n";
         Files.writeString(p.resolve("settings.json"), legacySettings);
         Files.writeString(p.resolve("recent-projects.txt"), legacyRecent);
-        Path backup = p.resolve(SettingsMigration.BACKUP_DIRECTORY_NAME);
-        JIPipeProgressInfo progress = new JIPipeProgressInfo() {
-            @Override
-            public void log(String message) {
-                if (message.startsWith("Moved legacy settings file recent-projects.txt")) {
-                    // The first move succeeded; make every later one fail.
-                    backup.toFile().setWritable(false, false);
-                }
+        Files.writeString(p.resolve("settings-db-node-db.json"), "{\"k\":\"v\"}");
+        // Move order: recent-projects.txt, settings-db-node-db.json, settings.json.
+        // Let the first two through, fail on the third.
+        AtomicInteger moves = new AtomicInteger();
+        SettingsMigration.setMoveOperationForTesting((source, target) -> {
+            if (moves.incrementAndGet() > 2) {
+                throw new java.io.UncheckedIOException(new java.io.IOException("third backup move fails by test request"));
             }
-        };
+            return moveUnchecked(source, target);
+        });
 
-        try {
-            SettingsMigration.migrateLegacyProfile(p, b -> true, Map.of(), progress);
+        SettingsMigration.migrateLegacyProfile(p, b -> true, Map.of(), JIPipeProgressInfo.SILENT);
 
-            assertEquals(legacyRecent, Files.readString(p.resolve("recent-projects.txt")),
-                    "the already-moved file must be restored to its original name");
-            assertEquals(legacySettings, Files.readString(p.resolve("settings.json")));
-            assertFalse(read(p.resolve("settings.json")).has("$schema"), "no new-format document may be written");
-            assertFalse(Files.exists(p.resolve("runtime-settings.json")));
-            assertTrue(SettingsMigration.needsMigration(p), "the profile stays migratable");
-        } finally {
-            backup.toFile().setWritable(true, false);
+        assertEquals(legacyRecent, Files.readString(p.resolve("recent-projects.txt")),
+                "the first already-moved file must be restored to its ORIGINAL name");
+        assertEquals("{\"k\":\"v\"}", Files.readString(p.resolve("settings-db-node-db.json")),
+                "the second already-moved file must be restored to its ORIGINAL name");
+        assertEquals(legacySettings, Files.readString(p.resolve("settings.json")),
+                "the file whose move failed must still be in the profile dir");
+        assertFalse(read(p.resolve("settings.json")).has("$schema"), "no new-format document may be written");
+        assertFalse(Files.exists(p.resolve("runtime-settings.json")));
+        assertTrue(SettingsMigration.needsMigration(p), "the profile stays migratable");
+        Path backup = p.resolve(SettingsMigration.BACKUP_DIRECTORY_NAME);
+        assertTrue(!Files.exists(backup) || fileNames(backup).isEmpty(),
+                "no partial backup set is left behind: " + (Files.exists(backup) ? fileNames(backup) : List.of()));
+    }
+
+    /**
+     * A corrupt legacy {@code settings.json} must not be renamed before the
+     * coordinated move: if a later move fails, everything is restored under
+     * its original name and {@link SettingsMigration#needsMigration(Path)}
+     * still reports the pending migration.
+     */
+    @Test void failedMoveWithACorruptInputRestoresItUnderItsOriginalName() throws Exception {
+        Path p = tempDir;
+        String corrupt = "{ this is not json";
+        Files.writeString(p.resolve("settings.json"), corrupt);
+        Files.writeString(p.resolve("recent-projects.txt"), "/a/b.jip\n");
+        AtomicInteger moves = new AtomicInteger();
+        SettingsMigration.setMoveOperationForTesting((source, target) -> {
+            if (moves.incrementAndGet() > 1) {
+                throw new java.io.UncheckedIOException(new java.io.IOException("second backup move fails by test request"));
+            }
+            return moveUnchecked(source, target);
+        });
+
+        SettingsMigration.migrateLegacyProfile(p, b -> true, Map.of(), JIPipeProgressInfo.SILENT);
+
+        assertTrue(Files.isRegularFile(p.resolve("settings.json")),
+                "the corrupt settings.json must be back under its ORIGINAL name");
+        assertEquals(corrupt, Files.readString(p.resolve("settings.json")),
+                "the corrupt bytes must be untouched");
+        assertEquals("/a/b.jip\n", Files.readString(p.resolve("recent-projects.txt")));
+        assertTrue(SettingsMigration.needsMigration(p),
+                "the profile must still report the pending migration");
+        try (var s = Files.list(p)) {
+            assertTrue(s.noneMatch(f -> f.getFileName().toString().contains(".bad-")),
+                    "the .bad rename must not happen in the profile dir before the moves succeed");
         }
     }
 
