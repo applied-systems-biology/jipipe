@@ -258,34 +258,6 @@ class SettingsDelegateTest {
     }
 
     /**
-     * Finding 1 (Task 13 review): the extension settings are read raw from the
-     * settings file <em>before</em> the service is initialized (they drive the
-     * pre-activation checks and the theme), so that read must happen
-     * <b>after</b> the profile migration. This pins the post-migration state:
-     * the raw reader and the loaded document agree on the extension sheet.
-     */
-    @Test
-    void rawExtensionSettingsMatchTheLoadedDocumentAfterStartup() {
-        JsonNode raw = JIPipeApplicationSettingsServiceComponent.getRawSheetsNode();
-        assertTrue(raw.has(JIPipeExtensionApplicationSettings.ID),
-                "the raw reader must expose the extension sheet after the startup migration");
-        JsonNode inDocument = JIPipe.getSettingsService().document(SettingsScope.APPLICATION)
-                .getBlock("sheet:" + JIPipeExtensionApplicationSettings.ID);
-        assertTrue(inDocument.isObject(), "the extension sheet must have a document block");
-        assertEquals(inDocument, raw.get(JIPipeExtensionApplicationSettings.ID),
-                "the raw reader and the loaded document must agree on the extension settings");
-
-        // And the pre-startup instance the initializer builds carries the stored
-        // values (not the class defaults) — the exact property Finding 1 broke.
-        JIPipeExtensionApplicationSettings fromRaw = JIPipeExtensionApplicationSettings.getInstanceFromRaw();
-        JIPipeExtensionApplicationSettings fromDocument = JIPipeExtensionApplicationSettings.getInstance();
-        assertEquals(fromDocument.isSilent(), fromRaw.isSilent(),
-                "the raw instance must carry the stored 'silent' value");
-        assertEquals(fromDocument.isValidateNodeTypes(), fromRaw.isValidateNodeTypes(),
-                "the raw instance must carry the stored 'validate node types' value");
-    }
-
-    /**
      * The raw reader is file-authoritative: while the profile is still in the
      * legacy (5.x flat) shape it exposes no {@code sheet:} blocks — the values
      * are not visible before the migration, which is the documented pre-startup

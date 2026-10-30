@@ -17,7 +17,6 @@ import net.imagej.ImageJ;
 import org.hkijena.jipipe.api.notifications.JIPipeNotification;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.service.JIPipeService;
-import org.hkijena.jipipe.api.service.components.JIPipeApplicationSettingsServiceComponent;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
@@ -84,11 +83,6 @@ public class JIPipeGUICommand implements Command {
 
         // Run registration
         JIPipeExtensionApplicationSettings extensionSettings = JIPipeExtensionApplicationSettings.getInstanceFromRaw();
-        // The raw read above happens before the settings are loaded (and may
-        // happen before the one-time profile migration); record the options
-        // forced here so they reach the loaded settings and are not written
-        // over the user's stored values on shutdown.
-        JIPipeApplicationSettingsServiceComponent.captureExtensionSettingsOverridesFromRaw(extensionSettings);
         JIPipeInitializationReport initializationReport;
         try {
             if (JIPipe.getInstance() == null) {

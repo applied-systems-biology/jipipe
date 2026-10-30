@@ -305,14 +305,6 @@ public class JIPipeServiceDefaultInitializer extends JIPipeServiceInitializer {
         getProgressInfo().log("Loading settings ...");
         getService().getApplicationSettings().reload();
 
-        // The extension settings were read raw *before* this load (they drive
-        // the pre-activation checks). Registration from a 5.x profile is
-        // prepared in-memory before the extension sheet is registered; a
-        // profile that was already migrated has the state on disk, which this
-        // load applies. Runners additionally force silent/fast-init through
-        // this call.
-        getService().getApplicationSettings().installExtensionSettingsOverrides();
-
         // Required as the reload deletes the allowed values
         updateDefaultImporterSettings();
         updateDefaultCacheDisplaySettings();

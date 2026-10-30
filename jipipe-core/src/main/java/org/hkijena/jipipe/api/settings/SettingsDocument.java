@@ -518,21 +518,6 @@ public final class SettingsDocument {
                 : JsonUtils.getObjectMapper().createObjectNode();
     }
 
-    /**
-     * Builds a nested object chain for {@code segments[from..]} with
-     * {@code value} at the end.
-     */
-    private static JsonNode buildChain(List<String> segments, int from, JsonNode value) {
-        JsonNode built = value;
-        for (int i = segments.size() - 1; i >= from; i--) {
-            ObjectNode object = JsonUtils.getObjectMapper().createObjectNode();
-            object.set(segments.get(i), built);
-            built = object;
-        }
-        return built;
-    }
-
-
     private synchronized void removeAt(List<String> segments) {
         if (segments.size() == 1) {
             root.remove(segments.get(0));

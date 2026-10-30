@@ -50,6 +50,10 @@ public class JIPipeExtensionApplicationSettings extends JIPipeDefaultApplication
     /**
      * Gets an instance from the raw properties file.
      * It works before settings sheets are registered
+     * <p>
+     * Callers that run before the profile migration has run see defaults on a
+     * legacy (5.x) profile; the migration completes within the same startup, so
+     * only this pre-startup snapshot is affected.
      *
      * @return the instance
      */

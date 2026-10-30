@@ -25,7 +25,6 @@ import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.run.JIPipeGraphRun;
 import org.hkijena.jipipe.api.run.JIPipeGraphRunConfiguration;
 import org.hkijena.jipipe.api.service.JIPipeService;
-import org.hkijena.jipipe.api.service.components.JIPipeApplicationSettingsServiceComponent;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
@@ -89,11 +88,6 @@ public class JIPipeRunAlgorithmCommand extends DynamicCommand implements Initial
     private void initializeRegistry(boolean withSplash) {
         JIPipeInitializationReport issues = new JIPipeInitializationReport();
         JIPipeExtensionApplicationSettings extensionSettings = JIPipeExtensionApplicationSettings.getInstanceFromRaw();
-        // The raw read above happens before the settings are loaded (and may
-        // happen before the one-time profile migration); record the options
-        // forced here so they reach the loaded settings and are not written
-        // over the user's stored values on shutdown.
-        JIPipeApplicationSettingsServiceComponent.captureExtensionSettingsOverridesFromRaw(extensionSettings);
         if (!JIPipe.isInstantiated()) {
             ThemeUtils.applyThemeFromSettings();
             if (!JIPipe.isInstantiated() && withSplash) {
