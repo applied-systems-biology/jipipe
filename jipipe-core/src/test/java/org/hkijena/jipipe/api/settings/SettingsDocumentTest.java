@@ -15,6 +15,8 @@ package org.hkijena.jipipe.api.settings;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.BooleanNode;
+import com.fasterxml.jackson.databind.node.IntNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.junit.jupiter.api.Test;
 
@@ -113,6 +115,57 @@ class SettingsDocumentTest {
         assertTrue(d.get("state:recent-projects", "first").isMissingNode(),
                 "a non-numeric segment is not an array index");
         assertTrue(d.get("absent:thing", "0").isMissingNode());
+    }
+
+    /**
+     * Addressing is type-directed and symmetric: reads and writes both resolve
+     * a numeric segment as an index when the current node is an array, and as a
+     * field when it is an object.
+     */
+    @Test void arrayElementWritesAreSymmetricWithReads() {
+        SettingsDocument d = new SettingsDocument(SettingsScope.APPLICATION);
+        d.setBlock("state:list", JsonUtils.getObjectMapper().createArrayNode());
+
+        // A named field holding an array: write through the field, then index.
+        d.set("state:list", "a", JsonUtils.getObjectMapper().createArrayNode());
+        d.set("state:list", "a/0", TextNode.valueOf("x"));
+        d.set("state:list", "a/1", TextNode.valueOf("y"));
+        assertEquals("x", d.get("state:list", "a/0").asText(), "set(a/0) writes the array element");
+        assertEquals("y", d.get("state:list", "a/1").asText(), "set(a/1) writes the second element");
+        assertEquals(JsonUtils.getObjectMapper().createArrayNode().add("x").add("y"),
+                d.getBlock("state:list").get("a"), "the two writes build the array in order");
+        assertEquals(Set.of("a"), d.subPaths("state:list"), "the array itself is a sub-path");
+
+        // Writing past the end grows with null placeholders.
+        d.set("state:list", "a/3", TextNode.valueOf("z"));
+        assertTrue(d.get("state:list", "a/2").isNull(), "a gap is padded with null");
+        assertEquals("z", d.get("state:list", "a/3").asText());
+        assertEquals(4, d.getBlock("state:list").get("a").size());
+    }
+
+    @Test void numericFirstSegmentOnAnObjectBlockAddressesTheField() {
+        // A numeric segment is only an array index when the current node is an
+        // array; under an object it is an ordinary field name.
+        SettingsDocument d = new SettingsDocument(SettingsScope.APPLICATION);
+        d.set("registry:node-db", "0", TextNode.valueOf("first"));
+        assertTrue(d.getBlock("registry:node-db").isObject(), "the block stays an object");
+        assertEquals("first", d.getBlock("registry:node-db").get("0").asText());
+        assertEquals("first", d.get("registry:node-db", "0").asText(), "and reads back symmetrically");
+        assertTrue(d.has("registry:node-db", "0"));
+        assertTrue(d.subPaths("registry:node-db").contains("0"));
+    }
+
+    @Test void nestedArrayUnderAnArrayIsRoundTrippable() {
+        SettingsDocument d = new SettingsDocument(SettingsScope.APPLICATION);
+        d.setBlock("state:matrix", JsonUtils.getObjectMapper().createArrayNode());
+        d.set("state:matrix", "0/0", IntNode.valueOf(1));
+        d.set("state:matrix", "0/1", IntNode.valueOf(2));
+        d.set("state:matrix", "1/0", IntNode.valueOf(3));
+        assertEquals(1, d.get("state:matrix", "0/0").asInt());
+        assertEquals(2, d.get("state:matrix", "0/1").asInt());
+        assertEquals(3, d.get("state:matrix", "1/0").asInt());
+        assertTrue(d.get("state:matrix", "0").isArray(), "the first element is a nested array");
+        assertTrue(d.get("state:matrix", "1").isArray(), "and so is the second");
     }
 
     @Test void subPathsListsAllNestedPaths() {

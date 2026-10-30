@@ -14,7 +14,9 @@
 package org.hkijena.jipipe.api.settings;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.MissingNode;
+import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
@@ -48,10 +50,14 @@ import java.util.function.Predicate;
  * empty segments are ignored, so {@code "a//b"} and {@code "a/b"} denote the
  * same location. An empty sub-path addresses the whole block.
  * <p>
- * Array elements are addressed by their decimal index: a block holding a JSON
- * array (e.g. the {@code state:recent-projects} list) reads element {@code i}
- * as {@code get(blockPath, String.valueOf(i))}. Reads of array elements are
- * supported; writes through a sub-path always address object fields.
+ * Addressing is <b>type-directed and symmetric for reads and writes</b>: a
+ * segment addresses an array element (its decimal index) when the current node
+ * is an array, and an object field when the current node is an object. A block
+ * holding a JSON array (e.g. {@code state:recent-projects}) therefore reads
+ * element {@code i} as {@code get(blockPath, String.valueOf(i))} and writes it
+ * as {@code set(blockPath, String.valueOf(i), value)}; a numeric segment under
+ * an object still names the object field {@code "0"}. Writes grow an array
+ * (with {@code null} placeholders) when the index is past its end.
  * <p>
  * A block is <em>pass-through</em> when its kind is unknown or its id is not
  * registered; pass-through blocks are stored and written back verbatim, and
@@ -283,8 +289,7 @@ public final class SettingsDocument {
         if (value == null || value.isMissingNode()) {
             removeAt(segments);
         } else {
-            ObjectNode parent = objectAt(segments, segments.size() - 1);
-            parent.set(segments.get(segments.size() - 1), value);
+            setAt(segments, value);
         }
         if (segments.size() == 1) {
             notifyBlockAndDescendants(blockPath);
@@ -418,21 +423,115 @@ public final class SettingsDocument {
         return true;
     }
 
-    private synchronized ObjectNode objectAt(List<String> segments, int depth) {
-        ObjectNode current = root;
-        for (int i = 0; i < depth; i++) {
+    /**
+     * Writes {@code value} at {@code segments}, using exactly the same
+     * type-directed resolution as {@link #node(List)}: a numeric segment
+     * addresses an array element (its index) when the current node is an
+     * array, and an object field when the current node is an object.
+     * <p>
+     * Intermediate containers are created when missing (an object, or an array
+     * when the next segment is numeric), and an array is grown with
+     * {@code null} placeholders when the index is past its end. A missing
+     * location whose current node is a scalar is replaced by the new
+     * container, matching the historic "create intermediate objects" rule.
+     */
+    private synchronized void setAt(List<String> segments, JsonNode value) {
+        String blockPath = segments.get(0);
+        if (segments.size() == 1) {
+            // A bare block path replaces the whole block.
+            root.set(blockPath, value);
+            return;
+        }
+        JsonNode block = root.get(blockPath);
+        if (block == null || block.isNull() || block.isValueNode()) {
+            // The first sub-path segment resolves inside the block, which is
+            // an object unless it already is an array (blocks are objects).
+            block = JsonUtils.getObjectMapper().createObjectNode();
+            root.set(blockPath, block);
+        }
+        if (setInside(block, segments, 1, value) == null) {
+            // The block holds an array but a named field is addressed: it has
+            // no such field, so the block is replaced by an object holding it
+            // (the historic object-only writer did the same).
+            JsonNode rebuilt = newContainerFor(segments.get(1));
+            setInside(rebuilt, segments, 2, value);
+            root.set(blockPath, rebuilt);
+        }
+    }
+
+    /**
+     * Walks {@code segments[from..]} inside {@code container} with the same
+     * type-directed rule as {@link #node(List)} and writes {@code value} at the
+     * last segment. Array elements are grown as needed.
+     *
+     * @return the container the value was written into (so the caller can
+     * replace it when the shape has to change), or {@code null} on a write
+     */
+    private JsonNode setInside(JsonNode container, List<String> segments, int from, JsonNode value) {
+        JsonNode current = container;
+        for (int i = from; i < segments.size(); i++) {
             String segment = segments.get(i);
-            JsonNode next = current.get(segment);
-            if (next instanceof ObjectNode o) {
-                current = o;
+            boolean last = i == segments.size() - 1;
+            if (current instanceof ArrayNode array) {
+                if (!isArrayIndex(segment)) {
+                    return null; // an array has no named fields
+                }
+                int index = Integer.parseInt(segment);
+                while (array.size() <= index) {
+                    array.addNull();
+                }
+                if (last) {
+                    array.set(index, value);
+                    return current;
+                }
+                JsonNode next = array.get(index);
+                if (next == null || next.isNull() || next.isValueNode()) {
+                    next = newContainerFor(segments.get(i + 1));
+                    array.set(index, next);
+                }
+                current = next;
+            } else if (current instanceof ObjectNode object) {
+                if (last) {
+                    object.set(segment, value);
+                    return current;
+                }
+                JsonNode next = object.get(segment);
+                if (next == null || next.isNull() || next.isValueNode()) {
+                    next = newContainerFor(segments.get(i + 1));
+                    object.set(segment, next);
+                }
+                current = next;
             } else {
-                ObjectNode created = JsonUtils.getObjectMapper().createObjectNode();
-                current.set(segment, created);
-                current = created;
+                return null; // a scalar in the middle of the path
             }
         }
         return current;
     }
+
+    /**
+     * @param nextSegment the segment that will be resolved inside the new container
+     * @return a fresh array when the next segment is numeric, an object otherwise
+     */
+    private static JsonNode newContainerFor(String nextSegment) {
+        return isArrayIndex(nextSegment)
+                ? JsonUtils.getObjectMapper().createArrayNode()
+                : JsonUtils.getObjectMapper().createObjectNode();
+    }
+
+    /**
+     * Builds a nested object chain for {@code segments[from..]} with
+     * {@code value} at the end.
+     */
+    private static JsonNode buildChain(List<String> segments, int from, JsonNode value) {
+        JsonNode built = value;
+        for (int i = segments.size() - 1; i >= from; i--) {
+            ObjectNode object = JsonUtils.getObjectMapper().createObjectNode();
+            object.set(segments.get(i), built);
+            built = object;
+        }
+        return built;
+    }
+
 
     private synchronized void removeAt(List<String> segments) {
         if (segments.size() == 1) {
@@ -440,8 +539,14 @@ public final class SettingsDocument {
             return;
         }
         JsonNode parent = node(segments.subList(0, segments.size() - 1).toArray(new String[0]));
+        String last = segments.get(segments.size() - 1);
         if (parent instanceof ObjectNode o) {
-            o.remove(segments.get(segments.size() - 1));
+            o.remove(last);
+        } else if (parent instanceof ArrayNode a && isArrayIndex(last)) {
+            int index = Integer.parseInt(last);
+            if (index < a.size()) {
+                a.set(index, NullNode.getInstance());
+            }
         }
     }
 
