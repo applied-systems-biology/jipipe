@@ -20,6 +20,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.*;
 import ij.IJ;
 import org.hkijena.jipipe.JIPipe;
@@ -53,7 +54,9 @@ import org.hkijena.jipipe.api.project.io.JIPipeLegacyProjectWriter;
 import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
 import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartition;
 import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartitionConfiguration;
+import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.api.service.components.JIPipeEnvironmentsServiceComponent;
+import org.hkijena.jipipe.api.service.components.JIPipeProjectSettingsServiceComponent;
 import org.hkijena.jipipe.api.settings.JIPipeProjectSettingsSheet;
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
@@ -100,7 +103,25 @@ public class JIPipeProject implements JIPipeValidatable {
     private final CompartmentRemovedEventEmitter compartmentRemovedEventEmitter = new CompartmentRemovedEventEmitter();
     private final JIPipeGraphNode.BaseDirectoryChangedEventEmitter baseDirectoryChangedEventEmitter = new JIPipeGraphNode.BaseDirectoryChangedEventEmitter();
     private final Map<String, JIPipeProjectSettingsSheet> settingsSheets = new HashMap<>();
-    private final Map<String, JsonNode> unloadedSettingsSheets = new HashMap<>();
+    /**
+     * The project-scope settings document: the content of the project's
+     * top-level {@code "settings"} member. It owns the pass-through of sheet
+     * blocks whose sheet is unknown to this JIPipe version (formerly the raw
+     * {@code unloadedSettingsSheets} map). {@code null} until the project is
+     * loaded or its settings are first written, so a project that is never
+     * loaded or saved never materializes a document.
+     */
+    private JIPipeProjectSettingsDocument settingsDocument;
+    /**
+     * Whether the project's file carried a non-empty {@code "settings"} member
+     * when it was loaded. A project whose file had none (or an empty member)
+     * keeps writing an <em>empty</em> member — no {@code $schema}/{@code $meta}
+     * document is invented for it. This keeps the save a fixpoint for
+     * settings-less projects: the first save writes {@code {}} and the reloaded
+     * project (whose member is then present but empty) writes {@code {}} again
+     * instead of expanding it into a full document.
+     */
+    private boolean hasSettingsMember;
     private JIPipeProjectMetadata metadata = new JIPipeProjectMetadata();
     private JIPipeRuntimePartitionConfiguration runtimePartitions = new JIPipeRuntimePartitionConfiguration();
     private JIPipeProjectRunSetsConfiguration runSetsConfiguration = new JIPipeProjectRunSetsConfiguration();
@@ -1051,9 +1072,7 @@ public class JIPipeProject implements JIPipeValidatable {
         generator.writeEndObject();
 
         // Write settings
-        generator.writeObjectFieldStart("settings");
-        writeSettingsJson(generator);
-        generator.writeEndObject();
+        generator.writeObjectField("settings", settingsJsonForWrite());
 
         // Write list of external environments
         writeExternalEnvironmentsJson(generator);
@@ -1212,21 +1231,108 @@ public class JIPipeProject implements JIPipeValidatable {
     }
 
     /**
-     * Write the project settings into JSON
+     * Re-serializes every live registered sheet into its block of the project
+     * settings document and returns the document as JSON — the content of the
+     * project's {@code "settings"} member.
+     * <p>
+     * Every live registered sheet is re-serialized into its
+     * {@code "sheet:<id>"} block (replacing the loaded block), while blocks
+     * whose sheet is unknown to this version stay untouched (pass-through), so
+     * a project saved by a newer JIPipe keeps its extra sheet settings on save.
+     * A project whose file carried no settings member (or an empty one) keeps
+     * writing an empty member.
      *
-     * @param generator the generator
-     * @throws IOException exceptions
+     * @return the {@code "settings"} member content
+     * @throws IOException if a sheet cannot be serialized
      */
-    private void writeSettingsJson(JsonGenerator generator) throws IOException {
-        for (Map.Entry<String, JIPipeProjectSettingsSheet> entry : settingsSheets.entrySet()) {
-            generator.writeObjectFieldStart(entry.getKey());
-            entry.getValue().serializeToJsonGenerator(generator);
-            generator.writeEndObject();
+    public ObjectNode settingsJsonForWrite() throws IOException {
+        if (!hasSettingsMember) {
+            // The project file never carried a settings member: keep writing an
+            // empty member instead of inventing a $schema document (decision:
+            // settings-less projects stay settings-less), so the save stays a
+            // fixpoint (S1 == S2).
+            return JsonUtils.getObjectMapper().createObjectNode();
         }
-        for (Map.Entry<String, JsonNode> entry : unloadedSettingsSheets.entrySet()) {
-            if (!settingsSheets.containsKey(entry.getKey())) {
-                generator.writeObjectField(entry.getKey(), entry.getValue());
-            }
+        JIPipeProjectSettingsDocument document = getOrCreateSettingsDocument();
+        for (Map.Entry<String, JIPipeProjectSettingsSheet> entry : settingsSheets.entrySet()) {
+            document.setBlock(JIPipeProjectSettingsDocument.blockPathOf(entry.getKey()),
+                    serializeSettingsSheet(entry.getValue()));
+        }
+        String writtenBy = JIPipeProjectSettingsDocument.writtenByVersion();
+        document.stampMeta(writtenBy);
+        return document.toJson();
+    }
+
+    /**
+     * Serializes a settings sheet into a JSON object.
+     *
+     * @param sheet the sheet
+     * @return the sheet's parameters as a JSON object
+     */
+    private static ObjectNode serializeSettingsSheet(JIPipeProjectSettingsSheet sheet) throws IOException {
+        String json = sheet.serializeToJsonString();
+        JsonNode node = JsonUtils.getObjectMapper().readTree(json);
+        return node instanceof ObjectNode objectNode ? objectNode : JsonUtils.getObjectMapper().createObjectNode();
+    }
+
+    /**
+     * @return the project settings document, created empty on first access
+     */
+    private JIPipeProjectSettingsDocument getOrCreateSettingsDocument() {
+        if (settingsDocument == null) {
+            settingsDocument = new JIPipeProjectSettingsDocument(JIPipeProject::isRegisteredProjectSettingsSheet);
+        }
+        return settingsDocument;
+    }
+
+    /**
+     * @return the project-scope settings document as loaded (never
+     * {@code null}); this is the <em>loaded</em> view. The save representation
+     * is {@link #settingsJsonForWrite()}, which refreshes the registered
+     * blocks from the live sheets first.
+     */
+    public JIPipeProjectSettingsDocument getSettingsDocument() {
+        return getOrCreateSettingsDocument();
+    }
+
+    /**
+     * @param sheetId the (unprefixed) settings sheet id
+     * @return the raw JSON of a pass-through settings sheet block (a sheet this
+     * version does not know) or {@code null} if there is none
+     */
+    public JsonNode getUnloadedSettingsSheet(String sheetId) {
+        if (settingsDocument == null) {
+            return null;
+        }
+        JsonNode block = settingsDocument.getBlock(JIPipeProjectSettingsDocument.blockPathOf(sheetId));
+        return block.isMissingNode() ? null : block;
+    }
+
+    /**
+     * Registration check used by the project settings document: a
+     * {@code "sheet:<id>"} block is registered iff this version knows a project
+     * settings sheet with that id. Degrades safely to "unknown" (i.e.
+     * pass-through) while JIPipe is not initialized yet.
+     *
+     * @param blockPath the canonical block path
+     * @return whether the block is a registered project settings sheet
+     */
+    private static boolean isRegisteredProjectSettingsSheet(String blockPath) {
+        String sheetId = JIPipeProjectSettingsDocument.sheetIdOf(blockPath);
+        if (sheetId == null) {
+            return false;
+        }
+        JIPipeService service = JIPipe.getInstance();
+        if (service == null) {
+            return false;
+        }
+        try {
+            JIPipeProjectSettingsServiceComponent projectSettings = service.getProjectSettings();
+            return projectSettings != null && projectSettings.getById(sheetId) != null;
+        } catch (RuntimeException e) {
+            // Service not fully initialized: treat the sheet as unknown
+            // (pass-through), which preserves its content.
+            return false;
         }
     }
 
@@ -1275,28 +1381,30 @@ public class JIPipeProject implements JIPipeValidatable {
             }
 
             // Load settings sheets
+            // The "settings" member is read through the project settings
+            // document, which auto-detects the legacy (unprefixed sheet ids,
+            // no $schema) and the new ($schema 2, "sheet:<id>" blocks) shape.
+            // Unknown sheets stay in the document as pass-through blocks.
             if (jsonNode.has("settings")) {
-                for (Map.Entry<String, JsonNode> entry : ImmutableList.copyOf(jsonNode.get("settings").fields())) {
-                    try {
-                        if (settingsSheets.containsKey(entry.getKey())) {
-                            settingsSheets.get(entry.getKey()).deserializeFromJsonNode(entry.getValue());
-                        } else {
-                            unloadedSettingsSheets.put(entry.getKey(), entry.getValue());
-//                            new UnspecifiedValidationReportContext().warning()
-//                                    .title("Unable to load settings")
-//                                    .explanation("The project settings for the sheet with the ID '" + entry.getKey() + "' are not known to JIPipe. ")
-//                                    .solution("Please check if all required plugins are up-to-date and activated.")
-//                                    .report(report);
+                try {
+                    settingsDocument = JIPipeProjectSettingsDocument.fromJson(jsonNode.get("settings"),
+                            JIPipeProject::isRegisteredProjectSettingsSheet);
+                    // Only a member that actually holds blocks counts as
+                    // settings; an empty member ({}) stays empty on save.
+                    hasSettingsMember = !settingsDocument.blockPaths().isEmpty();
+                    for (String blockPath : ImmutableList.copyOf(settingsDocument.blockPaths())) {
+                        String sheetId = JIPipeProjectSettingsDocument.sheetIdOf(blockPath);
+                        if (sheetId == null || !settingsSheets.containsKey(sheetId)) {
+                            continue; // pass-through: kept verbatim by the document
                         }
-                    } catch (Throwable e) {
-                        progressInfo.log("Unable to load settings sheet '" + entry.getKey() + "': " + e.getMessage());
-//                        new UnspecifiedValidationReportContext().error()
-//                                .title("Unable to load settings")
-//                                .explanation("The project settings for the sheet with the ID '" + entry.getKey() + "' could not be loaded.")
-//                                .solution("Please check if you are using an up-to-date JIPipe version.")
-//                                .details(ExceptionUtils.getStackTrace(e))
-//                                .report(report);
+                        try {
+                            settingsSheets.get(sheetId).deserializeFromJsonNode(settingsDocument.getBlock(blockPath));
+                        } catch (Throwable e) {
+                            progressInfo.log("Unable to load settings sheet '" + sheetId + "': " + e.getMessage());
+                        }
                     }
+                } catch (RuntimeException e) {
+                    progressInfo.log("Unable to load project settings: " + e.getMessage());
                 }
             }
 
