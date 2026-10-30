@@ -23,6 +23,7 @@ import org.hkijena.jipipe.api.grapheditortool.tools.DefaultGraphEditorTool;
 import org.hkijena.jipipe.api.history.JIPipeHistoryJournal;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.taxonomy.TaxonomyView;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.settings.SettingsBinding;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
@@ -114,11 +115,27 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
     /**
      * The live binding to {@link SettingsKeys#SHOW_DOCK_TOOLBAR_LABELS}. Bound
      * once with this editor, subscribed for live updates and written through
-     * when the dock panel's own toggle changes. Deliberately not closed with
-     * the panel: the settings service owns the binding (see
-     * {@link SettingsKeys}).
+     * when the dock panel's own toggle changes. Released in {@link #dispose()}
+     * — a binding registers a document path listener, so its owner must close
+     * it when the owner dies.
      */
     private SettingsBinding<Boolean> showDockToolbarLabelsBinding;
+    /**
+     * The dock panel's "show toolbar labels" toggle listener, held as a field
+     * so {@link #dispose()} can unsubscribe it. (A subscription made with
+     * {@code subscribeLambda} cannot be removed: the emitter's
+     * {@code LambdaSubscriber} never matches a listener.)
+     */
+    private final JIPipeParameterCollection.ParameterChangedEventListener
+            showDockToolbarLabelsParameterListener = this::onDockPanelParameterChanged;
+    /**
+     * The single live binding to {@link SettingsKeys#DOCK_LAYOUT_TEMPLATES},
+     * shared by the read ({@link #getDockStateTemplates()}) and the write
+     * ({@link #saveDockStateTemplates()}) path of both graph editor flavors,
+     * created lazily and released in {@link #dispose()}. Binding per action
+     * instead would leak one document listener per "Save layout" click.
+     */
+    private SettingsBinding<StringAndStringPairParameterList> dockLayoutTemplatesBinding;
     private JScrollPane scrollPane;
     private Point panningOffset = null;
     private Point panningScrollbarOffset = null;
@@ -174,7 +191,29 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
     @Override
     public void dispose() {
         graph.getGraphChangedEventEmitter().unsubscribe(this);
+        dockPanel.getParameterChangedEventEmitter().unsubscribe(showDockToolbarLabelsParameterListener);
+        // Each binding owns a document path listener: release the ones this
+        // editor created, so opening and closing editors does not accumulate
+        // listeners for the life of the JVM.
+        if (showDockToolbarLabelsBinding != null) {
+            showDockToolbarLabelsBinding.close();
+            showDockToolbarLabelsBinding = null;
+        }
+        if (dockLayoutTemplatesBinding != null) {
+            dockLayoutTemplatesBinding.close();
+            dockLayoutTemplatesBinding = null;
+        }
+        closeDockStateBinding();
         canvasUI.dispose();
+    }
+
+    /**
+     * Releases the flavor's dock-state binding (see
+     * {@link #restoreDockStateFromSettings()}). Overridden by every flavor
+     * that binds a dock state; the binding is created by the subclass, so only
+     * the subclass knows which field to close.
+     */
+    protected void closeDockStateBinding() {
     }
 
     @Override
@@ -274,11 +313,19 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
         showDockToolbarLabelsBinding = JIPipe.getSettingsService().bind(SettingsKeys.SHOW_DOCK_TOOLBAR_LABELS);
         applyShowDockToolbarLabels(showDockToolbarLabelsBinding.get());
         showDockToolbarLabelsBinding.subscribe(this::applyShowDockToolbarLabels);
-        dockPanel.getParameterChangedEventEmitter().subscribeLambda((emitter, event) -> {
-            if ("show-toolbar-labels".equals(event.getKey())) {
-                showDockToolbarLabelsBinding.set(dockPanel.isShowToolbarLabels());
-            }
-        });
+        dockPanel.getParameterChangedEventEmitter().subscribe(showDockToolbarLabelsParameterListener);
+    }
+
+    /**
+     * Writes the dock panel's own toggle state through the binding. A stable
+     * field (not a lambda) so {@link #dispose()} can unsubscribe it.
+     *
+     * @param event the parameter change event of the dock panel
+     */
+    private void onDockPanelParameterChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
+        if ("show-toolbar-labels".equals(event.getKey()) && showDockToolbarLabelsBinding != null) {
+            showDockToolbarLabelsBinding.set(dockPanel.isShowToolbarLabels());
+        }
     }
 
     /**
@@ -386,7 +433,32 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
         }
     }
 
-    protected abstract StringAndStringPairParameterList getDockStateTemplates();
+    /**
+     * The saved dock layout templates: the live value of
+     * {@link SettingsKeys#DOCK_LAYOUT_TEMPLATES}, read through the one binding
+     * this editor holds for that key (created on first use, closed in
+     * {@link #dispose()}). Used by both graph editor flavors.
+     *
+     * @return the templates, or {@code null} when the settings service does
+     * not exist yet
+     */
+    protected StringAndStringPairParameterList getDockStateTemplates() {
+        if (JIPipe.isInstantiated()) {
+            return dockLayoutTemplatesBinding().get();
+        }
+        return null;
+    }
+
+    /**
+     * @return the editor's single template binding, created lazily (the
+     * editor may be built before the settings service exists)
+     */
+    private SettingsBinding<StringAndStringPairParameterList> dockLayoutTemplatesBinding() {
+        if (dockLayoutTemplatesBinding == null) {
+            dockLayoutTemplatesBinding = JIPipe.getSettingsService().bind(SettingsKeys.DOCK_LAYOUT_TEMPLATES);
+        }
+        return dockLayoutTemplatesBinding;
+    }
 
     private void manageDockStateTemplates() {
         List<StringAndStringPairParameter> toDelete = UIUtils.getSelectionByDialog(this,
@@ -413,17 +485,16 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
      * Writes the layout template list modified in place by
      * {@link #manageDockStateTemplates()}/{@link #createDockStateTemplate()} to
      * its setting. The list is the live value read from the setting, so it has
-     * to go back through the binding — an explicit settings save alone does
-     * not see the in-place change.
+     * to go back through the editor's binding — an explicit settings save alone
+     * does not see the in-place change. Reuses the binding created by the read
+     * path: repeated saves never add a document listener.
      */
     private void saveDockStateTemplates() {
         StringAndStringPairParameterList templates = getDockStateTemplates();
         if (templates == null) {
             return;
         }
-        if (JIPipe.isInstantiated()) {
-            JIPipe.getSettingsService().bind(SettingsKeys.DOCK_LAYOUT_TEMPLATES).set(templates);
-        }
+        dockLayoutTemplatesBinding().set(templates);
         JIPipe.getSettings().save();
     }
 

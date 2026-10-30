@@ -108,14 +108,16 @@ public class JIPipeDesktopPipelineGraphEditorUI extends JIPipeDesktopGraphEditor
     public static final String DOCK_QUICK_GUIDE = "QUICK_GUIDE";
 
     /**
-     * The live bindings to {@link SettingsKeys#PIPELINE_DOCK_STATE} and
-     * {@link SettingsKeys#DOCK_LAYOUT_TEMPLATES}. Created lazily (the editor
-     * may be built before the settings service exists), kept for the life of
-     * the editor and never closed by it — the settings service owns them (see
-     * {@link SettingsKeys}).
+     * The live binding to {@link SettingsKeys#PIPELINE_DOCK_STATE}. Created
+     * lazily (the editor may be built before the settings service exists) and
+     * closed in {@link #closeDockStateBinding()} when the editor is disposed.
      */
     private SettingsBinding<JIPipeDesktopDockPanel.State> pipelineDockStateBinding;
-    private SettingsBinding<StringAndStringPairParameterList> dockLayoutTemplatesBinding;
+    /**
+     * The "Add nodes" browser, held so {@link #dispose()} can release its
+     * pinned-ids binding with the editor.
+     */
+    private JIPipeDesktopNodeBrowser nodeBrowser;
 
 
     /**
@@ -238,6 +240,7 @@ public class JIPipeDesktopPipelineGraphEditorUI extends JIPipeDesktopGraphEditor
     }
 
     private void initializeDefaultPanels() {
+        nodeBrowser = new JIPipeDesktopNodeBrowser(getDesktopWorkbench(), this);
 
         getDockPanel().addDockPanel(JIPipeDesktopGraphEditorUI.DOCK_CALCULATOR,
                 "Calculator",
@@ -263,7 +266,7 @@ public class JIPipeDesktopPipelineGraphEditorUI extends JIPipeDesktopGraphEditor
                 JIPipe.RESOURCES.getIcon24("actions/node-add.png"),
                 JIPipeDesktopDockPanel.PanelLocation.BottomLeft,
                 false,
-                JIPipeDesktopDockPanel.UI_ORDER_PINNED, new JIPipeDesktopNodeBrowser(getDesktopWorkbench(), this));
+                JIPipeDesktopDockPanel.UI_ORDER_PINNED, nodeBrowser);
         getDockPanel().addDockPanel(JIPipeDesktopGraphEditorUI.DOCK_BOOKMARKS,
                 "Bookmarks",
                 JIPipe.RESOURCES.getIcon24("actions/bookmarks.png"),
@@ -528,17 +531,6 @@ public class JIPipeDesktopPipelineGraphEditorUI extends JIPipeDesktopGraphEditor
     }
 
     @Override
-    protected StringAndStringPairParameterList getDockStateTemplates() {
-        if (JIPipe.isInstantiated()) {
-            if (dockLayoutTemplatesBinding == null) {
-                dockLayoutTemplatesBinding = JIPipe.getSettingsService().bind(SettingsKeys.DOCK_LAYOUT_TEMPLATES);
-            }
-            return dockLayoutTemplatesBinding.get();
-        }
-        return null;
-    }
-
-    @Override
     protected void saveDockStateToSettings() {
         if (JIPipe.isInstantiated()) {
             if (pipelineDockStateBinding == null) {
@@ -546,6 +538,23 @@ public class JIPipeDesktopPipelineGraphEditorUI extends JIPipeDesktopGraphEditor
             }
             pipelineDockStateBinding.set(getDockPanel().getCurrentState());
         }
+    }
+
+    @Override
+    protected void closeDockStateBinding() {
+        if (pipelineDockStateBinding != null) {
+            pipelineDockStateBinding.close();
+            pipelineDockStateBinding = null;
+        }
+    }
+
+    @Override
+    public void dispose() {
+        if (nodeBrowser != null) {
+            nodeBrowser.dispose();
+            nodeBrowser = null;
+        }
+        super.dispose();
     }
 
     @Override

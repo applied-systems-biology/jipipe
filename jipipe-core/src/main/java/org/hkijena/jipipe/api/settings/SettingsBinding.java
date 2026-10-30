@@ -117,7 +117,7 @@ public final class SettingsBinding<T> {
         this.subscribers = new CopyOnWriteArrayList<>();
         this.listener = this::handleDocumentChange;
         this.lastKnown = get();
-        document.addPathListener(pathWithSubPath, listener);
+        document.addPathListener(pathWithSubPath, listener, this);
     }
 
     /**

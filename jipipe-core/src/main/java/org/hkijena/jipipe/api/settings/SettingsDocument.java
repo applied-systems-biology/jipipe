@@ -21,6 +21,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -106,6 +108,15 @@ public final class SettingsDocument {
     private final String writerId;
     private final Predicate<String> registeredBlock;
     private final Map<String, List<Consumer<JsonNode>>> pathListeners;
+    /**
+     * The owned subset of {@link #pathListeners}: listeners registered with an
+     * explicit owner (identity-based) through
+     * {@link #addPathListener(String, Consumer, Object)}. Only the testing seam
+     * {@link #pathListenerCount(String)} reads it; it exists so a lifecycle
+     * test observes the per-bind listeners and not the settings service's
+     * fixed, per-location observers.
+     */
+    private final Map<String, Set<Consumer<JsonNode>>> ownedPathListeners;
 
     /**
      * Creates a document with the default registration check, which treats a
@@ -133,6 +144,7 @@ public final class SettingsDocument {
         this.root.putObject(META_FIELD);
         this.writerId = UUID.randomUUID().toString().replace("-", "");
         this.pathListeners = new ConcurrentHashMap<>();
+        this.ownedPathListeners = new ConcurrentHashMap<>();
     }
 
     /**
@@ -156,9 +168,31 @@ public final class SettingsDocument {
      * @param listener the listener to fire with the new value at the path
      */
     public synchronized void addPathListener(String pathWithSubPath, Consumer<JsonNode> listener) {
+        addPathListener(pathWithSubPath, listener, null);
+    }
+
+    /**
+     * Registers a path listener together with its <em>owner</em> (see
+     * {@link #addPathListener(String, Consumer)}). The owner is only used to
+     * attribute the listener for the testing seam
+     * {@link #pathListenerCount(String)}; it is not retained beyond that.
+     * {@link SettingsBinding} registers its listener with itself as owner, so
+     * a test can observe exactly the per-binding listeners.
+     *
+     * @param pathWithSubPath the path to observe
+     * @param listener the listener to fire with the new value at the path
+     * @param owner the owner of the listener, or {@code null} for a
+     *              service-owned observer
+     */
+    public synchronized void addPathListener(String pathWithSubPath, Consumer<JsonNode> listener, Object owner) {
         pathListeners
                 .computeIfAbsent(Objects.requireNonNull(pathWithSubPath, "pathWithSubPath"), p -> new ArrayList<>())
                 .add(Objects.requireNonNull(listener, "listener"));
+        if (owner != null) {
+            ownedPathListeners
+                    .computeIfAbsent(pathWithSubPath, p -> Collections.newSetFromMap(new IdentityHashMap<>()))
+                    .add(listener);
+        }
     }
 
     /**
@@ -173,6 +207,25 @@ public final class SettingsDocument {
         if (listeners != null) {
             listeners.remove(listener);
         }
+        Set<Consumer<JsonNode>> owned = ownedPathListeners.get(pathWithSubPath);
+        if (owned != null) {
+            owned.remove(listener);
+        }
+    }
+
+    /**
+     * <b>Testing only — not part of the production API.</b> The parameter of
+     * {@link #pathListenerCount(String)} for a key: the normalized
+     * {@code "<blockPath>/<subPath>"} listener path of the given location.
+     * Exists so lifecycle tests can observe a listener without depending on
+     * the package-private normalization helper.
+     *
+     * @param blockPath the canonical block path
+     * @param subPath   the slash-separated sub-path
+     * @return the normalized listener path
+     */
+    public static String listenerPathForTesting(String blockPath, String subPath) {
+        return listenerPath(blockPath, subPath);
     }
 
     /**
@@ -180,6 +233,36 @@ public final class SettingsDocument {
      */
     public SettingsScope scope() {
         return scope;
+    }
+
+    /**
+     * <b>Testing only — not part of the production API.</b> Counts only the
+     * path listeners registered with an explicit owner through
+     * {@link #addPathListener(String, Consumer, Object)}, i.e. the listeners a
+     * {@link SettingsBinding} adds. The settings service's own observers are
+     * registered without an owner and are deliberately not counted: they are
+     * one per registered location and never per user action, so they must not
+     * mask the per-binding lifecycle this count exists to observe. Production
+     * code must never branch on this value; it exists only as an observation
+     * seam for the lifecycle tests ({@code SettingsBindingLifecycleTest}).
+     *
+     * @param pathWithSubPath the path in the same {@code "<blockPath>/<subPath>"}
+     *                        form {@link #addPathListener} takes
+     * @return the number of owned listeners registered at exactly that path
+     */
+    public synchronized int pathListenerCount(String pathWithSubPath) {
+        List<Consumer<JsonNode>> listeners = pathListeners.get(pathWithSubPath);
+        if (listeners == null) {
+            return 0;
+        }
+        Set<Consumer<JsonNode>> owned = ownedPathListeners.getOrDefault(pathWithSubPath, Set.of());
+        int count = 0;
+        for (Consumer<JsonNode> listener : listeners) {
+            if (owned.contains(listener)) {
+                count++;
+            }
+        }
+        return count;
     }
 
     /**

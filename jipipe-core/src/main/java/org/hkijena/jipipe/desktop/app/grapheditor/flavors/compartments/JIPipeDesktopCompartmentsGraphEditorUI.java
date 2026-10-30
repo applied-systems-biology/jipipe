@@ -88,14 +88,17 @@ public class JIPipeDesktopCompartmentsGraphEditorUI extends JIPipeDesktopGraphEd
     public static final String DOCK_QUICK_GUIDE = "QUICK_GUIDE";
 
     /**
-     * The live bindings to {@link SettingsKeys#COMPARTMENTS_DOCK_STATE} and
-     * {@link SettingsKeys#DOCK_LAYOUT_TEMPLATES}. Created lazily (the editor
-     * may be built before the settings service exists), kept for the life of
-     * the editor and never closed by it — the settings service owns them (see
-     * {@link SettingsKeys}).
+     * The live binding to {@link SettingsKeys#COMPARTMENTS_DOCK_STATE}.
+     * Created lazily (the editor may be built before the settings service
+     * exists) and closed in {@link #closeDockStateBinding()} when the editor
+     * is disposed.
      */
     private SettingsBinding<JIPipeDesktopDockPanel.State> compartmentsDockStateBinding;
-    private SettingsBinding<StringAndStringPairParameterList> dockLayoutTemplatesBinding;
+    /**
+     * The "Add nodes" browser, held so {@link #dispose()} can release its
+     * pinned-ids binding with the editor.
+     */
+    private JIPipeDesktopNodeBrowser nodeBrowser;
 
     /**
      * @param workbenchUI The workbench UI
@@ -156,6 +159,7 @@ public class JIPipeDesktopCompartmentsGraphEditorUI extends JIPipeDesktopGraphEd
     }
 
     private void initializeDefaultPanels() {
+        nodeBrowser = new JIPipeDesktopNodeBrowser(getDesktopWorkbench(), this);
 
         getDockPanel().addDockPanel(JIPipeDesktopGraphEditorUI.DOCK_CALCULATOR,
                 "Calculator",
@@ -199,7 +203,7 @@ public class JIPipeDesktopCompartmentsGraphEditorUI extends JIPipeDesktopGraphEd
                 JIPipeDesktopDockPanel.PanelLocation.BottomLeft,
                 false,
                 JIPipeDesktopDockPanel.UI_ORDER_PINNED,
-                new JIPipeDesktopNodeBrowser(getDesktopWorkbench(), this));
+                nodeBrowser);
         getDockPanel().addDockPanel(DOCK_ERRORS,
                 "Errors",
                 JIPipe.RESOURCES.getIcon24("actions/dialog-warning-2.png"),
@@ -409,14 +413,20 @@ public class JIPipeDesktopCompartmentsGraphEditorUI extends JIPipeDesktopGraphEd
     }
 
     @Override
-    protected StringAndStringPairParameterList getDockStateTemplates() {
-        if (JIPipe.isInstantiated()) {
-            if (dockLayoutTemplatesBinding == null) {
-                dockLayoutTemplatesBinding = JIPipe.getSettingsService().bind(SettingsKeys.DOCK_LAYOUT_TEMPLATES);
-            }
-            return dockLayoutTemplatesBinding.get();
+    protected void closeDockStateBinding() {
+        if (compartmentsDockStateBinding != null) {
+            compartmentsDockStateBinding.close();
+            compartmentsDockStateBinding = null;
         }
-        return null;
+    }
+
+    @Override
+    public void dispose() {
+        if (nodeBrowser != null) {
+            nodeBrowser.dispose();
+            nodeBrowser = null;
+        }
+        super.dispose();
     }
 
     @Override

@@ -31,17 +31,26 @@ import java.util.List;
  * ({@code registry:<databaseKey>} plus the slash-joined registry key), so
  * existing profiles keep their values. Never re-target a constant here.
  * <p>
- * <b>Lifetime of bindings.</b> Bind a key through
- * {@link org.hkijena.jipipe.api.service.components.JIPipeSettingsServiceComponent#bind}
- * and keep the binding for the life of the consumer that owns it — typically
- * the application: a UI component that binds a key at construction stays
- * bound until the JVM exits. The settings service tracks every binding it
- * hands out and closes them all in its {@code dispose()}, so a component
- * must <em>not</em> close its binding when one panel or dialog is destroyed:
- * the next panel re-binds the same key and gets its own live binding (binding
- * the same key twice is allowed, each instance has its own subscribers), and
- * the service closes them all at dispose. Bindings created through a
- * {@code forTesting(...)} component are closed the same way.
+ * <b>Lifecycle: every binding has an owner that closes it.</b> A binding
+ * registers a path listener on its document, so binding per action leaks one
+ * listener per user action. The rules are:
+ * <ul>
+ * <li>A consumer that <em>lives</em> a session (the application itself, a
+ * singleton service) may keep its binding until the settings service's
+ * {@code dispose()} — that is the one acceptable "closed at exit" case.</li>
+ * <li>A consumer with a lifetime (an editor, a dialog, a browser panel) binds
+ * once, reuses the binding, and closes it when the consumer dies (its
+ * {@code dispose()}). Closing is idempotent, and the service's own close at
+ * exit then is a no-op.</li>
+ * <li>A <em>per-call</em> consumer (a static helper, a menu action) must not
+ * bind at all: use the leak-free registry delegates of
+ * {@code JIPipe.getSettings()} instead. {@code NODE_BROWSER_KINDS} is
+ * documented here for a future consumer that can own a binding; today's
+ * {@code NodeEntryKind.loadKinds()}/{@code saveKinds()} deliberately use the
+ * delegates.</li>
+ * </ul>
+ * Binding a key twice (two editors of the same type) is allowed: each binding
+ * has its own listeners and subscribers.
  * <p>
  * Bind only while the service exists ({@code JIPipe.isInstantiated()}):
  * {@code bind()} materializes the scope document.
@@ -121,6 +130,10 @@ public final class SettingsKeys {
                     .scope(SettingsScope.APPLICATION)
                     .name("Node browser kinds")
                     .description("The node kinds shown by the node browser and node finder (empty = all)");
+    // NOTE: NODE_BROWSER_KINDS is currently read/written by the static
+    // NodeEntryKind.loadKinds()/saveKinds(), which must not bind (per-call).
+    // It is declared here to document the frozen location for a consumer that
+    // can own and close a binding.
 
     private SettingsKeys() {
     }
