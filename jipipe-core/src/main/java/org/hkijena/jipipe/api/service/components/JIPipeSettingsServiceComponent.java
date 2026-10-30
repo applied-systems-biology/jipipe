@@ -23,6 +23,8 @@ import org.hkijena.jipipe.api.service.JIPipeServiceComponent;
 import org.hkijena.jipipe.api.settings.JIPipeApplicationSettingsSheet;
 import org.hkijena.jipipe.api.settings.JIPipeSettingKey;
 import org.hkijena.jipipe.api.settings.SettingsBinding;
+import org.hkijena.jipipe.api.settings.SettingsBlockPath;
+import org.hkijena.jipipe.api.settings.SettingsCarryOver;
 import org.hkijena.jipipe.api.settings.SettingsDocument;
 import org.hkijena.jipipe.api.settings.SettingsDocumentIO;
 import org.hkijena.jipipe.api.settings.SettingsDocumentMerger;
@@ -173,6 +175,27 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
      * sheet. Re-created after a reload of the APPLICATION document.
      */
     private final Map<JIPipeApplicationSettingsSheet, SettingsSheetBridge> attachedBridges = new LinkedHashMap<>();
+    /**
+     * The ids of the sheets that have been attached through
+     * {@link #attachSheet}, i.e. the {@code sheet:} blocks this version knows.
+     * Only grows (a reload re-attaches the same sheets), and is consulted by
+     * the cross-version carry-over (see {@link #isRegisteredBlock}). Guarded
+     * by the component monitor like {@link #attachedBridges}.
+     */
+    private final Set<String> attachedBridgedSheetIds = new LinkedHashSet<>();
+    /**
+     * The block paths of the setting keys registered through
+     * {@link #registerKey}, i.e. the {@code registry:}/{@code state:} blocks
+     * this version knows. Consulted by the cross-version carry-over (see
+     * {@link #isRegisteredBlock}); guarded by the component monitor.
+     */
+    private final Set<String> registeredKeyBlockPaths = new LinkedHashSet<>();
+    /**
+     * The settings blocks recovered by {@link #runCarryOver()} in this
+     * session, mapped to the sibling version they came from, so the UI can
+     * report "settings recovered from version X".
+     */
+    private final Map<String, String> recoveredBlocksByVersion = new LinkedHashMap<>();
 
     private final Timer swingSaveLaterTimer;
     private final ScheduledExecutorService executorSaveLater;
@@ -486,6 +509,102 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
             startWatchingFor(scope, doc);
         }
         return doc;
+    }
+
+    /**
+     * Runs the cross-version carry-over for the {@link SettingsScope#APPLICATION}
+     * settings file: unknown blocks (sheet/registry/state IDs this version does
+     * not know, or a block kind this version does not know) are recovered from
+     * sibling version profiles, newest sibling first, and merged into this
+     * version's {@code settings.json} (see {@link SettingsCarryOver}).
+     * Registered blocks are never overridden or pulled from a sibling, and
+     * sibling profile files are only read.
+     * <p>
+     * The recovered blocks are recorded in {@link #getRecoveredBlocks()} (block
+     * path → sibling version) so the UI can report "settings recovered from
+     * version X". A second run recovers nothing new: the blocks are present
+     * locally by then.
+     * <p>
+     * The profile base directory is the parent of {@link #userDir}
+     * ({@code .../profiles}) and the current version is {@link #userDir}'s file
+     * name, so this also works through {@link #forTesting(Path)}.
+     * Must run <em>before</em> the APPLICATION document is loaded, otherwise
+     * the recovered content only reaches this session through a reload.
+     * <p>
+     * TODO(#1345): the startup wiring (migration → carry-over → first document
+     * load) is Task 13; this method is deliberately not called from
+     * {@link #document(SettingsScope)}.
+     *
+     * @return the block paths recovered by this run (empty if none)
+     */
+    public synchronized Set<String> runCarryOver() {
+        Path settingsFile = fileFor(SettingsScope.APPLICATION);
+        Path profileBaseDir = userDir.toAbsolutePath().getParent();
+        String currentVersion = userDir.toAbsolutePath().getFileName().toString();
+        if (profileBaseDir == null || settingsFile == null) {
+            return Set.of();
+        }
+        Map<String, String> recovered;
+        try {
+            recovered = SettingsCarryOver.recoverUnknownBlocksByVersion(settingsFile, profileBaseDir,
+                    currentVersion, this::isRegisteredBlock);
+        } catch (RuntimeException e) {
+            // The carry-over is a recovery convenience: a failure (e.g. an
+            // unwritable profile) must never prevent startup.
+            logger.warn("Could not recover settings from sibling version profiles in {}", profileBaseDir, e);
+            return Set.of();
+        }
+        if (recovered.isEmpty()) {
+            return Set.of();
+        }
+        recoveredBlocksByVersion.putAll(recovered);
+        for (Map.Entry<String, String> entry : recovered.entrySet()) {
+            logger.info("Recovered settings block '{}' from version {}",
+                    entry.getKey(), entry.getValue());
+        }
+        if (getProgressInfo() != null) {
+            recovered.forEach((block, version) -> getProgressInfo()
+                    .log("Recovered settings block '" + block + "' from JIPipe version " + version));
+        }
+        // If the document was already materialized, the recovered blocks are
+        // not in it: pull the merged file in so this session sees them too.
+        if (documents.containsKey(SettingsScope.APPLICATION)) {
+            reload();
+        }
+        return new LinkedHashSet<>(recovered.keySet());
+    }
+
+    /**
+     * @return the settings blocks recovered by {@link #runCarryOver()} in this
+     * session, mapped to the sibling version they were recovered from; empty
+     * when the carry-over recovered nothing. Read by the UI to report
+     * "settings recovered from version X".
+     */
+    public synchronized Map<String, String> getRecoveredBlocks() {
+        return new LinkedHashMap<>(recoveredBlocksByVersion);
+    }
+
+    /**
+     * @param blockPath the canonical block path
+     * @return whether the block is registered in this version. The component
+     * registers sheet blocks through {@link #attachSheet} and setting keys
+     * through {@link #registerKey}; everything else is unknown (pass-through).
+     */
+    private boolean isRegisteredBlock(String blockPath) {
+        SettingsBlockPath path = new SettingsBlockPath(blockPath);
+        if (path.kind() == null) {
+            return false;
+        }
+        String id = path.id();
+        switch (path.kind()) {
+            case SHEET:
+                return attachedBridgedSheetIds.contains(id);
+            case REGISTRY:
+            case STATE:
+                return registeredKeyBlockPaths.contains(blockPath);
+            default:
+                return false;
+        }
     }
 
     /**
@@ -923,6 +1042,7 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
     public synchronized void registerKey(JIPipeSettingKey<?> key) {
         Objects.requireNonNull(key, "key");
         registeredKeys.put(keyLocation(key), key);
+        registeredKeyBlockPaths.add(key.blockPath());
         SettingsDocument doc = documents.get(key.scope());
         if (doc != null) {
             ensureObserved(doc, key.blockPath(), null);
@@ -1058,6 +1178,7 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
         // time): the bridge is created against the fresh, loaded document.
         SettingsSheetBridge bridge = attachBridge(document(SettingsScope.APPLICATION), sheet);
         attachedBridges.put(sheet, bridge);
+        attachedBridgedSheetIds.add(sheet.getId());
     }
 
     /**
@@ -1550,6 +1671,7 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
         lastSyncedBaselines.clear();
         lastKnownFileStates.clear();
         localChangeTrackedBlocks.clear();
+        recoveredBlocksByVersion.clear();
         changedEventEmitter.dispose();
         legacyChangedEventEmitter.dispose();
     }
