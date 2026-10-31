@@ -46,7 +46,7 @@ manual check that prove it, with the exact command and the observed result.
 | Gate | Command | Result |
 | --- | --- | --- |
 | Full build (all modules, all tests) | `mvn clean install` | **BUILD SUCCESS — 30/30 modules, 0 failures** re-run on the post-merge tree (after the `origin/master` merge of `fd5d35a9f0`; the only test-relevant log noise is the pre-existing CLIJ2 fixture "Unable to find node type … Skipping" lines, unrelated to settings) |
-| Settings-focused, core | `mvn test -pl jipipe-core -Dtest='*Settings*,Settings*' -q` | **PASS — 241 run, 0 failures, 0 errors, 0 skipped** on the post-merge tree (the +24 over the initial 217 are the follow-up RED-first pins, including the real `CARRY_OVER` event pin, the binding re-target-on-`reload()` pin, the file-store hardening pins (incl. the `.bad-*` prune), the seed-exempt flag + no-block pins, the tree-absorption pin, `ProjectSettingsViewsTest` (5), and the headless-runner abort static; earlier additions were the final-review pins: the `save()`-does-not-reschedule and raw-edit auto-save pins in `SettingsAutoPersistTest`, the duplicate-id / scope-qualified identity pins in `SettingsTreeModelTest`, the real-registry tab-construction pin `SettingsTabSectionsWithProjectTest`, and the tab-pane dispose pin `JIPipeDesktopTabPaneDisposeTest`; the desktop model tests are additionally listed below per criterion) |
+| Settings-focused, core | `mvn test -pl jipipe-core -Dtest='*Settings*,Settings*' -q` | **PASS — 242 run, 0 failures, 0 errors, 0 skipped** on the final tree (the +25 over the initial 217 are the follow-up RED-first pins, including the real `CARRY_OVER` event pin, the binding re-target-on-`reload()` pin, the file-store hardening pins (incl. the `.bad-*` prune), the seed-exempt flag + no-block pins, the tree-absorption pin, `ProjectSettingsViewsTest` (5), and the headless-runner abort static, plus the review-round pin `backupCorruptFileIsSubjectToTheSamePruneBound`; earlier additions were the final-review pins: the `save()`-does-not-reschedule and raw-edit auto-save pins in `SettingsAutoPersistTest`, the duplicate-id / scope-qualified identity pins in `SettingsTreeModelTest`, the real-registry tab-construction pin `SettingsTabSectionsWithProjectTest`, and the tab-pane dispose pin `JIPipeDesktopTabPaneDisposeTest`; the desktop model tests are additionally listed below per criterion) |
 | Settings-focused, launcher | `mvn test -pl jipipe-launcher -Dtest='*Settings*' -q` | **PASS — 21 run, 0 failures** on the post-merge tree (`SettingsMigrationIntegrationTest` 3, `SettingsNoModalUiTest` 2 (incl. the project-modal absence pin), `SettingsBindingLiveUpdateTest` 2, `SettingsPaletteKeysTest` 2, `SettingsDelegateTest` 10, `JIPipeProjectSettingsPersistenceTest` 2) |
 | No legacy file write path | `git grep -n "settings-db-" -- jipipe-core/src/main` ; `git grep -n "recent-projects.txt" -- jipipe-core/src/main` | **PASS** — only the migration code references the legacy names (see below) |
 
@@ -226,6 +226,33 @@ manual check that prove it, with the exact command and the observed result.
   persistence, no bridge — asserted in `ProjectSettingsViewsTest`); the fourth wrapper
   (`ProjectPermissionsSettingsSheetWrapper`) was dead code and was deleted with the
   modal.
+- Final scoped re-review round (2026-10-31, three independent reviewers over
+  the follow-up commits and the merge resolution, most-capable model, none of
+  whom implemented the work): the merge resolution came back
+  APPROVED_WITH_MINORS (one orphaned section header from the `NodeEntryKind`
+  splice — fixed, `a712812b4b`); the UI consolidation came back
+  APPROVED_WITH_MINORS (the `ProjectSettingsViews` Javadoc over-claimed a
+  rebuild-on-reload guarantee that only holds via the per-window lifecycle —
+  the Javadoc now states the actual guarantee with the verified lifecycle
+  facts — and four missing trailing newlines — fixed, `97d33495f1`); the
+  engine follow-ups came back **CHANGES_REQUIRED** with one MAJOR: the
+  fingerprint-contract hardening (null only on absence, rethrow otherwise)
+  missed one of six call sites — `mergeForeignBeforeSave` read the raw
+  `store.fingerprint()`, so a transient stat/permission failure on an
+  existing file would have escaped `save()` uncaught (EDT callers die with
+  an `AWTError`; the headless debounce silently skips persistence). Fixed by
+  routing the read through the same null-degrading wrapper as the five
+  sibling sites, which also makes the method's Javadoc ("a file that cannot
+  be fingerprinted … the save then proceeds") true again (`31874fdc88`); the
+  same commit closes the review's prune-gap NOTE (the foreign-merge backup
+  now routes through `SettingsFileStore.backupCorruptFile()`, so the
+  "at most 5 newest per base name" bound applies to every `.bad-*` creation
+  — pinned) and deletes an orphaned Javadoc block in `SettingsMigration`.
+  No pin was added for the MAJOR itself: the failure mode (a stat on an
+  existing file failing) is not deterministically reproducible on this
+  filesystem, and the fixed line is the identical pattern the existing
+  merge/sync suite exercises. Gates re-run after the fix: full core +
+  launcher suites exit 0; settings-focused core 242/0.
 - Stale-local-repo artifact (post-merge, not a defect): during the merge
   verification, `TemplateRelationSourceTest` and `TemplateDataDeserializationTest`
   (jipipe-launcher) failed in ISOLATED `mvn test -pl jipipe-launcher` runs with
