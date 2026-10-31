@@ -1,7 +1,8 @@
 # Verification Record — Modern Settings System (#1345)
 
-Branch: `1345-modern-settings-system` (62 commits over `master`), verified 2026-10-31 on
-Java 21 (`/usr/lib/jvm/java-21-openjdk-amd64`).
+Branch: `1345-modern-settings-system` (74 commits of branch work, plus the
+`origin/master` merge of `fd5d35a9f0`), verified 2026-10-31 on Java 21
+(`/usr/lib/jvm/java-21-openjdk-amd64`).
 
 **Final-review note (2026-10-31):** after this record was first written, the whole-branch
 final review found and fixed four defects that no single-task review could see — the
@@ -12,6 +13,30 @@ loop (quiescent bridge flushes), raw edits to unbound locations never auto-savin
 (session-long UI leak). Each is now RED-first pinned; the settings-focused gate below
 reflects the final tree.
 
+**Follow-up + merge note (2026-10-31):** all recorded follow-ups and deferred items were
+completed as part of this work item (the user ruled they belong to #1345): the engine
+follow-ups (real `CARRY_OVER` events, binding re-target on `reload()`, file-store
+hardening, headless-runner abort on failed initialization), the UI follow-ups (absorption
+of `general-ui`/`file-chooser` into the merged sections, seed-exempt page-host anchors
+that are never bridged, island teardown hardening), and the project-modal consolidation
+(`JIPipeDesktopProjectSettingsUI` deleted — the last JDialog settings UI; its three
+legacy wrapper sheets now render as live metadata views in the tab's PROJECT scope,
+non-persisting by design, with all call sites migrated to the tab). Then
+`origin/master` (`fd5d35a9f0`, 87 commits: the #1339 parameter-UX overhaul plus the #753
+jipx temporary-base work) was merged. Master did **not** touch the settings engine
+(`api/settings/`) — its seven conflicts were all in the UI/registration surface:
+`JIPipeProject` (union: our Task-12 `settingsDocument`/`hasSettingsMember` plus master's
+`usedTemporaryBaseDirectories`; the old `unloadedSettingsSheets` map that Task 12
+replaced was dropped), `JIPipeService` (our `settings` component kept in the component
+array), `NodeEntryKind` (our persistence section comment + master's relocated constants),
+`JIPipeApplicationSettingsServiceComponent` (union of imports: our SLF4J logger +
+master's `JsonUtils`), `JIPipeDesktopNodeFinderDialogUI` + `JIPipeDesktopNodeBrowser`
+(master's #1339 three-zone restructure auto-merged with our keyified `SettingsBinding`
+methods and `dispose()` chains intact — the graph editors still dispose the browser),
+and `TextBoxNoteGraphNodeToolProperties` (union: our palette-unsubscribe `dispose()` +
+master's `ensureNonEmptyPresets()`). The full-build gate below was re-run on the merged
+tree.
+
 This record maps each success criterion of the approved spec
 (`docs/superpowers/specs/2026-10-27-modern-settings-system-design.md` §11) to the test(s) or
 manual check that prove it, with the exact command and the observed result.
@@ -20,9 +45,9 @@ manual check that prove it, with the exact command and the observed result.
 
 | Gate | Command | Result |
 | --- | --- | --- |
-| Full build (all modules, all tests) | `mvn clean install -q` | **BUILD SUCCESS** (exit 0; the only test-relevant log noise is the pre-existing CLIJ2 fixture "Unable to find node type … Skipping" lines, unrelated to settings) |
-| Settings-focused, core | `mvn test -pl jipipe-core -Dtest='*Settings*,Settings*' -q` | **PASS — 217 run, 0 failures, 0 errors, 0 skipped** on the final tree (the +10 over the initial 207 are the final-review RED-first pins: the `save()`-does-not-reschedule and raw-edit auto-save pins in `SettingsAutoPersistTest`, the duplicate-id / scope-qualified identity pins in `SettingsTreeModelTest`, the real-registry tab-construction pin `SettingsTabSectionsWithProjectTest`, and the tab-pane dispose pin `JIPipeDesktopTabPaneDisposeTest`; the desktop model tests are additionally listed below per criterion) |
-| Settings-focused, launcher | `mvn test -pl jipipe-launcher -Dtest='*Settings*' -q` | **PASS — 20 run, 0 failures** (`SettingsMigrationIntegrationTest` 3, `SettingsNoModalUiTest` 1, `SettingsBindingLiveUpdateTest` 2, `SettingsPaletteKeysTest` 2, `SettingsDelegateTest` 10, `JIPipeProjectSettingsPersistenceTest` 2) |
+| Full build (all modules, all tests) | `mvn clean install` | **BUILD SUCCESS — 30/30 modules, 0 failures** re-run on the post-merge tree (after the `origin/master` merge of `fd5d35a9f0`; the only test-relevant log noise is the pre-existing CLIJ2 fixture "Unable to find node type … Skipping" lines, unrelated to settings) |
+| Settings-focused, core | `mvn test -pl jipipe-core -Dtest='*Settings*,Settings*' -q` | **PASS — 241 run, 0 failures, 0 errors, 0 skipped** on the post-merge tree (the +24 over the initial 217 are the follow-up RED-first pins, including the real `CARRY_OVER` event pin, the binding re-target-on-`reload()` pin, the file-store hardening pins (incl. the `.bad-*` prune), the seed-exempt flag + no-block pins, the tree-absorption pin, `ProjectSettingsViewsTest` (5), and the headless-runner abort static; earlier additions were the final-review pins: the `save()`-does-not-reschedule and raw-edit auto-save pins in `SettingsAutoPersistTest`, the duplicate-id / scope-qualified identity pins in `SettingsTreeModelTest`, the real-registry tab-construction pin `SettingsTabSectionsWithProjectTest`, and the tab-pane dispose pin `JIPipeDesktopTabPaneDisposeTest`; the desktop model tests are additionally listed below per criterion) |
+| Settings-focused, launcher | `mvn test -pl jipipe-launcher -Dtest='*Settings*' -q` | **PASS — 21 run, 0 failures** on the post-merge tree (`SettingsMigrationIntegrationTest` 3, `SettingsNoModalUiTest` 2 (incl. the project-modal absence pin), `SettingsBindingLiveUpdateTest` 2, `SettingsPaletteKeysTest` 2, `SettingsDelegateTest` 10, `JIPipeProjectSettingsPersistenceTest` 2) |
 | No legacy file write path | `git grep -n "settings-db-" -- jipipe-core/src/main` ; `git grep -n "recent-projects.txt" -- jipipe-core/src/main` | **PASS** — only the migration code references the legacy names (see below) |
 
 **Legacy file references (Step 4) — every hit is migration or documented read-only:**
@@ -195,4 +220,21 @@ manual check that prove it, with the exact command and the observed result.
 - Follow-up (recorded, out of scope for #1345): consolidate the project-settings modal's
   three legacy wrapper sheets (metadata/parameters/directories) into the tab's PROJECT
   scope, then delete `JIPipeDesktopProjectSettingsUI` — the last remaining JDialog-based
-  settings UI.
+  settings UI. **Completed 2026-10-31 as part of #1345** (see the merge note above): the
+  three wrappers now live in `ProjectSettingsViews` and render in the tab's PROJECT scope
+  as live metadata views (edits go straight to `project.getMetadata()`, no document, no
+  persistence, no bridge — asserted in `ProjectSettingsViewsTest`); the fourth wrapper
+  (`ProjectPermissionsSettingsSheetWrapper`) was dead code and was deleted with the
+  modal.
+- Stale-local-repo artifact (post-merge, not a defect): during the merge
+  verification, `TemplateRelationSourceTest` and `TemplateDataDeserializationTest`
+  (jipipe-launcher) failed in ISOLATED `mvn test -pl jipipe-launcher` runs with
+  "expected node id to be registered … ij1-analyze-find-particles2d /
+  ij3d-segmentation-nuclei-3d". The full reactor build (`mvn clean install`)
+  rebuilds all plugin modules and passes them (and everything else) — the isolated
+  launcher run resolves the plugin jars from the local Maven repo, where my
+  `install -pl jipipe-core` had refreshed only the core jar, so the ImageJ1 node
+  types came from stale pre-merge jars. The same stale-jar signature appeared on
+  pristine `origin/master` in a temp worktree, confirming it was environmental,
+  never a merge regression. Lesson: for launcher verification, run the full
+  reactor (or at least `mvn install` the plugins) first.
