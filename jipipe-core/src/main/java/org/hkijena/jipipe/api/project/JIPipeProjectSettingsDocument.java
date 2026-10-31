@@ -90,8 +90,12 @@ public final class JIPipeProjectSettingsDocument {
      * Reads a project {@code "settings"} object of either shape.
      * <p>
      * <ul>
-     * <li>the node has {@code $schema} → it is a new-shape document and is
-     * read as-is;</li>
+     * <li>{@link #isNewShape(JsonNode)} — the node carries {@code $schema}
+     * <em>together with</em> the corroborating markers JIPipe writes
+     * ({@code $meta} or a {@code sheet:}-prefixed key) → it is a new-shape
+     * document and is read as-is. A legacy project payload that merely happens
+     * to contain a literal {@code "$schema"} key is <em>not</em> mistaken for
+     * one (see {@link #isNewShape(JsonNode)});</li>
      * <li>otherwise it is the legacy shape: every top-level key is a
      * unprefixed sheet id and is re-written as {@code "sheet:<id>"}
      * (registered or not — drop nothing), then the resulting object is read.</li>

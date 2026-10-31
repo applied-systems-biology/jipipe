@@ -101,6 +101,12 @@ public final class SettingsBlockPath {
 
     /**
      * @return the full path including the sub-path: {@code path() + "/" + subPath()}
+     * <p>
+     * <b>Not strictly injective</b> if a block ID itself contains "/": for
+     * {@code ("state:a/b", null)} and {@code ("state:a", "b")} it is
+     * {@code "state:a/b"} in both cases. The contract is that <b>block IDs
+     * never contain "/"</b> (sub-paths are the only place a slash appears);
+     * this method relies on that and does not escape.
      */
     public String pathWithSubPath() {
         if (subPath == null) {
@@ -111,8 +117,14 @@ public final class SettingsBlockPath {
 
     /**
      * Creates a copy of this path with a sub-path within the block.
+     * <p>
+     * Deliberate asymmetry with the constructors: the block-level
+     * constructors reject a {@code null} block ID, but {@code withSubPath(null)}
+     * is legal — it <em>clears</em> the sub-path (returns the block-only path),
+     * because "no sub-path" is a meaningful state for a whole-block writer
+     * (see {@code observeBlockWrites}).
      *
-     * @param sub the sub-path within the block
+     * @param sub the sub-path within the block, or {@code null} to clear it
      * @return a new path with the same kind and ID but the given sub-path
      */
     public SettingsBlockPath withSubPath(String sub) {

@@ -99,6 +99,10 @@ import java.util.function.Predicate;
  * monitor, and the document lock covers the mutation itself.
  */
 public final class SettingsDocument {
+    // Deliberately duplicated in SettingsDocumentIO (which also defines these
+    // three names): each class owns the constants of the artifact version it
+    // writes, so the two can be version-pinned and migrated independently
+    // without one class silently inheriting the other's value.
     private static final String SCHEMA_FIELD = "$schema";
     private static final String META_FIELD = "$meta";
     private static final int DEFAULT_SCHEMA_VERSION = 2;
@@ -153,9 +157,18 @@ public final class SettingsDocument {
      * a {@link MissingNode} when the location is absent after the mutation.
      * <p>
      * {@code pathWithSubPath} is {@code "<blockPath>/<subPath>"}, using the
-     * same sub-path normalization as {@link #get(String, String)} (empty
-     * segments are dropped); a block path without a sub-path addresses the
-     * whole block. Notifications are sent by {@link #set}, {@link #remove},
+     * same sub-path normalization as {@link #get(String, String)}. That
+     * normalization — <b>split the sub-path on "/" and drop empty segments</b>
+     * — <em>is</em> the addressing contract (it is not the
+     * {@code JIPipeSettingKey}-style composite-key scheme). A block path
+     * without a sub-path addresses the whole block.
+     * <p>
+     * <b>Null handling is deliberately asymmetric:</b> the sub-path accessors
+     * ({@link #get}, {@link #set}, {@link #has}, {@link #remove}) require a
+     * non-{@code null} block path, while {@link #getBlock}/{@link #hasBlock}
+     * tolerate {@code null} (they answer "nothing there").
+     * <p>
+     * Notifications are sent by {@link #set}, {@link #remove},
      * {@link #setBlock}, and {@link #removeBlock}: listeners registered for
      * the mutated path are always notified, and a listener registered under a
      * block whose <em>whole block</em> was replaced or removed is notified as
@@ -314,6 +327,13 @@ public final class SettingsDocument {
 
     /**
      * Replaces the block at the given path with the given value.
+     * <p>
+     * <b>{@code "$schema"} and {@code "$meta"} are reserved field names and,
+     * although they are not rejected here, must not be passed as a block
+     * path.</b> The absence of a guard is intentional: this is the low-level
+     * document primitive that {@link SettingsDocumentIO} itself uses to restore
+     * {@code $meta} on load, and a raw editor may legitimately want to inspect
+     * the reserved fields. Application code addresses settings blocks only.
      *
      * @param blockPath the canonical block path
      * @param value the new block value, or {@code null} to remove the block
@@ -461,7 +481,12 @@ public final class SettingsDocument {
     }
 
     /**
-     * @return the live {@code $meta} object node; created on first access
+     * The {@code $meta} object already exists: the constructor creates it, so
+     * this never materializes it lazily. The defensive branch below only
+     * repairs a document whose {@code $meta} was replaced by a non-object
+     * (e.g. by a raw {@link #setBlock}).
+     *
+     * @return the live {@code $meta} object node
      */
     public synchronized ObjectNode meta() {
         return root.get(META_FIELD) instanceof ObjectNode m ? m : root.putObject(META_FIELD);
@@ -636,14 +661,16 @@ public final class SettingsDocument {
      * {@code "<blockPath>/<subPath>"}, dropping empty sub-path segments, so
      * {@code ("a:b", "x//y")} yields {@code "a:b/x/y"}. An empty or
      * {@code null} sub-path addresses the whole block and yields the block
-     * path itself. Package-visible so {@link SettingsBinding} registers its
-     * listener under the exact same key the document uses for dispatch.
+     * path itself. Public so every observer ({@link SettingsBinding} and the
+     * settings service's local-change tracking) registers its listener under
+     * the exact same key the document uses for dispatch, from a single
+     * implementation.
      *
      * @param blockPath the canonical block path
      * @param subPath the slash-separated sub-path, or {@code null}
      * @return the normalized listener path
      */
-    static String listenerPath(String blockPath, String subPath) {
+    public static String listenerPath(String blockPath, String subPath) {
         StringBuilder normalized = new StringBuilder(Objects.requireNonNull(blockPath, "blockPath"));
         if (subPath != null) {
             for (String segment : subPath.split("/")) {

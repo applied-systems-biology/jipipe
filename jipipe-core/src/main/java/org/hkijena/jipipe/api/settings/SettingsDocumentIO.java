@@ -38,6 +38,10 @@ import java.util.function.Predicate;
  * writing the pretty string to disk is the caller's concern.
  */
 public final class SettingsDocumentIO {
+    // Deliberately duplicated from SettingsDocument (which also defines these
+    // three names): each class owns the constants of the artifact version it
+    // writes, so the two can be version-pinned and migrated independently
+    // without one class silently inheriting the other's value.
     private static final String SCHEMA_FIELD = "$schema";
     private static final String META_FIELD = "$meta";
     private static final int DEFAULT_SCHEMA_VERSION = 2;
