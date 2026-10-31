@@ -22,6 +22,7 @@ import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.RegisterJIPipeParameterCollectionContextAction;
+import org.hkijena.jipipe.api.settings.SettingsScope;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 
 import java.io.IOException;
@@ -48,7 +49,7 @@ public class JIPipeGraphNodeEnvironmentOverridesParameter extends JIPipeDynamicP
     @RegisterJIPipeParameterCollectionContextAction(icon = "actions/open-in-new-window.png")
     public void openApplicationEnvironmentConfig(JIPipeWorkbench workbench) {
         if (workbench instanceof JIPipeDesktopProjectWorkbench) {
-            ((JIPipeDesktopProjectWorkbench) workbench).openApplicationSettings("/Connected services/Defaults");
+            ((JIPipeDesktopProjectWorkbench) workbench).openSettingsSection(SettingsScope.RUNTIME, "org.hkijena.jipipe:default-environments");
         }
     }
 

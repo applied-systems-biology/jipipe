@@ -5,6 +5,7 @@ import org.hkijena.jipipe.api.microservice.MicroserviceState;
 import org.hkijena.jipipe.api.microservice.MicroserviceStateChangeEvent;
 import org.hkijena.jipipe.api.microservice.MicroserviceStateChangeListener;
 import org.hkijena.jipipe.api.service.components.JIPipeAIServiceComponent;
+import org.hkijena.jipipe.api.settings.SettingsScope;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.ai.monitor.JIPipeDesktopAIMonitorWindow;
 import org.hkijena.jipipe.desktop.commons.components.icons.SpinnerIcon;
@@ -149,7 +150,7 @@ public class JIPipeDesktopAIStatusControl extends JButton implements Microservic
                 JIPipe.RESOURCES.getIcon16("actions/ai.png"), this::openAIMonitor));
         popupMenu.addSeparator();
         popupMenu.add(UIUtils.createMenuItem("Configure ...", "Opens the settings page for AI",
-                JIPipe.RESOURCES.getIcon16("actions/configure.png"), this::openApplicationSettings));
+                JIPipe.RESOURCES.getIcon16("actions/configure.png"), this::openSettingsSection));
     }
 
     private void updateStatus() {
@@ -221,8 +222,8 @@ public class JIPipeDesktopAIStatusControl extends JButton implements Microservic
         return s.length() > maxLen ? s.substring(0, maxLen) + "..." : s;
     }
 
-    private void openApplicationSettings() {
-        workbench.openApplicationSettings("/General/AI");
+    private void openSettingsSection() {
+        workbench.openSettingsSection(SettingsScope.APPLICATION, "org.hkijena.jipipe:ai");
     }
 
     private void startEmbeddingModel() {

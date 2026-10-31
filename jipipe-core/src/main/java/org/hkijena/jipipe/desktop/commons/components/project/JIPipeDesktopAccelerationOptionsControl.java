@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
 import org.hkijena.jipipe.api.acceleration.JIPipeHardwareAccelerationMode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
+import org.hkijena.jipipe.api.settings.SettingsScope;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeHardwareAccelerationApplicationSettings;
@@ -59,7 +60,7 @@ public class JIPipeDesktopAccelerationOptionsControl extends JButton implements 
             popupMenu.add(menuItem);
         }
         popupMenu.addSeparator();
-        popupMenu.add(UIUtils.createMenuItem("Configure ...", "Opens the application settings", JIPipe.RESOURCES.getIcon16("actions/configure.png"), this::openApplicationSettings));
+        popupMenu.add(UIUtils.createMenuItem("Configure ...", "Opens the application settings", JIPipe.RESOURCES.getIcon16("actions/configure.png"), this::openSettingsSection));
     }
 
     private void autodetectAcceleration() {
@@ -84,8 +85,8 @@ public class JIPipeDesktopAccelerationOptionsControl extends JButton implements 
         JIPipeDesktopRunExecuteUI.runInDialog(workbench, workbench.getWindow(), run);
     }
 
-    private void openApplicationSettings() {
-        workbench.openApplicationSettings("/General/Hardware acceleration");
+    private void openSettingsSection() {
+        workbench.openSettingsSection(SettingsScope.RUNTIME, "org.hkijena.jipipe:hardware-acceleration");
     }
 
     private void updateText() {

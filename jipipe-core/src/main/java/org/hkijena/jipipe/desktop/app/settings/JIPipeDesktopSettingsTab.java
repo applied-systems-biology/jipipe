@@ -46,8 +46,8 @@ import java.util.stream.Collectors;
 
 /**
  * The non-modal settings workbench tab (modern settings system, Task 18).
- * Replaces the modal {@link JIPipeDesktopApplicationSettingsUI} dialog: a
- * search field and a scope switcher ({@code Application | Project | Runtime})
+ * Replaces the former modal application-settings dialog (removed in Task 22):
+ * a search field and a scope switcher ({@code Application | Project | Runtime})
  * on top, the category tree on the left, the section's
  * {@link JIPipeDesktopParameterFormPanel} on the right, and a dismissible
  * banner when another process changed the settings.
@@ -55,7 +55,10 @@ import java.util.stream.Collectors;
  * The tree is built exactly like the modal's (categories from the sheets'
  * {@code getCategory()}, "General" pinned first, category icon from the
  * first sheet of the category, sheets sorted by name) so the migration is
- * 1:1; the grouping logic lives in {@link SettingsTreeModel}.
+ * 1:1; the grouping logic lives in {@link SettingsTreeModel}. Deep links open
+ * a section by its stable registered sheet id via
+ * {@code JIPipeDesktopProjectWorkbench#openSettingsSection(SettingsScope, String)},
+ * in the scope the sheet belongs to.
  * <p>
  * <b>No Save button.</b> Every parameter edit commits to the sheet
  * immediately (the editor UI writes through {@link org.hkijena.jipipe.api.parameters.JIPipeParameterAccess#set(Object)}),
@@ -68,6 +71,14 @@ import java.util.stream.Collectors;
  * settings file converges without any save action by this tab. Re-creating the
  * form panel on section selection therefore cannot lose an edit, and the tab
  * needs no Save button.
+ * <p>
+ * <b>No global Cancel or revert.</b> There is no Cancel button and no global
+ * revert of settings edits (a decision taken when the modal was removed,
+ * 2026-10-31): edits persist immediately, so a dialog-wide "discard" would
+ * have to fight the engine that already flushed them. To undo changes, use the
+ * per-section <em>Reset section</em> action (Appearance/Accessibility) or the
+ * per-key reset in the raw settings editor and the changes strip. This
+ * replaces the modal's Save/Cancel/Reset semantics.
  */
 public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implements Disposable {
 
@@ -199,39 +210,6 @@ public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implem
                     sheet.getId()));
         }
         return result;
-    }
-
-    /**
-     * Translates a legacy {@code "/Category/Sheet name"} path (as passed by
-     * the deep links to {@code JIPipeDesktopProjectWorkbench#openApplicationSettings(String)})
-     * into a sheet id. The legacy path addresses a sheet by its display name
-     * within its category, which the sheet id does not contain.
-     *
-     * @param model the model
-     * @param path  the legacy path, e.g. {@code "/General/Auto save"}
-     * @return the sheet id, or {@code null} if the path does not address a known sheet
-     */
-    public static String sheetIdForLegacyPath(SettingsTreeModel model, String path) {
-        if (model == null || path == null) {
-            return null;
-        }
-        String trimmed = path.trim();
-        if (trimmed.isEmpty() || "/".equals(trimmed)) {
-            return null;
-        }
-        String withoutLeadingSlash = trimmed.startsWith("/") ? trimmed.substring(1) : trimmed;
-        int separator = withoutLeadingSlash.indexOf('/');
-        if (separator < 0) {
-            return null; // legacy category paths are not sheets
-        }
-        String category = withoutLeadingSlash.substring(0, separator);
-        String sheetName = withoutLeadingSlash.substring(separator + 1);
-        for (SettingsTreeModel.SheetNode node : model.allNodes()) {
-            if (Objects.equals(node.category(), category) && Objects.equals(node.name(), sheetName)) {
-                return node.id();
-            }
-        }
-        return null;
     }
 
     private void initialize() {

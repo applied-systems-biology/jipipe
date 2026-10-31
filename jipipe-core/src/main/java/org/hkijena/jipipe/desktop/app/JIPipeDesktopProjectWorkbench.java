@@ -69,7 +69,6 @@ import org.hkijena.jipipe.desktop.app.running.queue.JIPipeDesktopRunnableBackgro
 import org.hkijena.jipipe.desktop.app.running.queue.JIPipeDesktopRunnableQueueButton;
 import org.hkijena.jipipe.desktop.app.running.queue.JIPipeDesktopRunnableQueueNotifier;
 import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopAppearanceSection;
-import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopApplicationSettingsUI;
 import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopProjectOverviewUI;
 import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopProjectSettingsUI;
 import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopRawSettingsSection;
@@ -336,7 +335,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
                                 "Missing author information",
                                 JOptionPane.YES_NO_OPTION,
                                 JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
-                            openApplicationSettings("/General/Project authors");
+                            openSettingsSection(SettingsScope.APPLICATION, "org.hkijena.jipipe:project-authors");
                         }
                     } else {
                         if (JOptionPane.showConfirmDialog(this, "<html>The project needs to be saved to update the author information.<br/>" +
@@ -956,10 +955,10 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         editCompartmentsButton.addActionListener(e -> openCompartmentEditor());
         projectMenu.add(editCompartmentsButton);
 
-        JMenuItem openApplicationSettingsButton = new JMenuItem("Application settings", JIPipe.RESOURCES.getIcon16("actions/configure.png"));
-        openApplicationSettingsButton.setToolTipText("Opens the application settings");
-        openApplicationSettingsButton.addActionListener(e -> openApplicationSettings(null));
-        projectMenu.add(openApplicationSettingsButton);
+        JMenuItem applicationSettingsButton = new JMenuItem("Application settings", JIPipe.RESOURCES.getIcon16("actions/configure.png"));
+        applicationSettingsButton.setToolTipText("Opens the application settings");
+        applicationSettingsButton.addActionListener(e -> openSettingsTab(SettingsScope.APPLICATION, null));
+        projectMenu.add(applicationSettingsButton);
 
         projectMenu.addSeparator();
 
@@ -1125,44 +1124,6 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         return !JIPipe.getInstance().getPlugins().getNewPlugins().isEmpty();
     }
 
-
-    /**
-     * Legacy entry point kept for the existing deep links (e.g. {@code "/General/Auto save"});
-     * routes to the non-modal settings tab in the {@link SettingsScope#APPLICATION} scope.
-     * <p>
-     * <b>Path translation.</b> The deep links pass a legacy {@code "/Category/Sheet name"} path
-     * (the tree path of the former modal dialog). It cannot be resolved against the modern
-     * section list directly, so this overload translates it in two stages:
-     * <ol>
-     * <li>If the path addresses a known section by category + display name
-     * ({@link JIPipeDesktopSettingsTab#sheetIdForLegacyPath}), the application scope tab selects that
-     * section by its sheet id. Because the tab also lists the other file-backed scope's sections, a path
-     * that addresses a runtime-scoped sheet lands on that sheet (shown read-only with its scope hint).</li>
-     * <li>Otherwise (no match, or a bare category path such as {@code "/General"}), the application scope
-     * is shown and the path's last segment is put into the section search field, so the user still
-     * ends up looking at the right sections.</li>
-     * </ol>
-     * A {@code null} path just opens the tab on its default selection.
-     *
-     * @param navigateToCategory the legacy {@code "/Category/Sheet name"} path, or {@code null}
-     * @deprecated use {@link #openSettingsTab(SettingsScope, String)}
-     */
-    @Deprecated
-    public void openApplicationSettings(String navigateToCategory) {
-        JIPipeDesktopSettingsTab tab = (JIPipeDesktopSettingsTab) openSettingsTab(SettingsScope.APPLICATION, null);
-        if (tab == null || navigateToCategory == null) {
-            return;
-        }
-        String sheetId = JIPipeDesktopSettingsTab.sheetIdForLegacyPath(tab.getModel(), navigateToCategory);
-        if (sheetId != null && tab.selectSheet(sheetId)) {
-            return;
-        }
-        // Fall back to a section search with the last path segment ("Auto save", "AI", "General", ...)
-        String trimmed = navigateToCategory.trim();
-        String lastSegment = trimmed.substring(trimmed.lastIndexOf('/') + 1);
-        tab.setActiveScope(SettingsScope.APPLICATION);
-        tab.setSectionSearch(lastSegment);
-    }
 
     /**
      * Opens the non-modal settings tab (creating it on first use) and selects a section.

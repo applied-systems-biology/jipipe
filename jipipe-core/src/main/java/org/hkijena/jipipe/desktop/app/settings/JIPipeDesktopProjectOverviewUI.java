@@ -31,6 +31,7 @@ import org.hkijena.jipipe.api.run.JIPipeProjectRunSet;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
 import org.hkijena.jipipe.api.settings.JIPipeProjectSettingsSheet;
+import org.hkijena.jipipe.api.settings.SettingsScope;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchPanel;
@@ -1006,8 +1007,8 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
         JButton openSettingsButton = new JButton("Application settings", JIPipe.RESOURCES.getIcon16("actions/open-in-new-window.png"));
         openSettingsButton.setOpaque(false);
         openSettingsButton.setBackground(new Color(0, 0, 0, 0));
-        openSettingsButton.setToolTipText("Opens the JIPipe application settings dialog");
-        openSettingsButton.addActionListener(e -> getDesktopProjectWorkbench().openApplicationSettings(null));
+        openSettingsButton.setToolTipText("Opens the JIPipe application settings");
+        openSettingsButton.addActionListener(e -> getDesktopProjectWorkbench().openSettingsTab(SettingsScope.APPLICATION, null));
         toolBar.add(openSettingsButton);
 
         JButton openProjectSettingsButton = new JButton("Project settings", JIPipe.RESOURCES.getIcon16("actions/configure.png"));

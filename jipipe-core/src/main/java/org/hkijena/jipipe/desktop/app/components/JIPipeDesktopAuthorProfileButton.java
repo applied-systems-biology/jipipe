@@ -6,6 +6,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.service.components.JIPipeApplicationSettingsServiceComponent;
+import org.hkijena.jipipe.api.settings.SettingsScope;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
@@ -69,7 +70,7 @@ public class JIPipeDesktopAuthorProfileButton extends JButton implements JIPipeD
 
     private void showSettings() {
         balloonTip.setVisible(false);
-        workbench.openApplicationSettings("/General/Project authors");
+        workbench.openSettingsSection(SettingsScope.APPLICATION, "org.hkijena.jipipe:project-authors");
     }
 
     private void initializeBalloon() {

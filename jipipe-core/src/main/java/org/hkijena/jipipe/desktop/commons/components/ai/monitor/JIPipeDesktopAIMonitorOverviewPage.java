@@ -16,6 +16,7 @@ package org.hkijena.jipipe.desktop.commons.components.ai.monitor;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.microservice.MicroserviceState;
 import org.hkijena.jipipe.api.service.components.JIPipeAIServiceComponent;
+import org.hkijena.jipipe.api.settings.SettingsScope;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.ai.JIPipeDesktopAISetupDialog;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
@@ -91,7 +92,7 @@ public class JIPipeDesktopAIMonitorOverviewPage extends JIPipeDesktopAIMonitorPa
 
     private void openAIConfig() {
         if (getDesktopWorkbench() instanceof JIPipeDesktopProjectWorkbench projectWorkbench) {
-            projectWorkbench.openApplicationSettings("/General/AI");
+            projectWorkbench.openSettingsSection(SettingsScope.APPLICATION, "org.hkijena.jipipe:ai");
         }
     }
 
