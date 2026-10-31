@@ -1636,6 +1636,14 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
      */
     public synchronized void attachSheet(JIPipeApplicationSettingsSheet sheet) {
         Objects.requireNonNull(sheet, "sheet");
+        // Seed-exempt sheets (the parameter-less merged-section page hosts) are
+        // never bridged: they own no settings, so there is nothing to sync and
+        // no block to keep in the document. Bridging them would seed an empty
+        // sheet:<id> block into the user's profile (re-created by every save,
+        // since the flush loop covers all attached bridges).
+        if (sheet.isSeedExempt()) {
+            return;
+        }
         // Materializing the document is lazy and idempotent, so this is safe
         // to call before the document exists (e.g. at sheet registration
         // time): the bridge is created against the fresh, loaded document.
@@ -1673,6 +1681,9 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
      */
     private void ensureAttachedSheetsSeeded(SettingsDocument doc) {
         for (JIPipeApplicationSettingsSheet sheet : unbridgedSheets(doc)) {
+            if (sheet.isSeedExempt()) {
+                continue; // parameter-less page hosts are never bridged (see attachSheet)
+            }
             attachedBridges.put(sheet, attachBridge(doc, sheet));
             attachedBridgedSheetIds.add(sheet.getId());
         }

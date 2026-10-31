@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.service.components.JIPipeApplicationSettingsServiceComponent;
+import org.hkijena.jipipe.api.settings.JIPipeApplicationSettingsSheet;
 import org.hkijena.jipipe.api.settings.JIPipeSettingKey;
 import org.hkijena.jipipe.api.settings.SettingsDocument;
 import org.hkijena.jipipe.api.settings.SettingsScope;
@@ -193,8 +194,11 @@ class SettingsDelegateTest {
     void everyRegisteredSheetHasADocumentBlock() {
         SettingsDocument doc = JIPipe.getSettingsService().document(SettingsScope.APPLICATION);
         assertFalse(JIPipe.getSettings().getRegisteredSheets().isEmpty(), "sheets must be registered");
-        for (String sheetId : JIPipe.getSettings().getRegisteredSheets().keySet()) {
-            assertTrue(doc.hasBlock("sheet:" + sheetId), "missing bridge for sheet " + sheetId);
+        for (Map.Entry<String, JIPipeApplicationSettingsSheet> entry : JIPipe.getSettings().getRegisteredSheets().entrySet()) {
+            if (entry.getValue().isSeedExempt()) {
+                continue; // parameter-less page hosts never get a document block
+            }
+            assertTrue(doc.hasBlock("sheet:" + entry.getKey()), "missing bridge for sheet " + entry.getKey());
         }
     }
 

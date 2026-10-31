@@ -62,6 +62,64 @@ class JIPipeSettingsServiceComponentTest {
         assertFalse(c.bind(JIPipeSettingKey.bool("registry:x", "a", Boolean.class).defaultValue(true)).get());
     }
 
+    /**
+     * A parameter-less sheet that opts out of the initial default-seed (the
+     * merged-section page hosts): attaching it must NOT write a block into the
+     * document, while a non-exempt sheet with the same shape gets its
+     * defaults seeded.
+     */
+    public static class SeedExemptProbeSheet extends AbstractJIPipeParameterCollection implements JIPipeApplicationSettingsSheet {
+        @Override
+        public String getId() {
+            return "seed-exempt-probe-sheet";
+        }
+
+        @Override
+        public Icon getIcon() {
+            return null;
+        }
+
+        @Override
+        public String getName() {
+            return "Seed exempt probe";
+        }
+
+        @Override
+        public String getDescription() {
+            return "A parameter-less seed-exempt probe sheet";
+        }
+
+        @Override
+        public String getCategory() {
+            return "General";
+        }
+
+        @Override
+        public Icon getCategoryIcon() {
+            return null;
+        }
+
+        @Override
+        public boolean isSeedExempt() {
+            return true;
+        }
+    }
+
+    @Test void seedExemptSheetGetsNoDocumentBlock() {
+        JIPipeSettingsServiceComponent c = JIPipeSettingsServiceComponent.forTesting(tempDir);
+        c.attachSheet(new SeedExemptProbeSheet());
+        c.document(SettingsScope.APPLICATION); // materialize
+        c.save();
+        assertFalse(c.document(SettingsScope.APPLICATION).hasBlock("sheet:seed-exempt-probe-sheet"),
+                "a seed-exempt sheet must not seed a (empty) block into the document");
+        // A non-exempt sheet with the same shape still seeds its defaults.
+        c.attachSheet(new ProbeSheet());
+        c.document(SettingsScope.APPLICATION);
+        c.save();
+        assertTrue(c.document(SettingsScope.APPLICATION).hasBlock("sheet:probe-sheet"),
+                "a non-exempt sheet must keep its initial default-seed");
+    }
+
     @Test void runtimeDocumentTransfersIntoAFreshInstanceWithoutLoss() {
         // Spec §11 success criterion 7: the runtime document can be exported and
         // re-imported into a fresh service instance without loss — the

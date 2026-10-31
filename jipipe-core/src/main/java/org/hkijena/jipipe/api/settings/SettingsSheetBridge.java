@@ -135,6 +135,10 @@ public final class SettingsSheetBridge {
      * the sheet's current values are serialized into it first (a fresh
      * profile behaves like the old defaults), and then the bridge subscribes
      * to both directions.
+     * <p>
+     * Seed-exempt sheets (the parameter-less merged-section page hosts) are
+     * never bridged by the component at all, so their empty blocks are never
+     * seeded.
      */
     public void attach() {
         if (attached) {
