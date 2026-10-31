@@ -36,6 +36,9 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.tree.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -113,8 +116,22 @@ public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implem
     private final JIPipeSettingsServiceComponent settingsService;
     private final JIPipeSettingsServiceComponent.SettingsChangedEventListener changedListener = this::onSettingsChanged;
 
+    /**
+     * The since-open audit of settings changes (modern settings system, Task
+     * 21). Every change event — all scopes, all origins — is recorded here; the
+     * changes strip renders the active scope's entries. The log is thread-safe
+     * and holds no listeners, so {@link #dispose()} has nothing to unbind.
+     */
+    private final SettingsChangeLog changeLog = new SettingsChangeLog();
+
     private final JPanel banner = new JPanel(new BorderLayout(8, 0));
     private final JSplitPane splitPane;
+
+    private final JLabel changesToggle = new JLabel();
+    private final DefaultListModel<SettingsChangeLog.ChangeEntry> changesListModel = new DefaultListModel<>();
+    private final JList<SettingsChangeLog.ChangeEntry> changesList = new JList<>(changesListModel);
+    private final JScrollPane changesScrollPane = new JScrollPane(changesList);
+    private boolean changesExpanded;
 
     private SettingsTreeModel model;
     private SettingsScope activeScope = SettingsScope.APPLICATION;
@@ -233,6 +250,8 @@ public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implem
         JPanel content = new JPanel(new BorderLayout());
         content.add(header, BorderLayout.NORTH);
         content.add(splitPane, BorderLayout.CENTER);
+        // Bottom: the collapsible since-open changes strip (collapsed by default).
+        content.add(createChangesStrip(), BorderLayout.SOUTH);
         add(content, BorderLayout.CENTER);
 
         tree.addTreeSelectionListener(e -> onTreeSelectionChanged());
@@ -286,9 +305,130 @@ public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implem
         });
         buttons.add(reloadButton);
         JButton dismissButton = new JButton("Dismiss", JIPipe.RESOURCES.getIcon16("actions/cancel.png"));
-        dismissButton.addActionListener(e -> hideBanner());
+        dismissButton.addActionListener(e -> {
+            hideBanner();
+            // Acknowledging the banner also acknowledges this scope's foreign
+            // changes: they leave the changes strip so a dismissed notice does
+            // not linger as a stale row.
+            changeLog.acknowledgeForeign(activeScope);
+            refreshChangesStrip();
+        });
         buttons.add(dismissButton);
         banner.add(buttons, BorderLayout.EAST);
+    }
+
+    /**
+     * Builds the collapsible changes strip shown at the bottom of the tab: a
+     * toggle label ("Changes (n)", n = the active scope's entries) and, when
+     * expanded, one row per since-open change of the active scope with a
+     * trailing per-entry reset button. Collapsed by default; the expanded state
+     * is a field, not persisted.
+     *
+     * @return the strip
+     */
+    private JComponent createChangesStrip() {
+        JPanel strip = new JPanel(new BorderLayout());
+        strip.setBorder(UIUtils.createEmptyBorder(2));
+
+        changesToggle.setIcon(JIPipe.RESOURCES.getIcon16("actions/chevron-right.png"));
+        changesToggle.setBorder(UIUtils.createEmptyBorder(2));
+        changesToggle.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        changesToggle.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                setChangesExpanded(!changesExpanded);
+            }
+        });
+        strip.add(changesToggle, BorderLayout.NORTH);
+
+        changesList.setCellRenderer(new ChangesCellRenderer());
+        changesScrollPane.setPreferredSize(new Dimension(0, 150));
+        changesScrollPane.setVisible(false);
+        strip.add(changesScrollPane, BorderLayout.CENTER);
+
+        updateChangesToggleText();
+        return strip;
+    }
+
+    /**
+     * Expands or collapses the changes strip.
+     *
+     * @param expanded whether the strip is expanded
+     */
+    private void setChangesExpanded(boolean expanded) {
+        changesExpanded = expanded;
+        changesScrollPane.setVisible(expanded);
+        updateChangesToggleText();
+        revalidate();
+        repaint();
+    }
+
+    private void updateChangesToggleText() {
+        int count = entriesOfActiveScope().size();
+        changesToggle.setText("Changes (" + count + ")");
+        changesToggle.setIcon(JIPipe.RESOURCES.getIcon16(changesExpanded
+                ? "actions/chevron-down.png"
+                : "actions/chevron-right.png"));
+    }
+
+    private List<SettingsChangeLog.ChangeEntry> entriesOfActiveScope() {
+        return changeLog.entries().stream().filter(entry -> entry.scope() == activeScope).collect(Collectors.toList());
+    }
+
+    /**
+     * Re-reads the log and re-renders the strip for the active scope. Must run
+     * on the EDT.
+     */
+    private void refreshChangesStrip() {
+        List<SettingsChangeLog.ChangeEntry> entries = entriesOfActiveScope();
+        changesListModel.clear();
+        for (SettingsChangeLog.ChangeEntry entry : entries) {
+            changesListModel.addElement(entry);
+        }
+        if (entries.isEmpty()) {
+            if (changesExpanded) {
+                setChangesExpanded(false);
+            }
+        }
+        updateChangesToggleText();
+        revalidate();
+        repaint();
+    }
+
+    /**
+     * Resets one entry's location to its default through the raw editor's
+     * model — the reviewed documented-vs-pass-through reset lives there and is
+     * not re-implemented here. The model is a throwaway: its constructor only
+     * captures the service and the scope's document and registers no listener,
+     * and {@link RawSettingsTableModel#resetKey(String)} writes through the
+     * engine, which emits the change event that records the reset itself.
+     * <p>
+     * The strip is refreshed on the EDT after the write, and the right pane is
+     * rebuilt when the reset touched the active scope so the section reflects
+     * the reset.
+     *
+     * @param entry the entry to reset
+     */
+    private void resetChangeEntry(SettingsChangeLog.ChangeEntry entry) {
+        try {
+            new RawSettingsTableModel(settingsService, entry.scope()).resetKey(entry.path());
+        } catch (RuntimeException e) {
+            JOptionPane.showMessageDialog(this,
+                    "Cannot reset '" + entry.path() + "': " + e.getMessage(),
+                    "Reset setting",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        boolean touchedActiveScope = entry.scope() == activeScope;
+        SwingUtilities.invokeLater(() -> {
+            // The reset emitted its own change event, whose later refresh would
+            // suffice — refreshing here too keeps the strip honest even if the
+            // scope was switched in between.
+            if (touchedActiveScope) {
+                rebuildRightPane();
+            }
+            refreshChangesStrip();
+        });
     }
 
     /**
@@ -415,6 +555,7 @@ public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implem
         activeScope = scope;
         selectedSheetId = null;
         rebuildTree();
+        refreshChangesStrip(); // re-filter the strip to the new scope
     }
 
     private void onTreeSelectionChanged() {
@@ -504,6 +645,13 @@ public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implem
     }
 
     private void onSettingsChanged(JIPipeSettingsServiceComponent.SettingsChangedEvent event) {
+        // The log is the audit of everything that changed since the tab opened:
+        // every scope, every origin. It is thread-safe, so recording here — on
+        // whatever thread mutated the document — is safe; the strip then
+        // re-reads the log on the EDT.
+        changeLog.record(event, RawSettingsTableModel.truncate(RawSettingsTableModel.render(event.getNewValue())));
+        SwingUtilities.invokeLater(this::refreshChangesStrip);
+
         JIPipeSettingsServiceComponent.ChangeOrigin origin = event.getOrigin();
         boolean external = origin == JIPipeSettingsServiceComponent.ChangeOrigin.EXTERNAL_FILE
                 || origin == JIPipeSettingsServiceComponent.ChangeOrigin.EXTERNAL_PROCESS
@@ -642,6 +790,49 @@ public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implem
     public void dispose() {
         settingsService.getChangedEventEmitter().unsubscribe(changedListener);
         disposeFormPanel();
+    }
+
+    /**
+     * Renders one changes-strip row: the change text (with a foreign marker)
+     * and a trailing per-entry "Reset" button.
+     */
+    private class ChangesCellRenderer extends JPanel implements ListCellRenderer<SettingsChangeLog.ChangeEntry> {
+
+        private final JLabel textLabel = new JLabel();
+        private final JButton resetButton = new JButton("Reset", JIPipe.RESOURCES.getIcon16("actions/edit-reset.png"));
+        private ActionListener resetListener;
+
+        ChangesCellRenderer() {
+            super(new BorderLayout(4, 0));
+            setBorder(UIUtils.createEmptyBorder(2));
+            add(textLabel, BorderLayout.CENTER);
+            resetButton.setToolTipText("Reset this setting to its default");
+            add(resetButton, BorderLayout.EAST);
+        }
+
+        @Override
+        public Component getListCellRendererComponent(JList<? extends SettingsChangeLog.ChangeEntry> list,
+                                                      SettingsChangeLog.ChangeEntry value,
+                                                      int index,
+                                                      boolean isSelected,
+                                                      boolean cellHasFocus) {
+            String text = value.displayText();
+            if (value.isForeign()) {
+                text += "  \u00b7external";
+                textLabel.setIcon(JIPipe.RESOURCES.getIcon16("actions/gnumeric-link-external.png"));
+            } else {
+                textLabel.setIcon(null);
+            }
+            textLabel.setText(text);
+            textLabel.setToolTipText(value.path() + " (" + value.origin() + ")");
+            textLabel.setForeground(isSelected ? list.getSelectionForeground() : list.getForeground());
+            setBackground(isSelected ? list.getSelectionBackground() : list.getBackground());
+            setOpaque(true);
+            resetButton.removeActionListener(resetListener);
+            resetListener = e -> resetChangeEntry(value);
+            resetButton.addActionListener(resetListener);
+            return this;
+        }
     }
 
     /**
