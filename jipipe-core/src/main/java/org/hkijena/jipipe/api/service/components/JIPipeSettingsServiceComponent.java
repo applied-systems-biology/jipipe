@@ -147,7 +147,27 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
     private static final DateTimeFormatter BAD_BACKUP_TIMESTAMP =
             DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH-mm-ss'Z'").withZone(ZoneOffset.UTC);
 
-    private final Path userDir;
+    /**
+     * The profile directory that holds the settings files, when the component
+     * was constructed with one explicitly ({@link #forTesting(Path)}). Used
+     * as-is; the component never resolves the JIPipe user dir in that case.
+     */
+    private final Path userDirOverride;
+    /**
+     * The profile directory of the production component, resolved <em>lazily</em>
+     * by {@link #userDir()} on first use and cached here.
+     * <p>
+     * Resolving it eagerly in the constructor would cache the real profile
+     * directory: the service (and with it this component) is constructed before
+     * the override user-dir base is installed on
+     * {@link JIPipeServiceInitializationSettings}, so
+     * {@link JIPipe#getJIPipeUserDir(boolean)} would return the developer's
+     * profile while the startup migration (which resolves the directory at
+     * initialization time, when the override is set) runs against the override
+     * profile — the two would read and write different files. Guarded by the
+     * component monitor.
+     */
+    private Path resolvedUserDir;
     /**
      * Whether the debounce timer runs on the Swing EDT. Resolved once at
      * construction: a Swing timer requires a live EDT, which headless
@@ -384,15 +404,26 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
      * Creates the component for the real JVM-wide {@link JIPipeService}, using
      * the standard user directory for the settings files.
      *
+     * <b>The profile directory is resolved lazily</b> (see {@link #userDir()}):
+     * the override user-dir base
+     * ({@link JIPipeServiceInitializationSettings#setOverrideUserDirBase(Path)},
+     * the CLI's {@code --override-profile}) is installed on the service
+     * <em>after</em> the service — and therefore this component — has been
+     * constructed. Resolving the directory here would cache the real profile
+     * directory and silently ignore the override, so the component would load
+     * and save a different profile than the one the startup migration
+     * prepared.
+     *
      * @param service the owning service
      */
     public JIPipeSettingsServiceComponent(JIPipeService service) {
-        this(service, JIPipe.getJIPipeUserDir(false));
+        this(service, null);
     }
 
     private JIPipeSettingsServiceComponent(JIPipeService service, Path userDir) {
         super(service);
-        this.userDir = Objects.requireNonNull(userDir, "userDir");
+        // Non-null only for the forTesting(Path) component, which pins the dir.
+        this.userDirOverride = userDir == null ? null : Objects.requireNonNull(userDir, "userDir");
         this.swingDebounce = !GraphicsEnvironment.isHeadless();
         if (swingDebounce) {
             this.swingSaveLaterTimer = new Timer((int) SAVE_LATER_DEBOUNCE_MILLIS, e -> save());
@@ -481,6 +512,34 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
     }
 
     /**
+     * Resolves the profile directory that holds the settings files.
+     * <p>
+     * A {@link #forTesting(Path)} component returns its injected directory
+     * as-is and never touches {@link JIPipe#getJIPipeUserDir(boolean)} (it may
+     * be constructed without a service and without a JIPipe instance). The
+     * production component resolves the JIPipe user dir on first use and
+     * caches it, so an override user-dir base installed after construction is
+     * honored. The cache is monitor-guarded like the document maps; the
+     * resolution itself does not need the lock for correctness, but keeping
+     * the first resolution single under concurrent callers avoids two
+     * {@code Files.createDirectories} races.
+     *
+     * @return the directory holding {@code settings.json}/{@code runtime-settings.json}
+     */
+    private synchronized Path userDir() {
+        Path pinned = userDirOverride;
+        if (pinned != null) {
+            return pinned;
+        }
+        Path resolved = resolvedUserDir;
+        if (resolved == null) {
+            resolved = Objects.requireNonNull(JIPipe.getJIPipeUserDir(false), "JIPipe user dir");
+            resolvedUserDir = resolved;
+        }
+        return resolved;
+    }
+
+    /**
      * @param scope the scope
      * @return the file the scope's document is persisted to, or {@code null}
      * for {@link SettingsScope#PROJECT} (kept in memory; the project owns it)
@@ -489,9 +548,9 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
         Objects.requireNonNull(scope, "scope");
         switch (scope) {
             case APPLICATION:
-                return userDir.resolve("settings.json");
+                return userDir().resolve("settings.json");
             case RUNTIME:
-                return userDir.resolve("runtime-settings.json");
+                return userDir().resolve("runtime-settings.json");
             case PROJECT:
                 return null;
             default:
@@ -537,6 +596,29 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
     }
 
     /**
+     * Returns the scope's document only if it has already been materialized,
+     * without materializing it.
+     * <p>
+     * Materializing {@link SettingsScope#APPLICATION} for the first time
+     * resolves the profile directory and loads the file. Callers that run
+     * during the startup <em>before</em> the profile has been prepared (e.g.
+     * the raw settings readers on the splash screen) must not trigger that:
+     * they would load the profile directory at an instant when a
+     * {@code --override-profile} override is not yet authoritative, and the
+     * settings component would then be split-brained between the override
+     * profile and the real one. Such callers read the file themselves and only
+     * use this as a fallback.
+     *
+     * @param scope the scope
+     * @return the live document for that scope, or {@code null} if it has not
+     * been created yet
+     */
+    public synchronized SettingsDocument materializedDocument(SettingsScope scope) {
+        Objects.requireNonNull(scope, "scope");
+        return documents.get(scope);
+    }
+
+    /**
      * Runs the cross-version carry-over for the {@link SettingsScope#APPLICATION}
      * settings file: unknown blocks (sheet/registry/state IDs this version does
      * not know, or a block kind this version does not know) are recovered from
@@ -550,9 +632,9 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
      * version X". A second run recovers nothing new: the blocks are present
      * locally by then.
      * <p>
-     * The profile base directory is the parent of {@link #userDir}
-     * ({@code .../profiles}) and the current version is {@link #userDir}'s file
-     * name, so this also works through {@link #forTesting(Path)}.
+     * The profile base directory is the parent of {@link #userDir()}
+     * ({@code .../profiles}) and the current version is the profile directory's
+     * file name, so this also works through {@link #forTesting(Path)}.
      * Must run <em>before</em> the APPLICATION document is loaded, otherwise
      * the recovered content only reaches this session through a reload.
      * <p>
@@ -564,8 +646,8 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
      */
     public synchronized Set<String> runCarryOver() {
         Path settingsFile = fileFor(SettingsScope.APPLICATION);
-        Path profileBaseDir = userDir.toAbsolutePath().getParent();
-        String currentVersion = userDir.toAbsolutePath().getFileName().toString();
+        Path profileBaseDir = userDir().toAbsolutePath().getParent();
+        String currentVersion = userDir().toAbsolutePath().getFileName().toString();
         if (profileBaseDir == null || settingsFile == null) {
             return Set.of();
         }

@@ -140,9 +140,16 @@ public final class JIPipeApplicationSettingsServiceComponent extends JIPipeServi
      * the same file yields the values.</li>
      * </ul>
      * The in-memory document is consulted <em>only</em> when the file is
-     * absent or unparseable — never to paper over the legacy shape (the
-     * document would be the pre-migration state, so mixing the two would make
-     * the result depend on whether anything materialized the document yet).
+     * absent, or when it is not parseable <em>and</em>
+     * {@code JIPipe.getSettingsService().document(APPLICATION)} has already
+     * been materialized — never to paper over the legacy shape (the document
+     * would be the pre-migration state, so mixing the two would make the
+     * result depend on whether anything materialized the document yet). It
+     * must never <em>materialize</em> the document itself: doing so during the
+     * startup would load the profile directory at that instant, and a
+     * {@code --override-profile} run would then be split-brained between the
+     * override profile (read here and migrated by the initializer) and the real
+     * profile (loaded into the settings component).
      *
      * @return the node keyed by sheet ID. Never null.
      */
@@ -168,15 +175,20 @@ public final class JIPipeApplicationSettingsServiceComponent extends JIPipeServi
 
     /**
      * @return the {@code sheet:<id>} blocks of the in-memory application
-     * document, or {@link MissingNode} when the service is not initialized
-     * (see {@link #getRawSheetsNode()} for when this fallback is used)
+     * document <em>if it is already materialized</em>, or {@link MissingNode}
+     * when there is none. Never triggers the first load: that would resolve the
+     * profile directory during the startup, before a {@code --override-profile}
+     * override is authoritative (see {@link #getRawSheetsNode()}).
      */
     private static JsonNode inMemoryRawSheetsNode() {
         if (!JIPipe.isInstantiated() || JIPipe.getInstance() == null) {
             return MissingNode.getInstance();
         }
         try {
-            SettingsDocument doc = JIPipe.getInstance().getSettings().document(SettingsScope.APPLICATION);
+            SettingsDocument doc = JIPipe.getInstance().getSettings().materializedDocument(SettingsScope.APPLICATION);
+            if (doc == null) {
+                return MissingNode.getInstance();
+            }
             return sheetBlocks(doc.snapshotJson());
         } catch (RuntimeException e) {
             logger.debug("Could not read the raw settings from the in-memory document", e);
