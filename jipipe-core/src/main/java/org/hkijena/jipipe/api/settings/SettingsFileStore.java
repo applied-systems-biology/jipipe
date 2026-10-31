@@ -326,6 +326,35 @@ public final class SettingsFileStore {
      * @param size the file size in bytes
      * @param lastModifiedMillis the last-modified time in epoch milliseconds
      */
+    /**
+     * Renames this store's file to a {@code .bad-<timestamp>} backup and
+     * prunes the old backups, preserving the broken content. This is the
+     * backup path for a corrupt file encountered OUTSIDE the store's own
+     * {@link #load()} (the foreign-merge recovery in the settings service),
+     * so that every {@code .bad-*} creation goes through the same bound as
+     * the load path (at most {@link #MAX_BAD_BACKUPS_PER_FILE} per base
+     * name).
+     * <p>
+     * Best effort: a failed rename is logged and the file is left in place
+     * (the caller already keeps its local state).
+     */
+    public void backupCorruptFile() {
+        Path backup = file.resolveSibling(file.getFileName() + BAD_MARKER + BACKUP_TIMESTAMP.format(Instant.now()));
+        try {
+            Files.move(file, backup, StandardCopyOption.REPLACE_EXISTING);
+            pruneBadBackups();
+        } catch (IOException e) {
+            logger.warn("Could not back up the corrupt settings file {} to {}", file, backup, e);
+        }
+    }
+
+    /**
+     * A lightweight snapshot of a settings file's identity on disk, used to
+     * detect changes since a previous snapshot.
+     *
+     * @param size the file size in bytes
+     * @param lastModifiedMillis the last-modified time in epoch milliseconds
+     */
     public record FileFingerprint(long size, long lastModifiedMillis) {
         /**
          * Computes the fingerprint of the given file.

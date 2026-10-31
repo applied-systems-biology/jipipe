@@ -46,7 +46,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -139,14 +138,6 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
 
     private static final DateTimeFormatter META_TIMESTAMP =
             DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'").withZone(ZoneOffset.UTC);
-    /**
-     * Backup marker and timestamp format for a corrupt foreign settings file,
-     * identical to {@code SettingsFileStore}'s recovery convention
-     * ({@code <name>.bad-<timestamp>}, filename-safe ISO basic format).
-     */
-    private static final String BAD_BACKUP_MARKER = ".bad-";
-    private static final DateTimeFormatter BAD_BACKUP_TIMESTAMP =
-            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH-mm-ss'Z'").withZone(ZoneOffset.UTC);
 
     /**
      * The profile directory that holds the settings files, when the component
@@ -909,15 +900,17 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
      * naming; the store owns its own recovery path, this only makes the
      * pre-check produce the same outcome without merging an empty document.
      */
+    /**
+     * Preserves a corrupt foreign settings file as a {@code .bad-<timestamp>}
+     * backup (the foreign-merge path: the watcher detected an unreadable file
+     * written by another process). Routed through the store's
+     * {@link SettingsFileStore#backupCorruptFile()} so this backup creation is
+     * subject to the same "at most 5 newest per base name" bound as the
+     * store's own load-path backups - a repeated foreign-merge corruption
+     * must not accumulate backups without limit.
+     */
     private void backupCorruptForeignFile(SettingsFileStore store) {
-        Path file = store.file();
-        try {
-            Path backup = file.resolveSibling(file.getFileName() + BAD_BACKUP_MARKER
-                    + BAD_BACKUP_TIMESTAMP.format(Instant.now()));
-            Files.move(file, backup, StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException e) {
-            logger.warn("Could not back up the corrupt settings file {}", file, e);
-        }
+        store.backupCorruptFile();
     }
 
     /**
@@ -1933,7 +1926,12 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
         if (!Files.isRegularFile(file)) {
             return; // nothing on disk (first save, or deleted): nothing to clobber
         }
-        FileFingerprint onDisk = store.fingerprint();
+        // A file that exists but cannot be fingerprinted (a transient stat or
+        // permission failure) degrades to null and is treated like a foreign
+        // change below - the merge is non-destructive and the save proceeds,
+        // exactly as the Javadoc states. The raw store.fingerprint() would
+        // rethrow here and abort the save for every caller (EDT included).
+        FileFingerprint onDisk = fingerprintOrNull(store);
         // The last state this process produced or accepted for this file.
         // A save records it as own; a merge records the merged foreign state
         // as own. Anything else means another writer changed the file since.

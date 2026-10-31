@@ -846,10 +846,6 @@ public final class SettingsMigration {
     }
 
     /**
-     * Reads and parses a JSON tree, returning {@code null} instead of throwing.
-     * Used for the backup directory, which is read-only for recovery.
-     */
-    /**
      * Parses a legacy file from the backup, or {@code null} when it cannot be
      * used. The recovery is a convenience and never fails a startup, but a
      * file that exists and does not parse is <b>not silent</b>: it is logged,

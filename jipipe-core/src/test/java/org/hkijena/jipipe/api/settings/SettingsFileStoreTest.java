@@ -222,6 +222,37 @@ class SettingsFileStoreTest {
         assertTrue(Files.exists(other), "backups of another base file name are not touched");
     }
 
+    /**
+     * The store's external backup route (the foreign-merge recovery in the
+     * settings service preserves a corrupt foreign file through
+     * {@link SettingsFileStore#backupCorruptFile()}) must be subject to the
+     * SAME "newest 5 per base name" bound as the load path: every {@code .bad-}
+     * creation goes through the bound, so repeated foreign corruption cannot
+     * accumulate backups without limit.
+     */
+    @Test void backupCorruptFileIsSubjectToTheSamePruneBound() throws Exception {
+        Path file = tempDir.resolve("settings.json");
+        Files.writeString(file, "{ corrupt foreign write");
+        for (int i = 0; i < 7; i++) {
+            Path backup = tempDir.resolve("settings.json.bad-2026-10-0" + (i + 1) + "T00-00-00Z");
+            Files.writeString(backup, "{ old corrupt " + i + " }");
+            Files.setLastModifiedTime(backup, FileTime.from(Instant.parse("2026-10-0" + (i + 1) + "T00:00:00Z")));
+        }
+
+        SettingsFileStore store = new SettingsFileStore(file, org.hkijena.jipipe.api.settings.SettingsScope.APPLICATION, p -> true);
+        store.backupCorruptFile();
+
+        List<Path> kept = listBadBackups().stream()
+                .filter(p -> p.getFileName().toString().startsWith("settings.json.bad-"))
+                .sorted()
+                .toList();
+        assertEquals(SettingsFileStore.maxBadBackupsPerFile(), kept.size(),
+                "the external backup route prunes to the newest 5 like the load path");
+        assertFalse(Files.exists(file), "the corrupt file itself is moved to the backup");
+        assertTrue(kept.stream().anyMatch(p -> p.getFileName().toString().startsWith("settings.json.bad-2026-10-31")),
+                "the new (current) backup survives the prune");
+    }
+
     private List<Path> listBadBackups() throws java.io.IOException {
         try (var stream = Files.list(tempDir)) {
             return stream.filter(p -> p.getFileName().toString().contains(".bad-")).sorted().toList();
