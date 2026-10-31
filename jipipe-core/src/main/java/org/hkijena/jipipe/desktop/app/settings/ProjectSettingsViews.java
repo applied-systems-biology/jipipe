@@ -72,9 +72,12 @@ public final class ProjectSettingsViews {
      * Builds the three live-view sections over the given project's metadata,
      * as tree nodes for {@link JIPipeDesktopSettingsTab}'s PROJECT scope.
      * <p>
-     * The instances are created over the <em>current</em> project every time the
-     * tab reloads its sections, so a view can never hold a stale project after
-     * it was closed and another one opened.
+     * The instances are created over the <em>passed</em> project. The tab
+     * builds them over the project open in the workbench when it constructs its
+     * sections, and the workbench's project is final for the tab's whole life
+     * (the project window disposes the workbench — tab included — before the
+     * project is closed), so a view can never hold a project that is no longer
+     * the open one.
      *
      * @param project the open project (must not be {@code null})
      * @return one node per view, in {@link #sectionIds()} order
