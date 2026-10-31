@@ -19,11 +19,14 @@ import org.hkijena.jipipe.api.settings.JIPipeSettingKey;
 import org.hkijena.jipipe.api.settings.SettingsBinding;
 import org.hkijena.jipipe.api.settings.SettingsScope;
 import org.hkijena.jipipe.utils.json.JsonUtils;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -45,6 +48,27 @@ class SettingsAutoPersistTest {
 
     @TempDir
     Path tempDir;
+
+    /**
+     * Every component the test creates; disposed in {@link #disposeComponents()}
+     * so a non-daemon Swing debounce timer cannot outlive the test and fire a
+     * save on a finished component.
+     */
+    private final List<JIPipeSettingsServiceComponent> components = new ArrayList<>();
+
+    private JIPipeSettingsServiceComponent component() {
+        JIPipeSettingsServiceComponent c = JIPipeSettingsServiceComponent.forTesting(tempDir);
+        components.add(c);
+        return c;
+    }
+
+    @AfterEach
+    void disposeComponents() {
+        // dispose() is idempotent; the test methods keep their own local refs.
+        for (JIPipeSettingsServiceComponent c : components) {
+            c.dispose();
+        }
+    }
 
     private static JsonNode readSettingsFile(Path userDir) throws Exception {
         Path file = userDir.resolve("settings.json");
@@ -74,7 +98,7 @@ class SettingsAutoPersistTest {
      */
     @Test
     void localEditIsSavedWithoutExplicitSave() throws Exception {
-        JIPipeSettingsServiceComponent c = JIPipeSettingsServiceComponent.forTesting(tempDir);
+        JIPipeSettingsServiceComponent c = component();
         JIPipeSettingKey<Boolean> key = JIPipeSettingKey.bool("registry:test-db", "flag", Boolean.class)
                 .defaultValue(false)
                 .scope(SettingsScope.APPLICATION);
@@ -96,7 +120,7 @@ class SettingsAutoPersistTest {
      */
     @Test
     void sheetShapedBlockEditIsSavedWithoutExplicitSave() throws Exception {
-        JIPipeSettingsServiceComponent c = JIPipeSettingsServiceComponent.forTesting(tempDir);
+        JIPipeSettingsServiceComponent c = component();
         JIPipeSettingKey<Boolean> key = JIPipeSettingKey.bool("sheet:test-sheet", "x", Boolean.class)
                 .defaultValue(false)
                 .scope(SettingsScope.APPLICATION);
@@ -118,7 +142,7 @@ class SettingsAutoPersistTest {
      */
     @Test
     void engineSaveDoesNotRescheduleItself() {
-        JIPipeSettingsServiceComponent c = JIPipeSettingsServiceComponent.forTesting(tempDir);
+        JIPipeSettingsServiceComponent c = component();
         JIPipeSettingKey<Boolean> key = JIPipeSettingKey.bool("registry:test-db", "flag", Boolean.class)
                 .defaultValue(false)
                 .scope(SettingsScope.APPLICATION);
@@ -139,7 +163,7 @@ class SettingsAutoPersistTest {
      */
     @Test
     void quiescentWriteDoesNotScheduleAutoSave() {
-        JIPipeSettingsServiceComponent c = JIPipeSettingsServiceComponent.forTesting(tempDir);
+        JIPipeSettingsServiceComponent c = component();
         JsonNode value = JsonUtils.getObjectMapper().valueToTree(true);
 
         c.writeQuiescently(c.document(SettingsScope.APPLICATION), "registry:recent", value);
