@@ -38,6 +38,7 @@ import javax.swing.tree.*;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -72,6 +73,36 @@ public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implem
      */
     private static final SettingsScope[] SCOPES = {SettingsScope.APPLICATION, SettingsScope.PROJECT, SettingsScope.RUNTIME};
 
+    /**
+     * The registered merged sections: registered sheet id → the merged section
+     * (page) its form is replaced by. A page is hosted by the first sheet that
+     * registers it, so the placeholder pages need no sheet of their own.
+     * <p>
+     * Populated by {@link JIPipeDesktopAppearanceSection#registerCompositions()}
+     * during plugin registration.
+     */
+    private static final Map<String, String> MERGED_PAGES_BY_SHEET = new ConcurrentHashMap<>();
+
+    /**
+     * Registers a merged section: the given registered sheet's form is replaced
+     * by the merged section named {@code page}.
+     *
+     * @param sheetId the registered sheet that hosts the merged section
+     * @param page    the merged section id ({@link AppearanceSectionModel#SECTION_APPEARANCE}, ...)
+     */
+    public static void registerMergedPage(String sheetId, String page) {
+        MERGED_PAGES_BY_SHEET.putIfAbsent(sheetId, page);
+    }
+
+    /**
+     * @param sheetId a registered sheet id
+     * @return the merged section the sheet's form is replaced by, or
+     * {@code null} for a plain section
+     */
+    static String mergedPageOf(String sheetId) {
+        return sheetId == null ? null : MERGED_PAGES_BY_SHEET.get(sheetId);
+    }
+
     private final JTree tree = new JTree();
     private final JTabbedPane scopeSwitcher = new JTabbedPane();
     private final JIPipeDesktopSearchTextField searchField = new JIPipeDesktopSearchTextField();
@@ -88,6 +119,7 @@ public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implem
     private SettingsScope activeScope = SettingsScope.APPLICATION;
     private String selectedSheetId;
     private JIPipeDesktopParameterFormPanel currentFormPanel;
+    private JIPipeDesktopAppearanceSection currentSection;
     private boolean updatingTree;
 
     /**
@@ -424,14 +456,19 @@ public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implem
             wrapper.add(createScopeHintLabel(sheetNode.scope()), BorderLayout.NORTH);
         }
 
+        String mergedPage = mergedPageOf(sheetNode.id());
         if (sheet == null) {
             wrapper.add(UIUtils.createInfoLabel("No settings available",
                     "The section '" + sheetNode.name() + "' is not available in this session"), BorderLayout.CENTER);
+        } else if (editable && mergedPage != null) {
+            // A merged section: render the composed content instead of a form.
+            JIPipeDesktopAppearanceSection section = new JIPipeDesktopAppearanceSection(getDesktopWorkbench(),
+                    this,
+                    mergedPage);
+            currentSection = section;
+            wrapper.add(section, BorderLayout.CENTER);
         } else {
-            JIPipeDesktopParameterFormPanel formPanel = new JIPipeDesktopParameterFormPanel(getDesktopWorkbench(),
-                    sheet,
-                    MarkdownText.fromPluginResource("documentation/application-settings.md", new HashMap<>()),
-                    JIPipeDesktopParameterFormPanel.WITH_SCROLLING | JIPipeDesktopParameterFormPanel.WITH_DOCUMENTATION | JIPipeDesktopParameterFormPanel.WITH_SEARCH_BAR);
+            JIPipeDesktopParameterFormPanel formPanel = createPlainFormPanel(sheet);
             if (!editable) {
                 formPanel.setEnabled(false);
             }
@@ -440,6 +477,13 @@ public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implem
         }
 
         splitPane.setRightComponent(UIUtils.wrapInIslandPanelIfNeeded(wrapper));
+    }
+
+    private JIPipeDesktopParameterFormPanel createPlainFormPanel(JIPipeParameterCollection sheet) {
+        return new JIPipeDesktopParameterFormPanel(getDesktopWorkbench(),
+                sheet,
+                MarkdownText.fromPluginResource("documentation/application-settings.md", new HashMap<>()),
+                JIPipeDesktopParameterFormPanel.WITH_SCROLLING | JIPipeDesktopParameterFormPanel.WITH_DOCUMENTATION | JIPipeDesktopParameterFormPanel.WITH_SEARCH_BAR);
     }
 
     private JLabel createScopeHintLabel(SettingsScope scope) {
@@ -477,6 +521,10 @@ public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implem
     }
 
     private void disposeFormPanel() {
+        if (currentSection != null) {
+            currentSection.dispose();
+            currentSection = null;
+        }
         if (currentFormPanel != null) {
             currentFormPanel.dispose();
             currentFormPanel = null;

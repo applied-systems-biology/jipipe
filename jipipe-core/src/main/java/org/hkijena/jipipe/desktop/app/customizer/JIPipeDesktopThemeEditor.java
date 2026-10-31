@@ -16,6 +16,7 @@ package org.hkijena.jipipe.desktop.app.customizer;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.app.settings.ThemePreviewPanel;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernThemeStyle;

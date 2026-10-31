@@ -46,7 +46,6 @@ import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopCacheBrowserUI;
 import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopCacheManagerUI;
 import org.hkijena.jipipe.desktop.app.components.JIPipeDesktopAuthorProfileButton;
 import org.hkijena.jipipe.desktop.app.components.JIPipeDesktopProjectSaveManagerButton;
-import org.hkijena.jipipe.desktop.app.customizer.JIPipeDesktopCustomizerDialog;
 import org.hkijena.jipipe.desktop.app.customizer.JIPipeDesktopThemeManager;
 import org.hkijena.jipipe.desktop.app.documentation.JIPipeDataTypeCompendiumUI;
 import org.hkijena.jipipe.desktop.app.documentation.JIPipeDesktopAlgorithmCompendiumUI;
@@ -69,6 +68,7 @@ import org.hkijena.jipipe.desktop.app.running.logs.JIPipeDesktopRunnableLogsColl
 import org.hkijena.jipipe.desktop.app.running.queue.JIPipeDesktopRunnableBackgroundQueuesIndicator;
 import org.hkijena.jipipe.desktop.app.running.queue.JIPipeDesktopRunnableQueueButton;
 import org.hkijena.jipipe.desktop.app.running.queue.JIPipeDesktopRunnableQueueNotifier;
+import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopAppearanceSection;
 import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopApplicationSettingsUI;
 import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopProjectOverviewUI;
 import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopProjectSettingsUI;
@@ -1095,8 +1095,12 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         updater.run();
     }
 
+    /**
+     * Opens the settings tab on the merged Appearance section (the former
+     * "Customize JIPipe" dialog, which the tab replaced).
+     */
     private void openCustomizer() {
-        new JIPipeDesktopCustomizerDialog(this).setVisible(true);
+        JIPipeDesktopAppearanceSection.openAppearance(this);
     }
 
     private void openArtifactManager() {
@@ -1170,6 +1174,25 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
             if (sectionSearch != null) {
                 settingsTab.setSectionSearch(sectionSearch);
             }
+        }
+        return content;
+    }
+
+    /**
+     * Opens the non-modal settings tab on a specific section.
+     *
+     * @param scope           the scope the section belongs to
+     * @param settingsSheetId the registered sheet id of the section (e.g. the
+     *                        merged Appearance section); if unknown, the tab is
+     *                        opened on its default selection
+     * @return the tab content component, or {@code null}
+     */
+    public Component openSettingsSection(SettingsScope scope, String settingsSheetId) {
+        Component content = openSettingsTab(scope, null);
+        if (content instanceof JIPipeDesktopSettingsTab settingsTab && settingsSheetId != null) {
+            // Clear a stale search so the section is selectable in the tree.
+            settingsTab.setSectionSearch("");
+            settingsTab.selectSheet(settingsSheetId);
         }
         return content;
     }

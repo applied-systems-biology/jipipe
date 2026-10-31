@@ -17,6 +17,7 @@ import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
 import org.hkijena.jipipe.api.service.JIPipeService;
+import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopAppearanceSection;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
@@ -93,6 +94,15 @@ public class StandardSettingsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerApplicationSettingsSheet(new JIPipeGraphEditorUIApplicationSettings());
         registerApplicationSettingsSheet(new JIPipeTableViewerUIApplicationSettings());
         registerApplicationSettingsSheet(new JIPipeFileChooserApplicationSettings());
+
+        // Merged Appearance / Accessibility / Keyboard sections (Task 19). Their
+        // content is composed of the general UI and file chooser sheets (see
+        // AppearanceSectionModel); the sheets below are the registration anchors
+        // that make the sections first-class in the tree and the persistence.
+        registerApplicationSettingsSheet(new JIPipeDesktopAppearanceApplicationSettings());
+        registerApplicationSettingsSheet(new JIPipeDesktopAccessibilityApplicationSettings());
+        registerApplicationSettingsSheet(new JIPipeDesktopKeyboardApplicationSettings());
+        JIPipeDesktopAppearanceSection.registerCompositions();
 
         // Data
         registerApplicationSettingsSheet(new JIPipeDefaultResultImporterApplicationSettings());
