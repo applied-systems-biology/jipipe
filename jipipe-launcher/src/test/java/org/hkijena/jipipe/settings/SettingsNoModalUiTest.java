@@ -18,10 +18,12 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
- * Task 22 of the modern settings system: the non-modal settings tab is the only
- * application-settings UI. The former modal dialog
- * ({@code JIPipeDesktopApplicationSettingsUI}) and the former "Customize JIPipe"
- * dialog ({@code JIPipeDesktopCustomizerDialog}, removed in Task 19) must be
+ * Task 22 (and work item 3 of the follow-up) of the modern settings system: the
+ * non-modal settings tab is the only settings UI. The former modal dialogs —
+ * the application settings ({@code JIPipeDesktopApplicationSettingsUI}), the
+ * "Customize JIPipe" dialog ({@code JIPipeDesktopCustomizerDialog}, removed in
+ * Task 19) and the <em>project</em> settings modal
+ * ({@code JIPipeDesktopProjectSettingsUI}, removed in work item 3) — must be
  * gone, so nothing can reintroduce a second, dialog-based settings surface.
  * <p>
  * This is a structural existence gate, not a Swing interaction test (AGENTS.md):
@@ -35,5 +37,11 @@ class SettingsNoModalUiTest {
                 () -> Class.forName("org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopApplicationSettingsUI"));
         assertThrows(ClassNotFoundException.class,
                 () -> Class.forName("org.hkijena.jipipe.desktop.app.customizer.JIPipeDesktopCustomizerDialog"));
+    }
+
+    @Test
+    void projectSettingsModalIsRemoved() {
+        assertThrows(ClassNotFoundException.class,
+                () -> Class.forName("org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopProjectSettingsUI"));
     }
 }

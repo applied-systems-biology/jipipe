@@ -15,6 +15,7 @@ package org.hkijena.jipipe.api.validation.contexts;
 
 import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.project.JIPipeProject;
+import org.hkijena.jipipe.api.settings.SettingsScope;
 import org.hkijena.jipipe.api.validation.NavigableJIPipeValidationReportContext;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 
@@ -31,7 +32,7 @@ public class ProjectSettingsValidationReportContext extends ProjectValidationRep
 
     @Override
     public void navigate(JIPipeWorkbench workbench) {
-        ((JIPipeDesktopProjectWorkbench) workbench).openProjectSettings("/General/Connected services");
+        ((JIPipeDesktopProjectWorkbench) workbench).openSettingsSection(SettingsScope.PROJECT, "org.hkijena.jipipe:default-environments");
     }
 
 }

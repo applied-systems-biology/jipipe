@@ -836,7 +836,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
     }
 
     private void editDirectoryParameters() {
-        getDesktopProjectWorkbench().openProjectSettings("/General/Project user paths");
+        getDesktopProjectWorkbench().openSettingsSection(SettingsScope.PROJECT, "jipipe:project-directories");
         refreshParameters();
     }
 
@@ -934,7 +934,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
     }
 
     private void editProjectMetadata() {
-        getDesktopProjectWorkbench().openProjectSettings("/General/Project metadata");
+        getDesktopProjectWorkbench().openSettingsSection(SettingsScope.PROJECT, "jipipe:project-metadata");
         refreshAll();
     }
 
@@ -1011,15 +1011,15 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
         openSettingsButton.addActionListener(e -> getDesktopProjectWorkbench().openSettingsTab(SettingsScope.APPLICATION, null));
         toolBar.add(openSettingsButton);
 
-        JButton openProjectSettingsButton = new JButton("Project settings", JIPipe.RESOURCES.getIcon16("actions/configure.png"));
-        openProjectSettingsButton.setOpaque(false);
-        openProjectSettingsButton.setBackground(new Color(0, 0, 0, 0));
-        openProjectSettingsButton.setToolTipText("Opens the project settings dialog");
-        openProjectSettingsButton.addActionListener(e -> {
-            getDesktopProjectWorkbench().openProjectSettings(null);
+        JButton projectSettingsButton = new JButton("Project settings", JIPipe.RESOURCES.getIcon16("actions/configure.png"));
+        projectSettingsButton.setOpaque(false);
+        projectSettingsButton.setBackground(new Color(0, 0, 0, 0));
+        projectSettingsButton.setToolTipText("Opens the project settings");
+        projectSettingsButton.addActionListener(e -> {
+            getDesktopProjectWorkbench().openSettingsTab(SettingsScope.PROJECT, null);
             refreshAll();
         });
-        toolBar.add(openProjectSettingsButton);
+        toolBar.add(projectSettingsButton);
 
         JButton runProjectButton = new JButton("Run project", JIPipe.RESOURCES.getIcon16("actions/play.png"));
         runProjectButton.setOpaque(false);

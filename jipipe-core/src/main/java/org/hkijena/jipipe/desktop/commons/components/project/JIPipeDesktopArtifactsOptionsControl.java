@@ -143,7 +143,7 @@ public class JIPipeDesktopArtifactsOptionsControl extends JButton implements JIP
     }
 
     private void openEnvironmentProjectSettings() {
-        workbench.openProjectSettings("/General/Connected services");
+        workbench.openSettingsSection(SettingsScope.PROJECT, "org.hkijena.jipipe:default-environments");
     }
 
     private void addLocalRepository() {

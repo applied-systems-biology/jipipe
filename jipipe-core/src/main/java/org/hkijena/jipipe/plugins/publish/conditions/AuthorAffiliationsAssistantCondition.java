@@ -16,6 +16,7 @@ package org.hkijena.jipipe.plugins.publish.conditions;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.metadata.JIPipeOrganizationMetadata;
+import org.hkijena.jipipe.api.settings.SettingsScope;
 import org.hkijena.jipipe.desktop.app.publish.JIPipeDesktopPublisherAssistant;
 import org.hkijena.jipipe.desktop.app.publish.JIPipeDesktopPublisherAssistantCondition;
 import org.hkijena.jipipe.desktop.app.publish.JIPipeDesktopPublisherAssistantConditionStatus;
@@ -34,7 +35,7 @@ public class AuthorAffiliationsAssistantCondition extends JIPipeDesktopPublisher
     }
 
     private void editProjectMetadata() {
-        getDesktopProjectWorkbench().openProjectSettings("/General/Project metadata");
+        getDesktopProjectWorkbench().openSettingsSection(SettingsScope.PROJECT, "jipipe:project-metadata");
         getAssistant().updateAssistant();
     }
 

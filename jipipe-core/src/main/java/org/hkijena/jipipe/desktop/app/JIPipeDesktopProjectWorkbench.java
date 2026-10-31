@@ -70,7 +70,6 @@ import org.hkijena.jipipe.desktop.app.running.queue.JIPipeDesktopRunnableQueueBu
 import org.hkijena.jipipe.desktop.app.running.queue.JIPipeDesktopRunnableQueueNotifier;
 import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopAppearanceSection;
 import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopProjectOverviewUI;
-import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopProjectSettingsUI;
 import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopRawSettingsSection;
 import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopSettingsTab;
 import org.hkijena.jipipe.desktop.commons.components.SplitButton;
@@ -837,7 +836,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
             listPanel.add(Box.createVerticalStrut(8));
             JButton openMeta = UIUtils.createButton("Open project metadata",
                     JIPipe.RESOURCES.getIcon16("actions/circle-info.png"),
-                    () -> openProjectSettings("/General/Project metadata"));
+                    () -> openSettingsSection(SettingsScope.PROJECT, "jipipe:project-metadata"));
             listPanel.add(openMeta);
         }
         content.add(listPanel, BorderLayout.CENTER);
@@ -979,7 +978,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
 
         JMenuItem projectSettings = new JMenuItem("Project settings", JIPipe.RESOURCES.getIcon16("actions/configure.png"));
         projectSettings.setToolTipText("Opens the project settings");
-        projectSettings.addActionListener(e -> openProjectSettings(null));
+        projectSettings.addActionListener(e -> openSettingsTab(SettingsScope.PROJECT, null));
         projectMenu.add(projectSettings);
 
         {
@@ -1464,46 +1463,6 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
     @Override
     public void onJIPipePluginRegistered(JIPipePluginRegisteredEvent event) {
         sendStatusBarText("Registered extension: '" + event.getExtension().getMetadata().getName() + "' with id '" + event.getExtension().getDependencyId() + "'. We recommend to restart ImageJ.");
-    }
-
-    public void openProjectSettings(String navigateToCategory) {
-        JIPipeDesktopProjectSettingsUI projectSettingsComponents = new JIPipeDesktopProjectSettingsUI(getProject(), this);
-
-        JDialog dialog = new JDialog(getWindow());
-        dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        dialog.setTitle("JIPipe - Project settings");
-        dialog.setModal(true);
-        dialog.setIconImage(UIUtils.getJIPipeIcon128());
-
-        UIUtils.addEscapeListener(dialog);
-        JPanel contentPanel = new JPanel(new BorderLayout(8, 8));
-        contentPanel.setBackground(ThemeUtils.getCurrentStyle().getWindowBackground());
-        contentPanel.add(projectSettingsComponents, BorderLayout.CENTER);
-
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setOpaque(false);
-        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
-        buttonPanel.add(new JLabel("Settings are applied automatically", JIPipe.RESOURCES.getIcon16("emblems/emblem-important-blue.png"), JLabel.LEFT));
-        buttonPanel.add(Box.createHorizontalGlue());
-
-        JButton closeButton = new JButton("Close", JIPipe.RESOURCES.getIcon16("actions/message-close.png"));
-        closeButton.addActionListener(e -> {
-            dialog.setVisible(false);
-        });
-        buttonPanel.add(UIUtils.makeButtonTransparent(closeButton));
-
-        contentPanel.add(buttonPanel, BorderLayout.SOUTH);
-        buttonPanel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
-
-        if (navigateToCategory != null) {
-            projectSettingsComponents.selectNode(navigateToCategory);
-        }
-
-        dialog.setContentPane(contentPanel);
-        dialog.pack();
-        dialog.setSize(1280, 768);
-        dialog.setLocationRelativeTo(getWindow());
-        dialog.setVisible(true);
     }
 
     public ProjectSavedEventEmitter getProjectSavedEventEmitter() {
