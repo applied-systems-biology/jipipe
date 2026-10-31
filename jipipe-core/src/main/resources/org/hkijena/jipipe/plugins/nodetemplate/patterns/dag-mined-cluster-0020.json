@@ -1,1 +1,102 @@
-{"edges":[{"source-node":"n0","source-slot":"Parameters","target-node":"n5","target-slot":"Radius 1"},{"source-node":"n2","source-slot":"Parameters","target-node":"n5","target-slot":"Structure"},{"source-node":"n3","source-slot":"Parameters","target-node":"n5","target-slot":"Radius 2"}],"nodes":{"n0":{"jipipe:graph-compartment":"f0c1a8fc-56c9-5072-b73d-989525659538","jipipe:metadata-v1":{"location/f0c1a8fc-56c9-5072-b73d-989525659538/x":0,"location/f0c1a8fc-56c9-5072-b73d-989525659538/y":5},"jipipe:node-info-id":"parameters-define-table"},"n2":{"jipipe:graph-compartment":"f0c1a8fc-56c9-5072-b73d-989525659538","jipipe:metadata-v1":{"location/f0c1a8fc-56c9-5072-b73d-989525659538/x":20,"location/f0c1a8fc-56c9-5072-b73d-989525659538/y":5},"jipipe:node-info-id":"parameters-define-table"},"n3":{"jipipe:graph-compartment":"f0c1a8fc-56c9-5072-b73d-989525659538","jipipe:metadata-v1":{"location/f0c1a8fc-56c9-5072-b73d-989525659538/x":10,"location/f0c1a8fc-56c9-5072-b73d-989525659538/y":5},"jipipe:node-info-id":"parameters-define-table"},"n5":{"jipipe:graph-compartment":"f0c1a8fc-56c9-5072-b73d-989525659538","jipipe:metadata-v1":{"location/f0c1a8fc-56c9-5072-b73d-989525659538/x":0,"location/f0c1a8fc-56c9-5072-b73d-989525659538/y":9},"jipipe:node-info-id":"parameters-merge","jipipe:slot-configuration":{"input":{"Radius 1":{"slot-data-type":"parameters","slot-type":"Input","name":"Radius 1","custom-name":null,"description":"","is-virtual":false,"save-outputs":true,"is-optional":false},"Radius 2":{"slot-data-type":"parameters","slot-type":"Input","name":"Radius 2","custom-name":null,"description":"","is-virtual":false,"save-outputs":true,"is-optional":false},"Structure":{"slot-data-type":"parameters","slot-type":"Input","name":"Structure","custom-name":null,"description":"","is-virtual":false,"save-outputs":true,"is-optional":false}},"output":{"Output":{"slot-data-type":"parameters","slot-type":"Output","name":"Output","custom-name":null,"description":null,"is-virtual":false,"save-outputs":true,"is-optional":false}}}}}}
+{
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Parameters",
+      "target-node": "n5",
+      "target-slot": "Radius 1"
+    },
+    {
+      "source-node": "n2",
+      "source-slot": "Parameters",
+      "target-node": "n5",
+      "target-slot": "Structure"
+    },
+    {
+      "source-node": "n3",
+      "source-slot": "Parameters",
+      "target-node": "n5",
+      "target-slot": "Radius 2"
+    }
+  ],
+  "nodes": {
+    "n0": {
+      "jipipe:graph-compartment": "f0c1a8fc-56c9-5072-b73d-989525659538",
+      "jipipe:metadata-v1": {
+        "location/f0c1a8fc-56c9-5072-b73d-989525659538/x": 0,
+        "location/f0c1a8fc-56c9-5072-b73d-989525659538/y": 5
+      },
+      "jipipe:node-info-id": "parameters-define-table"
+    },
+    "n2": {
+      "jipipe:graph-compartment": "f0c1a8fc-56c9-5072-b73d-989525659538",
+      "jipipe:metadata-v1": {
+        "location/f0c1a8fc-56c9-5072-b73d-989525659538/x": 20,
+        "location/f0c1a8fc-56c9-5072-b73d-989525659538/y": 5
+      },
+      "jipipe:node-info-id": "parameters-define-table"
+    },
+    "n3": {
+      "jipipe:graph-compartment": "f0c1a8fc-56c9-5072-b73d-989525659538",
+      "jipipe:metadata-v1": {
+        "location/f0c1a8fc-56c9-5072-b73d-989525659538/x": 10,
+        "location/f0c1a8fc-56c9-5072-b73d-989525659538/y": 5
+      },
+      "jipipe:node-info-id": "parameters-define-table"
+    },
+    "n5": {
+      "jipipe:graph-compartment": "f0c1a8fc-56c9-5072-b73d-989525659538",
+      "jipipe:metadata-v1": {
+        "location/f0c1a8fc-56c9-5072-b73d-989525659538/x": 0,
+        "location/f0c1a8fc-56c9-5072-b73d-989525659538/y": 9
+      },
+      "jipipe:node-info-id": "parameters-merge",
+      "jipipe:slot-configuration": {
+        "input": {
+          "Radius 1": {
+            "slot-data-type": "parameters",
+            "slot-type": "Input",
+            "name": "Radius 1",
+            "custom-name": null,
+            "description": "",
+            "is-virtual": false,
+            "save-outputs": true,
+            "is-optional": false
+          },
+          "Radius 2": {
+            "slot-data-type": "parameters",
+            "slot-type": "Input",
+            "name": "Radius 2",
+            "custom-name": null,
+            "description": "",
+            "is-virtual": false,
+            "save-outputs": true,
+            "is-optional": false
+          },
+          "Structure": {
+            "slot-data-type": "parameters",
+            "slot-type": "Input",
+            "name": "Structure",
+            "custom-name": null,
+            "description": "",
+            "is-virtual": false,
+            "save-outputs": true,
+            "is-optional": false
+          }
+        },
+        "output": {
+          "Output": {
+            "slot-data-type": "parameters",
+            "slot-type": "Output",
+            "name": "Output",
+            "custom-name": null,
+            "description": null,
+            "is-virtual": false,
+            "save-outputs": true,
+            "is-optional": false
+          }
+        }
+      }
+    }
+  }
+}

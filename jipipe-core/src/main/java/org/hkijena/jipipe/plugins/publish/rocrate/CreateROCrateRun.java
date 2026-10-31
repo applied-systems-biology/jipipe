@@ -75,6 +75,16 @@ public class CreateROCrateRun extends DefaultJIPipeRunnable {
                 ROCrateApplicationSettings.getInstance().toDockerSettings());
     }
 
+    private static String toSpdxLicenseUri(String license) {
+        if (StringUtils.isNullOrEmpty(license)) {
+            return "https://spdx.org/licenses/MIT";
+        }
+        if (license.startsWith("http://") || license.startsWith("https://")) {
+            return license;
+        }
+        return "https://spdx.org/licenses/" + license;
+    }
+
     public boolean isSkipDiagram() {
         return skipDiagram;
     }
@@ -198,8 +208,7 @@ public class CreateROCrateRun extends DefaultJIPipeRunnable {
                         PathUtils.createDirectories(tmpPath.resolve(relativeArchiveDirectory));
                         PathUtils.copyDirectory(entry.getValue(), tmpPath.resolve(relativeArchiveDirectory), getProgressInfo().resolve("Project directory " + entry.getKey()));
                         projectUserPathsRedirect.put(entry.getKey(), relativeArchiveDirectory.toString());
-                    }
-                    else if(Files.isRegularFile(entry.getValue())) {
+                    } else if (Files.isRegularFile(entry.getValue())) {
                         // We will make a subdirectory based on the key and copy the file into that one
                         // Then apply the redirect accordingly
                         // This preserves the file name which may contain metadata
@@ -212,8 +221,7 @@ public class CreateROCrateRun extends DefaultJIPipeRunnable {
                         PathUtils.createDirectories(tmpPath.resolve(relativeArchiveDirectory));
                         PathUtils.copyFile(entry.getValue(), tmpPath.resolve(relativeArchiveDirectory).resolve(entry.getValue().getFileName()));
                         projectUserPathsRedirect.put(entry.getKey(), relativeArchiveDirectory.resolve(entry.getValue().getFileName()).toString());
-                    }
-                    else {
+                    } else {
                         getProgressInfo().log(new FileNotFoundException("Unable to archive project user path " + entry.getKey() + ": directory " + entry.getValue() + " does not exist"));
                     }
                 }
@@ -221,17 +229,15 @@ public class CreateROCrateRun extends DefaultJIPipeRunnable {
                 case Output: {
                     getProgressInfo().log("Project user path " + entry.getKey() + " (" + entry.getValue() + ") will be redirected into the output directory");
 
-                    if(Files.isDirectory(entry.getValue())) {
+                    if (Files.isDirectory(entry.getValue())) {
                         // Outputs are stored into the outputs directory
                         projectUserPathsRedirect.put(entry.getKey(), Path.of("outputs", entry.getKey()).toString());
-                    }
-                    else if(Files.isRegularFile(entry.getValue())) {
+                    } else if (Files.isRegularFile(entry.getValue())) {
                         // Preserve the file name
                         Path finalOutputPath = Path.of("outputs", entry.getKey(), entry.getValue().getFileName().toString());
                         getProgressInfo().log("Relocating output project user path " + entry.getKey() + " (" + entry.getValue() + ") into key-based storage " + finalOutputPath);
                         projectUserPathsRedirect.put(entry.getKey(), finalOutputPath.toString());
-                    }
-                    else {
+                    } else {
                         getProgressInfo().warn("Unable to guess if the output is a file or directory (does not exist, so assuming a directory)");
                         // Outputs are stored into the outputs directory
                         projectUserPathsRedirect.put(entry.getKey(), Path.of("outputs", entry.getKey()).toString());
@@ -446,16 +452,6 @@ public class CreateROCrateRun extends DefaultJIPipeRunnable {
         builder.addContextualEntity(bioschemasGuide);
 
         return builder;
-    }
-
-    private static String toSpdxLicenseUri(String license) {
-        if (StringUtils.isNullOrEmpty(license)) {
-            return "https://spdx.org/licenses/MIT";
-        }
-        if (license.startsWith("http://") || license.startsWith("https://")) {
-            return license;
-        }
-        return "https://spdx.org/licenses/" + license;
     }
 
     private void addROCrateAuthors(RoCrate.RoCrateBuilder builder) {

@@ -14,15 +14,26 @@
 package org.hkijena.jipipe.utils.threshold;
 
 import ij.process.AutoThresholder;
+import org.hkijena.jipipe.ImageJHeadlessLogListener;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.util.Random;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class NBinsAutoThresholderTest {
+
+    /**
+     * ImageJ1's {@code AutoThresholder} logs non-converging iterations (e.g.
+     * {@code MinError}) via {@code IJ.log}, which opens the GUI "Log" window on
+     * first use - swallow it into a headless panel (belt & braces on top of the
+     * session listener).
+     */
+    @BeforeAll
+    static void installHeadlessImageJLogSink() {
+        ImageJHeadlessLogListener.installHeadlessLogSink();
+    }
 
     /**
      * On 256-bin histograms every method must return exactly what ImageJ's
@@ -207,7 +218,7 @@ class NBinsAutoThresholderTest {
      */
     @Test
     void testLiDoesNotOverflowOnLargeCountHistograms() {
-        // Case A: the user's crash shape — 500 bins, ~8 million pixels, one dominant
+        // Case A: the user's crash shape - 500 bins, ~8 million pixels, one dominant
         // high bin (473 * 7990637 wraps past 2^31 in the int mean accumulation).
         int[] caseA = new int[500];
         caseA[0] = 3;
@@ -253,7 +264,7 @@ class NBinsAutoThresholderTest {
      * Regression test for the same int-overflow class in Huang's fuzzy
      * thresholding: {@code sum_pix} accumulates {@code bin * count} products
      * in a 32-bit int, corrupting the running means (and thus the entropy
-     * criterion) once the weighted sum exceeds 2^31 — again only possible on
+     * criterion) once the weighted sum exceeds 2^31 - again only possible on
      * the n-bin paths with large pixel counts, never on 8-bit 256-bin input.
      */
     @Test

@@ -13,11 +13,6 @@
 
 package org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.filter;
 
-import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
-import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.IJ3DFramework;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.rois.RoiFiltersFunction;
-
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import gnu.trove.set.TIntSet;
@@ -35,6 +30,8 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.IJ3DFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.rois.RoiFiltersFunction;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
@@ -47,16 +44,17 @@ import org.hkijena.jipipe.plugins.ij3d.IJ3DUtils;
 import org.hkijena.jipipe.plugins.ij3d.datatypes.Ij3dSuiteRoi;
 import org.hkijena.jipipe.plugins.ij3d.datatypes.Ij3dSuiteRoiListData;
 import org.hkijena.jipipe.plugins.ij3d.utils.Roi3dRelationMeasurement;
-import org.hkijena.jipipe.plugins.ij3d.utils.Roi3dRelationMeasurementExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.ij3d.utils.Roi3dRelationMeasurementExpressionParameterVariablesInfo2;
 import org.hkijena.jipipe.plugins.ij3d.utils.Roi3dRelationMeasurementSetParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
+
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
 @SetJIPipeDocumentation(name = "Filter IJ3D ROI by overlap", description = "Filters the 3D ROI lists by testing for mutual overlap. The ROI1 output contains all ROI1 input ROI that overlap with any of ROI2. " +
         "The ROI2 output contains all ROI2 input ROI that overlap with a ROI1 ROI.")
-@ConfigureJIPipeNode(function = RoiFiltersFunction.class, framework = IJ3DFramework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
+@ConfigureJIPipeNode(function = RoiFiltersFunction.class, framework = IJ3DFramework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = Ij3dSuiteRoiListData.class, name = "Candidates", description = "The ROIs that are filtered", create = true)
 @AddJIPipeInputSlot(value = Ij3dSuiteRoiListData.class, name = "Filters", description = "The ROIs that are used as filters", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", description = "The reference image for measurements", create = true, optional = true)
@@ -71,11 +69,9 @@ public class FilterRoi3dByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
             .slotType(JIPipeSlotType.Output).dataClass(Ij3dSuiteRoiListData.class).build();
     public static final JIPipeDataSlotInfo SLOT_OUTPUT_FILTERS = JIPipeDataSlotInfo.builder().name("Filters").description("The remaining filter ROIs. Will be different if 'Consume on overlap' is enabled.")
             .slotType(JIPipeSlotType.Output).dataClass(Ij3dSuiteRoiListData.class).build();
-
-    private ColocalizationMode colocalizationMode = ColocalizationMode.Precise;
     private final MeasurementParameters measurementParameters;
     private final OutputParameters outputParameters;
-
+    private ColocalizationMode colocalizationMode = ColocalizationMode.Precise;
     private boolean ignoreC = true;
     private boolean ignoreT = true;
     private boolean consumeOnOverlap = false;
@@ -227,7 +223,7 @@ public class FilterRoi3dByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
 
         // Optimize if we are only interested in colocalization
         int relationMeasurements = measurementParameters.overlapFilterMeasurements.getNativeValue();
-        if(!overlapCondition.isEnabled()) {
+        if (!overlapCondition.isEnabled()) {
             relationMeasurements = Roi3dRelationMeasurement.Colocalization.getNativeValue();
         }
 
@@ -299,37 +295,35 @@ public class FilterRoi3dByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
             }
 
             boolean matches;
-            if(matchCondition.isEnabled()) {
+            if (matchCondition.isEnabled()) {
                 variables.put("numMatches", overlappingFilters.size());
                 matches = matchCondition.getContent().test(variables);
-            }
-            else {
+            } else {
                 matches = !overlappingFilters.isEmpty();
             }
 
             if (consumeOnOverlap && matches && !overlappingFilters.isEmpty()) {
                 consumedFilters.add(overlappingFilters.iterator().next());
             }
-            if(matches) {
+            if (matches) {
                 matched.add(candidatesCopy.get(i));
-            }
-            else {
+            } else {
                 rejected.add(candidatesCopy.get(i));
             }
         }
 
-        if(outputParameters.outputMatched) {
+        if (outputParameters.outputMatched) {
             iterationStep.addOutputData("Matched", matched, progressInfo);
         }
-        if(outputParameters.outputRejected) {
+        if (outputParameters.outputRejected) {
             iterationStep.addOutputData("Rejected", rejected, progressInfo);
         }
 
         // Output filters
-        if(outputParameters.outputFilters) {
+        if (outputParameters.outputFilters) {
             Ij3dSuiteRoiListData finalFilters = new Ij3dSuiteRoiListData();
             for (int i = 0; i < filtersCopy.size(); i++) {
-                if(!consumedFilters.contains(i)) {
+                if (!consumedFilters.contains(i)) {
                     finalFilters.add(filtersCopy.get(i));
                 }
             }

@@ -9,13 +9,25 @@ import org.hkijena.jipipe.utils.HardwareDetector;
 
 public class AccelerationStatisticsItem implements JIPipeStatisticsItem {
     @Override
-    public String getId() { return "acceleration"; }
+    public String getId() {
+        return "acceleration";
+    }
+
     @Override
-    public String getName() { return "Acceleration"; }
+    public String getName() {
+        return "Acceleration";
+    }
+
     @Override
-    public String getDescription() { return "Hardware acceleration mode and CUDA version"; }
+    public String getDescription() {
+        return "Hardware acceleration mode and CUDA version";
+    }
+
     @Override
-    public StatisticsPrivacyLevel getRequiredPrivacyLevel() { return StatisticsPrivacyLevel.Installation; }
+    public StatisticsPrivacyLevel getRequiredPrivacyLevel() {
+        return StatisticsPrivacyLevel.Installation;
+    }
+
     @Override
     public JsonNode serialize() {
         SystemResources resources = HardwareDetector.detect();
@@ -27,13 +39,20 @@ public class AccelerationStatisticsItem implements JIPipeStatisticsItem {
         }
         return TextNode.valueOf(mode);
     }
-    @Override
-    public void deserialize(JsonNode node) { }
-    @Override
-    public void reset() { }
 
     @Override
-    public String getIcon32() { return "actions/gears.png"; }
+    public void deserialize(JsonNode node) {
+    }
+
+    @Override
+    public void reset() {
+    }
+
+    @Override
+    public String getIcon32() {
+        return "actions/gears.png";
+    }
+
     @Override
     public org.hkijena.jipipe.desktop.commons.components.cards.JIPipeDesktopCardVariant getCardVariant() {
         return org.hkijena.jipipe.desktop.commons.components.cards.JIPipeDesktopCardVariant.Primary;

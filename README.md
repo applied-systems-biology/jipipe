@@ -21,7 +21,8 @@ See the LICENSE file provided with the code for the full license.
 
 You can find the latest release of JIPipe by visiting https://jipipe.hki-jena.de/download/
 
-We also provide snapshot builds that are created directly on the master branch: https://asb-git.hki-jena.de/RGerst/jipipe/-/packages
+We also provide snapshot builds that are created directly on the master
+branch: https://asb-git.hki-jena.de/RGerst/jipipe/-/packages
 
 ## Project structure
 
@@ -38,7 +39,8 @@ The project consists of following parts:
 * **JIPipe-IJ-OCR** integrates TesseractOCR.
 * **JIPipe-Filaments** filament processing library.
 * **JIPipe-IJ-Trackmate** integrates Trackmate.
-* **JIPipe-Multiparameters** provides algorithms and data types for handling parameter data. It contains the data source algorithms to define parameters.
+* **JIPipe-Multiparameters** provides algorithms and data types for handling parameter data. It contains the data source
+  algorithms to define parameters.
 * **JIPipe-Plots** provides data types and algorithms for generating plots.
 * **JIPipe-Python** provides a Python-scripting node.
 * **JIPipe-Tables** provides algorithms and data types to handle table data.
@@ -54,7 +56,7 @@ The project consists of following parts:
 
 You can use the **JIPipe** project to setup a development environment, as this project depends on all
 libraries.
-Due to internal dependencies, some data types are present in the **JIPipe-Core** library, but not registered into 
+Due to internal dependencies, some data types are present in the **JIPipe-Core** library, but not registered into
 the JIPipe runtime.
 
 ## Building JIPipe
@@ -70,16 +72,19 @@ You will need following packages:
 mvn package
 ```
 
-You will find the generated \*.jar files in `./*/target` folders. Copy them into the ImageJ `plugins` or `jar` directory.
+You will find the generated \*.jar files in `./*/target` folders. Copy them into the ImageJ `plugins` or `jar`
+directory.
 JIPipe requires some dependency libraries that need to be installer. These dependencies also have to be provided.
-This repository comes with automated tools that downloaded dependencies and to create packages that are ready-to-install.
+This repository comes with automated tools that downloaded dependencies and to create packages that are
+ready-to-install.
 
 ### Generating a package with dependencies
 
-You can find a script `build.sh` in `dist/zip`. It will package the output of an existing `mvn package` run with all 
+You can find a script `build.sh` in `dist/zip`. It will package the output of an existing `mvn package` run with all
 necessary dependencies, README files, and licenses into a zip file.
 
-This requires Linux or MacOS. On Windows you can install MSYS2, Cygwin, or use WSL. Also ensure that the `zip` utility is installed.
+This requires Linux or MacOS. On Windows you can install MSYS2, Cygwin, or use WSL. Also ensure that the `zip` utility
+is installed.
 
 ```bash
 # Ensure that the project is built
@@ -97,7 +102,7 @@ cd dist/zip
 This repository comes with a project `jipipe` that allows you to run and debug JIPipe inside your IDE.
 You just have to run the `main()` function inside `JIPipeLauncher`.
 
-You probably will need to add the following option into the Java VM options: 
+You probably will need to add the following option into the Java VM options:
 
 ```
 --add-opens=java.base/java.lang=ALL-UNNAMED
@@ -118,7 +123,7 @@ The JavaDoc will be put into the `target/site` folder.
 
 ### Missing Maven dependencies
 
-Sometimes Maven fails to download certain dependencies if run from CLI. We have experienced that using an IDE 
+Sometimes Maven fails to download certain dependencies if run from CLI. We have experienced that using an IDE
 can resolve this.
 
 ## Nullpointer exception on launching in IDE

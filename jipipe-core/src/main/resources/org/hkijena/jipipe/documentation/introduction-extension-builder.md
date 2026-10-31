@@ -12,12 +12,12 @@ On opening the extension builder, you will see three additional tabs:
 
 ## Extension settings
 
-This tab allows you to change some extension metadata. The most important setting is the `ID` that 
+This tab allows you to change some extension metadata. The most important setting is the `ID` that
 uniquely identifies your extension to allow other projects to trace back dependencies.
 
 ## Extension contents
 
-This tab contains all algorithms types defined in the extension. You can use it to 
+This tab contains all algorithms types defined in the extension. You can use it to
 add more content, or delete entries.
 
 ## Installation

@@ -35,27 +35,31 @@ Mined pattern `fan-in-ij1-roi-statistics-core-io-1-other-1` (shape `fan-in`, sup
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| other | `ij1-roi-statistics` |
-| core-io | `jipipe:compartment-output` |
-| other | `ij1-dimensions-stack-to-2d`, `ij1-labels-to-roi`, `ij1-math-fast-image-arithmetics`, `ij1-roi-filter-statistics`, `ij1-roi-from-mask`, `ij1-roi-merge`, … (9 total) |
+| role    | node ids                                                                                                                                                             |
+|---------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| other   | `ij1-roi-statistics`                                                                                                                                                 |
+| core-io | `jipipe:compartment-output`                                                                                                                                          |
+| other   | `ij1-dimensions-stack-to-2d`, `ij1-labels-to-roi`, `ij1-math-fast-image-arithmetics`, `ij1-roi-filter-statistics`, `ij1-roi-from-mask`, `ij1-roi-merge`, … (9 total) |
 
 ## Example graph
 
-Project: `AIAgentTests/02-AdvancedPipelines/Cryogels_01.jip` (relative to `/data/JIPipe`), compartment `Apply Cellpose Model 1+ROI management`.
+Project: `AIAgentTests/02-AdvancedPipelines/Cryogels_01.jip` (relative to `/data/JIPipe`), compartment
+`Apply Cellpose Model 1+ROI management`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `ij1-roi-merge` | Merge ROI lists |
-| n1 | `jipipe:compartment-output` | Output |
-| n2 | `ij1-roi-statistics` | Extract ROI statistics |
+| key | node id                     | name                   |
+|-----|-----------------------------|------------------------|
+| n0  | `ij1-roi-merge`             | Merge ROI lists        |
+| n1  | `jipipe:compartment-output` | Output                 |
+| n2  | `ij1-roi-statistics`        | Extract ROI statistics |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
+| from   | slot                | to                     | slot        | data class       |
+|--------|---------------------|------------------------|-------------|------------------|
 | Output | `Image with ridges` | Extract ROI statistics | `Reference` | `imagej-imgplus` |
 
 ## Template
 
-Proposed name `Extract 2D ROI statistics fans in from 10 source ids (roles: core-io, other)`, menu path `Patterns/ROIs/Extract 2D ROI statistics fans in from 10 source ids (roles: core-io, other)` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/fan-in-ij1-roi-statistics-core-io-1-other-1.json`.
+Proposed name `Extract 2D ROI statistics fans in from 10 source ids (roles: core-io, other)`, menu path
+`Patterns/ROIs/Extract 2D ROI statistics fans in from 10 source ids (roles: core-io, other)` (proposal only - not
+registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/fan-in-ij1-roi-statistics-core-io-1-other-1.json`.
 

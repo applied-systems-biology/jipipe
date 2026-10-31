@@ -1,1 +1,154 @@
-{"edges":[{"source-node":"n0","source-slot":"Output","target-node":"n2","target-slot":"Input"},{"source-node":"n1","source-slot":"Output","target-node":"n3","target-slot":"Input"},{"source-node":"n10","source-slot":"Output","target-node":"n1","target-slot":"Input"},{"source-node":"n2","source-slot":"Output","target-node":"n4","target-slot":"Input"},{"source-node":"n4","source-slot":"Output","target-node":"n5","target-slot":"Input"},{"source-node":"n5","source-slot":"Output","target-node":"n8","target-slot":"Input"},{"source-node":"n6","source-slot":"Output","target-node":"n9","target-slot":"Input"},{"source-node":"n7","source-slot":"Output","target-node":"n0","target-slot":"Input"},{"source-node":"n8","source-slot":"Output","target-node":"n6","target-slot":"Input"},{"source-node":"n9","source-slot":"Output","target-node":"n10","target-slot":"Input"}],"nodes":{"n0":{"jipipe:graph-compartment":"7448e144-d9dc-5fca-8b12-67dd01875552","jipipe:metadata-v1":{"location/7448e144-d9dc-5fca-8b12-67dd01875552/x":0,"location/7448e144-d9dc-5fca-8b12-67dd01875552/y":4},"jipipe:node-info-id":"table-remove-columns"},"n1":{"jipipe:graph-compartment":"7448e144-d9dc-5fca-8b12-67dd01875552","jipipe:metadata-v1":{"location/7448e144-d9dc-5fca-8b12-67dd01875552/x":0,"location/7448e144-d9dc-5fca-8b12-67dd01875552/y":36},"jipipe:node-info-id":"modify-tables"},"n10":{"jipipe:graph-compartment":"7448e144-d9dc-5fca-8b12-67dd01875552","jipipe:metadata-v1":{"location/7448e144-d9dc-5fca-8b12-67dd01875552/x":0,"location/7448e144-d9dc-5fca-8b12-67dd01875552/y":32},"jipipe:node-info-id":"table-remove-columns"},"n2":{"jipipe:graph-compartment":"7448e144-d9dc-5fca-8b12-67dd01875552","jipipe:metadata-v1":{"location/7448e144-d9dc-5fca-8b12-67dd01875552/x":0,"location/7448e144-d9dc-5fca-8b12-67dd01875552/y":8},"jipipe:node-info-id":"table-remove-columns"},"n3":{"jipipe:graph-compartment":"7448e144-d9dc-5fca-8b12-67dd01875552","jipipe:metadata-v1":{"location/7448e144-d9dc-5fca-8b12-67dd01875552/x":0,"location/7448e144-d9dc-5fca-8b12-67dd01875552/y":40},"jipipe:node-info-id":"iji-export-table-v2"},"n4":{"jipipe:graph-compartment":"7448e144-d9dc-5fca-8b12-67dd01875552","jipipe:metadata-v1":{"location/7448e144-d9dc-5fca-8b12-67dd01875552/x":0,"location/7448e144-d9dc-5fca-8b12-67dd01875552/y":12},"jipipe:node-info-id":"table-remove-columns"},"n5":{"jipipe:graph-compartment":"7448e144-d9dc-5fca-8b12-67dd01875552","jipipe:metadata-v1":{"location/7448e144-d9dc-5fca-8b12-67dd01875552/x":0,"location/7448e144-d9dc-5fca-8b12-67dd01875552/y":16},"jipipe:node-info-id":"table-remove-columns"},"n6":{"jipipe:graph-compartment":"7448e144-d9dc-5fca-8b12-67dd01875552","jipipe:metadata-v1":{"location/7448e144-d9dc-5fca-8b12-67dd01875552/x":0,"location/7448e144-d9dc-5fca-8b12-67dd01875552/y":24},"jipipe:node-info-id":"table-remove-columns"},"n7":{"jipipe:graph-compartment":"7448e144-d9dc-5fca-8b12-67dd01875552","jipipe:metadata-v1":{"location/7448e144-d9dc-5fca-8b12-67dd01875552/x":0,"location/7448e144-d9dc-5fca-8b12-67dd01875552/y":0},"jipipe:node-info-id":"data-to-annotation-table"},"n8":{"jipipe:graph-compartment":"7448e144-d9dc-5fca-8b12-67dd01875552","jipipe:metadata-v1":{"location/7448e144-d9dc-5fca-8b12-67dd01875552/x":0,"location/7448e144-d9dc-5fca-8b12-67dd01875552/y":20},"jipipe:node-info-id":"table-remove-columns"},"n9":{"jipipe:graph-compartment":"7448e144-d9dc-5fca-8b12-67dd01875552","jipipe:metadata-v1":{"location/7448e144-d9dc-5fca-8b12-67dd01875552/x":0,"location/7448e144-d9dc-5fca-8b12-67dd01875552/y":28},"jipipe:node-info-id":"table-remove-columns"}}}
+{
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Output",
+      "target-node": "n2",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n1",
+      "source-slot": "Output",
+      "target-node": "n3",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n10",
+      "source-slot": "Output",
+      "target-node": "n1",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n2",
+      "source-slot": "Output",
+      "target-node": "n4",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n4",
+      "source-slot": "Output",
+      "target-node": "n5",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n5",
+      "source-slot": "Output",
+      "target-node": "n8",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n6",
+      "source-slot": "Output",
+      "target-node": "n9",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n7",
+      "source-slot": "Output",
+      "target-node": "n0",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n8",
+      "source-slot": "Output",
+      "target-node": "n6",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n9",
+      "source-slot": "Output",
+      "target-node": "n10",
+      "target-slot": "Input"
+    }
+  ],
+  "nodes": {
+    "n0": {
+      "jipipe:graph-compartment": "7448e144-d9dc-5fca-8b12-67dd01875552",
+      "jipipe:metadata-v1": {
+        "location/7448e144-d9dc-5fca-8b12-67dd01875552/x": 0,
+        "location/7448e144-d9dc-5fca-8b12-67dd01875552/y": 4
+      },
+      "jipipe:node-info-id": "table-remove-columns"
+    },
+    "n1": {
+      "jipipe:graph-compartment": "7448e144-d9dc-5fca-8b12-67dd01875552",
+      "jipipe:metadata-v1": {
+        "location/7448e144-d9dc-5fca-8b12-67dd01875552/x": 0,
+        "location/7448e144-d9dc-5fca-8b12-67dd01875552/y": 36
+      },
+      "jipipe:node-info-id": "modify-tables"
+    },
+    "n10": {
+      "jipipe:graph-compartment": "7448e144-d9dc-5fca-8b12-67dd01875552",
+      "jipipe:metadata-v1": {
+        "location/7448e144-d9dc-5fca-8b12-67dd01875552/x": 0,
+        "location/7448e144-d9dc-5fca-8b12-67dd01875552/y": 32
+      },
+      "jipipe:node-info-id": "table-remove-columns"
+    },
+    "n2": {
+      "jipipe:graph-compartment": "7448e144-d9dc-5fca-8b12-67dd01875552",
+      "jipipe:metadata-v1": {
+        "location/7448e144-d9dc-5fca-8b12-67dd01875552/x": 0,
+        "location/7448e144-d9dc-5fca-8b12-67dd01875552/y": 8
+      },
+      "jipipe:node-info-id": "table-remove-columns"
+    },
+    "n3": {
+      "jipipe:graph-compartment": "7448e144-d9dc-5fca-8b12-67dd01875552",
+      "jipipe:metadata-v1": {
+        "location/7448e144-d9dc-5fca-8b12-67dd01875552/x": 0,
+        "location/7448e144-d9dc-5fca-8b12-67dd01875552/y": 40
+      },
+      "jipipe:node-info-id": "iji-export-table-v2"
+    },
+    "n4": {
+      "jipipe:graph-compartment": "7448e144-d9dc-5fca-8b12-67dd01875552",
+      "jipipe:metadata-v1": {
+        "location/7448e144-d9dc-5fca-8b12-67dd01875552/x": 0,
+        "location/7448e144-d9dc-5fca-8b12-67dd01875552/y": 12
+      },
+      "jipipe:node-info-id": "table-remove-columns"
+    },
+    "n5": {
+      "jipipe:graph-compartment": "7448e144-d9dc-5fca-8b12-67dd01875552",
+      "jipipe:metadata-v1": {
+        "location/7448e144-d9dc-5fca-8b12-67dd01875552/x": 0,
+        "location/7448e144-d9dc-5fca-8b12-67dd01875552/y": 16
+      },
+      "jipipe:node-info-id": "table-remove-columns"
+    },
+    "n6": {
+      "jipipe:graph-compartment": "7448e144-d9dc-5fca-8b12-67dd01875552",
+      "jipipe:metadata-v1": {
+        "location/7448e144-d9dc-5fca-8b12-67dd01875552/x": 0,
+        "location/7448e144-d9dc-5fca-8b12-67dd01875552/y": 24
+      },
+      "jipipe:node-info-id": "table-remove-columns"
+    },
+    "n7": {
+      "jipipe:graph-compartment": "7448e144-d9dc-5fca-8b12-67dd01875552",
+      "jipipe:metadata-v1": {
+        "location/7448e144-d9dc-5fca-8b12-67dd01875552/x": 0,
+        "location/7448e144-d9dc-5fca-8b12-67dd01875552/y": 0
+      },
+      "jipipe:node-info-id": "data-to-annotation-table"
+    },
+    "n8": {
+      "jipipe:graph-compartment": "7448e144-d9dc-5fca-8b12-67dd01875552",
+      "jipipe:metadata-v1": {
+        "location/7448e144-d9dc-5fca-8b12-67dd01875552/x": 0,
+        "location/7448e144-d9dc-5fca-8b12-67dd01875552/y": 20
+      },
+      "jipipe:node-info-id": "table-remove-columns"
+    },
+    "n9": {
+      "jipipe:graph-compartment": "7448e144-d9dc-5fca-8b12-67dd01875552",
+      "jipipe:metadata-v1": {
+        "location/7448e144-d9dc-5fca-8b12-67dd01875552/x": 0,
+        "location/7448e144-d9dc-5fca-8b12-67dd01875552/y": 28
+      },
+      "jipipe:node-info-id": "table-remove-columns"
+    }
+  }
+}

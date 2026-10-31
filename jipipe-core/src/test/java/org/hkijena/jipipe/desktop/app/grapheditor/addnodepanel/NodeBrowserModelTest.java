@@ -17,7 +17,6 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeNodeTaxonomyTags;
-import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeNodeStateChips;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabase;
@@ -30,11 +29,12 @@ import org.hkijena.jipipe.api.service.components.JIPipeNodesServiceComponent;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
+import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeNodeStateChips;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import javax.swing.Icon;
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -55,7 +55,9 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class NodeBrowserModelTest {
 
-    /** Stable id literal for the stub taxonomy function (see the stable-ID rule). */
+    /**
+     * Stable id literal for the stub taxonomy function (see the stable-ID rule).
+     */
     private static final String FUNCTION_ID = "node-browser-model-test:function";
 
     /**
@@ -65,13 +67,15 @@ class NodeBrowserModelTest {
      */
     private static final String COMP_FUNCTION_ID = "node-browser-model-test:comp-function";
 
-    /** Stable id literal for the stub taxonomy framework (see the stable-ID rule). */
+    /**
+     * Stable id literal for the stub taxonomy framework (see the stable-ID rule).
+     */
     private static final String FRAMEWORK_ID = "node-browser-model-test:framework";
 
     private static final String TEST_DEPENDENCY_ID = "node-browser-model-test";
 
     private static final JIPipeMutableDependency TEST_DEPENDENCY =
-        new JIPipeMutableDependency(TEST_DEPENDENCY_ID, "1.0.0", "node-browser-model-test");
+            new JIPipeMutableDependency(TEST_DEPENDENCY_ID, "1.0.0", "node-browser-model-test");
 
     private static final String PLANE_NODE_ID = "nodebrowser:plane-node";
     private static final String VOLUME_NODE_ID = "nodebrowser:volume-node";
@@ -84,16 +88,97 @@ class NodeBrowserModelTest {
     private static final String TAG_B = "nodebrowser:tag-b";
     private static final String TAG_C = "nodebrowser:tag-c";
 
-    /** The stub input-profile provider for {@link NodeBrowserModelTestPlaneData}. */
+    /**
+     * The stub input-profile provider for {@link NodeBrowserModelTestPlaneData}.
+     */
     private static final InputProfileProvider TEST_PROFILE_PROVIDER =
-        dataClass -> dataClass == NodeBrowserModelTestPlaneData.class
-            ? JIPipeNodeTaxonomyInputProfile.PLANE_2D
-            : JIPipeNodeTaxonomyInputProfile.NA;
+            dataClass -> dataClass == NodeBrowserModelTestPlaneData.class
+                    ? JIPipeNodeTaxonomyInputProfile.PLANE_2D
+                    : JIPipeNodeTaxonomyInputProfile.NA;
 
     @BeforeAll
     static void ensureJIPipe() {
         JIPipe.ensureInstance();
     }
+
+    private static JIPipeNodeDatabaseEntry entryOf(String nodeId) {
+        JIPipeNodeInfo info = JIPipe.getNodes().getRegisteredNodeInfos().get(nodeId);
+        return new CreateNewNodeByInfoDatabaseEntry("create-node-by-info:" + nodeId, info);
+    }
+
+    // ------------------------------------------------------------------
+    // Brief case 1: tier boundary
+    // ------------------------------------------------------------------
+
+    private static Set<String> originNodeIds(List<JIPipeNodeDatabaseEntry> entries) {
+        Set<String> ids = new java.util.LinkedHashSet<>();
+        for (JIPipeNodeDatabaseEntry entry : entries) {
+            ids.add(entry.getOriginNodeId());
+        }
+        return ids;
+    }
+
+    // ------------------------------------------------------------------
+    // Brief case 2: search overrides the tree
+    // ------------------------------------------------------------------
+
+    private static List<String> originNodeIdsList(List<JIPipeNodeDatabaseEntry> entries) {
+        List<String> ids = new ArrayList<>();
+        for (JIPipeNodeDatabaseEntry entry : entries) {
+            ids.add(entry.getOriginNodeId());
+        }
+        return ids;
+    }
+
+    // ------------------------------------------------------------------
+    // Brief case 3: facet combination, no cross-reset
+    // ------------------------------------------------------------------
+
+    private static void registerNodes() {
+        JIPipeNodesServiceComponent nodes = JIPipe.getNodes();
+        // The stub provider must be registered before the nodes: the input
+        // profile enrichment (which derives PLANE_2D for the plane node's
+        // first input slot) happens during registration.
+        nodes.registerInputProfileProvider(TEST_PROFILE_PROVIDER);
+        registerNode(PlaneNode.class, PLANE_NODE_ID, nodes);
+        registerNode(VolumeNode.class, VOLUME_NODE_ID, nodes);
+        registerNode(OtherNode.class, OTHER_NODE_ID, nodes);
+    }
+
+    // ------------------------------------------------------------------
+    // Brief case 4: the facet post-filter over the synthetic database
+    // ------------------------------------------------------------------
+
+    private static void registerNode(Class<? extends JIPipeGraphNode> klass, String id, JIPipeNodesServiceComponent nodes) {
+        if (nodes.hasNodeInfoWithId(id)) {
+            nodes.unregister(id);
+        }
+        JIPipeNodeInfo info = new JIPipeJavaNodeInfo(id, klass);
+        nodes.register(info, TEST_DEPENDENCY);
+    }
+
+    // ------------------------------------------------------------------
+    // Data-type facet (input / output) - merged "Data" filter
+    // ------------------------------------------------------------------
+
+    /**
+     * Builds a fresh database holding one "create node by info" entry per
+     * synthetic node.
+     */
+    private static JIPipeNodeDatabase databaseWithAllEntries() {
+        JIPipeNodeDatabase database = new TestNodeDatabase();
+        List<JIPipeNodeDatabaseEntry> entries = new ArrayList<>();
+        for (String nodeId : List.of(PLANE_NODE_ID, VOLUME_NODE_ID, OTHER_NODE_ID)) {
+            JIPipeNodeInfo info = JIPipe.getNodes().getRegisteredNodeInfos().get(nodeId);
+            entries.add(new CreateNewNodeByInfoDatabaseEntry("create-node-by-info:" + nodeId, info));
+        }
+        database.setEntries(entries);
+        return database;
+    }
+
+    // ------------------------------------------------------------------
+    // Node state: deprecated / unstable / auto-imported (order + labels)
+    // ------------------------------------------------------------------
 
     @AfterEach
     void cleanup() {
@@ -111,10 +196,6 @@ class NodeBrowserModelTest {
         nodes.runRegistrationTasks();
     }
 
-    // ------------------------------------------------------------------
-    // Brief case 1: tier boundary
-    // ------------------------------------------------------------------
-
     @Test
     void tierBoundary() {
         NodeBrowserModel model = new NodeBrowserModel();
@@ -126,7 +207,7 @@ class NodeBrowserModelTest {
     }
 
     // ------------------------------------------------------------------
-    // Brief case 2: search overrides the tree
+    // Helpers
     // ------------------------------------------------------------------
 
     @Test
@@ -149,10 +230,6 @@ class NodeBrowserModelTest {
         model.setSearch("");
         assertFalse(model.isSearchActive());
     }
-
-    // ------------------------------------------------------------------
-    // Brief case 3: facet combination, no cross-reset
-    // ------------------------------------------------------------------
 
     @Test
     void facetCombination() {
@@ -180,10 +257,6 @@ class NodeBrowserModelTest {
         assertTrue(model.getTags().isEmpty());
     }
 
-    // ------------------------------------------------------------------
-    // Brief case 4: the facet post-filter over the synthetic database
-    // ------------------------------------------------------------------
-
     @Test
     void filterQuery() {
         registerNodes();
@@ -191,63 +264,59 @@ class NodeBrowserModelTest {
 
         // Framework filter returns only that framework's nodes
         assertEquals(Set.of(PLANE_NODE_ID, VOLUME_NODE_ID),
-            originNodeIds(database.queryWithFacets("",
-                JIPipeNodeDatabasePipelineVisibility.Pipeline, false, true, Set.of(),
-                new StubFramework(), Set.of(), Set.of(), Set.of())));
+                originNodeIds(database.queryWithFacets("",
+                        JIPipeNodeDatabasePipelineVisibility.Pipeline, false, true, Set.of(),
+                        new StubFramework(), Set.of(), Set.of(), Set.of())));
 
         // Spatial SPATIAL_3D returns the nodes declaring it; SPATIAL_2D the others
         assertEquals(Set.of(VOLUME_NODE_ID),
-            originNodeIds(database.queryWithFacets("",
-                JIPipeNodeDatabasePipelineVisibility.Pipeline, false, true, Set.of(),
-                null, Set.of(JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D), Set.of(), Set.of())));
+                originNodeIds(database.queryWithFacets("",
+                        JIPipeNodeDatabasePipelineVisibility.Pipeline, false, true, Set.of(),
+                        null, Set.of(JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D), Set.of(), Set.of())));
         assertEquals(Set.of(PLANE_NODE_ID),
-            originNodeIds(database.queryWithFacets("",
-                JIPipeNodeDatabasePipelineVisibility.Pipeline, false, true, Set.of(),
-                null, Set.of(JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D), Set.of(), Set.of())));
+                originNodeIds(database.queryWithFacets("",
+                        JIPipeNodeDatabasePipelineVisibility.Pipeline, false, true, Set.of(),
+                        null, Set.of(JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D), Set.of(), Set.of())));
 
         // Input PLANE_2D returns the nodes with that derived profile
         assertEquals(Set.of(PLANE_NODE_ID),
-            originNodeIds(database.queryWithFacets("",
-                JIPipeNodeDatabasePipelineVisibility.Pipeline, false, true, Set.of(),
-                null, Set.of(), Set.of(JIPipeNodeTaxonomyInputProfile.PLANE_2D), Set.of())));
+                originNodeIds(database.queryWithFacets("",
+                        JIPipeNodeDatabasePipelineVisibility.Pipeline, false, true, Set.of(),
+                        null, Set.of(), Set.of(JIPipeNodeTaxonomyInputProfile.PLANE_2D), Set.of())));
 
         // Tags intersect. The unconverted OtherNode's node-level tags are
         // not merged (tag enrichment only runs for converted nodes), so
         // only the converted VolumeNode carries tag-a.
         assertEquals(Set.of(VOLUME_NODE_ID),
-            originNodeIds(database.queryWithFacets("",
-                JIPipeNodeDatabasePipelineVisibility.Pipeline, false, true, Set.of(),
-                null, Set.of(), Set.of(), Set.of(TAG_A))));
+                originNodeIds(database.queryWithFacets("",
+                        JIPipeNodeDatabasePipelineVisibility.Pipeline, false, true, Set.of(),
+                        null, Set.of(), Set.of(), Set.of(TAG_A))));
         assertEquals(Set.of(PLANE_NODE_ID),
-            originNodeIds(database.queryWithFacets("",
-                JIPipeNodeDatabasePipelineVisibility.Pipeline, false, true, Set.of(),
-                null, Set.of(), Set.of(), Set.of(TAG_B))));
+                originNodeIds(database.queryWithFacets("",
+                        JIPipeNodeDatabasePipelineVisibility.Pipeline, false, true, Set.of(),
+                        null, Set.of(), Set.of(), Set.of(TAG_B))));
         assertEquals(Set.of(PLANE_NODE_ID),
-            originNodeIds(database.queryWithFacets("",
-                JIPipeNodeDatabasePipelineVisibility.Pipeline, false, true, Set.of(),
-                null, Set.of(), Set.of(), Set.of(TAG_C))));
+                originNodeIds(database.queryWithFacets("",
+                        JIPipeNodeDatabasePipelineVisibility.Pipeline, false, true, Set.of(),
+                        null, Set.of(), Set.of(), Set.of(TAG_C))));
 
         // Combined facets: framework + spatial + tags must all hold
         assertEquals(Set.of(VOLUME_NODE_ID),
-            originNodeIds(database.queryWithFacets("",
-                JIPipeNodeDatabasePipelineVisibility.Pipeline, false, true, Set.of(),
-                new StubFramework(), Set.of(JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D),
-                Set.of(), Set.of(TAG_A))));
+                originNodeIds(database.queryWithFacets("",
+                        JIPipeNodeDatabasePipelineVisibility.Pipeline, false, true, Set.of(),
+                        new StubFramework(), Set.of(JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D),
+                        Set.of(), Set.of(TAG_A))));
 
         // No facets: the plain query result (all three, name-sorted)
         assertEquals(Set.of(PLANE_NODE_ID, VOLUME_NODE_ID, OTHER_NODE_ID),
-            originNodeIds(database.query("",
-                JIPipeNodeDatabasePipelineVisibility.Pipeline, false, true, Set.of())));
+                originNodeIds(database.query("",
+                        JIPipeNodeDatabasePipelineVisibility.Pipeline, false, true, Set.of())));
         // Name-sorted: "Browser Test" < "Browser Test Plane" < "Browser Test Volume"
         assertEquals(List.of(OTHER_NODE_ID, PLANE_NODE_ID, VOLUME_NODE_ID),
-            originNodeIdsList(database.queryWithFacets("",
-                JIPipeNodeDatabasePipelineVisibility.Pipeline, false, true, Set.of(),
-                null, Set.of(), Set.of(), Set.of())));
+                originNodeIdsList(database.queryWithFacets("",
+                        JIPipeNodeDatabasePipelineVisibility.Pipeline, false, true, Set.of(),
+                        null, Set.of(), Set.of(), Set.of())));
     }
-
-    // ------------------------------------------------------------------
-    // Data-type facet (input / output) — merged "Data" filter
-    // ------------------------------------------------------------------
 
     @Test
     void dataTypeFacets() {
@@ -256,14 +325,14 @@ class NodeBrowserModelTest {
         // PlaneNode has an input AND an output of NodeBrowserModelTestPlaneData;
         // VolumeNode/OtherNode have no slots at all.
         JIPipeNodeDatabaseEntry plane = new CreateNewNodeByInfoDatabaseEntry(
-            "create-node-by-info:" + PLANE_NODE_ID,
-            JIPipe.getNodes().getRegisteredNodeInfos().get(PLANE_NODE_ID));
+                "create-node-by-info:" + PLANE_NODE_ID,
+                JIPipe.getNodes().getRegisteredNodeInfos().get(PLANE_NODE_ID));
         JIPipeNodeDatabaseEntry volume = new CreateNewNodeByInfoDatabaseEntry(
-            "create-node-by-info:" + VOLUME_NODE_ID,
-            JIPipe.getNodes().getRegisteredNodeInfos().get(VOLUME_NODE_ID));
+                "create-node-by-info:" + VOLUME_NODE_ID,
+                JIPipe.getNodes().getRegisteredNodeInfos().get(VOLUME_NODE_ID));
         JIPipeNodeDatabaseEntry other = new CreateNewNodeByInfoDatabaseEntry(
-            "create-node-by-info:" + OTHER_NODE_ID,
-            JIPipe.getNodes().getRegisteredNodeInfos().get(OTHER_NODE_ID));
+                "create-node-by-info:" + OTHER_NODE_ID,
+                JIPipe.getNodes().getRegisteredNodeInfos().get(OTHER_NODE_ID));
 
         // No data-type filter: all pass
         assertTrue(model.matches(plane));
@@ -297,10 +366,6 @@ class NodeBrowserModelTest {
         assertFalse(model.matches(volume));
     }
 
-    // ------------------------------------------------------------------
-    // Node state: deprecated / unstable / auto-imported (order + labels)
-    // ------------------------------------------------------------------
-
     @Test
     void nodeStateClassificationAndDownRanking() {
         registerNodes();
@@ -330,21 +395,12 @@ class NodeBrowserModelTest {
 
         // The generalized down-ranking rule: standard curated nodes rank
         // first; auto-imported, unstable and deprecated nodes rank after
-        // them — no node-id or plugin heuristics involved
+        // them - no node-id or plugin heuristics involved
         assertFalse(JIPipeNodeStateChips.isDownRanked(stable));
         assertTrue(JIPipeNodeStateChips.isDownRanked(unstable));
         assertTrue(JIPipeNodeStateChips.isDownRanked(deprecated));
         assertTrue(JIPipeNodeStateChips.isDownRanked(autoImport));
     }
-
-    private static JIPipeNodeDatabaseEntry entryOf(String nodeId) {
-        JIPipeNodeInfo info = JIPipe.getNodes().getRegisteredNodeInfos().get(nodeId);
-        return new CreateNewNodeByInfoDatabaseEntry("create-node-by-info:" + nodeId, info);
-    }
-
-    // ------------------------------------------------------------------
-    // Helpers
-    // ------------------------------------------------------------------
 
     /**
      * The function-tree pruning support ({@link
@@ -357,7 +413,7 @@ class NodeBrowserModelTest {
     void populatedFunctionIdsUnionsNodeFunctionsAndFiltersByRole() {
         // null -> empty set (defensive; callers keep the full skeleton)
         assertTrue(NodeBrowserModel.populatedFunctionIds(null,
-            JIPipeNodeDatabasePipelineVisibility.Pipeline).isEmpty());
+                JIPipeNodeDatabasePipelineVisibility.Pipeline).isEmpty());
 
         registerNodes();
         JIPipeNodesServiceComponent nodes = JIPipe.getNodes();
@@ -367,64 +423,29 @@ class NodeBrowserModelTest {
         // mirrors databaseWithAllEntries() and keeps this independent of the
         // rest of the registered plugin set.
         List<JIPipeNodeInfo> stubInfos = List.of(PLANE_NODE_ID, VOLUME_NODE_ID, OTHER_NODE_ID)
-            .stream().map(nodes::getInfoById).toList();
+                .stream().map(nodes::getInfoById).toList();
         assertEquals(Set.of(FUNCTION_ID),
-            NodeBrowserModel.populatedFunctionIds(stubInfos,
-                JIPipeNodeDatabasePipelineVisibility.Pipeline));
+                NodeBrowserModel.populatedFunctionIds(stubInfos,
+                        JIPipeNodeDatabasePipelineVisibility.Pipeline));
         assertEquals(Set.of(FUNCTION_ID),
-            NodeBrowserModel.populatedFunctionIds(stubInfos,
-                JIPipeNodeDatabasePipelineVisibility.Compartments));
+                NodeBrowserModel.populatedFunctionIds(stubInfos,
+                        JIPipeNodeDatabasePipelineVisibility.Compartments));
 
         // A node whose primary function is pipeline-hidden must not count
         // toward the Pipeline role, but must for Compartments.
         nodes.register(new JIPipeJavaNodeInfo(COMP_NODE_ID, CompNode.class), TEST_DEPENDENCY);
         try {
             List<JIPipeNodeInfo> withComp = List.of(PLANE_NODE_ID, VOLUME_NODE_ID, OTHER_NODE_ID, COMP_NODE_ID)
-                .stream().map(nodes::getInfoById).toList();
+                    .stream().map(nodes::getInfoById).toList();
             assertEquals(Set.of(FUNCTION_ID),
-                NodeBrowserModel.populatedFunctionIds(withComp,
-                    JIPipeNodeDatabasePipelineVisibility.Pipeline));
+                    NodeBrowserModel.populatedFunctionIds(withComp,
+                            JIPipeNodeDatabasePipelineVisibility.Pipeline));
             assertEquals(Set.of(FUNCTION_ID, COMP_FUNCTION_ID),
-                NodeBrowserModel.populatedFunctionIds(withComp,
-                    JIPipeNodeDatabasePipelineVisibility.Compartments));
+                    NodeBrowserModel.populatedFunctionIds(withComp,
+                            JIPipeNodeDatabasePipelineVisibility.Compartments));
         } finally {
             nodes.unregister(COMP_NODE_ID);
         }
-    }
-
-    private static Set<String> originNodeIds(List<JIPipeNodeDatabaseEntry> entries) {
-        Set<String> ids = new java.util.LinkedHashSet<>();
-        for (JIPipeNodeDatabaseEntry entry : entries) {
-            ids.add(entry.getOriginNodeId());
-        }
-        return ids;
-    }
-
-    private static List<String> originNodeIdsList(List<JIPipeNodeDatabaseEntry> entries) {
-        List<String> ids = new ArrayList<>();
-        for (JIPipeNodeDatabaseEntry entry : entries) {
-            ids.add(entry.getOriginNodeId());
-        }
-        return ids;
-    }
-
-    private static void registerNodes() {
-        JIPipeNodesServiceComponent nodes = JIPipe.getNodes();
-        // The stub provider must be registered before the nodes: the input
-        // profile enrichment (which derives PLANE_2D for the plane node's
-        // first input slot) happens during registration.
-        nodes.registerInputProfileProvider(TEST_PROFILE_PROVIDER);
-        registerNode(PlaneNode.class, PLANE_NODE_ID, nodes);
-        registerNode(VolumeNode.class, VOLUME_NODE_ID, nodes);
-        registerNode(OtherNode.class, OTHER_NODE_ID, nodes);
-    }
-
-    private static void registerNode(Class<? extends JIPipeGraphNode> klass, String id, JIPipeNodesServiceComponent nodes) {
-        if (nodes.hasNodeInfoWithId(id)) {
-            nodes.unregister(id);
-        }
-        JIPipeNodeInfo info = new JIPipeJavaNodeInfo(id, klass);
-        nodes.register(info, TEST_DEPENDENCY);
     }
 
     /**
@@ -445,26 +466,13 @@ class NodeBrowserModelTest {
         }
     }
 
-    /**
-     * Builds a fresh database holding one "create node by info" entry per
-     * synthetic node.
-     */
-    private static JIPipeNodeDatabase databaseWithAllEntries() {
-        JIPipeNodeDatabase database = new TestNodeDatabase();
-        List<JIPipeNodeDatabaseEntry> entries = new ArrayList<>();
-        for (String nodeId : List.of(PLANE_NODE_ID, VOLUME_NODE_ID, OTHER_NODE_ID)) {
-            JIPipeNodeInfo info = JIPipe.getNodes().getRegisteredNodeInfos().get(nodeId);
-            entries.add(new CreateNewNodeByInfoDatabaseEntry("create-node-by-info:" + nodeId, info));
-        }
-        database.setEntries(entries);
-        return database;
-    }
-
     // ------------------------------------------------------------------
     // Stub taxonomy members
     // ------------------------------------------------------------------
 
-    /** Minimal taxonomy function (self-validating stub, no tags). */
+    /**
+     * Minimal taxonomy function (self-validating stub, no tags).
+     */
     public static class StubFunction implements JIPipeNodeTaxonomyFunction {
         public StubFunction() {
         }
@@ -570,7 +578,9 @@ class NodeBrowserModelTest {
         }
     }
 
-    /** Minimal taxonomy framework. */
+    /**
+     * Minimal taxonomy framework.
+     */
     public static class StubFramework implements JIPipeNodeTaxonomyFramework {
         public StubFramework() {
         }
@@ -603,7 +613,7 @@ class NodeBrowserModelTest {
      * {@code tag-b} and {@code tag-c}.
      */
     @ConfigureJIPipeNode(function = {StubFunction.class}, framework = StubFramework.class,
-        spatialDimensions = {JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D})
+            spatialDimensions = {JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D})
     @JIPipeNodeTaxonomyTags({TAG_B, TAG_C})
     @AddJIPipeInputSlot(value = NodeBrowserModelTestPlaneData.class, name = "Input", create = true)
     @AddJIPipeOutputSlot(value = NodeBrowserModelTestPlaneData.class, name = "Output")
@@ -629,9 +639,10 @@ class NodeBrowserModelTest {
      * slots (input profile {@code NA}), tag {@code tag-a}.
      */
     @ConfigureJIPipeNode(function = {StubFunction.class}, framework = StubFramework.class,
-        spatialDimensions = {JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D})
+            spatialDimensions = {JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D})
     @JIPipeNodeTaxonomyTags(TAG_A)
-    public static class VolumeNode extends JIPipeGraphNode {        public VolumeNode(JIPipeNodeInfo info) {
+    public static class VolumeNode extends JIPipeGraphNode {
+        public VolumeNode(JIPipeNodeInfo info) {
             super(info);
         }
 
@@ -691,7 +702,9 @@ class NodeBrowserModelTest {
         }
     }
 
-    /** Unstable node: {@code @MarkNodeAsUnstable} (the node-info flag source). */
+    /**
+     * Unstable node: {@code @MarkNodeAsUnstable} (the node-info flag source).
+     */
     @MarkNodeAsUnstable
     public static class UnstableNode extends JIPipeGraphNode {
         public UnstableNode(JIPipeNodeInfo info) {
@@ -700,9 +713,9 @@ class NodeBrowserModelTest {
 
         @Override
         public void reportValidity(JIPipeValidationReportContext reportContext,
-                                    JIPipeValidationReportSettings reportSettings,
-                                    JIPipeValidationReport report,
-                                    JIPipeProgressInfo progressInfo) {
+                                   JIPipeValidationReportSettings reportSettings,
+                                   JIPipeValidationReport report,
+                                   JIPipeProgressInfo progressInfo) {
         }
 
         @Override
@@ -710,7 +723,9 @@ class NodeBrowserModelTest {
         }
     }
 
-    /** Deprecated node: {@code @Deprecated} (the node-info flag source). */
+    /**
+     * Deprecated node: {@code @Deprecated} (the node-info flag source).
+     */
     @Deprecated
     public static class DeprecatedNode extends JIPipeGraphNode {
         public DeprecatedNode(JIPipeNodeInfo info) {
@@ -719,9 +734,9 @@ class NodeBrowserModelTest {
 
         @Override
         public void reportValidity(JIPipeValidationReportContext reportContext,
-                                    JIPipeValidationReportSettings reportSettings,
-                                    JIPipeValidationReport report,
-                                    JIPipeProgressInfo progressInfo) {
+                                   JIPipeValidationReportSettings reportSettings,
+                                   JIPipeValidationReport report,
+                                   JIPipeProgressInfo progressInfo) {
         }
 
         @Override
@@ -741,9 +756,9 @@ class NodeBrowserModelTest {
 
         @Override
         public void reportValidity(JIPipeValidationReportContext reportContext,
-                                    JIPipeValidationReportSettings reportSettings,
-                                    JIPipeValidationReport report,
-                                    JIPipeProgressInfo progressInfo) {
+                                   JIPipeValidationReportSettings reportSettings,
+                                   JIPipeValidationReport report,
+                                   JIPipeProgressInfo progressInfo) {
         }
 
         @Override

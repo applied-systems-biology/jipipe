@@ -13,8 +13,6 @@
 
 package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.threshold;
 
-import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
-import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ByteProcessor;
@@ -25,12 +23,15 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
-import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ThresholdingFunction;
+import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ThresholdingFunction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterSettings;
@@ -51,13 +52,16 @@ import org.hkijena.jipipe.utils.threshold.NBinsAutoThresholder;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
+
 /**
  * Thresholding node that thresholds 16-bit images via an auto threshold
  */
 @SetJIPipeDocumentation(name = "Auto threshold 2D (16-bit)", description = "Applies an auto-thresholding algorithm to 16-bit images. " +
         "The threshold is calculated from the full-range 65536-bin histogram (one bin per pixel value), so no precision is lost. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@ConfigureJIPipeNode(function = ThresholdingFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
+@ConfigureJIPipeNode(function = ThresholdingFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusGreyscale16UData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Output", create = true)
 public class AutoThreshold2D16UAlgorithm extends JIPipeIteratingAlgorithm {
@@ -93,6 +97,23 @@ public class AutoThreshold2D16UAlgorithm extends JIPipeIteratingAlgorithm {
         this.sourceArea = other.sourceArea;
         this.thresholdAnnotationStrategy = other.thresholdAnnotationStrategy;
         ImageJAlgorithmUtils.updateROIOrMaskSlot(sourceArea, getSlotConfiguration());
+    }
+
+    /**
+     * Inverts a 16-bit slice in the full range (v -> 65535 - v).
+     * <p>
+     * {@link ShortProcessor#invert()} cannot be used for this: unless the (off by default)
+     * {@code Prefs.fullRange16bitInversions} preference is set, it inverts around the
+     * current min/max display range (v -> max + min - v), which would rescale each
+     * slice to its own data range.
+     *
+     * @param ip the processor to invert in-place
+     */
+    private static void invert(ImageProcessor ip) {
+        short[] pixels = (short[]) ip.getPixels();
+        for (int i = 0; i < pixels.length; i++) {
+            pixels[i] = (short) (65535 - (pixels[i] & 0xffff));
+        }
     }
 
     @Override
@@ -232,23 +253,6 @@ public class AutoThreshold2D16UAlgorithm extends JIPipeIteratingAlgorithm {
         byte[] dst = (byte[]) target.getPixels();
         for (int i = 0; i < src.length; i++) {
             dst[i] = Short.toUnsignedInt(src[i]) > threshold ? (byte) 255 : 0;
-        }
-    }
-
-    /**
-     * Inverts a 16-bit slice in the full range (v -> 65535 - v).
-     * <p>
-     * {@link ShortProcessor#invert()} cannot be used for this: unless the (off by default)
-     * {@code Prefs.fullRange16bitInversions} preference is set, it inverts around the
-     * current min/max display range (v -> max + min - v), which would rescale each
-     * slice to its own data range.
-     *
-     * @param ip the processor to invert in-place
-     */
-    private static void invert(ImageProcessor ip) {
-        short[] pixels = (short[]) ip.getPixels();
-        for (int i = 0; i < pixels.length; i++) {
-            pixels[i] = (short) (65535 - (pixels[i] & 0xffff));
         }
     }
 

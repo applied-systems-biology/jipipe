@@ -22,7 +22,6 @@ import org.hkijena.jipipe.utils.json.JIPipePathMetadataStore;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;

@@ -29,12 +29,12 @@ import java.util.Map;
  * (spec §9 of the template-taxonomy integration design).
  * <p>
  * The first segment of the old menu path is matched case-insensitively against
- * the display names of the registered taxonomy functions — top-level branches
- * first (on a name tie), then child functions — with a small abbreviation
+ * the display names of the registered taxonomy functions - top-level branches
+ * first (on a name tie), then child functions - with a small abbreviation
  * table for the legacy menu categories
  * (e.g. {@code "Image" → "Images"}). The result is the referenced function's id;
  * when nothing matches (or the segment is blank), an <b>unset</b> reference is
- * returned — the catch-all placement ({@code jipipe:function:templates}) is
+ * returned - the catch-all placement ({@code jipipe:function:templates}) is
  * deliberately NOT applied here, but by the template's database entry instead,
  * so a future function registration can absorb previously unmatched templates.
  */
@@ -88,7 +88,7 @@ public final class JIPipeNodeTemplateMigration {
         var functions = JIPipe.getNodes().getFunctions();
 
         // Pass 1: top-level branches (parent == null). On a display-name tie the
-        // top-level branch wins over any child — the registry contains childless
+        // top-level branch wins over any child - the registry contains childless
         // export sub-leaves literally named "Images" and "Tables"
         // (jipipe:function:export-images / export-tables) that shadow the
         // top-level Images/Tables branches, but a legacy menu-path FIRST segment
@@ -102,7 +102,7 @@ public final class JIPipeNodeTemplateMigration {
                 break;
             }
         }
-        // Pass 2: any child function (leaf or branch) — a segment without a
+        // Pass 2: any child function (leaf or branch) - a segment without a
         // same-named top-level branch (e.g. "Thresholding") falls through here
         if (match == null) {
             for (JIPipeNodeTaxonomyFunction function : functions.all()) {
@@ -146,7 +146,7 @@ public final class JIPipeNodeTemplateMigration {
 
     /**
      * The inverse of {@link #appendPreviouslyFooter}: removes a
-     * "Previously: …" footer line from the description (spec §9.4 — re-picking
+     * "Previously: …" footer line from the description (spec §9.4 - re-picking
      * the function in the editor clears the auto-mapping audit line, because
      * the function is now an explicit user choice). Returns an
      * {@link HTMLText#EMPTY}-equivalent when the footer was the entire
@@ -163,7 +163,7 @@ public final class JIPipeNodeTemplateMigration {
         // The footer is always the trailing "<i><br>Previously: …</i>" block.
         int start = html.lastIndexOf("<i><br>Previously:");
         if (start < 0) {
-            // Defensive: a "Previously" mention that is not our footer format —
+            // Defensive: a "Previously" mention that is not our footer format -
             // leave it untouched rather than corrupting user text.
             return desc;
         }

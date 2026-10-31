@@ -1,1 +1,70 @@
-{"edges":[{"source-node":"n0","source-slot":"Measurements","target-node":"n4","target-slot":"Input"},{"source-node":"n1","source-slot":"Output","target-node":"n3","target-slot":"Input"},{"source-node":"n3","source-slot":"Output","target-node":"n2","target-slot":"Data"},{"source-node":"n4","source-slot":"Output","target-node":"n1","target-slot":"Input"}],"nodes":{"n0":{"jipipe:graph-compartment":"d2f8a931-c556-5270-ad88-8a7abfaf0245","jipipe:metadata-v1":{"location/d2f8a931-c556-5270-ad88-8a7abfaf0245/x":0,"location/d2f8a931-c556-5270-ad88-8a7abfaf0245/y":0},"jipipe:node-info-id":"ij1-analyze-image-statistics"},"n1":{"jipipe:graph-compartment":"d2f8a931-c556-5270-ad88-8a7abfaf0245","jipipe:metadata-v1":{"location/d2f8a931-c556-5270-ad88-8a7abfaf0245/x":0,"location/d2f8a931-c556-5270-ad88-8a7abfaf0245/y":8},"jipipe:node-info-id":"table-merge-tables"},"n2":{"jipipe:graph-compartment":"d2f8a931-c556-5270-ad88-8a7abfaf0245","jipipe:metadata-v1":{"location/d2f8a931-c556-5270-ad88-8a7abfaf0245/x":0,"location/d2f8a931-c556-5270-ad88-8a7abfaf0245/y":16},"jipipe:node-info-id":"export-data"},"n3":{"jipipe:graph-compartment":"d2f8a931-c556-5270-ad88-8a7abfaf0245","jipipe:metadata-v1":{"location/d2f8a931-c556-5270-ad88-8a7abfaf0245/x":0,"location/d2f8a931-c556-5270-ad88-8a7abfaf0245/y":12},"jipipe:node-info-id":"table-rename-columns-2"},"n4":{"jipipe:graph-compartment":"d2f8a931-c556-5270-ad88-8a7abfaf0245","jipipe:metadata-v1":{"location/d2f8a931-c556-5270-ad88-8a7abfaf0245/x":0,"location/d2f8a931-c556-5270-ad88-8a7abfaf0245/y":4},"jipipe:node-info-id":"table-add-annotation-columns"}}}
+{
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Measurements",
+      "target-node": "n4",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n1",
+      "source-slot": "Output",
+      "target-node": "n3",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n3",
+      "source-slot": "Output",
+      "target-node": "n2",
+      "target-slot": "Data"
+    },
+    {
+      "source-node": "n4",
+      "source-slot": "Output",
+      "target-node": "n1",
+      "target-slot": "Input"
+    }
+  ],
+  "nodes": {
+    "n0": {
+      "jipipe:graph-compartment": "d2f8a931-c556-5270-ad88-8a7abfaf0245",
+      "jipipe:metadata-v1": {
+        "location/d2f8a931-c556-5270-ad88-8a7abfaf0245/x": 0,
+        "location/d2f8a931-c556-5270-ad88-8a7abfaf0245/y": 0
+      },
+      "jipipe:node-info-id": "ij1-analyze-image-statistics"
+    },
+    "n1": {
+      "jipipe:graph-compartment": "d2f8a931-c556-5270-ad88-8a7abfaf0245",
+      "jipipe:metadata-v1": {
+        "location/d2f8a931-c556-5270-ad88-8a7abfaf0245/x": 0,
+        "location/d2f8a931-c556-5270-ad88-8a7abfaf0245/y": 8
+      },
+      "jipipe:node-info-id": "table-merge-tables"
+    },
+    "n2": {
+      "jipipe:graph-compartment": "d2f8a931-c556-5270-ad88-8a7abfaf0245",
+      "jipipe:metadata-v1": {
+        "location/d2f8a931-c556-5270-ad88-8a7abfaf0245/x": 0,
+        "location/d2f8a931-c556-5270-ad88-8a7abfaf0245/y": 16
+      },
+      "jipipe:node-info-id": "export-data"
+    },
+    "n3": {
+      "jipipe:graph-compartment": "d2f8a931-c556-5270-ad88-8a7abfaf0245",
+      "jipipe:metadata-v1": {
+        "location/d2f8a931-c556-5270-ad88-8a7abfaf0245/x": 0,
+        "location/d2f8a931-c556-5270-ad88-8a7abfaf0245/y": 12
+      },
+      "jipipe:node-info-id": "table-rename-columns-2"
+    },
+    "n4": {
+      "jipipe:graph-compartment": "d2f8a931-c556-5270-ad88-8a7abfaf0245",
+      "jipipe:metadata-v1": {
+        "location/d2f8a931-c556-5270-ad88-8a7abfaf0245/x": 0,
+        "location/d2f8a931-c556-5270-ad88-8a7abfaf0245/y": 4
+      },
+      "jipipe:node-info-id": "table-add-annotation-columns"
+    }
+  }
+}

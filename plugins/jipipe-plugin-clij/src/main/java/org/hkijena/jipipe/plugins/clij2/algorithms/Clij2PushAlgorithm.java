@@ -35,7 +35,7 @@ import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDim
 @SetJIPipeDocumentation(name = "CLIJ2 Push to GPU", description = "Converts an image into a GPU image managed by CLIJ")
 @AddJIPipeInputSlot(name = "Input", value = ImagePlusData.class, create = true)
 @AddJIPipeOutputSlot(name = "Output", value = CLIJImageData.class, create = true)
-@ConfigureJIPipeNode(function = MiscellaneousFunction.class, framework = ClijFramework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
+@ConfigureJIPipeNode(function = MiscellaneousFunction.class, framework = ClijFramework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 public class Clij2PushAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     public Clij2PushAlgorithm(JIPipeNodeInfo info) {

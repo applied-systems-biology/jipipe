@@ -8,7 +8,7 @@ the name evidence (human-authored titles + named nodes + comment text) that
 step (C)'s JEV namer will pick from.
 
 Deterministic given the embeddings: the same vectors always produce the same
-clusters. The endpoint itself is NOT called by these tests — they run against
+clusters. The endpoint itself is NOT called by these tests - they run against
 fixture embeddings (a fake vector function) so the suite is hermetic. One
 optional live probe (skipped unless --live is passed / env DAG_MERGE_LIVE=1)
 validates the endpoint contract.
@@ -260,7 +260,7 @@ class MergeTests(unittest.TestCase):
 
     def test_named_node_evidence_excludes_the_corpus_dominant_label(self):
         # the 2026-10-19 audit: "label != registry name" conflates USER
-        # renaming with a node TYPE that the developers renamed — the type's
+        # renaming with a node TYPE that the developers renamed - the type's
         # old default differs from the current registry name across the whole
         # corpus and is not a naming signal. A label that equals the type's
         # DOMINANT corpus label (its de-facto default) is excluded, in

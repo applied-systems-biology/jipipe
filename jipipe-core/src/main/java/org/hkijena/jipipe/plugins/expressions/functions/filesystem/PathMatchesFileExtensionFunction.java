@@ -33,7 +33,7 @@ public class PathMatchesFileExtensionFunction extends ExpressionFunction {
         String pathString = StringUtils.nullToEmpty(parameters.getFirst()).toLowerCase(Locale.ROOT);
         for (int i = 1; i < parameters.size(); i++) {
             String extensionString = StringUtils.nullToEmpty(parameters.get(i).toString()).toLowerCase(Locale.ROOT);
-            if(pathString.endsWith(extensionString)) {
+            if (pathString.endsWith(extensionString)) {
                 return true;
             }
         }
@@ -45,6 +45,6 @@ public class PathMatchesFileExtensionFunction extends ExpressionFunction {
         if (index == 0) {
             return new ParameterInfo("Path", "String that contains the path", String.class);
         }
-        return  new ParameterInfo("Extension " + index, "The extension (including the .)", String.class);
+        return new ParameterInfo("Extension " + index, "The extension (including the .)", String.class);
     }
 }

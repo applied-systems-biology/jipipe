@@ -1,1 +1,27 @@
-{"nodes":{"n0":{"jipipe:node-info-id":"import-folder-list","jipipe:graph-compartment":"b9ae5049-19cf-571b-9af0-47c7499162ca","jipipe:node:name":"Folder list"},"n1":{"jipipe:node-info-id":"folder-list-subfolders","jipipe:graph-compartment":"b9ae5049-19cf-571b-9af0-47c7499162ca","jipipe:node:name":"List subfolders"},"n2":{"jipipe:node-info-id":"jipipe:comment","jipipe:graph-compartment":"b9ae5049-19cf-571b-9af0-47c7499162ca","jipipe:node:name":"Comment"}},"edges":[{"source-node":"n0","source-slot":"Folder paths","target-node":"n1","target-slot":"Folders"}]}
+{
+  "nodes": {
+    "n0": {
+      "jipipe:node-info-id": "import-folder-list",
+      "jipipe:graph-compartment": "b9ae5049-19cf-571b-9af0-47c7499162ca",
+      "jipipe:node:name": "Folder list"
+    },
+    "n1": {
+      "jipipe:node-info-id": "folder-list-subfolders",
+      "jipipe:graph-compartment": "b9ae5049-19cf-571b-9af0-47c7499162ca",
+      "jipipe:node:name": "List subfolders"
+    },
+    "n2": {
+      "jipipe:node-info-id": "jipipe:comment",
+      "jipipe:graph-compartment": "b9ae5049-19cf-571b-9af0-47c7499162ca",
+      "jipipe:node:name": "Comment"
+    }
+  },
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Folder paths",
+      "target-node": "n1",
+      "target-slot": "Folders"
+    }
+  ]
+}

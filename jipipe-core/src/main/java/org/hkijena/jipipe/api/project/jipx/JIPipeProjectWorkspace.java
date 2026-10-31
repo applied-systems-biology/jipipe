@@ -31,7 +31,7 @@ import java.util.Map;
  * {@link JIPipeLocalProjectWorkspace}.
  * <p>
  * <b>Idempotency contract:</b> materializing a workspace is a pure
- * derivation from the project model — it (re)writes the listed part
+ * derivation from the project model - it (re)writes the listed part
  * files, the manifest ({@code jipx.json}), and the workspace state file
  * ({@code workspace.json}), but never deletes or rewrites any other
  * entry of the workspace (payload files such as {@code data/foo.tiff}
@@ -42,7 +42,7 @@ import java.util.Map;
  * the EDT save and the backup-queue save) must synchronize the whole
  * materialize → crate/README/manifest write → zip → self-verify → atomic
  * move → markSaved sequence on the workspace
- * ({@code synchronized (workspace) { ... }}) — otherwise a torn container
+ * ({@code synchronized (workspace) { ... }}) - otherwise a torn container
  * can pass the self-verify (each part parses individually) and silently
  * replace the target with a chimera.
  */
@@ -61,7 +61,7 @@ public interface JIPipeProjectWorkspace {
      * ({@code workspace.json}).
      * <p>
      * Idempotent: existing unknown/payload files in the base directory
-     * are never deleted or overwritten — only the listed part files,
+     * are never deleted or overwritten - only the listed part files,
      * the manifest, and the state file are written. The manifest's
      * {@code unknown} entries from a pre-existing manifest are merged
      * into the new one (spec §4: unknown parts are preserved verbatim on

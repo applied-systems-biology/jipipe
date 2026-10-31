@@ -16,7 +16,6 @@ package org.hkijena.jipipe.plugins.filesystem.datasources;
 
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
@@ -26,11 +25,9 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.FileSystemFunction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.RegisterJIPipeParameterCollectionContextAction;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.desktop.api.nodes.AddJIPipeDesktopNodeQuickAction;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.plugins.filesystem.JIPipeFilesystemPluginApplicationSettings;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.FolderData;
@@ -105,7 +102,7 @@ public class ProjectUserPathDataSource extends JIPipeSimpleIteratingAlgorithm {
             buttonText = "Select existing key",
             icon = "actions/folder-open.png")
     public void selectExistingFolder(JIPipeDesktopGraphCanvasUI canvasUI) {
-        if(canvasUI.getWorkbench() instanceof JIPipeDesktopProjectWorkbench projectWorkbench) {
+        if (canvasUI.getWorkbench() instanceof JIPipeDesktopProjectWorkbench projectWorkbench) {
             List<String> result = UIUtils.getSelectionByDialog(projectWorkbench.getProjectWindow(),
                     projectWorkbench.getProject().getUserPathMap().keySet(),
                     Collections.emptyList(),
@@ -113,7 +110,7 @@ public class ProjectUserPathDataSource extends JIPipeSimpleIteratingAlgorithm {
                     "Please select one of the existing keys",
                     null,
                     ListSelectionMode.Single);
-            if(result != null && !result.isEmpty()) {
+            if (result != null && !result.isEmpty()) {
                 setParameter("key", result.getFirst());
             }
         }

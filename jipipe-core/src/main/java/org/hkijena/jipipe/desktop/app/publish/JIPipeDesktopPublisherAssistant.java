@@ -17,9 +17,9 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeDummyParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeRunnableLogEntry;
-import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
@@ -52,10 +52,13 @@ public abstract class JIPipeDesktopPublisherAssistant extends JIPipeDesktopProje
     private final JPanel setupPanel = new JPanel();
     private final JIPipeDesktopParameterFormPanel parameterPanel = new JIPipeDesktopParameterFormPanel(getDesktopWorkbench(), new JIPipeDummyParameterCollection(), MarkdownText.EMPTY, JIPipeDesktopFormPanel.WITH_SCROLLING | JIPipeDesktopFormPanel.WITH_DOCUMENTATION | JIPipeDesktopParameterFormPanel.DOCUMENTATION_NO_UI);
     private final JIPipeQueuedRunnableExecutor queue = new JIPipeQueuedRunnableExecutor("Publish Local");
-    private final JLabel invalidMessage = new JLabel("Unable to publish. Please review the items on the left.", JIPipe.RESOURCES.getIcon16("emblems/warning.png"), JLabel.LEFT);    private final JButton confirmButton = UIUtils.createButton("Publish now", JIPipe.RESOURCES.getIcon16("actions/share-nodes.png"), this::startPublish);
+    private final JLabel invalidMessage = new JLabel("Unable to publish. Please review the items on the left.", JIPipe.RESOURCES.getIcon16("emblems/warning.png"), JLabel.LEFT);
+    private final JButton confirmButton = UIUtils.createButton("Publish now", JIPipe.RESOURCES.getIcon16("actions/share-nodes.png"), this::startPublish);
     private final JLabel warningMessage = new JLabel("Some additional checks are recommended. Please review the items on the left.", JIPipe.RESOURCES.getIcon16("emblems/emblem-important-blue.png"), JLabel.LEFT);
     private final List<JIPipeDesktopPublisherAssistantCondition> conditions = new ArrayList<>();
-    private JIPipeDesktopPublisherAssistantConditionStatus currentStatus = JIPipeDesktopPublisherAssistantConditionStatus.Invalid;    private final JButton refreshButton = UIUtils.createButton("Refresh", JIPipe.RESOURCES.getIcon16("actions/view-refresh.png"), this::updateAssistant);
+    private final JButton refreshButton = UIUtils.createButton("Refresh", JIPipe.RESOURCES.getIcon16("actions/view-refresh.png"), this::updateAssistant);
+    private JIPipeDesktopPublisherAssistantConditionStatus currentStatus = JIPipeDesktopPublisherAssistantConditionStatus.Invalid;
+
     public JIPipeDesktopPublisherAssistant(JIPipeDesktopProjectWorkbench workbench) {
         super(workbench);
         initialize();
@@ -248,9 +251,6 @@ public abstract class JIPipeDesktopPublisherAssistant extends JIPipeDesktopProje
                 false));
         switchToSetup();
     }
-
-
-
 
 
 }

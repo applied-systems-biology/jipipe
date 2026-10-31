@@ -28,7 +28,7 @@ import org.junit.platform.launcher.LauncherSessionListener;
  * calls {@code JIPipe.ensureInstance()}, which creates the SciJava/ImageJ
  * context. The data-type converters of this module bridge to ImageJ1
  * ({@code ij.ImagePlus} via {@code ImageJUtils}), so the legacy patcher must
- * run first — otherwise the patcher fails ({@code LinkageError: duplicate class
+ * run first - otherwise the patcher fails ({@code LinkageError: duplicate class
  * definition} / {@code No _hooks field found in ij.IJ}, depending on ordering),
  * corrupting the context so that no node infos are registered.
  *

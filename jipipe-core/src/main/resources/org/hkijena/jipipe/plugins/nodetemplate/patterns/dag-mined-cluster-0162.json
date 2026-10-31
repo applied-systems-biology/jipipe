@@ -1,1 +1,56 @@
-{"edges":[{"source-node":"n0","source-slot":"Measurements","target-node":"n3","target-slot":"Input"},{"source-node":"n1","source-slot":"Output","target-node":"n0","target-slot":"ROI"},{"source-node":"n3","source-slot":"Output","target-node":"n2","target-slot":"Input"}],"nodes":{"n0":{"jipipe:graph-compartment":"1988a7b2-a4b4-5534-8670-1442f865ef36","jipipe:metadata-v1":{"location/1988a7b2-a4b4-5534-8670-1442f865ef36/x":8,"location/1988a7b2-a4b4-5534-8670-1442f865ef36/y":2},"jipipe:node-info-id":"ij1-analyze-image-statistics"},"n1":{"jipipe:graph-compartment":"1988a7b2-a4b4-5534-8670-1442f865ef36","jipipe:metadata-v1":{"location/1988a7b2-a4b4-5534-8670-1442f865ef36/x":0,"location/1988a7b2-a4b4-5534-8670-1442f865ef36/y":0},"jipipe:node-info-id":"annotate-remove"},"n2":{"jipipe:graph-compartment":"1988a7b2-a4b4-5534-8670-1442f865ef36","jipipe:metadata-v1":{"location/1988a7b2-a4b4-5534-8670-1442f865ef36/x":8,"location/1988a7b2-a4b4-5534-8670-1442f865ef36/y":10},"jipipe:node-info-id":"iji-export-image-to-web"},"n3":{"jipipe:graph-compartment":"1988a7b2-a4b4-5534-8670-1442f865ef36","jipipe:metadata-v1":{"location/1988a7b2-a4b4-5534-8670-1442f865ef36/x":9,"location/1988a7b2-a4b4-5534-8670-1442f865ef36/y":6},"jipipe:node-info-id":"plot-table:plot-xy-line"}}}
+{
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Measurements",
+      "target-node": "n3",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n1",
+      "source-slot": "Output",
+      "target-node": "n0",
+      "target-slot": "ROI"
+    },
+    {
+      "source-node": "n3",
+      "source-slot": "Output",
+      "target-node": "n2",
+      "target-slot": "Input"
+    }
+  ],
+  "nodes": {
+    "n0": {
+      "jipipe:graph-compartment": "1988a7b2-a4b4-5534-8670-1442f865ef36",
+      "jipipe:metadata-v1": {
+        "location/1988a7b2-a4b4-5534-8670-1442f865ef36/x": 8,
+        "location/1988a7b2-a4b4-5534-8670-1442f865ef36/y": 2
+      },
+      "jipipe:node-info-id": "ij1-analyze-image-statistics"
+    },
+    "n1": {
+      "jipipe:graph-compartment": "1988a7b2-a4b4-5534-8670-1442f865ef36",
+      "jipipe:metadata-v1": {
+        "location/1988a7b2-a4b4-5534-8670-1442f865ef36/x": 0,
+        "location/1988a7b2-a4b4-5534-8670-1442f865ef36/y": 0
+      },
+      "jipipe:node-info-id": "annotate-remove"
+    },
+    "n2": {
+      "jipipe:graph-compartment": "1988a7b2-a4b4-5534-8670-1442f865ef36",
+      "jipipe:metadata-v1": {
+        "location/1988a7b2-a4b4-5534-8670-1442f865ef36/x": 8,
+        "location/1988a7b2-a4b4-5534-8670-1442f865ef36/y": 10
+      },
+      "jipipe:node-info-id": "iji-export-image-to-web"
+    },
+    "n3": {
+      "jipipe:graph-compartment": "1988a7b2-a4b4-5534-8670-1442f865ef36",
+      "jipipe:metadata-v1": {
+        "location/1988a7b2-a4b4-5534-8670-1442f865ef36/x": 9,
+        "location/1988a7b2-a4b4-5534-8670-1442f865ef36/y": 6
+      },
+      "jipipe:node-info-id": "plot-table:plot-xy-line"
+    }
+  }
+}

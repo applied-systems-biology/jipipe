@@ -13,19 +13,14 @@
 
 package org.hkijena.jipipe.desktop.commons.nodepatterns;
 
-import java.awt.BasicStroke;
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.util.Random;
 
-/** Sierpinski carpet (plane-filling fractal). */
+/**
+ * Sierpinski carpet (plane-filling fractal).
+ */
 public final class CarpetFamily implements NodePatternFamily {
-    @Override
-    public void paint(Graphics2D g, int w, int h, Random rng) {
-        g.setStroke(new BasicStroke(1.1f));
-        carpet(g, 0, 0, w, h, 3);
-    }
-
     private static void carpet(Graphics2D g, double x, double y, double w, double h, int depth) {
         if (depth == 0) {
             g.draw(new Rectangle2D.Double(x, y, w, h));
@@ -37,5 +32,11 @@ public final class CarpetFamily implements NodePatternFamily {
                 if (i == 1 && j == 1) continue;
                 carpet(g, x + i * cw, y + j * ch, cw, ch, depth - 1);
             }
+    }
+
+    @Override
+    public void paint(Graphics2D g, int w, int h, Random rng) {
+        g.setStroke(new BasicStroke(1.1f));
+        carpet(g, 0, 0, w, h, 3);
     }
 }

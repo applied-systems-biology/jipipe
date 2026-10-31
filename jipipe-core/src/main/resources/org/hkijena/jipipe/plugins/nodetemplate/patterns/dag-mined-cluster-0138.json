@@ -1,1 +1,160 @@
-{"edges":[{"source-node":"n0","source-slot":"Output","target-node":"n3","target-slot":"Data"},{"source-node":"n0","source-slot":"Output","target-node":"n3","target-slot":"Table"},{"source-node":"n10","source-slot":"Output","target-node":"n0","target-slot":"Input"},{"source-node":"n10","source-slot":"Output","target-node":"n6","target-slot":"Input"},{"source-node":"n3","source-slot":"Annotated data","target-node":"n8","target-slot":"Input"},{"source-node":"n4","source-slot":"Output","target-node":"n2","target-slot":"Input"},{"source-node":"n4","source-slot":"Output","target-node":"n5","target-slot":"Input"},{"source-node":"n5","source-slot":"Output","target-node":"n1","target-slot":"Input"},{"source-node":"n6","source-slot":"Output","target-node":"n7","target-slot":"Input"},{"source-node":"n8","source-slot":"Output","target-node":"n4","target-slot":"Input"},{"source-node":"n8","source-slot":"Output","target-node":"n9","target-slot":"Input"}],"nodes":{"n0":{"jipipe:graph-compartment":"c05a5b04-262f-5fd9-8ad1-a825002cac9e","jipipe:metadata-v1":{"location/c05a5b04-262f-5fd9-8ad1-a825002cac9e/x":0,"location/c05a5b04-262f-5fd9-8ad1-a825002cac9e/y":12},"jipipe:node-info-id":"table-process-columns"},"n1":{"jipipe:graph-compartment":"c05a5b04-262f-5fd9-8ad1-a825002cac9e","jipipe:metadata-v1":{"location/c05a5b04-262f-5fd9-8ad1-a825002cac9e/x":0,"location/c05a5b04-262f-5fd9-8ad1-a825002cac9e/y":36},"jipipe:node-info-id":"iji-export-image-v2"},"n10":{"jipipe:graph-compartment":"c05a5b04-262f-5fd9-8ad1-a825002cac9e","jipipe:metadata-v1":{"location/c05a5b04-262f-5fd9-8ad1-a825002cac9e/x":0,"location/c05a5b04-262f-5fd9-8ad1-a825002cac9e/y":0},"jipipe:node-info-id":"trackmate-measure-tracks"},"n2":{"jipipe:graph-compartment":"c05a5b04-262f-5fd9-8ad1-a825002cac9e","jipipe:metadata-v1":{"location/c05a5b04-262f-5fd9-8ad1-a825002cac9e/x":0,"location/c05a5b04-262f-5fd9-8ad1-a825002cac9e/y":40},"jipipe:node-info-id":"iji-export-table-as-xlsx-v2"},"n3":{"jipipe:graph-compartment":"c05a5b04-262f-5fd9-8ad1-a825002cac9e","jipipe:metadata-v1":{"location/c05a5b04-262f-5fd9-8ad1-a825002cac9e/x":0,"location/c05a5b04-262f-5fd9-8ad1-a825002cac9e/y":16},"jipipe:node-info-id":"annotate-data-with-table-values"},"n4":{"jipipe:graph-compartment":"c05a5b04-262f-5fd9-8ad1-a825002cac9e","jipipe:metadata-v1":{"location/c05a5b04-262f-5fd9-8ad1-a825002cac9e/x":0,"location/c05a5b04-262f-5fd9-8ad1-a825002cac9e/y":28},"jipipe:node-info-id":"table-convert-to-histogram"},"n5":{"jipipe:graph-compartment":"c05a5b04-262f-5fd9-8ad1-a825002cac9e","jipipe:metadata-v1":{"location/c05a5b04-262f-5fd9-8ad1-a825002cac9e/x":0,"location/c05a5b04-262f-5fd9-8ad1-a825002cac9e/y":32},"jipipe:node-info-id":"plot-table:plot-xy-line"},"n6":{"jipipe:graph-compartment":"c05a5b04-262f-5fd9-8ad1-a825002cac9e","jipipe:metadata-v1":{"location/c05a5b04-262f-5fd9-8ad1-a825002cac9e/x":0,"location/c05a5b04-262f-5fd9-8ad1-a825002cac9e/y":4},"jipipe:node-info-id":"plot-table:plot-histogram"},"n7":{"jipipe:graph-compartment":"c05a5b04-262f-5fd9-8ad1-a825002cac9e","jipipe:metadata-v1":{"location/c05a5b04-262f-5fd9-8ad1-a825002cac9e/x":0,"location/c05a5b04-262f-5fd9-8ad1-a825002cac9e/y":8},"jipipe:node-info-id":"iji-export-image-v2"},"n8":{"jipipe:graph-compartment":"c05a5b04-262f-5fd9-8ad1-a825002cac9e","jipipe:metadata-v1":{"location/c05a5b04-262f-5fd9-8ad1-a825002cac9e/x":0,"location/c05a5b04-262f-5fd9-8ad1-a825002cac9e/y":20},"jipipe:node-info-id":"table-add-columns-generate"},"n9":{"jipipe:graph-compartment":"c05a5b04-262f-5fd9-8ad1-a825002cac9e","jipipe:metadata-v1":{"location/c05a5b04-262f-5fd9-8ad1-a825002cac9e/x":0,"location/c05a5b04-262f-5fd9-8ad1-a825002cac9e/y":24},"jipipe:node-info-id":"iji-export-table-as-xlsx-v2"}}}
+{
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Output",
+      "target-node": "n3",
+      "target-slot": "Data"
+    },
+    {
+      "source-node": "n0",
+      "source-slot": "Output",
+      "target-node": "n3",
+      "target-slot": "Table"
+    },
+    {
+      "source-node": "n10",
+      "source-slot": "Output",
+      "target-node": "n0",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n10",
+      "source-slot": "Output",
+      "target-node": "n6",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n3",
+      "source-slot": "Annotated data",
+      "target-node": "n8",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n4",
+      "source-slot": "Output",
+      "target-node": "n2",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n4",
+      "source-slot": "Output",
+      "target-node": "n5",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n5",
+      "source-slot": "Output",
+      "target-node": "n1",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n6",
+      "source-slot": "Output",
+      "target-node": "n7",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n8",
+      "source-slot": "Output",
+      "target-node": "n4",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n8",
+      "source-slot": "Output",
+      "target-node": "n9",
+      "target-slot": "Input"
+    }
+  ],
+  "nodes": {
+    "n0": {
+      "jipipe:graph-compartment": "c05a5b04-262f-5fd9-8ad1-a825002cac9e",
+      "jipipe:metadata-v1": {
+        "location/c05a5b04-262f-5fd9-8ad1-a825002cac9e/x": 0,
+        "location/c05a5b04-262f-5fd9-8ad1-a825002cac9e/y": 12
+      },
+      "jipipe:node-info-id": "table-process-columns"
+    },
+    "n1": {
+      "jipipe:graph-compartment": "c05a5b04-262f-5fd9-8ad1-a825002cac9e",
+      "jipipe:metadata-v1": {
+        "location/c05a5b04-262f-5fd9-8ad1-a825002cac9e/x": 0,
+        "location/c05a5b04-262f-5fd9-8ad1-a825002cac9e/y": 36
+      },
+      "jipipe:node-info-id": "iji-export-image-v2"
+    },
+    "n10": {
+      "jipipe:graph-compartment": "c05a5b04-262f-5fd9-8ad1-a825002cac9e",
+      "jipipe:metadata-v1": {
+        "location/c05a5b04-262f-5fd9-8ad1-a825002cac9e/x": 0,
+        "location/c05a5b04-262f-5fd9-8ad1-a825002cac9e/y": 0
+      },
+      "jipipe:node-info-id": "trackmate-measure-tracks"
+    },
+    "n2": {
+      "jipipe:graph-compartment": "c05a5b04-262f-5fd9-8ad1-a825002cac9e",
+      "jipipe:metadata-v1": {
+        "location/c05a5b04-262f-5fd9-8ad1-a825002cac9e/x": 0,
+        "location/c05a5b04-262f-5fd9-8ad1-a825002cac9e/y": 40
+      },
+      "jipipe:node-info-id": "iji-export-table-as-xlsx-v2"
+    },
+    "n3": {
+      "jipipe:graph-compartment": "c05a5b04-262f-5fd9-8ad1-a825002cac9e",
+      "jipipe:metadata-v1": {
+        "location/c05a5b04-262f-5fd9-8ad1-a825002cac9e/x": 0,
+        "location/c05a5b04-262f-5fd9-8ad1-a825002cac9e/y": 16
+      },
+      "jipipe:node-info-id": "annotate-data-with-table-values"
+    },
+    "n4": {
+      "jipipe:graph-compartment": "c05a5b04-262f-5fd9-8ad1-a825002cac9e",
+      "jipipe:metadata-v1": {
+        "location/c05a5b04-262f-5fd9-8ad1-a825002cac9e/x": 0,
+        "location/c05a5b04-262f-5fd9-8ad1-a825002cac9e/y": 28
+      },
+      "jipipe:node-info-id": "table-convert-to-histogram"
+    },
+    "n5": {
+      "jipipe:graph-compartment": "c05a5b04-262f-5fd9-8ad1-a825002cac9e",
+      "jipipe:metadata-v1": {
+        "location/c05a5b04-262f-5fd9-8ad1-a825002cac9e/x": 0,
+        "location/c05a5b04-262f-5fd9-8ad1-a825002cac9e/y": 32
+      },
+      "jipipe:node-info-id": "plot-table:plot-xy-line"
+    },
+    "n6": {
+      "jipipe:graph-compartment": "c05a5b04-262f-5fd9-8ad1-a825002cac9e",
+      "jipipe:metadata-v1": {
+        "location/c05a5b04-262f-5fd9-8ad1-a825002cac9e/x": 0,
+        "location/c05a5b04-262f-5fd9-8ad1-a825002cac9e/y": 4
+      },
+      "jipipe:node-info-id": "plot-table:plot-histogram"
+    },
+    "n7": {
+      "jipipe:graph-compartment": "c05a5b04-262f-5fd9-8ad1-a825002cac9e",
+      "jipipe:metadata-v1": {
+        "location/c05a5b04-262f-5fd9-8ad1-a825002cac9e/x": 0,
+        "location/c05a5b04-262f-5fd9-8ad1-a825002cac9e/y": 8
+      },
+      "jipipe:node-info-id": "iji-export-image-v2"
+    },
+    "n8": {
+      "jipipe:graph-compartment": "c05a5b04-262f-5fd9-8ad1-a825002cac9e",
+      "jipipe:metadata-v1": {
+        "location/c05a5b04-262f-5fd9-8ad1-a825002cac9e/x": 0,
+        "location/c05a5b04-262f-5fd9-8ad1-a825002cac9e/y": 20
+      },
+      "jipipe:node-info-id": "table-add-columns-generate"
+    },
+    "n9": {
+      "jipipe:graph-compartment": "c05a5b04-262f-5fd9-8ad1-a825002cac9e",
+      "jipipe:metadata-v1": {
+        "location/c05a5b04-262f-5fd9-8ad1-a825002cac9e/x": 0,
+        "location/c05a5b04-262f-5fd9-8ad1-a825002cac9e/y": 24
+      },
+      "jipipe:node-info-id": "iji-export-table-as-xlsx-v2"
+    }
+  }
+}

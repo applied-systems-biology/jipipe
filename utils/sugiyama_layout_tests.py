@@ -19,7 +19,7 @@ def chain3():
 
 
 def test_linear_chain_width7():
-    # The canonical case: a chain flows TOP TO BOTTOM — y = 1, 5, 9 (each
+    # The canonical case: a chain flows TOP TO BOTTOM - y = 1, 5, 9 (each
     # layer 3 rows tall + 1 gap), all at x = 1 (single column per layer).
     pos = layout(chain3(), {"a": 7, "b": 7, "c": 7})
     assert pos == {"a": (1, 1), "b": (1, 5), "c": (1, 9)}, pos

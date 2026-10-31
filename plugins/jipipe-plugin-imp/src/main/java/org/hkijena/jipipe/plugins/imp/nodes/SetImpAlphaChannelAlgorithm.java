@@ -13,10 +13,6 @@
 
 package org.hkijena.jipipe.plugins.imp.nodes;
 
-import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
-import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.CoreFramework;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.MergingSplittingFunction;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -27,6 +23,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.MergingSplittingFunction;
 import org.hkijena.jipipe.plugins.imp.datatypes.ImpImageData;
 import org.hkijena.jipipe.plugins.imp.utils.ImpImageDataBuilder;
 import org.hkijena.jipipe.plugins.imp.utils.ImpImageUtils;
@@ -34,8 +31,11 @@ import org.hkijena.jipipe.utils.BufferedImageUtils;
 
 import java.awt.image.BufferedImage;
 
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
+
 @SetJIPipeDocumentation(name = "Set alpha channel from mask", description = "Sets the alpha channel of an IMP image from a mask")
-@ConfigureJIPipeNode(function = MergingSplittingFunction.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
+@ConfigureJIPipeNode(function = MergingSplittingFunction.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImpImageData.class, name = "Image", create = true)
 @AddJIPipeInputSlot(value = ImpImageData.class, name = "Alpha", create = true)
 @AddJIPipeOutputSlot(value = ImpImageData.class, name = "Output", create = true)

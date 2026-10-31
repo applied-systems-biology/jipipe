@@ -13,9 +13,6 @@
 
 package org.hkijena.jipipe.plugins.ijweka.nodes;
 
-import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.WekaFramework;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.machinelearning.MachineLearningTrainingFunction;
 import ij.ImagePlus;
 import ij.gui.Roi;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
@@ -31,6 +28,8 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.WekaFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.machinelearning.MachineLearningTrainingFunction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
@@ -55,9 +54,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
+
 @SetJIPipeDocumentation(name = "Train Weka model from ROI (3D)", description = "Trains a Weka model on 3D image data. The inputs are ROI that are assigned to the classes and trained on the input image." +
         "Can only train on a single image. Please convert ROI to labels/masks and use the appropriate nodes if you want to train on multiple images.")
-@ConfigureJIPipeNode(function = MachineLearningTrainingFunction.class, framework = WekaFramework.class, spatialDimensions = { SPATIAL_3D })
+@ConfigureJIPipeNode(function = MachineLearningTrainingFunction.class, framework = WekaFramework.class, spatialDimensions = {SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlus3DData.class, name = "Image", description = "Image on which the training should be applied", create = true)
 @AddJIPipeInputSlot(value = Roi2dListData.class)
 @AddJIPipeOutputSlot(value = WekaModelData.class, name = "Trained model", description = "The model", create = true)

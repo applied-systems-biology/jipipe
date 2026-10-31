@@ -12,19 +12,37 @@ class JIPipeStatisticsRegistryTest {
     private JIPipeStatisticsItem createItem(String id, StatisticsPrivacyLevel level) {
         return new JIPipeStatisticsItem() {
             @Override
-            public String getId() { return id; }
+            public String getId() {
+                return id;
+            }
+
             @Override
-            public String getName() { return id; }
+            public String getName() {
+                return id;
+            }
+
             @Override
-            public String getDescription() { return id; }
+            public String getDescription() {
+                return id;
+            }
+
             @Override
-            public StatisticsPrivacyLevel getRequiredPrivacyLevel() { return level; }
+            public StatisticsPrivacyLevel getRequiredPrivacyLevel() {
+                return level;
+            }
+
             @Override
-            public com.fasterxml.jackson.databind.JsonNode serialize() { return IntNode.valueOf(42); }
+            public com.fasterxml.jackson.databind.JsonNode serialize() {
+                return IntNode.valueOf(42);
+            }
+
             @Override
-            public void deserialize(com.fasterxml.jackson.databind.JsonNode node) {}
+            public void deserialize(com.fasterxml.jackson.databind.JsonNode node) {
+            }
+
             @Override
-            public void reset() {}
+            public void reset() {
+            }
         };
     }
 

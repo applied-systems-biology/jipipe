@@ -1,7 +1,5 @@
 package org.hkijena.jipipe.api.service.components;
 
-import org.hkijena.jipipe.api.nodes.database.embeddings.JIPipeGlobalEmbeddingSearch;
-
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -14,6 +12,7 @@ import org.hkijena.jipipe.api.microservice.AbstractMicroservice;
 import org.hkijena.jipipe.api.microservice.MicroserviceState;
 import org.hkijena.jipipe.api.microservice.ServiceAwareEphemeralExecutor;
 import org.hkijena.jipipe.api.microservice.ServiceAwareQueuedExecutor;
+import org.hkijena.jipipe.api.nodes.database.embeddings.JIPipeGlobalEmbeddingSearch;
 import org.hkijena.jipipe.api.run.JIPipeRunnableExecutor;
 import org.hkijena.jipipe.api.servers.JIPipeServerLease;
 import org.hkijena.jipipe.api.service.JIPipeService;
@@ -102,7 +101,7 @@ public class JIPipeAIServiceComponent extends JIPipeServiceComponent {
     }
 
     /**
-     * Asynchronous embed. Must not be called from the EDT — blocks until the model is ready.
+     * Asynchronous embed. Must not be called from the EDT - blocks until the model is ready.
      * Enqueues an embed task and returns a CompletableFuture.
      * If no model is loaded, auto-starts it first (blocking).
      * Returns null if AI is disabled in settings.
@@ -116,7 +115,7 @@ public class JIPipeAIServiceComponent extends JIPipeServiceComponent {
             return null;
         }
 
-        // If model is not ready, start it first (blocking — caller should be off-EDT)
+        // If model is not ready, start it first (blocking - caller should be off-EDT)
         if (!embeddingModelService.isReady()) {
             embeddingModelService.start();
         }

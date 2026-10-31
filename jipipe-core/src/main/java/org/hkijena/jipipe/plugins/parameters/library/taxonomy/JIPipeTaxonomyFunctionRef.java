@@ -16,18 +16,17 @@ package org.hkijena.jipipe.plugins.parameters.library.taxonomy;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.taxonomy.FunctionRegistry;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
-import org.hkijena.jipipe.api.validation.JIPipeValidatable;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
+import org.hkijena.jipipe.api.validation.*;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -38,7 +37,7 @@ import java.util.Objects;
  * Mirrors {@link org.hkijena.jipipe.plugins.parameters.library.references.JIPipeDataInfoRef}:
  * a plain reference wrapper that serializes to the bare id string (or {@code null} when unset),
  * so saved JSON stays human-readable. The id is only resolved lazily against the live
- * {@link FunctionRegistry}; an unknown (stale) id never throws — it simply reports
+ * {@link FunctionRegistry}; an unknown (stale) id never throws - it simply reports
  * {@link #isResolved() is unresolved} and {@link #getFunction()} returns {@code null}.
  */
 @JsonSerialize(using = JIPipeTaxonomyFunctionRef.Serializer.class)

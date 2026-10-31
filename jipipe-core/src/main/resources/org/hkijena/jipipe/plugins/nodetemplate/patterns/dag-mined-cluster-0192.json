@@ -1,1 +1,158 @@
-{"edges":[{"source-node":"n3","source-slot":"Output","target-node":"n5","target-slot":"ROI"},{"source-node":"n3","source-slot":"Output","target-node":"n9","target-slot":"ROI 1"},{"source-node":"n4","source-slot":"Output","target-node":"n0","target-slot":"ROI"},{"source-node":"n5","source-slot":"Output","target-node":"n0","target-slot":"Image"},{"source-node":"n5","source-slot":"Output","target-node":"n1","target-slot":"Image"},{"source-node":"n6","source-slot":"Output","target-node":"n2","target-slot":"Image"},{"source-node":"n6","source-slot":"Output","target-node":"n5","target-slot":"Image"},{"source-node":"n7","source-slot":"Output","target-node":"n6","target-slot":"Input"},{"source-node":"n8","source-slot":"Output","target-node":"n1","target-slot":"ROI"},{"source-node":"n8","source-slot":"Output","target-node":"n2","target-slot":"ROI"},{"source-node":"n8","source-slot":"Output","target-node":"n9","target-slot":"ROI 2"},{"source-node":"n9","source-slot":"ROI 2","target-node":"n4","target-slot":"Input"}],"nodes":{"n0":{"jipipe:graph-compartment":"a90baee7-663d-57bb-9a54-e3219c6245fa","jipipe:metadata-v1":{"location/a90baee7-663d-57bb-9a54-e3219c6245fa/x":14,"location/a90baee7-663d-57bb-9a54-e3219c6245fa/y":20},"jipipe:node-info-id":"ij1-roi-to-rgb"},"n1":{"jipipe:graph-compartment":"a90baee7-663d-57bb-9a54-e3219c6245fa","jipipe:metadata-v1":{"location/a90baee7-663d-57bb-9a54-e3219c6245fa/x":11,"location/a90baee7-663d-57bb-9a54-e3219c6245fa/y":8},"jipipe:node-info-id":"ij1-roi-to-rgb"},"n2":{"jipipe:graph-compartment":"a90baee7-663d-57bb-9a54-e3219c6245fa","jipipe:metadata-v1":{"location/a90baee7-663d-57bb-9a54-e3219c6245fa/x":22,"location/a90baee7-663d-57bb-9a54-e3219c6245fa/y":8},"jipipe:node-info-id":"ij1-roi-to-rgb"},"n3":{"jipipe:graph-compartment":"a90baee7-663d-57bb-9a54-e3219c6245fa","jipipe:metadata-v1":{"location/a90baee7-663d-57bb-9a54-e3219c6245fa/x":0,"location/a90baee7-663d-57bb-9a54-e3219c6245fa/y":4},"jipipe:node-info-id":"ij1-roi-set-properties"},"n4":{"jipipe:graph-compartment":"a90baee7-663d-57bb-9a54-e3219c6245fa","jipipe:metadata-v1":{"location/a90baee7-663d-57bb-9a54-e3219c6245fa/x":22,"location/a90baee7-663d-57bb-9a54-e3219c6245fa/y":16},"jipipe:node-info-id":"ij1-roi-set-properties"},"n5":{"jipipe:graph-compartment":"a90baee7-663d-57bb-9a54-e3219c6245fa","jipipe:metadata-v1":{"location/a90baee7-663d-57bb-9a54-e3219c6245fa/x":0,"location/a90baee7-663d-57bb-9a54-e3219c6245fa/y":8},"jipipe:node-info-id":"ij1-roi-to-rgb"},"n6":{"jipipe:graph-compartment":"a90baee7-663d-57bb-9a54-e3219c6245fa","jipipe:metadata-v1":{"location/a90baee7-663d-57bb-9a54-e3219c6245fa/x":11,"location/a90baee7-663d-57bb-9a54-e3219c6245fa/y":4},"jipipe:node-info-id":"ij1-contrast-calibrate"},"n7":{"jipipe:graph-compartment":"a90baee7-663d-57bb-9a54-e3219c6245fa","jipipe:metadata-v1":{"location/a90baee7-663d-57bb-9a54-e3219c6245fa/x":11,"location/a90baee7-663d-57bb-9a54-e3219c6245fa/y":0},"jipipe:node-info-id":"ij1-contrast-illumination-correction2d"},"n8":{"jipipe:graph-compartment":"a90baee7-663d-57bb-9a54-e3219c6245fa","jipipe:metadata-v1":{"location/a90baee7-663d-57bb-9a54-e3219c6245fa/x":22,"location/a90baee7-663d-57bb-9a54-e3219c6245fa/y":4},"jipipe:node-info-id":"ij1-roi-set-properties"},"n9":{"jipipe:graph-compartment":"a90baee7-663d-57bb-9a54-e3219c6245fa","jipipe:metadata-v1":{"location/a90baee7-663d-57bb-9a54-e3219c6245fa/x":20,"location/a90baee7-663d-57bb-9a54-e3219c6245fa/y":12},"jipipe:node-info-id":"ij1-roi-filter-by-overlap"}}}
+{
+  "edges": [
+    {
+      "source-node": "n3",
+      "source-slot": "Output",
+      "target-node": "n5",
+      "target-slot": "ROI"
+    },
+    {
+      "source-node": "n3",
+      "source-slot": "Output",
+      "target-node": "n9",
+      "target-slot": "ROI 1"
+    },
+    {
+      "source-node": "n4",
+      "source-slot": "Output",
+      "target-node": "n0",
+      "target-slot": "ROI"
+    },
+    {
+      "source-node": "n5",
+      "source-slot": "Output",
+      "target-node": "n0",
+      "target-slot": "Image"
+    },
+    {
+      "source-node": "n5",
+      "source-slot": "Output",
+      "target-node": "n1",
+      "target-slot": "Image"
+    },
+    {
+      "source-node": "n6",
+      "source-slot": "Output",
+      "target-node": "n2",
+      "target-slot": "Image"
+    },
+    {
+      "source-node": "n6",
+      "source-slot": "Output",
+      "target-node": "n5",
+      "target-slot": "Image"
+    },
+    {
+      "source-node": "n7",
+      "source-slot": "Output",
+      "target-node": "n6",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n8",
+      "source-slot": "Output",
+      "target-node": "n1",
+      "target-slot": "ROI"
+    },
+    {
+      "source-node": "n8",
+      "source-slot": "Output",
+      "target-node": "n2",
+      "target-slot": "ROI"
+    },
+    {
+      "source-node": "n8",
+      "source-slot": "Output",
+      "target-node": "n9",
+      "target-slot": "ROI 2"
+    },
+    {
+      "source-node": "n9",
+      "source-slot": "ROI 2",
+      "target-node": "n4",
+      "target-slot": "Input"
+    }
+  ],
+  "nodes": {
+    "n0": {
+      "jipipe:graph-compartment": "a90baee7-663d-57bb-9a54-e3219c6245fa",
+      "jipipe:metadata-v1": {
+        "location/a90baee7-663d-57bb-9a54-e3219c6245fa/x": 14,
+        "location/a90baee7-663d-57bb-9a54-e3219c6245fa/y": 20
+      },
+      "jipipe:node-info-id": "ij1-roi-to-rgb"
+    },
+    "n1": {
+      "jipipe:graph-compartment": "a90baee7-663d-57bb-9a54-e3219c6245fa",
+      "jipipe:metadata-v1": {
+        "location/a90baee7-663d-57bb-9a54-e3219c6245fa/x": 11,
+        "location/a90baee7-663d-57bb-9a54-e3219c6245fa/y": 8
+      },
+      "jipipe:node-info-id": "ij1-roi-to-rgb"
+    },
+    "n2": {
+      "jipipe:graph-compartment": "a90baee7-663d-57bb-9a54-e3219c6245fa",
+      "jipipe:metadata-v1": {
+        "location/a90baee7-663d-57bb-9a54-e3219c6245fa/x": 22,
+        "location/a90baee7-663d-57bb-9a54-e3219c6245fa/y": 8
+      },
+      "jipipe:node-info-id": "ij1-roi-to-rgb"
+    },
+    "n3": {
+      "jipipe:graph-compartment": "a90baee7-663d-57bb-9a54-e3219c6245fa",
+      "jipipe:metadata-v1": {
+        "location/a90baee7-663d-57bb-9a54-e3219c6245fa/x": 0,
+        "location/a90baee7-663d-57bb-9a54-e3219c6245fa/y": 4
+      },
+      "jipipe:node-info-id": "ij1-roi-set-properties"
+    },
+    "n4": {
+      "jipipe:graph-compartment": "a90baee7-663d-57bb-9a54-e3219c6245fa",
+      "jipipe:metadata-v1": {
+        "location/a90baee7-663d-57bb-9a54-e3219c6245fa/x": 22,
+        "location/a90baee7-663d-57bb-9a54-e3219c6245fa/y": 16
+      },
+      "jipipe:node-info-id": "ij1-roi-set-properties"
+    },
+    "n5": {
+      "jipipe:graph-compartment": "a90baee7-663d-57bb-9a54-e3219c6245fa",
+      "jipipe:metadata-v1": {
+        "location/a90baee7-663d-57bb-9a54-e3219c6245fa/x": 0,
+        "location/a90baee7-663d-57bb-9a54-e3219c6245fa/y": 8
+      },
+      "jipipe:node-info-id": "ij1-roi-to-rgb"
+    },
+    "n6": {
+      "jipipe:graph-compartment": "a90baee7-663d-57bb-9a54-e3219c6245fa",
+      "jipipe:metadata-v1": {
+        "location/a90baee7-663d-57bb-9a54-e3219c6245fa/x": 11,
+        "location/a90baee7-663d-57bb-9a54-e3219c6245fa/y": 4
+      },
+      "jipipe:node-info-id": "ij1-contrast-calibrate"
+    },
+    "n7": {
+      "jipipe:graph-compartment": "a90baee7-663d-57bb-9a54-e3219c6245fa",
+      "jipipe:metadata-v1": {
+        "location/a90baee7-663d-57bb-9a54-e3219c6245fa/x": 11,
+        "location/a90baee7-663d-57bb-9a54-e3219c6245fa/y": 0
+      },
+      "jipipe:node-info-id": "ij1-contrast-illumination-correction2d"
+    },
+    "n8": {
+      "jipipe:graph-compartment": "a90baee7-663d-57bb-9a54-e3219c6245fa",
+      "jipipe:metadata-v1": {
+        "location/a90baee7-663d-57bb-9a54-e3219c6245fa/x": 22,
+        "location/a90baee7-663d-57bb-9a54-e3219c6245fa/y": 4
+      },
+      "jipipe:node-info-id": "ij1-roi-set-properties"
+    },
+    "n9": {
+      "jipipe:graph-compartment": "a90baee7-663d-57bb-9a54-e3219c6245fa",
+      "jipipe:metadata-v1": {
+        "location/a90baee7-663d-57bb-9a54-e3219c6245fa/x": 20,
+        "location/a90baee7-663d-57bb-9a54-e3219c6245fa/y": 12
+      },
+      "jipipe:node-info-id": "ij1-roi-filter-by-overlap"
+    }
+  }
+}

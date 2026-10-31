@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.plugins.utils.algorithms.datatable;
 
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.tables.TableJoinSplitFunction;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -27,6 +26,7 @@ import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeParameterSlotAlgorithm;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.tables.TableJoinSplitFunction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 
 import java.util.ArrayList;

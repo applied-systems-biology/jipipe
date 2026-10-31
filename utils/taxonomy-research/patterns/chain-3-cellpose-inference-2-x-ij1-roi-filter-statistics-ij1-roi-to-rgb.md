@@ -36,28 +36,32 @@ Mined pattern `chain-3-cellpose-inference-2-x-ij1-roi-filter-statistics-ij1-roi-
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| other | `cellpose-inference-2.x` |
+| role  | node ids                    |
+|-------|-----------------------------|
+| other | `cellpose-inference-2.x`    |
 | other | `ij1-roi-filter-statistics` |
-| other | `ij1-roi-to-rgb` |
+| other | `ij1-roi-to-rgb`            |
 
 ## Example graph
 
-Project: `AIAgentTests/02-AdvancedPipelines/Cryogels_01.jip` (relative to `/data/JIPipe`), compartment `Apply Cellpose Model 1`.
+Project: `AIAgentTests/02-AdvancedPipelines/Cryogels_01.jip` (relative to `/data/JIPipe`), compartment
+`Apply Cellpose Model 1`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `cellpose-inference-2.x` | Cellpose segmentation (2.x) |
-| n1 | `ij1-roi-filter-statistics` | Filter ROI by statistics |
-| n2 | `ij1-roi-to-rgb` | Convert ROI to RGB: Cellpose results |
+| key | node id                     | name                                 |
+|-----|-----------------------------|--------------------------------------|
+| n0  | `cellpose-inference-2.x`    | Cellpose segmentation (2.x)          |
+| n1  | `ij1-roi-filter-statistics` | Filter ROI by statistics             |
+| n2  | `ij1-roi-to-rgb`            | Convert ROI to RGB: Cellpose results |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
-| Cellpose segmentation (2.x) | `ROI` | Filter ROI by statistics | `ROI` | `imagej-roi` |
-| Filter ROI by statistics | `Output` | Convert ROI to RGB: Cellpose results | `ROI` | `imagej-roi` |
+| from                        | slot     | to                                   | slot  | data class   |
+|-----------------------------|----------|--------------------------------------|-------|--------------|
+| Cellpose segmentation (2.x) | `ROI`    | Filter ROI by statistics             | `ROI` | `imagej-roi` |
+| Filter ROI by statistics    | `Output` | Convert ROI to RGB: Cellpose results | `ROI` | `imagej-roi` |
 
 ## Template
 
-Proposed name `Cellpose segmentation (2.x) -> Filter 2D ROI by statistics -> Convert 2D ROI to RGB`, menu path `Patterns/Machine learning/Cellpose segmentation (2.x) -> Filter 2D ROI by statistics -> Convert 2D ROI to RGB` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/chain-3-cellpose-inference-2-x-ij1-roi-filter-statistics-ij1-roi-to-rgb.json`.
+Proposed name `Cellpose segmentation (2.x) -> Filter 2D ROI by statistics -> Convert 2D ROI to RGB`, menu path
+`Patterns/Machine learning/Cellpose segmentation (2.x) -> Filter 2D ROI by statistics -> Convert 2D ROI to RGB`
+(proposal only - not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/chain-3-cellpose-inference-2-x-ij1-roi-filter-statistics-ij1-roi-to-rgb.json`.
 

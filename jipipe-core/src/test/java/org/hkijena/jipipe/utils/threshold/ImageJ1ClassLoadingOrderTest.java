@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  * Regression test for the ImageJ legacy patcher ordering issue:
  * this class initializes ImageJ1 classes ({@link AutoThresholder}). If a later
  * test (e.g. InstrumentationAPITest) creates the SciJava context, the ImageJ2
- * legacy patcher must already have run — enforced by the
+ * legacy patcher must already have run - enforced by the
  * {@code ImageJLegacyPatcherLauncherSessionListener}, which preinitializes the
  * patcher before any test class is loaded.
  *

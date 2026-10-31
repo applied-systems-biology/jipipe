@@ -34,35 +34,40 @@ template:
 
 # Pattern: Set LUT (color map) -> Compartment output -> Convert 2D ROI to RGB -> Compartment output
 
-Mined pattern `chain-4-ij1-set-lut-from-color-map-jipipe-compartment-output-ij1-roi-to-rgb-jipipe-compartment-output` (shape `chain`, support 26).
+Mined pattern `chain-4-ij1-set-lut-from-color-map-jipipe-compartment-output-ij1-roi-to-rgb-jipipe-compartment-output`
+(shape `chain`, support 26).
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| other | `ij1-set-lut-from-color-map` |
-| core-io | `jipipe:compartment-output` |
-| other | `ij1-roi-to-rgb` |
-| core-io | `jipipe:compartment-output` |
+| role    | node ids                     |
+|---------|------------------------------|
+| other   | `ij1-set-lut-from-color-map` |
+| core-io | `jipipe:compartment-output`  |
+| other   | `ij1-roi-to-rgb`             |
+| core-io | `jipipe:compartment-output`  |
 
 ## Example graph
 
-Project: `AIAgentTests/03-ExampleWorkflows/ConfrontationAssay_Mohamed_Jaime_v17.jip` (relative to `/data/JIPipe`), compartment `CellPose+File handler`.
+Project: `AIAgentTests/03-ExampleWorkflows/ConfrontationAssay_Mohamed_Jaime_v17.jip` (relative to `/data/JIPipe`),
+compartment `CellPose+File handler`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `ij1-set-lut-from-color-map` | Set LUT (color map): grey |
-| n1 | `jipipe:compartment-output` | Output #1 |
-| n2 | `ij1-roi-to-rgb` | Convert ROI to RGB: green overlay |
-| n3 | `jipipe:compartment-output` | Output #2 |
+| key | node id                      | name                              |
+|-----|------------------------------|-----------------------------------|
+| n0  | `ij1-set-lut-from-color-map` | Set LUT (color map): grey         |
+| n1  | `jipipe:compartment-output`  | Output #1                         |
+| n2  | `ij1-roi-to-rgb`             | Convert ROI to RGB: green overlay |
+| n3  | `jipipe:compartment-output`  | Output #2                         |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
-| Set LUT (color map): grey | `Output` | Output #1 | `TL stack` | `imagej-imgplus-greyscale` |
-| Output #1 | `Green` | Convert ROI to RGB: green overlay | `Image` | `imagej-imgplus-2d-greyscale-16u` |
-| Convert ROI to RGB: green overlay | `Output` | Output #2 | `Green overlay` | `imagej-imgplus-color-rgb` |
+| from                              | slot     | to                                | slot            | data class                        |
+|-----------------------------------|----------|-----------------------------------|-----------------|-----------------------------------|
+| Set LUT (color map): grey         | `Output` | Output #1                         | `TL stack`      | `imagej-imgplus-greyscale`        |
+| Output #1                         | `Green`  | Convert ROI to RGB: green overlay | `Image`         | `imagej-imgplus-2d-greyscale-16u` |
+| Convert ROI to RGB: green overlay | `Output` | Output #2                         | `Green overlay` | `imagej-imgplus-color-rgb`        |
 
 ## Template
 
-Proposed name `Set LUT (color map) -> Compartment output -> Convert 2D ROI to RGB -> Compartment output`, menu path `Patterns/Images/Set LUT (color map) -> Compartment output -> Convert 2D ROI to RGB -> Compartment output` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/chain-4-ij1-set-lut-from-color-map-jipipe-compartment-output-ij1-roi-to-rgb-jipipe-compartment-output.json`.
+Proposed name `Set LUT (color map) -> Compartment output -> Convert 2D ROI to RGB -> Compartment output`, menu path
+`Patterns/Images/Set LUT (color map) -> Compartment output -> Convert 2D ROI to RGB -> Compartment output` (proposal
+only - not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/chain-4-ij1-set-lut-from-color-map-jipipe-compartment-output-ij1-roi-to-rgb-jipipe-compartment-output.json`.
 

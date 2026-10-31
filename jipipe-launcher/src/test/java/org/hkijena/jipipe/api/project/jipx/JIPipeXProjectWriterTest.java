@@ -27,7 +27,6 @@ import org.hkijena.jipipe.api.project.io.JIPipeProjectWriter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
-import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeProjectIOApplicationSettings;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -41,29 +40,20 @@ import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Tests for {@link JIPipeXProjectWriter}, the JIPX container writer.
  * <p>
  * Fixture: {@code /projects/5.3.0-taxonomy-fixtures/basic-images.jipipe}
  * (1 node, {@code ij1-blur-gaussian2d}), loaded via
- * {@link JIPipeProject#loadProject} — the same content-first read dispatch
+ * {@link JIPipeProject#loadProject} - the same content-first read dispatch
  * the whole code base uses. The writer is exercised through both its own
  * seam ({@link JIPipeXProjectWriter#write} / {@code writeWithViolations})
  * and the legacy API ({@link JIPipeProject#saveProject(Path, boolean)} →
@@ -74,7 +64,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * same reason as {@code FixtureProjectsLoadTest}).
  * <p>
  * <b>ZIP contract under test (spec §6):</b> the production writer uses
- * {@code java.util.zip} only — the first entry is
+ * {@code java.util.zip} only - the first entry is
  * {@code ro-crate-metadata.json} (Workflow RO-Crate root convention),
  * then {@code jipx.json}, then {@code README.md}, then the part files in
  * manifest parts-table order, then any unknown/payload entries sorted by
@@ -98,6 +88,134 @@ class JIPipeXProjectWriterTest {
     // ---------------------------------------------------------------------
     // 1. Happy path + round-trip
     // ---------------------------------------------------------------------
+
+    private static JIPipeProject loadFixture() throws IOException, URISyntaxException {
+        Path fixture = Path.of(JIPipeXProjectWriterTest.class.getResource(FIXTURE).toURI());
+        return JIPipeProject.loadProject(fixture, new UnspecifiedValidationReportContext(),
+                new JIPipeValidationReport(), new JIPipeNotificationInbox(), JIPipeProgressInfo.SILENT);
+    }
+
+    // ---------------------------------------------------------------------
+    // 2. Crate conformance
+    // ---------------------------------------------------------------------
+
+    private static List<String> zipEntryNames(Path zipPath) throws IOException {
+        List<String> entries = new ArrayList<>();
+        try (ZipFile zip = new ZipFile(zipPath.toFile())) {
+            for (Enumeration<? extends ZipEntry> it = zip.entries(); it.hasMoreElements(); ) {
+                entries.add(it.nextElement().getName());
+            }
+        }
+        return entries;
+    }
+
+    private static JsonNode readZipEntryAsJson(Path zipPath, String entryName) throws IOException {
+        try (ZipFile zip = new ZipFile(zipPath.toFile())) {
+            ZipEntry entry = zip.getEntry(entryName);
+            assertNotNull(entry, "The zip must contain the entry '" + entryName + "'");
+            try (InputStream is = zip.getInputStream(entry)) {
+                return JsonUtils.getObjectMapper().readValue(is, JsonNode.class);
+            }
+        }
+    }
+
+    private static String readZipEntryAsString(Path zipPath, String entryName) throws IOException {
+        try (ZipFile zip = new ZipFile(zipPath.toFile())) {
+            ZipEntry entry = zip.getEntry(entryName);
+            assertNotNull(entry, "The zip must contain the entry '" + entryName + "'");
+            try (InputStream is = zip.getInputStream(entry)) {
+                return new String(is.readAllBytes(), StandardCharsets.UTF_8);
+            }
+        }
+    }
+
+    private static void putZipEntry(ZipOutputStream zos, String entryName, JsonNode node) throws IOException {
+        zos.putNextEntry(new ZipEntry(entryName));
+        zos.write(node.toString().getBytes(StandardCharsets.UTF_8));
+        zos.closeEntry();
+    }
+
+    // ---------------------------------------------------------------------
+    // 3. Atomicity / failure
+    // ---------------------------------------------------------------------
+
+    /**
+     * Finds the graph entity with the given @id, or null.
+     */
+    private static JsonNode entityWithId(JsonNode graph, String id) {
+        assertNotNull(graph, "The crate metadata must have an @graph");
+        for (JsonNode entity : graph) {
+            if (id.equals(entity.path("@id").asText())) {
+                return entity;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * True when a conformsTo value (single object or array of objects)
+     * carries the given @id.
+     */
+    private static boolean conformsToContains(JsonNode conformsTo, String uri) {
+        if (conformsTo == null || conformsTo.isMissingNode() || conformsTo.isNull()) {
+            return false;
+        }
+        if (conformsTo.isArray()) {
+            for (JsonNode element : conformsTo) {
+                if (uri.equals(element.path("@id").asText())) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        return uri.equals(conformsTo.path("@id").asText());
+    }
+
+    // ---------------------------------------------------------------------
+    // 4. Dispatcher + legacy API seam
+    // ---------------------------------------------------------------------
+
+    private static boolean typesContain(JsonNode typeNode, String type) {
+        if (typeNode == null || typeNode.isMissingNode()) {
+            return false;
+        }
+        if (typeNode.isArray()) {
+            for (JsonNode element : typeNode) {
+                if (type.equals(element.asText())) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        return type.equals(typeNode.asText());
+    }
+
+    private static boolean propertyContains(JsonNode propertyNode, String value) {
+        if (propertyNode == null || propertyNode.isMissingNode() || propertyNode.isNull()) {
+            return false;
+        }
+        if (propertyNode.isArray()) {
+            for (JsonNode element : propertyNode) {
+                if (value.equals(element.asText())) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        return value.equals(propertyNode.asText());
+    }
+
+    // ---------------------------------------------------------------------
+    // Helpers
+    // ---------------------------------------------------------------------
+
+    private static Map<UUID, String> nodeIdMapping(JIPipeGraph graph) {
+        Map<UUID, String> mapping = new HashMap<>();
+        for (JIPipeGraphNode n : graph.getGraphNodes()) {
+            mapping.put(n.getUUIDInParentGraph(), n.getInfo().getId());
+        }
+        return mapping;
+    }
 
     @Test
     void writesContainerWithCorrectEntriesAndRoundTrips() throws IOException, URISyntaxException {
@@ -139,10 +257,6 @@ class JIPipeXProjectWriterTest {
                 "Round-tripped node id mapping differs from the original fixture load");
     }
 
-    // ---------------------------------------------------------------------
-    // 2. Crate conformance
-    // ---------------------------------------------------------------------
-
     @Test
     void crateConformsToWorkflowRoCrateProfile() throws IOException, URISyntaxException {
         Path jipx = tmp.resolve("crate.jipx");
@@ -163,7 +277,7 @@ class JIPipeXProjectWriterTest {
         JsonNode root = entityWithId(graph, "./");
         assertNotNull(root, "The root './' entity must be present");
         // conformsTo lives on the JsonDescriptor entity (the
-        // ro-crate-metadata.json node), not on the root data entity —
+        // ro-crate-metadata.json node), not on the root data entity -
         // it may be a single object or an array of objects.
         JsonNode descriptor = entityWithId(graph, "ro-crate-metadata.json");
         assertNotNull(descriptor, "The JsonDescriptor entity ro-crate-metadata.json must be present");
@@ -324,10 +438,6 @@ class JIPipeXProjectWriterTest {
         assertEquals("https://ror.org/0000-0001", plainPerson.get("affiliation").path("@id").asText());
     }
 
-    // ---------------------------------------------------------------------
-    // 3. Atomicity / failure
-    // ---------------------------------------------------------------------
-
     @Test
     void selfVerifyZipRejectsMissingListedPartNamingTheEntry() throws IOException {
         // A hand-built bad zip: the jipx.json manifest lists
@@ -351,7 +461,7 @@ class JIPipeXProjectWriterTest {
         // Deterministic failure simulation: the target path is a
         // NON-EMPTY EXISTING DIRECTORY. A POSIX rename() onto an empty
         // directory would silently succeed (replacing it), but onto a
-        // non-empty one it fails after the self-verify passed — exactly
+        // non-empty one it fails after the self-verify passed - exactly
         // the atomic-replace failure path under test. (The brief's
         // read-only-directory variant is skipped: this suite runs as
         // root, where the read-only bit is ignored.)
@@ -373,10 +483,6 @@ class JIPipeXProjectWriterTest {
         assertTrue(Files.readString(targetDir.resolve("keep.txt")).equals("sentinel"),
                 "The colliding target directory's content must be untouched");
     }
-
-    // ---------------------------------------------------------------------
-    // 4. Dispatcher + legacy API seam
-    // ---------------------------------------------------------------------
 
     @Test
     void writerDispatcherSelectsJipxWriterByExtension() {
@@ -419,121 +525,5 @@ class JIPipeXProjectWriterTest {
                 "updateSavePath=false must leave the project file at the previous container");
         // The fixture's original path was tracked through the whole sequence.
         assertNotNull(original, "The fixture load must have recorded its project file");
-    }
-
-    // ---------------------------------------------------------------------
-    // Helpers
-    // ---------------------------------------------------------------------
-
-    private static JIPipeProject loadFixture() throws IOException, URISyntaxException {
-        Path fixture = Path.of(JIPipeXProjectWriterTest.class.getResource(FIXTURE).toURI());
-        return JIPipeProject.loadProject(fixture, new UnspecifiedValidationReportContext(),
-                new JIPipeValidationReport(), new JIPipeNotificationInbox(), JIPipeProgressInfo.SILENT);
-    }
-
-    private static List<String> zipEntryNames(Path zipPath) throws IOException {
-        List<String> entries = new ArrayList<>();
-        try (ZipFile zip = new ZipFile(zipPath.toFile())) {
-            for (Enumeration<? extends ZipEntry> it = zip.entries(); it.hasMoreElements(); ) {
-                entries.add(it.nextElement().getName());
-            }
-        }
-        return entries;
-    }
-
-    private static JsonNode readZipEntryAsJson(Path zipPath, String entryName) throws IOException {
-        try (ZipFile zip = new ZipFile(zipPath.toFile())) {
-            ZipEntry entry = zip.getEntry(entryName);
-            assertNotNull(entry, "The zip must contain the entry '" + entryName + "'");
-            try (InputStream is = zip.getInputStream(entry)) {
-                return JsonUtils.getObjectMapper().readValue(is, JsonNode.class);
-            }
-        }
-    }
-
-    private static String readZipEntryAsString(Path zipPath, String entryName) throws IOException {
-        try (ZipFile zip = new ZipFile(zipPath.toFile())) {
-            ZipEntry entry = zip.getEntry(entryName);
-            assertNotNull(entry, "The zip must contain the entry '" + entryName + "'");
-            try (InputStream is = zip.getInputStream(entry)) {
-                return new String(is.readAllBytes(), StandardCharsets.UTF_8);
-            }
-        }
-    }
-
-    private static void putZipEntry(ZipOutputStream zos, String entryName, JsonNode node) throws IOException {
-        zos.putNextEntry(new ZipEntry(entryName));
-        zos.write(node.toString().getBytes(StandardCharsets.UTF_8));
-        zos.closeEntry();
-    }
-
-    /**
-     * Finds the graph entity with the given @id, or null.
-     */
-    private static JsonNode entityWithId(JsonNode graph, String id) {
-        assertNotNull(graph, "The crate metadata must have an @graph");
-        for (JsonNode entity : graph) {
-            if (id.equals(entity.path("@id").asText())) {
-                return entity;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * True when a conformsTo value (single object or array of objects)
-     * carries the given @id.
-     */
-    private static boolean conformsToContains(JsonNode conformsTo, String uri) {
-        if (conformsTo == null || conformsTo.isMissingNode() || conformsTo.isNull()) {
-            return false;
-        }
-        if (conformsTo.isArray()) {
-            for (JsonNode element : conformsTo) {
-                if (uri.equals(element.path("@id").asText())) {
-                    return true;
-                }
-            }
-            return false;
-        }
-        return uri.equals(conformsTo.path("@id").asText());
-    }
-
-    private static boolean typesContain(JsonNode typeNode, String type) {
-        if (typeNode == null || typeNode.isMissingNode()) {
-            return false;
-        }
-        if (typeNode.isArray()) {
-            for (JsonNode element : typeNode) {
-                if (type.equals(element.asText())) {
-                    return true;
-                }
-            }
-            return false;
-        }
-        return type.equals(typeNode.asText());
-    }
-
-    private static boolean propertyContains(JsonNode propertyNode, String value) {
-        if (propertyNode == null || propertyNode.isMissingNode() || propertyNode.isNull()) {
-            return false;
-        }
-        if (propertyNode.isArray()) {
-            for (JsonNode element : propertyNode) {
-                if (value.equals(element.asText())) {
-                    return true;
-                }
-            }
-            return false;
-        }
-        return value.equals(propertyNode.asText());
-    }
-
-    private static Map<UUID, String> nodeIdMapping(JIPipeGraph graph) {
-        Map<UUID, String> mapping = new HashMap<>();
-        for (JIPipeGraphNode n : graph.getGraphNodes()) {
-            mapping.put(n.getUUIDInParentGraph(), n.getInfo().getId());
-        }
-        return mapping;
     }
 }

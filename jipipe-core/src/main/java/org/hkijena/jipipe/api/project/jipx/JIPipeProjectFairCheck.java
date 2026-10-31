@@ -28,13 +28,13 @@ import java.util.List;
  * <b>Why a separate checker and not the crate's compliance list?</b>
  * {@link JIPipeProjectCrate#buildCrate} only reports compliance violations
  * <i>after</i> it has built a full RO-Crate (which also auto-fills a default
- * license, adds the README/mainEntity, etc.) — that is the post-save check.
+ * license, adds the README/mainEntity, etc.) - that is the post-save check.
  * For a live "is it FAIR?" signal <i>before</i> the user publishes, we need a
  * metadata-only check that does not build a crate. This class therefore
  * mirrors the crate-compliance <i>intent</i> at the metadata level: a project
  * that can be shared should declare a license, a summary, and at least one
  * author. It intentionally does NOT duplicate the crate's structural checks
- * (mainEntity, README, programmingLanguage, conformsTo) — those are always
+ * (mainEntity, README, programmingLanguage, conformsTo) - those are always
  * satisfied by the writer itself.
  * <p>
  * <b>No side effects, no crate build, no Swing.</b> Safe to call from any
@@ -60,16 +60,16 @@ public final class JIPipeProjectFairCheck {
         List<String> missing = new ArrayList<>();
         String license = StringUtils.nullToEmpty(project.getMetadata().getLicense()).trim();
         if (license.isEmpty()) {
-            missing.add("License — no license is set on the project metadata.");
+            missing.add("License - no license is set on the project metadata.");
         }
         String summary = project.getMetadata().getSummary() == null
                 ? ""
                 : StringUtils.nullToEmpty(project.getMetadata().getSummary().toPlainText()).trim();
         if (summary.isEmpty()) {
-            missing.add("Summary — no summary is set on the project metadata.");
+            missing.add("Summary - no summary is set on the project metadata.");
         }
         if (project.getMetadata().getAuthors() == null || project.getMetadata().getAuthors().isEmpty()) {
-            missing.add("Authors — no author is set on the project metadata.");
+            missing.add("Authors - no author is set on the project metadata.");
         }
         return missing;
     }

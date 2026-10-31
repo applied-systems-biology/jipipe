@@ -8,7 +8,6 @@ Example for version 5.3.0
 
 ## Building
 
-
 ```bash
 docker build -t appsysbiohkijena/jipipe:5.3.0 -f jipipe-5.3.0.Dockerfile .
 ```

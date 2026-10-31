@@ -1,1 +1,211 @@
-{"edges":[{"source-node":"n0","source-slot":"Output","target-node":"n4","target-slot":"Input"},{"source-node":"n1","source-slot":"Output","target-node":"n3","target-slot":"ROI"},{"source-node":"n10","source-slot":"Output","target-node":"n11","target-slot":"Input"},{"source-node":"n11","source-slot":"Output","target-node":"n2","target-slot":"Mask"},{"source-node":"n2","source-slot":"ROI","target-node":"n1","target-slot":"Input"},{"source-node":"n3","source-slot":"Output","target-node":"n6","target-slot":"Green-TL"},{"source-node":"n3","source-slot":"Output","target-node":"n8","target-slot":"Target"},{"source-node":"n4","source-slot":"Output","target-node":"n9","target-slot":"Input"},{"source-node":"n6","source-slot":"Output","target-node":"n5","target-slot":"Target"},{"source-node":"n7","source-slot":"Output","target-node":"n0","target-slot":"Input"},{"source-node":"n9","source-slot":"Output","target-node":"n10","target-slot":"Input"}],"nodes":{"n0":{"jipipe:graph-compartment":"7c6ac96f-543a-5252-ac79-de5a5496938a","jipipe:metadata-v1":{"location/7c6ac96f-543a-5252-ac79-de5a5496938a/x":0,"location/7c6ac96f-543a-5252-ac79-de5a5496938a/y":4},"jipipe:node-info-id":"ij1-blur-gaussian3d"},"n1":{"jipipe:graph-compartment":"7c6ac96f-543a-5252-ac79-de5a5496938a","jipipe:metadata-v1":{"location/7c6ac96f-543a-5252-ac79-de5a5496938a/x":10,"location/7c6ac96f-543a-5252-ac79-de5a5496938a/y":28},"jipipe:node-info-id":"ij3d-roi-outline"},"n10":{"jipipe:graph-compartment":"7c6ac96f-543a-5252-ac79-de5a5496938a","jipipe:metadata-v1":{"location/7c6ac96f-543a-5252-ac79-de5a5496938a/x":0,"location/7c6ac96f-543a-5252-ac79-de5a5496938a/y":16},"jipipe:node-info-id":"ij1-binary-dtwatershed2d"},"n11":{"jipipe:graph-compartment":"7c6ac96f-543a-5252-ac79-de5a5496938a","jipipe:metadata-v1":{"location/7c6ac96f-543a-5252-ac79-de5a5496938a/x":0,"location/7c6ac96f-543a-5252-ac79-de5a5496938a/y":20},"jipipe:node-info-id":"ij1-binary-connected-component-labeling-3d"},"n2":{"jipipe:graph-compartment":"7c6ac96f-543a-5252-ac79-de5a5496938a","jipipe:metadata-v1":{"location/7c6ac96f-543a-5252-ac79-de5a5496938a/x":0,"location/7c6ac96f-543a-5252-ac79-de5a5496938a/y":24},"jipipe:node-info-id":"ij3d-analyze-find-particles"},"n3":{"jipipe:graph-compartment":"7c6ac96f-543a-5252-ac79-de5a5496938a","jipipe:metadata-v1":{"location/7c6ac96f-543a-5252-ac79-de5a5496938a/x":0,"location/7c6ac96f-543a-5252-ac79-de5a5496938a/y":32},"jipipe:node-info-id":"ij3d-roi-convert-to-rgb"},"n4":{"jipipe:graph-compartment":"7c6ac96f-543a-5252-ac79-de5a5496938a","jipipe:metadata-v1":{"location/7c6ac96f-543a-5252-ac79-de5a5496938a/x":0,"location/7c6ac96f-543a-5252-ac79-de5a5496938a/y":8},"jipipe:node-info-id":"ij1-threshold-auto2d"},"n5":{"jipipe:graph-compartment":"7c6ac96f-543a-5252-ac79-de5a5496938a","jipipe:metadata-v1":{"location/7c6ac96f-543a-5252-ac79-de5a5496938a/x":10,"location/7c6ac96f-543a-5252-ac79-de5a5496938a/y":40},"jipipe:node-info-id":"ij1-calibration-copy-physical-dimensions"},"n6":{"jipipe:graph-compartment":"7c6ac96f-543a-5252-ac79-de5a5496938a","jipipe:metadata-v1":{"location/7c6ac96f-543a-5252-ac79-de5a5496938a/x":10,"location/7c6ac96f-543a-5252-ac79-de5a5496938a/y":36},"jipipe:node-info-id":"ij1-color-blend-images","jipipe:slot-configuration":{"input":{"Green-TL":{"slot-data-type":"imagej-imgplus","slot-type":"Input","name":"Green-TL","custom-name":null,"description":"","is-virtual":false,"save-outputs":true,"is-optional":false},"Green":{"slot-data-type":"imagej-imgplus","slot-type":"Input","name":"Green","custom-name":null,"description":"","is-virtual":false,"save-outputs":true,"is-optional":false}},"output":{"Output":{"slot-data-type":"imagej-imgplus-color-rgb","slot-type":"Output","name":"Output","custom-name":null,"description":"The output image","is-virtual":false,"save-outputs":true,"is-optional":false}}},"render-greyscale-images":true,"layers/Green-TL":{"opacity":0.4},"layers/Green":{"opacity":1.0}},"n7":{"jipipe:graph-compartment":"7c6ac96f-543a-5252-ac79-de5a5496938a","jipipe:metadata-v1":{"location/7c6ac96f-543a-5252-ac79-de5a5496938a/x":0,"location/7c6ac96f-543a-5252-ac79-de5a5496938a/y":0},"jipipe:node-info-id":"ij1-noise-removeoutliers2d"},"n8":{"jipipe:graph-compartment":"7c6ac96f-543a-5252-ac79-de5a5496938a","jipipe:metadata-v1":{"location/7c6ac96f-543a-5252-ac79-de5a5496938a/x":0,"location/7c6ac96f-543a-5252-ac79-de5a5496938a/y":40},"jipipe:node-info-id":"ij1-calibration-copy-physical-dimensions"},"n9":{"jipipe:graph-compartment":"7c6ac96f-543a-5252-ac79-de5a5496938a","jipipe:metadata-v1":{"location/7c6ac96f-543a-5252-ac79-de5a5496938a/x":0,"location/7c6ac96f-543a-5252-ac79-de5a5496938a/y":12},"jipipe:node-info-id":"ij1-morph-operation2d"}}}
+{
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Output",
+      "target-node": "n4",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n1",
+      "source-slot": "Output",
+      "target-node": "n3",
+      "target-slot": "ROI"
+    },
+    {
+      "source-node": "n10",
+      "source-slot": "Output",
+      "target-node": "n11",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n11",
+      "source-slot": "Output",
+      "target-node": "n2",
+      "target-slot": "Mask"
+    },
+    {
+      "source-node": "n2",
+      "source-slot": "ROI",
+      "target-node": "n1",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n3",
+      "source-slot": "Output",
+      "target-node": "n6",
+      "target-slot": "Green-TL"
+    },
+    {
+      "source-node": "n3",
+      "source-slot": "Output",
+      "target-node": "n8",
+      "target-slot": "Target"
+    },
+    {
+      "source-node": "n4",
+      "source-slot": "Output",
+      "target-node": "n9",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n6",
+      "source-slot": "Output",
+      "target-node": "n5",
+      "target-slot": "Target"
+    },
+    {
+      "source-node": "n7",
+      "source-slot": "Output",
+      "target-node": "n0",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n9",
+      "source-slot": "Output",
+      "target-node": "n10",
+      "target-slot": "Input"
+    }
+  ],
+  "nodes": {
+    "n0": {
+      "jipipe:graph-compartment": "7c6ac96f-543a-5252-ac79-de5a5496938a",
+      "jipipe:metadata-v1": {
+        "location/7c6ac96f-543a-5252-ac79-de5a5496938a/x": 0,
+        "location/7c6ac96f-543a-5252-ac79-de5a5496938a/y": 4
+      },
+      "jipipe:node-info-id": "ij1-blur-gaussian3d"
+    },
+    "n1": {
+      "jipipe:graph-compartment": "7c6ac96f-543a-5252-ac79-de5a5496938a",
+      "jipipe:metadata-v1": {
+        "location/7c6ac96f-543a-5252-ac79-de5a5496938a/x": 10,
+        "location/7c6ac96f-543a-5252-ac79-de5a5496938a/y": 28
+      },
+      "jipipe:node-info-id": "ij3d-roi-outline"
+    },
+    "n10": {
+      "jipipe:graph-compartment": "7c6ac96f-543a-5252-ac79-de5a5496938a",
+      "jipipe:metadata-v1": {
+        "location/7c6ac96f-543a-5252-ac79-de5a5496938a/x": 0,
+        "location/7c6ac96f-543a-5252-ac79-de5a5496938a/y": 16
+      },
+      "jipipe:node-info-id": "ij1-binary-dtwatershed2d"
+    },
+    "n11": {
+      "jipipe:graph-compartment": "7c6ac96f-543a-5252-ac79-de5a5496938a",
+      "jipipe:metadata-v1": {
+        "location/7c6ac96f-543a-5252-ac79-de5a5496938a/x": 0,
+        "location/7c6ac96f-543a-5252-ac79-de5a5496938a/y": 20
+      },
+      "jipipe:node-info-id": "ij1-binary-connected-component-labeling-3d"
+    },
+    "n2": {
+      "jipipe:graph-compartment": "7c6ac96f-543a-5252-ac79-de5a5496938a",
+      "jipipe:metadata-v1": {
+        "location/7c6ac96f-543a-5252-ac79-de5a5496938a/x": 0,
+        "location/7c6ac96f-543a-5252-ac79-de5a5496938a/y": 24
+      },
+      "jipipe:node-info-id": "ij3d-analyze-find-particles"
+    },
+    "n3": {
+      "jipipe:graph-compartment": "7c6ac96f-543a-5252-ac79-de5a5496938a",
+      "jipipe:metadata-v1": {
+        "location/7c6ac96f-543a-5252-ac79-de5a5496938a/x": 0,
+        "location/7c6ac96f-543a-5252-ac79-de5a5496938a/y": 32
+      },
+      "jipipe:node-info-id": "ij3d-roi-convert-to-rgb"
+    },
+    "n4": {
+      "jipipe:graph-compartment": "7c6ac96f-543a-5252-ac79-de5a5496938a",
+      "jipipe:metadata-v1": {
+        "location/7c6ac96f-543a-5252-ac79-de5a5496938a/x": 0,
+        "location/7c6ac96f-543a-5252-ac79-de5a5496938a/y": 8
+      },
+      "jipipe:node-info-id": "ij1-threshold-auto2d"
+    },
+    "n5": {
+      "jipipe:graph-compartment": "7c6ac96f-543a-5252-ac79-de5a5496938a",
+      "jipipe:metadata-v1": {
+        "location/7c6ac96f-543a-5252-ac79-de5a5496938a/x": 10,
+        "location/7c6ac96f-543a-5252-ac79-de5a5496938a/y": 40
+      },
+      "jipipe:node-info-id": "ij1-calibration-copy-physical-dimensions"
+    },
+    "n6": {
+      "jipipe:graph-compartment": "7c6ac96f-543a-5252-ac79-de5a5496938a",
+      "jipipe:metadata-v1": {
+        "location/7c6ac96f-543a-5252-ac79-de5a5496938a/x": 10,
+        "location/7c6ac96f-543a-5252-ac79-de5a5496938a/y": 36
+      },
+      "jipipe:node-info-id": "ij1-color-blend-images",
+      "jipipe:slot-configuration": {
+        "input": {
+          "Green-TL": {
+            "slot-data-type": "imagej-imgplus",
+            "slot-type": "Input",
+            "name": "Green-TL",
+            "custom-name": null,
+            "description": "",
+            "is-virtual": false,
+            "save-outputs": true,
+            "is-optional": false
+          },
+          "Green": {
+            "slot-data-type": "imagej-imgplus",
+            "slot-type": "Input",
+            "name": "Green",
+            "custom-name": null,
+            "description": "",
+            "is-virtual": false,
+            "save-outputs": true,
+            "is-optional": false
+          }
+        },
+        "output": {
+          "Output": {
+            "slot-data-type": "imagej-imgplus-color-rgb",
+            "slot-type": "Output",
+            "name": "Output",
+            "custom-name": null,
+            "description": "The output image",
+            "is-virtual": false,
+            "save-outputs": true,
+            "is-optional": false
+          }
+        }
+      },
+      "render-greyscale-images": true,
+      "layers/Green-TL": {
+        "opacity": 0.4
+      },
+      "layers/Green": {
+        "opacity": 1.0
+      }
+    },
+    "n7": {
+      "jipipe:graph-compartment": "7c6ac96f-543a-5252-ac79-de5a5496938a",
+      "jipipe:metadata-v1": {
+        "location/7c6ac96f-543a-5252-ac79-de5a5496938a/x": 0,
+        "location/7c6ac96f-543a-5252-ac79-de5a5496938a/y": 0
+      },
+      "jipipe:node-info-id": "ij1-noise-removeoutliers2d"
+    },
+    "n8": {
+      "jipipe:graph-compartment": "7c6ac96f-543a-5252-ac79-de5a5496938a",
+      "jipipe:metadata-v1": {
+        "location/7c6ac96f-543a-5252-ac79-de5a5496938a/x": 0,
+        "location/7c6ac96f-543a-5252-ac79-de5a5496938a/y": 40
+      },
+      "jipipe:node-info-id": "ij1-calibration-copy-physical-dimensions"
+    },
+    "n9": {
+      "jipipe:graph-compartment": "7c6ac96f-543a-5252-ac79-de5a5496938a",
+      "jipipe:metadata-v1": {
+        "location/7c6ac96f-543a-5252-ac79-de5a5496938a/x": 0,
+        "location/7c6ac96f-543a-5252-ac79-de5a5496938a/y": 12
+      },
+      "jipipe:node-info-id": "ij1-morph-operation2d"
+    }
+  }
+}

@@ -23,7 +23,6 @@ public class Roi2dRelationMeasurementSet extends JIPipeDynamicSetParameter<Roi2d
 
     public Roi2dRelationMeasurementSet() {
         super(new HashSet<>(Arrays.asList(Roi2dRelationMeasurement.values())));
-        setCollapsed(true);
         initialize();
     }
 

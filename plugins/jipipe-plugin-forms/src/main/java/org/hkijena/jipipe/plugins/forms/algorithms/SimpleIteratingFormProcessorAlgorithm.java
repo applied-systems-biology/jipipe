@@ -15,7 +15,6 @@ package org.hkijena.jipipe.plugins.forms.algorithms;
 
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
-
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeIterationStepGenerationResult;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -40,7 +39,6 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
-import org.hkijena.jipipe.desktop.app.JIPipeDummyWorkbench;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.forms.datatypes.FormData;
 import org.hkijena.jipipe.plugins.forms.ui.FormsDialog;
@@ -94,7 +92,7 @@ public class SimpleIteratingFormProcessorAlgorithm extends JIPipeAlgorithm imple
         } else if (!dataSlot.isEmpty()) {
 
             JIPipeDesktopProjectWorkbench workbench = runContext.getWorkbench();
-            if(workbench == null) {
+            if (workbench == null) {
                 throw new JIPipeValidationRuntimeException(JIPipeValidationReportContext.UNSPECIFIED.node(this),
                         new NullPointerException("Workbench not found"),
                         "No interactive JIPipe window found!",

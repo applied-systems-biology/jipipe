@@ -36,6 +36,7 @@ import org.hkijena.jipipe.desktop.commons.components.validation.JIPipeDesktopVal
 import org.hkijena.jipipe.desktop.commons.components.window.JIPipeDesktopAlwaysOnTopToggle;
 import org.hkijena.jipipe.desktop.commons.notifications.JIPipeDesktopGenericNotificationInboxUI;
 import org.hkijena.jipipe.desktop.commons.theme.helpers.JIPipeDesktopIslandPanel;
+import org.hkijena.jipipe.desktop.commons.theme.ui.JIPipeDesktopRoundedButtonUI;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeGeneralDataApplicationSettings;
@@ -88,7 +89,13 @@ public class UIUtils {
     public static final JMenuItem MENU_ITEM_SEPARATOR = null;
     public static final Color COLOR_ERROR = new Color(0xa51d2d);
     public static final Color COLOR_SUCCESS = ThemeUtils.getCurrentStyle().getSuccessColor();
-
+    /**
+     * Height of a standard JIPipe button (see {@link #createParameterButton}),
+     * measured from the theme's {@code Button.font} + {@code Button.border}.
+     * Parameter header rows are raised to at least this height so the row
+     * action buttons line up across all editors (#1339).
+     */
+    public static final int STANDARD_BUTTON_HEIGHT = 27;
 
     public static Window getWindowOrWindowAncestor(Component component) {
         if (component instanceof Window) {
@@ -225,6 +232,125 @@ public class UIUtils {
     public static Border createControlBorder(Color color) {
         return BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1),
                 new RoundedLineBorder(color, 1, 5));
+    }
+
+    /**
+     * A modern left-only accent border: a 3px bar on the left edge, nothing on
+     * the other sides (no enclosing box). Used for compound parameter editors
+     * (lists, the HTML editor) where a full box reads as heavy - #1339. The bar
+     * uses the node-highlight gray (not the faint form border color) so it is
+     * actually visible against both light and dark panel backgrounds.
+     */
+    public static Border createLeftAccentBorder() {
+        return BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 16, 0, 0),
+                BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, ThemeUtils.getCurrentStyle().getBorderColor()),
+                        BorderFactory.createEmptyBorder(0, 8, 0, 0)));
+    }
+
+    /**
+     * The standardized **parameter action button** (#1339): used by every
+     * parameter control whose action opens a modal dialog or an edit menu
+     * (expression/script "Edit", path "Select", environment "Configure",
+     * {@code *Ref} "Edit", list/HTML header actions, pagination).
+     * <p>
+     * Default fill: the theme's <em>parameter action background</em> color
+     * (copies the window background in the standard themes). A rounded
+     * rectangle whose outline follows the fill, at the standard button
+     * height, with a real pressed/rollover state. For emphasized placements
+     * pass an explicit fill via the overload - the theme's highlighted
+     * parameter action color for group headers, the success color for the
+     * primary action.
+     *
+     * @param text   the button label
+     * @param icon   the icon (may be null)
+     * @param action the action (may be null)
+     * @return the standardized button
+     */
+    public static JButton createParameterButton(String text, Icon icon, ActionListener action) {
+        return createParameterButton(text, icon, ThemeUtils.getCurrentStyle().getParameterActionBackground(), action);
+    }
+
+    /**
+     * {@link #createParameterButton(String, Icon, ActionListener)} with an
+     * explicit fill color - the background <em>and</em> the rounded outline
+     * follow it. Use the theme's accent colors for emphasized placements (the
+     * highlighted parameter action color for group-header buttons, the
+     * success color for the success-styled primary action).
+     *
+     * @param text   the button label
+     * @param icon   the icon (may be null)
+     * @param fill   the background (and outline) fill
+     * @param action the action (may be null)
+     * @return the standardized button
+     */
+    public static JButton createParameterButton(String text, Icon icon, Color fill, ActionListener action) {
+        JButton b = new JButton(text, icon);
+        b.setFocusable(false);
+        // contentAreaFilled=false stops BasicButtonUI from painting its own
+        // rectangular fill; the custom UI (below) draws the rounded fill with
+        // pressed/rollover states, and the border paints the rounded outline.
+        b.setOpaque(true);
+        b.setContentAreaFilled(false);
+        b.setBackground(fill);
+        b.setUI(new JIPipeDesktopRoundedButtonUI(5, fill, fill.darker()));
+        b.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createEmptyBorder(1, 1, 1, 1),
+                BorderFactory.createCompoundBorder(
+                        new RoundedLineBorder(fill, 1, 5),
+                        BorderFactory.createEmptyBorder(1, 6, 1, 6))));
+        b.setToolTipText(text);
+        if (action != null) {
+            b.addActionListener(action);
+        }
+        // The standard button height (theme Button.font + padding) - parameter
+        // header rows take their min height from this (#1339).
+        b.setPreferredSize(new Dimension(b.getPreferredSize().width, STANDARD_BUTTON_HEIGHT));
+        b.setMinimumSize(new Dimension(b.getMinimumSize().width, STANDARD_BUTTON_HEIGHT));
+        return b;
+    }
+
+    /**
+     * Icon-only variant of {@link #createParameterButton(String, Icon,
+     * ActionListener)} where the tooltip is set explicitly (the parameter
+     * action buttons are icon buttons with a hover hint).
+     */
+    public static JButton createParameterIconButton(Icon icon, String tooltip, ActionListener action) {
+        return createParameterIconButton(icon, tooltip, ThemeUtils.getCurrentStyle().getParameterActionBackground(), action);
+    }
+
+    /**
+     * Icon-only variant with an explicit fill (see {@link #createParameterButton}).
+     */
+    public static JButton createParameterIconButton(Icon icon, String tooltip, Color fill, ActionListener action) {
+        JButton b = createParameterButton("", icon, fill, action);
+        b.setToolTipText(tooltip);
+        return b;
+    }
+
+    /**
+     * Primary-styled variant of {@link #createParameterButton(String, Icon,
+     * ActionListener)} - the primary action of a parameter row (the list
+     * editors' "Add"): filled with the theme's primary color.
+     */
+    public static JButton createPrimaryParameterButton(String text, Icon icon, ActionListener action) {
+        return createParameterButton(text, icon, ThemeUtils.getCurrentStyle().getParameterActionHighlightedBackground(), action);
+    }
+
+    /**
+     * Builds the name-row **Edit** button that opens a parameter's full editor
+     * in a dialog (the modern compound-editor pattern, #1339). Consistent across
+     * editors: flat, the {@code actions/edit.png} icon, a tooltip, and the given
+     * action.
+     */
+    public static JButton createEditInDialogButton(String tooltip, ActionListener action) {
+        JButton b = new JButton("Edit", JIPipe.RESOURCES.getIcon16("actions/edit.png"));
+        b.setOpaque(false);
+        b.setContentAreaFilled(false);
+        b.setFocusable(false);
+        b.setBorder(BorderFactory.createEmptyBorder(0, 4, 0, 4));
+        b.setToolTipText(tooltip);
+        b.addActionListener(action);
+        return b;
     }
 
     public static void addToStatusBarWithSeparator(JComponent target, JComponent control) {
@@ -2634,7 +2760,7 @@ public class UIUtils {
     }
 
     public static Color selectColor(Component parent, String title, Color defaultValue, boolean withTransparency) {
-        return JColorChooser.showDialog(parent, title, defaultValue, withTransparency);
+        return org.hkijena.jipipe.desktop.commons.components.color.JIPipeDesktopColorChooserDialog.show(parent, title, defaultValue, withTransparency);
     }
 
     public static class DragThroughMouseListener implements MouseListener, MouseMotionListener {

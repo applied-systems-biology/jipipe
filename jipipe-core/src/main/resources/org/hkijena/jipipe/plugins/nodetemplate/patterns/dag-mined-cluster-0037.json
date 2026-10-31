@@ -1,1 +1,172 @@
-{"edges":[{"source-node":"n0","source-slot":"Output","target-node":"n4","target-slot":"Model"},{"source-node":"n1","source-slot":"Output","target-node":"n6","target-slot":"I2"},{"source-node":"n2","source-slot":"Mask","target-node":"n7","target-slot":"Input"},{"source-node":"n4","source-slot":"ROI","target-node":"n8","target-slot":"ROI"},{"source-node":"n5","source-slot":"Filenames","target-node":"n0","target-slot":"Input"},{"source-node":"n6","source-slot":"Output","target-node":"n4","target-slot":"Input"},{"source-node":"n6","source-slot":"Output","target-node":"n8","target-slot":"Image"},{"source-node":"n7","source-slot":"Output","target-node":"n1","target-slot":"Input"},{"source-node":"n8","source-slot":"Output","target-node":"n3","target-slot":"Image"}],"nodes":{"n0":{"jipipe:graph-compartment":"692c8c58-89b5-5f08-bed0-4e0d891cd923","jipipe:metadata-v1":{"location/692c8c58-89b5-5f08-bed0-4e0d891cd923/x":0,"location/692c8c58-89b5-5f08-bed0-4e0d891cd923/y":20},"jipipe:node-info-id":"import-cellpose-model-v2"},"n1":{"jipipe:graph-compartment":"692c8c58-89b5-5f08-bed0-4e0d891cd923","jipipe:metadata-v1":{"location/692c8c58-89b5-5f08-bed0-4e0d891cd923/x":0,"location/692c8c58-89b5-5f08-bed0-4e0d891cd923/y":8},"jipipe:node-info-id":"ij1-contrast-histogram-enhancer"},"n2":{"jipipe:graph-compartment":"692c8c58-89b5-5f08-bed0-4e0d891cd923","jipipe:metadata-v1":{"location/692c8c58-89b5-5f08-bed0-4e0d891cd923/x":0,"location/692c8c58-89b5-5f08-bed0-4e0d891cd923/y":0},"jipipe:node-info-id":"ij1-segment-ridge-detector-2d"},"n3":{"jipipe:graph-compartment":"692c8c58-89b5-5f08-bed0-4e0d891cd923","jipipe:metadata-v1":{"location/692c8c58-89b5-5f08-bed0-4e0d891cd923/x":0,"location/692c8c58-89b5-5f08-bed0-4e0d891cd923/y":32},"jipipe:node-info-id":"ij1-roi-to-rgb"},"n4":{"jipipe:graph-compartment":"692c8c58-89b5-5f08-bed0-4e0d891cd923","jipipe:metadata-v1":{"location/692c8c58-89b5-5f08-bed0-4e0d891cd923/x":0,"location/692c8c58-89b5-5f08-bed0-4e0d891cd923/y":24},"jipipe:node-info-id":"cellpose-inference-2.x"},"n5":{"jipipe:graph-compartment":"692c8c58-89b5-5f08-bed0-4e0d891cd923","jipipe:metadata-v1":{"location/692c8c58-89b5-5f08-bed0-4e0d891cd923/x":0,"location/692c8c58-89b5-5f08-bed0-4e0d891cd923/y":16},"jipipe:node-info-id":"import-file-list"},"n6":{"jipipe:graph-compartment":"692c8c58-89b5-5f08-bed0-4e0d891cd923","jipipe:metadata-v1":{"location/692c8c58-89b5-5f08-bed0-4e0d891cd923/x":0,"location/692c8c58-89b5-5f08-bed0-4e0d891cd923/y":12},"jipipe:node-info-id":"ij1-math-fast-image-arithmetics","jipipe:slot-configuration":{"input":{"I1":{"slot-data-type":"imagej-imgplus-greyscale","slot-type":"Input","name":"I1","custom-name":null,"description":"","is-virtual":false,"save-outputs":true,"is-optional":true},"I2":{"slot-data-type":"imagej-imgplus-greyscale","slot-type":"Input","name":"I2","custom-name":null,"description":"","is-virtual":false,"save-outputs":true,"is-optional":false}},"output":{"Output":{"slot-data-type":"imagej-imgplus-greyscale","slot-type":"Output","name":"Output","custom-name":null,"description":"","is-virtual":false,"save-outputs":true,"is-optional":false}}},"expression":{"expression":"MAX(I1,I2)"},"bit-depth":"Grayscale32f"},"n7":{"jipipe:graph-compartment":"692c8c58-89b5-5f08-bed0-4e0d891cd923","jipipe:metadata-v1":{"location/692c8c58-89b5-5f08-bed0-4e0d891cd923/x":0,"location/692c8c58-89b5-5f08-bed0-4e0d891cd923/y":4},"jipipe:node-info-id":"ij1-blur-gaussian2d"},"n8":{"jipipe:graph-compartment":"692c8c58-89b5-5f08-bed0-4e0d891cd923","jipipe:metadata-v1":{"location/692c8c58-89b5-5f08-bed0-4e0d891cd923/x":0,"location/692c8c58-89b5-5f08-bed0-4e0d891cd923/y":28},"jipipe:node-info-id":"ij1-roi-to-rgb"}}}
+{
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Output",
+      "target-node": "n4",
+      "target-slot": "Model"
+    },
+    {
+      "source-node": "n1",
+      "source-slot": "Output",
+      "target-node": "n6",
+      "target-slot": "I2"
+    },
+    {
+      "source-node": "n2",
+      "source-slot": "Mask",
+      "target-node": "n7",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n4",
+      "source-slot": "ROI",
+      "target-node": "n8",
+      "target-slot": "ROI"
+    },
+    {
+      "source-node": "n5",
+      "source-slot": "Filenames",
+      "target-node": "n0",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n6",
+      "source-slot": "Output",
+      "target-node": "n4",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n6",
+      "source-slot": "Output",
+      "target-node": "n8",
+      "target-slot": "Image"
+    },
+    {
+      "source-node": "n7",
+      "source-slot": "Output",
+      "target-node": "n1",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n8",
+      "source-slot": "Output",
+      "target-node": "n3",
+      "target-slot": "Image"
+    }
+  ],
+  "nodes": {
+    "n0": {
+      "jipipe:graph-compartment": "692c8c58-89b5-5f08-bed0-4e0d891cd923",
+      "jipipe:metadata-v1": {
+        "location/692c8c58-89b5-5f08-bed0-4e0d891cd923/x": 0,
+        "location/692c8c58-89b5-5f08-bed0-4e0d891cd923/y": 20
+      },
+      "jipipe:node-info-id": "import-cellpose-model-v2"
+    },
+    "n1": {
+      "jipipe:graph-compartment": "692c8c58-89b5-5f08-bed0-4e0d891cd923",
+      "jipipe:metadata-v1": {
+        "location/692c8c58-89b5-5f08-bed0-4e0d891cd923/x": 0,
+        "location/692c8c58-89b5-5f08-bed0-4e0d891cd923/y": 8
+      },
+      "jipipe:node-info-id": "ij1-contrast-histogram-enhancer"
+    },
+    "n2": {
+      "jipipe:graph-compartment": "692c8c58-89b5-5f08-bed0-4e0d891cd923",
+      "jipipe:metadata-v1": {
+        "location/692c8c58-89b5-5f08-bed0-4e0d891cd923/x": 0,
+        "location/692c8c58-89b5-5f08-bed0-4e0d891cd923/y": 0
+      },
+      "jipipe:node-info-id": "ij1-segment-ridge-detector-2d"
+    },
+    "n3": {
+      "jipipe:graph-compartment": "692c8c58-89b5-5f08-bed0-4e0d891cd923",
+      "jipipe:metadata-v1": {
+        "location/692c8c58-89b5-5f08-bed0-4e0d891cd923/x": 0,
+        "location/692c8c58-89b5-5f08-bed0-4e0d891cd923/y": 32
+      },
+      "jipipe:node-info-id": "ij1-roi-to-rgb"
+    },
+    "n4": {
+      "jipipe:graph-compartment": "692c8c58-89b5-5f08-bed0-4e0d891cd923",
+      "jipipe:metadata-v1": {
+        "location/692c8c58-89b5-5f08-bed0-4e0d891cd923/x": 0,
+        "location/692c8c58-89b5-5f08-bed0-4e0d891cd923/y": 24
+      },
+      "jipipe:node-info-id": "cellpose-inference-2.x"
+    },
+    "n5": {
+      "jipipe:graph-compartment": "692c8c58-89b5-5f08-bed0-4e0d891cd923",
+      "jipipe:metadata-v1": {
+        "location/692c8c58-89b5-5f08-bed0-4e0d891cd923/x": 0,
+        "location/692c8c58-89b5-5f08-bed0-4e0d891cd923/y": 16
+      },
+      "jipipe:node-info-id": "import-file-list"
+    },
+    "n6": {
+      "jipipe:graph-compartment": "692c8c58-89b5-5f08-bed0-4e0d891cd923",
+      "jipipe:metadata-v1": {
+        "location/692c8c58-89b5-5f08-bed0-4e0d891cd923/x": 0,
+        "location/692c8c58-89b5-5f08-bed0-4e0d891cd923/y": 12
+      },
+      "jipipe:node-info-id": "ij1-math-fast-image-arithmetics",
+      "jipipe:slot-configuration": {
+        "input": {
+          "I1": {
+            "slot-data-type": "imagej-imgplus-greyscale",
+            "slot-type": "Input",
+            "name": "I1",
+            "custom-name": null,
+            "description": "",
+            "is-virtual": false,
+            "save-outputs": true,
+            "is-optional": true
+          },
+          "I2": {
+            "slot-data-type": "imagej-imgplus-greyscale",
+            "slot-type": "Input",
+            "name": "I2",
+            "custom-name": null,
+            "description": "",
+            "is-virtual": false,
+            "save-outputs": true,
+            "is-optional": false
+          }
+        },
+        "output": {
+          "Output": {
+            "slot-data-type": "imagej-imgplus-greyscale",
+            "slot-type": "Output",
+            "name": "Output",
+            "custom-name": null,
+            "description": "",
+            "is-virtual": false,
+            "save-outputs": true,
+            "is-optional": false
+          }
+        }
+      },
+      "expression": {
+        "expression": "MAX(I1,I2)"
+      },
+      "bit-depth": "Grayscale32f"
+    },
+    "n7": {
+      "jipipe:graph-compartment": "692c8c58-89b5-5f08-bed0-4e0d891cd923",
+      "jipipe:metadata-v1": {
+        "location/692c8c58-89b5-5f08-bed0-4e0d891cd923/x": 0,
+        "location/692c8c58-89b5-5f08-bed0-4e0d891cd923/y": 4
+      },
+      "jipipe:node-info-id": "ij1-blur-gaussian2d"
+    },
+    "n8": {
+      "jipipe:graph-compartment": "692c8c58-89b5-5f08-bed0-4e0d891cd923",
+      "jipipe:metadata-v1": {
+        "location/692c8c58-89b5-5f08-bed0-4e0d891cd923/x": 0,
+        "location/692c8c58-89b5-5f08-bed0-4e0d891cd923/y": 28
+      },
+      "jipipe:node-info-id": "ij1-roi-to-rgb"
+    }
+  }
+}

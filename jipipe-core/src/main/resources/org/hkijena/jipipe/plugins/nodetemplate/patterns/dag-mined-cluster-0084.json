@@ -1,1 +1,140 @@
-{"edges":[{"source-node":"n1","source-slot":"Output","target-node":"n2","target-slot":"Input"},{"source-node":"n2","source-slot":"Output","target-node":"n0","target-slot":"Input"},{"source-node":"n2","source-slot":"Output","target-node":"n3","target-slot":"Input"},{"source-node":"n2","source-slot":"Output","target-node":"n4","target-slot":"Input"},{"source-node":"n2","source-slot":"Output","target-node":"n7","target-slot":"Input"},{"source-node":"n2","source-slot":"Output","target-node":"n9","target-slot":"Input"},{"source-node":"n5","source-slot":"Output","target-node":"n8","target-slot":"Input"},{"source-node":"n6","source-slot":"Output","target-node":"n5","target-slot":"Input"},{"source-node":"n8","source-slot":"Output","target-node":"n1","target-slot":"Input"}],"nodes":{"n0":{"jipipe:graph-compartment":"289f24b4-771a-5454-aa3d-31f2cefd4620","jipipe:metadata-v1":{"location/289f24b4-771a-5454-aa3d-31f2cefd4620/x":0,"location/289f24b4-771a-5454-aa3d-31f2cefd4620/y":28},"jipipe:node-info-id":"plot-table:plot-xy-scatter"},"n1":{"jipipe:graph-compartment":"289f24b4-771a-5454-aa3d-31f2cefd4620","jipipe:metadata-v1":{"location/289f24b4-771a-5454-aa3d-31f2cefd4620/x":0,"location/289f24b4-771a-5454-aa3d-31f2cefd4620/y":12},"jipipe:node-info-id":"filaments-measure-vertices"},"n2":{"jipipe:graph-compartment":"289f24b4-771a-5454-aa3d-31f2cefd4620","jipipe:metadata-v1":{"location/289f24b4-771a-5454-aa3d-31f2cefd4620/x":0,"location/289f24b4-771a-5454-aa3d-31f2cefd4620/y":16},"jipipe:node-info-id":"table-filter-2"},"n3":{"jipipe:graph-compartment":"289f24b4-771a-5454-aa3d-31f2cefd4620","jipipe:metadata-v1":{"location/289f24b4-771a-5454-aa3d-31f2cefd4620/x":7,"location/289f24b4-771a-5454-aa3d-31f2cefd4620/y":24},"jipipe:node-info-id":"plot-table:plot-xy-scatter"},"n4":{"jipipe:graph-compartment":"289f24b4-771a-5454-aa3d-31f2cefd4620","jipipe:metadata-v1":{"location/289f24b4-771a-5454-aa3d-31f2cefd4620/x":0,"location/289f24b4-771a-5454-aa3d-31f2cefd4620/y":20},"jipipe:node-info-id":"plot-table:plot-xy-scatter"},"n5":{"jipipe:graph-compartment":"289f24b4-771a-5454-aa3d-31f2cefd4620","jipipe:metadata-v1":{"location/289f24b4-771a-5454-aa3d-31f2cefd4620/x":0,"location/289f24b4-771a-5454-aa3d-31f2cefd4620/y":4},"jipipe:node-info-id":"filaments-filter-components-by-properties"},"n6":{"jipipe:graph-compartment":"289f24b4-771a-5454-aa3d-31f2cefd4620","jipipe:metadata-v1":{"location/289f24b4-771a-5454-aa3d-31f2cefd4620/x":0,"location/289f24b4-771a-5454-aa3d-31f2cefd4620/y":0},"jipipe:node-info-id":"filaments-split-into-connected-components"},"n7":{"jipipe:graph-compartment":"289f24b4-771a-5454-aa3d-31f2cefd4620","jipipe:metadata-v1":{"location/289f24b4-771a-5454-aa3d-31f2cefd4620/x":7,"location/289f24b4-771a-5454-aa3d-31f2cefd4620/y":20},"jipipe:node-info-id":"plot-table:plot-xy-scatter"},"n8":{"jipipe:graph-compartment":"289f24b4-771a-5454-aa3d-31f2cefd4620","jipipe:metadata-v1":{"location/289f24b4-771a-5454-aa3d-31f2cefd4620/x":0,"location/289f24b4-771a-5454-aa3d-31f2cefd4620/y":8},"jipipe:node-info-id":"filaments-find-linear-vertex-order"},"n9":{"jipipe:graph-compartment":"289f24b4-771a-5454-aa3d-31f2cefd4620","jipipe:metadata-v1":{"location/289f24b4-771a-5454-aa3d-31f2cefd4620/x":0,"location/289f24b4-771a-5454-aa3d-31f2cefd4620/y":24},"jipipe:node-info-id":"plot-table:plot-xy-scatter"}}}
+{
+  "edges": [
+    {
+      "source-node": "n1",
+      "source-slot": "Output",
+      "target-node": "n2",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n2",
+      "source-slot": "Output",
+      "target-node": "n0",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n2",
+      "source-slot": "Output",
+      "target-node": "n3",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n2",
+      "source-slot": "Output",
+      "target-node": "n4",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n2",
+      "source-slot": "Output",
+      "target-node": "n7",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n2",
+      "source-slot": "Output",
+      "target-node": "n9",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n5",
+      "source-slot": "Output",
+      "target-node": "n8",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n6",
+      "source-slot": "Output",
+      "target-node": "n5",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n8",
+      "source-slot": "Output",
+      "target-node": "n1",
+      "target-slot": "Input"
+    }
+  ],
+  "nodes": {
+    "n0": {
+      "jipipe:graph-compartment": "289f24b4-771a-5454-aa3d-31f2cefd4620",
+      "jipipe:metadata-v1": {
+        "location/289f24b4-771a-5454-aa3d-31f2cefd4620/x": 0,
+        "location/289f24b4-771a-5454-aa3d-31f2cefd4620/y": 28
+      },
+      "jipipe:node-info-id": "plot-table:plot-xy-scatter"
+    },
+    "n1": {
+      "jipipe:graph-compartment": "289f24b4-771a-5454-aa3d-31f2cefd4620",
+      "jipipe:metadata-v1": {
+        "location/289f24b4-771a-5454-aa3d-31f2cefd4620/x": 0,
+        "location/289f24b4-771a-5454-aa3d-31f2cefd4620/y": 12
+      },
+      "jipipe:node-info-id": "filaments-measure-vertices"
+    },
+    "n2": {
+      "jipipe:graph-compartment": "289f24b4-771a-5454-aa3d-31f2cefd4620",
+      "jipipe:metadata-v1": {
+        "location/289f24b4-771a-5454-aa3d-31f2cefd4620/x": 0,
+        "location/289f24b4-771a-5454-aa3d-31f2cefd4620/y": 16
+      },
+      "jipipe:node-info-id": "table-filter-2"
+    },
+    "n3": {
+      "jipipe:graph-compartment": "289f24b4-771a-5454-aa3d-31f2cefd4620",
+      "jipipe:metadata-v1": {
+        "location/289f24b4-771a-5454-aa3d-31f2cefd4620/x": 7,
+        "location/289f24b4-771a-5454-aa3d-31f2cefd4620/y": 24
+      },
+      "jipipe:node-info-id": "plot-table:plot-xy-scatter"
+    },
+    "n4": {
+      "jipipe:graph-compartment": "289f24b4-771a-5454-aa3d-31f2cefd4620",
+      "jipipe:metadata-v1": {
+        "location/289f24b4-771a-5454-aa3d-31f2cefd4620/x": 0,
+        "location/289f24b4-771a-5454-aa3d-31f2cefd4620/y": 20
+      },
+      "jipipe:node-info-id": "plot-table:plot-xy-scatter"
+    },
+    "n5": {
+      "jipipe:graph-compartment": "289f24b4-771a-5454-aa3d-31f2cefd4620",
+      "jipipe:metadata-v1": {
+        "location/289f24b4-771a-5454-aa3d-31f2cefd4620/x": 0,
+        "location/289f24b4-771a-5454-aa3d-31f2cefd4620/y": 4
+      },
+      "jipipe:node-info-id": "filaments-filter-components-by-properties"
+    },
+    "n6": {
+      "jipipe:graph-compartment": "289f24b4-771a-5454-aa3d-31f2cefd4620",
+      "jipipe:metadata-v1": {
+        "location/289f24b4-771a-5454-aa3d-31f2cefd4620/x": 0,
+        "location/289f24b4-771a-5454-aa3d-31f2cefd4620/y": 0
+      },
+      "jipipe:node-info-id": "filaments-split-into-connected-components"
+    },
+    "n7": {
+      "jipipe:graph-compartment": "289f24b4-771a-5454-aa3d-31f2cefd4620",
+      "jipipe:metadata-v1": {
+        "location/289f24b4-771a-5454-aa3d-31f2cefd4620/x": 7,
+        "location/289f24b4-771a-5454-aa3d-31f2cefd4620/y": 20
+      },
+      "jipipe:node-info-id": "plot-table:plot-xy-scatter"
+    },
+    "n8": {
+      "jipipe:graph-compartment": "289f24b4-771a-5454-aa3d-31f2cefd4620",
+      "jipipe:metadata-v1": {
+        "location/289f24b4-771a-5454-aa3d-31f2cefd4620/x": 0,
+        "location/289f24b4-771a-5454-aa3d-31f2cefd4620/y": 8
+      },
+      "jipipe:node-info-id": "filaments-find-linear-vertex-order"
+    },
+    "n9": {
+      "jipipe:graph-compartment": "289f24b4-771a-5454-aa3d-31f2cefd4620",
+      "jipipe:metadata-v1": {
+        "location/289f24b4-771a-5454-aa3d-31f2cefd4620/x": 0,
+        "location/289f24b4-771a-5454-aa3d-31f2cefd4620/y": 24
+      },
+      "jipipe:node-info-id": "plot-table:plot-xy-scatter"
+    }
+  }
+}

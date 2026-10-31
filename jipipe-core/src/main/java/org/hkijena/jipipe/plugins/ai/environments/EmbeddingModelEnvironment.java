@@ -147,8 +147,8 @@ public class EmbeddingModelEnvironment extends JIPipeArtifactEnvironment {
     @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
         super.reportValidity(reportContext, reportSettings, report, progressInfo);
-        if(!isLoadFromArtifact()) {
-            if(!isValidLocalOnnx() && !isValidOpenAI()) {
+        if (!isLoadFromArtifact()) {
+            if (!isValidLocalOnnx() && !isValidOpenAI()) {
                 reportContext.error().title("Invalid embedding model configuration")
                         .explanation("A local model or remote API needs to be set up")
                         .solution("Setup a local model or remote API").report(report);
@@ -160,41 +160,38 @@ public class EmbeddingModelEnvironment extends JIPipeArtifactEnvironment {
     public String getInfo() {
         if (isLoadFromArtifact()) {
             return StringUtils.orElse(getArtifactQuery().getQuery(), "<Not set>");
-        } else if(getModelType() == EmbeddingModelType.LocalOnnx && isValidLocalOnnx()) {
+        } else if (getModelType() == EmbeddingModelType.LocalOnnx && isValidLocalOnnx()) {
             return "ONNX (Local)";
-        }
-        else if(getModelType() == EmbeddingModelType.OpenAIAPI && isValidOpenAI()) {
+        } else if (getModelType() == EmbeddingModelType.OpenAIAPI && isValidOpenAI()) {
             return "Remote API";
         }
         return "<Not set>";
     }
 
     private boolean isValidOpenAI() {
-        if(getModelType() == EmbeddingModelType.OpenAIAPI) {
+        if (getModelType() == EmbeddingModelType.OpenAIAPI) {
             return !StringUtils.isNullOrEmpty(getApiBase());
         }
         return false;
     }
 
     public boolean isValidLocalOnnx() {
-        if(getModelType() == EmbeddingModelType.LocalOnnx) {
+        if (getModelType() == EmbeddingModelType.LocalOnnx) {
             return Files.isRegularFile(getLocalModelFile()) && Files.isRegularFile(getLocalTokenizerFile());
         }
         return false;
     }
 
     public JIPipeEmbeddingAIModelRunner toRunner() {
-        if(getModelType() == EmbeddingModelType.LocalOnnx) {
+        if (getModelType() == EmbeddingModelType.LocalOnnx) {
             String modelId;
-            if(isLoadFromArtifact()) {
+            if (isLoadFromArtifact()) {
                 modelId = getLastConfiguredArtifact().getFullId();
-            }
-            else {
+            } else {
                 modelId = localModelFile.toString();
             }
             return new JIPipeOnnxEmbeddingAIModelRunner(localModelFile, localTokenizerFile, modelId);
-        }
-        else if(getModelType() == EmbeddingModelType.OpenAIAPI) {
+        } else if (getModelType() == EmbeddingModelType.OpenAIAPI) {
             return new JIPipeAPIEmbeddingAIModelRunner(apiBase, apiModel, apiKey.getPassword());
         }
         throw new IllegalArgumentException("Unknown model type: " + modelType);

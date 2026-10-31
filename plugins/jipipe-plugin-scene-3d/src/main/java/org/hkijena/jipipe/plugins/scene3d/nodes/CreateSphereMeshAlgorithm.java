@@ -13,8 +13,6 @@
 
 package org.hkijena.jipipe.plugins.scene3d.nodes;
 
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.Scene3DFramework;
-
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -24,6 +22,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.Scene3DFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.Scene3DDataFunction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.scene3d.datatypes.Scene3DData;

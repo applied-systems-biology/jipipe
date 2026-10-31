@@ -23,14 +23,14 @@ import java.util.Map;
 
 /**
  * An {@link AutoCloseable} manager that holds a block of server instance leases.
- * 
+ *
  * <p>Two common usage patterns:</p>
  * <ul>
  *     <li><b>Run-scoped:</b> Created at start of pipeline run, holds all servers needed
  *         by that run, released at end.</li>
  *     <li><b>App-wide:</b> Long-lived manager holding servers shared across multiple runs.</li>
  * </ul>
- * 
+ *
  * <p>Usage:</p>
  * <pre>
  * try (JIPipeServerInstanceManager servers = new JIPipeServerInstanceManager(serviceComponent)) {

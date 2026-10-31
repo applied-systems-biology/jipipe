@@ -1,1 +1,56 @@
-{"nodes":{"n0":{"jipipe:node-info-id":"annotate-data-with-table-values","jipipe:graph-compartment":"DEFAULT","jipipe:metadata-v1":{"location/DEFAULT/x":1,"location/DEFAULT/y":1}},"n1":{"jipipe:node-info-id":"annotate-filter-by-annotation-if-else","jipipe:graph-compartment":"DEFAULT","jipipe:metadata-v1":{"location/DEFAULT/x":1,"location/DEFAULT/y":5}},"n2":{"jipipe:node-info-id":"export-data-by-parameter","jipipe:graph-compartment":"DEFAULT","jipipe:metadata-v1":{"location/DEFAULT/x":1,"location/DEFAULT/y":9}},"n3":{"jipipe:node-info-id":"export-data-by-parameter-v2","jipipe:graph-compartment":"DEFAULT","jipipe:metadata-v1":{"location/DEFAULT/x":10,"location/DEFAULT/y":9}}},"edges":[{"source-node":"n0","source-slot":"Annotated data","target-node":"n1","target-slot":"Input"},{"source-node":"n1","source-slot":"Matched","target-node":"n2","target-slot":"Data"},{"source-node":"n1","source-slot":"Unmatched","target-node":"n3","target-slot":"Data"}]}
+{
+  "nodes": {
+    "n0": {
+      "jipipe:node-info-id": "annotate-data-with-table-values",
+      "jipipe:graph-compartment": "DEFAULT",
+      "jipipe:metadata-v1": {
+        "location/DEFAULT/x": 1,
+        "location/DEFAULT/y": 1
+      }
+    },
+    "n1": {
+      "jipipe:node-info-id": "annotate-filter-by-annotation-if-else",
+      "jipipe:graph-compartment": "DEFAULT",
+      "jipipe:metadata-v1": {
+        "location/DEFAULT/x": 1,
+        "location/DEFAULT/y": 5
+      }
+    },
+    "n2": {
+      "jipipe:node-info-id": "export-data-by-parameter",
+      "jipipe:graph-compartment": "DEFAULT",
+      "jipipe:metadata-v1": {
+        "location/DEFAULT/x": 1,
+        "location/DEFAULT/y": 9
+      }
+    },
+    "n3": {
+      "jipipe:node-info-id": "export-data-by-parameter-v2",
+      "jipipe:graph-compartment": "DEFAULT",
+      "jipipe:metadata-v1": {
+        "location/DEFAULT/x": 10,
+        "location/DEFAULT/y": 9
+      }
+    }
+  },
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Annotated data",
+      "target-node": "n1",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n1",
+      "source-slot": "Matched",
+      "target-node": "n2",
+      "target-slot": "Data"
+    },
+    {
+      "source-node": "n1",
+      "source-slot": "Unmatched",
+      "target-node": "n3",
+      "target-slot": "Data"
+    }
+  ]
+}

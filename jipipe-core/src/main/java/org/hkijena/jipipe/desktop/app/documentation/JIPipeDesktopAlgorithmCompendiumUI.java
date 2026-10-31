@@ -20,7 +20,10 @@ import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
-import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
@@ -51,34 +54,13 @@ public class JIPipeDesktopAlgorithmCompendiumUI extends JIPipeDesktopCompendiumU
         super(MarkdownText.fromPluginResource("documentation/algorithm-compendium.md", new HashMap<>()));
     }
 
-    @Override
-    protected List<JIPipeNodeInfo> getFilteredItems() {
-        // Task 26a: search over name + description + secondary function names
-        // (the alias/menu-path terms are gone; secondary functions carry the
-        // alternate-location search terms).
-        Predicate<JIPipeNodeInfo> filterFunction = info -> getSearchField().test(info.getName() + " " + info.getDescription() + " " + info.getSecondaryFunctions().stream().map(JIPipeNodeTaxonomyFunction::getName).collect(Collectors.joining(" ")));
-
-        return JIPipe.getNodes().getRegisteredNodeInfos().values().stream().filter(filterFunction)
-                .sorted(Comparator.comparing(JIPipeNodeInfo::getName)).collect(Collectors.toList());
-    }
-
-    @Override
-    protected ListCellRenderer<JIPipeNodeInfo> getItemListRenderer() {
-        return new JIPipeNodeInfoListCellRenderer();
-    }
-
-    @Override
-    public MarkdownText generateCompendiumFor(JIPipeNodeInfo info, boolean forJava) {
-        return buildAlgorithmDocumentation(info);
-    }
-
     /**
      * Builds the full documentation of a single algorithm node as markdown:
      * the title, the description, the input/output slot table and the
      * parameter documentation (grouped per source, in UI order).
      * <p>
      * This is the canonical node documentation used by the compendium and by
-     * any UI that shows "the node documentation" — keep the node finder's
+     * any UI that shows "the node documentation" - keep the node finder's
      * detail rail in sync by reusing this builder rather than re-implementing
      * it.
      *
@@ -211,5 +193,26 @@ public class JIPipeDesktopAlgorithmCompendiumUI extends JIPipeDesktopCompendiumU
         } else {
             builder.append("No description provided.");
         }
+    }
+
+    @Override
+    protected List<JIPipeNodeInfo> getFilteredItems() {
+        // Task 26a: search over name + description + secondary function names
+        // (the alias/menu-path terms are gone; secondary functions carry the
+        // alternate-location search terms).
+        Predicate<JIPipeNodeInfo> filterFunction = info -> getSearchField().test(info.getName() + " " + info.getDescription() + " " + info.getSecondaryFunctions().stream().map(JIPipeNodeTaxonomyFunction::getName).collect(Collectors.joining(" ")));
+
+        return JIPipe.getNodes().getRegisteredNodeInfos().values().stream().filter(filterFunction)
+                .sorted(Comparator.comparing(JIPipeNodeInfo::getName)).collect(Collectors.toList());
+    }
+
+    @Override
+    protected ListCellRenderer<JIPipeNodeInfo> getItemListRenderer() {
+        return new JIPipeNodeInfoListCellRenderer();
+    }
+
+    @Override
+    public MarkdownText generateCompendiumFor(JIPipeNodeInfo info, boolean forJava) {
+        return buildAlgorithmDocumentation(info);
     }
 }

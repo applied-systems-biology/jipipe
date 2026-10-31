@@ -16,8 +16,19 @@ public class NodeAddedEvent extends InstrumentationEvent {
         this.nodeName = nodeName;
     }
 
-    public String getCompartmentId() { return compartmentId; }
-    public String getNodeId() { return nodeId; }
-    public String getNodeTypeId() { return nodeTypeId; }
-    public String getNodeName() { return nodeName; }
+    public String getCompartmentId() {
+        return compartmentId;
+    }
+
+    public String getNodeId() {
+        return nodeId;
+    }
+
+    public String getNodeTypeId() {
+        return nodeTypeId;
+    }
+
+    public String getNodeName() {
+        return nodeName;
+    }
 }

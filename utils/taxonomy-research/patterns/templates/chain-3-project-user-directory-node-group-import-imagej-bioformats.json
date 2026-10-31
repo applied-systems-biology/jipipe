@@ -1,1 +1,33 @@
-{"nodes":{"n0":{"jipipe:node-info-id":"project-user-directory","jipipe:graph-compartment":"e50ecfd6-bb21-5614-863b-521672292254","jipipe:node:name":"Project user directory"},"n1":{"jipipe:node-info-id":"node-group","jipipe:graph-compartment":"e50ecfd6-bb21-5614-863b-521672292254","jipipe:node:name":"READ: folders, subfolders and files"},"n2":{"jipipe:node-info-id":"import-imagej-bioformats","jipipe:graph-compartment":"e50ecfd6-bb21-5614-863b-521672292254","jipipe:node:name":"Bio-Formats importer"}},"edges":[{"source-node":"n0","source-slot":"Output","target-node":"n1","target-slot":"Input folder"},{"source-node":"n1","source-slot":"Annotated paths","target-node":"n2","target-slot":"Input"}]}
+{
+  "nodes": {
+    "n0": {
+      "jipipe:node-info-id": "project-user-directory",
+      "jipipe:graph-compartment": "e50ecfd6-bb21-5614-863b-521672292254",
+      "jipipe:node:name": "Project user directory"
+    },
+    "n1": {
+      "jipipe:node-info-id": "node-group",
+      "jipipe:graph-compartment": "e50ecfd6-bb21-5614-863b-521672292254",
+      "jipipe:node:name": "READ: folders, subfolders and files"
+    },
+    "n2": {
+      "jipipe:node-info-id": "import-imagej-bioformats",
+      "jipipe:graph-compartment": "e50ecfd6-bb21-5614-863b-521672292254",
+      "jipipe:node:name": "Bio-Formats importer"
+    }
+  },
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Output",
+      "target-node": "n1",
+      "target-slot": "Input folder"
+    },
+    {
+      "source-node": "n1",
+      "source-slot": "Annotated paths",
+      "target-node": "n2",
+      "target-slot": "Input"
+    }
+  ]
+}

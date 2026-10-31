@@ -1,1 +1,42 @@
-{"edges":[{"source-node":"n0","source-slot":"Output","target-node":"n1","target-slot":"Source"},{"source-node":"n2","source-slot":"Output","target-node":"n0","target-slot":"Input"}],"nodes":{"n0":{"jipipe:graph-compartment":"22f4d17b-f029-5b2b-8089-cada469c5d43","jipipe:metadata-v1":{"location/22f4d17b-f029-5b2b-8089-cada469c5d43/x":0,"location/22f4d17b-f029-5b2b-8089-cada469c5d43/y":4},"jipipe:node-info-id":"ij1-dimensions-reorder"},"n1":{"jipipe:graph-compartment":"22f4d17b-f029-5b2b-8089-cada469c5d43","jipipe:metadata-v1":{"location/22f4d17b-f029-5b2b-8089-cada469c5d43/x":0,"location/22f4d17b-f029-5b2b-8089-cada469c5d43/y":8},"jipipe:node-info-id":"clij:plugin:net.haesleinhuepf.clijx.clij2wrappers.ExtendedDepthOfFocusSobelProjection"},"n2":{"jipipe:graph-compartment":"22f4d17b-f029-5b2b-8089-cada469c5d43","jipipe:metadata-v1":{"location/22f4d17b-f029-5b2b-8089-cada469c5d43/x":0,"location/22f4d17b-f029-5b2b-8089-cada469c5d43/y":0},"jipipe:node-info-id":"ij1-dimensions-expression-slicer"}}}
+{
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Output",
+      "target-node": "n1",
+      "target-slot": "Source"
+    },
+    {
+      "source-node": "n2",
+      "source-slot": "Output",
+      "target-node": "n0",
+      "target-slot": "Input"
+    }
+  ],
+  "nodes": {
+    "n0": {
+      "jipipe:graph-compartment": "22f4d17b-f029-5b2b-8089-cada469c5d43",
+      "jipipe:metadata-v1": {
+        "location/22f4d17b-f029-5b2b-8089-cada469c5d43/x": 0,
+        "location/22f4d17b-f029-5b2b-8089-cada469c5d43/y": 4
+      },
+      "jipipe:node-info-id": "ij1-dimensions-reorder"
+    },
+    "n1": {
+      "jipipe:graph-compartment": "22f4d17b-f029-5b2b-8089-cada469c5d43",
+      "jipipe:metadata-v1": {
+        "location/22f4d17b-f029-5b2b-8089-cada469c5d43/x": 0,
+        "location/22f4d17b-f029-5b2b-8089-cada469c5d43/y": 8
+      },
+      "jipipe:node-info-id": "clij:plugin:net.haesleinhuepf.clijx.clij2wrappers.ExtendedDepthOfFocusSobelProjection"
+    },
+    "n2": {
+      "jipipe:graph-compartment": "22f4d17b-f029-5b2b-8089-cada469c5d43",
+      "jipipe:metadata-v1": {
+        "location/22f4d17b-f029-5b2b-8089-cada469c5d43/x": 0,
+        "location/22f4d17b-f029-5b2b-8089-cada469c5d43/y": 0
+      },
+      "jipipe:node-info-id": "ij1-dimensions-expression-slicer"
+    }
+  }
+}

@@ -1,5 +1,5 @@
 {
-  "_note": "(D)-critical: shipped patterns referencing a node id not registered in the FULL 6.0.0 launcher (verified against the prepackaged launcher registry dump, 2026-10-19 review fix). The previous plan was computed against a code/test-classpath dump (cLij2 2.3.0.6, no clijx) that is structurally blind to the dynamically-registered cLij2/clijx kernels (the real launcher ships cLij2 2.5.3.5 + clijx 0.32.2.0) — 9 of the former 12 excludes resolved.",
+  "_note": "(D)-critical: shipped patterns referencing a node id not registered in the FULL 6.0.0 launcher (verified against the prepackaged launcher registry dump, 2026-10-19 review fix). The previous plan was computed against a code/test-classpath dump (cLij2 2.3.0.6, no clijx) that is structurally blind to the dynamically-registered cLij2/clijx kernels (the real launcher ships cLij2 2.5.3.5 + clijx 0.32.2.0) - 9 of the former 12 excludes resolved.",
   "exclude": {
     "cluster-0134": {
       "clusterId": "cluster-0134",

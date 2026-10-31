@@ -185,13 +185,13 @@ public class JIPipeArtifact extends AbstractJIPipeParameterCollection implements
      * @return if the artifact is compatible
      */
     public boolean isCompatible() {
-        if("*".equals(getClassifier())) {
+        if ("*".equals(getClassifier())) {
             return true;
         }
 
         String[] split = StringUtils.nullToEmpty(getClassifier()).split("_");
         for (String s : split) {
-            if("any".equals(s)) {
+            if ("any".equals(s)) {
                 return true;
             }
         }
@@ -403,12 +403,13 @@ public class JIPipeArtifact extends AbstractJIPipeParameterCollection implements
 
     /**
      * Returns true if a query matches the artifact. Only works for fully resolved artifacts.
+     *
      * @param query the query
      * @return if it matches
      * @throws IllegalStateException if the artifact's ID is not fully resolved
      */
     public boolean matchesQuery(String query) {
-        if(getResolutionStatus() != ResolutionStatus.Full) {
+        if (getResolutionStatus() != ResolutionStatus.Full) {
             throw new IllegalStateException("Cannot match query for non-fully resolved artifacts!");
         }
         String regex = StringUtils.convertGlobToRegex(query);

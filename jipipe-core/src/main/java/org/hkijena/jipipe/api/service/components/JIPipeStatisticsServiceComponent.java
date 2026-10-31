@@ -5,9 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.api.service.JIPipeServiceComponent;
-import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.plugins.statistics.JIPipeStatisticsRegistry;
 import org.hkijena.jipipe.plugins.statistics.StatisticsPrivacyLevel;
 import org.hkijena.jipipe.plugins.statistics.StatisticsReporter;
@@ -16,8 +16,6 @@ import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.function.Consumer;
 
 import javax.swing.*;
 import java.nio.channels.FileChannel;
@@ -29,20 +27,85 @@ import java.nio.file.StandardOpenOption;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 public class JIPipeStatisticsServiceComponent extends JIPipeServiceComponent {
     private static final Logger logger = LoggerFactory.getLogger(JIPipeStatisticsServiceComponent.class);
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
     private final JIPipeStatisticsRegistry registry = new JIPipeStatisticsRegistry();
-    private ObjectNode statisticsData;
     private final Timer saveLaterTimer;
+    private ObjectNode statisticsData;
     private Timer reportingTimer;
 
     public JIPipeStatisticsServiceComponent(JIPipeService service) {
         super(service);
         this.saveLaterTimer = new Timer(250, e -> save());
         this.saveLaterTimer.setRepeats(false);
+    }
+
+    public static void save(Path file, ObjectNode data) {
+        try {
+            PathUtils.ensureParentDirectoriesExist(file);
+            Path tmpFile = file.resolveSibling(file.getFileName() + ".tmp");
+            JsonUtils.getObjectMapper().writeValue(tmpFile.toFile(), data);
+            Files.move(tmpFile, file, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+        } catch (Exception e) {
+            logger.error("Failed to save statistics to {}", file, e);
+        }
+    }
+
+    public static ObjectNode loadOrCreate(Path file, JIPipeStatisticsRegistry registry) {
+        ObjectMapper mapper = JsonUtils.getObjectMapper();
+        ObjectNode root;
+        if (Files.isRegularFile(file)) {
+            try {
+                root = (ObjectNode) mapper.readTree(file.toFile());
+            } catch (Exception e) {
+                logger.error("Failed to load statistics from {}, creating new", file, e);
+                root = mapper.createObjectNode();
+            }
+        } else {
+            root = mapper.createObjectNode();
+        }
+
+        boolean createdMachineId = !root.has("machineId") || root.get("machineId").asText().isEmpty();
+        boolean createdFirstLaunch = !root.has("firstLaunchTimestamp");
+        boolean createdLastSent = !root.has("lastSentTimestamp");
+
+        if (createdMachineId) {
+            root.put("machineId", UUID.randomUUID().toString());
+            root.put("machineIdCreatedTimestamp", LocalDateTime.now().format(FORMATTER));
+        }
+        if (createdFirstLaunch) {
+            root.put("firstLaunchTimestamp", LocalDateTime.now().format(FORMATTER));
+        }
+        if (createdLastSent) {
+            root.putNull("lastSentTimestamp");
+        }
+        if (!root.has("lastSendAttemptTimestamp")) {
+            root.putNull("lastSendAttemptTimestamp");
+        }
+        if (!root.has("items")) {
+            root.putObject("items");
+        }
+        if (!root.has("history")) {
+            root.putObject("history");
+        }
+
+        JsonNode itemsNode = root.get("items");
+        for (var item : registry.getItems()) {
+            JsonNode itemData = itemsNode.get(item.getId());
+            if (itemData != null) {
+                item.deserialize(itemData);
+            }
+        }
+
+        if (createdMachineId || createdFirstLaunch || createdLastSent) {
+            save(file, root);
+        }
+
+        return root;
     }
 
     public JIPipeStatisticsRegistry getRegistry() {
@@ -129,7 +192,7 @@ public class JIPipeStatisticsServiceComponent extends JIPipeServiceComponent {
             try (FileChannel channel = FileChannel.open(lockFile, StandardOpenOption.WRITE);
                  FileLock lock = channel.tryLock()) {
                 if (lock == null) {
-                    logger.warn("Could not acquire statistics lock — save skipped, will retry");
+                    logger.warn("Could not acquire statistics lock - save skipped, will retry");
                     saveLaterTimer.restart();
                     return;
                 }
@@ -189,70 +252,6 @@ public class JIPipeStatisticsServiceComponent extends JIPipeServiceComponent {
         } catch (Exception e) {
             logger.error("Failed to save statistics to {}", file, e);
         }
-    }
-
-    public static void save(Path file, ObjectNode data) {
-        try {
-            PathUtils.ensureParentDirectoriesExist(file);
-            Path tmpFile = file.resolveSibling(file.getFileName() + ".tmp");
-            JsonUtils.getObjectMapper().writeValue(tmpFile.toFile(), data);
-            Files.move(tmpFile, file, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
-        } catch (Exception e) {
-            logger.error("Failed to save statistics to {}", file, e);
-        }
-    }
-
-    public static ObjectNode loadOrCreate(Path file, JIPipeStatisticsRegistry registry) {
-        ObjectMapper mapper = JsonUtils.getObjectMapper();
-        ObjectNode root;
-        if (Files.isRegularFile(file)) {
-            try {
-                root = (ObjectNode) mapper.readTree(file.toFile());
-            } catch (Exception e) {
-                logger.error("Failed to load statistics from {}, creating new", file, e);
-                root = mapper.createObjectNode();
-            }
-        } else {
-            root = mapper.createObjectNode();
-        }
-
-        boolean createdMachineId = !root.has("machineId") || root.get("machineId").asText().isEmpty();
-        boolean createdFirstLaunch = !root.has("firstLaunchTimestamp");
-        boolean createdLastSent = !root.has("lastSentTimestamp");
-
-        if (createdMachineId) {
-            root.put("machineId", UUID.randomUUID().toString());
-            root.put("machineIdCreatedTimestamp", LocalDateTime.now().format(FORMATTER));
-        }
-        if (createdFirstLaunch) {
-            root.put("firstLaunchTimestamp", LocalDateTime.now().format(FORMATTER));
-        }
-        if (createdLastSent) {
-            root.putNull("lastSentTimestamp");
-        }
-        if (!root.has("lastSendAttemptTimestamp")) {
-            root.putNull("lastSendAttemptTimestamp");
-        }
-        if (!root.has("items")) {
-            root.putObject("items");
-        }
-        if (!root.has("history")) {
-            root.putObject("history");
-        }
-
-        JsonNode itemsNode = root.get("items");
-        for (var item : registry.getItems()) {
-            JsonNode itemData = itemsNode.get(item.getId());
-            if (itemData != null) {
-                item.deserialize(itemData);
-            }
-        }
-
-        if (createdMachineId || createdFirstLaunch || createdLastSent) {
-            save(file, root);
-        }
-
-        return root;
     }
 
     @Override

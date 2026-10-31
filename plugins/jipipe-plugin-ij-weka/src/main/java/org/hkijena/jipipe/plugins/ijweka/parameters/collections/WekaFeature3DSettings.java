@@ -112,7 +112,7 @@ public class WekaFeature3DSettings extends AbstractJIPipeParameterCollection {
     }
 
     @SetJIPipeDocumentation(name = "Training features", description = "Here we can select and deselect the training features, which are the key of the learning procedure. " +
-            "The plugin creates a stack of images —one image for each feature. " +
+            "The plugin creates a stack of images -one image for each feature. " +
             "For instance, if only Gaussian blur is selected as a feature, the classifier will be trained on the original image and some blurred versions " +
             "to it with different \uD835\uDF0E parameters for the Gaussian. If the input image is grayscale, the features will be calculated using double precision (32-bit images). " +
             "In the case of RGB input images, the features will be RGB as well.")

@@ -26,7 +26,6 @@ public class Measurement3DSettings extends AbstractJIPipeParameterCollection {
     private boolean measureInPhysicalUnits = true;
 
     public Measurement3DSettings() {
-        statistics.setCollapsed(false);
     }
 
     @SetJIPipeDocumentation(name = "Statistics", description = "The statistics to measure")

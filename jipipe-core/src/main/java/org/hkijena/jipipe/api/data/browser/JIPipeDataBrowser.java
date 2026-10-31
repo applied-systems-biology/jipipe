@@ -65,6 +65,7 @@ public interface JIPipeDataBrowser extends Closeable, AutoCloseable {
 
     /**
      * Gets the data as more detailed information container
+     *
      * @param progressInfo the progress info
      * @return the information
      */

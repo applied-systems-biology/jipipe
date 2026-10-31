@@ -97,7 +97,7 @@ Function rule (R8c revised -- each distinct node id counts ONCE):
 
 Output (all under ``jipipe-core/src/main/resources/org/hkijena/jipipe/plugins/nodetemplate/patterns/``):
   * the curated + deduplicated graph JSON files (written under their kept
-    filenames, with the ``jipipe:node:name`` label DROPPED — see below;
+    filenames, with the ``jipipe:node:name`` label DROPPED - see below;
     currently 64 of the 185);
   * ``system-templates.json`` -- a JSON object mapping pattern id ->
     ``{"name", "description", "functionId", "file"}``.
@@ -106,7 +106,7 @@ Output (all under ``jipipe-core/src/main/resources/org/hkijena/jipipe/plugins/no
   That field is the serialized "customName" override, and a baked label pins
   a STALE display name forever (the corpus predates several node renames).
   Omitted, ``JIPipeGraphNode.getName()`` falls back to
-  ``getInfo().getName()`` — the LIVE registry name, always current and
+  ``getInfo().getName()`` - the LIVE registry name, always current and
   tracking future renames. (The label stays in the research artifact.)
 
   ``name``        = the ``.md`` frontmatter ``template.name`` (curated).
@@ -303,7 +303,7 @@ def node_labels(g: dict):
 
 # The research role vocabulary (patterns.json nodes[].role). A pattern name
 # whose segment is one of these is a mining-artifact leak, not a derivable
-# name — the curation guard below rejects any shipped name containing them.
+# name - the curation guard below rejects any shipped name containing them.
 ROLE_WORDS = {
     "annotate", "core-io", "export", "import", "other",
     "plotting", "trackmate", "unknown",
@@ -318,7 +318,7 @@ ROLE_WORDS = {
 def main() -> None:
     funcs, nodes = load_registry()
     pattern_nodes = load_patterns()
-    # The mined SHAPE per pattern id (patterns.json) — the curation's fan
+    # The mined SHAPE per pattern id (patterns.json) - the curation's fan
     # exclusion needs it (the .md frontmatter does not carry shape).
     with open(PATTERNS_JSON, encoding="utf-8") as fh:
         pattern_shapes = {e["id"]: e.get("shape") for e in json.load(fh)["patterns"]}
@@ -417,7 +417,7 @@ def main() -> None:
     for stem in sorted(graphs):
         if pattern_shapes.get(stem) in ("fan-in", "fan-out"):
             # Statistical fan shapes name themselves by corpus statistics
-            # ("X fans in from N source ids") — not derivable from what the
+            # ("X fans in from N source ids") - not derivable from what the
             # graph does.
             excluded_shapes += 1
             continue
@@ -466,7 +466,7 @@ def main() -> None:
     # patterns and the 8 plumbing (jipipe:comment / node-group) patterns are
     # dropped: their workflows are already covered (sub-paths) or carry no
     # general information (plumbing). The shipped NAME is an OUTCOME name
-    # (ruling 2026-19: the name says what the workflow does — no node chain,
+    # (ruling 2026-19: the name says what the workflow does - no node chain,
     # no -> / → / ⇢ separator); the mined chain name was the mechanism and is
     # no longer shipped. The mechanism (Sequence/Wiring) stays in the
     # description. linear-outcome-names.json is the source of truth for both
@@ -486,7 +486,7 @@ def main() -> None:
         # different count means the curation or the corpus changed.
         fail(f"Option C drop-count mismatch: expected 40 dropped "
              f"(32 sub-path + 8 plumbing), got {len(kept_stems) - len(outcome)} "
-             "— re-derive the keep-set")
+             "- re-derive the keep-set")
     kept_stems = sorted(outcome)  # Option C keep-set = the 24 outcome names
 
     # ---- build sidecar ----
@@ -507,7 +507,7 @@ def main() -> None:
         m = meta[stem]
         seq = m["corpus"].get("exampleGraphNodes", [])
         seq_names = [node_names.get(iid, n) for iid, n in seq]
-        # (The leading "Mined from the HKI corpus — support N across M
+        # (The leading "Mined from the HKI corpus - support N across M
         # projects." line was internal mining statistics with no user
         # value; the description starts with the pattern's own Sequence.)
         lines = []
@@ -529,7 +529,7 @@ def main() -> None:
         desc = "<br>".join(html.escape(l, quote=False) for l in lines)
 
         # Option C: the shipped name is the OUTCOME name (what the workflow
-        # does) from linear-outcome-names.json — NOT the mined node chain.
+        # does) from linear-outcome-names.json - NOT the mined node chain.
         # Ruling 2026-19 forbids any chain separator in the name; the chain
         # (mechanism) is carried by the description built above.
         display_name = outcome[stem]
@@ -546,7 +546,7 @@ def main() -> None:
     # ---- shipped distribution + role-name guard (the user's curation rule) ----
     # The SHIPPED set's function distribution must match the curation target
     # (a change to the corpus, the curation exclusions, or the function rule
-    # all move this — fail loudly rather than ship a silently-wrong set).
+    # all move this - fail loudly rather than ship a silently-wrong set).
     shipped_dist = Counter(shipped[s]["functionId"] for s in shipped)
     # Option C keep-set distribution: the 24 linear-only patterns
     # (32 sub-path + 8 plumbing patterns dropped).
@@ -562,19 +562,19 @@ def main() -> None:
              f"{ {k.replace('jipipe:function:',''): v for k, v in EXPECTED_SHIPPED_DIST.items()} }")
 
     # Ruling 2026-19: a shipped template NAME must describe what the workflow
-    # does — no node chain, no chain separator of any kind. The mechanism
+    # does - no node chain, no chain separator of any kind. The mechanism
     # (Sequence:/Wiring:) is description text only. Fail closed on any
     # separator so a regression cannot ship a chain name.
     for stem, rec in shipped.items():
         for sep in ("->", "\u2192", "\u21d2", "\u21e2"):
             if sep in rec["name"]:
                 fail(f"{stem}: shipped name contains a chain separator "
-                     f"{sep!r}: {rec['name']!r} — the name must be an outcome "
+                     f"{sep!r}: {rec['name']!r} - the name must be an outcome "
                      "name, not a node chain")
 
     # Backstop: a shipped name must not BE a raw role token (a mining artifact
     # like "other"/"import" used as a chain segment). Names are curated outcome
-    # strings now, so this only fires when the ENTIRE name is a bare token —
+    # strings now, so this only fires when the ENTIRE name is a bare token -
     # word-level matching would false-positive on legitimate names that start
     # with "Import"/"Export".
     for stem, rec in shipped.items():
@@ -604,9 +604,9 @@ def main() -> None:
         # Drop the node display label (jipipe:node:name) when shipping: it is
         # the serialized "customName" override, and a baked label pins a
         # STALE display name forever (the corpus predates several node
-        # renames — 111/234 shipped instances were stale). Omitted, the
+        # renames - 111/234 shipped instances were stale). Omitted, the
         # node's getName() falls back to getInfo().getName(), the LIVE
-        # registry name — always current and tracking future renames.
+        # registry name - always current and tracking future renames.
         # (Research dir untouched; the label stays in the mined artifact.)
         with open(src, encoding="utf-8") as fh:
             g = json.load(fh)
@@ -618,14 +618,14 @@ def main() -> None:
         # a floating interface node.)
         if any(n["jipipe:node-info-id"] == "io-interface"
                for n in g["nodes"].values()):
-            fail(f"{stem}: contains an io-interface node — the B2 ruling "
+            fail(f"{stem}: contains an io-interface node - the B2 ruling "
                  "drops such patterns; re-review the linear keep-set")
         # Location pass (the §3.4 fix): all 24 linear files are INVALID
         # (no locations at all) -> re-layout the WHOLE pattern with
         # sugiyama_layout. Their compartments are UUIDs (kept as-is, no
         # rekey). Width map accounts for the FINAL (post-restore) slot counts
         # (Ruling 12 / Global-Constraints rule 5): static registry slots +
-        # the restore extras (file-local via extras_for_graph — deterministically
+        # the restore extras (file-local via extras_for_graph - deterministically
         # identical to the Ruling 12 scratch+analyze, since the shipped set is
         # stable and no slot-config exists at generation time).
         if not all(node_location_valid(n) for n in g["nodes"].values()):

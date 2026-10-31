@@ -1,1 +1,70 @@
-{"nodes":{"n0":{"jipipe:graph-compartment":"DEFAULT","jipipe:metadata-v1":{"location/DEFAULT/x":1,"location/DEFAULT/y":5},"jipipe:node-info-id":"ij1-set-lut-from-color-map"},"n1":{"jipipe:graph-compartment":"DEFAULT","jipipe:metadata-v1":{"location/DEFAULT/x":1,"location/DEFAULT/y":13},"jipipe:node-info-id":"ij3d-roi-convert-to-rgb"},"n2":{"jipipe:graph-compartment":"DEFAULT","jipipe:metadata-v1":{"location/DEFAULT/x":1,"location/DEFAULT/y":9},"jipipe:node-info-id":"ij1-apply-lut"},"n3":{"jipipe:graph-compartment":"DEFAULT","jipipe:metadata-v1":{"location/DEFAULT/x":1,"location/DEFAULT/y":1},"jipipe:node-info-id":"ij1-contrast-histogram-enhancer"},"n4":{"jipipe:graph-compartment":"DEFAULT","jipipe:metadata-v1":{"location/DEFAULT/x":10,"location/DEFAULT/y":1},"jipipe:node-info-id":"ij3d-roi-change-properties"}},"edges":[{"source-node":"n0","source-slot":"Output","target-node":"n2","target-slot":"Input"},{"source-node":"n2","source-slot":"Output","target-node":"n1","target-slot":"Image"},{"source-node":"n3","source-slot":"Output","target-node":"n0","target-slot":"Input"},{"source-node":"n4","source-slot":"Output","target-node":"n1","target-slot":"ROI"}]}
+{
+  "nodes": {
+    "n0": {
+      "jipipe:graph-compartment": "DEFAULT",
+      "jipipe:metadata-v1": {
+        "location/DEFAULT/x": 1,
+        "location/DEFAULT/y": 5
+      },
+      "jipipe:node-info-id": "ij1-set-lut-from-color-map"
+    },
+    "n1": {
+      "jipipe:graph-compartment": "DEFAULT",
+      "jipipe:metadata-v1": {
+        "location/DEFAULT/x": 1,
+        "location/DEFAULT/y": 13
+      },
+      "jipipe:node-info-id": "ij3d-roi-convert-to-rgb"
+    },
+    "n2": {
+      "jipipe:graph-compartment": "DEFAULT",
+      "jipipe:metadata-v1": {
+        "location/DEFAULT/x": 1,
+        "location/DEFAULT/y": 9
+      },
+      "jipipe:node-info-id": "ij1-apply-lut"
+    },
+    "n3": {
+      "jipipe:graph-compartment": "DEFAULT",
+      "jipipe:metadata-v1": {
+        "location/DEFAULT/x": 1,
+        "location/DEFAULT/y": 1
+      },
+      "jipipe:node-info-id": "ij1-contrast-histogram-enhancer"
+    },
+    "n4": {
+      "jipipe:graph-compartment": "DEFAULT",
+      "jipipe:metadata-v1": {
+        "location/DEFAULT/x": 10,
+        "location/DEFAULT/y": 1
+      },
+      "jipipe:node-info-id": "ij3d-roi-change-properties"
+    }
+  },
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Output",
+      "target-node": "n2",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n2",
+      "source-slot": "Output",
+      "target-node": "n1",
+      "target-slot": "Image"
+    },
+    {
+      "source-node": "n3",
+      "source-slot": "Output",
+      "target-node": "n0",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n4",
+      "source-slot": "Output",
+      "target-node": "n1",
+      "target-slot": "ROI"
+    }
+  ]
+}

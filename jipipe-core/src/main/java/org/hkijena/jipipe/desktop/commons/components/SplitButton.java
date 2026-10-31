@@ -35,21 +35,21 @@ public class SplitButton extends JPanel {
     private void initialize() {
         setLayout(new BorderLayout());
         Color borderColor = ThemeUtils.getCurrentStyle().getBorderColor();
-        setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(1,1,1,1),
+        setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1),
                 new RoundedLineBorder(borderColor, 1, 5)));
 
         // Main button
         mainButton = new JButton();
         mainButton.setOpaque(false);
         mainButton.setFocusPainted(false);
-        mainButton.setBorder(BorderFactory.createEmptyBorder(0,0,0,5));
+        mainButton.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 5));
 
         // Arrow button
         arrowButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/caret-down.png"));
         arrowButton.setFocusPainted(false);
         arrowButton.setOpaque(false);
-        arrowButton.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0,1,0,0, borderColor),
-                BorderFactory.createEmptyBorder(0,5,0,0)));
+        arrowButton.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, borderColor),
+                BorderFactory.createEmptyBorder(0, 5, 0, 0)));
         arrowButton.setMargin(new Insets(2, 5, 2, 5));
 
         // Popup menu
@@ -64,12 +64,12 @@ public class SplitButton extends JPanel {
     }
 
     protected void reloadPopupMenu() {
-        if(popupMenuReloadFunction != null) {
+        if (popupMenuReloadFunction != null) {
             popupMenuReloadFunction.accept(popupMenu);
         }
     }
 
-    public void setText(String  text) {
+    public void setText(String text) {
         mainButton.setText(text);
     }
 
@@ -173,11 +173,11 @@ public class SplitButton extends JPanel {
         return new Dimension(totalWidth, totalHeight);
     }
 
-    public void setPopupMenuReloadFunction(Consumer<JPopupMenu> popupMenuReloadFunction) {
-        this.popupMenuReloadFunction = popupMenuReloadFunction;
-    }
-
     public Consumer<JPopupMenu> getPopupMenuReloadFunction() {
         return popupMenuReloadFunction;
+    }
+
+    public void setPopupMenuReloadFunction(Consumer<JPopupMenu> popupMenuReloadFunction) {
+        this.popupMenuReloadFunction = popupMenuReloadFunction;
     }
 }

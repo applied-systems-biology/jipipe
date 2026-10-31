@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
  * When the service transitions to Ready, the executor's state-change listener
  * triggers dispatch.</p>
  *
- * <p>Cancellation removes pending tasks from the queue before they start —
+ * <p>Cancellation removes pending tasks from the queue before they start -
  * no orphan tasks remain. Lifecycle operations (start/stop) are handled by
  * the {@link Microservice}, NOT as queue tasks.</p>
  */

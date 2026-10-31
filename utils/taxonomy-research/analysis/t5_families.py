@@ -186,27 +186,27 @@ def render_section(fam, families, pair_stats, per_fw, low, cross_check, cnt, ste
         "the typed tokens are {r:,} resolvable to a registry data type and {nr:,} not (null: {n})."
         .format(t=cnt["total"], i=cnt["in_family"], d=cnt["declared"], u=cnt["undeclared"],
                 x=cnt["cross_family"], r=cnt["resolvable"], nr=cnt["unresolvable"], n=cnt["null"]),
-        "- **3a — declared vs real:** a declared after-edge (B, A) is **wired** when ≥ 1 "
-        "corpus edge has source node id A and target node id B (ANY `dataClass` — a real "
+        "- **3a - declared vs real:** a declared after-edge (B, A) is **wired** when ≥ 1 "
+        "corpus edge has source node id A and target node id B (ANY `dataClass` - a real "
         "connection is a real connection; occurrences and distinct projects counted per "
         "family). Otherwise **declared-but-never-wired**. **Undeclared-real** edges: corpus "
         "edges (A→B) whose two node ids are both in F's member set but where B's `after[]` "
-        "does not contain A — real workflow edges the family graph is missing (top {n} by "
+        "does not contain A - real workflow edges the family graph is missing (top {n} by "
         "occurrence; all listed in `analysis/t5_table.md`)." .format(n=TOPN),
-        "- **3b — family candidates:** corpus edges (A→B) with A.id != B.id, "
+        "- **3b - family candidates:** corpus edges (A→B) with A.id != B.id, "
         "node(A).framework == node(B).framework (non-null; "
-        f"`{NONE_FW}` excluded — {cnt['no_fw']:,} such edges) where the pair is NOT "
+        f"`{NONE_FW}` excluded - {cnt['no_fw']:,} such edges) where the pair is NOT "
         "connected by any declared after-edge in ANY family, in either direction "
         f"({cnt['cross_declared']:,} same-framework edges excluded for this reason). Computed "
         "over ALL corpus edges (per the ruling's mechanical rule, not restricted to "
         f"cross-family edges): {cnt['pair_samefam']:,} of the qualifying occurrences are "
         "same-family edges that are also reported as undeclared-real in 3a (the "
-        "trackmate `mask-detector→detector` chain) — the overlap is intentional, not an "
+        "trackmate `mask-detector→detector` chain) - the overlap is intentional, not an "
         f"error (reading 3b restricted to pairs where NEITHER endpoint is a family "
         f"member: {cnt['pair_alt']:,} pairs / {cnt['occ_alt']:,} occurrences). "
         "Frameworks absent from the corpus are absent from the results by "
         f"construction. {cnt['fw_mismatch']:,} edges had different frameworks and never qualify.",
-        "- **3c — specialized data types:** the **low-consumer set is RECOMPUTED** here "
+        "- **3c - specialized data types:** the **low-consumer set is RECOMPUTED** here "
         "(t3's markdown not parsed for the set, t3 not re-run): a registry data type T "
         "(a non-null `outputs[].dataType`) with exactly 1-2 DISTINCT consumer node ids, where "
         "consumer = a registry node id observed as the target of a corpus edge whose resolved "
@@ -215,7 +215,7 @@ def render_section(fam, families, pair_stats, per_fw, low, cross_check, cnt, ste
         "OUTPUT T (registry capability, unlike the corpus-observed consumers); a framework "
         "**HAS families** when ≥ 1 node with that framework is in any family's member set. "
         "T is (i) **with-family** when any producer framework HAS families (the trackmate "
-        "case) or (ii) **without-family** otherwise (the siblings — narrow-consumer "
+        "case) or (ii) **without-family** otherwise (the siblings - narrow-consumer "
         "specialized types with no family to anchor them).",
         "", *step2_line, ""]
     for st in fam:
@@ -228,18 +228,18 @@ def render_section(fam, families, pair_stats, per_fw, low, cross_check, cnt, ste
         und_rows = [f"| `{a}` → `{b}` | {s['occ']} | {len(s['projects'])} |"
                     for (a, b), s in sorted(st["undeclared"].items(),
                                             key=lambda kv: (-kv[1]["occ"], kv[0]))]
-        body += [f"### 3a — `{st['fid']}` ({st['n_steps']} steps, {st['n_members']} members, "
+        body += [f"### 3a - `{st['fid']}` ({st['n_steps']} steps, {st['n_members']} members, "
                  f"{st['n_declared']} declared after-edges, {st['n_wired']} wired, {st['n_never']} "
                  f"declared-but-never-wired, {st['n_undec_pairs']} undeclared-real pairs)", "",
                  "| declared after-edge (A → B) | B label | wired occurrences | wired projects | "
                  "status |", "|---|---|---:|---:|---|"]
-        body += decl_rows or ["| — | — | — | — | (no declared after-edges) |"]
+        body += decl_rows or ["| - | - | - | - | (no declared after-edges) |"]
         body += ["", f"Undeclared-real edges between `{st['fid']}` members "
                      f"(top {min(TOPN, len(und_rows))} of {st['n_undec_pairs']} "
                      f"pairs, {st['undec_occ']:,} occurrences):", ""]
         body += (["| A → B (member node ids) | occurrences | projects |",
                   "|---|---:|---:|"] + und_rows[:TOPN]) if und_rows else \
-            ["(none — every real member→member edge is declared)"]
+            ["(none - every real member→member edge is declared)"]
         body.append("")
         raw += [f"### `{st['fid']}` declared after-edges", ""]
         raw += ["| A → B | B label | wired occurrences | wired projects | status |",
@@ -255,14 +255,14 @@ def render_section(fam, families, pair_stats, per_fw, low, cross_check, cnt, ste
           [f"| {i} | " + pair_row(k, s)[2:] for i, (k, s) in enumerate(all_sorted[:30], 1)]
     perfw = ["| framework | distinct pairs | occurrences |", "|---|---:|---:|"] + \
             [f"| `{fwi}` | {np_} | {no:,} |" for fwi, (np_, no) in per_fw]
-    body += [f"### 3b — Same-framework real edges with no declared family relation (top "
+    body += [f"### 3b - Same-framework real edges with no declared family relation (top "
              f"{len(all_sorted[:30])} of {len(pair_stats)} pairs)", ""]
     body += p30 + ["", "Per-framework distinct (A, B) pair counts (frameworks present in the "
                    "corpus with ≥ 1 qualifying pair):", ""] + perfw + [""]
-    raw += ["## 3b — same-framework real edges, no declared family relation (all pairs)", ""]
+    raw += ["## 3b - same-framework real edges, no declared family relation (all pairs)", ""]
     raw += ["| framework | A → B | occurrences | projects |", "|---|---|---:|---:|"] + \
         [pair_row(k, s) for k, s in all_sorted]
-    raw += ["", "## 3b — per-framework distinct (A, B) pair counts", ""] + perfw + [""]
+    raw += ["", "## 3b - per-framework distinct (A, B) pair counts", ""] + perfw + [""]
     p = sum(1 for t in low if t["cls"] == "with-family")
     q = sum(1 for t in low if t["cls"] == "without-family")
     fwj = lambda t: ", ".join(f"`{f}`" for f in sorted(t["pfws"])) or "(none)"
@@ -275,10 +275,10 @@ def render_section(fam, families, pair_stats, per_fw, low, cross_check, cnt, ste
            [f"| `{t['T']}` | {len(t['cons'])} | "
             f"{', '.join(f'`{c}`' for c in sorted(t['cons']))} | "
             f"{', '.join(f'`{x}`' for x in sorted(t['prod']))} | {fwj(t)} | {t['cls']} |" for t in low]
-    body += [f"### 3c — Low-consumer types by producer-family status "
+    body += [f"### 3c - Low-consumer types by producer-family status "
              f"({len(low)} recomputed: {p} with-family, {q} without-family)", ""]
     body += l3c + [""]
-    raw += ["## 3c — low-consumer recompute (all types)", ""]
+    raw += ["## 3c - low-consumer recompute (all types)", ""]
     raw += al3c + ["", *cross_check_lines, ""]
     return body, raw
 
@@ -315,14 +315,14 @@ def main():
     n_reg = len(t3_flagged) - len(t3_raw)
     rec, t3s = {t["T"] for t in low}, {t for t in t3_flagged if t in outdts_all}
     agree = rec == t3s
-    cc = ("**Cross-check: AGREE** — the recomputed set ({r} types) equals the "
+    cc = ("**Cross-check: AGREE** - the recomputed set ({r} types) equals the "
           "registry-known rows of the committed `analysis/t3_table.md` Table 1c "
           "flagged sub-table ({n} of its {n2} rows; {u} rows are unresolved raw tokens, "
-          "not registry data types, so the recompute rule — `T` is a non-null "
-          "`outputs[].dataType` — excludes them by definition)."
+          "not registry data types, so the recompute rule - `T` is a non-null "
+          "`outputs[].dataType` - excludes them by definition)."
           .format(r=len(rec), n=n_reg, n2=len(t3_flagged), u=len(t3_raw))
           if agree else
-          "**Cross-check: DISAGREE** — recomputed-only: "
+          "**Cross-check: DISAGREE** - recomputed-only: "
           + (", ".join(f"`{x}`" for x in sorted(rec - t3s)) or "(none)")
           + "; t3-only (registry-known): "
           + (", ".join(f"`{x}`" for x in sorted(t3s - rec)) or "(none)")
@@ -333,8 +333,8 @@ def main():
            + (f"; {len(t3_raw)} rows are unresolved raw tokens: "
               + ", ".join(f"`{t}`" for t in sorted(t3_raw)) if t3_raw else "") + ")"]
     body, raw = render_section(fam, families, pair_stats, per_fw, low, cc, cnt, [verify_trackmate(families)], ccl)
-    TABLE.write_text("\n".join(["# Task 5 — raw tables (family coverage & follow-up "
-                                "quality)", "", "## 3a — declared after-edges vs corpus "
+    TABLE.write_text("\n".join(["# Task 5 - raw tables (family coverage & follow-up "
+                                "quality)", "", "## 3a - declared after-edges vs corpus "
                                 "wiring", ""] + raw), encoding="utf-8")
     text = "## 3. Families vs reality\n" + "\n".join(body).rstrip() + "\n"
     if not REPORT.exists():

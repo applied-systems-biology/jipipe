@@ -1,1 +1,42 @@
-{"edges":[{"source-node":"n1","source-slot":"Image","target-node":"n0","target-slot":"Input"},{"source-node":"n2","source-slot":"Filenames","target-node":"n1","target-slot":"Files"}],"nodes":{"n0":{"jipipe:graph-compartment":"b372da6c-b486-595e-935c-2443739dd05e","jipipe:metadata-v1":{"location/b372da6c-b486-595e-935c-2443739dd05e/x":0,"location/b372da6c-b486-595e-935c-2443739dd05e/y":8},"jipipe:node-info-id":"iji-export-image-to-web"},"n1":{"jipipe:graph-compartment":"b372da6c-b486-595e-935c-2443739dd05e","jipipe:metadata-v1":{"location/b372da6c-b486-595e-935c-2443739dd05e/x":0,"location/b372da6c-b486-595e-935c-2443739dd05e/y":4},"jipipe:node-info-id":"import-imagej-imgplus-from-file"},"n2":{"jipipe:graph-compartment":"b372da6c-b486-595e-935c-2443739dd05e","jipipe:metadata-v1":{"location/b372da6c-b486-595e-935c-2443739dd05e/x":0,"location/b372da6c-b486-595e-935c-2443739dd05e/y":0},"jipipe:node-info-id":"import-file-list"}}}
+{
+  "edges": [
+    {
+      "source-node": "n1",
+      "source-slot": "Image",
+      "target-node": "n0",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n2",
+      "source-slot": "Filenames",
+      "target-node": "n1",
+      "target-slot": "Files"
+    }
+  ],
+  "nodes": {
+    "n0": {
+      "jipipe:graph-compartment": "b372da6c-b486-595e-935c-2443739dd05e",
+      "jipipe:metadata-v1": {
+        "location/b372da6c-b486-595e-935c-2443739dd05e/x": 0,
+        "location/b372da6c-b486-595e-935c-2443739dd05e/y": 8
+      },
+      "jipipe:node-info-id": "iji-export-image-to-web"
+    },
+    "n1": {
+      "jipipe:graph-compartment": "b372da6c-b486-595e-935c-2443739dd05e",
+      "jipipe:metadata-v1": {
+        "location/b372da6c-b486-595e-935c-2443739dd05e/x": 0,
+        "location/b372da6c-b486-595e-935c-2443739dd05e/y": 4
+      },
+      "jipipe:node-info-id": "import-imagej-imgplus-from-file"
+    },
+    "n2": {
+      "jipipe:graph-compartment": "b372da6c-b486-595e-935c-2443739dd05e",
+      "jipipe:metadata-v1": {
+        "location/b372da6c-b486-595e-935c-2443739dd05e/x": 0,
+        "location/b372da6c-b486-595e-935c-2443739dd05e/y": 0
+      },
+      "jipipe:node-info-id": "import-file-list"
+    }
+  }
+}

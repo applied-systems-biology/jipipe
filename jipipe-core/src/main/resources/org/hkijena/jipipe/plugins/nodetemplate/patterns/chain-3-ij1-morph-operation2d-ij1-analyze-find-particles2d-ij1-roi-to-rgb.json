@@ -1,1 +1,42 @@
-{"nodes":{"n0":{"jipipe:node-info-id":"ij1-morph-operation2d","jipipe:graph-compartment":"30b96f97-2a25-579d-8621-0307a9d7a762","jipipe:metadata-v1":{"location/30b96f97-2a25-579d-8621-0307a9d7a762/x":1,"location/30b96f97-2a25-579d-8621-0307a9d7a762/y":1}},"n1":{"jipipe:node-info-id":"ij1-analyze-find-particles2d","jipipe:graph-compartment":"30b96f97-2a25-579d-8621-0307a9d7a762","jipipe:metadata-v1":{"location/30b96f97-2a25-579d-8621-0307a9d7a762/x":1,"location/30b96f97-2a25-579d-8621-0307a9d7a762/y":5}},"n2":{"jipipe:node-info-id":"ij1-roi-to-rgb","jipipe:graph-compartment":"30b96f97-2a25-579d-8621-0307a9d7a762","jipipe:metadata-v1":{"location/30b96f97-2a25-579d-8621-0307a9d7a762/x":1,"location/30b96f97-2a25-579d-8621-0307a9d7a762/y":9}}},"edges":[{"source-node":"n0","source-slot":"Output","target-node":"n1","target-slot":"Mask"},{"source-node":"n1","source-slot":"ROI","target-node":"n2","target-slot":"ROI"}]}
+{
+  "nodes": {
+    "n0": {
+      "jipipe:node-info-id": "ij1-morph-operation2d",
+      "jipipe:graph-compartment": "30b96f97-2a25-579d-8621-0307a9d7a762",
+      "jipipe:metadata-v1": {
+        "location/30b96f97-2a25-579d-8621-0307a9d7a762/x": 1,
+        "location/30b96f97-2a25-579d-8621-0307a9d7a762/y": 1
+      }
+    },
+    "n1": {
+      "jipipe:node-info-id": "ij1-analyze-find-particles2d",
+      "jipipe:graph-compartment": "30b96f97-2a25-579d-8621-0307a9d7a762",
+      "jipipe:metadata-v1": {
+        "location/30b96f97-2a25-579d-8621-0307a9d7a762/x": 1,
+        "location/30b96f97-2a25-579d-8621-0307a9d7a762/y": 5
+      }
+    },
+    "n2": {
+      "jipipe:node-info-id": "ij1-roi-to-rgb",
+      "jipipe:graph-compartment": "30b96f97-2a25-579d-8621-0307a9d7a762",
+      "jipipe:metadata-v1": {
+        "location/30b96f97-2a25-579d-8621-0307a9d7a762/x": 1,
+        "location/30b96f97-2a25-579d-8621-0307a9d7a762/y": 9
+      }
+    }
+  },
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Output",
+      "target-node": "n1",
+      "target-slot": "Mask"
+    },
+    {
+      "source-node": "n1",
+      "source-slot": "ROI",
+      "target-node": "n2",
+      "target-slot": "ROI"
+    }
+  ]
+}

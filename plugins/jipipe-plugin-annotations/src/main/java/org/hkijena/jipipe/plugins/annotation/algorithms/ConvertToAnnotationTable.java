@@ -13,17 +13,20 @@
 
 package org.hkijena.jipipe.plugins.annotation.algorithms;
 
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.TableDataFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.annotations.AnnotationsConvertFunction;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.annotations.AnnotationsConvertFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.TableDataFunction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 import org.hkijena.jipipe.plugins.tables.datatypes.AnnotationTableData;
@@ -35,7 +38,7 @@ import java.util.Set;
  */
 @SetJIPipeDocumentation(name = "Convert to annotation table", description = "Converts data into an annotation table that contains " +
         "all annotations of the data row. You can also add a string representation of the data.")
-@ConfigureJIPipeNode(function = { TableDataFunction.class, AnnotationsConvertFunction.class })
+@ConfigureJIPipeNode(function = {TableDataFunction.class, AnnotationsConvertFunction.class})
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = AnnotationTableData.class, name = "Output", create = true)
 public class ConvertToAnnotationTable extends JIPipeMergingAlgorithm {

@@ -20,7 +20,15 @@ public class SegmentEdge {
         this.label = label;
     }
 
-    public String getSource() { return source; }
-    public String getTarget() { return target; }
-    public String getLabel() { return label; }
+    public String getSource() {
+        return source;
+    }
+
+    public String getTarget() {
+        return target;
+    }
+
+    public String getLabel() {
+        return label;
+    }
 }

@@ -57,9 +57,7 @@ public class JIPipeDesktopOrganizationMetadataParameterEditorUI extends JIPipeDe
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
         add(buttonPanel, BorderLayout.EAST);
 
-        JButton configureButton = new JButton("Configure ...", JIPipe.RESOURCES.getIcon16("actions/configure.png"));
-        configureButton.setBackground(getBackground());
-        configureButton.setOpaque(true);
+        JButton configureButton = UIUtils.createParameterButton("Configure", JIPipe.RESOURCES.getIcon16("actions/configure.png"), null);
         configureButton.setToolTipText("Edit/copy/paste organization");
         buttonPanel.add(configureButton);
 

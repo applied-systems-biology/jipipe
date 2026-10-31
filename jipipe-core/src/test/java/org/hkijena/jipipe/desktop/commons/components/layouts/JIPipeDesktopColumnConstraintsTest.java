@@ -15,7 +15,8 @@ package org.hkijena.jipipe.desktop.commons.components.layouts;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 
 class JIPipeDesktopColumnConstraintsTest {
 

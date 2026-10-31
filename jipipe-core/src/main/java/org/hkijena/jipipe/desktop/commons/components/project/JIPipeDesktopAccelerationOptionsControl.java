@@ -74,10 +74,9 @@ public class JIPipeDesktopAccelerationOptionsControl extends JButton implements 
             public void run() {
                 try {
                     JIPipe.getInstance().getAcceleration().autoDetect(getProgressInfo());
-                }
-                finally {
+                } finally {
                     SwingUtilities.invokeLater(() -> {
-                       updateText();
+                        updateText();
                     });
                 }
             }

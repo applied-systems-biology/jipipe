@@ -40,11 +40,11 @@ public class JIPipeLocalArtifact extends JIPipeArtifact {
         this.localPath = localPath;
     }
 
-    public void setReadOnly(boolean readOnly) {
-        this.readOnly = readOnly;
-    }
-
     public boolean isReadOnly() {
         return readOnly;
+    }
+
+    public void setReadOnly(boolean readOnly) {
+        this.readOnly = readOnly;
     }
 }

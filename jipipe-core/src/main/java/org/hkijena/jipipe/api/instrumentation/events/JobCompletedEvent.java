@@ -18,8 +18,19 @@ public class JobCompletedEvent extends InstrumentationEvent {
         this.error = error;
     }
 
-    public String getJobId() { return jobId; }
-    public InstrumentationJobStatus getStatus() { return status; }
-    public JsonNode getResult() { return result; }
-    public String getError() { return error; }
+    public String getJobId() {
+        return jobId;
+    }
+
+    public InstrumentationJobStatus getStatus() {
+        return status;
+    }
+
+    public JsonNode getResult() {
+        return result;
+    }
+
+    public String getError() {
+        return error;
+    }
 }

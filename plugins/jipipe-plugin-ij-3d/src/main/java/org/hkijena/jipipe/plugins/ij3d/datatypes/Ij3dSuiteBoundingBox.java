@@ -35,7 +35,7 @@ public class Ij3dSuiteBoundingBox {
         if (!b1.intersects(b2)) {
             return null;
         }
-        
+
         // Calculate the intersection bounds
         int xMin = Math.max(b1.getxMin(), b2.getxMin());
         int xMax = Math.min(b1.getxMax(), b2.getxMax());
@@ -43,7 +43,7 @@ public class Ij3dSuiteBoundingBox {
         int yMax = Math.min(b1.getyMax(), b2.getyMax());
         int zMin = Math.max(b1.getzMin(), b2.getzMin());
         int zMax = Math.min(b1.getzMax(), b2.getzMax());
-        
+
         // Create and return the intersection bounding box
         Ij3dSuiteBoundingBox intersection = new Ij3dSuiteBoundingBox();
         intersection.setxMin(xMin);
@@ -104,13 +104,13 @@ public class Ij3dSuiteBoundingBox {
     }
 
     public double getVolume() {
-        return (xMax -  xMin) * (yMax - yMin) * (zMax - zMin);
+        return (xMax - xMin) * (yMax - yMin) * (zMax - zMin);
     }
 
     public boolean intersects(Ij3dSuiteBoundingBox other) {
         return this.xMax >= other.xMin && this.xMin <= other.xMax &&
-               this.yMax >= other.yMin && this.yMin <= other.yMax &&
-               this.zMax >= other.zMin && this.zMin <= other.zMax;
+                this.yMax >= other.yMin && this.yMin <= other.yMax &&
+                this.zMax >= other.zMin && this.zMin <= other.zMax;
     }
 
     public Ij3dSuiteRoi toRoi() {

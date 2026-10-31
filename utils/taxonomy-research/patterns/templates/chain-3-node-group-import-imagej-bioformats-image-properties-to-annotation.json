@@ -1,1 +1,33 @@
-{"nodes":{"n0":{"jipipe:node-info-id":"node-group","jipipe:graph-compartment":"add8b443-f5f6-56c2-8428-c6df0285ab4b","jipipe:node:name":"READ: folders, subfolders and files"},"n1":{"jipipe:node-info-id":"import-imagej-bioformats","jipipe:graph-compartment":"add8b443-f5f6-56c2-8428-c6df0285ab4b","jipipe:node:name":"Bio-Formats importer"},"n2":{"jipipe:node-info-id":"image-properties-to-annotation","jipipe:graph-compartment":"add8b443-f5f6-56c2-8428-c6df0285ab4b","jipipe:node:name":"Annotate with image properties"}},"edges":[{"source-node":"n0","source-slot":"Annotated paths","target-node":"n1","target-slot":"Input"},{"source-node":"n1","source-slot":"Output","target-node":"n2","target-slot":"Image"}]}
+{
+  "nodes": {
+    "n0": {
+      "jipipe:node-info-id": "node-group",
+      "jipipe:graph-compartment": "add8b443-f5f6-56c2-8428-c6df0285ab4b",
+      "jipipe:node:name": "READ: folders, subfolders and files"
+    },
+    "n1": {
+      "jipipe:node-info-id": "import-imagej-bioformats",
+      "jipipe:graph-compartment": "add8b443-f5f6-56c2-8428-c6df0285ab4b",
+      "jipipe:node:name": "Bio-Formats importer"
+    },
+    "n2": {
+      "jipipe:node-info-id": "image-properties-to-annotation",
+      "jipipe:graph-compartment": "add8b443-f5f6-56c2-8428-c6df0285ab4b",
+      "jipipe:node:name": "Annotate with image properties"
+    }
+  },
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Annotated paths",
+      "target-node": "n1",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n1",
+      "source-slot": "Output",
+      "target-node": "n2",
+      "target-slot": "Image"
+    }
+  ]
+}

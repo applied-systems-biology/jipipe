@@ -12,13 +12,38 @@ class StatisticsReporterTest {
 
     private JIPipeStatisticsItem createItem(String id, StatisticsPrivacyLevel level, int value) {
         return new JIPipeStatisticsItem() {
-            @Override public String getId() { return id; }
-            @Override public String getName() { return id; }
-            @Override public String getDescription() { return id; }
-            @Override public StatisticsPrivacyLevel getRequiredPrivacyLevel() { return level; }
-            @Override public JsonNode serialize() { return IntNode.valueOf(value); }
-            @Override public void deserialize(JsonNode node) {}
-            @Override public void reset() {}
+            @Override
+            public String getId() {
+                return id;
+            }
+
+            @Override
+            public String getName() {
+                return id;
+            }
+
+            @Override
+            public String getDescription() {
+                return id;
+            }
+
+            @Override
+            public StatisticsPrivacyLevel getRequiredPrivacyLevel() {
+                return level;
+            }
+
+            @Override
+            public JsonNode serialize() {
+                return IntNode.valueOf(value);
+            }
+
+            @Override
+            public void deserialize(JsonNode node) {
+            }
+
+            @Override
+            public void reset() {
+            }
         };
     }
 

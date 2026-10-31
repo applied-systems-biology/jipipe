@@ -85,7 +85,7 @@ class SlotExtractionTests(unittest.TestCase):
 
 class TwinDetectionTests(unittest.TestCase):
     """A 2D<->3D twin pair is verified by the SLOT DATA-TYPE signature being
-    the dimension-swapped mirror plus the same name concept — never by id
+    the dimension-swapped mirror plus the same name concept - never by id
     guessing."""
 
     def test_roi_pair_is_a_twin(self):
@@ -180,7 +180,7 @@ class MechanicalSwapTests(unittest.TestCase):
         # setdefault), so a SOURCE endpoint resolved to the twin's INPUT slot
         # name for the swapped data type instead of its OUTPUT slot name.
         # Only bites when the twin has both an input and an output of the same
-        # dimension type with DIFFERENT names — the real ROI-statistics /
+        # dimension type with DIFFERENT names - the real ROI-statistics /
         # morph / scale families (input "ROI", output "Output"), 10 cases.
         catalog = self._catalog() + [
             cat_node("stat2d", "Stats 2D",
@@ -213,7 +213,7 @@ class MechanicalSwapTests(unittest.TestCase):
         # regression: the real import-imagej-roi-from-file (2D, input slot
         # "Files", dt "file") vs import-roi-3d (3D, input slot "Input", dt
         # "file"). The remapped name must land in the KEBAB-CASE (A) keys
-        # (source-slot/target-slot) — writing it to the snake_case keys left
+        # (source-slot/target-slot) - writing it to the snake_case keys left
         # the stale 2D name in the shipped edge (import-roi-3d "Files" does
         # not exist -> deserialization break at (D)).
         catalog = self._catalog() + [
@@ -533,7 +533,7 @@ class ProposalParsingTests(unittest.TestCase):
 
 class BuildCatalogTests(unittest.TestCase):
     """The catalog joins registry.json (data types per slot) with the source
-    @AddJIPipe(Input|Output)Slot annotations (slot names per class) — the LLM
+    @AddJIPipe(Input|Output)Slot annotations (slot names per class) - the LLM
     must see exact slot names to wire valid chains."""
 
     def _reg_node(self, nid, name, func, ins, outs, extra=None):
@@ -566,7 +566,7 @@ class BuildCatalogTests(unittest.TestCase):
 
     def test_node_without_source_slots_falls_back_to_class_names(self):
         # a node whose class file was not found still gets a catalog entry,
-        # using the class simple name as the slot label (best effort —
+        # using the class simple name as the slot label (best effort -
         # validation is fail-closed on the real slots)
         reg = [self._reg_node("x-node", "X node", "jipipe:function:misc",
                               [("SomeData", "some-dt")], [])]
@@ -578,7 +578,7 @@ class BuildCatalogTests(unittest.TestCase):
         # kernels) have NO source @AddJIPipe*Slot annotations, so the
         # source-slot scan cannot verify their slots. The registry dump
         # (inputSlots/outputSlots with the runtime slot name, 2072-node
-        # full-launcher registry) is authoritative for them — a node absent
+        # full-launcher registry) is authoritative for them - a node absent
         # from the source scan but present with named slots in the registry
         # gets those slot names and slots_verified=True.
         reg = [self._reg_node("clij:plugin:net.x.Edof", "CLIJ2 Edof",
@@ -635,7 +635,7 @@ class BuildCatalogTests(unittest.TestCase):
 
     def test_registry_slot_names_without_any_name_stay_unverified(self):
         # a registry slot entry with an EMPTY name carries no usable slot
-        # name — the fail-closed default (slots_verified=False) must hold
+        # name - the fail-closed default (slots_verified=False) must hold
         reg = [self._reg_node("clij:plugin:net.x.Anon", "CLIJ2 Anon",
                               "jipipe:function:misc",
                               [("CLIJImageData", "clij2-image")],
@@ -655,7 +655,7 @@ class BuildCatalogTests(unittest.TestCase):
 
     def test_branch_of_function_uses_the_parent_chain(self):
         # the branch is the TOP node of the function tree, walked via the
-        # parent chain — NOT a first-token guess (filament-data is under
+        # parent chain - NOT a first-token guess (filament-data is under
         # "data", not "filaments")
         reg = json.load(open(os.path.join(
             HERE, "taxonomy-research", "registry.json")))
@@ -718,7 +718,7 @@ class MergeShardsTests(unittest.TestCase):
 
     def test_structural_dedup_across_shards(self):
         # two shards independently derived the same structure (same node id +
-        # wiring) — the merge keeps one
+        # wiring) - the merge keeps one
         e1 = self._entry("derived-wn-cluster-0003-0", "what-next")
         e2 = self._entry("derived-wn-cluster-0004-0", "what-next")
         # force the same graph structure
@@ -741,7 +741,7 @@ class MergeShardsTests(unittest.TestCase):
     def test_shipped_variant_beats_rejected_same_structure(self):
         # regression: the first merge kept the FIRST entry per signature, so
         # a gate-rejected what-next (same structure as a gate-PASSED one from
-        # another source pattern) could collapse its shipped sibling — this
+        # another source pattern) could collapse its shipped sibling - this
         # lost 3 real patterns incl. "Annotate data with image statistics"
         # (seed family 4). The shipped variant must win regardless of order.
         e_rej = self._entry("derived-wn-cluster-0001-0", "what-next", "Bad Name")
@@ -768,7 +768,7 @@ class MergeShardsTests(unittest.TestCase):
 
 class MechanicalTwinEntryTests(unittest.TestCase):
     """A verified twin of a SHIPPED pattern is a legitimate general pattern
-    by construction — the LLM gate (which sees support 0) wrongly rejected
+    by construction - the LLM gate (which sees support 0) wrongly rejected
     16/26 of them in the pilot. The twin entry is built deterministically:
     inherit the source's ship + function, rename 2D<->3D in name/description."""
 
@@ -926,7 +926,7 @@ class DerivedJudgeTests(unittest.TestCase):
 
 class MergeDerivedOutputsTests(unittest.TestCase):
     """The merge RECOMPUTES the deterministic twins with the current code
-    (the in-shard twins may have been produced by an older version — the
+    (the in-shard twins may have been produced by an older version - the
     real incident: the podman run predates the kebab-case slot-remap fix, so
     2 import-roi-3d twins shipped the stale 2D slot name "Files"). Only the
     LLM what-next entries come from the shards."""

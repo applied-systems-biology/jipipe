@@ -31,25 +31,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 class ImageTypeInfoInputProfileProviderTest {
 
-    /** 2D image type. */
-    @ImageTypeInfo(numDimensions = 2)
-    private static final class TwoDimStub {
-    }
-
-    /** 3D volume type. */
-    @ImageTypeInfo(numDimensions = 3)
-    private static final class ThreeDimStub {
-    }
-
-    /** Image type with no dimension constraint (default −1). */
-    @ImageTypeInfo
-    private static final class AnyDimStub {
-    }
-
-    /** Non-image type: no {@link ImageTypeInfo} annotation. */
-    private static final class NonImageStub {
-    }
-
     @Test
     void providerMapsNumDimensions() {
         ImageTypeInfoInputProfileProvider provider = new ImageTypeInfoInputProfileProvider();
@@ -58,5 +39,32 @@ class ImageTypeInfoInputProfileProviderTest {
         assertEquals(JIPipeNodeTaxonomyInputProfile.VOLUME_3D, provider.getProfile(ThreeDimStub.class));
         assertEquals(JIPipeNodeTaxonomyInputProfile.ANY, provider.getProfile(AnyDimStub.class));
         assertEquals(JIPipeNodeTaxonomyInputProfile.NA, provider.getProfile(NonImageStub.class));
+    }
+
+    /**
+     * 2D image type.
+     */
+    @ImageTypeInfo(numDimensions = 2)
+    private static final class TwoDimStub {
+    }
+
+    /**
+     * 3D volume type.
+     */
+    @ImageTypeInfo(numDimensions = 3)
+    private static final class ThreeDimStub {
+    }
+
+    /**
+     * Image type with no dimension constraint (default −1).
+     */
+    @ImageTypeInfo
+    private static final class AnyDimStub {
+    }
+
+    /**
+     * Non-image type: no {@link ImageTypeInfo} annotation.
+     */
+    private static final class NonImageStub {
     }
 }

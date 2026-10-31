@@ -13,15 +13,13 @@
 
 package org.hkijena.jipipe.api.servers;
 
-import org.hkijena.jipipe.api.servers.JIPipeServerHealthCheck;
-
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
 /**
  * Health check strategy that uses TCP socket connection.
- * 
+ *
  * <p>Considers a server healthy if a TCP connection can be established
  * to the given host and port within the timeout period.</p>
  */

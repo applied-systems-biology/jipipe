@@ -25,8 +25,8 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.json.JIPipePathMetadataStore;
+import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.scijava.Priority;
 
 import java.io.IOException;
@@ -124,7 +124,7 @@ public class JIPipeMutableParameterAccess implements JIPipeParameterAccess {
         this.pinned = other.pinned;
         this.important = other.important;
         this.shortKey = other.shortKey;
-        this.metadata = new  JIPipePathMetadataStore(other.metadata);
+        this.metadata = new JIPipePathMetadataStore(other.metadata);
         for (Annotation annotation : other.getAnnotations()) {
             annotationMap.put(annotation.annotationType(), annotation);
         }

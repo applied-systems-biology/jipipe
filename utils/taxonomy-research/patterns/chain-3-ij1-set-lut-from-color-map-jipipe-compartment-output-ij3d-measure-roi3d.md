@@ -32,32 +32,37 @@ template:
 
 # Pattern: Set LUT (color map) -> Compartment output -> Extract IJ3D ROI statistics
 
-Mined pattern `chain-3-ij1-set-lut-from-color-map-jipipe-compartment-output-ij3d-measure-roi3d` (shape `chain`, support 28).
+Mined pattern `chain-3-ij1-set-lut-from-color-map-jipipe-compartment-output-ij3d-measure-roi3d` (shape `chain`, support
+28).
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| other | `ij1-set-lut-from-color-map` |
-| core-io | `jipipe:compartment-output` |
-| other | `ij3d-measure-roi3d` |
+| role    | node ids                     |
+|---------|------------------------------|
+| other   | `ij1-set-lut-from-color-map` |
+| core-io | `jipipe:compartment-output`  |
+| other   | `ij3d-measure-roi3d`         |
 
 ## Example graph
 
-Project: `AIAgentTests/03-ExampleWorkflows/Annamaria_12.jip` (relative to `/data/JIPipe`), compartment `Membrane+Particles`.
+Project: `AIAgentTests/03-ExampleWorkflows/Annamaria_12.jip` (relative to `/data/JIPipe`), compartment
+`Membrane+Particles`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `ij1-set-lut-from-color-map` | Set LUT (color map) |
-| n1 | `jipipe:compartment-output` | Mask |
-| n2 | `ij3d-measure-roi3d` | Extract ROI 3D statistics |
+| key | node id                      | name                      |
+|-----|------------------------------|---------------------------|
+| n0  | `ij1-set-lut-from-color-map` | Set LUT (color map)       |
+| n1  | `jipipe:compartment-output`  | Mask                      |
+| n2  | `ij3d-measure-roi3d`         | Extract ROI 3D statistics |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
-| Set LUT (color map) | `Output` | Mask | `3D labels` | `imagej-imgplus-greyscale` |
-| Mask | `Magenta trimmed` | Extract ROI 3D statistics | `Reference` | `imagej-imgplus` |
+| from                | slot              | to                        | slot        | data class                 |
+|---------------------|-------------------|---------------------------|-------------|----------------------------|
+| Set LUT (color map) | `Output`          | Mask                      | `3D labels` | `imagej-imgplus-greyscale` |
+| Mask                | `Magenta trimmed` | Extract ROI 3D statistics | `Reference` | `imagej-imgplus`           |
 
 ## Template
 
-Proposed name `Set LUT (color map) -> Compartment output -> Extract IJ3D ROI statistics`, menu path `Patterns/Images/Set LUT (color map) -> Compartment output -> Extract IJ3D ROI statistics` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/chain-3-ij1-set-lut-from-color-map-jipipe-compartment-output-ij3d-measure-roi3d.json`.
+Proposed name `Set LUT (color map) -> Compartment output -> Extract IJ3D ROI statistics`, menu path
+`Patterns/Images/Set LUT (color map) -> Compartment output -> Extract IJ3D ROI statistics` (proposal only - not
+registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/chain-3-ij1-set-lut-from-color-map-jipipe-compartment-output-ij3d-measure-roi3d.json`.
 

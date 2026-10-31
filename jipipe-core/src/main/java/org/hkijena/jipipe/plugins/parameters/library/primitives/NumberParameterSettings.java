@@ -44,4 +44,16 @@ public @interface NumberParameterSettings {
      * @return step size when the user clicks increase/decrease
      */
     double step() default 1;
+
+    /**
+     * The editor style for this number parameter.
+     *
+     * @return FIELD (default, text field + spinners) or SLIDER (bounded range only)
+     */
+    Style style() default Style.FIELD;
+
+    enum Style {
+        FIELD,
+        SLIDER
+    }
 }

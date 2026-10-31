@@ -1,1 +1,44 @@
-{"nodes":{"n0":{"jipipe:node-info-id":"path-filter","jipipe:graph-compartment":"4c482fa9-7107-5c28-bf8c-31bd4324090a","jipipe:node:name":"Filter paths"},"n1":{"jipipe:node-info-id":"folder-list-files","jipipe:graph-compartment":"4c482fa9-7107-5c28-bf8c-31bd4324090a","jipipe:node:name":"List TIFF or JPG"},"n2":{"jipipe:node-info-id":"path-to-annotation-simple","jipipe:graph-compartment":"4c482fa9-7107-5c28-bf8c-31bd4324090a","jipipe:node:name":"Add path to annotations"},"n3":{"jipipe:node-info-id":"import-imagej-imgplus-from-file","jipipe:graph-compartment":"4c482fa9-7107-5c28-bf8c-31bd4324090a","jipipe:node:name":"Import image"}},"edges":[{"source-node":"n0","source-slot":"Output","target-node":"n1","target-slot":"Folders"},{"source-node":"n1","source-slot":"Files","target-node":"n2","target-slot":"Paths"},{"source-node":"n2","source-slot":"Annotated paths","target-node":"n3","target-slot":"Files"}]}
+{
+  "nodes": {
+    "n0": {
+      "jipipe:node-info-id": "path-filter",
+      "jipipe:graph-compartment": "4c482fa9-7107-5c28-bf8c-31bd4324090a",
+      "jipipe:node:name": "Filter paths"
+    },
+    "n1": {
+      "jipipe:node-info-id": "folder-list-files",
+      "jipipe:graph-compartment": "4c482fa9-7107-5c28-bf8c-31bd4324090a",
+      "jipipe:node:name": "List TIFF or JPG"
+    },
+    "n2": {
+      "jipipe:node-info-id": "path-to-annotation-simple",
+      "jipipe:graph-compartment": "4c482fa9-7107-5c28-bf8c-31bd4324090a",
+      "jipipe:node:name": "Add path to annotations"
+    },
+    "n3": {
+      "jipipe:node-info-id": "import-imagej-imgplus-from-file",
+      "jipipe:graph-compartment": "4c482fa9-7107-5c28-bf8c-31bd4324090a",
+      "jipipe:node:name": "Import image"
+    }
+  },
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Output",
+      "target-node": "n1",
+      "target-slot": "Folders"
+    },
+    {
+      "source-node": "n1",
+      "source-slot": "Files",
+      "target-node": "n2",
+      "target-slot": "Paths"
+    },
+    {
+      "source-node": "n2",
+      "source-slot": "Annotated paths",
+      "target-node": "n3",
+      "target-slot": "Files"
+    }
+  ]
+}

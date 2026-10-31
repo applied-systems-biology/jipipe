@@ -20,21 +20,28 @@
       "type": "object",
       "description": "A file with *.json extension containing metadata",
       "properties": {
-        "is-processing-3d": { "type": "boolean", "description": "Indicates if the model is a 3D model" }
+        "is-processing-3d": {
+          "type": "boolean",
+          "description": "Indicates if the model is a 3D model"
+        }
       }
     },
     "model-file": {
       "type": "object",
       "description": "A *.model file that contains the classifier",
       "properties": {
-        "fs:entry-type": { "$ref": "https://jipipe.org/schemas/filesystem/type-file.schema.json" }
+        "fs:entry-type": {
+          "$ref": "https://jipipe.org/schemas/filesystem/type-file.schema.json"
+        }
       }
     },
     "data-file": {
       "type": "object",
       "description": "An optional *.arff file that contains the data used to train the model.",
       "properties": {
-        "fs:entry-type": { "$ref": "https://jipipe.org/schemas/filesystem/type-file.schema.json" }
+        "fs:entry-type": {
+          "$ref": "https://jipipe.org/schemas/filesystem/type-file.schema.json"
+        }
       }
     }
   }

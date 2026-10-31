@@ -26,13 +26,24 @@ public class PopularNodesStatisticsItem implements JIPipeStatisticsItem {
     private JIPipeStatisticsServiceComponent service;
 
     @Override
-    public String getId() { return "popular-nodes"; }
+    public String getId() {
+        return "popular-nodes";
+    }
+
     @Override
-    public String getName() { return "Popular nodes"; }
+    public String getName() {
+        return "Popular nodes";
+    }
+
     @Override
-    public String getDescription() { return "Top 5 most used node types"; }
+    public String getDescription() {
+        return "Top 5 most used node types";
+    }
+
     @Override
-    public StatisticsPrivacyLevel getRequiredPrivacyLevel() { return StatisticsPrivacyLevel.Everything; }
+    public StatisticsPrivacyLevel getRequiredPrivacyLevel() {
+        return StatisticsPrivacyLevel.Everything;
+    }
 
     @Override
     public JsonNode serialize() {
@@ -54,9 +65,14 @@ public class PopularNodesStatisticsItem implements JIPipeStatisticsItem {
     }
 
     @Override
-    public void reset() { nodeCounts.clear(); }
+    public void reset() {
+        nodeCounts.clear();
+    }
+
     @Override
-    public boolean isTimeTracked() { return true; }
+    public boolean isTimeTracked() {
+        return true;
+    }
 
     @Override
     public void initialize(JIPipeStatisticsServiceComponent service) {
@@ -105,11 +121,17 @@ public class PopularNodesStatisticsItem implements JIPipeStatisticsItem {
     }
 
     @Override
-    public String getIcon32() { return "actions/starred.png"; }
+    public String getIcon32() {
+        return "actions/starred.png";
+    }
+
     @Override
     public org.hkijena.jipipe.desktop.commons.components.cards.JIPipeDesktopCardVariant getCardVariant() {
         return org.hkijena.jipipe.desktop.commons.components.cards.JIPipeDesktopCardVariant.Secondary;
     }
+
     @Override
-    public int getDefaultColumnSpan() { return 12; }
+    public int getDefaultColumnSpan() {
+        return 12;
+    }
 }

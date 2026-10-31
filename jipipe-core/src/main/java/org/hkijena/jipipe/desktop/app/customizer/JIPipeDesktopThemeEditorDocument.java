@@ -96,6 +96,8 @@ public class JIPipeDesktopThemeEditorDocument extends AbstractJIPipeParameterCol
         categoryInteractiveElements.buttonBackground = style.getButtonBackground();
         categoryInteractiveElements.buttonDisabledBackground = style.getButtonDisabledBackground();
         categoryInteractiveElements.buttonToggled = style.getButtonToggled();
+        categoryInteractiveElements.parameterActionBackground = style.getParameterActionBackground();
+        categoryInteractiveElements.parameterActionHighlightedBackground = style.getParameterActionHighlightedBackground();
         categoryInteractiveElements.formBackground = style.getFormBackground();
         categoryInteractiveElements.formDisabledBackground = style.getFormDisabledBackground();
         categoryInteractiveElements.formForeground = style.getFormForeground();
@@ -162,6 +164,8 @@ public class JIPipeDesktopThemeEditorDocument extends AbstractJIPipeParameterCol
         result.setButtonBackground(categoryInteractiveElements.getButtonBackground());
         result.setButtonDisabledBackground(categoryInteractiveElements.getButtonDisabledBackground());
         result.setButtonToggled(categoryInteractiveElements.getButtonToggled());
+        result.setParameterActionBackground(categoryInteractiveElements.getParameterActionBackground());
+        result.setParameterActionHighlightedBackground(categoryInteractiveElements.getParameterActionHighlightedBackground());
         result.setFormBackground(categoryInteractiveElements.getFormBackground());
         result.setFormDisabledBackground(categoryInteractiveElements.getFormDisabledBackground());
         result.setFormForeground(categoryInteractiveElements.getFormForeground());
@@ -623,6 +627,8 @@ public class JIPipeDesktopThemeEditorDocument extends AbstractJIPipeParameterCol
         private Color buttonBackground = Color.WHITE;
         private Color buttonDisabledBackground = new Color(0xF7F8FA);
         private Color buttonToggled = new Color(0xCFCCD5);
+        private Color parameterActionBackground = new Color(0xEBECF0);
+        private Color parameterActionHighlightedBackground = new Color(0xC4D6FB);
         private Color formBackground = Color.WHITE;
         private Color formDisabledBackground = new Color(0xF7F8FA);
         private Color formForeground = Color.BLACK;
@@ -665,6 +671,28 @@ public class JIPipeDesktopThemeEditorDocument extends AbstractJIPipeParameterCol
         @JIPipeParameter("button-toggled")
         public void setButtonToggled(Color buttonToggled) {
             this.buttonToggled = buttonToggled;
+        }
+
+        @SetJIPipeDocumentation(name = "Parameter action background", description = "Background of the standardized parameter action buttons (opens a dialog or menu)")
+        @JIPipeParameter("parameter-action-background")
+        public Color getParameterActionBackground() {
+            return parameterActionBackground;
+        }
+
+        @JIPipeParameter("parameter-action-background")
+        public void setParameterActionBackground(Color parameterActionBackground) {
+            this.parameterActionBackground = parameterActionBackground;
+        }
+
+        @SetJIPipeDocumentation(name = "Parameter action highlighted background", description = "Background of the emphasized parameter action buttons (group headers)")
+        @JIPipeParameter("parameter-action-highlighted-background")
+        public Color getParameterActionHighlightedBackground() {
+            return parameterActionHighlightedBackground;
+        }
+
+        @JIPipeParameter("parameter-action-highlighted-background")
+        public void setParameterActionHighlightedBackground(Color parameterActionHighlightedBackground) {
+            this.parameterActionHighlightedBackground = parameterActionHighlightedBackground;
         }
 
         @SetJIPipeDocumentation(name = "Form background", description = "Form background color")

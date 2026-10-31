@@ -52,7 +52,6 @@ public class ImageJMeasurementsSetParameter extends JIPipeDynamicSetParameter<Im
 
     public ImageJMeasurementsSetParameter() {
         super(new HashSet<>(Arrays.asList(ImageJMeasurement.values())));
-        setCollapsed(true);
         initialize();
     }
 

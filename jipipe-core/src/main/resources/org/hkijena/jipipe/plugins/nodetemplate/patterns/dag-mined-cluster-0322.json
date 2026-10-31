@@ -1,1 +1,56 @@
-{"edges":[{"source-node":"n0","source-slot":"Output","target-node":"n2","target-slot":"Input"},{"source-node":"n1","source-slot":"Components","target-node":"n0","target-slot":"Input"},{"source-node":"n2","source-slot":"Output","target-node":"n3","target-slot":"ROI"}],"nodes":{"n0":{"jipipe:graph-compartment":"ce2b74c9-c773-52fb-a5d4-627c80c32a89","jipipe:metadata-v1":{"location/ce2b74c9-c773-52fb-a5d4-627c80c32a89/x":0,"location/ce2b74c9-c773-52fb-a5d4-627c80c32a89/y":4},"jipipe:node-info-id":"ij1-roi-set-properties-from-expressions"},"n1":{"jipipe:graph-compartment":"ce2b74c9-c773-52fb-a5d4-627c80c32a89","jipipe:metadata-v1":{"location/ce2b74c9-c773-52fb-a5d4-627c80c32a89/x":0,"location/ce2b74c9-c773-52fb-a5d4-627c80c32a89/y":0},"jipipe:node-info-id":"ij1-roi-split-into-connected-components"},"n2":{"jipipe:graph-compartment":"ce2b74c9-c773-52fb-a5d4-627c80c32a89","jipipe:metadata-v1":{"location/ce2b74c9-c773-52fb-a5d4-627c80c32a89/x":0,"location/ce2b74c9-c773-52fb-a5d4-627c80c32a89/y":8},"jipipe:node-info-id":"ij1-roi-merge"},"n3":{"jipipe:graph-compartment":"ce2b74c9-c773-52fb-a5d4-627c80c32a89","jipipe:metadata-v1":{"location/ce2b74c9-c773-52fb-a5d4-627c80c32a89/x":0,"location/ce2b74c9-c773-52fb-a5d4-627c80c32a89/y":12},"jipipe:node-info-id":"ij1-roi-to-rgb"}}}
+{
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Output",
+      "target-node": "n2",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n1",
+      "source-slot": "Components",
+      "target-node": "n0",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n2",
+      "source-slot": "Output",
+      "target-node": "n3",
+      "target-slot": "ROI"
+    }
+  ],
+  "nodes": {
+    "n0": {
+      "jipipe:graph-compartment": "ce2b74c9-c773-52fb-a5d4-627c80c32a89",
+      "jipipe:metadata-v1": {
+        "location/ce2b74c9-c773-52fb-a5d4-627c80c32a89/x": 0,
+        "location/ce2b74c9-c773-52fb-a5d4-627c80c32a89/y": 4
+      },
+      "jipipe:node-info-id": "ij1-roi-set-properties-from-expressions"
+    },
+    "n1": {
+      "jipipe:graph-compartment": "ce2b74c9-c773-52fb-a5d4-627c80c32a89",
+      "jipipe:metadata-v1": {
+        "location/ce2b74c9-c773-52fb-a5d4-627c80c32a89/x": 0,
+        "location/ce2b74c9-c773-52fb-a5d4-627c80c32a89/y": 0
+      },
+      "jipipe:node-info-id": "ij1-roi-split-into-connected-components"
+    },
+    "n2": {
+      "jipipe:graph-compartment": "ce2b74c9-c773-52fb-a5d4-627c80c32a89",
+      "jipipe:metadata-v1": {
+        "location/ce2b74c9-c773-52fb-a5d4-627c80c32a89/x": 0,
+        "location/ce2b74c9-c773-52fb-a5d4-627c80c32a89/y": 8
+      },
+      "jipipe:node-info-id": "ij1-roi-merge"
+    },
+    "n3": {
+      "jipipe:graph-compartment": "ce2b74c9-c773-52fb-a5d4-627c80c32a89",
+      "jipipe:metadata-v1": {
+        "location/ce2b74c9-c773-52fb-a5d4-627c80c32a89/x": 0,
+        "location/ce2b74c9-c773-52fb-a5d4-627c80c32a89/y": 12
+      },
+      "jipipe:node-info-id": "ij1-roi-to-rgb"
+    }
+  }
+}

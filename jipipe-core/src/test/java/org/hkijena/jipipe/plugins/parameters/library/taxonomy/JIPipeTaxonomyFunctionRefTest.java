@@ -19,26 +19,35 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class JIPipeTaxonomyFunctionRefTest {
-    @Test void serializesToIdString() throws Exception {
+    @Test
+    void serializesToIdString() throws Exception {
         String json = JsonUtils.toPrettyJsonString(new JIPipeTaxonomyFunctionRef("jipipe:function:images"));
         assertThat(json).contains("jipipe:function:images");
     }
-    @Test void deserializesFromIdString() throws Exception {
+
+    @Test
+    void deserializesFromIdString() throws Exception {
         JIPipeTaxonomyFunctionRef ref =
-            JsonUtils.readFromString("\"jipipe:function:tables\"", JIPipeTaxonomyFunctionRef.class);
+                JsonUtils.readFromString("\"jipipe:function:tables\"", JIPipeTaxonomyFunctionRef.class);
         assertThat(ref.getId()).isEqualTo("jipipe:function:tables");
     }
-    @Test void nullRoundTripsToUnset() {
+
+    @Test
+    void nullRoundTripsToUnset() {
         JIPipeTaxonomyFunctionRef ref = JsonUtils.readFromString("null", JIPipeTaxonomyFunctionRef.class);
         assertThat(ref.getId()).isNull();
         assertThat(ref.isResolved()).isFalse();
     }
-    @Test void unresolvedIdDoesNotThrow() {
+
+    @Test
+    void unresolvedIdDoesNotThrow() {
         JIPipeTaxonomyFunctionRef ref = new JIPipeTaxonomyFunctionRef("jipipe:function:does-not-exist");
         assertThat(ref.isResolved()).isFalse();   // registry not booted in a unit test → unresolved
         assertThat(ref.getFunction()).isNull();
     }
-    @Test void equalsAndHashCodeOnId() {
+
+    @Test
+    void equalsAndHashCodeOnId() {
         assertThat(new JIPipeTaxonomyFunctionRef("x")).isEqualTo(new JIPipeTaxonomyFunctionRef("x"));
         assertThat(new JIPipeTaxonomyFunctionRef("x")).isNotEqualTo(new JIPipeTaxonomyFunctionRef("y"));
     }

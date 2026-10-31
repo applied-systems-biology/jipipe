@@ -28,7 +28,7 @@ import org.junit.platform.launcher.LauncherSessionListener;
  * calls {@code JIPipe.ensureInstance()}, which creates the SciJava/ImageJ
  * context. The gate creates the SciJava context, which initializes ImageJ classes. The patcher
  * ({@code net.imagej.patcher.LegacyInjector}) must therefore run
- * first — otherwise it fails ({@code LinkageError: duplicate class
+ * first - otherwise it fails ({@code LinkageError: duplicate class
  * definition} / {@code No _hooks field found in ij.IJ}, depending on ordering),
  * corrupting the context so that no node infos are registered.
  *

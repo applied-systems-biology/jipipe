@@ -20,6 +20,10 @@ public class AIApplicationSettings extends JIPipeDefaultApplicationsSettingsShee
     public AIApplicationSettings() {
     }
 
+    public static AIApplicationSettings getInstance() {
+        return JIPipe.getSettings().getById(ID, AIApplicationSettings.class);
+    }
+
     @SetJIPipeDocumentation(name = "Enable AI functionality", description = "Use this setting to disable all AI-related features")
     @JIPipeParameter("enable-ai")
     public boolean isEnableAI() {
@@ -43,10 +47,9 @@ public class AIApplicationSettings extends JIPipeDefaultApplicationsSettingsShee
     }
 
     public EmbeddingModelEnvironment getEmbeddingModelEnvironment() {
-        if(overrideEmbeddingModelEnvironment.isEnabled() && overrideEmbeddingModelEnvironment.getContent().isValid()) {
+        if (overrideEmbeddingModelEnvironment.isEnabled() && overrideEmbeddingModelEnvironment.getContent().isValid()) {
             return new EmbeddingModelEnvironment(overrideEmbeddingModelEnvironment.getContent());
-        }
-        else {
+        } else {
             EmbeddingModelEnvironment environment = new EmbeddingModelEnvironment();
             environment.setLoadFromArtifact(true);
             environment.setArtifactQuery(new JIPipeArtifactQueryParameter(AIPlugin.DEFAULT_EMBEDDING_ARTIFACT));
@@ -77,9 +80,5 @@ public class AIApplicationSettings extends JIPipeDefaultApplicationsSettingsShee
     @Override
     public String getDescription() {
         return "Settings related to AI helpers";
-    }
-
-    public static AIApplicationSettings getInstance() {
-        return JIPipe.getSettings().getById(ID, AIApplicationSettings.class);
     }
 }

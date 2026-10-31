@@ -1,1 +1,42 @@
-{"edges":[{"source-node":"n0","source-slot":"Output","target-node":"n1","target-slot":"Model"},{"source-node":"n2","source-slot":"Filenames","target-node":"n0","target-slot":"Input"}],"nodes":{"n0":{"jipipe:graph-compartment":"d81ca57f-7d85-5034-9fca-753ec5199d68","jipipe:metadata-v1":{"location/d81ca57f-7d85-5034-9fca-753ec5199d68/x":7,"location/d81ca57f-7d85-5034-9fca-753ec5199d68/y":4},"jipipe:node-info-id":"import-cellpose-model-v2"},"n1":{"jipipe:graph-compartment":"d81ca57f-7d85-5034-9fca-753ec5199d68","jipipe:metadata-v1":{"location/d81ca57f-7d85-5034-9fca-753ec5199d68/x":0,"location/d81ca57f-7d85-5034-9fca-753ec5199d68/y":8},"jipipe:node-info-id":"cellpose-segmentation-inference-3.x"},"n2":{"jipipe:graph-compartment":"d81ca57f-7d85-5034-9fca-753ec5199d68","jipipe:metadata-v1":{"location/d81ca57f-7d85-5034-9fca-753ec5199d68/x":7,"location/d81ca57f-7d85-5034-9fca-753ec5199d68/y":0},"jipipe:node-info-id":"import-file-list"}}}
+{
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Output",
+      "target-node": "n1",
+      "target-slot": "Model"
+    },
+    {
+      "source-node": "n2",
+      "source-slot": "Filenames",
+      "target-node": "n0",
+      "target-slot": "Input"
+    }
+  ],
+  "nodes": {
+    "n0": {
+      "jipipe:graph-compartment": "d81ca57f-7d85-5034-9fca-753ec5199d68",
+      "jipipe:metadata-v1": {
+        "location/d81ca57f-7d85-5034-9fca-753ec5199d68/x": 7,
+        "location/d81ca57f-7d85-5034-9fca-753ec5199d68/y": 4
+      },
+      "jipipe:node-info-id": "import-cellpose-model-v2"
+    },
+    "n1": {
+      "jipipe:graph-compartment": "d81ca57f-7d85-5034-9fca-753ec5199d68",
+      "jipipe:metadata-v1": {
+        "location/d81ca57f-7d85-5034-9fca-753ec5199d68/x": 0,
+        "location/d81ca57f-7d85-5034-9fca-753ec5199d68/y": 8
+      },
+      "jipipe:node-info-id": "cellpose-segmentation-inference-3.x"
+    },
+    "n2": {
+      "jipipe:graph-compartment": "d81ca57f-7d85-5034-9fca-753ec5199d68",
+      "jipipe:metadata-v1": {
+        "location/d81ca57f-7d85-5034-9fca-753ec5199d68/x": 7,
+        "location/d81ca57f-7d85-5034-9fca-753ec5199d68/y": 0
+      },
+      "jipipe:node-info-id": "import-file-list"
+    }
+  }
+}

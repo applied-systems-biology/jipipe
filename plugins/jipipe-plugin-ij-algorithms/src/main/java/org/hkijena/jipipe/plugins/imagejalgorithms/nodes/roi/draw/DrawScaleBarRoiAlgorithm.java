@@ -13,8 +13,7 @@
 
 package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.draw;
 
-import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
-import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
+import com.fasterxml.jackson.databind.JsonNode;
 import ij.ImagePlus;
 import ij.gui.Overlay;
 import ij.gui.Roi;
@@ -22,15 +21,20 @@ import ij.measure.Calibration;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.MeasurementsFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.PreprocessingFunction;
+import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.MeasurementsFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.PreprocessingFunction;
+import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
@@ -39,15 +43,18 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.calibration.ScaleBarGen
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
-import org.hkijena.jipipe.plugins.parameters.library.primitives.FontFamilyParameter;
-import org.hkijena.jipipe.plugins.parameters.library.primitives.FontStyleParameter;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.JIPipeFontFamilySizeStyleColorParameter;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.JIPipeFontFamilySizeStyleParameter;
 import org.hkijena.jipipe.plugins.parameters.library.quantities.OptionalQuantity;
 import org.hkijena.jipipe.plugins.parameters.library.quantities.Quantity;
 
 import java.awt.*;
 
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
+
 @SetJIPipeDocumentation(name = "Draw 2D scale bar ROI", description = "Draws a scale bar ROI. Compared to 'Draw scale bar', this node allows better control over overlay.")
-@ConfigureJIPipeNode(function = { PreprocessingFunction.class, MeasurementsFunction.class }, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
+@ConfigureJIPipeNode(function = {PreprocessingFunction.class, MeasurementsFunction.class}, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = Roi2dListData.class, name = "ROI", description = "Optional existing list of ROI. The new ROI will be appended to it.", optional = true, create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", description = "Reference image for the positioning. If not set, the area covered by the existing ROI are used (or width=0, height=0)", create = true)
 @AddJIPipeOutputSlot(value = Roi2dListData.class, name = "ROI", create = true)
@@ -128,10 +135,8 @@ public class DrawScaleBarRoiAlgorithm extends JIPipeIteratingAlgorithm {
         generator.getConfig().setBarThicknessInPixels(barThickness);
         generator.getConfig().setBarColor(barColor);
         generator.getConfig().setBackgroundColor(backgroundColor.isEnabled() ? backgroundColor.getContent() : null);
-        generator.getConfig().setTextColor(textSettings.getTextColor());
-        generator.getConfig().setFontFamily(textSettings.getFontFamily());
-        generator.getConfig().setFontSize(textSettings.getFontSize());
-        generator.getConfig().setFontStyle(textSettings.getFontStyle());
+        generator.getConfig().setTextColor(textSettings.getFont().getColor());
+        generator.getConfig().setFont(textSettings.getFont().toFont());
         generator.getConfig().setHideText(textSettings.isHideLabels());
 
         Overlay scaleBarOverlay = generator.createScaleBarOverlay();
@@ -238,25 +243,38 @@ public class DrawScaleBarRoiAlgorithm extends JIPipeIteratingAlgorithm {
         this.drawVertical = drawVertical;
     }
 
+    /**
+     * #1339: migrate the legacy split text-font parameters (text-font,
+     * text-font-size, font-style) and the separate text-color into the single
+     * {@code text-settings/font} parameter when a pre-migration project is
+     * loaded. The nested collection is loaded via flat slash-keys, so the
+     * keys are prefixed with {@code text-settings/}. Idempotent: after the next
+     * save the legacy keys are gone.
+     */
+    @Override
+    protected void onDeserialized(JsonNode node, JIPipeValidationReport issues, JIPipeNotificationInbox notifications) {
+        if (node.has("text-settings/text-font") || node.has("text-settings/text-font-size")
+                || node.has("text-settings/font-style") || node.has("text-settings/text-color")) {
+            textSettings.setFont(JIPipeFontFamilySizeStyleColorParameter.fromLegacyKeys(node,
+                    "text-settings/text-font", "text-settings/text-font-size",
+                    "text-settings/font-style", "text-settings/text-color", 12));
+        }
+    }
+
     public static class TextSettings extends AbstractJIPipeParameterCollection {
-        private FontFamilyParameter fontFamily = new FontFamilyParameter();
-        private int fontSize = 12;
-        private FontStyleParameter fontStyle = FontStyleParameter.Bold;
+        private JIPipeFontFamilySizeStyleColorParameter font = new JIPipeFontFamilySizeStyleColorParameter();
         private JIPipeExpressionParameter horizontalLabel = new JIPipeExpressionParameter("D2S(value, 0) + \" \" + unit");
 
         private JIPipeExpressionParameter verticalLabel = new JIPipeExpressionParameter("D2S(value, 0) + \" \" + unit");
-        private Color textColor = Color.WHITE;
 
         private boolean hideLabels = false;
 
         public TextSettings() {
+            font.migrateFrom(JIPipeFontFamilySizeStyleParameter.defaultFamily(), 12, Font.BOLD, Color.WHITE);
         }
 
         public TextSettings(TextSettings other) {
-            this.fontFamily = new FontFamilyParameter(other.fontFamily);
-            this.fontSize = other.fontSize;
-            this.fontStyle = other.fontStyle;
-            this.textColor = other.textColor;
+            this.font = new JIPipeFontFamilySizeStyleColorParameter(other.font);
             this.horizontalLabel = new JIPipeExpressionParameter(other.horizontalLabel);
             this.verticalLabel = new JIPipeExpressionParameter(other.verticalLabel);
             this.hideLabels = other.hideLabels;
@@ -301,48 +319,15 @@ public class DrawScaleBarRoiAlgorithm extends JIPipeIteratingAlgorithm {
             this.hideLabels = hideLabels;
         }
 
-        @SetJIPipeDocumentation(name = "Text color", description = "The color of the text")
-        @JIPipeParameter("text-color")
-        public Color getTextColor() {
-            return textColor;
+        @SetJIPipeDocumentation(name = "Font", description = "Font (family, size, style and color) of the text")
+        @JIPipeParameter("font")
+        public JIPipeFontFamilySizeStyleColorParameter getFont() {
+            return font;
         }
 
-        @JIPipeParameter("text-color")
-        public void setTextColor(Color textColor) {
-            this.textColor = textColor;
-        }
-
-        @SetJIPipeDocumentation(name = "Font", description = "Font of the text")
-        @JIPipeParameter("text-font")
-        public FontFamilyParameter getFontFamily() {
-            return fontFamily;
-        }
-
-        @JIPipeParameter("text-font")
-        public void setFontFamily(FontFamilyParameter fontFamily) {
-            this.fontFamily = fontFamily;
-        }
-
-        @SetJIPipeDocumentation(name = "Font size", description = "Size of the text")
-        @JIPipeParameter("text-font-size")
-        public int getFontSize() {
-            return fontSize;
-        }
-
-        @JIPipeParameter("text-font-size")
-        public void setFontSize(int fontSize) {
-            this.fontSize = fontSize;
-        }
-
-        @SetJIPipeDocumentation(name = "Font style", description = "The style of the font")
-        @JIPipeParameter("font-style")
-        public FontStyleParameter getFontStyle() {
-            return fontStyle;
-        }
-
-        @JIPipeParameter("font-style")
-        public void setFontStyle(FontStyleParameter fontStyle) {
-            this.fontStyle = fontStyle;
+        @JIPipeParameter("font")
+        public void setFont(JIPipeFontFamilySizeStyleColorParameter font) {
+            this.font = font;
         }
     }
 }

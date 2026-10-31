@@ -1,1 +1,112 @@
-{"edges":[{"source-node":"n0","source-slot":"Output","target-node":"n1","target-slot":"Input"},{"source-node":"n2","source-slot":"Spot tracker","target-node":"n7","target-slot":"Data"},{"source-node":"n3","source-slot":"Output","target-node":"n0","target-slot":"Input"},{"source-node":"n4","source-slot":"Spot detector","target-node":"n6","target-slot":"Spot detector"},{"source-node":"n5","source-slot":"Tracks","target-node":"n3","target-slot":"Input"},{"source-node":"n6","source-slot":"Spots","target-node":"n5","target-slot":"Spots"},{"source-node":"n7","source-slot":"Annotated data","target-node":"n5","target-slot":"Spot tracker"}],"nodes":{"n0":{"jipipe:graph-compartment":"46c0f01b-1e0e-5cdb-a180-dedbe07c4656","jipipe:metadata-v1":{"location/46c0f01b-1e0e-5cdb-a180-dedbe07c4656/x":0,"location/46c0f01b-1e0e-5cdb-a180-dedbe07c4656/y":24},"jipipe:node-info-id":"trackmate-measure-tracks"},"n1":{"jipipe:graph-compartment":"46c0f01b-1e0e-5cdb-a180-dedbe07c4656","jipipe:metadata-v1":{"location/46c0f01b-1e0e-5cdb-a180-dedbe07c4656/x":0,"location/46c0f01b-1e0e-5cdb-a180-dedbe07c4656/y":28},"jipipe:node-info-id":"plot-table:plot-histogram"},"n2":{"jipipe:graph-compartment":"46c0f01b-1e0e-5cdb-a180-dedbe07c4656","jipipe:metadata-v1":{"location/46c0f01b-1e0e-5cdb-a180-dedbe07c4656/x":8,"location/46c0f01b-1e0e-5cdb-a180-dedbe07c4656/y":8},"jipipe:node-info-id":"trackmate-create-spot-tracker-sparse-lap-tracker"},"n3":{"jipipe:graph-compartment":"46c0f01b-1e0e-5cdb-a180-dedbe07c4656","jipipe:metadata-v1":{"location/46c0f01b-1e0e-5cdb-a180-dedbe07c4656/x":0,"location/46c0f01b-1e0e-5cdb-a180-dedbe07c4656/y":20},"jipipe:node-info-id":"trackmate-filter-tracks"},"n4":{"jipipe:graph-compartment":"46c0f01b-1e0e-5cdb-a180-dedbe07c4656","jipipe:metadata-v1":{"location/46c0f01b-1e0e-5cdb-a180-dedbe07c4656/x":9,"location/46c0f01b-1e0e-5cdb-a180-dedbe07c4656/y":0},"jipipe:node-info-id":"trackmate-create-spot-detector-mask-detector"},"n5":{"jipipe:graph-compartment":"46c0f01b-1e0e-5cdb-a180-dedbe07c4656","jipipe:metadata-v1":{"location/46c0f01b-1e0e-5cdb-a180-dedbe07c4656/x":0,"location/46c0f01b-1e0e-5cdb-a180-dedbe07c4656/y":16},"jipipe:node-info-id":"trackmate-tracking"},"n6":{"jipipe:graph-compartment":"46c0f01b-1e0e-5cdb-a180-dedbe07c4656","jipipe:metadata-v1":{"location/46c0f01b-1e0e-5cdb-a180-dedbe07c4656/x":0,"location/46c0f01b-1e0e-5cdb-a180-dedbe07c4656/y":4},"jipipe:node-info-id":"trackmate-detector"},"n7":{"jipipe:graph-compartment":"46c0f01b-1e0e-5cdb-a180-dedbe07c4656","jipipe:metadata-v1":{"location/46c0f01b-1e0e-5cdb-a180-dedbe07c4656/x":8,"location/46c0f01b-1e0e-5cdb-a180-dedbe07c4656/y":12},"jipipe:node-info-id":"annotate-with-source-slot"}}}
+{
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Output",
+      "target-node": "n1",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n2",
+      "source-slot": "Spot tracker",
+      "target-node": "n7",
+      "target-slot": "Data"
+    },
+    {
+      "source-node": "n3",
+      "source-slot": "Output",
+      "target-node": "n0",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n4",
+      "source-slot": "Spot detector",
+      "target-node": "n6",
+      "target-slot": "Spot detector"
+    },
+    {
+      "source-node": "n5",
+      "source-slot": "Tracks",
+      "target-node": "n3",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n6",
+      "source-slot": "Spots",
+      "target-node": "n5",
+      "target-slot": "Spots"
+    },
+    {
+      "source-node": "n7",
+      "source-slot": "Annotated data",
+      "target-node": "n5",
+      "target-slot": "Spot tracker"
+    }
+  ],
+  "nodes": {
+    "n0": {
+      "jipipe:graph-compartment": "46c0f01b-1e0e-5cdb-a180-dedbe07c4656",
+      "jipipe:metadata-v1": {
+        "location/46c0f01b-1e0e-5cdb-a180-dedbe07c4656/x": 0,
+        "location/46c0f01b-1e0e-5cdb-a180-dedbe07c4656/y": 24
+      },
+      "jipipe:node-info-id": "trackmate-measure-tracks"
+    },
+    "n1": {
+      "jipipe:graph-compartment": "46c0f01b-1e0e-5cdb-a180-dedbe07c4656",
+      "jipipe:metadata-v1": {
+        "location/46c0f01b-1e0e-5cdb-a180-dedbe07c4656/x": 0,
+        "location/46c0f01b-1e0e-5cdb-a180-dedbe07c4656/y": 28
+      },
+      "jipipe:node-info-id": "plot-table:plot-histogram"
+    },
+    "n2": {
+      "jipipe:graph-compartment": "46c0f01b-1e0e-5cdb-a180-dedbe07c4656",
+      "jipipe:metadata-v1": {
+        "location/46c0f01b-1e0e-5cdb-a180-dedbe07c4656/x": 8,
+        "location/46c0f01b-1e0e-5cdb-a180-dedbe07c4656/y": 8
+      },
+      "jipipe:node-info-id": "trackmate-create-spot-tracker-sparse-lap-tracker"
+    },
+    "n3": {
+      "jipipe:graph-compartment": "46c0f01b-1e0e-5cdb-a180-dedbe07c4656",
+      "jipipe:metadata-v1": {
+        "location/46c0f01b-1e0e-5cdb-a180-dedbe07c4656/x": 0,
+        "location/46c0f01b-1e0e-5cdb-a180-dedbe07c4656/y": 20
+      },
+      "jipipe:node-info-id": "trackmate-filter-tracks"
+    },
+    "n4": {
+      "jipipe:graph-compartment": "46c0f01b-1e0e-5cdb-a180-dedbe07c4656",
+      "jipipe:metadata-v1": {
+        "location/46c0f01b-1e0e-5cdb-a180-dedbe07c4656/x": 9,
+        "location/46c0f01b-1e0e-5cdb-a180-dedbe07c4656/y": 0
+      },
+      "jipipe:node-info-id": "trackmate-create-spot-detector-mask-detector"
+    },
+    "n5": {
+      "jipipe:graph-compartment": "46c0f01b-1e0e-5cdb-a180-dedbe07c4656",
+      "jipipe:metadata-v1": {
+        "location/46c0f01b-1e0e-5cdb-a180-dedbe07c4656/x": 0,
+        "location/46c0f01b-1e0e-5cdb-a180-dedbe07c4656/y": 16
+      },
+      "jipipe:node-info-id": "trackmate-tracking"
+    },
+    "n6": {
+      "jipipe:graph-compartment": "46c0f01b-1e0e-5cdb-a180-dedbe07c4656",
+      "jipipe:metadata-v1": {
+        "location/46c0f01b-1e0e-5cdb-a180-dedbe07c4656/x": 0,
+        "location/46c0f01b-1e0e-5cdb-a180-dedbe07c4656/y": 4
+      },
+      "jipipe:node-info-id": "trackmate-detector"
+    },
+    "n7": {
+      "jipipe:graph-compartment": "46c0f01b-1e0e-5cdb-a180-dedbe07c4656",
+      "jipipe:metadata-v1": {
+        "location/46c0f01b-1e0e-5cdb-a180-dedbe07c4656/x": 8,
+        "location/46c0f01b-1e0e-5cdb-a180-dedbe07c4656/y": 12
+      },
+      "jipipe:node-info-id": "annotate-with-source-slot"
+    }
+  }
+}

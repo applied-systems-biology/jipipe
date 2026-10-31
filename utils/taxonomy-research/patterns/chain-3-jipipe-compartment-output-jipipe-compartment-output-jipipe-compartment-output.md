@@ -32,32 +32,37 @@ template:
 
 # Pattern: Compartment output -> Compartment output -> Compartment output
 
-Mined pattern `chain-3-jipipe-compartment-output-jipipe-compartment-output-jipipe-compartment-output` (shape `chain`, support 32).
+Mined pattern `chain-3-jipipe-compartment-output-jipipe-compartment-output-jipipe-compartment-output` (shape `chain`,
+support 32).
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
+| role    | node ids                    |
+|---------|-----------------------------|
 | core-io | `jipipe:compartment-output` |
 | core-io | `jipipe:compartment-output` |
 | core-io | `jipipe:compartment-output` |
 
 ## Example graph
 
-Project: `AIAgentTests/03-ExampleWorkflows/Annamaria_12.jip` (relative to `/data/JIPipe`), compartment `Distances+Membrane+Particles`.
+Project: `AIAgentTests/03-ExampleWorkflows/Annamaria_12.jip` (relative to `/data/JIPipe`), compartment
+`Distances+Membrane+Particles`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `jipipe:compartment-output` | Mask |
-| n1 | `jipipe:compartment-output` | Output |
-| n2 | `jipipe:compartment-output` | Distances |
+| key | node id                     | name      |
+|-----|-----------------------------|-----------|
+| n0  | `jipipe:compartment-output` | Mask      |
+| n1  | `jipipe:compartment-output` | Output    |
+| n2  | `jipipe:compartment-output` | Distances |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
-| Mask | `3D cell mask` | Output | `3D cell mask` | `imagej-imgplus-greyscale-mask` |
-| Output | `Green distances` | Distances | `Green to green closest distances` | `imagej-results-table` |
+| from   | slot              | to        | slot                               | data class                      |
+|--------|-------------------|-----------|------------------------------------|---------------------------------|
+| Mask   | `3D cell mask`    | Output    | `3D cell mask`                     | `imagej-imgplus-greyscale-mask` |
+| Output | `Green distances` | Distances | `Green to green closest distances` | `imagej-results-table`          |
 
 ## Template
 
-Proposed name `Compartment output -> Compartment output -> Compartment output`, menu path `Patterns/Graph / Project/Compartment output -> Compartment output -> Compartment output` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/chain-3-jipipe-compartment-output-jipipe-compartment-output-jipipe-compartment-output.json`.
+Proposed name `Compartment output -> Compartment output -> Compartment output`, menu path
+`Patterns/Graph / Project/Compartment output -> Compartment output -> Compartment output` (proposal only - not
+registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/chain-3-jipipe-compartment-output-jipipe-compartment-output-jipipe-compartment-output.json`.
 

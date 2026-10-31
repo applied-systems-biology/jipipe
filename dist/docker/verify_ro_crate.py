@@ -44,7 +44,7 @@ async def create_ro_crate(container_output_path: str, ws_url: str = DEFAULT_WS_U
                 raise RuntimeError(f"Server error: {msg.get('message', 'unknown')}")
 
         if not project_id:
-            raise RuntimeError("No project found — was it opened via CLI arg?")
+            raise RuntimeError("No project found - was it opened via CLI arg?")
 
         print(f"Found project: {project_id}")
 

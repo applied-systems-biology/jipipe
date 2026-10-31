@@ -20,7 +20,6 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.database.DefaultJIPipeNodeDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabasePipelineVisibility;
 import org.hkijena.jipipe.api.nodes.database.WeightedTokens;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeClassification;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.NoFramework;
@@ -89,29 +88,6 @@ public class CreateNewNodeByInfoDatabaseEntry extends DefaultJIPipeNodeDatabaseE
     }
 
     /**
-     * Populates {@link #locationInfos} from the node's taxonomy (Task 26a).
-     * <p>
-     * The primary function contributes the function chain root→leaf,
-     * {@code \n}-joined, no node name — e.g. {@code "Data Sources\nImage data"}.
-     * The 21b node-finder + entry-list renderers do {@code .replace("\n", " > ")},
-     * and the search/embedding consume the raw form. Secondary functions each
-     * contribute their own chain (they replace the removed alias location
-     * entries). A node with no primary function contributes nothing — it
-     * should not exist post-conversion; do NOT read the legacy category.
-     */
-    private void initializeLocationInfos() {
-        JIPipeNodeTaxonomyFunction primary = nodeInfo.getPrimaryFunction();
-        if (primary != null) {
-            locationInfos.add(functionChainLocation(primary));
-        }
-        for (JIPipeNodeTaxonomyFunction secondary : nodeInfo.getSecondaryFunctions()) {
-            if (secondary != null) {
-                locationInfos.add(functionChainLocation(secondary));
-            }
-        }
-    }
-
-    /**
      * The {@code \n}-joined function chain (root→leaf) for the given leaf
      * function, e.g. {@code "Data Sources\nImage data"}. Guards against a
      * cyclic parent chain so it always terminates.
@@ -136,6 +112,98 @@ public class CreateNewNodeByInfoDatabaseEntry extends DefaultJIPipeNodeDatabaseE
             sb.append(names.get(i));
         }
         return sb.toString();
+    }
+
+    /**
+     * Adds the taxonomy search tokens of the given node info:
+     * <ul>
+     * <li><b>Function path:</b> the primary function's name at
+     *     {@link WeightedTokens#WEIGHT_FUNCTION_LEAF}, then its
+     *     {@code getParent()} chain walked up, each ancestor at
+     *     {@link WeightedTokens#WEIGHT_FUNCTION_LEAF} − 2 × depth, floored
+     *     at {@link WeightedTokens#WEIGHT_FUNCTION_TOP}. Secondary
+     *     functions (alternate locations the node is listed under) add
+     *     their own name at the leaf weight only - their ancestor chains
+     *     are deliberately NOT walked, because the shared ancestors
+     *     (e.g. the top-level branch) would otherwise be added again on
+     *     top of the primary path's contribution;</li>
+     * <li><b>Framework:</b> the display name at
+     *     {@link WeightedTokens#WEIGHT_FRAMEWORK} and the abbreviation at
+     *     {@link WeightedTokens#WEIGHT_FRAMEWORK_ABBREV} - skipped for
+     *     {@link NoFramework}, whose "-"/"-" values would be search noise
+     *     on every unconverted node;</li>
+     * <li><b>Tags:</b> each merged tag at {@link WeightedTokens#WEIGHT_TAG}.</li>
+     * </ul>
+     * The spatial dimensions and the input profile are filter-only facets
+     * (see the spec) and are NOT added as tokens.
+     * <p>
+     * This is additive: the existing name/alias/menu/description tokens
+     * must already have been added by the caller.
+     *
+     * @param tokens   the tokens to add to
+     * @param nodeInfo the node info to read the taxonomy from
+     */
+    static void addTaxonomyTokens(WeightedTokens tokens, JIPipeNodeInfo nodeInfo) {
+        // Function path: primary leaf + ancestors (gradient), secondary leaves only
+        JIPipeNodeTaxonomyFunction primary = nodeInfo.getPrimaryFunction();
+        if (primary != null) {
+            addFunctionPathTokens(tokens, primary);
+            for (JIPipeNodeTaxonomyFunction secondary : nodeInfo.getSecondaryFunctions()) {
+                if (secondary != null && !secondary.getId().equals(primary.getId())) {
+                    // Alternate location: leaf weight only, no ancestor walk
+                    // (avoids double-adding ancestors shared with the primary path)
+                    tokens.add(secondary.getName(), WeightedTokens.WEIGHT_FUNCTION_LEAF);
+                }
+            }
+        }
+        // Framework: skip the NoFramework sentinel ("-" would be search noise)
+        JIPipeNodeTaxonomyFramework framework = nodeInfo.getFramework();
+        if (framework != null && !NoFramework.ID.equals(framework.getId())) {
+            tokens.add(framework.getName(), WeightedTokens.WEIGHT_FRAMEWORK);
+            tokens.add(framework.getAbbreviation(), WeightedTokens.WEIGHT_FRAMEWORK_ABBREV);
+        }
+        // Tags: the merged set (node-level tags plus function-path tags)
+        for (String tag : nodeInfo.getMergedTags()) {
+            tokens.add(tag, WeightedTokens.WEIGHT_TAG);
+        }
+    }
+
+    /**
+     * Adds the name of the given function at the leaf weight, then walks
+     * its {@code getParent()} chain up, each ancestor two weight levels
+     * below the previous, floored at the top weight.
+     */
+    private static void addFunctionPathTokens(WeightedTokens tokens, JIPipeNodeTaxonomyFunction function) {
+        JIPipeNodeTaxonomyFunction current = function;
+        int weight = WeightedTokens.WEIGHT_FUNCTION_LEAF;
+        while (current != null) {
+            tokens.add(current.getName(), weight);
+            weight = Math.max(WeightedTokens.WEIGHT_FUNCTION_TOP, weight - 2);
+            current = current.getParent();
+        }
+    }
+
+    /**
+     * Populates {@link #locationInfos} from the node's taxonomy (Task 26a).
+     * <p>
+     * The primary function contributes the function chain root→leaf,
+     * {@code \n}-joined, no node name - e.g. {@code "Data Sources\nImage data"}.
+     * The 21b node-finder + entry-list renderers do {@code .replace("\n", " > ")},
+     * and the search/embedding consume the raw form. Secondary functions each
+     * contribute their own chain (they replace the removed alias location
+     * entries). A node with no primary function contributes nothing - it
+     * should not exist post-conversion; do NOT read the legacy category.
+     */
+    private void initializeLocationInfos() {
+        JIPipeNodeTaxonomyFunction primary = nodeInfo.getPrimaryFunction();
+        if (primary != null) {
+            locationInfos.add(functionChainLocation(primary));
+        }
+        for (JIPipeNodeTaxonomyFunction secondary : nodeInfo.getSecondaryFunctions()) {
+            if (secondary != null) {
+                locationInfos.add(functionChainLocation(secondary));
+            }
+        }
     }
 
     private void initializeSlots() {
@@ -164,75 +232,6 @@ public class CreateNewNodeByInfoDatabaseEntry extends DefaultJIPipeNodeDatabaseE
         // For unconverted nodes (no function, NoFramework, no tags) this
         // adds nothing, so the legacy token set is unchanged.
         addTaxonomyTokens(tokens, nodeInfo);
-    }
-
-    /**
-     * Adds the taxonomy search tokens of the given node info:
-     * <ul>
-     * <li><b>Function path:</b> the primary function's name at
-     *     {@link WeightedTokens#WEIGHT_FUNCTION_LEAF}, then its
-     *     {@code getParent()} chain walked up, each ancestor at
-     *     {@link WeightedTokens#WEIGHT_FUNCTION_LEAF} − 2 × depth, floored
-     *     at {@link WeightedTokens#WEIGHT_FUNCTION_TOP}. Secondary
-     *     functions (alternate locations the node is listed under) add
-     *     their own name at the leaf weight only — their ancestor chains
-     *     are deliberately NOT walked, because the shared ancestors
-     *     (e.g. the top-level branch) would otherwise be added again on
-     *     top of the primary path's contribution;</li>
-     * <li><b>Framework:</b> the display name at
-     *     {@link WeightedTokens#WEIGHT_FRAMEWORK} and the abbreviation at
-     *     {@link WeightedTokens#WEIGHT_FRAMEWORK_ABBREV} — skipped for
-     *     {@link NoFramework}, whose "—"/"—" values would be search noise
-     *     on every unconverted node;</li>
-     * <li><b>Tags:</b> each merged tag at {@link WeightedTokens#WEIGHT_TAG}.</li>
-     * </ul>
-     * The spatial dimensions and the input profile are filter-only facets
-     * (see the spec) and are NOT added as tokens.
-     * <p>
-     * This is additive: the existing name/alias/menu/description tokens
-     * must already have been added by the caller.
-     *
-     * @param tokens   the tokens to add to
-     * @param nodeInfo the node info to read the taxonomy from
-     */
-    static void addTaxonomyTokens(WeightedTokens tokens, JIPipeNodeInfo nodeInfo) {
-        // Function path: primary leaf + ancestors (gradient), secondary leaves only
-        JIPipeNodeTaxonomyFunction primary = nodeInfo.getPrimaryFunction();
-        if (primary != null) {
-            addFunctionPathTokens(tokens, primary);
-            for (JIPipeNodeTaxonomyFunction secondary : nodeInfo.getSecondaryFunctions()) {
-                if (secondary != null && !secondary.getId().equals(primary.getId())) {
-                    // Alternate location: leaf weight only, no ancestor walk
-                    // (avoids double-adding ancestors shared with the primary path)
-                    tokens.add(secondary.getName(), WeightedTokens.WEIGHT_FUNCTION_LEAF);
-                }
-            }
-        }
-        // Framework: skip the NoFramework sentinel ("—" would be search noise)
-        JIPipeNodeTaxonomyFramework framework = nodeInfo.getFramework();
-        if (framework != null && !NoFramework.ID.equals(framework.getId())) {
-            tokens.add(framework.getName(), WeightedTokens.WEIGHT_FRAMEWORK);
-            tokens.add(framework.getAbbreviation(), WeightedTokens.WEIGHT_FRAMEWORK_ABBREV);
-        }
-        // Tags: the merged set (node-level tags plus function-path tags)
-        for (String tag : nodeInfo.getMergedTags()) {
-            tokens.add(tag, WeightedTokens.WEIGHT_TAG);
-        }
-    }
-
-    /**
-     * Adds the name of the given function at the leaf weight, then walks
-     * its {@code getParent()} chain up, each ancestor two weight levels
-     * below the previous, floored at the top weight.
-     */
-    private static void addFunctionPathTokens(WeightedTokens tokens, JIPipeNodeTaxonomyFunction function) {
-        JIPipeNodeTaxonomyFunction current = function;
-        int weight = WeightedTokens.WEIGHT_FUNCTION_LEAF;
-        while (current != null) {
-            tokens.add(current.getName(), weight);
-            weight = Math.max(WeightedTokens.WEIGHT_FUNCTION_TOP, weight - 2);
-            current = current.getParent();
-        }
     }
 
     @Override

@@ -76,6 +76,7 @@ public final class EncodingFormats {
     public static final String MATLAB = "text/x-matlab";
     public static final String PHP = "application/x-httpd-php";
     public static final String SQL = "application/sql";
+
     private EncodingFormats() {
         // Prevent instantiation
     }

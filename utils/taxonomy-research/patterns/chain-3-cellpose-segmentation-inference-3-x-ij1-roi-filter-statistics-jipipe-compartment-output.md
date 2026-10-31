@@ -32,32 +32,36 @@ template:
 
 # Pattern: Cellpose segmentation (3.x) -> Filter 2D ROI by statistics -> Compartment output
 
-Mined pattern `chain-3-cellpose-segmentation-inference-3-x-ij1-roi-filter-statistics-jipipe-compartment-output` (shape `chain`, support 28).
+Mined pattern `chain-3-cellpose-segmentation-inference-3-x-ij1-roi-filter-statistics-jipipe-compartment-output` (shape
+`chain`, support 28).
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| other | `cellpose-segmentation-inference-3.x` |
-| other | `ij1-roi-filter-statistics` |
-| core-io | `jipipe:compartment-output` |
+| role    | node ids                              |
+|---------|---------------------------------------|
+| other   | `cellpose-segmentation-inference-3.x` |
+| other   | `ij1-roi-filter-statistics`           |
+| core-io | `jipipe:compartment-output`           |
 
 ## Example graph
 
 Project: `AIAgentTests/02-AdvancedPipelines/Paco_06.jip` (relative to `/data/JIPipe`), compartment `Segmentation`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `cellpose-segmentation-inference-3.x` | Cellpose segmentation (3.x) |
-| n1 | `ij1-roi-filter-statistics` | Filter 2D ROI by statistics |
-| n2 | `jipipe:compartment-output` | Masks and ROIs |
+| key | node id                               | name                        |
+|-----|---------------------------------------|-----------------------------|
+| n0  | `cellpose-segmentation-inference-3.x` | Cellpose segmentation (3.x) |
+| n1  | `ij1-roi-filter-statistics`           | Filter 2D ROI by statistics |
+| n2  | `jipipe:compartment-output`           | Masks and ROIs              |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
-| Cellpose segmentation (3.x) | `ROI` | Filter 2D ROI by statistics | `ROI` | `imagej-roi` |
-| Filter 2D ROI by statistics | `Output` | Masks and ROIs | `Nucleus ROI` | `imagej-roi` |
+| from                        | slot     | to                          | slot          | data class   |
+|-----------------------------|----------|-----------------------------|---------------|--------------|
+| Cellpose segmentation (3.x) | `ROI`    | Filter 2D ROI by statistics | `ROI`         | `imagej-roi` |
+| Filter 2D ROI by statistics | `Output` | Masks and ROIs              | `Nucleus ROI` | `imagej-roi` |
 
 ## Template
 
-Proposed name `Cellpose segmentation (3.x) -> Filter 2D ROI by statistics -> Compartment output`, menu path `Patterns/Machine learning/Cellpose segmentation (3.x) -> Filter 2D ROI by statistics -> Compartment output` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/chain-3-cellpose-segmentation-inference-3-x-ij1-roi-filter-statistics-jipipe-compartment-output.json`.
+Proposed name `Cellpose segmentation (3.x) -> Filter 2D ROI by statistics -> Compartment output`, menu path
+`Patterns/Machine learning/Cellpose segmentation (3.x) -> Filter 2D ROI by statistics -> Compartment output` (proposal
+only - not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/chain-3-cellpose-segmentation-inference-3-x-ij1-roi-filter-statistics-jipipe-compartment-output.json`.
 

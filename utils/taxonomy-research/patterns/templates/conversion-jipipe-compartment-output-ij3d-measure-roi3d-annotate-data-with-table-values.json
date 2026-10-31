@@ -1,1 +1,33 @@
-{"nodes":{"n0":{"jipipe:node-info-id":"jipipe:compartment-output","jipipe:graph-compartment":"920e0f39-ec3f-5fcb-9d33-2160668f8bbf","jipipe:node:name":"Mask"},"n1":{"jipipe:node-info-id":"ij3d-measure-roi3d","jipipe:graph-compartment":"920e0f39-ec3f-5fcb-9d33-2160668f8bbf","jipipe:node:name":"Extract ROI 3D statistics"},"n2":{"jipipe:node-info-id":"annotate-data-with-table-values","jipipe:graph-compartment":"920e0f39-ec3f-5fcb-9d33-2160668f8bbf","jipipe:node:name":"Annotate data with table values"}},"edges":[{"source-node":"n0","source-slot":"Magenta trimmed","target-node":"n1","target-slot":"Reference"},{"source-node":"n1","source-slot":"Measurements","target-node":"n2","target-slot":"Table"}]}
+{
+  "nodes": {
+    "n0": {
+      "jipipe:node-info-id": "jipipe:compartment-output",
+      "jipipe:graph-compartment": "920e0f39-ec3f-5fcb-9d33-2160668f8bbf",
+      "jipipe:node:name": "Mask"
+    },
+    "n1": {
+      "jipipe:node-info-id": "ij3d-measure-roi3d",
+      "jipipe:graph-compartment": "920e0f39-ec3f-5fcb-9d33-2160668f8bbf",
+      "jipipe:node:name": "Extract ROI 3D statistics"
+    },
+    "n2": {
+      "jipipe:node-info-id": "annotate-data-with-table-values",
+      "jipipe:graph-compartment": "920e0f39-ec3f-5fcb-9d33-2160668f8bbf",
+      "jipipe:node:name": "Annotate data with table values"
+    }
+  },
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Magenta trimmed",
+      "target-node": "n1",
+      "target-slot": "Reference"
+    },
+    {
+      "source-node": "n1",
+      "source-slot": "Measurements",
+      "target-node": "n2",
+      "target-slot": "Table"
+    }
+  ]
+}

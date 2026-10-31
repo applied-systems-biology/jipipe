@@ -1,1 +1,98 @@
-{"edges":[{"source-node":"n0","source-slot":"Annotated paths","target-node":"n6","target-slot":"Files"},{"source-node":"n1","source-slot":"Files","target-node":"n0","target-slot":"Paths"},{"source-node":"n2","source-slot":"Json","target-node":"n4","target-slot":"Model"},{"source-node":"n3","source-slot":"Filenames","target-node":"n2","target-slot":"File"},{"source-node":"n5","source-slot":"Folder paths","target-node":"n1","target-slot":"Folders"},{"source-node":"n6","source-slot":"Image","target-node":"n4","target-slot":"Raw"}],"nodes":{"n0":{"jipipe:graph-compartment":"8269b191-e5c3-5fb0-a993-f52d96615cea","jipipe:metadata-v1":{"location/8269b191-e5c3-5fb0-a993-f52d96615cea/x":0,"location/8269b191-e5c3-5fb0-a993-f52d96615cea/y":8},"jipipe:node-info-id":"path-to-annotation-simple"},"n1":{"jipipe:graph-compartment":"8269b191-e5c3-5fb0-a993-f52d96615cea","jipipe:metadata-v1":{"location/8269b191-e5c3-5fb0-a993-f52d96615cea/x":0,"location/8269b191-e5c3-5fb0-a993-f52d96615cea/y":4},"jipipe:node-info-id":"folder-list-files"},"n2":{"jipipe:graph-compartment":"8269b191-e5c3-5fb0-a993-f52d96615cea","jipipe:metadata-v1":{"location/8269b191-e5c3-5fb0-a993-f52d96615cea/x":16,"location/8269b191-e5c3-5fb0-a993-f52d96615cea/y":4},"jipipe:node-info-id":"import-json-from-file"},"n3":{"jipipe:graph-compartment":"8269b191-e5c3-5fb0-a993-f52d96615cea","jipipe:metadata-v1":{"location/8269b191-e5c3-5fb0-a993-f52d96615cea/x":16,"location/8269b191-e5c3-5fb0-a993-f52d96615cea/y":0},"jipipe:node-info-id":"import-file-list"},"n4":{"jipipe:graph-compartment":"8269b191-e5c3-5fb0-a993-f52d96615cea","jipipe:metadata-v1":{"location/8269b191-e5c3-5fb0-a993-f52d96615cea/x":12,"location/8269b191-e5c3-5fb0-a993-f52d96615cea/y":19},"jipipe:node-info-id":"ij1-ml-labkit-segmentation"},"n5":{"jipipe:graph-compartment":"8269b191-e5c3-5fb0-a993-f52d96615cea","jipipe:metadata-v1":{"location/8269b191-e5c3-5fb0-a993-f52d96615cea/x":0,"location/8269b191-e5c3-5fb0-a993-f52d96615cea/y":0},"jipipe:node-info-id":"import-folder-list"},"n6":{"jipipe:graph-compartment":"8269b191-e5c3-5fb0-a993-f52d96615cea","jipipe:metadata-v1":{"location/8269b191-e5c3-5fb0-a993-f52d96615cea/x":0,"location/8269b191-e5c3-5fb0-a993-f52d96615cea/y":12},"jipipe:node-info-id":"import-imagej-imgplus-from-file"}}}
+{
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Annotated paths",
+      "target-node": "n6",
+      "target-slot": "Files"
+    },
+    {
+      "source-node": "n1",
+      "source-slot": "Files",
+      "target-node": "n0",
+      "target-slot": "Paths"
+    },
+    {
+      "source-node": "n2",
+      "source-slot": "Json",
+      "target-node": "n4",
+      "target-slot": "Model"
+    },
+    {
+      "source-node": "n3",
+      "source-slot": "Filenames",
+      "target-node": "n2",
+      "target-slot": "File"
+    },
+    {
+      "source-node": "n5",
+      "source-slot": "Folder paths",
+      "target-node": "n1",
+      "target-slot": "Folders"
+    },
+    {
+      "source-node": "n6",
+      "source-slot": "Image",
+      "target-node": "n4",
+      "target-slot": "Raw"
+    }
+  ],
+  "nodes": {
+    "n0": {
+      "jipipe:graph-compartment": "8269b191-e5c3-5fb0-a993-f52d96615cea",
+      "jipipe:metadata-v1": {
+        "location/8269b191-e5c3-5fb0-a993-f52d96615cea/x": 0,
+        "location/8269b191-e5c3-5fb0-a993-f52d96615cea/y": 8
+      },
+      "jipipe:node-info-id": "path-to-annotation-simple"
+    },
+    "n1": {
+      "jipipe:graph-compartment": "8269b191-e5c3-5fb0-a993-f52d96615cea",
+      "jipipe:metadata-v1": {
+        "location/8269b191-e5c3-5fb0-a993-f52d96615cea/x": 0,
+        "location/8269b191-e5c3-5fb0-a993-f52d96615cea/y": 4
+      },
+      "jipipe:node-info-id": "folder-list-files"
+    },
+    "n2": {
+      "jipipe:graph-compartment": "8269b191-e5c3-5fb0-a993-f52d96615cea",
+      "jipipe:metadata-v1": {
+        "location/8269b191-e5c3-5fb0-a993-f52d96615cea/x": 16,
+        "location/8269b191-e5c3-5fb0-a993-f52d96615cea/y": 4
+      },
+      "jipipe:node-info-id": "import-json-from-file"
+    },
+    "n3": {
+      "jipipe:graph-compartment": "8269b191-e5c3-5fb0-a993-f52d96615cea",
+      "jipipe:metadata-v1": {
+        "location/8269b191-e5c3-5fb0-a993-f52d96615cea/x": 16,
+        "location/8269b191-e5c3-5fb0-a993-f52d96615cea/y": 0
+      },
+      "jipipe:node-info-id": "import-file-list"
+    },
+    "n4": {
+      "jipipe:graph-compartment": "8269b191-e5c3-5fb0-a993-f52d96615cea",
+      "jipipe:metadata-v1": {
+        "location/8269b191-e5c3-5fb0-a993-f52d96615cea/x": 12,
+        "location/8269b191-e5c3-5fb0-a993-f52d96615cea/y": 19
+      },
+      "jipipe:node-info-id": "ij1-ml-labkit-segmentation"
+    },
+    "n5": {
+      "jipipe:graph-compartment": "8269b191-e5c3-5fb0-a993-f52d96615cea",
+      "jipipe:metadata-v1": {
+        "location/8269b191-e5c3-5fb0-a993-f52d96615cea/x": 0,
+        "location/8269b191-e5c3-5fb0-a993-f52d96615cea/y": 0
+      },
+      "jipipe:node-info-id": "import-folder-list"
+    },
+    "n6": {
+      "jipipe:graph-compartment": "8269b191-e5c3-5fb0-a993-f52d96615cea",
+      "jipipe:metadata-v1": {
+        "location/8269b191-e5c3-5fb0-a993-f52d96615cea/x": 0,
+        "location/8269b191-e5c3-5fb0-a993-f52d96615cea/y": 12
+      },
+      "jipipe:node-info-id": "import-imagej-imgplus-from-file"
+    }
+  }
+}

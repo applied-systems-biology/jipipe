@@ -13,10 +13,6 @@
 
 package org.hkijena.jipipe.plugins.ilastik.nodes;
 
-import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
-import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.IlastikFramework;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.machinelearning.MachineLearningInferenceFunction;
 import ij.ImagePlus;
 import org.apache.commons.io.FilenameUtils;
 import org.hkijena.jipipe.api.AddJIPipeCitation;
@@ -40,6 +36,8 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSingleIterationAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.IlastikFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.machinelearning.MachineLearningInferenceFunction;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
@@ -60,13 +58,15 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 import static org.hkijena.jipipe.plugins.ilastik.utils.ImgUtils.*;
 
 @SetJIPipeDocumentation(name = "Ilastik autocontext", description = "Assigns labels to pixels based on pixel features and user annotations. " +
         "Improves the Pixel Classification workflow by running it in multiple stages and showing each pixel the results of the previous stage. " +
         "Please note that results will be generated for each image and each project (pairwise).")
 @AddJIPipeCitation("Autocontext documentation: https://www.ilastik.org/documentation/autocontext/autocontext")
-@ConfigureJIPipeNode(function = MachineLearningInferenceFunction.class, framework = IlastikFramework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
+@ConfigureJIPipeNode(function = MachineLearningInferenceFunction.class, framework = IlastikFramework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", create = true, description = "The image(s) to classify.")
 @AddJIPipeInputSlot(value = IlastikModelData.class, name = "Project", create = true, description = "The Ilastik project. Must support pixel classification.", role = JIPipeDataSlotRole.ParametersLooping)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Probabilities Stage 1", description = "Multi-channel image where pixel values represent the probability that that pixel belongs to the class represented by that channel (Stage 1)")

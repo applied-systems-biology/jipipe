@@ -30,11 +30,11 @@ public interface JIPipeProjectReader extends JIPipeProjectIO {
     /**
      * Reads a project from the given file.
      *
-     * @param path         the project file to read
-     * @param context      the validation context
-     * @param report       issue report
+     * @param path          the project file to read
+     * @param context       the validation context
+     * @param report        issue report
      * @param notifications notifications for the user
-     * @param progressInfo the progress info
+     * @param progressInfo  the progress info
      * @return the loaded project
      * @throws IOException triggered by the JSON parser
      */

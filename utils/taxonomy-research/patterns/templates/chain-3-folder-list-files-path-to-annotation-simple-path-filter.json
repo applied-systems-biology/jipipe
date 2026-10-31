@@ -1,1 +1,33 @@
-{"nodes":{"n0":{"jipipe:node-info-id":"folder-list-files","jipipe:graph-compartment":"f3deee06-3e97-51d8-b33a-6b5b81fae8f3","jipipe:node:name":"List files"},"n1":{"jipipe:node-info-id":"path-to-annotation-simple","jipipe:graph-compartment":"f3deee06-3e97-51d8-b33a-6b5b81fae8f3","jipipe:node:name":"Annotate with file/directory name"},"n2":{"jipipe:node-info-id":"path-filter","jipipe:graph-compartment":"f3deee06-3e97-51d8-b33a-6b5b81fae8f3","jipipe:node:name":"Filter paths"}},"edges":[{"source-node":"n0","source-slot":"Files","target-node":"n1","target-slot":"Paths"},{"source-node":"n1","source-slot":"Annotated paths","target-node":"n2","target-slot":"Input"}]}
+{
+  "nodes": {
+    "n0": {
+      "jipipe:node-info-id": "folder-list-files",
+      "jipipe:graph-compartment": "f3deee06-3e97-51d8-b33a-6b5b81fae8f3",
+      "jipipe:node:name": "List files"
+    },
+    "n1": {
+      "jipipe:node-info-id": "path-to-annotation-simple",
+      "jipipe:graph-compartment": "f3deee06-3e97-51d8-b33a-6b5b81fae8f3",
+      "jipipe:node:name": "Annotate with file/directory name"
+    },
+    "n2": {
+      "jipipe:node-info-id": "path-filter",
+      "jipipe:graph-compartment": "f3deee06-3e97-51d8-b33a-6b5b81fae8f3",
+      "jipipe:node:name": "Filter paths"
+    }
+  },
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Files",
+      "target-node": "n1",
+      "target-slot": "Paths"
+    },
+    {
+      "source-node": "n1",
+      "source-slot": "Annotated paths",
+      "target-node": "n2",
+      "target-slot": "Input"
+    }
+  ]
+}

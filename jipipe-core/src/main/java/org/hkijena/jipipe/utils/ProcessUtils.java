@@ -219,10 +219,10 @@ public class ProcessUtils {
      * Queries standard output with a standard timeout.
      * Does not listen to cancellation signals.
      *
-     * @param executable     the executable
-     * @param handleQuoting  whether to handle quoting
-     * @param progressInfo   the progress info
-     * @param args           executable args
+     * @param executable    the executable
+     * @param handleQuoting whether to handle quoting
+     * @param progressInfo  the progress info
+     * @param args          executable args
      * @return the stdout, or null on failure/timeout
      */
     public static String queryFast(Path executable,
@@ -236,11 +236,11 @@ public class ProcessUtils {
      * Queries standard output with an optional timeout.
      * Does not listen to cancellation signals.
      *
-     * @param executable     the executable
-     * @param handleQuoting  whether to handle quoting
-     * @param progressInfo   the progress info
-     * @param timeoutMillis  timeout in milliseconds; 0 or negative = no timeout
-     * @param args           executable args
+     * @param executable    the executable
+     * @param handleQuoting whether to handle quoting
+     * @param progressInfo  the progress info
+     * @param timeoutMillis timeout in milliseconds; 0 or negative = no timeout
+     * @param args          executable args
      * @return the stdout, or null on failure/timeout
      */
     public static String queryFast(Path executable,

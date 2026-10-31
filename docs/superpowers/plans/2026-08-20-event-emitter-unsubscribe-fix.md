@@ -1,18 +1,23 @@
-# Fix JIPipeEventEmitter.unsubscribe() Implementation Plan
+# Fix JIPipeEventEmitter.unsubscribe () Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:
+> executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Fix `JIPipeEventEmitter.unsubscribe()` so it actually removes subscribers, eliminating a codebase-wide memory leak where 44 `unsubscribe()` call sites are silent no-ops.
+**Goal:** Fix `JIPipeEventEmitter.unsubscribe()` so it actually removes subscribers, eliminating a codebase-wide memory
+leak where 44 `unsubscribe()` call sites are silent no-ops.
 
-**Architecture:** Remove the never-populated `listenerSubscriberMap`. Add a `matchesListener(Listener)` method to the `Subscriber` interface. Rewrite `unsubscribe()` to iterate `subscribers` under a write lock and remove matching entries by identity comparison. Remove dead fields (`emittingDepth`, `copyOnWriteActive`). Add comprehensive tests.
+**Architecture:** Remove the never-populated `listenerSubscriberMap`. Add a `matchesListener(Listener)` method to the
+`Subscriber` interface. Rewrite `unsubscribe()` to iterate `subscribers` under a write lock and remove matching entries
+by identity comparison. Remove dead fields (`emittingDepth`, `copyOnWriteActive`). Add comprehensive tests.
 
 **Tech Stack:** Java 25, JUnit 5, AssertJ, Maven
 
 ## Global Constraints
 
 - All changes are in `jipipe-core` module
-- The `Subscriber` interface is public and nested in `JIPipeEventEmitter` — adding a method is a breaking API change, but all implementations are nested classes in the same file
-- Thread safety via `StampedLock` must be preserved — `unsubscribe()` must acquire the write lock
+- The `Subscriber` interface is public and nested in `JIPipeEventEmitter` - adding a method is a breaking API change,
+  but all implementations are nested classes in the same file
+- Thread safety via `StampedLock` must be preserved - `unsubscribe()` must acquire the write lock
 - Identity comparison (`==`) must be used for listener matching, consistent with the original `IdentityHashMap` design
 - No external dependencies may be added
 - Existing callers of `unsubscribe()` must work without modification
@@ -22,12 +27,14 @@
 ### Task 1: Create test infrastructure and failing tests
 
 **Files:**
+
 - Create: `jipipe-core/src/test/java/org/hkijena/jipipe/api/events/JIPipeEventEmitterTest.java`
 - Read: `jipipe-core/src/main/java/org/hkijena/jipipe/api/events/JIPipeEventEmitter.java`
 
 **Interfaces:**
+
 - Consumes: `JIPipeEventEmitter` (abstract class), `JIPipeEvent` (marker interface), `Subscriber` (nested interface)
-- Produces: `JIPipeEventEmitterTest` — test class that validates subscribe/unsubscribe/emit behavior
+- Produces: `JIPipeEventEmitterTest` - test class that validates subscribe/unsubscribe/emit behavior
 
 - [ ] **Step 1: Write the failing tests**
 
@@ -226,7 +233,9 @@ class JIPipeEventEmitterTest {
 - [ ] **Step 2: Run tests to verify they fail**
 
 Run: `mvn test -pl jipipe-core -Dtest=JIPipeEventEmitterTest -Dsurefire.useFile=false`
-Expected: `unsubscribe_removesStrongSubscriber`, `unsubscribe_removesWeakSubscriber`, `unsubscribe_doesNotAffectOtherListeners`, `unsubscribeAll_removesAllMatchingSubscribers`, and `emit_afterUnsubscribe_doesNotCallUnsubscribedListener` FAIL. Other tests PASS.
+Expected: `unsubscribe_removesStrongSubscriber`, `unsubscribe_removesWeakSubscriber`,
+`unsubscribe_doesNotAffectOtherListeners`, `unsubscribeAll_removesAllMatchingSubscribers`, and
+`emit_afterUnsubscribe_doesNotCallUnsubscribedListener` FAIL. Other tests PASS.
 
 - [ ] **Step 3: Commit**
 
@@ -237,26 +246,31 @@ git commit -m "Add failing tests for JIPipeEventEmitter unsubscribe (#1314)"
 
 ---
 
-### Task 2: Fix unsubscribe() and remove dead code
+### Task 2: Fix unsubscribe () and remove dead code
 
 **Files:**
+
 - Modify: `jipipe-core/src/main/java/org/hkijena/jipipe/api/events/JIPipeEventEmitter.java`
 
 **Interfaces:**
+
 - Consumes: `JIPipeEventEmitterTest` (from Task 1)
-- Produces: Fixed `JIPipeEventEmitter` with working `unsubscribe()`, `Subscriber.matchesListener()`, no `listenerSubscriberMap`, no dead fields
+- Produces: Fixed `JIPipeEventEmitter` with working `unsubscribe()`, `Subscriber.matchesListener()`, no
+  `listenerSubscriberMap`, no dead fields
 
 - [ ] **Step 1: Implement the fix**
 
 In `JIPipeEventEmitter.java`, make the following changes:
 
 **Remove the `listenerSubscriberMap` field (line 36):**
+
 ```java
 // DELETE this line:
 private final Map<Listener, Subscriber<Event, Listener>> listenerSubscriberMap = new IdentityHashMap<>();
 ```
 
 **Remove dead fields (lines 37-38):**
+
 ```java
 // DELETE these lines:
 private final AtomicInteger emittingDepth = new AtomicInteger(0);
@@ -264,6 +278,7 @@ private final AtomicBoolean copyOnWriteActive = new AtomicBoolean();
 ```
 
 **Remove unused imports:**
+
 ```java
 // DELETE these imports:
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -271,6 +286,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 ```
 
 **Rewrite `unsubscribe()` (lines 85-90):**
+
 ```java
 public void unsubscribe(Listener listener) {
     long stamp = stampedLock.writeLock();
@@ -282,7 +298,8 @@ public void unsubscribe(Listener listener) {
 }
 ```
 
-**Update `dispose()` (lines 138-142) — remove `listenerSubscriberMap.clear()`:**
+**Update `dispose()` (lines 138-142) - remove `listenerSubscriberMap.clear()`:**
+
 ```java
 @Override
 public void dispose() {
@@ -292,6 +309,7 @@ public void dispose() {
 ```
 
 **Add `matchesListener` method to the `Subscriber` interface (after line 149):**
+
 ```java
 public interface Subscriber<Event extends JIPipeEvent, Listener> {
     void call(JIPipeEventEmitter<Event, Listener> emitter, Event event);
@@ -305,6 +323,7 @@ public interface Subscriber<Event extends JIPipeEvent, Listener> {
 ```
 
 **Implement `matchesListener` in `StrongObjectSubscriber` (after line 172):**
+
 ```java
 @Override
 public boolean matchesListener(Listener listener) {
@@ -313,6 +332,7 @@ public boolean matchesListener(Listener listener) {
 ```
 
 **Implement `matchesListener` in `WeakObjectSubscriber` (after line 198):**
+
 ```java
 @Override
 public boolean matchesListener(Listener listener) {
@@ -321,6 +341,7 @@ public boolean matchesListener(Listener listener) {
 ```
 
 **Implement `matchesListener` in `LambdaSubscriber` (after line 226):**
+
 ```java
 @Override
 public boolean matchesListener(Listener listener) {
@@ -360,6 +381,7 @@ copyOnWriteActive fields."
 ### Task 3: Create design spec document
 
 **Files:**
+
 - Create: `docs/superpowers/specs/2026-08-20-event-emitter-unsubscribe-fix-design.md`
 
 - [ ] **Step 1: Write the design spec**

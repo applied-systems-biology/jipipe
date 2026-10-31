@@ -13,13 +13,12 @@
 
 package org.hkijena.jipipe.desktop.commons.nodepatterns;
 
-import java.awt.BasicStroke;
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.awt.geom.Path2D;
 import java.util.Random;
 
 /**
- * Organic voronoi — each cell as one smooth wobbly closed membrane
+ * Organic voronoi - each cell as one smooth wobbly closed membrane
  * (KDE 'Cluster' / Vanta 'cells' look). Border sites just outside the frame
  * make the cells clip at all four edges.
  */
@@ -43,10 +42,18 @@ public final class CellularFamily implements NodePatternFamily {
         int c = n;
         for (int i = 0; i < side; i++) {
             double t = (i + 0.5) / side;
-            ex[c] = -w * 0.06; ey[c] = t * h; c++;
-            ex[c] = w * 1.08; ey[c] = t * h; c++; // 1.08 (was 1.06 in the prototype): keeps the right-edge membranes inside the 6px border band at all contract-tested sizes (ruling 2026-17)
-            ex[c] = t * w; ey[c] = -h * 0.06; c++;
-            ex[c] = t * w; ey[c] = h * 1.06; c++;
+            ex[c] = -w * 0.06;
+            ey[c] = t * h;
+            c++;
+            ex[c] = w * 1.08;
+            ey[c] = t * h;
+            c++; // 1.08 (was 1.06 in the prototype): keeps the right-edge membranes inside the 6px border band at all contract-tested sizes (ruling 2026-17)
+            ex[c] = t * w;
+            ey[c] = -h * 0.06;
+            c++;
+            ex[c] = t * w;
+            ey[c] = h * 1.06;
+            c++;
         }
         int total = n + extra;
         g.setStroke(new BasicStroke(1.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
@@ -70,7 +77,8 @@ public final class CellularFamily implements NodePatternFamily {
                 double wob = maxR * (0.07 * Math.sin(3 * a + s * 1.7) + 0.05 * Math.cos(5 * a + s * 0.9));
                 double bx = ex[s] + (maxR + wob) * dxr;
                 double by = ey[s] + (maxR + wob) * dyr;
-                if (k == 0) p.moveTo(bx, by); else p.lineTo(bx, by);
+                if (k == 0) p.moveTo(bx, by);
+                else p.lineTo(bx, by);
             }
             p.closePath();
             g.draw(p);

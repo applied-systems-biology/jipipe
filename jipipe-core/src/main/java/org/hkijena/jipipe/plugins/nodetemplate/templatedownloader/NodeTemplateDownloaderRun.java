@@ -25,6 +25,7 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeNodeTemplateApplicationSettings;
 import org.hkijena.jipipe.utils.WebUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
+
 import javax.swing.*;
 
 import java.io.IOException;

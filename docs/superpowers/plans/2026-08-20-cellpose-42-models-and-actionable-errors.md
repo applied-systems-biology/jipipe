@@ -1,10 +1,16 @@
 # Cellpose 4.2 Model Support & Actionable Error System Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:
+> executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Add support for Cellpose 4.2 models (cpsam_v2, cpdino, cpdino-vitb), extend the validation error system with clickable action buttons, and enable users to auto-update their Cellpose environment from within error messages.
+**Goal:** Add support for Cellpose 4.2 models (cpsam_v2, cpdino, cpdino-vitb), extend the validation error system with
+clickable action buttons, and enable users to auto-update their Cellpose environment from within error messages.
 
-**Architecture:** Three subsystems are touched: (1) the core validation/error system gains `JIPipeNotificationAction` support on `JIPipeValidationReportEntry`, rendered as buttons in the error UI; (2) the Cellpose 4 plugin gains new models, a conditional `bsize` parameter for DINO models, a new training node with 4.2 defaults, and a version-check utility that generates validation warnings + runtime guards with actionable "Update Cellpose" buttons; (3) the Project Overview's upgrade dialog is extracted into a reusable utility.
+**Architecture:** Three subsystems are touched: (1) the core validation/error system gains `JIPipeNotificationAction`
+support on `JIPipeValidationReportEntry`, rendered as buttons in the error UI; (2) the Cellpose 4 plugin gains new
+models, a conditional `bsize` parameter for DINO models, a new training node with 4.2 defaults, and a version-check
+utility that generates validation warnings + runtime guards with actionable "Update Cellpose" buttons; (3) the Project
+Overview's upgrade dialog is extracted into a reusable utility.
 
 **Tech Stack:** Java 21, Swing, Maven, JUnit 5
 
@@ -16,19 +22,24 @@
 - Test framework: JUnit 5 (`org.junit.jupiter`)
 - No project upgrade logic needed (JIPipe 6 is unreleased)
 - The `ArtifactUpgrade` inner class of `JIPipeDesktopProjectOverviewUI` must be extracted to a standalone class
-- Cellpose < 4.2 supports only `cpsam` and `None`; Cellpose >= 4.2 supports `cpsam_v2`, `cpdino`, `cpdino-vitb`, `cpsam`, `None`
-- Version is parsed from the artifact query string (e.g., `com.github.mouseland.cellpose4:4.2.1.1.1000-*`); custom (non-artifact) environments skip version checking
+- Cellpose < 4.2 supports only `cpsam` and `None`; Cellpose >= 4.2 supports `cpsam_v2`, `cpdino`, `cpdino-vitb`,
+  `cpsam`, `None`
+- Version is parsed from the artifact query string (e.g., `com.github.mouseland.cellpose4:4.2.1.1.1000-*`); custom
+  (non-artifact) environments skip version checking
 
 ---
 
 ### Task 1: Add Actions to JIPipeValidationReportEntry
 
 **Files:**
+
 - Modify: `jipipe-core/src/main/java/org/hkijena/jipipe/api/validation/JIPipeValidationReportEntry.java`
 - Test: `jipipe-core/src/test/java/org/hkijena/jipipe/api/validation/JIPipeValidationReportEntryTest.java`
 
 **Interfaces:**
-- Produces: `JIPipeValidationReportEntry.getActions()` returns `List<JIPipeNotificationAction>`; new constructors accept actions
+
+- Produces: `JIPipeValidationReportEntry.getActions()` returns `List<JIPipeNotificationAction>`; new constructors accept
+  actions
 
 - [ ] **Step 1: Write the failing test**
 
@@ -95,7 +106,7 @@ public class JIPipeValidationReportEntryTest {
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `cd /data/src/jipipe-4 && mvn test -pl jipipe-core -Dtest=JIPipeValidationReportEntryTest -q`
-Expected: FAIL — no constructor accepting `List<JIPipeNotificationAction>`, no `getActions()` method
+Expected: FAIL - no constructor accepting `List<JIPipeNotificationAction>`, no `getActions()` method
 
 - [ ] **Step 3: Write minimal implementation**
 
@@ -177,12 +188,15 @@ git commit -m "Add action support to JIPipeValidationReportEntry"
 ### Task 2: Add Action Builder to ValidationEntryBuilder
 
 **Files:**
+
 - Modify: `jipipe-core/src/main/java/org/hkijena/jipipe/api/validation/JIPipeValidationReportContext.java`
 - Test: `jipipe-core/src/test/java/org/hkijena/jipipe/api/validation/ValidationEntryBuilderActionTest.java`
 
 **Interfaces:**
+
 - Consumes: `JIPipeValidationReportEntry.getActions()` from Task 1
-- Produces: `ValidationEntryBuilder.action(JIPipeNotificationAction)` fluent method; `build()` and `report()` now create entries with actions
+- Produces: `ValidationEntryBuilder.action(JIPipeNotificationAction)` fluent method; `build()` and `report()` now create
+  entries with actions
 
 - [ ] **Step 1: Write the failing test**
 
@@ -244,7 +258,7 @@ public class ValidationEntryBuilderActionTest {
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `cd /data/src/jipipe-4 && mvn test -pl jipipe-core -Dtest=ValidationEntryBuilderActionTest -q`
-Expected: FAIL — no `.action()` method on builder
+Expected: FAIL - no `.action()` method on builder
 
 - [ ] **Step 3: Write minimal implementation**
 
@@ -304,10 +318,12 @@ git commit -m "Add action() fluent builder to ValidationEntryBuilder"
 ### Task 3: Carry Actions Through JIPipeValidationRuntimeException
 
 **Files:**
+
 - Modify: `jipipe-core/src/main/java/org/hkijena/jipipe/api/validation/JIPipeValidationRuntimeException.java`
 - Test: `jipipe-core/src/test/java/org/hkijena/jipipe/api/validation/JIPipeValidationRuntimeExceptionActionsTest.java`
 
 **Interfaces:**
+
 - Consumes: `JIPipeValidationReportEntry.getActions()` from Task 1
 - Produces: `JIPipeValidationRuntimeException` preserves actions when wrapping entries
 
@@ -348,7 +364,7 @@ public class JIPipeValidationRuntimeExceptionActionsTest {
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `cd /data/src/jipipe-4 && mvn test -pl jipipe-core -Dtest=JIPipeValidationRuntimeExceptionActionsTest -q`
-Expected: FAIL — `JIPipeValidationRuntimeException(JIPipeValidationReportEntry)` constructor does not preserve actions
+Expected: FAIL - `JIPipeValidationRuntimeException(JIPipeValidationReportEntry)` constructor does not preserve actions
 
 - [ ] **Step 3: Write minimal implementation**
 
@@ -359,7 +375,8 @@ import org.hkijena.jipipe.api.notifications.JIPipeNotificationAction;
 import java.util.List;
 ```
 
-Update the `mergeReport` method to carry actions through. In the `switch` block (lines 59-62), update the Error and Warning cases to also pass actions:
+Update the `mergeReport` method to carry actions through. In the `switch` block (lines 59-62), update the Error and
+Warning cases to also pass actions:
 
 ```java
 case Error ->
@@ -387,7 +404,9 @@ case Warning -> {
 }
 ```
 
-The `JIPipeValidationRuntimeException(JIPipeValidationReportEntry entry)` constructor (line 26) already creates a report and adds the entry directly — the entry's actions are already on it. The `mergeReport` path is where actions were being lost. This fix ensures they survive.
+The `JIPipeValidationRuntimeException(JIPipeValidationReportEntry entry)` constructor (line 26) already creates a report
+and adds the entry directly - the entry's actions are already on it. The `mergeReport` path is where actions were being
+lost. This fix ensures they survive.
 
 - [ ] **Step 4: Run test to verify it passes**
 
@@ -406,9 +425,12 @@ git commit -m "Preserve actions through JIPipeValidationRuntimeException merge"
 ### Task 4: Render Action Buttons in JIPipeDesktopUserFriendlyErrorUI
 
 **Files:**
-- Modify: `jipipe-core/src/main/java/org/hkijena/jipipe/desktop/commons/components/validation/JIPipeDesktopUserFriendlyErrorUI.java`
+
+- Modify:
+  `jipipe-core/src/main/java/org/hkijena/jipipe/desktop/commons/components/validation/JIPipeDesktopUserFriendlyErrorUI.java`
 
 **Interfaces:**
+
 - Consumes: `JIPipeValidationReportEntry.getActions()` from Task 1
 - Produces: Action buttons rendered in the error UI between "Go to" and "Show details"
 
@@ -420,7 +442,8 @@ In `JIPipeDesktopUserFriendlyErrorUI.java`, add import:
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationAction;
 ```
 
-In the `addEntry()` method, after the "Go to" button block (after line 284, before `actionBar.add(Box.createHorizontalGlue());` on line 286), add:
+In the `addEntry()` method, after the "Go to" button block (after line 284, before
+`actionBar.add(Box.createHorizontalGlue());` on line 286), add:
 
 ```java
 for (JIPipeNotificationAction action : entry.getActions()) {
@@ -457,12 +480,15 @@ git commit -m "Render action buttons in error UI"
 ### Task 5: Extract ArtifactUpgrade and Upgrade Dialog into Reusable Utilities
 
 **Files:**
+
 - Create: `jipipe-core/src/main/java/org/hkijena/jipipe/desktop/commons/components/project/ArtifactUpgrade.java`
 - Create: `jipipe-core/src/main/java/org/hkijena/jipipe/desktop/commons/components/project/ArtifactUpgradeUtils.java`
 - Modify: `jipipe-core/src/main/java/org/hkijena/jipipe/desktop/app/settings/JIPipeDesktopProjectOverviewUI.java`
 
 **Interfaces:**
-- Produces: `ArtifactUpgrade` standalone data class; `ArtifactUpgradeUtils.showUpgradeDialog(JIPipeDesktopWorkbench, List<ArtifactUpgrade>)` static method
+
+- Produces: `ArtifactUpgrade` standalone data class;
+  `ArtifactUpgradeUtils.showUpgradeDialog(JIPipeDesktopWorkbench, List<ArtifactUpgrade>)` static method
 
 - [ ] **Step 1: Create the ArtifactUpgrade standalone class**
 
@@ -621,12 +647,14 @@ In `JIPipeDesktopProjectOverviewUI.java`:
 1. Remove the inner class `ArtifactUpgrade` (lines 1114-1126).
 
 2. Add import:
+
 ```java
 import org.hkijena.jipipe.desktop.commons.components.project.ArtifactUpgrade;
 import org.hkijena.jipipe.desktop.commons.components.project.ArtifactUpgradeUtils;
 ```
 
 3. Replace the body of `upgradeArtifacts()` method (lines 332-372) with:
+
 ```java
 private void upgradeArtifacts(List<ArtifactUpgrade> upgrades) {
     ArtifactUpgradeUtils.showUpgradeDialog(getDesktopWorkbench(), upgrades);
@@ -634,7 +662,9 @@ private void upgradeArtifacts(List<ArtifactUpgrade> upgrades) {
 }
 ```
 
-4. Update `createArtifactUpgradeTipsIfNeeded()` to use `ArtifactUpgradeUtils.findAvailableUpgrades()` instead of the inline logic. Replace the for-loop body (lines 282-322) with:
+4. Update `createArtifactUpgradeTipsIfNeeded()` to use `ArtifactUpgradeUtils.findAvailableUpgrades()` instead of the
+   inline logic. Replace the for-loop body (lines 282-322) with:
+
 ```java
 for (JIPipeArtifactEnvironment environment : environments) {
     upgrades.addAll(ArtifactUpgradeUtils.findAvailableUpgrades(environment));
@@ -663,10 +693,14 @@ git commit -m "Extract ArtifactUpgrade and upgrade dialog into reusable utilitie
 ### Task 6: Add New Cellpose 4 Models to PretrainedCellpose4SegmentationModel
 
 **Files:**
-- Modify: `plugins/jipipe-plugin-cellpose/src/main/java/org/hkijena/jipipe/plugins/cellpose/parameters/cp4/PretrainedCellpose4SegmentationModel.java`
+
+- Modify:
+  `plugins/jipipe-plugin-cellpose/src/main/java/org/hkijena/jipipe/plugins/cellpose/parameters/cp4/PretrainedCellpose4SegmentationModel.java`
 
 **Interfaces:**
-- Produces: `PretrainedCellpose4SegmentationModel.cpsam_v2`, `.cpdino`, `.cpdino_vitb` enum constants; `cpsam_v2` is the default (first ordinal)
+
+- Produces: `PretrainedCellpose4SegmentationModel.cpsam_v2`, `.cpdino`, `.cpdino_vitb` enum constants; `cpsam_v2` is the
+  default (first ordinal)
 
 - [ ] **Step 1: Update the enum**
 
@@ -698,11 +732,17 @@ git commit -m "Add cpsam_v2, cpdino, cpdino_vitb to PretrainedCellpose4Segmentat
 ### Task 7: Create CellposeVersionUtils
 
 **Files:**
-- Create: `plugins/jipipe-plugin-cellpose/src/main/java/org/hkijena/jipipe/plugins/cellpose/utils/CellposeVersionUtils.java`
-- Test: `plugins/jipipe-plugin-cellpose/src/test/java/org/hkijena/jipipe/plugins/cellpose/utils/CellposeVersionUtilsTest.java`
+
+- Create:
+  `plugins/jipipe-plugin-cellpose/src/main/java/org/hkijena/jipipe/plugins/cellpose/utils/CellposeVersionUtils.java`
+- Test:
+  `plugins/jipipe-plugin-cellpose/src/test/java/org/hkijena/jipipe/plugins/cellpose/utils/CellposeVersionUtilsTest.java`
 
 **Interfaces:**
-- Produces: `CellposeVersionUtils.getInstalledVersion(Cellpose4Environment)`, `CellposeVersionUtils.isModelSupported(String, String)`, `CellposeVersionUtils.requiresCellpose42(String)`, `CellposeVersionUtils.findAvailableUpgrades(Cellpose4Environment)`
+
+- Produces: `CellposeVersionUtils.getInstalledVersion(Cellpose4Environment)`,
+  `CellposeVersionUtils.isModelSupported(String, String)`, `CellposeVersionUtils.requiresCellpose42(String)`,
+  `CellposeVersionUtils.findAvailableUpgrades(Cellpose4Environment)`
 
 - [ ] **Step 1: Write the failing test**
 
@@ -754,11 +794,12 @@ public class CellposeVersionUtilsTest {
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `cd /data/src/jipipe-4 && mvn test -pl plugins/jipipe-plugin-cellpose -Dtest=CellposeVersionUtilsTest -q`
-Expected: FAIL — class does not exist
+Expected: FAIL - class does not exist
 
 - [ ] **Step 3: Write minimal implementation**
 
-Create `plugins/jipipe-plugin-cellpose/src/main/java/org/hkijena/jipipe/plugins/cellpose/utils/CellposeVersionUtils.java`:
+Create
+`plugins/jipipe-plugin-cellpose/src/main/java/org/hkijena/jipipe/plugins/cellpose/utils/CellposeVersionUtils.java`:
 
 ```java
 package org.hkijena.jipipe.plugins.cellpose.utils;
@@ -820,10 +861,14 @@ git commit -m "Add CellposeVersionUtils for version detection and model compatib
 ### Task 8: Add bsize Parameter and Version Checks to Cellpose4SegmentationInferenceAlgorithm
 
 **Files:**
-- Modify: `plugins/jipipe-plugin-cellpose/src/main/java/org/hkijena/jipipe/plugins/cellpose/algorithms/cp4/Cellpose4SegmentationInferenceAlgorithm.java`
+
+- Modify:
+  `plugins/jipipe-plugin-cellpose/src/main/java/org/hkijena/jipipe/plugins/cellpose/algorithms/cp4/Cellpose4SegmentationInferenceAlgorithm.java`
 
 **Interfaces:**
-- Consumes: `CellposeVersionUtils` from Task 7, `ArtifactUpgradeUtils` from Task 5, `JIPipeNotificationAction` action support from Tasks 1-4
+
+- Consumes: `CellposeVersionUtils` from Task 7, `ArtifactUpgradeUtils` from Task 5, `JIPipeNotificationAction` action
+  support from Tasks 1-4
 - Produces: `bsize` parameter on CP4 inference; validation warning + runtime guard for version compatibility
 
 - [ ] **Step 1: Add bsize field and imports**
@@ -882,11 +927,14 @@ private boolean isDinoModelSelected() {
 }
 ```
 
-Note: The model comes from input data (a `CellposeModelData` input slot), not a parameter. Since the model is not known at UI rendering time, `isDinoModelSelected()` returns `true` so the bsize parameter is always visible. The documentation explains it only applies to DINO models. At runtime, `--bsize` is only passed when the model name is `cpdino` or `cpdino-vitb`.
+Note: The model comes from input data (a `CellposeModelData` input slot), not a parameter. Since the model is not known
+at UI rendering time, `isDinoModelSelected()` returns `true` so the bsize parameter is always visible. The documentation
+explains it only applies to DINO models. At runtime, `--bsize` is only passed when the model name is `cpdino` or
+`cpdino-vitb`.
 
 Update `isDinoModelSelected()` to `return true;`.
 
-- [ ] **Step 3: Pass --bsize in runCellpose() for DINO models**
+- [ ] **Step 3: Pass --bsize in runCellpose () for DINO models**
 
 In `runCellpose()` method, after the model arguments (after line 422), add:
 
@@ -942,7 +990,7 @@ public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeVa
 }
 ```
 
-- [ ] **Step 5: Add runtime guard in runIteration()**
+- [ ] **Step 5: Add runtime guard in runIteration ()**
 
 In `runIteration()`, after getting the environment (after line 207), add:
 
@@ -995,9 +1043,12 @@ git commit -m "Add bsize parameter and version checks to CP4 inference"
 ### Task 9: Deprecate Old Training Node
 
 **Files:**
-- Modify: `plugins/jipipe-plugin-cellpose/src/main/java/org/hkijena/jipipe/plugins/cellpose/algorithms/cp4/Cellpose4SegmentationTrainingAlgorithm.java`
+
+- Modify:
+  `plugins/jipipe-plugin-cellpose/src/main/java/org/hkijena/jipipe/plugins/cellpose/algorithms/cp4/Cellpose4SegmentationTrainingAlgorithm.java`
 
 **Interfaces:**
+
 - Produces: Old training node annotated `@Deprecated` with display name "(old)"
 
 - [ ] **Step 1: Deprecate and rename the old training node**
@@ -1005,15 +1056,19 @@ git commit -m "Add bsize parameter and version checks to CP4 inference"
 In `Cellpose4SegmentationTrainingAlgorithm.java`:
 
 1. Add import:
+
 ```java
 import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
 ```
 
 2. Change the `@SetJIPipeDocumentation` annotation (line 77) from:
+
 ```java
 @SetJIPipeDocumentation(name = "Cellpose segmentation training (4.x)", description = ...)
 ```
+
 to:
+
 ```java
 @Deprecated
 @SetJIPipeDocumentation(name = "Cellpose segmentation training 4.x (old)", description = ...)
@@ -1036,19 +1091,24 @@ git commit -m "Deprecate old CP4 training node and rename to (old)"
 ### Task 10: Create Cellpose4SegmentationTraining2Algorithm
 
 **Files:**
-- Create: `plugins/jipipe-plugin-cellpose/src/main/java/org/hkijena/jipipe/plugins/cellpose/algorithms/cp4/Cellpose4SegmentationTraining2Algorithm.java`
+
+- Create:
+  `plugins/jipipe-plugin-cellpose/src/main/java/org/hkijena/jipipe/plugins/cellpose/algorithms/cp4/Cellpose4SegmentationTraining2Algorithm.java`
 
 **Interfaces:**
+
 - Consumes: `CellposeVersionUtils` from Task 7, `ArtifactUpgradeUtils` from Task 5
 - Produces: New CP4 training node with 4.2 defaults, aggressive log for non-cpsam, validation warning + runtime guard
 
 - [ ] **Step 1: Create the new training algorithm**
 
-Create `plugins/jipipe-plugin-cellpose/src/main/java/org/hkijena/jipipe/plugins/cellpose/algorithms/cp4/Cellpose4SegmentationTraining2Algorithm.java`.
+Create
+`plugins/jipipe-plugin-cellpose/src/main/java/org/hkijena/jipipe/plugins/cellpose/algorithms/cp4/Cellpose4SegmentationTraining2Algorithm.java`.
 
 This is a copy of `Cellpose4SegmentationTrainingAlgorithm` with the following changes:
+
 - Class name: `Cellpose4SegmentationTraining2Algorithm`
-- `@SetJIPipeDocumentation(name = "Cellpose segmentation training (4.x)")` 
+- `@SetJIPipeDocumentation(name = "Cellpose segmentation training (4.x)")`
 - Remove `Cellpose2ChannelSettings` (channels are deprecated in 4.0.1+)
 - Updated training defaults: `learningRate = 0.00001`, `weightDecay = 0.1`, `batchSize = 1`, `numEpochs = 100`
 - Add `--bsize`, `--save_every`, `--model_name_out` CLI params
@@ -1057,7 +1117,8 @@ This is a copy of `Cellpose4SegmentationTrainingAlgorithm` with the following ch
 - Add `progressInfo.aggressiveError()` for non-cpsam model at runtime
 - Add version check validation warning + runtime guard (same as inference)
 
-Use the full source of `Cellpose4SegmentationTrainingAlgorithm` as the base, applying all changes above. The key differences from the old class:
+Use the full source of `Cellpose4SegmentationTrainingAlgorithm` as the base, applying all changes above. The key
+differences from the old class:
 
 ```java
 @SetJIPipeDocumentation(name = "Cellpose segmentation training (4.x)", description =
@@ -1076,18 +1137,22 @@ public class Cellpose4SegmentationTraining2Algorithm extends JIPipeSingleIterati
 ```
 
 Field changes:
+
 - Remove `channelSettings` field and all its registrations
 - `numEpochs = 100` (was 500)
 - Add `private OptionalIntegerParameter saveEvery = new OptionalIntegerParameter(100, true);`
 - Add `private String modelNameOut = "";`
 
 In `processModel()`, the CLI argument building changes:
+
 - Remove all channel arguments (`--chan`, `--chan2`, `--all_channels`, `--invert`)
 - Remove `--diam_mean`, `--train_size`, `--SGD`
 - Add after diameter: `--bsize 256`
 - Add: `--save_every` with value
 - Add: `--model_name_out` if non-empty
-- Update `--learning_rate` default from `tweaksSettings.getLearningRate()` (which defaults to 0.2 in the settings class) — instead, the new algorithm overrides the defaults by setting `tweaksSettings.setLearningRate(0.00001)`, `tweaksSettings.setWeightDecay(0.1)`, `tweaksSettings.setBatchSize(1)` in the constructor.
+- Update `--learning_rate` default from `tweaksSettings.getLearningRate()` (which defaults to 0.2 in the settings
+  class) - instead, the new algorithm overrides the defaults by setting `tweaksSettings.setLearningRate(0.00001)`,
+  `tweaksSettings.setWeightDecay(0.1)`, `tweaksSettings.setBatchSize(1)` in the constructor.
 
 In `runIteration()`, after getting the environment, add aggressive log:
 
@@ -1126,7 +1191,9 @@ public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeVa
 }
 ```
 
-Note: The training node uses models from the input slot, not a fixed enum. The version check focuses on whether the Cellpose version itself is >= 4.2 (since this is a 4.2+ training node). If version < 4.2, warn that this node requires Cellpose 4.2+.
+Note: The training node uses models from the input slot, not a fixed enum. The version check focuses on whether the
+Cellpose version itself is >= 4.2 (since this is a 4.2+ training node). If version < 4.2, warn that this node requires
+Cellpose 4.2+.
 
 Simplify the version check for training:
 
@@ -1198,9 +1265,11 @@ git commit -m "Add Cellpose4SegmentationTraining2Algorithm with 4.2 defaults"
 ### Task 11: Register New Training Node in CellposePlugin
 
 **Files:**
+
 - Modify: `plugins/jipipe-plugin-cellpose/src/main/java/org/hkijena/jipipe/plugins/cellpose/CellposePlugin.java`
 
 **Interfaces:**
+
 - Produces: New training node registered as `cellpose-segmentation-training-4.x-v2`
 
 - [ ] **Step 1: Register the new node type**
@@ -1228,6 +1297,7 @@ git commit -m "Register Cellpose4SegmentationTraining2Algorithm node type"
 ### Task 12: Final Compilation and Test Run
 
 **Files:**
+
 - None (verification only)
 
 - [ ] **Step 1: Compile the full project**

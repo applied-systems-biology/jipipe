@@ -13,8 +13,6 @@
 
 package org.hkijena.jipipe.api.servers;
 
-import org.hkijena.jipipe.api.servers.JIPipeServerInstance;
-
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**

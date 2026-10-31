@@ -28,8 +28,8 @@ import java.util.List;
 public class JIPipeOptionalParameterContentAccess<T> implements JIPipeParameterAccess {
     private final JIPipeParameterAccess parent;
     private final JIPipeOptionalParameter<T> optionalParameter;
-    private JIPipePathMetadataStore metadata = new JIPipePathMetadataStore();
     private final JIPipeParameterCollection.ParameterChangedEventEmitter parameterChangedEventEmitter = new JIPipeParameterCollection.ParameterChangedEventEmitter();
+    private JIPipePathMetadataStore metadata = new JIPipePathMetadataStore();
 
     /**
      * Creates a new instance

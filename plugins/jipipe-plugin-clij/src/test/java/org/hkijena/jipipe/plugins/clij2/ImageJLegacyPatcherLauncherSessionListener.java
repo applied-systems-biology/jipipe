@@ -29,7 +29,7 @@ import org.junit.platform.launcher.LauncherSessionListener;
  * context. This module's {@code CLIJImageData} data type and the
  * {@code Clij2PushAlgorithm}/{@code Clij2PullAlgorithm} nodes genuinely load
  * ImageJ1 classes ({@code ij.ImagePlus}, {@code ij.process.ImageProcessor}),
- * so the legacy patcher must run first — otherwise the patcher fails
+ * so the legacy patcher must run first - otherwise the patcher fails
  * ({@code LinkageError: duplicate class definition} / {@code No _hooks field
  * found in ij.IJ}, depending on ordering), corrupting the context so that no
  * node infos are registered.

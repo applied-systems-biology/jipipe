@@ -18,16 +18,13 @@ import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.NoFramework;
 import org.junit.jupiter.api.Test;
 
-import java.awt.Color;
+import java.awt.*;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Verifies the 20-framework core ship set of {@link JIPipeNodeTaxonomyFramework}s:
@@ -45,26 +42,26 @@ class FrameworksTest {
      */
     private static List<Class<? extends JIPipeNodeTaxonomyFramework>> allFrameworks() {
         return List.of(
-            CoreFramework.class,
-            PythonFramework.class,
-            RFramework.class,
-            Cellpose2Framework.class,
-            Cellpose3Framework.class,
-            Cellpose4Framework.class,
-            TrackMateFramework.class,
-            JIPipeDLFramework.class,
-            JFreeChartFramework.class,
-            OpenCVFramework.class,
-            OmniposeFramework.class,
-            IlastikFramework.class,
-            ClijFramework.class,
-            ImageJ1Framework.class,
-            ImageJ2Framework.class,
-            WekaFramework.class,
-            FilamentsFramework.class,
-            IJ3DFramework.class,
-            OmeroFramework.class,
-            Scene3DFramework.class
+                CoreFramework.class,
+                PythonFramework.class,
+                RFramework.class,
+                Cellpose2Framework.class,
+                Cellpose3Framework.class,
+                Cellpose4Framework.class,
+                TrackMateFramework.class,
+                JIPipeDLFramework.class,
+                JFreeChartFramework.class,
+                OpenCVFramework.class,
+                OmniposeFramework.class,
+                IlastikFramework.class,
+                ClijFramework.class,
+                ImageJ1Framework.class,
+                ImageJ2Framework.class,
+                WekaFramework.class,
+                FilamentsFramework.class,
+                IJ3DFramework.class,
+                OmeroFramework.class,
+                Scene3DFramework.class
         );
     }
 
@@ -82,12 +79,12 @@ class FrameworksTest {
         for (Class<? extends JIPipeNodeTaxonomyFramework> framework : allFrameworks()) {
             String id = instantiate(framework).getId();
             assertTrue(id != null && id.startsWith("jipipe:framework:"),
-                "Id of " + framework.getName() + " must be a non-null literal starting with 'jipipe:framework:', got: " + id);
+                    "Id of " + framework.getName() + " must be a non-null literal starting with 'jipipe:framework:', got: " + id);
             ids.add(id);
         }
         assertEquals(20, ids.size(), "Expected 20 unique framework ids, got " + ids.size() + " for: " + ids);
         assertFalse(ids.contains(new NoFramework().getId()),
-            "A seed framework must not collide with the NoFramework sentinel id");
+                "A seed framework must not collide with the NoFramework sentinel id");
     }
 
     @Test
@@ -165,13 +162,13 @@ class FrameworksTest {
         for (Class<? extends JIPipeNodeTaxonomyFramework> framework : allFrameworks()) {
             String abbreviation = instantiate(framework).getAbbreviation();
             assertTrue(abbreviation != null && !abbreviation.isEmpty(),
-                "Expected a non-empty abbreviation for " + framework.getName());
+                    "Expected a non-empty abbreviation for " + framework.getName());
             assertTrue(abbreviation.length() <= 4,
-                "Abbreviation of " + framework.getName() + " must be at most 4 characters: " + abbreviation);
+                    "Abbreviation of " + framework.getName() + " must be at most 4 characters: " + abbreviation);
             abbreviations.add(abbreviation);
         }
         assertEquals(20, abbreviations.size(),
-            "Expected 20 unique abbreviations, got " + abbreviations.size() + " for: " + abbreviations);
+                "Expected 20 unique abbreviations, got " + abbreviations.size() + " for: " + abbreviations);
     }
 
     @Test
@@ -199,7 +196,7 @@ class FrameworksTest {
         for (Class<? extends JIPipeNodeTaxonomyFramework> framework : allFrameworks()) {
             String styleId = instantiate(framework).getPatternStyleId();
             assertTrue(styleId != null && !styleId.isEmpty(),
-                "Expected a non-empty pattern style id for " + framework.getName() + ", got: " + styleId);
+                    "Expected a non-empty pattern style id for " + framework.getName() + ", got: " + styleId);
         }
     }
 
@@ -220,16 +217,16 @@ class FrameworksTest {
             Color first = instantiate(framework).getColor();
             Color second = instantiate(framework).getColor();
             assertEquals(first, second,
-                "getColor() of " + framework.getName() + " must be stable across instances");
+                    "getColor() of " + framework.getName() + " must be stable across instances");
         }
     }
 
     @Test
     void differentFrameworksMapToDifferentColors() {
         Set<Color> colors = allFrameworks().stream()
-            .map(f -> instantiate(f).getColor())
-            .collect(Collectors.toSet());
+                .map(f -> instantiate(f).getColor())
+                .collect(Collectors.toSet());
         assertTrue(colors.size() > 1,
-            "Expected the 20 ship-set frameworks to span more than one palette color, got: " + colors);
+                "Expected the 20 ship-set frameworks to span more than one palette color, got: " + colors);
     }
 }

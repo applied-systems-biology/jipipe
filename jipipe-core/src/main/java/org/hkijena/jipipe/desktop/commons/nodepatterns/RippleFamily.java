@@ -13,14 +13,15 @@
 
 package org.hkijena.jipipe.desktop.commons.nodepatterns;
 
-import java.awt.BasicStroke;
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 import java.util.Random;
 
-/** Radial fan + concentric rings from an interior point (Vanta 'ripple' / 'trunk'); the full 360° crosses all four borders. */
+/**
+ * Radial fan + concentric rings from an interior point (Vanta 'ripple' / 'trunk'); the full 360° crosses all four borders.
+ */
 public final class RippleFamily implements NodePatternFamily {
     @Override
     public void paint(Graphics2D g, int w, int h, Random rng) {

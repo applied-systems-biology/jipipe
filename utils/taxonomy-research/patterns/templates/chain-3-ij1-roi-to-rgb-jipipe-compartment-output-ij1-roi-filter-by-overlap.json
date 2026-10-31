@@ -1,1 +1,33 @@
-{"nodes":{"n0":{"jipipe:node-info-id":"ij1-roi-to-rgb","jipipe:graph-compartment":"9d7092aa-46bc-51fd-a215-b693ebbd8862","jipipe:node:name":"Convert ROI to RGB: Cellpose results"},"n1":{"jipipe:node-info-id":"jipipe:compartment-output","jipipe:graph-compartment":"9d7092aa-46bc-51fd-a215-b693ebbd8862","jipipe:node:name":"Output"},"n2":{"jipipe:node-info-id":"ij1-roi-filter-by-overlap","jipipe:graph-compartment":"9d7092aa-46bc-51fd-a215-b693ebbd8862","jipipe:node:name":"Filter ROI by overlap"}},"edges":[{"source-node":"n0","source-slot":"Output","target-node":"n1","target-slot":"Ovedrlay combined ROIs"},{"source-node":"n1","source-slot":"Image with ridges","target-node":"n2","target-slot":"Reference"}]}
+{
+  "nodes": {
+    "n0": {
+      "jipipe:node-info-id": "ij1-roi-to-rgb",
+      "jipipe:graph-compartment": "9d7092aa-46bc-51fd-a215-b693ebbd8862",
+      "jipipe:node:name": "Convert ROI to RGB: Cellpose results"
+    },
+    "n1": {
+      "jipipe:node-info-id": "jipipe:compartment-output",
+      "jipipe:graph-compartment": "9d7092aa-46bc-51fd-a215-b693ebbd8862",
+      "jipipe:node:name": "Output"
+    },
+    "n2": {
+      "jipipe:node-info-id": "ij1-roi-filter-by-overlap",
+      "jipipe:graph-compartment": "9d7092aa-46bc-51fd-a215-b693ebbd8862",
+      "jipipe:node:name": "Filter ROI by overlap"
+    }
+  },
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Output",
+      "target-node": "n1",
+      "target-slot": "Ovedrlay combined ROIs"
+    },
+    {
+      "source-node": "n1",
+      "source-slot": "Image with ridges",
+      "target-node": "n2",
+      "target-slot": "Reference"
+    }
+  ]
+}

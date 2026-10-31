@@ -14,17 +14,20 @@
 package org.hkijena.jipipe.plugins.tables.nodes.columns;
 
 import com.google.common.primitives.Doubles;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.TableDataFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.tables.TableTransformFunction;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
-import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.TableDataFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.tables.TableTransformFunction;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
@@ -41,7 +44,7 @@ import java.util.*;
  * Algorithm that integrates columns
  */
 @SetJIPipeDocumentation(name = "Apply expression to table (columns)", description = "Applies an expression to the whole table. Each entry in the list of processors generates a column.")
-@ConfigureJIPipeNode(function = { TableTransformFunction.class, TableDataFunction.class })
+@ConfigureJIPipeNode(function = {TableTransformFunction.class, TableDataFunction.class})
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true, optional = true, description = "The optional input table. If none is provided, the number of rows and columns are set to zero.")
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)
 public class ApplyExpressionToTableByColumnAlgorithm extends JIPipeSimpleIteratingAlgorithm {

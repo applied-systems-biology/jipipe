@@ -1,1 +1,27 @@
-{"nodes":{"n0":{"jipipe:node-info-id":"ij3d-roi-convert-to-rgb","jipipe:graph-compartment":"d74727c7-23a4-55cc-ba85-d9888e3789d5","jipipe:node:name":"Convert 3D ROI to RGB"},"n1":{"jipipe:node-info-id":"ij1-color-blend-images","jipipe:graph-compartment":"d74727c7-23a4-55cc-ba85-d9888e3789d5","jipipe:node:name":"Blend images"},"n2":{"jipipe:node-info-id":"ij1-calibration-copy-physical-dimensions","jipipe:graph-compartment":"d74727c7-23a4-55cc-ba85-d9888e3789d5","jipipe:node:name":"Copy physical dimensions"}},"edges":[{"source-node":"n0","source-slot":"Output","target-node":"n1","target-slot":"Magenta"}]}
+{
+  "nodes": {
+    "n0": {
+      "jipipe:node-info-id": "ij3d-roi-convert-to-rgb",
+      "jipipe:graph-compartment": "d74727c7-23a4-55cc-ba85-d9888e3789d5",
+      "jipipe:node:name": "Convert 3D ROI to RGB"
+    },
+    "n1": {
+      "jipipe:node-info-id": "ij1-color-blend-images",
+      "jipipe:graph-compartment": "d74727c7-23a4-55cc-ba85-d9888e3789d5",
+      "jipipe:node:name": "Blend images"
+    },
+    "n2": {
+      "jipipe:node-info-id": "ij1-calibration-copy-physical-dimensions",
+      "jipipe:graph-compartment": "d74727c7-23a4-55cc-ba85-d9888e3789d5",
+      "jipipe:node:name": "Copy physical dimensions"
+    }
+  },
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Output",
+      "target-node": "n1",
+      "target-slot": "Magenta"
+    }
+  ]
+}

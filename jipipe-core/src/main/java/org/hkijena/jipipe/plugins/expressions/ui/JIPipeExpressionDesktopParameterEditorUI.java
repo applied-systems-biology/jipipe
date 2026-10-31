@@ -70,8 +70,8 @@ public class JIPipeExpressionDesktopParameterEditorUI extends JIPipeDesktopParam
         JIPipeExpressionParameterSettings settings = getParameterAccess().getAnnotationOfType(JIPipeExpressionParameterSettings.class);
         setLayout(new BorderLayout());
 
-        JButton functionBuilder = new JButton("Edit", JIPipe.RESOURCES.getIcon16("actions/edit.png"));
-        functionBuilder.addActionListener(e -> editInFunctionBuilder());
+        JButton functionBuilder = UIUtils.createParameterButton("Edit", JIPipe.RESOURCES.getIcon16("actions/edit.png"), e -> editInFunctionBuilder());
+        functionBuilder.setToolTipText("Edit the expression in the function builder");
         editPanel.setOpaque(false);
 
         if (settings == null || !settings.withoutEditorButton()) {

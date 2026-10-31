@@ -19,9 +19,7 @@ import org.junit.jupiter.api.Test;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Tests the four seed {@link org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFamily}
@@ -37,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class SeedFamiliesTest {
 
     private static final JIPipeNodeTaxonomyFamily[] FAMILIES = {
-        new TrackMateFamily(), new Cellpose4Family(), new MachineLearningFamily(), new PlottingFamily()
+            new TrackMateFamily(), new Cellpose4Family(), new MachineLearningFamily(), new PlottingFamily()
     };
 
     /**
@@ -69,9 +67,9 @@ class SeedFamiliesTest {
             String name = family.getName();
             String description = family.getDescription();
             assertTrue(name != null && !name.isBlank(),
-                "family name must be non-blank: " + family.getClass().getSimpleName());
+                    "family name must be non-blank: " + family.getClass().getSimpleName());
             assertTrue(description != null && !description.isBlank(),
-                "family description must be non-blank: " + family.getClass().getSimpleName());
+                    "family description must be non-blank: " + family.getClass().getSimpleName());
         }
     }
 
@@ -83,9 +81,9 @@ class SeedFamiliesTest {
     void templatesAndExamplesAreNull() {
         for (JIPipeNodeTaxonomyFamily family : FAMILIES) {
             assertEquals(null, family.getTemplate(),
-                "template must be null in Phase 1a: " + family.getClass().getSimpleName());
+                    "template must be null in Phase 1a: " + family.getClass().getSimpleName());
             assertEquals(null, family.getExample(),
-                "example must be null in Phase 1a: " + family.getClass().getSimpleName());
+                    "example must be null in Phase 1a: " + family.getClass().getSimpleName());
         }
     }
 
@@ -96,7 +94,7 @@ class SeedFamiliesTest {
     void tagsAreEmpty() {
         for (JIPipeNodeTaxonomyFamily family : FAMILIES) {
             assertTrue(family.getTags().isEmpty(),
-                "tags must be empty in Phase 1a: " + family.getClass().getSimpleName());
+                    "tags must be empty in Phase 1a: " + family.getClass().getSimpleName());
         }
     }
 }

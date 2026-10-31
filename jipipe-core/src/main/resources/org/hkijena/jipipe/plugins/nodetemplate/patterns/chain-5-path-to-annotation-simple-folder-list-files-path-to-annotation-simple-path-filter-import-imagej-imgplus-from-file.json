@@ -1,1 +1,70 @@
-{"nodes":{"n0":{"jipipe:node-info-id":"path-to-annotation-simple","jipipe:graph-compartment":"c0302e31-6fac-55c1-a3b2-049b5ac9b4d0","jipipe:metadata-v1":{"location/c0302e31-6fac-55c1-a3b2-049b5ac9b4d0/x":1,"location/c0302e31-6fac-55c1-a3b2-049b5ac9b4d0/y":1}},"n1":{"jipipe:node-info-id":"folder-list-files","jipipe:graph-compartment":"c0302e31-6fac-55c1-a3b2-049b5ac9b4d0","jipipe:metadata-v1":{"location/c0302e31-6fac-55c1-a3b2-049b5ac9b4d0/x":1,"location/c0302e31-6fac-55c1-a3b2-049b5ac9b4d0/y":5}},"n2":{"jipipe:node-info-id":"path-to-annotation-simple","jipipe:graph-compartment":"c0302e31-6fac-55c1-a3b2-049b5ac9b4d0","jipipe:metadata-v1":{"location/c0302e31-6fac-55c1-a3b2-049b5ac9b4d0/x":1,"location/c0302e31-6fac-55c1-a3b2-049b5ac9b4d0/y":9}},"n3":{"jipipe:node-info-id":"path-filter","jipipe:graph-compartment":"c0302e31-6fac-55c1-a3b2-049b5ac9b4d0","jipipe:metadata-v1":{"location/c0302e31-6fac-55c1-a3b2-049b5ac9b4d0/x":1,"location/c0302e31-6fac-55c1-a3b2-049b5ac9b4d0/y":13}},"n4":{"jipipe:node-info-id":"import-imagej-imgplus-from-file","jipipe:graph-compartment":"c0302e31-6fac-55c1-a3b2-049b5ac9b4d0","jipipe:metadata-v1":{"location/c0302e31-6fac-55c1-a3b2-049b5ac9b4d0/x":1,"location/c0302e31-6fac-55c1-a3b2-049b5ac9b4d0/y":17}}},"edges":[{"source-node":"n0","source-slot":"Annotated paths","target-node":"n1","target-slot":"Folders"},{"source-node":"n1","source-slot":"Files","target-node":"n2","target-slot":"Paths"},{"source-node":"n2","source-slot":"Annotated paths","target-node":"n3","target-slot":"Input"},{"source-node":"n3","source-slot":"Output","target-node":"n4","target-slot":"Files"}]}
+{
+  "nodes": {
+    "n0": {
+      "jipipe:node-info-id": "path-to-annotation-simple",
+      "jipipe:graph-compartment": "c0302e31-6fac-55c1-a3b2-049b5ac9b4d0",
+      "jipipe:metadata-v1": {
+        "location/c0302e31-6fac-55c1-a3b2-049b5ac9b4d0/x": 1,
+        "location/c0302e31-6fac-55c1-a3b2-049b5ac9b4d0/y": 1
+      }
+    },
+    "n1": {
+      "jipipe:node-info-id": "folder-list-files",
+      "jipipe:graph-compartment": "c0302e31-6fac-55c1-a3b2-049b5ac9b4d0",
+      "jipipe:metadata-v1": {
+        "location/c0302e31-6fac-55c1-a3b2-049b5ac9b4d0/x": 1,
+        "location/c0302e31-6fac-55c1-a3b2-049b5ac9b4d0/y": 5
+      }
+    },
+    "n2": {
+      "jipipe:node-info-id": "path-to-annotation-simple",
+      "jipipe:graph-compartment": "c0302e31-6fac-55c1-a3b2-049b5ac9b4d0",
+      "jipipe:metadata-v1": {
+        "location/c0302e31-6fac-55c1-a3b2-049b5ac9b4d0/x": 1,
+        "location/c0302e31-6fac-55c1-a3b2-049b5ac9b4d0/y": 9
+      }
+    },
+    "n3": {
+      "jipipe:node-info-id": "path-filter",
+      "jipipe:graph-compartment": "c0302e31-6fac-55c1-a3b2-049b5ac9b4d0",
+      "jipipe:metadata-v1": {
+        "location/c0302e31-6fac-55c1-a3b2-049b5ac9b4d0/x": 1,
+        "location/c0302e31-6fac-55c1-a3b2-049b5ac9b4d0/y": 13
+      }
+    },
+    "n4": {
+      "jipipe:node-info-id": "import-imagej-imgplus-from-file",
+      "jipipe:graph-compartment": "c0302e31-6fac-55c1-a3b2-049b5ac9b4d0",
+      "jipipe:metadata-v1": {
+        "location/c0302e31-6fac-55c1-a3b2-049b5ac9b4d0/x": 1,
+        "location/c0302e31-6fac-55c1-a3b2-049b5ac9b4d0/y": 17
+      }
+    }
+  },
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Annotated paths",
+      "target-node": "n1",
+      "target-slot": "Folders"
+    },
+    {
+      "source-node": "n1",
+      "source-slot": "Files",
+      "target-node": "n2",
+      "target-slot": "Paths"
+    },
+    {
+      "source-node": "n2",
+      "source-slot": "Annotated paths",
+      "target-node": "n3",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n3",
+      "source-slot": "Output",
+      "target-node": "n4",
+      "target-slot": "Files"
+    }
+  ]
+}

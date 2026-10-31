@@ -10,5 +10,7 @@ public class NodeRemovedEvent extends InstrumentationEvent {
         this.nodeId = nodeId;
     }
 
-    public String getNodeId() { return nodeId; }
+    public String getNodeId() {
+        return nodeId;
+    }
 }

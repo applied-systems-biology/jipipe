@@ -6,12 +6,12 @@ Consumes step (A)'s ``utils/taxonomy-research/dag-candidates.json`` and
 produces ``utils/taxonomy-research/dag-clusters.json``:
 
 * **pre-merge**: candidates sharing a functional signature are already
-  exact duplicates — collapsed BEFORE embedding (one embedding per
+  exact duplicates - collapsed BEFORE embedding (one embedding per
   signature group; the (A) `support`/`memberProjects` are the union).
 * **embed**: each group's canonical text form (title evidence + node
   display names + wiring) is embedded via the OpenAI-compatible
   ``/embeddings`` endpoint on ``asb-llm.hki-jena.de`` (model
-  ``vllm/embedding``, 4096-dim — the same API
+  ``vllm/embedding``, 4096-dim - the same API
   ``JIPipeAPIEmbeddingAIModelRunner`` speaks).
 * **merge**: agglomerative clustering (cosine distance, average linkage).
   A cluster = one shipping candidate for step (C); representative = the
@@ -21,7 +21,7 @@ produces ``utils/taxonomy-research/dag-clusters.json``:
   transfer).
 * **name evidence (signals 4/5)**: named nodes (a node whose
   ``jipipe:node:name`` differs from BOTH its current registry display name
-  AND its dominant corpus label — the 2026-10-19 audit: comparing only
+  AND its dominant corpus label - the 2026-10-19 audit: comparing only
   against the registry name counted a dev-renamed type's stale old default
   as "user naming", 29% of the old field) and comment text attached
   inside the candidate are additional vocabulary for step (C)'s namer.
@@ -69,7 +69,7 @@ CHUNK = 40  # texts per request (the audit script's chunk size)
 # literature and practice put useful cuts around 0.2–0.3)". The sweep over
 # THIS corpus (ruling B8) shows that cut is wrong here: this embedding
 # compresses distances high (median cosine distance 0.408; even
-# "hello"/"Hello" is 0.13 apart), so the "0.2–0.3" band over-merges — at
+# "hello"/"Hello" is 0.13 apart), so the "0.2–0.3" band over-merges - at
 # 0.20 a single cluster holds 220 members / 40 distinct graphs (chaining),
 # and it only grows with threshold (110 -> 276 -> 714 -> 1101). The usable
 # cut is lower: 0.15 stops exactly where chaining begins, where each
@@ -140,7 +140,7 @@ def build_corpus_label_census(candidates) -> dict:
     """node-id -> {label: count} over the harvested candidates (the (A)
     population). The 2026-10-19 audit: "label != registry name" as the
     signal-4 test conflates USER renaming with node TYPES the developers
-    renamed — the type's old default differs from the current registry name
+    renamed - the type's old default differs from the current registry name
     across the whole corpus (29% of the nameEvidence field was exactly that).
     The census is the baseline for "what is this type's default label"
     (dominant_label); it is rebuilt from dag-candidates.json on every (B)
@@ -161,7 +161,7 @@ def dominant_label(census: dict, node_id: str):
     """The type's de-facto default label = the most frequent label in the
     census (lexicographic tie-break, deterministic). None when the type is
     absent from the census. This is the registry name for un-renamed types
-    and the STALE old default for types the developers renamed — excluding
+    and the STALE old default for types the developers renamed - excluding
     it (below) is what separates user naming from a rename."""
     counts = census.get(node_id)
     if not counts:
@@ -172,7 +172,7 @@ def dominant_label(census: dict, node_id: str):
 def collect_name_evidence(candidate: dict, registry_names=None,
                           census=None) -> list:
     """Named-node evidence (signal 4): the ``jipipe:node:name`` labels that
-    are a genuine USER choice — not the node type's default. A label is
+    are a genuine USER choice - not the node type's default. A label is
     excluded when it equals the type's CURRENT registry name OR its
     DOMINANT corpus label (census): a node type the developers renamed
     carries its stale old default across the corpus (measured 60–99% of
@@ -255,7 +255,7 @@ class EndpointEmbedder:
 # --------------------------------------------------------------------------- #
 
 # scipy is the production path (C-speed average linkage; the research
-# scripts in this repo already use it). It is OPTIONAL — without it the
+# scripts in this repo already use it). It is OPTIONAL - without it the
 # pure-Python fallback below is used (correct, but O(n^4); fine for the
 # small hermetic test inputs, too slow for the ~624-vector corpus run).
 try:
@@ -351,7 +351,7 @@ def merge_candidates(candidates, embed, threshold=DEFAULT_THRESHOLD,
 
     ``embed``: callable(texts) -> list of vectors (hermetic tests pass a
     fake; the CLI passes the live endpoint with the disk cache).
-    ``cache``: {sha256(canonical_text): vector} — consulted first; new
+    ``cache``: {sha256(canonical_text): vector} - consulted first; new
     embeddings are written back to ``cache_path`` when given.
     Returns the list of cluster records (deterministic order).
     """
@@ -436,7 +436,7 @@ def merge_candidates(candidates, embed, threshold=DEFAULT_THRESHOLD,
         rep_cand = next((c for c in candidates
                          if c["candidateId"] == rep["representative"]), None)
         # title transfer: an untitled member in a titled cluster (plan §3.1
-        # signal 3b — "the merge stage first tries to match them against a
+        # signal 3b - "the merge stage first tries to match them against a
         # titled candidate (same-cluster ⇒ the title transfers)")
         transferred = []
         if titles:
@@ -556,7 +556,7 @@ def main(argv=None):
                          cache=cache, cache_path=args.cache, census=census)
         save_cache(args.cache, cache)
         def cached_embed(texts):
-            # all texts are cached now — fail loudly on a cache miss instead
+            # all texts are cached now - fail loudly on a cache miss instead
             # of silently calling the endpoint again
             key = lambda t: hashlib.sha256(t.encode("utf-8")).hexdigest()
             missing = [t for t in texts if key(t) not in cache]

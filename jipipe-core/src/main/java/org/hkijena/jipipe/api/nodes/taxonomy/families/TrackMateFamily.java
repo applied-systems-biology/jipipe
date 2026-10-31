@@ -28,7 +28,9 @@ import java.util.Set;
  */
 public final class TrackMateFamily implements JIPipeNodeTaxonomyFamily {
 
-    /** The stable id of this family; used verbatim in step ids. */
+    /**
+     * The stable id of this family; used verbatim in step ids.
+     */
     public static final String ID = "jipipe:family:trackmate";
 
     @Override

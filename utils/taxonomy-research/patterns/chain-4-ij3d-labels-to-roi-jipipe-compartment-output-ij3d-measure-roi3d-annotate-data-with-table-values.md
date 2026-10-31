@@ -34,35 +34,42 @@ template:
 
 # Pattern: IJ3D Labels to 3D ROI -> Compartment output -> Extract IJ3D ROI statistics -> Annotate data with table values
 
-Mined pattern `chain-4-ij3d-labels-to-roi-jipipe-compartment-output-ij3d-measure-roi3d-annotate-data-with-table-values` (shape `chain`, support 26).
+Mined pattern `chain-4-ij3d-labels-to-roi-jipipe-compartment-output-ij3d-measure-roi3d-annotate-data-with-table-values`
+(shape `chain`, support 26).
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| other | `ij3d-labels-to-roi` |
-| core-io | `jipipe:compartment-output` |
-| other | `ij3d-measure-roi3d` |
+| role     | node ids                          |
+|----------|-----------------------------------|
+| other    | `ij3d-labels-to-roi`              |
+| core-io  | `jipipe:compartment-output`       |
+| other    | `ij3d-measure-roi3d`              |
 | annotate | `annotate-data-with-table-values` |
 
 ## Example graph
 
-Project: `AIAgentTests/03-ExampleWorkflows/Annamaria_12.jip` (relative to `/data/JIPipe`), compartment `Membrane+Particles`.
+Project: `AIAgentTests/03-ExampleWorkflows/Annamaria_12.jip` (relative to `/data/JIPipe`), compartment
+`Membrane+Particles`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `ij3d-labels-to-roi` | Labels to 3D ROI |
-| n1 | `jipipe:compartment-output` | Mask |
-| n2 | `ij3d-measure-roi3d` | Extract ROI 3D statistics |
-| n3 | `annotate-data-with-table-values` | Annotate data with table values |
+| key | node id                           | name                            |
+|-----|-----------------------------------|---------------------------------|
+| n0  | `ij3d-labels-to-roi`              | Labels to 3D ROI                |
+| n1  | `jipipe:compartment-output`       | Mask                            |
+| n2  | `ij3d-measure-roi3d`              | Extract ROI 3D statistics       |
+| n3  | `annotate-data-with-table-values` | Annotate data with table values |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
-| Labels to 3D ROI | `ROI` | Mask | `3D cell membranes` | `roi-3d-list` |
-| Mask | `Magenta trimmed` | Extract ROI 3D statistics | `Reference` | `imagej-imgplus` |
-| Extract ROI 3D statistics | `Measurements` | Annotate data with table values | `Table` | `imagej-results-table` |
+| from                      | slot              | to                              | slot                | data class             |
+|---------------------------|-------------------|---------------------------------|---------------------|------------------------|
+| Labels to 3D ROI          | `ROI`             | Mask                            | `3D cell membranes` | `roi-3d-list`          |
+| Mask                      | `Magenta trimmed` | Extract ROI 3D statistics       | `Reference`         | `imagej-imgplus`       |
+| Extract ROI 3D statistics | `Measurements`    | Annotate data with table values | `Table`             | `imagej-results-table` |
 
 ## Template
 
-Proposed name `IJ3D Labels to 3D ROI -> Compartment output -> Extract IJ3D ROI statistics -> Annotate data with table values`, menu path `Patterns/Images/IJ3D Labels to 3D ROI -> Compartment output -> Extract IJ3D ROI statistics -> Annotate data with table values` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/chain-4-ij3d-labels-to-roi-jipipe-compartment-output-ij3d-measure-roi3d-annotate-data-with-table-values.json`.
+Proposed name
+`IJ3D Labels to 3D ROI -> Compartment output -> Extract IJ3D ROI statistics -> Annotate data with table values`, menu
+path
+`Patterns/Images/IJ3D Labels to 3D ROI -> Compartment output -> Extract IJ3D ROI statistics -> Annotate data with table values`
+(proposal only - not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/chain-4-ij3d-labels-to-roi-jipipe-compartment-output-ij3d-measure-roi3d-annotate-data-with-table-values.json`.
 

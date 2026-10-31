@@ -1,1 +1,84 @@
-{"edges":[{"source-node":"n0","source-slot":"Input","target-node":"n1","target-slot":"Input"},{"source-node":"n1","source-slot":"Output","target-node":"n2","target-slot":"Mask"},{"source-node":"n2","source-slot":"ROI","target-node":"n4","target-slot":"Input"},{"source-node":"n3","source-slot":"Output","target-node":"n0","target-slot":"Input"},{"source-node":"n5","source-slot":"Output","target-node":"n3","target-slot":"Input"}],"nodes":{"n0":{"jipipe:graph-compartment":"94e058d3-f651-5ac0-b3dc-8f1429f35414","jipipe:metadata-v1":{"location/94e058d3-f651-5ac0-b3dc-8f1429f35414/x":0,"location/94e058d3-f651-5ac0-b3dc-8f1429f35414/y":8},"jipipe:node-info-id":"ij1-feature-mfc-2d"},"n1":{"jipipe:graph-compartment":"94e058d3-f651-5ac0-b3dc-8f1429f35414","jipipe:metadata-v1":{"location/94e058d3-f651-5ac0-b3dc-8f1429f35414/x":0,"location/94e058d3-f651-5ac0-b3dc-8f1429f35414/y":12},"jipipe:node-info-id":"ij1-threshold-auto2d"},"n2":{"jipipe:graph-compartment":"94e058d3-f651-5ac0-b3dc-8f1429f35414","jipipe:metadata-v1":{"location/94e058d3-f651-5ac0-b3dc-8f1429f35414/x":0,"location/94e058d3-f651-5ac0-b3dc-8f1429f35414/y":16},"jipipe:node-info-id":"ij3d-analyze-find-particles"},"n3":{"jipipe:graph-compartment":"94e058d3-f651-5ac0-b3dc-8f1429f35414","jipipe:metadata-v1":{"location/94e058d3-f651-5ac0-b3dc-8f1429f35414/x":0,"location/94e058d3-f651-5ac0-b3dc-8f1429f35414/y":4},"jipipe:node-info-id":"ij1-set-lut-from-color-map"},"n4":{"jipipe:graph-compartment":"94e058d3-f651-5ac0-b3dc-8f1429f35414","jipipe:metadata-v1":{"location/94e058d3-f651-5ac0-b3dc-8f1429f35414/x":0,"location/94e058d3-f651-5ac0-b3dc-8f1429f35414/y":20},"jipipe:node-info-id":"ij3d-roi-change-properties"},"n5":{"jipipe:graph-compartment":"94e058d3-f651-5ac0-b3dc-8f1429f35414","jipipe:metadata-v1":{"location/94e058d3-f651-5ac0-b3dc-8f1429f35414/x":0,"location/94e058d3-f651-5ac0-b3dc-8f1429f35414/y":0},"jipipe:node-info-id":"ij1-blur-median2d"}}}
+{
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Input",
+      "target-node": "n1",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n1",
+      "source-slot": "Output",
+      "target-node": "n2",
+      "target-slot": "Mask"
+    },
+    {
+      "source-node": "n2",
+      "source-slot": "ROI",
+      "target-node": "n4",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n3",
+      "source-slot": "Output",
+      "target-node": "n0",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n5",
+      "source-slot": "Output",
+      "target-node": "n3",
+      "target-slot": "Input"
+    }
+  ],
+  "nodes": {
+    "n0": {
+      "jipipe:graph-compartment": "94e058d3-f651-5ac0-b3dc-8f1429f35414",
+      "jipipe:metadata-v1": {
+        "location/94e058d3-f651-5ac0-b3dc-8f1429f35414/x": 0,
+        "location/94e058d3-f651-5ac0-b3dc-8f1429f35414/y": 8
+      },
+      "jipipe:node-info-id": "ij1-feature-mfc-2d"
+    },
+    "n1": {
+      "jipipe:graph-compartment": "94e058d3-f651-5ac0-b3dc-8f1429f35414",
+      "jipipe:metadata-v1": {
+        "location/94e058d3-f651-5ac0-b3dc-8f1429f35414/x": 0,
+        "location/94e058d3-f651-5ac0-b3dc-8f1429f35414/y": 12
+      },
+      "jipipe:node-info-id": "ij1-threshold-auto2d"
+    },
+    "n2": {
+      "jipipe:graph-compartment": "94e058d3-f651-5ac0-b3dc-8f1429f35414",
+      "jipipe:metadata-v1": {
+        "location/94e058d3-f651-5ac0-b3dc-8f1429f35414/x": 0,
+        "location/94e058d3-f651-5ac0-b3dc-8f1429f35414/y": 16
+      },
+      "jipipe:node-info-id": "ij3d-analyze-find-particles"
+    },
+    "n3": {
+      "jipipe:graph-compartment": "94e058d3-f651-5ac0-b3dc-8f1429f35414",
+      "jipipe:metadata-v1": {
+        "location/94e058d3-f651-5ac0-b3dc-8f1429f35414/x": 0,
+        "location/94e058d3-f651-5ac0-b3dc-8f1429f35414/y": 4
+      },
+      "jipipe:node-info-id": "ij1-set-lut-from-color-map"
+    },
+    "n4": {
+      "jipipe:graph-compartment": "94e058d3-f651-5ac0-b3dc-8f1429f35414",
+      "jipipe:metadata-v1": {
+        "location/94e058d3-f651-5ac0-b3dc-8f1429f35414/x": 0,
+        "location/94e058d3-f651-5ac0-b3dc-8f1429f35414/y": 20
+      },
+      "jipipe:node-info-id": "ij3d-roi-change-properties"
+    },
+    "n5": {
+      "jipipe:graph-compartment": "94e058d3-f651-5ac0-b3dc-8f1429f35414",
+      "jipipe:metadata-v1": {
+        "location/94e058d3-f651-5ac0-b3dc-8f1429f35414/x": 0,
+        "location/94e058d3-f651-5ac0-b3dc-8f1429f35414/y": 0
+      },
+      "jipipe:node-info-id": "ij1-blur-median2d"
+    }
+  }
+}

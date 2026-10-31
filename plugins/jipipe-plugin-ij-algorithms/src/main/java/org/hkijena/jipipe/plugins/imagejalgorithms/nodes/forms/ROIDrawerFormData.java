@@ -32,7 +32,6 @@ import org.hkijena.jipipe.plugins.imageviewer.legacy.JIPipeDesktopLegacyImageVie
 import org.hkijena.jipipe.plugins.imageviewer.legacy.plugins2d.CalibrationPlugin2D;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.plugins2d.LUTManagerPlugin2D;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.plugins2d.PixelInfoPlugin2D;
-import org.hkijena.jipipe.plugins.imageviewer.legacy.plugins2d.maskdrawer.MaskDrawerPlugin2D;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.plugins2d.maskdrawer.MaskToROIDrawerPlugin2D;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.plugins2d.roimanager.ROIManagerPlugin2D;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
@@ -65,9 +64,9 @@ public class ROIDrawerFormData extends FormData {
     }
 
     private void initializeImageViewer() {
-        imageViewerPanelContainer = new JPanel(new BorderLayout(8,8));
+        imageViewerPanelContainer = new JPanel(new BorderLayout(8, 8));
         JIPipeDesktopDockPanel dockPanel = new JIPipeDesktopDockPanel();
-        JIPipeDesktopRibbon ribbon = new  JIPipeDesktopRibbon();
+        JIPipeDesktopRibbon ribbon = new JIPipeDesktopRibbon();
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
         imageViewerPanelContainer.add(dockPanel, BorderLayout.CENTER);

@@ -16,13 +16,24 @@ import org.hkijena.jipipe.utils.json.JsonUtils;
 public class NoodleScoreStatisticsItem implements JIPipeStatisticsItem {
 
     @Override
-    public String getId() { return "noodle-score"; }
+    public String getId() {
+        return "noodle-score";
+    }
+
     @Override
-    public String getName() { return "Noodle score"; }
+    public String getName() {
+        return "Noodle score";
+    }
+
     @Override
-    public String getDescription() { return "Edge path lengths (min/avg/max) across all opened graph editors"; }
+    public String getDescription() {
+        return "Edge path lengths (min/avg/max) across all opened graph editors";
+    }
+
     @Override
-    public StatisticsPrivacyLevel getRequiredPrivacyLevel() { return StatisticsPrivacyLevel.Everything; }
+    public StatisticsPrivacyLevel getRequiredPrivacyLevel() {
+        return StatisticsPrivacyLevel.Everything;
+    }
 
     @Override
     public JsonNode serialize() {
@@ -72,15 +83,24 @@ public class NoodleScoreStatisticsItem implements JIPipeStatisticsItem {
     @Override
     public void reset() {
     }
-    @Override
-    public boolean isTimeTracked() { return true; }
 
     @Override
-    public String getIcon32() { return "actions/bezier-curve.png"; }
+    public boolean isTimeTracked() {
+        return true;
+    }
+
+    @Override
+    public String getIcon32() {
+        return "actions/bezier-curve.png";
+    }
+
     @Override
     public org.hkijena.jipipe.desktop.commons.components.cards.JIPipeDesktopCardVariant getCardVariant() {
         return org.hkijena.jipipe.desktop.commons.components.cards.JIPipeDesktopCardVariant.Default;
     }
+
     @Override
-    public int getDefaultColumnSpan() { return 6; }
+    public int getDefaultColumnSpan() {
+        return 6;
+    }
 }

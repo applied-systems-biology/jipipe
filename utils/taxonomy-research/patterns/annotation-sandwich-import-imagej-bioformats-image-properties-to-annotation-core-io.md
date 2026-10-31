@@ -32,32 +32,37 @@ template:
 
 # Pattern: Bio-Formats importer -> Annotate with image properties -> core-io
 
-Mined pattern `annotation-sandwich-import-imagej-bioformats-image-properties-to-annotation-core-io` (shape `annotation-sandwich`, support 6).
+Mined pattern `annotation-sandwich-import-imagej-bioformats-image-properties-to-annotation-core-io` (shape
+`annotation-sandwich`, support 6).
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| import | `import-imagej-bioformats` |
+| role     | node ids                         |
+|----------|----------------------------------|
+| import   | `import-imagej-bioformats`       |
 | annotate | `image-properties-to-annotation` |
-| core-io | `jipipe:compartment-output` |
+| core-io  | `jipipe:compartment-output`      |
 
 ## Example graph
 
-Project: `AIAgentTests/02-AdvancedPipelines/CellTracking_01.jip` (relative to `/data/JIPipe`), compartment `Preprocessing`.
+Project: `AIAgentTests/02-AdvancedPipelines/CellTracking_01.jip` (relative to `/data/JIPipe`), compartment
+`Preprocessing`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `import-imagej-bioformats` | Bio-Formats importer |
-| n1 | `image-properties-to-annotation` | Annotate with image properties |
-| n2 | `jipipe:compartment-output` | Output |
+| key | node id                          | name                           |
+|-----|----------------------------------|--------------------------------|
+| n0  | `import-imagej-bioformats`       | Bio-Formats importer           |
+| n1  | `image-properties-to-annotation` | Annotate with image properties |
+| n2  | `jipipe:compartment-output`      | Output                         |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
-| Bio-Formats importer | `Output` | Annotate with image properties | `Image` | `imagej-ome` |
-| Annotate with image properties | `Annotated image` | Output | `Raw` | `imagej-imgplus` |
+| from                           | slot              | to                             | slot    | data class       |
+|--------------------------------|-------------------|--------------------------------|---------|------------------|
+| Bio-Formats importer           | `Output`          | Annotate with image properties | `Image` | `imagej-ome`     |
+| Annotate with image properties | `Annotated image` | Output                         | `Raw`   | `imagej-imgplus` |
 
 ## Template
 
-Proposed name `Bio-Formats importer -> Annotate with image properties -> core-io`, menu path `Patterns/Data Sources/Bio-Formats importer -> Annotate with image properties -> core-io` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/annotation-sandwich-import-imagej-bioformats-image-properties-to-annotation-core-io.json`.
+Proposed name `Bio-Formats importer -> Annotate with image properties -> core-io`, menu path
+`Patterns/Data Sources/Bio-Formats importer -> Annotate with image properties -> core-io` (proposal only - not
+registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/annotation-sandwich-import-imagej-bioformats-image-properties-to-annotation-core-io.json`.
 

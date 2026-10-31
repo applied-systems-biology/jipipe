@@ -42,7 +42,7 @@ public class TextBoxNoteGraphNodeTool extends JIPipeAnnotationGraphNodeTool<Text
     protected TextBoxGraphCanvasNote createAndConfigureNode(Point firstPoint, Point secondPoint) {
         TextBoxGraphCanvasNote node = super.createAndConfigureNode(firstPoint, secondPoint);
 
-        if(preset != null) {
+        if (preset != null) {
             applyPreset(node, preset);
         }
 
@@ -100,11 +100,11 @@ public class TextBoxNoteGraphNodeTool extends JIPipeAnnotationGraphNodeTool<Text
         this.anchor = anchor;
     }
 
-    public void setPreset(TextBoxGraphCanvasNote preset) {
-        this.preset = preset;
-    }
-
     public TextBoxGraphCanvasNote getPreset() {
         return preset;
+    }
+
+    public void setPreset(TextBoxGraphCanvasNote preset) {
+        this.preset = preset;
     }
 }

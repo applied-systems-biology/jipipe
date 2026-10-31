@@ -218,6 +218,11 @@ public class JIPipeDesktopScriptParameterEditorUI extends JIPipeDesktopParameter
     }
 
     @Override
+    public boolean isUIInline() {
+        return false;
+    }
+
+    @Override
     public boolean reloadOnShownFirstTime() {
         return true;
     }

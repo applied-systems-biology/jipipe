@@ -18,9 +18,23 @@ public class ConnectionChangedEvent extends InstrumentationEvent {
         this.action = action;
     }
 
-    public String getSource() { return source; }
-    public String getSourceSlot() { return sourceSlot; }
-    public String getTarget() { return target; }
-    public String getTargetSlot() { return targetSlot; }
-    public String getAction() { return action; }
+    public String getSource() {
+        return source;
+    }
+
+    public String getSourceSlot() {
+        return sourceSlot;
+    }
+
+    public String getTarget() {
+        return target;
+    }
+
+    public String getTargetSlot() {
+        return targetSlot;
+    }
+
+    public String getAction() {
+        return action;
+    }
 }

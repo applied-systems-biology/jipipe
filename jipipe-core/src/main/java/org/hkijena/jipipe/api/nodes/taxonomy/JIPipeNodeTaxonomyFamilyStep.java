@@ -28,7 +28,7 @@ import java.util.List;
  * The {@code after} entry holds node <em>classes</em>, not node ids: the
  * {@link FamilyAssembler} resolves them against its current class→node-id
  * mapping <em>lazily, at query time</em> ({@link #afterIds(String, FamilyAssembler)}
- * — see below). Registration order therefore does not matter: a step whose
+ * - see below). Registration order therefore does not matter: a step whose
  * predecessor registers (or maps) later still resolves correctly. A class
  * that maps to several node ids (e.g. a shared factory class behind many
  * programmatically generated node entries) contributes one predecessor per
@@ -71,7 +71,7 @@ public final class JIPipeNodeTaxonomyFamilyStep {
     /**
      * The step ids of this step's predecessors, resolved through the given
      * assembler's <em>current</em> class→node-id mapping (deferred
-     * resolution — see the class Javadoc). A class the mapping does not
+     * resolution - see the class Javadoc). A class the mapping does not
      * know falls back to its simple name; a class mapped to several node
      * ids yields one step id per node id, in mapping order. Duplicates are
      * removed, first occurrence wins.

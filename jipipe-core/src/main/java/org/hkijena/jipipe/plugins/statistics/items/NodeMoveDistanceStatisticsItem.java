@@ -9,14 +9,30 @@ public class NodeMoveDistanceStatisticsItem implements JIPipeStatisticsItem {
     private static double accumulatedDistance = 0;
     private double distance = 0;
 
+    public static void addDistance(double delta, Runnable onSave) {
+        accumulatedDistance += delta;
+        if (onSave != null) onSave.run();
+    }
+
     @Override
-    public String getId() { return "node-move-distance"; }
+    public String getId() {
+        return "node-move-distance";
+    }
+
     @Override
-    public String getName() { return "Node move distance"; }
+    public String getName() {
+        return "Node move distance";
+    }
+
     @Override
-    public String getDescription() { return "Total distance nodes have been moved by the user (pixels)"; }
+    public String getDescription() {
+        return "Total distance nodes have been moved by the user (pixels)";
+    }
+
     @Override
-    public StatisticsPrivacyLevel getRequiredPrivacyLevel() { return StatisticsPrivacyLevel.Everything; }
+    public StatisticsPrivacyLevel getRequiredPrivacyLevel() {
+        return StatisticsPrivacyLevel.Everything;
+    }
 
     @Override
     public JsonNode serialize() {
@@ -33,15 +49,18 @@ public class NodeMoveDistanceStatisticsItem implements JIPipeStatisticsItem {
     }
 
     @Override
-    public void reset() { distance = 0; accumulatedDistance = 0; }
-    @Override
-    public boolean isTimeTracked() { return true; }
-
-    public static void addDistance(double delta, Runnable onSave) {
-        accumulatedDistance += delta;
-        if (onSave != null) onSave.run();
+    public void reset() {
+        distance = 0;
+        accumulatedDistance = 0;
     }
 
     @Override
-    public String getIcon32() { return "actions/transform-move.png"; }
+    public boolean isTimeTracked() {
+        return true;
+    }
+
+    @Override
+    public String getIcon32() {
+        return "actions/transform-move.png";
+    }
 }

@@ -32,32 +32,36 @@ template:
 
 # Pattern: Set IJ3D ROI properties -> Convert IJ3D ROI to RGB -> Copy physical dimensions
 
-Mined pattern `chain-3-ij3d-roi-change-properties-ij3d-roi-convert-to-rgb-ij1-calibration-copy-physical-dimensions` (shape `chain`, support 34).
+Mined pattern `chain-3-ij3d-roi-change-properties-ij3d-roi-convert-to-rgb-ij1-calibration-copy-physical-dimensions`
+(shape `chain`, support 34).
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| other | `ij3d-roi-change-properties` |
-| other | `ij3d-roi-convert-to-rgb` |
+| role  | node ids                                   |
+|-------|--------------------------------------------|
+| other | `ij3d-roi-change-properties`               |
+| other | `ij3d-roi-convert-to-rgb`                  |
 | other | `ij1-calibration-copy-physical-dimensions` |
 
 ## Example graph
 
 Project: `AIAgentTests/03-ExampleWorkflows/Annamaria_12.jip` (relative to `/data/JIPipe`), compartment `Colocalization`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `ij3d-roi-change-properties` | Set 3D ROI properties |
-| n1 | `ij3d-roi-convert-to-rgb` | Convert 3D ROI to RGB |
-| n2 | `ij1-calibration-copy-physical-dimensions` | Copy physical dimensions |
+| key | node id                                    | name                     |
+|-----|--------------------------------------------|--------------------------|
+| n0  | `ij3d-roi-change-properties`               | Set 3D ROI properties    |
+| n1  | `ij3d-roi-convert-to-rgb`                  | Convert 3D ROI to RGB    |
+| n2  | `ij1-calibration-copy-physical-dimensions` | Copy physical dimensions |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
-| Set 3D ROI properties | `Output` | Convert 3D ROI to RGB | `ROI` | `roi-3d-list` |
+| from                  | slot     | to                       | slot     | data class                 |
+|-----------------------|----------|--------------------------|----------|----------------------------|
+| Set 3D ROI properties | `Output` | Convert 3D ROI to RGB    | `ROI`    | `roi-3d-list`              |
 | Convert 3D ROI to RGB | `Output` | Copy physical dimensions | `Target` | `imagej-imgplus-color-rgb` |
 
 ## Template
 
-Proposed name `Set IJ3D ROI properties -> Convert IJ3D ROI to RGB -> Copy physical dimensions`, menu path `Patterns/ROIs/Set IJ3D ROI properties -> Convert IJ3D ROI to RGB -> Copy physical dimensions` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/chain-3-ij3d-roi-change-properties-ij3d-roi-convert-to-rgb-ij1-calibration-copy-physical-dimensions.json`.
+Proposed name `Set IJ3D ROI properties -> Convert IJ3D ROI to RGB -> Copy physical dimensions`, menu path
+`Patterns/ROIs/Set IJ3D ROI properties -> Convert IJ3D ROI to RGB -> Copy physical dimensions` (proposal only - not
+registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/chain-3-ij3d-roi-change-properties-ij3d-roi-convert-to-rgb-ij1-calibration-copy-physical-dimensions.json`.
 

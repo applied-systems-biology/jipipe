@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.api.nodes.taxonomy;
 
-import java.awt.Color;
+import java.awt.*;
 
 /**
  * A framework in the node taxonomy: the origin of an algorithm node,
@@ -33,9 +33,9 @@ public interface JIPipeNodeTaxonomyFramework {
      * so the color is a pure function of the id.
      */
     Color[] PALETTE = {
-        new Color(0x4a86c8), new Color(0xd08a3e), new Color(0x5aa05a), new Color(0x8a63c0),
-        new Color(0xb3542e), new Color(0x2e6db3), new Color(0x5a7d2a), new Color(0xc05a8a),
-        new Color(0x7a5ac0), new Color(0x2ea0a0), new Color(0xa0a02e), new Color(0x666e7a)
+            new Color(0x4a86c8), new Color(0xd08a3e), new Color(0x5aa05a), new Color(0x8a63c0),
+            new Color(0xb3542e), new Color(0x2e6db3), new Color(0x5a7d2a), new Color(0xc05a8a),
+            new Color(0x7a5ac0), new Color(0x2ea0a0), new Color(0xa0a02e), new Color(0x666e7a)
     };
 
     /**

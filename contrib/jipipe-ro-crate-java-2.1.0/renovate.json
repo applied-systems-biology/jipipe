@@ -1,4 +1,8 @@
 {
-  "labels": ["dependencies"],
-  "baseBranches": ["development"]
+  "labels": [
+    "dependencies"
+  ],
+  "baseBranches": [
+    "development"
+  ]
 }

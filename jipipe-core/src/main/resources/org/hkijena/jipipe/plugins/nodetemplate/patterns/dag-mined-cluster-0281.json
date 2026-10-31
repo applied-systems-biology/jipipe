@@ -1,1 +1,56 @@
-{"edges":[{"source-node":"n0","source-slot":"Annotated data","target-node":"n1","target-slot":"Input"},{"source-node":"n2","source-slot":"Measurements","target-node":"n3","target-slot":"Input"},{"source-node":"n3","source-slot":"Output","target-node":"n0","target-slot":"Table"}],"nodes":{"n0":{"jipipe:graph-compartment":"25f82917-d82a-5289-ac77-0a95d0a59f8b","jipipe:metadata-v1":{"location/25f82917-d82a-5289-ac77-0a95d0a59f8b/x":2,"location/25f82917-d82a-5289-ac77-0a95d0a59f8b/y":8},"jipipe:node-info-id":"annotate-data-with-table-values"},"n1":{"jipipe:graph-compartment":"25f82917-d82a-5289-ac77-0a95d0a59f8b","jipipe:metadata-v1":{"location/25f82917-d82a-5289-ac77-0a95d0a59f8b/x":0,"location/25f82917-d82a-5289-ac77-0a95d0a59f8b/y":12},"jipipe:node-info-id":"annotate-filter-by-annotation-if-else"},"n2":{"jipipe:graph-compartment":"25f82917-d82a-5289-ac77-0a95d0a59f8b","jipipe:metadata-v1":{"location/25f82917-d82a-5289-ac77-0a95d0a59f8b/x":5,"location/25f82917-d82a-5289-ac77-0a95d0a59f8b/y":0},"jipipe:node-info-id":"ij1-analyze-find-particles2d"},"n3":{"jipipe:graph-compartment":"25f82917-d82a-5289-ac77-0a95d0a59f8b","jipipe:metadata-v1":{"location/25f82917-d82a-5289-ac77-0a95d0a59f8b/x":7,"location/25f82917-d82a-5289-ac77-0a95d0a59f8b/y":4},"jipipe:node-info-id":"table-integrate-columns"}}}
+{
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Annotated data",
+      "target-node": "n1",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n2",
+      "source-slot": "Measurements",
+      "target-node": "n3",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n3",
+      "source-slot": "Output",
+      "target-node": "n0",
+      "target-slot": "Table"
+    }
+  ],
+  "nodes": {
+    "n0": {
+      "jipipe:graph-compartment": "25f82917-d82a-5289-ac77-0a95d0a59f8b",
+      "jipipe:metadata-v1": {
+        "location/25f82917-d82a-5289-ac77-0a95d0a59f8b/x": 2,
+        "location/25f82917-d82a-5289-ac77-0a95d0a59f8b/y": 8
+      },
+      "jipipe:node-info-id": "annotate-data-with-table-values"
+    },
+    "n1": {
+      "jipipe:graph-compartment": "25f82917-d82a-5289-ac77-0a95d0a59f8b",
+      "jipipe:metadata-v1": {
+        "location/25f82917-d82a-5289-ac77-0a95d0a59f8b/x": 0,
+        "location/25f82917-d82a-5289-ac77-0a95d0a59f8b/y": 12
+      },
+      "jipipe:node-info-id": "annotate-filter-by-annotation-if-else"
+    },
+    "n2": {
+      "jipipe:graph-compartment": "25f82917-d82a-5289-ac77-0a95d0a59f8b",
+      "jipipe:metadata-v1": {
+        "location/25f82917-d82a-5289-ac77-0a95d0a59f8b/x": 5,
+        "location/25f82917-d82a-5289-ac77-0a95d0a59f8b/y": 0
+      },
+      "jipipe:node-info-id": "ij1-analyze-find-particles2d"
+    },
+    "n3": {
+      "jipipe:graph-compartment": "25f82917-d82a-5289-ac77-0a95d0a59f8b",
+      "jipipe:metadata-v1": {
+        "location/25f82917-d82a-5289-ac77-0a95d0a59f8b/x": 7,
+        "location/25f82917-d82a-5289-ac77-0a95d0a59f8b/y": 4
+      },
+      "jipipe:node-info-id": "table-integrate-columns"
+    }
+  }
+}

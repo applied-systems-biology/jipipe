@@ -20,20 +20,10 @@ import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabasePipelineVisibilit
 import org.hkijena.jipipe.api.nodes.database.entries.CreateNewNodesByTemplateDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.entries.NodeEntryKind;
 import org.hkijena.jipipe.api.nodes.database.entries.TemplateScope;
-import org.hkijena.jipipe.api.nodes.taxonomy.FunctionRegistry;
-import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework;
-import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyInputProfile;
-import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension;
+import org.hkijena.jipipe.api.nodes.taxonomy.*;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Deque;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * The non-Swing state of the adaptive node browser (Task 16).
@@ -47,25 +37,31 @@ import java.util.Set;
  * The state splits into three independent groups, none of which resets
  * the others:
  * <ul>
- * <li><b>search text</b> — a non-empty search ({@link #isSearchActive()})
+ * <li><b>search text</b> - a non-empty search ({@link #isSearchActive()})
  * re-queries the list and highlights the matching tree leafs (the layout
  * itself never changes: tree + list are always shown);</li>
  * <li><b>the taxonomy facets</b> (framework / input+output data types /
- * tags) — the shared filter predicate {@link #matches(JIPipeNodeDatabaseEntry)};</li>
- * <li><b>the tree path and view toggles</b> (selected function path —
- * mutually exclusive with a selected template scope — pinned-only,
+ * tags) - the shared filter predicate {@link #matches(JIPipeNodeDatabaseEntry)};</li>
+ * <li><b>the tree path and view toggles</b> (selected function path -
+ * mutually exclusive with a selected template scope - pinned-only,
  * selection-only).</li>
  * </ul>
  */
 public class NodeBrowserModel {
 
-    /** The compact tier: a single tree list of node leaves. */
+    /**
+     * The compact tier: a single tree list of node leaves.
+     */
     public static final int TIER_COMPACT = 0;
 
-    /** The comfortable tier: tree list + results list side by side. */
+    /**
+     * The comfortable tier: tree list + results list side by side.
+     */
     public static final int TIER_COMFORTABLE = 1;
 
-    /** Width below which the compact tier is used (exclusive). */
+    /**
+     * Width below which the compact tier is used (exclusive).
+     */
     public static final int COMPACT_TIER_MAX_WIDTH = 380;
 
     private String search = "";
@@ -73,9 +69,13 @@ public class NodeBrowserModel {
     private Set<JIPipeNodeTaxonomySpatialDimension> spatial = Set.of();
     private Set<JIPipeNodeTaxonomyInputProfile> input = Set.of();
     private Set<String> tags = Set.of();
-    /** Selected input data types (by class); empty = no input-data-type filter. */
+    /**
+     * Selected input data types (by class); empty = no input-data-type filter.
+     */
     private Set<Class<? extends JIPipeData>> inputDataTypes = Set.of();
-    /** Selected output data types (by class); empty = no output-data-type filter. */
+    /**
+     * Selected output data types (by class); empty = no output-data-type filter.
+     */
     private Set<Class<? extends JIPipeData>> outputDataTypes = Set.of();
     private List<JIPipeNodeTaxonomyFunction> treePath = List.of();
     /**
@@ -87,7 +87,7 @@ public class NodeBrowserModel {
     private TemplateScope selectedScope;
     /**
      * The taxonomy function whose synthetic {@code <function>/Patterns} row
-     * is selected (the per-function template grouping — the row lists the
+     * is selected (the per-function template grouping - the row lists the
      * template entries filed under that function). MUTUALLY EXCLUSIVE with
      * {@link #treePath} and {@link #selectedScope} (setting one clears the
      * other two). {@code null} = no Patterns row selected.
@@ -112,9 +112,99 @@ public class NodeBrowserModel {
     // Search
     // ------------------------------------------------------------------
 
+    /**
+     * The ids of the given leaf and all of its descendants in the function
+     * tree. A results row matches a selected leaf when the entry's
+     * {@link JIPipeNodeDatabaseEntry#getFunctionIds() function ids} contain
+     * one of these ids (an entry stores the leaf ids it appears under, so
+     * descendants of the selected leaf are included as well).
+     *
+     * @param registry the function registry to walk
+     * @param leaf     the selected leaf (or an intermediate node); {@code null}
+     *                 yields an empty set
+     * @return an unmodifiable set of function ids, always containing the leaf
+     * itself
+     */
+    public static Set<String> descendantIds(@Nullable FunctionRegistry registry, @Nullable JIPipeNodeTaxonomyFunction leaf) {
+        Set<String> ids = new LinkedHashSet<>();
+        if (registry == null || leaf == null) {
+            return Collections.unmodifiableSet(ids);
+        }
+        Deque<JIPipeNodeTaxonomyFunction> stack = new ArrayDeque<>();
+        stack.push(leaf);
+        while (!stack.isEmpty()) {
+            JIPipeNodeTaxonomyFunction current = stack.pop();
+            if (!ids.add(current.getId())) {
+                continue;
+            }
+            for (JIPipeNodeTaxonomyFunction child : registry.children(current)) {
+                stack.push(child);
+            }
+        }
+        return Collections.unmodifiableSet(ids);
+    }
+
+    /**
+     * The ids of every taxonomy function under which at least one of the
+     * given node infos has a node - used to prune the function tree so it
+     * never shows empty categories (e.g. a plot sub-leaf no node is
+     * assigned to, or an entire branch with no nodes).
+     * <p>
+     * Node infos (rather than node database entries) are the authoritative
+     * source here: the database builds its entries asynchronously and may
+     * still be empty when a tree is first rendered, while the registered
+     * infos are complete as soon as the plugins are registered. A node is
+     * counted only when it is visible for the given database role, so a
+     * function whose only nodes are hidden in this editor is pruned too -
+     * matching what the browser's query would show under it.
+     * <p>
+     * For each counted node the primary <em>and</em> all secondary function
+     * ids are added, mirroring {@link JIPipeNodeDatabaseEntry#getFunctionIds()}
+     * (a node appears under every function it declares).
+     *
+     * @param infos the node infos to inspect; {@code null} yields an empty
+     *              set (the caller then keeps the full skeleton)
+     * @param role  the visibility role to filter by ({@code Both} counts
+     *              every node)
+     * @return the populated function ids (possibly empty)
+     */
+    public static Set<String> populatedFunctionIds(@Nullable Iterable<? extends JIPipeNodeInfo> infos,
+                                                   JIPipeNodeDatabasePipelineVisibility role) {
+        Set<String> ids = new LinkedHashSet<>();
+        if (infos == null) {
+            return Collections.unmodifiableSet(ids);
+        }
+        for (JIPipeNodeInfo info : infos) {
+            if (info == null) {
+                continue;
+            }
+            JIPipeNodeTaxonomyFunction primary = info.getPrimaryFunction();
+            if (primary == null) {
+                continue; // unconverted / fn-null: never appears in the tree
+            }
+            if (role == JIPipeNodeDatabasePipelineVisibility.Pipeline && !primary.isVisibleInPipeline()) {
+                continue;
+            }
+            if (role == JIPipeNodeDatabasePipelineVisibility.Compartments && !primary.isVisibleInCompartments()) {
+                continue;
+            }
+            ids.add(primary.getId());
+            for (JIPipeNodeTaxonomyFunction secondary : info.getSecondaryFunctions()) {
+                if (secondary != null) {
+                    ids.add(secondary.getId());
+                }
+            }
+        }
+        return Collections.unmodifiableSet(ids);
+    }
+
     public String getSearch() {
         return search;
     }
+
+    // ------------------------------------------------------------------
+    // Taxonomy facets
+    // ------------------------------------------------------------------
 
     /**
      * @param search the search text; {@code null} is treated as empty
@@ -132,10 +222,6 @@ public class NodeBrowserModel {
         return search != null && !search.trim().isEmpty();
     }
 
-    // ------------------------------------------------------------------
-    // Taxonomy facets
-    // ------------------------------------------------------------------
-
     /**
      * @return the selected framework filter, or {@code null} for "no
      * framework filter"
@@ -147,7 +233,7 @@ public class NodeBrowserModel {
 
     /**
      * @param framework the framework to filter by, or {@code null} to clear
-     * the framework filter (does not affect the other facets)
+     *                  the framework filter (does not affect the other facets)
      */
     public void setFramework(@Nullable JIPipeNodeTaxonomyFramework framework) {
         this.framework = framework;
@@ -162,8 +248,8 @@ public class NodeBrowserModel {
 
     /**
      * @param spatial the spatial dimensions to filter by; an empty (or
-     * {@code null}) set clears the spatial filter without affecting the other
-     * facets
+     *                {@code null}) set clears the spatial filter without affecting the other
+     *                facets
      */
     public void setSpatial(@Nullable Set<JIPipeNodeTaxonomySpatialDimension> spatial) {
         this.spatial = Collections.unmodifiableSet(spatial == null ? Set.of() : new LinkedHashSet<>(spatial));
@@ -178,7 +264,7 @@ public class NodeBrowserModel {
 
     /**
      * @param input the input profiles to filter by; an empty (or {@code null})
-     * set clears the input filter without affecting the other facets
+     *              set clears the input filter without affecting the other facets
      */
     public void setInput(@Nullable Set<JIPipeNodeTaxonomyInputProfile> input) {
         this.input = Collections.unmodifiableSet(input == null ? Set.of() : new LinkedHashSet<>(input));
@@ -189,6 +275,14 @@ public class NodeBrowserModel {
      */
     public Set<String> getTags() {
         return tags;
+    }
+
+    /**
+     * @param tags the tags to filter by; an empty (or {@code null}) set
+     *             clears the tag filter without affecting the other facets
+     */
+    public void setTags(@Nullable Set<String> tags) {
+        this.tags = Collections.unmodifiableSet(tags == null ? Set.of() : new LinkedHashSet<>(tags));
     }
 
     /**
@@ -209,7 +303,7 @@ public class NodeBrowserModel {
      */
     public void setInputDataTypes(@Nullable Set<Class<? extends JIPipeData>> inputDataTypes) {
         this.inputDataTypes = Collections.unmodifiableSet(
-            inputDataTypes == null ? Set.of() : new LinkedHashSet<>(inputDataTypes));
+                inputDataTypes == null ? Set.of() : new LinkedHashSet<>(inputDataTypes));
     }
 
     /**
@@ -222,6 +316,10 @@ public class NodeBrowserModel {
         return outputDataTypes;
     }
 
+    // ------------------------------------------------------------------
+    // Tree path + view toggles
+    // ------------------------------------------------------------------
+
     /**
      * @param outputDataTypes the output data types to filter by; an entry
      *                        passes when at least one of its output slots
@@ -230,15 +328,7 @@ public class NodeBrowserModel {
      */
     public void setOutputDataTypes(@Nullable Set<Class<? extends JIPipeData>> outputDataTypes) {
         this.outputDataTypes = Collections.unmodifiableSet(
-            outputDataTypes == null ? Set.of() : new LinkedHashSet<>(outputDataTypes));
-    }
-
-    /**
-     * @param tags the tags to filter by; an empty (or {@code null}) set
-     * clears the tag filter without affecting the other facets
-     */
-    public void setTags(@Nullable Set<String> tags) {
-        this.tags = Collections.unmodifiableSet(tags == null ? Set.of() : new LinkedHashSet<>(tags));
+                outputDataTypes == null ? Set.of() : new LinkedHashSet<>(outputDataTypes));
     }
 
     /**
@@ -269,7 +359,7 @@ public class NodeBrowserModel {
         }
         // Data-type facets: the entry passes the input filter iff at least
         // one of its input slots produces one of the selected types (a
-        // slot's own type or a convertible type counts — the slot's data
+        // slot's own type or a convertible type counts - the slot's data
         // class IS what the node accepts), and symmetrically for outputs.
         // An empty selection disables the respective check.
         if (!inputDataTypes.isEmpty()) {
@@ -299,10 +389,6 @@ public class NodeBrowserModel {
         return true;
     }
 
-    // ------------------------------------------------------------------
-    // Tree path + view toggles
-    // ------------------------------------------------------------------
-
     /**
      * @return the currently selected function tree path (root → leaf), empty
      * when nothing is selected
@@ -327,8 +413,8 @@ public class NodeBrowserModel {
 
     /**
      * @return the selected template scope of the synthetic
-     *         {@code Templates / <scope>} branch, or {@code null} when a
-     *         function path (or the root) is selected instead
+     * {@code Templates / <scope>} branch, or {@code null} when a
+     * function path (or the root) is selected instead
      */
     @Nullable
     public TemplateScope getSelectedScope() {
@@ -352,8 +438,8 @@ public class NodeBrowserModel {
 
     /**
      * @return the taxonomy function whose {@code <function>/Patterns} row is
-     *         selected, or {@code null} when a function path, a template
-     *         scope, or the root is selected instead
+     * selected, or {@code null} when a function path, a template
+     * scope, or the root is selected instead
      */
     @Nullable
     public JIPipeNodeTaxonomyFunction getPatternsFunction() {
@@ -379,7 +465,7 @@ public class NodeBrowserModel {
     /**
      * The shared SELECTION predicate with an explicitly supplied function
      * registry (spec §7.2): whether the given entry belongs in the results
-     * list given the current tree selection — a template scope, a
+     * list given the current tree selection - a template scope, a
      * {@code <function>/Patterns} row, else a function tree path, else the
      * root (all entries).
      * <p>
@@ -399,18 +485,18 @@ public class NodeBrowserModel {
      *                 selection to a descendant-id set ({@code null} disables
      *                 the function side, so only a scope or the root applies)
      * @return {@code true} if the entry belongs in the list for the current
-     *         selection
+     * selection
      */
     public boolean matchesSelection(JIPipeNodeDatabaseEntry entry, FunctionRegistry registry) {
         if (selectedScope != null) {
             return entry instanceof CreateNewNodesByTemplateDatabaseEntry template
-                && template.getScope() == selectedScope;
+                    && template.getScope() == selectedScope;
         }
         if (patternsFunction != null) {
             // The <function>/Patterns row: only the template entries filed
             // under that exact function (the row's own attach rule).
             return entry instanceof CreateNewNodesByTemplateDatabaseEntry
-                && entry.getFunctionIds().contains(patternsFunction.getId());
+                    && entry.getFunctionIds().contains(patternsFunction.getId());
         }
         if (!treePath.isEmpty()) {
             JIPipeNodeTaxonomyFunction leaf = treePath.get(treePath.size() - 1);
@@ -457,6 +543,10 @@ public class NodeBrowserModel {
         return kindFilter;
     }
 
+    // ------------------------------------------------------------------
+    // Tier
+    // ------------------------------------------------------------------
+
     /**
      * @param kindFilter the result kinds to show; an empty (or {@code null})
      *                   set clears the filter. Does not affect the other
@@ -466,10 +556,14 @@ public class NodeBrowserModel {
         this.kindFilter = Collections.unmodifiableSet(kindFilter == null ? Set.of() : new LinkedHashSet<>(kindFilter));
     }
 
+    // ------------------------------------------------------------------
+    // Tree helpers
+    // ------------------------------------------------------------------
+
     /**
      * The shared kind-filter predicate (1340): whether the given entry
      * passes the currently selected result kinds. Delegates to
-     * {@link NodeEntryKind#matches(JIPipeNodeDatabaseEntry, Set)} — entries
+     * {@link NodeEntryKind#matches(JIPipeNodeDatabaseEntry, Set)} - entries
      * without a kind (existing nodes / compartments, new compartments)
      * always pass, and an empty selection matches everything. Both node
      * browser surfaces (the docked {@link JIPipeDesktopNodeBrowser} and the
@@ -482,10 +576,6 @@ public class NodeBrowserModel {
         return NodeEntryKind.matches(entry, kindFilter);
     }
 
-    // ------------------------------------------------------------------
-    // Tier
-    // ------------------------------------------------------------------
-
     /**
      * The layout tier for a given component width: a pure function of the
      * width, so it can be recomputed on every resize.
@@ -496,95 +586,5 @@ public class NodeBrowserModel {
      */
     public int getTier(int widthPx) {
         return widthPx < COMPACT_TIER_MAX_WIDTH ? TIER_COMPACT : TIER_COMFORTABLE;
-    }
-
-    // ------------------------------------------------------------------
-    // Tree helpers
-    // ------------------------------------------------------------------
-
-    /**
-     * The ids of the given leaf and all of its descendants in the function
-     * tree. A results row matches a selected leaf when the entry's
-     * {@link JIPipeNodeDatabaseEntry#getFunctionIds() function ids} contain
-     * one of these ids (an entry stores the leaf ids it appears under, so
-     * descendants of the selected leaf are included as well).
-     *
-     * @param registry the function registry to walk
-     * @param leaf     the selected leaf (or an intermediate node); {@code null}
-     *                 yields an empty set
-     * @return an unmodifiable set of function ids, always containing the leaf
-     * itself
-     */
-    public static Set<String> descendantIds(@Nullable FunctionRegistry registry, @Nullable JIPipeNodeTaxonomyFunction leaf) {
-        Set<String> ids = new LinkedHashSet<>();
-        if (registry == null || leaf == null) {
-            return Collections.unmodifiableSet(ids);
-        }
-        Deque<JIPipeNodeTaxonomyFunction> stack = new ArrayDeque<>();
-        stack.push(leaf);
-        while (!stack.isEmpty()) {
-            JIPipeNodeTaxonomyFunction current = stack.pop();
-            if (!ids.add(current.getId())) {
-                continue;
-            }
-            for (JIPipeNodeTaxonomyFunction child : registry.children(current)) {
-                stack.push(child);
-            }
-        }
-        return Collections.unmodifiableSet(ids);
-    }
-
-    /**
-     * The ids of every taxonomy function under which at least one of the
-     * given node infos has a node — used to prune the function tree so it
-     * never shows empty categories (e.g. a plot sub-leaf no node is
-     * assigned to, or an entire branch with no nodes).
-     * <p>
-     * Node infos (rather than node database entries) are the authoritative
-     * source here: the database builds its entries asynchronously and may
-     * still be empty when a tree is first rendered, while the registered
-     * infos are complete as soon as the plugins are registered. A node is
-     * counted only when it is visible for the given database role, so a
-     * function whose only nodes are hidden in this editor is pruned too —
-     * matching what the browser's query would show under it.
-     * <p>
-     * For each counted node the primary <em>and</em> all secondary function
-     * ids are added, mirroring {@link JIPipeNodeDatabaseEntry#getFunctionIds()}
-     * (a node appears under every function it declares).
-     *
-     * @param infos the node infos to inspect; {@code null} yields an empty
-     *              set (the caller then keeps the full skeleton)
-     * @param role  the visibility role to filter by ({@code Both} counts
-     *              every node)
-     * @return the populated function ids (possibly empty)
-     */
-    public static Set<String> populatedFunctionIds(@Nullable Iterable<? extends JIPipeNodeInfo> infos,
-                                                   JIPipeNodeDatabasePipelineVisibility role) {
-        Set<String> ids = new LinkedHashSet<>();
-        if (infos == null) {
-            return Collections.unmodifiableSet(ids);
-        }
-        for (JIPipeNodeInfo info : infos) {
-            if (info == null) {
-                continue;
-            }
-            JIPipeNodeTaxonomyFunction primary = info.getPrimaryFunction();
-            if (primary == null) {
-                continue; // unconverted / fn-null: never appears in the tree
-            }
-            if (role == JIPipeNodeDatabasePipelineVisibility.Pipeline && !primary.isVisibleInPipeline()) {
-                continue;
-            }
-            if (role == JIPipeNodeDatabasePipelineVisibility.Compartments && !primary.isVisibleInCompartments()) {
-                continue;
-            }
-            ids.add(primary.getId());
-            for (JIPipeNodeTaxonomyFunction secondary : info.getSecondaryFunctions()) {
-                if (secondary != null) {
-                    ids.add(secondary.getId());
-                }
-            }
-        }
-        return Collections.unmodifiableSet(ids);
     }
 }

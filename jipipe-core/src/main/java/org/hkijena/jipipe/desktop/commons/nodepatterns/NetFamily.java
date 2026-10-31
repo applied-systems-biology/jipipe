@@ -13,8 +13,7 @@
 
 package org.hkijena.jipipe.desktop.commons.nodepatterns;
 
-import java.awt.BasicStroke;
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.util.Arrays;
@@ -25,6 +24,20 @@ import java.util.Random;
  * frame by one row/column on each side so edges cross all four borders.
  */
 public final class NetFamily implements NodePatternFamily {
+    private static int[] nearest(double x, double y, double[] px, double[] py, int n, int k, double maxD) {
+        double[] d = new double[n];
+        for (int i = 0; i < n; i++) d[i] = (px[i] - x) * (px[i] - x) + (py[i] - y) * (py[i] - y);
+        Integer[] idx = new Integer[n];
+        for (int i = 0; i < n; i++) idx[i] = i;
+        Arrays.sort(idx, (a, b) -> Double.compare(d[a], d[b]));
+        int[] out = new int[Math.min(k, n)];
+        for (int i = 1; i <= Math.min(k, n); i++) {
+            if (d[idx[i]] <= maxD * maxD) out[i - 1] = idx[i];
+            else break;
+        }
+        return out;
+    }
+
     @Override
     public void paint(Graphics2D g, int w, int h, Random rng) {
         int side = 7;
@@ -47,19 +60,5 @@ public final class NetFamily implements NodePatternFamily {
             }
             g.fill(new Ellipse2D.Double(px[i] - 2.2, py[i] - 2.2, 4.4, 4.4));
         }
-    }
-
-    private static int[] nearest(double x, double y, double[] px, double[] py, int n, int k, double maxD) {
-        double[] d = new double[n];
-        for (int i = 0; i < n; i++) d[i] = (px[i] - x) * (px[i] - x) + (py[i] - y) * (py[i] - y);
-        Integer[] idx = new Integer[n];
-        for (int i = 0; i < n; i++) idx[i] = i;
-        Arrays.sort(idx, (a, b) -> Double.compare(d[a], d[b]));
-        int[] out = new int[Math.min(k, n)];
-        for (int i = 1; i <= Math.min(k, n); i++) {
-            if (d[idx[i]] <= maxD * maxD) out[i - 1] = idx[i];
-            else break;
-        }
-        return out;
     }
 }

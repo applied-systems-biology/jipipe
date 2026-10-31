@@ -1,1 +1,160 @@
-{"edges":[{"source-node":"n0","source-slot":"Default zoom","target-node":"n8","target-slot":"Input"},{"source-node":"n1","source-slot":"Annotated image","target-node":"n0","target-slot":"Input"},{"source-node":"n2","source-slot":"Output","target-node":"n7","target-slot":"Input"},{"source-node":"n4","source-slot":"Mask","target-node":"n2","target-slot":"Input"},{"source-node":"n6","source-slot":"Image","target-node":"n1","target-slot":"Image"},{"source-node":"n7","source-slot":"Output","target-node":"n3","target-slot":"Input 2"},{"source-node":"n8","source-slot":"Output","target-node":"n3","target-slot":"Input 1"},{"source-node":"n8","source-slot":"Output","target-node":"n4","target-slot":"Input"}],"nodes":{"n0":{"jipipe:graph-compartment":"785c5ead-eae1-5d66-81bb-1b4529ef8d68","jipipe:metadata-v1":{"location/785c5ead-eae1-5d66-81bb-1b4529ef8d68/x":2,"location/785c5ead-eae1-5d66-81bb-1b4529ef8d68/y":16},"jipipe:node-info-id":"annotate-split-by-annotation","jipipe:slot-configuration":{"input":{"Input":{"slot-data-type":"jipipe:data","slot-type":"Input","name":"Input","custom-name":null,"description":"","is-virtual":false,"save-outputs":true,"is-optional":false}},"output":{"Default zoom":{"slot-data-type":"imagej-imgplus","slot-type":"Output","name":"Default zoom","custom-name":null,"description":"","is-virtual":false,"save-outputs":true,"is-optional":false},"Zoom-in 2x":{"slot-data-type":"imagej-imgplus","slot-type":"Output","name":"Zoom-in 2x","custom-name":null,"description":"","is-virtual":false,"save-outputs":true,"is-optional":false}}},"target-slots/Default zoom":{"expression":"TO_NUMBER($\"Image width\" ) == 1024"},"target-slots/Zoom-in 2x":{"expression":"TO_NUMBER($\"Image width\" ) == 2048"}},"n1":{"jipipe:graph-compartment":"785c5ead-eae1-5d66-81bb-1b4529ef8d68","jipipe:metadata-v1":{"location/785c5ead-eae1-5d66-81bb-1b4529ef8d68/x":2,"location/785c5ead-eae1-5d66-81bb-1b4529ef8d68/y":12},"jipipe:node-info-id":"image-properties-to-annotation"},"n2":{"jipipe:graph-compartment":"785c5ead-eae1-5d66-81bb-1b4529ef8d68","jipipe:metadata-v1":{"location/785c5ead-eae1-5d66-81bb-1b4529ef8d68/x":2,"location/785c5ead-eae1-5d66-81bb-1b4529ef8d68/y":28},"jipipe:node-info-id":"ij1-blur-gaussian2d"},"n3":{"jipipe:graph-compartment":"785c5ead-eae1-5d66-81bb-1b4529ef8d68","jipipe:metadata-v1":{"location/785c5ead-eae1-5d66-81bb-1b4529ef8d68/x":2,"location/785c5ead-eae1-5d66-81bb-1b4529ef8d68/y":36},"jipipe:node-info-id":"ij1-math-imagecalculator2d"},"n4":{"jipipe:graph-compartment":"785c5ead-eae1-5d66-81bb-1b4529ef8d68","jipipe:metadata-v1":{"location/785c5ead-eae1-5d66-81bb-1b4529ef8d68/x":0,"location/785c5ead-eae1-5d66-81bb-1b4529ef8d68/y":24},"jipipe:node-info-id":"ij1-segment-ridge-detector-2d"},"n6":{"jipipe:graph-compartment":"785c5ead-eae1-5d66-81bb-1b4529ef8d68","jipipe:metadata-v1":{"location/785c5ead-eae1-5d66-81bb-1b4529ef8d68/x":4,"location/785c5ead-eae1-5d66-81bb-1b4529ef8d68/y":8},"jipipe:node-info-id":"import-imagej-imgplus-from-file"},"n7":{"jipipe:graph-compartment":"785c5ead-eae1-5d66-81bb-1b4529ef8d68","jipipe:metadata-v1":{"location/785c5ead-eae1-5d66-81bb-1b4529ef8d68/x":0,"location/785c5ead-eae1-5d66-81bb-1b4529ef8d68/y":32},"jipipe:node-info-id":"ij1-contrast-histogram-enhancer"},"n8":{"jipipe:graph-compartment":"785c5ead-eae1-5d66-81bb-1b4529ef8d68","jipipe:metadata-v1":{"location/785c5ead-eae1-5d66-81bb-1b4529ef8d68/x":5,"location/785c5ead-eae1-5d66-81bb-1b4529ef8d68/y":20},"jipipe:node-info-id":"ij1-transform-crop2d"}}}
+{
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Default zoom",
+      "target-node": "n8",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n1",
+      "source-slot": "Annotated image",
+      "target-node": "n0",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n2",
+      "source-slot": "Output",
+      "target-node": "n7",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n4",
+      "source-slot": "Mask",
+      "target-node": "n2",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n6",
+      "source-slot": "Image",
+      "target-node": "n1",
+      "target-slot": "Image"
+    },
+    {
+      "source-node": "n7",
+      "source-slot": "Output",
+      "target-node": "n3",
+      "target-slot": "Input 2"
+    },
+    {
+      "source-node": "n8",
+      "source-slot": "Output",
+      "target-node": "n3",
+      "target-slot": "Input 1"
+    },
+    {
+      "source-node": "n8",
+      "source-slot": "Output",
+      "target-node": "n4",
+      "target-slot": "Input"
+    }
+  ],
+  "nodes": {
+    "n0": {
+      "jipipe:graph-compartment": "785c5ead-eae1-5d66-81bb-1b4529ef8d68",
+      "jipipe:metadata-v1": {
+        "location/785c5ead-eae1-5d66-81bb-1b4529ef8d68/x": 2,
+        "location/785c5ead-eae1-5d66-81bb-1b4529ef8d68/y": 16
+      },
+      "jipipe:node-info-id": "annotate-split-by-annotation",
+      "jipipe:slot-configuration": {
+        "input": {
+          "Input": {
+            "slot-data-type": "jipipe:data",
+            "slot-type": "Input",
+            "name": "Input",
+            "custom-name": null,
+            "description": "",
+            "is-virtual": false,
+            "save-outputs": true,
+            "is-optional": false
+          }
+        },
+        "output": {
+          "Default zoom": {
+            "slot-data-type": "imagej-imgplus",
+            "slot-type": "Output",
+            "name": "Default zoom",
+            "custom-name": null,
+            "description": "",
+            "is-virtual": false,
+            "save-outputs": true,
+            "is-optional": false
+          },
+          "Zoom-in 2x": {
+            "slot-data-type": "imagej-imgplus",
+            "slot-type": "Output",
+            "name": "Zoom-in 2x",
+            "custom-name": null,
+            "description": "",
+            "is-virtual": false,
+            "save-outputs": true,
+            "is-optional": false
+          }
+        }
+      },
+      "target-slots/Default zoom": {
+        "expression": "TO_NUMBER($\"Image width\" ) == 1024"
+      },
+      "target-slots/Zoom-in 2x": {
+        "expression": "TO_NUMBER($\"Image width\" ) == 2048"
+      }
+    },
+    "n1": {
+      "jipipe:graph-compartment": "785c5ead-eae1-5d66-81bb-1b4529ef8d68",
+      "jipipe:metadata-v1": {
+        "location/785c5ead-eae1-5d66-81bb-1b4529ef8d68/x": 2,
+        "location/785c5ead-eae1-5d66-81bb-1b4529ef8d68/y": 12
+      },
+      "jipipe:node-info-id": "image-properties-to-annotation"
+    },
+    "n2": {
+      "jipipe:graph-compartment": "785c5ead-eae1-5d66-81bb-1b4529ef8d68",
+      "jipipe:metadata-v1": {
+        "location/785c5ead-eae1-5d66-81bb-1b4529ef8d68/x": 2,
+        "location/785c5ead-eae1-5d66-81bb-1b4529ef8d68/y": 28
+      },
+      "jipipe:node-info-id": "ij1-blur-gaussian2d"
+    },
+    "n3": {
+      "jipipe:graph-compartment": "785c5ead-eae1-5d66-81bb-1b4529ef8d68",
+      "jipipe:metadata-v1": {
+        "location/785c5ead-eae1-5d66-81bb-1b4529ef8d68/x": 2,
+        "location/785c5ead-eae1-5d66-81bb-1b4529ef8d68/y": 36
+      },
+      "jipipe:node-info-id": "ij1-math-imagecalculator2d"
+    },
+    "n4": {
+      "jipipe:graph-compartment": "785c5ead-eae1-5d66-81bb-1b4529ef8d68",
+      "jipipe:metadata-v1": {
+        "location/785c5ead-eae1-5d66-81bb-1b4529ef8d68/x": 0,
+        "location/785c5ead-eae1-5d66-81bb-1b4529ef8d68/y": 24
+      },
+      "jipipe:node-info-id": "ij1-segment-ridge-detector-2d"
+    },
+    "n6": {
+      "jipipe:graph-compartment": "785c5ead-eae1-5d66-81bb-1b4529ef8d68",
+      "jipipe:metadata-v1": {
+        "location/785c5ead-eae1-5d66-81bb-1b4529ef8d68/x": 4,
+        "location/785c5ead-eae1-5d66-81bb-1b4529ef8d68/y": 8
+      },
+      "jipipe:node-info-id": "import-imagej-imgplus-from-file"
+    },
+    "n7": {
+      "jipipe:graph-compartment": "785c5ead-eae1-5d66-81bb-1b4529ef8d68",
+      "jipipe:metadata-v1": {
+        "location/785c5ead-eae1-5d66-81bb-1b4529ef8d68/x": 0,
+        "location/785c5ead-eae1-5d66-81bb-1b4529ef8d68/y": 32
+      },
+      "jipipe:node-info-id": "ij1-contrast-histogram-enhancer"
+    },
+    "n8": {
+      "jipipe:graph-compartment": "785c5ead-eae1-5d66-81bb-1b4529ef8d68",
+      "jipipe:metadata-v1": {
+        "location/785c5ead-eae1-5d66-81bb-1b4529ef8d68/x": 5,
+        "location/785c5ead-eae1-5d66-81bb-1b4529ef8d68/y": 20
+      },
+      "jipipe:node-info-id": "ij1-transform-crop2d"
+    }
+  }
+}

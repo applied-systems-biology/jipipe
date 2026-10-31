@@ -1,1 +1,42 @@
-{"nodes":{"n0":{"jipipe:node-info-id":"filaments-convert-roi2d-to-filaments","jipipe:graph-compartment":"DEFAULT","jipipe:metadata-v1":{"location/DEFAULT/x":1,"location/DEFAULT/y":1}},"n1":{"jipipe:node-info-id":"filaments-filter-filaments-at-border","jipipe:graph-compartment":"DEFAULT","jipipe:metadata-v1":{"location/DEFAULT/x":1,"location/DEFAULT/y":5}},"n2":{"jipipe:node-info-id":"filaments-convert-to-mask","jipipe:graph-compartment":"DEFAULT","jipipe:metadata-v1":{"location/DEFAULT/x":1,"location/DEFAULT/y":9}}},"edges":[{"source-node":"n0","source-slot":"Output","target-node":"n1","target-slot":"Input"},{"source-node":"n1","source-slot":"Output","target-node":"n2","target-slot":"Input"}]}
+{
+  "nodes": {
+    "n0": {
+      "jipipe:node-info-id": "filaments-convert-roi2d-to-filaments",
+      "jipipe:graph-compartment": "DEFAULT",
+      "jipipe:metadata-v1": {
+        "location/DEFAULT/x": 1,
+        "location/DEFAULT/y": 1
+      }
+    },
+    "n1": {
+      "jipipe:node-info-id": "filaments-filter-filaments-at-border",
+      "jipipe:graph-compartment": "DEFAULT",
+      "jipipe:metadata-v1": {
+        "location/DEFAULT/x": 1,
+        "location/DEFAULT/y": 5
+      }
+    },
+    "n2": {
+      "jipipe:node-info-id": "filaments-convert-to-mask",
+      "jipipe:graph-compartment": "DEFAULT",
+      "jipipe:metadata-v1": {
+        "location/DEFAULT/x": 1,
+        "location/DEFAULT/y": 9
+      }
+    }
+  },
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Output",
+      "target-node": "n1",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n1",
+      "source-slot": "Output",
+      "target-node": "n2",
+      "target-slot": "Input"
+    }
+  ]
+}

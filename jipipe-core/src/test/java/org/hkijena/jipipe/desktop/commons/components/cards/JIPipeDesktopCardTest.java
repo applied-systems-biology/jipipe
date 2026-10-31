@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * has a title/icon or a header action (the computed {@code headerVisible},
  * {@code hasTitleOrIcon || hasActions}). The simple set/getter behavior of
  * the title, variant, body and action slots is not tested (the "do not test
- * trivial things" policy) — the user verifies the rendered cards in the app.
+ * trivial things" policy) - the user verifies the rendered cards in the app.
  */
 class JIPipeDesktopCardTest {
 

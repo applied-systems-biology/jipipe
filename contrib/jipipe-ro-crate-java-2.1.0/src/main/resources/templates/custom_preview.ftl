@@ -34,7 +34,7 @@
             background-color: var(--card-bg);
             border-bottom: 1px solid var(--border);
             border-radius: 0 0 8px 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         }
 
         header h1 {
@@ -52,7 +52,7 @@
             background-color: var(--card-bg);
             padding: 1.5rem;
             border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
             border: 1px solid var(--border);
         }
 
@@ -130,63 +130,63 @@
 <main>
 
     <#if crateModel.crate.hasPart?? && crateModel.crate.hasPart?size gt 0>
-    <section>
-        <h2>Parts</h2>
-        <ul>
-            <#list crateModel.crate.hasPart as part>
-                <li>
-                    <strong>${part.name!}</strong>
-                    <#if part.id??>
-                        - <a href="${part.id}">${part.id}</a>
-                    </#if>
-                </li>
-            </#list>
-        </ul>
-    </section>
+        <section>
+            <h2>Parts</h2>
+            <ul>
+                <#list crateModel.crate.hasPart as part>
+                    <li>
+                        <strong>${part.name!}</strong>
+                        <#if part.id??>
+                            - <a href="${part.id}">${part.id}</a>
+                        </#if>
+                    </li>
+                </#list>
+            </ul>
+        </section>
     </#if>
 
     <#if crateModel.datasets?? && crateModel.datasets?size gt 0>
-    <section>
-        <h2>Datasets</h2>
-        <ul>
-            <#list crateModel.datasets as dataset>
-                <li>
-                    <strong>${dataset.name!}</strong>
-                    <#if dataset.id??>
-                        - <a href="${dataset.id}">${dataset.id}</a>
-                    </#if>
-                    <#if dataset.description??>
-                        <br>${dataset.description}
-                    </#if>
-                </li>
-            </#list>
-        </ul>
-    </section>
+        <section>
+            <h2>Datasets</h2>
+            <ul>
+                <#list crateModel.datasets as dataset>
+                    <li>
+                        <strong>${dataset.name!}</strong>
+                        <#if dataset.id??>
+                            - <a href="${dataset.id}">${dataset.id}</a>
+                        </#if>
+                        <#if dataset.description??>
+                            <br>${dataset.description}
+                        </#if>
+                    </li>
+                </#list>
+            </ul>
+        </section>
     </#if>
 
     <#if crateModel.files?? && crateModel.files?size gt 0>
-    <section>
-        <h2>Files</h2>
-        <ul>
-            <#list crateModel.files as file>
-                <li>
-                    <strong>${file.name!}</strong>
-                    <#if file.id??>
-                        - <a href="${file.id}">${file.id}</a>
-                    </#if>
-                    <#if file.description??>
-                        <br>${file.description}
-                    </#if>
-                    <#if file.contentSize??>
-                        <br><em>Size:</em> ${file.contentSize}
-                    </#if>
-                    <#if file.encodingFormat??>
-                        <br><em>Format:</em> ${file.encodingFormat}
-                    </#if>
-                </li>
-            </#list>
-        </ul>
-    </section>
+        <section>
+            <h2>Files</h2>
+            <ul>
+                <#list crateModel.files as file>
+                    <li>
+                        <strong>${file.name!}</strong>
+                        <#if file.id??>
+                            - <a href="${file.id}">${file.id}</a>
+                        </#if>
+                        <#if file.description??>
+                            <br>${file.description}
+                        </#if>
+                        <#if file.contentSize??>
+                            <br><em>Size:</em> ${file.contentSize}
+                        </#if>
+                        <#if file.encodingFormat??>
+                            <br><em>Format:</em> ${file.encodingFormat}
+                        </#if>
+                    </li>
+                </#list>
+            </ul>
+        </section>
     </#if>
 
 </main>

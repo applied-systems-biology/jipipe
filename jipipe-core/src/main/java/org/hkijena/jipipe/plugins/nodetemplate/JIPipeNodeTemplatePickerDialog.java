@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.plugins.nodetemplate;
 
 import org.hkijena.jipipe.api.JIPipeNodeTemplate;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeExample;
 import org.hkijena.jipipe.desktop.commons.components.pickers.JIPipeDesktopPickerDialog;
 
 import java.awt.*;

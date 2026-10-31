@@ -24,12 +24,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ServiceAwareEphemeralExecutorTest {
 
-    static class TestService extends AbstractMicroservice {
-        TestService() { super("Test"); }
-        @Override
-        protected void onStart() throws Exception { }
-    }
-
     @Test
     void newTaskCancelsPrevious() throws Exception {
         TestService service = new TestService();
@@ -41,11 +35,16 @@ class ServiceAwareEphemeralExecutorTest {
 
         exec.enqueue(new DefaultJIPipeRunnable() {
             @Override
-            public String getTaskLabel() { return "First"; }
+            public String getTaskLabel() {
+                return "First";
+            }
+
             @Override
             public void run() {
                 firstStarted.countDown();
-                try { Thread.sleep(5000); } catch (InterruptedException e) {
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                     return;
                 }
@@ -55,11 +54,14 @@ class ServiceAwareEphemeralExecutorTest {
 
         assertTrue(firstStarted.await(2, TimeUnit.SECONDS));
 
-        // Enqueue second task — should cancel the first
+        // Enqueue second task - should cancel the first
         CountDownLatch secondDone = new CountDownLatch(1);
         exec.enqueue(new DefaultJIPipeRunnable() {
             @Override
-            public String getTaskLabel() { return "Second"; }
+            public String getTaskLabel() {
+                return "Second";
+            }
+
             @Override
             public void run() {
                 secondDone.countDown();
@@ -79,9 +81,14 @@ class ServiceAwareEphemeralExecutorTest {
         CountDownLatch latch = new CountDownLatch(1);
         exec.enqueue(new DefaultJIPipeRunnable() {
             @Override
-            public String getTaskLabel() { return "Test"; }
+            public String getTaskLabel() {
+                return "Test";
+            }
+
             @Override
-            public void run() { latch.countDown(); }
+            public void run() {
+                latch.countDown();
+            }
         });
 
         assertFalse(latch.await(1, TimeUnit.SECONDS));
@@ -95,9 +102,14 @@ class ServiceAwareEphemeralExecutorTest {
         CountDownLatch latch = new CountDownLatch(1);
         exec.enqueue(new DefaultJIPipeRunnable() {
             @Override
-            public String getTaskLabel() { return "Test"; }
+            public String getTaskLabel() {
+                return "Test";
+            }
+
             @Override
-            public void run() { latch.countDown(); }
+            public void run() {
+                latch.countDown();
+            }
         });
 
         assertFalse(latch.await(1, TimeUnit.SECONDS));
@@ -114,9 +126,14 @@ class ServiceAwareEphemeralExecutorTest {
         CountDownLatch latch = new CountDownLatch(1);
         exec.enqueue(new DefaultJIPipeRunnable() {
             @Override
-            public String getTaskLabel() { return "Test"; }
+            public String getTaskLabel() {
+                return "Test";
+            }
+
             @Override
-            public void run() { latch.countDown(); }
+            public void run() {
+                latch.countDown();
+            }
         });
 
         exec.cancelAll();
@@ -124,5 +141,15 @@ class ServiceAwareEphemeralExecutorTest {
 
         assertFalse(latch.await(2, TimeUnit.SECONDS));
         assertTrue(exec.isEmpty());
+    }
+
+    static class TestService extends AbstractMicroservice {
+        TestService() {
+            super("Test");
+        }
+
+        @Override
+        protected void onStart() throws Exception {
+        }
     }
 }

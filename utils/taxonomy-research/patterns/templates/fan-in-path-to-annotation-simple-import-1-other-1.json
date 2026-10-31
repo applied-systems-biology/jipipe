@@ -1,1 +1,27 @@
-{"nodes":{"n0":{"jipipe:node-info-id":"project-user-directory","jipipe:graph-compartment":"218e6663-69ac-5a07-a4d6-7dd058fc266c","jipipe:node:name":"Project user directory"},"n1":{"jipipe:node-info-id":"jipipe:comment","jipipe:graph-compartment":"218e6663-69ac-5a07-a4d6-7dd058fc266c","jipipe:node:name":"Comment"},"n2":{"jipipe:node-info-id":"path-to-annotation-simple","jipipe:graph-compartment":"218e6663-69ac-5a07-a4d6-7dd058fc266c","jipipe:node:name":"Add path to annotations"}},"edges":[{"source-node":"n1","source-slot":"Comment","target-node":"n2","target-slot":"Paths"}]}
+{
+  "nodes": {
+    "n0": {
+      "jipipe:node-info-id": "project-user-directory",
+      "jipipe:graph-compartment": "218e6663-69ac-5a07-a4d6-7dd058fc266c",
+      "jipipe:node:name": "Project user directory"
+    },
+    "n1": {
+      "jipipe:node-info-id": "jipipe:comment",
+      "jipipe:graph-compartment": "218e6663-69ac-5a07-a4d6-7dd058fc266c",
+      "jipipe:node:name": "Comment"
+    },
+    "n2": {
+      "jipipe:node-info-id": "path-to-annotation-simple",
+      "jipipe:graph-compartment": "218e6663-69ac-5a07-a4d6-7dd058fc266c",
+      "jipipe:node:name": "Add path to annotations"
+    }
+  },
+  "edges": [
+    {
+      "source-node": "n1",
+      "source-slot": "Comment",
+      "target-node": "n2",
+      "target-slot": "Paths"
+    }
+  ]
+}

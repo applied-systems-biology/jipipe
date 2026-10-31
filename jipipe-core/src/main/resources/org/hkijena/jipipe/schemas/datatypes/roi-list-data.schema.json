@@ -14,7 +14,9 @@
       "type": "object",
       "description": "A *.roi or *.zip file",
       "properties": {
-        "fs:entry-type": { "$ref": "https://jipipe.org/schemas/filesystem/type-file.schema.json" }
+        "fs:entry-type": {
+          "$ref": "https://jipipe.org/schemas/filesystem/type-file.schema.json"
+        }
       }
     }
   }

@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.api.nodes.database.embeddings;
 
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
@@ -55,53 +54,31 @@ import java.util.stream.Collectors;
  */
 public class JIPipeEmbeddingDatabase {
 
-    /**
-     * Verification state for cached embeddings.
-     */
-    public enum VerificationState {
-        /** Loaded from cache, needs hash check */
-        UNVERIFIED,
-        /** Hash checked and matches */
-        VERIFIED,
-        /** From bundled resource, skip verification */
-        PRE_VERIFIED
-    }
-
     private static final Logger LOGGER = LoggerFactory.getLogger(JIPipeEmbeddingDatabase.class);
-
     private static final String MAGIC = "JEMB";
     private static final int CURRENT_VERSION = 2;
     private static final String BUNDLED_RESOURCE_PATH = "ai/embeddings.db";
     private static final long EMBED_TIMEOUT_SECONDS = 30;
-
     // Inner storage: modelId -> (nodeId -> embedding vector)
     private final Map<String, Map<String, float[]>> embeddings = new ConcurrentHashMap<>();
-
     // Hash storage: modelId -> (nodeId -> SHA-256 hash of the text used to generate the embedding)
     private final Map<String, Map<String, String>> hashes = new ConcurrentHashMap<>();
-
     // Verification state: modelId -> (nodeId -> verification state)
     private final Map<String, Map<String, VerificationState>> verificationStates = new ConcurrentHashMap<>();
-
-    // The model ID this database is currently associated with (for convenience)
-    private String activeModelId;
-
     // Dimension of embeddings for each model
     private final Map<String, Integer> dimensions = new ConcurrentHashMap<>();
-
     // Tracks which model IDs have had their cache (bundled resource + user disk) loaded.
     // This prevents ensureEmbeddingsForEntries() from computing embeddings that are
     // already available in the cache but haven't been loaded yet.
     private final Set<String> cacheLoadedModels = ConcurrentHashMap.newKeySet();
-
     // Tracks which model IDs have unsaved (dirty) embeddings that need to be persisted to disk.
     private final Set<String> dirtyModels = ConcurrentHashMap.newKeySet();
-
     // Lock for thread-safe disk operations
     private final ReentrantReadWriteLock diskLock = new ReentrantReadWriteLock();
-
     // If false, never save to disk
     private final boolean persistent;
+    // The model ID this database is currently associated with (for convenience)
+    private String activeModelId;
 
     /**
      * Creates a new persistent embedding database.
@@ -120,7 +97,148 @@ public class JIPipeEmbeddingDatabase {
         this.persistent = persistent;
     }
 
+    /**
+     * Compute a SHA-256 hash of the given text.
+     *
+     * @param text the text to hash
+     * @return the hex-encoded SHA-256 hash
+     */
+    public static String computeHash(String text) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hashBytes = digest.digest(text.getBytes(StandardCharsets.UTF_8));
+            StringBuilder sb = new StringBuilder();
+            for (byte b : hashBytes) {
+                sb.append(String.format("%02x", b));
+            }
+            return sb.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     // ===== Resource and Disk I/O =====
+
+    /**
+     * Create comprehensive text for embedding from a node database entry.
+     * Handles null values gracefully (skips sections with no data).
+     *
+     * @param entry the node database entry
+     * @return a text representation suitable for embedding
+     */
+    public static String entryToText(JIPipeNodeDatabaseEntry entry) {
+        Objects.requireNonNull(entry, "Entry must not be null");
+
+        StringBuilder sb = new StringBuilder();
+
+        // Name
+        String name = entry.getName();
+        if (name != null && !name.isBlank()) {
+            sb.append("Name: ").append(name).append("\n");
+        }
+
+        // Description
+        HTMLText description = entry.getDescription();
+        if (description != null) {
+            String plainText = description.toPlainText();
+            if (plainText != null && !plainText.isBlank()) {
+                sb.append("Description: ").append(plainText).append("\n");
+            }
+        }
+
+        // Menu location
+        List<String> locationInfos = entry.getLocationInfos();
+        if (locationInfos != null && !locationInfos.isEmpty()) {
+            for (String locationInfo : locationInfos) {
+                sb.append("Menu: ").append(locationInfo.replace("\n", " > ")).append("\n");
+            }
+        }
+
+        // Input slots
+        Map<String, JIPipeDataSlotInfo> inputSlots = entry.getInputSlots();
+        if (inputSlots != null && !inputSlots.isEmpty()) {
+            String inputs = inputSlots.entrySet().stream()
+                    .sorted(Map.Entry.comparingByKey())
+                    .map(e -> {
+                        JIPipeDataInfo dataInfo = JIPipeDataInfo.getInstance(e.getValue().getDataClass());
+                        return e.getKey() + " (" + dataInfo.getName() + ", " + dataInfo.getDescription() + ")";
+                    })
+                    .collect(Collectors.joining(", "));
+            sb.append("Inputs: ").append(inputs).append("\n");
+        }
+
+        // Output slots
+        Map<String, JIPipeDataSlotInfo> outputSlots = entry.getOutputSlots();
+        if (outputSlots != null && !outputSlots.isEmpty()) {
+            String outputs = outputSlots.entrySet().stream()
+                    .sorted(Map.Entry.comparingByKey())
+                    .map(e -> {
+                        JIPipeDataInfo dataInfo = JIPipeDataInfo.getInstance(e.getValue().getDataClass());
+                        return e.getKey() + " (" + dataInfo.getName() + ", " + dataInfo.getDescription() + ")";
+                    })
+                    .collect(Collectors.joining(", "));
+            sb.append("Outputs: ").append(outputs).append("\n");
+        }
+
+        return sb.toString().trim();
+    }
+
+    /**
+     * Create a stable ID for the entry for caching purposes.
+     * Uses {@code entry.getId()} if available, otherwise derives from name+location.
+     *
+     * @param entry the node database entry
+     * @return a stable string ID for the entry
+     */
+    public static String entryToId(JIPipeNodeDatabaseEntry entry) {
+        Objects.requireNonNull(entry, "Entry must not be null");
+
+        String id = entry.getId();
+        if (id != null && !id.isBlank()) {
+            return id;
+        }
+
+        // Fallback: derive from name and location
+        StringBuilder sb = new StringBuilder();
+        String name = entry.getName();
+        if (name != null) {
+            sb.append(name);
+        }
+        List<String> locationInfos = entry.getLocationInfos();
+        if (locationInfos != null && !locationInfos.isEmpty()) {
+            if (!sb.isEmpty()) {
+                sb.append("@");
+            }
+            sb.append(String.join(">", locationInfos));
+        }
+        return sb.toString();
+    }
+
+    /**
+     * Sanitize a model ID for use as a filename component.
+     * Replaces characters that are invalid on Windows
+     * ({@code < > : " / \ | ? * { }}) with underscores to ensure
+     * the path can be constructed on all platforms.
+     *
+     * @param modelId the model ID to sanitize
+     * @return a filesystem-safe version of the model ID
+     */
+    private static String sanitizeModelIdForPath(String modelId) {
+        return modelId
+                .replace(':', '_')
+                .replace('<', '_')
+                .replace('>', '_')
+                .replace('"', '_')
+                .replace('/', '_')
+                .replace('\\', '_')
+                .replace('|', '_')
+                .replace('?', '_')
+                .replace('*', '_')
+                .replace('{', '_')
+                .replace('}', '_');
+    }
+
+    // ===== Core Access Methods =====
 
     /**
      * Load pre-computed embeddings from a classpath resource (the bundled file).
@@ -216,8 +334,6 @@ public class JIPipeEmbeddingDatabase {
             diskLock.writeLock().unlock();
         }
     }
-
-    // ===== Core Access Methods =====
 
     /**
      * Get the embedding for a node, returns null if not found.
@@ -369,6 +485,8 @@ public class JIPipeEmbeddingDatabase {
         return dimensions.getOrDefault(modelId, -1);
     }
 
+    // ===== Hash Computation =====
+
     /**
      * Get all node IDs that have embeddings for a model.
      *
@@ -382,6 +500,8 @@ public class JIPipeEmbeddingDatabase {
         }
         return Collections.unmodifiableSet(modelEmbeddings.keySet());
     }
+
+    // ===== JIT Computation =====
 
     /**
      * Remove all embeddings for a model.
@@ -415,29 +535,7 @@ public class JIPipeEmbeddingDatabase {
         }
     }
 
-    // ===== Hash Computation =====
-
-    /**
-     * Compute a SHA-256 hash of the given text.
-     *
-     * @param text the text to hash
-     * @return the hex-encoded SHA-256 hash
-     */
-    public static String computeHash(String text) {
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hashBytes = digest.digest(text.getBytes(StandardCharsets.UTF_8));
-            StringBuilder sb = new StringBuilder();
-            for (byte b : hashBytes) {
-                sb.append(String.format("%02x", b));
-            }
-            return sb.toString();
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    // ===== JIT Computation =====
+    // ===== Static Helper Methods =====
 
     /**
      * For each entry that doesn't have a verified embedding, compute one JIT.
@@ -523,7 +621,7 @@ public class JIPipeEmbeddingDatabase {
      * @param progressInfo the progress info for logging
      */
     public void ensureEmbeddingsForEntriesWithEmbedder(List<JIPipeNodeDatabaseEntry> entries, String modelId,
-                                                        Function<String, float[]> embedFn, JIPipeProgressInfo progressInfo) {
+                                                       Function<String, float[]> embedFn, JIPipeProgressInfo progressInfo) {
         Objects.requireNonNull(entries, "Entries must not be null");
         Objects.requireNonNull(modelId, "Model ID must not be null");
         Objects.requireNonNull(embedFn, "Embed function must not be null");
@@ -578,127 +676,16 @@ public class JIPipeEmbeddingDatabase {
         }
     }
 
-    // ===== Static Helper Methods =====
-
-    /**
-     * Create comprehensive text for embedding from a node database entry.
-     * Handles null values gracefully (skips sections with no data).
-     *
-     * @param entry the node database entry
-     * @return a text representation suitable for embedding
-     */
-    public static String entryToText(JIPipeNodeDatabaseEntry entry) {
-        Objects.requireNonNull(entry, "Entry must not be null");
-
-        StringBuilder sb = new StringBuilder();
-
-        // Name
-        String name = entry.getName();
-        if (name != null && !name.isBlank()) {
-            sb.append("Name: ").append(name).append("\n");
-        }
-
-        // Description
-        HTMLText description = entry.getDescription();
-        if (description != null) {
-            String plainText = description.toPlainText();
-            if (plainText != null && !plainText.isBlank()) {
-                sb.append("Description: ").append(plainText).append("\n");
-            }
-        }
-
-        // Menu location
-        List<String> locationInfos = entry.getLocationInfos();
-        if (locationInfos != null && !locationInfos.isEmpty()) {
-            for (String locationInfo : locationInfos) {
-                sb.append("Menu: ").append(locationInfo.replace("\n", " > ")).append("\n");
-            }
-        }
-
-        // Input slots
-        Map<String, JIPipeDataSlotInfo> inputSlots = entry.getInputSlots();
-        if (inputSlots != null && !inputSlots.isEmpty()) {
-            String inputs = inputSlots.entrySet().stream()
-                    .sorted(Map.Entry.comparingByKey())
-                    .map(e -> {
-                        JIPipeDataInfo dataInfo = JIPipeDataInfo.getInstance(e.getValue().getDataClass());
-                        return e.getKey() + " (" + dataInfo.getName() + ", " + dataInfo.getDescription() + ")";
-                    })
-                    .collect(Collectors.joining(", "));
-            sb.append("Inputs: ").append(inputs).append("\n");
-        }
-
-        // Output slots
-        Map<String, JIPipeDataSlotInfo> outputSlots = entry.getOutputSlots();
-        if (outputSlots != null && !outputSlots.isEmpty()) {
-            String outputs = outputSlots.entrySet().stream()
-                    .sorted(Map.Entry.comparingByKey())
-                    .map(e -> {
-                        JIPipeDataInfo dataInfo = JIPipeDataInfo.getInstance(e.getValue().getDataClass());
-                        return e.getKey() + " (" + dataInfo.getName() + ", " + dataInfo.getDescription() + ")";
-                    })
-                    .collect(Collectors.joining(", "));
-            sb.append("Outputs: ").append(outputs).append("\n");
-        }
-
-        return sb.toString().trim();
-    }
-
-    /**
-     * Create a stable ID for the entry for caching purposes.
-     * Uses {@code entry.getId()} if available, otherwise derives from name+location.
-     *
-     * @param entry the node database entry
-     * @return a stable string ID for the entry
-     */
-    public static String entryToId(JIPipeNodeDatabaseEntry entry) {
-        Objects.requireNonNull(entry, "Entry must not be null");
-
-        String id = entry.getId();
-        if (id != null && !id.isBlank()) {
-            return id;
-        }
-
-        // Fallback: derive from name and location
-        StringBuilder sb = new StringBuilder();
-        String name = entry.getName();
-        if (name != null) {
-            sb.append(name);
-        }
-        List<String> locationInfos = entry.getLocationInfos();
-        if (locationInfos != null && !locationInfos.isEmpty()) {
-            if (!sb.isEmpty()) {
-                sb.append("@");
-            }
-            sb.append(String.join(">", locationInfos));
-        }
-        return sb.toString();
-    }
-
     // ===== User Cache Methods =====
 
     /**
-     * Sanitize a model ID for use as a filename component.
-     * Replaces characters that are invalid on Windows
-     * ({@code < > : " / \ | ? * { }}) with underscores to ensure
-     * the path can be constructed on all platforms.
+     * Convenience overload for {@link #loadUserCache(String, JIPipeProgressInfo)}
+     * that uses {@link JIPipeProgressInfo#SILENT}.
      *
-     * @param modelId the model ID to sanitize
-     * @return a filesystem-safe version of the model ID
+     * @param modelId the model ID to load caches for
      */
-    private static String sanitizeModelIdForPath(String modelId) {
-        return modelId
-                .replace(':', '_')
-                .replace('<', '_')
-                .replace('>', '_')
-                .replace('"', '_')
-                .replace('/', '_')
-                .replace('\\', '_')
-                .replace('|', '_')
-                .replace('?', '_')
-                .replace('*', '_')
-                .replace('{', '_')
-                .replace('}', '_');
+    public void loadUserCache(String modelId) {
+        loadUserCache(modelId, JIPipeProgressInfo.SILENT);
     }
 
     /**
@@ -709,15 +696,6 @@ public class JIPipeEmbeddingDatabase {
      * @param modelId      the model ID to load caches for
      * @param progressInfo the progress info for logging
      */
-    /**
-     * Convenience overload for {@link #loadUserCache(String, JIPipeProgressInfo)}
-     * that uses {@link JIPipeProgressInfo#SILENT}.
-     *
-     * @param modelId the model ID to load caches for
-     */
-    public void loadUserCache(String modelId) {
-        loadUserCache(modelId, JIPipeProgressInfo.SILENT);
-    }
 
     /**
      * Load from the user cache directory and the bundled resource.
@@ -804,8 +782,6 @@ public class JIPipeEmbeddingDatabase {
         return dirtyModels.contains(modelId);
     }
 
-    // ===== Active Model ID =====
-
     /**
      * Get the active model ID.
      *
@@ -814,6 +790,8 @@ public class JIPipeEmbeddingDatabase {
     public String getActiveModelId() {
         return activeModelId;
     }
+
+    // ===== Active Model ID =====
 
     /**
      * Set the active model ID.
@@ -824,8 +802,6 @@ public class JIPipeEmbeddingDatabase {
         this.activeModelId = activeModelId;
     }
 
-    // ===== Persistence Flag =====
-
     /**
      * Check if this database is persistent (saves to disk).
      *
@@ -835,7 +811,7 @@ public class JIPipeEmbeddingDatabase {
         return persistent;
     }
 
-    // ===== Internal I/O Methods =====
+    // ===== Persistence Flag =====
 
     /**
      * Load embeddings from an input stream using the binary format.
@@ -944,6 +920,8 @@ public class JIPipeEmbeddingDatabase {
         progressInfo.log("Loaded " + entryCount + " embeddings (v" + version + ") for model " + modelId);
     }
 
+    // ===== Internal I/O Methods =====
+
     /**
      * Save embeddings to an output stream using the binary format (version 2 with hashes).
      *
@@ -1013,5 +991,23 @@ public class JIPipeEmbeddingDatabase {
         }
 
         dos.flush();
+    }
+
+    /**
+     * Verification state for cached embeddings.
+     */
+    public enum VerificationState {
+        /**
+         * Loaded from cache, needs hash check
+         */
+        UNVERIFIED,
+        /**
+         * Hash checked and matches
+         */
+        VERIFIED,
+        /**
+         * From bundled resource, skip verification
+         */
+        PRE_VERIFIED
     }
 }

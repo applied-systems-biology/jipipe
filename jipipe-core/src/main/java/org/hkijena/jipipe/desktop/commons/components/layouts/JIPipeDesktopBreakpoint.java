@@ -26,10 +26,6 @@ public enum JIPipeDesktopBreakpoint {
         this.minWidth = minWidth;
     }
 
-    public int getMinWidth() {
-        return minWidth;
-    }
-
     public static JIPipeDesktopBreakpoint fromWidth(int width) {
         JIPipeDesktopBreakpoint result = XS;
         for (JIPipeDesktopBreakpoint bp : values()) {
@@ -38,5 +34,9 @@ public enum JIPipeDesktopBreakpoint {
             }
         }
         return result;
+    }
+
+    public int getMinWidth() {
+        return minWidth;
     }
 }

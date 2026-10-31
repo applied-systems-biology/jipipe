@@ -22,18 +22,24 @@ package org.hkijena.jipipe.api.nodes.taxonomy;
  * order. It maps every id into its category's Voronoi cell, so conceptually
  * similar functions are visually adjacent by construction.
  * <p>
- * Hue is never persisted (not in settings, node database or project JSON) —
+ * Hue is never persisted (not in settings, node database or project JSON) -
  * it is computed live from the function tree.
  */
 public final class TaxonomyHue {
 
-    /** FNV-1a 64-bit offset basis. */
+    /**
+     * FNV-1a 64-bit offset basis.
+     */
     private static final long FNV_OFFSET_BASIS = 0xcbf29ce484222325L;
 
-    /** FNV-1a 64-bit prime. */
+    /**
+     * FNV-1a 64-bit prime.
+     */
     private static final long FNV_PRIME = 0x100000001b3L;
 
-    /** Number of hue slots per Voronoi cell. */
+    /**
+     * Number of hue slots per Voronoi cell.
+     */
     private static final int SLOTS = 24;
 
     /**

@@ -30,9 +30,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Contract test for {@link JIPipeLegacyProjectReader}.
@@ -44,8 +42,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * directory, and it loads the fixture's nodes unchanged.
  * <p>
  * <b>Scope: jipipe-launcher.</b> The fixture references the node id
- * {@code ij1-blur-gaussian2d} from the ij-algorithms plugin, so — like
- * {@code FixtureProjectsLoadTest} — this test must live in the launcher
+ * {@code ij1-blur-gaussian2d} from the ij-algorithms plugin, so - like
+ * {@code FixtureProjectsLoadTest} - this test must live in the launcher
  * (the only module with all plugin modules on its classpath). On
  * jipipe-core's classpath {@code nodesFromJson} would silently skip the
  * fixture node and the node-count assertion would pass vacuously.
@@ -53,7 +51,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * <p>
  * <b>.jip vs .jipipe:</b> the legacy reader only claims the {@code .jip}
  * extension in {@link JIPipeLegacyProjectReader#supports(Path)}, but its
- * {@code read(...)} deliberately does not gate on the extension — exactly
+ * {@code read(...)} deliberately does not gate on the extension - exactly
  * like the former inline {@code JIPipeProject.loadProject}, which is why the
  * {@code .jipipe} fixtures load through it. A future reader (e.g. the JIPX
  * format) is the only component allowed to use {@code supports()} for
@@ -87,7 +85,7 @@ class LegacyProjectReaderContractTest {
         assertEquals(List.of("jip"), reader.getFileExtensions());
 
         // (0b) supports() gates on the .jip extension (case-insensitive) and
-        // on regular files — NOT on the fixture's .jipipe extension.
+        // on regular files - NOT on the fixture's .jipipe extension.
         Path jip = tmp.resolve("probe.jip");
         Files.createFile(jip);
         Path jipUpper = tmp.resolve("PROBE.JIP");
@@ -101,7 +99,7 @@ class LegacyProjectReaderContractTest {
         assertFalse(reader.supports(jipipe), "reader must not claim the .jipipe extension");
         assertFalse(reader.supports(dir), "reader must not support directories");
 
-        // (1) The 5-arg reader call — same shape as the former 5-arg
+        // (1) The 5-arg reader call - same shape as the former 5-arg
         // JIPipeProject.loadProject: must not throw.
         JIPipeProject project = reader.read(path,
                 new UnspecifiedValidationReportContext(), new JIPipeValidationReport(),
@@ -120,7 +118,7 @@ class LegacyProjectReaderContractTest {
         // load MUST fail.
         assertEquals(1, nodes.size(),
                 "Expected 1 loaded node but got " + nodes.size()
-                        + " — node silently skipped (unknown id or missing compartment?)");
+                        + " - node silently skipped (unknown id or missing compartment?)");
 
         // (5) The single node is the fixture's gaussian blur node.
         assertEquals("ij1-blur-gaussian2d", nodes.get(0).getInfo().getId(),

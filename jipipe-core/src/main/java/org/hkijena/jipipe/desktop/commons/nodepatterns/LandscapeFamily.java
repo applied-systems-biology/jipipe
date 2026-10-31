@@ -13,8 +13,7 @@
 
 package org.hkijena.jipipe.desktop.commons.nodepatterns;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.awt.geom.Path2D;
 import java.util.Random;
 
@@ -24,6 +23,10 @@ import java.util.Random;
  * at y=0 and the bottom at y=h.
  */
 public final class LandscapeFamily implements NodePatternFamily {
+    private static double curveY(double x, double yb, double amp, double kk, double ph, int ww) {
+        return yb + amp * Math.sin(x / ww * Math.PI * 2 * kk + ph) + amp * 0.5 * Math.sin(x / ww * Math.PI * 4 + ph * 2);
+    }
+
     @Override
     public void paint(Graphics2D g, int w, int h, Random rng) {
         int layers = 5 + rng.nextInt(2);
@@ -65,9 +68,5 @@ public final class LandscapeFamily implements NodePatternFamily {
             g.fill(p);
             g.setColor(Color.WHITE);
         }
-    }
-
-    private static double curveY(double x, double yb, double amp, double kk, double ph, int ww) {
-        return yb + amp * Math.sin(x / ww * Math.PI * 2 * kk + ph) + amp * 0.5 * Math.sin(x / ww * Math.PI * 4 + ph * 2);
     }
 }

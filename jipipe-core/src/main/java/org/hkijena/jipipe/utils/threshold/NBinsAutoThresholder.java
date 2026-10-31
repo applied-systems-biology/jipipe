@@ -145,24 +145,42 @@ public final class NBinsAutoThresholder {
 
     private static int invokePorted(AutoThresholdMethod method, int[] histogram) {
         switch (method) {
-            case Default: return NBinsThresholdMethods.Default(histogram);
-            case Huang: return NBinsThresholdMethods.Huang(histogram);
-            case Intermodes: return NBinsThresholdMethods.Intermodes(histogram);
-            case IsoData: return NBinsThresholdMethods.IsoData(histogram);
-            case IJ_IsoData: return NBinsThresholdMethods.IJ_IsoData(histogram);
-            case Li: return NBinsThresholdMethods.Li(histogram);
-            case MaxEntropy: return NBinsThresholdMethods.MaxEntropy(histogram);
-            case Mean: return NBinsThresholdMethods.Mean(histogram);
-            case MinError: return NBinsThresholdMethods.MinError(histogram);
-            case Minimum: return NBinsThresholdMethods.Minimum(histogram);
-            case Moments: return NBinsThresholdMethods.Moments(histogram);
-            case Otsu: return NBinsThresholdMethods.Otsu(histogram);
-            case Percentile: return NBinsThresholdMethods.Percentile(histogram);
-            case RenyiEntropy: return NBinsThresholdMethods.RenyiEntropy(histogram);
-            case Shanbhag: return NBinsThresholdMethods.Shanbhag(histogram);
-            case Triangle: return NBinsThresholdMethods.Triangle(histogram);
-            case Yen: return NBinsThresholdMethods.Yen(histogram);
-            default: throw new UnsupportedOperationException("Unknown method: " + method);
+            case Default:
+                return NBinsThresholdMethods.Default(histogram);
+            case Huang:
+                return NBinsThresholdMethods.Huang(histogram);
+            case Intermodes:
+                return NBinsThresholdMethods.Intermodes(histogram);
+            case IsoData:
+                return NBinsThresholdMethods.IsoData(histogram);
+            case IJ_IsoData:
+                return NBinsThresholdMethods.IJ_IsoData(histogram);
+            case Li:
+                return NBinsThresholdMethods.Li(histogram);
+            case MaxEntropy:
+                return NBinsThresholdMethods.MaxEntropy(histogram);
+            case Mean:
+                return NBinsThresholdMethods.Mean(histogram);
+            case MinError:
+                return NBinsThresholdMethods.MinError(histogram);
+            case Minimum:
+                return NBinsThresholdMethods.Minimum(histogram);
+            case Moments:
+                return NBinsThresholdMethods.Moments(histogram);
+            case Otsu:
+                return NBinsThresholdMethods.Otsu(histogram);
+            case Percentile:
+                return NBinsThresholdMethods.Percentile(histogram);
+            case RenyiEntropy:
+                return NBinsThresholdMethods.RenyiEntropy(histogram);
+            case Shanbhag:
+                return NBinsThresholdMethods.Shanbhag(histogram);
+            case Triangle:
+                return NBinsThresholdMethods.Triangle(histogram);
+            case Yen:
+                return NBinsThresholdMethods.Yen(histogram);
+            default:
+                throw new UnsupportedOperationException("Unknown method: " + method);
         }
     }
 }

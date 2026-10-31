@@ -24,16 +24,14 @@ import org.hkijena.jipipe.desktop.commons.components.color.JIPipeDesktopColorCho
 import org.hkijena.jipipe.desktop.commons.components.icons.OverlayJIPipeDesktopColorIcon;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterFormPanel;
-import org.hkijena.jipipe.desktop.commons.components.textfield.JIPipeDesktopDocumentChangeListener;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.*;
 import org.hkijena.jipipe.utils.scripting.ScriptUtils;
-import org.scijava.ui.swing.script.EditorPane;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
+import javax.swing.border.Border;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.text.*;
 import javax.swing.text.html.HTML;
@@ -55,21 +53,26 @@ public class JIPipeDesktopHTMLEditor extends JIPipeDesktopWorkbenchPanel {
     public static final int NONE = 0;
     public static final int WITH_SCROLL_BAR = 1;
     public static final int WITH_DIALOG_EDITOR_BUTTON = 2;
+    public static final int NO_TOOLBAR = 4;
     private final Set<String> availableFonts = new HashSet<>(Arrays.asList(GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames()));
     private final Map<String, Action> availableEditorKitActions = new HashMap<>();
     private final boolean enableDialogEditor;
+    private final boolean showToolBar;
     private final Map<JToggleButton, BooleanSupplier> updatedButtons = new HashMap<>();
     private JTextPane wysiwygEditorPane;
-    private EditorPane htmlEditorPane;
+    private JEditorPane previewPane;
+    private JTextArea sourceArea;
     private HTMLEditorKit wysiwygEditorKit;
     private JComboBox<String> fontSelection;
     private JComboBox<Integer> sizeSelection;
     private JIPipeDesktopColorChooserButton foregroundColorButton;
     private boolean isUpdating = false;
-    private Mode mode;
+    private View view = View.WYSIWYG;
+    private boolean expanded = false;
     private JPanel toolBarContainer;
     private JPanel editorContainer;
-    private JButton modeButton;
+    private JButton viewButton;
+    private JButton densityButton;
     private JButton editInDialogButton;
     private JButton insertImageButton;
     private JButton insertLinkButton;
@@ -77,42 +80,248 @@ public class JIPipeDesktopHTMLEditor extends JIPipeDesktopWorkbenchPanel {
     public JIPipeDesktopHTMLEditor(JIPipeDesktopWorkbench workbench, Mode mode, int flags) {
         super(workbench);
         this.enableDialogEditor = (flags & WITH_DIALOG_EDITOR_BUTTON) == WITH_DIALOG_EDITOR_BUTTON;
+        this.showToolBar = (flags & NO_TOOLBAR) == 0;
         initialize(flags);
         setMode(mode);
         initializeEvents();
     }
 
-    public Mode getMode() {
-        return mode;
-    }
+    /**
+     * Themes an editable combo to the JIPipe look (#1339): one rounded
+     * themed outline around the whole box, a flat (unbeveled) field, a flat
+     * arrow inside the same box, and a themed selection highlight. Without
+     * this, the editable font/size combos fall back to Metal's unthemed
+     * bevels - the dark outline around the field and the separate
+     * full-bordered arrow button the user reported.
+     */
+    private static void themeEditableComboBox(JComboBox<?> combo) {
+        // Force the (Metal) UI delegate to be installed so the editable field
+        // and the dropdown arrow button exist as child components - they are
+        // created lazily by the UI, not by the JComboBox constructor.
+        combo.getUI();
+        Color selBg = ThemeUtils.getCurrentStyle().getSelectionBackground();
+        Color selFg = ThemeUtils.getCurrentStyle().getTextForeground();
+        // One themed rounded outline around the whole combo (the theme sets
+        // ComboBox.background but not ComboBox.border, so Metal's bevel
+        // "EditorBorder" was drawn by the field instead - the dark outline).
+        Border fieldBorder = UIManager.getBorder("TextField.border");
+        combo.setBorder(fieldBorder);
 
-    public void setMode(Mode mode) {
-        if (mode != this.mode) {
-            if (this.mode == Mode.HTML) {
-                // Copy to wysiwyg
-                wysiwygEditorPane.setText(htmlEditorPane.getText());
-            } else {
-                // Copy to HTML
-                htmlEditorPane.setText(wysiwygEditorPane.getText());
+        // The combo's editable field + dropdown arrow (both created by the
+        // Metal UI): flatten them so they sit inside the single rounded box.
+        for (Component c : combo.getComponents()) {
+            JTextComponent tc = findTextComponent(c);
+            if (tc != null) {
+                tc.setBackground(ThemeUtils.getCurrentStyle().getFormBackground());
+                // Drop the Metal bevel, keep the themed field padding.
+                tc.setBorder(BorderFactory.createEmptyBorder(1, 2, 1, 2));
+                tc.setSelectionColor(selBg);
+                tc.setSelectedTextColor(selFg);
             }
-            this.mode = mode;
-            modeButton.setText(mode.toString());
-            reloadToolbar();
-            reloadEditor();
+            if (c instanceof JButton && c.getClass().getName().endsWith("ComboBoxButton")) {
+                // The opaque, beveled MetalComboBoxButton → flat arrow with no
+                // separate button frame.
+                JButton arrow = (JButton) c;
+                arrow.setOpaque(false);
+                arrow.setContentAreaFilled(false);
+                arrow.setBorderPainted(false);
+                arrow.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 4));
+                arrow.setFocusable(false);
+            }
+        }
+        // The dropdown popup's item selection (opaque renderer).
+        combo.setRenderer((list, value, index, isSelected, cellHasFocus) -> {
+            JLabel label = new JLabel(value == null ? "" : value.toString());
+            label.setOpaque(true);
+            label.setBackground(isSelected ? selBg : ThemeUtils.getCurrentStyle().getFormBackground());
+            label.setForeground(selFg);
+            return label;
+        });
+    }
+
+    /**
+     * Finds the first descendant {@link JTextComponent} (null if none).
+     */
+    private static JTextComponent findTextComponent(Component c) {
+        if (c instanceof JTextComponent)
+            return (JTextComponent) c;
+        if (c instanceof Container container) {
+            for (Component child : container.getComponents()) {
+                JTextComponent found = findTextComponent(child);
+                if (found != null)
+                    return found;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Makes a flat, 24×24 toolbar button (spec §8.2: toolbar buttons flat
+     * 24×24). Kept out of {@code UIUtils} (which only offers 25×25) so the row
+     * height stays 24px.
+     */
+    private static void makeToolbarButton24(AbstractButton b) {
+        b.setOpaque(false);
+        b.setContentAreaFilled(false);
+        b.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
+        b.setFocusable(false);
+        b.setPreferredSize(new Dimension(24, 24));
+        b.setMinimumSize(new Dimension(24, 24));
+        b.setMaximumSize(new Dimension(24, 24));
+    }
+
+    /**
+     * Returns the legacy {@link Mode} derived from the current view + density
+     * state (spec §8.2: the public API is kept stable for existing callers -
+     * the parameter editor, the expression/function-builder contexts).
+     */
+    public Mode getMode() {
+        if (view == View.SOURCE) {
+            return Mode.HTML;
+        }
+        return expanded ? Mode.Full : Mode.Compact;
+    }
+
+    /**
+     * Maps a legacy {@link Mode} onto the new view + density state:
+     * HTML → Source view, Full → expanded toolbars, Compact → the compact
+     * single-row toolbar. The current view is kept unless the mode demands a
+     * different one (HTML → Source), so switching between Compact and Full
+     * only changes the toolbar density.
+     */
+    public void setMode(Mode mode) {
+        if (mode == this.modeFromState()) {
+            return;
+        }
+        switch (mode) {
+            case HTML -> {
+                if (view != View.SOURCE) {
+                    setView(View.SOURCE);
+                }
+            }
+            case Full -> {
+                if (view == View.SOURCE) {
+                    setView(View.WYSIWYG);
+                }
+                expanded = true;
+            }
+            case Compact -> {
+                if (view == View.SOURCE) {
+                    setView(View.WYSIWYG);
+                }
+                expanded = false;
+            }
+        }
+        reloadToolbar();
+        reloadEditor();
+    }
+
+    private Mode modeFromState() {
+        if (view == View.SOURCE) {
+            return Mode.HTML;
+        }
+        return expanded ? Mode.Full : Mode.Compact;
+    }
+
+    public View getView() {
+        return view;
+    }
+
+    /**
+     * Switches the view (WYSIWYG / Preview / Source), syncing content between
+     * the panes on each transition (spec §8.2).
+     */
+    public void setView(View view) {
+        if (view == this.view) {
+            return;
+        }
+        switch (this.view) {
+            case WYSIWYG -> wysiwygToOut(view);
+            case PREVIEW -> wysiwygToOut(view);
+            case SOURCE -> sourceToWysiwyg();
+        }
+        this.view = view;
+        updateViewButton();
+        reloadToolbar();
+        reloadEditor();
+    }
+
+    /**
+     * Cycles WYSIWYG → Preview → Source → WYSIWYG.
+     */
+    public void cycleView() {
+        View next = switch (view) {
+            case WYSIWYG -> View.PREVIEW;
+            case PREVIEW -> View.SOURCE;
+            case SOURCE -> View.WYSIWYG;
+        };
+        setView(next);
+    }
+
+    /**
+     * Toggles the toolbar between the compact single row and the expanded toolbars.
+     */
+    public void toggleExpanded() {
+        expanded = !expanded;
+        updateDensityButton();
+        reloadToolbar();
+    }
+
+    public boolean isExpanded() {
+        return expanded;
+    }
+
+    /**
+     * WYSIWYG -> Preview/Source: copy the rendered HTML into the target pane.
+     */
+    private void wysiwygToOut(View target) {
+        String html;
+        try {
+            Document document = wysiwygEditorPane.getDocument();
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            wysiwygEditorKit.write(out, document, 0, document.getLength());
+            html = out.toString();
+        } catch (Exception e) {
+            html = wysiwygEditorPane.getText();
+        }
+        switch (target) {
+            case PREVIEW -> {
+                previewPane.setText(html);
+                previewPane.setCaretPosition(0);
+            }
+            case SOURCE -> sourceArea.setText(html);
+            default -> {
+            }
         }
     }
 
-    private void reloadEditor() {
-        editorContainer.removeAll();
-        if (mode == Mode.HTML) {
-            htmlEditorPane.setText(wysiwygEditorPane.getText());
-            editorContainer.add(htmlEditorPane, BorderLayout.CENTER);
-        } else {
-            wysiwygEditorPane.setText(htmlEditorPane.getText());
-            editorContainer.add(wysiwygEditorPane, BorderLayout.CENTER);
-        }
-        editorContainer.revalidate();
-        editorContainer.repaint();
+    /**
+     * Source -> WYSIWYG: parse the edited markup back into the document.
+     */
+    private void sourceToWysiwyg() {
+        setText(sourceArea.getText());
+    }
+
+    private void updateViewButton() {
+        String icon = switch (view) {
+            case WYSIWYG -> "actions/edit-select-text.png";
+            case PREVIEW -> "actions/view-preview.png";
+            case SOURCE -> "actions/format-text-code.png";
+        };
+        String tip = switch (view) {
+            case WYSIWYG -> "View: WYSIWYG (click for Preview)";
+            case PREVIEW -> "View: Preview (click for Source)";
+            case SOURCE -> "View: Source (click for WYSIWYG)";
+        };
+        viewButton.setIcon(JIPipe.RESOURCES.getIcon16(icon));
+        viewButton.setToolTipText(tip);
+    }
+
+    private void updateDensityButton() {
+        String icon = expanded ? "actions/view-compact.png" : "actions/view-fullscreen.png";
+        String tip = expanded ? "Collapse the toolbar" : "Expand the toolbar";
+        densityButton.setIcon(JIPipe.RESOURCES.getIcon16(icon));
+        densityButton.setToolTipText(tip);
     }
 
     public Document getDocument() {
@@ -139,63 +348,55 @@ public class JIPipeDesktopHTMLEditor extends JIPipeDesktopWorkbenchPanel {
 
     private void reloadToolbar() {
         toolBarContainer.removeAll();
-        if (mode == Mode.Compact) {
-            JToolBar toolBar = new JToolBar();
-            toolBar.add(foregroundColorButton);
-            toolBar.add(createFormatActionButton(new StyledEditorKit.BoldAction(),
-                    this::selectionIsBold,
-                    "Format bold",
-                    "actions/format-text-bold.png"));
-            toolBar.add(createFormatActionButton(new StyledEditorKit.ItalicAction(),
-                    this::selectionIsItalic,
-                    "Format italic",
-                    "actions/format-text-italic.png"));
-            toolBar.add(createFormatActionButton(new StyledEditorKit.UnderlineAction(),
-                    this::selectionIsUnderline,
-                    "Format underlined",
-                    "actions/format-text-underline.png"));
-            toolBar.addSeparator();
-            toolBar.add(insertImageButton);
-            toolBar.add(Box.createHorizontalGlue());
-            toolBar.add(modeButton);
-            if (enableDialogEditor)
-                toolBar.add(editInDialogButton);
+        if (!showToolBar) {
+            // No toolbar at all (the embedded parameter view, #1339): the body is
+            // editable, but the formatting controls live in the full dialog
+            // opened from the name-row "Edit" button.
+            revalidate();
+            repaint();
+            return;
+        }
+        if (!expanded) {
+            // Compact: a single 24px icon-only row (spec §8.2). B, I, U, color,
+            // image, |, view toggle, density toggle, Edit-in-dialog.
+            JToolBar toolBar = createCompactToolBar();
             toolBarContainer.add(toolBar);
-        } else if (mode == Mode.Full) {
-
-            // Toolbar 1
+        } else {
+            // Expanded: the former Full toolbars (font/size/color, formatting,
+            // alignment, insert), plus the view + density toggles.
             JToolBar toolBar1 = new JToolBar();
-
+            toolBar1.setAlignmentX(0f);
             toolBar1.add(fontSelection);
             toolBar1.add(sizeSelection);
             toolBar1.addSeparator();
-
             toolBar1.add(foregroundColorButton);
-
-            toolBar1.add(Box.createHorizontalGlue());
-            toolBar1.add(modeButton);
-            if (enableDialogEditor)
-                toolBar1.add(editInDialogButton);
-
-            // Toolbar 2
-            JToolBar toolBar2 = new JToolBar();
-
-            toolBar2.add(createFormatActionButton(new StyledEditorKit.BoldAction(),
+            toolBar1.add(createFormatActionButton(new StyledEditorKit.BoldAction(),
                     this::selectionIsBold,
                     "Format bold",
                     "actions/format-text-bold.png"));
-            toolBar2.add(createFormatActionButton(new StyledEditorKit.ItalicAction(),
+            toolBar1.add(createFormatActionButton(new StyledEditorKit.ItalicAction(),
                     this::selectionIsItalic,
                     "Format italic",
                     "actions/format-text-italic.png"));
-            toolBar2.add(createFormatActionButton(new StyledEditorKit.UnderlineAction(),
+            toolBar1.add(createFormatActionButton(new StyledEditorKit.UnderlineAction(),
                     this::selectionIsUnderline,
                     "Format underlined",
                     "actions/format-text-underline.png"));
-            toolBar2.add(createFormatActionButton(new StrikeThroughAction(),
+            toolBar1.add(createFormatActionButton(new StrikeThroughAction(),
                     this::selectionIsStrikeThrough,
                     "Format strike-through",
                     "actions/format-text-strikethrough.png"));
+            toolBar1.addSeparator();
+            toolBar1.add(insertLinkButton);
+            toolBar1.add(insertImageButton);
+            toolBar1.add(Box.createHorizontalGlue());
+            toolBar1.add(viewButton);
+            toolBar1.add(densityButton);
+            if (enableDialogEditor)
+                toolBar1.add(editInDialogButton);
+
+            JToolBar toolBar2 = new JToolBar();
+            toolBar2.setAlignmentX(0f);
             toolBar2.add(createFormatActionButton(new SubscriptAction(),
                     this::selectionIsSubscript,
                     "Format as sub-script",
@@ -204,9 +405,7 @@ public class JIPipeDesktopHTMLEditor extends JIPipeDesktopWorkbenchPanel {
                     this::selectionIsSuperscript,
                     "Format as super-script",
                     "actions/format-text-superscript.png"));
-
             toolBar2.addSeparator();
-
             toolBar2.add(createFormatActionButton(new StyledEditorKit.AlignmentAction("Align left", StyleConstants.ALIGN_LEFT),
                     this::selectionIsAlignLeft,
                     "Align left",
@@ -223,30 +422,54 @@ public class JIPipeDesktopHTMLEditor extends JIPipeDesktopWorkbenchPanel {
                     this::selectionIsAlignJustified,
                     "Align justified",
                     "actions/format-justify-fill.png"));
-
+            // A trailing glue (like toolBar1's) makes this row's max width
+            // unbounded, so the BoxLayout stretches it to the full editor width
+            // - otherwise the row (and its bottom border line) stops at the last
+            // icon (#1339).
             toolBar2.add(Box.createHorizontalGlue());
 
-            //Toolbar 3
-            JToolBar toolBar3 = new JToolBar();
-
-            toolBar3.add(insertLinkButton);
-            toolBar3.add(insertImageButton);
-            toolBar3.add(Box.createHorizontalGlue());
-
-            // Add the toolbars
             toolBarContainer.add(toolBar1);
             toolBarContainer.add(toolBar2);
-            toolBarContainer.add(toolBar3);
-        } else {
-            JToolBar toolBar = new JToolBar();
-            toolBar.add(Box.createHorizontalGlue());
-            toolBar.add(modeButton);
-            if (enableDialogEditor)
-                toolBar.add(editInDialogButton);
-            toolBarContainer.add(toolBar);
         }
         revalidate();
         repaint();
+    }
+
+    private JToolBar createCompactToolBar() {
+        JToolBar toolBar = new JToolBar();
+        toolBar.setAlignmentX(0f);
+        toolBar.add(createFormatActionButton(new StyledEditorKit.BoldAction(),
+                this::selectionIsBold,
+                "Format bold",
+                "actions/format-text-bold.png"));
+        toolBar.add(createFormatActionButton(new StyledEditorKit.ItalicAction(),
+                this::selectionIsItalic,
+                "Format italic",
+                "actions/format-text-italic.png"));
+        toolBar.add(createFormatActionButton(new StyledEditorKit.UnderlineAction(),
+                this::selectionIsUnderline,
+                "Format underlined",
+                "actions/format-text-underline.png"));
+        toolBar.add(foregroundColorButton);
+        toolBar.addSeparator();
+        toolBar.add(insertImageButton);
+        toolBar.addSeparator();
+        toolBar.add(viewButton);
+        toolBar.add(densityButton);
+        if (enableDialogEditor)
+            toolBar.add(editInDialogButton);
+        return toolBar;
+    }
+
+    private void reloadEditor() {
+        editorContainer.removeAll();
+        switch (view) {
+            case PREVIEW -> editorContainer.add(previewPane, BorderLayout.CENTER);
+            case SOURCE -> editorContainer.add(new JScrollPane(sourceArea), BorderLayout.CENTER);
+            default -> editorContainer.add(wysiwygEditorPane, BorderLayout.CENTER);
+        }
+        editorContainer.revalidate();
+        editorContainer.repaint();
     }
 
     private void initialize(int flags) {
@@ -264,14 +487,6 @@ public class JIPipeDesktopHTMLEditor extends JIPipeDesktopWorkbenchPanel {
         wysiwygEditorKit.getStyleSheet().addRule("body { font-family: Dialog; }" +
                 "p { margin: 0; }");
         wysiwygEditorPane.setCursor(Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR));
-//        wysiwygEditorPane.getDocument().addDocumentListener(new DocumentChangeListener() {
-//            @Override
-//            public void changed(DocumentEvent documentEvent) {
-//                if(mode != Mode.HTML) {
-//                    htmlEditorPane.setText(wysiwygEditorPane.getText());
-//                }
-//            }
-//        });
         wysiwygEditorPane.addHyperlinkListener(e -> {
             if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
                 try {
@@ -288,21 +503,19 @@ public class JIPipeDesktopHTMLEditor extends JIPipeDesktopWorkbenchPanel {
             }
         });
 
-        // HTML code editor
-        htmlEditorPane = new EditorPane();
-        ThemeUtils.applyThemeToCodeEditor(htmlEditorPane);
-        htmlEditorPane.setBackground(UIManager.getColor("TextArea.background"));
-        htmlEditorPane.setHighlightCurrentLine(false);
-        htmlEditorPane.setTabSize(4);
-        htmlEditorPane.setSyntaxEditingStyle("text/html");
-        htmlEditorPane.getDocument().addDocumentListener(new JIPipeDesktopDocumentChangeListener() {
-            @Override
-            public void changed(DocumentEvent documentEvent) {
-                if (mode == Mode.HTML) {
-                    wysiwygEditorPane.setText(htmlEditorPane.getText());
-                }
-            }
-        });
+        // Source view: a plain text area showing the raw HTML markup (no
+        // syntax-highlight dependency - #1124 will replace this later).
+        sourceArea = new JTextArea();
+        sourceArea.setFont(new Font(Font.MONOSPACED, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
+        sourceArea.setBackground(UIManager.getColor("TextArea.background"));
+        sourceArea.setLineWrap(false);
+        sourceArea.setWrapStyleWord(false);
+
+        // Preview view: a read-only render of the current HTML.
+        previewPane = new JEditorPane();
+        previewPane.setEditable(false);
+        previewPane.setContentType("text/html");
+        previewPane.setEditorKit(new HTMLEditorKit());
 
         // The editor container
         editorContainer = new JPanel(new BorderLayout());
@@ -318,6 +531,15 @@ public class JIPipeDesktopHTMLEditor extends JIPipeDesktopWorkbenchPanel {
         add(toolBarContainer, BorderLayout.NORTH);
 
         initializeToolBarComponents();
+        updateViewButton();
+        updateDensityButton();
+        // Chrome (spec §8.2): the embedded parameter view (which carries the
+        // name-row "Edit" button that opens the dialog) uses a modern
+        // left-accent bar (#1339); the standalone full dialog carries none -
+        // its own window is the frame.
+        setBorder(enableDialogEditor ? UIUtils.createLeftAccentBorder() : BorderFactory.createEmptyBorder());
+        reloadToolbar();
+        reloadEditor();
     }
 
     private void initializeToolBarComponents() {
@@ -356,12 +578,21 @@ public class JIPipeDesktopHTMLEditor extends JIPipeDesktopWorkbenchPanel {
                 wysiwygEditorPane.requestFocusInWindow();
             }
         });
+        // The font/size combos are editable, so focusing one selects all its
+        // text - and the unthemed Metal bevels/selection draw the dark
+        // outlines in the font/size combos (the "weird combobox" design,
+        // #1339). Theme the whole combo to the JIPipe look.
+        themeEditableComboBox(fontSelection);
+        themeEditableComboBox(sizeSelection);
 
         // Color selection
         foregroundColorButton = new JIPipeDesktopColorChooserButton("");
         foregroundColorButton.setIcon(new OverlayJIPipeDesktopColorIcon(JIPipe.RESOURCES.getIcon16("actions/format-stroke-color.png"),
                 new Rectangle(0, 14, 16, 2), true, false));
         UIUtils.makeButtonFlat25x25(foregroundColorButton);
+        foregroundColorButton.setPreferredSize(new Dimension(24, 24));
+        foregroundColorButton.setMinimumSize(new Dimension(24, 24));
+        foregroundColorButton.setMaximumSize(new Dimension(24, 24));
         foregroundColorButton.setToolTipText("Set color");
         foregroundColorButton.getColorChosenEventEmitter().subscribeLambda((emitter, event) -> {
             if (!isUpdating) {
@@ -373,28 +604,18 @@ public class JIPipeDesktopHTMLEditor extends JIPipeDesktopWorkbenchPanel {
             }
         });
 
-        // Compact mode selection
-        modeButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/caret-down.png"));
-        modeButton.setHorizontalTextPosition(SwingConstants.LEFT);
-        UIUtils.makeButtonFlat(modeButton);
-        JPopupMenu modeMenu = UIUtils.addPopupMenuToButton(modeButton);
-        {
-            JMenuItem compactModeItem = new JMenuItem("Compact", JIPipe.RESOURCES.getIcon16("actions/edit-select-text.png"));
-            compactModeItem.addActionListener(e -> setMode(Mode.Compact));
-            modeMenu.add(compactModeItem);
-
-            JMenuItem fullModeItem = new JMenuItem("Full", JIPipe.RESOURCES.getIcon16("actions/edit-select-text.png"));
-            fullModeItem.addActionListener(e -> setMode(Mode.Full));
-            modeMenu.add(fullModeItem);
-
-            JMenuItem htmlModeItem = new JMenuItem("HTML code", JIPipe.RESOURCES.getIcon16("actions/format-text-code.png"));
-            htmlModeItem.addActionListener(e -> setMode(Mode.HTML));
-            modeMenu.add(htmlModeItem);
-        }
+        // View toggle (WYSIWYG -> Preview -> Source, spec §8.2) + density
+        // toggle (compact <-> expanded), both flat 24x24.
+        viewButton = new JButton();
+        makeToolbarButton24(viewButton);
+        viewButton.addActionListener(e -> cycleView());
+        densityButton = new JButton();
+        makeToolbarButton24(densityButton);
+        densityButton.addActionListener(e -> toggleExpanded());
 
         // Edit in dialog button
         editInDialogButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/open-in-new-window.png"));
-        UIUtils.makeButtonFlat25x25(editInDialogButton);
+        makeToolbarButton24(editInDialogButton);
         editInDialogButton.setToolTipText("Edit in dedicated window");
         editInDialogButton.addActionListener(e -> {
             HTMLText result = UIUtils.getHTMLByDialog(getDesktopWorkbench(), this, "Edit", null, new HTMLText(getHTML()));
@@ -405,7 +626,7 @@ public class JIPipeDesktopHTMLEditor extends JIPipeDesktopWorkbenchPanel {
 
         // Insert image
         insertImageButton = new JButton("Image", JIPipe.RESOURCES.getIcon16("actions/insert-image.png"));
-        UIUtils.makeButtonFlat(insertImageButton);
+        makeToolbarButton24(insertImageButton);
         JPopupMenu insertImageMenu = UIUtils.addPopupMenuToButton(insertImageButton);
         {
             JMenuItem insertImageFromFileItem = new JMenuItem("Embed from file ...", JIPipe.RESOURCES.getIcon16("actions/document-open-folder.png"));
@@ -425,7 +646,7 @@ public class JIPipeDesktopHTMLEditor extends JIPipeDesktopWorkbenchPanel {
 
         // Insert link
         insertLinkButton = new JButton("Link", JIPipe.RESOURCES.getIcon16("actions/insert-link.png"));
-        UIUtils.makeButtonFlat(insertLinkButton);
+        makeToolbarButton24(insertLinkButton);
         insertLinkButton.addActionListener(e -> insertLink());
     }
 
@@ -719,7 +940,7 @@ public class JIPipeDesktopHTMLEditor extends JIPipeDesktopWorkbenchPanel {
         button.setText("");
         button.setIcon(JIPipe.RESOURCES.getIcon16(icon));
         button.setToolTipText(name);
-        UIUtils.makeButtonFlat25x25(button);
+        makeToolbarButton24(button);
         updatedButtons.put(button, toggled);
         return button;
     }
@@ -769,6 +990,19 @@ public class JIPipeDesktopHTMLEditor extends JIPipeDesktopWorkbenchPanel {
 
         // Workaround https://stackoverflow.com/questions/1527021/html-jtextpane-newline-support
 //        textPane.getDocument().putProperty(DefaultEditorKit.EndOfLineStringProperty, "<br/>\n");
+    }
+
+    /**
+     * The three view states (spec §8.2): WYSIWYG (the live editable HTML pane),
+     * Preview (a read-only render of the current HTML), and Source (a plain
+     * editable text area showing the raw markup). This is an internal view
+     * concern, separate from the legacy {@link Mode} (which callers use for
+     * toolbar density) and from the compact/expanded density toggle.
+     */
+    public enum View {
+        WYSIWYG,
+        PREVIEW,
+        SOURCE
     }
 
     public enum Mode {

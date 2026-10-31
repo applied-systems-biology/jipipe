@@ -13,17 +13,14 @@
 
 package org.hkijena.jipipe.desktop.commons.nodepatterns;
 
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.util.Random;
 
-/** Recursive subdivision, alternating fills. */
+/**
+ * Recursive subdivision, alternating fills.
+ */
 public final class PatchworkFamily implements NodePatternFamily {
-    @Override
-    public void paint(Graphics2D g, int w, int h, Random rng) {
-        subdivide(g, rng, 0, 0, w, h, 4, true);
-    }
-
     private static void subdivide(Graphics2D g, Random rng, double x, double y, double w, double h, int depth, boolean fill) {
         if (depth == 0 || (w < 24 && h < 24)) { // 24 (was 26 in the prototype): at 64px the frame-adjacent leaf column can land on an empty fill-parity, leaving one border ink-free (plane-filling contract deviation, controller ruling)
             if (fill) g.fill(new Rectangle2D.Double(x + 1.5, y + 1.5, Math.max(1, w - 3), Math.max(1, h - 3)));
@@ -38,5 +35,10 @@ public final class PatchworkFamily implements NodePatternFamily {
             subdivide(g, rng, x, y, w, split - y, depth - 1, !fill);
             subdivide(g, rng, x, split, w, y + h - split, depth - 1, !fill);
         }
+    }
+
+    @Override
+    public void paint(Graphics2D g, int w, int h, Random rng) {
+        subdivide(g, rng, 0, 0, w, h, 4, true);
     }
 }

@@ -1,8 +1,8 @@
 package org.hkijena.jipipe.desktop.commons.components.servers.monitor;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.servers.JIPipeServerInstance;
 import org.hkijena.jipipe.api.microservice.MicroserviceState;
+import org.hkijena.jipipe.api.servers.JIPipeServerInstance;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.decorator.HighlighterFactory;
@@ -46,6 +46,41 @@ public class JIPipeDesktopServerMonitorOverviewPage extends JIPipeDesktopServerM
         initialize();
         this.refreshTimer = new Timer(5000, this::onRefreshTimer);
         refreshTimer.start();
+    }
+
+    /**
+     * Returns whether the instance is in a state where it can be stopped.
+     *
+     * @param instance the instance
+     * @return true if a stop can be issued
+     */
+    private static boolean isRunning(JIPipeServerInstance<?> instance) {
+        MicroserviceState state = instance.getState();
+        return state != MicroserviceState.Stopped && state != MicroserviceState.Stopping;
+    }
+
+    /**
+     * Formats the instance uptime based on {@link JIPipeServerInstance#getStartedAt()}.
+     *
+     * @param instance the instance
+     * @return a human-readable uptime string, or "N/A"
+     */
+    private static String formatUptime(JIPipeServerInstance<?> instance) {
+        Instant startedAt = instance.getStartedAt();
+        if (startedAt == null) {
+            return "N/A";
+        }
+        Duration uptime = Duration.between(startedAt, Instant.now());
+        long hours = uptime.toHours();
+        long minutes = uptime.minusHours(hours).toMinutes();
+        long seconds = uptime.minusHours(hours).minusMinutes(minutes).getSeconds();
+        if (hours > 0) {
+            return hours + "h " + minutes + "m " + seconds + "s";
+        }
+        if (minutes > 0) {
+            return minutes + "m " + seconds + "s";
+        }
+        return seconds + "s";
     }
 
     private void onRefreshTimer(ActionEvent e) {
@@ -145,41 +180,6 @@ public class JIPipeDesktopServerMonitorOverviewPage extends JIPipeDesktopServerM
             }
         }
         refresh();
-    }
-
-    /**
-     * Returns whether the instance is in a state where it can be stopped.
-     *
-     * @param instance the instance
-     * @return true if a stop can be issued
-     */
-    private static boolean isRunning(JIPipeServerInstance<?> instance) {
-        MicroserviceState state = instance.getState();
-        return state != MicroserviceState.Stopped && state != MicroserviceState.Stopping;
-    }
-
-    /**
-     * Formats the instance uptime based on {@link JIPipeServerInstance#getStartedAt()}.
-     *
-     * @param instance the instance
-     * @return a human-readable uptime string, or "N/A"
-     */
-    private static String formatUptime(JIPipeServerInstance<?> instance) {
-        Instant startedAt = instance.getStartedAt();
-        if (startedAt == null) {
-            return "N/A";
-        }
-        Duration uptime = Duration.between(startedAt, Instant.now());
-        long hours = uptime.toHours();
-        long minutes = uptime.minusHours(hours).toMinutes();
-        long seconds = uptime.minusHours(hours).minusMinutes(minutes).getSeconds();
-        if (hours > 0) {
-            return hours + "h " + minutes + "m " + seconds + "s";
-        }
-        if (minutes > 0) {
-            return minutes + "m " + seconds + "s";
-        }
-        return seconds + "s";
     }
 
     @Override

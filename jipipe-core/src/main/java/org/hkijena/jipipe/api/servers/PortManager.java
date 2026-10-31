@@ -39,13 +39,21 @@ import java.util.concurrent.ThreadLocalRandom;
  * privileged ports ({@code < 1024}) and already-assigned ports.</p>
  */
 public class PortManager {
-    /** Lowest port considered during the fallback scan. Ports below 1024 are privileged on Unix. */
+    /**
+     * Lowest port considered during the fallback scan. Ports below 1024 are privileged on Unix.
+     */
     private static final int MIN_SCAN_PORT = 1024;
-    /** Highest port considered during the fallback scan. */
+    /**
+     * Highest port considered during the fallback scan.
+     */
     private static final int MAX_SCAN_PORT = 65535;
-    /** Number of times to ask the OS for a free port before falling back to a scan. */
+    /**
+     * Number of times to ask the OS for a free port before falling back to a scan.
+     */
     private static final int MAX_OS_ATTEMPTS = 100;
-    /** Number of random ports to probe during the fallback scan. */
+    /**
+     * Number of random ports to probe during the fallback scan.
+     */
     private static final int MAX_SCAN_ATTEMPTS = 64;
     private final Set<Integer> assignedPorts = ConcurrentHashMap.newKeySet();
 

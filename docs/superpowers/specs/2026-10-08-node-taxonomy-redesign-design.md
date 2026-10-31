@@ -1,4 +1,4 @@
-# Redesign of Node Categorization and Design — Design
+# Redesign of Node Categorization and Design - Design
 
 Date: 2026-10-08
 Issue: [RGerst/jipipe #1324](https://asb-git.hki-jena.de/RGerst/jipipe/-/work_items/1324)
@@ -7,10 +7,10 @@ Issue: [RGerst/jipipe #1324](https://asb-git.hki-jena.de/RGerst/jipipe/-/work_it
 
 JIPipe organizes its ~1,840 registered node types by a fixed set of 11 flat
 `JIPipeNodeTypeCategory` classes plus a string `menuPath` that builds deep,
-hard-to-navigate submenu hierarchies. Categories also own the visual aspects
-(authors pick a `colorHue` and icon per category — an annoying manual task) and
-install one button each into the node-list panel. As new frameworks
-(Cellpose 2/3/4, TrackMate, JFreeChart plotting, JIPipeDL, …) are added, more
+hard-to-navigate submenu hierarchies. Categories also own the visual aspects (authors pick a `colorHue` and icon per
+category - an annoying manual task) and
+install one button each into the node-list panel. As new frameworks (Cellpose 2/3/4, TrackMate, JFreeChart plotting,
+JIPipeDL, …) are added, more
 and more nodes are hard to categorize, hard to find, and hard to recognize on
 the canvas.
 
@@ -23,42 +23,40 @@ A fine-grained, low-effort **node taxonomy** that
 - dissolves the `menuPath` hierarchy into a browsable **function tree**,
 - adds **tags** (per function and per node), **framework** (origin: Cellpose 4,
   TrackMate, JFreeChart, JIPipeDL, …), **dimensionality** (declared spatial
-  2D/3D + derived input profile, see below), and
-  **workflow families** (groups of nodes that form a setup together),
-- presents the node selection in a modern, adaptive UI with contextual
-  *related* and *follow-ups* sections, and
+  2D/3D + derived input profile, see below), and **workflow families** (groups of nodes that form a setup together),
+- presents the node selection in a modern, adaptive UI with contextual *related* and *follow-ups* sections, and
 - renders framework identity on canvas nodes via a cached procedural
   "gravatar-like" pattern plus a badge, both user-configurable.
 
-All existing nodes are converted to the new system as part of this change
-(6.0.0 is a breaking major; no legacy compatibility is carried).
+All existing nodes are converted to the new system as part of this change (6.0.0 is a breaking major; no legacy
+compatibility is carried).
 
 ## Non-goals
 
 - No persistence of taxonomy into project files (verified: projects store only
-  node-type ids — `jipipe:algorithm-class` — never category/menu-path data).
+  node-type ids - `jipipe:algorithm-class` - never category/menu-path data).
 - No user-editable functions/frameworks/families (they are code-defined;
   tags are the free-form layer).
 - No changes to node execution semantics, iteration, or data flow.
 - No new node UI subclasses; rendering changes are additive inside the
   existing `JIPipeDesktopGraphNodeUI` paint pipeline.
-- Custom/procedural pattern *designs* beyond the bundled DiceBear styles
-  (a later extension; the engine supports adding CC0 styles as resources).
+- Custom/procedural pattern *designs* beyond the bundled DiceBear styles (a later extension; the engine supports adding
+  CC0 styles as resources).
 
 ## Current system (context)
 
-| Concern | Where |
-|---|---|
-| Category interface (id, name, icon, `colorHue`, uiOrder, visibility flags) | `api/nodes/JIPipeNodeTypeCategory.java`; 11 impls in `api/nodes/categories/` |
-| Node declaration | `@ConfigureJIPipeNode` (`api/ConfigureJIPipeNode.java`): `nodeTypeCategory`, `menuPath`, `nodeClassification`, `dataSourceMenuLocation`; aliases via repeatable `@AddJIPipeNodeAlias` |
-| Info extraction at registration | `api/nodes/infos/JIPipeJavaNodeInfo.java` (reads annotations, builds `JIPipeNodeMenuLocation`s) |
-| Registry | `api/service/components/JIPipeNodesServiceComponent.java` (`JIPipe.getNodes()`): node infos, category `BiMap`, `getNodesOfCategory`, `getMenuDataSourcesFor`, icon cache |
-| Search / node database | `api/nodes/database/` — `JIPipeNodeDatabase` builds `JIPipeNodeDatabaseEntry`s (incl. `CreateNewNodeByInfoDatabaseEntry`) with `WeightedTokens`, `getCategoryIds()`, `getFillColor/BorderColor`; several search backends incl. embedding/AI search |
-| Node list panel | `desktop/app/grapheditor/addnodepanel/JIPipeDesktopAddNodesPanel.java` (967 lines): search box + AI toggle → `database.query()` → `JList`; one `JToggleButton` per visible category (right-click = nested `menuPath` `JMenu` tree via `UIUtils.createMenuTree`); optional sub-category breadcrumb from a JGraphT hierarchy; pin/unpin; DnD via `JIPipeDesktopAddNodeTransferHandler` (JSON `Transferable`); double-click inserts at cursor. Mounted in `DOCK_ADD_NODES` by pipeline and compartment editors |
-| Node finder dialog | `nodefinder/JIPipeDesktopNodeFinderDialogUI.java` (Ctrl+A), opened from `commons/contextmenu/add/AddNewNodeUIContextAction.java` |
-| Node rendering | `desktop/app/grapheditor/commons/nodeui/JIPipeDesktopGraphNodeUI.java` (1705 lines): plain-rect node body filled with `ThemeUtils.getNodeFillColor(category.colorHue)` (hue < 0 = panel background), title band (run button, icon, name), output slot band, partition chip, striped disabled/pass-through paints, `nodeBuffer` cache; UI class chosen via `JIPipeGraphNode.getNodeUiClass()` |
-| Colors | `utils/ThemeUtils.java` (HSB from hue + theme saturation/brightness); theme defaults in `desktop/commons/theme/JIPipeDesktopModernThemeStyle.java` |
-| Search ranking class | `api/nodes/JIPipeNodeClassification.java` (Standard / AutoImport / EdgeCase) — kept, orthogonal to the new taxonomy |
+| Concern                                                                    | Where                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+|----------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Category interface (id, name, icon, `colorHue`, uiOrder, visibility flags) | `api/nodes/JIPipeNodeTypeCategory.java`; 11 impls in `api/nodes/categories/`                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| Node declaration                                                           | `@ConfigureJIPipeNode` (`api/ConfigureJIPipeNode.java`): `nodeTypeCategory`, `menuPath`, `nodeClassification`, `dataSourceMenuLocation`; aliases via repeatable `@AddJIPipeNodeAlias`                                                                                                                                                                                                                                                                                                                       |
+| Info extraction at registration                                            | `api/nodes/infos/JIPipeJavaNodeInfo.java` (reads annotations, builds `JIPipeNodeMenuLocation`s)                                                                                                                                                                                                                                                                                                                                                                                                             |
+| Registry                                                                   | `api/service/components/JIPipeNodesServiceComponent.java` (`JIPipe.getNodes()`): node infos, category `BiMap`, `getNodesOfCategory`, `getMenuDataSourcesFor`, icon cache                                                                                                                                                                                                                                                                                                                                    |
+| Search / node database                                                     | `api/nodes/database/` - `JIPipeNodeDatabase` builds `JIPipeNodeDatabaseEntry`s (incl. `CreateNewNodeByInfoDatabaseEntry`) with `WeightedTokens`, `getCategoryIds()`, `getFillColor/BorderColor`; several search backends incl. embedding/AI search                                                                                                                                                                                                                                                          |
+| Node list panel                                                            | `desktop/app/grapheditor/addnodepanel/JIPipeDesktopAddNodesPanel.java` (967 lines): search box + AI toggle → `database.query()` → `JList`; one `JToggleButton` per visible category (right-click = nested `menuPath` `JMenu` tree via `UIUtils.createMenuTree`); optional sub-category breadcrumb from a JGraphT hierarchy; pin/unpin; DnD via `JIPipeDesktopAddNodeTransferHandler` (JSON `Transferable`); double-click inserts at cursor. Mounted in `DOCK_ADD_NODES` by pipeline and compartment editors |
+| Node finder dialog                                                         | `nodefinder/JIPipeDesktopNodeFinderDialogUI.java` (Ctrl+A), opened from `commons/contextmenu/add/AddNewNodeUIContextAction.java`                                                                                                                                                                                                                                                                                                                                                                            |
+| Node rendering                                                             | `desktop/app/grapheditor/commons/nodeui/JIPipeDesktopGraphNodeUI.java` (1705 lines): plain-rect node body filled with `ThemeUtils.getNodeFillColor(category.colorHue)` (hue < 0 = panel background), title band (run button, icon, name), output slot band, partition chip, striped disabled/pass-through paints, `nodeBuffer` cache; UI class chosen via `JIPipeGraphNode.getNodeUiClass()`                                                                                                                |
+| Colors                                                                     | `utils/ThemeUtils.java` (HSB from hue + theme saturation/brightness); theme defaults in `desktop/commons/theme/JIPipeDesktopModernThemeStyle.java`                                                                                                                                                                                                                                                                                                                                                          |
+| Search ranking class                                                       | `api/nodes/JIPipeNodeClassification.java` (Standard / AutoImport / EdgeCase) - kept, orthogonal to the new taxonomy                                                                                                                                                                                                                                                                                                                                                                                         |
 
 ## Data model (Phase 1)
 
@@ -102,12 +100,12 @@ The original single `D2…D5` enum was rejected as ambiguous: it conflated a
 node's **spatial math** (what it computes) with **how much stack it can be
 fed** (a pipeline property). JIPipe's data model makes this precise:
 spatial is bounded at 3D (x/y/z); "4D"/"5D" images are 3D-or-2D volumes
-plus stack axes — `HyperstackDimension = {Depth (Z), Channel (C), Frame (T)}` —
+plus stack axes - `HyperstackDimension = {Depth (Z), Channel (C), Frame (T)}` -
 and feeding/iteration over T/C is handled by the **iteration layer**
 (`JIPipeMultiIterationStep` solvers, user-configurable at run time). So the
 model splits into:
 
-**1. `spatialDimensions` — declared per node (intrinsic, stable):**
+**1. `spatialDimensions` - declared per node (intrinsic, stable):**
 
 ```java
 public enum JIPipeNodeTaxonomySpatialDimension { SPATIAL_2D, SPATIAL_3D }
@@ -119,7 +117,7 @@ spatialDimensions = {SPATIAL_2D, SPATIAL_3D}   // Cellpose: adaptive, declares b
 "2D" = operates on an x/y plane; "3D" = operates on an x/y/z volume. There is
 no 4D/5D *spatial* operation, so this set is closed and unambiguous.
 
-**2. `inputProfile` — derived at registration from the node's input slot
+**2. `inputProfile` - derived at registration from the node's input slot
 data types (not hand-annotated):**
 
 ```java
@@ -131,13 +129,13 @@ data-type-operation pattern) answers "what is the native input shape of this
 data type?". The ImageJ data-types plugin implements it from the existing
 `@ImageTypeInfo.numDimensions()` (2 → `PLANE_2D`, 3 → `VOLUME_3D`,
 unconstrained `ImagePlusData` → `ANY`). T and C are always iterable by the
-solvers, so the effective maximum feedable dimensionality is: `PLANE_2D` → 4D
-(x/y/T/C), `VOLUME_3D`/`ANY` → 5D (x/y/z/T/C). Non-image data types report
+solvers, so the effective maximum feedable dimensionality is: `PLANE_2D` → 4D (x/y/T/C), `VOLUME_3D`/`ANY` → 5D
+(x/y/z/T/C). Non-image data types report
 "N/A" and the facet is hidden for those nodes.
 
 Both are used as **filter facets** and search metadata (filter-only, not
 ranking tokens). Example: the Cellpose 4 inference node = spatial `{2D, 3D}`
-(declared) + input `ANY → up to 5D` (derived) — both statements true at once,
+(declared) + input `ANY → up to 5D` (derived) - both statements true at once,
 no ambiguity.
 
 ### `JIPipeNodeTaxonomyFramework`
@@ -183,8 +181,8 @@ Declared per node via a **repeatable annotation** (syntactic sugar):
                               purpose = "Finds candidate spots…")
 ```
 
-The registration system assembles the family graph from all step annotations
-(resolution deferred, consistent with the existing scheduling system; a node
+The registration system assembles the family graph from all step annotations (resolution deferred, consistent with the
+existing scheduling system; a node
 may reference a family whose other members register later). A node can
 belong to multiple families. For **auto-discovered nodes** (IJ2, CLIJ) the
 registration code can build family membership programmatically.
@@ -215,11 +213,11 @@ public class CellposeSegmentCellsNode extends JIPipeSimpleIteratingAlgorithm { �
 ```
 
 - `menuPath()` and `nodeTypeCategory()` are **removed** (6.0.0 hard break).
-- `function()` is an array; the first entry is the **primary** function
-  (determines tree position, hue, and the default search token set), the rest
+- `function()` is an array; the first entry is the **primary** function (determines tree position, hue, and the default
+  search token set), the rest
   are secondary locations where the node additionally appears (replacing
   `@AddJIPipeNodeAlias`, whose `alternativeName` capability moves to an
-  optional per-entry display name if ever needed — not in the seed scope).
+  optional per-entry display name if ever needed - not in the seed scope).
 - Data-source menu location (`dataSourceMenuLocation`) stays as-is.
 - `nodeClassification` (Standard/AutoImport/EdgeCase) is kept unchanged.
 
@@ -241,6 +239,7 @@ public class CellposeSegmentCellsNode extends JIPipeSimpleIteratingAlgorithm { �
 ### Validation (registration guard)
 
 Run at startup / in tests:
+
 - every registered node resolves to a known function leaf, known framework,
   and (if declared) a valid spatial dimensionality; nodes whose input slot
   data types have no input-profile provider get "N/A" (never a hard error);
@@ -255,23 +254,23 @@ Run at startup / in tests:
 
 Top-level function branches (each with one deliberate hue):
 
-| Branch | Sub-branches (dissolved from old menuPaths) |
-|---|---|
-| Data Sources | Images (Tiff, OmeTiff, Czi, …), Tables, ROIs, Filaments, Misc. |
-| Images | Preprocessing, Filtering, Thresholding, Segmentation (Cell-based, Region-based), Measurements, Resampling, Merging/Splitting, Color/Stack ops |
-| ROIs | ROI filters, Measurements, Morphology, Intersections |
-| Filaments | Smoothing, Filtering, Quantification |
-| Tables | Filter/Modify, Join/Split, Aggregate, Transform, Export-to-file |
-| Statistics | Descriptive, Testing, Estimation |
-| Tracking | Detection, Linking, Filtering, Analysis (TrackMate/Comet nodes live here functionally) |
-| Annotations | Add/edit/remove, Convert |
+| Branch           | Sub-branches (dissolved from old menuPaths)                                                                                                          |
+|------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Data Sources     | Images (Tiff, OmeTiff, Czi, …), Tables, ROIs, Filaments, Misc.                                                                                       |
+| Images           | Preprocessing, Filtering, Thresholding, Segmentation (Cell-based, Region-based), Measurements, Resampling, Merging/Splitting, Color/Stack ops        |
+| ROIs             | ROI filters, Measurements, Morphology, Intersections                                                                                                 |
+| Filaments        | Smoothing, Filtering, Quantification                                                                                                                 |
+| Tables           | Filter/Modify, Join/Split, Aggregate, Transform, Export-to-file                                                                                      |
+| Statistics       | Descriptive, Testing, Estimation                                                                                                                     |
+| Tracking         | Detection, Linking, Filtering, Analysis (TrackMate/Comet nodes live here functionally)                                                               |
+| Annotations      | Add/edit/remove, Convert                                                                                                                             |
 | Machine learning | Inference, Training, Models (deep-learning *and* classical classifiers: Weka, LabelKit, ilastik RF; renamed from "Deep Learning" during 1324 review) |
-| Plotting | Scatter, Line, Bar, Heatmap, … |
-| Export | File formats, Archive |
-| Graph/Project | Compartment outputs, Wrappers, Debug/internal |
-| Miscellaneous | shrinking residual |
+| Plotting         | Scatter, Line, Bar, Heatmap, …                                                                                                                       |
+| Export           | File formats, Archive                                                                                                                                |
+| Graph/Project    | Compartment outputs, Wrappers, Debug/internal                                                                                                        |
+| Miscellaneous    | shrinking residual                                                                                                                                   |
 
-Cellpose/TrackMate/etc. are **not** branches — a TrackMate node lives where it
+Cellpose/TrackMate/etc. are **not** branches - a TrackMate node lives where it
 functions and carries the TrackMate framework; framework filtering crosses the
 tree.
 
@@ -287,20 +286,20 @@ One new component, `JIPipeDesktopNodeBrowser`, used in two surfaces.
 
 **Adaptive by width** (single component, three arrangements):
 
-- **< 380px — compact:** single function tree with node leaves (icon,
+- **< 380px - compact:** single function tree with node leaves (icon,
   framework badge, spatial chips); filters in their own wrapping bar;
   related/follow-ups strip at the bottom.
-- **≥ 380px — comfortable:** function tree | filtered node list; filter bar;
+- **≥ 380px - comfortable:** function tree | filtered node list; filter bar;
   related/follow-ups strip.
 - **Filter bar** (own row, wrapping, room to grow): Framework ▾,
   Spatial (2D / 3D, multi) ▾, Input (plane / volume / hyperstack, multi) ▾,
-  Tags ▾, plus toggles: ★ pinned, ⊂ selection only
-  (nodes whose inputs are compatible with the current selection's outputs),
+  Tags ▾, plus toggles: ★ pinned, ⊂ selection only (nodes whose inputs are compatible with the current selection's
+  outputs),
   deprecated/unstable.
 - **Search** box with the existing AI toggle preserved; typing flips either
   tier into a flat ranked result list; Enter inserts first hit (preserved).
-- **Drag & drop** to canvas and **double-click to add at cursor** preserved
-  (same JSON `Transferable` mechanism; tree leaves and list rows draggable).
+- **Drag & drop** to canvas and **double-click to add at cursor** preserved (same JSON `Transferable` mechanism; tree
+  leaves and list rows draggable).
 - Pin/unpin, docs, examples, "show family setup" context menu items preserved.
 
 The old per-category buttons and their right-click `menuPath` popup menus are
@@ -310,8 +309,8 @@ insertion keeps its simpler existing menu.
 ### Node finder dialog (rebuilt `JIPipeDesktopNodeFinderDialogUI`, Ctrl+A)
 
 Always the **three-zone** layout: function tree | result list | **detail
-rail** (description, framework, tags, spatial + input profile, *related*,
-*follow-ups* with ▶ Insert setup + Open example, docs).
+rail** (description, framework, tags, spatial + input profile, *related*, *follow-ups* with ▶ Insert setup + Open
+example, docs).
 
 ### Related / follow-ups (shared implementation)
 
@@ -335,7 +334,7 @@ well.
 ### Colors in the UI
 
 Node list entries, dialog rows, and canvas nodes all derive fill/border from
-the function tree hue (top-branch hue shaded by depth) via `ThemeUtils` —
+the function tree hue (top-branch hue shaded by depth) via `ThemeUtils` -
 the legacy category-hue path is replaced, not extended.
 
 ## Node rendering (Phase 2)
@@ -353,8 +352,8 @@ Framework identification on canvas nodes: **full-body procedural pattern +
 badge** (design option A, approved).
 
 - Node body fill = function hue (unchanged from Phase 1).
-- The **pattern** is blitted over the node's main area at low opacity
-  (default ≈ 0.15), theme-aware ink color; suppressed where the
+- The **pattern** is blitted over the node's main area at low opacity (default ≈ 0.15), theme-aware ink color;
+  suppressed where the
   disabled/pass-through hatching paints.
 - The **badge** (rounded chip, framework abbreviation, framework-specific
   hashed-palette color independent of the function hue) sits in the title
@@ -364,15 +363,15 @@ badge** (design option A, approved).
 
 ### Pattern engine: DiceBear port (contrib module)
 
-This is a solved problem (identicons / procedural avatars). We port
-**DiceBear** (github.com/dicebear/dicebear, MIT core, 9.8k stars) instead of
+This is a solved problem (identicons / procedural avatars). We port **DiceBear** (github.com/dicebear/dicebear, MIT
+core, 9.8k stars) instead of
 inventing an algorithm:
 
-- Styles are plain JSON definitions rendered by a small core engine
-  (PRNG → option resolution → SVG); all official ports (JS/PHP/Python/Rust/
+- Styles are plain JSON definitions rendered by a small core engine (PRNG → option resolution → SVG); all official ports
+  (JS/PHP/Python/Rust/
   Go/Dart/C#) are required to be **byte-identical**, so the algorithm is fully
   pinned and verifiable.
-- **42 of 63 styles are CC0 public domain** — freely bundleable.
+- **42 of 63 styles are CC0 public domain** - freely bundleable.
 - New module **`contrib/jipipe-avatar-dicebear-<ver>/`** (following the
   existing contrib module pattern, e.g. `contrib/jipipe-ro-crate-java-2.1.0`):
   Java port of the DiceBear core (PRNG, options descriptor, resolver,
@@ -385,13 +384,13 @@ inventing an algorithm:
   Style selection is a per-framework one-liner; more styles can be bundled
   later without engine changes. Custom styles can be authored later using
   JIPipe's image inspect tool for visual evaluation.
-- **Rasterization:** generated SVG → 128×128 `BufferedImage` via
-  **Apache Batik** (Apache-2.0) once per framework, cached in a
+- **Rasterization:** generated SVG → 128×128 `BufferedImage` via **Apache Batik** (Apache-2.0) once per framework,
+  cached in a
   `Map<String, BufferedImage>`, invalidated on theme/framework
   re-registration; per-node cost ≈ one scaled `drawImage` (the issue's
   caching/performance requirement). Fallback if Batik is judged too heavy:
   direct `Graphics2D` rendering (same interface, no dependency).
-- **Dist packaging:** the new contrib jar(s) (incl. Batik if used) are added
+- **Dist packaging:** the new contrib jar (s) (incl. Batik if used) are added
   to `dist/dist-info.json` (`dependencies` / `contrib-dependencies`) and
   build scripts regenerated with `python3 dist/generate-dist-scripts.py`;
   plugin-dependencies in `jipipe-distribution-files` updated accordingly.
@@ -412,12 +411,12 @@ new function-derived hues). Rendering changes are additive; the existing
 - **6.0.0 hard break:** `JIPipeNodeTypeCategory` + 11 legacy classes removed;
   `@ConfigureJIPipeNode.nodeTypeCategory()/menuPath()` removed;
   `JIPipeNodeDatabaseEntry.getCategoryIds()` → `getFunctionIds()`.
-- **Saved projects unaffected:** they persist node-type ids only
-  (`jipipe:algorithm-class`); all taxonomy metadata is rebuilt at
+- **Saved projects unaffected:** they persist node-type ids only (`jipipe:algorithm-class`); all taxonomy metadata is
+  rebuilt at
   registration from annotations. No project-file migration needed.
 - **Plugin API:** external plugin authors target the new annotations in
   6.0.0; no compatibility layer is provided (accepted).
-- **Pinned nodes** (settings `node-db` / `pinned-node-ids`) key on node ids —
+- **Pinned nodes** (settings `node-db` / `pinned-node-ids`) key on node ids -
   unaffected.
 - Conversion of ~1,840 registration sites is done plugin-by-plugin inside
   this change (Phase 1, task block 3), not as a later migration.
@@ -426,64 +425,64 @@ new function-derived hues). Rendering changes are additive; the existing
 
 - **Registration guard tests** (core): every registered node resolves to a
   known function leaf / framework / valid spatial set; input-profile
-  derivation is total (no exception for any registered slot type — "N/A"
+  derivation is total (no exception for any registered slot type - "N/A"
   allowed); function tree acyclic and fully reachable; family graphs have no
   dangling step ids.
 - **Taxonomy content tests:** top-branch hue uniqueness (contrast),
   framework abbreviation length, id stability (literal, not code-derived).
 - **Avatar module tests** (contrib, JUnit 5 per the existing contrib module
   pattern): **byte-identical SVG output** against the DiceBear reference test
-  vectors for a fixed set of seeds — the port is verifiably correct.
+  vectors for a fixed set of seeds - the port is verifiably correct.
 - **UI tests:** unit-level only (no heavyweight Swing harness exists):
   adaptive tier switching by width, filter state handling,
   related/follow-ups ranking in `JIPipeNodeDatabase`.
-- **Migration test:** 5.3.0-era project fixtures must load unchanged
-  (category metadata rebuilt fresh).
+- **Migration test:** 5.3.0-era project fixtures must load unchanged (category metadata rebuilt fresh).
 
 ## Phases
 
-**Phase 1 — Data model, taxonomy, UI, conversion**
+**Phase 1 - Data model, taxonomy, UI, conversion**
+
 1. `JIPipeNodeTaxonomy*` API + annotations + registration (function tree,
    frameworks, families, spatial dimensionality + derived input profile
    provider, tags) + IJ2/CLIJ programmatic assignment + validation guards.
 2. Remove legacy category system.
-3. Taxonomy audit + conversion of all registration sites plugin-by-plugin
-   (largest task block; mechanical per plugin, reviewed per node).
+3. Taxonomy audit + conversion of all registration sites plugin-by-plugin (largest task block; mechanical per plugin,
+   reviewed per node).
 4. `JIPipeDesktopNodeBrowser` (adaptive tiers), filter bar, rebuilt Node
    Finder dialog, related/follow-ups, search-token upgrade, UI colors.
 
-**Phase 2 — Node rendering**
+**Phase 2 - Node rendering**
 Contrib avatar module (DiceBear port + CC0 styles + dist entries), per-
 framework tile cache, pattern+badge paint in `JIPipeDesktopGraphNodeUI`,
 theme-editor toggles, minimap reuse.
 
-**Phase 3 — Audit refinement & search tuning**
+**Phase 3 - Audit refinement & search tuning**
 With the tree live: measure search quality across backends, rebalance
 `WeightedTokens`, prune Miscellaneous, fix family follow-up edges, tune
 pattern styles per framework (visual review), add custom styles if desired.
 
-Branch per phase, following the `<issue-id>-<name>` convention
-(e.g. `1324-node-taxonomy-core`, `1324-node-taxonomy-rendering`,
+Branch per phase, following the `<issue-id>-<name>` convention (e.g. `1324-node-taxonomy-core`,
+`1324-node-taxonomy-rendering`,
 `1324-node-taxonomy-audit`), each an MR.
 
 ## Risks & mitigations
 
-| Risk | Mitigation |
-|---|---|
-| Migration size (1,840 sites) | Mechanical per plugin; registration guard tests catch stragglers at startup and in CI |
-| Function-tree taste | Seed tree is a proposal; Phase 3 refines with the system live |
-| DiceBear port fidelity | Byte-identity test suite from the reference ports |
-| Pattern readability | User-toggleable, low-opacity default; styles swappable per framework as JSON resources without code changes |
-| New dependency (Batik) | Isolated in the contrib module; direct-Graphics2D fallback behind the same interface |
-| Auto-discovered node heuristics (IJ2/CLIJ) | Heuristics are data (tables), overridable; Phase 3 tunes |
+| Risk                                       | Mitigation                                                                                                  |
+|--------------------------------------------|-------------------------------------------------------------------------------------------------------------|
+| Migration size (1,840 sites)               | Mechanical per plugin; registration guard tests catch stragglers at startup and in CI                       |
+| Function-tree taste                        | Seed tree is a proposal; Phase 3 refines with the system live                                               |
+| DiceBear port fidelity                     | Byte-identity test suite from the reference ports                                                           |
+| Pattern readability                        | User-toggleable, low-opacity default; styles swappable per framework as JSON resources without code changes |
+| New dependency (Batik)                     | Isolated in the contrib module; direct-Graphics2D fallback behind the same interface                        |
+| Auto-discovered node heuristics (IJ2/CLIJ) | Heuristics are data (tables), overridable; Phase 3 tunes                                                    |
 
 ## Decisions log (from brainstorming)
 
 1. Scope: full architecture spec, three-phase implementation.
 2. Axes: function tree + framework + dimensionality (declared spatial 2D/3D
-   + derived input profile) + workflow families + tags.
+    + derived input profile) + workflow families + tags.
 3. Dimensionality: split into `spatialDimensions` (declared, closed set
-   {2D, 3D}) and a *derived* `inputProfile` from the input slot data type —
+   {2D, 3D}) and a *derived* `inputProfile` from the input slot data type -
    the single `D2…D5` enum was rejected as ambiguous (Cellpose is spatial
    2D/3D; "5D" is a pipeline/iteration capability, not a node tag).
 4. Naming: `JIPipeNodeTaxonomy*` prefix (avoids collisions).

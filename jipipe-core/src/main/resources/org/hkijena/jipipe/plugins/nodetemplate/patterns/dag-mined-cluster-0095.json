@@ -1,1 +1,56 @@
-{"edges":[{"source-node":"n1","source-slot":"Output","target-node":"n0","target-slot":"Input"},{"source-node":"n2","source-slot":"Destination","target-node":"n1","target-slot":"Input"},{"source-node":"n3","source-slot":"Output","target-node":"n2","target-slot":"Source"}],"nodes":{"n0":{"jipipe:graph-compartment":"26e49d01-b6fb-57e5-9b5e-22b04a369d66","jipipe:metadata-v1":{"location/26e49d01-b6fb-57e5-9b5e-22b04a369d66/x":0,"location/26e49d01-b6fb-57e5-9b5e-22b04a369d66/y":12},"jipipe:node-info-id":"ij1-morph-binary-fillholes2d"},"n1":{"jipipe:graph-compartment":"26e49d01-b6fb-57e5-9b5e-22b04a369d66","jipipe:metadata-v1":{"location/26e49d01-b6fb-57e5-9b5e-22b04a369d66/x":0,"location/26e49d01-b6fb-57e5-9b5e-22b04a369d66/y":8},"jipipe:node-info-id":"ij1-threshold-auto2d"},"n2":{"jipipe:graph-compartment":"26e49d01-b6fb-57e5-9b5e-22b04a369d66","jipipe:metadata-v1":{"location/26e49d01-b6fb-57e5-9b5e-22b04a369d66/x":0,"location/26e49d01-b6fb-57e5-9b5e-22b04a369d66/y":4},"jipipe:node-info-id":"clij:plugin:net.haesleinhuepf.clij2.plugins.GaussianBlur2D"},"n3":{"jipipe:graph-compartment":"26e49d01-b6fb-57e5-9b5e-22b04a369d66","jipipe:metadata-v1":{"location/26e49d01-b6fb-57e5-9b5e-22b04a369d66/x":0,"location/26e49d01-b6fb-57e5-9b5e-22b04a369d66/y":0},"jipipe:node-info-id":"ij1-math-divide-by-maximum"}}}
+{
+  "edges": [
+    {
+      "source-node": "n1",
+      "source-slot": "Output",
+      "target-node": "n0",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n2",
+      "source-slot": "Destination",
+      "target-node": "n1",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n3",
+      "source-slot": "Output",
+      "target-node": "n2",
+      "target-slot": "Source"
+    }
+  ],
+  "nodes": {
+    "n0": {
+      "jipipe:graph-compartment": "26e49d01-b6fb-57e5-9b5e-22b04a369d66",
+      "jipipe:metadata-v1": {
+        "location/26e49d01-b6fb-57e5-9b5e-22b04a369d66/x": 0,
+        "location/26e49d01-b6fb-57e5-9b5e-22b04a369d66/y": 12
+      },
+      "jipipe:node-info-id": "ij1-morph-binary-fillholes2d"
+    },
+    "n1": {
+      "jipipe:graph-compartment": "26e49d01-b6fb-57e5-9b5e-22b04a369d66",
+      "jipipe:metadata-v1": {
+        "location/26e49d01-b6fb-57e5-9b5e-22b04a369d66/x": 0,
+        "location/26e49d01-b6fb-57e5-9b5e-22b04a369d66/y": 8
+      },
+      "jipipe:node-info-id": "ij1-threshold-auto2d"
+    },
+    "n2": {
+      "jipipe:graph-compartment": "26e49d01-b6fb-57e5-9b5e-22b04a369d66",
+      "jipipe:metadata-v1": {
+        "location/26e49d01-b6fb-57e5-9b5e-22b04a369d66/x": 0,
+        "location/26e49d01-b6fb-57e5-9b5e-22b04a369d66/y": 4
+      },
+      "jipipe:node-info-id": "clij:plugin:net.haesleinhuepf.clij2.plugins.GaussianBlur2D"
+    },
+    "n3": {
+      "jipipe:graph-compartment": "26e49d01-b6fb-57e5-9b5e-22b04a369d66",
+      "jipipe:metadata-v1": {
+        "location/26e49d01-b6fb-57e5-9b5e-22b04a369d66/x": 0,
+        "location/26e49d01-b6fb-57e5-9b5e-22b04a369d66/y": 0
+      },
+      "jipipe:node-info-id": "ij1-math-divide-by-maximum"
+    }
+  }
+}

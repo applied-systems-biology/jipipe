@@ -35,7 +35,6 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @SetJIPipeDocumentation(name = "TrackMate spot detector", description = "A spot detector for TrackMate")
 @ConfigureJIPipeDataCrate(entities = {}, inherits = JIPipeSerializedJsonObjectData.class)
@@ -129,7 +128,7 @@ public class SpotDetectorData implements JIPipeData {
         JIPipeDataInstanceInfo.Builder builder = JIPipeDataInstanceInfo.builder();
         builder.add(JIPipeDataInstanceInfo.DetailLevel.Brief, "Spot detector", spotDetectorFactory.getName());
         for (Map.Entry<String, Object> entry : settings.entrySet()) {
-            builder.add(JIPipeDataInstanceInfo.DetailLevel.Detailed,  entry.getKey(), entry.getValue().toString());
+            builder.add(JIPipeDataInstanceInfo.DetailLevel.Detailed, entry.getKey(), entry.getValue().toString());
         }
         return builder.build();
     }

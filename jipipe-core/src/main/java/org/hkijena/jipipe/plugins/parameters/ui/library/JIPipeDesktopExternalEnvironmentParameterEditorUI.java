@@ -21,8 +21,8 @@ import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironmentParameterSettings;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironmentSetupTool;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
-import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
+import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.service.components.JIPipeEnvironmentsServiceComponent;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
@@ -67,9 +67,7 @@ public class JIPipeDesktopExternalEnvironmentParameterEditorUI extends JIPipeDes
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
         add(buttonPanel, BorderLayout.EAST);
 
-        JButton configureButton = new JButton("Configure ...", JIPipe.RESOURCES.getIcon16("actions/configure.png"));
-        configureButton.setBackground(getBackground());
-        configureButton.setOpaque(true);
+        JButton configureButton = UIUtils.createParameterButton("Configure", JIPipe.RESOURCES.getIcon16("actions/configure.png"), null);
         configureButton.setToolTipText("Edit/select/install environment");
         UIUtils.addReloadablePopupMenuToButton(configureButton, configureMenu, this::reloadInstallMenu);
         buttonPanel.add(configureButton);

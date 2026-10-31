@@ -8,13 +8,15 @@ import org.junit.jupiter.api.Test;
 import javax.swing.*;
 import java.util.Collections;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class JIPipeValidationRuntimeExceptionActionsTest {
 
     @Test
     public void testExceptionFromEntryPreservesActions() {
-        JIPipeNotificationAction action = new JIPipeNotificationAction("Update", null, null, wb -> {});
+        JIPipeNotificationAction action = new JIPipeNotificationAction("Update", null, null, wb -> {
+        });
         JIPipeValidationReportEntry entry = new JIPipeValidationReportEntry(
                 JIPipeValidationReportEntryLevel.Error,
                 new UnspecifiedValidationReportContext(),
@@ -33,7 +35,8 @@ public class JIPipeValidationRuntimeExceptionActionsTest {
 
     @Test
     public void testMergeReportPreservesActions() {
-        JIPipeNotificationAction action = new JIPipeNotificationAction("Fix", null, null, wb -> {});
+        JIPipeNotificationAction action = new JIPipeNotificationAction("Fix", null, null, wb -> {
+        });
         JIPipeValidationReportEntry innerEntry = new JIPipeValidationReportEntry(
                 JIPipeValidationReportEntryLevel.Error,
                 new UnspecifiedValidationReportContext(),

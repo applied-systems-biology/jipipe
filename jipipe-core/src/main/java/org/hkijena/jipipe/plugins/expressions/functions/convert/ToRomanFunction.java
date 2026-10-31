@@ -30,6 +30,22 @@ public class ToRomanFunction extends ExpressionFunction {
         super("TO_ROMAN", 1);
     }
 
+    /**
+     * Encodes the given non-negative number as a Roman numeral. Values up to 3999 use
+     * standard notation; larger values use overflow-M notation (e.g. 4000 = MMMM).
+     * Package-private for the canonical-form validation in {@link FromRomanFunction}.
+     */
+    static String toRomanCanonical(long n) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < VALUES.length; i++) {
+            while (n >= VALUES[i][0]) {
+                sb.append(SYMBOLS[i]);
+                n -= VALUES[i][0];
+            }
+        }
+        return sb.toString();
+    }
+
     @Override
     public ParameterInfo getParameterInfo(int index) {
         if (index == 0) {
@@ -50,22 +66,6 @@ public class ToRomanFunction extends ExpressionFunction {
             throw new IllegalArgumentException("Roman numerals are defined for 1 to 3999, got " + n + ".");
         }
         return toRomanCanonical(n);
-    }
-
-    /**
-     * Encodes the given non-negative number as a Roman numeral. Values up to 3999 use
-     * standard notation; larger values use overflow-M notation (e.g. 4000 = MMMM).
-     * Package-private for the canonical-form validation in {@link FromRomanFunction}.
-     */
-    static String toRomanCanonical(long n) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < VALUES.length; i++) {
-            while (n >= VALUES[i][0]) {
-                sb.append(SYMBOLS[i]);
-                n -= VALUES[i][0];
-            }
-        }
-        return sb.toString();
     }
 
     private long toLong(Object value) {

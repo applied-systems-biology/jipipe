@@ -16,10 +16,10 @@ public class JIPipeAPIEmbeddingAIModelRunner implements JIPipeEmbeddingAIModelRu
     private final String apiBase;
     private final String apiModel;
     private final String apiKey;
+    private final ObjectMapper objectMapper = new ObjectMapper();
     private MicroserviceState status = MicroserviceState.Stopped;
     private String lastError = null;
     private HttpClient httpClient;
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public JIPipeAPIEmbeddingAIModelRunner(String apiBase, String apiModel, String apiKey) {
         this.apiBase = apiBase;

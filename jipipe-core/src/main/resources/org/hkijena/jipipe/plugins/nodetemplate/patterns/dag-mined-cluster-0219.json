@@ -1,1 +1,42 @@
-{"edges":[{"source-node":"n1","source-slot":"Output","target-node":"n2","target-slot":"Input"},{"source-node":"n2","source-slot":"Output","target-node":"n0","target-slot":"Input"}],"nodes":{"n0":{"jipipe:graph-compartment":"c703f35f-c8ad-576c-9d0a-f7f96bd48481","jipipe:metadata-v1":{"location/c703f35f-c8ad-576c-9d0a-f7f96bd48481/x":0,"location/c703f35f-c8ad-576c-9d0a-f7f96bd48481/y":8},"jipipe:node-info-id":"table-rename-columns-2"},"n1":{"jipipe:graph-compartment":"c703f35f-c8ad-576c-9d0a-f7f96bd48481","jipipe:metadata-v1":{"location/c703f35f-c8ad-576c-9d0a-f7f96bd48481/x":0,"location/c703f35f-c8ad-576c-9d0a-f7f96bd48481/y":0},"jipipe:node-info-id":"filaments-measure-filaments"},"n2":{"jipipe:graph-compartment":"c703f35f-c8ad-576c-9d0a-f7f96bd48481","jipipe:metadata-v1":{"location/c703f35f-c8ad-576c-9d0a-f7f96bd48481/x":0,"location/c703f35f-c8ad-576c-9d0a-f7f96bd48481/y":4},"jipipe:node-info-id":"table-remove-columns"}}}
+{
+  "edges": [
+    {
+      "source-node": "n1",
+      "source-slot": "Output",
+      "target-node": "n2",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n2",
+      "source-slot": "Output",
+      "target-node": "n0",
+      "target-slot": "Input"
+    }
+  ],
+  "nodes": {
+    "n0": {
+      "jipipe:graph-compartment": "c703f35f-c8ad-576c-9d0a-f7f96bd48481",
+      "jipipe:metadata-v1": {
+        "location/c703f35f-c8ad-576c-9d0a-f7f96bd48481/x": 0,
+        "location/c703f35f-c8ad-576c-9d0a-f7f96bd48481/y": 8
+      },
+      "jipipe:node-info-id": "table-rename-columns-2"
+    },
+    "n1": {
+      "jipipe:graph-compartment": "c703f35f-c8ad-576c-9d0a-f7f96bd48481",
+      "jipipe:metadata-v1": {
+        "location/c703f35f-c8ad-576c-9d0a-f7f96bd48481/x": 0,
+        "location/c703f35f-c8ad-576c-9d0a-f7f96bd48481/y": 0
+      },
+      "jipipe:node-info-id": "filaments-measure-filaments"
+    },
+    "n2": {
+      "jipipe:graph-compartment": "c703f35f-c8ad-576c-9d0a-f7f96bd48481",
+      "jipipe:metadata-v1": {
+        "location/c703f35f-c8ad-576c-9d0a-f7f96bd48481/x": 0,
+        "location/c703f35f-c8ad-576c-9d0a-f7f96bd48481/y": 4
+      },
+      "jipipe:node-info-id": "table-remove-columns"
+    }
+  }
+}

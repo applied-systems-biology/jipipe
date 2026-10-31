@@ -3,7 +3,7 @@
 
 The (C) review's decision (3) is a full audit of the node descriptions the
 shipped patterns use. My first scoping pass used a length proxy (missing or
-<50 chars) and produced "93 targets" — but that proxy MISSES the most damaging
+<50 chars) and produced "93 targets" - but that proxy MISSES the most damaging
 defect: a description that is long yet describes the WRONG node (a copy-paste
 from a sibling), e.g. ij1-roi-to-rgb (the most-used pattern node) whose text
 says "Converts ROI lists to masks" (that is ij1-roi-to-mask's description).
@@ -33,7 +33,7 @@ C = load_cls()
 
 
 class BucketTests(unittest.TestCase):
-    """classify() on synthetic nodes — one defect each."""
+    """classify() on synthetic nodes - one defect each."""
 
     def _cls(self, desc, nid="some-node", freq=5):
         return C.classify(nid, desc, freq=freq)
@@ -70,7 +70,7 @@ class BucketTests(unittest.TestCase):
                       "ij1-transform-tile"), "not_editable_here")
 
     def test_curated_wrong_overrides_length(self):
-        # long, but describes the sibling node — must be flagged wrong, not ok
+        # long, but describes the sibling node - must be flagged wrong, not ok
         self.assertEqual(
             C.classify("ij1-roi-to-rgb",
                        "Converts ROI lists to masks. This algorithm needs a "

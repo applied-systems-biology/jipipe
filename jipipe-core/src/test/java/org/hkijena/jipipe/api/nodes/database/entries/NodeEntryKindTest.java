@@ -20,11 +20,7 @@ import org.hkijena.jipipe.api.JIPipeNodeTemplate;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
-import org.hkijena.jipipe.api.nodes.JIPipeGraph;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeExample;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.infos.JIPipeJavaNodeInfo;
 import org.hkijena.jipipe.api.service.components.JIPipeNodesServiceComponent;
@@ -66,7 +62,7 @@ class NodeEntryKindTest {
     private static final String STUB_ID = "node-entry-kind-test:stub-node";
     private static final String IMAGES_FN_ID = "jipipe:function:images";
     private static final JIPipeMutableDependency TEST_DEPENDENCY =
-        new JIPipeMutableDependency("node-entry-kind-test", "1.0.0", "node-entry-kind-test");
+            new JIPipeMutableDependency("node-entry-kind-test", "1.0.0", "node-entry-kind-test");
 
     @BeforeAll
     static void boot() {
@@ -87,10 +83,10 @@ class NodeEntryKindTest {
     void classifiesNodeAndExampleEntries() {
         JIPipeNodeInfo info = JIPipe.getNodes().getInfoById(STUB_ID);
         assertThat(NodeEntryKind.of(new CreateNewNodeByInfoDatabaseEntry("create-node-by-info:" + STUB_ID, info)))
-            .isEqualTo(NodeEntryKind.NODES);
+                .isEqualTo(NodeEntryKind.NODES);
         JIPipeNodeTemplate single = template(1, IMAGES_FN_ID);
         assertThat(NodeEntryKind.of(new CreateNewNodeByExampleDatabaseEntry("create-node-by-example:" + STUB_ID + ":[0]", new JIPipeNodeExample(single))))
-            .isEqualTo(NodeEntryKind.EXAMPLES);
+                .isEqualTo(NodeEntryKind.EXAMPLES);
     }
 
     @Test

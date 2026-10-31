@@ -34,35 +34,40 @@ template:
 
 # Pattern: Filter paths -> List files -> Annotate with file/directory name -> Import image
 
-Mined pattern `chain-4-path-filter-folder-list-files-path-to-annotation-simple-import-imagej-imgplus-from-file` (shape `chain`, support 32).
+Mined pattern `chain-4-path-filter-folder-list-files-path-to-annotation-simple-import-imagej-imgplus-from-file` (shape
+`chain`, support 32).
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| import | `path-filter` |
-| import | `folder-list-files` |
-| annotate | `path-to-annotation-simple` |
-| import | `import-imagej-imgplus-from-file` |
+| role     | node ids                          |
+|----------|-----------------------------------|
+| import   | `path-filter`                     |
+| import   | `folder-list-files`               |
+| annotate | `path-to-annotation-simple`       |
+| import   | `import-imagej-imgplus-from-file` |
 
 ## Example graph
 
-Project: `AIAgentTests/03-ExampleWorkflows/Angela_Roots_38.jip` (relative to `/data/JIPipe`), compartment `Preprocessing`.
+Project: `AIAgentTests/03-ExampleWorkflows/Angela_Roots_38.jip` (relative to `/data/JIPipe`), compartment
+`Preprocessing`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `path-filter` | Filter paths |
-| n1 | `folder-list-files` | List TIFF or JPG |
-| n2 | `path-to-annotation-simple` | Add path to annotations |
-| n3 | `import-imagej-imgplus-from-file` | Import image |
+| key | node id                           | name                    |
+|-----|-----------------------------------|-------------------------|
+| n0  | `path-filter`                     | Filter paths            |
+| n1  | `folder-list-files`               | List TIFF or JPG        |
+| n2  | `path-to-annotation-simple`       | Add path to annotations |
+| n3  | `import-imagej-imgplus-from-file` | Import image            |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
-| Filter paths | `Output` | List TIFF or JPG | `Folders` | `path` |
-| List TIFF or JPG | `Files` | Add path to annotations | `Paths` | `file` |
-| Add path to annotations | `Annotated paths` | Import image | `Files` | `path` |
+| from                    | slot              | to                      | slot      | data class |
+|-------------------------|-------------------|-------------------------|-----------|------------|
+| Filter paths            | `Output`          | List TIFF or JPG        | `Folders` | `path`     |
+| List TIFF or JPG        | `Files`           | Add path to annotations | `Paths`   | `file`     |
+| Add path to annotations | `Annotated paths` | Import image            | `Files`   | `path`     |
 
 ## Template
 
-Proposed name `Filter paths -> List files -> Annotate with file/directory name -> Import image`, menu path `Patterns/Data Sources/Filter paths -> List files -> Annotate with file/directory name -> Import image` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/chain-4-path-filter-folder-list-files-path-to-annotation-simple-import-imagej-imgplus-from-file.json`.
+Proposed name `Filter paths -> List files -> Annotate with file/directory name -> Import image`, menu path
+`Patterns/Data Sources/Filter paths -> List files -> Annotate with file/directory name -> Import image` (proposal only -
+not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/chain-4-path-filter-folder-list-files-path-to-annotation-simple-import-imagej-imgplus-from-file.json`.
 

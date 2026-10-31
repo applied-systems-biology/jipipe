@@ -35,26 +35,30 @@ Mined pattern `fan-in-jipipe-compartment-output-other-2` (shape `fan-in`, suppor
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| core-io | `jipipe:compartment-output` |
-| other | `cellpose-2`, `cellpose-segmentation-inference-3.x`, `cellpose-training-2`, `ij1-analyze-find-particles2d`, `ij1-analyze-image-statistics`, `ij1-calibration-copy-physical-dimensions`, … (27 total) |
+| role    | node ids                                                                                                                                                                                             |
+|---------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| core-io | `jipipe:compartment-output`                                                                                                                                                                          |
+| other   | `cellpose-2`, `cellpose-segmentation-inference-3.x`, `cellpose-training-2`, `ij1-analyze-find-particles2d`, `ij1-analyze-image-statistics`, `ij1-calibration-copy-physical-dimensions`, … (27 total) |
 
 ## Example graph
 
-Project: `AIAgentTests/01-BasicWorkshop/JSC_2025_04_Kidney_Compartments/kidney.jip` (relative to `/data/JIPipe`), compartment `Glomeruli`.
+Project: `AIAgentTests/01-BasicWorkshop/JSC_2025_04_Kidney_Compartments/kidney.jip` (relative to `/data/JIPipe`),
+compartment `Glomeruli`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `ij1-roi-to-rgb` | Convert ROI to RGB |
-| n1 | `ij1-analyze-find-particles2d` | Find particles 2D |
-| n2 | `jipipe:compartment-output` | Output |
+| key | node id                        | name               |
+|-----|--------------------------------|--------------------|
+| n0  | `ij1-roi-to-rgb`               | Convert ROI to RGB |
+| n1  | `ij1-analyze-find-particles2d` | Find particles 2D  |
+| n2  | `jipipe:compartment-output`    | Output             |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
+| from              | slot           | to     | slot           | data class             |
+|-------------------|----------------|--------|----------------|------------------------|
 | Find particles 2D | `Measurements` | Output | `Measurements` | `imagej-results-table` |
 
 ## Template
 
-Proposed name `Compartment output fans in from 27 source ids (roles: other)`, menu path `Patterns/Graph / Project/Compartment output fans in from 27 source ids (roles: other)` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/fan-in-jipipe-compartment-output-other-2.json`.
+Proposed name `Compartment output fans in from 27 source ids (roles: other)`, menu path
+`Patterns/Graph / Project/Compartment output fans in from 27 source ids (roles: other)` (proposal only - not
+registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/fan-in-jipipe-compartment-output-other-2.json`.
 

@@ -8,7 +8,9 @@
 
 ## 1. Problem Statement
 
-The previous addendum describes a daemon process but leaves the instantiation mechanism vague. This document clarifies **exactly how the daemon JVM process is spawned** from within a running JIPipe instance, under the following constraints:
+The previous addendum describes a daemon process but leaves the instantiation mechanism vague. This document clarifies
+**exactly how the daemon JVM process is spawned** from within a running JIPipe instance, under the following
+constraints:
 
 1. **The same JVM runtime that runs JIPipe is used** -- no separate JRE installation or version
 2. **Must be OS-independent** -- same mechanism works on Windows, Linux, and macOS
@@ -18,14 +20,17 @@ The previous addendum describes a daemon process but leaves the instantiation me
 
 ## 2. Core Mechanism: `java.home` + `java.class.path`
 
-The daemon is spawned using `ProcessBuilder` with two JDK-standard system properties that are **guaranteed to be available** in every JVM:
+The daemon is spawned using `ProcessBuilder` with two JDK-standard system properties that are **guaranteed to be
+available** in every JVM:
 
-| Property | Meaning | Example (Linux) | Example (Windows) |
-|----------|---------|-----------------|-------------------|
-| `java.home` | Root of the JRE/JDK running the current JVM | `/usr/lib/jvm/java-21-openjdk-amd64` | `C:\Program Files\Java\jdk-21` |
-| `java.class.path` | The full runtime classpath of the current JVM | `jipipe-core.jar:plugins/...` | `jipipe-core.jar;plugins\...` |
+| Property          | Meaning                                       | Example (Linux)                      | Example (Windows)              |
+|-------------------|-----------------------------------------------|--------------------------------------|--------------------------------|
+| `java.home`       | Root of the JRE/JDK running the current JVM   | `/usr/lib/jvm/java-21-openjdk-amd64` | `C:\Program Files\Java\jdk-21` |
+| `java.class.path` | The full runtime classpath of the current JVM | `jipipe-core.jar:plugins/...`        | `jipipe-core.jar;plugins\...`  |
 
-Both properties are set by the JVM at startup and reflect the actual runtime environment. They work identically whether JIPipe was launched by:
+Both properties are set by the JVM at startup and reflect the actual runtime environment. They work identically whether
+JIPipe was launched by:
+
 - **IDE debug** (Maven constructs the classpath)
 - **jipipe-launcher** (ImageJ native launcher constructs the classpath)
 - **Fiji plugin** (ImageJ native launcher constructs the classpath)
@@ -67,6 +72,7 @@ public class DaemonLauncher {
 ```
 
 **Why this is OS-independent:**
+
 - `java.home` is a JVM-standard property, always available
 - `java.class.path` uses the platform-specific separator (`:` on Unix, `;` on Windows) automatically
 - `javaw.exe` on Windows avoids a console window; `java` on Unix is the standard executable
@@ -76,31 +82,39 @@ public class DaemonLauncher {
 
 This is the critical question. Does `java.class.path` contain all JIPipe JARs regardless of how JIPipe was launched?
 
-| Launch Mode | Who Sets `java.class.path` | Content |
-|-------------|---------------------------|---------|
-| **IDE debug** | Maven/IDE | All JARs from `mvn compile` + dependencies |
+| Launch Mode         | Who Sets `java.class.path`                                   | Content                                                  |
+|---------------------|--------------------------------------------------------------|----------------------------------------------------------|
+| **IDE debug**       | Maven/IDE                                                    | All JARs from `mvn compile` + dependencies               |
 | **jipipe-launcher** | ImageJ native launcher (`--pass-classpath --full-classpath`) | All JARs from `ImageJ.app/jars/` + `ImageJ.app/plugins/` |
-| **Fiji plugin** | ImageJ native launcher (Fiji startup) | All JARs from `Fiji.app/jars/` + `Fiji.app/plugins/` |
+| **Fiji plugin**     | ImageJ native launcher (Fiji startup)                        | All JARs from `Fiji.app/jars/` + `Fiji.app/plugins/`     |
 
-In all three cases, the classpath includes the `jipipe-server-manager-core` JAR (or its classes), because that module is a dependency of `jipipe-core` (which is a dependency of all launch configurations).
+In all three cases, the classpath includes the `jipipe-server-manager-core` JAR (or its classes), because that module is
+a dependency of `jipipe-core` (which is a dependency of all launch configurations).
 
-**Edge case: modular classpath.** Some IDEs and launchers use the module path (`-p`) instead of the classpath (`-cp`). In this case, `java.class.path` may be empty. However:
+**Edge case: modular classpath.** Some IDEs and launchers use the module path (`-p`) instead of the classpath (`-cp`).
+In this case, `java.class.path` may be empty. However:
+
 - ImageJ/Fiji does NOT use modules (it's a classpath-based application)
 - Maven Surefire (testing) uses classpath
 - The ImageJ native launcher uses `-cp`, not `-p`
 
-**Edge case: custom classloaders.** If JIPipe uses custom classloaders (e.g., SciJava's `PluginService`), some classes may not be on `java.class.path`. However, the daemon main class (`DaemonMain`) is in `jipipe-server-manager-core`, which is a direct dependency of `jipipe-core` and always on the classpath.
+**Edge case: custom classloaders.** If JIPipe uses custom classloaders (e.g., SciJava's `PluginService`), some classes
+may not be on `java.class.path`. However, the daemon main class (`DaemonMain`) is in `jipipe-server-manager-core`, which
+is a direct dependency of `jipipe-core` and always on the classpath.
 
-**Verification approach:** At daemon startup, `DaemonMain` should verify it can load its own classes and log the classpath. If the classpath is incomplete, the daemon can fall back to scanning the ImageJ directory for JARs (see Section 3).
+**Verification approach:** At daemon startup, `DaemonMain` should verify it can load its own classes and log the
+classpath. If the classpath is incomplete, the daemon can fall back to scanning the ImageJ directory for JARs (see
+Section 3).
 
 ### 2.3 `javaw.exe` vs `java.exe` on Windows
 
-| Executable | Console Window | Use Case |
-|------------|---------------|----------|
-| `java.exe` | Yes (visible) | Debugging, development |
-| `javaw.exe` | No (headless) | Production daemon |
+| Executable  | Console Window | Use Case               |
+|-------------|----------------|------------------------|
+| `java.exe`  | Yes (visible)  | Debugging, development |
+| `javaw.exe` | No (headless)  | Production daemon      |
 
 For the daemon, `javaw.exe` is preferred because:
+
 - No console window appears (users would find it confusing)
 - The daemon writes its own log file (`daemon.log`)
 - The daemon has no stdin/stdout interaction
@@ -111,7 +125,8 @@ If `javaw.exe` is not found (rare -- it should always exist in a JDK/JRE), fall 
 
 ## 3. Fallback: ImageJ Directory Scanning
 
-If `java.class.path` is empty or incomplete (unlikely but defensive), the daemon launcher can construct the classpath by scanning the ImageJ directory -- the same approach the ImageJ native launcher uses internally:
+If `java.class.path` is empty or incomplete (unlikely but defensive), the daemon launcher can construct the classpath by
+scanning the ImageJ directory -- the same approach the ImageJ native launcher uses internally:
 
 ```java
 public static String buildClasspathFromImageJDir() {
@@ -143,7 +158,8 @@ public static String buildClasspathFromImageJDir() {
 }
 ```
 
-This is only needed as a fallback for the Fiji plugin case where `java.class.path` might be non-standard. In practice, the ImageJ native launcher always sets `java.class.path` correctly.
+This is only needed as a fallback for the Fiji plugin case where `java.class.path` might be non-standard. In practice,
+the ImageJ native launcher always sets `java.class.path` correctly.
 
 ---
 
@@ -227,7 +243,8 @@ JIPipe A                              File System                    JIPipe B
      │                                   │     7. Connect to daemon     │
 ```
 
-The `FileLocker` on `bootstrap.lock` ensures exactly one JIPipe instance starts the daemon. The second instance waits, then discovers the already-running daemon.
+The `FileLocker` on `bootstrap.lock` ensures exactly one JIPipe instance starts the daemon. The second instance waits,
+then discovers the already-running daemon.
 
 ### 4.3 Daemon Already Running (Common Case)
 
@@ -258,16 +275,19 @@ No bootstrap lock needed. The instance just connects to the existing daemon.
 
 The daemon is launched with `-Djipipe.daemon=true`. This system property serves multiple purposes:
 
-1. **Prevents recursive daemon spawning:** If the daemon itself tries to acquire a server, the library detects `jipipe.daemon=true` and uses embedded mode instead of trying to spawn another daemon.
+1. **Prevents recursive daemon spawning:** If the daemon itself tries to acquire a server, the library detects
+   `jipipe.daemon=true` and uses embedded mode instead of trying to spawn another daemon.
 
-2. **Prevents JIPipe initialization:** The daemon should NOT initialize the full JIPipe stack (`JIPipeService`, plugins, ImageJ context). It only needs the server manager library. The `-Djipipe.daemon=true` flag tells `DaemonMain` to skip JIPipe bootstrapping.
+2. **Prevents JIPipe initialization:** The daemon should NOT initialize the full JIPipe stack (`JIPipeService`, plugins,
+   ImageJ context). It only needs the server manager library. The `-Djipipe.daemon=true` flag tells `DaemonMain` to skip
+   JIPipe bootstrapping.
 
 3. **Enables lightweight startup:** The daemon only loads:
-   - `jipipe-server-manager-api` classes
-   - `jipipe-server-manager-core` classes  
-   - Jackson (for JSON serialization)
-   - JDK `HttpServer` (for the REST API)
-   - **NOT** ImageJ, SciJava, or any JIPipe plugins
+    - `jipipe-server-manager-api` classes
+    - `jipipe-server-manager-core` classes
+    - Jackson (for JSON serialization)
+    - JDK `HttpServer` (for the REST API)
+    - **NOT** ImageJ, SciJava, or any JIPipe plugins
 
 ### 5.2 Daemon Main Class
 
@@ -325,7 +345,9 @@ public class DaemonMain {
 }
 ```
 
-**Critical difference from JIPipe:** The daemon uses `System.exit(0)` (which runs shutdown hooks), **NOT** `Runtime.getRuntime().halt()`. The daemon has no SciJava `Context` and therefore no deadlock problem. This means the daemon's shutdown hooks **always execute**, providing reliable cleanup.
+**Critical difference from JIPipe:** The daemon uses `System.exit(0)` (which runs shutdown hooks), **NOT**
+`Runtime.getRuntime().halt()`. The daemon has no SciJava `Context` and therefore no deadlock problem. This means the
+daemon's shutdown hooks **always execute**, providing reliable cleanup.
 
 ### 5.3 Signal Handling
 
@@ -340,7 +362,8 @@ Signal.handle(new Signal("TERM"), signal -> {
 });
 ```
 
-On Windows, SIGTERM is sent when the process is terminated via Task Manager or `taskkill` (without `/F`). With `/F`, the process is force-killed and no signal handler runs -- but the OS releases all resources (ports, file locks, processes).
+On Windows, SIGTERM is sent when the process is terminated via Task Manager or `taskkill` (without `/F`). With `/F`, the
+process is force-killed and no signal handler runs -- but the OS releases all resources (ports, file locks, processes).
 
 ---
 
@@ -381,26 +404,31 @@ JIPipe Instance                         Daemon Process
 
 **Option A: HTTP Keep-Alive (Simplest)**
 
-JIPipe instances make regular HTTP requests with `Connection: keep-alive`. The daemon monitors idle connections. If no request arrives within a timeout (e.g., 30 seconds), the daemon considers the client dead.
+JIPipe instances make regular HTTP requests with `Connection: keep-alive`. The daemon monitors idle connections. If no
+request arrives within a timeout (e.g., 30 seconds), the daemon considers the client dead.
 
 - **Pro:** Works with any HTTP server library
 - **Con:** Requires periodic polling (heartbeat requests) from the client
 
 **Option B: WebSocket (Recommended)**
 
-JIPipe instances open a WebSocket connection to `/api/v1/events`. The connection stays open for the lifetime of the JIPipe instance. The daemon uses TCP keepalive to detect disconnection.
+JIPipe instances open a WebSocket connection to `/api/v1/events`. The connection stays open for the lifetime of the
+JIPipe instance. The daemon uses TCP keepalive to detect disconnection.
 
 - **Pro:** Immediate detection, no polling, bidirectional events
 - **Con:** Requires WebSocket support (available via JDK `HttpClient` on client side, needs server-side support)
 
 **Option C: Long-Polling with Client PID**
 
-JIPipe instances periodically call `GET /api/v1/heartbeat?clientPid=<pid>`. The daemon also independently verifies client PIDs via `ProcessHandle.of(pid).isAlive()`.
+JIPipe instances periodically call `GET /api/v1/heartbeat?clientPid=<pid>`. The daemon also independently verifies
+client PIDs via `ProcessHandle.of(pid).isAlive()`.
 
 - **Pro:** No persistent connection needed, works with any HTTP server
 - **Con:** Detection delay equals the heartbeat interval
 
-**Recommendation:** Use **Option C (Long-Polling with PID)** for the MVP. It's the simplest, requires no WebSocket, and works with the pure JDK `HttpServer`. The daemon also proactively checks client PIDs via `ProcessHandle`, so even if a client stops sending heartbeats (crash), the daemon detects it within seconds.
+**Recommendation:** Use **Option C (Long-Polling with PID)** for the MVP. It's the simplest, requires no WebSocket, and
+works with the pure JDK `HttpServer`. The daemon also proactively checks client PIDs via `ProcessHandle`, so even if a
+client stops sending heartbeats (crash), the daemon detects it within seconds.
 
 ```java
 // In the daemon's client tracker
@@ -466,11 +494,13 @@ public static void exitLater(int exitCode) {
 }
 ```
 
-`releaseAll()` sends `DELETE /api/v1/servers/{id}/release` for each server the instance is using. This is a synchronous HTTP call that completes in milliseconds.
+`releaseAll()` sends `DELETE /api/v1/servers/{id}/release` for each server the instance is using. This is a synchronous
+HTTP call that completes in milliseconds.
 
 ### 7.2 Crash Scenario (No `exitLater()` Called)
 
 If JIPipe crashes or is force-killed:
+
 1. The heartbeat stops arriving at the daemon
 2. The daemon's `ProcessHandle` check detects the JIPipe PID is dead
 3. The daemon auto-releases all server references for that client
@@ -481,6 +511,7 @@ If JIPipe crashes or is force-killed:
 ### 7.3 Fiji Plugin Mode
 
 In Fiji plugin mode, closing the JIPipe window does NOT call `exitLater()` or `halt()`. Instead:
+
 - `JIPipeDesktopProjectWindow.dispose()` is called
 - The JVM (Fiji) keeps running
 
@@ -500,17 +531,18 @@ Or better: the server manager should be lifecycle-aware and register a listener 
 ## 8. State Directory Location
 
 The daemon's state directory must be:
+
 1. Accessible from all JIPipe instances (shared, not per-profile)
 2. In a well-known location
 3. Writable by the current user
 
 **Recommended location:** `<JIPipeSharedDir>/manager/`
 
-| OS | Path |
-|----|------|
-| Linux | `~/.local/share/JIPipe/shared/manager/` |
-| Windows | `%APPDATA%\JIPipe\shared\manager\` |
-| macOS | `~/Library/Application Support/JIPipe/shared/manager/` |
+| OS      | Path                                                   |
+|---------|--------------------------------------------------------|
+| Linux   | `~/.local/share/JIPipe/shared/manager/`                |
+| Windows | `%APPDATA%\JIPipe\shared\manager\`                     |
+| macOS   | `~/Library/Application Support/JIPipe/shared/manager/` |
 
 Overridable via `JIPIPE_OVERRIDE_SHARED_DIR` environment variable.
 
@@ -609,29 +641,34 @@ Overridable via `JIPIPE_OVERRIDE_SHARED_DIR` environment variable.
 ### 10.1 Daemon Crashes
 
 If the daemon crashes (JVM error, OS kill):
+
 1. Managed server processes are orphaned (their parent PID is gone)
 2. JIPipe instances detect daemon failure (heartbeat HTTP request fails)
 3. Next JIPipe instance to need a server triggers bootstrap (Section 4)
 4. New daemon reads server state files, discovers orphans:
-   - Checks if each server PID is alive + port is reachable
-   - Adopts or terminates orphans based on current needs
+    - Checks if each server PID is alive + port is reachable
+    - Adopts or terminates orphans based on current needs
 5. If no JIPipe instance restarts the daemon, orphaned server processes continue running
    until manually killed or OS shutdown
 
-**Mitigation:** The daemon writes server state to `<sharedDir>/manager/servers/*.json` on every state change. This allows crash recovery.
+**Mitigation:** The daemon writes server state to `<sharedDir>/manager/servers/*.json` on every state change. This
+allows crash recovery.
 
 ### 10.2 Daemon Port Conflict
 
 If another application is using the port the daemon selected:
+
 - The daemon uses port 0 (OS assigns), so this should never happen
 - If it does happen (extremely rare), the daemon logs the error and exits
 - The JIPipe instance detects daemon failure and retries with a new spawn
 
 ### 10.3 Classpath Too Long (Windows)
 
-On Windows, the maximum command line length is ~32,767 characters. JIPipe's classpath with all plugins could exceed this limit.
+On Windows, the maximum command line length is ~32,767 characters. JIPipe's classpath with all plugins could exceed this
+limit.
 
-**Mitigation:** Use a classpath manifest JAR (a small JAR whose `MANIFEST.MF` contains `Class-Path:` entries pointing to all other JARs). This is a standard Java pattern:
+**Mitigation:** Use a classpath manifest JAR (a small JAR whose `MANIFEST.MF` contains `Class-Path:` entries pointing to
+all other JARs). This is a standard Java pattern:
 
 ```java
 // Create a temporary manifest JAR that references all classpath entries
@@ -654,15 +691,22 @@ This reduces the command line to: `java -jar daemon-classpath.jar --state-dir ..
 
 ### 10.4 Fiji Mode: JIPipe Not Started via ImageJ Launcher
 
-In some Fiji configurations, JIPipe might be started via a different mechanism (e.g., Jython script, other SciJava plugins). The `java.class.path` property still contains the full classpath because the ImageJ native launcher sets it at JVM startup, regardless of how JIPipe is triggered within the running Fiji instance.
+In some Fiji configurations, JIPipe might be started via a different mechanism (e.g., Jython script, other SciJava
+plugins). The `java.class.path` property still contains the full classpath because the ImageJ native launcher sets it at
+JVM startup, regardless of how JIPipe is triggered within the running Fiji instance.
 
 ### 10.5 Multiple Daemons (Different JIPipe Versions)
 
-If two versions of JIPipe are installed and running simultaneously, they might each try to start a daemon. The daemon state directory is under `JIPipeSharedDir`, which is **version-independent** by design. This means both versions would share the same daemon.
+If two versions of JIPipe are installed and running simultaneously, they might each try to start a daemon. The daemon
+state directory is under `JIPipeSharedDir`, which is **version-independent** by design. This means both versions would
+share the same daemon.
 
-**Problem:** The daemon's classpath comes from the JIPipe version that started it. If version A starts the daemon, version B's `DaemonMain` class might be different.
+**Problem:** The daemon's classpath comes from the JIPipe version that started it. If version A starts the daemon,
+version B's `DaemonMain` class might be different.
 
-**Mitigation:** The `daemon.json` file includes the JIPipe version and the daemon API version. When a JIPipe instance connects, it checks compatibility. If incompatible:
+**Mitigation:** The `daemon.json` file includes the JIPipe version and the daemon API version. When a JIPipe instance
+connects, it checks compatibility. If incompatible:
+
 1. Request the daemon to shut down (via API)
 2. Wait for it to stop
 3. Start a new daemon with the current version's classpath
@@ -673,14 +717,14 @@ This is a rare edge case (two JIPipe versions running simultaneously) and can be
 
 ## 11. Summary: What Changed vs the Previous Addendum
 
-| Aspect | Previous Addendum | This Addendum |
-|--------|-------------------|---------------|
-| **Daemon spawning** | Vague ("ProcessBuilder") | Explicit: `java.home` + `java.class.path` via `ProcessBuilder` |
-| **Classpath source** | Not specified | `System.getProperty("java.class.path")` with ImageJ directory scan fallback |
-| **OS independence** | Not addressed | Detailed: `javaw.exe` on Windows, `java` on Unix, `File.pathSeparator` |
-| **Windows classpath length** | Not addressed | Manifest JAR workaround |
-| **Daemon self-identification** | Not addressed | `-Djipipe.daemon=true` system property |
-| **Shutdown behavior** | "Graceful" | Explicit: daemon uses `System.exit()` (not `halt()`), shutdown hooks always run |
-| **Client liveness** | "TCP keepalive" | Concrete: `ProcessHandle` polling (5s) + HTTP heartbeat (10s) |
-| **Fiji plugin mode** | Briefly mentioned | Explicit cleanup in `JIPipeDesktopProjectWindow.dispose()` |
-| **Version compatibility** | Not addressed | `daemon.json` includes version, incompatible daemons are restarted |
+| Aspect                         | Previous Addendum        | This Addendum                                                                   |
+|--------------------------------|--------------------------|---------------------------------------------------------------------------------|
+| **Daemon spawning**            | Vague ("ProcessBuilder") | Explicit: `java.home` + `java.class.path` via `ProcessBuilder`                  |
+| **Classpath source**           | Not specified            | `System.getProperty("java.class.path")` with ImageJ directory scan fallback     |
+| **OS independence**            | Not addressed            | Detailed: `javaw.exe` on Windows, `java` on Unix, `File.pathSeparator`          |
+| **Windows classpath length**   | Not addressed            | Manifest JAR workaround                                                         |
+| **Daemon self-identification** | Not addressed            | `-Djipipe.daemon=true` system property                                          |
+| **Shutdown behavior**          | "Graceful"               | Explicit: daemon uses `System.exit()` (not `halt()`), shutdown hooks always run |
+| **Client liveness**            | "TCP keepalive"          | Concrete: `ProcessHandle` polling (5s) + HTTP heartbeat (10s)                   |
+| **Fiji plugin mode**           | Briefly mentioned        | Explicit cleanup in `JIPipeDesktopProjectWindow.dispose()`                      |
+| **Version compatibility**      | Not addressed            | `daemon.json` includes version, incompatible daemons are restarted              |

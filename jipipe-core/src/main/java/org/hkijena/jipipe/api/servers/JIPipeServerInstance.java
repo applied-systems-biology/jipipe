@@ -73,7 +73,9 @@ public abstract class JIPipeServerInstance<TEnv extends JIPipeEnvironment> exten
         while (System.currentTimeMillis() < deadline) {
             if (Thread.currentThread().isInterrupted()) return false;
             if (isHealthy()) return true;
-            try { Thread.sleep(500); } catch (InterruptedException e) {
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 return false;
             }

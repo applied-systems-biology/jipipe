@@ -6,8 +6,6 @@ import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.servers.monitor.JIPipeDesktopServerMonitorWindow;
 
-import javax.swing.*;
-
 /**
  * Menu tool that opens the external server instance monitor window.
  */

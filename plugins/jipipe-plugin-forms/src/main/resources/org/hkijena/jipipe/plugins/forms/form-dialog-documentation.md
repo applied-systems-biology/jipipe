@@ -1,6 +1,6 @@
 # User input forms
 
-The currently running pipeline is asking for your input. 
+The currently running pipeline is asking for your input.
 
 <table>
 <tr><td><img src="resource://icons/actions/insert-tableofcontents.png"/></td><td>On the left side you see a list of all iteration steps.</td></tr>

@@ -1,1 +1,42 @@
-{"edges":[{"source-node":"n1","source-slot":"Filenames","target-node":"n2","target-slot":"Files"},{"source-node":"n2","source-slot":"Image","target-node":"n0","target-slot":"Input"}],"nodes":{"n0":{"jipipe:graph-compartment":"efd6fb33-997a-5ca1-aa52-6b915c835e88","jipipe:metadata-v1":{"location/efd6fb33-997a-5ca1-aa52-6b915c835e88/x":0,"location/efd6fb33-997a-5ca1-aa52-6b915c835e88/y":8},"jipipe:node-info-id":"ij1-labels-split-connected-components-2d"},"n1":{"jipipe:graph-compartment":"efd6fb33-997a-5ca1-aa52-6b915c835e88","jipipe:metadata-v1":{"location/efd6fb33-997a-5ca1-aa52-6b915c835e88/x":0,"location/efd6fb33-997a-5ca1-aa52-6b915c835e88/y":0},"jipipe:node-info-id":"import-file-list"},"n2":{"jipipe:graph-compartment":"efd6fb33-997a-5ca1-aa52-6b915c835e88","jipipe:metadata-v1":{"location/efd6fb33-997a-5ca1-aa52-6b915c835e88/x":0,"location/efd6fb33-997a-5ca1-aa52-6b915c835e88/y":4},"jipipe:node-info-id":"import-imagej-imgplus-from-file"}}}
+{
+  "edges": [
+    {
+      "source-node": "n1",
+      "source-slot": "Filenames",
+      "target-node": "n2",
+      "target-slot": "Files"
+    },
+    {
+      "source-node": "n2",
+      "source-slot": "Image",
+      "target-node": "n0",
+      "target-slot": "Input"
+    }
+  ],
+  "nodes": {
+    "n0": {
+      "jipipe:graph-compartment": "efd6fb33-997a-5ca1-aa52-6b915c835e88",
+      "jipipe:metadata-v1": {
+        "location/efd6fb33-997a-5ca1-aa52-6b915c835e88/x": 0,
+        "location/efd6fb33-997a-5ca1-aa52-6b915c835e88/y": 8
+      },
+      "jipipe:node-info-id": "ij1-labels-split-connected-components-2d"
+    },
+    "n1": {
+      "jipipe:graph-compartment": "efd6fb33-997a-5ca1-aa52-6b915c835e88",
+      "jipipe:metadata-v1": {
+        "location/efd6fb33-997a-5ca1-aa52-6b915c835e88/x": 0,
+        "location/efd6fb33-997a-5ca1-aa52-6b915c835e88/y": 0
+      },
+      "jipipe:node-info-id": "import-file-list"
+    },
+    "n2": {
+      "jipipe:graph-compartment": "efd6fb33-997a-5ca1-aa52-6b915c835e88",
+      "jipipe:metadata-v1": {
+        "location/efd6fb33-997a-5ca1-aa52-6b915c835e88/x": 0,
+        "location/efd6fb33-997a-5ca1-aa52-6b915c835e88/y": 4
+      },
+      "jipipe:node-info-id": "import-imagej-imgplus-from-file"
+    }
+  }
+}

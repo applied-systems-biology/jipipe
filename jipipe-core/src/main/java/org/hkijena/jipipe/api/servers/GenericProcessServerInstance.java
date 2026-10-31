@@ -15,7 +15,6 @@ package org.hkijena.jipipe.api.servers;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
-import org.hkijena.jipipe.api.servers.ServerStartException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -28,7 +27,7 @@ import java.util.Map;
 
 /**
  * A generic server instance for any HTTP-speaking process.
- * 
+ *
  * <p>Provides basic HTTP GET/POST methods and health checking.
  * Suitable for wrapping any external HTTP server (e.g., REST APIs,
  * web services) as a managed JIPipe server instance.</p>
@@ -65,8 +64,8 @@ public class GenericProcessServerInstance extends JIPipeServerInstance<JIPipeEnv
      * @param healthCheckTimeoutMs the timeout for health check requests in milliseconds
      */
     public GenericProcessServerInstance(JIPipeEnvironment environment, int port,
-                                         String healthCheckPath, int expectedHealthStatus,
-                                         int healthCheckTimeoutMs) {
+                                        String healthCheckPath, int expectedHealthStatus,
+                                        int healthCheckTimeoutMs) {
         super(environment, port);
         this.healthCheckPath = healthCheckPath;
         this.expectedHealthStatus = expectedHealthStatus;
@@ -76,7 +75,7 @@ public class GenericProcessServerInstance extends JIPipeServerInstance<JIPipeEnv
     @Override
     protected void startProcess() throws ServerStartException {
         // The actual process spawning is handled by subclasses or by the environment's
-        // runExecutable method. This base implementation does nothing — subclasses
+        // runExecutable method. This base implementation does nothing - subclasses
         // are expected to override and spawn the process before returning.
     }
 
@@ -177,13 +176,13 @@ public class GenericProcessServerInstance extends JIPipeServerInstance<JIPipeEnv
      * Spawns the server process with the given command and environment variables.
      * This is a convenience method for subclasses that need to spawn a process.
      *
-     * @param command     the command and arguments
-     * @param environment additional environment variables
+     * @param command      the command and arguments
+     * @param environment  additional environment variables
      * @param progressInfo the progress info for logging
      * @throws IOException if the process cannot be started
      */
     protected void spawnProcess(List<String> command, Map<String, String> environment,
-                                 JIPipeProgressInfo progressInfo) throws IOException {
+                                JIPipeProgressInfo progressInfo) throws IOException {
         Process process = processSupervisor.spawnProcess(command, environment,
                 getDisplayName(), progressInfo);
         setProcess(process);

@@ -1,1 +1,84 @@
-{"nodes":{"n0":{"jipipe:graph-compartment":"DEFAULT","jipipe:metadata-v1":{"location/DEFAULT/x":1,"location/DEFAULT/y":9},"jipipe:node-info-id":"plot-table:plot-histogram"},"n1":{"jipipe:graph-compartment":"DEFAULT","jipipe:metadata-v1":{"location/DEFAULT/x":1,"location/DEFAULT/y":1},"jipipe:node-info-id":"ij3d-measure-roi3d"},"n2":{"jipipe:graph-compartment":"DEFAULT","jipipe:metadata-v1":{"location/DEFAULT/x":1,"location/DEFAULT/y":5},"jipipe:node-info-id":"annotate-set"},"n3":{"jipipe:graph-compartment":"DEFAULT","jipipe:metadata-v1":{"location/DEFAULT/x":10,"location/DEFAULT/y":9},"jipipe:node-info-id":"plot-table:plot-histogram"},"n4":{"jipipe:graph-compartment":"DEFAULT","jipipe:metadata-v1":{"location/DEFAULT/x":1,"location/DEFAULT/y":13},"jipipe:node-info-id":"annotate-split-by-annotation"},"n5":{"jipipe:graph-compartment":"DEFAULT","jipipe:metadata-v1":{"location/DEFAULT/x":10,"location/DEFAULT/y":13},"jipipe:node-info-id":"annotate-split-by-annotation"}},"edges":[{"source-node":"n0","source-slot":"Output","target-node":"n5","target-slot":"Input"},{"source-node":"n1","source-slot":"Measurements","target-node":"n2","target-slot":"Input"},{"source-node":"n2","source-slot":"Output","target-node":"n0","target-slot":"Input"},{"source-node":"n2","source-slot":"Output","target-node":"n3","target-slot":"Input"},{"source-node":"n3","source-slot":"Output","target-node":"n4","target-slot":"Input"}]}
+{
+  "nodes": {
+    "n0": {
+      "jipipe:graph-compartment": "DEFAULT",
+      "jipipe:metadata-v1": {
+        "location/DEFAULT/x": 1,
+        "location/DEFAULT/y": 9
+      },
+      "jipipe:node-info-id": "plot-table:plot-histogram"
+    },
+    "n1": {
+      "jipipe:graph-compartment": "DEFAULT",
+      "jipipe:metadata-v1": {
+        "location/DEFAULT/x": 1,
+        "location/DEFAULT/y": 1
+      },
+      "jipipe:node-info-id": "ij3d-measure-roi3d"
+    },
+    "n2": {
+      "jipipe:graph-compartment": "DEFAULT",
+      "jipipe:metadata-v1": {
+        "location/DEFAULT/x": 1,
+        "location/DEFAULT/y": 5
+      },
+      "jipipe:node-info-id": "annotate-set"
+    },
+    "n3": {
+      "jipipe:graph-compartment": "DEFAULT",
+      "jipipe:metadata-v1": {
+        "location/DEFAULT/x": 10,
+        "location/DEFAULT/y": 9
+      },
+      "jipipe:node-info-id": "plot-table:plot-histogram"
+    },
+    "n4": {
+      "jipipe:graph-compartment": "DEFAULT",
+      "jipipe:metadata-v1": {
+        "location/DEFAULT/x": 1,
+        "location/DEFAULT/y": 13
+      },
+      "jipipe:node-info-id": "annotate-split-by-annotation"
+    },
+    "n5": {
+      "jipipe:graph-compartment": "DEFAULT",
+      "jipipe:metadata-v1": {
+        "location/DEFAULT/x": 10,
+        "location/DEFAULT/y": 13
+      },
+      "jipipe:node-info-id": "annotate-split-by-annotation"
+    }
+  },
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Output",
+      "target-node": "n5",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n1",
+      "source-slot": "Measurements",
+      "target-node": "n2",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n2",
+      "source-slot": "Output",
+      "target-node": "n0",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n2",
+      "source-slot": "Output",
+      "target-node": "n3",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n3",
+      "source-slot": "Output",
+      "target-node": "n4",
+      "target-slot": "Input"
+    }
+  ]
+}

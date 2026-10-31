@@ -1,1 +1,33 @@
-{"nodes":{"n0":{"jipipe:node-info-id":"ij1-set-lut-from-color-map","jipipe:graph-compartment":"8284b7e1-9a31-5b8d-a8c0-fc6a9704fde7","jipipe:node:name":"Set LUT (color map): label"},"n1":{"jipipe:node-info-id":"jipipe:compartment-output","jipipe:graph-compartment":"8284b7e1-9a31-5b8d-a8c0-fc6a9704fde7","jipipe:node:name":"Channels"},"n2":{"jipipe:node-info-id":"jipipe:compartment-output","jipipe:graph-compartment":"8284b7e1-9a31-5b8d-a8c0-fc6a9704fde7","jipipe:node:name":"Masks and ROIs"}},"edges":[{"source-node":"n0","source-slot":"Output","target-node":"n1","target-slot":"Label"},{"source-node":"n1","source-slot":"Label","target-node":"n2","target-slot":"Label"}]}
+{
+  "nodes": {
+    "n0": {
+      "jipipe:node-info-id": "ij1-set-lut-from-color-map",
+      "jipipe:graph-compartment": "8284b7e1-9a31-5b8d-a8c0-fc6a9704fde7",
+      "jipipe:node:name": "Set LUT (color map): label"
+    },
+    "n1": {
+      "jipipe:node-info-id": "jipipe:compartment-output",
+      "jipipe:graph-compartment": "8284b7e1-9a31-5b8d-a8c0-fc6a9704fde7",
+      "jipipe:node:name": "Channels"
+    },
+    "n2": {
+      "jipipe:node-info-id": "jipipe:compartment-output",
+      "jipipe:graph-compartment": "8284b7e1-9a31-5b8d-a8c0-fc6a9704fde7",
+      "jipipe:node:name": "Masks and ROIs"
+    }
+  },
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Output",
+      "target-node": "n1",
+      "target-slot": "Label"
+    },
+    {
+      "source-node": "n1",
+      "source-slot": "Label",
+      "target-node": "n2",
+      "target-slot": "Label"
+    }
+  ]
+}

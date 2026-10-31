@@ -13,11 +13,13 @@
 
 package org.hkijena.jipipe.desktop.commons.nodepatterns;
 
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.awt.geom.Path2D;
 import java.util.Random;
 
-/** Confetti polygons on a jittered grid; shapes may clip at the frame, so the pattern continues beyond the tile. */
+/**
+ * Confetti polygons on a jittered grid; shapes may clip at the frame, so the pattern continues beyond the tile.
+ */
 public final class DiscoFamily implements NodePatternFamily {
     @Override
     public void paint(Graphics2D g, int w, int h, Random rng) {
@@ -35,10 +37,12 @@ public final class DiscoFamily implements NodePatternFamily {
                 for (int s = 0; s < sides; s++) {
                     double a = rot + s * 2 * Math.PI / sides;
                     double x = cx + r * Math.cos(a), y = cy + r * Math.sin(a);
-                    if (s == 0) p.moveTo(x, y); else p.lineTo(x, y);
+                    if (s == 0) p.moveTo(x, y);
+                    else p.lineTo(x, y);
                 }
                 p.closePath();
-                if (rng.nextDouble() < 0.5) g.fill(p); else g.draw(p);
+                if (rng.nextDouble() < 0.5) g.fill(p);
+                else g.draw(p);
             }
     }
 }

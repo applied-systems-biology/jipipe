@@ -31,7 +31,7 @@ import java.util.function.Consumer;
  * The {@link NodeRelationSource} backed by node template graphs
  * (spec §10.2, source 2).
  * <p>
- * Mines <b>every</b> loaded template graph — System, Global, and Project
+ * Mines <b>every</b> loaded template graph - System, Global, and Project
  * scope (the user directed "mine the full extent from the templates"; the
  * database already holds all scopes, so relations are per-entry data across
  * the whole set). For each in-template connection {@code A → B} it emits one
@@ -41,7 +41,7 @@ import java.util.function.Consumer;
  * <b>Stale edges.</b> A template's serialized graph can reference a node id
  * that no longer resolves in the registry (the node was removed, or an
  * extension failed to load). Such an edge is skipped with a
- * {@code logger.warn} — never propagated, never thrown — so a stale template
+ * {@code logger.warn} - never propagated, never thrown - so a stale template
  * cannot break the index rebuild or any {@code relations()} call
  * (Review Focus #2).
  */
@@ -49,13 +49,34 @@ public class TemplateRelationSource implements NodeRelationSource {
 
     private static final Logger logger = LoggerFactory.getLogger(TemplateRelationSource.class);
 
-    /** The project whose project-scoped templates are mined in addition to
+    /**
+     * The project whose project-scoped templates are mined in addition to
      * System and Global templates. May be {@code null} (then only System and
-     * Global templates are mined). */
+     * Global templates are mined).
+     */
     private final JIPipeProject project;
 
     public TemplateRelationSource(JIPipeProject project) {
         this.project = project;
+    }
+
+    /**
+     * Resolves a template-graph node to its node-info id, or {@code null} if
+     * the node (or its info id) no longer resolves in the registry.
+     */
+    private static String resolvedNodeId(JIPipeGraphNode node) {
+        if (node == null || node.getInfo() == null) {
+            return null;
+        }
+        JIPipeNodeInfo info = node.getInfo();
+        if (info.getId() == null) {
+            return null;
+        }
+        return JIPipe.getNodes().hasNodeInfoWithId(info.getId()) ? info.getId() : null;
+    }
+
+    private static String idOr(JIPipeGraphNode node) {
+        return (node != null && node.getInfo() != null) ? node.getInfo().getId() : String.valueOf(node);
     }
 
     @Override
@@ -64,7 +85,7 @@ public class TemplateRelationSource implements NodeRelationSource {
         for (JIPipeNodeTemplate template : templates) {
             // A single corrupted template (invalid serialized data, a graph
             // that throws on access, ...) must not abort the whole index
-            // build — the same "never fail" intent as the stale-edge case,
+            // build - the same "never fail" intent as the stale-edge case,
             // and consistent with the database builder's own
             // catch (Throwable ignored) around template entry construction.
             try {
@@ -94,29 +115,10 @@ public class TemplateRelationSource implements NodeRelationSource {
             String toId = resolvedNodeId(targetNode);
             if (fromId == null || toId == null) {
                 logger.warn("Skipping stale template edge in template '{}': unresolved node info id (from='{}', to='{}')",
-                    templateName, idOr(sourceNode), idOr(targetNode));
+                        templateName, idOr(sourceNode), idOr(targetNode));
                 continue;
             }
             sink.accept(new Edge(fromId, toId));
         }
-    }
-
-    /**
-     * Resolves a template-graph node to its node-info id, or {@code null} if
-     * the node (or its info id) no longer resolves in the registry.
-     */
-    private static String resolvedNodeId(JIPipeGraphNode node) {
-        if (node == null || node.getInfo() == null) {
-            return null;
-        }
-        JIPipeNodeInfo info = node.getInfo();
-        if (info.getId() == null) {
-            return null;
-        }
-        return JIPipe.getNodes().hasNodeInfoWithId(info.getId()) ? info.getId() : null;
-    }
-
-    private static String idOr(JIPipeGraphNode node) {
-        return (node != null && node.getInfo() != null) ? node.getInfo().getId() : String.valueOf(node);
     }
 }

@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * .jipx projects are .jipx").
  * <p>
  * Backups exist in both formats since 6.0.0. Every place that scans a
- * backup directory must accept BOTH — otherwise .jipx backups are
+ * backup directory must accept BOTH - otherwise .jipx backups are
  * invisible in the backup manager, and a session directory whose
  * backups are ALL .jipx is considered empty and DELETED by
  * {@link PruneBackupsRun#pruneEmptySessions} (the ThinBackupsRun
@@ -59,7 +59,7 @@ class JIPipeProjectBackupUtilsTest {
     void jipxOnlySessionIsNotEmpty(@TempDir Path sessionDir) throws IOException {
         // A session directory whose only backup is a .jipx file must be
         // treated as NON-EMPTY by the prune logic (otherwise
-        // pruneEmptySessions would delete it — the startup auto-cleanup
+        // pruneEmptySessions would delete it - the startup auto-cleanup
         // runs by default).
         Files.createDirectories(sessionDir);
         Files.writeString(sessionDir.resolve("backup_2026-10-23T10-00-00.jipx"), "fake");

@@ -1,1 +1,28 @@
-{"edges":[{"source-node":"n1","source-slot":"Output","target-node":"n2","target-slot":"Input"}],"nodes":{"n1":{"jipipe:graph-compartment":"230fbf48-e170-5358-b5ec-0a91ed0286f6","jipipe:metadata-v1":{"location/230fbf48-e170-5358-b5ec-0a91ed0286f6/x":22,"location/230fbf48-e170-5358-b5ec-0a91ed0286f6/y":0},"jipipe:node-info-id":"filaments-split-into-connected-components"},"n2":{"jipipe:graph-compartment":"230fbf48-e170-5358-b5ec-0a91ed0286f6","jipipe:metadata-v1":{"location/230fbf48-e170-5358-b5ec-0a91ed0286f6/x":24,"location/230fbf48-e170-5358-b5ec-0a91ed0286f6/y":4},"jipipe:node-info-id":"filaments-convert-to-mask"}}}
+{
+  "edges": [
+    {
+      "source-node": "n1",
+      "source-slot": "Output",
+      "target-node": "n2",
+      "target-slot": "Input"
+    }
+  ],
+  "nodes": {
+    "n1": {
+      "jipipe:graph-compartment": "230fbf48-e170-5358-b5ec-0a91ed0286f6",
+      "jipipe:metadata-v1": {
+        "location/230fbf48-e170-5358-b5ec-0a91ed0286f6/x": 22,
+        "location/230fbf48-e170-5358-b5ec-0a91ed0286f6/y": 0
+      },
+      "jipipe:node-info-id": "filaments-split-into-connected-components"
+    },
+    "n2": {
+      "jipipe:graph-compartment": "230fbf48-e170-5358-b5ec-0a91ed0286f6",
+      "jipipe:metadata-v1": {
+        "location/230fbf48-e170-5358-b5ec-0a91ed0286f6/x": 24,
+        "location/230fbf48-e170-5358-b5ec-0a91ed0286f6/y": 4
+      },
+      "jipipe:node-info-id": "filaments-convert-to-mask"
+    }
+  }
+}

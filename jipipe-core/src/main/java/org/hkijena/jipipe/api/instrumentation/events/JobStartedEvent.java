@@ -14,7 +14,15 @@ public class JobStartedEvent extends InstrumentationEvent {
         this.description = description;
     }
 
-    public String getJobId() { return jobId; }
-    public String getOperation() { return operation; }
-    public String getDescription() { return description; }
+    public String getJobId() {
+        return jobId;
+    }
+
+    public String getOperation() {
+        return operation;
+    }
+
+    public String getDescription() {
+        return description;
+    }
 }

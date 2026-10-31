@@ -32,32 +32,37 @@ template:
 
 # Pattern: Import image -> Annotate with data -> other
 
-Mined pattern `annotation-sandwich-import-imagej-imgplus-from-file-annotate-with-data-other` (shape `annotation-sandwich`, support 18).
+Mined pattern `annotation-sandwich-import-imagej-imgplus-from-file-annotate-with-data-other` (shape
+`annotation-sandwich`, support 18).
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| import | `import-imagej-imgplus-from-file` |
-| annotate | `annotate-with-data` |
-| other | `distribute-data` |
+| role     | node ids                          |
+|----------|-----------------------------------|
+| import   | `import-imagej-imgplus-from-file` |
+| annotate | `annotate-with-data`              |
+| other    | `distribute-data`                 |
 
 ## Example graph
 
-Project: `AIAgentTests/03-ExampleWorkflows/CellposeTraining.jip` (relative to `/data/JIPipe`), compartment `Cellpose training`.
+Project: `AIAgentTests/03-ExampleWorkflows/CellposeTraining.jip` (relative to `/data/JIPipe`), compartment
+`Cellpose training`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `import-imagej-imgplus-from-file` | Import image |
-| n1 | `annotate-with-data` | Annotate with data |
-| n2 | `distribute-data` | Split data randomly (percentage) |
+| key | node id                           | name                             |
+|-----|-----------------------------------|----------------------------------|
+| n0  | `import-imagej-imgplus-from-file` | Import image                     |
+| n1  | `annotate-with-data`              | Annotate with data               |
+| n2  | `distribute-data`                 | Split data randomly (percentage) |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
-| Import image | `Image` | Annotate with data | `Input` | `imagej-imgplus` |
-| Annotate with data | `Output` | Split data randomly (percentage) | `Input` | `jipipe:data` |
+| from               | slot     | to                               | slot    | data class       |
+|--------------------|----------|----------------------------------|---------|------------------|
+| Import image       | `Image`  | Annotate with data               | `Input` | `imagej-imgplus` |
+| Annotate with data | `Output` | Split data randomly (percentage) | `Input` | `jipipe:data`    |
 
 ## Template
 
-Proposed name `Import image -> Annotate with data -> other`, menu path `Patterns/Data Sources/Import image -> Annotate with data -> other` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/annotation-sandwich-import-imagej-imgplus-from-file-annotate-with-data-other.json`.
+Proposed name `Import image -> Annotate with data -> other`, menu path
+`Patterns/Data Sources/Import image -> Annotate with data -> other` (proposal only - not registered). `data` = the
+minimal JIPipeGraph JSON; the full object is written to
+`templates/annotation-sandwich-import-imagej-imgplus-from-file-annotate-with-data-other.json`.
 

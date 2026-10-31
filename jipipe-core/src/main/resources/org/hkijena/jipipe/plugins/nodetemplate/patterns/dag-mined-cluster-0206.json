@@ -1,1 +1,42 @@
-{"edges":[{"source-node":"n1","source-slot":"Annotated image","target-node":"n0","target-slot":"Input"},{"source-node":"n2","source-slot":"Output","target-node":"n1","target-slot":"Image"}],"nodes":{"n0":{"jipipe:graph-compartment":"e6a7fcf6-b425-5b68-b71e-ca0ad8e3c6bb","jipipe:metadata-v1":{"location/e6a7fcf6-b425-5b68-b71e-ca0ad8e3c6bb/x":0,"location/e6a7fcf6-b425-5b68-b71e-ca0ad8e3c6bb/y":8},"jipipe:node-info-id":"ij1-math-divide-by-maximum"},"n1":{"jipipe:graph-compartment":"e6a7fcf6-b425-5b68-b71e-ca0ad8e3c6bb","jipipe:metadata-v1":{"location/e6a7fcf6-b425-5b68-b71e-ca0ad8e3c6bb/x":0,"location/e6a7fcf6-b425-5b68-b71e-ca0ad8e3c6bb/y":4},"jipipe:node-info-id":"image-properties-to-annotation"},"n2":{"jipipe:graph-compartment":"e6a7fcf6-b425-5b68-b71e-ca0ad8e3c6bb","jipipe:metadata-v1":{"location/e6a7fcf6-b425-5b68-b71e-ca0ad8e3c6bb/x":0,"location/e6a7fcf6-b425-5b68-b71e-ca0ad8e3c6bb/y":0},"jipipe:node-info-id":"annotate-set-single"}}}
+{
+  "edges": [
+    {
+      "source-node": "n1",
+      "source-slot": "Annotated image",
+      "target-node": "n0",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n2",
+      "source-slot": "Output",
+      "target-node": "n1",
+      "target-slot": "Image"
+    }
+  ],
+  "nodes": {
+    "n0": {
+      "jipipe:graph-compartment": "e6a7fcf6-b425-5b68-b71e-ca0ad8e3c6bb",
+      "jipipe:metadata-v1": {
+        "location/e6a7fcf6-b425-5b68-b71e-ca0ad8e3c6bb/x": 0,
+        "location/e6a7fcf6-b425-5b68-b71e-ca0ad8e3c6bb/y": 8
+      },
+      "jipipe:node-info-id": "ij1-math-divide-by-maximum"
+    },
+    "n1": {
+      "jipipe:graph-compartment": "e6a7fcf6-b425-5b68-b71e-ca0ad8e3c6bb",
+      "jipipe:metadata-v1": {
+        "location/e6a7fcf6-b425-5b68-b71e-ca0ad8e3c6bb/x": 0,
+        "location/e6a7fcf6-b425-5b68-b71e-ca0ad8e3c6bb/y": 4
+      },
+      "jipipe:node-info-id": "image-properties-to-annotation"
+    },
+    "n2": {
+      "jipipe:graph-compartment": "e6a7fcf6-b425-5b68-b71e-ca0ad8e3c6bb",
+      "jipipe:metadata-v1": {
+        "location/e6a7fcf6-b425-5b68-b71e-ca0ad8e3c6bb/x": 0,
+        "location/e6a7fcf6-b425-5b68-b71e-ca0ad8e3c6bb/y": 0
+      },
+      "jipipe:node-info-id": "annotate-set-single"
+    }
+  }
+}

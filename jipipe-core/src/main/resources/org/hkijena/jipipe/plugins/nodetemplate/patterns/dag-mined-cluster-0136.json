@@ -1,1 +1,42 @@
-{"edges":[{"source-node":"n1","source-slot":"Output","target-node":"n0","target-slot":"Input"},{"source-node":"n2","source-slot":"Kernel","target-node":"n1","target-slot":"Input"}],"nodes":{"n0":{"jipipe:graph-compartment":"f4a69297-1ba0-53b2-b7d9-d43b31700093","jipipe:metadata-v1":{"location/f4a69297-1ba0-53b2-b7d9-d43b31700093/x":1,"location/f4a69297-1ba0-53b2-b7d9-d43b31700093/y":8},"jipipe:node-info-id":"export-3d-scene-to-collada"},"n1":{"jipipe:graph-compartment":"f4a69297-1ba0-53b2-b7d9-d43b31700093","jipipe:metadata-v1":{"location/f4a69297-1ba0-53b2-b7d9-d43b31700093/x":0,"location/f4a69297-1ba0-53b2-b7d9-d43b31700093/y":4},"jipipe:node-info-id":"mask-to-3d-mesh"},"n2":{"jipipe:graph-compartment":"f4a69297-1ba0-53b2-b7d9-d43b31700093","jipipe:metadata-v1":{"location/f4a69297-1ba0-53b2-b7d9-d43b31700093/x":0,"location/f4a69297-1ba0-53b2-b7d9-d43b31700093/y":0},"jipipe:node-info-id":"ij1-generate-filter-kernel-3d"}}}
+{
+  "edges": [
+    {
+      "source-node": "n1",
+      "source-slot": "Output",
+      "target-node": "n0",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n2",
+      "source-slot": "Kernel",
+      "target-node": "n1",
+      "target-slot": "Input"
+    }
+  ],
+  "nodes": {
+    "n0": {
+      "jipipe:graph-compartment": "f4a69297-1ba0-53b2-b7d9-d43b31700093",
+      "jipipe:metadata-v1": {
+        "location/f4a69297-1ba0-53b2-b7d9-d43b31700093/x": 1,
+        "location/f4a69297-1ba0-53b2-b7d9-d43b31700093/y": 8
+      },
+      "jipipe:node-info-id": "export-3d-scene-to-collada"
+    },
+    "n1": {
+      "jipipe:graph-compartment": "f4a69297-1ba0-53b2-b7d9-d43b31700093",
+      "jipipe:metadata-v1": {
+        "location/f4a69297-1ba0-53b2-b7d9-d43b31700093/x": 0,
+        "location/f4a69297-1ba0-53b2-b7d9-d43b31700093/y": 4
+      },
+      "jipipe:node-info-id": "mask-to-3d-mesh"
+    },
+    "n2": {
+      "jipipe:graph-compartment": "f4a69297-1ba0-53b2-b7d9-d43b31700093",
+      "jipipe:metadata-v1": {
+        "location/f4a69297-1ba0-53b2-b7d9-d43b31700093/x": 0,
+        "location/f4a69297-1ba0-53b2-b7d9-d43b31700093/y": 0
+      },
+      "jipipe:node-info-id": "ij1-generate-filter-kernel-3d"
+    }
+  }
+}

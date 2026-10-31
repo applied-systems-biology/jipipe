@@ -90,8 +90,7 @@ public class JIPipeDesktopStringParameterEditorUI extends JIPipeDesktopParameter
                 }
             });
         } else {
-            JButton editButton = new JButton("Show/Edit", JIPipe.RESOURCES.getIcon16("actions/document-edit.png"));
-            editButton.addActionListener(e -> editText());
+            JButton editButton = UIUtils.createParameterButton("Show/Edit", JIPipe.RESOURCES.getIcon16("actions/document-edit.png"), e -> editText());
             add(editButton, BorderLayout.CENTER);
         }
     }

@@ -1,1 +1,27 @@
-{"nodes":{"n0":{"jipipe:node-info-id":"clij:plugin:net.haesleinhuepf.clij2.plugins.GaussianBlur2D","jipipe:graph-compartment":"fbf90eb3-dcf1-58b2-9c16-66b67513b56c","jipipe:node:name":"CLIJ2 Gaussian Blur 2D"},"n1":{"jipipe:node-info-id":"import-cellpose-3.x-pretrained-segmentation-model","jipipe:graph-compartment":"fbf90eb3-dcf1-58b2-9c16-66b67513b56c","jipipe:node:name":"Pretrained Cellpose 3.x segmentation model"},"n2":{"jipipe:node-info-id":"cellpose-segmentation-inference-3.x","jipipe:graph-compartment":"fbf90eb3-dcf1-58b2-9c16-66b67513b56c","jipipe:node:name":"Cellpose segmentation (3.x)"}},"edges":[{"source-node":"n1","source-slot":"Output","target-node":"n2","target-slot":"Model"}]}
+{
+  "nodes": {
+    "n0": {
+      "jipipe:node-info-id": "clij:plugin:net.haesleinhuepf.clij2.plugins.GaussianBlur2D",
+      "jipipe:graph-compartment": "fbf90eb3-dcf1-58b2-9c16-66b67513b56c",
+      "jipipe:node:name": "CLIJ2 Gaussian Blur 2D"
+    },
+    "n1": {
+      "jipipe:node-info-id": "import-cellpose-3.x-pretrained-segmentation-model",
+      "jipipe:graph-compartment": "fbf90eb3-dcf1-58b2-9c16-66b67513b56c",
+      "jipipe:node:name": "Pretrained Cellpose 3.x segmentation model"
+    },
+    "n2": {
+      "jipipe:node-info-id": "cellpose-segmentation-inference-3.x",
+      "jipipe:graph-compartment": "fbf90eb3-dcf1-58b2-9c16-66b67513b56c",
+      "jipipe:node:name": "Cellpose segmentation (3.x)"
+    }
+  },
+  "edges": [
+    {
+      "source-node": "n1",
+      "source-slot": "Output",
+      "target-node": "n2",
+      "target-slot": "Model"
+    }
+  ]
+}

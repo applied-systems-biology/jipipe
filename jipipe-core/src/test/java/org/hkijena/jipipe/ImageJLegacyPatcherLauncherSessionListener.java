@@ -28,7 +28,7 @@ import org.junit.platform.launcher.LauncherSessionListener;
  * context creation fails with {@code No _hooks field found in ij.IJ}.
  *
  * <p>This listener runs at launcher-session start, i.e. before test discovery
- * and class loading, and preinitializes the patcher — making the test suite
+ * and class loading, and preinitializes the patcher - making the test suite
  * independent of test-class ordering.
  *
  * <p>Registered via {@code META-INF/services/org.junit.platform.launcher.LauncherSessionListener}.

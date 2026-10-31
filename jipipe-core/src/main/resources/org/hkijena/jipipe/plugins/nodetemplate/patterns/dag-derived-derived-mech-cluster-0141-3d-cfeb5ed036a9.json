@@ -1,1 +1,42 @@
-{"nodes":{"n0":{"jipipe:graph-compartment":"DEFAULT","jipipe:metadata-v1":{"location/DEFAULT/x":1,"location/DEFAULT/y":5},"jipipe:node-info-id":"ij3d-measure-roi3d"},"n1":{"jipipe:graph-compartment":"DEFAULT","jipipe:metadata-v1":{"location/DEFAULT/x":1,"location/DEFAULT/y":9},"jipipe:node-info-id":"table-convert-to-histogram-key-value"},"n2":{"jipipe:graph-compartment":"DEFAULT","jipipe:metadata-v1":{"location/DEFAULT/x":1,"location/DEFAULT/y":1},"jipipe:node-info-id":"ij3d-roi-change-properties-from-expressions"}},"edges":[{"source-node":"n0","source-slot":"Measurements","target-node":"n1","target-slot":"Input"},{"source-node":"n2","source-slot":"Output","target-node":"n0","target-slot":"ROI"}]}
+{
+  "nodes": {
+    "n0": {
+      "jipipe:graph-compartment": "DEFAULT",
+      "jipipe:metadata-v1": {
+        "location/DEFAULT/x": 1,
+        "location/DEFAULT/y": 5
+      },
+      "jipipe:node-info-id": "ij3d-measure-roi3d"
+    },
+    "n1": {
+      "jipipe:graph-compartment": "DEFAULT",
+      "jipipe:metadata-v1": {
+        "location/DEFAULT/x": 1,
+        "location/DEFAULT/y": 9
+      },
+      "jipipe:node-info-id": "table-convert-to-histogram-key-value"
+    },
+    "n2": {
+      "jipipe:graph-compartment": "DEFAULT",
+      "jipipe:metadata-v1": {
+        "location/DEFAULT/x": 1,
+        "location/DEFAULT/y": 1
+      },
+      "jipipe:node-info-id": "ij3d-roi-change-properties-from-expressions"
+    }
+  },
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Measurements",
+      "target-node": "n1",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n2",
+      "source-slot": "Output",
+      "target-node": "n0",
+      "target-slot": "ROI"
+    }
+  ]
+}

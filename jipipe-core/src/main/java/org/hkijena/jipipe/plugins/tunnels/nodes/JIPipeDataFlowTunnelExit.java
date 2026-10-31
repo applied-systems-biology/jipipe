@@ -35,6 +35,7 @@ public abstract class JIPipeDataFlowTunnelExit extends JIPipeDataFlowTunnel {
 
     /**
      * Maps the input slot name from the corresponding tunnel entrance to the output slot of this exit.
+     *
      * @param inputSlotName input slot name from the tunnel entrance
      * @return the output where the data is piped to
      */

@@ -11,7 +11,6 @@ import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPan
 import org.hkijena.jipipe.plugins.ai.AIApplicationSettings;
 import org.hkijena.jipipe.plugins.ai.environments.EmbeddingModelEnvironment;
 import org.hkijena.jipipe.plugins.ai.environments.OptionalEmbeddingModelEnvironment;
-import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -24,9 +23,9 @@ import java.util.List;
 public class JIPipeDesktopAISetupDialog extends JDialog {
     private final JIPipeDesktopWorkbench workbench;
     private final JCheckBox termsCheckBox;
+    private final ModelConfigurationComponent embeddingModelConfigurationComponent;
     private boolean userConfirmed;
     private JButton okButton;
-    private final ModelConfigurationComponent embeddingModelConfigurationComponent;
 
     public JIPipeDesktopAISetupDialog(JIPipeDesktopWorkbench workbench) {
         super(workbench.getWindow());
@@ -37,11 +36,25 @@ public class JIPipeDesktopAISetupDialog extends JDialog {
         updateOkButton();
     }
 
+    public static boolean checkFirstTimeSetup(JIPipeDesktopWorkbench workbench) {
+        if (JIPipe.getInstance().getAiService().hasConfiguredAndReadyEmbeddingModel()) {
+            return true;
+        }
+        // User is shown the dialog
+        JIPipeDesktopAISetupDialog dialog = new JIPipeDesktopAISetupDialog(workbench);
+        dialog.pack();
+        dialog.setSize(1024, 768);
+        dialog.setLocationRelativeTo(workbench.getWindow());
+        dialog.setModal(true);
+        dialog.setVisible(true);
+        return dialog.userConfirmed;
+    }
+
     private void initialize() {
         setTitle("JIPipe - AI setup");
         setIconImage(UIUtils.getJIPipeIcon128());
 
-        JPanel contentPanel = new JPanel(new BorderLayout(8,8));
+        JPanel contentPanel = new JPanel(new BorderLayout(8, 8));
         contentPanel.setBorder(UIUtils.createEmptyBorder(8));
         contentPanel.setBackground(ThemeUtils.getCurrentStyle().getWindowBackground());
         setContentPane(contentPanel);
@@ -77,7 +90,7 @@ public class JIPipeDesktopAISetupDialog extends JDialog {
     }
 
     private void disableAI() {
-        if(JOptionPane.showConfirmDialog(this, "All AI-related features will be disabled and fully hidden.\nYou will need to go to the application settings to re-enable AI.\nContinue?",
+        if (JOptionPane.showConfirmDialog(this, "All AI-related features will be disabled and fully hidden.\nYou will need to go to the application settings to re-enable AI.\nContinue?",
                 "Disable AI", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
             AIApplicationSettings.getInstance().setEnableAI(false);
             userConfirmed = false;
@@ -93,7 +106,7 @@ public class JIPipeDesktopAISetupDialog extends JDialog {
 
     private void confirmConfiguration() {
         EmbeddingModelEnvironment embeddingModelEnvironment = (EmbeddingModelEnvironment) embeddingModelConfigurationComponent.getParameterCollection();
-        if(!embeddingModelEnvironment.isValid()) {
+        if (!embeddingModelEnvironment.isValid()) {
             JOptionPane.showMessageDialog(this, "The embedding environment is not correctly configured!", "AI setup", JOptionPane.ERROR_MESSAGE);
         }
 
@@ -109,17 +122,16 @@ public class JIPipeDesktopAISetupDialog extends JDialog {
             String query = embeddingModelEnvironment.getArtifactQuery().getQuery();
             JIPipeArtifact artifact = JIPipe.getInstance().getArtifacts()
                     .queryPreferredCachedArtifact(query);
-            if(artifact instanceof JIPipeRemoteArtifact remoteArtifact) {
+            if (artifact instanceof JIPipeRemoteArtifact remoteArtifact) {
                 toInstall.add(remoteArtifact);
-            }
-            else if(artifact == null) {
+            } else if (artifact == null) {
                 JOptionPane.showMessageDialog(this, "Artifact '" + query + "' not found! (No internet?)", "AI setup", JOptionPane.ERROR_MESSAGE);
                 return;
             }
         }
 
-        if(!toInstall.isEmpty()) {
-            if(JOptionPane.showConfirmDialog(this, "JIPipe needs to download local models. This needs to be done only once.\nContinue?", "AI setup", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
+        if (!toInstall.isEmpty()) {
+            if (JOptionPane.showConfirmDialog(this, "JIPipe needs to download local models. This needs to be done only once.\nContinue?", "AI setup", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
                 return;
             }
             JIPipeArtifactRepositoryApplyInstallUninstallRun run = new JIPipeArtifactRepositoryApplyInstallUninstallRun(toInstall, Collections.emptyList());
@@ -128,19 +140,5 @@ public class JIPipeDesktopAISetupDialog extends JDialog {
 
         userConfirmed = true;
         setVisible(false);
-    }
-
-    public static boolean checkFirstTimeSetup(JIPipeDesktopWorkbench workbench) {
-        if(JIPipe.getInstance().getAiService().hasConfiguredAndReadyEmbeddingModel()) {
-            return true;
-        }
-        // User is shown the dialog
-        JIPipeDesktopAISetupDialog dialog = new JIPipeDesktopAISetupDialog(workbench);
-        dialog.pack();
-        dialog.setSize(1024,768);
-        dialog.setLocationRelativeTo(workbench.getWindow());
-        dialog.setModal(true);
-        dialog.setVisible(true);
-        return dialog.userConfirmed;
     }
 }

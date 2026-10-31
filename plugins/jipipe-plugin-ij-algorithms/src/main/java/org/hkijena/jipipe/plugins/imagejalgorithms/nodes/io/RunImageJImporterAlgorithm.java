@@ -25,15 +25,15 @@ import org.hkijena.jipipe.api.compat.ImageJDataImporterUI;
 import org.hkijena.jipipe.api.compat.ImageJImportParameters;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.ImageDataFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.MiscDataFunction;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.ImageDataFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.MiscDataFunction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.RegisterJIPipeParameterCollectionContextAction;
 import org.hkijena.jipipe.api.validation.*;
@@ -45,7 +45,7 @@ import javax.swing.*;
 
 @SetJIPipeDocumentation(name = "Import from ImageJ", description = "Runs an ImageJ importer. You can select the utilized importer type in the parameters.")
 @AddJIPipeOutputSlot(value = JIPipeData.class, name = "Output", create = true)
-@ConfigureJIPipeNode(function = { ImageDataFunction.class, MiscDataFunction.class }, framework = ImageJ1Framework.class)
+@ConfigureJIPipeNode(function = {ImageDataFunction.class, MiscDataFunction.class}, framework = ImageJ1Framework.class)
 public class RunImageJImporterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private ImageJDataImporterRef importerType = new ImageJDataImporterRef();

@@ -36,32 +36,28 @@ public class Roi3dRelationMeasurementExpressionParameterVariablesInfo2 implement
         }
     }
 
-    @Override
-    public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-        return VARIABLES;
-    }
-
     public static String translateColumnName(String columnName) {
-        if(columnName.startsWith("Current.")) {
+        if (columnName.startsWith("Current.")) {
             return "Candidate." + columnName.substring("Current.".length());
-        }
-        else if(columnName.startsWith("Other.")) {
+        } else if (columnName.startsWith("Other.")) {
             return "Filter." + columnName.substring("Other.".length());
-        }
-        else {
+        } else {
             return columnName;
         }
     }
 
     public static String translateName(String name) {
-        if(name.startsWith("Current:")) {
+        if (name.startsWith("Current:")) {
             return "Candidate:" + name.substring("Current:".length());
-        }
-        else if(name.startsWith("Other:")) {
+        } else if (name.startsWith("Other:")) {
             return "Filter:" + name.substring("Other:".length());
-        }
-        else {
+        } else {
             return name;
         }
+    }
+
+    @Override
+    public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+        return VARIABLES;
     }
 }

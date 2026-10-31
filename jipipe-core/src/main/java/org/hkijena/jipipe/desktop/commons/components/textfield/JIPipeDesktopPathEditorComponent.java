@@ -100,7 +100,7 @@ public class JIPipeDesktopPathEditorComponent extends JIPipeDesktopWorkbenchPane
             }
         });
 
-        JButton selectButton = new JButton("Select", JIPipe.RESOURCES.getIcon16("actions/document-open-folder.png"));
+        JButton selectButton = UIUtils.createParameterButton("Select", JIPipe.RESOURCES.getIcon16("actions/document-open-folder.png"), e -> choosePath());
         selectButton.setToolTipText("Select from filesystem");
         add(selectButton, new GridBagConstraints() {
             {
@@ -109,8 +109,6 @@ public class JIPipeDesktopPathEditorComponent extends JIPipeDesktopWorkbenchPane
                 gridy = 0;
             }
         });
-
-        selectButton.addActionListener(e -> choosePath());
 
         pathEdit.getDocument().addDocumentListener(new JIPipeDesktopDocumentChangeListener() {
             @Override

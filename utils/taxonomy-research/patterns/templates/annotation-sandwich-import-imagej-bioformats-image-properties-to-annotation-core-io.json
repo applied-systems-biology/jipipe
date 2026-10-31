@@ -1,1 +1,33 @@
-{"nodes":{"n0":{"jipipe:node-info-id":"import-imagej-bioformats","jipipe:graph-compartment":"6e8e0d6f-37e1-541b-9999-64a28159b2bc","jipipe:node:name":"Bio-Formats importer"},"n1":{"jipipe:node-info-id":"image-properties-to-annotation","jipipe:graph-compartment":"6e8e0d6f-37e1-541b-9999-64a28159b2bc","jipipe:node:name":"Annotate with image properties"},"n2":{"jipipe:node-info-id":"jipipe:compartment-output","jipipe:graph-compartment":"6e8e0d6f-37e1-541b-9999-64a28159b2bc","jipipe:node:name":"Output"}},"edges":[{"source-node":"n0","source-slot":"Output","target-node":"n1","target-slot":"Image"},{"source-node":"n1","source-slot":"Annotated image","target-node":"n2","target-slot":"Raw"}]}
+{
+  "nodes": {
+    "n0": {
+      "jipipe:node-info-id": "import-imagej-bioformats",
+      "jipipe:graph-compartment": "6e8e0d6f-37e1-541b-9999-64a28159b2bc",
+      "jipipe:node:name": "Bio-Formats importer"
+    },
+    "n1": {
+      "jipipe:node-info-id": "image-properties-to-annotation",
+      "jipipe:graph-compartment": "6e8e0d6f-37e1-541b-9999-64a28159b2bc",
+      "jipipe:node:name": "Annotate with image properties"
+    },
+    "n2": {
+      "jipipe:node-info-id": "jipipe:compartment-output",
+      "jipipe:graph-compartment": "6e8e0d6f-37e1-541b-9999-64a28159b2bc",
+      "jipipe:node:name": "Output"
+    }
+  },
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Output",
+      "target-node": "n1",
+      "target-slot": "Image"
+    },
+    {
+      "source-node": "n1",
+      "source-slot": "Annotated image",
+      "target-node": "n2",
+      "target-slot": "Raw"
+    }
+  ]
+}

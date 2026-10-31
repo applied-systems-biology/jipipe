@@ -8,7 +8,9 @@
     "fht_info.json": {
       "$ref": "#/$defs/fht_info",
       "properties": {
-        "fs:entry-type": { "$ref": "https://jipipe.org/schemas/filesystem/type-file.schema.json" }
+        "fs:entry-type": {
+          "$ref": "https://jipipe.org/schemas/filesystem/type-file.schema.json"
+        }
       }
     }
   },
@@ -16,13 +18,17 @@
     "^fht(\\.ome)*\\.tif": {
       "$ref": "#/$defs/fht",
       "properties": {
-        "fs:entry-type": { "$ref": "https://jipipe.org/schemas/filesystem/type-file.schema.json" }
+        "fs:entry-type": {
+          "$ref": "https://jipipe.org/schemas/filesystem/type-file.schema.json"
+        }
       }
     },
     "^power_spectrum(\\.ome)*\\.tif": {
       "$ref": "#/$defs/power_spectrum",
       "properties": {
-        "fs:entry-type": { "$ref": "https://jipipe.org/schemas/filesystem/type-file.schema.json" }
+        "fs:entry-type": {
+          "$ref": "https://jipipe.org/schemas/filesystem/type-file.schema.json"
+        }
       }
     }
   },
@@ -54,7 +60,11 @@
         "original-bit-depth": {
           "type": "number",
           "description": "Original bit depth spatial domain image",
-          "enum": [8,16,32]
+          "enum": [
+            8,
+            16,
+            32
+          ]
         },
         "power-spectrum-mean": {
           "type": "number",

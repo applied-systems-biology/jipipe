@@ -18,7 +18,9 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-/** Registry of bundled node pattern styles. Ids are stable string literals. */
+/**
+ * Registry of bundled node pattern styles. Ids are stable string literals.
+ */
 public final class NodePatternStyles {
     private static final Map<String, NodePatternFamily> STYLES = new LinkedHashMap<>();
 
@@ -44,9 +46,12 @@ public final class NodePatternStyles {
         STYLES.put("flow", new FlowFamily());
     }
 
-    private NodePatternStyles() {}
+    private NodePatternStyles() {
+    }
 
-    /** @return the family for {@code id}, or {@code null} for an unknown id */
+    /**
+     * @return the family for {@code id}, or {@code null} for an unknown id
+     */
     public static NodePatternFamily family(String id) {
         return id == null ? null : STYLES.get(id);
     }

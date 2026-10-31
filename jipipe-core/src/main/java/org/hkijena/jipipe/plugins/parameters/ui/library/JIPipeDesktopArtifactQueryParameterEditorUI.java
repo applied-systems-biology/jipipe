@@ -16,30 +16,50 @@ package org.hkijena.jipipe.plugins.parameters.ui.library;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.artifacts.JIPipeArtifact;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
-import org.hkijena.jipipe.desktop.commons.components.pickers.JIPipeDesktopPickEnumValueDialog;
+import org.hkijena.jipipe.desktop.commons.components.selection.JIPipeDesktopRichSelectionBox;
 import org.hkijena.jipipe.plugins.parameters.api.enums.JIPipeEnumItemInfoRenderTarget;
 import org.hkijena.jipipe.plugins.parameters.api.enums.JIPipeEnumParameterItemInfo;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeArtifactQueryParameter;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeArtifactQueryParameterSettings;
-import org.hkijena.jipipe.utils.StringUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.*;
 import java.util.List;
-import java.util.Set;
 
+/**
+ * Parameter editor for {@link JIPipeArtifactQueryParameter}.
+ * <p>
+ * #1339 item 1: the flat artifact picker is now a
+ * {@link JIPipeDesktopRichSelectionBox} - the searchable "new combobox" -
+ * instead of a display button + modal enum-pick dialog. The parameter still
+ * stores the artifact's full id; the box matches it back to a
+ * {@link JIPipeArtifact} for display.
+ */
 public class JIPipeDesktopArtifactQueryParameterEditorUI extends JIPipeDesktopParameterEditorUI<JIPipeArtifactQueryParameter> {
 
-    private final JButton button = new JButton();
+    private final JIPipeDesktopRichSelectionBox selectionBox;
     private final List<JIPipeArtifact> availableArtifacts = new ArrayList<>();
 
     public JIPipeDesktopArtifactQueryParameterEditorUI(InitializationParameters parameters) {
         super(JIPipeArtifactQueryParameter.class, parameters);
+        selectionBox = new JIPipeDesktopRichSelectionBox("Select artifact", false,
+                this::options,
+                selected -> {
+                    if (selected.isEmpty()) {
+                        setParameter(new JIPipeArtifactQueryParameter(), true);
+                    } else {
+                        setParameter(new JIPipeArtifactQueryParameter(((JIPipeArtifact) selected.get(0).getValue()).getFullId()), true);
+                    }
+                });
         initialize();
         reloadArtifacts();
         reload();
+    }
+
+    private void initialize() {
+        setLayout(new BorderLayout());
+        add(selectionBox, BorderLayout.CENTER);
     }
 
     private void reloadArtifacts() {
@@ -63,25 +83,19 @@ public class JIPipeDesktopArtifactQueryParameterEditorUI extends JIPipeDesktopPa
         availableArtifacts.addAll(cachedArtifacts);
     }
 
-    private void initialize() {
-        setLayout(new BorderLayout());
-        button.setHorizontalAlignment(SwingConstants.LEFT);
-        button.setIcon(JIPipe.RESOURCES.getIcon16("actions/run-install.png"));
-        button.addActionListener(e -> {
-            selectArtifact();
-        });
-        add(button, BorderLayout.CENTER);
-    }
-
-    private void selectArtifact() {
-        Object selected = JIPipeDesktopPickEnumValueDialog.showDialog(getDesktopWorkbench().getWindow(),
-                availableArtifacts,
-                new ArtifactEnumItemInfo(),
-                null,
-                "Select artifact");
-        if (selected instanceof JIPipeArtifact) {
-            setParameter(new JIPipeArtifactQueryParameter(((JIPipeArtifact) selected).getFullId()), true);
+    private List<JIPipeDesktopRichSelectionBox.Option<?>> options() {
+        ArtifactEnumItemInfo info = new ArtifactEnumItemInfo();
+        List<JIPipeArtifact> sorted = new ArrayList<>(availableArtifacts);
+        sorted.sort(Comparator.comparing(a -> info.getLabel(a, JIPipeEnumItemInfoRenderTarget.List), String.CASE_INSENSITIVE_ORDER));
+        List<JIPipeDesktopRichSelectionBox.Option<?>> result = new ArrayList<>();
+        for (JIPipeArtifact artifact : sorted) {
+            result.add(new JIPipeDesktopRichSelectionBox.Option<>(artifact,
+                    info.getLabel(artifact, JIPipeEnumItemInfoRenderTarget.List),
+                    info.getIcon(artifact, JIPipeEnumItemInfoRenderTarget.List),
+                    null,
+                    info.getTooltip(artifact, JIPipeEnumItemInfoRenderTarget.List)));
         }
+        return result;
     }
 
     @Override
@@ -91,8 +105,18 @@ public class JIPipeDesktopArtifactQueryParameterEditorUI extends JIPipeDesktopPa
 
     @Override
     public void reload() {
-        JIPipeArtifactQueryParameter queryParameter = getParameter();
-        button.setText(StringUtils.orElse(queryParameter.getQuery(), "<None>"));
+        String query = getParameter().getQuery();
+        JIPipeArtifact match = null;
+        if (query != null && !query.isEmpty()) {
+            for (JIPipeArtifact artifact : availableArtifacts) {
+                if (artifact.getFullId().equals(query)) {
+                    match = artifact;
+                    break;
+                }
+            }
+        }
+        selectionBox.setSelectedValues(match == null ? List.of() : List.of(match));
+        selectionBox.refreshDisplay();
     }
 
     public static class ArtifactEnumItemInfo implements JIPipeEnumParameterItemInfo {

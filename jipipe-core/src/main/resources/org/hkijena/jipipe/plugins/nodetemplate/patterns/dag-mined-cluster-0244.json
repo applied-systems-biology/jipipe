@@ -1,1 +1,84 @@
-{"edges":[{"source-node":"n0","source-slot":"Filenames","target-node":"n2","target-slot":"Files"},{"source-node":"n1","source-slot":"Spots","target-node":"n3","target-slot":"Input"},{"source-node":"n2","source-slot":"Image","target-node":"n1","target-slot":"Image"},{"source-node":"n3","source-slot":"Output","target-node":"n5","target-slot":"Spots"},{"source-node":"n5","source-slot":"Tracks","target-node":"n4","target-slot":"Input"}],"nodes":{"n0":{"jipipe:graph-compartment":"6fc20080-34ac-5a2b-90f9-81b1d53e53a0","jipipe:metadata-v1":{"location/6fc20080-34ac-5a2b-90f9-81b1d53e53a0/x":0,"location/6fc20080-34ac-5a2b-90f9-81b1d53e53a0/y":0},"jipipe:node-info-id":"import-file-list"},"n1":{"jipipe:graph-compartment":"6fc20080-34ac-5a2b-90f9-81b1d53e53a0","jipipe:metadata-v1":{"location/6fc20080-34ac-5a2b-90f9-81b1d53e53a0/x":0,"location/6fc20080-34ac-5a2b-90f9-81b1d53e53a0/y":8},"jipipe:node-info-id":"trackmate-detector"},"n2":{"jipipe:graph-compartment":"6fc20080-34ac-5a2b-90f9-81b1d53e53a0","jipipe:metadata-v1":{"location/6fc20080-34ac-5a2b-90f9-81b1d53e53a0/x":0,"location/6fc20080-34ac-5a2b-90f9-81b1d53e53a0/y":4},"jipipe:node-info-id":"import-imagej-imgplus-from-file"},"n3":{"jipipe:graph-compartment":"6fc20080-34ac-5a2b-90f9-81b1d53e53a0","jipipe:metadata-v1":{"location/6fc20080-34ac-5a2b-90f9-81b1d53e53a0/x":0,"location/6fc20080-34ac-5a2b-90f9-81b1d53e53a0/y":12},"jipipe:node-info-id":"trackmate-filter-spots"},"n4":{"jipipe:graph-compartment":"6fc20080-34ac-5a2b-90f9-81b1d53e53a0","jipipe:metadata-v1":{"location/6fc20080-34ac-5a2b-90f9-81b1d53e53a0/x":0,"location/6fc20080-34ac-5a2b-90f9-81b1d53e53a0/y":20},"jipipe:node-info-id":"trackmate-filter-tracks"},"n5":{"jipipe:graph-compartment":"6fc20080-34ac-5a2b-90f9-81b1d53e53a0","jipipe:metadata-v1":{"location/6fc20080-34ac-5a2b-90f9-81b1d53e53a0/x":0,"location/6fc20080-34ac-5a2b-90f9-81b1d53e53a0/y":16},"jipipe:node-info-id":"trackmate-tracking"}}}
+{
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Filenames",
+      "target-node": "n2",
+      "target-slot": "Files"
+    },
+    {
+      "source-node": "n1",
+      "source-slot": "Spots",
+      "target-node": "n3",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n2",
+      "source-slot": "Image",
+      "target-node": "n1",
+      "target-slot": "Image"
+    },
+    {
+      "source-node": "n3",
+      "source-slot": "Output",
+      "target-node": "n5",
+      "target-slot": "Spots"
+    },
+    {
+      "source-node": "n5",
+      "source-slot": "Tracks",
+      "target-node": "n4",
+      "target-slot": "Input"
+    }
+  ],
+  "nodes": {
+    "n0": {
+      "jipipe:graph-compartment": "6fc20080-34ac-5a2b-90f9-81b1d53e53a0",
+      "jipipe:metadata-v1": {
+        "location/6fc20080-34ac-5a2b-90f9-81b1d53e53a0/x": 0,
+        "location/6fc20080-34ac-5a2b-90f9-81b1d53e53a0/y": 0
+      },
+      "jipipe:node-info-id": "import-file-list"
+    },
+    "n1": {
+      "jipipe:graph-compartment": "6fc20080-34ac-5a2b-90f9-81b1d53e53a0",
+      "jipipe:metadata-v1": {
+        "location/6fc20080-34ac-5a2b-90f9-81b1d53e53a0/x": 0,
+        "location/6fc20080-34ac-5a2b-90f9-81b1d53e53a0/y": 8
+      },
+      "jipipe:node-info-id": "trackmate-detector"
+    },
+    "n2": {
+      "jipipe:graph-compartment": "6fc20080-34ac-5a2b-90f9-81b1d53e53a0",
+      "jipipe:metadata-v1": {
+        "location/6fc20080-34ac-5a2b-90f9-81b1d53e53a0/x": 0,
+        "location/6fc20080-34ac-5a2b-90f9-81b1d53e53a0/y": 4
+      },
+      "jipipe:node-info-id": "import-imagej-imgplus-from-file"
+    },
+    "n3": {
+      "jipipe:graph-compartment": "6fc20080-34ac-5a2b-90f9-81b1d53e53a0",
+      "jipipe:metadata-v1": {
+        "location/6fc20080-34ac-5a2b-90f9-81b1d53e53a0/x": 0,
+        "location/6fc20080-34ac-5a2b-90f9-81b1d53e53a0/y": 12
+      },
+      "jipipe:node-info-id": "trackmate-filter-spots"
+    },
+    "n4": {
+      "jipipe:graph-compartment": "6fc20080-34ac-5a2b-90f9-81b1d53e53a0",
+      "jipipe:metadata-v1": {
+        "location/6fc20080-34ac-5a2b-90f9-81b1d53e53a0/x": 0,
+        "location/6fc20080-34ac-5a2b-90f9-81b1d53e53a0/y": 20
+      },
+      "jipipe:node-info-id": "trackmate-filter-tracks"
+    },
+    "n5": {
+      "jipipe:graph-compartment": "6fc20080-34ac-5a2b-90f9-81b1d53e53a0",
+      "jipipe:metadata-v1": {
+        "location/6fc20080-34ac-5a2b-90f9-81b1d53e53a0/x": 0,
+        "location/6fc20080-34ac-5a2b-90f9-81b1d53e53a0/y": 16
+      },
+      "jipipe:node-info-id": "trackmate-tracking"
+    }
+  }
+}

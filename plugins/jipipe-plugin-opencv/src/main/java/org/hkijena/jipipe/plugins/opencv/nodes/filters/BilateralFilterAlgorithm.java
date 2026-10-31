@@ -13,9 +13,6 @@
 
 package org.hkijena.jipipe.plugins.opencv.nodes.filters;
 
-import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.OpenCVFramework;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.FilteringFunction;
 import org.bytedeco.javacpp.opencv_core;
 import org.bytedeco.javacpp.opencv_imgproc;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
@@ -28,10 +25,14 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.OpenCVFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.FilteringFunction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.opencv.datatypes.OpenCvImageData;
 import org.hkijena.jipipe.plugins.opencv.utils.OpenCvBorderType;
 import org.hkijena.jipipe.plugins.opencv.utils.OpenCvImageUtils;
+
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 
 @SetJIPipeDocumentation(name = "Bilateral Filter (OpenCV)", description = "Applies the bilateral filter to an image.\n" +
         "\n" +
@@ -40,7 +41,7 @@ import org.hkijena.jipipe.plugins.opencv.utils.OpenCvImageUtils;
         "Sigma values: For simplicity, you can set the 2 sigma values to be the same. If they are small (< 10), the filter will not have much effect, whereas if they are large (> 150), they will have a very strong effect, making the image look \"cartoonish\".\n" +
         "\n" +
         "Filter size: Large filters (d > 5) are very slow, so it is recommended to use d=5 for real-time applications, and perhaps d=9 for offline applications that need heavy noise filtering.")
-@ConfigureJIPipeNode(function = FilteringFunction.class, framework = OpenCVFramework.class, spatialDimensions = { SPATIAL_2D })
+@ConfigureJIPipeNode(function = FilteringFunction.class, framework = OpenCVFramework.class, spatialDimensions = {SPATIAL_2D})
 @AddJIPipeInputSlot(value = OpenCvImageData.class, name = "Input", create = true, description = "Source 8-bit or floating-point, 1-channel or 3-channel image.")
 @AddJIPipeOutputSlot(value = OpenCvImageData.class, name = "Output", create = true)
 public class BilateralFilterAlgorithm extends JIPipeSimpleIteratingAlgorithm {

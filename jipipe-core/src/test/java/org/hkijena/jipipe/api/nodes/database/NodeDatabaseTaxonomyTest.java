@@ -18,17 +18,15 @@ import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeNodeTaxonomyTags;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeClassification;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.database.entries.CreateNewCompartmentNodeDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.entries.CreateNewNodeByInfoDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.relations.NodeRelations;
 import org.hkijena.jipipe.api.nodes.infos.JIPipeJavaNodeInfo;
-import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFamilyStepAnnotation;
-import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework;
-import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyInputProfile;
-import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension;
-import org.hkijena.jipipe.api.nodes.taxonomy.NoFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.*;
 import org.hkijena.jipipe.api.nodes.taxonomy.families.TrackMateFamily;
 import org.hkijena.jipipe.api.service.components.JIPipeNodesServiceComponent;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
@@ -38,7 +36,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import javax.swing.Icon;
+import javax.swing.*;
 import java.util.List;
 import java.util.Set;
 
@@ -63,16 +61,20 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class NodeDatabaseTaxonomyTest {
 
-    /** Stable id literal for the stub taxonomy function (see the stable-ID rule). */
+    /**
+     * Stable id literal for the stub taxonomy function (see the stable-ID rule).
+     */
     private static final String FUNCTION_ID = "node-db-taxonomy-test:function";
 
-    /** Stable id literal for the stub taxonomy framework (see the stable-ID rule). */
+    /**
+     * Stable id literal for the stub taxonomy framework (see the stable-ID rule).
+     */
     private static final String FRAMEWORK_ID = "node-db-taxonomy-test:framework";
 
     private static final String TEST_DEPENDENCY_ID = "node-db-taxonomy-test";
 
     private static final JIPipeMutableDependency TEST_DEPENDENCY =
-        new JIPipeMutableDependency(TEST_DEPENDENCY_ID, "1.0.0", "node-database-taxonomy-test");
+            new JIPipeMutableDependency(TEST_DEPENDENCY_ID, "1.0.0", "node-database-taxonomy-test");
 
     private static final String SPOT_DETECT_ID = "nodbtax:spot-detect";
     private static final String TRACK_ID = "nodbtax:track";
@@ -87,6 +89,67 @@ class NodeDatabaseTaxonomyTest {
     @BeforeAll
     static void ensureJIPipe() {
         JIPipe.ensureInstance();
+    }
+
+    /**
+     * Registers all synthetic nodes. The order matters: it determines both
+     * the {@code FamilyAssembler} step order (detect → track) and the
+     * database entry order, and it guarantees that {@code after} classes
+     * resolve through the class→node-id mapping (detect is registered
+     * before track's step is assembled).
+     */
+    private static void registerNodes() {
+        JIPipeNodesServiceComponent nodes = JIPipe.getNodes();
+        registerNode(SpotDetectNode.class, SPOT_DETECT_ID, nodes);
+        registerNode(TrackNode.class, TRACK_ID, nodes);
+        registerNode(FilterTracksNode.class, FILTER_ID, nodes);
+        registerNode(OtherFrameworkNode.class, OTHER_FRAMEWORK_ID, nodes);
+        registerNode(SharedTagOneNode.class, SHARED_TAG_1, nodes);
+        registerNode(SharedTagTwoNode.class, SHARED_TAG_2, nodes);
+        registerNode(AutoImportNode.class, AUTO_IMPORT_ID, nodes);
+        registerNode(NoTagsNode.class, NO_TAGS_ID, nodes);
+        registerNode(SameFunctionNode.class, SAME_FUNCTION_ID, nodes);
+    }
+
+    // ------------------------------------------------------------------
+    // Test cases
+    // ------------------------------------------------------------------
+
+    private static void registerNode(Class<? extends JIPipeGraphNode> nodeClass, String id, JIPipeNodesServiceComponent nodes) {
+        if (nodes.hasNodeInfoWithId(id)) {
+            nodes.unregister(id);
+        }
+        JIPipeNodeInfo info = new JIPipeJavaNodeInfo(id, nodeClass);
+        nodes.register(info, TEST_DEPENDENCY);
+    }
+
+    /**
+     * Builds a fresh database holding only the entries created here: one
+     * "create node by info" entry per synthetic node.
+     * <p>
+     * Task 26a: the alias entry for the detect node was removed (the
+     * menu-location-backed alias entry no longer exists).
+     */
+    private static JIPipeNodeDatabase databaseWithAllEntries() {
+        JIPipeNodeDatabase database = new TestNodeDatabase();
+        List<JIPipeNodeDatabaseEntry> entries = new java.util.ArrayList<>();
+        for (String id : List.of(SPOT_DETECT_ID, TRACK_ID, FILTER_ID, OTHER_FRAMEWORK_ID,
+                SHARED_TAG_1, SHARED_TAG_2, AUTO_IMPORT_ID, NO_TAGS_ID, SAME_FUNCTION_ID)) {
+            JIPipeNodeInfo info = JIPipe.getNodes().getRegisteredNodeInfos().get(id);
+            entries.add(new CreateNewNodeByInfoDatabaseEntry("create-node-by-info:" + id, info));
+        }
+        database.setEntries(entries);
+        return database;
+    }
+
+    private static CreateNewNodeByInfoDatabaseEntry byInfo(JIPipeNodeDatabase database, String nodeId) {
+        for (JIPipeNodeDatabaseEntry entry : database.getEntries()) {
+            if (entry instanceof CreateNewNodeByInfoDatabaseEntry && nodeId.equals(entry.getOriginNodeId())) {
+                return (CreateNewNodeByInfoDatabaseEntry) entry;
+            }
+        }
+        fail("no 'create node by info' entry for node id '" + nodeId + "' in the database");
+        return null;
     }
 
     @AfterEach
@@ -106,7 +169,7 @@ class NodeDatabaseTaxonomyTest {
         // the three synthetic family nodes. TrackMateFamily is a
         // production family class (kept), but the resolver's
         // id→family registry only ever learns about it through node step
-        // annotations, and no jipipe-core node carries TrackMate steps —
+        // annotations, and no jipipe-core node carries TrackMate steps -
         // so the registry entry is ours to remove, keeping the shared
         // family registry clean for other tests.
         nodes.getFamilyAssembler().unregisterStep(SPOT_DETECT_ID, TrackMateFamily.ID);
@@ -118,10 +181,6 @@ class NodeDatabaseTaxonomyTest {
         nodes.runRegistrationTasks();
     }
 
-    // ------------------------------------------------------------------
-    // Test cases
-    // ------------------------------------------------------------------
-
     /**
      * The "create node by info" entry carries the taxonomy facets of its
      * node info (the production population path).
@@ -132,12 +191,12 @@ class NodeDatabaseTaxonomyTest {
 
         JIPipeNodeInfo detectInfo = JIPipe.getNodes().getRegisteredNodeInfos().get(SPOT_DETECT_ID);
         CreateNewNodeByInfoDatabaseEntry entry =
-            new CreateNewNodeByInfoDatabaseEntry("create-node-by-info:" + SPOT_DETECT_ID, detectInfo);
+                new CreateNewNodeByInfoDatabaseEntry("create-node-by-info:" + SPOT_DETECT_ID, detectInfo);
 
         // Function facets: the primary function id is present, unconverted
         // nodes have an empty set (default on the interface)
         assertTrue(entry.getFunctionIds().contains(FUNCTION_ID),
-            "function ids must contain the primary function id, got: " + entry.getFunctionIds());
+                "function ids must contain the primary function id, got: " + entry.getFunctionIds());
         assertTrue(entry.getFunctionIds().containsAll(detectInfo.getSecondaryFunctions().stream().map(JIPipeNodeTaxonomyFunction::getId).toList()));
 
         assertEquals(FRAMEWORK_ID, entry.getFramework().getId());
@@ -147,13 +206,17 @@ class NodeDatabaseTaxonomyTest {
         assertEquals(Set.of("detect", "tm-func-tag"), entry.getTags());
     }
 
+    // ------------------------------------------------------------------
+    // Helpers
+    // ------------------------------------------------------------------
+
     /**
      * The "create node by info" entry exposes the origin node id; entries
      * that do not wrap a node type (compartment entries) expose
      * {@code null}.
      * <p>
      * Task 26a: the "create node by info alias" entry (and its
-     * menu-location-backed alias data) was removed — aliases
+     * menu-location-backed alias data) was removed - aliases
      * became secondary functions, which the base entry already carries.
      */
     @Test
@@ -162,7 +225,7 @@ class NodeDatabaseTaxonomyTest {
 
         JIPipeNodeInfo detectInfo = JIPipe.getNodes().getRegisteredNodeInfos().get(SPOT_DETECT_ID);
         CreateNewNodeByInfoDatabaseEntry base =
-            new CreateNewNodeByInfoDatabaseEntry("create-node-by-info:" + SPOT_DETECT_ID, detectInfo);
+                new CreateNewNodeByInfoDatabaseEntry("create-node-by-info:" + SPOT_DETECT_ID, detectInfo);
 
         assertEquals(SPOT_DETECT_ID, base.getOriginNodeId());
 
@@ -214,7 +277,7 @@ class NodeDatabaseTaxonomyTest {
      * returns {@code similar} ranked in tiers: same-function, then
      * same-framework, then shared-tag (≥2 shared before 1), de-duplicated and
      * capped, with auto-import entries down-ranked to the end of their tier.
-     * The workflow-neighbor nodes are NOT in {@code similar} — they are
+     * The workflow-neighbor nodes are NOT in {@code similar} - they are
      * surfaced by {@code next}/{@code previous} instead, so the three lists
      * stay disjoint.
      * <p>
@@ -225,7 +288,7 @@ class NodeDatabaseTaxonomyTest {
      * <ol>
      * <li>{@code similar(detect, 10)} =
      * [{@code sameFunction}, {@code otherFramework}, {@code autoImport},
-     * {@code sharedTagOne}, {@code sharedTagTwo}] — {@code sameFunction}
+     * {@code sharedTagOne}, {@code sharedTagTwo}] - {@code sameFunction}
      * ranks in the function tier (above the same-framework siblings, the
      * "shared functionality outranks a large shared framework" guard), then
      * the framework tier ({@code otherFramework} before the down-ranked
@@ -255,13 +318,13 @@ class NodeDatabaseTaxonomyTest {
         assertEquals(List.of(track), relations.next());
         assertEquals(List.of(), relations.previous());
         List<JIPipeNodeDatabaseEntry> expectedSimilar = List.of(
-            sameFunction, otherFramework, autoImport, sharedTag1, sharedTag2);
+                sameFunction, otherFramework, autoImport, sharedTag1, sharedTag2);
         assertEquals(expectedSimilar, relations.similar());
 
         // The family successor (track) is in `next`, NOT in `similar`
         assertTrue(relations.next().contains(track));
         assertFalse(relations.similar().contains(track),
-            "a next-neighbor must be excluded from similar (the lists stay disjoint)");
+                "a next-neighbor must be excluded from similar (the lists stay disjoint)");
         // filter is two hops away (not a direct neighbor) and qualifies for
         // no similar tier, so it is absent from all three lists
         assertFalse(relations.similar().contains(filter));
@@ -272,11 +335,11 @@ class NodeDatabaseTaxonomyTest {
         int sameFunctionIdx = relations.similar().indexOf(sameFunction);
         int otherFrameworkIdx = relations.similar().indexOf(otherFramework);
         assertTrue(sameFunctionIdx < otherFrameworkIdx,
-            "a same-function entry must rank above a same-framework entry");
+                "a same-function entry must rank above a same-framework entry");
 
         // Cap: each list is independently capped at maxPerList
         assertEquals(List.of(sameFunction, otherFramework),
-            database.relations(detect, 2).similar());
+                database.relations(detect, 2).similar());
         assertEquals(List.of(track), database.relations(detect, 2).next());
     }
 
@@ -304,46 +367,14 @@ class NodeDatabaseTaxonomyTest {
         // {@code otherFramework}, while {@code track} (the family
         // successor) still surfaces as the first `next` entry.
         List<JIPipeNodeDatabaseEntry> reordered = List.of(
-            otherFramework, detect, track);
+                otherFramework, detect, track);
         database.setEntries(reordered);
         NodeRelations second = database.relations(detect, 10);
         assertNotSame(first, second, "replacing the entries must invalidate the relations cache");
         assertEquals(List.of(otherFramework), second.similar(),
-            "the similar order must reflect the new entry set (framework tier)");
+                "the similar order must reflect the new entry set (framework tier)");
         assertEquals(List.of(track), second.next(),
-            "the next neighbor (family successor) is unaffected by the entry-set change");
-    }
-
-    // ------------------------------------------------------------------
-    // Helpers
-    // ------------------------------------------------------------------
-
-    /**
-     * Registers all synthetic nodes. The order matters: it determines both
-     * the {@code FamilyAssembler} step order (detect → track) and the
-     * database entry order, and it guarantees that {@code after} classes
-     * resolve through the class→node-id mapping (detect is registered
-     * before track's step is assembled).
-     */
-    private static void registerNodes() {
-        JIPipeNodesServiceComponent nodes = JIPipe.getNodes();
-        registerNode(SpotDetectNode.class, SPOT_DETECT_ID, nodes);
-        registerNode(TrackNode.class, TRACK_ID, nodes);
-        registerNode(FilterTracksNode.class, FILTER_ID, nodes);
-        registerNode(OtherFrameworkNode.class, OTHER_FRAMEWORK_ID, nodes);
-        registerNode(SharedTagOneNode.class, SHARED_TAG_1, nodes);
-        registerNode(SharedTagTwoNode.class, SHARED_TAG_2, nodes);
-        registerNode(AutoImportNode.class, AUTO_IMPORT_ID, nodes);
-        registerNode(NoTagsNode.class, NO_TAGS_ID, nodes);
-        registerNode(SameFunctionNode.class, SAME_FUNCTION_ID, nodes);
-    }
-
-    private static void registerNode(Class<? extends JIPipeGraphNode> nodeClass, String id, JIPipeNodesServiceComponent nodes) {
-        if (nodes.hasNodeInfoWithId(id)) {
-            nodes.unregister(id);
-        }
-        JIPipeNodeInfo info = new JIPipeJavaNodeInfo(id, nodeClass);
-        nodes.register(info, TEST_DEPENDENCY);
+                "the next neighbor (family successor) is unaffected by the entry-set change");
     }
 
     /**
@@ -365,40 +396,13 @@ class NodeDatabaseTaxonomyTest {
         }
     }
 
-    /**
-     * Builds a fresh database holding only the entries created here: one
-     * "create node by info" entry per synthetic node.
-     * <p>
-     * Task 26a: the alias entry for the detect node was removed (the
-     * menu-location-backed alias entry no longer exists).
-     */
-    private static JIPipeNodeDatabase databaseWithAllEntries() {
-        JIPipeNodeDatabase database = new TestNodeDatabase();
-        List<JIPipeNodeDatabaseEntry> entries = new java.util.ArrayList<>();
-        for (String id : List.of(SPOT_DETECT_ID, TRACK_ID, FILTER_ID, OTHER_FRAMEWORK_ID,
-            SHARED_TAG_1, SHARED_TAG_2, AUTO_IMPORT_ID, NO_TAGS_ID, SAME_FUNCTION_ID)) {
-            JIPipeNodeInfo info = JIPipe.getNodes().getRegisteredNodeInfos().get(id);
-            entries.add(new CreateNewNodeByInfoDatabaseEntry("create-node-by-info:" + id, info));
-        }
-        database.setEntries(entries);
-        return database;
-    }
-
-    private static CreateNewNodeByInfoDatabaseEntry byInfo(JIPipeNodeDatabase database, String nodeId) {
-        for (JIPipeNodeDatabaseEntry entry : database.getEntries()) {
-            if (entry instanceof CreateNewNodeByInfoDatabaseEntry && nodeId.equals(entry.getOriginNodeId())) {
-                return (CreateNewNodeByInfoDatabaseEntry) entry;
-            }
-        }
-        fail("no 'create node by info' entry for node id '" + nodeId + "' in the database");
-        return null;
-    }
-
     // ------------------------------------------------------------------
     // Stub taxonomy members
     // ------------------------------------------------------------------
 
-    /** Minimal taxonomy function carrying one tag (self-validating stub). */
+    /**
+     * Minimal taxonomy function carrying one tag (self-validating stub).
+     */
     static class StubFunction implements JIPipeNodeTaxonomyFunction {
         public StubFunction() {
         }
@@ -504,7 +508,9 @@ class NodeDatabaseTaxonomyTest {
         }
     }
 
-    /** Minimal taxonomy framework. */
+    /**
+     * Minimal taxonomy framework.
+     */
     static class StubFramework implements JIPipeNodeTaxonomyFramework {
         public StubFramework() {
         }
@@ -537,7 +543,7 @@ class NodeDatabaseTaxonomyTest {
      * {@code after = {} start step annotation.
      */
     @ConfigureJIPipeNode(function = {StubFunction.class}, framework = StubFramework.class,
-        spatialDimensions = {JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D})
+            spatialDimensions = {JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D})
     @JIPipeNodeTaxonomyTags("detect")
     @JIPipeNodeTaxonomyFamilyStepAnnotation(family = TrackMateFamily.class, label = "Detect spots")
     public static class SpotDetectNode extends JIPipeGraphNode {
@@ -564,7 +570,7 @@ class NodeDatabaseTaxonomyTest {
      */
     @ConfigureJIPipeNode(function = {StubFunction.class}, framework = StubFramework.class)
     @JIPipeNodeTaxonomyFamilyStepAnnotation(family = TrackMateFamily.class, label = "Track",
-        after = {SpotDetectNode.class})
+            after = {SpotDetectNode.class})
     public static class TrackNode extends JIPipeGraphNode {
         public TrackNode(JIPipeNodeInfo info) {
             super(info);
@@ -589,7 +595,7 @@ class NodeDatabaseTaxonomyTest {
      * Deliberately has no framework of its own and no tags.
      */
     @JIPipeNodeTaxonomyFamilyStepAnnotation(family = TrackMateFamily.class, label = "Filter tracks",
-        after = {TrackNode.class})
+            after = {TrackNode.class})
     public static class FilterTracksNode extends JIPipeGraphNode {
         public FilterTracksNode(JIPipeNodeInfo info) {
             super(info);
@@ -681,7 +687,7 @@ class NodeDatabaseTaxonomyTest {
      * tier, since it also shares both of detect's tags).
      */
     @ConfigureJIPipeNode(function = {StubNoTagFunction.class}, framework = StubFramework.class,
-        nodeClassification = JIPipeNodeClassification.AutoImport)
+            nodeClassification = JIPipeNodeClassification.AutoImport)
     @JIPipeNodeTaxonomyTags({"detect", "tm-func-tag"})
     public static class AutoImportNode extends JIPipeGraphNode {
         public AutoImportNode(JIPipeNodeInfo info) {
@@ -700,7 +706,9 @@ class NodeDatabaseTaxonomyTest {
         }
     }
 
-    /** No framework, no family step, no tags: excluded from related(). */
+    /**
+     * No framework, no family step, no tags: excluded from related().
+     */
     public static class NoTagsNode extends JIPipeGraphNode {
         public NoTagsNode(JIPipeNodeInfo info) {
             super(info);

@@ -16,26 +16,49 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class LargestProjectCompartmentsStatisticsItem implements JIPipeStatisticsItem {
-    private int maxCompartments = 0;
     private final Set<JIPipeDesktopProjectWindow> attachedWindows = new HashSet<>();
+    private int maxCompartments = 0;
     private JIPipeStatisticsServiceComponent service;
 
     @Override
-    public String getId() { return "largest-project-compartments"; }
+    public String getId() {
+        return "largest-project-compartments";
+    }
+
     @Override
-    public String getName() { return "Largest project (compartments)"; }
+    public String getName() {
+        return "Largest project (compartments)";
+    }
+
     @Override
-    public String getDescription() { return "Maximum number of compartments in any opened project"; }
+    public String getDescription() {
+        return "Maximum number of compartments in any opened project";
+    }
+
     @Override
-    public StatisticsPrivacyLevel getRequiredPrivacyLevel() { return StatisticsPrivacyLevel.Everything; }
+    public StatisticsPrivacyLevel getRequiredPrivacyLevel() {
+        return StatisticsPrivacyLevel.Everything;
+    }
+
     @Override
-    public JsonNode serialize() { return IntNode.valueOf(maxCompartments); }
+    public JsonNode serialize() {
+        return IntNode.valueOf(maxCompartments);
+    }
+
     @Override
-    public void deserialize(JsonNode node) { if (node != null && !node.isNull()) maxCompartments = node.asInt(); }
+    public void deserialize(JsonNode node) {
+        if (node != null && !node.isNull()) maxCompartments = node.asInt();
+    }
+
     @Override
-    public void reset() { maxCompartments = 0; }
+    public void reset() {
+        maxCompartments = 0;
+    }
+
     @Override
-    public boolean isTimeTracked() { return true; }
+    public boolean isTimeTracked() {
+        return true;
+    }
 
     @Override
     public void initialize(JIPipeStatisticsServiceComponent service) {
@@ -84,11 +107,17 @@ public class LargestProjectCompartmentsStatisticsItem implements JIPipeStatistic
     }
 
     @Override
-    public String getIcon32() { return "actions/window.png"; }
+    public String getIcon32() {
+        return "actions/window.png";
+    }
+
     @Override
     public org.hkijena.jipipe.desktop.commons.components.cards.JIPipeDesktopCardVariant getCardVariant() {
         return org.hkijena.jipipe.desktop.commons.components.cards.JIPipeDesktopCardVariant.Primary;
     }
+
     @Override
-    public int getDefaultColumnSpan() { return 6; }
+    public int getDefaultColumnSpan() {
+        return 6;
+    }
 }

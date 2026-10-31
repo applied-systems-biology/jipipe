@@ -46,8 +46,8 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.*;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.BitDepth;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.CustomAnalyzer;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageMeasurementUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageJMeasurementsSetParameter;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageMeasurementUtils;
 import org.hkijena.jipipe.plugins.napari.NapariOverlay;
 import org.hkijena.jipipe.plugins.parameters.library.roi.Margin;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
@@ -58,7 +58,6 @@ import org.hkijena.jipipe.utils.StringUtils;
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.io.*;
-import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.List;
@@ -1480,7 +1479,7 @@ public class Roi2dListData extends ArrayList<Roi> implements JIPipeData, NapariO
         if (addNameToTable) {
             result.addStringColumn("Name");
         }
-        if(imp == null) {
+        if (imp == null) {
             imp = createDummyImage();
         }
 

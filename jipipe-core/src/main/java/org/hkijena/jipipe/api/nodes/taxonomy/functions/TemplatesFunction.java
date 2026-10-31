@@ -17,7 +17,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
 import org.jetbrains.annotations.Nullable;
 
-import javax.swing.Icon;
+import javax.swing.*;
 import java.util.Collections;
 import java.util.Set;
 
@@ -35,12 +35,14 @@ import java.util.Set;
  * <p>
  * Note: this leaf is distinct from the synthetic top-level
  * <em>Templates</em> branch of the node browser (a UI-only scope grouping
- * with System/Global/Project children) — see the template-taxonomy
+ * with System/Global/Project children) - see the template-taxonomy
  * integration design spec, §7.2.
  */
 public final class TemplatesFunction implements JIPipeNodeTaxonomyFunction {
 
-    /** The stable registry id of this function (a string literal per the stable-ID rule). */
+    /**
+     * The stable registry id of this function (a string literal per the stable-ID rule).
+     */
     public static final String ID = "jipipe:function:templates";
 
     @Override

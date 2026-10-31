@@ -10,17 +10,17 @@ shipped DAG patterns and the 8 plumbing (comment/group) patterns are dropped.
 This script ships the DAG patterns mined/derived by the taxonomy-research
 pipeline:
 
-  * 262 MINED patterns  — dag-judgments.json (ship=true), minus the 3
+  * 262 MINED patterns  - dag-judgments.json (ship=true), minus the 3
     dag-stale-id-plan.json exclusions, with the 3 stale-id remaps applied
     (verified 2026-10-19: same-algorithm successors, slot names preserved);
-  * 160 DERIVED patterns — dag-derived.json (ship=true): 26 deterministic
+  * 160 DERIVED patterns - dag-derived.json (ship=true): 26 deterministic
     twin swaps + 134 (C)-gated what-next chains (incl. the 2026-10-19
     full-catalog re-sweep's 6 cLij2 GPU push->kernel->pull chains).
 
 Total: 422 mined/derived DAG patterns, cleaned at generation (group I/O
 wrapper nodes stripped, the {Parameters} external slot enabled where wired,
-the 6 io-interface patterns dropped by the B2 ruling — 5 mined + 1
-derived — the 4 sealed-slot patterns dropped by Ruling 13, and the 16
+the 6 io-interface patterns dropped by the B2 ruling - 5 mined + 1
+derived - the 4 sealed-slot patterns dropped by Ruling 13, and the 16
 item-3c drops: 5 JIPipe-scripting patterns, 2 loop-plumbing tunnel
 patterns, 9 degenerate multi-component harvest artifacts; 34 further
 multi-component patterns keep their largest connected component) -> 396
@@ -34,16 +34,16 @@ SugiyamaGraphAutoLayoutImplementation.rearrangeSugiyamaVertical), the derived
 compartment rekeyed to "DEFAULT". The 242 mined patterns carry valid UUID
 locations and are kept VERBATIM (the B1 slot-configuration restore,
 utils/restore_pattern_slot_configs.py, may later add slot configs + driving
-parameters to mined files — never locations/compartments).
+parameters to mined files - never locations/compartments).
 
 Outputs (all in the bundled resource dir, next to the linear patterns):
-  * one <key>.json per DAG pattern — the (A)-format graph,
+  * one <key>.json per DAG pattern - the (A)-format graph,
     jipipe:node:name STRIPPED (the node display-name policy, 2026-18:
     the shipped graph never pins a label; display falls back to the live
     registry name), locations + compartment key kept (§3.4), group I/O
     wrapper nodes stripped, the item-3c drops removed and keep-largest
     components trimmed;
-  * system-templates.json — the 24 linear entries preserved BYTE-STABLE
+  * system-templates.json - the 24 linear entries preserved BYTE-STABLE
     plus the 396 surviving "dag-..." entries (name + description +
     functionId + file). Idempotent: re-running rebuilds exactly the dag-*
     entries (the item-3c drops are keyed in dag-pattern-decisions.json).
@@ -88,7 +88,7 @@ EXPECTED_MINED_EXCLUDED = 3
 #: 0013/0029/0076/0215/0230; 0013 also has 4 unmatched split-2 nodes, dropped
 #: by B2 before the B1 hard-fail can fire) + 1 derived (derived-mech-cluster-
 #: 0029-2d). They are single-component, so the Ruling-13 drop + item 3c
-#: (which run on the 412) would pass them through — verified.
+#: (which run on the 412) would pass them through - verified.
 EXPECTED_IOINTERFACE_MINED_DROP = 5
 EXPECTED_IOINTERFACE_DERIVED_DROP = 1
 EXPECTED_IOINTERFACE_DROP = (EXPECTED_IOINTERFACE_MINED_DROP
@@ -103,7 +103,7 @@ EXPECTED_DERIVED_COLLECTED = 160
 EXPECTED_MINED_AFTER_B2 = 257
 EXPECTED_DERIVED_AFTER_B2 = 159
 #: Ruling 13: the 4 sealed-slot patterns (all mined) that cannot load with
-#: their restored slot configurations, dropped by exact key — see
+#: their restored slot configurations, dropped by exact key - see
 #: SEALED_CONFIG_DROP_KEYS below for the set and the per-key reasons.
 EXPECTED_SEALED_DROP = 4
 #: The per-family SHIPPED survivors after B2 + the Ruling-13 drop:
@@ -138,13 +138,13 @@ DAG_KEY_PREFIX = "dag-"
 #: JIPipeGraphNode's (info) constructor seals the annotation-derived slot
 #: configuration (JIPipeGraphNode.java:115-119; converter additionally
 #: sealInput()s), so the B1 restore's corpus-faithful slot configs are
-#: silently dropped on load (fromJson on a sealed config) — these patterns
+#: silently dropped on load (fromJson on a sealed config) - these patterns
 #: cannot load with restored configs: 0210's corpus input "ROI" vs the fresh
 #: "Input", 0212's I1/I2/O1 fan-in on a single-Input node (execution-
 #: invalid), 0246's "Input data"/"Output data" name drift, 0275's
 #: "Image"(ImagePlusData) vs "Images"(OMEImageData) generation drift.
 #: Consistent with the io-interface curation ruling, they are EXCLUDED from
-#: the shipped set rather than shipped broken. Keyed to EXACT pattern keys —
+#: the shipped set rather than shipped broken. Keyed to EXACT pattern keys -
 #: other patterns containing these node types may load fine and stay.
 SEALED_CONFIG_DROP_KEYS = frozenset({
     "dag-mined-cluster-0210",  # ij1-roi-split-into-connected-components
@@ -160,7 +160,7 @@ SEALED_CONFIG_DROP_KEYS = frozenset({
 PATTERN_DECISIONS = os.path.join(RESEARCH, "dag-pattern-decisions.json")
 # Dedicated script-RUNNER node ids (the JIPipe scripting system). Deliberately
 # NOT the "(Script)" filter variants (annotate-split-by-annotation-script,
-# ij1-roi-filter-statistics-script, ...) — those are annotation/filter nodes,
+# ij1-roi-filter-statistics-script, ...) - those are annotation/filter nodes,
 # and external-imagej-macro is a separate integration (user: out of scope).
 SCRIPT_RUNNER_PREFIXES = ("cpython-script", "python-script", "r-script")
 SCRIPT_RUNNER_IDS = {
@@ -205,7 +205,7 @@ def connected_components(graph):
 
 def keep_largest_component(graph, name, key):
     """Trim the graph to its largest connected component (the disconnected
-    strays are harvest noise — the mining region captured several unconnected
+    strays are harvest noise - the mining region captured several unconnected
     node groups). Deterministic: tie-break by the sorted node ids."""
     comps = connected_components(graph)
     comps.sort(key=lambda c: (len(c), tuple(sorted(
@@ -222,7 +222,7 @@ def keep_largest_component(graph, name, key):
 def apply_pattern_decisions(records, decisions):
     """Apply the item-3c policy + per-case decisions to the (cleaned) records.
     Fail-closed: a multi-component / script / tunnel pattern WITHOUT a
-    decision entry means the harvest-artifact set changed — re-review it.
+    decision entry means the harvest-artifact set changed - re-review it.
     Returns the surviving records (drops removed, keep-largest trimmed)."""
     kept = []
     dropped = 0
@@ -237,7 +237,7 @@ def apply_pattern_decisions(records, decisions):
         d = decisions.get(key)
         if d is None:
             fail(f"{name!r} ({key}): multi-component/script/tunnel pattern "
-                 f"without a decision in dag-pattern-decisions.json — the "
+                 f"without a decision in dag-pattern-decisions.json - the "
                  "harvest-artifact set changed; re-review it")
         if d["action"] == "drop":
             dropped += 1
@@ -245,7 +245,7 @@ def apply_pattern_decisions(records, decisions):
         if script or tunnel:
             fail(f"{name!r} ({key}): decision says keep, but the pattern "
                  f"contains a script-runner ({script}) or tunnel ({tunnel}) "
-                 "node — those are policy DROPS, not keep-largest")
+                 "node - those are policy DROPS, not keep-largest")
         keep_largest_component(g, name, key)
         kept.append((key, name, desc, fn, g))
     return kept, dropped
@@ -255,7 +255,7 @@ def drop_io_interface(records):
     """B2 ruling: remove any record whose graph contains a node with
     ``jipipe:node-info-id == "io-interface"`` (the 6 patterns). Fail-closed:
     the per-family drop counts must equal :data:`EXPECTED_IOINTERFACE_MINED_DROP`
-    (5) and :data:`EXPECTED_IOINTERFACE_DERIVED_DROP` (1) — a corpus re-mine
+    (5) and :data:`EXPECTED_IOINTERFACE_DERIVED_DROP` (1) - a corpus re-mine
     that changes either fails loudly. Returns (surviving records, dropped)."""
     kept = []
     mined_dropped = 0
@@ -271,12 +271,12 @@ def drop_io_interface(records):
         kept.append((key, name, desc, fn, g))
     if mined_dropped != EXPECTED_IOINTERFACE_MINED_DROP:
         fail(f"expected {EXPECTED_IOINTERFACE_MINED_DROP} mined io-interface "
-             f"patterns to drop (the B2 ruling), dropped {mined_dropped} — "
+             f"patterns to drop (the B2 ruling), dropped {mined_dropped} - "
              "the set changed; re-review")
     if derived_dropped != EXPECTED_IOINTERFACE_DERIVED_DROP:
         fail(f"expected {EXPECTED_IOINTERFACE_DERIVED_DROP} derived "
              f"io-interface patterns to drop (the B2 ruling), dropped "
-             f"{derived_dropped} — the set changed; re-review")
+             f"{derived_dropped} - the set changed; re-review")
     return kept, mined_dropped + derived_dropped
 
 
@@ -284,7 +284,7 @@ def drop_sealed_config_patterns(records):
     """Ruling 13: remove the 4 sealed-slot patterns by EXACT key (see
     :data:`SEALED_CONFIG_DROP_KEYS`). Fail-closed: every expected key must
     be present in the collected set AND the drop count must equal
-    :data:`EXPECTED_SEALED_DROP` — a corpus re-mine that renames/removes one
+    :data:`EXPECTED_SEALED_DROP` - a corpus re-mine that renames/removes one
     of the four fails loudly in either direction. Returns (surviving
     records, dropped)."""
     kept = []
@@ -299,11 +299,11 @@ def drop_sealed_config_patterns(records):
     missing = SEALED_CONFIG_DROP_KEYS - dropped_keys
     if missing:
         fail(f"Ruling 13 sealed drop: expected pattern key(s) "
-             f"{sorted(missing)} no longer in the collected set — the "
+             f"{sorted(missing)} no longer in the collected set - the "
              "corpus changed; re-review")
     if dropped != EXPECTED_SEALED_DROP:
         fail(f"expected {EXPECTED_SEALED_DROP} sealed-slot patterns to drop "
-             f"(Ruling 13), dropped {dropped} — the set changed; re-review")
+             f"(Ruling 13), dropped {dropped} - the set changed; re-review")
     return kept, dropped
 
 
@@ -327,7 +327,7 @@ def remap_graph(graph):
 
 
 def strip_name(graph):
-    """Drop the serialized node display label (jipipe:node:name) — the
+    """Drop the serialized node display label (jipipe:node:name) - the
     node display-name policy: the shipped graph tracks the live registry
     name instead of pinning a corpus-era label."""
     for node in graph["nodes"].values():
@@ -343,7 +343,7 @@ WRAPPER_IO_IDS = {"graph-wrapper:input", "graph-wrapper:output"}
 # The flattened node key of the JIPipeParameterSlotAlgorithm "External
 # parameters" toggle (verified 2026-10-19: setting it to true in the node
 # JSON creates the {Parameters} input slot on the template-deserialization
-# path — see the throwaway probe).
+# path - see the throwaway probe).
 PARAM_SLOT_FLAG = "jipipe:parameter-slot-algorithm/has-parameter-slot"
 PARAM_SLOT = "{Parameters}"
 
@@ -352,10 +352,10 @@ def clean_graph(graph):
     """Make a mined graph ship-ready (applied at generation, research
     artifacts untouched):
       (3a) strip group I/O wrapper nodes (graph-wrapper:input/output) and
-           their edges — they are leftover group plumbing that instantiates
+           their edges - they are leftover group plumbing that instantiates
            as floating interfaces;
       (3b) enable the "External" parameter slot (has-parameter-slot=true) on
-           every node that an edge targets at its {Parameters} slot — the
+           every node that an edge targets at its {Parameters} slot - the
            corpus dumper is structure-only and dropped the per-node flag, so
            the slot is never created and the wiring dangles (the parameters
            never connect).
@@ -384,14 +384,14 @@ def clean_graph(graph):
             target = graph["nodes"].get(e.get("target-node"))
             if target is None or target.get(PARAM_SLOT_FLAG) is not True:
                 fail(f"{PARAM_SLOT} edge to {e.get('target-node')} without the "
-                     f"External parameter-slot flag — the wiring would dangle")
+                     f"External parameter-slot flag - the wiring would dangle")
     return graph
 
 
 def topo_order(graph):
     """Deterministic BFS-from-sources node-key order (same rule as the
     (B) canonical text: alphabetical among ready nodes, tie-break by
-    node-info-id; a cycle-break fallback — the (A) format guarantees
+    node-info-id; a cycle-break fallback - the (A) format guarantees
     DAGs)."""
     nodes = graph["nodes"]
     indeg = {k: 0 for k in nodes}
@@ -419,7 +419,7 @@ def topo_order(graph):
 
 def wiring_line(graph, registry):
     """The plan §3.4 'Wiring:' sidecar line, BFS-ordered, LIVE registry
-    display names (never corpus labels — the shipped graph carries no
+    display names (never corpus labels - the shipped graph carries no
     jipipe:node:name)."""
     pos = {k: i for i, k in enumerate(topo_order(graph))}
     im = {k: v["jipipe:node-info-id"] for k, v in graph["nodes"].items()}
@@ -520,7 +520,7 @@ def main():
     # =159) are the counts AFTER this drop (262-5, 160-1 = 416). The 6 are
     # single-component (verified) and carry no script/tunnel/multi-component
     # trigger, so ordering them before or after the later drops is
-    # equivalent — before is what the pins require. Fail-closed: the
+    # equivalent - before is what the pins require. Fail-closed: the
     # per-family drop counts are pinned (a corpus re-mine that changes them
     # fails loudly).
     records, ioface_dropped = drop_io_interface(records)
@@ -528,16 +528,16 @@ def main():
     derived_after = sum(1 for r in records if r[0].startswith("dag-derived-"))
     if mined_after != EXPECTED_MINED_AFTER_B2:
         fail(f"expected {EXPECTED_MINED_AFTER_B2} mined patterns after the "
-             f"B2 io-interface drop, built {mined_after} — the drop set "
+             f"B2 io-interface drop, built {mined_after} - the drop set "
              "changed; re-review")
     if derived_after != EXPECTED_DERIVED_AFTER_B2:
         fail(f"expected {EXPECTED_DERIVED_AFTER_B2} derived patterns after "
-             f"the B2 io-interface drop, built {derived_after} — the drop "
+             f"the B2 io-interface drop, built {derived_after} - the drop "
              "set changed; re-review")
     if len(records) != EXPECTED_MINED_AFTER_B2 + EXPECTED_DERIVED_AFTER_B2:
         fail(f"expected {EXPECTED_MINED_AFTER_B2 + EXPECTED_DERIVED_AFTER_B2} "
              f"DAG patterns after the B2 io-interface drop, built "
-             f"{len(records)} — the drop set changed; re-review")
+             f"{len(records)} - the drop set changed; re-review")
 
     # ---- Ruling 13: drop the 4 sealed-slot patterns, by exact key ----
     # Runs AFTER B2 (on the 416), BEFORE clean_graph + item 3c: the per-
@@ -545,9 +545,9 @@ def main():
     # =159) are the counts AFTER this drop (257-4, 159-0 = 412), and item
     # 3c then removes 16 of the 412 -> 396. The 4 are single-component and
     # carry no script/tunnel/multi-component trigger (none appears in
-    # dag-pattern-decisions.json — verified), so ordering them before item
-    # 3c is equivalent — before is what the pins require. Fail-closed: the
-    # drop is keyed to the 4 exact pattern keys (NOT node type — other
+    # dag-pattern-decisions.json - verified), so ordering them before item
+    # 3c is equivalent - before is what the pins require. Fail-closed: the
+    # drop is keyed to the 4 exact pattern keys (NOT node type - other
     # patterns containing these node types may load fine and stay) and the
     # count is pinned.
     records, sealed_dropped = drop_sealed_config_patterns(records)
@@ -555,15 +555,15 @@ def main():
     derived_after = sum(1 for r in records if r[0].startswith("dag-derived-"))
     if mined_after != EXPECTED_MINED_SHIP:
         fail(f"expected {EXPECTED_MINED_SHIP} mined patterns after the "
-             f"B2 + Ruling-13 drops, built {mined_after} — the drop set "
+             f"B2 + Ruling-13 drops, built {mined_after} - the drop set "
              "changed; re-review")
     if derived_after != EXPECTED_DERIVED_SHIP:
         fail(f"expected {EXPECTED_DERIVED_SHIP} derived patterns after the "
-             f"B2 + Ruling-13 drops, built {derived_after} — the drop set "
+             f"B2 + Ruling-13 drops, built {derived_after} - the drop set "
              "changed; re-review")
     if len(records) != EXPECTED_TOTAL:  # 253 + 159 = 412
         fail(f"expected {EXPECTED_TOTAL} DAG patterns after the B2 + "
-             f"Ruling-13 drops, built {len(records)} — the drop set "
+             f"Ruling-13 drops, built {len(records)} - the drop set "
              "changed; re-review")
 
     # ---- clean every mined graph for shipping (3a + 3b) ----
@@ -580,9 +580,9 @@ def main():
     # AFTER the B2 + Ruling-13 drops (the 412 staged total) and BEFORE the
     # fail-closed guards (so (i)–(vii) validate the final 396). Fail-closed:
     # a script-runner / tunnel / multi-component pattern without a decision
-    # entry means the harvest-artifact set changed — re-review it.
-    # The item-3c policy/artifact drops remove 16 of the 412 —
-    # 5 cpython-script + 2 tunnel + 9 degenerate multi-component — leaving
+    # entry means the harvest-artifact set changed - re-review it.
+    # The item-3c policy/artifact drops remove 16 of the 412 -
+    # 5 cpython-script + 2 tunnel + 9 degenerate multi-component - leaving
     # the 396 shipped DAG patterns.
     with open(PATTERN_DECISIONS, encoding="utf-8") as fh:
         decisions = json.load(fh)["decisions"]
@@ -590,11 +590,11 @@ def main():
     EXPECTED_DAG_SHIP = EXPECTED_TOTAL - 16  # 412 - 16 = 396
     if len(records) != EXPECTED_DAG_SHIP:
         fail(f"expected {EXPECTED_DAG_SHIP} shipped DAG patterns after the "
-             f"item-3c drops ({EXPECTED_TOTAL} - 16), built {len(records)} — "
+             f"item-3c drops ({EXPECTED_TOTAL} - 16), built {len(records)} - "
              "the drop set changed; re-review dag-pattern-decisions.json")
     if len(records) != EXPECTED_TOTAL_SHIPPED_DAG:
         fail(f"expected {EXPECTED_TOTAL_SHIPPED_DAG} shipped DAG patterns "
-             f"after the B2 + item-3c drops, built {len(records)} — the drop "
+             f"after the B2 + item-3c drops, built {len(records)} - the drop "
              "set changed; re-review")
 
     # ---- location pass (the §3.4 fix): re-lay out the invalid patterns ----
@@ -609,10 +609,10 @@ def main():
     # "DEFAULT" location migration, JIPipeGraph.nodesFromJson, promotes the
     # key). The width map accounts for the FINAL (post-restore) slot counts
     # (Ruling 12 / Global-Constraints rule 5): static registry slots + the
-    # restore extras (file-local via extras_for_graph — deterministically
+    # restore extras (file-local via extras_for_graph - deterministically
     # identical to the Ruling 12 scratch+analyze, since the shipped set is
     # stable and no slot-config exists in the records at generation time).
-    # (No edge-dedupe pass — Ruling 11: it is verified harmful.)
+    # (No edge-dedupe pass - Ruling 11: it is verified harmful.)
     laid_out = 0
     for i, (key, name, _d, _f, g) in enumerate(records):
         if not all(node_location_valid(n) for n in g["nodes"].values()):
@@ -628,7 +628,7 @@ def main():
     if laid_out != expected_derived_laid:
         fail(f"location pass re-laid out {laid_out} patterns, expected "
              f"{expected_derived_laid} (every shipped derived pattern; mined "
-             "are valid and must be kept verbatim) — the mined/derived "
+             "are valid and must be kept verbatim) - the mined/derived "
              "location split changed; re-review")
 
     # ---- fail-closed guards over the 396 shipped records ----
@@ -639,7 +639,7 @@ def main():
             if nid not in registry:
                 fail(f"{name!r} ({key}): unregistered node id {nid!r}")
     # (ii) the stale ids are gone. (They are unregistered in the 2072
-    #     registry, so guard (i) above would already fail if any survived —
+    #     registry, so guard (i) above would already fail if any survived -
     #     this is the explicit, self-documenting version of the same check:
     #     a missing remap would leave an unregistered stale id behind.)
     all_ids = [n["jipipe:node-info-id"]
@@ -656,12 +656,12 @@ def main():
             fail(f"{name!r} ({key}): functionId {fn!r} is not a "
                  f"registered top-level branch")
     # (iv) §3.4 locations: every node's compartment key is resolvable
-    #     (a UUID, "DEFAULT", or empty — the legacy names like "derived"
+    #     (a UUID, "DEFAULT", or empty - the legacy names like "derived"
     #     NEVER resolve at load and fail) AND it carries
     #     location/<that key>/x AND /y, cell-plausible (0 <= x,y <= MAX_COORD;
     #     the pixel-era 1250 coords fail). The location PASS above (write
     #     loop) re-lays out every invalid pattern, so a surviving violation
-    #     here means the pass failed to produce valid coordinates — a
+    #     here means the pass failed to produce valid coordinates - a
     #     fail-closed stop, not a silent ship.
     for key, name, _d, _f, g in records:
         for k, n in g["nodes"].items():
@@ -670,7 +670,7 @@ def main():
             if not (is_uuid(comp) or comp in ("DEFAULT", "")):
                 fail(f"{name!r} ({key}): node {k} has an unresolvable "
                      f"compartment key {comp!r} (must be a UUID, \"DEFAULT\" "
-                     "or empty — legacy names fail at load)")
+                     "or empty - legacy names fail at load)")
             if not (f"location/{comp}/x" in md
                     and f"location/{comp}/y" in md):
                 fail(f"{name!r} ({key}): node {k} lacks its §3.4 location "
@@ -679,11 +679,11 @@ def main():
             y = md[f"location/{comp}/y"]
             if not (0 <= x <= MAX_COORD and 0 <= y <= MAX_COORD):
                 fail(f"{name!r} ({key}): node {k} has non-cell-plausible "
-                     f"location ({x},{y}) — must be 0..{MAX_COORD} (the "
+                     f"location ({x},{y}) - must be 0..{MAX_COORD} (the "
                      "pixel-era 1250 coords are invalid)")
     # (v) names: non-empty; no collision with the 64 linear patterns;
     #     (name, node-info-id multiset) unique across the 422 (the test's
-    #     identity key — 13 DAG names are shared by DIFFERENT graphs).
+    #     identity key - 13 DAG names are shared by DIFFERENT graphs).
     #     Separate the linear (non-dag-*) entries from any prior dag-* run so
     #     the guard is idempotent: on every run the linear set is exactly 64.
     with open(SIDECAR, encoding="utf-8") as fh:

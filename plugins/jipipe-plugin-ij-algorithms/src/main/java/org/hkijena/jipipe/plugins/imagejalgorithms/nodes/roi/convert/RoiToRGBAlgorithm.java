@@ -13,8 +13,7 @@
 
 package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.convert;
 
-import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
-import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
+import com.fasterxml.jackson.databind.JsonNode;
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.gui.ImageCanvas;
@@ -25,15 +24,17 @@ import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.rois.RoiFiltersFunction;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.rois.RoiFiltersFunction;
+import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
@@ -41,7 +42,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.*;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.BitDepth;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
-import org.hkijena.jipipe.plugins.parameters.library.primitives.FontFamilyParameter;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.JIPipeFontFamilySizeStyleParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.NumberParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalDoubleParameter;
 import org.hkijena.jipipe.utils.BufferedImageUtils;
@@ -50,11 +51,14 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.Collections;
 
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
+
 /**
  * Wrapper around {@link RoiDrawer}
  */
 @SetJIPipeDocumentation(name = "Convert 2D ROI to RGB", description = "Creates an RGB image that draws 2D ROIs as colored outlines, fills, and optional labels. It takes a 2D ROI list and an optional reference image; without a reference, it uses a blank RGB canvas. The output is an RGB image of the ROI visualization.")
-@ConfigureJIPipeNode(function = RoiFiltersFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
+@ConfigureJIPipeNode(function = RoiFiltersFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 @AddJIPipeInputSlot(value = Roi2dListData.class, name = "ROI", description = "The ROI", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", description = "The image where ROI are drawn on", create = true, optional = true)
 @AddJIPipeOutputSlot(value = ImagePlusColorRGBData.class, name = "Output", description = "The ROI visualization (RGB image)", create = true)
@@ -67,11 +71,12 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
     private OptionalColorParameter overrideLineColor = new OptionalColorParameter();
     private OptionalDoubleParameter overrideLineWidth = new OptionalDoubleParameter();
     private boolean drawOver = true;
-    private Color labelForeground = Color.WHITE;
     private OptionalColorParameter labelBackground = new OptionalColorParameter(Color.BLACK, false);
-    private int labelSize = 9;
-
-    private FontFamilyParameter labelFontFamily = new FontFamilyParameter();
+    // #1339: label font (family/size/style) - the color is a separate, optional override.
+    private JIPipeFontFamilySizeStyleParameter labelFont = defaultLabelFont();
+    // #1339: optional fixed label color. Disabled by default, so each label
+    // uses the line color of its ROI (RoiDrawer's FROM_ROI_LINE mode).
+    private OptionalColorParameter labelColor = new OptionalColorParameter(Color.WHITE, false);
     private double opacity = 1.0;
     private boolean ignoreZ = false;
     private boolean ignoreC = false;
@@ -107,16 +112,27 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
         this.overrideLineColor = new OptionalColorParameter(other.overrideLineColor);
         this.overrideLineWidth = new OptionalDoubleParameter(other.overrideLineWidth);
         this.drawOver = other.drawOver;
-        this.labelForeground = other.labelForeground;
         this.labelBackground = new OptionalColorParameter(other.labelBackground);
-        this.labelFontFamily = new FontFamilyParameter(other.labelFontFamily);
-        this.labelSize = other.labelSize;
+        this.labelFont = new JIPipeFontFamilySizeStyleParameter(other.labelFont);
+        this.labelColor = new OptionalColorParameter(other.labelColor);
         this.opacity = other.opacity;
         this.ignoreC = other.ignoreC;
         this.ignoreZ = other.ignoreZ;
         this.ignoreT = other.ignoreT;
         this.magnification = other.magnification;
         this.preferRenderViaOverlay = other.preferRenderViaOverlay;
+    }
+
+    /**
+     * The default label font, matching the legacy defaults (the old
+     * {@code RoiDrawer} label size of 9, plain style). The legacy white
+     * foreground lives in the {@code labelColor} default (disabled), not in
+     * the font.
+     */
+    private static JIPipeFontFamilySizeStyleParameter defaultLabelFont() {
+        JIPipeFontFamilySizeStyleParameter f = new JIPipeFontFamilySizeStyleParameter();
+        f.migrateFrom(JIPipeFontFamilySizeStyleParameter.defaultFamily(), 9, Font.PLAIN);
+        return f;
     }
 
     @Override
@@ -146,10 +162,14 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
         drawer.setOverrideLineColor(overrideLineColor);
         drawer.setOverrideLineWidth(overrideLineWidth);
         drawer.setDrawOver(drawOver);
-        drawer.setLabelForeground(labelForeground);
+        if (labelColor.isEnabled()) {
+            drawer.setLabelColorMode(RoiDrawer.RoiLabelColorMode.FIXED);
+            drawer.setLabelForeground(labelColor.getContent());
+        } else {
+            drawer.setLabelColorMode(RoiDrawer.RoiLabelColorMode.FROM_ROI_LINE);
+        }
         drawer.setLabelBackground(labelBackground);
-        drawer.setLabelFontFamily(labelFontFamily);
-        drawer.setLabelSize(labelSize);
+        drawer.setLabelFont(labelFont.toFont());
         drawer.setOpacity(opacity);
         drawer.setIgnoreC(ignoreC);
         drawer.setIgnoreZ(ignoreZ);
@@ -212,15 +232,26 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
         return true;
     }
 
-    @SetJIPipeDocumentation(name = "Label font family", description = "The font family of the label")
-    @JIPipeParameter("label-font-family")
-    public FontFamilyParameter getLabelFontFamily() {
-        return labelFontFamily;
+    @SetJIPipeDocumentation(name = "Label font", description = "The font (family, size and style) of the label")
+    @JIPipeParameter("label-font")
+    public JIPipeFontFamilySizeStyleParameter getLabelFont() {
+        return labelFont;
     }
 
-    @JIPipeParameter("label-font-family")
-    public void setLabelFontFamily(FontFamilyParameter labelFontFamily) {
-        this.labelFontFamily = labelFontFamily;
+    @JIPipeParameter("label-font")
+    public void setLabelFont(JIPipeFontFamilySizeStyleParameter labelFont) {
+        this.labelFont = labelFont;
+    }
+
+    @SetJIPipeDocumentation(name = "Label color", description = "If enabled, the label color is fixed to this value; otherwise each label uses the color of its ROI's line.")
+    @JIPipeParameter("label-color")
+    public OptionalColorParameter getLabelColor() {
+        return labelColor;
+    }
+
+    @JIPipeParameter("label-color")
+    public void setLabelColor(OptionalColorParameter labelColor) {
+        this.labelColor = labelColor;
     }
 
     @SetJIPipeDocumentation(name = "Draw outline", description = "If enabled, draw a white outline of the ROI")
@@ -256,17 +287,6 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
         this.drawnLabel = drawnLabel;
     }
 
-    @SetJIPipeDocumentation(name = "Label foreground", description = "The text color of the label (if enabled)")
-    @JIPipeParameter("label-foreground")
-    public Color getLabelForeground() {
-        return labelForeground;
-    }
-
-    @JIPipeParameter("label-foreground")
-    public void setLabelForeground(Color labelForeground) {
-        this.labelForeground = labelForeground;
-    }
-
     @SetJIPipeDocumentation(name = "Label background", description = "The background color of the label (if enabled)")
     @JIPipeParameter("label-background")
     public OptionalColorParameter getLabelBackground() {
@@ -276,20 +296,6 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
     @JIPipeParameter("label-background")
     public void setLabelBackground(OptionalColorParameter labelBackground) {
         this.labelBackground = labelBackground;
-    }
-
-    @SetJIPipeDocumentation(name = "Label size", description = "Font size of drawn labels")
-    @JIPipeParameter("label-size")
-    public int getLabelSize() {
-        return labelSize;
-    }
-
-    @JIPipeParameter("label-size")
-    public boolean setLabelSize(int labelSize) {
-        if (labelSize < 1)
-            return false;
-        this.labelSize = labelSize;
-        return true;
     }
 
     @SetJIPipeDocumentation(name = "Override fill color", description = "If enabled, the fill color will be overridden by this value. " +
@@ -392,5 +398,26 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
     @JIPipeParameter("prefer-render-via-overlay")
     public void setPreferRenderViaOverlay(boolean preferRenderViaOverlay) {
         this.preferRenderViaOverlay = preferRenderViaOverlay;
+    }
+
+    /**
+     * #1339: migrate the legacy split label-font parameters (family, size,
+     * foreground color) into the color-less {@code label-font} parameter plus
+     * the {@code label-color} optional parameter when a pre-migration project
+     * is loaded. This node never had a label font-style parameter, so the
+     * style defaults to plain. A legacy {@code label-foreground} becomes an
+     * <em>enabled</em> fixed label color (the old colors are preserved);
+     * without one, the color stays disabled and each label follows the line
+     * color of its ROI. Idempotent: after the next save the legacy keys are
+     * gone.
+     */
+    @Override
+    protected void onDeserialized(JsonNode node, JIPipeValidationReport issues, JIPipeNotificationInbox notifications) {
+        if (node.has("label-font-family") || node.has("label-size") || node.has("label-foreground")) {
+            this.labelFont = JIPipeFontFamilySizeStyleParameter.fromLegacyKeys(node, "label-font-family", "label-size", null, null, 9);
+            if (node.has("label-foreground")) {
+                this.labelColor = new OptionalColorParameter(JIPipeFontFamilySizeStyleParameter.legacyColor(node.get("label-foreground")), true);
+            }
+        }
     }
 }

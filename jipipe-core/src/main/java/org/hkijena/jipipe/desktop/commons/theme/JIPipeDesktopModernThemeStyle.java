@@ -126,6 +126,15 @@ public class JIPipeDesktopModernThemeStyle {
     private Color buttonToggled = new Color(0xCFCCD5);
 
     /*
+     * Parameter action buttons (UIUtils.createParameterButton)
+     */
+    @JsonProperty("parameter-action-background")
+    private Color parameterActionBackground = new Color(0xEBECF0);
+
+    @JsonProperty("parameter-action-highlighted-background")
+    private Color parameterActionHighlightedBackground = new Color(0xC4D6FB);
+
+    /*
      * Forms/fields
      */
     @JsonProperty("form-background")
@@ -255,6 +264,8 @@ public class JIPipeDesktopModernThemeStyle {
         this.buttonBackground = other.buttonBackground;
         this.buttonDisabledBackground = other.buttonDisabledBackground;
         this.buttonToggled = other.buttonToggled;
+        this.parameterActionBackground = other.parameterActionBackground;
+        this.parameterActionHighlightedBackground = other.parameterActionHighlightedBackground;
         this.formBackground = other.formBackground;
         this.formDisabledBackground = other.formDisabledBackground;
         this.formForeground = other.formForeground;
@@ -538,6 +549,22 @@ public class JIPipeDesktopModernThemeStyle {
 
     public void setButtonToggled(Color buttonToggled) {
         this.buttonToggled = buttonToggled;
+    }
+
+    public Color getParameterActionBackground() {
+        return parameterActionBackground;
+    }
+
+    public void setParameterActionBackground(Color parameterActionBackground) {
+        this.parameterActionBackground = parameterActionBackground;
+    }
+
+    public Color getParameterActionHighlightedBackground() {
+        return parameterActionHighlightedBackground;
+    }
+
+    public void setParameterActionHighlightedBackground(Color parameterActionHighlightedBackground) {
+        this.parameterActionHighlightedBackground = parameterActionHighlightedBackground;
     }
 
     public Color getFormBackground() {

@@ -1,1 +1,33 @@
-{"nodes":{"n0":{"jipipe:node-info-id":"ij1-morph-operation2d","jipipe:graph-compartment":"06cfb3c9-6d64-5e23-801b-5d53f219d078","jipipe:node:name":"Morphological operation 2D"},"n1":{"jipipe:node-info-id":"annotate-with-data","jipipe:graph-compartment":"06cfb3c9-6d64-5e23-801b-5d53f219d078","jipipe:node:name":"Annotate with data"},"n2":{"jipipe:node-info-id":"distribute-data","jipipe:graph-compartment":"06cfb3c9-6d64-5e23-801b-5d53f219d078","jipipe:node:name":"Split data randomly (percentage)"}},"edges":[{"source-node":"n0","source-slot":"Output","target-node":"n1","target-slot":"Annotation"},{"source-node":"n1","source-slot":"Output","target-node":"n2","target-slot":"Input"}]}
+{
+  "nodes": {
+    "n0": {
+      "jipipe:node-info-id": "ij1-morph-operation2d",
+      "jipipe:graph-compartment": "06cfb3c9-6d64-5e23-801b-5d53f219d078",
+      "jipipe:node:name": "Morphological operation 2D"
+    },
+    "n1": {
+      "jipipe:node-info-id": "annotate-with-data",
+      "jipipe:graph-compartment": "06cfb3c9-6d64-5e23-801b-5d53f219d078",
+      "jipipe:node:name": "Annotate with data"
+    },
+    "n2": {
+      "jipipe:node-info-id": "distribute-data",
+      "jipipe:graph-compartment": "06cfb3c9-6d64-5e23-801b-5d53f219d078",
+      "jipipe:node:name": "Split data randomly (percentage)"
+    }
+  },
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Output",
+      "target-node": "n1",
+      "target-slot": "Annotation"
+    },
+    {
+      "source-node": "n1",
+      "source-slot": "Output",
+      "target-node": "n2",
+      "target-slot": "Input"
+    }
+  ]
+}

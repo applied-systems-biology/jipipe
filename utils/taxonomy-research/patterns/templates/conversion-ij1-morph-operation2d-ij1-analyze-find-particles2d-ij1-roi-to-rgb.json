@@ -1,1 +1,33 @@
-{"nodes":{"n0":{"jipipe:node-info-id":"ij1-morph-operation2d","jipipe:graph-compartment":"136ec225-c886-52a9-9aaf-7584fae91453","jipipe:node:name":"Morphological operation 2D: Erode"},"n1":{"jipipe:node-info-id":"ij1-analyze-find-particles2d","jipipe:graph-compartment":"136ec225-c886-52a9-9aaf-7584fae91453","jipipe:node:name":"Find particles 2D"},"n2":{"jipipe:node-info-id":"ij1-roi-to-rgb","jipipe:graph-compartment":"136ec225-c886-52a9-9aaf-7584fae91453","jipipe:node:name":"Convert ROI to RGB"}},"edges":[{"source-node":"n0","source-slot":"Output","target-node":"n1","target-slot":"Mask"},{"source-node":"n1","source-slot":"ROI","target-node":"n2","target-slot":"ROI"}]}
+{
+  "nodes": {
+    "n0": {
+      "jipipe:node-info-id": "ij1-morph-operation2d",
+      "jipipe:graph-compartment": "136ec225-c886-52a9-9aaf-7584fae91453",
+      "jipipe:node:name": "Morphological operation 2D: Erode"
+    },
+    "n1": {
+      "jipipe:node-info-id": "ij1-analyze-find-particles2d",
+      "jipipe:graph-compartment": "136ec225-c886-52a9-9aaf-7584fae91453",
+      "jipipe:node:name": "Find particles 2D"
+    },
+    "n2": {
+      "jipipe:node-info-id": "ij1-roi-to-rgb",
+      "jipipe:graph-compartment": "136ec225-c886-52a9-9aaf-7584fae91453",
+      "jipipe:node:name": "Convert ROI to RGB"
+    }
+  },
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Output",
+      "target-node": "n1",
+      "target-slot": "Mask"
+    },
+    {
+      "source-node": "n1",
+      "source-slot": "ROI",
+      "target-node": "n2",
+      "target-slot": "ROI"
+    }
+  ]
+}

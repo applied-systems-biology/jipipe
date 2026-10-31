@@ -1,1 +1,42 @@
-{"edges":[{"source-node":"n0","source-slot":"Output","target-node":"n1","target-slot":"Input"},{"source-node":"n2","source-slot":"Output","target-node":"n0","target-slot":"Input"}],"nodes":{"n0":{"jipipe:graph-compartment":"b5b81458-a55b-5605-a7a3-a8fb28b91b11","jipipe:metadata-v1":{"location/b5b81458-a55b-5605-a7a3-a8fb28b91b11/x":1,"location/b5b81458-a55b-5605-a7a3-a8fb28b91b11/y":4},"jipipe:node-info-id":"table-sort"},"n1":{"jipipe:graph-compartment":"b5b81458-a55b-5605-a7a3-a8fb28b91b11","jipipe:metadata-v1":{"location/b5b81458-a55b-5605-a7a3-a8fb28b91b11/x":0,"location/b5b81458-a55b-5605-a7a3-a8fb28b91b11/y":8},"jipipe:node-info-id":"table-rename-columns-2"},"n2":{"jipipe:graph-compartment":"b5b81458-a55b-5605-a7a3-a8fb28b91b11","jipipe:metadata-v1":{"location/b5b81458-a55b-5605-a7a3-a8fb28b91b11/x":0,"location/b5b81458-a55b-5605-a7a3-a8fb28b91b11/y":0},"jipipe:node-info-id":"table-slice-rows"}}}
+{
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Output",
+      "target-node": "n1",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n2",
+      "source-slot": "Output",
+      "target-node": "n0",
+      "target-slot": "Input"
+    }
+  ],
+  "nodes": {
+    "n0": {
+      "jipipe:graph-compartment": "b5b81458-a55b-5605-a7a3-a8fb28b91b11",
+      "jipipe:metadata-v1": {
+        "location/b5b81458-a55b-5605-a7a3-a8fb28b91b11/x": 1,
+        "location/b5b81458-a55b-5605-a7a3-a8fb28b91b11/y": 4
+      },
+      "jipipe:node-info-id": "table-sort"
+    },
+    "n1": {
+      "jipipe:graph-compartment": "b5b81458-a55b-5605-a7a3-a8fb28b91b11",
+      "jipipe:metadata-v1": {
+        "location/b5b81458-a55b-5605-a7a3-a8fb28b91b11/x": 0,
+        "location/b5b81458-a55b-5605-a7a3-a8fb28b91b11/y": 8
+      },
+      "jipipe:node-info-id": "table-rename-columns-2"
+    },
+    "n2": {
+      "jipipe:graph-compartment": "b5b81458-a55b-5605-a7a3-a8fb28b91b11",
+      "jipipe:metadata-v1": {
+        "location/b5b81458-a55b-5605-a7a3-a8fb28b91b11/x": 0,
+        "location/b5b81458-a55b-5605-a7a3-a8fb28b91b11/y": 0
+      },
+      "jipipe:node-info-id": "table-slice-rows"
+    }
+  }
+}

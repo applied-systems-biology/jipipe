@@ -9,6 +9,8 @@ import com.fasterxml.jackson.databind.JsonNode;
  */
 public interface InstrumentationOperation {
     String getId();
+
     String getDescription();
+
     JsonNode execute(InstrumentationContext ctx, JsonNode params) throws Exception;
 }

@@ -35,26 +35,30 @@ Mined pattern `fan-in-ij1-roi-filter-statistics-other-2` (shape `fan-in`, suppor
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| other | `ij1-roi-filter-statistics` |
+| role  | node ids                                                                                                                                                                                      |
+|-------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| other | `ij1-roi-filter-statistics`                                                                                                                                                                   |
 | other | `cellpose-2`, `cellpose-denoise-inference-3.x`, `cellpose-inference-2.x`, `cellpose-segmentation-inference-3.x`, `ij1-analyze-find-particles2d`, `ij1-background-rollingball2d`, … (14 total) |
 
 ## Example graph
 
-Project: `AIAgentTests/02-AdvancedPipelines/Cryogels_01.jip` (relative to `/data/JIPipe`), compartment `Apply Cellpose Model 1`.
+Project: `AIAgentTests/02-AdvancedPipelines/Cryogels_01.jip` (relative to `/data/JIPipe`), compartment
+`Apply Cellpose Model 1`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `cellpose-inference-2.x` | Cellpose segmentation (2.x) |
-| n1 | `ij1-math-fast-image-arithmetics` | Fast image arithmetics 2D |
-| n2 | `ij1-roi-filter-statistics` | Filter ROI by statistics |
+| key | node id                           | name                        |
+|-----|-----------------------------------|-----------------------------|
+| n0  | `cellpose-inference-2.x`          | Cellpose segmentation (2.x) |
+| n1  | `ij1-math-fast-image-arithmetics` | Fast image arithmetics 2D   |
+| n2  | `ij1-roi-filter-statistics`       | Filter ROI by statistics    |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
+| from                      | slot     | to                       | slot        | data class                 |
+|---------------------------|----------|--------------------------|-------------|----------------------------|
 | Fast image arithmetics 2D | `Output` | Filter ROI by statistics | `Reference` | `imagej-imgplus-greyscale` |
 
 ## Template
 
-Proposed name `Filter 2D ROI by statistics fans in from 14 source ids (roles: other)`, menu path `Patterns/ROIs/Filter 2D ROI by statistics fans in from 14 source ids (roles: other)` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/fan-in-ij1-roi-filter-statistics-other-2.json`.
+Proposed name `Filter 2D ROI by statistics fans in from 14 source ids (roles: other)`, menu path
+`Patterns/ROIs/Filter 2D ROI by statistics fans in from 14 source ids (roles: other)` (proposal only - not registered).
+`data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/fan-in-ij1-roi-filter-statistics-other-2.json`.
 

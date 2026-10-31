@@ -85,7 +85,7 @@ class ExtractUnitTests(unittest.TestCase):
         self.assertEqual(m["my-id"], "MyNode")
 
     def test_annotation_node_type_registration(self):
-        # canvas-note nodes register via registerAnnotationNodeType — they
+        # canvas-note nodes register via registerAnnotationNodeType - they
         # carry @SetJIPipeDocumentation too and must be linked the same way
         txt = ('registerAnnotationNodeType("graph-annotation-image", '
                'ImageBoxGraphCanvasNote.class, ImageBoxNoteGraphNodeTool.class, icon);')

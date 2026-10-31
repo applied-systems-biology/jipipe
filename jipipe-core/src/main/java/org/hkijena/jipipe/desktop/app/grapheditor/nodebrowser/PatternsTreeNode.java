@@ -23,7 +23,7 @@ import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
  * function via {@code getFunctionIds()}, which mixed them into the same tree
  * level as the function's real nodes (the "templates spill into the
  * functions" clutter). This row groups a function's template leaves one
- * level below the function — the function level then shows only real nodes
+ * level below the function - the function level then shows only real nodes
  * plus (when it has templates) the {@code Patterns} child.
  * <p>
  * This is deliberately <em>not</em> a taxonomy function: the row is pure UI

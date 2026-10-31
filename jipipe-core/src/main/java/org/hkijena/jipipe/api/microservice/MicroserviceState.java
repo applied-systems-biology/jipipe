@@ -26,7 +26,7 @@ package org.hkijena.jipipe.api.microservice;
  *   <li>{@code Failed → Starting} (retry via start)</li>
  * </ul>
  *
- * <p>There is no {@code Busy} state — "busy" is a transient condition during
+ * <p>There is no {@code Busy} state - "busy" is a transient condition during
  * work execution tracked by the executor, not a lifecycle state. The optional
  * detail string on {@link AbstractMicroservice} can convey nuance.
  */

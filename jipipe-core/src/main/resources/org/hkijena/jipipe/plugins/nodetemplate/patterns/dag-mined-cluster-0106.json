@@ -1,1 +1,70 @@
-{"edges":[{"source-node":"n0","source-slot":"Measurements","target-node":"n4","target-slot":"Input"},{"source-node":"n1","source-slot":"Output","target-node":"n0","target-slot":"Image"},{"source-node":"n3","source-slot":"Output","target-node":"n2","target-slot":"Input"},{"source-node":"n4","source-slot":"Output","target-node":"n3","target-slot":"Input"}],"nodes":{"n0":{"jipipe:graph-compartment":"ad01114d-3ebb-50db-9aef-65b29dbfdbb4","jipipe:metadata-v1":{"location/ad01114d-3ebb-50db-9aef-65b29dbfdbb4/x":0,"location/ad01114d-3ebb-50db-9aef-65b29dbfdbb4/y":4},"jipipe:node-info-id":"ij1-analyze-image-statistics-expression"},"n1":{"jipipe:graph-compartment":"ad01114d-3ebb-50db-9aef-65b29dbfdbb4","jipipe:metadata-v1":{"location/ad01114d-3ebb-50db-9aef-65b29dbfdbb4/x":0,"location/ad01114d-3ebb-50db-9aef-65b29dbfdbb4/y":0},"jipipe:node-info-id":"ij1-morph-binary-skeletonize2d"},"n2":{"jipipe:graph-compartment":"ad01114d-3ebb-50db-9aef-65b29dbfdbb4","jipipe:metadata-v1":{"location/ad01114d-3ebb-50db-9aef-65b29dbfdbb4/x":0,"location/ad01114d-3ebb-50db-9aef-65b29dbfdbb4/y":16},"jipipe:node-info-id":"iji-export-table-as-xlsx-v2"},"n3":{"jipipe:graph-compartment":"ad01114d-3ebb-50db-9aef-65b29dbfdbb4","jipipe:metadata-v1":{"location/ad01114d-3ebb-50db-9aef-65b29dbfdbb4/x":0,"location/ad01114d-3ebb-50db-9aef-65b29dbfdbb4/y":12},"jipipe:node-info-id":"table-apply-expression-per-row-v2"},"n4":{"jipipe:graph-compartment":"ad01114d-3ebb-50db-9aef-65b29dbfdbb4","jipipe:metadata-v1":{"location/ad01114d-3ebb-50db-9aef-65b29dbfdbb4/x":0,"location/ad01114d-3ebb-50db-9aef-65b29dbfdbb4/y":8},"jipipe:node-info-id":"table-merge-tables"}}}
+{
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Measurements",
+      "target-node": "n4",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n1",
+      "source-slot": "Output",
+      "target-node": "n0",
+      "target-slot": "Image"
+    },
+    {
+      "source-node": "n3",
+      "source-slot": "Output",
+      "target-node": "n2",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n4",
+      "source-slot": "Output",
+      "target-node": "n3",
+      "target-slot": "Input"
+    }
+  ],
+  "nodes": {
+    "n0": {
+      "jipipe:graph-compartment": "ad01114d-3ebb-50db-9aef-65b29dbfdbb4",
+      "jipipe:metadata-v1": {
+        "location/ad01114d-3ebb-50db-9aef-65b29dbfdbb4/x": 0,
+        "location/ad01114d-3ebb-50db-9aef-65b29dbfdbb4/y": 4
+      },
+      "jipipe:node-info-id": "ij1-analyze-image-statistics-expression"
+    },
+    "n1": {
+      "jipipe:graph-compartment": "ad01114d-3ebb-50db-9aef-65b29dbfdbb4",
+      "jipipe:metadata-v1": {
+        "location/ad01114d-3ebb-50db-9aef-65b29dbfdbb4/x": 0,
+        "location/ad01114d-3ebb-50db-9aef-65b29dbfdbb4/y": 0
+      },
+      "jipipe:node-info-id": "ij1-morph-binary-skeletonize2d"
+    },
+    "n2": {
+      "jipipe:graph-compartment": "ad01114d-3ebb-50db-9aef-65b29dbfdbb4",
+      "jipipe:metadata-v1": {
+        "location/ad01114d-3ebb-50db-9aef-65b29dbfdbb4/x": 0,
+        "location/ad01114d-3ebb-50db-9aef-65b29dbfdbb4/y": 16
+      },
+      "jipipe:node-info-id": "iji-export-table-as-xlsx-v2"
+    },
+    "n3": {
+      "jipipe:graph-compartment": "ad01114d-3ebb-50db-9aef-65b29dbfdbb4",
+      "jipipe:metadata-v1": {
+        "location/ad01114d-3ebb-50db-9aef-65b29dbfdbb4/x": 0,
+        "location/ad01114d-3ebb-50db-9aef-65b29dbfdbb4/y": 12
+      },
+      "jipipe:node-info-id": "table-apply-expression-per-row-v2"
+    },
+    "n4": {
+      "jipipe:graph-compartment": "ad01114d-3ebb-50db-9aef-65b29dbfdbb4",
+      "jipipe:metadata-v1": {
+        "location/ad01114d-3ebb-50db-9aef-65b29dbfdbb4/x": 0,
+        "location/ad01114d-3ebb-50db-9aef-65b29dbfdbb4/y": 8
+      },
+      "jipipe:node-info-id": "table-merge-tables"
+    }
+  }
+}

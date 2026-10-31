@@ -3,11 +3,11 @@
 
 Reads ``node-description-audit-plan.json`` (the classified worklist with
 pattern frequencies) + ``node-description-audit-proposals.json`` (the applied
-before/after texts) and writes ``node-description-audit-review.md`` — the
+before/after texts) and writes ``node-description-audit-review.md`` - the
 human review table grouped wrong → missing → thin.
 
 Every table row has exactly 4 cells (node | used in | was | now), one cell per
-header column — an earlier inline version of this report glued the frequency
+header column - an earlier inline version of this report glued the frequency
 onto the node cell, shifting every row left so the "now" column rendered
 empty. That failure mode is pinned by the selftest.
 
@@ -53,7 +53,7 @@ def build_report(plan: dict, proposals: dict, today=None) -> str:
         by_bucket.setdefault(p["bucket"], []).append(p)
     L = []
     A = L.append
-    A("# Node-Description Audit — Before/After (pattern-relevant slice, decision 3)")
+    A("# Node-Description Audit - Before/After (pattern-relevant slice, decision 3)")
     A("")
     A(f"Work item 1324 · {today} · {sum(counts.get(b, 0) for b in ('wrong', 'missing', 'thin'))}"
       f" editable node types of the {len(freq)} the shipped patterns use")
@@ -68,7 +68,7 @@ def build_report(plan: dict, proposals: dict, today=None) -> str:
     A("= empty, **thin** = present but <50 chars. The "
       f"{counts.get('not_editable_here', 0)} `not_editable_here` (third-party CLIJ")
     A("kernels, runtime-dynamic plot/trackmate variants, the absent jipipe2ai plugin,")
-    A("stale IDs that get remapped in (D)) have no JIPipe annotation to fix — the")
+    A("stale IDs that get remapped in (D)) have no JIPipe annotation to fix - the")
     A("remaining ~1440 registry nodes are the follow-up pass.")
     A("")
     for bucket, header in BUCKETS:

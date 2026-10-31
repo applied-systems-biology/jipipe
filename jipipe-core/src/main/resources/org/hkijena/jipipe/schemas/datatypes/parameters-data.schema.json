@@ -7,8 +7,10 @@
   "patternProperties": {
     "^.*\\.json": {
       "$ref": "#/$defs/file",
-      "properties" : {
-        "fs:entry-type": { "$ref": "https://jipipe.org/schemas/filesystem/type-file.schema.json" }
+      "properties": {
+        "fs:entry-type": {
+          "$ref": "https://jipipe.org/schemas/filesystem/type-file.schema.json"
+        }
       }
     }
   },
@@ -20,8 +22,13 @@
         "type": "object",
         "description": "",
         "properties": {
-          "type-id": { "type": "string", "description": "The unique JIPipe parameter type ID" },
-          "value": { "description": "Serialized value of the parameter" }
+          "type-id": {
+            "type": "string",
+            "description": "The unique JIPipe parameter type ID"
+          },
+          "value": {
+            "description": "Serialized value of the parameter"
+          }
         }
       }
     }

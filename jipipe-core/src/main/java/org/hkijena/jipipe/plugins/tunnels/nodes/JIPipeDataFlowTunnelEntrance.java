@@ -35,6 +35,7 @@ public abstract class JIPipeDataFlowTunnelEntrance extends JIPipeDataFlowTunnel 
 
     /**
      * Gets the input slot where the data for the corresponding tunnel exit is pass to
+     *
      * @param outputSlotName the output slot name of the tunnel exit
      * @return the input slot
      */

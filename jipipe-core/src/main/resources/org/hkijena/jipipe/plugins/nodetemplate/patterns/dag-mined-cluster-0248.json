@@ -1,1 +1,88 @@
-{"edges":[{"source-node":"n1","source-slot":"Output","target-node":"n2","target-slot":"Input"},{"source-node":"n2","source-slot":"Output","target-node":"n0","target-slot":"Data 1"}],"nodes":{"n0":{"jipipe:graph-compartment":"ffe33fb7-3130-52f2-8042-d287511c54ad","jipipe:metadata-v1":{"location/ffe33fb7-3130-52f2-8042-d287511c54ad/x":0,"location/ffe33fb7-3130-52f2-8042-d287511c54ad/y":8},"jipipe:node-info-id":"annotation-merge","jipipe:slot-configuration":{"input":{"Data 1":{"slot-data-type":"jipipe:data","slot-type":"Input","name":"Data 1","custom-name":null,"description":"","is-virtual":false,"save-outputs":true,"is-optional":false},"Data 2":{"slot-data-type":"jipipe:data","slot-type":"Input","name":"Data 2","custom-name":null,"description":"","is-virtual":false,"save-outputs":true,"is-optional":false}},"output":{"Data 1":{"slot-data-type":"jipipe:data","slot-type":"Output","name":"Data 1","custom-name":null,"description":null,"is-virtual":false,"save-outputs":true,"is-optional":false},"Data 2":{"slot-data-type":"jipipe:data","slot-type":"Output","name":"Data 2","custom-name":null,"description":null,"is-virtual":false,"save-outputs":true,"is-optional":false}}}},"n1":{"jipipe:graph-compartment":"ffe33fb7-3130-52f2-8042-d287511c54ad","jipipe:metadata-v1":{"location/ffe33fb7-3130-52f2-8042-d287511c54ad/x":0,"location/ffe33fb7-3130-52f2-8042-d287511c54ad/y":0},"jipipe:node-info-id":"ij1-generate-zero-image"},"n2":{"jipipe:graph-compartment":"ffe33fb7-3130-52f2-8042-d287511c54ad","jipipe:metadata-v1":{"location/ffe33fb7-3130-52f2-8042-d287511c54ad/x":0,"location/ffe33fb7-3130-52f2-8042-d287511c54ad/y":4},"jipipe:node-info-id":"annotate-set-single"}}}
+{
+  "edges": [
+    {
+      "source-node": "n1",
+      "source-slot": "Output",
+      "target-node": "n2",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n2",
+      "source-slot": "Output",
+      "target-node": "n0",
+      "target-slot": "Data 1"
+    }
+  ],
+  "nodes": {
+    "n0": {
+      "jipipe:graph-compartment": "ffe33fb7-3130-52f2-8042-d287511c54ad",
+      "jipipe:metadata-v1": {
+        "location/ffe33fb7-3130-52f2-8042-d287511c54ad/x": 0,
+        "location/ffe33fb7-3130-52f2-8042-d287511c54ad/y": 8
+      },
+      "jipipe:node-info-id": "annotation-merge",
+      "jipipe:slot-configuration": {
+        "input": {
+          "Data 1": {
+            "slot-data-type": "jipipe:data",
+            "slot-type": "Input",
+            "name": "Data 1",
+            "custom-name": null,
+            "description": "",
+            "is-virtual": false,
+            "save-outputs": true,
+            "is-optional": false
+          },
+          "Data 2": {
+            "slot-data-type": "jipipe:data",
+            "slot-type": "Input",
+            "name": "Data 2",
+            "custom-name": null,
+            "description": "",
+            "is-virtual": false,
+            "save-outputs": true,
+            "is-optional": false
+          }
+        },
+        "output": {
+          "Data 1": {
+            "slot-data-type": "jipipe:data",
+            "slot-type": "Output",
+            "name": "Data 1",
+            "custom-name": null,
+            "description": null,
+            "is-virtual": false,
+            "save-outputs": true,
+            "is-optional": false
+          },
+          "Data 2": {
+            "slot-data-type": "jipipe:data",
+            "slot-type": "Output",
+            "name": "Data 2",
+            "custom-name": null,
+            "description": null,
+            "is-virtual": false,
+            "save-outputs": true,
+            "is-optional": false
+          }
+        }
+      }
+    },
+    "n1": {
+      "jipipe:graph-compartment": "ffe33fb7-3130-52f2-8042-d287511c54ad",
+      "jipipe:metadata-v1": {
+        "location/ffe33fb7-3130-52f2-8042-d287511c54ad/x": 0,
+        "location/ffe33fb7-3130-52f2-8042-d287511c54ad/y": 0
+      },
+      "jipipe:node-info-id": "ij1-generate-zero-image"
+    },
+    "n2": {
+      "jipipe:graph-compartment": "ffe33fb7-3130-52f2-8042-d287511c54ad",
+      "jipipe:metadata-v1": {
+        "location/ffe33fb7-3130-52f2-8042-d287511c54ad/x": 0,
+        "location/ffe33fb7-3130-52f2-8042-d287511c54ad/y": 4
+      },
+      "jipipe:node-info-id": "annotate-set-single"
+    }
+  }
+}

@@ -1,1 +1,84 @@
-{"edges":[{"source-node":"n0","source-slot":"Output","target-node":"n6","target-slot":"Input"},{"source-node":"n1","source-slot":"Output","target-node":"n7","target-slot":"Input"},{"source-node":"n2","source-slot":"Output","target-node":"n1","target-slot":"Input"},{"source-node":"n4","source-slot":"Output","target-node":"n0","target-slot":"Input"},{"source-node":"n6","source-slot":"Output","target-node":"n2","target-slot":"Input"}],"nodes":{"n0":{"jipipe:graph-compartment":"b60c78d2-e796-597e-81dd-8d17cddb483f","jipipe:metadata-v1":{"location/b60c78d2-e796-597e-81dd-8d17cddb483f/x":0,"location/b60c78d2-e796-597e-81dd-8d17cddb483f/y":8},"jipipe:node-info-id":"annotate-split-by-annotation"},"n1":{"jipipe:graph-compartment":"b60c78d2-e796-597e-81dd-8d17cddb483f","jipipe:metadata-v1":{"location/b60c78d2-e796-597e-81dd-8d17cddb483f/x":0,"location/b60c78d2-e796-597e-81dd-8d17cddb483f/y":20},"jipipe:node-info-id":"annotate-remove"},"n2":{"jipipe:graph-compartment":"b60c78d2-e796-597e-81dd-8d17cddb483f","jipipe:metadata-v1":{"location/b60c78d2-e796-597e-81dd-8d17cddb483f/x":0,"location/b60c78d2-e796-597e-81dd-8d17cddb483f/y":16},"jipipe:node-info-id":"annotate-remove"},"n4":{"jipipe:graph-compartment":"b60c78d2-e796-597e-81dd-8d17cddb483f","jipipe:metadata-v1":{"location/b60c78d2-e796-597e-81dd-8d17cddb483f/x":0,"location/b60c78d2-e796-597e-81dd-8d17cddb483f/y":4},"jipipe:node-info-id":"ij1-transform-tile-2d"},"n6":{"jipipe:graph-compartment":"b60c78d2-e796-597e-81dd-8d17cddb483f","jipipe:metadata-v1":{"location/b60c78d2-e796-597e-81dd-8d17cddb483f/x":0,"location/b60c78d2-e796-597e-81dd-8d17cddb483f/y":12},"jipipe:node-info-id":"annotate-remove"},"n7":{"jipipe:graph-compartment":"b60c78d2-e796-597e-81dd-8d17cddb483f","jipipe:metadata-v1":{"location/b60c78d2-e796-597e-81dd-8d17cddb483f/x":0,"location/b60c78d2-e796-597e-81dd-8d17cddb483f/y":24},"jipipe:node-info-id":"annotate-remove"}}}
+{
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Output",
+      "target-node": "n6",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n1",
+      "source-slot": "Output",
+      "target-node": "n7",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n2",
+      "source-slot": "Output",
+      "target-node": "n1",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n4",
+      "source-slot": "Output",
+      "target-node": "n0",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n6",
+      "source-slot": "Output",
+      "target-node": "n2",
+      "target-slot": "Input"
+    }
+  ],
+  "nodes": {
+    "n0": {
+      "jipipe:graph-compartment": "b60c78d2-e796-597e-81dd-8d17cddb483f",
+      "jipipe:metadata-v1": {
+        "location/b60c78d2-e796-597e-81dd-8d17cddb483f/x": 0,
+        "location/b60c78d2-e796-597e-81dd-8d17cddb483f/y": 8
+      },
+      "jipipe:node-info-id": "annotate-split-by-annotation"
+    },
+    "n1": {
+      "jipipe:graph-compartment": "b60c78d2-e796-597e-81dd-8d17cddb483f",
+      "jipipe:metadata-v1": {
+        "location/b60c78d2-e796-597e-81dd-8d17cddb483f/x": 0,
+        "location/b60c78d2-e796-597e-81dd-8d17cddb483f/y": 20
+      },
+      "jipipe:node-info-id": "annotate-remove"
+    },
+    "n2": {
+      "jipipe:graph-compartment": "b60c78d2-e796-597e-81dd-8d17cddb483f",
+      "jipipe:metadata-v1": {
+        "location/b60c78d2-e796-597e-81dd-8d17cddb483f/x": 0,
+        "location/b60c78d2-e796-597e-81dd-8d17cddb483f/y": 16
+      },
+      "jipipe:node-info-id": "annotate-remove"
+    },
+    "n4": {
+      "jipipe:graph-compartment": "b60c78d2-e796-597e-81dd-8d17cddb483f",
+      "jipipe:metadata-v1": {
+        "location/b60c78d2-e796-597e-81dd-8d17cddb483f/x": 0,
+        "location/b60c78d2-e796-597e-81dd-8d17cddb483f/y": 4
+      },
+      "jipipe:node-info-id": "ij1-transform-tile-2d"
+    },
+    "n6": {
+      "jipipe:graph-compartment": "b60c78d2-e796-597e-81dd-8d17cddb483f",
+      "jipipe:metadata-v1": {
+        "location/b60c78d2-e796-597e-81dd-8d17cddb483f/x": 0,
+        "location/b60c78d2-e796-597e-81dd-8d17cddb483f/y": 12
+      },
+      "jipipe:node-info-id": "annotate-remove"
+    },
+    "n7": {
+      "jipipe:graph-compartment": "b60c78d2-e796-597e-81dd-8d17cddb483f",
+      "jipipe:metadata-v1": {
+        "location/b60c78d2-e796-597e-81dd-8d17cddb483f/x": 0,
+        "location/b60c78d2-e796-597e-81dd-8d17cddb483f/y": 24
+      },
+      "jipipe:node-info-id": "annotate-remove"
+    }
+  }
+}

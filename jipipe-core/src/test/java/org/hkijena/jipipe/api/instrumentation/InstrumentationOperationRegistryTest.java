@@ -1,7 +1,6 @@
 package org.hkijena.jipipe.api.instrumentation;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 
@@ -42,9 +41,18 @@ class InstrumentationOperationRegistryTest {
 
     private InstrumentationOperation createOp(String id, String desc) {
         return new InstrumentationOperation() {
-            @Override public String getId() { return id; }
-            @Override public String getDescription() { return desc; }
-            @Override public JsonNode execute(InstrumentationContext ctx, JsonNode params) {
+            @Override
+            public String getId() {
+                return id;
+            }
+
+            @Override
+            public String getDescription() {
+                return desc;
+            }
+
+            @Override
+            public JsonNode execute(InstrumentationContext ctx, JsonNode params) {
                 return mapper.createObjectNode();
             }
         };

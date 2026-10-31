@@ -149,7 +149,8 @@ public class JIPipeDesktopBackupManagerPanel extends JIPipeDesktopWorkbenchPanel
                 "You can enable/disable backups and change the interval in the application settings.");
 
         propertiesPanel.addWideToForm(UIUtils.createLeftAlignedButton("Open backup directory", JIPipe.RESOURCES.getIcon16("actions/folder-open.png"), this::openBackupFolder));
-        JButton cleanupButton = UIUtils.createLeftAlignedButton("Remove old backups", JIPipe.RESOURCES.getIcon16("actions/clear-brush.png"), () -> { });
+        JButton cleanupButton = UIUtils.createLeftAlignedButton("Remove old backups", JIPipe.RESOURCES.getIcon16("actions/clear-brush.png"), () -> {
+        });
         JPopupMenu cleanupMenu = UIUtils.addPopupMenuToButton(cleanupButton);
         cleanupMenu.add(UIUtils.createMenuItem("Cleanup backups", "Applies the standard backup cleanup operation", JIPipe.RESOURCES.getIcon16("actions/clear-brush.png"), this::thinBackups));
         cleanupMenu.add(UIUtils.createMenuItem("Remove old backups (days)", "Removes backups older than a given number of days", JIPipe.RESOURCES.getIcon16("actions/clear-brush.png"), this::removeOldBackups));
@@ -265,7 +266,7 @@ public class JIPipeDesktopBackupManagerPanel extends JIPipeDesktopWorkbenchPanel
     }
 
     private void thinBackups() {
-        if(JOptionPane.showConfirmDialog(this, "Do you really want to cleanup the backups?", "Cleanup backups", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+        if (JOptionPane.showConfirmDialog(this, "Do you really want to cleanup the backups?", "Cleanup backups", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
             ThinBackupsRun run = new ThinBackupsRun(true);
             JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), this, run, JIPipe.getInstance().getProjectBackup().getQueue(), JIPipeDesktopRunExecuteUI.GlobalLogMode.Everything);
         }

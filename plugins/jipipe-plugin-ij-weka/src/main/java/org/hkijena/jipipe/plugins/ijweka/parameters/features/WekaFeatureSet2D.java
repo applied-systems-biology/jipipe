@@ -57,7 +57,6 @@ public class WekaFeatureSet2D extends JIPipeDynamicSetParameter<WekaFeature2D> {
                 WekaFeature2D.Hessian,
                 WekaFeature2D.Difference_of_gaussians,
                 WekaFeature2D.Membrane_projections));
-        setCollapsed(true);
     }
 
     public WekaFeatureSet2D(WekaFeatureSet2D other) {

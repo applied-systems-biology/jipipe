@@ -13,9 +13,6 @@
 
 package org.hkijena.jipipe.plugins.ijmultitemplatematching;
 
-import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
-import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
-
 import ij.ImagePlus;
 import ij.gui.Roi;
 import ij.gui.ShapeRoi;
@@ -31,11 +28,14 @@ import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.*;
-import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.MeasurementsFunction;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.MeasurementsFunction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.RegisterJIPipeParameterCollectionContextAction;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
@@ -65,6 +65,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
+
 @SetJIPipeDocumentation(name = "Multi-Template matching", description = "Template matching is an algorithm that can be used for object-detections in grayscale images. " +
         "To perform template matching you will need a template image that is searched in the target image.\n" +
         "The best is to simply crop a typical region of interest from a representative image.\n\n\n\n" +
@@ -79,7 +82,7 @@ import java.util.stream.Collectors;
 @AddJIPipeOutputSlot(value = Roi2dListData.class, name = "ROI", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Measurements", create = true, description = "Table containing information about the matched templates. To access the templates directly, enable 'Output matched templates'")
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Assembled templates")
-@ConfigureJIPipeNode(function = MeasurementsFunction.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
+@ConfigureJIPipeNode(function = MeasurementsFunction.class, spatialDimensions = {SPATIAL_2D, SPATIAL_3D})
 public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
 
     public static final JIPipeDataSlotInfo OUTPUT_SLOT_MATCHED_TEMPLATES = new JIPipeDataSlotInfo(JIPipeDataTable.class, JIPipeSlotType.Output, "Matched templates", "Measurements attached to the matched templates.");

@@ -48,7 +48,7 @@ public class JIPipeDesktopImageParameterEditorUI extends JIPipeDesktopParameterE
         setLayout(new BorderLayout());
         add(imagePreview, BorderLayout.WEST);
 
-        JButton importButton = new JButton("Import", JIPipe.RESOURCES.getIcon16("actions/document-import.png"));
+        JButton importButton = UIUtils.createParameterButton("Import", JIPipe.RESOURCES.getIcon16("actions/document-import.png"), null);
         JPopupMenu importMenu = UIUtils.addPopupMenuToButton(importButton);
         add(importButton, BorderLayout.CENTER);
 

@@ -36,38 +36,46 @@ template:
 
 # Pattern: Annotate with file/directory name -> Filter paths -> List files -> Annotate with file/directory name -> Import image
 
-Mined pattern `chain-5-path-to-annotation-simple-path-filter-folder-list-files-path-to-annotation-simple-import-imagej-imgplus-from-file` (shape `chain`, support 32).
+Mined pattern
+`chain-5-path-to-annotation-simple-path-filter-folder-list-files-path-to-annotation-simple-import-imagej-imgplus-from-file`
+(shape `chain`, support 32).
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| annotate | `path-to-annotation-simple` |
-| import | `path-filter` |
-| import | `folder-list-files` |
-| annotate | `path-to-annotation-simple` |
-| import | `import-imagej-imgplus-from-file` |
+| role     | node ids                          |
+|----------|-----------------------------------|
+| annotate | `path-to-annotation-simple`       |
+| import   | `path-filter`                     |
+| import   | `folder-list-files`               |
+| annotate | `path-to-annotation-simple`       |
+| import   | `import-imagej-imgplus-from-file` |
 
 ## Example graph
 
-Project: `AIAgentTests/03-ExampleWorkflows/Angela_Roots_38.jip` (relative to `/data/JIPipe`), compartment `Preprocessing`.
+Project: `AIAgentTests/03-ExampleWorkflows/Angela_Roots_38.jip` (relative to `/data/JIPipe`), compartment
+`Preprocessing`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `path-to-annotation-simple` | Add path to annotations #1 |
-| n1 | `path-filter` | Filter paths |
-| n2 | `folder-list-files` | List TIFF or JPG |
-| n3 | `path-to-annotation-simple` | Add path to annotations #2 |
-| n4 | `import-imagej-imgplus-from-file` | Import image |
+| key | node id                           | name                       |
+|-----|-----------------------------------|----------------------------|
+| n0  | `path-to-annotation-simple`       | Add path to annotations #1 |
+| n1  | `path-filter`                     | Filter paths               |
+| n2  | `folder-list-files`               | List TIFF or JPG           |
+| n3  | `path-to-annotation-simple`       | Add path to annotations #2 |
+| n4  | `import-imagej-imgplus-from-file` | Import image               |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
-| Add path to annotations #1 | `Annotated paths` | Filter paths | `Input` | `path` |
-| Filter paths | `Output` | List TIFF or JPG | `Folders` | `path` |
-| List TIFF or JPG | `Files` | Add path to annotations #2 | `Paths` | `file` |
-| Add path to annotations #2 | `Annotated paths` | Import image | `Files` | `path` |
+| from                       | slot              | to                         | slot      | data class |
+|----------------------------|-------------------|----------------------------|-----------|------------|
+| Add path to annotations #1 | `Annotated paths` | Filter paths               | `Input`   | `path`     |
+| Filter paths               | `Output`          | List TIFF or JPG           | `Folders` | `path`     |
+| List TIFF or JPG           | `Files`           | Add path to annotations #2 | `Paths`   | `file`     |
+| Add path to annotations #2 | `Annotated paths` | Import image               | `Files`   | `path`     |
 
 ## Template
 
-Proposed name `Annotate with file/directory name -> Filter paths -> List files -> Annotate with file/directory name -> Import image`, menu path `Patterns/Annotations/Annotate with file/directory name -> Filter paths -> List files -> Annotate with file/directory name -> Import image` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/chain-5-path-to-annotation-simple-path-filter-folder-list-files-path-to-annotation-simple-import-imagej-imgplus-from-file.json`.
+Proposed name
+`Annotate with file/directory name -> Filter paths -> List files -> Annotate with file/directory name -> Import image`,
+menu path
+`Patterns/Annotations/Annotate with file/directory name -> Filter paths -> List files -> Annotate with file/directory name -> Import image`
+(proposal only - not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/chain-5-path-to-annotation-simple-path-filter-folder-list-files-path-to-annotation-simple-import-imagej-imgplus-from-file.json`.
 

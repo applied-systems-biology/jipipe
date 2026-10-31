@@ -293,7 +293,7 @@ public class JIPipeDesktop {
     }
 
     private static Path addExtensionIfNeeded(FileNameExtensionFilter[] extensionFilters, Path path) {
-        if(path == null) {
+        if (path == null) {
             return null;
         }
         if (JIPipeFileChooserApplicationSettings.getInstance().isAddFileExtension() &&
@@ -1103,16 +1103,17 @@ public class JIPipeDesktop {
 
     /**
      * Registers a path or URL to a *.jip, *.jipx, *.crate.zip or https:// URL as next operation to open when the project window is opened the first time
+     *
      * @param pathOrUrl path to an existing *.jip, *.jipx or *.crate.zip file or a URL
      */
     public static void tryAddOpenProjectOnLoad(String pathOrUrl) {
-        if(StringUtils.isNullOrEmpty(pathOrUrl)) {
+        if (StringUtils.isNullOrEmpty(pathOrUrl)) {
             return;
         }
         try {
             Path path = Paths.get(pathOrUrl);
             String fileName = path.getFileName().toString();
-            if(Files.isRegularFile(path) && (fileName.endsWith(".jip") || PathUtils.isJipxPath(path) || fileName.endsWith(".crate.zip"))) {
+            if (Files.isRegularFile(path) && (fileName.endsWith(".jip") || PathUtils.isJipxPath(path) || fileName.endsWith(".crate.zip"))) {
                 OPEN_ON_LOAD_FILE = path;
             }
         } catch (Exception ignored) {
@@ -1120,41 +1121,36 @@ public class JIPipeDesktop {
         try {
             URL url = new URL(pathOrUrl);
             OPEN_ON_LOAD_URL = url;
-        }
-        catch (Exception ignored) {
+        } catch (Exception ignored) {
         }
     }
 
     public static void doOpenProjectOnLoad(JIPipeDesktopProjectWindow window) {
-        if(OPEN_ON_LOAD_URL != null) {
+        if (OPEN_ON_LOAD_URL != null) {
             URL url = OPEN_ON_LOAD_URL;
             OPEN_ON_LOAD_URL = null;
             OPEN_ON_LOAD_FILE = null;
             window.importURL(url.toString(), true);
-        }
-        else if(OPEN_ON_LOAD_FILE != null) {
+        } else if (OPEN_ON_LOAD_FILE != null) {
             Path file = OPEN_ON_LOAD_FILE;
             OPEN_ON_LOAD_FILE = null;
             OPEN_ON_LOAD_URL = null;
-            if(Files.isRegularFile(file)) {
+            if (Files.isRegularFile(file)) {
                 String fileName = file.getFileName().toString();
-                if(fileName.endsWith(".jip")) {
+                if (fileName.endsWith(".jip")) {
                     window.openProject(file, true);
                 }
-                // .jipx is a ZIP container — this check MUST precede the
+                // .jipx is a ZIP container - this check MUST precede the
                 // ZIP-magic check below (which would misroute it to the
                 // RO-Crate import)
-                else if(PathUtils.isJipxPath(file)) {
+                else if (PathUtils.isJipxPath(file)) {
                     window.openProject(file, true);
-                }
-                else if(fileName.endsWith(".crate.zip")) {
+                } else if (fileName.endsWith(".crate.zip")) {
                     window.importROCrate(file, true, true, true);
-                }
-                else if(ArchiveUtils.isZipFile(file)) {
+                } else if (ArchiveUtils.isZipFile(file)) {
                     // Magic bytes check for zip
                     window.importROCrate(file, true, true, true);
-                }
-                else {
+                } else {
                     // If not a ZIP, try to open as JSON
                     window.openProject(file, true);
                 }

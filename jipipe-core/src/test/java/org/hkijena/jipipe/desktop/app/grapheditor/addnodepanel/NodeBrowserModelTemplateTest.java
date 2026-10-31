@@ -50,15 +50,17 @@ import static org.assertj.core.api.Assertions.assertThat;
  * This class boots the {@link JIPipe} instance so that real template
  * entries (built from a registered stub node) and the live
  * {@link FunctionRegistry} (for {@link NodeBrowserModel#descendantIds}) can
- * be exercised. It never touches Swing — no tree, no list.
+ * be exercised. It never touches Swing - no tree, no list.
  */
 class NodeBrowserModelTemplateTest {
 
     private static final String STUB_ID = "template-browser-model-test:stub-node";
-    /** A real, registry-registered branch the stub function ids can be filed under. */
+    /**
+     * A real, registry-registered branch the stub function ids can be filed under.
+     */
     private static final String IMAGES_FN_ID = "jipipe:function:images";
     private static final JIPipeMutableDependency TEST_DEPENDENCY =
-        new JIPipeMutableDependency("template-browser-model-test", "1.0.0", "template-browser-model-test");
+            new JIPipeMutableDependency("template-browser-model-test", "1.0.0", "template-browser-model-test");
 
     @BeforeAll
     static void boot() {
@@ -146,7 +148,7 @@ class NodeBrowserModelTemplateTest {
     void rootSelectionListsEachTemplateOnce() {
         NodeBrowserModel model = new NodeBrowserModel();
         // Root (no scope, empty path): every entry passes the selection
-        // predicate — no scope, no function filter. This guards the
+        // predicate - no scope, no function filter. This guards the
         // predicate against double-counting a template (it is listed once;
         // de-dup is inherent to the single query-driven list).
         CreateNewNodesByTemplateDatabaseEntry a = entry(1, IMAGES_FN_ID, TemplateScope.Global);
@@ -155,7 +157,7 @@ class NodeBrowserModelTemplateTest {
         assertThat(model.getSelectedScope()).isNull();
         assertThat(model.getTreePath()).isEmpty();
         // Both dually-placed templates pass the root selection (each exactly
-        // once — no scope/function dimension to count them a second time).
+        // once - no scope/function dimension to count them a second time).
         assertThat(model.matchesSelection(a, null)).isTrue();
         assertThat(model.matchesSelection(b, null)).isTrue();
     }

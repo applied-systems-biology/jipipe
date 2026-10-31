@@ -260,7 +260,7 @@ public final class JIPipeArtifactsServiceComponent extends JIPipeServiceComponen
         try {
             for (Path repositoryPath : Arrays.asList(localSystemRepositoryPath, localUserRepositoryPath)) {
                 progressInfo.log("Checking local repository @ " + repositoryPath);
-                if(!Files.isDirectory(repositoryPath)) {
+                if (!Files.isDirectory(repositoryPath)) {
                     progressInfo.warn("Local repository at " + repositoryPath + " is not a directory. Skipping.");
                     continue;
                 }

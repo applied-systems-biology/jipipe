@@ -8,25 +8,44 @@ import org.hkijena.jipipe.plugins.statistics.StatisticsPrivacyLevel;
 
 public class RecentProjectsCountStatisticsItem implements JIPipeStatisticsItem {
     @Override
-    public String getId() { return "recent-projects-count"; }
+    public String getId() {
+        return "recent-projects-count";
+    }
+
     @Override
-    public String getName() { return "Recent projects"; }
+    public String getName() {
+        return "Recent projects";
+    }
+
     @Override
-    public String getDescription() { return "Number of projects in the recent projects list"; }
+    public String getDescription() {
+        return "Number of projects in the recent projects list";
+    }
+
     @Override
-    public StatisticsPrivacyLevel getRequiredPrivacyLevel() { return StatisticsPrivacyLevel.RoughProjects; }
+    public StatisticsPrivacyLevel getRequiredPrivacyLevel() {
+        return StatisticsPrivacyLevel.RoughProjects;
+    }
+
     @Override
     public JsonNode serialize() {
         int count = JIPipe.getInstance().getRecentProjects().getRecentProjects().size();
         return IntNode.valueOf(count);
     }
-    @Override
-    public void deserialize(JsonNode node) { }
-    @Override
-    public void reset() { }
 
     @Override
-    public String getIcon32() { return "actions/document-open-folder.png"; }
+    public void deserialize(JsonNode node) {
+    }
+
+    @Override
+    public void reset() {
+    }
+
+    @Override
+    public String getIcon32() {
+        return "actions/document-open-folder.png";
+    }
+
     @Override
     public org.hkijena.jipipe.desktop.commons.components.cards.JIPipeDesktopCardVariant getCardVariant() {
         return org.hkijena.jipipe.desktop.commons.components.cards.JIPipeDesktopCardVariant.Secondary;

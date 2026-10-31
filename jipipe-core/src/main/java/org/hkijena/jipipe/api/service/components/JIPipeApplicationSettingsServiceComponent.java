@@ -33,8 +33,8 @@ import org.hkijena.jipipe.api.settings.SettingsFileStore;
 import org.hkijena.jipipe.api.settings.SettingsKind;
 import org.hkijena.jipipe.api.settings.SettingsScope;
 import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.json.JIPipePathMetadataStore;
+import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

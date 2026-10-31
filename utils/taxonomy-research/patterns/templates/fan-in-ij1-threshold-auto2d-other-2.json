@@ -1,1 +1,27 @@
-{"nodes":{"n0":{"jipipe:node-info-id":"filaments-convert-to-mask","jipipe:graph-compartment":"c2a51425-7b77-54cc-9d42-c49f390fd601","jipipe:node:name":"Convert filaments to mask"},"n1":{"jipipe:node-info-id":"cellpose-inference-2.x","jipipe:graph-compartment":"c2a51425-7b77-54cc-9d42-c49f390fd601","jipipe:node:name":"Cellpose prediction (2.x)"},"n2":{"jipipe:node-info-id":"ij1-threshold-auto2d","jipipe:graph-compartment":"c2a51425-7b77-54cc-9d42-c49f390fd601","jipipe:node:name":"Auto threshold 2D"}},"edges":[{"source-node":"n1","source-slot":"Probabilities","target-node":"n2","target-slot":"Input"}]}
+{
+  "nodes": {
+    "n0": {
+      "jipipe:node-info-id": "filaments-convert-to-mask",
+      "jipipe:graph-compartment": "c2a51425-7b77-54cc-9d42-c49f390fd601",
+      "jipipe:node:name": "Convert filaments to mask"
+    },
+    "n1": {
+      "jipipe:node-info-id": "cellpose-inference-2.x",
+      "jipipe:graph-compartment": "c2a51425-7b77-54cc-9d42-c49f390fd601",
+      "jipipe:node:name": "Cellpose prediction (2.x)"
+    },
+    "n2": {
+      "jipipe:node-info-id": "ij1-threshold-auto2d",
+      "jipipe:graph-compartment": "c2a51425-7b77-54cc-9d42-c49f390fd601",
+      "jipipe:node:name": "Auto threshold 2D"
+    }
+  },
+  "edges": [
+    {
+      "source-node": "n1",
+      "source-slot": "Probabilities",
+      "target-node": "n2",
+      "target-slot": "Input"
+    }
+  ]
+}

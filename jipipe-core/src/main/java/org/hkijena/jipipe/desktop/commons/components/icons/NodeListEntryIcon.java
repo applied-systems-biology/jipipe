@@ -29,7 +29,7 @@ import java.awt.image.BufferedImage;
  * carrying the node's framework signature pattern, with the node icon drawn in
  * the upper region.
  * <p>
- * Width is {@link #WIDTH} (22px — a little more than the 16px node icons, so
+ * Width is {@link #WIDTH} (22px - a little more than the 16px node icons, so
  * the icon sits with spacing in the bar); the height is set by the caller
  * (the row height: ~50px in the node browser, the full card height in the
  * find-node dialog). The framework pattern is painted at node scale (a crop of
@@ -40,11 +40,17 @@ import java.awt.image.BufferedImage;
  * scaled DOWN (aspect-preserving) only if it is larger than the region.
  */
 public class NodeListEntryIcon implements Icon {
-    /** The bar width (a little more than the 16px node icons). */
+    /**
+     * The bar width (a little more than the 16px node icons).
+     */
     public static final int WIDTH = 22;
-    /** The upper region reserved for the node icon (its height). */
+    /**
+     * The upper region reserved for the node icon (its height).
+     */
     private static final int ICON_REGION = 22;
-    /** The top margin above the node icon region. */
+    /**
+     * The top margin above the node icon region.
+     */
     private static final int TOP_MARGIN = 3;
     private static final int ARC = 6;
 
@@ -60,12 +66,12 @@ public class NodeListEntryIcon implements Icon {
         this.height = height;
     }
 
-    public void setFillColor(Color c) {
-        this.background = c;
-    }
-
     public Color getFillColor() {
         return background;
+    }
+
+    public void setFillColor(Color c) {
+        this.background = c;
     }
 
     /**
@@ -115,8 +121,8 @@ public class NodeListEntryIcon implements Icon {
         // area), so the rounded corners land on the true top/bottom edges.
         // The host (a JLabel sized by GridBag to the row/card height) can be
         // TALLER or SHORTER than this icon's preferred height. If we drew a
-        // fixed-height bar, a shorter label would center-crop it — slicing off
-        // the rounded corners and leaving square edges — so we adapt to the
+        // fixed-height bar, a shorter label would center-crop it - slicing off
+        // the rounded corners and leaving square edges - so we adapt to the
         // real size instead.
         int ox = x;
         int oy = y;
@@ -142,7 +148,7 @@ public class NodeListEntryIcon implements Icon {
             g2d.setColor(background);
             g2d.fill(bar);
 
-            // Framework signature pattern over the fill, clipped to the bar —
+            // Framework signature pattern over the fill, clipped to the bar -
             // same gating as a canvas node.
             JIPipeDesktopModernThemeStyle style = ThemeUtils.getCurrentStyle();
             if (isPatternEnabled(style)) {

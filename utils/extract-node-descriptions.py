@@ -2,7 +2,7 @@
 """Extract node descriptions from the JIPipe source tree (research/offline tool).
 
 The mining pipeline's ``registry.json`` is structure-only (node id, name,
-functions, slots) — it carries **no** node descriptions, which is why the step
+functions, slots) - it carries **no** node descriptions, which is why the step
 (C) LLM had to infer what each node does from its short display name alone
 (the jargon names, unqualified ROI names and thin descriptions the user
 flagged in the (C) review). This script recovers the real descriptions from
@@ -18,12 +18,12 @@ Linking a node id to its class:
 * the class's ``@SetJIPipeDocumentation`` (class-level, the first one in the
   file) holds the ``description``. Java string-literal concatenations that span
   lines are joined; the common escapes (``\\"`` ``\\\\`` ``\\n`` ``\\t``) are
-  decoded (``\\n``/``\\t`` become spaces — descriptions are prose, not
+  decoded (``\\n``/``\\t`` become spaces - descriptions are prose, not
   line-broken, so a single logical line is what the pipeline and the prompt
   want).
 
 Output: a JSON map ``{node-info-id: description}`` (sorted, the nodes that
-have a description; ~300 of the 326 node types the shipped patterns use —
+have a description; ~300 of the 326 node types the shipped patterns use -
 the ~26 without are ``clij:plugin:*`` / ``jipipe2ai-*`` / auto-registered
 nodes, which fall back to the node name in the pipeline).
 
@@ -119,7 +119,7 @@ def _read_concat_literals(s: str) -> str:
 
 def extract_description(text: str):
     """The first ``@SetJIPipeDocumentation`` description in ``text``, or None
-    if absent/empty. Anchored on the ``@`` usage — the string also appears in
+    if absent/empty. Anchored on the ``@`` usage - the string also appears in
     the import line, and matching that (then finding the NEXT ``(``, which may
     sit in a javadoc) silently returns the wrong block or None."""
     m = re.search(r"@SetJIPipeDocumentation\s*\(", text)

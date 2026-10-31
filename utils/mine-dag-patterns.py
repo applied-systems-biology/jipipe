@@ -4,24 +4,24 @@
 
 Part of the DAG-aware pattern mining plan
 (``docs/superpowers/plans/2026-10-16-dag-pattern-mining.md``). This is the
-**deterministic harvest stage — no AI**. It walks the corpus's real ``.jip``
+**deterministic harvest stage - no AI**. It walks the corpus's real ``.jip``
 projects and emits the groupings HUMANS already authored as candidate
 patterns:
 
-* **signal 1 — canvas-note sections** (``graph-annotation-text-box`` /
+* **signal 1 - canvas-note sections** (``graph-annotation-text-box`` /
   ``graph-annotation-group-box``): the rect-contained real nodes form the
   candidate; title = the note's ``text-title``.
-* **signal 2 — group nodes** (``node-group``): the group's embedded
+* **signal 2 - group nodes** (``node-group``): the group's embedded
   ``contents`` subgraph is the candidate verbatim; title = the group's
   ``jipipe:node:name`` (the default name "Group" is not a title).
-* **signal 3 — named compartments** (``jipipe:project-compartment``): the
+* **signal 3 - named compartments** (``jipipe:project-compartment``): the
   UUID-sharing real nodes form the candidate; title = the compartment's
-  display name (a small stop-list rejects generic names — the JEV gate in
+  display name (a small stop-list rejects generic names - the JEV gate in
   step (C) remains the real authority).
-* **signal 3b — geometric clusters** (unannotated): related nodes are placed
+* **signal 3b - geometric clusters** (unannotated): related nodes are placed
   together even without a note (plan v2 addition, commit (72)). Single-linkage
   clustering over grid coordinates with an automatic gap cut (the largest
-  ratio between consecutive merge distances). No title — these route
+  ratio between consecutive merge distances). No title - these route
   through the merge stage (title transfer) and the JEV namer in step (C);
   a candidate that ends up nameless there is rejected there.
 
@@ -41,7 +41,7 @@ drop time). Candidates whose source layout is unusable (most group
 ``contents`` carry no or only legacy locations) fall back to a compact
 longest-path layering computed at mine time.
 
-Output: ``utils/taxonomy-research/dag-candidates.json`` —
+Output: ``utils/taxonomy-research/dag-candidates.json`` -
 
 .. code-block:: json
 
@@ -108,7 +108,7 @@ PLUMBING_IDS = {
 }
 
 # Compartment sinks are rejected ANYWHERE in a candidate (even inside a
-# group's contents) — they are workflow-specific plumbing (the (69) rule).
+# group's contents) - they are workflow-specific plumbing (the (69) rule).
 SINK_IDS = {"jipipe:compartment-output", "jipipe:compartment-input"}
 
 # Generic, non-derivable compartment names (ruling A6): harvesting them would
@@ -161,13 +161,13 @@ def node_grid_location(node: dict, compartment: str):
     Resolution order (mirrors ``JIPipeGraphNode.fromJson`` +
     ``getNodeUILocationWithin``):
 
-    1. modern ``jipipe:metadata-v1`` ``location/<compartment>/x|y`` — the
+    1. modern ``jipipe:metadata-v1`` ``location/<compartment>/x|y`` - the
        canonical format (the legacy format is migrated INTO this store at
        load time);
     2. legacy ``jipipe:ui-grid-location``: the entry whose compartment key
        equals ``compartment`` ("" for root) OR, if the node has exactly one
        compartment key and it is not the requested one, that single entry
-       (stale multi-compartment keys are NEVER used — the modern store's
+       (stale multi-compartment keys are NEVER used - the modern store's
        own keys win and they are compartment-qualified);
     3. the legacy ``""`` entry as a last resort.
 
@@ -241,7 +241,7 @@ def fallback_layout(graph: dict):
     """Compute grid locations for a candidate whose source layout is unusable:
     column = longest-path layer (x), row = position within the layer, top to
     bottom in topological (Kahn) order with ~2 rows of headroom per node (y).
-    Returns {node key: (x, y)} — already origin-anchored."""
+    Returns {node key: (x, y)} - already origin-anchored."""
     layer = topo_layering(graph)
     # Kahn order with alphabetical tie-break: stable row order
     nodes = graph["nodes"]
@@ -375,7 +375,7 @@ def _linkage_with_dists(items):
 def functional_signature(graph: dict):
     """The signature used for dedup (ruling A5): the sorted node-info ids +
     the sorted (srcInfoId, srcSlot, tgtInfoId, tgtSlot) edge tuples. Instance
-    keys, compartment UUIDs, node labels and locations are ignored — the
+    keys, compartment UUIDs, node labels and locations are ignored - the
     same rule class as the (69) generator's dedup, so a candidate that is
     functionally one of the shipped 64 is a duplicate whether or not it was
     mined with different labels/layout."""
@@ -425,14 +425,14 @@ def build_candidate_graph(member_nodes, member_edges, source_locations,
     """Assemble a candidate's minimal ``JIPipeGraph`` (ruling A3) with its
     locations (plan §3.4).
 
-    ``member_nodes``: {original key: node dict} — already plumbing-free.
+    ``member_nodes``: {original key: node dict} - already plumbing-free.
     ``member_edges``: edges with both endpoints in the member set.
     ``source_locations``: {original key: (x, y)} as resolved from the source
         project (only members, only nodes that HAVE a location).
-    ``require_source_layout``: when True (section/compartment/cluster —
+    ``require_source_layout``: when True (section/compartment/cluster -
         induced from the canvas), a candidate is layout-"source" iff EVERY
         member has a resolved location; otherwise it falls back. When False
-        (group contents — an embedded subgraph), even partial source
+        (group contents - an embedded subgraph), even partial source
         locations are not usable (inner nodes sit in the group's local
         coordinate space, not the canvas) → fallback unless every member
         has one, in which case "source" (normalized like the canvas case).
@@ -548,7 +548,7 @@ def harvest_project(rel_path, project, stop_list=COMPARTMENT_STOP_LIST):
     Returns (candidates, claimed) where each candidate is a dict WITHOUT the
     candidateId/signature/support (assigned corpus-wide) and ``claimed`` is
     the set of (compartment, node key) pairs already used by a TITLED
-    candidate — geometric clustering only fills the uncovered gaps (ruling
+    candidate - geometric clustering only fills the uncovered gaps (ruling
     A2: "where notes exist, the note rectangles are the ground truth and
     geometric clustering only fills the uncovered gaps").
     """
@@ -597,7 +597,7 @@ def harvest_project(rel_path, project, stop_list=COMPARTMENT_STOP_LIST):
             continue
         # a group's contents ARE the authored recipe: one that hands data to
         # a compartment sink is workflow plumbing, not a pattern (the (69)
-        # rule) — rejected on the RAW inner set (sinks are plumbing-filtered
+        # rule) - rejected on the RAW inner set (sinks are plumbing-filtered
         # out of `members` above and would never be seen there)
         if any(n.get("jipipe:node-info-id") in SINK_IDS for n in inner.values()):
             continue
@@ -659,7 +659,7 @@ def harvest_project(rel_path, project, stop_list=COMPARTMENT_STOP_LIST):
         if not (MIN_NODES <= len(real) <= MAX_NODES):
             continue
         # the whole compartment is ONE authored unit; keep it as a single
-        # candidate (all components) if in band — no splitting here, the
+        # candidate (all components) if in band - no splitting here, the
         # compartment is the boundary
         candidates_raw.append(("compartment", name, real,
                                induced_edges(edges, real),
@@ -740,7 +740,7 @@ def mine_corpus(root, out_path, shipped_dir=None, generated=None):
     Returns the result dict (also written to ``out_path``).
     ``shipped_dir=None`` → the committed System template resources dir.
     ``generated=None`` → the current UTC timestamp; pass a fixed string for
-    byte-identical (re-)runs — the harvest itself is fully deterministic.
+    byte-identical (re-)runs - the harvest itself is fully deterministic.
     """
     if shipped_dir is None:
         shipped_dir = DEFAULT_SHIPPED_DIR
@@ -845,7 +845,7 @@ def mine_corpus(root, out_path, shipped_dir=None, generated=None):
 def main(argv=None):
     parser = argparse.ArgumentParser(
         description="Harvest DAG pattern candidates from the JIPipe corpus "
-                    "(plan step A — deterministic, no AI).")
+                    "(plan step A - deterministic, no AI).")
     parser.add_argument("corpus", nargs="?", default="/data/JIPipe",
                         help="corpus root (default: /data/JIPipe)")
     parser.add_argument("--out", default=DEFAULT_OUT,

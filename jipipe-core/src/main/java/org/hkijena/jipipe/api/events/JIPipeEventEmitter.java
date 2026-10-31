@@ -17,7 +17,9 @@ import com.google.common.collect.ImmutableList;
 import org.scijava.Disposable;
 
 import java.lang.ref.WeakReference;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.locks.StampedLock;
 import java.util.function.BiConsumer;
 

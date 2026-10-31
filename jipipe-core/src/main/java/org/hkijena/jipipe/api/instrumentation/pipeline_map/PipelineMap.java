@@ -25,20 +25,6 @@ public class PipelineMap {
         this.root = root;
     }
 
-    public long getVersion() { return version; }
-    public void setVersion(long version) { this.version = version; }
-
-    public SegmentNode getRoot() { return root; }
-    public void setRoot(SegmentNode root) { this.root = root; }
-
-    public List<SegmentEdge> getEdges() { return edges; }
-    public void setEdges(List<SegmentEdge> edges) { this.edges = edges; }
-
-    public SegmentNode findSegment(String id) {
-        if (root == null) return null;
-        return findSegmentRecursive(root, id);
-    }
-
     private static SegmentNode findSegmentRecursive(SegmentNode node, String id) {
         if (node.getId() != null && node.getId().equals(id)) return node;
         if (node.getChildren() != null) {
@@ -48,5 +34,34 @@ public class PipelineMap {
             }
         }
         return null;
+    }
+
+    public long getVersion() {
+        return version;
+    }
+
+    public void setVersion(long version) {
+        this.version = version;
+    }
+
+    public SegmentNode getRoot() {
+        return root;
+    }
+
+    public void setRoot(SegmentNode root) {
+        this.root = root;
+    }
+
+    public List<SegmentEdge> getEdges() {
+        return edges;
+    }
+
+    public void setEdges(List<SegmentEdge> edges) {
+        this.edges = edges;
+    }
+
+    public SegmentNode findSegment(String id) {
+        if (root == null) return null;
+        return findSegmentRecursive(root, id);
     }
 }

@@ -13,9 +13,6 @@
 
 package org.hkijena.jipipe.plugins.ijweka.nodes;
 
-import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.WekaFramework;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.machinelearning.MachineLearningTrainingFunction;
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -27,6 +24,8 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.WekaFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.machinelearning.MachineLearningTrainingFunction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.ijweka.datatypes.WekaModelData;
 import org.hkijena.jipipe.plugins.ijweka.parameters.WekaClassifierParameter;
@@ -43,10 +42,12 @@ import weka.classifiers.Classifier;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
+
 @SetJIPipeDocumentation(name = "Train Weka model from mask (2D)", description = "Trains a Weka model on 2D image data that classified into two classes via a mask. " +
         "Can only train on a single image. " +
         "Use the multi-image node if you want to train from multiple images.")
-@ConfigureJIPipeNode(function = MachineLearningTrainingFunction.class, framework = WekaFramework.class, spatialDimensions = { SPATIAL_2D })
+@ConfigureJIPipeNode(function = MachineLearningTrainingFunction.class, framework = WekaFramework.class, spatialDimensions = {SPATIAL_2D})
 @AddJIPipeInputSlot(value = ImagePlus2DData.class, name = "Image", description = "Image on which the training should be applied", create = true)
 @AddJIPipeInputSlot(value = ImagePlus2DGreyscaleMaskData.class, name = "Mask", description = "Mask that marks foreground objects via white pixels (255) and the background with black pixels (0)", create = true)
 @AddJIPipeOutputSlot(value = WekaModelData.class, name = "Trained model", description = "The model", create = true)

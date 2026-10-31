@@ -1,1 +1,27 @@
-{"nodes":{"n0":{"jipipe:node-info-id":"ij1-roi-merge","jipipe:graph-compartment":"ae39fa29-a991-5531-a00a-a6a1d71e5e84","jipipe:node:name":"Merge ROI lists"},"n1":{"jipipe:node-info-id":"jipipe:compartment-output","jipipe:graph-compartment":"ae39fa29-a991-5531-a00a-a6a1d71e5e84","jipipe:node:name":"Output"},"n2":{"jipipe:node-info-id":"ij1-roi-statistics","jipipe:graph-compartment":"ae39fa29-a991-5531-a00a-a6a1d71e5e84","jipipe:node:name":"Extract ROI statistics"}},"edges":[{"source-node":"n1","source-slot":"Image with ridges","target-node":"n2","target-slot":"Reference"}]}
+{
+  "nodes": {
+    "n0": {
+      "jipipe:node-info-id": "ij1-roi-merge",
+      "jipipe:graph-compartment": "ae39fa29-a991-5531-a00a-a6a1d71e5e84",
+      "jipipe:node:name": "Merge ROI lists"
+    },
+    "n1": {
+      "jipipe:node-info-id": "jipipe:compartment-output",
+      "jipipe:graph-compartment": "ae39fa29-a991-5531-a00a-a6a1d71e5e84",
+      "jipipe:node:name": "Output"
+    },
+    "n2": {
+      "jipipe:node-info-id": "ij1-roi-statistics",
+      "jipipe:graph-compartment": "ae39fa29-a991-5531-a00a-a6a1d71e5e84",
+      "jipipe:node:name": "Extract ROI statistics"
+    }
+  },
+  "edges": [
+    {
+      "source-node": "n1",
+      "source-slot": "Image with ridges",
+      "target-node": "n2",
+      "target-slot": "Reference"
+    }
+  ]
+}

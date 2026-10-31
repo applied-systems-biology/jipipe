@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.opticalflow;
 
-import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 import ij.CompositeImage;
 import ij.ImagePlus;
 import ij.ImageStack;
@@ -23,17 +22,22 @@ import mpicbg.ij.integral.Mean;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.MergingSplittingFunction;
+import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.MergingSplittingFunction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscale32FData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d4.greyscale.ImagePlus4DGreyscale32FData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.utils.ImageJCalibrationMode;
+
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 
 /**
  * Adapted from {@link mpicbg.ij.plugin.MSEBlockFlow}, as the methods there are all protected/private
@@ -46,7 +50,7 @@ import org.hkijena.jipipe.utils.ImageJCalibrationMode;
         "Both the size of the block and the search radius are parameters of the method.\n\n" +
         "The output is a two-channel image with (T-1) items. The pixels in each channel describe the relative location" +
         " of the next similar pixel in polar coordinates (default) or cartesian coordinates.")
-@ConfigureJIPipeNode(function = MergingSplittingFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_3D })
+@ConfigureJIPipeNode(function = MergingSplittingFunction.class, framework = ImageJ1Framework.class, spatialDimensions = {SPATIAL_3D})
 @AddJIPipeInputSlot(value = ImagePlus3DGreyscale32FData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlus4DGreyscale32FData.class, name = "Vector field", create = true)
 public class MSEBlockFlowAlgorithm extends JIPipeSimpleIteratingAlgorithm {

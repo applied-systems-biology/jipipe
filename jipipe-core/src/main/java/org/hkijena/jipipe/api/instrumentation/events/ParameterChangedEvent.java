@@ -14,7 +14,15 @@ public class ParameterChangedEvent extends InstrumentationEvent {
         this.value = value;
     }
 
-    public String getNodeId() { return nodeId; }
-    public String getKey() { return key; }
-    public String getValue() { return value; }
+    public String getNodeId() {
+        return nodeId;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public String getValue() {
+        return value;
+    }
 }

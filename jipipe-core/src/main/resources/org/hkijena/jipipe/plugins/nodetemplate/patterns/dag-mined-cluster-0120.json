@@ -1,1 +1,56 @@
-{"edges":[{"source-node":"n1","source-slot":"Output","target-node":"n0","target-slot":"Data"},{"source-node":"n2","source-slot":"Measurements","target-node":"n1","target-slot":"Input"},{"source-node":"n3","source-slot":"ROI","target-node":"n2","target-slot":"ROI"}],"nodes":{"n0":{"jipipe:graph-compartment":"ad7dade5-a8a0-5c6e-81c9-3e616c812c0f","jipipe:metadata-v1":{"location/ad7dade5-a8a0-5c6e-81c9-3e616c812c0f/x":0,"location/ad7dade5-a8a0-5c6e-81c9-3e616c812c0f/y":12},"jipipe:node-info-id":"export-data-by-parameter-v2"},"n1":{"jipipe:graph-compartment":"ad7dade5-a8a0-5c6e-81c9-3e616c812c0f","jipipe:metadata-v1":{"location/ad7dade5-a8a0-5c6e-81c9-3e616c812c0f/x":0,"location/ad7dade5-a8a0-5c6e-81c9-3e616c812c0f/y":8},"jipipe:node-info-id":"table-filter"},"n2":{"jipipe:graph-compartment":"ad7dade5-a8a0-5c6e-81c9-3e616c812c0f","jipipe:metadata-v1":{"location/ad7dade5-a8a0-5c6e-81c9-3e616c812c0f/x":0,"location/ad7dade5-a8a0-5c6e-81c9-3e616c812c0f/y":4},"jipipe:node-info-id":"ij3d-measure-roi3d"},"n3":{"jipipe:graph-compartment":"ad7dade5-a8a0-5c6e-81c9-3e616c812c0f","jipipe:metadata-v1":{"location/ad7dade5-a8a0-5c6e-81c9-3e616c812c0f/x":0,"location/ad7dade5-a8a0-5c6e-81c9-3e616c812c0f/y":0},"jipipe:node-info-id":"ij3d-analyze-find-particles"}}}
+{
+  "edges": [
+    {
+      "source-node": "n1",
+      "source-slot": "Output",
+      "target-node": "n0",
+      "target-slot": "Data"
+    },
+    {
+      "source-node": "n2",
+      "source-slot": "Measurements",
+      "target-node": "n1",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n3",
+      "source-slot": "ROI",
+      "target-node": "n2",
+      "target-slot": "ROI"
+    }
+  ],
+  "nodes": {
+    "n0": {
+      "jipipe:graph-compartment": "ad7dade5-a8a0-5c6e-81c9-3e616c812c0f",
+      "jipipe:metadata-v1": {
+        "location/ad7dade5-a8a0-5c6e-81c9-3e616c812c0f/x": 0,
+        "location/ad7dade5-a8a0-5c6e-81c9-3e616c812c0f/y": 12
+      },
+      "jipipe:node-info-id": "export-data-by-parameter-v2"
+    },
+    "n1": {
+      "jipipe:graph-compartment": "ad7dade5-a8a0-5c6e-81c9-3e616c812c0f",
+      "jipipe:metadata-v1": {
+        "location/ad7dade5-a8a0-5c6e-81c9-3e616c812c0f/x": 0,
+        "location/ad7dade5-a8a0-5c6e-81c9-3e616c812c0f/y": 8
+      },
+      "jipipe:node-info-id": "table-filter"
+    },
+    "n2": {
+      "jipipe:graph-compartment": "ad7dade5-a8a0-5c6e-81c9-3e616c812c0f",
+      "jipipe:metadata-v1": {
+        "location/ad7dade5-a8a0-5c6e-81c9-3e616c812c0f/x": 0,
+        "location/ad7dade5-a8a0-5c6e-81c9-3e616c812c0f/y": 4
+      },
+      "jipipe:node-info-id": "ij3d-measure-roi3d"
+    },
+    "n3": {
+      "jipipe:graph-compartment": "ad7dade5-a8a0-5c6e-81c9-3e616c812c0f",
+      "jipipe:metadata-v1": {
+        "location/ad7dade5-a8a0-5c6e-81c9-3e616c812c0f/x": 0,
+        "location/ad7dade5-a8a0-5c6e-81c9-3e616c812c0f/y": 0
+      },
+      "jipipe:node-info-id": "ij3d-analyze-find-particles"
+    }
+  }
+}

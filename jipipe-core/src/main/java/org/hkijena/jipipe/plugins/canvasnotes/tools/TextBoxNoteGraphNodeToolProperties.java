@@ -38,17 +38,16 @@ import java.util.List;
 
 public class TextBoxNoteGraphNodeToolProperties extends JIPipeDesktopFormGraphEditorToolPanel<TextBoxNoteGraphNodeTool> implements JIPipeDesktopColorPaletteUI.SelectedEventListener, JIPipeParameterCollection.ParameterChangedEventListener {
 
-    private static JIPipeDesktopColorPaletteColor LAST_COLOR = JIPipeDesktopColorPalette.PASTEL[0];
-    private static Anchor LAST_ANCHOR = Anchor.CenterCenter;
-    private static List<JIPipeNodeTemplate> PRESETS;
-    private static JIPipeNodeTemplate LAST_PRESET;
     private static final String PRESET_DOCUMENTATION = """
             # Presets
             
             Create presets to create designs for newly created annotations.
             Please note that the border/background color and text location are determined by the other controls.
             """;
-
+    private static JIPipeDesktopColorPaletteColor LAST_COLOR = JIPipeDesktopColorPalette.PASTEL[0];
+    private static Anchor LAST_ANCHOR = Anchor.CenterCenter;
+    private static List<JIPipeNodeTemplate> PRESETS;
+    private static JIPipeNodeTemplate LAST_PRESET;
     private final JIPipeDesktopColorPaletteUI paletteUI;
     private final JIPipeDesktopParameterEditorUI<Anchor> anchorParameterEditorUI;
     private final JButton pickPresetButton;
@@ -65,7 +64,8 @@ public class TextBoxNoteGraphNodeToolProperties extends JIPipeDesktopFormGraphEd
         // Preset picker
         initializePreset();
         this.pickPresetButton = UIUtils.createButton("PRESET", JIPipe.RESOURCES.getIcon16("actions/template.png"), this::pickPreset);
-        this.editPresetButton = UIUtils.createIconOnlyButton("Show preset options", JIPipe.RESOURCES.getIcon16("actions/configure.png"), () -> {});
+        this.editPresetButton = UIUtils.createIconOnlyButton("Show preset options", JIPipe.RESOURCES.getIcon16("actions/configure.png"), () -> {
+        });
         JPopupMenu editMenu = UIUtils.addPopupMenuToButton(editPresetButton);
         editMenu.add(UIUtils.createMenuItem("Edit", "Edits the current preset", JIPipe.RESOURCES.getIcon16("actions/edit.png"), this::editPreset));
         editMenu.add(UIUtils.createMenuItem("Rename", "Rename the current preset", JIPipe.RESOURCES.getIcon16("actions/label.png"), this::renamePreset));
@@ -103,9 +103,20 @@ public class TextBoxNoteGraphNodeToolProperties extends JIPipeDesktopFormGraphEd
         super.dispose();
     }
 
+    private static void ensureNonEmptyPresets() {
+        if (PRESETS.isEmpty()) {
+            JIPipeNodeTemplate template = new JIPipeNodeTemplate();
+            JIPipeGraph graph = new JIPipeGraph();
+            graph.insertNode(JIPipe.createNode(TextBoxGraphCanvasNote.class));
+            template.setName("Default");
+            template.setGraph(graph);
+            PRESETS.add(template);
+        }
+    }
+
     private void renamePreset() {
         String newName = JOptionPane.showInputDialog(this, "Please enter the new name:", LAST_PRESET.getName());
-        if(!StringUtils.isNullOrEmpty(newName)) {
+        if (!StringUtils.isNullOrEmpty(newName)) {
             LAST_PRESET.setName(newName);
             onPresetChanged();
             savePresets();
@@ -116,10 +127,10 @@ public class TextBoxNoteGraphNodeToolProperties extends JIPipeDesktopFormGraphEd
         JIPipeNodeTemplate copy = new JIPipeNodeTemplate(LAST_PRESET);
         copy.setName("Untitled");
         TextBoxGraphCanvasNote node = copy.getGraph().findFirstNodeOfType(TextBoxGraphCanvasNote.class);
-        if(node == null) {
+        if (node == null) {
             throw new RuntimeException("Cannot find node of type TextBoxAnnotationGraphNode");
         }
-        if(JIPipeDesktopParameterFormPanel.showDialog(getDesktopWorkbench(), node, new MarkdownText(PRESET_DOCUMENTATION), "Add preset")) {
+        if (JIPipeDesktopParameterFormPanel.showDialog(getDesktopWorkbench(), node, new MarkdownText(PRESET_DOCUMENTATION), "Add preset")) {
             PRESETS.add(copy);
             LAST_PRESET = copy;
             onPresetChanged();
@@ -129,7 +140,7 @@ public class TextBoxNoteGraphNodeToolProperties extends JIPipeDesktopFormGraphEd
     }
 
     private void deletePreset() {
-        if(JOptionPane.showConfirmDialog(this,
+        if (JOptionPane.showConfirmDialog(this,
                 "Do you really want to delete the current preset?",
                 "Delete preset",
                 JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
@@ -145,27 +156,26 @@ public class TextBoxNoteGraphNodeToolProperties extends JIPipeDesktopFormGraphEd
 
         JIPipeNodeTemplate copy = new JIPipeNodeTemplate(LAST_PRESET);
         TextBoxGraphCanvasNote node = copy.getGraph().findFirstNodeOfType(TextBoxGraphCanvasNote.class);
-        if(node != null) {
+        if (node != null) {
             getTool().setPreset(node);
         }
     }
 
     private void editPreset() {
         int index = PRESETS.indexOf(LAST_PRESET);
-        if(index >= 0) {
+        if (index >= 0) {
             JIPipeNodeTemplate copy = new JIPipeNodeTemplate(LAST_PRESET);
             TextBoxGraphCanvasNote node = copy.getGraph().findFirstNodeOfType(TextBoxGraphCanvasNote.class);
-            if(node == null) {
+            if (node == null) {
                 throw new RuntimeException("Cannot find node of type TextBoxAnnotationGraphNode");
             }
-            if(JIPipeDesktopParameterFormPanel.showDialog(getDesktopWorkbench(), node, new MarkdownText(PRESET_DOCUMENTATION), "Edit preset")) {
+            if (JIPipeDesktopParameterFormPanel.showDialog(getDesktopWorkbench(), node, new MarkdownText(PRESET_DOCUMENTATION), "Edit preset")) {
                 PRESETS.set(index, copy);
                 LAST_PRESET = copy;
                 onPresetChanged();
                 savePresets();
             }
-        }
-        else {
+        } else {
             throw new RuntimeException("Cannot find preset within list of available presets");
         }
     }
@@ -174,29 +184,29 @@ public class TextBoxNoteGraphNodeToolProperties extends JIPipeDesktopFormGraphEd
         JIPipeNodeTemplatePickerDialog dialog = new JIPipeNodeTemplatePickerDialog(SwingUtilities.getWindowAncestor(this));
         dialog.setAvailableItems(PRESETS);
         JIPipeNodeTemplate selected = dialog.showDialog();
-        if(selected != null) {
+        if (selected != null) {
             LAST_PRESET = selected;
             onPresetChanged();
         }
     }
 
     private void initializePreset() {
-        if(PRESETS == null) {
-            PRESETS =  JIPipe.getSettings().getListFromRegistry("ui-graph-editor",
+        if (PRESETS == null) {
+            PRESETS = JIPipe.getSettings().getListFromRegistry("ui-graph-editor",
                     JIPipePathMetadataStore.key("context-panel", "tools", "draw-text-box-annotation", "presets"),
                     JIPipeNodeTemplate.class,
                     true);
             PRESETS.removeIf(this::isInvalidPreset);
             ensureNonEmptyPresets();
         }
-        if(LAST_PRESET == null) {
+        if (LAST_PRESET == null) {
             LAST_PRESET = PRESETS.getFirst();
         }
     }
 
     private boolean isInvalidPreset(JIPipeNodeTemplate template) {
         JIPipeGraph graph = template.getGraph();
-        if(graph == null ) {
+        if (graph == null) {
             return true;
         }
         TextBoxGraphCanvasNote node = graph.findFirstNodeOfType(TextBoxGraphCanvasNote.class);
@@ -207,17 +217,6 @@ public class TextBoxNoteGraphNodeToolProperties extends JIPipeDesktopFormGraphEd
         JIPipe.getSettings().putIntoRegistry("ui-graph-editor",
                 JIPipePathMetadataStore.key("context-panel", "tools", "draw-text-box-annotation", "presets"),
                 PRESETS);
-    }
-
-    private static void ensureNonEmptyPresets() {
-        if(PRESETS.isEmpty()) {
-            JIPipeNodeTemplate template = new  JIPipeNodeTemplate();
-            JIPipeGraph graph = new JIPipeGraph();
-            graph.insertNode(JIPipe.createNode(TextBoxGraphCanvasNote.class));
-            template.setName("Default");
-            template.setGraph(graph);
-            PRESETS.add(template);
-        }
     }
 
     @Override

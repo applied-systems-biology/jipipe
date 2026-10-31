@@ -1,1 +1,27 @@
-{"nodes":{"n0":{"jipipe:node-info-id":"iji-export-image-v2","jipipe:graph-compartment":"50fc307f-3da6-5eb2-8f39-20743964f2b7","jipipe:node:name":"Export image"},"n1":{"jipipe:node-info-id":"ij1-roi-relation-2d","jipipe:graph-compartment":"50fc307f-3da6-5eb2-8f39-20743964f2b7","jipipe:node:name":"Extract pairwise 2D ROI statistics"},"n2":{"jipipe:node-info-id":"jipipe:compartment-output","jipipe:graph-compartment":"50fc307f-3da6-5eb2-8f39-20743964f2b7","jipipe:node:name":"Output"}},"edges":[{"source-node":"n1","source-slot":"Measurements","target-node":"n2","target-slot":"Cell to cell distances"}]}
+{
+  "nodes": {
+    "n0": {
+      "jipipe:node-info-id": "iji-export-image-v2",
+      "jipipe:graph-compartment": "50fc307f-3da6-5eb2-8f39-20743964f2b7",
+      "jipipe:node:name": "Export image"
+    },
+    "n1": {
+      "jipipe:node-info-id": "ij1-roi-relation-2d",
+      "jipipe:graph-compartment": "50fc307f-3da6-5eb2-8f39-20743964f2b7",
+      "jipipe:node:name": "Extract pairwise 2D ROI statistics"
+    },
+    "n2": {
+      "jipipe:node-info-id": "jipipe:compartment-output",
+      "jipipe:graph-compartment": "50fc307f-3da6-5eb2-8f39-20743964f2b7",
+      "jipipe:node:name": "Output"
+    }
+  },
+  "edges": [
+    {
+      "source-node": "n1",
+      "source-slot": "Measurements",
+      "target-node": "n2",
+      "target-slot": "Cell to cell distances"
+    }
+  ]
+}

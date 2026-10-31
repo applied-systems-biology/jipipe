@@ -13,11 +13,13 @@
 
 package org.hkijena.jipipe.desktop.commons.nodepatterns;
 
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.awt.geom.Path2D;
 import java.util.Random;
 
-/** Scattered smooth filled blobs (superellipse + noise); centers may overshoot the frame so blobs clip at the borders. */
+/**
+ * Scattered smooth filled blobs (superellipse + noise); centers may overshoot the frame so blobs clip at the borders.
+ */
 public final class BlobsFamily implements NodePatternFamily {
     @Override
     public void paint(Graphics2D g, int w, int h, Random rng) {

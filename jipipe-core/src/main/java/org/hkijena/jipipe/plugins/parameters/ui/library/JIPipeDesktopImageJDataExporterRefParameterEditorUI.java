@@ -45,15 +45,12 @@ public class JIPipeDesktopImageJDataExporterRefParameterEditorUI extends JIPipeD
         setLayout(new BorderLayout());
 
         currentlyDisplayed = new JButton();
+        currentlyDisplayed.setHorizontalAlignment(SwingConstants.LEFT);
         currentlyDisplayed.addActionListener(e -> pick());
+        currentlyDisplayed.setToolTipText("Select algorithm type");
         UIUtils.setStandardButtonBorder(currentlyDisplayed);
+        // #1339 item 6: the display button already opens the same picker.
         add(currentlyDisplayed, BorderLayout.CENTER);
-
-        JButton selectButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/edit.png"));
-        UIUtils.setStandardButtonBorder(selectButton);
-        selectButton.setToolTipText("Select algorithm type");
-        selectButton.addActionListener(e -> pick());
-        add(selectButton, BorderLayout.EAST);
 
         picker = new JIPipeDesktopImageJDataExporterPicker(getDesktopWorkbench().getWindow());
     }

@@ -1,1 +1,56 @@
-{"edges":[{"source-node":"n1","source-slot":"Output","target-node":"n0","target-slot":"Input"},{"source-node":"n2","source-slot":"Output","target-node":"n3","target-slot":"Input"},{"source-node":"n3","source-slot":"Output","target-node":"n1","target-slot":"Input"}],"nodes":{"n0":{"jipipe:graph-compartment":"8c1a1a0d-a975-5544-8495-6800ffd9b117","jipipe:metadata-v1":{"location/8c1a1a0d-a975-5544-8495-6800ffd9b117/x":0,"location/8c1a1a0d-a975-5544-8495-6800ffd9b117/y":12},"jipipe:node-info-id":"plot-table:plot-histogram"},"n1":{"jipipe:graph-compartment":"8c1a1a0d-a975-5544-8495-6800ffd9b117","jipipe:metadata-v1":{"location/8c1a1a0d-a975-5544-8495-6800ffd9b117/x":0,"location/8c1a1a0d-a975-5544-8495-6800ffd9b117/y":8},"jipipe:node-info-id":"table-filter"},"n2":{"jipipe:graph-compartment":"8c1a1a0d-a975-5544-8495-6800ffd9b117","jipipe:metadata-v1":{"location/8c1a1a0d-a975-5544-8495-6800ffd9b117/x":0,"location/8c1a1a0d-a975-5544-8495-6800ffd9b117/y":0},"jipipe:node-info-id":"filaments-measure-filaments"},"n3":{"jipipe:graph-compartment":"8c1a1a0d-a975-5544-8495-6800ffd9b117","jipipe:metadata-v1":{"location/8c1a1a0d-a975-5544-8495-6800ffd9b117/x":0,"location/8c1a1a0d-a975-5544-8495-6800ffd9b117/y":4},"jipipe:node-info-id":"table-filter-2"}}}
+{
+  "edges": [
+    {
+      "source-node": "n1",
+      "source-slot": "Output",
+      "target-node": "n0",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n2",
+      "source-slot": "Output",
+      "target-node": "n3",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n3",
+      "source-slot": "Output",
+      "target-node": "n1",
+      "target-slot": "Input"
+    }
+  ],
+  "nodes": {
+    "n0": {
+      "jipipe:graph-compartment": "8c1a1a0d-a975-5544-8495-6800ffd9b117",
+      "jipipe:metadata-v1": {
+        "location/8c1a1a0d-a975-5544-8495-6800ffd9b117/x": 0,
+        "location/8c1a1a0d-a975-5544-8495-6800ffd9b117/y": 12
+      },
+      "jipipe:node-info-id": "plot-table:plot-histogram"
+    },
+    "n1": {
+      "jipipe:graph-compartment": "8c1a1a0d-a975-5544-8495-6800ffd9b117",
+      "jipipe:metadata-v1": {
+        "location/8c1a1a0d-a975-5544-8495-6800ffd9b117/x": 0,
+        "location/8c1a1a0d-a975-5544-8495-6800ffd9b117/y": 8
+      },
+      "jipipe:node-info-id": "table-filter"
+    },
+    "n2": {
+      "jipipe:graph-compartment": "8c1a1a0d-a975-5544-8495-6800ffd9b117",
+      "jipipe:metadata-v1": {
+        "location/8c1a1a0d-a975-5544-8495-6800ffd9b117/x": 0,
+        "location/8c1a1a0d-a975-5544-8495-6800ffd9b117/y": 0
+      },
+      "jipipe:node-info-id": "filaments-measure-filaments"
+    },
+    "n3": {
+      "jipipe:graph-compartment": "8c1a1a0d-a975-5544-8495-6800ffd9b117",
+      "jipipe:metadata-v1": {
+        "location/8c1a1a0d-a975-5544-8495-6800ffd9b117/x": 0,
+        "location/8c1a1a0d-a975-5544-8495-6800ffd9b117/y": 4
+      },
+      "jipipe:node-info-id": "table-filter-2"
+    }
+  }
+}

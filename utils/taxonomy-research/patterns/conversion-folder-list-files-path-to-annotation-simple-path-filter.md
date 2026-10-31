@@ -36,28 +36,32 @@ Mined pattern `conversion-folder-list-files-path-to-annotation-simple-path-filte
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| import | `folder-list-files` |
+| role     | node ids                    |
+|----------|-----------------------------|
+| import   | `folder-list-files`         |
 | annotate | `path-to-annotation-simple` |
-| import | `path-filter` |
+| import   | `path-filter`               |
 
 ## Example graph
 
-Project: `AIAgentTests/01-BasicWorkshop/JSC_2025_06_Kidney_Exports/kidney.jip` (relative to `/data/JIPipe`), compartment `File Handling`.
+Project: `AIAgentTests/01-BasicWorkshop/JSC_2025_06_Kidney_Exports/kidney.jip` (relative to `/data/JIPipe`), compartment
+`File Handling`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `folder-list-files` | List files |
-| n1 | `path-to-annotation-simple` | Annotate with file/directory name |
-| n2 | `path-filter` | Filter paths |
+| key | node id                     | name                              |
+|-----|-----------------------------|-----------------------------------|
+| n0  | `folder-list-files`         | List files                        |
+| n1  | `path-to-annotation-simple` | Annotate with file/directory name |
+| n2  | `path-filter`               | Filter paths                      |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
-| List files | `Files` | Annotate with file/directory name | `Paths` | `file` |
-| Annotate with file/directory name | `Annotated paths` | Filter paths | `Input` | `path` |
+| from                              | slot              | to                                | slot    | data class |
+|-----------------------------------|-------------------|-----------------------------------|---------|------------|
+| List files                        | `Files`           | Annotate with file/directory name | `Paths` | `file`     |
+| Annotate with file/directory name | `Annotated paths` | Filter paths                      | `Input` | `path`     |
 
 ## Template
 
-Proposed name `List files -> Annotate with file/directory name -> Filter paths`, menu path `Patterns/Data Sources/List files -> Annotate with file/directory name -> Filter paths` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/conversion-folder-list-files-path-to-annotation-simple-path-filter.json`.
+Proposed name `List files -> Annotate with file/directory name -> Filter paths`, menu path
+`Patterns/Data Sources/List files -> Annotate with file/directory name -> Filter paths` (proposal only - not
+registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/conversion-folder-list-files-path-to-annotation-simple-path-filter.json`.
 

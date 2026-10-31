@@ -22,116 +22,38 @@ import org.hkijena.jipipe.api.JIPipeNodeTemplate;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.taxonomy.FunctionRegistry;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.*;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.*;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.annotations.AnnotationsConvertFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.annotations.AnnotationsEditFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.annotations.GraphAnnotationsFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.FilamentDataFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.FileSystemFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.FormsFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.ImageDataFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.MiscDataFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.OmeroFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.RoiDataFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.Scene3DDataFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.TableDataFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.machinelearning.MachineLearningInferenceFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.machinelearning.MachineLearningModelsFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.machinelearning.MachineLearningTrainingFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.export.ExportDataFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.export.ExportImagesFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.export.ExportRoiFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.export.ExportScenesFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.export.ExportTablesFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.*;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.export.*;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.filaments.FilamentFilteringFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.filaments.FilamentQuantificationFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.filaments.FilamentSmoothingFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.graph.GraphCompartmentOutputsFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.graph.GraphDebugFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.graph.GraphWrappersFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ColorStackFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.FilteringFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ImageArithmeticFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ImageComparisonFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ImageLabelingFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ImageMomentsFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ImageNeighborMeasurementsFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ImagePixelManipulationFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ImageProjectionsFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ImagePropertiesFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ImageStatisticsFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ImageTransformationsFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ImageTypeConversionFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.MeasurementsFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.MergingSplittingFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.PreprocessingFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ResamplingFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.SegmentationCellBasedFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.SegmentationFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ThresholdingFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.*;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.machinelearning.MachineLearningInferenceFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.machinelearning.MachineLearningModelsFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.machinelearning.MachineLearningTrainingFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.misc.MiscellaneousUnassignedFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.plotting.PlotBarFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.plotting.PlotHeatmapFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.plotting.PlotLineFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.plotting.PlotMiscFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.plotting.PlotScatterFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.rois.RoiFiltersFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.rois.RoiIntersectionsFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.rois.RoiMeasurementsFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.rois.RoiMorphologyFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.rois.RoiPropertiesFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.statistics.StatisticsDescriptiveFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.statistics.StatisticsEstimationFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.statistics.StatisticsTestingFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.tables.TableAggregateFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.tables.TableExportFileFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.tables.TableFilterModifyFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.tables.TableJoinSplitFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.tables.TableTransformFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.tracking.TrackingAnalysisFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.tracking.TrackingDetectionFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.tracking.TrackingFilteringFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.tracking.TrackingLinkingFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.AnnotationsFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.DataSourcesFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.DataUtilitiesFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.ScriptingFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.TextMarkupFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.plotting.*;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.rois.*;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.scripting.ScriptingExpressionFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.scripting.ScriptingImageJMacroFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.scripting.ScriptingPythonFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.scripting.ScriptingRFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.MachineLearningFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.ExportFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.FilamentsFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.GraphFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.ImagesFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.MiscellaneousFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.PlottingFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.RoisFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.StatisticsFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.TablesFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.TemplatesFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.TrackingFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.Cellpose2Framework;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.Cellpose3Framework;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.Cellpose4Framework;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ClijFramework;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.CoreFramework;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.FilamentsFramework;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.IJ3DFramework;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.OmeroFramework;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.Scene3DFramework;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.WekaFramework;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.PythonFramework;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.RFramework;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ2Framework;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.JFreeChartFramework;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.JIPipeDLFramework;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.OmniposeFramework;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.IlastikFramework;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.OpenCVFramework;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.TrackMateFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.statistics.StatisticsDescriptiveFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.statistics.StatisticsEstimationFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.statistics.StatisticsTestingFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.tables.*;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.tracking.TrackingAnalysisFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.tracking.TrackingDetectionFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.tracking.TrackingFilteringFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.tracking.TrackingLinkingFunction;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.core.CorePlugin;
@@ -146,12 +68,7 @@ import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Registers the curated node taxonomy into the live registries: the 84
@@ -175,6 +92,96 @@ public class TaxonomyPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     public static final JIPipeDependency AS_DEPENDENCY =
             new JIPipeMutableDependency("org.hkijena.jipipe:taxonomy",
                     JIPipe.getJIPipeVersion(), "Node taxonomy");
+    /**
+     * Classpath base directory of the bundled system-template graph resources
+     * (absolute, as required by {@link Class#getResourceAsStream}).
+     */
+    static final String SYSTEM_TEMPLATE_RESOURCE_DIR =
+            "/org/hkijena/jipipe/plugins/nodetemplate/patterns/";
+    /**
+     * The committed metadata sidecar (pattern id → name/description/functionId/file).
+     */
+    static final String SYSTEM_TEMPLATE_SIDECAR = SYSTEM_TEMPLATE_RESOURCE_DIR + "system-templates.json";
+
+    /**
+     * Reads the committed {@code system-templates.json} metadata sidecar from
+     * the bundled classpath resources.
+     *
+     * @return the sidecar object, or {@code null} if the resource is absent
+     * (the caller then registers nothing)
+     */
+    private static JsonNode readPatternsSidecar() {
+        try (InputStream in = TaxonomyPlugin.class.getResourceAsStream(SYSTEM_TEMPLATE_SIDECAR)) {
+            if (in == null) {
+                return null;
+            }
+            return JsonUtils.getObjectMapper().readTree(in);
+        } catch (Exception e) {
+            JIPipe.getInstance().getProgressInfo().log(
+                    "ERROR: could not read the bundled system-template sidecar: " + e);
+            return null;
+        }
+    }
+
+    /**
+     * Reads a bundled raw graph JSON resource (absolute classpath path).
+     */
+    private static String readPatternGraphResource(String file) {
+        String path = SYSTEM_TEMPLATE_RESOURCE_DIR + file;
+        try (InputStream in = TaxonomyPlugin.class.getResourceAsStream(path)) {
+            if (in == null) {
+                return null;
+            }
+            return new String(in.readAllBytes(), java.nio.charset.StandardCharsets.UTF_8);
+        } catch (Exception e) {
+            JIPipe.getInstance().getProgressInfo().log("ERROR reading pattern graph " + path + ": " + e);
+            return null;
+        }
+    }
+
+    /**
+     * Maps a function's live {@link javax.swing.Icon} back to its
+     * {@code IconRef} name. Every top-level branch builds its icon via
+     * {@code JIPipe.RESOURCES.getIcon16("<name>")}, which is cached by name and
+     * therefore returns the SAME instance on every call for a given name. So
+     * we reverse-map by reference equality: probe each known 16px icon name and
+     * return the one whose cached instance is the very icon the function
+     * reported. Falls back to {@code null} (the template keeps its default
+     * icon) if no match is found.
+     */
+    private static IconRef reverseMapIcon(javax.swing.Icon icon) {
+        if (icon == null) {
+            return null;
+        }
+        // walkInternalResourceFolder returns FULL resource paths; the IconRef
+        // name is the relative path (e.g. "actions/document-import.png"), so
+        // strip the light 16px base path first (mirrors getAvailableIcons()).
+        String basePath = ResourceUtils.getResourcePath("icons/light/icons-16/");
+        for (String fullPath : ResourceUtils.walkInternalResourceFolder("icons/light/icons-16/")) {
+            if (!fullPath.startsWith(basePath) || !fullPath.endsWith(".png")) {
+                continue;
+            }
+            String name = fullPath.substring(basePath.length());
+            try {
+                if (icon == JIPipe.RESOURCES.getIcon16(name)) {
+                    return new IconRef(name);
+                }
+            } catch (Throwable ignored) {
+                // a name that does not resolve to an icon - skip
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Sorted property-name list of a JSON object (deterministic iteration).
+     */
+    private static List<String> sortedKeys(JsonNode object) {
+        List<String> keys = new ArrayList<>();
+        object.fieldNames().forEachRemaining(keys::add);
+        Collections.sort(keys);
+        return keys;
+    }
 
     @Override
     public String getName() {
@@ -238,7 +245,7 @@ public class TaxonomyPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 new RoiDataFunction(),
                 new FilamentDataFunction(),
                 new MiscDataFunction(),
-                // data — full-registry audit leaves (curated nodes previously in
+                // data - full-registry audit leaves (curated nodes previously in
                 // the "Misc. data" catch-all)
                 new FileSystemFunction(),
                 new OmeroFunction(),
@@ -254,7 +261,7 @@ public class TaxonomyPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 new ResamplingFunction(),
                 new MergingSplittingFunction(),
                 new ColorStackFunction(),
-                // images — full-registry audit leaves (auto-discovered IJ2/CLIJ2
+                // images - full-registry audit leaves (auto-discovered IJ2/CLIJ2
                 // nodes + curated strays that previously fell to Miscellaneous)
                 new ImageArithmeticFunction(),
                 new ImageComparisonFunction(),
@@ -306,7 +313,7 @@ public class TaxonomyPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 new PlotBarFunction(),
                 new PlotHeatmapFunction(),
                 new PlotMiscFunction(),
-                // export — organized by WHAT is exported
+                // export - organized by WHAT is exported
                 new ExportImagesFunction(),
                 new ExportTablesFunction(),
                 new ExportRoiFunction(),
@@ -316,15 +323,15 @@ public class TaxonomyPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 new GraphCompartmentOutputsFunction(),
                 new GraphWrappersFunction(),
                 new GraphDebugFunction(),
-                // misc — full-registry audit leaves (curated nodes previously in
+                // misc - full-registry audit leaves (curated nodes previously in
                 // the "Miscellaneous" catch-all)
                 new DataUtilitiesFunction(),
                 new TextMarkupFunction(),
                 new ScriptingFunction(),
                 new MiscellaneousUnassignedFunction(),
-                // misc — templates catch-all (template-taxonomy integration)
+                // misc - templates catch-all (template-taxonomy integration)
                 new TemplatesFunction(),
-                // scripting — language sub-leaves (re-clustering audit: users
+                // scripting - language sub-leaves (re-clustering audit: users
                 // interested in one language get a dedicated branch; the
                 // matching framework facet is the orthogonal filter)
                 new ScriptingPythonFunction(),
@@ -360,7 +367,7 @@ public class TaxonomyPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
         // Name-inference fallback (core policy, set in exactly this one place):
         // discovered nodes whose names match no keyword pattern land in
-        // "Miscellaneous unassigned" — the deliberate 6.0.0 behavior change
+        // "Miscellaneous unassigned" - the deliberate 6.0.0 behavior change
         // from the old Miscellaneous default of TaxonomyAutoAssignment.
         JIPipe.getNodeTaxonomyService().setInferenceFallback(new MiscellaneousUnassignedFunction());
 
@@ -380,15 +387,15 @@ public class TaxonomyPlugin extends JIPipePrepackagedDefaultJavaPlugin {
      * The 64 curated, deduplicated patterns (185 research artifacts: the
      * statistical fan shapes and the compartment-sink patterns are excluded
      * as workflow-specific noise, and the survivors' shape-label duplicates
-     * are collapsed — see {@code utils/generate-system-template-metadata.py})
+     * are collapsed - see {@code utils/generate-system-template-metadata.py})
      * ship as
      * bundled resources under
      * {@code org/hkijena/jipipe/plugins/nodetemplate/patterns/}:
      * <ul>
      *   <li>one raw {@code JIPipeGraph}-shaped JSON per pattern
-     *       ({@code {"nodes": …, "edges": …}}) — the exact shape
+     *       ({@code {"nodes": …, "edges": …}}) - the exact shape
      *       {@link JIPipeNodeTemplate#getGraph()} deserializes;</li>
-     *   <li>{@code system-templates.json} — a committed metadata sidecar
+     *   <li>{@code system-templates.json} - a committed metadata sidecar
      *       mapping pattern id → {@code {name, description, functionId,
      *       file}} (no runtime markdown parsing).</li>
      * </ul>
@@ -397,7 +404,7 @@ public class TaxonomyPlugin extends JIPipePrepackagedDefaultJavaPlugin {
      * {@code taxonomyFunction} is the sidecar's {@code functionId} (a top-level
      * branch, computed by the generator), and its icon/hue are derived from the
      * LIVE function registry at registration time (the top-level branch's
-     * {@code getColorHue()} / {@code getIcon()} — never stored in the sidecar).
+     * {@code getColorHue()} / {@code getIcon()} - never stored in the sidecar).
      * The {@code source} is left at its default: {@code addFromPlugin}
      * force-sets it to {@link JIPipeNodeTemplate#SOURCE_EXTENSION}
      * ("Extension"), which is what makes these System-scoped
@@ -460,97 +467,6 @@ public class TaxonomyPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         }
         JIPipe.getInstance().getProgressInfo().log(
                 "Registered " + registered + " corpus-mined System node templates (bundled patterns)");
-    }
-
-    /**
-     * Reads the committed {@code system-templates.json} metadata sidecar from
-     * the bundled classpath resources.
-     *
-     * @return the sidecar object, or {@code null} if the resource is absent
-     * (the caller then registers nothing)
-     */
-    private static JsonNode readPatternsSidecar() {
-        try (InputStream in = TaxonomyPlugin.class.getResourceAsStream(SYSTEM_TEMPLATE_SIDECAR)) {
-            if (in == null) {
-                return null;
-            }
-            return JsonUtils.getObjectMapper().readTree(in);
-        } catch (Exception e) {
-            JIPipe.getInstance().getProgressInfo().log(
-                    "ERROR: could not read the bundled system-template sidecar: " + e);
-            return null;
-        }
-    }
-
-    /**
-     * Reads a bundled raw graph JSON resource (absolute classpath path).
-     */
-    private static String readPatternGraphResource(String file) {
-        String path = SYSTEM_TEMPLATE_RESOURCE_DIR + file;
-        try (InputStream in = TaxonomyPlugin.class.getResourceAsStream(path)) {
-            if (in == null) {
-                return null;
-            }
-            return new String(in.readAllBytes(), java.nio.charset.StandardCharsets.UTF_8);
-        } catch (Exception e) {
-            JIPipe.getInstance().getProgressInfo().log("ERROR reading pattern graph " + path + ": " + e);
-            return null;
-        }
-    }
-
-    /**
-     * Classpath base directory of the bundled system-template graph resources
-     * (absolute, as required by {@link Class#getResourceAsStream}).
-     */
-    static final String SYSTEM_TEMPLATE_RESOURCE_DIR =
-            "/org/hkijena/jipipe/plugins/nodetemplate/patterns/";
-    /**
-     * The committed metadata sidecar (pattern id → name/description/functionId/file).
-     */
-    static final String SYSTEM_TEMPLATE_SIDECAR = SYSTEM_TEMPLATE_RESOURCE_DIR + "system-templates.json";
-
-    /**
-     * Maps a function's live {@link javax.swing.Icon} back to its
-     * {@code IconRef} name. Every top-level branch builds its icon via
-     * {@code JIPipe.RESOURCES.getIcon16("<name>")}, which is cached by name and
-     * therefore returns the SAME instance on every call for a given name. So
-     * we reverse-map by reference equality: probe each known 16px icon name and
-     * return the one whose cached instance is the very icon the function
-     * reported. Falls back to {@code null} (the template keeps its default
-     * icon) if no match is found.
-     */
-    private static IconRef reverseMapIcon(javax.swing.Icon icon) {
-        if (icon == null) {
-            return null;
-        }
-        // walkInternalResourceFolder returns FULL resource paths; the IconRef
-        // name is the relative path (e.g. "actions/document-import.png"), so
-        // strip the light 16px base path first (mirrors getAvailableIcons()).
-        String basePath = ResourceUtils.getResourcePath("icons/light/icons-16/");
-        for (String fullPath : ResourceUtils.walkInternalResourceFolder("icons/light/icons-16/")) {
-            if (!fullPath.startsWith(basePath) || !fullPath.endsWith(".png")) {
-                continue;
-            }
-            String name = fullPath.substring(basePath.length());
-            try {
-                if (icon == JIPipe.RESOURCES.getIcon16(name)) {
-                    return new IconRef(name);
-                }
-            } catch (Throwable ignored) {
-                // a name that does not resolve to an icon — skip
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Sorted property-name list of a JSON object (deterministic iteration).
-     */
-    private static List<String> sortedKeys(JsonNode object) {
-        List<String> keys = new ArrayList<>();
-        object.fieldNames().forEachRemaining(keys::add);
-        Collections.sort(keys);
-        return keys;
     }
 
     @Override

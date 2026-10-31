@@ -45,14 +45,14 @@ import java.util.Set;
  * {@code CreateROCrateRun} (the same contrib library, the same profile),
  * with two deliberate differences:
  * <ul>
- * <li>No entity {@code location}s — the crate is serialized via
+ * <li>No entity {@code location}s - the crate is serialized via
  * {@link RoCrate#getJsonMetadata()} and the container's ZIP is written by
  * {@link JIPipeXProjectWriter} itself, so the library's file-copying
  * writers are not used.</li>
  * <li>The main entity is the container's own {@code project/graph.json}
  * part (a JIPipe program), not an external CWL wrapper.</li>
  * <li>The Workflow RO-Crate profile descriptor is applied post-build via
- * {@code RoCrate.setJsonDescriptor} — the builder's internal descriptor
+ * {@code RoCrate.setJsonDescriptor} - the builder's internal descriptor
  * is not configurable through the builder API, and adding the descriptor
  * as a contextual entity would duplicate it in the {@code @graph} (the
  * library's own {@code CreateROCrateRun} addContextualEntity pattern has
@@ -63,13 +63,13 @@ import java.util.Set;
  * provide (license → settings default → MIT, the {@code mainEntity}
  * pointer), {@link #buildCrate} runs the
  * spec's profile checklist and reports every missing piece into
- * {@code violationsOut} — a well-formed save yields ZERO violations.
+ * {@code violationsOut} - a well-formed save yields ZERO violations.
  */
 public final class JIPipeProjectCrate {
 
     /**
      * The main entity id of a JIPX crate: the container's main graph part.
-     * Equal to {@link JIPipeXManifest#MAIN_GRAPH} — the crate's
+     * Equal to {@link JIPipeXManifest#MAIN_GRAPH} - the crate's
      * {@code mainEntity} and the manifest's {@code main-graph} must
      * always agree.
      */
@@ -108,13 +108,13 @@ public final class JIPipeProjectCrate {
      * Builds the Workflow RO-Crate for the given project and runs the
      * compliance checklist.
      *
-     * @param project     the project to crate (its metadata drives the
-     *                    entity graph)
+     * @param project       the project to crate (its metadata drives the
+     *                      entity graph)
      * @param violationsOut collects the compliance violations; a
      *                      well-formed save leaves it empty
      * @return the built crate (validated by the library's JSON-schema
-     *         validator — violations are printed to {@code System.err} by
-     *         the library and intentionally left there)
+     * validator - violations are printed to {@code System.err} by
+     * the library and intentionally left there)
      * @throws JIPipeValidationRuntimeException if the crate cannot be built
      */
     public static RoCrate buildCrate(JIPipeProject project, List<String> violationsOut) {
@@ -147,13 +147,13 @@ public final class JIPipeProjectCrate {
                 .build());
 
         // Point the root at the main entity (same post-build hook as
-        // CreateROCrateRun.addROCrateMainEntity — the builder has no
+        // CreateROCrateRun.addROCrateMainEntity - the builder has no
         // mainEntity setter).
         crate.getRootDataEntity().addIdProperty("mainEntity", MAIN_ENTITY_ID);
 
         // Root keywords: "JIPipe" + the metadata's categories (the
         // library's addProperty overwrites single values, so the list is
-        // built explicitly as an array — the schema allows arrays of
+        // built explicitly as an array - the schema allows arrays of
         // literals, which serialize as the RO-Crate list form).
         ArrayNode keywords = MyObjectMapper.getMapper().createArrayNode();
         keywords.add("JIPipe");
@@ -190,7 +190,7 @@ public final class JIPipeProjectCrate {
                 toSpdxLicenseUri(effectiveLicense));
 
         // The JIPipe programming-language contextual entity (the CWL
-        // language entity of CreateROCrateRun, replaced by JIPipe — the
+        // language entity of CreateROCrateRun, replaced by JIPipe - the
         // stable URI placeholder, see LANGUAGE_ENTITY_ID).
         builder.addContextualEntity(new ContextualEntity.ContextualEntityBuilder()
                 .setId(LANGUAGE_ENTITY_ID)
@@ -200,7 +200,7 @@ public final class JIPipeProjectCrate {
                 .build());
 
         // The Bioschemas ComputationalWorkflow profile guide (mirrors
-        // CreateROCrateRun's contextual entity — spec §6).
+        // CreateROCrateRun's contextual entity - spec §6).
         builder.addContextualEntity(new ContextualEntity.ContextualEntityBuilder()
                 .setId(BIOSCHEMAS_COMPUTATIONAL_WORKFLOW_PROFILE)
                 .addType("Guide")
@@ -228,7 +228,7 @@ public final class JIPipeProjectCrate {
         // Persons from the project authors (mirrors
         // CreateROCrateRun.addROCrateAuthors). Authors without an ORCID
         // get a stable non-URL id (urn:person:<index> in author order)
-        // instead — an empty id would be replaced by a random UUID by the
+        // instead - an empty id would be replaced by a random UUID by the
         // library, breaking id stability.
         int authorIndex = 0;
         for (JIPipeAuthorMetadata author : project.getMetadata().getAuthors()) {
@@ -269,7 +269,7 @@ public final class JIPipeProjectCrate {
                 .build());
 
         // The README (mirrors CreateROCrateRun.createReadme, minus the
-        // location — the file is written by the container writer).
+        // location - the file is written by the container writer).
         builder.addDataEntity(new FileEntity.FileEntityBuilder()
                 .setId("README.md")
                 .addType("File")

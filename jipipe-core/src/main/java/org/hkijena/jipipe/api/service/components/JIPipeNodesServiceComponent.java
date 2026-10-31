@@ -13,15 +13,19 @@
 
 package org.hkijena.jipipe.api.service.components;
 
-import com.google.common.collect.*;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.Multimap;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeNodeTemplate;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeEmptyData;
-import org.hkijena.jipipe.api.nodes.*;
-
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeExample;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.taxonomy.*;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.api.service.JIPipeServiceComponent;
@@ -59,7 +63,7 @@ public final class JIPipeNodesServiceComponent extends JIPipeServiceComponent im
         // The taxonomy component is passed in explicitly (JIPipeService
         // creates it before this one): this constructor runs inside
         // JIPipeService's own constructor, where the service state is still
-        // Uninitialized — service.getNodeTaxonomyService() would call
+        // Uninitialized - service.getNodeTaxonomyService() would call
         // ensureInitialized() and re-entrantly start a full initialization
         // here, before the remaining components exist.
         this.taxonomyResolver = new TaxonomyResolver(taxonomyService);
@@ -513,7 +517,7 @@ public final class JIPipeNodesServiceComponent extends JIPipeServiceComponent im
      * <li>hard taxonomy errors (cyclic/dangling function tree, broken
      * framework set, dangling family step, node pointing at an
      * unregistered function/framework) are appended to the service's
-     * initialization report, which the initializer then fails on — a
+     * initialization report, which the initializer then fails on - a
      * broken-but-partly-converted taxonomy must never ship a wrong
      * browser;</li>
      * <li>nodes without a primary function are the expected phase 1a
@@ -530,16 +534,16 @@ public final class JIPipeNodesServiceComponent extends JIPipeServiceComponent im
         // The single authoritative taxonomy validation+log of the
         // initialization (the settle loop in run() stays silent so it
         // can run on every registration cycle without re-logging). The
-        // FamilyAssembler overload validates ALL error classes — function
+        // FamilyAssembler overload validates ALL error classes - function
         // tree, framework set, family steps (dangling steps / phantom
-        // predecessors via the FamilyAssembler), and node membership —
+        // predecessors via the FamilyAssembler), and node membership -
         // so a broken family workflow can never ship a wrong browser.
         TaxonomyValidationReport report = TaxonomyValidationReport.run(
-            taxonomyResolver.getFunctionRegistry(),
-            taxonomyResolver.getFrameworkRegistry(),
-            registeredNodeInfos,
-            taxonomyResolver.getFamilyAssembler(),
-            registeredNodeInfos.keySet());
+                taxonomyResolver.getFunctionRegistry(),
+                taxonomyResolver.getFrameworkRegistry(),
+                registeredNodeInfos,
+                taxonomyResolver.getFamilyAssembler(),
+                registeredNodeInfos.keySet());
         if (!report.errors().isEmpty()) {
             List<Throwable> errors = new ArrayList<>();
             for (String error : report.errors()) {
@@ -549,7 +553,7 @@ public final class JIPipeNodesServiceComponent extends JIPipeServiceComponent im
             getService().getInitializationReport().getErrors().addAll(errors);
         } else if (!report.unassignedNodeIds().isEmpty()) {
             progressInfo.log("Node taxonomy: " + report.unassignedNodeIds().size()
-                + " nodes not yet assigned a taxonomy function — expected during conversion");
+                    + " nodes not yet assigned a taxonomy function - expected during conversion");
         } else {
             progressInfo.log("Node taxonomy validation passed");
         }

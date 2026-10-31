@@ -20,17 +20,17 @@ public class InstrumentationContext {
     private final String projectId;
 
     public InstrumentationContext(JIPipeProject project, String projectId,
-                                   JIPipeProgressInfo progressInfo,
-                                   InstrumentationEventBus eventBus,
-                                   InstrumentationJobManager jobManager) {
+                                  JIPipeProgressInfo progressInfo,
+                                  InstrumentationEventBus eventBus,
+                                  InstrumentationJobManager jobManager) {
         this(project, projectId, null, progressInfo, eventBus, jobManager);
     }
 
     public InstrumentationContext(JIPipeProject project, String projectId,
-                                   JIPipeGraph graphOverride,
-                                   JIPipeProgressInfo progressInfo,
-                                   InstrumentationEventBus eventBus,
-                                   InstrumentationJobManager jobManager) {
+                                  JIPipeGraph graphOverride,
+                                  JIPipeProgressInfo progressInfo,
+                                  InstrumentationEventBus eventBus,
+                                  InstrumentationJobManager jobManager) {
         this.project = project;
         this.projectId = projectId;
         this.graphOverride = graphOverride;
@@ -39,11 +39,25 @@ public class InstrumentationContext {
         this.jobManager = jobManager;
     }
 
-    public JIPipeProject getProject() { return project; }
-    public String getProjectId() { return projectId; }
-    public JIPipeProgressInfo getProgressInfo() { return progressInfo; }
-    public InstrumentationEventBus getEventBus() { return eventBus; }
-    public InstrumentationJobManager getJobManager() { return jobManager; }
+    public JIPipeProject getProject() {
+        return project;
+    }
+
+    public String getProjectId() {
+        return projectId;
+    }
+
+    public JIPipeProgressInfo getProgressInfo() {
+        return progressInfo;
+    }
+
+    public InstrumentationEventBus getEventBus() {
+        return eventBus;
+    }
+
+    public InstrumentationJobManager getJobManager() {
+        return jobManager;
+    }
 
     /**
      * Returns the graph to operate on. If a graphOverride was set (e.g., a stage's

@@ -1,1 +1,28 @@
-{"nodes":{"n0":{"jipipe:node-info-id":"table-apply-expression-per-row","jipipe:graph-compartment":"DEFAULT","jipipe:metadata-v1":{"location/DEFAULT/x":1,"location/DEFAULT/y":1}},"n1":{"jipipe:node-info-id":"iji-export-table-as-xlsx","jipipe:graph-compartment":"DEFAULT","jipipe:metadata-v1":{"location/DEFAULT/x":1,"location/DEFAULT/y":5}}},"edges":[{"source-node":"n0","source-slot":"Output","target-node":"n1","target-slot":"Input"}]}
+{
+  "nodes": {
+    "n0": {
+      "jipipe:node-info-id": "table-apply-expression-per-row",
+      "jipipe:graph-compartment": "DEFAULT",
+      "jipipe:metadata-v1": {
+        "location/DEFAULT/x": 1,
+        "location/DEFAULT/y": 1
+      }
+    },
+    "n1": {
+      "jipipe:node-info-id": "iji-export-table-as-xlsx",
+      "jipipe:graph-compartment": "DEFAULT",
+      "jipipe:metadata-v1": {
+        "location/DEFAULT/x": 1,
+        "location/DEFAULT/y": 5
+      }
+    }
+  },
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Output",
+      "target-node": "n1",
+      "target-slot": "Input"
+    }
+  ]
+}

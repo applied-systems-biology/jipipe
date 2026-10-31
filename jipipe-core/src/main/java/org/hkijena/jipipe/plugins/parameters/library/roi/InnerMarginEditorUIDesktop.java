@@ -41,12 +41,6 @@ public class InnerMarginEditorUIDesktop extends JIPipeDesktopParameterEditorUI<I
         setLayout(new BorderLayout());
         setBorder(UIUtils.createControlBorder());
 
-        JToolBar toolBar = new JToolBar();
-        toolBar.setFloatable(false);
-        add(toolBar, BorderLayout.NORTH);
-
-        toolBar.add(new JLabel(getParameterAccess().getName()));
-
         JPanel content = new JPanel(new BorderLayout());
 
         parameterPanel = new JIPipeDesktopParameterFormPanel(getDesktopWorkbench(), null, null, JIPipeDesktopParameterFormPanel.NO_EMPTY_GROUP_HEADERS);
@@ -56,7 +50,7 @@ public class InnerMarginEditorUIDesktop extends JIPipeDesktopParameterEditorUI<I
     }
 
     @Override
-    public boolean isUILabelEnabled() {
+    public boolean isUIInline() {
         return false;
     }
 

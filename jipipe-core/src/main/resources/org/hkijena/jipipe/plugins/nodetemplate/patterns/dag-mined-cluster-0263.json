@@ -1,1 +1,48 @@
-{"edges":[{"source-node":"n0","source-slot":"Output","target-node":"n2","target-slot":"Input"},{"source-node":"n2","source-slot":"Output","target-node":"n1","target-slot":"Key"},{"source-node":"n2","source-slot":"Output","target-node":"n1","target-slot":"Value"}],"nodes":{"n0":{"jipipe:graph-compartment":"afac4c78-313d-5878-93d6-82006f7806f0","jipipe:metadata-v1":{"location/afac4c78-313d-5878-93d6-82006f7806f0/x":0,"location/afac4c78-313d-5878-93d6-82006f7806f0/y":0},"jipipe:node-info-id":"ij1-math-generate-from-expression"},"n1":{"jipipe:graph-compartment":"afac4c78-313d-5878-93d6-82006f7806f0","jipipe:metadata-v1":{"location/afac4c78-313d-5878-93d6-82006f7806f0/x":1,"location/afac4c78-313d-5878-93d6-82006f7806f0/y":9},"jipipe:node-info-id":"ij1-analyze-statistics-histogram-key-value"},"n2":{"jipipe:graph-compartment":"afac4c78-313d-5878-93d6-82006f7806f0","jipipe:metadata-v1":{"location/afac4c78-313d-5878-93d6-82006f7806f0/x":0,"location/afac4c78-313d-5878-93d6-82006f7806f0/y":4},"jipipe:node-info-id":"ij1-math-edt2d"}}}
+{
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Output",
+      "target-node": "n2",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n2",
+      "source-slot": "Output",
+      "target-node": "n1",
+      "target-slot": "Key"
+    },
+    {
+      "source-node": "n2",
+      "source-slot": "Output",
+      "target-node": "n1",
+      "target-slot": "Value"
+    }
+  ],
+  "nodes": {
+    "n0": {
+      "jipipe:graph-compartment": "afac4c78-313d-5878-93d6-82006f7806f0",
+      "jipipe:metadata-v1": {
+        "location/afac4c78-313d-5878-93d6-82006f7806f0/x": 0,
+        "location/afac4c78-313d-5878-93d6-82006f7806f0/y": 0
+      },
+      "jipipe:node-info-id": "ij1-math-generate-from-expression"
+    },
+    "n1": {
+      "jipipe:graph-compartment": "afac4c78-313d-5878-93d6-82006f7806f0",
+      "jipipe:metadata-v1": {
+        "location/afac4c78-313d-5878-93d6-82006f7806f0/x": 1,
+        "location/afac4c78-313d-5878-93d6-82006f7806f0/y": 9
+      },
+      "jipipe:node-info-id": "ij1-analyze-statistics-histogram-key-value"
+    },
+    "n2": {
+      "jipipe:graph-compartment": "afac4c78-313d-5878-93d6-82006f7806f0",
+      "jipipe:metadata-v1": {
+        "location/afac4c78-313d-5878-93d6-82006f7806f0/x": 0,
+        "location/afac4c78-313d-5878-93d6-82006f7806f0/y": 4
+      },
+      "jipipe:node-info-id": "ij1-math-edt2d"
+    }
+  }
+}

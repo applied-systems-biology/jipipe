@@ -8,7 +8,6 @@ import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.pickers.JIPipeDesktopPickNodeDialog;
 import org.hkijena.jipipe.plugins.parameters.library.graph.GraphNodeReferenceParameter;
 import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -26,10 +25,12 @@ public class JIPipeDesktopGraphNodeReferenceParameterEditorUI extends JIPipeDesk
 
     private void initialize() {
         selectButton.addActionListener(e -> selectNode());
+        selectButton.setHorizontalAlignment(SwingConstants.LEFT);
+        selectButton.setToolTipText("Select node");
 
         setLayout(new BorderLayout());
+        // #1339 item 6: the display button already opens the same picker.
         add(selectButton, BorderLayout.CENTER);
-        add(UIUtils.createButton("", JIPipe.RESOURCES.getIcon16("actions/edit.png"), this::selectNode), BorderLayout.EAST);
     }
 
     private void selectNode() {

@@ -27,12 +27,12 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class ResolveVariableOperatorTest {
 
+    private final JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
+
     @BeforeAll
     static void ensureJIPipe() {
         org.hkijena.jipipe.JIPipe.ensureInstance();
     }
-
-    private final JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
 
     /**
      * Finds the first report entry whose title or explanation mentions the needle.

@@ -3,7 +3,7 @@
 
 A pure, UI-free re-implementation of the arithmetic of
 ``SugiyamaGraphAutoLayoutImplementation.rearrangeSugiyamaVertical`` (the app's
-Sugiyama auto-layout — layers flow TOP TO BOTTOM, the app's flow direction,
+Sugiyama auto-layout - layers flow TOP TO BOTTOM, the app's flow direction,
 1338), over the RAW edge list of a minimal graph
 (``{"nodes": {key: {...}}, "edges": [...]}``). For the shipped patterns it is
 deterministic and, per the global-constraints rule, identical in spacing to
@@ -23,12 +23,12 @@ Spacing rules (the global-constraints rule, the binding spec):
      earlier indices.
   2. Within a layer: index = node-key sort order (deterministic; the Java impl
      uses set order, which is irrelevant for equality of the spacing rules).
-  3. y(layer) = 1 + sum over l' < layer of (NODE_HEIGHT_CELLS + 1) —
+  3. y(layer) = 1 + sum over l' < layer of (NODE_HEIGHT_CELLS + 1) -
      every real node is 3 grid rows tall, so each layer advances the row by
      3 + 1 cells (the Java impl's per-row max of node heights + GRID_HEIGHT).
   4. x(index) = 1 + sum over i' < index of (nodeWidthCells(i') + 2), where
      nodeWidthCells comes from the width map (cells; the caller supplies it,
-     already ceil(estimate/25) — see node_width_cells below).
+     already ceil(estimate/25) - see node_width_cells below).
   5. The width map (node key -> cells) is the caller's: 7 cells for most
      nodes, 10 cells for nodes whose FINAL slot count (restored
      jipipe:slot-configuration if present, else registry inputSlots+outputSlots)
@@ -92,15 +92,15 @@ def layout(graph, node_width_cells):
     """Lay out ``graph`` on the grid.
 
     Args:
-      graph: ``{"nodes": {key: {...}}, "edges": [...]}`` — the minimal
+      graph: ``{"nodes": {key: {...}}, "edges": [...]}`` - the minimal
         (A)-format graph. Node keys are the dict keys (not the UUIDs); edges
         reference ``source-node`` / ``target-node``.
-      node_width_cells: ``{node key: int}`` — the FINAL width of each node in
+      node_width_cells: ``{node key: int}`` - the FINAL width of each node in
         grid cells (7 or 10; see rule 5). Nodes absent from the map use
         :data:`DEFAULT_WIDTH_CELLS`.
 
     Returns:
-      ``{node key: (x, y)}`` — deterministic grid-cell coordinates, origin
+      ``{node key: (x, y)}`` - deterministic grid-cell coordinates, origin
       (1, 1). Every node in ``graph`` gets a placement (total).
     """
     nodes = graph.get("nodes", {})
@@ -173,7 +173,7 @@ def is_uuid(value):
 
 def node_location_valid(node):
     """A node's location is VALID iff its ``jipipe:graph-compartment`` is a
-    UUID (or empty / ``"DEFAULT"`` — both resolve to the default compartment)
+    UUID (or empty / ``"DEFAULT"`` - both resolve to the default compartment)
     AND ``jipipe:metadata-v1`` carries ``location/<that key>/x`` and ``/y``.
     (The legacy-name "derived" + pixel-era files and the 24 location-less
     linear files are the 179 invalid ones.)"""
@@ -193,7 +193,7 @@ def relocate_graph(graph, node_width_cells, rekey_legacy="derived"):
     If ``rekey_legacy`` is not None, nodes whose compartment equals that
     legacy name (e.g. ``"derived"``) also get their
     ``jipipe:graph-compartment`` rewritten to ``"DEFAULT"`` (the resolvable
-    default-compartment marker — ``JIPipeGraph.nodesFromJson`` keeps
+    default-compartment marker - ``JIPipeGraph.nodesFromJson`` keeps
     default-compartment nodes as-is and the existing "DEFAULT" location
     migration promotes the key) and their location is keyed under
     ``"DEFAULT"``. Mined nodes (UUID compartments) keep their compartment and

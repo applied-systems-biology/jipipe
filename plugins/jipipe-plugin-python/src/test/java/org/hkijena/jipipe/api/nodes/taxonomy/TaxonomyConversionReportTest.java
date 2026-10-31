@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Per-module conversion gate for the node taxonomy (phase 1b, task 14;
- * Review Focus #6 — "a conversion batch must not leave a node without a
+ * Review Focus #6 - "a conversion batch must not leave a node without a
  * function, or it vanishes from the browser").
  * <p>
  * <b>Gated:</b> this test is skipped unless the system property
@@ -52,7 +52,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *   -Djipipe.taxonomy.report.module=<package-prefix>
  * }</pre>
  * The project's Surefire (3.5.3) forwards user {@code -D} properties into
- * the forked test JVM, so a plain {@code -D} is sufficient — no
+ * the forked test JVM, so a plain {@code -D} is sufficient - no
  * {@code argLine} wiring needed.
  * <p>
  * <b>One prefix per invocation.</b> The gate filters by a single package
@@ -61,20 +61,20 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * and {@code org.hkijena.jipipe.plugins}) is checked with one invocation per
  * prefix.
  * <p>
- * <b>Module boundary — copy this test into plugin modules!</b>
+ * <b>Module boundary - copy this test into plugin modules!</b>
  * {@code JIPipe.ensureInstance()} only initializes plugins on the classpath
  * of the running module. This test lives in jipipe-core, where it gates
  * core's own nodes. Plugin modules depend on core (not vice versa), so
  * {@code mvn test -pl jipipe-core} cannot see their nodes. For each
  * 19.x plugin conversion batch, <b>copy-paste this test file unchanged into
- * the plugin module's test tree</b> (same package, same file name — it is
+ * the plugin module's test tree</b> (same package, same file name - it is
  * deliberately self-contained: only jipipe-core API + JUnit 5 imports) and
  * run the gate with that module's package prefix. Do not re-derive the test
  * per batch; this class is the single source.
  * <p>
  * <b>Registration caveat:</b> the gate only sees nodes that are actually
  * <i>registered</i> in the running module's classpath. A node class with
- * {@code @ConfigureJIPipeNode} is not automatically registered — it must be
+ * {@code @ConfigureJIPipeNode} is not automatically registered - it must be
  * referenced by a plugin's {@code registerNodeType(...)} call (or a
  * registration task). E.g. in jipipe-core the comment node
  * ({@code jipipe:comment}) is registered by the <i>utils</i> plugin, and the
@@ -90,9 +90,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * framework references) so a batch cannot "convert" into a broken registry.
  */
 @EnabledIfSystemProperty(named = "jipipe.taxonomy.report.module", matches = ".+",
-    disabledReason =
-    "Conversion gate: enabled only when -Djipipe.taxonomy.report.module=<package-prefix> is set "
-        + "(see class Javadoc for the per-module invocation).")
+        disabledReason =
+                "Conversion gate: enabled only when -Djipipe.taxonomy.report.module=<package-prefix> is set "
+                        + "(see class Javadoc for the per-module invocation).")
 class TaxonomyConversionReportTest {
 
     /**
@@ -113,32 +113,32 @@ class TaxonomyConversionReportTest {
     @Test
     void moduleHasNoUnconvertedNodes() {
         TaxonomyValidationReport report = TaxonomyValidationReport.run(
-            JIPipe.getNodes().getFunctions(),
-            JIPipe.getNodes().getFrameworks(),
-            JIPipe.getNodes().getRegisteredNodeInfos());
+                JIPipe.getNodes().getFunctions(),
+                JIPipe.getNodes().getFrameworks(),
+                JIPipe.getNodes().getRegisteredNodeInfos());
 
         // Hard errors (broken function tree, dangling framework/function
         // references) must never be shipped by a conversion batch.
         assertTrue(report.errors().isEmpty(),
-            "Taxonomy validation errors while converting '" + modulePrefix + "': " + report.errors());
+                "Taxonomy validation errors while converting '" + modulePrefix + "': " + report.errors());
 
         // The gate itself: every node of this module must be converted
         // (have a primary function). Filter by instance-class package
-        // prefix — registration path (annotation vs. programmatic) is
+        // prefix - registration path (annotation vs. programmatic) is
         // irrelevant here.
         List<String> unassignedInModule = report.unassignedNodeIds().stream()
-            .filter(nodeId -> {
-                JIPipeNodeInfo info = JIPipe.getNodes().getRegisteredNodeInfos().get(nodeId);
-                return info != null
-                    && info.getInstanceClass().getName().startsWith(modulePrefix);
-            })
-            .sorted()
-            .collect(Collectors.toList());
+                .filter(nodeId -> {
+                    JIPipeNodeInfo info = JIPipe.getNodes().getRegisteredNodeInfos().get(nodeId);
+                    return info != null
+                            && info.getInstanceClass().getName().startsWith(modulePrefix);
+                })
+                .sorted()
+                .collect(Collectors.toList());
 
         assertTrue(unassignedInModule.isEmpty(),
-            "Module '" + modulePrefix + "' still has " + unassignedInModule.size()
-                + " node(s) without a taxonomy function:\n  "
-                + String.join("\n  ", unassignedInModule)
-                + "\nRun utils/taxonomy-conversion/convert.py with the module's map.tsv, then re-run this gate.");
+                "Module '" + modulePrefix + "' still has " + unassignedInModule.size()
+                        + " node(s) without a taxonomy function:\n  "
+                        + String.join("\n  ", unassignedInModule)
+                        + "\nRun utils/taxonomy-conversion/convert.py with the module's map.tsv, then re-run this gate.");
     }
 }

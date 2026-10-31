@@ -28,10 +28,10 @@ import java.util.*;
  * Resolves the taxonomy views of the node service component:
  * <ul>
  * <li>the {@link FunctionRegistry} (the curated function tree, populated
- * once by the taxonomy plugin) — read from the owning
+ * once by the taxonomy plugin) - read from the owning
  * {@link JIPipeNodeTaxonomyServiceComponent},</li>
  * <li>the {@link FrameworkRegistry} (populated once by the taxonomy
- * plugin) — read from the owning
+ * plugin) - read from the owning
  * {@link JIPipeNodeTaxonomyServiceComponent},</li>
  * <li>the family step graph, assembled from the nodes'
  * {@link JIPipeNodeTaxonomyFamilyStepAnnotation}s via a
@@ -56,13 +56,19 @@ public class TaxonomyResolver {
     private final List<InputProfileProvider> inputProfileProviders = new ArrayList<>();
     private final Map<String, JIPipeNodeTaxonomyFamily> familiesById = new LinkedHashMap<>();
 
-    /** nodeId → the node's primary and secondary taxonomy functions */
+    /**
+     * nodeId → the node's primary and secondary taxonomy functions
+     */
     private final Map<String, Set<JIPipeNodeTaxonomyFunction>> nodeFunctions = new HashMap<>();
 
-    /** nodeId → the node's taxonomy framework */
+    /**
+     * nodeId → the node's taxonomy framework
+     */
     private final Map<String, JIPipeNodeTaxonomyFramework> nodeFrameworks = new HashMap<>();
 
-    /** Class → node ids (registration order), lazily rebuilt from the node registry */
+    /**
+     * Class → node ids (registration order), lazily rebuilt from the node registry
+     */
     private Map<Class<?>, List<String>> classToNodeIds;
 
     private FamilyAssembler familyAssembler;
@@ -86,13 +92,64 @@ public class TaxonomyResolver {
      * framework registries are read from the given taxonomy service
      * component.
      *
-     * @param taxonomyService  the taxonomy service component owning the
-     *                         function and framework registries
-     * @param classToNodeIds   node class → registered node ids (registration order)
+     * @param taxonomyService the taxonomy service component owning the
+     *                        function and framework registries
+     * @param classToNodeIds  node class → registered node ids (registration order)
      */
     public TaxonomyResolver(JIPipeNodeTaxonomyServiceComponent taxonomyService, Map<Class<?>, List<String>> classToNodeIds) {
         this.taxonomyService = taxonomyService;
         this.classToNodeIds = classToNodeIds == null ? null : new LinkedHashMap<>(classToNodeIds);
+    }
+
+    /**
+     * The node's current taxonomy functions: its primary function
+     * (if any) plus its secondary functions.
+     *
+     * @param info the node info
+     * @return the functions, possibly empty
+     */
+    private static Set<JIPipeNodeTaxonomyFunction> currentFunctionsOf(JIPipeNodeInfo info) {
+        Set<JIPipeNodeTaxonomyFunction> functions = new LinkedHashSet<>();
+        if (info.getPrimaryFunction() != null) {
+            functions.add(info.getPrimaryFunction());
+        }
+        functions.addAll(info.getSecondaryFunctions());
+        return functions;
+    }
+
+    private static Class<?> firstInputSlotDataClass(JIPipeNodeInfo info) {
+        List<AddJIPipeInputSlot> inputSlots = info.getInputSlots();
+        if (inputSlots.isEmpty()) {
+            return null;
+        }
+        return inputSlots.get(0).value();
+    }
+
+    private static Set<String> mergedTags(JIPipeNodeInfo info, Set<JIPipeNodeTaxonomyFunction> functions) {
+        Set<String> tags = new LinkedHashSet<>(info.getTaxonomyTags());
+        // Tag-audit resource (jipipe-core): per-node tags for the curated
+        // nodes, merged next to the annotation-declared tags
+        tags.addAll(TaxonomyAutoAssignment.CuratedNodeTags.tagsOf(info.getId()));
+        for (JIPipeNodeTaxonomyFunction function : functions) {
+            collectFunctionPathTags(function, tags, new HashSet<>());
+        }
+        return tags;
+    }
+
+    /**
+     * Adds the tags of the function and every ancestor on its path
+     * (leaf → root) to the given set.
+     *
+     * @param function the function to start from
+     * @param target   the tag set to fill
+     * @param visited  visited function ids (cycle guard)
+     */
+    private static void collectFunctionPathTags(JIPipeNodeTaxonomyFunction function, Set<String> target, Set<String> visited) {
+        JIPipeNodeTaxonomyFunction current = function;
+        while (current != null && visited.add(current.getId())) {
+            target.addAll(current.getTags());
+            current = current.getParent();
+        }
     }
 
     /**
@@ -138,7 +195,7 @@ public class TaxonomyResolver {
         }
         this.classToNodeIds = mapping;
         // Keep the existing assembler (its steps survive); only its
-        // class→node-ids mapping is updated — the steps resolve their
+        // class→node-ids mapping is updated - the steps resolve their
         // predecessors lazily against it at query time.
         if (familyAssembler != null) {
             familyAssembler.updateClassToNodeId(mapping);
@@ -178,9 +235,9 @@ public class TaxonomyResolver {
             return;
         }
         for (JIPipeNodeTaxonomyFamilyStepAnnotation stepAnnotation :
-            ReflectionUtils.getAllAnnotations(info.getInstanceClass(), JIPipeNodeTaxonomyFamilyStepAnnotation.class)) {
+                ReflectionUtils.getAllAnnotations(info.getInstanceClass(), JIPipeNodeTaxonomyFamilyStepAnnotation.class)) {
             JIPipeNodeTaxonomyFamily family =
-                (JIPipeNodeTaxonomyFamily) ReflectionUtils.newInstance(stepAnnotation.family());
+                    (JIPipeNodeTaxonomyFamily) ReflectionUtils.newInstance(stepAnnotation.family());
             String familyId = family.getId();
             familiesById.putIfAbsent(familyId, family);
             getFamilyAssembler().addStep(info.getId(), familyId, stepAnnotation);
@@ -318,22 +375,6 @@ public class TaxonomyResolver {
     }
 
     /**
-     * The node's current taxonomy functions: its primary function
-     * (if any) plus its secondary functions.
-     *
-     * @param info the node info
-     * @return the functions, possibly empty
-     */
-    private static Set<JIPipeNodeTaxonomyFunction> currentFunctionsOf(JIPipeNodeInfo info) {
-        Set<JIPipeNodeTaxonomyFunction> functions = new LinkedHashSet<>();
-        if (info.getPrimaryFunction() != null) {
-            functions.add(info.getPrimaryFunction());
-        }
-        functions.addAll(info.getSecondaryFunctions());
-        return functions;
-    }
-
-    /**
      * Validates the taxonomy state:
      * <ul>
      * <li>the function tree ({@link FunctionRegistry#validate()}),</li>
@@ -368,50 +409,15 @@ public class TaxonomyResolver {
             }
             if (taxonomyService.getFunctionRegistry().byId(primary.getId()) == null) {
                 errors.add("Node '" + info.getId() + "' points at taxonomy function '"
-                    + primary.getId() + "' that is not registered in the function registry");
+                        + primary.getId() + "' that is not registered in the function registry");
             }
             JIPipeNodeTaxonomyFramework framework = info.getFramework();
             if (framework != null && !(framework instanceof NoFramework)
-                && taxonomyService.getFrameworkRegistry().byId(framework.getId()) == null) {
+                    && taxonomyService.getFrameworkRegistry().byId(framework.getId()) == null) {
                 errors.add("Node '" + info.getId() + "' points at taxonomy framework '"
-                    + framework.getId() + "' that is not registered in the framework registry");
+                        + framework.getId() + "' that is not registered in the framework registry");
             }
         }
         return errors;
-    }
-
-    private static Class<?> firstInputSlotDataClass(JIPipeNodeInfo info) {
-        List<AddJIPipeInputSlot> inputSlots = info.getInputSlots();
-        if (inputSlots.isEmpty()) {
-            return null;
-        }
-        return inputSlots.get(0).value();
-    }
-
-    private static Set<String> mergedTags(JIPipeNodeInfo info, Set<JIPipeNodeTaxonomyFunction> functions) {
-        Set<String> tags = new LinkedHashSet<>(info.getTaxonomyTags());
-        // Tag-audit resource (jipipe-core): per-node tags for the curated
-        // nodes, merged next to the annotation-declared tags
-        tags.addAll(TaxonomyAutoAssignment.CuratedNodeTags.tagsOf(info.getId()));
-        for (JIPipeNodeTaxonomyFunction function : functions) {
-            collectFunctionPathTags(function, tags, new HashSet<>());
-        }
-        return tags;
-    }
-
-    /**
-     * Adds the tags of the function and every ancestor on its path
-     * (leaf → root) to the given set.
-     *
-     * @param function the function to start from
-     * @param target   the tag set to fill
-     * @param visited  visited function ids (cycle guard)
-     */
-    private static void collectFunctionPathTags(JIPipeNodeTaxonomyFunction function, Set<String> target, Set<String> visited) {
-        JIPipeNodeTaxonomyFunction current = function;
-        while (current != null && visited.add(current.getId())) {
-            target.addAll(current.getTags());
-            current = current.getParent();
-        }
     }
 }

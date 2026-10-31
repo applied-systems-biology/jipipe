@@ -36,28 +36,32 @@ Mined pattern `fan-in-ij3d-measure-roi3d-core-io-1-other-1` (shape `fan-in`, sup
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| other | `ij3d-measure-roi3d` |
-| core-io | `io-interface`, `jipipe:compartment-output` |
-| other | `ij3d-analyze-find-particles`, `ij3d-filter-roi3d-by-statistics`, `ij3d-labels-to-roi`, `ij3d-roi-filter-by-overlap` |
+| role    | node ids                                                                                                             |
+|---------|----------------------------------------------------------------------------------------------------------------------|
+| other   | `ij3d-measure-roi3d`                                                                                                 |
+| core-io | `io-interface`, `jipipe:compartment-output`                                                                          |
+| other   | `ij3d-analyze-find-particles`, `ij3d-filter-roi3d-by-statistics`, `ij3d-labels-to-roi`, `ij3d-roi-filter-by-overlap` |
 
 ## Example graph
 
-Project: `AIAgentTests/03-ExampleWorkflows/Annamaria_12.jip` (relative to `/data/JIPipe`), compartment `Membrane+Particles`.
+Project: `AIAgentTests/03-ExampleWorkflows/Annamaria_12.jip` (relative to `/data/JIPipe`), compartment
+`Membrane+Particles`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `jipipe:compartment-output` | Mask |
-| n1 | `ij3d-filter-roi3d-by-statistics` | Filter 3D ROI by statistics |
-| n2 | `ij3d-measure-roi3d` | Extract ROI 3D statistics |
+| key | node id                           | name                        |
+|-----|-----------------------------------|-----------------------------|
+| n0  | `jipipe:compartment-output`       | Mask                        |
+| n1  | `ij3d-filter-roi3d-by-statistics` | Filter 3D ROI by statistics |
+| n2  | `ij3d-measure-roi3d`              | Extract ROI 3D statistics   |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
-| Mask | `Magenta trimmed` | Filter 3D ROI by statistics | `Reference` | `imagej-imgplus` |
-| Filter 3D ROI by statistics | `Output` | Extract ROI 3D statistics | `ROI` | `roi-3d-list` |
+| from                        | slot              | to                          | slot        | data class       |
+|-----------------------------|-------------------|-----------------------------|-------------|------------------|
+| Mask                        | `Magenta trimmed` | Filter 3D ROI by statistics | `Reference` | `imagej-imgplus` |
+| Filter 3D ROI by statistics | `Output`          | Extract ROI 3D statistics   | `ROI`       | `roi-3d-list`    |
 
 ## Template
 
-Proposed name `Extract IJ3D ROI statistics fans in from 6 source ids (roles: core-io, other)`, menu path `Patterns/ROIs/Extract IJ3D ROI statistics fans in from 6 source ids (roles: core-io, other)` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/fan-in-ij3d-measure-roi3d-core-io-1-other-1.json`.
+Proposed name `Extract IJ3D ROI statistics fans in from 6 source ids (roles: core-io, other)`, menu path
+`Patterns/ROIs/Extract IJ3D ROI statistics fans in from 6 source ids (roles: core-io, other)` (proposal only - not
+registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/fan-in-ij3d-measure-roi3d-core-io-1-other-1.json`.
 

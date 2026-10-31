@@ -1,1 +1,56 @@
-{"nodes":{"n0":{"jipipe:node-info-id":"convert-imagej-image","jipipe:graph-compartment":"DEFAULT","jipipe:metadata-v1":{"location/DEFAULT/x":1,"location/DEFAULT/y":1}},"n1":{"jipipe:node-info-id":"ij1-analyze-find-particles2d","jipipe:graph-compartment":"DEFAULT","jipipe:metadata-v1":{"location/DEFAULT/x":10,"location/DEFAULT/y":1}},"n2":{"jipipe:node-info-id":"filaments-convert-roi2d-to-filaments","jipipe:graph-compartment":"DEFAULT","jipipe:metadata-v1":{"location/DEFAULT/x":1,"location/DEFAULT/y":5}},"n3":{"jipipe:node-info-id":"filaments-set-overlay","jipipe:graph-compartment":"DEFAULT","jipipe:metadata-v1":{"location/DEFAULT/x":1,"location/DEFAULT/y":9}}},"edges":[{"source-node":"n0","source-slot":"Output","target-node":"n3","target-slot":"Input"},{"source-node":"n1","source-slot":"ROI","target-node":"n2","target-slot":"Input"},{"source-node":"n2","source-slot":"Output","target-node":"n3","target-slot":"Filaments"}]}
+{
+  "nodes": {
+    "n0": {
+      "jipipe:node-info-id": "convert-imagej-image",
+      "jipipe:graph-compartment": "DEFAULT",
+      "jipipe:metadata-v1": {
+        "location/DEFAULT/x": 1,
+        "location/DEFAULT/y": 1
+      }
+    },
+    "n1": {
+      "jipipe:node-info-id": "ij1-analyze-find-particles2d",
+      "jipipe:graph-compartment": "DEFAULT",
+      "jipipe:metadata-v1": {
+        "location/DEFAULT/x": 10,
+        "location/DEFAULT/y": 1
+      }
+    },
+    "n2": {
+      "jipipe:node-info-id": "filaments-convert-roi2d-to-filaments",
+      "jipipe:graph-compartment": "DEFAULT",
+      "jipipe:metadata-v1": {
+        "location/DEFAULT/x": 1,
+        "location/DEFAULT/y": 5
+      }
+    },
+    "n3": {
+      "jipipe:node-info-id": "filaments-set-overlay",
+      "jipipe:graph-compartment": "DEFAULT",
+      "jipipe:metadata-v1": {
+        "location/DEFAULT/x": 1,
+        "location/DEFAULT/y": 9
+      }
+    }
+  },
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Output",
+      "target-node": "n3",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n1",
+      "source-slot": "ROI",
+      "target-node": "n2",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n2",
+      "source-slot": "Output",
+      "target-node": "n3",
+      "target-slot": "Filaments"
+    }
+  ]
+}

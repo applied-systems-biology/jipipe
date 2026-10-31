@@ -18,8 +18,8 @@ package org.hkijena.jipipe.api.nodes.database.relations;
  * before {@code to} (i.e. {@code to} is a next step of {@code from}, and
  * {@code from} is a previous step of {@code to}).
  * <p>
- * The edge is identified by the node ids only — never by node instances or
- * graph UUIDs — so that edges mined from different sources (family step
+ * The edge is identified by the node ids only - never by node instances or
+ * graph UUIDs - so that edges mined from different sources (family step
  * graphs, template graphs, a future starter-pattern source) can be merged in
  * the same {@link NodeRelationIndex} and their support (the number of
  * sources/occurrences carrying the edge) can be accumulated.

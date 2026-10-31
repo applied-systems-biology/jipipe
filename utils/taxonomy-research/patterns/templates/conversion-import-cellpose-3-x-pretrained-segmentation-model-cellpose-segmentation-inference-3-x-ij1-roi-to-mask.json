@@ -1,1 +1,33 @@
-{"nodes":{"n0":{"jipipe:node-info-id":"import-cellpose-3.x-pretrained-segmentation-model","jipipe:graph-compartment":"b38a44a4-ffa7-5456-9c9a-fe722fc7b285","jipipe:node:name":"Pretrained Cellpose 3.x segmentation model"},"n1":{"jipipe:node-info-id":"cellpose-segmentation-inference-3.x","jipipe:graph-compartment":"b38a44a4-ffa7-5456-9c9a-fe722fc7b285","jipipe:node:name":"Cellpose segmentation (3.x)"},"n2":{"jipipe:node-info-id":"ij1-roi-to-mask","jipipe:graph-compartment":"b38a44a4-ffa7-5456-9c9a-fe722fc7b285","jipipe:node:name":"Convert 2D ROI to mask"}},"edges":[{"source-node":"n0","source-slot":"Output","target-node":"n1","target-slot":"Model"},{"source-node":"n1","source-slot":"Probabilities","target-node":"n2","target-slot":"Image"}]}
+{
+  "nodes": {
+    "n0": {
+      "jipipe:node-info-id": "import-cellpose-3.x-pretrained-segmentation-model",
+      "jipipe:graph-compartment": "b38a44a4-ffa7-5456-9c9a-fe722fc7b285",
+      "jipipe:node:name": "Pretrained Cellpose 3.x segmentation model"
+    },
+    "n1": {
+      "jipipe:node-info-id": "cellpose-segmentation-inference-3.x",
+      "jipipe:graph-compartment": "b38a44a4-ffa7-5456-9c9a-fe722fc7b285",
+      "jipipe:node:name": "Cellpose segmentation (3.x)"
+    },
+    "n2": {
+      "jipipe:node-info-id": "ij1-roi-to-mask",
+      "jipipe:graph-compartment": "b38a44a4-ffa7-5456-9c9a-fe722fc7b285",
+      "jipipe:node:name": "Convert 2D ROI to mask"
+    }
+  },
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Output",
+      "target-node": "n1",
+      "target-slot": "Model"
+    },
+    {
+      "source-node": "n1",
+      "source-slot": "Probabilities",
+      "target-node": "n2",
+      "target-slot": "Image"
+    }
+  ]
+}

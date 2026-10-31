@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.desktop.api.dataviewer;
 
-import org.hkijena.jipipe.api.data.JIPipeDataInstanceInfo;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.textfield.JIPipeDesktopFancyReadOnlyTextArea;
 import org.hkijena.jipipe.desktop.commons.components.textfield.JIPipeDesktopFancyReadOnlyTextField;

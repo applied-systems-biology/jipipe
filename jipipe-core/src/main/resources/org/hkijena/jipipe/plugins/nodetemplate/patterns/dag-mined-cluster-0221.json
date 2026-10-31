@@ -1,1 +1,100 @@
-{"edges":[{"source-node":"n0","source-slot":"C1","target-node":"n1","target-slot":"Input"},{"source-node":"n2","source-slot":"Image","target-node":"n0","target-slot":"Input"}],"nodes":{"n0":{"jipipe:graph-compartment":"d199e8af-c7f8-5a9c-a82d-c351c2f6bcf5","jipipe:metadata-v1":{"location/d199e8af-c7f8-5a9c-a82d-c351c2f6bcf5/x":0,"location/d199e8af-c7f8-5a9c-a82d-c351c2f6bcf5/y":4},"jipipe:node-info-id":"ij1-color-split-channels-2","jipipe:slot-configuration":{"input":{"Input":{"slot-data-type":"imagej-imgplus","slot-type":"Input","name":"Input","custom-name":null,"description":"","is-virtual":false,"save-outputs":true,"is-optional":false}},"output":{"C1":{"slot-data-type":"imagej-imgplus","slot-type":"Output","name":"C1","custom-name":"CFW","description":"","is-virtual":true,"save-outputs":true,"is-optional":false},"C2":{"slot-data-type":"imagej-imgplus","slot-type":"Output","name":"C2","custom-name":"NR","description":"","is-virtual":true,"save-outputs":true,"is-optional":false},"C3":{"slot-data-type":"imagej-imgplus","slot-type":"Output","name":"C3","custom-name":"TL","description":"","is-virtual":true,"save-outputs":true,"is-optional":false}}},"channel-name-annotation":{"content":"Channel","enabled":false},"ignore-missing-channels":false,"channel-index-annotation":{"content":"Channel index","enabled":false},"channel-to-slot-assignments/C1":0,"channel-to-slot-assignments/C2":1,"channel-to-slot-assignments/C3":2},"n1":{"jipipe:graph-compartment":"d199e8af-c7f8-5a9c-a82d-c351c2f6bcf5","jipipe:metadata-v1":{"location/d199e8af-c7f8-5a9c-a82d-c351c2f6bcf5/x":0,"location/d199e8af-c7f8-5a9c-a82d-c351c2f6bcf5/y":8},"jipipe:node-info-id":"ij1-remove-lut"},"n2":{"jipipe:graph-compartment":"d199e8af-c7f8-5a9c-a82d-c351c2f6bcf5","jipipe:metadata-v1":{"location/d199e8af-c7f8-5a9c-a82d-c351c2f6bcf5/x":0,"location/d199e8af-c7f8-5a9c-a82d-c351c2f6bcf5/y":0},"jipipe:node-info-id":"import-imagej-imgplus-from-file"}}}
+{
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "C1",
+      "target-node": "n1",
+      "target-slot": "Input"
+    },
+    {
+      "source-node": "n2",
+      "source-slot": "Image",
+      "target-node": "n0",
+      "target-slot": "Input"
+    }
+  ],
+  "nodes": {
+    "n0": {
+      "jipipe:graph-compartment": "d199e8af-c7f8-5a9c-a82d-c351c2f6bcf5",
+      "jipipe:metadata-v1": {
+        "location/d199e8af-c7f8-5a9c-a82d-c351c2f6bcf5/x": 0,
+        "location/d199e8af-c7f8-5a9c-a82d-c351c2f6bcf5/y": 4
+      },
+      "jipipe:node-info-id": "ij1-color-split-channels-2",
+      "jipipe:slot-configuration": {
+        "input": {
+          "Input": {
+            "slot-data-type": "imagej-imgplus",
+            "slot-type": "Input",
+            "name": "Input",
+            "custom-name": null,
+            "description": "",
+            "is-virtual": false,
+            "save-outputs": true,
+            "is-optional": false
+          }
+        },
+        "output": {
+          "C1": {
+            "slot-data-type": "imagej-imgplus",
+            "slot-type": "Output",
+            "name": "C1",
+            "custom-name": "CFW",
+            "description": "",
+            "is-virtual": true,
+            "save-outputs": true,
+            "is-optional": false
+          },
+          "C2": {
+            "slot-data-type": "imagej-imgplus",
+            "slot-type": "Output",
+            "name": "C2",
+            "custom-name": "NR",
+            "description": "",
+            "is-virtual": true,
+            "save-outputs": true,
+            "is-optional": false
+          },
+          "C3": {
+            "slot-data-type": "imagej-imgplus",
+            "slot-type": "Output",
+            "name": "C3",
+            "custom-name": "TL",
+            "description": "",
+            "is-virtual": true,
+            "save-outputs": true,
+            "is-optional": false
+          }
+        }
+      },
+      "channel-name-annotation": {
+        "content": "Channel",
+        "enabled": false
+      },
+      "ignore-missing-channels": false,
+      "channel-index-annotation": {
+        "content": "Channel index",
+        "enabled": false
+      },
+      "channel-to-slot-assignments/C1": 0,
+      "channel-to-slot-assignments/C2": 1,
+      "channel-to-slot-assignments/C3": 2
+    },
+    "n1": {
+      "jipipe:graph-compartment": "d199e8af-c7f8-5a9c-a82d-c351c2f6bcf5",
+      "jipipe:metadata-v1": {
+        "location/d199e8af-c7f8-5a9c-a82d-c351c2f6bcf5/x": 0,
+        "location/d199e8af-c7f8-5a9c-a82d-c351c2f6bcf5/y": 8
+      },
+      "jipipe:node-info-id": "ij1-remove-lut"
+    },
+    "n2": {
+      "jipipe:graph-compartment": "d199e8af-c7f8-5a9c-a82d-c351c2f6bcf5",
+      "jipipe:metadata-v1": {
+        "location/d199e8af-c7f8-5a9c-a82d-c351c2f6bcf5/x": 0,
+        "location/d199e8af-c7f8-5a9c-a82d-c351c2f6bcf5/y": 0
+      },
+      "jipipe:node-info-id": "import-imagej-imgplus-from-file"
+    }
+  }
+}

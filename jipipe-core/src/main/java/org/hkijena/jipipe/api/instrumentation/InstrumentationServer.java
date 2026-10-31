@@ -29,13 +29,6 @@ public class InstrumentationServer extends WebSocketServer {
     private final Map<WebSocket, ConnectionContext> connections = new ConcurrentHashMap<>();
     private final CountDownLatch startLatch = new CountDownLatch(1);
 
-    private static class ConnectionContext {
-        JIPipeProject selectedProject;
-        String selectedProjectId;
-        InstrumentationEventBus eventBus;
-        InstrumentationJobManager jobManager;
-    }
-
     public InstrumentationServer(int port) {
         super(new InetSocketAddress(
                 System.getProperty("jipipe.instrumentation.bind", "127.0.0.1"), port));
@@ -274,5 +267,12 @@ public class InstrumentationServer extends WebSocketServer {
         } catch (Exception e) {
             logger.error("Error broadcasting project list", e);
         }
+    }
+
+    private static class ConnectionContext {
+        JIPipeProject selectedProject;
+        String selectedProjectId;
+        InstrumentationEventBus eventBus;
+        InstrumentationJobManager jobManager;
     }
 }

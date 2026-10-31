@@ -1,1 +1,28 @@
-{"edges":[{"source-node":"n0","source-slot":"Output","target-node":"n1","target-slot":"Image"}],"nodes":{"n0":{"jipipe:graph-compartment":"a873310b-e6dc-5b2f-81cc-9726483141a8","jipipe:metadata-v1":{"location/a873310b-e6dc-5b2f-81cc-9726483141a8/x":1,"location/a873310b-e6dc-5b2f-81cc-9726483141a8/y":5},"jipipe:node-info-id":"ij1-contrast-histogram-enhancer"},"n1":{"jipipe:graph-compartment":"a873310b-e6dc-5b2f-81cc-9726483141a8","jipipe:metadata-v1":{"location/a873310b-e6dc-5b2f-81cc-9726483141a8/x":0,"location/a873310b-e6dc-5b2f-81cc-9726483141a8/y":9},"jipipe:node-info-id":"ij1-roi-to-rgb"}}}
+{
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "Output",
+      "target-node": "n1",
+      "target-slot": "Image"
+    }
+  ],
+  "nodes": {
+    "n0": {
+      "jipipe:graph-compartment": "a873310b-e6dc-5b2f-81cc-9726483141a8",
+      "jipipe:metadata-v1": {
+        "location/a873310b-e6dc-5b2f-81cc-9726483141a8/x": 1,
+        "location/a873310b-e6dc-5b2f-81cc-9726483141a8/y": 5
+      },
+      "jipipe:node-info-id": "ij1-contrast-histogram-enhancer"
+    },
+    "n1": {
+      "jipipe:graph-compartment": "a873310b-e6dc-5b2f-81cc-9726483141a8",
+      "jipipe:metadata-v1": {
+        "location/a873310b-e6dc-5b2f-81cc-9726483141a8/x": 0,
+        "location/a873310b-e6dc-5b2f-81cc-9726483141a8/y": 9
+      },
+      "jipipe:node-info-id": "ij1-roi-to-rgb"
+    }
+  }
+}

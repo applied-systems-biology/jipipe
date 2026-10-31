@@ -106,7 +106,7 @@ public class CUDAUtils {
     private static String parseMaxCudaVersion(String nvidiaSmiOutput) {
         Pattern pattern = Pattern.compile("CUDA Version: (\\d+\\.\\d+)");
         Matcher matcher = pattern.matcher(nvidiaSmiOutput);
-        if(matcher.find()) {
+        if (matcher.find()) {
             return matcher.group(1);
         }
         return "Unknown";

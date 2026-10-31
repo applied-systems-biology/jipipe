@@ -32,32 +32,37 @@ template:
 
 # Pattern: Group -> Bio-Formats importer -> Annotate with image properties
 
-Mined pattern `conversion-node-group-import-imagej-bioformats-image-properties-to-annotation` (shape `conversion`, support 44).
+Mined pattern `conversion-node-group-import-imagej-bioformats-image-properties-to-annotation` (shape `conversion`,
+support 44).
 
 ## Role sequence
 
-| role | node ids |
-|---|---|
-| other | `node-group` |
-| import | `import-imagej-bioformats` |
+| role     | node ids                         |
+|----------|----------------------------------|
+| other    | `node-group`                     |
+| import   | `import-imagej-bioformats`       |
 | annotate | `image-properties-to-annotation` |
 
 ## Example graph
 
-Project: `AIAgentTests/02-AdvancedPipelines/CellTracking_01.jip` (relative to `/data/JIPipe`), compartment `Preprocessing`.
+Project: `AIAgentTests/02-AdvancedPipelines/CellTracking_01.jip` (relative to `/data/JIPipe`), compartment
+`Preprocessing`.
 
-| key | node id | name |
-|---|---|---|
-| n0 | `node-group` | READ: folders, subfolders and files |
-| n1 | `import-imagej-bioformats` | Bio-Formats importer |
-| n2 | `image-properties-to-annotation` | Annotate with image properties |
+| key | node id                          | name                                |
+|-----|----------------------------------|-------------------------------------|
+| n0  | `node-group`                     | READ: folders, subfolders and files |
+| n1  | `import-imagej-bioformats`       | Bio-Formats importer                |
+| n2  | `image-properties-to-annotation` | Annotate with image properties      |
 
-| from | slot | to | slot | data class |
-|---|---|---|---|---|
-| READ: folders, subfolders and files | `Annotated paths` | Bio-Formats importer | `Input` | `path` |
-| Bio-Formats importer | `Output` | Annotate with image properties | `Image` | `imagej-ome` |
+| from                                | slot              | to                             | slot    | data class   |
+|-------------------------------------|-------------------|--------------------------------|---------|--------------|
+| READ: folders, subfolders and files | `Annotated paths` | Bio-Formats importer           | `Input` | `path`       |
+| Bio-Formats importer                | `Output`          | Annotate with image properties | `Image` | `imagej-ome` |
 
 ## Template
 
-Proposed name `Group -> Bio-Formats importer -> Annotate with image properties`, menu path `Patterns/Graph / Project/Group -> Bio-Formats importer -> Annotate with image properties` (proposal only — not registered). `data` = the minimal JIPipeGraph JSON; the full object is written to `templates/conversion-node-group-import-imagej-bioformats-image-properties-to-annotation.json`.
+Proposed name `Group -> Bio-Formats importer -> Annotate with image properties`, menu path
+`Patterns/Graph / Project/Group -> Bio-Formats importer -> Annotate with image properties` (proposal only - not
+registered). `data` = the minimal JIPipeGraph JSON; the full object is written to
+`templates/conversion-node-group-import-imagej-bioformats-image-properties-to-annotation.json`.
 

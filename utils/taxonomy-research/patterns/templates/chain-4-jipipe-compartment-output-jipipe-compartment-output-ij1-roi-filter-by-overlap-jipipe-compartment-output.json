@@ -1,1 +1,44 @@
-{"nodes":{"n0":{"jipipe:node-info-id":"jipipe:compartment-output","jipipe:graph-compartment":"39b8dd14-b34d-575b-89b6-8a78cd567524","jipipe:node:name":"Output #1"},"n1":{"jipipe:node-info-id":"jipipe:compartment-output","jipipe:graph-compartment":"39b8dd14-b34d-575b-89b6-8a78cd567524","jipipe:node:name":"Output #2"},"n2":{"jipipe:node-info-id":"ij1-roi-filter-by-overlap","jipipe:graph-compartment":"39b8dd14-b34d-575b-89b6-8a78cd567524","jipipe:node:name":"Filter ROI by overlap"},"n3":{"jipipe:node-info-id":"jipipe:compartment-output","jipipe:graph-compartment":"39b8dd14-b34d-575b-89b6-8a78cd567524","jipipe:node:name":"Output #3"}},"edges":[{"source-node":"n0","source-slot":"ROIs","target-node":"n1","target-slot":"Model2 ROI"},{"source-node":"n1","source-slot":"Merged ROIs","target-node":"n2","target-slot":"ROI 2"},{"source-node":"n2","source-slot":"ROI 1","target-node":"n3","target-slot":"False negatives ROI"}]}
+{
+  "nodes": {
+    "n0": {
+      "jipipe:node-info-id": "jipipe:compartment-output",
+      "jipipe:graph-compartment": "39b8dd14-b34d-575b-89b6-8a78cd567524",
+      "jipipe:node:name": "Output #1"
+    },
+    "n1": {
+      "jipipe:node-info-id": "jipipe:compartment-output",
+      "jipipe:graph-compartment": "39b8dd14-b34d-575b-89b6-8a78cd567524",
+      "jipipe:node:name": "Output #2"
+    },
+    "n2": {
+      "jipipe:node-info-id": "ij1-roi-filter-by-overlap",
+      "jipipe:graph-compartment": "39b8dd14-b34d-575b-89b6-8a78cd567524",
+      "jipipe:node:name": "Filter ROI by overlap"
+    },
+    "n3": {
+      "jipipe:node-info-id": "jipipe:compartment-output",
+      "jipipe:graph-compartment": "39b8dd14-b34d-575b-89b6-8a78cd567524",
+      "jipipe:node:name": "Output #3"
+    }
+  },
+  "edges": [
+    {
+      "source-node": "n0",
+      "source-slot": "ROIs",
+      "target-node": "n1",
+      "target-slot": "Model2 ROI"
+    },
+    {
+      "source-node": "n1",
+      "source-slot": "Merged ROIs",
+      "target-node": "n2",
+      "target-slot": "ROI 2"
+    },
+    {
+      "source-node": "n2",
+      "source-slot": "ROI 1",
+      "target-node": "n3",
+      "target-slot": "False negatives ROI"
+    }
+  ]
+}
