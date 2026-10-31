@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.api.settings;
 
 import org.hkijena.jipipe.api.settings.SettingsFileStore.FileFingerprint;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -76,6 +77,10 @@ class SettingsFileWatcherTest {
     }
 
     @Test void foreignWriteFiresOnce() throws Exception {
+        // start() is a documented no-op in a headless JVM (CLI runs never
+        // spawn watcher threads), so the callback mechanics only exist in a
+        // headful environment - skip where the behavior is intentionally off.
+        Assumptions.assumeTrue(!GraphicsEnvironment.isHeadless(), "headless environment");
         Path f = Files.writeString(tempDir.resolve("settings.json"), "{\"a\":1}");
         List<FileFingerprint> seen = new CopyOnWriteArrayList<>();
         SettingsFileWatcher w = new SettingsFileWatcher(f, seen::add);
@@ -89,6 +94,10 @@ class SettingsFileWatcherTest {
     }
 
     @Test void throwingConsumerDoesNotKillTheWatcher() throws Exception {
+        // start() is a documented no-op in a headless JVM (CLI runs never
+        // spawn watcher threads), so the callback mechanics only exist in a
+        // headful environment - skip where the behavior is intentionally off.
+        Assumptions.assumeTrue(!GraphicsEnvironment.isHeadless(), "headless environment");
         Path f = Files.writeString(tempDir.resolve("settings.json"), "{\"a\":1}");
         AtomicInteger fires = new AtomicInteger();
         SettingsFileWatcher w = new SettingsFileWatcher(f, fp -> {
@@ -136,9 +145,15 @@ class SettingsFileWatcherTest {
      * Proves the poll loop is the correctness floor on its own: the watcher
      * runs with the {@code WatchService} disabled (package-private test
      * seam) and a short poll interval, so only the poll thread can detect
-     * the foreign write.
+     * the foreign write. Skipped in headless environments: {@code start()}
+     * is a documented no-op there (CLI runs never spawn watcher threads),
+     * so no poll thread runs at all.
      */
     @Test void pollLoopAloneDetectsAForeignWrite() throws Exception {
+        // start() is a documented no-op in a headless JVM (CLI runs never
+        // spawn watcher threads), so the poll loop only exists in a headful
+        // environment - skip where the behavior is intentionally off.
+        Assumptions.assumeTrue(!GraphicsEnvironment.isHeadless(), "headless environment");
         Path f = Files.writeString(tempDir.resolve("settings.json"), "{\"a\":1}");
         List<FileFingerprint> seen = new CopyOnWriteArrayList<>();
         SettingsFileWatcher w = new SettingsFileWatcher(f, seen::add, 200L, false);

@@ -13,10 +13,13 @@
 
 package org.hkijena.jipipe.desktop.commons.components.tabs;
 
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.scijava.Disposable;
 
 import javax.swing.*;
+import java.awt.GraphicsEnvironment;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -37,6 +40,22 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * animation) are left to the JVM, which is why the pane is disposed here.
  */
 class JIPipeDesktopTabPaneDisposeTest {
+
+    @BeforeAll
+    static void boot() {
+        // The tab pane's construction pulls in the display toolkit; in a
+        // headless environment (CI has no X11) Swing component creation
+        // throws HeadlessException, so the cascade is skipped there.
+        try {
+            if (GraphicsEnvironment.isHeadless()) {
+                Assumptions.assumeTrue(false, "headless environment");
+                return;
+            }
+        } catch (Throwable t) {
+            Assumptions.assumeTrue(false, "AWT not available: " + t);
+            return;
+        }
+    }
 
     private static final class DisposableContent extends JPanel implements Disposable {
         private final AtomicInteger disposeCount = new AtomicInteger();

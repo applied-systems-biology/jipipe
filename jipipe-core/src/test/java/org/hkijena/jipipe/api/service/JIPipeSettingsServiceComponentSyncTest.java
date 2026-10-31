@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.settings.JIPipeSettingKey;
 import org.hkijena.jipipe.api.settings.SettingsBinding;
 import org.hkijena.jipipe.api.settings.SettingsDocument;
 import org.hkijena.jipipe.api.settings.SettingsScope;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -379,10 +380,18 @@ class JIPipeSettingsServiceComponentSyncTest {
      * display is present, i.e. never on the merge executor (mutation of UI
      * state off the EDT is what the event marshalling exists to prevent).</li>
      * </ol>
-     * This test JVM is not headless, so the EDT branch is the one exercised;
-     * headless runs deliver inline and the assertion below is skipped.
+     * Skipped in headless environments: the foreign-change watcher is a
+     * documented no-op there (CLI runs never spawn watcher threads), so no
+     * watcher-driven merge happens at all (a foreign write is instead picked
+     * up by the save-time merge floor, on the save-later executor - a
+     * different code path this test does not cover).
      */
     @Test void mergeRunsOnTheExecutorThreadNotInTheWatcherCallback() throws Exception {
+        // The watcher is a documented no-op in a headless JVM (CLI runs
+        // never spawn watcher threads): without it there is no
+        // watcher-driven merge to observe - skip where the behavior is
+        // intentionally off.
+        Assumptions.assumeTrue(!GraphicsEnvironment.isHeadless(), "headless environment");
         JIPipeSettingsServiceComponent c = newComponent(tempDir);
         JIPipeSettingKey<String> key = JIPipeSettingKey.string("registry:thd", "x", String.class).defaultValue("d");
         SettingsBinding<String> b = c.bind(key);
