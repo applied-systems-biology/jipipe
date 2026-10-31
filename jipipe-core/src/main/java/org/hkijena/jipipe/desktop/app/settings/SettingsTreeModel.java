@@ -48,13 +48,22 @@ public final class SettingsTreeModel {
     private static final String GENERAL_CATEGORY = "General";
 
     private final List<SheetNode> allNodes;
+    /**
+     * Sections keyed by scope-qualified identity ({@code scope + ":" + id}).
+     * A section's identity is <b>(scope, id)</b>, not the bare registration
+     * id: distinct sections legitimately share an id across scopes (e.g. the
+     * RUNTIME application sheet and the PROJECT sheet
+     * {@code org.hkijena.jipipe:default-environments}, which describe
+     * different documents and different sheets).
+     */
     private final Map<String, SheetNode> byId;
     private final Map<SettingsScope, List<SheetNode>> byScope;
 
     /**
      * @param nodes every known section (application, runtime and project),
-     *              across all scopes. Duplicate ids are rejected: the id is
-     *              the section's identity.
+     *              across all scopes. The same id in the same scope is
+     *              rejected (a genuine registration bug); the same id in
+     *              <em>different</em> scopes is legitimate.
      */
     public SettingsTreeModel(Collection<SheetNode> nodes) {
         Objects.requireNonNull(nodes, "nodes");
@@ -66,11 +75,21 @@ public final class SettingsTreeModel {
         }
         for (SheetNode node : allNodes) {
             Objects.requireNonNull(node, "node");
-            if (byId.put(node.id(), node) != null) {
-                throw new IllegalArgumentException("Duplicate settings section id: " + node.id());
+            if (byId.put(scopeQualifiedId(node.scope(), node.id()), node) != null) {
+                throw new IllegalArgumentException("Duplicate settings section id: " + node.id()
+                        + " in scope " + node.scope());
             }
             byScope.get(node.scope()).add(node);
         }
+    }
+
+    /**
+     * @param scope the section's scope
+     * @param id    the sheet's registration id
+     * @return the section's identity key
+     */
+    public static String scopeQualifiedId(SettingsScope scope, String id) {
+        return scope + ":" + id;
     }
 
     /**
@@ -198,11 +217,31 @@ public final class SettingsTreeModel {
     }
 
     /**
+     * @param scope the section's scope
+     * @param id    the section's registration id
+     * @return the section, or {@code null} if unknown in that scope
+     */
+    public SheetNode nodeById(SettingsScope scope, String id) {
+        return scope == null || id == null ? null : byId.get(scopeQualifiedId(scope, id));
+    }
+
+    /**
+     * Looks a section up by bare id, ignoring the scope. Only meaningful for
+     * ids that occur in one scope; prefer {@link #nodeById(SettingsScope, String)}.
+     *
      * @param id the section id
      * @return the section, or {@code null} if unknown
      */
     public SheetNode nodeById(String id) {
-        return byId.get(id);
+        if (id == null) {
+            return null;
+        }
+        for (SheetNode node : allNodes) {
+            if (node.id().equals(id)) {
+                return node;
+            }
+        }
+        return null;
     }
 
     /**

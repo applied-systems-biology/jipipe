@@ -21,6 +21,8 @@ import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -39,7 +41,7 @@ class SettingsTreeModelTest {
     @Test
     void sectionsOfOtherScopesArePresentButNotEditable() {
         SettingsTreeModel m = model();
-        SettingsTreeModel.SheetNode runtimeSheet = m.nodeById("org.hkijena.jipipe:runtime");
+        SettingsTreeModel.SheetNode runtimeSheet = m.nodeById(SettingsScope.RUNTIME, "org.hkijena.jipipe:runtime");
         assertFalse(m.isEditable(runtimeSheet, SettingsScope.PROJECT));
     }
 
@@ -80,6 +82,67 @@ class SettingsTreeModelTest {
                         .filter(node -> node.scope() == SettingsScope.RUNTIME).findFirst().orElseThrow();
         assertFalse(m.isEditable(runtimeFromApplication, SettingsScope.APPLICATION));
         assertTrue(m.isEditable(runtimeFromApplication, SettingsScope.RUNTIME));
+    }
+
+    /**
+     * Section identity is <b>(scope, id)</b>, not the bare id: two genuinely
+     * distinct sections share one registration id in different scopes —
+     * {@code org.hkijena.jipipe:default-environments} is both a RUNTIME
+     * application sheet (installed environments) and a PROJECT sheet (the
+     * project's default environment). The tab builds one model from both
+     * registries, so the bare-id uniqueness rule must not fire across scopes
+     * (it made the settings tab unconstructible in every project).
+     */
+    @Test
+    void sameIdInDifferentScopesIsAllowedAndResolvedScopeQualified() {
+        SettingsTreeModel.SheetNode appDefaults = new SettingsTreeModel.SheetNode(
+                "org.hkijena.jipipe:default-environments",
+                "Default environments",
+                "Installed environments on this machine",
+                "Execution",
+                SettingsScope.RUNTIME,
+                "org.hkijena.jipipe:default-environments");
+        SettingsTreeModel.SheetNode projectDefaults = new SettingsTreeModel.SheetNode(
+                "org.hkijena.jipipe:default-environments",
+                "Default environments",
+                "The default environment of projects",
+                "Execution",
+                SettingsScope.PROJECT,
+                "org.hkijena.jipipe:default-environments");
+
+        SettingsTreeModel m = new SettingsTreeModel(List.of(appDefaults, projectDefaults));
+
+        assertSame(appDefaults, m.nodeById(SettingsScope.RUNTIME, "org.hkijena.jipipe:default-environments"));
+        assertSame(projectDefaults, m.nodeById(SettingsScope.PROJECT, "org.hkijena.jipipe:default-environments"));
+        // Each scope view lists the one it owns; the APPLICATION view lists the
+        // runtime-scoped application sheet (read-only), never the project sheet.
+        assertEquals(List.of("org.hkijena.jipipe:default-environments"),
+                ids(m.search("default-environments", SettingsScope.APPLICATION)));
+        assertEquals(SettingsScope.RUNTIME,
+                m.search("default-environments", SettingsScope.APPLICATION).get(0).scope());
+        assertEquals(List.of("org.hkijena.jipipe:default-environments"),
+                ids(m.search("default-environments", SettingsScope.PROJECT)));
+        assertEquals(SettingsScope.PROJECT,
+                m.search("default-environments", SettingsScope.PROJECT).get(0).scope());
+        assertFalse(m.isEditable(appDefaults, SettingsScope.APPLICATION));
+        assertTrue(m.isEditable(projectDefaults, SettingsScope.PROJECT));
+    }
+
+    /**
+     * The same id in the <em>same</em> scope is a genuine registration bug and
+     * must still be rejected.
+     */
+    @Test
+    void sameIdInTheSameScopeIsStillRejected() {
+        SettingsTreeModel.SheetNode first = new SettingsTreeModel.SheetNode(
+                "org.hkijena.jipipe:general-ui", "General UI", null, "General",
+                SettingsScope.APPLICATION, "org.hkijena.jipipe:general-ui");
+        SettingsTreeModel.SheetNode second = new SettingsTreeModel.SheetNode(
+                "org.hkijena.jipipe:general-ui", "General UI (duplicate)", null, "General",
+                SettingsScope.APPLICATION, "org.hkijena.jipipe:general-ui");
+        IllegalArgumentException error = assertThrows(IllegalArgumentException.class,
+                () -> new SettingsTreeModel(List.of(first, second)));
+        assertTrue(error.getMessage().contains("org.hkijena.jipipe:general-ui"), error.getMessage());
     }
 
     private static SettingsTreeModel model() {

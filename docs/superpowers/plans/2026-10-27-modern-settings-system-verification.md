@@ -181,7 +181,8 @@ manual check that prove it, with the exact command and the observed result.
 - The settings-tab deep links use stable registered sheet IDs
   (`openSettingsSection(SettingsScope, String)`), not display names — a sheet renamed or
   re-categorized does not rot them; a removed sheet falls back to the tab's default
-  selection (the workbench method guards `selectSheet`'s boolean result).
+  selection and is logged (`openSettingsSection` captures `selectSheet(scope, id)`'s boolean
+  and warns `Settings deep link to unknown sheet id '<id>' (scope <scope>)`).
 - Follow-up (recorded, out of scope for #1345): consolidate the project-settings modal's
   three legacy wrapper sheets (metadata/parameters/directories) into the tab's PROJECT
   scope, then delete `JIPipeDesktopProjectSettingsUI` — the last remaining JDialog-based

@@ -95,6 +95,9 @@ import org.hkijena.jipipe.plugins.statistics.settings.JIPipeStatisticsApplicatio
 import org.hkijena.jipipe.plugins.statistics.ui.JIPipeDesktopStatisticsButton;
 import org.hkijena.jipipe.plugins.statistics.ui.JIPipeDesktopStatisticsUI;
 import org.hkijena.jipipe.utils.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.scijava.Disposable;
 import org.jdesktop.swingx.JXStatusBar;
 import org.jdesktop.swingx.plaf.basic.BasicStatusBarUI;
 import org.scijava.Context;
@@ -118,7 +121,9 @@ import java.util.function.Consumer;
 /**
  * UI around an {@link JIPipeProject}
  */
-public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDesktopWorkbench, JIPipeProject.CompartmentRemovedEventListener, JIPipePluginRegisteredEventListener {
+public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDesktopWorkbench, JIPipeProject.CompartmentRemovedEventListener, JIPipePluginRegisteredEventListener, Disposable {
+
+    private static final Logger logger = LoggerFactory.getLogger(JIPipeDesktopProjectWorkbench.class);
 
     public static final String TAB_INTRODUCTION = "INTRODUCTION";
     public static final String TAB_LICENSE = "LICENSE";
@@ -138,6 +143,11 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
     private final Map<JIPipeGraphNode, Timer> algorithmUpdateTimers = new WeakHashMap<>();
     private final JIPipeNodeDatabase nodeDatabase;
     public JIPipeDesktopTabPane documentTabPane;
+    /**
+     * Whether {@link #dispose()} already ran (it is idempotent; the window
+     * creates a fresh workbench per project, but a double dispose must be safe).
+     */
+    private boolean disposed;
     private JLabel statusText;
     private JIPipeDesktopReloadableValidityChecker validityCheckerPanel;
     private JIPipeDesktopPluginValidityCheckerPanel pluginValidityCheckerPanel;
@@ -1163,7 +1173,16 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         if (content instanceof JIPipeDesktopSettingsTab settingsTab && settingsSheetId != null) {
             // Clear a stale search so the section is selectable in the tree.
             settingsTab.setSectionSearch("");
-            settingsTab.selectSheet(settingsSheetId);
+            // The section is addressed by (scope, id): ids are shared across scopes
+            // (org.hkijena.jipipe:default-environments is a RUNTIME application sheet
+            // and a PROJECT sheet), so the scope disambiguates.
+            SettingsScope effectiveScope = scope != null ? scope : SettingsScope.APPLICATION;
+            if (!settingsTab.selectSheet(effectiveScope, settingsSheetId)) {
+                logger.warn("Settings deep link to unknown sheet id '{}' (scope {}): fell back to the default selection",
+                        settingsSheetId, effectiveScope);
+                // selectSheet() may have cleared the search; restore a section list.
+                settingsTab.setSectionSearch("");
+            }
         }
         return content;
     }
@@ -1542,6 +1561,36 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
 
         public String getStage() {
             return stage;
+        }
+    }
+
+    /**
+     * Releases the UI this workbench owns when its window closes. The workbench
+     * is per-window ({@code JIPipeDesktopProjectWindow#loadProject} creates a
+     * new one), so this is the single release point for the whole per-project
+     * UI tree.
+     * <p>
+     * <b>The tab pane is the load-bearing link:</b>
+     * {@link JIPipeDesktopTabPane#dispose()} iterates every registered tab and
+     * calls {@link Disposable#dispose()} on each {@link Disposable} content —
+     * which includes the settings tab (unsubscribes its
+     * {@code SettingsChangedEvent} listener) and every graph editor
+     * ({@link JIPipeDesktopPipelineGraphEditorUI}, the compartment editor),
+     * whose dispose closes their settings bindings and nested node browsers.
+     * Editors and sections are docked <em>inside</em> tab contents, so they are
+     * released through the same cascade. Without this hook the closed window
+     * pins that whole tree on the JVM-lifetime settings document.
+     * <p>
+     * Idempotent: a second call is a no-op.
+     */
+    @Override
+    public void dispose() {
+        if (disposed) {
+            return;
+        }
+        disposed = true;
+        if (documentTabPane != null) {
+            documentTabPane.dispose();
         }
     }
 

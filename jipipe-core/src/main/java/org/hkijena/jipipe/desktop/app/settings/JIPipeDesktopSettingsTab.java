@@ -121,6 +121,13 @@ public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implem
     private final JTree tree = new JTree();
     private final JTabbedPane scopeSwitcher = new JTabbedPane();
     private final JIPipeDesktopSearchTextField searchField = new JIPipeDesktopSearchTextField();
+    /**
+     * Sections keyed by scope-qualified identity
+     * ({@link SettingsTreeModel#scopeQualifiedId(SettingsScope, String)}): a
+     * section's identity is (scope, id), so the RUNTIME application sheet and
+     * the PROJECT sheet {@code org.hkijena.jipipe:default-environments} are
+     * distinct entries rather than one overwriting the other.
+     */
     private final Map<String, SettingsTreeModel.SheetNode> nodeMap = new HashMap<>();
     private final Map<String, JIPipeParameterCollection> sheetById = new HashMap<>();
     private final Map<String, Icon> categoryIconById = new HashMap<>();
@@ -146,11 +153,14 @@ public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implem
 
     private SettingsTreeModel model;
     private SettingsScope activeScope = SettingsScope.APPLICATION;
-    private String selectedSheetId;
+    /** The selected section's scope-qualified identity; {@code null} when none. */
+    private String selectedSectionKey;
     private JIPipeDesktopParameterFormPanel currentFormPanel;
     private JIPipeDesktopAppearanceSection currentSection;
     private JIPipeDesktopRawSettingsSection currentRawSection;
     private boolean updatingTree;
+    /** Whether {@link #dispose()} already ran (it is idempotent). */
+    private boolean disposed;
 
     /**
      * @param workbench the workbench
@@ -199,6 +209,10 @@ public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implem
      * @param sheets the project's live sheets
      * @return one tree node per sheet
      */
+    private static String sectionKey(SettingsTreeModel.SheetNode node) {
+        return SettingsTreeModel.scopeQualifiedId(node.scope(), node.id());
+    }
+
     public static List<SettingsTreeModel.SheetNode> projectNodes(Collection<JIPipeProjectSettingsSheet> sheets) {
         List<SettingsTreeModel.SheetNode> result = new ArrayList<>();
         for (JIPipeProjectSettingsSheet sheet : sheets) {
@@ -419,33 +433,36 @@ public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implem
         Map<String, Icon> categoryIcons = new LinkedHashMap<>();
 
         Map<String, JIPipeApplicationSettingsSheet> applicationSheets = JIPipe.getSettings().getRegisteredSheets();
-        nodes.addAll(applicationNodes(applicationSheets.values(), settingsService.effectiveScopeByBlock()));
-        for (JIPipeApplicationSettingsSheet sheet : applicationSheets.values()) {
-            sheets.put(sheet.getId(), sheet);
-            categoryIcons.putIfAbsent(sheet.getCategory(), sheet.getCategoryIcon());
+        List<SettingsTreeModel.SheetNode> applicationNodes =
+                applicationNodes(applicationSheets.values(), settingsService.effectiveScopeByBlock());
+        nodes.addAll(applicationNodes);
+        for (SettingsTreeModel.SheetNode node : applicationNodes) {
+            sheets.put(sectionKey(node), applicationSheets.get(node.id()));
+            categoryIcons.putIfAbsent(node.category(), applicationSheets.get(node.id()).getCategoryIcon());
         }
 
         if (getDesktopWorkbench().getProject() != null) {
             Map<String, JIPipeProjectSettingsSheet> projectSheets = getDesktopWorkbench().getProject().getSettingsSheets();
-            nodes.addAll(projectNodes(projectSheets.values()));
-            for (JIPipeProjectSettingsSheet sheet : projectSheets.values()) {
-                sheets.put(sheet.getId(), sheet);
-                categoryIcons.putIfAbsent(sheet.getCategory(), sheet.getCategoryIcon());
+            List<SettingsTreeModel.SheetNode> projectNodes = projectNodes(projectSheets.values());
+            nodes.addAll(projectNodes);
+            for (SettingsTreeModel.SheetNode node : projectNodes) {
+                sheets.put(sectionKey(node), projectSheets.get(node.id()));
+                categoryIcons.putIfAbsent(node.category(), projectSheets.get(node.id()).getCategoryIcon());
             }
         }
 
         this.model = new SettingsTreeModel(nodes);
         this.nodeMap.clear();
-        for (SettingsTreeModel.SheetNode node : model.allNodes()) {
-            nodeMap.put(node.id(), node);
-        }
         this.sheetById.clear();
-        this.sheetById.putAll(sheets);
+        for (SettingsTreeModel.SheetNode node : model.allNodes()) {
+            nodeMap.put(sectionKey(node), node);
+            sheetById.put(sectionKey(node), sheets.get(sectionKey(node)));
+        }
         this.categoryIconById.clear();
         this.categoryIconById.putAll(categoryIcons);
 
-        if (selectedSheetId != null && !nodeMap.containsKey(selectedSheetId)) {
-            selectedSheetId = null;
+        if (selectedSectionKey != null && !nodeMap.containsKey(selectedSectionKey)) {
+            selectedSectionKey = null;
         }
         rebuildTree();
     }
@@ -479,7 +496,7 @@ public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implem
             tree.setModel(new DefaultTreeModel(rootNode));
             UIUtils.expandAllTree(tree);
 
-            DefaultMutableTreeNode target = selectedSheetId != null ? findNode(rootNode, selectedSheetId) : null;
+            DefaultMutableTreeNode target = selectedSectionKey != null ? findNode(rootNode, selectedSectionKey) : null;
             if (target == null && rootNode.getChildCount() > 0) {
                 target = (DefaultMutableTreeNode) rootNode.getChildAt(0);
             }
@@ -506,13 +523,13 @@ public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implem
         return categoryNode;
     }
 
-    private DefaultMutableTreeNode findNode(DefaultMutableTreeNode node, String sheetId) {
+    private DefaultMutableTreeNode findNode(DefaultMutableTreeNode node, String sectionKey) {
         if (node.getUserObject() instanceof SettingsTreeNodeEntry entry && entry.sheet() != null
-                && entry.sheet().id().equals(sheetId)) {
+                && sectionKey(entry.sheet()).equals(sectionKey)) {
             return node;
         }
         for (int i = 0; i < node.getChildCount(); i++) {
-            DefaultMutableTreeNode result = findNode((DefaultMutableTreeNode) node.getChildAt(i), sheetId);
+            DefaultMutableTreeNode result = findNode((DefaultMutableTreeNode) node.getChildAt(i), sectionKey);
             if (result != null) {
                 return result;
             }
@@ -521,7 +538,7 @@ public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implem
     }
 
     private Icon sheetIcon(SettingsTreeModel.SheetNode node) {
-        JIPipeParameterCollection sheet = sheetById.get(node.id());
+        JIPipeParameterCollection sheet = sheetById.get(sectionKey(node));
         return sheet instanceof JIPipeSettingsSheet settingsSheet ? settingsSheet.getIcon() : null;
     }
 
@@ -531,7 +548,7 @@ public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implem
         // must not be swallowed. Rebuilding an unchanged scope is cheap.
         SettingsScope scope = SCOPES[Math.max(0, scopeSwitcher.getSelectedIndex())];
         activeScope = scope;
-        selectedSheetId = null;
+        selectedSectionKey = null;
         rebuildTree();
         refreshChangesStrip(); // re-filter the strip to the new scope
     }
@@ -542,14 +559,14 @@ public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implem
         }
         Object selected = tree.getLastSelectedPathComponent();
         if (!(selected instanceof DefaultMutableTreeNode node)) {
-            selectedSheetId = null;
+            selectedSectionKey = null;
             rebuildRightPane();
             return;
         }
         SettingsTreeNodeEntry entry = (SettingsTreeNodeEntry) node.getUserObject();
-        String previous = selectedSheetId;
-        selectedSheetId = entry.sheet() != null ? entry.sheet().id() : null;
-        if (!Objects.equals(previous, selectedSheetId)) {
+        String previous = selectedSectionKey;
+        selectedSectionKey = entry.sheet() != null ? sectionKey(entry.sheet()) : null;
+        if (!Objects.equals(previous, selectedSectionKey)) {
             hideBanner();
         }
         rebuildRightPane();
@@ -562,14 +579,14 @@ public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implem
     public void rebuildRightPane() {
         disposeFormPanel();
 
-        SettingsTreeModel.SheetNode sheetNode = selectedSheetId != null ? nodeMap.get(selectedSheetId) : null;
+        SettingsTreeModel.SheetNode sheetNode = selectedSectionKey != null ? nodeMap.get(selectedSectionKey) : null;
         if (sheetNode == null) {
             splitPane.setRightComponent(UIUtils.wrapInIslandPanelIfNeeded(UIUtils.createInfoLabel("No settings selected",
                     "Select a section in the tree on the left")));
             return;
         }
 
-        JIPipeParameterCollection sheet = sheetById.get(sheetNode.id());
+        JIPipeParameterCollection sheet = sheetById.get(sectionKey(sheetNode));
         boolean editable = sheet != null && model.isEditable(sheetNode, activeScope);
 
         JPanel wrapper = new JPanel(new BorderLayout());
@@ -674,18 +691,25 @@ public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implem
     }
 
     /**
-     * Selects a section by its sheet id, switching to the section's scope if
-     * needed.
+     * Selects a section by its <b>scope-qualified identity</b> (scope + sheet
+     * id) and switches the scope switcher to that scope. Sections share ids
+     * across scopes ({@code org.hkijena.jipipe:default-environments} is both a
+     * RUNTIME application sheet and a PROJECT sheet), so the scope is part of
+     * what is being addressed.
      *
-     * @param sheetId the sheet id
+     * @param scope   the section's scope
+     * @param sheetId the sheet's registration id
      * @return whether the section exists
      */
-    public boolean selectSheet(String sheetId) {
-        SettingsTreeModel.SheetNode node = nodeMap.get(sheetId);
+    public boolean selectSheet(SettingsScope scope, String sheetId) {
+        if (scope == null || sheetId == null) {
+            return false;
+        }
+        SettingsTreeModel.SheetNode node = nodeMap.get(SettingsTreeModel.scopeQualifiedId(scope, sheetId));
         if (node == null) {
             return false;
         }
-        this.selectedSheetId = sheetId;
+        this.selectedSectionKey = sectionKey(node);
         // Clear a stale search so the target section is visible in the tree.
         if (!searchField.getText().isEmpty()) {
             searchField.setText(""); // triggers rebuildTree() via the document listener
@@ -702,7 +726,16 @@ public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implem
      * @return the id of the selected section, or {@code null}
      */
     public String getSelectedSheetId() {
-        return selectedSheetId;
+        SettingsTreeModel.SheetNode node = selectedSectionKey != null ? nodeMap.get(selectedSectionKey) : null;
+        return node != null ? node.id() : null;
+    }
+
+    /**
+     * @return the scope of the selected section, or {@code null} when none
+     */
+    public SettingsScope getSelectedSectionScope() {
+        SettingsTreeModel.SheetNode node = selectedSectionKey != null ? nodeMap.get(selectedSectionKey) : null;
+        return node != null ? node.scope() : null;
     }
 
     /**
@@ -766,6 +799,12 @@ public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implem
 
     @Override
     public void dispose() {
+        // Idempotent: the pane disposes tab contents on window close, and a tab
+        // the user closed earlier was already disposed by forceCloseTab.
+        if (disposed) {
+            return;
+        }
+        disposed = true;
         settingsService.getChangedEventEmitter().unsubscribe(changedListener);
         disposeFormPanel();
     }
