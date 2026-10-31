@@ -166,16 +166,52 @@ public class JIPipeDesktopAppearanceSection extends JPanel implements JIPipeDesk
      */
     public static Map<String, JsonNode> freshSheetDefaults() {
         Map<String, JsonNode> result = new LinkedHashMap<>();
-        collectDefaults(result, new JIPipeGeneralUIApplicationSettings(),
-                AppearanceSectionModel.GENERAL_UI_BLOCK,
-                AppearanceSectionModel.APPEARANCE_GENERAL_UI_PARAMETER_KEYS);
-        collectDefaults(result, new JIPipeGeneralUIApplicationSettings(),
-                AppearanceSectionModel.GENERAL_UI_BLOCK,
-                AppearanceSectionModel.ACCESSIBILITY_PARAMETER_KEYS);
-        collectDefaults(result, new JIPipeFileChooserApplicationSettings(),
-                AppearanceSectionModel.FILE_CHOOSER_BLOCK,
-                AppearanceSectionModel.APPEARANCE_FILE_CHOOSER_PARAMETER_KEYS);
+        // One throwaway instance per composed sheet TYPE, shared by every section
+        // that displays keys of that sheet (the Appearance and the Accessibility
+        // sections both read general-ui defaults), so a block never has two
+        // default sources. The cache lives only for this call: the instances are
+        // read and then dropped.
+        Map<Class<?>, JIPipeApplicationSettingsSheet> throwaways = new LinkedHashMap<>();
+        for (AppearanceSectionModel.Section section : AppearanceSectionModel.SECTIONS) {
+            Map<String, List<String>> bySheet = AppearanceSectionModel.parametersBySheet(section.id());
+            for (Map.Entry<String, List<String>> entry : bySheet.entrySet()) {
+                JIPipeApplicationSettingsSheet throwaway = throwaways.computeIfAbsent(
+                        sheetTypeOf(entry.getKey()), type -> newThrowaway(entry.getKey()));
+                if (throwaway != null) {
+                    collectDefaults(result, throwaway, entry.getKey(), entry.getValue());
+                }
+            }
+        }
         return result;
+    }
+
+    /**
+     * @param blockPath a composed sheet's block path
+     * @return the sheet class whose fresh instance holds that sheet's defaults
+     */
+    private static Class<?> sheetTypeOf(String blockPath) {
+        if (AppearanceSectionModel.GENERAL_UI_BLOCK.equals(blockPath)) {
+            return JIPipeGeneralUIApplicationSettings.class;
+        }
+        if (AppearanceSectionModel.FILE_CHOOSER_BLOCK.equals(blockPath)) {
+            return JIPipeFileChooserApplicationSettings.class;
+        }
+        throw new IllegalArgumentException("No fresh-default source for " + blockPath);
+    }
+
+    /**
+     * @param blockPath a composed sheet's block path
+     * @return a fresh, unregistered, unbridged instance of that sheet type
+     */
+    private static JIPipeApplicationSettingsSheet newThrowaway(String blockPath) {
+        Class<?> type = sheetTypeOf(blockPath);
+        if (type == JIPipeGeneralUIApplicationSettings.class) {
+            return new JIPipeGeneralUIApplicationSettings();
+        }
+        if (type == JIPipeFileChooserApplicationSettings.class) {
+            return new JIPipeFileChooserApplicationSettings();
+        }
+        throw new IllegalArgumentException("No fresh-default source for " + blockPath);
     }
 
     private static void collectDefaults(Map<String, JsonNode> target,
@@ -218,6 +254,11 @@ public class JIPipeDesktopAppearanceSection extends JPanel implements JIPipeDesk
     public static void registerCompositions() {
         for (AppearanceSectionModel.Section section : AppearanceSectionModel.SECTIONS) {
             JIPipeDesktopSettingsTab.registerMergedPage(section.mergedSheetId(), section.id());
+            // The merged sections own the parameters of their composed sheets, so
+            // those plain tree entries would show every knob a second time.
+            for (String composedSheetId : section.sheetIds()) {
+                JIPipeDesktopSettingsTab.registerAbsorbedSheet(composedSheetId);
+            }
         }
     }
 

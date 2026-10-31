@@ -30,6 +30,8 @@ import org.hkijena.jipipe.plugins.settings.SettingsScopes;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Disposable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -82,6 +84,8 @@ import java.util.stream.Collectors;
  */
 public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implements Disposable {
 
+    private static final Logger logger = LoggerFactory.getLogger(JIPipeDesktopSettingsTab.class);
+
     /**
      * The scopes shown in the switcher, in display order.
      */
@@ -99,6 +103,13 @@ public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implem
     private static final Map<String, String> MERGED_PAGES_BY_SHEET = new ConcurrentHashMap<>();
 
     /**
+     * The sheet ids whose content is absorbed by a merged page: they keep their
+     * registration and block, but get no tree entry (see
+     * {@link #registerAbsorbedSheet(String)}).
+     */
+    private static final Set<String> ABSORBED_SHEET_IDS = ConcurrentHashMap.newKeySet();
+
+    /**
      * Registers a merged section: the given registered sheet's form is replaced
      * by the merged section named {@code page}.
      *
@@ -106,7 +117,34 @@ public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implem
      * @param page    the merged section id ({@link AppearanceSectionModel#SECTION_APPEARANCE}, ...)
      */
     public static void registerMergedPage(String sheetId, String page) {
-        MERGED_PAGES_BY_SHEET.putIfAbsent(sheetId, page);
+        String previous = MERGED_PAGES_BY_SHEET.putIfAbsent(sheetId, page);
+        if (previous != null && !previous.equals(page)) {
+            logger.warn("Settings sheet '{}' is already registered as merged page '{}'; ignoring the re-registration as '{}' (first registration wins)",
+                    sheetId, previous, page);
+        }
+    }
+
+    /**
+     * Registers a sheet whose <em>content</em> is absorbed by a merged page: the
+     * sheet stays registered and keeps its block (the engine, bindings and the
+     * raw editor are unaffected), but it no longer gets a tree entry, because
+     * the merged section already shows its parameters.
+     * <p>
+     * The absorbed set is the one extension point for "a merged section owns this
+     * sheet's knobs". Deep links must therefore target the merged section's
+     * sheet id, never an absorbed one.
+     *
+     * @param sheetId the registered sheet whose tree entry is replaced by a merged page
+     */
+    public static void registerAbsorbedSheet(String sheetId) {
+        ABSORBED_SHEET_IDS.add(sheetId);
+    }
+
+    /**
+     * @return the sheet ids whose tree entries are replaced by a merged page
+     */
+    public static List<String> absorbedSheetIds() {
+        return List.copyOf(ABSORBED_SHEET_IDS);
     }
 
     /**
@@ -192,6 +230,11 @@ public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implem
                                                                      Map<String, SettingsScope> scopes) {
         List<SettingsTreeModel.SheetNode> result = new ArrayList<>();
         for (JIPipeApplicationSettingsSheet sheet : sheets) {
+            if (isAbsorbed(sheet.getId())) {
+                // Its parameters are shown by a merged section (spec: the merged
+                // section owns these knobs), so the plain entry would duplicate them.
+                continue;
+            }
             SettingsScope scope = scopes.getOrDefault("sheet:" + sheet.getId(), SettingsScope.APPLICATION);
             result.add(new SettingsTreeModel.SheetNode(sheet.getId(),
                     sheet.getName(),
@@ -201,6 +244,14 @@ public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implem
                     sheet.getId()));
         }
         return result;
+    }
+
+    /**
+     * @param sheetId a sheet id
+     * @return whether the sheet's tree entry is replaced by a merged page
+     */
+    private static boolean isAbsorbed(String sheetId) {
+        return sheetId != null && ABSORBED_SHEET_IDS.contains(sheetId);
     }
 
     /**
