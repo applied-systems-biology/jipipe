@@ -19,4 +19,26 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
  * A settings sheet used for storing application-wide settings
  */
 public interface JIPipeApplicationSettingsSheet extends JIPipeParameterCollection, JIPipeSettingsSheet {
+
+    /**
+     * Whether the engine must not seed a document block for this sheet.
+     * <p>
+     * The settings engine seeds an absent block from the sheet's current values
+     * when the sheet is attached (and on first materialization), which is how a
+     * fresh profile gets the old built-in defaults. A sheet that has no
+     * parameters of its own — an <em>anchor</em> sheet that only hosts a merged
+     * page of the settings tab — would leave an empty block behind, pure profile
+     * noise. Such anchors override this to {@code true}: their block is only
+     * created if something actually writes to it.
+     * <p>
+     * Seeding is also skipped when the sheet has no parameters at all, so an
+     * anchor that forgets the override does not pollute the profile either; the
+     * flag documents the intent and keeps a future parameter-carrying anchor
+     * seedable without editing the engine.
+     *
+     * @return whether the engine skips seeding this sheet's block
+     */
+    default boolean isSeedExempt() {
+        return false;
+    }
 }

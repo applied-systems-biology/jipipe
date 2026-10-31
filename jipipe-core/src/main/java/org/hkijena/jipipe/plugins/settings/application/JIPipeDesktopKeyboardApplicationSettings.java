@@ -75,4 +75,16 @@ public class JIPipeDesktopKeyboardApplicationSettings extends JIPipeDefaultAppli
     public JIPipeDefaultApplicationSettingsSheetCategory getDefaultCategory() {
         return JIPipeDefaultApplicationSettingsSheetCategory.UI;
     }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * The placeholder section anchor has no parameters of its own (it hosts a merged page of the settings tab), so an empty document block would be pure profile noise. The engine must not seed one.
+     *
+     * @return always {@code true}
+     */
+    @Override
+    public boolean isSeedExempt() {
+        return true;
+    }
 }

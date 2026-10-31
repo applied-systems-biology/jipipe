@@ -66,15 +66,23 @@ public final class SettingsChangeLog {
 
     /**
      * Records one change.
+     * <p>
+     * <b>One source per side.</b> The two sides of a change are rendered by
+     * exactly one place each: the <em>new</em> value is rendered by the caller
+     * and passed in already formatted ({@code formattedValue}), the <em>old</em>
+     * value is always rendered here from
+     * {@link SettingsChangedEvent#getOldValue()} (the event carries the raw old
+     * node). A caller must therefore not re-render or re-format the old value,
+     * and the log never re-formats a non-null {@code formattedValue}.
      *
      * @param event          the change event
-     * @param formattedValue the new value as rendered for the strip — the
-     *                       caller owns the new value's rendering (an empty
-     *                       string means the location was removed); it is
-     *                       cut to the raw editor's preview length by
-     *                       {@link RawSettingsTableModel#truncate(String)}.
-     *                       The old value is always rendered here from
-     *                       {@link SettingsChangedEvent#getOldValue()}
+     * @param formattedValue the new value as rendered by the caller (an empty
+     *                       string means the location was removed). It is only
+     *                       normalized (null → empty), not re-rendered; the
+     *                       caller is expected to cut it to the raw editor's
+     *                       preview length via
+     *                       {@link RawSettingsTableModel#truncate(String)} /
+     *                       {@link RawSettingsTableModel#render(com.fasterxml.jackson.databind.JsonNode)}
      */
     public synchronized void record(SettingsChangedEvent event, String formattedValue) {
         Objects.requireNonNull(event, "event");

@@ -76,4 +76,16 @@ public class JIPipeDesktopRawSettingsApplicationSettings extends JIPipeDefaultAp
     public JIPipeDefaultApplicationSettingsSheetCategory getDefaultCategory() {
         return JIPipeDefaultApplicationSettingsSheetCategory.UI;
     }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * The raw editor's anchor has no parameters of its own (it hosts the raw editor page), so an empty document block would be pure profile noise. The engine must not seed one.
+     *
+     * @return always {@code true}
+     */
+    @Override
+    public boolean isSeedExempt() {
+        return true;
+    }
 }
