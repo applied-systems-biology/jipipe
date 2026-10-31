@@ -43,6 +43,13 @@ public class ImageBoxNoteGraphNodeToolProperties extends JIPipeDesktopFormGraphE
 
     @Override
     public void dispose() {
+        if (paletteUI != null) {
+            // The palette UI owns the selected-event emitter; the panel is a
+            // subscriber of it, so it must detach itself here (the palette UI
+            // dies with the island, but a detached panel must not stay in a live
+            // emitter's subscriber list either).
+            paletteUI.getSelectedEventEmitter().unsubscribe(this);
+        }
         if (registryUserColors != null) {
             registryUserColors.dispose();
         }

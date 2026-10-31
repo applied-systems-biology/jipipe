@@ -111,7 +111,9 @@ class PaletteStorageLifecycleTest {
 
     /**
      * The island teardown seam: a rebuilt context panel disposes exactly the
-     * islands of the previous pass, exactly once, and starts a fresh list.
+     * islands of the previous pass, exactly once, and starts a fresh list — in
+     * one step, so a caller cannot take the list and forget to dispose it (or
+     * dispose it twice).
      */
     @Test
     void islandTeardownDisposesThePreviousPassOnce() {
@@ -121,16 +123,19 @@ class PaletteStorageLifecycleTest {
         islands.add(a);
         islands.add(b);
 
-        List<FakeIsland> previous = JIPipeDesktopGraphEditorContextPanelIsland.takePreviousAndClear(islands);
-        assertEquals(List.of(a, b), previous, "the previous pass is handed back");
+        JIPipeDesktopGraphEditorContextPanelIsland.disposePreviousIslands(islands);
         assertEquals(0, islands.size(), "the tracking list is cleared for the new pass");
-        JIPipeDesktopGraphEditorContextPanelIsland.disposeAll(previous);
-        assertEquals(1, a.disposeCount);
+        assertEquals(1, a.disposeCount, "each island of the previous pass is disposed exactly once");
         assertEquals(1, b.disposeCount);
 
         // A next pass with no islands: nothing to dispose, nothing thrown.
-        assertEquals(List.of(), JIPipeDesktopGraphEditorContextPanelIsland.takePreviousAndClear(islands));
-        JIPipeDesktopGraphEditorContextPanelIsland.disposeAll(List.of());
+        JIPipeDesktopGraphEditorContextPanelIsland.disposePreviousIslands(islands);
+        assertEquals(0, islands.size());
+        assertEquals(1, a.disposeCount, "an empty pass disposes nothing");
+
+        // A second call on the now-empty list is a no-op (no double dispose).
+        JIPipeDesktopGraphEditorContextPanelIsland.disposePreviousIslands(islands);
+        assertEquals(1, a.disposeCount);
     }
 
     /**

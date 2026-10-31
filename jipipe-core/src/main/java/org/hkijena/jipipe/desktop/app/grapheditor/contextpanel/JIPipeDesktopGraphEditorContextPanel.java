@@ -46,8 +46,7 @@ public class JIPipeDesktopGraphEditorContextPanel extends JIPipeDesktopWorkbench
         // each of them must release its resources exactly once. This is the
         // only per-rebuild teardown hook (formPanel.clear() only drops the
         // wrapper panels added by addIsland()).
-        JIPipeDesktopGraphEditorContextPanelIsland.disposeAll(
-                JIPipeDesktopGraphEditorContextPanelIsland.takePreviousAndClear(currentIslands));
+        JIPipeDesktopGraphEditorContextPanelIsland.disposePreviousIslands(currentIslands);
 
         JScrollPane scrollPane = formPanel.getScrollPane();
         int oldValue = scrollPane.getVerticalScrollBar().getValue();

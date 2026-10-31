@@ -75,20 +75,18 @@ public abstract class JIPipeDesktopGraphEditorContextPanelIsland extends JIPipeD
     }
 
     /**
-     * Separates the islands of the previous rebuild pass from the pass that is
-     * about to be built: returns the previous entries and clears the tracking
-     * list. The caller then {@link #disposeAll(List) disposes} the returned
-     * islands, so every rebuild releases the previous islands' resources
-     * exactly once.
+     * Disposes the islands of the previous rebuild pass and clears the tracking
+     * list in one step, so a rebuild can never dispose an island twice or forget
+     * to dispose one: the previous entries are taken, disposed exactly once, and
+     * only then is the tracking list cleared.
      *
      * @param tracked the context panel's island list
      * @param <T>     the island type
-     * @return the islands of the previous pass, in insertion order
      */
-    public static <T extends JIPipeDesktopGraphEditorContextPanelIsland> List<T> takePreviousAndClear(List<T> tracked) {
+    public static <T extends JIPipeDesktopGraphEditorContextPanelIsland> void disposePreviousIslands(List<T> tracked) {
         List<T> previous = new ArrayList<>(tracked);
         tracked.clear();
-        return previous;
+        disposeAll(previous);
     }
 
     /**
