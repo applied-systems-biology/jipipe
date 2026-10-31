@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopAppearanceSection;
+import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopRawSettingsSection;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
@@ -103,6 +104,11 @@ public class StandardSettingsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerApplicationSettingsSheet(new JIPipeDesktopAccessibilityApplicationSettings());
         registerApplicationSettingsSheet(new JIPipeDesktopKeyboardApplicationSettings());
         JIPipeDesktopAppearanceSection.registerCompositions();
+
+        // Raw settings editor (about:config, Task 20): an anchor sheet plus the
+        // merged-section registration that replaces its form with the raw table.
+        registerApplicationSettingsSheet(new JIPipeDesktopRawSettingsApplicationSettings());
+        JIPipeDesktopRawSettingsSection.registerRawSection();
 
         // Data
         registerApplicationSettingsSheet(new JIPipeDefaultResultImporterApplicationSettings());

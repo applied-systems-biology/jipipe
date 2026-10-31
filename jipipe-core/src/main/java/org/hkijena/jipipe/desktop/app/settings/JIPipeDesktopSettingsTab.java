@@ -79,7 +79,8 @@ public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implem
      * registers it, so the placeholder pages need no sheet of their own.
      * <p>
      * Populated by {@link JIPipeDesktopAppearanceSection#registerCompositions()}
-     * during plugin registration.
+     * and {@link JIPipeDesktopRawSettingsSection#registerRawSection()} during
+     * plugin registration.
      */
     private static final Map<String, String> MERGED_PAGES_BY_SHEET = new ConcurrentHashMap<>();
 
@@ -120,6 +121,7 @@ public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implem
     private String selectedSheetId;
     private JIPipeDesktopParameterFormPanel currentFormPanel;
     private JIPipeDesktopAppearanceSection currentSection;
+    private JIPipeDesktopRawSettingsSection currentRawSection;
     private boolean updatingTree;
 
     /**
@@ -461,12 +463,21 @@ public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implem
             wrapper.add(UIUtils.createInfoLabel("No settings available",
                     "The section '" + sheetNode.name() + "' is not available in this session"), BorderLayout.CENTER);
         } else if (editable && mergedPage != null) {
-            // A merged section: render the composed content instead of a form.
-            JIPipeDesktopAppearanceSection section = new JIPipeDesktopAppearanceSection(getDesktopWorkbench(),
-                    this,
-                    mergedPage);
-            currentSection = section;
-            wrapper.add(section, BorderLayout.CENTER);
+            if (JIPipeDesktopRawSettingsSection.PAGE_RAW.equals(mergedPage)) {
+                // The raw settings editor lists the whole scope document; it hosts
+                // its own scope selector and is not tied to this section's sheet.
+                JIPipeDesktopRawSettingsSection section = new JIPipeDesktopRawSettingsSection();
+                section.setScope(activeScope);
+                currentRawSection = section;
+                wrapper.add(section, BorderLayout.CENTER);
+            } else {
+                // A merged section: render the composed content instead of a form.
+                JIPipeDesktopAppearanceSection section = new JIPipeDesktopAppearanceSection(getDesktopWorkbench(),
+                        this,
+                        mergedPage);
+                currentSection = section;
+                wrapper.add(section, BorderLayout.CENTER);
+            }
         } else {
             JIPipeDesktopParameterFormPanel formPanel = createPlainFormPanel(sheet);
             if (!editable) {
@@ -524,6 +535,10 @@ public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implem
         if (currentSection != null) {
             currentSection.dispose();
             currentSection = null;
+        }
+        if (currentRawSection != null) {
+            currentRawSection.dispose();
+            currentRawSection = null;
         }
         if (currentFormPanel != null) {
             currentFormPanel.dispose();

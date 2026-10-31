@@ -72,6 +72,7 @@ import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopAppearanceSection;
 import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopApplicationSettingsUI;
 import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopProjectOverviewUI;
 import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopProjectSettingsUI;
+import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopRawSettingsSection;
 import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopSettingsTab;
 import org.hkijena.jipipe.desktop.commons.components.SplitButton;
 import org.hkijena.jipipe.desktop.commons.components.ai.JIPipeDesktopAIStatusControl;
@@ -1003,6 +1004,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         JMenu toolsMenu = new JMenu("Tools");
 
         toolsMenu.add(UIUtils.createMenuItem("Customize JIPipe ...", "Allows to customize JIPipe using themes", JIPipe.RESOURCES.getIcon16("actions/palette.png"), this::openCustomizer));
+        toolsMenu.add(UIUtils.createMenuItem("Raw settings (about:config) ...", "Lists and edits every setting, including values without a dedicated editor", JIPipe.RESOURCES.getIcon16("actions/configure.png"), this::openRawSettings));
         toolsMenu.add(UIUtils.createMenuItem("Theme manager/editor", "Allows to create custom JIPipe theme", JIPipe.RESOURCES.getIcon16("actions/palette.png"), this::openThemeManagerAndEditor));
 
         JMenu pluginsMenu = new JMenu("Plugins");
@@ -1101,6 +1103,14 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
      */
     private void openCustomizer() {
         JIPipeDesktopAppearanceSection.openAppearance(this);
+    }
+
+    /**
+     * Opens the settings tab on the raw settings editor (the {@code about:config}
+     * of JIPipe, Task 20).
+     */
+    private void openRawSettings() {
+        JIPipeDesktopRawSettingsSection.openRawSection(this);
     }
 
     private void openArtifactManager() {

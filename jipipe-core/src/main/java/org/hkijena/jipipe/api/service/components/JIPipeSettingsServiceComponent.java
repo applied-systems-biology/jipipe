@@ -1328,6 +1328,65 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
     }
 
     /**
+     * Writes (or, with a {@code null} value, removes) one document location
+     * and attributes the resulting change to the given
+     * {@link ChangeOrigin}.
+     * <p>
+     * This is the origin-carrying write seam. The origin a change is reported
+     * with — and, for a local origin, whether it schedules the debounced
+     * auto-save (see {@link #scheduleSaveForLocalEdit}) — is read from the
+     * private {@link #foreignMergeOrigin} thread-local by the document's path
+     * listeners. The merge path sets that thread-local itself; every other
+     * writer (bindings, sheet bridges) keeps the default
+     * {@link ChangeOrigin#LOCAL_PROGRAMMATIC}. This method exposes the same
+     * mechanism for a caller that owns a distinct origin, currently the raw
+     * settings editor ({@link ChangeOrigin#RAW_EDIT} for an edited value,
+     * {@link ChangeOrigin#RESET} for restoring a default).
+     * <p>
+     * The thread-local is set for the duration of this call only and restored
+     * in a {@code finally} (the same discipline as the merge hook wrapper), so
+     * an exception out of a path listener cannot leak the origin to later
+     * writes on this thread.
+     * <p>
+     * The location is made observable first (the same
+     * {@link #ensureObserved} step the merge path performs before it writes a
+     * block): the change event and the debounced auto-save are produced by the
+     * document's path listeners (see {@link #onPathChanged} and
+     * {@link #registerLocalChangeListener}), and those exist only for observed
+     * locations. A raw edit may address a location no binding ever touched (an
+     * unknown block), which a plain {@link SettingsDocument#set} would change
+     * silently — not broadcast and, worse, never saved. ("Observable" is thus a
+     * superset of what a binding observed; it broadens what is reported, never
+     * what an existing write does.)
+     * <p>
+     * Additive: it changes no existing behaviour.
+     *
+     * @param scope the scope of the document to write to
+     * @param blockPath the canonical block path
+     * @param subPath the slash-separated sub-path within the block
+     * @param value the value to store, or {@code null} to remove the location
+     * @param origin the origin to attribute to the change
+     */
+    public synchronized void writeWithOrigin(SettingsScope scope,
+                                             String blockPath,
+                                             String subPath,
+                                             JsonNode value,
+                                             ChangeOrigin origin) {
+        Objects.requireNonNull(scope, "scope");
+        Objects.requireNonNull(origin, "origin");
+        SettingsDocument doc = document(scope);
+        // The same pre-write observation step the merge path performs.
+        ensureObserved(doc, blockPath, subPath);
+        ChangeOrigin saved = foreignMergeOrigin.get();
+        foreignMergeOrigin.set(origin);
+        try {
+            doc.set(blockPath, subPath, value);
+        } finally {
+            foreignMergeOrigin.set(saved);
+        }
+    }
+
+    /**
      * Marks the given document as being written quiescently (see
      * {@link #writeQuiescently}): until the matching {@link #endQuiescentWrite}
      * on the same thread, its mutations emit no change events and do not count
