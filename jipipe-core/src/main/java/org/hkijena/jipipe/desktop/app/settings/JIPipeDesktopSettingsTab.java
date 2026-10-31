@@ -500,6 +500,20 @@ public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implem
                 sheets.put(sectionKey(node), projectSheets.get(node.id()));
                 categoryIcons.putIfAbsent(node.category(), projectSheets.get(node.id()).getCategoryIcon());
             }
+
+            // The live views over the project metadata (user paths, project-wide
+            // parameters, metadata without those parts). They are built here, over
+            // the CURRENT project, and shown as sections only — never registered
+            // on the project, so they are never persisted (the metadata is
+            // persisted natively; registering these would write it twice).
+            List<SettingsTreeModel.SheetNode> viewNodes = ProjectSettingsViews.sectionNodes(getDesktopWorkbench().getProject());
+            List<JIPipeProjectSettingsSheet> viewSheets = ProjectSettingsViews.sectionSheets(getDesktopWorkbench().getProject());
+            nodes.addAll(viewNodes);
+            for (int i = 0; i < viewNodes.size(); i++) {
+                SettingsTreeModel.SheetNode node = viewNodes.get(i);
+                sheets.put(sectionKey(node), viewSheets.get(i));
+                categoryIcons.putIfAbsent(node.category(), viewSheets.get(i).getCategoryIcon());
+            }
         }
 
         this.model = new SettingsTreeModel(nodes);
@@ -666,7 +680,7 @@ public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implem
                 wrapper.add(section, BorderLayout.CENTER);
             }
         } else {
-            JIPipeDesktopParameterFormPanel formPanel = createPlainFormPanel(sheet);
+            JIPipeDesktopParameterFormPanel formPanel = createPlainFormPanel(sheet, sheetNode.scope());
             if (!editable) {
                 formPanel.setEnabled(false);
             }
@@ -677,11 +691,24 @@ public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implem
         splitPane.setRightComponent(UIUtils.wrapInIslandPanelIfNeeded(wrapper));
     }
 
-    private JIPipeDesktopParameterFormPanel createPlainFormPanel(JIPipeParameterCollection sheet) {
+    /**
+     * A plain section form: the sheet's parameters plus the scope's
+     * documentation. PROJECT sections use {@code documentation/project-settings.md}
+     * — the same documentation and flags the deleted project-settings modal
+     * used — which also covers the live views ({@link ProjectSettingsViews}).
+     */
+    private JIPipeDesktopParameterFormPanel createPlainFormPanel(JIPipeParameterCollection sheet, SettingsScope scope) {
+        boolean projectScope = scope == SettingsScope.PROJECT;
+        String documentation = projectScope
+                ? "documentation/project-settings.md"
+                : "documentation/application-settings.md";
         return new JIPipeDesktopParameterFormPanel(getDesktopWorkbench(),
                 sheet,
-                MarkdownText.fromPluginResource("documentation/application-settings.md", new HashMap<>()),
-                JIPipeDesktopParameterFormPanel.WITH_SCROLLING | JIPipeDesktopParameterFormPanel.WITH_DOCUMENTATION | JIPipeDesktopParameterFormPanel.WITH_SEARCH_BAR);
+                MarkdownText.fromPluginResource(documentation, new HashMap<>()),
+                JIPipeDesktopParameterFormPanel.WITH_SCROLLING
+                        | JIPipeDesktopParameterFormPanel.WITH_DOCUMENTATION
+                        | JIPipeDesktopParameterFormPanel.WITH_SEARCH_BAR
+                        | (projectScope ? JIPipeDesktopParameterFormPanel.DOCUMENTATION_NO_UI : 0));
     }
 
     private JLabel createScopeHintLabel(SettingsScope scope) {
