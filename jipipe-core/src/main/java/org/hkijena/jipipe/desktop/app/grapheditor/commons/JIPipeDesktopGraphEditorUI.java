@@ -140,6 +140,8 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
     private Point panningOffset = null;
     private Point panningScrollbarOffset = null;
     private boolean isPanning = false;
+    /** Whether {@link #dispose()} already ran (it is idempotent). */
+    private boolean disposed;
     private Set<JIPipeNodeInfo> addableAlgorithms = new HashSet<>();
     private JIPipeDesktopToggleableGraphEditorTool currentTool;
     private int contextToolbarInsertLocation;
@@ -190,6 +192,14 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
 
     @Override
     public void dispose() {
+        // Idempotent: an editor tab is disposed when the user closes the tab
+        // (forceCloseTab) and again when the project window closes (the tab
+        // pane's teardown). The bindings' close() is idempotent, but the
+        // unsubscribe/canvas work must not repeat.
+        if (disposed) {
+            return;
+        }
+        disposed = true;
         graph.getGraphChangedEventEmitter().unsubscribe(this);
         dockPanel.getParameterChangedEventEmitter().unsubscribe(showDockToolbarLabelsParameterListener);
         // Each binding owns a document path listener: release the ones this
