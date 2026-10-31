@@ -31,30 +31,30 @@ import java.util.function.Consumer;
  * <em>Accessibility</em> and <em>Keyboard</em> sections of the settings tab
  * (modern settings system, Task 19).
  * <p>
- * <b>Composition.</b> The three sections are registered as ordinary
- * application sheets of the category
- * {@link #CATEGORY_APPEARANCE_AND_ACCESSIBILITY}. The <em>Appearance</em>
- * section composes parameters of two <em>already registered</em> sheets —
+ * <b>Composition.</b> The three sections are registered as application sheets of
+ * the category {@link #CATEGORY_APPEARANCE_AND_ACCESSIBILITY}; the <em>Appearance</em>
+ * section composes <em>selected</em> parameters of two registered sheets —
  * {@code JIPipeGeneralUIApplicationSettings} (theme, theme style) and
- * {@code JIPipeFileChooserApplicationSettings} (file dialog design + fallback);
- * the <em>Accessibility</em> section shows the general UI sheet's reduced motion
- * and owns the UI-scale control (which is <em>not</em> a settings key: it is
- * stored in the jaunch config files, see
- * {@code JIPipeDesktopAppearanceSection}); the <em>Keyboard</em> section is a
- * placeholder. Which keys are shown per sheet is declared by this model and
- * read by the section UI — the UI never invents a key.
+ * {@code JIPipeFileChooserApplicationSettings} (file dialog design + fallback) —
+ * the <em>Accessibility</em> section the general UI sheet's reduced motion (plus
+ * the UI-scale control, which is not a settings key), the <em>Keyboard</em>
+ * section is a placeholder. {@link #parametersBySheet(String)} declares the keys.
  * <p>
- * <b>Modification and reset.</b> A section owns the sheets it composes. A block
- * is present in the document exactly when its sheet deviates from its defaults
- * (the sheet bridge merges the serialized sheet into the block), so
- * {@link #isModified()} is "any owned block present" and
- * {@link #resetAll()} removes exactly those blocks — the bridge then re-applies
- * the (now absent) block into the live sheet, restoring defaults, and the
- * settings engine auto-saves the removal like any other local write.
+ * <b>Modification is per displayed key, relative to its default.</b> The sheet
+ * bridge deliberately materializes defaults into the document: it seeds a block
+ * from the whole sheet on attach and flushes the whole sheet on every change.
+ * Block presence is therefore <em>not</em> a modification signal — a freshly
+ * opened profile has every block present while every value still equals its
+ * default. {@link #isModified()} answers "does any <em>displayed</em> key hold a
+ * value that differs from its default?"; keys the section does not display
+ * belong to the sheet's other consumers and neither count nor get touched.
  * <p>
- * The model is either the <em>catalog</em> ({@link #allSections(SettingsDocument)}:
- * all three sections, {@link #sectionIds()} lists them) or one section's view
- * ({@link #forSection(String)}), which is what a section header binds to.
+ * <b>Reset.</b> {@link #resetAll()} removes only the displayed keys from the
+ * document ({@link SettingsDocument#remove(String, String)} per key, never a
+ * whole block). That cleans the stored state; the authoritative reset — driving
+ * the live sheet parameters to their defaults — is the section's job, because
+ * the bridge only applies keys that are <em>present</em> in the block and the
+ * next save would re-flush the sheet's (unchanged) values.
  */
 public final class AppearanceSectionModel {
 
@@ -137,7 +137,7 @@ public final class AppearanceSectionModel {
     /**
      * The three sections, in display order: the registered merged sheet that
      * hosts the section and the <em>composed</em> sheets whose parameters it
-     * shows (which is what a section's reset reverts).
+     * shows.
      */
     public static final List<Section> SECTIONS = List.of(
             new Section(SECTION_APPEARANCE, "org.hkijena.jipipe:desktop-appearance",
@@ -148,59 +148,95 @@ public final class AppearanceSectionModel {
                     List.of()));
 
     private final SettingsDocument document;
-    private final List<String> ownedBlockPaths;
+    /**
+     * The displayed keys per section, as {@code (blockPath, keys)}. Only these
+     * keys are evaluated and reset.
+     */
+    private final Map<String, List<Map.Entry<String, List<String>>>> displayedKeysBySection;
+    /**
+     * The default value of every displayed key, keyed by {@code blockPath + "/" + key}.
+     */
+    private final Map<String, JsonNode> defaults;
     private final List<String> sectionIds;
 
-    private AppearanceSectionModel(SettingsDocument document, List<String> ownedBlockPaths, List<String> sectionIds) {
-        this.document = document;
-        this.ownedBlockPaths = List.copyOf(ownedBlockPaths);
+    private AppearanceSectionModel(SettingsDocument document,
+                                   Map<String, List<Map.Entry<String, List<String>>>> displayedKeysBySection,
+                                   Map<String, JsonNode> defaults,
+                                   List<String> sectionIds) {
+        this.document = Objects.requireNonNull(document, "document");
+        this.displayedKeysBySection = displayedKeysBySection;
+        this.defaults = Map.copyOf(defaults);
         this.sectionIds = List.copyOf(sectionIds);
+    }
+
+    /**
+     * The id → composition of the three sections, in display order.
+     *
+     * @return section id → (block path → displayed keys)
+     */
+    public static Map<String, Map<String, List<String>>> allCompositions() {
+        Map<String, Map<String, List<String>>> result = new LinkedHashMap<>();
+        for (Section section : SECTIONS) {
+            result.put(section.id(), parametersBySheet(section.id()));
+        }
+        return result;
     }
 
     /**
      * The catalog of the merged sections.
      *
      * @param document the application settings document
-     * @return a model listing all three sections; performing a reset on it
-     * resets every owned block of every section
+     * @param defaults the default value of every displayed key, keyed by
+     *                 {@code blockPath + "/" + key} (read from throwaway fresh
+     *                 sheet instances by the caller)
+     * @return a model listing all three sections
      */
-    public static AppearanceSectionModel allSections(SettingsDocument document) {
-        List<String> blocks = new ArrayList<>();
-        List<String> ids = new ArrayList<>();
-        for (Section section : SECTIONS) {
-            ids.add(section.id());
-            for (String sheetId : section.sheetIds()) {
-                blocks.add("sheet:" + sheetId);
-            }
-        }
-        return new AppearanceSectionModel(document, blocks, ids);
+    public static AppearanceSectionModel allSections(SettingsDocument document, Map<String, JsonNode> defaults) {
+        return new AppearanceSectionModel(document,
+                toComposition(allCompositions()),
+                defaults,
+                List.of(SECTION_APPEARANCE, SECTION_ACCESSIBILITY, SECTION_KEYBOARD));
     }
 
     /**
-     * A model over an explicit set of owned blocks (no section ids). Used by
-     * the section UI for one composed section and by tests.
-     *
-     * @param document        the settings document
-     * @param ownedBlockPaths the block paths the section owns
-     * @return the model
-     */
-    public static AppearanceSectionModel withOwnedBlocks(SettingsDocument document, List<String> ownedBlockPaths) {
-        Objects.requireNonNull(document, "document");
-        return new AppearanceSectionModel(document, ownedBlockPaths, List.of());
-    }
-
-    /**
-     * Creates a model for a single section, holding only the blocks that
-     * section owns.
+     * Creates a model for a single section, holding only the keys that section
+     * displays.
      *
      * @param document  the application settings document
      * @param sectionId one of {@link #SECTION_APPEARANCE},
      *                  {@link #SECTION_ACCESSIBILITY} or {@link #SECTION_KEYBOARD}
-     * @return the section's model; the keyboard placeholder owns no sheet
+     * @param defaults  the default value of every displayed key, keyed by
+     *                  {@code blockPath + "/" + key}
+     * @return the section's model; the keyboard placeholder displays nothing
      * @throws IllegalArgumentException if the id is unknown
      */
-    public static AppearanceSectionModel forSection(SettingsDocument document, String sectionId) {
-        return allSections(document).forSection(sectionId);
+    public static AppearanceSectionModel forSection(SettingsDocument document, String sectionId,
+                                                    Map<String, JsonNode> defaults) {
+        return allSections(document, defaults).forSection(sectionId);
+    }
+
+    /**
+     * A model over an explicit composition (used by tests and by consumers
+     * that compose their own keys).
+     *
+     * @param document              the settings document
+     * @param displayedBySection    section id → (block path → displayed keys)
+     * @param defaults              the default value per displayed key, keyed by
+     *                              {@code blockPath + "/" + key}
+     * @return the model
+     */
+    public static AppearanceSectionModel withComposition(SettingsDocument document,
+                                                         Map<String, Map<String, List<String>>> displayedBySection,
+                                                         Map<String, JsonNode> defaults) {
+        return new AppearanceSectionModel(document, toComposition(displayedBySection), defaults,
+                List.copyOf(displayedBySection.keySet()));
+    }
+
+    private static Map<String, List<Map.Entry<String, List<String>>>> toComposition(
+            Map<String, Map<String, List<String>>> displayedBySection) {
+        Map<String, List<Map.Entry<String, List<String>>>> result = new LinkedHashMap<>();
+        displayedBySection.forEach((sectionId, bySheet) -> result.put(sectionId, List.copyOf(bySheet.entrySet())));
+        return result;
     }
 
     /**
@@ -244,7 +280,8 @@ public final class AppearanceSectionModel {
 
     /**
      * @param sectionId the section id
-     * @return the sheets (block paths) the section's parameters come from; empty for the placeholder
+     * @return the sheets (block paths) the section's parameters come from; empty
+     * for the placeholder
      * @throws IllegalArgumentException if the id is unknown
      */
     public static List<String> ownedBlocksOf(String sectionId) {
@@ -256,14 +293,16 @@ public final class AppearanceSectionModel {
     }
 
     /**
-     * @return a model restricted to one section (see {@link #forSection(String)})
+     * @return a model restricted to one section (see {@link #forSection(String, Map)})
      */
     public AppearanceSectionModel forSection(String sectionId) {
-        List<String> blocks = ownedBlocksOf(sectionId);
-        if (blocks.isEmpty()) {
-            return new AppearanceSectionModel(document, List.of(), List.of());
+        if (!displayedKeysBySection.containsKey(sectionId)) {
+            // Unknown section in this composition (or the placeholder): nothing is displayed.
+            return new AppearanceSectionModel(document, Map.of(), defaults, List.of());
         }
-        return new AppearanceSectionModel(document, blocks, List.of(sectionId));
+        Map<String, List<Map.Entry<String, List<String>>>> single = new LinkedHashMap<>();
+        single.put(sectionId, displayedKeysBySection.get(sectionId));
+        return new AppearanceSectionModel(document, single, defaults, List.of(sectionId));
     }
 
     /**
@@ -275,62 +314,128 @@ public final class AppearanceSectionModel {
     }
 
     /**
-     * @return the block paths of the sheets this model's sections own
+     * @return the block paths of the sheets the displayed keys come from
      */
     public List<String> ownedBlockPaths() {
-        return ownedBlockPaths;
+        Set<String> result = new LinkedHashSet<>();
+        displayedKeysBySection.values().forEach(entries -> entries.forEach(entry -> result.add(entry.getKey())));
+        return List.copyOf(result);
     }
 
     /**
-     * @return whether any owned block is present in the document, i.e. whether
-     * the section holds a value that deviates from the sheet defaults
+     * @return the displayed keys of this model, keyed by
+     * {@code blockPath + "/" + key}
      */
-    public boolean isModified() {
-        for (String blockPath : ownedBlockPaths) {
-            if (document.hasBlock(blockPath)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * @return the owned blocks present in the document, in ownership order
-     */
-    public List<String> modifiedBlockPaths() {
-        List<String> result = new ArrayList<>();
-        for (String blockPath : ownedBlockPaths) {
-            if (document.hasBlock(blockPath)) {
-                result.add(blockPath);
+    public Map<String, List<String>> displayedKeys() {
+        Map<String, List<String>> result = new LinkedHashMap<>();
+        for (List<Map.Entry<String, List<String>>> entries : displayedKeysBySection.values()) {
+            for (Map.Entry<String, List<String>> entry : entries) {
+                result.merge(entry.getKey(), entry.getValue(), (a, b) -> {
+                    List<String> merged = new ArrayList<>(a);
+                    b.stream().filter(key -> !merged.contains(key)).forEach(merged::add);
+                    return merged;
+                });
             }
         }
         return result;
     }
 
     /**
-     * Removes the owned blocks from the document, so every parameter of the
-     * section falls back to its default. Blocks that are already absent are
-     * not touched (no document change, no auto-save).
+     * @return whether any <em>displayed</em> key holds a value in the document
+     * that differs from its default. A block holding only defaults (the state
+     * the bridge materializes on first open) is not a modification; a
+     * non-displayed key does not count either.
+     */
+    public boolean isModified() {
+        for (Map.Entry<String, List<String>> entry : displayedKeys().entrySet()) {
+            for (String key : entry.getValue()) {
+                if (isKeyModified(entry.getKey(), key)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @return the displayed keys whose stored value differs from the default,
+     * as {@code blockPath + "/" + key}, in display order
+     */
+    public List<String> modifiedKeys() {
+        List<String> result = new ArrayList<>();
+        for (Map.Entry<String, List<String>> entry : displayedKeys().entrySet()) {
+            for (String key : entry.getValue()) {
+                if (isKeyModified(entry.getKey(), key)) {
+                    result.add(entry.getKey() + "/" + key);
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * A displayed key is modified when the document holds a value for it that
+     * differs structurally from the recorded default. An absent value reads as
+     * the default, so it is not modified.
+     */
+    private boolean isKeyModified(String blockPath, String key) {
+        JsonNode stored = document.get(blockPath, key);
+        if (stored.isMissingNode()) {
+            return false;
+        }
+        JsonNode defaultValue = defaults.get(blockPath + "/" + key);
+        if (defaultValue == null) {
+            // No recorded default: fall back to "a stored value is a deviation".
+            return true;
+        }
+        return !stored.equals(defaultValue);
+    }
+
+    /**
+     * Removes the section's <em>displayed</em> keys from the document (per key,
+     * never a whole block), so no stale non-default value survives in the
+     * stored profile. Keys the section does not display are left untouched.
+     * <p>
+     * This only cleans the document. The live sheets are reset by the section UI
+     * (which drives each displayed parameter to its default), because the bridge
+     * applies only keys that are present in the block.
+     * <p>
+     * Only keys that actually deviate from their default are removed: an absent
+     * key already reads as the default, so resetting a section whose displayed
+     * keys are all at their defaults writes nothing (no spurious auto-save).
      */
     public void resetAll() {
-        for (String blockPath : modifiedBlockPaths()) {
-            document.removeBlock(blockPath);
+        for (Map.Entry<String, List<String>> entry : displayedKeys().entrySet()) {
+            for (String key : entry.getValue()) {
+                if (isKeyModified(entry.getKey(), key)) {
+                    document.remove(entry.getKey(), key);
+                }
+            }
         }
     }
 
     /**
-     * Subscribes to changes of the owned blocks, so the "modified" badge can be
-     * re-evaluated. A block appearing or disappearing notifies through the
-     * block-level listener. The subscription is removed by
-     * {@link #unsubscribe(Consumer)}; call both with the same listener instance
-     * (store it in a field).
+     * Subscribes to changes of the sheets the displayed keys come from, so the
+     * "modified" badge can be re-evaluated. A block-level listener catches every
+     * per-key change (including the per-key removals of {@link #resetAll()}), so
+     * the callback must re-evaluate {@link #isModified()} rather than trust the
+     * event. The subscription is removed by {@link #unsubscribe(Consumer)}; call
+     * both with the same listener instance (store it in a field).
      *
-     * @param listener invoked on every change of an owned block
+     * @param listener invoked on every change of a composed sheet's block
      */
     public void subscribe(Consumer<JsonNode> listener) {
         Objects.requireNonNull(listener, "listener");
-        for (String blockPath : ownedBlocks()) {
+        for (String blockPath : ownedBlockPaths()) {
+            // SettingsDocument#set(String, String, JsonNode) (the per-key write the
+            // sheet bridge uses) notifies only the exact "blockPath/key" listeners,
+            // so every displayed key gets its own listener on top of the
+            // block-level one (which covers whole-block replacements, block
+            // removal, and the per-key removals of resetAll()).
             document.addPathListener(blockPath, listener);
+            for (String key : displayedKeys().getOrDefault(blockPath, List.of())) {
+                document.addPathListener(blockPath + "/" + key, listener);
+            }
         }
     }
 
@@ -340,8 +445,11 @@ public final class AppearanceSectionModel {
      * @param listener the listener passed to {@link #subscribe(Consumer)}
      */
     public void unsubscribe(Consumer<JsonNode> listener) {
-        for (String blockPath : ownedBlocks()) {
+        for (String blockPath : ownedBlockPaths()) {
             document.removePathListener(blockPath, listener);
+            for (String key : displayedKeys().getOrDefault(blockPath, List.of())) {
+                document.removePathListener(blockPath + "/" + key, listener);
+            }
         }
     }
 
@@ -353,21 +461,21 @@ public final class AppearanceSectionModel {
     }
 
     /**
-     * @return the owned blocks, distinct and in ownership order
+     * @return the recorded default of a displayed key, or {@code null}
      */
-    public Set<String> ownedBlocks() {
-        return new LinkedHashSet<>(ownedBlockPaths);
+    public JsonNode defaultOf(String blockPath, String key) {
+        return defaults.get(blockPath + "/" + key);
     }
 
     /**
      * One of the merged sections.
      *
-     * @param id           the stable section id ({@link #SECTION_APPEARANCE}, ...)
+     * @param id            the stable section id ({@link #SECTION_APPEARANCE}, ...)
      * @param mergedSheetId the registration id of the merged sheet hosting the
      *                      section (persisted in profiles)
-     * @param sheetIds     the registration ids of the <em>composed</em> sheets
-     *                     the section's parameters come from (empty for the
-     *                     placeholder)
+     * @param sheetIds      the registration ids of the <em>composed</em> sheets
+     *                      the section's parameters come from (empty for the
+     *                      placeholder)
      */
     public record Section(String id, String mergedSheetId, List<String> sheetIds) {
         public Section {

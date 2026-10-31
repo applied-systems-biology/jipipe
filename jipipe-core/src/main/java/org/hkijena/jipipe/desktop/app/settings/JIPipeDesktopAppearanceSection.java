@@ -29,10 +29,15 @@ import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPan
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernThemeStyle;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopUITheme;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeModernThemeStyleParameter;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeGeneralUIApplicationSettings;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.scijava.Disposable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -75,6 +80,8 @@ import java.util.function.Consumer;
  */
 public class JIPipeDesktopAppearanceSection extends JPanel implements JIPipeDesktopWorkbenchAccess, Disposable {
 
+    private static final Logger logger = LoggerFactory.getLogger(JIPipeDesktopAppearanceSection.class);
+
     private static final String THEME_KEY = "theme-v2";
     private static final String THEME_STYLE_KEY = "theme-style";
     private static final String PAGE_APPEARANCE = AppearanceSectionModel.SECTION_APPEARANCE;
@@ -86,6 +93,11 @@ public class JIPipeDesktopAppearanceSection extends JPanel implements JIPipeDesk
     private final String page;
     private final SettingsDocument document;
     private final AppearanceSectionModel model;
+    /**
+     * The default value of every displayed key, read from throwaway fresh sheet
+     * instances (see {@link #freshSheetDefaults()}).
+     */
+    private final Map<String, JsonNode> defaults;
     private final JIPipeDesktopFormPanel formPanel = new JIPipeDesktopFormPanel(JIPipeDesktopFormPanel.WITH_SCROLLING);
     private final ThemePreviewPanel previewPanel = new ThemePreviewPanel();
 
@@ -121,7 +133,8 @@ public class JIPipeDesktopAppearanceSection extends JPanel implements JIPipeDesk
         this.settingsTab = settingsTab;
         this.page = page;
         this.document = applicationDocument();
-        this.model = AppearanceSectionModel.forSection(document, page);
+        this.defaults = freshSheetDefaults();
+        this.model = AppearanceSectionModel.forSection(document, page, defaults);
         this.systemScale = UIUtils.getScale(workbench != null ? workbench.getWindow() : null);
         initialize();
         model.subscribe(documentListener);
@@ -136,6 +149,46 @@ public class JIPipeDesktopAppearanceSection extends JPanel implements JIPipeDesk
             throw new IllegalStateException("The settings service is not available");
         }
         return service.document(SettingsScope.APPLICATION);
+    }
+
+    /**
+     * Reads the default value of every displayed key of the merged sections.
+     * <p>
+     * The source is one <em>throwaway</em> fresh instance per composed sheet type
+     * ({@code new JIPipeGeneralUIApplicationSettings()},
+     * {@code new JIPipeFileChooserApplicationSettings()}): settings sheets are
+     * plain parameter containers with no constructor side effects, and a fresh
+     * instance holds exactly the defaults. The instances are read only — never
+     * registered, never attached to a bridge, never kept — so no second sheet
+     * can exist for a block.
+     *
+     * @return {@code blockPath + "/" + key} → the default value as JSON
+     */
+    public static Map<String, JsonNode> freshSheetDefaults() {
+        Map<String, JsonNode> result = new LinkedHashMap<>();
+        collectDefaults(result, new JIPipeGeneralUIApplicationSettings(),
+                AppearanceSectionModel.GENERAL_UI_BLOCK,
+                AppearanceSectionModel.APPEARANCE_GENERAL_UI_PARAMETER_KEYS);
+        collectDefaults(result, new JIPipeGeneralUIApplicationSettings(),
+                AppearanceSectionModel.GENERAL_UI_BLOCK,
+                AppearanceSectionModel.ACCESSIBILITY_PARAMETER_KEYS);
+        collectDefaults(result, new JIPipeFileChooserApplicationSettings(),
+                AppearanceSectionModel.FILE_CHOOSER_BLOCK,
+                AppearanceSectionModel.APPEARANCE_FILE_CHOOSER_PARAMETER_KEYS);
+        return result;
+    }
+
+    private static void collectDefaults(Map<String, JsonNode> target,
+                                        JIPipeApplicationSettingsSheet throwawaySheet,
+                                        String blockPath,
+                                        List<String> keys) {
+        Map<String, JIPipeParameterAccess> accesses = new JIPipeParameterTree(throwawaySheet).getParameters();
+        for (String key : keys) {
+            JIPipeParameterAccess access = accesses.get(key);
+            if (access != null) {
+                target.put(blockPath + "/" + key, JsonUtils.getObjectMapper().valueToTree(access.get(Object.class)));
+            }
+        }
     }
 
     private static int getRoundedScale(int scale) {
@@ -490,13 +543,53 @@ public class JIPipeDesktopAppearanceSection extends JPanel implements JIPipeDesk
                 ? "This section contains settings that differ from the defaults" : null);
     }
 
+    /**
+     * Resets the section to its defaults.
+     * <p>
+     * The document removal alone is cosmetic: the sheet bridge applies only keys
+     * that are <em>present</em> in a block, and the next save re-flushes the
+     * whole sheet with its current (unchanged) values. The authoritative reset
+     * therefore drives every displayed parameter of the <em>live</em> sheet to
+     * the default read from a throwaway fresh instance: each {@code set} fires
+     * the sheet's parameter change event → the bridge flushes it into the
+     * document (the engine auto-saves it). Afterwards the model removes the
+     * displayed keys from the document (per key, and only those that still
+     * deviate) so the stored profile carries no stale value, and the section is
+     * re-created so the editors show the defaults.
+     */
     private void doActionResetSection() {
+        for (Map.Entry<String, List<String>> entry : model.displayedKeys().entrySet()) {
+            Map<String, JIPipeParameterAccess> liveAccesses = parameterAccessesOf(entry.getKey());
+            for (String key : entry.getValue()) {
+                driveToDefault(entry.getKey(), key, liveAccesses.get(key));
+            }
+        }
         model.resetAll();
-        // The bridge has re-applied the (now absent) blocks into the live sheets;
-        // re-create the section so the editors show the defaults.
         refreshModifiedBadge();
         if (settingsTab != null) {
             settingsTab.rebuildRightPane();
+        }
+    }
+
+    /**
+     * Sets one live sheet parameter to its default (the value the throwaway
+     * fresh sheet holds). Unchanged values and parameters without a recorded
+     * default are left untouched, so the method fires nothing for them.
+     */
+    private void driveToDefault(String blockPath, String key, JIPipeParameterAccess access) {
+        JsonNode defaultValue = model.defaultOf(blockPath, key);
+        if (access == null || defaultValue == null) {
+            return;
+        }
+        try {
+            JsonNode current = JsonUtils.getObjectMapper().valueToTree(access.get(Object.class));
+            if (current.equals(defaultValue)) {
+                return;
+            }
+            Object value = JsonUtils.getObjectMapper().readerFor(access.getFieldClass()).readValue(defaultValue);
+            access.set(value);
+        } catch (Exception | Error e) {
+            logger.warn("Could not reset parameter '{}' of {} to its default", key, blockPath, e);
         }
     }
 
