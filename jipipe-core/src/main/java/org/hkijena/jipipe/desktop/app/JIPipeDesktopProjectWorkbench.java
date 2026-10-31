@@ -37,6 +37,7 @@ import org.hkijena.jipipe.api.project.jipx.JIPipeProjectFairCheck;
 import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
 import org.hkijena.jipipe.api.service.events.JIPipePluginRegisteredEvent;
 import org.hkijena.jipipe.api.service.events.JIPipePluginRegisteredEventListener;
+import org.hkijena.jipipe.api.settings.SettingsScope;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
@@ -71,6 +72,7 @@ import org.hkijena.jipipe.desktop.app.running.queue.JIPipeDesktopRunnableQueueNo
 import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopApplicationSettingsUI;
 import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopProjectOverviewUI;
 import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopProjectSettingsUI;
+import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopSettingsTab;
 import org.hkijena.jipipe.desktop.commons.components.SplitButton;
 import org.hkijena.jipipe.desktop.commons.components.ai.JIPipeDesktopAIStatusControl;
 import org.hkijena.jipipe.desktop.commons.components.servers.JIPipeDesktopServerStatusControl;
@@ -127,6 +129,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
     public static final String TAB_PROJECT_OVERVIEW = "PROJECT_OVERVIEW";
     public static final String TAB_STATISTICS = "STATISTICS";
     public static final String TAB_LOG = "LOG";
+    public static final String TAB_SETTINGS = "SETTINGS";
     private final JIPipeDesktopProjectWindow window;
     private final JIPipeProject project;
     private final Context context;
@@ -440,6 +443,11 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
                 "Statistics",
                 JIPipe.RESOURCES.getIcon16("actions/chart-bar.png"),
                 () -> new JIPipeDesktopStatisticsUI(this),
+                JIPipeDesktopTabPane.SingletonTabMode.Hidden);
+        documentTabPane.registerSingletonTab(TAB_SETTINGS,
+                "Settings",
+                JIPipe.RESOURCES.getIcon16("actions/configure.png"),
+                () -> new JIPipeDesktopSettingsTab(this),
                 JIPipeDesktopTabPane.SingletonTabMode.Hidden);
         add(documentTabPane, BorderLayout.CENTER);
 
@@ -1104,62 +1112,66 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
     }
 
 
+    /**
+     * Legacy entry point kept for the existing deep links (e.g. {@code "/General/Auto save"});
+     * routes to the non-modal settings tab in the {@link SettingsScope#APPLICATION} scope.
+     * <p>
+     * <b>Path translation.</b> The deep links pass a legacy {@code "/Category/Sheet name"} path
+     * (the tree path of the former modal dialog). It cannot be resolved against the modern
+     * section list directly, so this overload translates it in two stages:
+     * <ol>
+     * <li>If the path addresses a known section by category + display name
+     * ({@link JIPipeDesktopSettingsTab#sheetIdForLegacyPath}), the application scope tab selects that
+     * section by its sheet id. Because the tab also lists the other file-backed scope's sections, a path
+     * that addresses a runtime-scoped sheet lands on that sheet (shown read-only with its scope hint).</li>
+     * <li>Otherwise (no match, or a bare category path such as {@code "/General"}), the application scope
+     * is shown and the path's last segment is put into the section search field, so the user still
+     * ends up looking at the right sections.</li>
+     * </ol>
+     * A {@code null} path just opens the tab on its default selection.
+     *
+     * @param navigateToCategory the legacy {@code "/Category/Sheet name"} path, or {@code null}
+     * @deprecated use {@link #openSettingsTab(SettingsScope, String)}
+     */
+    @Deprecated
     public void openApplicationSettings(String navigateToCategory) {
-        JDialog dialog = new JDialog(getWindow());
-        dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        dialog.setTitle("JIPipe - Application settings");
-        dialog.setModal(true);
-        dialog.setIconImage(UIUtils.getJIPipeIcon128());
-        JIPipeDesktopApplicationSettingsUI applicationSettingsUI = new JIPipeDesktopApplicationSettingsUI(this);
-        if (navigateToCategory != null) {
-            applicationSettingsUI.selectNode(navigateToCategory);
+        JIPipeDesktopSettingsTab tab = (JIPipeDesktopSettingsTab) openSettingsTab(SettingsScope.APPLICATION, null);
+        if (tab == null || navigateToCategory == null) {
+            return;
         }
-        UIUtils.addEscapeListener(dialog);
-        JPanel contentPanel = new JPanel(new BorderLayout(8, 8));
-        contentPanel.setBackground(ThemeUtils.getCurrentStyle().getWindowBackground());
-        contentPanel.add(applicationSettingsUI, BorderLayout.CENTER);
+        String sheetId = JIPipeDesktopSettingsTab.sheetIdForLegacyPath(tab.getModel(), navigateToCategory);
+        if (sheetId != null && tab.selectSheet(sheetId)) {
+            return;
+        }
+        // Fall back to a section search with the last path segment ("Auto save", "AI", "General", ...)
+        String trimmed = navigateToCategory.trim();
+        String lastSegment = trimmed.substring(trimmed.lastIndexOf('/') + 1);
+        tab.setActiveScope(SettingsScope.APPLICATION);
+        tab.setSectionSearch(lastSegment);
+    }
 
-        AtomicBoolean saved = new AtomicBoolean(false);
-        window.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent windowEvent) {
-                if (!saved.get()) {
-                    JIPipe.getSettings().reload();
-                }
+    /**
+     * Opens the non-modal settings tab (creating it on first use) and selects a section.
+     *
+     * @param scope         the scope to show ({@code APPLICATION}, {@code PROJECT} or {@code RUNTIME})
+     * @param sectionSearch optional initial search text for the section list; {@code null} keeps the
+     *                      current search
+     * @return the tab content component
+     */
+    public Component openSettingsTab(SettingsScope scope, String sectionSearch) {
+        SettingsScope effectiveScope = scope != null ? scope : SettingsScope.APPLICATION;
+        JIPipeDesktopTabPane.DocumentTab documentTab = documentTabPane.selectSingletonTab(TAB_SETTINGS);
+        if (documentTab == null) {
+            return null;
+        }
+        Component content = documentTab.getContent();
+        if (content instanceof JIPipeDesktopSettingsTab settingsTab) {
+            settingsTab.setActiveScope(effectiveScope);
+            if (sectionSearch != null) {
+                settingsTab.setSectionSearch(sectionSearch);
             }
-        });
-
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setBackground(ThemeUtils.getCurrentStyle().getWindowBackground());
-        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
-        JButton resetButton = new JButton("Reset", JIPipe.RESOURCES.getIcon16("actions/edit-reset.png"));
-        resetButton.addActionListener(e -> {
-            JIPipe.getSettings().reload();
-            applicationSettingsUI.selectNode("/General");
-        });
-        buttonPanel.add(UIUtils.makeButtonTransparent(resetButton));
-        buttonPanel.add(Box.createHorizontalGlue());
-        JButton cancelButton = new JButton("Cancel", JIPipe.RESOURCES.getIcon16("actions/cancel.png"));
-        cancelButton.addActionListener(e -> {
-            JIPipe.getSettings().reload();
-            dialog.setVisible(false);
-        });
-        buttonPanel.add(UIUtils.makeButtonTransparent(cancelButton));
-        JButton saveButton = new JButton("Save", JIPipe.RESOURCES.getIcon16("actions/filesave.png"));
-        saveButton.addActionListener(e -> {
-            JIPipe.getSettings().save();
-            saved.set(true);
-            dialog.setVisible(false);
-        });
-        buttonPanel.add(UIUtils.makeButtonTransparent(saveButton));
-        contentPanel.add(buttonPanel, BorderLayout.SOUTH);
-        buttonPanel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
-
-        dialog.setContentPane(contentPanel);
-        dialog.pack();
-        dialog.setSize(1280, 768);
-        dialog.setLocationRelativeTo(getWindow());
-        dialog.setVisible(true);
+        }
+        return content;
     }
 
     public void openProjectReport() {
