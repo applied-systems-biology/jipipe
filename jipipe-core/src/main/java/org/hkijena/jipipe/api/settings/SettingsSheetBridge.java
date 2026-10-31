@@ -96,8 +96,14 @@ public final class SettingsSheetBridge {
      * parameter changes caused by the apply are then dropped in
      * {@link #onSheetParameterChanged(ParameterChangedEvent)} so they do not
      * flush back into the document.
+     * <p>
+     * Volatile: {@code applyFromDocument} runs off the EDT (the foreign-merge
+     * executor, raw edits) while {@code onSheetParameterChanged} runs on the
+     * EDT. Without the visibility guarantee a sheet-parameter event of an
+     * off-EDT apply could slip past this echo guard and flush the stale sheet
+     * state back over the value that was just applied.
      */
-    private boolean applying;
+    private volatile boolean applying;
 
     /**
      * Creates a bridge between a sheet and the {@code "sheet:<sheetId>"}

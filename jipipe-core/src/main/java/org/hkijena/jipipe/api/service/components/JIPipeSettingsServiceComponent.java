@@ -1159,7 +1159,18 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
      */
     public synchronized void registerKey(JIPipeSettingKey<?> key) {
         Objects.requireNonNull(key, "key");
-        registeredKeys.put(keyLocation(key), key);
+        String location = keyLocation(key);
+        JIPipeSettingKey<?> existing = registeredKeys.get(location);
+        if (existing != null && existing != key && existing.scope() != key.scope()) {
+            // The registry is location-keyed and last-wins, so the second
+            // registration silently decides which document the location is
+            // written to. A warning (not an exception: this is a public API
+            // and today's registrations are clean) surfaces the mistake.
+            logger.warn("Setting key at location {}/{} (scope {}) is overwritten by a key of the same location "
+                            + "with scope {}: the same location is registered in two scopes",
+                    key.blockPath(), key.subPath(), existing.scope(), key.scope());
+        }
+        registeredKeys.put(location, key);
         registeredKeyBlockPaths.add(key.blockPath());
         SettingsDocument doc = documents.get(key.scope());
         if (doc != null) {
@@ -1348,16 +1359,16 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
      * an exception out of a path listener cannot leak the origin to later
      * writes on this thread.
      * <p>
-     * The location is made observable first (the same
-     * {@link #ensureObserved} step the merge path performs before it writes a
-     * block): the change event and the debounced auto-save are produced by the
-     * document's path listeners (see {@link #onPathChanged} and
-     * {@link #registerLocalChangeListener}), and those exist only for observed
-     * locations. A raw edit may address a location no binding ever touched (an
-     * unknown block), which a plain {@link SettingsDocument#set} would change
-     * silently — not broadcast and, worse, never saved. ("Observable" is thus a
-     * superset of what a binding observed; it broadens what is reported, never
-     * what an existing write does.)
+     * The location is made observable and tracked first: the change event
+     * ({@link #onPathChanged}) and the debounced auto-save
+     * ({@link #registerLocalChangeListener}) are produced by the document's
+     * path listeners, and those exist only for observed/tracked locations. A
+     * raw edit may address a location no binding ever touched (an unbound
+     * pass-through block), which a plain {@link SettingsDocument#set} would
+     * change silently — not broadcast, never saved, and misclassified by a
+     * concurrent foreign merge. ("Observable"/"tracked" is thus a superset of
+     * what a binding observed; it broadens what is reported, never what an
+     * existing write does.)
      * <p>
      * Additive: it changes no existing behaviour.
      *
@@ -1377,6 +1388,16 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
         SettingsDocument doc = document(scope);
         // The same pre-write observation step the merge path performs.
         ensureObserved(doc, blockPath, subPath);
+        // ... and the local-change tracking that every binding and bridge
+        // registers (auto-save + merge classification). Without it a raw edit
+        // to a location no binding ever touched — an unbound pass-through
+        // block, exactly what the raw editor exists for — would be broadcast
+        // but never saved, and a concurrent foreign merge of that block would
+        // adopt the foreign value over the user's edit. Idempotent per
+        // document+location (see registerLocalChangeListener), so this is a
+        // no-op for a documented key's location, which bind()/registerKey
+        // already tracked.
+        observeBlockWrites(doc, blockPath, subPath);
         ChangeOrigin saved = foreignMergeOrigin.get();
         foreignMergeOrigin.set(origin);
         try {
@@ -1442,10 +1463,12 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
      * listener). Tracking both covers both writer kinds.
      * <p>
      * The hook is attached for a location the first time a binding or a
-     * bridge observes it. A raw {@code document().set(...)} that no binding
-     * or bridge ever touched is not tracked; the merge's conservative rule
-     * then keeps such a block (it is never destroyed), so the gap degrades
-     * at worst to a missing conflict banner, not to data loss.
+     * bridge observes it, and by {@link #writeWithOrigin} for a location a
+     * raw edit addresses. A raw {@code document().set(...)} that bypasses
+     * {@link #writeWithOrigin} and was never observed is not tracked; the
+     * merge's conservative rule then keeps such a block (it is never
+     * destroyed), so the gap degrades at worst to a missing conflict banner,
+     * not to data loss.
      *
      * @param doc the document
      * @param blockPath the canonical block path
@@ -1520,9 +1543,9 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
      * <li><b>Quiescent bookkeeping writes</b> return before this method (see
      * {@link #onPathChanged} and the caller), because they manage their own
      * persistence.</li>
-     * <li><b>The save itself</b> writes no settings block values (it only
-     * stamps {@code $meta}, which is a reserved path, and flushes bridges
-     * with values that are already in the document), so a save cannot
+     * <li><b>The save itself</b> writes no settings block values of its own (it
+     * only stamps {@code $meta}, which is a reserved path), and its sheet
+     * bridge flush runs quiescently (see {@link #save()}), so a save cannot
      * re-trigger this.</li>
      * </ul>
      * Never called from {@link #save()} or the merge executor: both run their
@@ -1589,6 +1612,18 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
         // to call before the document exists (e.g. at sheet registration
         // time): the bridge is created against the fresh, loaded document.
         SettingsDocument doc = document(SettingsScope.APPLICATION);
+        // Re-attaching the same sheet (or a second instance with the same id)
+        // must not leak the previous bridge: its document path listeners and
+        // sheet parameter listener would keep firing, so every sheet change
+        // would flush twice. detach() is idempotent and removes all of them.
+        SettingsSheetBridge previous = attachedBridges.remove(sheet);
+        if (previous != null) {
+            try {
+                previous.detach();
+            } catch (RuntimeException e) {
+                logger.warn("Could not detach the previous settings sheet bridge during re-attach", e);
+            }
+        }
         SettingsSheetBridge bridge = attachBridge(doc, sheet);
         attachedBridges.put(sheet, bridge);
         attachedBridgedSheetIds.add(sheet.getId());
@@ -1758,8 +1793,32 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
         if (disposed) {
             return;
         }
-        for (SettingsSheetBridge bridge : attachedBridges.values()) {
-            bridge.flushToDocument();
+        // The bridge flush writes every attached sheet's block back into the
+        // application document. That write is bookkeeping (the sheet is the
+        // source, the document the copy), so it runs quiescently: it must not
+        // dispatch change events, not mark the sheet blocks as locally changed
+        // (which would turn a foreign write to a sheet block into a conflict
+        // instead of a clean merge), and above all NOT schedule another save —
+        // an unguarded flush re-triggers the debounced save through the sheet
+        // block's local-change listener, so every save would schedule the next
+        // one, forever. Quiescence gates only those listener side effects: the
+        // setBlock mutation itself still lands in the document (the store loop
+        // below snapshots it) and the file write never consults it.
+        SettingsDocument appDoc = documents.get(SettingsScope.APPLICATION);
+        if (appDoc != null && !attachedBridges.isEmpty()) {
+            // Today every bridge is attached to the APPLICATION document
+            // (attachBridge is only called from attachSheet/
+            // ensureAttachedSheetsSeeded/reload, all of which pass it), so one
+            // document-level wrap covers all of them. A future non-application
+            // bridge must be wrapped individually around its own document.
+            beginQuiescentWrite(appDoc);
+            try {
+                for (SettingsSheetBridge bridge : attachedBridges.values()) {
+                    bridge.flushToDocument();
+                }
+            } finally {
+                endQuiescentWrite(appDoc);
+            }
         }
         for (Map.Entry<SettingsScope, SettingsFileStore> entry : stores.entrySet()) {
             SettingsScope scope = entry.getKey();
@@ -1995,6 +2054,24 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
             save();
         }
         return pending;
+    }
+
+/**
+     * @param scope the scope whose document is consulted
+     * @param blockPath the canonical block path
+     * @return whether the block is currently marked as locally changed
+     * (edited by this process since the last sync point), i.e. what the
+     * per-block merge classifies as "ours". Not part of the production API; a
+     * {@code *ForTesting} seam consistent with {@link #saveNowForTesting()}.
+     */
+    public synchronized boolean isLocallyChangedForTesting(SettingsScope scope, String blockPath) {
+        Objects.requireNonNull(scope, "scope");
+        SettingsDocument doc = documents.get(scope);
+        if (doc == null) {
+            return false;
+        }
+        Set<String> changed = locallyChangedBlocks.get(doc);
+        return changed != null && changed.contains(blockPath);
     }
 
     /**

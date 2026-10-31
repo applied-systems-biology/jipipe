@@ -15,6 +15,7 @@ package org.hkijena.jipipe.api.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.jipipe.api.service.components.JIPipeSettingsServiceComponent;
+import org.hkijena.jipipe.api.service.components.JIPipeSettingsServiceComponent.ChangeOrigin;
 import org.hkijena.jipipe.api.settings.JIPipeSettingKey;
 import org.hkijena.jipipe.api.settings.SettingsBinding;
 import org.hkijena.jipipe.api.settings.SettingsScope;
@@ -169,5 +170,135 @@ class SettingsAutoPersistTest {
         c.writeQuiescently(c.document(SettingsScope.APPLICATION), "registry:recent", value);
 
         assertFalse(c.saveNowForTesting(), "a quiescent bookkeeping write must not trigger the local auto-save");
+    }
+
+    /**
+     * RED pre-fix: with an attached sheet every {@code save()} flushed the
+     * bridge ({@code document.setBlock}) outside any guard, so the sheet
+     * block's local-change listener fired → a new debounced save was
+     * scheduled 250 ms after every save, forever (unbounded save loop), and
+     * the sheet block was re-marked locally changed on every save.
+     */
+    @Test
+    void saveFlushOfAnAttachedSheetDoesNotScheduleAnotherSave() {
+        JIPipeSettingsServiceComponent c = component();
+        JIPipeSettingsServiceComponentTest.ProbeSheet sheet = new JIPipeSettingsServiceComponentTest.ProbeSheet();
+        c.attachSheet(sheet);
+        // Consume the save attach/seed may have scheduled.
+        c.saveNowForTesting();
+
+        c.save();
+
+        assertFalse(c.saveNowForTesting(),
+                "the bridge flush inside save() must not schedule another save (unbounded save loop)");
+    }
+
+    /**
+     * The same defect's <em>observable</em> form: the flush inside
+     * {@code save()} re-marked the sheet block as locally changed. That
+     * set is read by {@code mergeForeignBeforeSave} (the merge's "which
+     * blocks did I edit since last sync" bookkeeping) <em>before</em> the
+     * save records its own sync point, so a foreign write to the same block
+     * is misclassified as a CONFLICT (foreign wins) instead of a clean
+     * merge.
+     * <p>
+     * A single save alone does not show it (its own sync point clears the
+     * set); the pollution is observable at the start of the next save.
+     */
+    @Test
+    void saveFlushOfAnAttachedSheetDoesNotMarkTheBlockLocallyChanged() {
+        JIPipeSettingsServiceComponent c = component();
+        JIPipeSettingsServiceComponentTest.ProbeSheet sheet = new JIPipeSettingsServiceComponentTest.ProbeSheet();
+        c.attachSheet(sheet);
+
+        // First save: the bridge flush is the last write before the sync
+        // point, which is exactly what pollutes the local-change set.
+        c.save();
+
+        // What the next save's pre-save merge would classify as "edited by me".
+        assertFalse(c.isLocallyChangedForTesting(SettingsScope.APPLICATION, "sheet:probe-sheet"),
+                "the save's own bridge flush must not be classified as a local edit (it would turn a "
+                        + "foreign write to the same block into a conflict)");
+    }
+
+    /**
+     * RED pre-fix: {@code writeWithOrigin} (the raw settings editor's write
+     * path) only made the location <em>observable</em> (change event), not
+     * <em>tracked</em> for local changes (auto-save), so a raw edit to a
+     * location no binding tracks — an unbound pass-through block, exactly
+     * what the raw editor exists for — was never persisted.
+     */
+    @Test
+    void rawEditToAnUnboundPassThroughLocationIsAutoSaved() throws Exception {
+        JIPipeSettingsServiceComponent c = component();
+        JsonNode value = JsonUtils.getObjectMapper().valueToTree("typed-by-the-user");
+
+        c.writeWithOrigin(SettingsScope.APPLICATION, "state:test", "a/b", value, ChangeOrigin.RAW_EDIT);
+
+        c.saveNowForTesting();
+
+        JsonNode root = readSettingsFile(tempDir);
+        assertNotNull(root, "the raw edit must have scheduled a save");
+        assertEquals("typed-by-the-user", root.path("state:test").path("a").path("b").asText(),
+                "a raw edit to an unbound pass-through location must reach settings.json without an explicit save");
+    }
+
+    /**
+     * The same raw edit must count as this process's own edit, so a foreign
+     * merge of that block cannot classify it as foreign content and adopt the
+     * foreign value over it.
+     */
+    @Test
+    void rawEditToAnUnboundPassThroughLocationIsMarkedLocallyChanged() {
+        JIPipeSettingsServiceComponent c = component();
+        JsonNode value = JsonUtils.getObjectMapper().valueToTree("typed-by-the-user");
+
+        c.writeWithOrigin(SettingsScope.APPLICATION, "state:test", "a/b", value, ChangeOrigin.RAW_EDIT);
+
+        assertTrue(c.isLocallyChangedForTesting(SettingsScope.APPLICATION, "state:test"),
+                "a raw edit must mark its block as locally changed (merge classification)");
+    }
+
+    /**
+     * Re-attaching the same sheet must not leak the previous bridge: with two
+     * live bridges every sheet change would flush twice (and, before the
+     * quiescent save flush, schedule two saves).
+     */
+    @Test
+    void reAttachingASheetKeepsExactlyOneBridge() {
+        JIPipeSettingsServiceComponent c = component();
+        JIPipeSettingsServiceComponentTest.ProbeSheet sheet = new JIPipeSettingsServiceComponentTest.ProbeSheet();
+        c.attachSheet(sheet);
+        c.saveNowForTesting();
+
+        c.attachSheet(sheet);
+
+        assertFalse(c.saveNowForTesting(),
+                "re-attach itself must not schedule a save (the previous bridge's flush is quiescent)");
+        sheet.setTheme("Dark");
+
+        assertTrue(c.saveNowForTesting(), "the remaining bridge must still flush a sheet change");
+    }
+
+    /**
+     * Registering the same location in two scopes is a mistake the registry
+     * (last-wins) cannot signal on its own; the second registration must keep
+     * winning (public API, no exception) and the first must be superseded.
+     */
+    @Test
+    void registeringTheSameLocationInTwoScopesKeepsTheLastKey() {
+        JIPipeSettingsServiceComponent c = component();
+        JIPipeSettingKey<Boolean> application = JIPipeSettingKey.bool("registry:dup", "x", Boolean.class)
+                .scope(SettingsScope.APPLICATION);
+        JIPipeSettingKey<Boolean> runtime = JIPipeSettingKey.bool("registry:dup", "x", Boolean.class)
+                .scope(SettingsScope.RUNTIME);
+
+        c.registerKey(application);
+        c.registerKey(runtime);
+
+        assertSame(runtime, c.keyByBlockAndSubPath("registry:dup", "x"),
+                "the last registration wins (the cross-scope warning is logged, not thrown)");
+        assertEquals(SettingsScope.RUNTIME, c.effectiveScopeByBlock().get("registry:dup"),
+                "the effective routing follows the winning (last) key");
     }
 }
