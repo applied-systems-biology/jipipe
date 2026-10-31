@@ -1,7 +1,16 @@
 # Verification Record — Modern Settings System (#1345)
 
-Branch: `1345-modern-settings-system` (57 commits over `master`), verified 2026-10-31 on
+Branch: `1345-modern-settings-system` (62 commits over `master`), verified 2026-10-31 on
 Java 21 (`/usr/lib/jvm/java-21-openjdk-amd64`).
+
+**Final-review note (2026-10-31):** after this record was first written, the whole-branch
+final review found and fixed four defects that no single-task review could see — the
+application/project `default-environments` id collision that made the settings tab
+unopenable in any project (scope-qualified section identity), the `save()` self-retrigger
+loop (quiescent bridge flushes), raw edits to unbound locations never auto-saving
+(`writeWithOrigin` now tracks the location), and the missing window-close dispose hook
+(session-long UI leak). Each is now RED-first pinned; the settings-focused gate below
+reflects the final tree.
 
 This record maps each success criterion of the approved spec
 (`docs/superpowers/specs/2026-10-27-modern-settings-system-design.md` §11) to the test(s) or
@@ -12,7 +21,7 @@ manual check that prove it, with the exact command and the observed result.
 | Gate | Command | Result |
 | --- | --- | --- |
 | Full build (all modules, all tests) | `mvn clean install -q` | **BUILD SUCCESS** (exit 0; the only test-relevant log noise is the pre-existing CLIJ2 fixture "Unable to find node type … Skipping" lines, unrelated to settings) |
-| Settings-focused, core | `mvn test -pl jipipe-core -Dtest='*Settings*,Settings*' -q` | **PASS — 207 run, 0 failures, 0 errors, 0 skipped** (includes `PaletteStorageLifecycleTest`; the desktop model tests are additionally listed below per criterion) |
+| Settings-focused, core | `mvn test -pl jipipe-core -Dtest='*Settings*,Settings*' -q` | **PASS — 217 run, 0 failures, 0 errors, 0 skipped** on the final tree (the +10 over the initial 207 are the final-review RED-first pins: the `save()`-does-not-reschedule and raw-edit auto-save pins in `SettingsAutoPersistTest`, the duplicate-id / scope-qualified identity pins in `SettingsTreeModelTest`, the real-registry tab-construction pin `SettingsTabSectionsWithProjectTest`, and the tab-pane dispose pin `JIPipeDesktopTabPaneDisposeTest`; the desktop model tests are additionally listed below per criterion) |
 | Settings-focused, launcher | `mvn test -pl jipipe-launcher -Dtest='*Settings*' -q` | **PASS — 20 run, 0 failures** (`SettingsMigrationIntegrationTest` 3, `SettingsNoModalUiTest` 1, `SettingsBindingLiveUpdateTest` 2, `SettingsPaletteKeysTest` 2, `SettingsDelegateTest` 10, `JIPipeProjectSettingsPersistenceTest` 2) |
 | No legacy file write path | `git grep -n "settings-db-" -- jipipe-core/src/main` ; `git grep -n "recent-projects.txt" -- jipipe-core/src/main` | **PASS** — only the migration code references the legacy names (see below) |
 
