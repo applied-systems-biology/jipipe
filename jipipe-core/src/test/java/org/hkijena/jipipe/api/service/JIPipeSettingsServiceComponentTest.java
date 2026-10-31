@@ -62,6 +62,27 @@ class JIPipeSettingsServiceComponentTest {
         assertFalse(c.bind(JIPipeSettingKey.bool("registry:x", "a", Boolean.class).defaultValue(true)).get());
     }
 
+    @Test void runtimeDocumentTransfersIntoAFreshInstanceWithoutLoss() {
+        // Spec §11 success criterion 7: the runtime document can be exported and
+        // re-imported into a fresh service instance without loss — the
+        // prerequisite for the #1102 runtime process split. The file is the
+        // transferable artifact; a fresh component reading it sees the same
+        // runtime-scoped content.
+        JIPipeSettingsServiceComponent writer = JIPipeSettingsServiceComponent.forTesting(tempDir);
+        JIPipeSettingKey<String> key = JIPipeSettingKey.string("sheet:org.hkijena.jipipe:runtime", "threads", String.class)
+                .scope(SettingsScope.RUNTIME)
+                .defaultValue("4");
+        writer.bind(key).set("8");
+        writer.save();
+        assertTrue(Files.exists(tempDir.resolve("runtime-settings.json")), "the runtime document has its own file");
+
+        JIPipeSettingsServiceComponent reader = JIPipeSettingsServiceComponent.forTesting(tempDir);
+        SettingsBinding<String> reRead = reader.bind(JIPipeSettingKey.string("sheet:org.hkijena.jipipe:runtime", "threads", String.class)
+                .scope(SettingsScope.RUNTIME)
+                .defaultValue("4"));
+        assertEquals("8", reRead.get(), "a fresh instance re-imports the runtime document without loss");
+    }
+
     @Test void availableScopesAlwaysContainAllThree() {
         JIPipeSettingsServiceComponent c = JIPipeSettingsServiceComponent.forTesting(tempDir);
         assertEquals(Set.of(SettingsScope.APPLICATION, SettingsScope.PROJECT, SettingsScope.RUNTIME), c.availableScopes());
