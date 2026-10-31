@@ -19,6 +19,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.utils.VersionUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -99,6 +101,13 @@ import java.util.function.Predicate;
  * apart from a user who deliberately deleted their settings after a
  * successful migration (the stale backup must not resurrect them).
  * <p>
+ * <b>Kill window.</b> The corruption backups are renamed only after every
+ * legacy file has moved into the backup directory, so a process killed in
+ * between leaves a <em>plain-named</em> corrupt file there
+ * ({@code settings.json} without {@code $schema}). The recovery path reads such
+ * files when it can, logs a warning when it cannot, and never renames them —
+ * it leaves the backup untouched.
+ * <p>
  * <b>Partially migrated profiles.</b> If a new-format {@code settings.json}
  * (one with {@code $schema}) already exists while legacy files are still
  * present, only the remaining legacy parts are migrated and their blocks are
@@ -107,6 +116,7 @@ import java.util.function.Predicate;
  * more recent truth.
  */
 public final class SettingsMigration {
+    private static final Logger logger = LoggerFactory.getLogger(SettingsMigration.class);
     /**
      * The name of the backup directory inside the profile dir.
      */
@@ -839,10 +849,28 @@ public final class SettingsMigration {
      * Reads and parses a JSON tree, returning {@code null} instead of throwing.
      * Used for the backup directory, which is read-only for recovery.
      */
+    /**
+     * Parses a legacy file from the backup, or {@code null} when it cannot be
+     * used. The recovery is a convenience and never fails a startup, but a
+     * file that exists and does not parse is <b>not silent</b>: it is logged,
+     * because it means the user's recovered settings were dropped.
+     * <p>
+     * This is the only place a plain-named corrupt file in the backup is
+     * noticed (see {@link #recoverFromInterruptedMigration}: recovery never
+     * renames backup files), so the warning is the sole signal that the
+     * backup holds content recovery could not read.
+     */
     private static JsonNode readTreeOrNull(Path file) {
         try {
-            return JsonUtils.getObjectMapper().readTree(Files.readString(file, StandardCharsets.UTF_8));
+            JsonNode node = JsonUtils.getObjectMapper().readTree(Files.readString(file, StandardCharsets.UTF_8));
+            if (node != null && !node.isObject()) {
+                logger.warn("Ignoring settings backup file {}: it is not a JSON object ({})",
+                        file, node.getNodeType());
+                return null;
+            }
+            return node;
         } catch (IOException | RuntimeException e) {
+            logger.warn("Could not parse settings backup file {}; its content is NOT recovered", file, e);
             return null;
         }
     }

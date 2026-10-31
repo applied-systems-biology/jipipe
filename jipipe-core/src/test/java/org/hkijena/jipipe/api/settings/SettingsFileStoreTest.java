@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.api.settings;
 
 import com.fasterxml.jackson.databind.node.BooleanNode;
+import org.hkijena.jipipe.api.settings.SettingsDocument;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -30,6 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class SettingsFileStoreTest {
     @TempDir Path tempDir;
@@ -126,5 +128,103 @@ class SettingsFileStoreTest {
         SettingsFileStore.cleanUpOrphanTempFiles(tempDir);
         assertTrue(Files.exists(fresh));
         assertFalse(Files.exists(old));
+    }
+
+    /**
+     * Item 3: {@code null} means "absent" and nothing else. A file that exists
+     * but cannot be fingerprinted must not be reported as absent (the watcher
+     * would then swallow the next foreign change). An unreadable *file* is
+     * hard to fabricate portably, so this pins the contract at its other end:
+     * an existing file never yields null, and a missing one always does.
+     */
+    @Test void fingerprintIsNullOnlyForAbsence() throws Exception {
+        Path file = tempDir.resolve("settings.json");
+        SettingsFileStore store = new SettingsFileStore(file, org.hkijena.jipipe.api.settings.SettingsScope.APPLICATION, p -> true);
+        assertNull(store.fingerprint(), "an absent file fingerprints to null");
+        Files.writeString(file, "{\"$schema\": 2}");
+        assertNotNull(store.fingerprint(), "an existing file must never fingerprint to null");
+        Files.delete(file);
+        assertNull(store.fingerprint(), "a deleted file fingerprints to null again");
+    }
+
+    /**
+     * Item 4: only the exceptions a genuinely corrupt file produces are
+     * turned into a {@code .bad-} backup; a code bug must propagate instead of
+     * hiding as "corruption".
+     * <p>
+     * The bug is injected through the classification predicate, which
+     * {@code SettingsDocument.isPassThrough} consults lazily. It therefore
+     * proves the narrower contract at the point it matters: a loaded document
+     * whose classification throws is NOT backed up and NOT replaced by an
+     * empty one, and the storage file is untouched.
+     */
+    @Test void codeBugsAreNotLaunderedIntoCorruption() throws Exception {
+        Path file = tempDir.resolve("settings.json");
+        Files.writeString(file, "{\"$schema\": 2, \"registry:x\": {\"a\": 1}}");
+        SettingsFileStore store = new SettingsFileStore(file, org.hkijena.jipipe.api.settings.SettingsScope.APPLICATION,
+                p -> {
+                    throw new NullPointerException("a bug in the registration predicate");
+                });
+        SettingsDocument doc = store.load();
+        assertThrows(NullPointerException.class, () -> doc.isPassThrough("registry:x"),
+                "a predicate bug surfaces to the caller instead of being swallowed by load()");
+        assertTrue(Files.isRegularFile(file), "the file must be untouched: this was not corruption");
+        assertEquals(0, listBadBackups().size(), "no backup is made for a code bug");
+    }
+
+    /**
+     * The counterpart: a parse failure is a load-time failure and still takes
+     * the recovery path (pinned by the existing corrupt-file tests above).
+     */
+    @Test void parseFailuresStillTakeTheRecoveryPathWithoutThrowing() throws Exception {
+        Path file = tempDir.resolve("settings.json");
+        Files.writeString(file, "{ this is not json");
+        SettingsFileStore store = new SettingsFileStore(file, org.hkijena.jipipe.api.settings.SettingsScope.APPLICATION, p -> true);
+        assertNotNull(store.load(), "a corrupt file yields an empty document");
+    }
+
+    /**
+     * ... while a genuinely corrupt file still takes the recovery path.
+     */
+    @Test void corruptFileStillTakesTheRecoveryPath() throws Exception {
+        Path file = tempDir.resolve("settings.json");
+        Files.writeString(file, "{ this is not json");
+        SettingsFileStore store = new SettingsFileStore(file, org.hkijena.jipipe.api.settings.SettingsScope.APPLICATION, p -> true);
+        assertNotNull(store.load(), "a corrupt file yields an empty document");
+        assertEquals(1, listBadBackups().size(), "a corrupt file is preserved as one .bad- backup");
+    }
+
+    /**
+     * Item 5: backups are pruned to the newest 5 per base file name.
+     */
+    @Test void oldBadBackupsArePrunedToTheNewestFive() throws Exception {
+        Path file = tempDir.resolve("settings.json");
+        Files.writeString(file, "{ not json");
+        for (int i = 0; i < 7; i++) {
+            Path backup = tempDir.resolve("settings.json.bad-2026-10-0" + (i + 1) + "T00-00-00Z");
+            Files.writeString(backup, "{ not json " + i + " }");
+            Files.setLastModifiedTime(backup, FileTime.from(Instant.parse("2026-10-0" + (i + 1) + "T00:00:00Z")));
+        }
+        // A backup of a DIFFERENT base name must be left alone.
+        Path other = tempDir.resolve("runtime-settings.json.bad-2026-10-01T00-00-00Z");
+        Files.writeString(other, "{}");
+
+        SettingsFileStore store = new SettingsFileStore(file, org.hkijena.jipipe.api.settings.SettingsScope.APPLICATION, p -> true);
+        store.pruneBadBackups();
+
+        List<Path> kept = listBadBackups().stream()
+                .filter(p -> p.getFileName().toString().startsWith("settings.json.bad-"))
+                .sorted()
+                .toList();
+        assertEquals(SettingsFileStore.maxBadBackupsPerFile(), kept.size(), "only the newest 5 backups are kept");
+        assertEquals("settings.json.bad-2026-10-03T00-00-00Z", kept.get(0).getFileName().toString(),
+                "the oldest surviving backup is the 3rd of the 7");
+        assertTrue(Files.exists(other), "backups of another base file name are not touched");
+    }
+
+    private List<Path> listBadBackups() throws java.io.IOException {
+        try (var stream = Files.list(tempDir)) {
+            return stream.filter(p -> p.getFileName().toString().contains(".bad-")).sorted().toList();
+        }
     }
 }

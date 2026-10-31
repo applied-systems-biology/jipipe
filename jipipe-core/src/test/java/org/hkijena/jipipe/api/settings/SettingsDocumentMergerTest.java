@@ -219,4 +219,36 @@ class SettingsDocumentMergerTest {
         doc.setBlock(blockPath, JsonUtils.getObjectMapper().createObjectNode().put(subPath, value));
         return doc;
     }
+
+    /**
+     * T9: re-applying a value the block already holds must not write it again.
+     * The second merge pass re-judges blocks the first pass settled; when both
+     * outcomes coincide, an unconditional setBlock would fire a change event
+     * for an unchanged value (a phantom change in the UI).
+     */
+    @Test void adoptingAnAlreadyEqualValueDoesNotReWriteTheBlock() {
+        SettingsDocument local = docWith("registry:a", "x", 1);
+        SettingsDocument foreign = docWith("registry:a", "x", 1);
+        java.util.List<String> notified = new java.util.ArrayList<>();
+        local.addPathListener("registry:a", node -> notified.add("registry:a"));
+
+        SettingsDocumentMerger.MergeResult r = SettingsDocumentMerger.merge(local, foreign, Set.of());
+
+        assertTrue(r.adoptedBlocks().isEmpty(), "equal documents adopt nothing");
+        assertTrue(notified.isEmpty(), "no spurious change event for an unchanged block, got " + notified);
+    }
+
+    /**
+     * The write still happens when it actually changes the block.
+     */
+    @Test void adoptionOfADifferentValueStillNotifies() {
+        SettingsDocument local = docWith("registry:a", "x", 1);
+        SettingsDocument foreign = docWith("registry:a", "x", 2);
+        java.util.List<String> notified = new java.util.ArrayList<>();
+        local.addPathListener("registry:a", node -> notified.add("registry:a"));
+
+        SettingsDocumentMerger.merge(local, foreign, Set.of());
+
+        assertEquals(java.util.List.of("registry:a"), notified, "a real adoption notifies exactly once");
+    }
 }

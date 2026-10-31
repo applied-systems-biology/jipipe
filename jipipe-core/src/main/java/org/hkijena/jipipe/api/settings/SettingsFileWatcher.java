@@ -14,11 +14,14 @@
 package org.hkijena.jipipe.api.settings;
 
 import org.hkijena.jipipe.api.settings.SettingsFileStore.FileFingerprint;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.awt.GraphicsEnvironment;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.FileSystems;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchEvent;
@@ -111,6 +114,7 @@ import java.util.function.Consumer;
  * file.
  */
 final class SettingsFileWatcher implements AutoCloseable {
+    private static final Logger logger = LoggerFactory.getLogger(SettingsFileWatcher.class);
     /**
      * The default poll interval. The poll thread re-checks the file's
      * fingerprint at this interval. This poll is the correctness floor of
@@ -452,9 +456,17 @@ final class SettingsFileWatcher implements AutoCloseable {
      * does not exist or cannot be read
      */
     private FileFingerprint readFingerprint() {
+        // Null means "absent" by contract; a genuine I/O error must not be
+        // mistaken for absence (see SettingsFileStore#fingerprint), but the
+        // watcher is a background loop: a transient error skips this round
+        // (null = "nothing to deliver now") instead of killing the thread.
+        if (!Files.isRegularFile(file)) {
+            return null;
+        }
         try {
             return FileFingerprint.of(file);
         } catch (IOException e) {
+            logger.warn("Could not fingerprint watched settings file {}; skipping this round", file, e);
             return null;
         }
     }

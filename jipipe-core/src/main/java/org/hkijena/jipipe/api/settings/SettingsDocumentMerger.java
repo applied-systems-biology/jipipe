@@ -292,11 +292,25 @@ public final class SettingsDocumentMerger {
     /**
      * Writes the foreign value into the local document, whole-block, or
      * removes the block when the foreign document does not carry it.
+     * <p>
+     * A no-op write is skipped: the second pass re-judges blocks the first
+     * pass already settled, and if the outcomes coincide (the block already
+     * holds the foreign value) writing again would fire a spurious change
+     * event for an unchanged value — the settings UI would report a change
+     * that did not happen. {@link SettingsDocument#setBlock} notifies
+     * unconditionally, so the equality check must live here.
      */
     private static void applyForeign(SettingsDocument local, String blockPath, JsonNode f) {
+        JsonNode current = local.getBlock(blockPath);
         if (f.isMissingNode()) {
+            if (current.isMissingNode()) {
+                return; // already absent: nothing to remove
+            }
             local.removeBlock(blockPath);
         } else {
+            if (current.equals(f)) {
+                return; // already the foreign value: do not re-write it
+            }
             local.setBlock(blockPath, f.deepCopy());
         }
     }
