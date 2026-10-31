@@ -388,23 +388,6 @@ public class JIPipeDesktopRawSettingsSection extends JPanel implements Disposabl
         }
     }
 
-    /**
-     * The paths currently shown in the table (filter applied), in row order.
-     * <p>
-     * Not used by the section itself: it is the observation seam for the manual
-     * UI verification of the filter (no Swing structure tests, per project
-     * policy).
-     *
-     * @return the visible paths
-     */
-    public List<String> getVisiblePaths() {
-        List<String> result = new ArrayList<>();
-        for (int viewRow = 0; viewRow < table.getRowCount(); viewRow++) {
-            result.add(tableModel.getRow(table.convertRowIndexToModel(viewRow)).path());
-        }
-        return result;
-    }
-
     @Override
     public void dispose() {
         disposed = true;

@@ -98,6 +98,17 @@ public final class RawSettingsTableModel {
      * location that was reset to a default differing from the stored value.
      */
     public static final String PENDING_DEFAULT_SEPARATOR = " \u2192 ";
+    /**
+     * The maximum number of characters of a rendered preview or default text
+     * shown in the table; a longer rendering is cut and ends with
+     * {@link #TRUNCATION_ELLIPSIS}. {@link #rawJson(String)} is never truncated:
+     * the edit dialog needs the full value.
+     */
+    public static final int MAX_PREVIEW_LENGTH = 80;
+    /**
+     * Appended to a preview that {@link #MAX_PREVIEW_LENGTH} cut.
+     */
+    public static final String TRUNCATION_ELLIPSIS = "\u2026";
 
     private final JIPipeSettingsServiceComponent settingsService;
     private final SettingsScope scope;
@@ -209,6 +220,14 @@ public final class RawSettingsTableModel {
      * Stores the parsed {@link JsonNode} of {@code rawJson} at the location as a
      * raw edit ({@link ChangeOrigin#RAW_EDIT}); the engine broadcasts and
      * auto-saves the change.
+     * <p>
+     * <b>A JSON {@code null} is a value.</b> The text {@code null} is accepted
+     * and stores a JSON null node at the location (the raw editor is honest
+     * JSON: a stored null is content, distinct from an absent location — the
+     * same distinction the legacy registry makes). An empty or unparseable
+     * input is rejected. Removing a location is the job of
+     * {@link #resetKey(String)} (a pass-through reset, or the reset of a
+     * documented key without a default), never of this method.
      *
      * @param path a full location path
      * @param rawJson the new value as JSON text
@@ -257,7 +276,7 @@ public final class RawSettingsTableModel {
 
     private RawRow documentedRow(String path, JIPipeSettingKey<?> key) {
         JsonNode defaultValue = defaultJsonOf(key);
-        String defaultText = defaultValue == null ? "" : render(defaultValue);
+        String defaultText = renderDefault(defaultValue);
         JsonNode stored = document.get(key.blockPath(), normalizeSubPath(key.subPath()));
         String valuePreview = renderPreview(stored, defaultValue);
         return new RawRow(path,
@@ -271,7 +290,7 @@ public final class RawSettingsTableModel {
     }
 
     private RawRow passThroughRow(String path, JsonNode value) {
-        return new RawRow(path, render(value), typeLabelOf(value), true, false, "", "", "");
+        return new RawRow(path, truncate(render(value)), typeLabelOf(value), true, false, "", "", "");
     }
 
     /**
@@ -311,10 +330,39 @@ public final class RawSettingsTableModel {
             return DEFAULT_PLACEHOLDER;
         }
         String storedText = render(stored);
-        if (defaultValue == null || stored.equals(defaultValue)) {
-            return storedText;
+        if (defaultValue == null || stored.equals(defaultValue)
+                || storedText.length() > MAX_PREVIEW_LENGTH) {
+            // Either there is nothing to compare, or the stored part alone is
+            // already too long to append anything meaningfully: cut it and stop.
+            return truncate(storedText);
         }
-        return storedText + PENDING_DEFAULT_SEPARATOR + render(defaultValue);
+        return truncate(storedText + PENDING_DEFAULT_SEPARATOR + render(defaultValue));
+    }
+
+    /**
+     * Renders the Default column, bounded like the preview.
+     *
+     * @param defaultValue the key's default, or {@code null} if it has none
+     * @return the rendered, truncated default; an empty string for a key without
+     * a default ({@code "null"} for an actual JSON null default)
+     */
+    public static String renderDefault(JsonNode defaultValue) {
+        return defaultValue == null ? "" : truncate(render(defaultValue));
+    }
+
+    /**
+     * @param rendered an already-rendered value
+     * @return the rendering, cut to {@link #MAX_PREVIEW_LENGTH} characters plus
+     * {@link #TRUNCATION_ELLIPSIS} when longer
+     */
+    public static String truncate(String rendered) {
+        if (rendered == null) {
+            return "";
+        }
+        if (rendered.length() <= MAX_PREVIEW_LENGTH) {
+            return rendered;
+        }
+        return rendered.substring(0, MAX_PREVIEW_LENGTH) + TRUNCATION_ELLIPSIS;
     }
 
     /**
@@ -409,10 +457,21 @@ public final class RawSettingsTableModel {
 
     /**
      * @param path a full location path
-     * @return the registered key at that exact location, or {@code null}
+     * @return the registered key at that exact location <em>in this model's
+     * scope</em>, or {@code null}
+     * <p>
+     * The component's key registry is a single, scope-agnostic map keyed by
+     * location, so {@code keyByBlockAndSubPath} also returns a key that was
+     * registered in another scope. Rows are enumerated per scope
+     * ({@link #registeredKeysOfThisScope()}), so resolution must be bounded the
+     * same way: a location this scope's document holds as stored content, but
+     * another scope's key describes, is pass-through content here. Without the
+     * check, {@link #resetKey(String)} would take the documented branch and
+     * write the <em>other</em> scope's default into this scope's document.
      */
     private JIPipeSettingKey<?> keyAt(String path) {
-        return settingsService.keyByBlockAndSubPath(blockPathOf(path), subPathOf(path));
+        JIPipeSettingKey<?> key = settingsService.keyByBlockAndSubPath(blockPathOf(path), subPathOf(path));
+        return key != null && key.scope() == scope ? key : null;
     }
 
     private JsonNode storedValue(String path) {

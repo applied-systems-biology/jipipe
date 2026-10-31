@@ -26,10 +26,14 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import javax.swing.SwingUtilities;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -51,6 +55,7 @@ class RawSettingsTableModelTest {
     private static final String BLOCK = "registry:x";
     private static final String DOCUMENTED_PATH = BLOCK + "/show-labels";
     private static final String PASS_THROUGH_BLOCK = "os:unknown-block";
+    private static final String RUNTIME_ONLY_BLOCK = "sheet:org.hkijena.jipipe:test-runtime";
     private static final ObjectMapper MAPPER = JsonUtils.getObjectMapper();
 
     @TempDir
@@ -260,6 +265,248 @@ class RawSettingsTableModelTest {
         assertEquals("1024", m.rawJson(PASS_THROUGH_BLOCK + "/window/width"));
         assertEquals("false", m.rawJson(DOCUMENTED_PATH));
         assertEquals("", m.rawJson("state:absent/x"), "an absent location has no raw JSON");
+    }
+
+    /**
+     * <b>Finding 3.</b> A JSON {@code null} is stored as a value; only an empty
+     * or unparseable input is rejected. Removing a location is the reset's job.
+     */
+    @Test
+    void setValueStoresJsonNullAsAValue() {
+        JIPipeSettingsServiceComponent component = componentWithKeyAndPassThrough();
+        RawSettingsTableModel m = new RawSettingsTableModel(component, SettingsScope.APPLICATION);
+
+        m.setValue(PASS_THROUGH_BLOCK + "/window/width", "null");
+
+        assertTrue(document(component).has(PASS_THROUGH_BLOCK, "window/width"),
+                "a stored JSON null is a value, not a removal");
+        assertTrue(document(component).get(PASS_THROUGH_BLOCK, "window/width").isNull());
+        assertEquals("null", m.rawJson(PASS_THROUGH_BLOCK + "/window/width"));
+    }
+
+    // ------------------------------------------------------- key scope checks
+
+    /**
+     * <b>Finding 1 (RED pin).</b> Key resolution must be scope-bounded. The
+     * component's key registry is a single scope-agnostic map, so
+     * {@code keyByBlockAndSubPath} happily returns a key registered in
+     * <em>another</em> scope for a same-named location. A location that this
+     * scope's document holds as pass-through content must therefore stay
+     * pass-through: it is not documented by a key of a different scope, and
+     * resetting it must remove the value of <em>this</em> document (the
+     * pass-through rule), not write the other scope's default.
+     * <p>
+     * Variant implemented: the controller's "pin the property directly" variant.
+     * Registering the same block/sub-path key in two scopes is not usable as a
+     * fixture — {@code registerKey} keys {@code registeredKeys} by location only,
+     * so the second registration silently <em>replaces</em> the first (noted in
+     * the report; not fixed here, by instruction). One RUNTIME-scoped key plus an
+     * APPLICATION-document value at the same path is the honest construction.
+     */
+    @Test
+    void aKeyRegisteredInAnotherScopeDoesNotDocumentThisScopesLocation() {
+        JIPipeSettingsServiceComponent component = componentWithKeyAndPassThrough();
+        SettingsScope scope = SettingsScope.APPLICATION;
+        String path = RUNTIME_ONLY_BLOCK + "/runtime-only";
+        // The key exists only in the RUNTIME scope ...
+        component.bind(JIPipeSettingKey.string(RUNTIME_ONLY_BLOCK, "runtime-only", String.class)
+                .scope(SettingsScope.RUNTIME)
+                .defaultValue("runtime-default"));
+        // ... while the APPLICATION document (like any document, which is not
+        // block-filtered on write) holds a value at the same location.
+        document(component).set(RUNTIME_ONLY_BLOCK, "runtime-only",
+                MAPPER.getNodeFactory().textNode("application-value"));
+
+        RawSettingsTableModel application = new RawSettingsTableModel(component, scope);
+        assertFalse(application.isDocumented(path),
+                "a key registered in another scope must not document this scope's location");
+        RawSettingsTableModel.RawRow row = rowOf(application.rows(path), path);
+        assertTrue(row.isPassThrough());
+        assertFalse(row.isDocumented());
+
+        // The reset takes the pass-through branch: this document's value is
+        // removed. Writing the runtime key's default here would prove the bug.
+        application.resetKey(path);
+        assertFalse(document(component).has(RUNTIME_ONLY_BLOCK, "runtime-only"),
+                "reset must remove the application document's value (pass-through rule)");
+        assertEquals("application-value",
+                document(component, SettingsScope.RUNTIME).get(RUNTIME_ONLY_BLOCK, "runtime-only").asText("application-value"),
+                "the runtime document must not receive the application value");
+    }
+
+    /**
+     * The counterpart: in the scope the key belongs to, the same key <em>is</em>
+     * documented — so the check above pins the scope boundary, not a global
+     * "keys are ignored" behaviour.
+     */
+    @Test
+    void theKeyIsDocumentedInItsOwnScope() {
+        JIPipeSettingsServiceComponent component = componentWithKeyAndPassThrough();
+        String path = RUNTIME_ONLY_BLOCK + "/runtime-only";
+        component.bind(JIPipeSettingKey.string(RUNTIME_ONLY_BLOCK, "runtime-only", String.class)
+                .scope(SettingsScope.RUNTIME)
+                .defaultValue("runtime-default"));
+        RawSettingsTableModel runtime = new RawSettingsTableModel(component, SettingsScope.RUNTIME);
+        assertTrue(runtime.isDocumented(path));
+        RawSettingsTableModel.RawRow row = rowOf(runtime.rows(path), path);
+        assertTrue(row.isDocumented());
+        assertFalse(row.isPassThrough());
+        assertEquals("\"runtime-default\"", row.defaultText());
+    }
+
+    // --------------------------------------------------------- preview bounds
+
+    /**
+     * <b>Finding 2.</b> A table cell must never hold a multi-kilobyte value: the
+     * preview and the default text are truncated with an ellipsis, while
+     * {@link RawSettingsTableModel#rawJson(String)} (which prefills the edit
+     * dialog) keeps the full value.
+     */
+    @Test
+    void previewsAreBoundedButRawJsonIsNot() {
+        JIPipeSettingsServiceComponent component = componentWithKeyAndPassThrough();
+        RawSettingsTableModel m = new RawSettingsTableModel(component, SettingsScope.APPLICATION);
+        String stored = "x".repeat(200);
+        m.setValue(PASS_THROUGH_BLOCK + "/window/note", "\"" + stored + "\"");
+
+        RawSettingsTableModel.RawRow row = rowOf(m.rows(PASS_THROUGH_BLOCK + "/window/note"),
+                PASS_THROUGH_BLOCK + "/window/note");
+        assertTrue(row.valuePreview().length() <= RawSettingsTableModel.MAX_PREVIEW_LENGTH + 1,
+                "the preview must be bounded: " + row.valuePreview().length() + " chars");
+        assertTrue(row.valuePreview().endsWith(RawSettingsTableModel.TRUNCATION_ELLIPSIS),
+                "a truncated preview ends with the ellipsis: " + row.valuePreview());
+        assertEquals("\"" + stored + "\"", m.rawJson(PASS_THROUGH_BLOCK + "/window/note"),
+                "rawJson must keep the full value for the edit dialog");
+
+        // The Default column is bounded the same way.
+        String longDefault = "d".repeat(200);
+        component.bind(JIPipeSettingKey.string("sheet:org.hkijena.jipipe:test-long-default", "text", String.class)
+                .defaultValue(longDefault));
+        RawSettingsTableModel withLongDefault = new RawSettingsTableModel(component, SettingsScope.APPLICATION);
+        RawSettingsTableModel.RawRow defaultRow = rowOf(
+                withLongDefault.rows("sheet:org.hkijena.jipipe:test-long-default/text"),
+                "sheet:org.hkijena.jipipe:test-long-default/text");
+        assertTrue(defaultRow.defaultText().length() <= RawSettingsTableModel.MAX_PREVIEW_LENGTH + 1,
+                "the default text must be bounded: " + defaultRow.defaultText().length() + " chars");
+        assertTrue(defaultRow.defaultText().endsWith(RawSettingsTableModel.TRUNCATION_ELLIPSIS));
+    }
+
+    // ------------------------------------------------- origin restore on a throw
+
+    /**
+     * <b>Finding 5.</b> {@link JIPipeSettingsServiceComponent#writeWithOrigin}
+     * must restore the thread-local origin even when a document path listener
+     * throws <em>through</em> it: the restore happens in the seam's
+     * {@code finally}, after {@code document.set} has already notified the
+     * listeners. The write reassigns the location, so a stale listener at its
+     * old value throws; the write propagates the exception and the next write on
+     * this thread must still be a plain local one — a leaked
+     * {@link ChangeOrigin#RAW_EDIT} / {@link ChangeOrigin#RESET} would be visible
+     * as a wrong origin on its change event.
+     * <p>
+     * The listener is registered directly on the document (the same public
+     * {@code addPathListener} seam the component itself uses); it must not throw
+     * on the second write, so it is removed before that write.
+     */
+    @Test
+    void aThrowingListenerDoesNotLeakTheOriginToTheNextWrite() throws Exception {
+        // Change events are dispatched inline in a headless JVM but posted to the
+        // EDT otherwise, so the observations run on the EDT either way.
+        AtomicReference<String> failure = new AtomicReference<>();
+        SwingUtilities.invokeAndWait(() -> {
+            try {
+                assertThrowingListenerRestoresTheOrigin();
+            } catch (AssertionError e) {
+                failure.set(e.getMessage());
+            }
+        });
+        if (failure.get() != null) {
+            throw new AssertionError(failure.get());
+        }
+    }
+
+    private void assertThrowingListenerRestoresTheOrigin() {
+        JIPipeSettingsServiceComponent component = componentWithKeyAndPassThrough();
+        SettingsDocument doc = document(component);
+        String block = PASS_THROUGH_BLOCK;
+        String sub = "window/height";
+        // Baseline for the component's observers first: an absent "old" value
+        // dispatches nothing, and a listener on an observed path is the only
+        // dispatch seam whose exception propagates through the seam (the change
+        // event emitter swallows subscriber exceptions).
+        component.writeWithOrigin(SettingsScope.APPLICATION, block, sub,
+                MAPPER.getNodeFactory().numberNode(768), ChangeOrigin.LOCAL_PROGRAMMATIC);
+        doc.set(block, sub, MAPPER.getNodeFactory().numberNode(768));
+
+        AtomicBoolean throwNextWrite = new AtomicBoolean(true);
+        Consumer<JsonNode> throwingListener = value -> {
+            if (throwNextWrite.get()) {
+                throw new IllegalStateException("listener failure (intentional)");
+            }
+        };
+        doc.addPathListener(SettingsDocument.listenerPathForTesting(block, sub), throwingListener);
+
+        IllegalStateException error = assertThrows(IllegalStateException.class,
+                () -> component.writeWithOrigin(SettingsScope.APPLICATION, block, sub,
+                        MAPPER.getNodeFactory().numberNode(700), ChangeOrigin.RAW_EDIT),
+                "the listener's exception must propagate through the seam");
+        assertEquals("listener failure (intentional)", error.getMessage());
+        assertEquals(700, doc.get(block, sub).asInt(), "the write itself landed before the listener threw");
+
+        doc.removePathListener(SettingsDocument.listenerPathForTesting(block, sub), throwingListener);
+
+        // Everything is restored: an ordinary local write on this thread is
+        // attributed as a local write (not a raw edit) on its change event.
+        List<ChangeOrigin> origins = new ArrayList<>();
+        JIPipeSettingsServiceComponent.SettingsChangedEventListener capture = event -> {
+            if (event.getPath().equals(block + "/" + sub)) {
+                origins.add(event.getOrigin());
+            }
+        };
+        component.getChangedEventEmitter().subscribe(capture);
+        try {
+            component.writeWithOrigin(SettingsScope.APPLICATION, block, sub,
+                    MAPPER.getNodeFactory().numberNode(600), ChangeOrigin.LOCAL_PROGRAMMATIC);
+        } finally {
+            component.getChangedEventEmitter().unsubscribe(capture);
+        }
+        assertEquals(List.of(ChangeOrigin.LOCAL_PROGRAMMATIC), origins,
+                "the origin must be restored after a throwing listener; a leaked RAW_EDIT appears here");
+    }
+
+    /**
+     * The same property through the type everyone writes settings with: after a
+     * throwing {@code writeWithOrigin}, an ordinary {@code SettingsBinding.set}
+     * still schedules the debounced auto-save. That gate
+     * ({@code isLocalOrigin}) is the origin check itself, so a leaked
+     * non-local origin would show up here as a missing save.
+     */
+    @Test
+    void aThrowingListenerDoesNotBlockTheNextTypedWriteFromPersisting() {
+        JIPipeSettingsServiceComponent component = componentWithKeyAndPassThrough();
+        SettingsDocument doc = document(component);
+        String block = PASS_THROUGH_BLOCK;
+        String sub = "window/height";
+        doc.set(block, sub, MAPPER.getNodeFactory().numberNode(768));
+        AtomicBoolean throwNextWrite = new AtomicBoolean(true);
+        Consumer<JsonNode> throwingListener = value -> {
+            if (throwNextWrite.get()) {
+                throw new IllegalStateException("listener failure (intentional)");
+            }
+        };
+        doc.addPathListener(SettingsDocument.listenerPathForTesting(block, sub), throwingListener);
+        assertThrows(IllegalStateException.class, () -> component.writeWithOrigin(SettingsScope.APPLICATION,
+                block, sub, MAPPER.getNodeFactory().numberNode(700), ChangeOrigin.RAW_EDIT));
+        doc.removePathListener(SettingsDocument.listenerPathForTesting(block, sub), throwingListener);
+
+        // Drain whatever the fixture/attempt scheduled, then write through a binding.
+        component.saveNowForTesting();
+        JIPipeSettingKey<Boolean> other = JIPipeSettingKey.bool("registry:x", "typed-after-throw", Boolean.class)
+                .defaultValue(false);
+        SettingsBinding<Boolean> binding = component.bind(other);
+        binding.set(true);
+        assertTrue(component.saveNowForTesting(),
+                "an ordinary local write after a throwing raw write must still auto-save");
     }
 
     // ---------------------------------------------------------------- fixtures
