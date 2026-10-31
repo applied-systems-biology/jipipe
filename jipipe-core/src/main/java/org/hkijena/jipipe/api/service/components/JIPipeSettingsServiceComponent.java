@@ -221,6 +221,14 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
     private final Map<String, String> recoveredBlocksByVersion = new LinkedHashMap<>();
 
     private final Timer swingSaveLaterTimer;
+    /**
+     * Whether the Swing debounce timer has a save pending (set by
+     * {@link #saveLater()}, cleared when the timer fires). Tracked explicitly
+     * so {@link #saveNowForTesting()} can report/run a pending save without
+     * depending on a live Swing timer queue; {@link Timer#isRunning()} is not
+     * reliable outside a running EDT.
+     */
+    private volatile boolean pendingSwingSave;
     private final ScheduledExecutorService executorSaveLater;
     /**
      * The currently scheduled headless save task; replaced (and the previous
@@ -426,7 +434,10 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
         this.userDirOverride = userDir == null ? null : Objects.requireNonNull(userDir, "userDir");
         this.swingDebounce = !GraphicsEnvironment.isHeadless();
         if (swingDebounce) {
-            this.swingSaveLaterTimer = new Timer((int) SAVE_LATER_DEBOUNCE_MILLIS, e -> save());
+            this.swingSaveLaterTimer = new Timer((int) SAVE_LATER_DEBOUNCE_MILLIS, e -> {
+                pendingSwingSave = false;
+                save();
+            });
             this.swingSaveLaterTimer.setRepeats(false);
             this.executorSaveLater = null;
         } else {
@@ -1393,6 +1404,11 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
      * to the document's locally-changed set, looking the set up at fire
      * time (rather than capturing it) because a sync point replaces the set
      * in the map and only writes after the new sync point count.
+     * <p>
+     * <b>Auto-persist.</b> A genuine local write also schedules the
+     * debounced save ({@link #saveLater()}). This is the trigger that makes
+     * a UI parameter edit — or any feature write — durable without an
+     * explicit save by the caller (see {@link #scheduleSaveForLocalEdit}).
      */
     private void registerLocalChangeListener(SettingsDocument doc, String blockPath, String subPath) {
         String path = location(blockPath, subPath);
@@ -1424,7 +1440,72 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
                 // runs, and only here is the edited value still visible.
                 pendingLocalEdits.put(blockPath, doc.getBlock(blockPath).deepCopy());
             }
+            scheduleSaveForLocalEdit();
         });
+    }
+
+    /**
+     * Schedules the debounced save for a local write that just landed, so
+     * the settings file converges without an explicit {@code save()} by the
+     * caller.
+     * <p>
+     * <b>Origin gate.</b> Only genuinely local origins schedule the save
+     * ({@link ChangeOrigin#LOCAL_EDIT}, {@link ChangeOrigin#LOCAL_PROGRAMMATIC},
+     * {@link ChangeOrigin#RESET}, {@link ChangeOrigin#RAW_EDIT}). This keeps
+     * the engine's own machinery out of the cycle:
+     * <ul>
+     * <li><b>Foreign merges</b> ({@link ChangeOrigin#EXTERNAL_FILE}) are
+     * excluded — the merge path already schedules its own converging
+     * {@link #saveLater()} (see {@code applyForeignInto}); a local edit and a
+     * foreign change in the same window coalesce into that one save.</li>
+     * <li><b>Quiescent bookkeeping writes</b> return before this method (see
+     * {@link #onPathChanged} and the caller), because they manage their own
+     * persistence.</li>
+     * <li><b>The save itself</b> writes no settings block values (it only
+     * stamps {@code $meta}, which is a reserved path, and flushes bridges
+     * with values that are already in the document), so a save cannot
+     * re-trigger this.</li>
+     * </ul>
+     * Never called from {@link #save()} or the merge executor: both run their
+     * writes under an origin that this gate rejects.
+     */
+    private void scheduleSaveForLocalEdit() {
+        if (disposed) {
+            return;
+        }
+        if (!isLocalOrigin(foreignMergeOrigin.get())) {
+            // Foreign merge (EXTERNAL_FILE): the merge path schedules its own
+            // converging save. Any other origin is either a bookkeeping write
+            // (already returned before the caller) or engine machinery.
+            return;
+        }
+        // Called from the document path listener. In Swing mode saveLater()
+        // restarts a Swing Timer, which must happen on the EDT; an off-EDT
+        // local write (a background feature thread) hands the restart over.
+        // The pending state itself is recorded here, on the writing thread,
+        // so the auto-save is scheduled deterministically even when the
+        // hand-off has not run yet (and saveNowForTesting() can observe it).
+        if (swingSaveLaterTimer != null) {
+            pendingSwingSave = true;
+            if (javax.swing.SwingUtilities.isEventDispatchThread()) {
+                swingSaveLaterTimer.restart();
+            } else {
+                javax.swing.SwingUtilities.invokeLater(swingSaveLaterTimer::restart);
+            }
+        } else {
+            saveLater(); // headless: no Swing involved, inline debounce scheduling
+        }
+    }
+
+    /**
+     * @param origin a change origin
+     * @return whether it is a genuinely local origin that must auto-persist
+     */
+    private static boolean isLocalOrigin(ChangeOrigin origin) {
+        return origin == ChangeOrigin.LOCAL_EDIT
+                || origin == ChangeOrigin.LOCAL_PROGRAMMATIC
+                || origin == ChangeOrigin.RESET
+                || origin == ChangeOrigin.RAW_EDIT;
     }
 
     /**
@@ -1784,6 +1865,7 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
             return;
         }
         if (swingSaveLaterTimer != null) {
+            pendingSwingSave = true;
             swingSaveLaterTimer.restart();
             return;
         }
@@ -1807,6 +1889,53 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
                 logger.warn("Could not schedule a debounced settings save", e);
             }
         }
+    }
+
+    /**
+     * <b>Testing only.</b> Runs the pending debounced save (see
+     * {@link #saveLater()}) synchronously, so a test never has to poll the
+     * 250 ms wall clock or depend on a running Swing timer queue (a JVM with
+     * a display but no live EDT would otherwise never fire the timer inside
+     * a test). Mirrors the debounce in both modes:
+     * <ul>
+     * <li>Swing mode: the pending state tracked by {@link #pendingSwingSave}
+     * is cleared, the {@link Timer} is stopped and {@link #save()} is run
+     * inline.</li>
+     * <li>Headless mode: the pending scheduled task is cancelled and
+     * {@link #save()} is run inline.</li>
+     * </ul>
+     * Not part of the production API; a {@code *ForTesting} seam,
+     * consistent with the existing {@code *ForTesting} methods of this
+     * component.
+     *
+     * @return whether a save was pending before this call
+     */
+    public boolean saveNowForTesting() {
+        if (swingSaveLaterTimer != null) {
+            boolean pending = pendingSwingSave;
+            pendingSwingSave = false;
+            swingSaveLaterTimer.stop();
+            if (pending) {
+                // A start requested from a background thread may still be
+                // queued on the EDT: drop it, so it cannot fire a second save
+                // after this one.
+                javax.swing.SwingUtilities.invokeLater(swingSaveLaterTimer::stop);
+                save();
+            }
+            return pending;
+        }
+        boolean pending;
+        synchronized (saveLaterLock) {
+            pending = pendingSaveTask != null;
+            if (pendingSaveTask != null) {
+                pendingSaveTask.cancel(false);
+                pendingSaveTask = null;
+            }
+        }
+        if (pending) {
+            save();
+        }
+        return pending;
     }
 
     /**
