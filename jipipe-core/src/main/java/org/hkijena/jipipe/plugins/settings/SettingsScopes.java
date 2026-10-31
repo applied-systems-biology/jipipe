@@ -51,12 +51,14 @@ public final class SettingsScopes {
             "sheet:org.hkijena.jipipe:runtime", SettingsScope.RUNTIME,
             // Installed hardware acceleration backends (JIPipeHardwareAccelerationApplicationSettings)
             "sheet:org.hkijena.jipipe:hardware-acceleration", SettingsScope.RUNTIME,
-            // TODO(#1345): JIPipeDefaultEnvironmentsApplicationSettings mixes
-            //  installed environments (machine state) with the default
+            // Ruled (#1345 final review): JIPipeDefaultEnvironmentsApplicationSettings
+            //  mixes installed environments (machine state) with the default
             //  environment of newly created projects (a default template that is
-            //  still machine-side configuration), so the whole block is
-            //  runtime-scoped here. Split it per key if the project-creation
-            //  defaults ever need to be per user.
+            //  still machine-side configuration). The whole block is therefore
+            //  runtime-scoped. A per-key split is a future option if the
+            //  project-creation defaults ever need to be per user; the routing
+            //  table is keyed by block, so such a split means moving those keys
+            //  into their own block, not a finer routing entry.
             "sheet:org.hkijena.jipipe:default-environments", SettingsScope.RUNTIME,
             // Artifact download directories (JIPipeArtifactApplicationSettings)
             "sheet:org.hkijena.jipipe:artifacts", SettingsScope.RUNTIME,
@@ -64,11 +66,14 @@ public final class SettingsScopes {
             "sheet:org.hkijena.jipipe:downloads", SettingsScope.RUNTIME,
             // Usage statistics collection and reporting (JIPipeStatisticsApplicationSettings)
             "sheet:org.hkijena.jipipe:statistics", SettingsScope.RUNTIME
-            // TODO(#1345): add genuinely execution-state registry blocks here
-            //  (e.g. an AI remote-backend database, once it exists). The UI
-            //  registry databases (ui-graph-editor, ui-general, ui-dock,
-            //  ui-palette, node-db) hold user-interface state and stay
-            //  application-scoped.
+            // A genuinely execution-state registry block does not exist today
+            //  (verified in Task 14). When one arrives — e.g. an AI
+            //  remote-backend database, or any registry whose content describes
+            //  the machine's execution environment rather than a user preference
+            //  — it is added here as a ``registry:<id>`` entry (or as a map entry
+            //  under it, for a keyed sub-table). The UI registry databases
+            //  (ui-graph-editor, ui-general, ui-dock, ui-palette, node-db) hold
+            //  user-interface state and stay application-scoped.
     );
 
     private SettingsScopes() {
