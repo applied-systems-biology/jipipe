@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests of {@link SettingsTreeModel}, the pure (non-Swing) view model behind
@@ -40,6 +41,45 @@ class SettingsTreeModelTest {
         SettingsTreeModel m = model();
         SettingsTreeModel.SheetNode runtimeSheet = m.nodeById("org.hkijena.jipipe:runtime");
         assertFalse(m.isEditable(runtimeSheet, SettingsScope.PROJECT));
+    }
+
+    /**
+     * Pins the cross-scope visibility rule (spec §3.4): the application and
+     * runtime views both list the <em>other</em> file-backed scope's
+     * sections, so a query that matches a runtime section also matches it
+     * from the application view, where it is listed but not editable.
+     */
+    @Test
+    void sectionsOfTheOtherScopeAreSearchableFromBothViews() {
+        // The runtime sheet matches "theme" through its name — the query that
+        // the brief's search test uses for the application sheet.
+        SettingsTreeModel.SheetNode generalUi = new SettingsTreeModel.SheetNode(
+                "org.hkijena.jipipe:general-ui",
+                "General UI",
+                "Contains theme and general user interface settings",
+                "General",
+                SettingsScope.APPLICATION,
+                "org.hkijena.jipipe:general-ui");
+        SettingsTreeModel.SheetNode runtimeTheme = new SettingsTreeModel.SheetNode(
+                "org.hkijena.jipipe:runtime",
+                "Theme and caches",
+                "Threads, temporary directories and caches",
+                "Execution",
+                SettingsScope.RUNTIME,
+                "org.hkijena.jipipe:runtime");
+        SettingsTreeModel m = new SettingsTreeModel(List.of(generalUi, runtimeTheme));
+
+        assertEquals(List.of("org.hkijena.jipipe:general-ui", "org.hkijena.jipipe:runtime"),
+                ids(m.search("theme", SettingsScope.APPLICATION)));
+        // Symmetric: the runtime view lists the application sheet too (read-only there).
+        assertEquals(List.of("org.hkijena.jipipe:general-ui", "org.hkijena.jipipe:runtime"),
+                ids(m.search("theme", SettingsScope.RUNTIME)));
+
+        SettingsTreeModel.SheetNode runtimeFromApplication =
+                m.search("theme", SettingsScope.APPLICATION).stream()
+                        .filter(node -> node.scope() == SettingsScope.RUNTIME).findFirst().orElseThrow();
+        assertFalse(m.isEditable(runtimeFromApplication, SettingsScope.APPLICATION));
+        assertTrue(m.isEditable(runtimeFromApplication, SettingsScope.RUNTIME));
     }
 
     private static SettingsTreeModel model() {

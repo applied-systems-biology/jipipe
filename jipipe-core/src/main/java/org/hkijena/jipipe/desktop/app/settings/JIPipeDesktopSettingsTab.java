@@ -55,12 +55,15 @@ import java.util.stream.Collectors;
  * <p>
  * <b>No Save button.</b> Every parameter edit commits to the sheet
  * immediately (the editor UI writes through {@link org.hkijena.jipipe.api.parameters.JIPipeParameterAccess#set(Object)}),
- * and the sheet bridge
+ * the sheet bridge
  * ({@link org.hkijena.jipipe.api.settings.SettingsSheetBridge}) flushes the
- * edited sheet into the settings document on every {@code ParameterChangedEvent};
- * the document is then persisted by the service's debounced
- * {@code saveLater()}. Re-creating the form panel on section selection
- * therefore cannot lose an edit.
+ * edited sheet into the settings document on every {@code ParameterChangedEvent},
+ * and the <em>engine</em>
+ * ({@link JIPipeSettingsServiceComponent}) then persists that local write
+ * itself: a local change schedules its debounced {@code saveLater()}, so the
+ * settings file converges without any save action by this tab. Re-creating the
+ * form panel on section selection therefore cannot lose an edit, and the tab
+ * needs no Save button.
  */
 public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implements Disposable {
 
