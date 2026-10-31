@@ -84,10 +84,7 @@ public class JIPipeServiceDefaultInitializer extends JIPipeServiceInitializer {
         getProgressInfo().setProgress(1);
         getProgressInfo().log("Legacy settings conversion ...");
         copyTemplatesFromPropertiesToLegacyProfile(getProgressInfo().resolve("Legacy conversion"));
-        if (applyProfileUpgrades(getProgressInfo().resolve("Preparing profiles"))) {
-            getProgressInfo().log("Upgrade was applied. Reloading extension settings.");
-            extensionSettings = JIPipeExtensionApplicationSettings.getInstanceFromRaw();
-        }
+        boolean upgradedProfile = applyProfileUpgrades(getProgressInfo().resolve("Preparing profiles"));
 
         // Prepare the settings file (5.x migration, interrupted-migration
         // recovery, cross-version carry-over) as early as possible: no profile
@@ -96,6 +93,18 @@ public class JIPipeServiceDefaultInitializer extends JIPipeServiceInitializer {
         // document. A failed migration aborts the startup loudly instead of
         // letting a later save overwrite the user's settings.
         prepareApplicationSettingsDocument();
+
+        // Re-read the extension settings AFTER the profile upgrades AND the
+        // settings migration: both rewrote the settings file, and
+        // `extensionSettings` is consumed by the pre-activation checks below
+        // (isIgnorePreActivationChecks, isValidateNodeTypes) — reading it
+        // before the migration made those decisions on defaults instead of the
+        // user's values. Nothing between the first read (above) and this point
+        // consumes it, so this is a single, correct re-read.
+        if (upgradedProfile) {
+            getProgressInfo().log("Upgrade was applied. Reloading extension settings.");
+        }
+        extensionSettings = JIPipeExtensionApplicationSettings.getInstanceFromRaw();
 
         getProgressInfo().log("Pre-initialization phase ...");
 
