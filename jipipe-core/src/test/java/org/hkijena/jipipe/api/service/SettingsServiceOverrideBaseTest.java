@@ -54,6 +54,14 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
  * the pre-override directory, a lazy resolution returns the override's. This
  * also works in the shared full-suite JVM (no dependence on whether another
  * test booted the service first).
+ * <p>
+ * <b>Side effect of the bare service.</b> {@code new JIPipeService()}
+ * constructs every component, which includes installing JVM shutdown hooks
+ * (e.g. the AI service component saves its embedding caches at shutdown).
+ * Those hooks are best-effort and swallow their exceptions, so in the test
+ * environment they are effectively no-ops — a shutdown-time log line from one
+ * of them is not a test leak. The singleton publication itself is always
+ * restored in a {@code finally}.
  */
 class SettingsServiceOverrideBaseTest {
 

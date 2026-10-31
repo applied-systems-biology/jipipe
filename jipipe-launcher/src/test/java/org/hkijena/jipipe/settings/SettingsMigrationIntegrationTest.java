@@ -58,13 +58,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * <li>{@link #legacyProfileMigratesWithoutLoss()} — a 5.x-shaped profile
  * (flat {@code settings.json} + two {@code settings-db-*.json} +
  * {@code recent-projects.txt}) goes through the real
- * {@link SettingsMigration} code path with the production scope routing
- * ({@link SettingsScopes#scopeByBlock()}) and the real
- * {@link SettingsFileStore} writer, and comes out as the new-shape
- * {@code settings.json} + {@code runtime-settings.json}: every legacy block is
- * in the document of its scope, the legacy files are gone from the profile
- * root, the backup directory is clean, and {@code needsMigration} is false
- * afterwards.</li>
+ * {@link SettingsMigration} code path with the static scope routing ({@link
+ * SettingsScopes#scopeByBlock()}) and the real {@link SettingsFileStore}
+ * writer, and comes out as the new-shape {@code settings.json} +
+ * {@code runtime-settings.json}: every legacy block is in the document of its
+ * scope, the legacy files are gone from the profile root, the backup directory
+ * is clean, and {@code needsMigration} is false afterwards.</li>
  * <li>{@link #unknownBlocksSurviveASaveCycle()} — a 6.x profile containing an
  * unknown block kind, an unknown sheet block and an unknown sub-path inside a
  * known block round-trips through a {@code load → save} cycle with no loss
@@ -74,6 +73,19 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * to the last good {@code settings.json}) loads the good document, and the
  * orphan cleanup removes the stale tmp file without touching the settings.</li>
  * </ol>
+ * <p>
+ * <b>Scope routing.</b> The migration in {@link #legacyProfileMigratesWithoutLoss()}
+ * is pinned against the <em>static</em> routing map
+ * ({@link SettingsScopes#scopeByBlock()}). That is exactly the routing the
+ * production startup uses <em>at migration time</em>: the initializer
+ * ({@code JIPipeServiceDefaultInitializer#prepareApplicationSettings}) passes
+ * the component's effective map ({@code effectiveScopeByBlock()}, which layers
+ * RUNTIME-scoped <em>registered keys</em> over the static map), but the
+ * migration runs before any plugin — and therefore before any setting key —
+ * is registered, so the effective map then equals the static one. What this
+ * test does <em>not</em> prove: a block that is RUNTIME-scoped only via a
+ * registered key still routes correctly during migration (that layer is
+ * covered by {@code SettingsScopesTest}).
  * <p>
  * <b>Why not the fully booted service.</b> The startup path
  * ({@code JIPipeServiceDefaultInitializer#prepareApplicationSettingsDocument})
@@ -129,7 +141,12 @@ class SettingsMigrationIntegrationTest {
         assertTrue(Files.isRegularFile(profileDir.resolve("recent-projects.txt")));
         assertFalse(Files.exists(profileDir.resolve("runtime-settings.json")));
 
-        // The real migration, with the production scope routing.
+        // The real migration, with the static scope routing. This is the
+        // initializer's effective routing at migration time: no setting keys
+        // are registered before the migration runs, so
+        // effectiveScopeByBlock() equals the static map then (see the class
+        // Javadoc). A block that is RUNTIME-scoped only via a registered key
+        // is not covered by this test (SettingsScopesTest covers that layer).
         SettingsMigration.migrateLegacyProfile(profileDir, path -> true,
                 SettingsScopes.scopeByBlock(), JIPipeProgressInfo.SILENT);
 
