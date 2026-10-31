@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.api.service.JIPipeServiceComponent;
+import org.scijava.Context;
 import org.hkijena.jipipe.api.settings.JIPipeApplicationSettingsSheet;
 import org.hkijena.jipipe.api.settings.JIPipeSettingKey;
 import org.hkijena.jipipe.api.settings.SettingsBinding;
@@ -591,7 +592,7 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
                 // load time: the pre-save read-merge-write check compares
                 // against it, so the first save does not mistake our own
                 // loaded content for a foreign write.
-                lastKnownFileStates.put(scope, store.fingerprint());
+                lastKnownFileStates.put(scope, fingerprintOrNull(store));
             }
             documents.put(scope, doc);
             attachPathListeners(doc);
@@ -647,11 +648,9 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
      * ({@code .../profiles}) and the current version is the profile directory's
      * file name, so this also works through {@link #forTesting(Path)}.
      * Must run <em>before</em> the APPLICATION document is loaded, otherwise
-     * the recovered content only reaches this session through a reload.
-     * <p>
-     * TODO(#1345): the startup wiring (migration → carry-over → first document
-     * load) is Task 13; this method is deliberately not called from
-     * {@link #document(SettingsScope)}.
+     * the recovered content only reaches this session through a reload (which
+     * this method performs when the document is already materialized, and
+     * which it then reports as {@link ChangeOrigin#CARRY_OVER} events).
      *
      * @return the block paths recovered by this run (empty if none)
      */
@@ -686,8 +685,21 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
         }
         // If the document was already materialized, the recovered blocks are
         // not in it: pull the merged file in so this session sees them too.
-        if (documents.containsKey(SettingsScope.APPLICATION)) {
+        boolean materialized = documents.containsKey(SettingsScope.APPLICATION);
+        if (materialized) {
             reload();
+            // A reload is a wholesale document replacement: it emits no
+            // per-block events, so without this the recovery would be silent
+            // and the settings UI could never report it. Announce every
+            // recovered block as a CARRY_OVER change (old = null: the block
+            // did not exist in this profile), read from the fresh document.
+            SettingsDocument fresh = documents.get(SettingsScope.APPLICATION);
+            if (fresh != null) {
+                for (String blockPath : recovered.keySet()) {
+                    dispatchChangeEvent(new SettingsChangedEvent(SettingsScope.APPLICATION, blockPath,
+                            null, fresh.getBlock(blockPath), ChangeOrigin.CARRY_OVER));
+                }
+            }
         }
         return new LinkedHashSet<>(recovered.keySet());
     }
@@ -834,7 +846,7 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
         // again as a new change (a second delivery would re-merge the same
         // content against an already-updated baseline and could adopt the
         // local blocks as foreign deletions — data loss).
-        FileFingerprint foreignFingerprint = store.fingerprint();
+        FileFingerprint foreignFingerprint = fingerprintOrNull(store);
         Path file = store.file();
         if (isUnreadableSettingsFile(file)) {
             // A corrupt or partially written foreign file (e.g. another
@@ -846,7 +858,7 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
             logger.warn("Foreign settings file {} ({}) is not valid settings JSON; "
                     + "preserving it as a backup and keeping the local document unchanged", file, reason);
             backupCorruptForeignFile(store);
-            recordOwnFingerprint(scope, store.fingerprint());
+            recordOwnFingerprint(scope, fingerprintOrNull(store));
             return;
         }
         SettingsDocument foreign;
@@ -1134,6 +1146,22 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
                 foreignMergeOrigin.set(saved);
             }
         };
+    }
+
+    /**
+     * {@link SettingsFileStore#fingerprint()} for a code path that must not
+     * abort on a transient file-system error (a save, a watcher hand-off):
+     * the store's contract is that {@code null} means "absent", so a genuine
+     * I/O error is logged here and degraded to {@code null} at the call site
+     * rather than being conflated inside the store.
+     */
+    private FileFingerprint fingerprintOrNull(SettingsFileStore store) {
+        try {
+            return store.fingerprint();
+        } catch (RuntimeException e) {
+            logger.warn("Could not fingerprint settings file {}; continuing without a fingerprint", store.file(), e);
+            return null;
+        }
     }
 
     private void recordOwnFingerprint(SettingsScope scope, FileFingerprint fingerprint) {
@@ -1731,9 +1759,22 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
             }
             attachPathListeners(fresh);
             recordSyncPoint(fresh);
+            // Open bindings over this scope still reference the replaced
+            // document: their writes would go into an orphan (silently lost).
+            // Re-target them so they follow the fresh document; closed ones
+            // stay dead (reattach() ignores them).
+            for (SettingsBinding<?> binding : trackedBindings) {
+                if (binding.key().scope() == scope) {
+                    binding.reattach(fresh);
+                    // The fresh document has no local-change tracking yet
+                    // (attachPathListeners only adds the change reporter), so
+                    // a post-reload write would be broadcast but never saved.
+                    observeBlockWrites(fresh, binding.key().blockPath(), binding.key().subPath());
+                }
+            }
             // The disk content is what both sides agree on again: the
             // pre-save read-merge-write check starts from it.
-            lastKnownFileStates.put(scope, store.fingerprint());
+            lastKnownFileStates.put(scope, fingerprintOrNull(store));
             if (scope == SettingsScope.APPLICATION) {
                 // Re-create every bridge on the fresh document and attach it:
                 // the already-bridged sheets (including ones that are not in
@@ -1845,7 +1886,7 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
                 continue; // the write failed: no successful sync point
             }
             recordSyncPoint(doc); // a successful save is a sync point
-            recordOwnFingerprint(scope, store.fingerprint());
+            recordOwnFingerprint(scope, fingerprintOrNull(store));
             verifyOwnWrite(store, doc, "after saving");
         }
         if (getProgressInfo() != null) {
@@ -1947,7 +1988,7 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
             // branch routes it through the merge instead of recording the
             // foreign fingerprint as our own (which the watcher would
             // then suppress — the loss this check exists to prevent).
-            FileFingerprint own = store.fingerprint();
+            FileFingerprint own = fingerprintOrNull(store);
             String onDisk = Files.readString(file, StandardCharsets.UTF_8);
             if (onDisk.equals(SettingsDocumentIO.toPrettyString(doc))) {
                 // Our write survived: record it as our own, so the watcher
@@ -2270,31 +2311,33 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
         return service == null ? null : service.getProgressInfo();
     }
 
+    /**
+     * Same guard as {@link #getProgressInfo()}: a {@link #forTesting(Path)}
+     * component has no service, and the inherited implementation would throw a
+     * {@link NullPointerException} on every call.
+     *
+     * @return the service's SciJava context, or {@code null} for a testing
+     * component
+     */
+    @Override
+    public Context getContext() {
+        JIPipeService service = getService();
+        return service == null ? null : service.getContext();
+    }
+
     private static String keyLocation(JIPipeSettingKey<?> key) {
         return location(key.blockPath(), key.subPath());
     }
 
     /**
      * Normalizes a block path plus sub-path into the listener key form
-     * {@code "<blockPath>/<subPath>"}, dropping empty sub-path segments, so
-     * {@code ("a:b", "x//y")} yields {@code "a:b/x/y"} and an empty sub-path
-     * yields the bare block path.
-     * <p>
-     * TODO(#1345): this duplicates the normalization performed by
-     * {@code SettingsDocument.listenerPath} (package-private in
-     * {@code org.hkijena.jipipe.api.settings}); reuse it there if/when its
-     * visibility is widened, instead of keeping two copies.
+     * {@code "<blockPath>/<subPath>"}. Delegates to
+     * {@link SettingsDocument#listenerPath} — the exact normalization the
+     * document uses for dispatch — so registration and notification can never
+     * drift apart.
      */
     private static String location(String blockPath, String subPath) {
-        StringBuilder normalized = new StringBuilder(Objects.requireNonNull(blockPath, "blockPath"));
-        if (subPath != null) {
-            for (String segment : subPath.split("/")) {
-                if (!segment.isEmpty()) {
-                    normalized.append('/').append(segment);
-                }
-            }
-        }
-        return normalized.toString();
+        return SettingsDocument.listenerPath(blockPath, subPath);
     }
 
     /**

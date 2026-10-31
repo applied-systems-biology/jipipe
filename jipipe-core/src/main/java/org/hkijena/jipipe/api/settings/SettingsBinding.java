@@ -67,7 +67,13 @@ import java.util.function.Consumer;
 public final class SettingsBinding<T> {
     private static final Logger logger = LoggerFactory.getLogger(SettingsBinding.class);
 
-    private final SettingsDocument document;
+    /**
+     * The document this binding is attached to. Not final: a document reload
+     * replaces the scope's document wholesale, and the owning component
+     * re-targets open bindings with {@link #reattach(SettingsDocument)} so
+     * their writes do not go into an orphan.
+     */
+    private volatile SettingsDocument document;
     private final JIPipeSettingKey<T> key;
     private final String pathWithSubPath;
     private final List<Consumer<T>> subscribers;
@@ -163,10 +169,12 @@ public final class SettingsBinding<T> {
      * binding still writes through to the document.
      * <p>
      * Keys whose default is {@code null} (e.g. {@code object(...)} keys) are
-     * the only ones for which {@code set(null)} is meaningful: it stores a
-     * JSON {@code null}, and {@link #get()} then falls back to that
-     * {@code null} default. For keys with a non-null default,
-     * {@code set(null)} is rejected with a {@link NullPointerException}.
+     * the only ones for which {@code set(null)} is meaningful: the value equals
+     * the default, so it <b>removes</b> the location (defaults are never
+     * materialized; it does not store a JSON {@code null}).
+     * {@link #get()} then returns the {@code null} default. For keys with a
+     * non-null default, {@code set(null)} is rejected with a
+     * {@link NullPointerException}.
      *
      * @param value the value to store
      */
@@ -180,7 +188,10 @@ public final class SettingsBinding<T> {
         if (Objects.equals(value, key.defaultValue())) {
             document.remove(key.blockPath(), key.subPath());
         } else {
-            document.set(key.blockPath(), key.subPath(), value == null ? null : valueToTree(value));
+            // value != default, so value is non-null here: a null value with a
+            // non-null default was rejected above, and a null default would
+            // have taken the remove() branch.
+            document.set(key.blockPath(), key.subPath(), valueToTree(value));
         }
     }
 
@@ -263,6 +274,48 @@ public final class SettingsBinding<T> {
         closed = true;
         document.removePathListener(pathWithSubPath, listener);
         subscribers.clear();
+    }
+
+    /**
+     * Re-targets an <em>open</em> binding from its current document to a
+     * replacement document (a scope reload loads the file into a fresh
+     * document). Without this the binding would keep writing into the
+     * replaced document — a silent write loss: the value never reaches the
+     * live document, no listener fires and nothing is auto-saved.
+     * <p>
+     * The path listener moves to the new document, and
+     * {@link #lastKnown} is re-read from it so the next {@link #set(Object)}
+     * compares against the reloaded content (a reload is a sync point, not a
+     * local edit). The write guard and subscribers live on this binding
+     * instance, so they survive unchanged.
+     * <p>
+     * A closed binding is dead by contract and is left untouched. Called by
+     * the owning settings component's {@code reload()} (which lives in a
+     * sub-package, hence the public modifier: this is an engine seam, not a
+     * user-facing operation).
+     *
+     * @param newDocument the document that replaces the current one
+     */
+    public void reattach(SettingsDocument newDocument) {
+        Objects.requireNonNull(newDocument, "newDocument");
+        if (closed) {
+            return; // dead by contract: never resurrect a closed binding
+        }
+        SettingsDocument old = this.document;
+        if (old == newDocument) {
+            return;
+        }
+        old.removePathListener(pathWithSubPath, listener);
+        this.document = newDocument;
+        newDocument.addPathListener(pathWithSubPath, listener, this);
+        this.lastKnown = get();
+    }
+
+    /**
+     * @return whether {@link #close()} has been called
+     */
+    boolean isClosed() {
+        return closed;
     }
 
     /**
