@@ -390,6 +390,10 @@ public class JIPipeDesktopRawSettingsSection extends JPanel implements Disposabl
 
     /**
      * The paths currently shown in the table (filter applied), in row order.
+     * <p>
+     * Not used by the section itself: it is the observation seam for the manual
+     * UI verification of the filter (no Swing structure tests, per project
+     * policy).
      *
      * @return the visible paths
      */
