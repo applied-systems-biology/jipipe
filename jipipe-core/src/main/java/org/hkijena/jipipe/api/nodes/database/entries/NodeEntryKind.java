@@ -205,11 +205,6 @@ public enum NodeEntryKind {
         JIPipe.getSettings().save();
     }
 
-    // ------------------------------------------------------------------
-    // Persistence (shared setting of the node browser + node finder dialog,
-    // the same settings-registry pattern as the pinned node ids)
-    // ------------------------------------------------------------------
-
     public String getLabel() {
         return label;
     }
