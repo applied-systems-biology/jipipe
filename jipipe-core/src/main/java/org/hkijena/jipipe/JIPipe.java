@@ -30,6 +30,8 @@ import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.api.service.JIPipeServiceInitializationSettings;
 import org.hkijena.jipipe.api.service.components.*;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalPathParameter;
@@ -182,6 +184,58 @@ public final class JIPipe {
         JIPipeService instance = JIPipe.createInstance(context);
         JIPipe.getInstance().initialize();
         return instance;
+    }
+
+/**
+     * Headless runners must not continue into project loading when the service
+     * failed to initialize: the startup is fail-loud (a broken profile
+     * migration aborts the initialization), and a partially initialized
+     * service would then load, run and <em>save</em> settings and projects
+     * against a broken state.
+     * <p>
+     * There is no UI to show the reason in a headless run, so the
+     * initialization report's issues are logged and the JVM exits with status 1.
+     * A no-op for a successfully initialized service.
+     * <p>
+     * Testable without Swing: it only reads the state and the report, and the
+     * exit is delegated to {@link #terminateForFailedInitialization(int)}.
+     *
+     * @param service the service a runner has just initialized
+     */
+    public static void abortIfInitializationFailed(JIPipeService service) {
+        if (service == null) {
+            return;
+        }
+        if (service.getState() != org.hkijena.jipipe.api.service.JIPipeServiceState.Initialized) {
+            System.err.println("JIPipe initialization failed (state: " + service.getState()
+                    + "). Aborting the headless run instead of continuing with a broken service.");
+            JIPipeInitializationReport report = service.getInitializationReport();
+            if (report != null) {
+                for (Throwable error : report.getErrors()) {
+                    System.err.println("  Initialization error: " + error);
+                }
+                JIPipeValidationReport issues = new JIPipeValidationReport();
+                report.reportValidity(new UnspecifiedValidationReportContext(), JIPipeValidationReportSettings.DEFAULT,
+                        issues, JIPipeProgressInfo.SILENT);
+                for (JIPipeValidationReportEntry entry : issues) {
+                    System.err.println("  " + entry.getLevel() + ": " + entry.getTitle()
+                            + (entry.getExplanation().isEmpty() ? "" : " — " + entry.getExplanation()));
+                }
+            }
+            terminateForFailedInitialization(1);
+        }
+    }
+
+    /**
+     * Terminates the JVM after a failed initialization. Extracted so a test can
+     * observe the decision without exiting the test JVM: it is a static seam
+     * that only production code calls with a real {@link System#exit(int)}.
+     *
+     * @param status the exit status
+     */
+    static void terminateForFailedInitialization(int status) {
+        System.err.flush();
+        System.exit(status);
     }
 
     /**

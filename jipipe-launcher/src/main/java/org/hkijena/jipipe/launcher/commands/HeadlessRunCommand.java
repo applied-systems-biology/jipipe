@@ -159,6 +159,10 @@ public class HeadlessRunCommand {
             extensionSettings.setValidateNodeTypes(false);
         }
         service.ensureInitialized();
+        // Fail-loud startup (Task 13): a failed initialization (e.g. an aborted
+        // settings migration) leaves the service in Error state; continuing
+        // would load and run a project against a broken service.
+        JIPipe.abortIfInitializationFailed(service);
 
         JIPipeValidationReport projectIssues = new JIPipeValidationReport();
         JIPipeNotificationInbox notifications = new JIPipeNotificationInbox();
