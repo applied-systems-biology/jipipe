@@ -24,6 +24,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 
 import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterFormPanel;
+import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopSegmentedButtonGroup;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.SettingsScopes;
@@ -157,7 +158,14 @@ public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implem
     }
 
     private final JTree tree = new JTree();
-    private final JTabbedPane scopeSwitcher = new JTabbedPane();
+    /**
+     * The scope switcher in the header. A merged button group rather than a
+     * {@link javax.swing.JTabbedPane}: a tab pane carries a tab strip plus a
+     * (here empty) content area, which made the header row - and the search
+     * field in it - sit noticeably too high. The group is a fixed 28px row,
+     * flush with the search field.
+     */
+    private final JIPipeDesktopSegmentedButtonGroup scopeSwitcher = new JIPipeDesktopSegmentedButtonGroup();
     private final JIPipeDesktopSearchTextField searchField = new JIPipeDesktopSearchTextField();
     /**
      * Sections keyed by scope-qualified identity
@@ -326,9 +334,9 @@ public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implem
         topBar.add(searchPanel, BorderLayout.WEST);
 
         for (SettingsScope scope : SCOPES) {
-            scopeSwitcher.addTab(scopeToTitle(scope), null, new JPanel());
+            scopeSwitcher.addSegment(scopeToTitle(scope));
         }
-        scopeSwitcher.addChangeListener(e -> onScopeChanged());
+        scopeSwitcher.addSelectionListener(idx -> onScopeChanged());
         topBar.add(scopeSwitcher, BorderLayout.EAST);
         return topBar;
     }
@@ -608,10 +616,11 @@ public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implem
     }
 
     private void onScopeChanged() {
-        // Note: no "same scope" early return — the switcher is initialised in
-        // initialize(), before the section model exists, and that first event
-        // must not be swallowed. Rebuilding an unchanged scope is cheap.
-        SettingsScope scope = SCOPES[Math.max(0, scopeSwitcher.getSelectedIndex())];
+        // The segmented group's selection listener fires only on a real
+        // index change (its initial selection is silent, and
+        // setSelectedIndex is a no-op for the current index), so there is no
+        // redundant first event to swallow here.
+        SettingsScope scope = SCOPES[Math.max(0, Math.min(scopeSwitcher.getSelectedIndex(), SCOPES.length - 1))];
         activeScope = scope;
         selectedSectionKey = null;
         rebuildTree();
