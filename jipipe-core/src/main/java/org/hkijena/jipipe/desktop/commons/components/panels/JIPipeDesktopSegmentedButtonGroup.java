@@ -17,6 +17,7 @@ import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.ThemeUtils;
 
 import javax.swing.*;
+import javax.swing.plaf.basic.BasicToggleButtonUI;
 import java.awt.*;
 import java.awt.geom.Path2D;
 import java.util.ArrayList;
@@ -88,10 +89,20 @@ public class JIPipeDesktopSegmentedButtonGroup extends JPanel {
      */
     public void addSegment(String title, Icon icon) {
         JToggleButton button = new JToggleButton(title, icon);
+        // The modern theme installs a JIPipeDesktopModernToggleButtonUI
+        // globally that paints a grey rounded rect on every SELECTED toggle
+        // button (ignoring contentAreaFilled) - which would overlay this
+        // control's own primary-color fill. The segment buttons use the plain
+        // basic UI (whose pressed/selected paint is a no-op) so only this
+        // container paints the selected segment.
+        button.setUI(new BasicToggleButtonUI());
         button.setFocusPainted(false);
         button.setOpaque(false);
-        button.setBorder(null);
+        button.setBorderPainted(false);
         button.setContentAreaFilled(false);
+        // Inset-only padding (not painted) so the widest label does not run
+        // into the fill's edge.
+        button.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
         button.getModel().setSelected(buttons.isEmpty());
         button.addActionListener(e -> onSegmentActivated(button));
         buttonGroup.add(button);
