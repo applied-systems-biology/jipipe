@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.desktop.app.settings;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
@@ -26,6 +25,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
+import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopSegmentedButtonGroup;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernThemeStyle;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopUITheme;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeModernThemeStyleParameter;
@@ -67,16 +67,23 @@ import java.util.function.Consumer;
  * their {@link JIPipeParameterTree} node (never a new sheet instance), so an
  * edit fires the sheet's {@code ParameterChangedEvent} → the settings engine's
  * {@code SettingsSheetBridge} → the settings document → the debounced
- * auto-save. The Appearance section additionally hosts the live
- * {@link ThemePreviewPanel}, refreshed from the tree's parameter-changed events
- * and from the scale control.
+ * auto-save. The Appearance and the Accessibility sections each host a live
+ * {@link ThemePreviewPanel}, refreshed from the tree's parameter-changed
+ * events and from the scale control (the Appearance preview shows the theme,
+ * the Accessibility preview shows the chosen scale).
  * <p>
  * <b>UI scale.</b> Not a settings key (it lives in the jaunch config files): a
- * control that reads the current system scale, rounds to 25% and, when released
- * on a changed value, asks whether to apply the scale to Fiji/ImageJ too, calls
- * {@link UIUtils#saveUIScaleToJaunch(float, boolean)} and reports a failed write
- * with an error dialog — exactly the old dialog's Apply path. A "restart JIPipe
- * to apply the UI scale" hint replaces the old modal restart message.
+ * segmented control offering the integral scales the bundled JDK applies on
+ * this platform (100/200/300% — the X11 AWT scale is an {@code int}, so
+ * fractional values are silently truncated or ignored, see
+ * {@link UIUtils#OFFERED_UI_SCALES}). The initial selection reads the
+ * <em>stored</em> value's effective scale (auto → the nearest offered one);
+ * selecting a different segment asks whether to apply the scale to
+ * Fiji/ImageJ too, calls {@link UIUtils#saveUIScaleToJaunch(float, boolean)}
+ * and reports a failed write with an error dialog — the old dialog's Apply
+ * path. The Accessibility page also hosts the {@link ThemePreviewPanel}
+ * scaled relative to the stored effective scale, so the chosen scale can be
+ * seen before the restart it requires.
  */
 public class JIPipeDesktopAppearanceSection extends JPanel implements JIPipeDesktopWorkbenchAccess, Disposable {
 
@@ -112,12 +119,20 @@ public class JIPipeDesktopAppearanceSection extends JPanel implements JIPipeDesk
     private final Consumer<JsonNode> documentListener = node -> refreshModifiedBadge();
 
     /**
-     * The system scale at construction: the reference the scale control is
-     * displayed and corrected against (the old dialog's {@code systemScale}).
+     * The system (automatic) scale at construction: the fallback the stored
+     * jaunch value is corrected against (the old dialog's {@code systemScale}).
      */
     private final double systemScale;
-    private final JSlider scaleSlider = new JSlider(25, 500, 100);
-    private final JLabel scaleLabel = new JLabel("100%");
+    /**
+     * The scale the STORED jaunch value actually applies (auto markers → the
+     * system scale; fractional values → the integer the JVM truncates to, see
+     * {@link UIUtils#effectiveUiScaleForStoredValue}). Read once at
+     * construction: it is the reference the control is displayed and corrected
+     * against, and the preview is scaled relative to it (1.0 = "looks like
+     * now").
+     */
+    private final double storedEffectiveScale;
+    private final JIPipeDesktopSegmentedButtonGroup scaleGroup = new JIPipeDesktopSegmentedButtonGroup();
 
     private boolean disposed;
 
@@ -136,6 +151,8 @@ public class JIPipeDesktopAppearanceSection extends JPanel implements JIPipeDesk
         this.defaults = freshSheetDefaults();
         this.model = AppearanceSectionModel.forSection(document, page, defaults);
         this.systemScale = UIUtils.getScale(workbench != null ? workbench.getWindow() : null);
+        this.storedEffectiveScale =
+                UIUtils.effectiveUiScaleForStoredValue(UIUtils.parseStoredUiScaleProperty(), systemScale);
         initialize();
         model.subscribe(documentListener);
     }
@@ -225,10 +242,6 @@ public class JIPipeDesktopAppearanceSection extends JPanel implements JIPipeDesk
                 target.put(blockPath + "/" + key, JsonUtils.getObjectMapper().valueToTree(access.get(Object.class)));
             }
         }
-    }
-
-    private static int getRoundedScale(int scale) {
-        return Math.round(scale / 25f) * 25;
     }
 
     /**
@@ -377,10 +390,18 @@ public class JIPipeDesktopAppearanceSection extends JPanel implements JIPipeDesk
             }
         }
 
-        // Accessibility: the UI-scale control (not a settings key).
+        // Accessibility: the UI-scale control (not a settings key) and a
+        // preview, so the chosen scale can be seen (the running app itself
+        // only re-scales on restart).
         if (PAGE_ACCESSIBILITY.equals(page)) {
             formPanel.addGroupHeader("UI scale", JIPipe.RESOURCES.getIcon16("actions/configure.png"));
             initializeScaleControl();
+            previewPanel.setPreferredSize(new Dimension(480, 260));
+            formPanel.addWideToForm(UIUtils.wrapInIslandPanelIfNeeded(previewPanel));
+            formPanel.addWideToForm(UIUtils.createReadonlyBorderlessTextArea(
+                    "The preview shows how the interface will look after the next restart. "
+                            + "On this platform the JVM only supports integral scales, "
+                            + "so 100%, 200% and 300% are available."));
         }
 
         formPanel.addVerticalGlue();
@@ -467,10 +488,12 @@ public class JIPipeDesktopAppearanceSection extends JPanel implements JIPipeDesk
 
     /**
      * Reads the current theme, theme style and scale from the live sheets and
-     * the scale control, and updates the preview panel.
+     * the scale control, and updates the preview panel. The Appearance page
+     * previews the theme and style; the Accessibility page previews the
+     * chosen scale (1.0 = the current look, 2.0 = everything twice as large).
      */
     private void refreshPreview() {
-        if (disposed || !PAGE_APPEARANCE.equals(page)) {
+        if (disposed || (!PAGE_APPEARANCE.equals(page) && !PAGE_ACCESSIBILITY.equals(page))) {
             return;
         }
         Map<String, JIPipeParameterAccess> generalUi = parameterAccessesOf(AppearanceSectionModel.GENERAL_UI_BLOCK);
@@ -489,7 +512,14 @@ public class JIPipeDesktopAppearanceSection extends JPanel implements JIPipeDesk
         JIPipeDesktopModernThemeStyle style = ThemeUtils.getStyleFromId(styleId);
         previewPanel.setTheme(theme);
         previewPanel.setThemeStyle(style);
-        previewPanel.setScale(scaleSlider.getValue() * 1.0f / getRoundedScale((int) (systemScale * 100)));
+        // The preview scale is RELATIVE to the stored effective scale (1.0 =
+        // "looks like now"). The old slider-derived formula was inaccurate:
+        // the slider's value was unattached to the stored setting until the
+        // file was written, and the slider's 25% steps did not match what the
+        // JVM applies.
+        previewPanel.setScale(scaleGroup.getSelectedIndex() < 0
+                ? 1.0f
+                : (float) (UIUtils.OFFERED_UI_SCALES.get(scaleGroup.getSelectedIndex()) / storedEffectiveScale));
     }
 
     // ------------------------------------------------------------------
@@ -500,47 +530,38 @@ public class JIPipeDesktopAppearanceSection extends JPanel implements JIPipeDesk
         formPanel.addWideToForm(UIUtils.createReadonlyBorderlessTextArea(
                 "If the interface is too large or too small, you can change the UI scale."));
 
-        scaleSlider.setSnapToTicks(true);
-        scaleSlider.setMajorTickSpacing(100);
-        scaleSlider.setMinorTickSpacing(25);
-        scaleSlider.setPaintTicks(true);
-        scaleSlider.setPaintLabels(false);
-        scaleLabel.setMinimumSize(new Dimension(50, 20));
-        int scalePercent = (int) (systemScale * 100);
-        scaleSlider.setValue(getRoundedScale(scalePercent));
-        scaleLabel.setText(getRoundedScale(scalePercent) + "%");
-
-        // Live label/preview on drag; the file write on release (a drag must not
-        // trigger one confirm + jaunch write per tick).
-        scaleSlider.addChangeListener(e -> {
-            int roundedScale = getRoundedScale(scaleSlider.getValue());
-            scaleLabel.setText(roundedScale + "%");
-            refreshPreview();
-        });
-        scaleSlider.addMouseListener(new java.awt.event.MouseAdapter() {
-            @Override
-            public void mouseReleased(java.awt.event.MouseEvent e) {
-                applyScale();
-            }
-        });
-        scaleSlider.addKeyListener(new java.awt.event.KeyAdapter() {
-            @Override
-            public void keyReleased(java.awt.event.KeyEvent e) {
-                applyScale();
-            }
-        });
-
-        formPanel.addWideToForm(UIUtils.borderNSEWC(null, null, scaleLabel, null, scaleSlider));
-        formPanel.addWideToForm(UIUtils.createJLabel("The preview might be slightly inaccurate",
-                JIPipe.RESOURCES.getIcon16("emblems/emblem-information.png")));
-        formPanel.addWideToForm(UIUtils.createJLabel("Non-integral scales may not correctly work",
-                JIPipe.RESOURCES.getIcon16("emblems/emblem-information.png")));
-        if (SystemUtils.IS_OS_MAC_OSX) {
-            formPanel.addWideToForm(UIUtils.createJLabel("May not work on macOS",
-                    JIPipe.RESOURCES.getIcon16("emblems/emblem-information.png")));
+        for (double offered : UIUtils.OFFERED_UI_SCALES) {
+            scaleGroup.addSegment((int) Math.round(offered * 100) + "%");
         }
+        // The segment matching the STORED effective scale (not the running
+        // one, which only changes on restart): auto → nearest offered,
+        // fractional → the integer the JVM truncates to.
+        scaleGroup.setSelectedIndex(scaleSegmentOf(storedEffectiveScale));
+        // A click both updates the preview and is the Apply point (no drag
+        // exists to defer the write to).
+        scaleGroup.addSelectionListener(idx -> {
+            refreshPreview();
+            applyScale(idx);
+        });
+
+        formPanel.addWideToForm(scaleGroup);
         formPanel.addWideToForm(UIUtils.createJLabel("Restart JIPipe to apply the UI scale",
                 JIPipe.RESOURCES.getIcon16("emblems/emblem-information.png")));
+    }
+
+    /**
+     * @param effectiveScale an effective scale (see
+     *                       {@link UIUtils#effectiveUiScaleForStoredValue})
+     * @return the index of the offered scale segment it renders as
+     */
+    private static int scaleSegmentOf(double effectiveScale) {
+        int percent = UIUtils.nearestOfferedUiScalePercent(effectiveScale);
+        for (int i = 0; i < UIUtils.OFFERED_UI_SCALES.size(); i++) {
+            if ((int) Math.round(UIUtils.OFFERED_UI_SCALES.get(i) * 100) == percent) {
+                return i;
+            }
+        }
+        return 0;
     }
 
     /**
@@ -548,23 +569,26 @@ public class JIPipeDesktopAppearanceSection extends JPanel implements JIPipeDesk
      * jaunch config files, not in a settings block): the "apply to Fiji/ImageJ
      * too?" confirmation only on an actual change, then the write, then the
      * error dialog if the write failed.
+     *
+     * @param segmentIndex the scale segment the user selected
      */
-    private void applyScale() {
-        if (disposed) {
+    private void applyScale(int segmentIndex) {
+        if (disposed || segmentIndex < 0 || segmentIndex >= UIUtils.OFFERED_UI_SCALES.size()) {
             return;
         }
-        int newRoundedScale = getRoundedScale(scaleSlider.getValue());
-        int originalRoundedScale = getRoundedScale((int) (systemScale * 100));
-        if (newRoundedScale == originalRoundedScale) {
+        double newScale = UIUtils.OFFERED_UI_SCALES.get(segmentIndex);
+        // No write when the stored value already applies as the chosen scale
+        // (e.g. a stored 2.5 and a 200% selection both truncate to 2).
+        if (newScale == storedEffectiveScale) {
             return;
         }
         boolean alsoImageJ = JOptionPane.showConfirmDialog(this,
                 "Do you want to apply your scale settings also to Fiji/ImageJ?",
                 "Apply",
                 JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
-        if (!UIUtils.saveUIScaleToJaunch(newRoundedScale / 100f, alsoImageJ)) {
+        if (!UIUtils.saveUIScaleToJaunch((float) newScale, alsoImageJ)) {
             JOptionPane.showMessageDialog(workbench != null ? workbench.getWindow() : this,
-                    "Your UI scale setting of " + newRoundedScale + "% could not be saved.",
+                    "Your UI scale setting of " + (int) Math.round(newScale * 100) + "% could not be saved.",
                     "Appearance",
                     JOptionPane.ERROR_MESSAGE);
         }

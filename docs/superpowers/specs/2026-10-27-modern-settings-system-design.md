@@ -205,8 +205,8 @@ Layout:
 
 - **Top:** search bar (**global** across all scopes; matches names, descriptions, raw key paths; selecting a result from another scope switches the scope switcher to it) and a **scope switcher** `Application | Project | Runtime` (a merged button group; the header row is the search field's height).
 - **Left:** category tree (existing categories, reorganized):
-  - *General → Appearance* (merged: theme, theme style, UI scale, reduced motion, file chooser type + fallback, **with the live preview panel from Customize JIPipe**) — application scope
-  - *General → Accessibility* (reduced motion, UI scale, future a11y settings) — application scope
+  - *General → Appearance* (merged: theme, theme style, file chooser type + fallback, **with the live preview panel from Customize JIPipe**) — application scope
+  - *General → Accessibility* (reduced motion, UI scale, future a11y settings) — application scope. The UI scale is NOT a settings key (it is the `-Dsun.java2d.uiScale` line in the jaunch tomls, applied only on restart): a segmented control of the integral scales the bundled JDK actually applies (100/200/300%). Fractional values are infeasible on this platform — the X11 AWT scale factor is an `int` by design (`X11GraphicsDevice#initScaleFactor` truncates `sun.java2d.uiScale`), verified against the bundled Zulu 21 (1.5/1.75/150% → 1.0, 2.5 → 2.0), so the old 25%-step slider wrote values that were silently ignored. The section hosts the live theme preview scaled relative to the stored effective scale, so the chosen scale can be seen before the restart.
   - *General → Keyboard* (placeholder section — empty state "shortcut profiles coming"; this is where #1346 registers) — application scope
   - *Runtime* category (threads, temp/cache directories, environment installations, hardware acceleration, artifact dirs) — runtime scope, presented alongside the rest
   - remaining sheets map to sections under their categories; small sheets are grouped into their category page.
