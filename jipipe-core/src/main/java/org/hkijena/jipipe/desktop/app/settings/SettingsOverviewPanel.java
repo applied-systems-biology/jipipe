@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.desktop.app.settings;
 
 import org.hkijena.jipipe.api.settings.SettingsScope;
+import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
@@ -88,52 +89,54 @@ public class SettingsOverviewPanel extends JPanel {
 
         setLayout(new BorderLayout());
         setOpaque(false);
-        add(new JScrollPane(buildContent(),
+        JScrollPane scroll = new JScrollPane(buildContent(),
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER), BorderLayout.CENTER);
+                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        // The default wheel increment is 1px per notch (probed) - far too
+        // slow for a page of this length; 25 is the app-wide convention
+        // (graph editor, data tracer, code editor).
+        scroll.getVerticalScrollBar().setUnitIncrement(25);
+        add(scroll, BorderLayout.CENTER);
     }
 
     private JComponent buildContent() {
-        JPanel content = new JPanel();
+        // GridBagLayout (not BoxLayout): every entry spans the full width,
+        // the two grid columns divide it evenly, and the All rows stretch -
+        // a BoxLayout sizes each child to its preferred width, which leaves
+        // a short first section and a centered, width-limited All list.
+        JPanel content = new JPanel(new GridBagLayout());
         content.setOpaque(false);
-        content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
         content.setBorder(UIUtils.createEmptyBorder(12));
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weightx = 1;
 
-        content.add(header("Common"));
-        content.add(Box.createVerticalStrut(6));
-        content.add(commonGrid());
-        content.add(Box.createVerticalStrut(18));
-
-        content.add(header("All " + scopeLabel(scope)));
+        int row = 0;
+        content.add(header("Common"), withGbc(gbc, row++, 0, 6));
+        content.add(commonGrid(), withGbc(gbc, row++, 4, 4));
+        content.add(header("All settings"), withGbc(gbc, row++, 14, 6));
         for (SettingsTreeModel.CategoryNode category : model.categories(scope)) {
             if (category.sheets().isEmpty()) {
                 continue;
             }
-            content.add(Box.createVerticalStrut(12));
             JLabel categoryLabel = new JLabel(category.name());
             categoryLabel.setFont(categoryLabel.getFont().deriveFont(Font.PLAIN,
                     ThemeUtils.getCurrentStyle().getFontSizeSmall()));
             categoryLabel.setForeground(ThemeUtils.getCurrentStyle().getTextMuted());
-            categoryLabel.setAlignmentX(LEFT_ALIGNMENT);
-            content.add(categoryLabel);
+            content.add(categoryLabel, withGbc(gbc, row++, 10, 2));
             for (SettingsTreeModel.SheetNode sheet : category.sheets()) {
-                content.add(allRow(sheet));
+                content.add(allRow(sheet), withGbc(gbc, row++, 0, 0));
             }
         }
         return content;
     }
 
-    private static String scopeLabel(SettingsScope scope) {
-        switch (scope) {
-            case APPLICATION:
-                return "application";
-            case PROJECT:
-                return "project";
-            case RUNTIME:
-                return "runtime";
-            default:
-                return scope.name().toLowerCase();
-        }
+    private static GridBagConstraints withGbc(GridBagConstraints base, int row, int top, int bottom) {
+        GridBagConstraints gbc = (GridBagConstraints) base.clone();
+        gbc.gridy = row;
+        gbc.insets = new Insets(top, 0, bottom, 0);
+        return gbc;
     }
 
     private static JLabel header(String text) {
@@ -165,7 +168,7 @@ public class SettingsOverviewPanel extends JPanel {
 
     private JComponent commonCard(SettingsTreeModel.SheetNode sheet, CommonEntry entry) {
         JPanel card = new JPanel(new BorderLayout(8, 0));
-        card.setOpaque(false);
+        card.setOpaque(true);
         card.setBorder(new RoundedLineBorder(UIUtils.getControlBorderColor(), 1, 6));
         card.setBackground(UIManager.getColor("Panel.background"));
         card.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -189,18 +192,60 @@ public class SettingsOverviewPanel extends JPanel {
         text.add(blurb);
         card.add(text, BorderLayout.CENTER);
 
-        card.addMouseListener(new MouseAdapter() {
+        card.addMouseListener(clickable(card, () -> onSelect.accept(sheet)));
+        return card;
+    }
+
+    /**
+     * A click listener with a <b>pressed</b> state: while the mouse button is
+     * down inside the component it is tinted darker (a transparent component
+     * becomes briefly opaque), and restores on release/exit. No hover state -
+     * only the press gives feedback, per the requested behavior.
+     *
+     * @param target the component to tint
+     * @param click  what a full click does
+     */
+    private static MouseAdapter clickable(JComponent target, Runnable click) {
+        final Color base = target.getBackground();
+        final boolean baseOpaque = target.isOpaque();
+        final Color pressed = ColorUtils.mix(base, Color.BLACK, 0.15);
+        return new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                if (target.contains(e.getPoint())) {
+                    target.setOpaque(true);
+                    target.setBackground(pressed);
+                    target.repaint();
+                }
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                restore();
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                restore();
+            }
+
+            private void restore() {
+                target.setOpaque(baseOpaque);
+                target.setBackground(base);
+                target.repaint();
+            }
+
             @Override
             public void mouseClicked(MouseEvent e) {
-                onSelect.accept(sheet);
+                click.run();
             }
-        });
-        return card;
+        };
     }
 
     private JComponent allRow(SettingsTreeModel.SheetNode sheet) {
         JPanel row = new JPanel(new BorderLayout(8, 0));
         row.setOpaque(false);
+        row.setBackground(UIManager.getColor("Panel.background"));
         row.setBorder(UIUtils.createEmptyBorder(3));
         row.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         row.setAlignmentX(LEFT_ALIGNMENT);
@@ -224,12 +269,7 @@ public class SettingsOverviewPanel extends JPanel {
         }
         row.add(text, BorderLayout.CENTER);
 
-        row.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                onSelect.accept(sheet);
-            }
-        });
+        row.addMouseListener(clickable(row, () -> onSelect.accept(sheet)));
         return row;
     }
 }
