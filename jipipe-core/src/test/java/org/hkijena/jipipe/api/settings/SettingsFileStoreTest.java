@@ -233,10 +233,12 @@ class SettingsFileStoreTest {
     @Test void backupCorruptFileIsSubjectToTheSamePruneBound() throws Exception {
         Path file = tempDir.resolve("settings.json");
         Files.writeString(file, "{ corrupt foreign write");
+        java.util.Set<String> oldNames = new java.util.HashSet<>();
         for (int i = 0; i < 7; i++) {
             Path backup = tempDir.resolve("settings.json.bad-2026-10-0" + (i + 1) + "T00-00-00Z");
             Files.writeString(backup, "{ old corrupt " + i + " }");
             Files.setLastModifiedTime(backup, FileTime.from(Instant.parse("2026-10-0" + (i + 1) + "T00:00:00Z")));
+            oldNames.add(backup.getFileName().toString());
         }
 
         SettingsFileStore store = new SettingsFileStore(file, org.hkijena.jipipe.api.settings.SettingsScope.APPLICATION, p -> true);
@@ -249,7 +251,7 @@ class SettingsFileStoreTest {
         assertEquals(SettingsFileStore.maxBadBackupsPerFile(), kept.size(),
                 "the external backup route prunes to the newest 5 like the load path");
         assertFalse(Files.exists(file), "the corrupt file itself is moved to the backup");
-        assertTrue(kept.stream().anyMatch(p -> p.getFileName().toString().startsWith("settings.json.bad-2026-10-31")),
+        assertTrue(kept.stream().anyMatch(p -> !oldNames.contains(p.getFileName().toString())),
                 "the new (current) backup survives the prune");
     }
 
