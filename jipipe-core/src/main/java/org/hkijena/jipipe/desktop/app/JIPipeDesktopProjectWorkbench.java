@@ -1011,7 +1011,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         JMenu toolsMenu = new JMenu("Tools");
 
         toolsMenu.add(UIUtils.createMenuItem("Customize JIPipe ...", "Allows to customize JIPipe using themes", JIPipe.RESOURCES.getIcon16("actions/palette.png"), this::openCustomizer));
-        toolsMenu.add(UIUtils.createMenuItem("Raw settings (about:config) ...", "Lists and edits every setting, including values without a dedicated editor", JIPipe.RESOURCES.getIcon16("actions/configure.png"), this::openRawSettings));
+        toolsMenu.add(UIUtils.createMenuItem("Raw settings ...", "Lists and edits every setting, including values without a dedicated editor", JIPipe.RESOURCES.getIcon16("actions/configure.png"), this::openRawSettings));
         toolsMenu.add(UIUtils.createMenuItem("Theme manager/editor", "Allows to create custom JIPipe theme", JIPipe.RESOURCES.getIcon16("actions/palette.png"), this::openThemeManagerAndEditor));
 
         JMenu pluginsMenu = new JMenu("Plugins");
@@ -1113,8 +1113,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
     }
 
     /**
-     * Opens the settings tab on the raw settings editor (the {@code about:config}
-     * of JIPipe, Task 20).
+     * Opens the settings tab on the raw settings editor (Task 20).
      */
     private void openRawSettings() {
         JIPipeDesktopRawSettingsSection.openRawSection(this);

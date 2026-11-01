@@ -35,8 +35,8 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * The raw settings editor of the settings tab — JIPipe's {@code about:config}
- * (modern settings system, Task 20).
+ * The raw settings editor of the settings tab: every setting of the selected
+ * scope in one table (modern settings system, Task 20).
  * <p>
  * It lists <em>every</em> setting of the selected scope: the documented keys and
  * the stored content the section tree has no UI for (pass-through blocks and

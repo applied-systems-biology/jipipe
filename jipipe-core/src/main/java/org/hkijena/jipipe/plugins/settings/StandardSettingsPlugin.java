@@ -105,7 +105,7 @@ public class StandardSettingsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerApplicationSettingsSheet(new JIPipeDesktopKeyboardApplicationSettings());
         JIPipeDesktopAppearanceSection.registerCompositions();
 
-        // Raw settings editor (about:config, Task 20): an anchor sheet plus the
+        // Raw settings editor (Task 20): an anchor sheet plus the
         // merged-section registration that replaces its form with the raw table.
         registerApplicationSettingsSheet(new JIPipeDesktopRawSettingsApplicationSettings());
         JIPipeDesktopRawSettingsSection.registerRawSection();

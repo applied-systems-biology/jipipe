@@ -33,8 +33,8 @@ import java.util.Set;
 import java.util.TreeMap;
 
 /**
- * Pure (non-Swing) model of the raw settings editor — the {@code about:config}
- * of JIPipe's settings (modern settings system, Task 20).
+ * Pure (non-Swing) model of the raw settings editor (modern settings system,
+ * Task 20).
  * <p>
  * <b>What it lists.</b> {@link #rows(String)} returns one {@link RawRow} per
  * <em>addressable leaf</em> of the selected scope's document:
