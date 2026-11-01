@@ -65,7 +65,7 @@ class SettingsTreeAbsorptionTest {
         assertTrue(model.allNodes().stream().noneMatch(node -> node.id().equals(GENERAL_UI)
                         || node.id().equals(FILE_CHOOSER)),
                 "no application view lists an absorbed sheet");
-        assertTrue(model.search("theme", SettingsScope.APPLICATION).stream()
+        assertTrue(model.search("theme").stream()
                         .noneMatch(node -> node.id().equals(GENERAL_UI)),
                 "searching does not resurrect an absorbed sheet");
     }

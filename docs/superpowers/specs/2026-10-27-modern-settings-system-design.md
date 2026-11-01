@@ -203,7 +203,7 @@ Shell: a **workbench-level tab** (beside the Welcome tab) — non-modal, multipl
 
 Layout:
 
-- **Top:** search bar (filters tree + content; matches names, descriptions, raw key paths) and a **scope switcher** `Application | Project | Runtime`.
+- **Top:** search bar (**global** across all scopes; matches names, descriptions, raw key paths; selecting a result from another scope switches the scope switcher to it) and a **scope switcher** `Application | Project | Runtime` (a merged button group; the header row is the search field's height).
 - **Left:** category tree (existing categories, reorganized):
   - *General → Appearance* (merged: theme, theme style, UI scale, reduced motion, file chooser type + fallback, **with the live preview panel from Customize JIPipe**) — application scope
   - *General → Accessibility* (reduced motion, UI scale, future a11y settings) — application scope
@@ -211,7 +211,8 @@ Layout:
   - *Runtime* category (threads, temp/cache directories, environment installations, hardware acceleration, artifact dirs) — runtime scope, presented alongside the rest
   - remaining sheets map to sections under their categories; small sheets are grouped into their category page.
 - **Right:** content pane reusing `JIPipeDesktopParameterFormPanel` (all existing parameter editors work unchanged), with per-section header: description, **modified** badge, **Reset to defaults** button.
-- **Scope behavior:** the tree always shows all sections; each section belongs to exactly one scope, and sections of a different scope than the switcher are shown dimmed and read-only with a "belongs to &lt;scope&gt;" hint, so users can *find* a setting without knowing its scope. The switcher makes that scope's sections editable. Project-only sections are unavailable when no project is open; runtime sections are `RUNTIME_ADMIN`/`READ_ONLY`-gated once the runtime is remote.
+- **Scope behavior (revised 2026-11-01, user ruling):** the tree shows ONLY the sections of the active scope - foreign-scope sections are not listed at all (the original dimmed read-only cross-scope view was rejected: "just don't show them"). Finding a setting without knowing its scope is the job of the GLOBAL search: a cross-scope hit, when selected, switches the scope switcher to that scope and opens the section editable. Project-only sections are unavailable when no project is open; runtime sections are `RUNTIME_ADMIN`/`READ_ONLY`-gated once the runtime is remote.
+- **Overview (revised 2026-11-01, user ruling):** when no section is selected - including on tab open and on every scope switch - the right pane shows an overview page instead of a "No settings selected" placeholder: a **Common** grid of frequently used settings (stable sheet ids, resolved against the live registry) and an **All** list of the active scope's sections grouped by category, each entry a link with its description.
 - **Advanced → Raw settings** (`about:config`): tree of every key in the active-scope document — documented keys with metadata, pass-through keys marked "managed by another version", typed value editing dialog, per-key reset, warning banner. Edits the same API as the typed UI.
 - **Advanced → About:** version, profile dir, "open profile folder".
 

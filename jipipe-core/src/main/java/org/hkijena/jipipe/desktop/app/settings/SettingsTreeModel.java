@@ -113,19 +113,21 @@ public final class SettingsTreeModel {
     }
 
     /**
-     * Same ordering rule as {@link #orderCategories(Collection)}: a query of
-     * {@code "GENERAL-UI"} matches the block path {@code
-     * org.hkijena.jipipe:general-ui} case-insensitively.
+     * Global search across ALL scopes: a setting can be found without
+     * knowing which scope it belongs to (the tab auto-switches the scope
+     * when a cross-scope result is selected). Same ordering rule as
+     * {@link #orderCategories(Collection)}: a query of {@code "GENERAL-UI"}
+     * matches the block path {@code org.hkijena.jipipe:general-ui}
+     * case-insensitively.
      *
      * @param query the search text; a blank query matches everything
-     * @param scope the scope view
-     * @return the matching sections of the view, category-ordered and
+     * @return the matching sections of every scope, category-ordered and
      * name-sorted within each category
      */
-    public List<SheetNode> search(String query, SettingsScope scope) {
+    public List<SheetNode> search(String query) {
         String needle = query == null ? "" : query.trim().toLowerCase(Locale.ROOT);
         List<SheetNode> result = new ArrayList<>();
-        for (SheetNode node : visibleIn(scope)) {
+        for (SheetNode node : allNodes) {
             if (needle.isEmpty() || matches(node, needle)) {
                 result.add(node);
             }
@@ -165,25 +167,15 @@ public final class SettingsTreeModel {
 
     /**
      * @param scope the scope view
-     * @return the sections shown in the view: the view's own scope sections
-     * plus the non-project sections of the other file-backed scope (shown
-     * dimmed, see {@link #isEditable(SheetNode, SettingsScope)})
+     * @return the sections shown in the view: exactly the view's own scope
+     * sections. Sections of another scope are NOT listed (the user ruling
+     * replaced the former dimmed cross-scope view, spec §3.4: "just don't
+     * show them"); they remain reachable through the global {@link #search}
+     * and deep links, which auto-switch the scope.
      */
     private List<SheetNode> visibleIn(SettingsScope scope) {
         Objects.requireNonNull(scope, "scope");
-        List<SheetNode> result = new ArrayList<>(byScope.get(scope));
-        switch (scope) {
-            case APPLICATION:
-                result.addAll(byScope.get(SettingsScope.RUNTIME));
-                break;
-            case RUNTIME:
-                result.addAll(byScope.get(SettingsScope.APPLICATION));
-                break;
-            case PROJECT:
-            default:
-                break;
-        }
-        return result;
+        return List.copyOf(byScope.get(scope));
     }
 
     /**

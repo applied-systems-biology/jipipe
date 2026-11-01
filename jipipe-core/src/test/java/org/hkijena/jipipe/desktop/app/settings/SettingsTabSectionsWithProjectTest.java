@@ -27,8 +27,10 @@ import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Whole-branch review pin for the settings tab's section model built from the
@@ -81,20 +83,27 @@ class SettingsTabSectionsWithProjectTest {
         assertSame(SettingsScope.RUNTIME, appSection.scope());
         assertSame(SettingsScope.PROJECT, projectSection.scope());
 
-        // APPLICATION tab: the runtime-scoped application section (read-only there), never the project one.
-        List<SettingsTreeModel.SheetNode> applicationView = model.search("default-environments", SettingsScope.APPLICATION);
-        List<SettingsTreeModel.SheetNode> appMatches = applicationView.stream()
+        // Global search finds BOTH same-id sections, each in its own scope.
+        List<SettingsTreeModel.SheetNode> search = model.search("default-environments");
+        List<SettingsTreeModel.SheetNode> sameId = search.stream()
                 .filter(node -> node.id().equals(id)).collect(Collectors.toList());
-        assertEquals(1, appMatches.size());
-        assertSame(SettingsScope.RUNTIME, appMatches.get(0).scope());
-        assertEquals(false, model.isEditable(appMatches.get(0), SettingsScope.APPLICATION));
+        assertEquals(2, sameId.size(), "the RUNTIME application and the PROJECT section share the id");
+        assertSame(SettingsScope.RUNTIME, sameId.stream().filter(n -> n.scope() == SettingsScope.RUNTIME).findFirst().orElseThrow().scope());
+        assertSame(SettingsScope.PROJECT, sameId.stream().filter(n -> n.scope() == SettingsScope.PROJECT).findFirst().orElseThrow().scope());
 
-        // PROJECT tab: only the project section, editable.
-        List<SettingsTreeModel.SheetNode> projectView = model.search("default-environments", SettingsScope.PROJECT);
-        List<SettingsTreeModel.SheetNode> projectMatches = projectView.stream()
+        // Each scope view lists only its own section (no dimmed cross-scope entries).
+        List<SettingsTreeModel.SheetNode> projectView = model.categories(SettingsScope.PROJECT).stream()
+                .flatMap(category -> category.sheets().stream())
                 .filter(node -> node.id().equals(id)).collect(Collectors.toList());
-        assertEquals(1, projectMatches.size());
-        assertSame(SettingsScope.PROJECT, projectMatches.get(0).scope());
-        assertEquals(true, model.isEditable(projectMatches.get(0), SettingsScope.PROJECT));
+        assertEquals(1, projectView.size(), "the PROJECT tab lists only the project section");
+        assertSame(SettingsScope.PROJECT, projectView.get(0).scope());
+        assertTrue(model.isEditable(projectView.get(0), SettingsScope.PROJECT));
+
+        List<SettingsTreeModel.SheetNode> applicationView = model.categories(SettingsScope.APPLICATION).stream()
+                .flatMap(category -> category.sheets().stream())
+                .filter(node -> node.id().equals(id)).collect(Collectors.toList());
+        assertTrue(applicationView.isEmpty(), "the APPLICATION tab no longer lists the RUNTIME-scoped section");
+
+        assertFalse(model.isEditable(appSection, SettingsScope.APPLICATION));
     }
 }

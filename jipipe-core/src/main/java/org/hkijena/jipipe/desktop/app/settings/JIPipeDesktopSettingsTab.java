@@ -29,6 +29,7 @@ import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchT
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.SettingsScopes;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Disposable;
 import org.slf4j.Logger;
@@ -295,6 +296,7 @@ public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implem
         // Top: search + scope switcher, with the (hidden by default) live-update
         // banner as a thin strip below it. Center: the tree and the section form.
         JPanel header = new JPanel(new BorderLayout());
+        header.setBackground(ThemeUtils.getCurrentStyle().getWindowBackground());
         header.add(createTopBar(), BorderLayout.NORTH);
         header.add(banner, BorderLayout.SOUTH);
 
@@ -326,6 +328,7 @@ public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implem
 
     private JComponent createTopBar() {
         JPanel topBar = new JPanel(new BorderLayout(8, 0));
+        topBar.setBackground(ThemeUtils.getCurrentStyle().getWindowBackground());
         topBar.setBorder(UIUtils.createEmptyBorder(5));
 
         JPanel searchPanel = new JPanel(new BorderLayout(4, 0));
@@ -550,8 +553,10 @@ public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implem
             boolean searching = query != null && !query.isBlank();
             if (searching) {
                 // Flat result list grouped by the model's category order.
+                // Search is GLOBAL: results may come from other scopes;
+                // selecting one switches the scope switcher to it.
                 Map<String, List<SettingsTreeModel.SheetNode>> byCategory = new LinkedHashMap<>();
-                for (SettingsTreeModel.SheetNode sheet : model.search(query, activeScope)) {
+                for (SettingsTreeModel.SheetNode sheet : model.search(query)) {
                     byCategory.computeIfAbsent(sheet.category(), k -> new ArrayList<>()).add(sheet);
                 }
                 for (Map.Entry<String, List<SettingsTreeModel.SheetNode>> entry : byCategory.entrySet()) {
@@ -569,10 +574,10 @@ public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implem
             tree.setModel(new DefaultTreeModel(rootNode));
             UIUtils.expandAllTree(tree);
 
+            // A stale/foreign target (e.g. a deep link or a global-search hit
+            // in another scope) is not in the tree: no selection, and the
+            // overview shows - never the first section by accident.
             DefaultMutableTreeNode target = selectedSectionKey != null ? findNode(rootNode, selectedSectionKey) : null;
-            if (target == null && rootNode.getChildCount() > 0) {
-                target = (DefaultMutableTreeNode) rootNode.getChildAt(0);
-            }
             if (target != null) {
                 tree.getSelectionModel().setSelectionPath(new TreePath(target.getPath()));
             }
@@ -622,7 +627,11 @@ public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implem
         // redundant first event to swallow here.
         SettingsScope scope = SCOPES[Math.max(0, Math.min(scopeSwitcher.getSelectedIndex(), SCOPES.length - 1))];
         activeScope = scope;
-        selectedSectionKey = null;
+        // NOTE: selectedSectionKey is deliberately NOT cleared here. A
+        // deep link (selectSheet) or a global-search hit first sets the key
+        // and then switches the scope; the key must survive the switch so
+        // the rebuilt tree can select the section. A key that does not exist
+        // in the new tree simply leaves the tree unselected (overview).
         rebuildTree();
         refreshChangesStrip(); // re-filter the strip to the new scope
     }
@@ -638,12 +647,57 @@ public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implem
             return;
         }
         SettingsTreeNodeEntry entry = (SettingsTreeNodeEntry) node.getUserObject();
+        SettingsTreeModel.SheetNode sheet = entry.sheet();
         String previous = selectedSectionKey;
-        selectedSectionKey = entry.sheet() != null ? sectionKey(entry.sheet()) : null;
+        selectedSectionKey = sheet != null ? sectionKey(sheet) : null;
         if (!Objects.equals(previous, selectedSectionKey)) {
             hideBanner();
         }
+        if (sheet != null && sheet.scope() != activeScope) {
+            selectCrossScopeSection(sheet);
+            return;
+        }
         rebuildRightPane();
+    }
+
+    /**
+     * Opens a section that belongs to another scope (a global-search hit or
+     * a Common-overview card): switches the scope switcher so the section
+     * opens EDITABLE - the user ruling that replaced the old dimmed
+     * read-only cross-scope view. The selected key survives the switch
+     * (onScopeChanged no longer clears it), so the rebuilt tree re-selects
+     * the section and the second pass renders it.
+     *
+     * @param sheet the section to open
+     */
+    private void selectCrossScopeSection(SettingsTreeModel.SheetNode sheet) {
+        if (!Objects.equals(selectedSectionKey, sectionKey(sheet))) {
+            hideBanner();
+        }
+        setActiveScope(sheet.scope());
+    }
+
+    /**
+     * An overview entry (Common card or All row) was clicked: open that
+     * section, switching the scope when the entry lives in another one
+     * (e.g. the RUNTIME-scoped hardware acceleration from the APPLICATION
+     * view).
+     *
+     * @param sheet the clicked section
+     */
+    private void selectSectionFromOverview(SettingsTreeModel.SheetNode sheet) {
+        if (sheet == null) {
+            return;
+        }
+        hideBanner();
+        selectedSectionKey = sectionKey(sheet);
+        if (sheet.scope() != activeScope) {
+            selectCrossScopeSection(sheet);
+        } else {
+            // Select it in the tree: the selection listener rebuilds the
+            // right pane for the (now matching) scope.
+            rebuildTree();
+        }
     }
 
     /**
@@ -655,8 +709,16 @@ public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implem
 
         SettingsTreeModel.SheetNode sheetNode = selectedSectionKey != null ? nodeMap.get(selectedSectionKey) : null;
         if (sheetNode == null) {
-            splitPane.setRightComponent(UIUtils.wrapInIslandPanelIfNeeded(UIUtils.createInfoLabel("No settings selected",
-                    "Select a section in the tree on the left")));
+            // No section selected: the overview (Common grid + All list) is
+            // the home page - the tab opens to it and every scope switch
+            // lands on it.
+            if (model != null) {
+                splitPane.setRightComponent(UIUtils.wrapInIslandPanelIfNeeded(
+                        new SettingsOverviewPanel(model, activeScope, this::sheetIcon, this::selectSectionFromOverview)));
+            } else {
+                splitPane.setRightComponent(UIUtils.wrapInIslandPanelIfNeeded(UIUtils.createInfoLabel("No settings selected",
+                        "Select a section in the tree on the left")));
+            }
             return;
         }
 
@@ -664,9 +726,6 @@ public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implem
         boolean editable = sheet != null && model.isEditable(sheetNode, activeScope);
 
         JPanel wrapper = new JPanel(new BorderLayout());
-        if (!editable) {
-            wrapper.add(createScopeHintLabel(sheetNode.scope()), BorderLayout.NORTH);
-        }
 
         String mergedPage = mergedPageOf(sheetNode.id());
         if (sheet == null) {
@@ -718,12 +777,6 @@ public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implem
                         | JIPipeDesktopParameterFormPanel.WITH_DOCUMENTATION
                         | JIPipeDesktopParameterFormPanel.WITH_SEARCH_BAR
                         | (projectScope ? JIPipeDesktopParameterFormPanel.DOCUMENTATION_NO_UI : 0));
-    }
-
-    private JLabel createScopeHintLabel(SettingsScope scope) {
-        return new JLabel("<html>This section belongs to the " + scopeToTitle(scope)
-                + " settings &mdash; switch to the " + scopeToTitle(scope) + " tab to edit it</html>",
-                JIPipe.RESOURCES.getIcon16("info.png"), SwingConstants.LEFT);
     }
 
     private void onSettingsChanged(JIPipeSettingsServiceComponent.SettingsChangedEvent event) {
@@ -959,17 +1012,14 @@ public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implem
         @Override
         public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
             if (value instanceof DefaultMutableTreeNode node && node.getUserObject() instanceof SettingsTreeNodeEntry entry) {
-                boolean readOnly = entry.sheet() != null && model != null && !model.isEditable(entry.sheet(), activeScope);
+                // No dimming: the tree lists only the active scope's sections,
+                // and global-search results from other scopes render normally
+                // too - selecting one switches the scope (see
+                // onTreeSelectionChanged), so nothing looks disabled.
                 setText(entry.name());
                 setIcon(entry.icon());
-                if (readOnly) {
-                    // Spec §3.4: sections of the other scope are shown dimmed.
-                    setForeground(UIManager.getColor("Label.disabledForeground"));
-                    setToolTipText("Belongs to the " + scopeToTitle(entry.sheet().scope()) + " settings");
-                } else {
-                    setForeground(selected ? UIManager.getColor("List.selectionForeground") : UIManager.getColor("List.foreground"));
-                    setToolTipText(entry.sheet() != null ? entry.sheet().description() : null);
-                }
+                setForeground(selected ? UIManager.getColor("List.selectionForeground") : UIManager.getColor("List.foreground"));
+                setToolTipText(entry.sheet() != null ? entry.sheet().description() : null);
             } else {
                 setText("");
                 setIcon(null);

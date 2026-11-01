@@ -46,7 +46,7 @@ manual check that prove it, with the exact command and the observed result.
 | Gate | Command | Result |
 | --- | --- | --- |
 | Full build (all modules, all tests) | `mvn clean install` | **BUILD SUCCESS — 30/30 modules, 0 failures** re-run on the post-merge tree (after the `origin/master` merge of `fd5d35a9f0`; the only test-relevant log noise is the pre-existing CLIJ2 fixture "Unable to find node type … Skipping" lines, unrelated to settings) |
-| Settings-focused, core | `mvn test -pl jipipe-core -Dtest='*Settings*,Settings*' -q` | **PASS — 242 run, 0 failures, 0 errors, 0 skipped** on the final tree (the +25 over the initial 217 are the follow-up RED-first pins, including the real `CARRY_OVER` event pin, the binding re-target-on-`reload()` pin, the file-store hardening pins (incl. the `.bad-*` prune), the seed-exempt flag + no-block pins, the tree-absorption pin, `ProjectSettingsViewsTest` (5), and the headless-runner abort static, plus the review-round pin `backupCorruptFileIsSubjectToTheSamePruneBound`; earlier additions were the final-review pins: the `save()`-does-not-reschedule and raw-edit auto-save pins in `SettingsAutoPersistTest`, the duplicate-id / scope-qualified identity pins in `SettingsTreeModelTest`, the real-registry tab-construction pin `SettingsTabSectionsWithProjectTest`, and the tab-pane dispose pin `JIPipeDesktopTabPaneDisposeTest`; the desktop model tests are additionally listed below per criterion) |
+| Settings-focused, core | `mvn test -pl jipipe-core -Dtest='*Settings*,Settings*' -q` | **PASS — 243 run, 0 failures, 0 errors, 0 skipped** on the final tree (the +26 over the initial 217 are the follow-up RED-first pins, including the real `CARRY_OVER` event pin, the binding re-target-on-`reload()` pin, the file-store hardening pins (incl. the `.bad-*` prune), the seed-exempt flag + no-block pins, the tree-absorption pin, `ProjectSettingsViewsTest` (5), and the headless-runner abort static, plus the review-round pin `backupCorruptFileIsSubjectToTheSamePruneBound`, and the 2026-11-01 UX pins (global-search / hide-other-scope contract in the expanded `SettingsTreeModelTest`); earlier additions were the final-review pins: the `save()`-does-not-reschedule and raw-edit auto-save pins in `SettingsAutoPersistTest`, the duplicate-id / scope-qualified identity pins in `SettingsTreeModelTest`, the real-registry tab-construction pin `SettingsTabSectionsWithProjectTest`, and the tab-pane dispose pin `JIPipeDesktopTabPaneDisposeTest`; the desktop model tests are additionally listed below per criterion) |
 | Settings-focused, launcher | `mvn test -pl jipipe-launcher -Dtest='*Settings*' -q` | **PASS — 21 run, 0 failures** on the post-merge tree (`SettingsMigrationIntegrationTest` 3, `SettingsNoModalUiTest` 2 (incl. the project-modal absence pin), `SettingsBindingLiveUpdateTest` 2, `SettingsPaletteKeysTest` 2, `SettingsDelegateTest` 10, `JIPipeProjectSettingsPersistenceTest` 2) |
 | No legacy file write path | `git grep -n "settings-db-" -- jipipe-core/src/main` ; `git grep -n "recent-projects.txt" -- jipipe-core/src/main` | **PASS** — only the migration code references the legacy names (see below) |
 
@@ -134,10 +134,12 @@ manual check that prove it, with the exact command and the observed result.
 ### Criterion 4 — All 35 sheets and the 4 Customize-JIPipe controls are reachable in the new tab; search finds any setting by name or key path; the raw editor lists and edits every stored key including pass-through ones
 
 - **Tests:**
-  - `SettingsTreeModelTest` (core, 3) — search matches name, description, AND block path
+  - `SettingsTreeModelTest` (core, 6) — search matches name, description, AND block path
     (the key-path search: `search("GENERAL-UI")` resolves via `org.hkijena.jipipe:general-ui`),
-    case-insensitively, across the cross-scope-visible sections; `isEditable` is the scope
-    rule.
+    case-insensitively; search is **global across all scopes** (revised 2026-11-01: the
+    dimmed cross-scope view was replaced - each scope view lists only its own sections,
+    a cross-scope search hit auto-switches the scope and opens editable); a blank query
+    matches everything; `isEditable` is the scope rule.
   - `AppearanceSectionModelTest` (core, 11) — the merged Customize-JIPipe content: theme,
     theme style, file-chooser type + fallback, reduced motion are composed entries; the
     per-key default-aware reset removes exactly the displayed keys (non-displayed keys stay
