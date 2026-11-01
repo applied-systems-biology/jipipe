@@ -53,12 +53,20 @@ public class JIPipeDesktopRunQueueLoggerPanel extends JIPipeDesktopWorkbenchPane
         this.queue = queue;
         this.progressDebouncer = new StaticDebouncer(250, this::updateProgress);
         this.spinnerIcon = new JIPipeDesktopRunnableQueueSpinnerIcon(this, queue, 32);
-        // One binding per panel instance: the panel owns it and releases it in
-        // dispose(). Without a running settings service the checkbox simply
-        // starts checked and keeps its value in memory.
+        // One binding per panel instance: the panel owns it and releases it
+        // in dispose(). The stored value is placed on the checkbox BEFORE
+        // initialize() registers the checkbox's action listener, so the
+        // initial apply can never echo a write back into the binding (an
+        // echo of the default value would hit the document's remove path and
+        // fire a spurious change event for a location that does not exist).
+        // The logger's VISIBILITY is applied at the end of the constructor,
+        // once the logger component exists - the checkbox alone is not
+        // enough, because the visibility depends on it. Without a running
+        // settings service the checkbox simply starts checked and keeps its
+        // value in memory.
         if (JIPipe.isInstantiated()) {
             showLogBinding = JIPipe.getSettingsService().bind(SettingsKeys.RUN_QUEUE_SHOW_LOG);
-            applyShowLog(showLogBinding.get());
+            showLogCheckbox.setSelected(showLogBinding.get());
         } else {
             showLogCheckbox.setSelected(true);
         }
@@ -78,20 +86,6 @@ public class JIPipeDesktopRunQueueLoggerPanel extends JIPipeDesktopWorkbenchPane
 
         addHeaderPanelComponent(showLogCheckbox);
         updateHeader();
-        updateLoggerVisibility();
-    }
-
-    /**
-     * Applies the setting to the checkbox. Compares before touching the
-     * checkbox, so the echo of our own write (and of a re-applied equal
-     * value) does nothing.
-     *
-     * @param showLog the stored value
-     */
-    private void applyShowLog(boolean showLog) {
-        if (showLogCheckbox.isSelected() != showLog) {
-            showLogCheckbox.setSelected(showLog);
-        }
         updateLoggerVisibility();
     }
 
