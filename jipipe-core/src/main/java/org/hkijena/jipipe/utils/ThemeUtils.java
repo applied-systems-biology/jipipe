@@ -184,16 +184,25 @@ public class ThemeUtils {
     }
 
     /**
-     * Resolves the theme and the theme style from a raw application settings
-     * document (or from the flat {@code sheetId -> block} view the raw readers
-     * return) into {@link #CURRENT_THEME} / {@link #CURRENT_STYLE}.
+     * Resolves the theme and the theme style from a settings JSON node into
+     * {@link #CURRENT_THEME} / {@link #CURRENT_STYLE}.
      * <p>
-     * The canonical 6.0 layout puts the values into the {@code sheet:} block of
-     * the general UI sheet; the bare block is still read as a fallback, because
-     * profiles migrated from 5.x can hold a stale, un-prefixed duplicate of it.
-     * The block that has the key wins, the {@code sheet:} block is preferred.
+     * Three node shapes are accepted:
+     * <ul>
+     * <li>a full settings document: the canonical 6.0 layout puts the values
+     * into the {@code sheet:} block of the general UI sheet, and the bare
+     * block is still read as a fallback because migrated profiles can hold a
+     * stale, un-prefixed duplicate of it. Where both blocks carry a key, the
+     * {@code sheet:} block wins;</li>
+     * <li>the flat {@code sheetId -> block} view the raw readers
+     * ({@code getRawSheetsNode()}) return, which has the same shape as a legacy
+     * 5.x document;</li>
+     * <li>a bare sheet block (what {@code SettingsDocument#getBlock} returns):
+     * the general UI block's own contents, so the keys are read from the
+     * node itself.</li>
+     * </ul>
      *
-     * @param node   the settings document, or {@code null}
+     * @param node   one of the shapes above, or {@code null}
      * @param commit whether a resolved value is committed to the current theme
      *               / style; {@code false} only resolves them (preview, dirty
      *               check) and leaves the running theme untouched
@@ -203,10 +212,21 @@ public class ThemeUtils {
         JIPipeDesktopUITheme theme = CURRENT_THEME;
         JIPipeDesktopModernThemeStyle style = CURRENT_STYLE;
         if (node != null && node.isObject()) {
-            JsonNode sheetBlock = node.path(JIPipeGeneralUIApplicationSettings.ID);
-            JsonNode canonicalBlock = node.path(SettingsKind.SHEET.prefix() + ":" + JIPipeGeneralUIApplicationSettings.ID);
-            JsonNode themeNode = firstPresent(canonicalBlock, sheetBlock, THEME_KEY, LEGACY_THEME_KEY);
-            JsonNode styleNode = firstPresent(canonicalBlock, sheetBlock, THEME_STYLE_KEY);
+            String canonicalKey = SettingsKind.SHEET.prefix() + ":" + JIPipeGeneralUIApplicationSettings.ID;
+            JsonNode canonicalBlock = node.path(canonicalKey);
+            JsonNode bareBlock = node.path(JIPipeGeneralUIApplicationSettings.ID);
+            JsonNode themeNode;
+            JsonNode styleNode;
+            if (canonicalBlock.isMissingNode() && bareBlock.isMissingNode()) {
+                // A bare sheet block (the sheet's own contents): read the keys
+                // from the node itself.
+                themeNode = firstPresent(node, THEME_KEY, LEGACY_THEME_KEY);
+                styleNode = firstPresent(node, THEME_STYLE_KEY);
+            } else {
+                // A document (or the flat raw view): the sheet block wins.
+                themeNode = firstPresent(canonicalBlock, bareBlock, THEME_KEY, LEGACY_THEME_KEY);
+                styleNode = firstPresent(canonicalBlock, bareBlock, THEME_STYLE_KEY);
+            }
             if (themeNode != null) {
                 try {
                     theme = JsonUtils.getObjectMapper().readerFor(JIPipeDesktopUITheme.class).readValue(themeNode);
@@ -275,6 +295,21 @@ public class ThemeUtils {
         }
         for (String key : keys) {
             JsonNode value = bareBlock.path(key);
+            if (!value.isMissingNode() && !value.isNull()) {
+                return value;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * @param block the node whose keys are to be tried, in order
+     * @param keys  the keys to try
+     * @return the first present, non-null value, or {@code null}
+     */
+    private static JsonNode firstPresent(JsonNode block, String... keys) {
+        for (String key : keys) {
+            JsonNode value = block.path(key);
             if (!value.isMissingNode() && !value.isNull()) {
                 return value;
             }

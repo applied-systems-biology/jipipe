@@ -182,5 +182,36 @@ class ThemeUtilsTest {
                 ThemeUtils.recordAppliedTheme("", "");
             }
         }
+
+        /**
+         * The production seam (#1351 regression): the settings tab resolves the
+         * restart hint over the general UI block as returned by
+         * {@code SettingsDocument#getBlock(...)} - the sheet's own contents,
+         * with the {@code theme-v2} / {@code theme-style} keys at the top
+         * level, NOT nested under a {@code sheet:} key. The resolver must
+         * read that bare block the same way it reads a document, or the hint
+         * can never see a change (it would compare the applied theme against
+         * itself).
+         */
+        @Test
+        void aBareSheetBlockIsReadTheSameWayAsADocument() throws Exception {
+            ThemeUtils.recordAppliedTheme(JIPipeDesktopUITheme.Modern.name(), "JIPipe Light");
+            try {
+                // Exactly the node the tab hands in:
+                //   document(APPLICATION).path("sheet:…:general-ui")
+                JsonNode bareRestyled = parse("""
+                        {"theme-v2": "Modern", "theme-style": "JIPipe Dark", "reduced-motion": false}
+                        """);
+                assertEquals(List.of("Theme style"),
+                        ThemeUtils.getRestartRequiredSettings(SHEET_ID, bareRestyled));
+
+                JsonNode bareUnchanged = parse("""
+                        {"theme-v2": "Modern", "theme-style": "JIPipe Light"}
+                        """);
+                assertTrue(ThemeUtils.getRestartRequiredSettings(SHEET_ID, bareUnchanged).isEmpty());
+            } finally {
+                ThemeUtils.recordAppliedTheme("", "");
+            }
+        }
     }
 }

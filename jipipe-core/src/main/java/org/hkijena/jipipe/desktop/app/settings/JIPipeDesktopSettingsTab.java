@@ -385,8 +385,8 @@ public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implem
         List<String> names = new ArrayList<>();
         try {
             names.addAll(ThemeUtils.getRestartRequiredSettings(JIPipeGeneralUIApplicationSettings.ID,
-                    settingsService.document(SettingsScope.APPLICATION)
-                            .getBlock(SettingsKind.SHEET.prefix() + ":" + JIPipeGeneralUIApplicationSettings.ID)));
+                    settingsService.document(SettingsScope.APPLICATION).snapshotJson()
+                            .path(SettingsKind.SHEET.prefix() + ":" + JIPipeGeneralUIApplicationSettings.ID)));
         } catch (RuntimeException e) {
             // A header note must never break the tab: without the document there
             // is simply nothing to report.
