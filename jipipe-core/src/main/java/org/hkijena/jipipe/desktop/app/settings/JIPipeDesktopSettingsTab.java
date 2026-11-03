@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.settings.JIPipeApplicationSettingsSheet;
 import org.hkijena.jipipe.api.settings.JIPipeProjectSettingsSheet;
 import org.hkijena.jipipe.api.settings.JIPipeSettingsSheet;
+import org.hkijena.jipipe.api.settings.SettingsKind;
 import org.hkijena.jipipe.api.settings.SettingsScope;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
@@ -28,6 +29,7 @@ import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopSegment
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.SettingsScopes;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeGeneralUIApplicationSettings;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -192,6 +194,17 @@ public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implem
     private final JPanel banner = new JPanel(new BorderLayout(8, 0));
     private final JSplitPane splitPane;
 
+    /**
+     * The restart hint of the header (work item #1351): the settings whose
+     * stored value only takes effect after a restart. It sits between the
+     * search field and the scope switcher and is hidden while nothing waits for
+     * a restart. See {@link ThemeUtils#getRestartRequiredSettings(String, com.fasterxml.jackson.databind.JsonNode)}.
+     */
+    private final JLabel restartHint = new JLabel();
+
+    private final ThemeUtils.RestartStateChangedEventListener restartStateChangedListener = event ->
+            SwingUtilities.invokeLater(this::refreshRestartHint);
+
     private final JLabel changesToggle = new JLabel();
     private final DefaultListModel<SettingsChangeLog.ChangeEntry> changesListModel = new DefaultListModel<>();
     private final JList<SettingsChangeLog.ChangeEntry> changesList = new JList<>(changesListModel);
@@ -222,6 +235,8 @@ public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implem
         initialize();
         reloadSections();
         settingsService.getChangedEventEmitter().subscribe(changedListener);
+        ThemeUtils.getRestartStateChangedEventEmitter().subscribe(restartStateChangedListener);
+        refreshRestartHint();
     }
 
     /**
@@ -336,12 +351,63 @@ public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implem
         searchPanel.add(searchField, BorderLayout.CENTER);
         topBar.add(searchPanel, BorderLayout.WEST);
 
+        // The restart hint fills the space between the search field and the
+        // scope switcher; it centers itself so it reads as a header note, not
+        // as a third control. Hidden while nothing waits for a restart.
+        restartHint.setIcon(JIPipe.RESOURCES.getIcon16("emblems/emblem-warning.png"));
+        restartHint.setVisible(false);
+        JPanel restartPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        restartPanel.setOpaque(false);
+        restartPanel.add(restartHint);
+        topBar.add(restartPanel, BorderLayout.CENTER);
+
         for (SettingsScope scope : SCOPES) {
             scopeSwitcher.addSegment(scopeToTitle(scope));
         }
         scopeSwitcher.addSelectionListener(idx -> onScopeChanged());
         topBar.add(scopeSwitcher, BorderLayout.EAST);
         return topBar;
+    }
+
+    /**
+     * Re-evaluates the restart hint of the header: the theme/theme style of the
+     * application scope (compared against what this session applied, see
+     * {@link ThemeUtils#getRestartRequiredSettings(String, com.fasterxml.jackson.databind.JsonNode)})
+     * plus the UI scale, which is not a settings key and reports itself. Must
+     * run on the EDT.
+     */
+    private void refreshRestartHint() {
+        if (disposed) {
+            return;
+        }
+        List<String> names = new ArrayList<>();
+        try {
+            names.addAll(ThemeUtils.getRestartRequiredSettings(JIPipeGeneralUIApplicationSettings.ID,
+                    settingsService.document(SettingsScope.APPLICATION)
+                            .getBlock(SettingsKind.SHEET.prefix() + ":" + JIPipeGeneralUIApplicationSettings.ID)));
+        } catch (RuntimeException e) {
+            // A header note must never break the tab: without the document there
+            // is simply nothing to report.
+            logger.debug("Could not evaluate the restart hint", e);
+        }
+        String uiScaleReason = ThemeUtils.getUiScaleRestartReason();
+        if (uiScaleReason != null) {
+            names.add(uiScaleReason);
+        }
+        if (names.isEmpty()) {
+            if (restartHint.isVisible()) {
+                restartHint.setVisible(false);
+                restartHint.setText("");
+                restartHint.revalidate();
+            }
+            return;
+        }
+        restartHint.setText("<html>" + String.join(" · ", names)
+                + " — restart JIPipe to apply</html>");
+        restartHint.setToolTipText("The following settings only take effect after JIPipe is restarted: "
+                + String.join(", ", names));
+        restartHint.setVisible(true);
+        restartHint.revalidate();
     }
 
     private void initializeBanner() {
@@ -786,6 +852,7 @@ public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implem
         // re-reads the log on the EDT.
         changeLog.record(event, RawSettingsTableModel.truncate(RawSettingsTableModel.render(event.getNewValue())));
         SwingUtilities.invokeLater(this::refreshChangesStrip);
+        SwingUtilities.invokeLater(this::refreshRestartHint);
 
         JIPipeSettingsServiceComponent.ChangeOrigin origin = event.getOrigin();
         boolean external = origin == JIPipeSettingsServiceComponent.ChangeOrigin.EXTERNAL_FILE
@@ -946,6 +1013,7 @@ public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implem
         }
         disposed = true;
         settingsService.getChangedEventEmitter().unsubscribe(changedListener);
+        ThemeUtils.getRestartStateChangedEventEmitter().unsubscribe(restartStateChangedListener);
         disposeFormPanel();
     }
 
