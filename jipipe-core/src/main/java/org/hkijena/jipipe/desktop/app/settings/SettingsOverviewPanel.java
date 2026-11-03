@@ -129,6 +129,20 @@ public class SettingsOverviewPanel extends JPanel {
                 content.add(allRow(sheet), withGbc(gbc, row++, 0, 0));
             }
         }
+
+        // Add vertical glue
+        content.add(new JPanel(), new GridBagConstraints(0,
+                row++,
+                1,
+                1,
+                0,
+                1.0,
+                GridBagConstraints.NORTH,
+                GridBagConstraints.VERTICAL,
+                new Insets(0, 0, 0, 0),
+                0,
+                0));
+
         return content;
     }
 
