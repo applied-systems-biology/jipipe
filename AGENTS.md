@@ -271,6 +271,13 @@ Examples:
 - `1310-cellpose-42-models-actionable-errors`
 - `1308-ro-crate-improvements`
 
+### No Em Dashes or En Dashes (IMPORTANT)
+
+Do **not** use em dashes (U+2014) or en dashes (U+2013) in code, Javadoc, comments, or
+user-facing strings. Use a regular hyphen, a colon, a comma, or a period instead. This keeps
+searches and diffs predictable and avoids AI-sounding typography. (The existing codebase uses
+plain hyphens in prose, e.g. `- The codebase has ...`; follow that.)
+
 ### General Principles
 
 1. **Follow existing patterns** - The codebase has consistent patterns for plugin registration and algorithm

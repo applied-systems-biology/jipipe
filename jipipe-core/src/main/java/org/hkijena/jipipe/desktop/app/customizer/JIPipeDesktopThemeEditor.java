@@ -149,7 +149,11 @@ public class JIPipeDesktopThemeEditor extends JFrame implements JIPipeParameterC
     }
 
     private void newDocumentFromExisting(String id) {
-        newDocumentFromExisting(ThemeUtils.getStyleFromId(id));
+        JIPipeDesktopModernThemeStyle style = ThemeUtils.getStyleFromId(id);
+        if (style == null) {
+            return;
+        }
+        newDocumentFromExisting(style);
     }
 
     private void newDocumentFromExisting(JIPipeDesktopModernThemeStyle style) {

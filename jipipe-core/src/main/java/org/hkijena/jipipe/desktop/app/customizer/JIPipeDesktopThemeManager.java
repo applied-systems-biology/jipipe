@@ -48,7 +48,10 @@ public class JIPipeDesktopThemeManager extends JFrame implements ThemeUtils.Avai
     private void reloadList() {
         DefaultListModel<JIPipeDesktopModernThemeStyle> model = new DefaultListModel<>();
         for (String id : ThemeUtils.getAvailableStyleIds()) {
-            model.addElement(ThemeUtils.getStyleFromId(id));
+            JIPipeDesktopModernThemeStyle style = ThemeUtils.getStyleFromId(id);
+            if (style != null) {
+                model.addElement(style);
+            }
         }
         styleJList.setModel(model);
     }
