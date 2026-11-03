@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.artifacts.JIPipeArtifactRepositoryReference;
 import org.hkijena.jipipe.api.artifacts.JIPipeArtifactRepositoryType;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.service.components.JIPipeArtifactsServiceComponent;
+import org.hkijena.jipipe.api.settings.SettingsScope;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.plugins.artifactsmanager.JIPipeDesktopArtifactManagerUI;
@@ -118,7 +119,7 @@ public class JIPipeDesktopArtifactsOptionsControl extends JButton implements JIP
         popupMenu.add(UIUtils.createMenuItem("Refresh remote artifacts", "Refreshes the list of installed and available artifacts", JIPipe.RESOURCES.getIcon16("actions/view-refresh.png"), this::refreshArtifacts));
         popupMenu.addSeparator();
         popupMenu.add(UIUtils.createMenuItem("Add remote artifacts local directory ...", "Adds a local artifacts repository for offline use", JIPipe.RESOURCES.getIcon16("actions/add-folder-to-archive.png"), this::addLocalRepository));
-        popupMenu.add(UIUtils.createMenuItem("Manage remote artifacts settings ...", "Opens the application settings", JIPipe.RESOURCES.getIcon16("actions/configure.png"), this::openApplicationSettings));
+        popupMenu.add(UIUtils.createMenuItem("Manage remote artifacts settings ...", "Opens the application settings", JIPipe.RESOURCES.getIcon16("actions/configure.png"), this::openSettingsSection));
     }
 
     private void autoFixProjectEnvironments() {
@@ -138,11 +139,11 @@ public class JIPipeDesktopArtifactsOptionsControl extends JButton implements JIP
     }
 
     private void openEnvironmentApplicationSettings() {
-        workbench.openApplicationSettings("/Connected services/Defaults");
+        workbench.openSettingsSection(SettingsScope.RUNTIME, "org.hkijena.jipipe:default-environments");
     }
 
     private void openEnvironmentProjectSettings() {
-        workbench.openProjectSettings("/General/Connected services");
+        workbench.openSettingsSection(SettingsScope.PROJECT, "org.hkijena.jipipe:default-environments");
     }
 
     private void addLocalRepository() {
@@ -168,8 +169,8 @@ public class JIPipeDesktopArtifactsOptionsControl extends JButton implements JIP
         JIPipe.getArtifacts().enqueueUpdateCachedArtifacts();
     }
 
-    private void openApplicationSettings() {
-        workbench.openApplicationSettings("/Connected services/Artifacts");
+    private void openSettingsSection() {
+        workbench.openSettingsSection(SettingsScope.RUNTIME, "org.hkijena.jipipe:artifacts");
     }
 
     private void updateText() {

@@ -29,6 +29,7 @@ import org.hkijena.jipipe.api.nodes.database.entries.TemplateScope;
 import org.hkijena.jipipe.api.nodes.taxonomy.FunctionRegistry;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
 import org.hkijena.jipipe.api.run.JIPipeEphemeralRunnableExecutor;
+import org.hkijena.jipipe.api.settings.SettingsBinding;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.grapheditor.addnodepanel.NodeBrowserModel;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
@@ -40,10 +41,10 @@ import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchT
 import org.hkijena.jipipe.desktop.commons.components.selection.JIPipeDesktopRichSelectionBox;
 import org.hkijena.jipipe.desktop.commons.components.slots.JIPipeDesktopAddAlgorithmSlotPanel;
 import org.hkijena.jipipe.plugins.ai.AIApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.SettingsKeys;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeGraphEditorUIApplicationSettings;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.utils.json.JIPipePathMetadataStore;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -51,6 +52,8 @@ import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.*;
 import java.util.List;
 
@@ -98,6 +101,18 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
     private final JScrollPane scrollPane = new JScrollPane(nodeList);
     private final JIPipeEphemeralRunnableExecutor executor = new JIPipeEphemeralRunnableExecutor("Node finder");
     private final NodeBrowserModel model = new NodeBrowserModel();
+    /**
+     * The live binding to {@link SettingsKeys#PINNED_NODE_IDS}, shared with
+     * the node browser. Created lazily and released when the dialog's window
+     * is closed ({@link #dispose()}), so clicking "Find node" repeatedly does
+     * not accumulate document listeners.
+     */
+    private SettingsBinding<List<String>> pinnedNodeIdsBinding;
+    /**
+     * Whether {@link #dispose()} has run; a late access then stays unbindable
+     * instead of re-creating the binding.
+     */
+    private boolean disposed;
     /**
      * Function-leaf tree rows to highlight because a search matched a node
      * under them (bold in the tree renderer); empty when no search is active.
@@ -253,6 +268,17 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
         setLocationRelativeTo(SwingUtilities.getWindowAncestor(canvasUI));
         setModal(true);
         UIUtils.addEscapeListener(this);
+        // Release the pinned-ids binding when the dialog is finished with: the
+        // dialog hides itself on selection and is never explicitly disposed by
+        // its callers, so DISPOSE_ON_CLOSE + WINDOW_CLOSED covers both the
+        // window close button and setVisible(false).
+        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosed(WindowEvent e) {
+                dispose();
+            }
+        });
     }
 
     private void initializeList() {
@@ -275,7 +301,37 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
     }
 
     public Set<String> getPinnedNodeDatabaseEntries() {
-        return new HashSet<>(JIPipe.getSettings().getListFromRegistry("node-db", JIPipePathMetadataStore.key("pinned-node-ids"), String.class, true));
+        SettingsBinding<List<String>> binding = pinnedNodeIdsBinding();
+        List<String> pinned = binding == null ? null : binding.get();
+        return pinned == null ? new HashSet<>() : new HashSet<>(pinned);
+    }
+
+    /**
+     * @return the dialog's single pinned-ids binding, created on first use and
+     * {@code null} once the dialog is disposed (a late access then stays
+     * unbindable instead of re-creating the listener)
+     */
+    private SettingsBinding<List<String>> pinnedNodeIdsBinding() {
+        if (pinnedNodeIdsBinding == null && !disposed) {
+            pinnedNodeIdsBinding = JIPipe.getSettingsService().bind(SettingsKeys.PINNED_NODE_IDS);
+        }
+        return pinnedNodeIdsBinding;
+    }
+
+    /**
+     * Releases the pinned-ids binding when the dialog's window is closed. The
+     * dialog is shown with {@link #setVisible(boolean)} and hidden again on
+     * selection, which fires {@code WINDOW_CLOSED}, so this runs when the user
+     * is done with the dialog whether or not it is finally {@code dispose()}d.
+     */
+    @Override
+    public void dispose() {
+        disposed = true;
+        if (pinnedNodeIdsBinding != null) {
+            pinnedNodeIdsBinding.close();
+            pinnedNodeIdsBinding = null;
+        }
+        super.dispose();
     }
 
     public JIPipeDataSlot getQuerySlot() {

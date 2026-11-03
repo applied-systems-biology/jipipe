@@ -27,6 +27,8 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 /**
  * UI that executes an {@link JIPipeRunnable} and shows the progress in a dialog
@@ -72,6 +74,15 @@ public class JIPipeDesktopRunExecuteUI extends JIPipeDesktopWorkbenchPanel imple
         ui.setDialog(dialog);
         contentPane.add(ui, BorderLayout.CENTER);
         dialog.setContentPane(contentPane);
+        // The run panel's settings binding (show-log) is released with the
+        // dialog, so opening and closing run dialogs does not accumulate
+        // document listeners.
+        dialog.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosed(WindowEvent e) {
+                ui.dispose();
+            }
+        });
         dialog.pack();
         dialog.revalidate();
         dialog.repaint();
@@ -138,6 +149,14 @@ public class JIPipeDesktopRunExecuteUI extends JIPipeDesktopWorkbenchPanel imple
 
     public void setDialog(JDialog dialog) {
         this.dialog = dialog;
+    }
+
+    /**
+     * Releases the nested run-queue panel's settings binding. Called by
+     * {@link #runInDialog} when the dialog is closed.
+     */
+    public void dispose() {
+        loggerPanel.dispose();
     }
 
     @Override

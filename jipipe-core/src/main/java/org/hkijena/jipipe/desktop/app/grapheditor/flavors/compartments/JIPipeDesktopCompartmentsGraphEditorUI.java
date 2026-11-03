@@ -17,6 +17,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.project.JIPipeProject;
+import org.hkijena.jipipe.api.settings.SettingsBinding;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.bookmarks.JIPipeDesktopBookmarkListPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.addnodepanel.JIPipeDesktopNodeBrowser;
@@ -63,7 +64,8 @@ import org.hkijena.jipipe.desktop.app.history.JIPipeDesktopHistoryJournalUI;
 import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopRunSetsListEditor;
 import org.hkijena.jipipe.desktop.commons.components.tools.JIPipeDesktopExpressionCalculatorUI;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameterList;
-import org.hkijena.jipipe.utils.json.JIPipePathMetadataStore;
+import org.hkijena.jipipe.plugins.settings.SettingsKeys;
+import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 
 import javax.swing.*;
@@ -83,6 +85,19 @@ public class JIPipeDesktopCompartmentsGraphEditorUI extends JIPipeDesktopGraphEd
     public static final String DOCK_NODE_CONTEXT_SLOT_MANAGER = "_SLOT_MANAGER";
     public static final String DOCK_NODE_CONTEXT_RESULTS = "_RESULTS";
     public static final String DOCK_QUICK_GUIDE = "QUICK_GUIDE";
+
+    /**
+     * The live binding to {@link SettingsKeys#COMPARTMENTS_DOCK_STATE}.
+     * Created lazily (the editor may be built before the settings service
+     * exists) and closed in {@link #closeDockStateBinding()} when the editor
+     * is disposed.
+     */
+    private SettingsBinding<JIPipeDesktopDockPanel.State> compartmentsDockStateBinding;
+    /**
+     * The "Add nodes" browser, held so {@link #dispose()} can release its
+     * pinned-ids binding with the editor.
+     */
+    private JIPipeDesktopNodeBrowser nodeBrowser;
 
     /**
      * @param workbenchUI The workbench UI
@@ -143,6 +158,7 @@ public class JIPipeDesktopCompartmentsGraphEditorUI extends JIPipeDesktopGraphEd
     }
 
     private void initializeDefaultPanels() {
+        nodeBrowser = new JIPipeDesktopNodeBrowser(getDesktopWorkbench(), this);
 
         getDockPanel().addDockPanel(JIPipeDesktopGraphEditorUI.DOCK_CALCULATOR,
                 "Calculator",
@@ -186,7 +202,7 @@ public class JIPipeDesktopCompartmentsGraphEditorUI extends JIPipeDesktopGraphEd
                 JIPipeDesktopDockPanel.PanelLocation.BottomLeft,
                 false,
                 JIPipeDesktopDockPanel.UI_ORDER_PINNED,
-                new JIPipeDesktopNodeBrowser(getDesktopWorkbench(), this));
+                nodeBrowser);
         getDockPanel().addDockPanel(DOCK_ERRORS,
                 "Errors",
                 JIPipe.RESOURCES.getIcon24("actions/dialog-warning-2.png"),
@@ -358,35 +374,58 @@ public class JIPipeDesktopCompartmentsGraphEditorUI extends JIPipeDesktopGraphEd
 
     @Override
     protected void restoreDockStateFromSettings() {
-        try {
-            JIPipeDesktopDockPanel.State defaultState = new JIPipeDesktopDockPanel.State();
-            defaultState.setAlwaysShowRightPanel(true);
-            JIPipeDesktopDockPanel.State state = JIPipe.getSettings().getFromRegistry("ui-graph-editor",
-                    JIPipePathMetadataStore.key("compartments", "dock-state"),
-                    JIPipeDesktopDockPanel.State.class,
-                    defaultState,
-                    true);
+        if (!JIPipe.isInstantiated()) {
+            return;
+        }
+        compartmentsDockStateBinding = JIPipe.getSettingsService().bind(SettingsKeys.COMPARTMENTS_DOCK_STATE);
+        applyCompartmentsDockState(compartmentsDockStateBinding.get());
+        // A change made by another view (a second compartments editor, a
+        // merged foreign write) re-applies the stored layout live.
+        compartmentsDockStateBinding.subscribe(this::applyCompartmentsDockState);
+    }
+
+    /**
+     * @param state the stored layout; restored only when it differs from the
+     *              layout currently shown, so the echo of our own write (the
+     *              dock panel saves on every layout change) re-applies nothing
+     */
+    private void applyCompartmentsDockState(JIPipeDesktopDockPanel.State state) {
+        if (state == null) {
+            return;
+        }
+        // JIPipeDesktopDockPanel.State has no equals(): compare the serialized
+        // form, which is exactly what the document stores.
+        if (!JsonUtils.getObjectMapper().valueToTree(state)
+                .equals(JsonUtils.getObjectMapper().valueToTree(getDockPanel().getCurrentState()))) {
             getDockPanel().restoreState(state);
-        } catch (Throwable e) {
-            e.printStackTrace();
         }
     }
 
     @Override
     protected void saveDockStateToSettings() {
         if (JIPipe.isInstantiated()) {
-            JIPipe.getSettings().putIntoRegistry("ui-graph-editor",
-                    JIPipePathMetadataStore.key("compartments", "dock-state"),
-                    getDockPanel().getCurrentState());
+            if (compartmentsDockStateBinding == null) {
+                compartmentsDockStateBinding = JIPipe.getSettingsService().bind(SettingsKeys.COMPARTMENTS_DOCK_STATE);
+            }
+            compartmentsDockStateBinding.set(getDockPanel().getCurrentState());
         }
     }
 
     @Override
-    protected StringAndStringPairParameterList getDockStateTemplates() {
-        if (JIPipe.isInstantiated()) {
-            return JIPipe.getSettings().getFromRegistry("ui-dock", JIPipePathMetadataStore.key("layouts"), StringAndStringPairParameterList.class, new StringAndStringPairParameterList(), true);
+    protected void closeDockStateBinding() {
+        if (compartmentsDockStateBinding != null) {
+            compartmentsDockStateBinding.close();
+            compartmentsDockStateBinding = null;
         }
-        return null;
+    }
+
+    @Override
+    public void dispose() {
+        if (nodeBrowser != null) {
+            nodeBrowser.dispose();
+            nodeBrowser = null;
+        }
+        super.dispose();
     }
 
     @Override

@@ -98,6 +98,8 @@ public class JIPipeRunAlgorithmCommand extends DynamicCommand implements Initial
             service.ensureInitialized(); // Trigger manual initialization
             SwingUtilities.invokeLater(() -> JIPipeDesktopSplashScreen.getInstance().hideSplash());
         }
+        // Fail-loud startup: do not continue with a broken service.
+        JIPipe.abortIfInitializationFailed(JIPipe.getInstance());
         if (!extensionSettings.isSilent()) {
             JIPipeValidationReport report = new JIPipeValidationReport();
             issues.reportValidity(new UnspecifiedValidationReportContext(), JIPipeValidationReportSettings.DEFAULT, report, new JIPipeProgressInfo());

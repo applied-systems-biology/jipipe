@@ -52,6 +52,7 @@ public class JIPipeService extends AbstractService implements JIPipeValidatable 
     private final JIPipeCustomMenuItemsServiceComponent customMenuItems;
     private final JIPipeParameterTypesServiceComponent parameterTypes;
     private final JIPipeApplicationSettingsServiceComponent applicationSettings;
+    private final JIPipeSettingsServiceComponent settings;
     private final JIPipeProjectSettingsServiceComponent projectSettings;
     private final JIPipeExpressionFunctionsServiceComponent expressionFunctions;
     private final JIPipeUtilityClassesServiceComponent utilityClasses;
@@ -98,6 +99,7 @@ public class JIPipeService extends AbstractService implements JIPipeValidatable 
         customMenuItems = new JIPipeCustomMenuItemsServiceComponent(this);
         parameterTypes = new JIPipeParameterTypesServiceComponent(this);
         applicationSettings = new JIPipeApplicationSettingsServiceComponent(this);
+        settings = new JIPipeSettingsServiceComponent(this);
         projectSettings = new JIPipeProjectSettingsServiceComponent(this);
         expressionFunctions = new JIPipeExpressionFunctionsServiceComponent(this);
         utilityClasses = new JIPipeUtilityClassesServiceComponent(this);
@@ -119,7 +121,7 @@ public class JIPipeService extends AbstractService implements JIPipeValidatable 
 
         // Add into components list so we can later postprocess them
         this.components = new JIPipeServiceComponent[]{
-                recentProjects, nodeTaxonomy, nodes, dataTypes, imageJDataAdapters, customMenuItems, parameterTypes, applicationSettings, projectSettings, expressionFunctions, utilityClasses,
+                recentProjects, nodeTaxonomy, nodes, dataTypes, imageJDataAdapters, customMenuItems, parameterTypes, applicationSettings, settings, projectSettings, expressionFunctions, utilityClasses,
                 environments, plugins, projectTemplates, artifacts, nodeTemplates, acceleration, cleanup, projectBackup, memoryMonitor, aiService, serverService, statistics, instrumentation
         };
     }
@@ -194,6 +196,19 @@ public class JIPipeService extends AbstractService implements JIPipeValidatable 
     public JIPipeApplicationSettingsServiceComponent getApplicationSettings() {
         ensureInitialized();
         return applicationSettings;
+    }
+
+    /**
+     * The modern scoped-settings service component: one settings document per
+     * scope plus the typed key/binding API. It eventually subsumes the legacy
+     * {@link #getApplicationSettings()}; both coexist until that migration
+     * (Task 13 of the modern settings system).
+     *
+     * @return the settings service component
+     */
+    public JIPipeSettingsServiceComponent getSettings() {
+        ensureInitialized();
+        return settings;
     }
 
     public JIPipeProjectSettingsServiceComponent getProjectSettings() {

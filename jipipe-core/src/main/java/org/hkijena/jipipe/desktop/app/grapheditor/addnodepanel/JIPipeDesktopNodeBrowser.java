@@ -36,6 +36,7 @@ import org.hkijena.jipipe.api.nodes.taxonomy.TaxonomyView;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.DataSourcesFunction;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.run.JIPipeEphemeralRunnableExecutor;
+import org.hkijena.jipipe.api.settings.SettingsBinding;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
@@ -61,12 +62,12 @@ import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchT
 import org.hkijena.jipipe.desktop.commons.components.selection.JIPipeDesktopRichSelectionBox;
 import org.hkijena.jipipe.plugins.ai.AIApplicationSettings;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
+import org.hkijena.jipipe.plugins.settings.SettingsKeys;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeGraphEditorUIApplicationSettings;
 import org.hkijena.jipipe.utils.CustomStateLessToggleButton;
 import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.utils.json.JIPipePathMetadataStore;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 
 import javax.swing.*;
@@ -135,6 +136,20 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
     private final JIPipeNodeDatabase database;
     private final JIPipeDesktopGraphEditorUI graphEditorUI;
     private final boolean isCompartmentsEditor;
+
+    /**
+     * The live binding to {@link SettingsKeys#PINNED_NODE_IDS}, created on
+     * first use and kept for the life of the browser (released in
+     * {@link #dispose()}, called by the owning graph editor).
+     */
+    private SettingsBinding<List<String>> pinnedNodeIdsBinding;
+
+    /**
+     * Whether this browser has been disposed (see {@link #dispose()}); a late
+     * access then stays unbindable instead of re-creating the binding.
+     */
+    private boolean disposed;
+
     // --- Toolbar (search + AI toggle lifted from the old add-nodes panel) ---
     private final JToolBar toolBar = new JToolBar();
     private final JIPipeEphemeralRunnableExecutor executor = new JIPipeEphemeralRunnableExecutor("Node browser");
@@ -1055,30 +1070,67 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
     }
 
     // ------------------------------------------------------------------
-    // Pinned (lifted settings key: "node-db" / "pinned-node-ids")
+    // Pinned (settings key "registry:node-db" / "pinned-node-ids")
     // ------------------------------------------------------------------
 
+    /**
+     * The bindings to {@link SettingsKeys#PINNED_NODE_IDS} are created once
+     * per browser instance and kept for the browser's lifetime: one browser
+     * exists per graph editor (see the editor's dock panel), so the count is
+     * bounded by the number of live editors. {@link #dispose()} releases it
+     * when the owning editor is disposed.
+     */
+    private SettingsBinding<List<String>> pinnedNodeIdsBinding() {
+        if (pinnedNodeIdsBinding == null && !disposed) {
+            pinnedNodeIdsBinding = JIPipe.getSettingsService().bind(SettingsKeys.PINNED_NODE_IDS);
+        }
+        return pinnedNodeIdsBinding;
+    }
+
+    /**
+     * Releases the pinned-ids binding (its document path listener) with the
+     * browser. Called by the owning graph editor's dispose.
+     */
+    public void dispose() {
+        disposed = true;
+        if (pinnedNodeIdsBinding != null) {
+            pinnedNodeIdsBinding.close();
+            pinnedNodeIdsBinding = null;
+        }
+    }
+
     public Set<String> getPinnedNodeDatabaseEntries() {
-        return new HashSet<>(JIPipe.getSettings().getListFromRegistry("node-db", JIPipePathMetadataStore.key("pinned-node-ids"), String.class, true));
+        SettingsBinding<List<String>> binding = pinnedNodeIdsBinding();
+        List<String> pinned = binding == null ? null : binding.get();
+        return pinned == null ? new HashSet<>() : new HashSet<>(pinned);
     }
 
     private void pinNodes(List<JIPipeNodeDatabaseEntry> entries) {
-        List<String> ids = JIPipe.getSettings().getListFromRegistry("node-db", JIPipePathMetadataStore.key("pinned-node-ids"), String.class, true);
+        SettingsBinding<List<String>> binding = pinnedNodeIdsBinding();
+        if (binding == null) {
+            return;
+        }
+        // Work on a private copy: the key's default list is shared.
+        List<String> ids = new ArrayList<>(binding.get());
         for (JIPipeNodeDatabaseEntry entry : entries) {
             if (!ids.contains(entry.getId())) {
                 ids.add(entry.getId());
             }
         }
-        JIPipe.getSettings().save();
+        binding.set(ids);
         reloadList();
     }
 
     private void unpinNodes(List<JIPipeNodeDatabaseEntry> entries) {
-        List<String> ids = JIPipe.getSettings().getListFromRegistry("node-db", JIPipePathMetadataStore.key("pinned-node-ids"), String.class, true);
+        SettingsBinding<List<String>> binding = pinnedNodeIdsBinding();
+        if (binding == null) {
+            return;
+        }
+        List<String> ids = new ArrayList<>(binding.get());
         for (JIPipeNodeDatabaseEntry entry : entries) {
             ids.remove(entry.getId());
         }
-        JIPipe.getSettings().save();
+        binding.set(ids);
         reloadList();
     }
 

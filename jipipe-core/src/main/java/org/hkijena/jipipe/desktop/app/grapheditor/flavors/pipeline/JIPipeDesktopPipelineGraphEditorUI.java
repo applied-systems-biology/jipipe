@@ -24,6 +24,7 @@ import org.hkijena.jipipe.api.history.JIPipeDedicatedGraphHistoryJournal;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepAlgorithm;
 import org.hkijena.jipipe.api.parameters.RegisterJIPipeParameterCollectionContextAction;
+import org.hkijena.jipipe.api.settings.SettingsBinding;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.batchassistant.JIPipeDesktopDataBatchAssistantUI;
@@ -78,11 +79,12 @@ import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopPar
 import org.hkijena.jipipe.desktop.commons.components.tools.JIPipeDesktopExpressionCalculatorUI;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameterList;
 import org.hkijena.jipipe.plugins.parameters.ui.api.JIPipeDesktopScriptParameterEditorUI;
+import org.hkijena.jipipe.plugins.settings.SettingsKeys;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeGeneralUIApplicationSettings;
 import org.hkijena.jipipe.utils.DocumentationUtils;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.utils.json.JIPipePathMetadataStore;
+import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 
 import javax.swing.*;
@@ -103,6 +105,18 @@ public class JIPipeDesktopPipelineGraphEditorUI extends JIPipeDesktopGraphEditor
     public static final String DOCK_NODE_CONTEXT_INPUT_MANAGER = "_INPUT_MANAGER";
     public static final String DOCK_NODE_CONTEXT_RESULTS = "_RESULTS";
     public static final String DOCK_QUICK_GUIDE = "QUICK_GUIDE";
+
+    /**
+     * The live binding to {@link SettingsKeys#PIPELINE_DOCK_STATE}. Created
+     * lazily (the editor may be built before the settings service exists) and
+     * closed in {@link #closeDockStateBinding()} when the editor is disposed.
+     */
+    private SettingsBinding<JIPipeDesktopDockPanel.State> pipelineDockStateBinding;
+    /**
+     * The "Add nodes" browser, held so {@link #dispose()} can release its
+     * pinned-ids binding with the editor.
+     */
+    private JIPipeDesktopNodeBrowser nodeBrowser;
 
 
     /**
@@ -225,6 +239,7 @@ public class JIPipeDesktopPipelineGraphEditorUI extends JIPipeDesktopGraphEditor
     }
 
     private void initializeDefaultPanels() {
+        nodeBrowser = new JIPipeDesktopNodeBrowser(getDesktopWorkbench(), this);
 
         getDockPanel().addDockPanel(JIPipeDesktopGraphEditorUI.DOCK_CALCULATOR,
                 "Calculator",
@@ -250,7 +265,7 @@ public class JIPipeDesktopPipelineGraphEditorUI extends JIPipeDesktopGraphEditor
                 JIPipe.RESOURCES.getIcon24("actions/node-add.png"),
                 JIPipeDesktopDockPanel.PanelLocation.BottomLeft,
                 false,
-                JIPipeDesktopDockPanel.UI_ORDER_PINNED, new JIPipeDesktopNodeBrowser(getDesktopWorkbench(), this));
+                JIPipeDesktopDockPanel.UI_ORDER_PINNED, nodeBrowser);
         getDockPanel().addDockPanel(JIPipeDesktopGraphEditorUI.DOCK_BOOKMARKS,
                 "Bookmarks",
                 JIPipe.RESOURCES.getIcon24("actions/bookmarks.png"),
@@ -487,35 +502,58 @@ public class JIPipeDesktopPipelineGraphEditorUI extends JIPipeDesktopGraphEditor
 
     @Override
     protected void restoreDockStateFromSettings() {
-        try {
-            JIPipeDesktopDockPanel.State defaultState = new JIPipeDesktopDockPanel.State();
-            defaultState.setAlwaysShowRightPanel(true);
-            JIPipeDesktopDockPanel.State state = JIPipe.getSettings().getFromRegistry("ui-graph-editor",
-                    JIPipePathMetadataStore.key("pipeline", "dock-state"),
-                    JIPipeDesktopDockPanel.State.class,
-                    defaultState,
-                    true);
-            getDockPanel().restoreState(state);
-        } catch (Throwable e) {
-            e.printStackTrace();
+        if (!JIPipe.isInstantiated()) {
+            return;
         }
+        pipelineDockStateBinding = JIPipe.getSettingsService().bind(SettingsKeys.PIPELINE_DOCK_STATE);
+        applyPipelineDockState(pipelineDockStateBinding.get());
+        // A change made by another view (a second pipeline editor, a merged
+        // foreign write) re-applies the stored layout live.
+        pipelineDockStateBinding.subscribe(this::applyPipelineDockState);
     }
 
-    @Override
-    protected StringAndStringPairParameterList getDockStateTemplates() {
-        if (JIPipe.isInstantiated()) {
-            return JIPipe.getSettings().getFromRegistry("ui-dock", JIPipePathMetadataStore.key("layouts"), StringAndStringPairParameterList.class, new StringAndStringPairParameterList(), true);
+    /**
+     * @param state the stored layout; restored only when it differs from the
+     *              layout currently shown, so the echo of our own write (the
+     *              dock panel saves on every layout change) re-applies nothing
+     */
+    private void applyPipelineDockState(JIPipeDesktopDockPanel.State state) {
+        if (state == null) {
+            return;
         }
-        return null;
+        // JIPipeDesktopDockPanel.State has no equals(): compare the serialized
+        // form, which is exactly what the document stores.
+        if (!JsonUtils.getObjectMapper().valueToTree(state)
+                .equals(JsonUtils.getObjectMapper().valueToTree(getDockPanel().getCurrentState()))) {
+            getDockPanel().restoreState(state);
+        }
     }
 
     @Override
     protected void saveDockStateToSettings() {
         if (JIPipe.isInstantiated()) {
-            JIPipe.getSettings().putIntoRegistry("ui-graph-editor",
-                    JIPipePathMetadataStore.key("pipeline", "dock-state"),
-                    getDockPanel().getCurrentState());
+            if (pipelineDockStateBinding == null) {
+                pipelineDockStateBinding = JIPipe.getSettingsService().bind(SettingsKeys.PIPELINE_DOCK_STATE);
+            }
+            pipelineDockStateBinding.set(getDockPanel().getCurrentState());
         }
+    }
+
+    @Override
+    protected void closeDockStateBinding() {
+        if (pipelineDockStateBinding != null) {
+            pipelineDockStateBinding.close();
+            pipelineDockStateBinding = null;
+        }
+    }
+
+    @Override
+    public void dispose() {
+        if (nodeBrowser != null) {
+            nodeBrowser.dispose();
+            nodeBrowser = null;
+        }
+        super.dispose();
     }
 
     @Override

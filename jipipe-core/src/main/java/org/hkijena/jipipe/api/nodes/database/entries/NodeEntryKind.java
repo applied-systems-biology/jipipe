@@ -150,9 +150,26 @@ public enum NodeEntryKind {
         return kind == null || kinds.contains(kind);
     }
 
+    // ------------------------------------------------------------------
+    // Persistence (shared setting of the node browser + node finder dialog,
+    // the same settings-registry pattern as the pinned node ids; the
+    // SETTINGS_DATABASE / SETTINGS_KEY constants are declared above)
+    //
+    // Deliberately NOT keyified through a SettingsBinding: these are static
+    // helpers called on every browser/dialog construction, and a binding
+    // registers a document listener that only close() releases — a
+    // bind-and-drop here would leak one listener per user action. The
+    // location is frozen in SettingsKeys.NODE_BROWSER_KINDS for a future
+    // consumer that can own (and close) a binding.
+    // ------------------------------------------------------------------
+
     /**
      * The kind filter selection persisted for this user (empty = show all
      * kinds). Loaded on demand; unknown stored names are skipped.
+     * <p>
+     * Reads through the registry delegates (no binding, see the section
+     * comment). The delegates' read seeds an absent location with its default
+     * (legacy behavior of this site).
      *
      * @return the persisted kinds, possibly empty
      */
@@ -187,11 +204,6 @@ public enum NodeEntryKind {
         JIPipe.getSettings().putIntoRegistry(SETTINGS_DATABASE, SETTINGS_KEY, stored);
         JIPipe.getSettings().save();
     }
-
-    // ------------------------------------------------------------------
-    // Persistence (shared setting of the node browser + node finder dialog,
-    // the same settings-registry pattern as the pinned node ids)
-    // ------------------------------------------------------------------
 
     public String getLabel() {
         return label;

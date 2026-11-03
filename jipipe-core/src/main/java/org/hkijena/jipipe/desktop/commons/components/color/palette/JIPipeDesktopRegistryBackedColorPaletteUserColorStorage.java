@@ -13,8 +13,14 @@
 
 package org.hkijena.jipipe.desktop.commons.components.color.palette;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.settings.JIPipeSettingKey;
+import org.hkijena.jipipe.api.settings.SettingsBinding;
+import org.hkijena.jipipe.plugins.settings.SettingsKeys;
 import org.hkijena.jipipe.utils.json.JIPipePathMetadataStore;
+import org.hkijena.jipipe.utils.json.JsonUtils;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -29,19 +35,104 @@ public class JIPipeDesktopRegistryBackedColorPaletteUserColorStorage implements 
     private final JIPipeDesktopColorPaletteUI paletteUI;
     private final JIPipePathMetadataStore.Key registryStoragePath;
     private final List<JIPipeDesktopColorPaletteColor> paletteColors;
+    /**
+     * The binding to the palette's settings key, created once per storage
+     * instance (one per palette UI) and released by {@link #dispose()}. The
+     * value is held as a raw JSON node (see {@link SettingsKeys#USER_PALETTE_COLORS_FG})
+     * and converted with the typed list reader the legacy path used, so the
+     * stored shape stays byte-identical.
+     */
+    private SettingsBinding<JsonNode> colorsBinding;
 
     public JIPipeDesktopRegistryBackedColorPaletteUserColorStorage(JIPipeDesktopColorPaletteUI paletteUI) {
         this.paletteUI = paletteUI;
         this.registryStoragePath = getRegistryStoragePath(paletteUI);
-        this.paletteColors = loadFromRegistry("ui-palette", registryStoragePath);
+        // Bind eagerly, once per instance: the binding must not depend on a
+        // static-cache miss (a second storage for the same path would then
+        // never own a binding, and its dispose() would release nothing).
+        this.colorsBinding = JIPipe.isInstantiated() ? JIPipe.getSettingsService().bind(getKey(registryStoragePath)) : null;
+        this.paletteColors = loadFromRegistry(getDatabaseId(), registryStoragePath);
+    }
+
+    /**
+     * Returns the binding to this storage's palette setting, created once per
+     * storage instance in the constructor — never per read/write — because a
+     * binding owns a document path listener.
+     * <p>
+     * Without a running settings service (e.g. headless tests) no binding is
+     * created and the palette works in memory.
+     *
+     * @return the binding, or {@code null} if the settings service is absent
+     */
+    private SettingsBinding<JsonNode> colorsBinding() {
+        if (colorsBinding == null && JIPipe.isInstantiated()) {
+            colorsBinding = JIPipe.getSettingsService().bind(getKey(registryStoragePath));
+        }
+        return colorsBinding;
+    }
+
+    /**
+     * Releases the binding (its document path listener). Called when the
+     * owning palette UI dies; until then the binding is tracked by the
+     * settings service, which closes it as a fallback. Closing is idempotent,
+     * and reads/writes still work on a closed binding (it only stops
+     * receiving change events).
+     */
+    public void dispose() {
+        if (colorsBinding != null) {
+            colorsBinding.close();
+            colorsBinding = null;
+        }
+    }
+
+    /**
+     * Maps a palette storage sub-path to the frozen settings key of that
+     * palette variant. Unknown paths fall back to the foreground
+     * ({@code fg}) key with a warning instead of throwing: the mapping is
+     * called from the storage's constructor, so a future palette variant must
+     * not turn into a constructor-time crash.
+     *
+     * @param registryStoragePath this storage's palette variant sub-path
+     * @return the settings key for this storage's palette variant
+     */
+    public static JIPipeSettingKey<JsonNode> getKey(JIPipePathMetadataStore.Key registryStoragePath) {
+        String path = String.join("/", registryStoragePath.getItems());
+        switch (path) {
+            case "user-palette-colors/fg-a":
+                return SettingsKeys.USER_PALETTE_COLORS_FG_A;
+            case "user-palette-colors/fg-bg":
+                return SettingsKeys.USER_PALETTE_COLORS_FG_BG;
+            case "user-palette-colors/fg-bg-a":
+                return SettingsKeys.USER_PALETTE_COLORS_FG_BG_A;
+            case "user-palette-colors/fg":
+                return SettingsKeys.USER_PALETTE_COLORS_FG;
+            default:
+                LoggerFactory.getLogger(JIPipeDesktopRegistryBackedColorPaletteUserColorStorage.class)
+                        .warn("Unknown palette storage path '{}'; falling back to the foreground palette setting", path);
+                return SettingsKeys.USER_PALETTE_COLORS_FG;
+        }
+    }
+
+    private String getDatabaseId() {
+        // The frozen legacy registry database key of these keys: SettingsKeys
+        // addresses "registry:ui-palette", while the in-memory LISTS cache is
+        // still keyed by the legacy database id.
+        return getKey(registryStoragePath).blockPath().substring("registry:".length());
     }
 
     private List<JIPipeDesktopColorPaletteColor> loadFromRegistry(String databaseId, JIPipePathMetadataStore.Key registryStoragePath) {
         List<JIPipeDesktopColorPaletteColor> result = LISTS.get(databaseId + "-" + registryStoragePath);
         if (result == null) {
             try {
-                result = JIPipe.getSettings().getListFromRegistry(databaseId, registryStoragePath, JIPipeDesktopColorPaletteColor.class, true);
-                LISTS.put(databaseId + "-" + registryStoragePath, result);
+                SettingsBinding<JsonNode> binding = colorsBinding();
+                if (binding != null) {
+                    JsonNode stored = binding.get();
+                    if (stored != null && stored.isArray()) {
+                        // The exact legacy read: a concrete-element typed list.
+                        result = JsonUtils.getObjectMapper().readerForListOf(JIPipeDesktopColorPaletteColor.class).readValue(stored);
+                        LISTS.put(databaseId + "-" + registryStoragePath, result);
+                    }
+                }
             } catch (Exception ignored) {
             }
         }
@@ -75,7 +166,12 @@ public class JIPipeDesktopRegistryBackedColorPaletteUserColorStorage implements 
     }
 
     private void serializeParameter() {
-        JIPipe.getSettings().putIntoRegistry("ui-palette", registryStoragePath, paletteColors);
+        SettingsBinding<JsonNode> binding = colorsBinding();
+        if (binding != null) {
+            // The same JSON the legacy putIntoRegistry wrote: valueToTree of
+            // the concrete-element list.
+            binding.set(JsonUtils.getObjectMapper().valueToTree(paletteColors));
+        }
     }
 
     @Override

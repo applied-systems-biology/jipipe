@@ -26,13 +26,34 @@ public class ImageBoxNoteGraphNodeToolProperties extends JIPipeDesktopFormGraphE
 
     private static JIPipeDesktopColorPaletteColor LAST_COLOR = JIPipeDesktopColorPalette.PASTEL[0];
     private final JIPipeDesktopColorPaletteUI paletteUI;
+    /**
+     * The registry-backed user colors, whose settings binding is closed when
+     * the island is disposed (the island is rebuilt on every node selection).
+     */
+    private final JIPipeDesktopRegistryBackedColorPaletteUserColorStorage registryUserColors;
 
     public ImageBoxNoteGraphNodeToolProperties(JIPipeDesktopGraphEditorUI graphEditorUI, ImageBoxNoteGraphNodeTool tool) {
         super(graphEditorUI, tool);
         this.paletteUI = new JIPipeDesktopColorPaletteUI(getDesktopWorkbench(), JIPipeDesktopColorPaletteUI.NONE, JIPipeDesktopColorPalette.PASTEL);
-        this.paletteUI.setUserColors(new JIPipeDesktopRegistryBackedColorPaletteUserColorStorage(paletteUI));
+        this.registryUserColors = new JIPipeDesktopRegistryBackedColorPaletteUserColorStorage(paletteUI);
+        this.paletteUI.setUserColors(registryUserColors);
         this.paletteUI.getSelectedEventEmitter().subscribe(this);
         this.paletteUI.setSelectedColor(LAST_COLOR);
+    }
+
+    @Override
+    public void dispose() {
+        if (paletteUI != null) {
+            // The palette UI owns the selected-event emitter; the panel is a
+            // subscriber of it, so it must detach itself here (the palette UI
+            // dies with the island, but a detached panel must not stay in a live
+            // emitter's subscriber list either).
+            paletteUI.getSelectedEventEmitter().unsubscribe(this);
+        }
+        if (registryUserColors != null) {
+            registryUserColors.dispose();
+        }
+        super.dispose();
     }
 
     @Override

@@ -1,0 +1,10 @@
+{
+  "legacy-pinned": {
+    "id": "from-5x-node-db",
+    "ids": [
+      "legacy-node-a",
+      "legacy-node-b"
+    ]
+  },
+  "legacy-counter": 11
+}

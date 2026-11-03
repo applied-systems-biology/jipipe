@@ -200,14 +200,30 @@ public class JIPipeDesktopTabPane extends JPanel implements Disposable {
         }
     }
 
+    /**
+     * Disposes every tab content exactly once and closes all tabs.
+     * <p>
+     * The disposal iterates the <em>registered</em> tabs, not the visible
+     * ones: a singleton tab the user closed earlier in the session is no
+     * longer in the visible list but its content is still referenced by
+     * {@code singletonTabInstances} for the re-open path, so it must be
+     * released too. The tabs are then closed via
+     * {@link #removeTabWithoutDispose} so the content is not disposed a second
+     * time (and no close confirmation is shown on teardown).
+     * <p>
+     * {@link #forceCloseTab} keeps disposing on every close: a tab that is
+     * closed mid-session must release its content immediately.
+     */
     @Override
     public void dispose() {
-        for (DocumentTab tab : tabs) {
+        for (DocumentTab tab : ImmutableList.copyOf(tabs)) {
             if (tab.content instanceof Disposable) {
                 ((Disposable) tab.content).dispose();
             }
         }
-        closeAllTabs(true);
+        for (DocumentTab tab : ImmutableList.copyOf(tabs)) {
+            removeTabWithoutDispose(tab);
+        }
     }
 
     /**
@@ -509,6 +525,17 @@ public class JIPipeDesktopTabPane extends JPanel implements Disposable {
         if (tab.content instanceof Disposable) {
             ((Disposable) tab.content).dispose();
         }
+        removeTabWithoutDispose(tab);
+    }
+
+    /**
+     * Removes a tab from the pane (and its bookkeeping) without disposing its
+     * content. Used by {@link #dispose()}, which has already disposed every
+     * content, and by {@link #forceCloseTab}.
+     *
+     * @param tab the tab
+     */
+    private void removeTabWithoutDispose(DocumentTab tab) {
         tabs.remove(tab);
         tabHistory.remove(tab);
         singletonTabInstances.inverse().remove(tab);

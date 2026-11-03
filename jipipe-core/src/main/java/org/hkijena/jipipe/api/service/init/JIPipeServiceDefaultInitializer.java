@@ -17,6 +17,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.api.run.JIPipeRunnableLogEntry;
+import org.hkijena.jipipe.api.service.JIPipeInitializationException;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.api.service.JIPipeServiceComponent;
 import org.hkijena.jipipe.api.service.JIPipeServiceInitializer;
@@ -24,6 +25,9 @@ import org.hkijena.jipipe.api.service.components.JIPipeEnvironmentsServiceCompon
 import org.hkijena.jipipe.api.service.components.nodes.JIPipeNodeRegistrationTask;
 import org.hkijena.jipipe.api.service.events.JIPipePluginDiscoveredEvent;
 import org.hkijena.jipipe.api.service.events.JIPipePluginRegisteredEvent;
+import org.hkijena.jipipe.api.settings.SettingsBlockPath;
+import org.hkijena.jipipe.api.settings.SettingsMigration;
+import org.hkijena.jipipe.api.settings.SettingsScope;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
@@ -43,8 +47,10 @@ import org.scijava.service.AbstractService;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.function.Predicate;
 
 public class JIPipeServiceDefaultInitializer extends JIPipeServiceInitializer {
     private final JIPipeInitializationReport issues;
@@ -75,10 +81,27 @@ public class JIPipeServiceDefaultInitializer extends JIPipeServiceInitializer {
         getProgressInfo().setProgress(1);
         getProgressInfo().log("Legacy settings conversion ...");
         copyTemplatesFromPropertiesToLegacyProfile(getProgressInfo().resolve("Legacy conversion"));
-        if (applyProfileUpgrades(getProgressInfo().resolve("Preparing profiles"))) {
+        boolean upgradedProfile = applyProfileUpgrades(getProgressInfo().resolve("Preparing profiles"));
+
+        // Prepare the settings file (5.x migration, interrupted-migration
+        // recovery, cross-version carry-over) as early as possible: no profile
+        // directory rewrite happens between here and the load below, so every
+        // raw reader after this point (and the load itself) sees the migrated
+        // document. A failed migration aborts the startup loudly instead of
+        // letting a later save overwrite the user's settings.
+        prepareApplicationSettingsDocument();
+
+        // Re-read the extension settings AFTER the profile upgrades AND the
+        // settings migration: both rewrote the settings file, and
+        // `extensionSettings` is consumed by the pre-activation checks below
+        // (isIgnorePreActivationChecks, isValidateNodeTypes) — reading it
+        // before the migration made those decisions on defaults instead of the
+        // user's values. Nothing between the first read (above) and this point
+        // consumes it, so this is a single, correct re-read.
+        if (upgradedProfile) {
             getProgressInfo().log("Upgrade was applied. Reloading extension settings.");
-            extensionSettings = JIPipeExtensionApplicationSettings.getInstanceFromRaw();
         }
+        extensionSettings = JIPipeExtensionApplicationSettings.getInstanceFromRaw();
 
         getProgressInfo().log("Pre-initialization phase ...");
 
@@ -279,7 +302,11 @@ public class JIPipeServiceDefaultInitializer extends JIPipeServiceInitializer {
         registerNodeExamplesFromFileSystem();
         registerProjectTemplatesFromFileSystem();
 
-        // Reload settings
+        // Reload settings. The settings file was prepared right after the
+        // profile upgrades (see prepareApplicationSettingsDocument()), so this
+        // is exactly one load; the legacy facade's reload() delegates to the
+        // same component, so it loads every sheet bridge and the registry
+        // blocks.
         getProgressInfo().setProgress(4);
         getProgressInfo().log("Loading settings ...");
         getService().getApplicationSettings().reload();
@@ -372,6 +399,92 @@ public class JIPipeServiceDefaultInitializer extends JIPipeServiceInitializer {
 
         // Mark log as read
         JIPipeDesktopRunnableLogsCollection.getInstance().markAllAsRead();
+    }
+
+    /**
+     * Prepares the application settings file before it is first loaded: (a) a
+     * 5.x profile is migrated, (b) an interrupted migration is recovered, (c)
+     * unknown blocks are carried over from sibling version profiles.
+     * <p>
+     * <b>Ordering contract:</b> all three steps run <em>before</em> the first
+     * {@code document(APPLICATION)} materialization, because recovered content
+     * only reaches this session through a load.
+     * <p>
+     * <b>Fail-loud contract.</b> A failure of the migration or of the
+     * interrupted-migration recovery is rethrown as a
+     * {@link JIPipeInitializationException}: the legacy files may already have
+     * been moved into {@code settings-migration-backup/}, and a later save
+     * would write a new-format {@code settings.json} from the (empty or
+     * partial) document — after which {@code needsMigration} is false forever
+     * and the user's values would sit only in the backup. Continuing would
+     * therefore silently clear the user's settings. A carry-over failure is
+     * not load-bearing (it only recovers unknown blocks from sibling
+     * profiles) and is logged and continued.
+     * <p>
+     * Package-visible so the contract above is testable without booting the
+     * service.
+     *
+     * @param profileDir the profile directory (e.g. {@code <base>/<version>})
+     * @param registeredBlock the registration predicate used by the migration
+     * @param scopeByBlock the scope routing map
+     * @param progress receives the log lines
+     * @param carryOver runs the cross-version carry-over (owned by the settings
+     *                  component; a failure is logged, not fatal)
+     * @throws JIPipeInitializationException if the migration or the recovery throws
+     */
+    static void prepareApplicationSettings(Path profileDir,
+                                           Predicate<String> registeredBlock,
+                                           Map<String, SettingsScope> scopeByBlock,
+                                           JIPipeProgressInfo progress,
+                                           Runnable carryOver) {
+        try {
+            if (SettingsMigration.needsMigration(profileDir)) {
+                progress.log("Migrating legacy settings in " + profileDir + " ...");
+                SettingsMigration.migrateLegacyProfile(profileDir, registeredBlock, scopeByBlock, progress);
+            }
+        } catch (RuntimeException e) {
+            throw new JIPipeInitializationException("Could not migrate the legacy settings of the profile "
+                    + profileDir + ". The startup is aborted so the existing settings are not overwritten. "
+                    + "Your previous settings are preserved in the profile directory and in "
+                    + SettingsMigration.BACKUP_DIRECTORY_NAME + "/. Underlying error: " + e, e);
+        }
+        try {
+            SettingsMigration.recoverFromInterruptedMigration(profileDir, registeredBlock, scopeByBlock, progress);
+        } catch (RuntimeException e) {
+            throw new JIPipeInitializationException("Could not recover the interrupted settings migration of the profile "
+                    + profileDir + ". The startup is aborted so the existing settings are not overwritten. "
+                    + "Your previous settings are preserved in " + SettingsMigration.BACKUP_DIRECTORY_NAME + "/. "
+                    + "Underlying error: " + e, e);
+        }
+        try {
+            carryOver.run();
+        } catch (RuntimeException e) {
+            // Non-load-bearing: the carry-over only recovers unknown blocks
+            // from sibling version profiles.
+            progress.log("Could not carry over settings from previous versions (" + e + "); continuing");
+        }
+    }
+
+    /**
+     * Runs the startup preparation for the live profile.
+     */
+    private void prepareApplicationSettingsDocument() {
+        Path userDir = JIPipe.getJIPipeUserDir(false);
+        // Runtime-scoped blocks (threads, temp/cache dirs, environments,
+        // hardware acceleration, artifact directories) are routed into
+        // runtime-settings.json; everything else is application-scoped. The
+        // component merges the scopes of already-registered keys over the
+        // static fallback, so keyified blocks take precedence.
+        Map<String, SettingsScope> scopeByBlock = getService().getSettings().effectiveScopeByBlock();
+        // "Registered" means the block kind is known; Task 14 refines this if
+        // needed.
+        Predicate<String> registeredBlock = path -> new SettingsBlockPath(path).kind() != null;
+        prepareApplicationSettings(userDir, registeredBlock, scopeByBlock, getProgressInfo(), () -> {
+            Set<String> recovered = getService().getSettings().runCarryOver();
+            if (!recovered.isEmpty()) {
+                getProgressInfo().log("Recovered " + recovered.size() + " settings block(s) from a previous profile version");
+            }
+        });
     }
 
     private void validateParameterTypes(JIPipeInitializationReport issues) {

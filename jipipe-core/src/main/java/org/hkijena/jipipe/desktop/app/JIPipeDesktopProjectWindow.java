@@ -212,6 +212,16 @@ public class JIPipeDesktopProjectWindow extends JFrame {
 
     @Override
     public void dispose() {
+        // Release the per-window UI tree FIRST (tab pane → tab contents →
+        // graph editors' settings bindings, the settings tab's change-event
+        // subscription, ...) while the settings service and the project are
+        // still alive. closeCurrentProject() then runs project.close(...) —
+        // project teardown only, it does not touch the workbench (the
+        // progress dialog is this window's own JFrame and the runnables are
+        // driven by the queued executor).
+        if (projectWorkbench != null) {
+            projectWorkbench.dispose();
+        }
         closeCurrentProject();
         OPEN_WINDOWS.remove(this);
         WINDOW_CLOSED_EVENT_EMITTER.emit(new WindowClosedEvent(this));

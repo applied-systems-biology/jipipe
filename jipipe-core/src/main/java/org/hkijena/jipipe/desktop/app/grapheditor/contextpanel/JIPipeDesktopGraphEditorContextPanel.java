@@ -9,10 +9,20 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class JIPipeDesktopGraphEditorContextPanel extends JIPipeDesktopWorkbenchPanel {
     private final JIPipeDesktopGraphEditorUI graphEditorUI;
     private final JIPipeDesktopFormPanel formPanel;
+    /**
+     * The islands added by the current rebuild pass. A rebuild replaces every
+     * island, so the previous pass's islands are disposed at its start (see
+     * {@link #rebuild()}) — otherwise their resources (e.g. the note tools'
+     * palette settings bindings, which are rebuilt on every node selection)
+     * would leak.
+     */
+    private final List<JIPipeDesktopGraphEditorContextPanelIsland> currentIslands = new ArrayList<>();
 
     public JIPipeDesktopGraphEditorContextPanel(JIPipeDesktopGraphEditorUI graphEditorUI) {
         super(graphEditorUI.getDesktopWorkbench());
@@ -32,6 +42,12 @@ public class JIPipeDesktopGraphEditorContextPanel extends JIPipeDesktopWorkbench
     }
 
     public void rebuild() {
+        // Tear down the previous pass first: a rebuild replaces every island, so
+        // each of them must release its resources exactly once. This is the
+        // only per-rebuild teardown hook (formPanel.clear() only drops the
+        // wrapper panels added by addIsland()).
+        JIPipeDesktopGraphEditorContextPanelIsland.disposePreviousIslands(currentIslands);
+
         JScrollPane scrollPane = formPanel.getScrollPane();
         int oldValue = scrollPane.getVerticalScrollBar().getValue();
         formPanel.clear();
@@ -54,6 +70,7 @@ public class JIPipeDesktopGraphEditorContextPanel extends JIPipeDesktopWorkbench
     }
 
     private void addIsland(JIPipeDesktopGraphEditorContextPanelIsland island) {
+        currentIslands.add(island);
         island.initializeContent();
         island.postInitializeContent();
         formPanel.addWideToForm(UIUtils.wrapInBackgroundIslandPanelIfNeeded(island));

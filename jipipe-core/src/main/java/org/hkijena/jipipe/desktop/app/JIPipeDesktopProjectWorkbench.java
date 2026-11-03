@@ -37,6 +37,7 @@ import org.hkijena.jipipe.api.project.jipx.JIPipeProjectFairCheck;
 import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
 import org.hkijena.jipipe.api.service.events.JIPipePluginRegisteredEvent;
 import org.hkijena.jipipe.api.service.events.JIPipePluginRegisteredEventListener;
+import org.hkijena.jipipe.api.settings.SettingsScope;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
@@ -45,7 +46,6 @@ import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopCacheBrowserUI;
 import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopCacheManagerUI;
 import org.hkijena.jipipe.desktop.app.components.JIPipeDesktopAuthorProfileButton;
 import org.hkijena.jipipe.desktop.app.components.JIPipeDesktopProjectSaveManagerButton;
-import org.hkijena.jipipe.desktop.app.customizer.JIPipeDesktopCustomizerDialog;
 import org.hkijena.jipipe.desktop.app.customizer.JIPipeDesktopThemeManager;
 import org.hkijena.jipipe.desktop.app.documentation.JIPipeDataTypeCompendiumUI;
 import org.hkijena.jipipe.desktop.app.documentation.JIPipeDesktopAlgorithmCompendiumUI;
@@ -68,9 +68,10 @@ import org.hkijena.jipipe.desktop.app.running.logs.JIPipeDesktopRunnableLogsColl
 import org.hkijena.jipipe.desktop.app.running.queue.JIPipeDesktopRunnableBackgroundQueuesIndicator;
 import org.hkijena.jipipe.desktop.app.running.queue.JIPipeDesktopRunnableQueueButton;
 import org.hkijena.jipipe.desktop.app.running.queue.JIPipeDesktopRunnableQueueNotifier;
-import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopApplicationSettingsUI;
+import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopAppearanceSection;
 import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopProjectOverviewUI;
-import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopProjectSettingsUI;
+import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopRawSettingsSection;
+import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopSettingsTab;
 import org.hkijena.jipipe.desktop.commons.components.SplitButton;
 import org.hkijena.jipipe.desktop.commons.components.ai.JIPipeDesktopAIStatusControl;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
@@ -93,6 +94,9 @@ import org.hkijena.jipipe.plugins.statistics.settings.JIPipeStatisticsApplicatio
 import org.hkijena.jipipe.plugins.statistics.ui.JIPipeDesktopStatisticsButton;
 import org.hkijena.jipipe.plugins.statistics.ui.JIPipeDesktopStatisticsUI;
 import org.hkijena.jipipe.utils.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.scijava.Disposable;
 import org.jdesktop.swingx.JXStatusBar;
 import org.jdesktop.swingx.plaf.basic.BasicStatusBarUI;
 import org.scijava.Context;
@@ -116,7 +120,9 @@ import java.util.function.Consumer;
 /**
  * UI around an {@link JIPipeProject}
  */
-public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDesktopWorkbench, JIPipeProject.CompartmentRemovedEventListener, JIPipePluginRegisteredEventListener {
+public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDesktopWorkbench, JIPipeProject.CompartmentRemovedEventListener, JIPipePluginRegisteredEventListener, Disposable {
+
+    private static final Logger logger = LoggerFactory.getLogger(JIPipeDesktopProjectWorkbench.class);
 
     public static final String TAB_INTRODUCTION = "INTRODUCTION";
     public static final String TAB_LICENSE = "LICENSE";
@@ -127,6 +133,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
     public static final String TAB_PROJECT_OVERVIEW = "PROJECT_OVERVIEW";
     public static final String TAB_STATISTICS = "STATISTICS";
     public static final String TAB_LOG = "LOG";
+    public static final String TAB_SETTINGS = "SETTINGS";
     private final JIPipeDesktopProjectWindow window;
     private final JIPipeProject project;
     private final Context context;
@@ -137,6 +144,11 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
     private final ProjectSavedEventEmitter projectSavedEventEmitter = new ProjectSavedEventEmitter();
     private final ProjectSavingEventEmitter projectSavingEventEmitter = new ProjectSavingEventEmitter();
     public JIPipeDesktopTabPane documentTabPane;
+    /**
+     * Whether {@link #dispose()} already ran (it is idempotent; the window
+     * creates a fresh workbench per project, but a double dispose must be safe).
+     */
+    private boolean disposed;
     private JLabel statusText;
     private JIPipeDesktopReloadableValidityChecker validityCheckerPanel;
     private JIPipeDesktopPluginValidityCheckerPanel pluginValidityCheckerPanel;
@@ -331,7 +343,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
                                 "Missing author information",
                                 JOptionPane.YES_NO_OPTION,
                                 JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
-                            openApplicationSettings("/General/Project authors");
+                            openSettingsSection(SettingsScope.APPLICATION, "org.hkijena.jipipe:project-authors");
                         }
                     } else {
                         if (JOptionPane.showConfirmDialog(this, "<html>The project needs to be saved to update the author information.<br/>" +
@@ -439,6 +451,11 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
                 "Statistics",
                 JIPipe.RESOURCES.getIcon16("actions/chart-bar.png"),
                 () -> new JIPipeDesktopStatisticsUI(this),
+                JIPipeDesktopTabPane.SingletonTabMode.Hidden);
+        documentTabPane.registerSingletonTab(TAB_SETTINGS,
+                "Settings",
+                JIPipe.RESOURCES.getIcon16("actions/configure.png"),
+                () -> new JIPipeDesktopSettingsTab(this),
                 JIPipeDesktopTabPane.SingletonTabMode.Hidden);
         add(documentTabPane, BorderLayout.CENTER);
 
@@ -818,7 +835,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
             listPanel.add(Box.createVerticalStrut(8));
             JButton openMeta = UIUtils.createButton("Open project metadata",
                     JIPipe.RESOURCES.getIcon16("actions/circle-info.png"),
-                    () -> openProjectSettings("/General/Project metadata"));
+                    () -> openSettingsSection(SettingsScope.PROJECT, "jipipe:project-metadata"));
             listPanel.add(openMeta);
         }
         content.add(listPanel, BorderLayout.CENTER);
@@ -946,10 +963,10 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         editCompartmentsButton.addActionListener(e -> openCompartmentEditor());
         projectMenu.add(editCompartmentsButton);
 
-        JMenuItem openApplicationSettingsButton = new JMenuItem("Application settings", JIPipe.RESOURCES.getIcon16("actions/configure.png"));
-        openApplicationSettingsButton.setToolTipText("Opens the application settings");
-        openApplicationSettingsButton.addActionListener(e -> openApplicationSettings(null));
-        projectMenu.add(openApplicationSettingsButton);
+        JMenuItem applicationSettingsButton = new JMenuItem("Application settings", JIPipe.RESOURCES.getIcon16("actions/configure.png"));
+        applicationSettingsButton.setToolTipText("Opens the application settings");
+        applicationSettingsButton.addActionListener(e -> openSettingsTab(SettingsScope.APPLICATION, null));
+        projectMenu.add(applicationSettingsButton);
 
         projectMenu.addSeparator();
 
@@ -960,7 +977,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
 
         JMenuItem projectSettings = new JMenuItem("Project settings", JIPipe.RESOURCES.getIcon16("actions/configure.png"));
         projectSettings.setToolTipText("Opens the project settings");
-        projectSettings.addActionListener(e -> openProjectSettings(null));
+        projectSettings.addActionListener(e -> openSettingsTab(SettingsScope.PROJECT, null));
         projectMenu.add(projectSettings);
 
         {
@@ -994,6 +1011,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         JMenu toolsMenu = new JMenu("Tools");
 
         toolsMenu.add(UIUtils.createMenuItem("Customize JIPipe ...", "Allows to customize JIPipe using themes", JIPipe.RESOURCES.getIcon16("actions/palette.png"), this::openCustomizer));
+        toolsMenu.add(UIUtils.createMenuItem("Raw settings ...", "Lists and edits every setting, including values without a dedicated editor", JIPipe.RESOURCES.getIcon16("actions/configure.png"), this::openRawSettings));
         toolsMenu.add(UIUtils.createMenuItem("Theme manager/editor", "Allows to create custom JIPipe theme", JIPipe.RESOURCES.getIcon16("actions/palette.png"), this::openThemeManagerAndEditor));
 
         JMenu pluginsMenu = new JMenu("Plugins");
@@ -1086,8 +1104,19 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         updater.run();
     }
 
+    /**
+     * Opens the settings tab on the merged Appearance section (the former
+     * "Customize JIPipe" dialog, which the tab replaced).
+     */
     private void openCustomizer() {
-        new JIPipeDesktopCustomizerDialog(this).setVisible(true);
+        JIPipeDesktopAppearanceSection.openAppearance(this);
+    }
+
+    /**
+     * Opens the settings tab on the raw settings editor (Task 20).
+     */
+    private void openRawSettings() {
+        JIPipeDesktopRawSettingsSection.openRawSection(this);
     }
 
     private void openArtifactManager() {
@@ -1103,62 +1132,56 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
     }
 
 
-    public void openApplicationSettings(String navigateToCategory) {
-        JDialog dialog = new JDialog(getWindow());
-        dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        dialog.setTitle("JIPipe - Application settings");
-        dialog.setModal(true);
-        dialog.setIconImage(UIUtils.getJIPipeIcon128());
-        JIPipeDesktopApplicationSettingsUI applicationSettingsUI = new JIPipeDesktopApplicationSettingsUI(this);
-        if (navigateToCategory != null) {
-            applicationSettingsUI.selectNode(navigateToCategory);
+    /**
+     * Opens the non-modal settings tab (creating it on first use) and selects a section.
+     *
+     * @param scope         the scope to show ({@code APPLICATION}, {@code PROJECT} or {@code RUNTIME})
+     * @param sectionSearch optional initial search text for the section list; {@code null} keeps the
+     *                      current search
+     * @return the tab content component
+     */
+    public Component openSettingsTab(SettingsScope scope, String sectionSearch) {
+        SettingsScope effectiveScope = scope != null ? scope : SettingsScope.APPLICATION;
+        JIPipeDesktopTabPane.DocumentTab documentTab = documentTabPane.selectSingletonTab(TAB_SETTINGS);
+        if (documentTab == null) {
+            return null;
         }
-        UIUtils.addEscapeListener(dialog);
-        JPanel contentPanel = new JPanel(new BorderLayout(8, 8));
-        contentPanel.setBackground(ThemeUtils.getCurrentStyle().getWindowBackground());
-        contentPanel.add(applicationSettingsUI, BorderLayout.CENTER);
-
-        AtomicBoolean saved = new AtomicBoolean(false);
-        window.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent windowEvent) {
-                if (!saved.get()) {
-                    JIPipe.getSettings().reload();
-                }
+        Component content = documentTab.getContent();
+        if (content instanceof JIPipeDesktopSettingsTab settingsTab) {
+            settingsTab.setActiveScope(effectiveScope);
+            if (sectionSearch != null) {
+                settingsTab.setSectionSearch(sectionSearch);
             }
-        });
+        }
+        return content;
+    }
 
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setBackground(ThemeUtils.getCurrentStyle().getWindowBackground());
-        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
-        JButton resetButton = new JButton("Reset", JIPipe.RESOURCES.getIcon16("actions/edit-reset.png"));
-        resetButton.addActionListener(e -> {
-            JIPipe.getSettings().reload();
-            applicationSettingsUI.selectNode("/General");
-        });
-        buttonPanel.add(UIUtils.makeButtonTransparent(resetButton));
-        buttonPanel.add(Box.createHorizontalGlue());
-        JButton cancelButton = new JButton("Cancel", JIPipe.RESOURCES.getIcon16("actions/cancel.png"));
-        cancelButton.addActionListener(e -> {
-            JIPipe.getSettings().reload();
-            dialog.setVisible(false);
-        });
-        buttonPanel.add(UIUtils.makeButtonTransparent(cancelButton));
-        JButton saveButton = new JButton("Save", JIPipe.RESOURCES.getIcon16("actions/filesave.png"));
-        saveButton.addActionListener(e -> {
-            JIPipe.getSettings().save();
-            saved.set(true);
-            dialog.setVisible(false);
-        });
-        buttonPanel.add(UIUtils.makeButtonTransparent(saveButton));
-        contentPanel.add(buttonPanel, BorderLayout.SOUTH);
-        buttonPanel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
-
-        dialog.setContentPane(contentPanel);
-        dialog.pack();
-        dialog.setSize(1280, 768);
-        dialog.setLocationRelativeTo(getWindow());
-        dialog.setVisible(true);
+    /**
+     * Opens the non-modal settings tab on a specific section.
+     *
+     * @param scope           the scope the section belongs to
+     * @param settingsSheetId the registered sheet id of the section (e.g. the
+     *                        merged Appearance section); if unknown, the tab is
+     *                        opened on its default selection
+     * @return the tab content component, or {@code null}
+     */
+    public Component openSettingsSection(SettingsScope scope, String settingsSheetId) {
+        Component content = openSettingsTab(scope, null);
+        if (content instanceof JIPipeDesktopSettingsTab settingsTab && settingsSheetId != null) {
+            // Clear a stale search so the section is selectable in the tree.
+            settingsTab.setSectionSearch("");
+            // The section is addressed by (scope, id): ids are shared across scopes
+            // (org.hkijena.jipipe:default-environments is a RUNTIME application sheet
+            // and a PROJECT sheet), so the scope disambiguates.
+            SettingsScope effectiveScope = scope != null ? scope : SettingsScope.APPLICATION;
+            if (!settingsTab.selectSheet(effectiveScope, settingsSheetId)) {
+                logger.warn("Settings deep link to unknown sheet id '{}' (scope {}): fell back to the default selection",
+                        settingsSheetId, effectiveScope);
+                // selectSheet() may have cleared the search; restore a section list.
+                settingsTab.setSectionSearch("");
+            }
+        }
+        return content;
     }
 
     public void openProjectReport() {
@@ -1440,46 +1463,6 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         sendStatusBarText("Registered extension: '" + event.getExtension().getMetadata().getName() + "' with id '" + event.getExtension().getDependencyId() + "'. We recommend to restart ImageJ.");
     }
 
-    public void openProjectSettings(String navigateToCategory) {
-        JIPipeDesktopProjectSettingsUI projectSettingsComponents = new JIPipeDesktopProjectSettingsUI(getProject(), this);
-
-        JDialog dialog = new JDialog(getWindow());
-        dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        dialog.setTitle("JIPipe - Project settings");
-        dialog.setModal(true);
-        dialog.setIconImage(UIUtils.getJIPipeIcon128());
-
-        UIUtils.addEscapeListener(dialog);
-        JPanel contentPanel = new JPanel(new BorderLayout(8, 8));
-        contentPanel.setBackground(ThemeUtils.getCurrentStyle().getWindowBackground());
-        contentPanel.add(projectSettingsComponents, BorderLayout.CENTER);
-
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setOpaque(false);
-        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
-        buttonPanel.add(new JLabel("Settings are applied automatically", JIPipe.RESOURCES.getIcon16("emblems/emblem-important-blue.png"), JLabel.LEFT));
-        buttonPanel.add(Box.createHorizontalGlue());
-
-        JButton closeButton = new JButton("Close", JIPipe.RESOURCES.getIcon16("actions/message-close.png"));
-        closeButton.addActionListener(e -> {
-            dialog.setVisible(false);
-        });
-        buttonPanel.add(UIUtils.makeButtonTransparent(closeButton));
-
-        contentPanel.add(buttonPanel, BorderLayout.SOUTH);
-        buttonPanel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
-
-        if (navigateToCategory != null) {
-            projectSettingsComponents.selectNode(navigateToCategory);
-        }
-
-        dialog.setContentPane(contentPanel);
-        dialog.pack();
-        dialog.setSize(1280, 768);
-        dialog.setLocationRelativeTo(getWindow());
-        dialog.setVisible(true);
-    }
-
     public ProjectSavedEventEmitter getProjectSavedEventEmitter() {
         return projectSavedEventEmitter;
     }
@@ -1535,6 +1518,36 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
 
         public String getStage() {
             return stage;
+        }
+    }
+
+    /**
+     * Releases the UI this workbench owns when its window closes. The workbench
+     * is per-window ({@code JIPipeDesktopProjectWindow#loadProject} creates a
+     * new one), so this is the single release point for the whole per-project
+     * UI tree.
+     * <p>
+     * <b>The tab pane is the load-bearing link:</b>
+     * {@link JIPipeDesktopTabPane#dispose()} iterates every registered tab and
+     * calls {@link Disposable#dispose()} on each {@link Disposable} content —
+     * which includes the settings tab (unsubscribes its
+     * {@code SettingsChangedEvent} listener) and every graph editor
+     * ({@link JIPipeDesktopPipelineGraphEditorUI}, the compartment editor),
+     * whose dispose closes their settings bindings and nested node browsers.
+     * Editors and sections are docked <em>inside</em> tab contents, so they are
+     * released through the same cascade. Without this hook the closed window
+     * pins that whole tree on the JVM-lifetime settings document.
+     * <p>
+     * Idempotent: a second call is a no-op.
+     */
+    @Override
+    public void dispose() {
+        if (disposed) {
+            return;
+        }
+        disposed = true;
+        if (documentTabPane != null) {
+            documentTabPane.dispose();
         }
     }
 

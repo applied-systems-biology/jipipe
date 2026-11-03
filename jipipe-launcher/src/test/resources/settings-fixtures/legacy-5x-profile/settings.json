@@ -1,0 +1,13 @@
+{
+  "org.hkijena.jipipe:general-ui": {
+    "legacy-marker-a": "from-5x-general-ui",
+    "legacy-flag": true
+  },
+  "org.hkijena.jipipe:runtime": {
+    "legacy-marker-e": "from-5x-runtime",
+    "legacy-threads": 3
+  },
+  "org.hkijena.jipipe:totally-unknown-sheet": {
+    "legacy-marker-b": "from-5x-unknown-sheet"
+  }
+}

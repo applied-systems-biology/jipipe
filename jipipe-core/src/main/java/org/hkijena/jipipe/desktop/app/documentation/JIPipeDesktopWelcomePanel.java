@@ -25,10 +25,10 @@ import org.hkijena.jipipe.api.service.components.JIPipeProjectTemplatesServiceCo
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchPanel;
-import org.hkijena.jipipe.desktop.app.customizer.JIPipeDesktopCustomizerDialog;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.JIPipeDesktopPipelineGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.project.templatedownloader.JIPipeDesktopProjectTemplateDownloaderRun;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
+import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopAppearanceSection;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopImageFrameComponent;
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeDesktopTemplateProjectListCellRenderer;
@@ -186,7 +186,9 @@ public class JIPipeDesktopWelcomePanel extends JIPipeDesktopProjectWorkbenchPane
     }
 
     private void doActionOpenCustomization() {
-        new JIPipeDesktopCustomizerDialog(getDesktopProjectWorkbench()).setVisible(true);
+        // The "Customize JIPipe" dialog was replaced by the settings tab's
+        // merged Appearance section.
+        JIPipeDesktopAppearanceSection.openAppearance(getDesktopProjectWorkbench());
     }
 
     private void doActionOpenTutorials() {

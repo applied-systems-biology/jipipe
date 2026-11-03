@@ -1,0 +1,2 @@
+/tmp/jipipe-legacy-fixture/project-a.jip
+/tmp/jipipe-legacy-fixture/project-b.jip

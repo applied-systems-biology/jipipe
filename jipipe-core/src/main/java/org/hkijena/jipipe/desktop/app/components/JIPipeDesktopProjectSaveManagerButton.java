@@ -1,6 +1,7 @@
 package org.hkijena.jipipe.desktop.app.components;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.settings.SettingsScope;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.SplitButton;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeAutoSaveApplicationSettings;
@@ -114,7 +115,7 @@ public class JIPipeDesktopProjectSaveManagerButton extends SplitButton implement
     }
 
     private void openAutoSaveSettings() {
-        workbench.openApplicationSettings("/General/Auto save");
+        workbench.openSettingsSection(SettingsScope.APPLICATION, "org.hkijena.jipipe:auto-save");
     }
 
     private void updateStatus() {

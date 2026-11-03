@@ -2637,7 +2637,7 @@ public class UIUtils {
      */
     public static double getScale(Component comp) {
         // 1) If user explicitly forced a scale via CLI, respect it.
-        Double forced = parseSunUiScaleProperty();
+        Double forced = parseStoredUiScaleProperty();
         if (forced != null && forced > 0.0) {
             return forced;
         }
@@ -2682,28 +2682,43 @@ public class UIUtils {
     }
 
     /**
-     * Parses -Dsun.java2d.uiScale if present.
-     * Accepts plain numbers (e.g., "1.5", "2") or percentages (e.g., "150%").
-     * Returns null if not set or unparsable.
+     * Parses the stored {@code -Dsun.java2d.uiScale} value (jaunch config or
+     * the running JVM's property) into a scale factor. Accepts every form the
+     * bundled JDK's {@code SunGraphicsEnvironment#getScaleFactor} accepts:
+     * plain numbers (e.g. {@code 2}, {@code 1.5}), percentages (e.g.
+     * {@code 150%}), multipliers (e.g. {@code 2x}) and dpi values (e.g.
+     * {@code 192dpi}) — users can edit the tomls by hand. The auto markers
+     * ({@code true}, empty) and unparsable values yield {@code null}: the
+     * automatic (system) scale applies.
+     *
+     * @return the stored scale, or {@code null} for the auto markers
      */
-    private static Double parseSunUiScaleProperty() {
+    public static Double parseStoredUiScaleProperty() {
         String raw = System.getProperty("sun.java2d.uiScale");
-        if (raw == null || raw.isBlank()) return null;
-        raw = raw.trim().toLowerCase(Locale.ROOT);
-
-        try {
-            if (raw.endsWith("%")) {
-                String num = raw.substring(0, raw.length() - 1).trim();
-                double pct = Double.parseDouble(num);
-                if (pct > 0.0) return pct / 100.0;
-            } else {
-                double v = Double.parseDouble(raw);
-                if (v > 0.0) return v;
-            }
-        } catch (NumberFormatException ignore) {
-            // fall through to null
+        if (raw == null || raw.isBlank()) {
+            return null;
         }
-        return null;
+        raw = raw.trim().toLowerCase(Locale.ROOT);
+        if (raw.equals("true")) {
+            return null;
+        }
+
+        double units = 1.0;
+        if (raw.endsWith("dpi")) {
+            units = 96.0;
+            raw = raw.substring(0, raw.length() - 3);
+        } else if (raw.endsWith("%")) {
+            units = 100.0;
+            raw = raw.substring(0, raw.length() - 1);
+        } else if (raw.endsWith("x")) {
+            raw = raw.substring(0, raw.length() - 1);
+        }
+        try {
+            double value = Double.parseDouble(raw.trim());
+            return value > 0.0 ? value / units : null;
+        } catch (NumberFormatException ignore) {
+            return null;
+        }
     }
 
     public static JPanel borderNSEWC(Component north, Component south, Component east, Component west, Component center) {
@@ -2726,10 +2741,23 @@ public class UIUtils {
         return panel;
     }
 
+    /**
+     * The UI scales the bundled JDK actually applies on this platform. The X11
+     * AWT scale factor is an {@code int} by design (the JDK's
+     * {@code X11GraphicsDevice#initScaleFactor} truncates the
+     * {@code sun.java2d.uiScale} value), so fractional values like 1.5 are
+     * silently ignored (they apply 1.0) and 2.5 applies 2.0. Only the
+     * integral steps are offered in the UI; this list is the single source of
+     * truth for them.
+     */
+    public static final List<Double> OFFERED_UI_SCALES = List.of(1.0, 2.0, 3.0);
+
     public static boolean saveUIScaleToJaunch(float newScale, boolean alsoImageJ) {
         Path imageJDir = PathUtils.getImageJDir();
         boolean success = true;
-        if (!saveUIScaleToJaunch(newScale, imageJDir.resolve("config").resolve("jaunch").resolve("fiji.toml"))) {
+        // The "apply to Fiji/ImageJ too" confirmation only gates the fiji.toml
+        // write: jipipe.toml (JIPipe's own launcher) is always updated.
+        if (alsoImageJ && !saveUIScaleToJaunch(newScale, imageJDir.resolve("config").resolve("jaunch").resolve("fiji.toml"))) {
             success = false;
         }
         if (!saveUIScaleToJaunch(newScale, imageJDir.resolve("config").resolve("jaunch").resolve("jipipe.toml"))) {
@@ -2738,16 +2766,75 @@ public class UIUtils {
         return success;
     }
 
+    /**
+     * Rewrites the {@code -Dsun.java2d.uiScale} entry of a jaunch toml
+     * (pure; no file I/O). The two patterns cover the value forms the config
+     * can hold: the auto marker (letters, e.g. {@code true}) and the numeric
+     * forms (e.g. {@code 2}, {@code 2.0}, {@code 1.5}, {@code 150%}). A
+     * config without the property is returned unchanged.
+     *
+     * @param config   the toml content
+     * @param newScale the scale to write (rendered as a decimal, e.g. {@code 2.0})
+     * @return the rewritten content
+     */
+    public static String applyUiScaleToJaunchConfig(String config, float newScale) {
+        String replacement = "-Dsun.java2d.uiScale=" + newScale;
+        String result = config.replaceAll("-Dsun\\.java2d\\.uiScale=[a-zA-Z]+", replacement);
+        return result.replaceAll("-Dsun\\.java2d\\.uiScale=[0-9%\\.]+", replacement);
+    }
+
+    /**
+     * The scale the running (or next) JVM actually applies for a STORED
+     * {@code sun.java2d.uiScale} value, mirroring the bundled JDK's X11
+     * semantics: values of 1 or above are TRUNCATED to their integral part
+     * (1.5 → 1.0, 2.5 → 2.0), and values below 1 (or {@code null} for the
+     * auto markers {@code true}/absent) fall back to the automatic system
+     * scale.
+     *
+     * @param storedValue the stored value parsed as a number, or {@code null}
+     *                    for {@code true} / property absent
+     * @param autoScale   the automatic (system) scale, e.g. {@link #getScale}
+     * @return the effective scale
+     */
+    public static double effectiveUiScaleForStoredValue(Double storedValue, double autoScale) {
+        if (storedValue == null || storedValue < 1.0) {
+            return autoScale;
+        }
+        return Math.floor(storedValue);
+    }
+
+    /**
+     * The nearest offered UI scale (see {@link #OFFERED_UI_SCALES}) to an
+     * effective scale, so a stored value that falls between the offered steps
+     * (e.g. the automatic 1.25 on a HiDPI display) maps onto the segment that
+     * renders closest to it. Ties map to the lower segment; out-of-range
+     * values clamp.
+     *
+     * @param effectiveScale the effective scale (e.g.
+     *                        {@link #effectiveUiScaleForStoredValue})
+     * @return the percent of the offered scale, e.g. {@code 200}
+     */
+    public static int nearestOfferedUiScalePercent(double effectiveScale) {
+        int best = 100;
+        int bestDistance = Integer.MAX_VALUE;
+        for (double offered : OFFERED_UI_SCALES) {
+            int distance = Math.abs((int) Math.round(offered * 100) - (int) Math.round(effectiveScale * 100));
+            if (distance < bestDistance) {
+                bestDistance = distance;
+                best = (int) Math.round(offered * 100);
+            }
+        }
+        return best;
+    }
+
     private static boolean saveUIScaleToJaunch(float newScale, Path jaunchConfigPath) {
         if (Files.isRegularFile(jaunchConfigPath)) {
             try {
                 Path backupFile = jaunchConfigPath.getParent().resolve(jaunchConfigPath.getFileName() + ".bak");
-                String config = Files.readString(jaunchConfigPath);
-                config = config.replaceAll("-Dsun\\.java2d\\.uiScale=[a-zA-Z]+", "-Dsun.java2d.uiScale=" + newScale);
-                config = config.replaceAll("-Dsun\\.java2d\\.uiScale=[0-9%\\.]+", "-Dsun.java2d.uiScale=" + newScale);
+                String updated = applyUiScaleToJaunchConfig(Files.readString(jaunchConfigPath), newScale);
 
                 Files.copy(jaunchConfigPath, backupFile, StandardCopyOption.REPLACE_EXISTING);
-                Files.writeString(jaunchConfigPath, config, StandardOpenOption.WRITE);
+                Files.writeString(jaunchConfigPath, updated, StandardOpenOption.WRITE);
                 return true;
             } catch (Exception e) {
                 JIPipe.getInstance().getLogService().error("Save UI scale - Error:" + e.getMessage());

@@ -1,0 +1,31 @@
+{
+  "$schema" : 2,
+  "$meta" : {
+    "written-by-version" : "6.0.0",
+    "written-at" : "2026-10-27T22:30:00Z",
+    "writer-id" : "fixture-writer"
+  },
+  "registry:fixture-registry" : {
+    "known-value" : "kept",
+    "future-sub" : {
+      "nested" : "written-by-a-newer-version",
+      "flag" : true
+    }
+  },
+  "sheet:org.hkijena.jipipe:fixture-sheet" : {
+    "legacy-marker-a" : "from-6x-general-ui"
+  },
+  "future-thing:abc" : {
+    "opaque-field" : "unknown-kind-content",
+    "count" : 42
+  },
+  "sheet:org.hkijena.jipipe:totally-unknown-sheet" : {
+    "legacy-marker-b" : "from-6x-unknown-sheet",
+    "nested" : {
+      "one" : [
+        "a",
+        "b"
+      ]
+    }
+  }
+}

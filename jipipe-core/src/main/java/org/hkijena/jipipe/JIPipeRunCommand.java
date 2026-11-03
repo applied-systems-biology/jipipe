@@ -74,6 +74,9 @@ public class JIPipeRunCommand implements Command {
             JIPipeService service = JIPipe.createInstance(context);
             service.ensureInitialized(); // Manual initialization
         }
+        // Fail-loud startup: a broken initialization must not continue into
+        // project loading (headless has no UI to show the reason).
+        JIPipe.abortIfInitializationFailed(JIPipe.getInstance());
         if (!extensionSettings.isSilent()) {
             JIPipeValidationReport report = new JIPipeValidationReport();
             issues.reportValidity(new UnspecifiedValidationReportContext(), JIPipeValidationReportSettings.DEFAULT, report, new JIPipeProgressInfo());
