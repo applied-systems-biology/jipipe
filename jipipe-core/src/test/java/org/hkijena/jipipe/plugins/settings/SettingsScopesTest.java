@@ -58,6 +58,19 @@ class SettingsScopesTest {
         assertFalse(SettingsScopes.scopeByBlock().containsKey("sheet:org.hkijena.jipipe:general-ui"));
     }
 
+    /**
+     * The statistics sheet is a user preference (telemetry opt-in consent,
+     * privacy level, server URL, first-time prompt), not execution state, so it
+     * is application-scoped and must NOT be routed into the runtime document.
+     * Pins the spec §3.1 ownership ruling against a regression that wrongly
+     * placed it under the Runtime scope.
+     */
+    @Test
+    void statisticsIsAnApplicationUserPreferenceNotRuntimeScoped() {
+        assertFalse(SettingsScopes.scopeByBlock().containsKey("sheet:org.hkijena.jipipe:statistics"),
+                "the statistics sheet is a user preference, not execution state; it must be application-scoped");
+    }
+
     @Test
     void writeGuardBlocksRejectedKey() {
         JIPipeSettingsServiceComponent c = JIPipeSettingsServiceComponent.forTesting(tempDir);

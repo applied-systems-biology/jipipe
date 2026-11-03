@@ -63,9 +63,7 @@ public final class SettingsScopes {
             // Artifact download directories (JIPipeArtifactApplicationSettings)
             "sheet:org.hkijena.jipipe:artifacts", SettingsScope.RUNTIME,
             // Downloader processes and their locations (JIPipeDownloadsApplicationSettings)
-            "sheet:org.hkijena.jipipe:downloads", SettingsScope.RUNTIME,
-            // Usage statistics collection and reporting (JIPipeStatisticsApplicationSettings)
-            "sheet:org.hkijena.jipipe:statistics", SettingsScope.RUNTIME
+            "sheet:org.hkijena.jipipe:downloads", SettingsScope.RUNTIME
             // A genuinely execution-state registry block does not exist today
             //  (verified in Task 14). When one arrives — e.g. an AI
             //  remote-backend database, or any registry whose content describes
