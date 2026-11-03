@@ -352,11 +352,13 @@ public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implem
         topBar.add(searchPanel, BorderLayout.WEST);
 
         // The restart hint fills the space between the search field and the
-        // scope switcher; it centers itself so it reads as a header note, not
-        // as a third control. Hidden while nothing waits for a restart.
+        // scope switcher. GridLayout(1, 1) centers the single label both ways,
+        // so it sits on the same vertical center as the search field and the
+        // scope switcher (a FlowLayout would pin it to the top of the row).
+        // Hidden while nothing waits for a restart.
         restartHint.setIcon(JIPipe.RESOURCES.getIcon16("emblems/emblem-warning.png"));
         restartHint.setVisible(false);
-        JPanel restartPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        JPanel restartPanel = new JPanel(new GridLayout(1, 1));
         restartPanel.setOpaque(false);
         restartPanel.add(restartHint);
         topBar.add(restartPanel, BorderLayout.CENTER);
@@ -402,8 +404,7 @@ public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implem
             }
             return;
         }
-        restartHint.setText("<html>" + String.join(" · ", names)
-                + " — restart JIPipe to apply</html>");
+        restartHint.setText("Restart required to apply all settings");
         restartHint.setToolTipText("The following settings only take effect after JIPipe is restarted: "
                 + String.join(", ", names));
         restartHint.setVisible(true);
