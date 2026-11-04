@@ -20,8 +20,10 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
+import java.awt.Component;
 import java.awt.GraphicsEnvironment;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -32,6 +34,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -212,5 +215,88 @@ class HeadfulPlumbingTest {
         worker.join(5_000);
         assertFalse(worker.isAlive(), "the worker thread must have finished after showAndWait() returned");
         assertFalse(dialog.isVisible(), "the decision must close (hide) the dialog");
+    }
+
+    /**
+     * Input dialogs must open with the focus on their content — the text
+     * field — instead of the OK button (the button panel is added before the
+     * content in the chrome constructor, so container-order focus traversal
+     * would pick the button; {@code showAndWait()} redirects the initial
+     * focus to the content).
+     * <p>
+     * Same choreography as {@link #realModalOkClickReturnsValue()}: the
+     * worker thread blocks inside the real {@code showAndWait()}, and a timer
+     * armed at window-opened records the focus owner on the EDT and dismisses
+     * the dialog to release the worker. The check runs well after the queued
+     * {@code requestFocusInWindow()} redirect, so the assertion is
+     * deterministic, not sleep-based.
+     */
+    @Test
+    void inputDialogGivesInitialFocusToContent() throws Exception {
+        AtomicReference<Component> focusOwner = new AtomicReference<>();
+        SwingUtilities.invokeAndWait(() -> {
+            JIPipeDesktopDialog d = new JIPipeDesktopDialog(null, "t");
+            d.addMessage("m");
+            d.addContent(new JTextField("initial"));
+            d.setCancelable(true);
+            d.setButtons(Button.OK.asDefault());
+            d.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowOpened(WindowEvent e) {
+                    Timer check = new Timer(CLICK_DELAY_MS, ev -> {
+                        focusOwner.set(d.getFocusOwner());
+                        d.dismiss();
+                    });
+                    check.setRepeats(false);
+                    check.start();
+                }
+            });
+            dialog = d;
+        });
+
+        // Watchdog: release a wedged showAndWait() so a broken choreography
+        // fails the assertions instead of hanging the build.
+        watchdog = new Timer(WATCHDOG_TIMEOUT_MS, ev -> {
+            JIPipeDesktopDialog d = dialog;
+            if (d != null && d.isShowing()) {
+                d.setVisible(false);
+            }
+        });
+        watchdog.setRepeats(false);
+
+        CountDownLatch returned = new CountDownLatch(1);
+        AtomicReference<Throwable> workerError = new AtomicReference<>();
+        watchdog.start();
+        Thread worker = new Thread(() -> {
+            try {
+                dialog.showAndWait();
+            } catch (Throwable t) {
+                workerError.set(t);
+            } finally {
+                returned.countDown();
+            }
+        }, "headful-input-focus-showAndWait");
+        worker.setDaemon(true);
+        worker.start();
+
+        assertTrue(returned.await(AWAIT_SECONDS, TimeUnit.SECONDS),
+                "showAndWait() must return once the dialog was dismissed by the focus check");
+        if (workerError.get() != null) {
+            AssertionError error = new AssertionError("showAndWait() threw on the worker thread: " + workerError.get());
+            error.initCause(workerError.get());
+            throw error;
+        }
+        assertNotNull(focusOwner.get(), "the focus owner must have been recorded while the dialog was showing");
+        // The redirect must have been invoked (code contract, environment
+        // independent) and the window manager must have granted it (behavior
+        // contract). If a CI window manager ever makes the grant flaky, the
+        // first assertion is the documented fallback to keep.
+        assertTrue(dialog.isContentFocusRequested(),
+                "an input dialog must redirect the initial focus to its content (requestFocusInWindow invoked)");
+        assertTrue(focusOwner.get() instanceof JTextField,
+                "an input dialog must give the initial focus to its content (the text field), not the OK button — but was: "
+                        + focusOwner.get());
+        worker.join(5_000);
+        assertFalse(worker.isAlive(), "the worker thread must have finished after showAndWait() returned");
     }
 }

@@ -160,6 +160,60 @@ class DismissMappingTest {
     }
 
     @Test
+    void messageAndErrorRegisterDefaultOkButton() {
+        // Enter must acknowledge notify dialogs: the OK button handed to the
+        // chrome is default-flagged, so the root pane registers it as the
+        // default button (the old JOptionPane did this everywhere).
+        JIPipeDesktopDialogs.message(null, "t", "m");
+        JButton messageDefault = captured.getRootPane().getDefaultButton();
+        assertNotNull(messageDefault, "message() must register a default button (Enter)");
+        assertEquals("OK", messageDefault.getText(), "the default button must be OK");
+
+        JIPipeDesktopDialogs.error(null, "t", "m", null);
+        JButton errorDefault = captured.getRootPane().getDefaultButton();
+        assertNotNull(errorDefault, "error() must register a default button (Enter)");
+        assertEquals("OK", errorDefault.getText(), "the default button must be OK");
+    }
+
+    @Test
+    void inputDialogRegistersDefaultOkButtonAndMatchesResultByIdentity() {
+        // The input dialogs hand a default-flagged OK copy to the chrome; the
+        // facade must compare the result against that same copy — asDefault()
+        // returns a copy, so comparing against the Button.OK constant would
+        // never match (and Enter would silently do nothing on ~170 dialogs).
+        //
+        // Undecided first (a decision disposes the dialog, which resets the
+        // root pane's default button — the assertion below must observe the
+        // presented dialog, not a disposed one).
+        JIPipeDesktopDialogs.inputText(null, "t", "m", "abc");
+        JButton inputDefault = captured.getRootPane().getDefaultButton();
+        assertNotNull(inputDefault, "inputText() must register a default button (Enter)");
+        assertEquals("OK", inputDefault.getText(), "the default button must be OK");
+
+        // OK click: the submitted value is returned and the recorded result
+        // is the default-flagged copy (never the Button.OK constant).
+        JIPipeDesktopDialogs.setPresenter(dialog -> {
+            captured = dialog;
+            dialog.getActionButtons().get(0).doClick();
+            return dialog;
+        });
+        Optional<String> value = JIPipeDesktopDialogs.inputText(null, "t", "m", "abc");
+        assertEquals(Optional.of("abc"), value, "clicking OK must submit the field value");
+        assertTrue(captured.getResult().orElseThrow().isDefault(),
+                "the recorded result must be the default-flagged OK copy");
+
+        // Cancel (the implicit last button) is not an OK choice — and, being
+        // a different instance, can never be confused with the flagged copy.
+        JIPipeDesktopDialogs.setPresenter(dialog -> {
+            captured = dialog;
+            dialog.getActionButtons().get(1).doClick();
+            return dialog;
+        });
+        Optional<String> cancelled = JIPipeDesktopDialogs.inputText(null, "t", "m", "abc");
+        assertTrue(cancelled.isEmpty(), "clicking Cancel must not submit");
+    }
+
+    @Test
     void errorWithCauseShowsTrace() {
         RuntimeException cause = new RuntimeException("boom");
 

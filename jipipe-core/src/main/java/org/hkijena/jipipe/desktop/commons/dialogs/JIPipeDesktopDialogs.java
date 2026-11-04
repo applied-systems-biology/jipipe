@@ -58,8 +58,7 @@ import java.util.function.Predicate;
  * ({@link #message}, {@link #error}, {@link #confirm}, {@link #choose},
  * {@link #inputText}, {@link #inputUniqueText}, {@link #inputMultiLine},
  * {@link #inputInteger}, {@link #inputDouble}), the color chooser
- * delegation ({@link #chooseColor}), and the {@link Builder} escape hatch;
- * the remaining pick methods follow in later tasks of #1341.
+ * delegation ({@link #chooseColor}), and the {@link Builder} escape hatch.
  */
 public final class JIPipeDesktopDialogs {
 
@@ -84,10 +83,14 @@ public final class JIPipeDesktopDialogs {
      * Re-exposes the dialog-level presenter seam for facade tests: installs
      * the {@link DialogPresenter} used by all facade methods (delegates to
      * {@link JIPipeDesktopDialog#setPresenter(DialogPresenter)}).
+     * <p>
+     * Package-private: {@link DialogPresenter} is package-private, so a
+     * {@code public} method could not be implemented outside this package
+     * anyway (tests are same-package).
      *
      * @param p the presenter to use
      */
-    public static void setPresenter(DialogPresenter p) {
+    static void setPresenter(DialogPresenter p) {
         JIPipeDesktopDialog.setPresenter(p);
     }
 
@@ -104,7 +107,11 @@ public final class JIPipeDesktopDialogs {
     public static void message(Component parent, String title, String message) {
         JIPipeDesktopDialog dialog = newDialog(parent, title);
         dialog.addMessage(normalizeMessage(message));
-        dialog.setButtons(Button.OK);
+        // Default-flagged OK: Enter acknowledges the dialog (the classic
+        // option pane registered OK as the default button everywhere). The
+        // result is unused (the dialog is acknowledged, not answered), so no
+        // identity comparison is needed here.
+        dialog.setButtons(Button.OK.asDefault());
         dialog.showAndWait();
     }
 
@@ -125,7 +132,8 @@ public final class JIPipeDesktopDialogs {
         if (cause != null) {
             dialog.addContent(tracePane(cause));
         }
-        dialog.setButtons(Button.OK);
+        // Default-flagged OK: Enter acknowledges the dialog (see message()).
+        dialog.setButtons(Button.OK.asDefault());
         dialog.showAndWait();
     }
 
@@ -203,7 +211,12 @@ public final class JIPipeDesktopDialogs {
     public static Optional<String> inputText(Component parent, String title, String message, String initialValue) {
         JTextField field = new JTextField(initialValue != null ? initialValue : "");
         field.selectAll();
-        JIPipeDesktopDialog dialog = newInputDialog(parent, title, message, field);
+        // Default-flagged OK: Enter (outside the field) and the initial
+        // focus behavior match the classic option pane. The flagged copy
+        // must be kept: the chrome records it as the result, and okChosen
+        // compares against this exact instance (never the Button.OK constant).
+        Button ok = Button.OK.asDefault();
+        JIPipeDesktopDialog dialog = newInputDialog(parent, title, message, field, ok);
         // Enter inside the field submits the OK action (spec §4.2): the
         // field's action event (fired on Enter) clicks the OK button — the
         // same code path as an OK click. Index 0 is the OK button: it is the
@@ -211,7 +224,7 @@ public final class JIPipeDesktopDialogs {
         JButton okButton = dialog.getActionButtons().get(0);
         field.addActionListener(e -> okButton.doClick());
         dialog.showAndWait();
-        if (!okChosen(dialog)) {
+        if (!okChosen(dialog, ok)) {
             return Optional.empty();
         }
         String text = field.getText();
@@ -241,11 +254,12 @@ public final class JIPipeDesktopDialogs {
         JTextArea area = new JTextArea(initialValue != null ? initialValue : "");
         JScrollPane pane = new JScrollPane(area);
         pane.setPreferredSize(MULTILINE_PREFERRED_SIZE);
-        JIPipeDesktopDialog dialog = newInputDialog(parent, title, message, pane);
+        Button ok = Button.OK.asDefault();
+        JIPipeDesktopDialog dialog = newInputDialog(parent, title, message, pane, ok);
         // No Enter binding here: inside a JTextArea, Enter inserts a newline;
         // submission is via the OK button only (spec §4.2).
         dialog.showAndWait();
-        if (!okChosen(dialog)) {
+        if (!okChosen(dialog, ok)) {
             return Optional.empty();
         }
         String text = area.getText();
@@ -275,9 +289,10 @@ public final class JIPipeDesktopDialogs {
         }
         SpinnerNumberModel model = new SpinnerNumberModel(initialValue != null ? initialValue : min, min, max, 1);
         JSpinner spinner = new JSpinner(model);
-        JIPipeDesktopDialog dialog = newInputDialog(parent, title, message, spinner);
+        Button ok = Button.OK.asDefault();
+        JIPipeDesktopDialog dialog = newInputDialog(parent, title, message, spinner, ok);
         dialog.showAndWait();
-        if (!okChosen(dialog)) {
+        if (!okChosen(dialog, ok)) {
             return Optional.empty();
         }
         return Optional.of(model.getNumber().intValue());
@@ -303,9 +318,10 @@ public final class JIPipeDesktopDialogs {
         }
         SpinnerNumberModel model = new SpinnerNumberModel(initialValue != null ? initialValue : min, min, max, 1.0);
         JSpinner spinner = new JSpinner(model);
-        JIPipeDesktopDialog dialog = newInputDialog(parent, title, message, spinner);
+        Button ok = Button.OK.asDefault();
+        JIPipeDesktopDialog dialog = newInputDialog(parent, title, message, spinner, ok);
         dialog.showAndWait();
-        if (!okChosen(dialog)) {
+        if (!okChosen(dialog, ok)) {
             return Optional.empty();
         }
         return Optional.of(model.getNumber().doubleValue());
@@ -345,6 +361,10 @@ public final class JIPipeDesktopDialogs {
         // submission: the text to re-present (selected) and the error to show.
         String lastValue = initialValue != null ? initialValue : "";
         String error = null;
+        // Default-flagged OK, shared by every re-presentation round (a fresh
+        // copy per round would be equivalent; the instance only matters for
+        // the okChosen identity comparison of its own round).
+        Button ok = Button.OK.asDefault();
         while (true) {
             JTextField field = new JTextField(lastValue);
             field.selectAll();
@@ -352,7 +372,7 @@ public final class JIPipeDesktopDialogs {
             JPanel content = new JPanel(new BorderLayout(0, 4));
             content.add(field, BorderLayout.NORTH);
             content.add(errorLabel, BorderLayout.SOUTH);
-            JIPipeDesktopDialog dialog = newInputDialog(parent, title, message, content);
+            JIPipeDesktopDialog dialog = newInputDialog(parent, title, message, content, ok);
             // Enter inside the field submits the OK action (spec §4.2): the
             // same wiring as inputText. Index 0 is the OK button: it is the
             // only caller-provided button (the implicit Cancel is appended
@@ -360,7 +380,7 @@ public final class JIPipeDesktopDialogs {
             JButton okButton = dialog.getActionButtons().get(0);
             field.addActionListener(e -> okButton.doClick());
             dialog.showAndWait();
-            if (!okChosen(dialog)) {
+            if (!okChosen(dialog, ok)) {
                 return Optional.empty();
             }
             String submitted = field.getText();
@@ -503,10 +523,15 @@ public final class JIPipeDesktopDialogs {
 
         /**
          * Builds the dialog without presenting it.
+         * <p>
+         * Package-private: the built {@link JIPipeDesktopDialog} is
+         * package-private, so a {@code public} method would leak a
+         * non-exportable type. All uses are same-package {@link #show()}
+         * chains (which stays public).
          *
          * @return the configured dialog
          */
-        public JIPipeDesktopDialog build() {
+        JIPipeDesktopDialog build() {
             JIPipeDesktopDialog dialog = newDialog(parent, title);
             dialog.addMessage(normalizeMessage(message));
             if (content != null) {
@@ -581,25 +606,30 @@ public final class JIPipeDesktopDialogs {
 
     /**
      * Creates an input dialog: message on top, the given content in the
-     * center, cancelable with an OK button (the implicit Cancel is appended
-     * by the dialog chrome — always the {@link Button#CANCEL} constant, never
-     * a copy).
+     * center, cancelable with a default-flagged OK button (the implicit
+     * Cancel is appended by the dialog chrome — always the
+     * {@link Button#CANCEL} constant, never a copy). The {@code ok} instance
+     * must be reused for the caller's result comparison: the chrome records
+     * the exact instance it was given ({@code asDefault()} returns a copy —
+     * comparing against the {@link Button#OK} constant would never match).
      */
-    private static JIPipeDesktopDialog newInputDialog(Component parent, String title, String message, JComponent content) {
+    private static JIPipeDesktopDialog newInputDialog(Component parent, String title, String message, JComponent content, Button ok) {
         JIPipeDesktopDialog dialog = newDialog(parent, title);
         dialog.addMessage(normalizeMessage(message));
         dialog.addContent(content);
         dialog.setCancelable(true);
-        dialog.setButtons(Button.OK);
+        dialog.setButtons(ok);
         return dialog;
     }
 
     /**
      * Whether the OK button of an input dialog was chosen (by identity: the
      * dialog preserves the exact instance, so a Cancel click or a dismissal —
-     * which leaves the result empty — is not an OK choice).
+     * which leaves the result empty — is not an OK choice). The compared
+     * {@code ok} must be the default-flagged instance the dialog was given
+     * (see {@link #newInputDialog}).
      */
-    private static boolean okChosen(JIPipeDesktopDialog dialog) {
-        return dialog.getResult().orElse(null) == Button.OK;
+    private static boolean okChosen(JIPipeDesktopDialog dialog, Button ok) {
+        return dialog.getResult().orElse(null) == ok;
     }
 }

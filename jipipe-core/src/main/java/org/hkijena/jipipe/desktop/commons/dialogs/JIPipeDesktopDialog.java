@@ -19,6 +19,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -46,7 +48,10 @@ class JIPipeDesktopDialog extends JDialog {
     private final JLabel messageLabel;
     private final JPanel buttonPanel = new JPanel(new BorderLayout());
     private final List<JButton> actionButtons = new ArrayList<>();
+    private JComponent content;
     private boolean cancelable;
+    private boolean contentFocusRedirectArmed;
+    private boolean contentFocusRequested;
     private Button result;
 
     /**
@@ -72,15 +77,18 @@ class JIPipeDesktopDialog extends JDialog {
         contentPane.add(messageLabel, BorderLayout.NORTH);
         contentPane.add(buttonPanel, BorderLayout.SOUTH);
 
-        // Escape funnels into dismiss() (empty result). Registered as a plain
-        // action (same key stroke and scope as UIUtils.addEscapeListener) so
-        // the binding is inspectable and clearable.
-        getRootPane().registerKeyboardAction(new AbstractAction() {
+        // Escape funnels into dismiss() (empty result). Bound via the
+        // input/action maps (same key stroke and scope as
+        // UIUtils.addEscapeListener) so the binding is inspectable and
+        // clearable.
+        getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+                .put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "dismissDialog");
+        getRootPane().getActionMap().put("dismissDialog", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 dismiss();
             }
-        }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
+        });
     }
 
     /**
@@ -101,10 +109,13 @@ class JIPipeDesktopDialog extends JDialog {
 
     /**
      * Sets the message displayed above the dialog content. Plain messages are
-     * wrapped in a word-wrapping HTML container; messages that already are a
-     * full {@code <html>} document pass through verbatim (the spec's
-     * {@code <html>} pass-through rule — nesting them in the wrapper div
-     * would mangle their rendering).
+     * wrapped in a word-wrapping HTML container, with the HTML-significant
+     * characters ({@code &}, {@code <}, {@code >}) escaped so they render
+     * verbatim (the classic option pane showed plain strings verbatim); messages
+     * that already are a full {@code <html>} document pass through verbatim
+     * (the spec's {@code <html>} pass-through rule — nesting them in the
+     * wrapper div would mangle their rendering, and their markup is
+     * intentional).
      *
      * @param message the message text, e.g. {@code "Hello <b>world</b>"} or
      *                {@code "<html><b>Hello</b></html>"}
@@ -115,7 +126,23 @@ class JIPipeDesktopDialog extends JDialog {
             messageLabel.setText(message);
             return;
         }
-        messageLabel.setText("<html><div style=\"width: 400px\"> " + message + " </div></html>");
+        messageLabel.setText("<html><div style=\"width: 400px\"> " + escapeHtml(message) + " </div></html>");
+    }
+
+    /**
+     * Escapes the HTML-significant characters of a plain message so they
+     * render verbatim inside the word-wrapping HTML container. The ampersand
+     * must be replaced first — escaping it after the angle brackets would
+     * double-escape the entities produced for them.
+     */
+    private static String escapeHtml(String message) {
+        if (message == null) {
+            return "";
+        }
+        return message
+                .replace("&", "&amp;")
+                .replace("<", "&lt;")
+                .replace(">", "&gt;");
     }
 
     /**
@@ -124,6 +151,7 @@ class JIPipeDesktopDialog extends JDialog {
      * @param content the content component to show
      */
     void addContent(JComponent content) {
+        this.content = content;
         getContentPane().add(content, BorderLayout.CENTER);
     }
 
@@ -186,13 +214,51 @@ class JIPipeDesktopDialog extends JDialog {
     }
 
     /**
-     * Shows the dialog and blocks until the user has decided.
+     * Shows the dialog and blocks until the user has decided. When a content
+     * component was set, the initial focus is redirected to it: the button
+     * panel is added before the content (container order), so without the
+     * redirect, input dialogs would open with the OK button focused instead
+     * of their text field. Without content (message/confirm/choose dialogs),
+     * nothing is done — the default button receives focus naturally.
+     * <p>
+     * The redirect is armed at {@code windowOpened} (and deferred one more
+     * event-loop hop): a plain {@code invokeLater} queued before presenting
+     * could run before the dialog is realized when {@code showAndWait()} is
+     * called off the event dispatch thread, and a focus request on a
+     * not-yet-showing component is silently dropped.
      *
      * @return the dialog, with the result set by {@link #getResult()}
      * @see #getResult()
      */
     JIPipeDesktopDialog showAndWait() {
+        if (content != null && !contentFocusRedirectArmed) {
+            contentFocusRedirectArmed = true;
+            addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowOpened(WindowEvent e) {
+                    SwingUtilities.invokeLater(JIPipeDesktopDialog.this::requestInitialContentFocus);
+                }
+            });
+        }
         return presenter.show(this);
+    }
+
+    /**
+     * Redirects the initial focus to the content component. Records the
+     * attempt (test seam): whether the window manager grants the request is
+     * environment-dependent, but the redirect itself must always happen.
+     */
+    void requestInitialContentFocus() {
+        contentFocusRequested = true;
+        content.requestFocusInWindow();
+    }
+
+    /**
+     * @return whether {@link #requestInitialContentFocus()} was invoked
+     * (test seam, see {@link #showAndWait()})
+     */
+    boolean isContentFocusRequested() {
+        return contentFocusRequested;
     }
 
     /**
@@ -222,7 +288,9 @@ class JIPipeDesktopDialog extends JDialog {
     }
 
     /**
-     * A non-cancel action was clicked: record the button and close the dialog.
+     * A non-cancel action was clicked: record the button and close the
+     * dialog. Disposes symmetrically to {@link #dismiss()} — otherwise every
+     * decided dialog would keep its native window alive until GC.
      */
     private void onActionClicked(Button b) {
         if (b == Button.CANCEL) {
@@ -230,6 +298,7 @@ class JIPipeDesktopDialog extends JDialog {
         } else {
             result = b;
             setVisible(false);
+            dispose();
         }
     }
 }

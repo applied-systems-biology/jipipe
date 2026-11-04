@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -164,8 +165,21 @@ class DialogChromeTest {
         String message = "Hello <b>world</b>";
         d.addMessage(message);
         assertNotNull(d.getMessageLabel(), "addMessage() must install a message label");
-        assertTrue(d.getMessageLabel().getText().contains(message),
-                "message label text must contain the given message");
+        // Plain messages are escaped inside the HTML wrapper: the literal
+        // markup characters must render verbatim (the old JOptionPane showed
+        // plain strings verbatim), never as markup.
+        assertTrue(d.getMessageLabel().getText().contains("Hello &lt;b&gt;world&lt;/b&gt;"),
+                "a plain message must be escaped in the wrapper (<, >, & render verbatim)");
+        assertFalse(d.getMessageLabel().getText().contains("<b>"),
+                "a plain message must not be set as live markup");
+
+        // The ampersand is escaped (first — without double-escaping).
+        JIPipeDesktopDialog ampersand = newDialog();
+        ampersand.addMessage("A & B");
+        assertTrue(ampersand.getMessageLabel().getText().contains("A &amp; B"),
+                "a literal & must render verbatim (escaped exactly once)");
+        assertFalse(ampersand.getMessageLabel().getText().contains("&amp;amp;"),
+                "the & escape must not be double-escaped");
     }
 
     @Test
