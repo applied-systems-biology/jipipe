@@ -18,6 +18,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEdit
 import org.hkijena.jipipe.desktop.app.grapheditor.contextpanel.JIPipeDesktopGraphEditorContextPanelIsland;
 import org.hkijena.jipipe.desktop.commons.components.color.palette.JIPipeDesktopColorPalette;
 import org.hkijena.jipipe.desktop.commons.components.color.palette.JIPipeDesktopColorPaletteColor;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.canvasnotes.nodes.TextBoxGraphCanvasNote;
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
 import org.hkijena.jipipe.plugins.parameters.library.roi.Anchor;
@@ -46,10 +47,8 @@ public class TextBoxNoteGraphNodeTool extends JIPipeAnnotationGraphNodeTool<Text
             applyPreset(node, preset);
         }
 
-        String title = JOptionPane.showInputDialog(getDesktopWorkbench().getWindow(), "Please input the title:", "Create text box", JOptionPane.PLAIN_MESSAGE);
-        if (!StringUtils.isNullOrEmpty(title)) {
-            node.setTextTitle(title);
-        }
+        JIPipeDesktopDialogs.inputText(getDesktopWorkbench().getWindow(), "Create text box", "Please input the title:", null)
+                .ifPresent(title -> node.setTextTitle(title));
 
         JIPipeDesktopColorPaletteColor color = getColor();
         node.getShapeParameters().setBorderColor(color.getForeground());

@@ -321,7 +321,7 @@ public class JIPipeDesktopRawSettingsSection extends JPanel implements Disposabl
                 + (row.isDocumented() ? " &mdash; " + escapeHtml(row.typeLabel())
                 + (row.description().isEmpty() ? "" : "<br>" + escapeHtml(row.description())) : "")
                 + "<br>Edit the value as JSON.</html>";
-        String edited = UIUtils.getMultiLineStringByDialog(this, "Edit raw setting", message, current);
+        String edited = JIPipeDesktopDialogs.inputMultiLine(this, "Edit raw setting", message, current).orElse(null);
         if (edited == null) {
             return;
         }

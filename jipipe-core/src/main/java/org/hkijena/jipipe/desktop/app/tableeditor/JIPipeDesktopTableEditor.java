@@ -29,6 +29,7 @@ import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopLargeBu
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopSmallButtonRibbonAction;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeTableViewerUIApplicationSettings;
@@ -445,15 +446,16 @@ public class JIPipeDesktopTableEditor extends JIPipeDesktopWorkbenchPanel {
     }
 
     private void addColumn(boolean stringColumn) {
-        String name = UIUtils.getUniqueStringByDialog(this,
+        // The former wrapper pre-uniquified the initial value; preserved here
+        Optional<String> name = JIPipeDesktopDialogs.inputUniqueText(this, "Input",
                 "Please enter the name of the new column",
-                "Column",
-                tableModel::containsColumn);
-        if (name != null && !name.isEmpty()) {
+                StringUtils.makeUniqueString("Column", " ", tableModel::containsColumn),
+                tableModel::containsColumn, null);
+        if (name.isPresent()) {
             createUndoSnapshot();
             if (tableModel.getRowCount() == 0)
                 tableModel.addRow();
-            tableModel.addColumn(name, stringColumn);
+            tableModel.addColumn(name.get(), stringColumn);
             refreshTable();
         }
     }
@@ -467,12 +469,14 @@ public class JIPipeDesktopTableEditor extends JIPipeDesktopWorkbenchPanel {
         sourceColumn = jxTable.convertColumnIndexToModel(sourceColumn);
         String sourceColumnName = tableModel.getColumnName(sourceColumn);
 
-        String newName = UIUtils.getUniqueStringByDialog(this, "Set the name of the new column:",
-                sourceColumnName, tableModel::containsColumn);
-        if (!StringUtils.isNullOrEmpty(newName) && !tableModel.containsColumn(newName)) {
+        // The former wrapper pre-uniquified the initial value; preserved here
+        Optional<String> newName = JIPipeDesktopDialogs.inputUniqueText(this, "Input", "Set the name of the new column:",
+                StringUtils.makeUniqueString(sourceColumnName, " ", tableModel::containsColumn),
+                tableModel::containsColumn, null);
+        if (newName.isPresent() && !tableModel.containsColumn(newName.get())) {
             createUndoSnapshot();
             jxTable.setModel(new DefaultTableModel());
-            tableModel.duplicateColumn(sourceColumn, newName);
+            tableModel.duplicateColumn(sourceColumn, newName.get());
             jxTable.setModel(tableModel);
             refreshTable();
         }
@@ -492,12 +496,14 @@ public class JIPipeDesktopTableEditor extends JIPipeDesktopWorkbenchPanel {
                 generatedName.append(tableModel.getColumnName(sourceColumns[i]));
             }
 
-            String newName = UIUtils.getUniqueStringByDialog(this, "Set the name of the new column:",
-                    generatedName.toString(), tableModel::containsColumn);
-            if (!StringUtils.isNullOrEmpty(newName) && !tableModel.containsColumn(newName)) {
+            // The former wrapper pre-uniquified the initial value; preserved here
+            Optional<String> newName = JIPipeDesktopDialogs.inputUniqueText(this, "Input", "Set the name of the new column:",
+                    StringUtils.makeUniqueString(generatedName.toString(), " ", tableModel::containsColumn),
+                    tableModel::containsColumn, null);
+            if (newName.isPresent() && !tableModel.containsColumn(newName.get())) {
                 try (BusyCursor busyCursor = new BusyCursor(this)) {
                     createUndoSnapshot();
-                    tableModel.mergeColumns(Ints.asList(sourceColumns), newName, ", ", "=");
+                    tableModel.mergeColumns(Ints.asList(sourceColumns), newName.get(), ", ", "=");
                     refreshTable();
                 }
             }
@@ -508,10 +514,13 @@ public class JIPipeDesktopTableEditor extends JIPipeDesktopWorkbenchPanel {
         if (jxTable.getSelectedColumn() != -1) {
             createUndoSnapshot();
             String oldName = tableModel.getColumnName(jxTable.convertColumnIndexToModel(jxTable.getSelectedColumn()));
-            String name = UIUtils.getUniqueStringByDialog(this, "Please input a new name", oldName, tableModel::containsColumn);
-            if (!StringUtils.isNullOrEmpty(name) && !Objects.equals(name, oldName)) {
+            // The former wrapper pre-uniquified the initial value; preserved here
+            Optional<String> name = JIPipeDesktopDialogs.inputUniqueText(this, "Input", "Please input a new name",
+                    StringUtils.makeUniqueString(oldName, " ", tableModel::containsColumn),
+                    tableModel::containsColumn, null);
+            if (name.isPresent() && !Objects.equals(name.get(), oldName)) {
                 jxTable.setModel(new DefaultTableModel());
-                tableModel.renameColumn(oldName, name);
+                tableModel.renameColumn(oldName, name.get());
                 jxTable.setModel(tableModel);
                 jxTable.packAll();
             }

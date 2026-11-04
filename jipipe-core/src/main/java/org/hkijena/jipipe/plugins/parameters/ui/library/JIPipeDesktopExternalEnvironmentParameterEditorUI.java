@@ -183,10 +183,8 @@ public class JIPipeDesktopExternalEnvironmentParameterEditorUI extends JIPipeDes
         JIPipeParameterTypeInfo typeInfo = JIPipe.getInstance().getParameterTypes().getInfoByFieldClass(fieldClass);
 
         JIPipeEnvironment duplicate = (JIPipeEnvironment) typeInfo.duplicate(parameter);
-        String newName = JOptionPane.showInputDialog(getDesktopWorkbench().getWindow(), "Please insert the name of the preset:", duplicate.getName());
-        if (StringUtils.isNullOrEmpty(newName))
-            return;
-        duplicate.setName(newName);
+        JIPipeDesktopDialogs.inputText(getDesktopWorkbench().getWindow(), "Input", "Please insert the name of the preset:", duplicate.getName())
+                .ifPresent(duplicate::setName);
 
         JIPipe.getInstance().getEnvironments().addPreset(fieldClass, duplicate);
     }

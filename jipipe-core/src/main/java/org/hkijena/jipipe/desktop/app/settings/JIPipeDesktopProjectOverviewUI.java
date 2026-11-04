@@ -259,7 +259,12 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
     private void editProjectDescription() {
         JIPipeDesktopHTMLEditor editor = new JIPipeDesktopHTMLEditor(getDesktopProjectWorkbench(), JIPipeDesktopHTMLEditor.Mode.Full, JIPipeDesktopHTMLEditor.WITH_SCROLL_BAR);
         editor.setText(getProject().getMetadata().getDescription().getHtml());
-        if (UIUtils.showConfirmDialog(this, "Edit project description", new Dimension(800, 600), editor)) {
+        Optional<Button> result = JIPipeDesktopDialogs.builder(this, "Edit project description")
+                .content(editor)
+                .buttons(Button.OK, Button.CANCEL)
+                .size(800, 600)
+                .show();
+        if (result.orElse(null) == Button.OK) {
             getProject().getMetadata().setDescription(new HTMLText(editor.getHTML()));
             refreshCenterPanel();
         }
@@ -646,11 +651,14 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
             }));
         }
         popupMenu.add(UIUtils.createMenuItem("Custom ...", "Enter a custom ID", JIPipe.RESOURCES.getIcon16("actions/edit.png"), () -> {
-            String newLicense = JOptionPane.showInputDialog(this, "Please enter a valid license ID:", "Set license");
-            if (!StringUtils.isNullOrEmpty(newLicense)) {
-                getProject().getMetadata().setLicense(newLicense);
-                refreshAll();
-            }
+            // "Set license" was the third argument of the former 3-arg
+            // showInputDialog call, i.e. the initial field value (not a title).
+            // Preserved verbatim.
+            JIPipeDesktopDialogs.inputText(this, "Input", "Please enter a valid license ID:", "Set license")
+                    .ifPresent(newLicense -> {
+                        getProject().getMetadata().setLicense(newLicense);
+                        refreshAll();
+                    });
         }));
 
         popupMenu.addSeparator();

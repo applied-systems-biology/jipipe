@@ -118,6 +118,7 @@ import java.util.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 /**
  * UI around an {@link JIPipeProject}
@@ -1319,10 +1320,13 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
     private void newCompartmentAfterCurrent() {
         if (documentTabPane.getCurrentContent() instanceof JIPipeDesktopPipelineGraphEditorUI) {
             JIPipeDesktopPipelineGraphEditorUI ui = (JIPipeDesktopPipelineGraphEditorUI) documentTabPane.getCurrentContent();
-            String compartmentName = UIUtils.getUniqueStringByDialog(this, "Please enter the name of the compartment",
-                    "Compartment", s -> project.getCompartments().containsKey(s));
-            if (compartmentName != null && !compartmentName.trim().isEmpty()) {
-                JIPipeProjectCompartment compartment = project.addCompartment(compartmentName);
+            // The former wrapper pre-uniquified the initial value; preserved here
+            Predicate<String> compartmentExists = s -> project.getCompartments().containsKey(s);
+            Optional<String> compartmentName = JIPipeDesktopDialogs.inputUniqueText(this, "Input", "Please enter the name of the compartment",
+                    StringUtils.makeUniqueString("Compartment", " ", compartmentExists),
+                    compartmentExists, null);
+            if (compartmentName.isPresent()) {
+                JIPipeProjectCompartment compartment = project.addCompartment(compartmentName.get());
                 project.connectCompartments(project.getCompartments().get(ui.getCompartment()), compartment);
                 getOrOpenPipelineEditorTab(compartment, true);
             }

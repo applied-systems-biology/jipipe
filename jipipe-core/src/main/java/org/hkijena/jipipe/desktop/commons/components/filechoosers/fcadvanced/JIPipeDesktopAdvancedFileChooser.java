@@ -19,6 +19,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.service.JIPipeServiceState;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.textfield.JIPipeDesktopFancyTextField;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.parameters.library.filesystem.FileChooserBookmark;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
@@ -375,17 +376,13 @@ public class JIPipeDesktopAdvancedFileChooser extends JPanel implements Property
             Path path = directory.toPath();
             if (bookmarked) {
                 if (settings.getBookmarks().stream().noneMatch(bookmark -> Objects.equals(path, bookmark.getPath()))) {
-                    Object name = JOptionPane.showInputDialog(this,
-                            "Please enter the name of the new bookmark",
-                            "Create bookmark",
-                            JOptionPane.INFORMATION_MESSAGE,
-                            null,
-                            null,
-                            path.getFileName().toString());
-                    if (name != null && !StringUtils.nullToEmpty(name).trim().isEmpty()) {
-                        settings.getBookmarks().add(new FileChooserBookmark(name.toString(), path));
-                        settings.emitParameterChangedEvent("bookmarks");
-                    }
+                    // The former 7-arg showInputDialog passed selectionValues=null,
+                    // i.e. a plain text input
+                    JIPipeDesktopDialogs.inputText(this, "Create bookmark", "Please enter the name of the new bookmark", path.getFileName().toString())
+                            .ifPresent(name -> {
+                                settings.getBookmarks().add(new FileChooserBookmark(name, path));
+                                settings.emitParameterChangedEvent("bookmarks");
+                            });
                 }
             } else {
                 settings.getBookmarks().removeIf(bookmark -> Objects.equals(path, bookmark.getPath()));

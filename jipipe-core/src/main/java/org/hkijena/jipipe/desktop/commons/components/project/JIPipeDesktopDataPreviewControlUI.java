@@ -15,6 +15,7 @@ package org.hkijena.jipipe.desktop.commons.components.project;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeGeneralDataApplicationSettings;
 import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -83,7 +84,7 @@ public class JIPipeDesktopDataPreviewControlUI extends JPanel implements JIPipeP
 
     private void setSizeManually() {
         int current = dataSettings.getPreviewSize();
-        Optional<Integer> selected = UIUtils.getIntegerByDialog(this, "Set preview size", "Set the preview size in pixels:", current, 40, Integer.MAX_VALUE);
+        Optional<Integer> selected = JIPipeDesktopDialogs.inputInteger(this, "Set preview size", "Set the preview size in pixels:", current, 40, Integer.MAX_VALUE);
         if (selected.isPresent()) {
             int newSize = selected.get();
             if (newSize != current) {

@@ -19,6 +19,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.settings.ThemePreviewPanel;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterFormPanel;
+import org.hkijena.jipipe.desktop.commons.dialogs.Button;
 import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernThemeStyle;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
@@ -31,6 +32,9 @@ import org.hkijena.jipipe.utils.debounce.StaticDebouncer;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 public class JIPipeDesktopThemeEditor extends JFrame implements JIPipeParameterCollection.ParameterChangedEventListener {
 
@@ -99,18 +103,17 @@ public class JIPipeDesktopThemeEditor extends JFrame implements JIPipeParameterC
     private void saveDocument() {
         String id = document.getId();
         if (StringUtils.isNullOrEmpty(id)) {
-            // Find a new ID
-            while (true) {
-                id = StringUtils.nullToEmpty(JOptionPane.showInputDialog(this, "Please enter the ID of the style", StringUtils.makeFilesystemCompatible(StringUtils.nullToEmpty(document.getCategoryBasics().getName())))).trim();
-                if (StringUtils.isNullOrEmpty(id)) {
-                    return;
-                }
-                if (ThemeUtils.getAvailableStyleIds().contains(id)) {
-                    JOptionPane.showMessageDialog(this, "The style ID " + id + " already exists. Please choose another ID.", "Save style", JOptionPane.ERROR_MESSAGE);
-                } else {
-                    break;
-                }
+            // Find a new ID: the facade's unique-text dialog repeats its prompt
+            // (inline error) for taken IDs, so the former error-dialog loop
+            // collapses into one call. Empty submit/dismissal cancels the save.
+            Optional<String> newId = JIPipeDesktopDialogs.inputUniqueText(this, "Input", "Please enter the ID of the style",
+                    StringUtils.makeFilesystemCompatible(StringUtils.nullToEmpty(document.getCategoryBasics().getName())),
+                    ThemeUtils.getAvailableStyleIds()::contains,
+                    "The style ID {value} already exists. Please choose another ID.");
+            if (!newId.isPresent()) {
+                return;
             }
+            id = newId.get().trim();
         }
         if (StringUtils.isNullOrEmpty(id)) {
             return;
@@ -137,16 +140,21 @@ public class JIPipeDesktopThemeEditor extends JFrame implements JIPipeParameterC
     }
 
     private void newDocumentFromExisting() {
-        Object id = JOptionPane.showInputDialog(this,
-                "Please select the theme style that you want to use as base:",
-                "New theme from template",
-                JOptionPane.PLAIN_MESSAGE,
-                null,
-                ThemeUtils.getAvailableStyleIds().toArray(),
-                ThemeUtils.DEFAULT_STYLE_ID);
-        if (id instanceof String str) {
-            newDocumentFromExisting(str);
+        List<String> styleIds = ThemeUtils.getAvailableStyleIds();
+        List<Button> options = new ArrayList<>();
+        for (String styleId : styleIds) {
+            Button button = Button.custom(styleId);
+            if (styleId.equals(ThemeUtils.DEFAULT_STYLE_ID)) {
+                button = button.asDefault();
+            }
+            options.add(button);
         }
+        options.add(Button.CANCEL);
+        Optional<Button> selected = JIPipeDesktopDialogs.choose(this,
+                "New theme from template",
+                "Please select the theme style that you want to use as base:",
+                options.toArray(new Button[0]));
+        selected.ifPresent(button -> newDocumentFromExisting(button.getLabel()));
     }
 
     private void newDocumentFromExisting(String id) {

@@ -116,12 +116,12 @@ public class TextBoxNoteGraphNodeToolProperties extends JIPipeDesktopFormGraphEd
     }
 
     private void renamePreset() {
-        String newName = JOptionPane.showInputDialog(this, "Please enter the new name:", LAST_PRESET.getName());
-        if (!StringUtils.isNullOrEmpty(newName)) {
-            LAST_PRESET.setName(newName);
-            onPresetChanged();
-            savePresets();
-        }
+        JIPipeDesktopDialogs.inputText(this, "Input", "Please enter the new name:", LAST_PRESET.getName())
+                .ifPresent(newName -> {
+                    LAST_PRESET.setName(newName);
+                    onPresetChanged();
+                    savePresets();
+                });
     }
 
     private void addPreset() {

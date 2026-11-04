@@ -351,10 +351,8 @@ public class JIPipeDesktopTabPane extends JPanel implements Disposable {
             JMenuItem renameButton = new JMenuItem("Rename", JIPipe.RESOURCES.getIcon16("actions/tag.png"));
             UIUtils.makeButtonBorderlessWithoutMargin(renameButton);
             renameButton.addActionListener(e -> {
-                String newName = JOptionPane.showInputDialog(this, "Rename tab '" + tab.getTitle() + "' to ...", tab.getTitle());
-                if (newName != null && !newName.isEmpty()) {
-                    tab.setTitle(newName);
-                }
+                JIPipeDesktopDialogs.inputText(this, "Input", "Rename tab '" + tab.getTitle() + "' to ...", tab.getTitle())
+                        .ifPresent(newName -> tab.setTitle(newName));
             });
             popupMenu.add(renameButton);
         }

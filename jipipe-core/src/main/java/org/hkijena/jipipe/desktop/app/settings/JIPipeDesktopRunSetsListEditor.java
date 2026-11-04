@@ -63,17 +63,17 @@ public class JIPipeDesktopRunSetsListEditor extends JIPipeDesktopProjectWorkbenc
 
     public static void createRunSetsManagementContextMenu(JMenu menu, Set<JIPipeGraphNode> nodes, JIPipeDesktopWorkbench workbench) {
         menu.add(UIUtils.createMenuItem("Assign to new run set ...", "Creates a new run set and afterwards adds the node to it", JIPipe.RESOURCES.getIcon16("actions/add.png"), () -> {
-            String newName = JOptionPane.showInputDialog(workbench.getWindow(), "Enter new run set name", "New run set", JOptionPane.PLAIN_MESSAGE);
-            if (!StringUtils.isNullOrEmpty(newName)) {
-                JIPipeProjectRunSet runSet = new JIPipeProjectRunSet();
-                runSet.setName(newName);
-                for (JIPipeGraphNode node : nodes) {
-                    if (node instanceof JIPipeAlgorithm || node instanceof JIPipeProjectCompartment) {
-                        runSet.getNodes().add(new GraphNodeReferenceParameter(node));
-                    }
-                }
-                workbench.getProject().getRunSetsConfiguration().add(runSet);
-            }
+            JIPipeDesktopDialogs.inputText(workbench.getWindow(), "New run set", "Enter new run set name", null)
+                    .ifPresent(newName -> {
+                        JIPipeProjectRunSet runSet = new JIPipeProjectRunSet();
+                        runSet.setName(newName);
+                        for (JIPipeGraphNode node : nodes) {
+                            if (node instanceof JIPipeAlgorithm || node instanceof JIPipeProjectCompartment) {
+                                runSet.getNodes().add(new GraphNodeReferenceParameter(node));
+                            }
+                        }
+                        workbench.getProject().getRunSetsConfiguration().add(runSet);
+                    });
         }));
         menu.add(UIUtils.createMenuItem("Edit run sets", "Opens the run set editor panel", JIPipe.RESOURCES.getIcon16("actions/edit.png"), () -> {
             workbench.getDocumentTabPane().selectSingletonTab(JIPipeDesktopProjectWorkbench.TAB_PROJECT_OVERVIEW);

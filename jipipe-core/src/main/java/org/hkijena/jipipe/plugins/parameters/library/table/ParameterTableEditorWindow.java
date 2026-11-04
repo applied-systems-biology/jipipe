@@ -28,6 +28,7 @@ import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopLargeBu
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopSmallButtonRibbonAction;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
+import org.hkijena.jipipe.desktop.commons.dialogs.Button;
 import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.ThemeUtils;
@@ -301,12 +302,16 @@ public class ParameterTableEditorWindow extends JFrame {
             }
             String strategy = "Skip remaining rows";
             if (generatedObjects.size() < selectedRows.length) {
-                Object result = JOptionPane.showInputDialog(this, String.format("You have selected %d rows, but only %d values were generated.\n" +
+                Optional<Button> result = JIPipeDesktopDialogs.choose(this, "Replace parameter values",
+                        String.format("You have selected %d rows, but only %d values were generated.\n" +
                                 "What should be done with the remaining rows?", selectedRows.length, generatedObjects.size()),
-                        "Replace parameter values", JOptionPane.QUESTION_MESSAGE, null, new Object[]{"Skip remaining rows", "Repeat last generated value", "Cycle generated values"}, strategy);
-                if (result == null || Objects.equals(result, "Cancel"))
+                        Button.custom("Skip remaining rows").asDefault(),
+                        Button.custom("Repeat last generated value"),
+                        Button.custom("Cycle generated values"),
+                        Button.CANCEL);
+                if (result.isEmpty())
                     return;
-                strategy = result.toString();
+                strategy = result.get().getLabel();
             }
             if (strategy.equals("Skip remaining rows")) {
                 for (int i = 0; i < Math.min(generatedObjects.size(), selectedRows.length); i++) {

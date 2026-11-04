@@ -1366,42 +1366,17 @@ public class UIUtils {
         JIPipeDesktopHTMLEditor area = new JIPipeDesktopHTMLEditor(workbench, JIPipeDesktopHTMLEditor.Mode.Full, JIPipeDesktopHTMLEditor.WITH_SCROLL_BAR);
         area.setText(initialValue.getHtml());
 
-        JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(parent), title);
-        dialog.setLayout(new BorderLayout());
+        // Facade-backed (#1341): the builder replaces the hand-rolled button row.
+        JIPipeDesktopDialogs.Builder builder = JIPipeDesktopDialogs.builder(parent, title)
+                .content(area)
+                .buttons(Button.OK, Button.CANCEL)
+                .size(1024, 768);
         if (!StringUtils.isNullOrEmpty(message)) {
-            dialog.add(new JLabel(message), BorderLayout.NORTH);
+            builder.message(message);
         }
-        dialog.add(area, BorderLayout.CENTER);
+        Optional<Button> result = builder.show();
 
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
-        buttonPanel.add(Box.createHorizontalGlue());
-
-        AtomicBoolean confirmation = new AtomicBoolean(false);
-
-        JButton cancelButton = new JButton("Cancel", JIPipe.RESOURCES.getIcon16("actions/cancel.png"));
-        cancelButton.addActionListener(e -> {
-            confirmation.set(false);
-            dialog.setVisible(false);
-        });
-        buttonPanel.add(cancelButton);
-
-        JButton confirmButton = new JButton("OK", JIPipe.RESOURCES.getIcon16("actions/ok.png"));
-        confirmButton.addActionListener(e -> {
-            confirmation.set(true);
-            dialog.setVisible(false);
-        });
-        buttonPanel.add(confirmButton);
-
-        dialog.add(buttonPanel, BorderLayout.SOUTH);
-
-        dialog.pack();
-        dialog.setSize(1024, 768);
-        dialog.setLocationRelativeTo(parent);
-        dialog.setModal(true);
-        dialog.setVisible(true);
-
-        if (confirmation.get()) {
+        if (result.orElse(null) == Button.OK) {
             return new HTMLText(area.getHTML());
         }
         return null;
@@ -1576,16 +1551,10 @@ public class UIUtils {
     public static String getUniqueStringByDialog(Component parent, String message, String initialValue, Predicate<String> exists) {
         if (initialValue != null)
             initialValue = StringUtils.makeUniqueString(initialValue, " ", exists);
-        String value = null;
-        while (value == null) {
-            String newValue = JOptionPane.showInputDialog(parent, message, initialValue);
-            if (newValue == null || newValue.trim().isEmpty())
-                return null;
-            if (exists.test(newValue))
-                continue;
-            value = newValue;
-        }
-        return value;
+        // Facade-backed (#1341): the modern input-unique dialog covers the loop
+        // (a taken submission re-presents the dialog). "Input" was the window
+        // title of the former 3-arg JOptionPane.showInputDialog call.
+        return JIPipeDesktopDialogs.inputUniqueText(parent, "Input", message, initialValue, exists, null).orElse(null);
     }
 
     /**

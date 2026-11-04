@@ -24,6 +24,7 @@ import org.hkijena.jipipe.desktop.commons.components.color.JIPipeDesktopColorCho
 import org.hkijena.jipipe.desktop.commons.components.icons.OverlayJIPipeDesktopColorIcon;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterFormPanel;
+import org.hkijena.jipipe.desktop.commons.dialogs.Button;
 import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
@@ -619,9 +620,16 @@ public class JIPipeDesktopHTMLEditor extends JIPipeDesktopWorkbenchPanel {
         makeToolbarButton24(editInDialogButton);
         editInDialogButton.setToolTipText("Edit in dedicated window");
         editInDialogButton.addActionListener(e -> {
-            HTMLText result = UIUtils.getHTMLByDialog(getDesktopWorkbench(), this, "Edit", null, new HTMLText(getHTML()));
-            if (result != null) {
-                setText(result.getHtml());
+            // Facade builder (#1341): read getHTML() only when OK was chosen
+            JIPipeDesktopHTMLEditor dialogEditor = new JIPipeDesktopHTMLEditor(getDesktopWorkbench(), Mode.Full, WITH_SCROLL_BAR);
+            dialogEditor.setText(getHTML());
+            Optional<Button> result = JIPipeDesktopDialogs.builder(this, "Edit")
+                    .content(dialogEditor)
+                    .buttons(Button.OK, Button.CANCEL)
+                    .size(1024, 768)
+                    .show();
+            if (result.orElse(null) == Button.OK) {
+                setText(dialogEditor.getHTML());
             }
         });
 
@@ -652,19 +660,21 @@ public class JIPipeDesktopHTMLEditor extends JIPipeDesktopWorkbenchPanel {
     }
 
     private void insertImageURL() {
-        String urlString = JOptionPane.showInputDialog(this, "Please insert the URL of the image into the following box.\nPlease note that the image will not be embedded into the document.", "Insert image", JOptionPane.PLAIN_MESSAGE);
-        try {
-            URL url = new URL(urlString);
-            try {
-                int caretPosition = wysiwygEditorPane.getCaretPosition();
-                HTMLDocument document = (HTMLDocument) wysiwygEditorPane.getDocument();
-                wysiwygEditorKit.insertHTML(document, caretPosition, "<img src=\"" + url + "\" ></img>", 0, 0, HTML.Tag.IMG);
-            } catch (BadLocationException | IOException e) {
-                throw new RuntimeException(e);
-            }
-        } catch (MalformedURLException e) {
-            JOptionPane.showMessageDialog(this, "'" + urlString + "' is not a valid URL!");
-        }
+        JIPipeDesktopDialogs.inputText(this, "Insert image", "Please insert the URL of the image into the following box.\nPlease note that the image will not be embedded into the document.", null)
+                .ifPresent(urlString -> {
+                    try {
+                        URL url = new URL(urlString);
+                        try {
+                            int caretPosition = wysiwygEditorPane.getCaretPosition();
+                            HTMLDocument document = (HTMLDocument) wysiwygEditorPane.getDocument();
+                            wysiwygEditorKit.insertHTML(document, caretPosition, "<img src=\"" + url + "\" ></img>", 0, 0, HTML.Tag.IMG);
+                        } catch (BadLocationException | IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    } catch (MalformedURLException e) {
+                        JOptionPane.showMessageDialog(this, "'" + urlString + "' is not a valid URL!");
+                    }
+                });
     }
 
     private void insertLink() {
@@ -713,45 +723,43 @@ public class JIPipeDesktopHTMLEditor extends JIPipeDesktopWorkbenchPanel {
         }
         setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         if (base64.length() > 128 * 1024) {
-            Object result = JOptionPane.showInputDialog(this, "The image has a size of " + image.getWidth() + " x " + image.getHeight() + " pixels (" + (base64.length() / 1024) + "KB)." +
-                            "Images of this size can impact the performance of the editor.\nIn the following setting, you can downscale the image to a specified data size or scale.", "Insert image", JOptionPane.WARNING_MESSAGE,
-                    JIPipe.RESOURCES.getIcon16("apps/jipipe.png"), new Object[]{
-                            "512KB",
-                            "256KB",
-                            "128KB",
-                            "64KB",
-                            "32KB",
-                            "100%",
-                            "80%",
-                            "75%",
-                            "60%",
-                            "50%",
-                            "40%",
-                            "25%",
-                            "20%",
-                            "10%"
-                    }, "128KB");
-            if (result instanceof String) {
-                String s = result.toString();
-                double percentage;
-                if (s.endsWith("KB")) {
-                    double targetBytes = Integer.parseInt(s.substring(0, s.length() - 2)) * 1024;
-                    percentage = Math.sqrt(targetBytes / base64.length());
-                } else {
-                    percentage = Double.parseDouble(s.substring(0, s.length() - 1)) / 100.0;
-                }
-                if (percentage < 1) {
-                    ImageProcessor processor = new ColorProcessor(image);
-                    processor = processor.resize((int) (processor.getWidth() * percentage), (int) (processor.getHeight() * percentage));
-                    image = processor.getBufferedImage();
-                    try {
-                        base64 = BufferedImageUtils.imageToBase64(image, "png");
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            } else {
+            Optional<Button> result = JIPipeDesktopDialogs.choose(this, "Insert image", "The image has a size of " + image.getWidth() + " x " + image.getHeight() + " pixels (" + (base64.length() / 1024) + "KB)." +
+                            "Images of this size can impact the performance of the editor.\nIn the following setting, you can downscale the image to a specified data size or scale.",
+                    Button.custom("512KB"),
+                    Button.custom("256KB"),
+                    Button.custom("128KB").asDefault(),
+                    Button.custom("64KB"),
+                    Button.custom("32KB"),
+                    Button.custom("100%"),
+                    Button.custom("80%"),
+                    Button.custom("75%"),
+                    Button.custom("60%"),
+                    Button.custom("50%"),
+                    Button.custom("40%"),
+                    Button.custom("25%"),
+                    Button.custom("20%"),
+                    Button.custom("10%"),
+                    Button.CANCEL);
+            if (result.isEmpty()) {
                 return;
+            }
+            String s = result.get().getLabel();
+            double percentage;
+            if (s.endsWith("KB")) {
+                double targetBytes = Integer.parseInt(s.substring(0, s.length() - 2)) * 1024;
+                percentage = Math.sqrt(targetBytes / base64.length());
+            } else {
+                percentage = Double.parseDouble(s.substring(0, s.length() - 1)) / 100.0;
+            }
+            if (percentage < 1) {
+                ImageProcessor processor = new ColorProcessor(image);
+                processor = processor.resize((int) (processor.getWidth() * percentage), (int) (processor.getHeight() * percentage));
+                image = processor.getBufferedImage();
+                try {
+                    base64 = BufferedImageUtils.imageToBase64(image, "png");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
 
