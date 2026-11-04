@@ -16,10 +16,14 @@ package org.hkijena.jipipe.desktop.commons.dialogs;
 import org.hkijena.jipipe.utils.ThemeUtils;
 
 import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingUtilities;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -44,10 +48,11 @@ import java.util.Optional;
  * EDT itself; doing so would be redundant for the existing call sites and
  * would change the threading semantics of the migration.
  * <p>
- * This class currently offers the notify/decide/choose methods
- * ({@link #message}, {@link #error}, {@link #confirm}, {@link #choose});
- * the typed input methods and the {@code Builder} escape hatch follow in
- * later tasks of #1341.
+ * This class currently offers the notify/decide/choose/input methods
+ * ({@link #message}, {@link #error}, {@link #confirm}, {@link #choose},
+ * {@link #inputText}, {@link #inputMultiLine}, {@link #inputInteger},
+ * {@link #inputDouble}); the remaining pick/input methods and the
+ * {@code Builder} escape hatch follow in later tasks of #1341.
  */
 public final class JIPipeDesktopDialogs {
 
@@ -57,6 +62,13 @@ public final class JIPipeDesktopDialogs {
      * and the height is bounded so long traces scroll instead of growing.
      */
     private static final Dimension ERROR_TRACE_PREFERRED_SIZE = new Dimension(420, 150);
+
+    /**
+     * Preferred dimensions of the scrollable multi-line input area in
+     * {@link #inputMultiLine} dialogs (spec §4.2: ≈480×240, overridable only
+     * via the builder).
+     */
+    private static final Dimension MULTILINE_PREFERRED_SIZE = new Dimension(480, 240);
 
     private JIPipeDesktopDialogs() {
     }
@@ -165,6 +177,134 @@ public final class JIPipeDesktopDialogs {
     }
 
     /**
+     * Shows a single-line text input dialog: a {@link JTextField} pre-filled
+     * with {@code initialValue} (null → empty) whose content is selected.
+     * Enter inside the field and the OK button both submit.
+     * <p>
+     * Deliberate behavior change vs. {@code JOptionPane.showInputDialog}
+     * (spec §4.2): submitting with <em>empty or whitespace-only</em> text
+     * counts as dismiss — the result is {@link Optional#empty()}, never an
+     * empty string. A caller that genuinely needs an empty value uses the
+     * {@code Builder} escape hatch (a later task of #1341).
+     *
+     * @param parent       the parent component, or null for an ownerless dialog
+     * @param title        the dialog title
+     * @param message      the message to show (may contain {@code <html>…</html>}), or null (no label)
+     * @param initialValue the initial field text, or null for an empty field
+     * @return the submitted text, or empty if the dialog was dismissed or the submission was empty/whitespace-only
+     */
+    public static Optional<String> inputText(Component parent, String title, String message, String initialValue) {
+        JTextField field = new JTextField(initialValue != null ? initialValue : "");
+        field.selectAll();
+        JIPipeDesktopDialog dialog = newInputDialog(parent, title, message, field);
+        // Enter inside the field submits the OK action (spec §4.2): the
+        // field's action event (fired on Enter) clicks the OK button — the
+        // same code path as an OK click. Index 0 is the OK button: it is the
+        // only caller-provided button (the implicit Cancel is appended last).
+        JButton okButton = dialog.getActionButtons().get(0);
+        field.addActionListener(e -> okButton.doClick());
+        dialog.showAndWait();
+        if (!okChosen(dialog)) {
+            return Optional.empty();
+        }
+        String text = field.getText();
+        if (text.isBlank()) {
+            // Empty-submit rule (spec §4.2): an empty/whitespace-only
+            // submission counts as dismiss, not as an empty-string value.
+            return Optional.empty();
+        }
+        return Optional.of(text);
+    }
+
+    /**
+     * Shows a multi-line text input dialog: a {@link JTextArea} in a scroll
+     * pane (≈480×240), pre-filled with {@code initialValue} (null → empty).
+     * Enter inserts a newline — submission is via the OK button only.
+     * <p>
+     * Same empty-submit rule as {@link #inputText} (spec §4.2): submitting
+     * with empty or whitespace-only text counts as dismiss.
+     *
+     * @param parent       the parent component, or null for an ownerless dialog
+     * @param title        the dialog title
+     * @param message      the message to show (may contain {@code <html>…</html>}), or null (no label)
+     * @param initialValue the initial area text, or null for an empty area
+     * @return the submitted text, or empty if the dialog was dismissed or the submission was empty/whitespace-only
+     */
+    public static Optional<String> inputMultiLine(Component parent, String title, String message, String initialValue) {
+        JTextArea area = new JTextArea(initialValue != null ? initialValue : "");
+        JScrollPane pane = new JScrollPane(area);
+        pane.setPreferredSize(MULTILINE_PREFERRED_SIZE);
+        JIPipeDesktopDialog dialog = newInputDialog(parent, title, message, pane);
+        // No Enter binding here: inside a JTextArea, Enter inserts a newline;
+        // submission is via the OK button only (spec §4.2).
+        dialog.showAndWait();
+        if (!okChosen(dialog)) {
+            return Optional.empty();
+        }
+        String text = area.getText();
+        if (text.isBlank()) {
+            return Optional.empty();
+        }
+        return Optional.of(text);
+    }
+
+    /**
+     * Shows an integer input dialog: a plain {@link JSpinner} with a
+     * {@link SpinnerNumberModel} (step 1) bounded by {@code min}/{@code max}.
+     * A null {@code initialValue} starts the spinner at {@code min}.
+     *
+     * @param parent       the parent component, or null for an ownerless dialog
+     * @param title        the dialog title
+     * @param message      the message to show (may contain {@code <html>…</html>}), or null (no label)
+     * @param initialValue the initial value, or null to start at {@code min}
+     * @param min          the minimum (inclusive)
+     * @param max          the maximum (inclusive)
+     * @return the submitted value, or empty if the dialog was dismissed
+     * @throws IllegalArgumentException if {@code min > max} (thrown before any dialog is built)
+     */
+    public static Optional<Integer> inputInteger(Component parent, String title, String message, Integer initialValue, int min, int max) {
+        if (min > max) {
+            throw new IllegalArgumentException("min (" + min + ") must not be greater than max (" + max + ")");
+        }
+        SpinnerNumberModel model = new SpinnerNumberModel(initialValue != null ? initialValue : min, min, max, 1);
+        JSpinner spinner = new JSpinner(model);
+        JIPipeDesktopDialog dialog = newInputDialog(parent, title, message, spinner);
+        dialog.showAndWait();
+        if (!okChosen(dialog)) {
+            return Optional.empty();
+        }
+        return Optional.of(model.getNumber().intValue());
+    }
+
+    /**
+     * Shows a floating-point input dialog: a plain {@link JSpinner} with a
+     * {@link SpinnerNumberModel} (step 1) bounded by {@code min}/{@code max}.
+     * A null {@code initialValue} starts the spinner at {@code min}.
+     *
+     * @param parent       the parent component, or null for an ownerless dialog
+     * @param title        the dialog title
+     * @param message      the message to show (may contain {@code <html>…</html>}), or null (no label)
+     * @param initialValue the initial value, or null to start at {@code min}
+     * @param min          the minimum (inclusive)
+     * @param max          the maximum (inclusive)
+     * @return the submitted value, or empty if the dialog was dismissed
+     * @throws IllegalArgumentException if {@code min > max} (thrown before any dialog is built)
+     */
+    public static Optional<Double> inputDouble(Component parent, String title, String message, Double initialValue, double min, double max) {
+        if (min > max) {
+            throw new IllegalArgumentException("min (" + min + ") must not be greater than max (" + max + ")");
+        }
+        SpinnerNumberModel model = new SpinnerNumberModel(initialValue != null ? initialValue : min, min, max, 1.0);
+        JSpinner spinner = new JSpinner(model);
+        JIPipeDesktopDialog dialog = newInputDialog(parent, title, message, spinner);
+        dialog.showAndWait();
+        if (!okChosen(dialog)) {
+            return Optional.empty();
+        }
+        return Optional.of(model.getNumber().doubleValue());
+    }
+
+    /**
      * Resolves the owner window from the given parent component, null-safe
      * (same pattern as {@code JIPipeDesktopColorChooserDialog.show}).
      */
@@ -206,5 +346,29 @@ public final class JIPipeDesktopDialogs {
                 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         pane.setBorder(BorderFactory.createEmptyBorder());
         return pane;
+    }
+
+    /**
+     * Creates an input dialog: message on top, the given content in the
+     * center, cancelable with an OK button (the implicit Cancel is appended
+     * by the dialog chrome — always the {@link Button#CANCEL} constant, never
+     * a copy).
+     */
+    private static JIPipeDesktopDialog newInputDialog(Component parent, String title, String message, JComponent content) {
+        JIPipeDesktopDialog dialog = newDialog(parent, title);
+        dialog.addMessage(normalizeMessage(message));
+        dialog.addContent(content);
+        dialog.setCancelable(true);
+        dialog.setButtons(Button.OK);
+        return dialog;
+    }
+
+    /**
+     * Whether the OK button of an input dialog was chosen (by identity: the
+     * dialog preserves the exact instance, so a Cancel click or a dismissal —
+     * which leaves the result empty — is not an OK choice).
+     */
+    private static boolean okChosen(JIPipeDesktopDialog dialog) {
+        return dialog.getResult().orElse(null) == Button.OK;
     }
 }
