@@ -167,4 +167,21 @@ class DialogChromeTest {
         assertTrue(d.getMessageLabel().getText().contains(message),
                 "message label text must contain the given message");
     }
+
+    @Test
+    void addMessagePassesThroughHtmlDocument() {
+        // A message that already is a full <html> document must not be nested
+        // in the wrapper div (Swing mangles double-wrapped documents).
+        JIPipeDesktopDialog d = newDialog();
+        String document = "<html><b>Hi</b></html>";
+        d.addMessage(document);
+        assertEquals(document, d.getMessageLabel().getText(),
+                "a full <html> document must be set verbatim, without the added wrapper div");
+
+        // Plain messages keep the word-wrapping wrapper.
+        JIPipeDesktopDialog plain = newDialog();
+        plain.addMessage("plain message");
+        assertTrue(plain.getMessageLabel().getText().contains("<div style=\"width: 400px\">"),
+                "a plain message must still be wrapped for word-wrapping");
+    }
 }

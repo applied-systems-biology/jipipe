@@ -100,12 +100,21 @@ class JIPipeDesktopDialog extends JDialog {
     }
 
     /**
-     * Sets the message displayed above the dialog content. The message is
-     * HTML, so it is word-wrapped.
+     * Sets the message displayed above the dialog content. Plain messages are
+     * wrapped in a word-wrapping HTML container; messages that already are a
+     * full {@code <html>} document pass through verbatim (the spec's
+     * {@code <html>} pass-through rule — nesting them in the wrapper div
+     * would mangle their rendering).
      *
-     * @param message the message text, e.g. {@code "Hello <b>world</b>"}
+     * @param message the message text, e.g. {@code "Hello <b>world</b>"} or
+     *                {@code "<html><b>Hello</b></html>"}
      */
     void addMessage(String message) {
+        String trimmed = message != null ? message.trim() : "";
+        if (trimmed.regionMatches(true, 0, "<html", 0, 5)) {
+            messageLabel.setText(message);
+            return;
+        }
         messageLabel.setText("<html><div style=\"width: 400px\"> " + message + " </div></html>");
     }
 
