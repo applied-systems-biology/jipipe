@@ -95,10 +95,7 @@ public class RunImageJImporterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @RegisterJIPipeParameterCollectionContextAction(icon = "actions/configure.png")
     public void setImporterParametersFromUI(JIPipeWorkbench parent) {
         if (importerType.getInstance() == null) {
-            JOptionPane.showMessageDialog(((JIPipeDesktopWorkbench) parent).getWindow(),
-                    "Please select an importer type, first!",
-                    "Set import parameters",
-                    JOptionPane.ERROR_MESSAGE);
+            JIPipeDesktopDialogs.message(((JIPipeDesktopWorkbench) parent).getWindow(), "Set import parameters", "Please select an importer type, first!");
             return;
         }
         ImageJDataImportOperation operation = new ImageJDataImportOperation(importerType.getInstance());

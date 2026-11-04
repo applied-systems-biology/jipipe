@@ -46,10 +46,8 @@ public class REnvironmentFromSystemSetupTool implements JIPipeEnvironmentSetupTo
             rEnvironment.setRExecutablePath(selectedRPath);
             rEnvironment.setRScriptExecutablePath(selectedRPath);
 
-            JOptionPane.showMessageDialog(parent,
-                    "R executable set to: " + selectedRPath + "\n" +
-                            "Note: You may need to manually configure the RScript executable path if it differs from the R executable.",
-                    "R Configuration", JOptionPane.INFORMATION_MESSAGE);
+            JIPipeDesktopDialogs.message(parent, "R Configuration", "R executable set to: " + selectedRPath + "\n" +
+                            "Note: You may need to manually configure the RScript executable path if it differs from the R executable.");
 
             return true;
         } else {
@@ -107,11 +105,9 @@ public class REnvironmentFromSystemSetupTool implements JIPipeEnvironmentSetupTo
 
             rEnvironment.setLoadFromArtifact(false);
 
-            JOptionPane.showMessageDialog(parent,
-                    "R environment configured successfully!\n" +
+            JIPipeDesktopDialogs.message(parent, "R Configuration", "R environment configured successfully!\n" +
                             "R executable: " + rEnvironment.getRExecutablePath() + "\n" +
-                            "RScript executable: " + rEnvironment.getRScriptExecutablePath(),
-                    "R Configuration", JOptionPane.INFORMATION_MESSAGE);
+                            "RScript executable: " + rEnvironment.getRScriptExecutablePath());
 
             return true;
         }

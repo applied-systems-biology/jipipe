@@ -21,6 +21,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterFormPanel;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.clij2.CLIJPluginApplicationSettings;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.ResourceUtils;
@@ -176,7 +177,7 @@ public class CLIJControlPanel extends JIPipeDesktopWorkbenchPanel {
     private void clearMemory() {
         getDesktopWorkbench().sendStatusBarText("Cleared all images from GPU memory. Please note that this can break running analyses and cached items.");
         CLIJ2.getInstance().clear();
-        JOptionPane.showMessageDialog(getDesktopWorkbench().getWindow(), "Memory cleared. Please clear all cached data if it contains GPU images.");
+        JIPipeDesktopDialogs.message(getDesktopWorkbench().getWindow(), "Message", "Memory cleared. Please clear all cached data if it contains GPU images.");
     }
 
     private void reinitializeCLIJ() {

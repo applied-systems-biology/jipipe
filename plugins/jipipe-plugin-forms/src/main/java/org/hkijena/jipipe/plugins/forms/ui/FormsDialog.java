@@ -420,10 +420,7 @@ public class FormsDialog extends JFrame {
         JMenuItem applyToAllRemainingButton = new JMenuItem("All data remaining batches", JIPipe.RESOURCES.getIcon16("actions/dialog-layers.png"));
         applyToAllRemainingButton.addActionListener(e -> {
             if (iterationStepStatuses.stream().noneMatch(iterationStepStatus -> iterationStepStatus == DataBatchStatus.Unvisited)) {
-                JOptionPane.showMessageDialog(this,
-                        "There are no remaining unvisited iteration steps.",
-                        "Apply to all remaining batches",
-                        JOptionPane.ERROR_MESSAGE);
+                JIPipeDesktopDialogs.message(this, "Apply to all remaining batches", "There are no remaining unvisited iteration steps.");
                 return;
             }
             if (JIPipeDesktopDialogs.confirm(this,
@@ -607,8 +604,8 @@ public class FormsDialog extends JFrame {
         updateBottomBarStats();
 
         if (encounteredImmutable) {
-            JOptionPane.showMessageDialog(this, "Some settings could not be copied, as " +
-                    "they are marked immutable.", "Copy settings", JOptionPane.WARNING_MESSAGE);
+            JIPipeDesktopDialogs.message(this, "Copy settings", "Some settings could not be copied, as " +
+                    "they are marked immutable.");
         }
         if (!report.isValid()) {
             UIUtils.showValidityReportDialog(workbench, this, report, "Errors while copying settings", "The following issues were detected while copying the data:", true);

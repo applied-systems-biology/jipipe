@@ -105,7 +105,7 @@ public class TracksManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2
 
     private void exportTracksToFile() {
         if (tracksCollection.getNTracks() <= 0) {
-            JOptionPane.showMessageDialog(getViewerPanel(), "No tracks to export.", "Export tracks", JOptionPane.ERROR_MESSAGE);
+            JIPipeDesktopDialogs.message(getViewerPanel(), "Export tracks", "No tracks to export.");
             return;
         }
         TrackCollectionData result = getSelectedTracksOrAll("Export tracks", "Do you want to export all ROI or only the selected ones?");

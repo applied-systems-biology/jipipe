@@ -147,10 +147,10 @@ public class GetJIPipeSlotFolderAlgorithm extends JIPipeSimpleIteratingAlgorithm
                             ParameterUtils.setParameter(this, "compartment-id",
                                     slot.getNode().getProjectCompartment().getAliasIdInParentGraph());
                         } else {
-                            JOptionPane.showMessageDialog(window, "Please select a slot", "Error", JOptionPane.ERROR_MESSAGE);
+                            JIPipeDesktopDialogs.message(window, "Error", "Please select a slot");
                         }
                     } else {
-                        JOptionPane.showMessageDialog(window, "Please select a slot", "Error", JOptionPane.ERROR_MESSAGE);
+                        JIPipeDesktopDialogs.message(window, "Error", "Please select a slot");
                     }
                 }
             } catch (Exception e) {

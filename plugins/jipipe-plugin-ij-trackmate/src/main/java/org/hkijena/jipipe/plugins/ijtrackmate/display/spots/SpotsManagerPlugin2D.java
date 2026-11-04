@@ -227,7 +227,7 @@ public class SpotsManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D
 
     private void exportSpotsToFile() {
         if (spotsCollection.getSpots().getNSpots(true) <= 0) {
-            JOptionPane.showMessageDialog(getViewerPanel(), "No spots to export.", "Export spots", JOptionPane.ERROR_MESSAGE);
+            JIPipeDesktopDialogs.message(getViewerPanel(), "Export spots", "No spots to export.");
             return;
         }
         SpotsCollectionData result = getSelectedSpotsOrAll("Export spots", "Do you want to export all spots or only the selected ones?");

@@ -19,6 +19,7 @@ import ij.process.LUT;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.LUTData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.JIPipeDesktopLegacyImageViewer;
@@ -266,7 +267,7 @@ public abstract class ImageViewerOpacityLUTEditor extends JPanel implements Thum
     }
 
     public void setToUniformColorByDialog() {
-        Color color = JColorChooser.showDialog(this, "Select color", Color.WHITE);
+        Color color = JIPipeDesktopDialogs.chooseColor(this, "Select color", Color.WHITE, false).orElse(null);
         if (color != null) {
             setToUniformColor(color);
         }
@@ -361,7 +362,7 @@ public abstract class ImageViewerOpacityLUTEditor extends JPanel implements Thum
         int index = slider.getSelectedIndex();
         if (index >= 0) {
             Color color = slider.getModel().getThumbAt(index).getObject();
-            color = JColorChooser.showDialog(this, "Select color", color);
+            color = JIPipeDesktopDialogs.chooseColor(this, "Select color", color, false).orElse(null);
             if (color != null) {
                 color = ColorUtils.toGreyscale(color);
                 slider.getModel().getThumbAt(index).setObject(color);

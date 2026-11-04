@@ -97,10 +97,7 @@ public class RunImageJExporterAlgorithm extends JIPipeMergingAlgorithm {
     @RegisterJIPipeParameterCollectionContextAction(icon = "actions/configure.png")
     public void setExporterParametersFromUI(JIPipeWorkbench parent) {
         if (exporterType.getInstance() == null) {
-            JOptionPane.showMessageDialog(((JIPipeDesktopWorkbench) parent).getWindow(),
-                    "Please select an exporter type, first!",
-                    "Set export parameters",
-                    JOptionPane.ERROR_MESSAGE);
+            JIPipeDesktopDialogs.message(((JIPipeDesktopWorkbench) parent).getWindow(), "Set export parameters", "Please select an exporter type, first!");
             return;
         }
         ImageJDataExportOperation operation = new ImageJDataExportOperation(exporterType.getInstance());

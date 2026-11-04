@@ -554,7 +554,7 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
 
     public void exportCurrentSliceToPNG() {
         if (getCanvas().getImage() == null) {
-            JOptionPane.showMessageDialog(this, "No image loaded.", "Error", JOptionPane.ERROR_MESSAGE);
+            JIPipeDesktopDialogs.message(this, "Error", "No image loaded.");
             return;
         }
         Path targetFile = JIPipeDesktop.saveFile(this, workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export current slice", HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_PNG, PathUtils.EXTENSION_FILTER_JPEG, PathUtils.EXTENSION_FILTER_BMP);
@@ -576,7 +576,7 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
 
     public void copyCurrentSliceToClipboard() {
         if (getCanvas().getImage() == null) {
-            JOptionPane.showMessageDialog(this, "No image loaded.", "Error", JOptionPane.ERROR_MESSAGE);
+            JIPipeDesktopDialogs.message(this, "Error", "No image loaded.");
             return;
         }
 //        BufferedImage image = ImageJUtils.copyBufferedImageToARGB(getCanvas().getImage());

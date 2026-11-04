@@ -142,7 +142,7 @@ public class ROIManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D {
 
     public Roi2dListData getSelectedROIOrAll(String title, String message) {
         if (rois.isEmpty()) {
-            JOptionPane.showMessageDialog(getViewerPanel(), "There are no ROI in the list", title, JOptionPane.ERROR_MESSAGE);
+            JIPipeDesktopDialogs.message(getViewerPanel(), title, "There are no ROI in the list");
             return null;
         }
         if (!roiListControl.getSelectedValuesList().isEmpty()) {
@@ -183,7 +183,7 @@ public class ROIManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D {
     private void editROIInDialog() {
         List<Roi> selected = roiListControl.getSelectedValuesList();
         if (selected.isEmpty()) {
-            JOptionPane.showMessageDialog(getViewerPanel(), "You have not selected ROI to edit.", "Edit ROI", JOptionPane.ERROR_MESSAGE);
+            JIPipeDesktopDialogs.message(getViewerPanel(), "Edit ROI", "You have not selected ROI to edit.");
         }
         if (selected.size() > 5) {
             if (!JIPipeDesktopDialogs.confirm(getViewerPanel(), "Edit ROI", "Do you really want to edit " + selected.size() + "ROI?")) {
@@ -502,7 +502,7 @@ public class ROIManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D {
         Color currentStrokeColor = selectedRois.stream().map(Roi::getStrokeColor).filter(Objects::nonNull).findAny().orElse(Color.YELLOW);
         JMenuItem setLineColorItem = new JMenuItem("Set line color ...", new SolidColorIcon(16, 16, currentStrokeColor));
         setLineColorItem.addActionListener(e -> {
-            Color value = JColorChooser.showDialog(getViewerPanel(), "Set line color", currentStrokeColor);
+            Color value = JIPipeDesktopDialogs.chooseColor(getViewerPanel(), "Set line color", currentStrokeColor, false).orElse(null);
             if (value != null) {
                 for (Roi roi : selectedRois) {
                     roi.setStrokeColor(value);
@@ -516,7 +516,7 @@ public class ROIManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D {
         Color currentFillColor = selectedRois.stream().map(Roi::getFillColor).filter(Objects::nonNull).findAny().orElse(Color.RED);
         JMenuItem setFillColorItem = new JMenuItem("Set fill color ...", new SolidColorIcon(16, 16, currentFillColor));
         setFillColorItem.addActionListener(e -> {
-            Color value = JColorChooser.showDialog(getViewerPanel(), "Set fill color", currentFillColor);
+            Color value = JIPipeDesktopDialogs.chooseColor(getViewerPanel(), "Set fill color", currentFillColor, false).orElse(null);
             if (value != null) {
                 for (Roi roi : selectedRois) {
                     roi.setFillColor(value);

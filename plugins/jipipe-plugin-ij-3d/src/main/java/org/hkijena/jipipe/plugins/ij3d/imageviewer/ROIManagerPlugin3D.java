@@ -152,7 +152,7 @@ public class ROIManagerPlugin3D extends JIPipeDesktopLegacyImageViewerPlugin2D {
 
     public Ij3dSuiteRoiListData getSelectedROIOrAll(String title, String message) {
         if (rois.isEmpty()) {
-            JOptionPane.showMessageDialog(getViewerPanel(), "There are no ROI in the list", title, JOptionPane.ERROR_MESSAGE);
+            JIPipeDesktopDialogs.message(getViewerPanel(), title, "There are no ROI in the list");
             return null;
         }
         if (!roiListControl.getSelectedValuesList().isEmpty()) {
@@ -467,7 +467,7 @@ public class ROIManagerPlugin3D extends JIPipeDesktopLegacyImageViewerPlugin2D {
         Color currentFillColor = selectedRois.stream().map(Ij3dSuiteRoi::getFillColor).filter(Objects::nonNull).findAny().orElse(Color.RED);
         JMenuItem setFillColorItem = new JMenuItem("Set fill color ...", new SolidColorIcon(16, 16, currentFillColor));
         setFillColorItem.addActionListener(e -> {
-            Color value = JColorChooser.showDialog(getViewerPanel(), "Set fill color", currentFillColor);
+            Color value = JIPipeDesktopDialogs.chooseColor(getViewerPanel(), "Set fill color", currentFillColor, false).orElse(null);
             if (value != null) {
                 for (Ij3dSuiteRoi roi : selectedRois) {
                     roi.setFillColor(value);

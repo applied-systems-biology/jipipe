@@ -477,10 +477,7 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
             int endAngleValue = ((SpinnerNumberModel) endAngle.getModel()).getNumber().intValue();
             int step = ((SpinnerNumberModel) angleStep.getModel()).getNumber().intValue();
             if (endAngleValue < startAngleValue) {
-                JOptionPane.showMessageDialog(((JIPipeDesktopWorkbench) workbench).getWindow(),
-                        "The start angle must be less than the end angle!",
-                        "Generate angles",
-                        JOptionPane.ERROR_MESSAGE);
+                JIPipeDesktopDialogs.message(((JIPipeDesktopWorkbench) workbench).getWindow(), "Generate angles", "The start angle must be less than the end angle!");
                 return;
             }
             StringBuilder stringBuilder = new StringBuilder();
