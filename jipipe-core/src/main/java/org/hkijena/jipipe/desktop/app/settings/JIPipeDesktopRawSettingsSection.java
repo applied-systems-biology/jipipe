@@ -328,7 +328,7 @@ public class JIPipeDesktopRawSettingsSection extends JPanel implements Disposabl
         try {
             model.setValue(row.path(), edited);
         } catch (IllegalArgumentException e) {
-            JOptionPane.showMessageDialog(this, e.getMessage(), "Invalid value", JOptionPane.ERROR_MESSAGE);
+            JIPipeDesktopDialogs.error(this, "Invalid value", e.getMessage(), e);
             return;
         }
         reload();

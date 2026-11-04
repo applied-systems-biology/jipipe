@@ -56,6 +56,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.events.*;
 import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopRuntimePartitionListEditor;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopZoomViewPort;
 import org.hkijena.jipipe.desktop.commons.components.slots.JIPipeDesktopAddAlgorithmSlotPanel;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.core.nodes.JIPipeCommentNode;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeGraphEditorUIApplicationSettings;
 import org.hkijena.jipipe.utils.PointRange;
@@ -1028,7 +1029,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
             JIPipeRuntimePartitionConfiguration runtimePartitions = getDesktopWorkbench().getProject().getRuntimePartitions();
             int newIndex = runtimePartitions.indexOf(runtimePartition);
             if (newIndex == -1) {
-                JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(this), "Unable to find selected partition!", "Partition nodes", JOptionPane.ERROR_MESSAGE);
+                JIPipeDesktopDialogs.message(SwingUtilities.getWindowAncestor(this), "Partition nodes", "Unable to find selected partition!");
                 return;
             }
             for (JIPipeDesktopGraphInteractiveObjectUI interactiveObjectUI : selectionManager.getSelection()) {
@@ -1238,8 +1239,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         }
 
         if (availableTypes.isEmpty()) {
-            JOptionPane.showMessageDialog(getDesktopWorkbench().getWindow(),
-                    "There is no possibility to create a compatible slot for the data.", "Incompatible node", JOptionPane.ERROR_MESSAGE);
+            JIPipeDesktopDialogs.message(getDesktopWorkbench().getWindow(), "Incompatible node", "There is no possibility to create a compatible slot for the data.");
             return;
         }
 

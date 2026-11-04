@@ -146,7 +146,7 @@ public class JIPipeEnvironmentConfigurator<T extends JIPipeEnvironment> implemen
                 errorMessage += "</ul>";
             }
             errorMessage += "</html>";
-            JOptionPane.showMessageDialog(parent, errorMessage, title, JOptionPane.ERROR_MESSAGE);
+            JIPipeDesktopDialogs.message(parent, title, errorMessage);
             return;
         }
         JIPipeEnvironment environment = configurationCache.get(baseEnvironment);
@@ -185,7 +185,7 @@ public class JIPipeEnvironmentConfigurator<T extends JIPipeEnvironment> implemen
 
                 @Override
                 public void onInterrupted(InterruptedEvent event) {
-                    JOptionPane.showMessageDialog(parent, title, "The configuration failed or was interrupted.", JOptionPane.ERROR_MESSAGE);
+                    JIPipeDesktopDialogs.message(parent, "The configuration failed or was interrupted.", title);
                 }
             };
 

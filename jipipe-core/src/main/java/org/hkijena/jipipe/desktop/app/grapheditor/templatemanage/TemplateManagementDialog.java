@@ -465,7 +465,7 @@ public class TemplateManagementDialog extends JFrame implements NodeTemplatesRef
         if (path != null) {
             List<JIPipeNodeTemplate> imported = controller.importTemplates(project, TemplateScope.Global, path);
             if (imported.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "No templates were imported from " + path + ".", "Import", JOptionPane.INFORMATION_MESSAGE);
+                JIPipeDesktopDialogs.message(this, "Import", "No templates were imported from " + path + ".");
             }
         }
     }

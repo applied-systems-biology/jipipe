@@ -1196,7 +1196,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
 
     public void archiveProjectLegacy() {
         if (getProject().getWorkDirectory() == null) {
-            JOptionPane.showMessageDialog(this, "Please save the project once before using the archive function.", "Archive project", JOptionPane.ERROR_MESSAGE);
+            JIPipeDesktopDialogs.message(this, "Archive project", "Please save the project once before using the archive function.");
             return;
         }
         Button zipFile = Button.custom("ZIP file").asDefault();
@@ -1264,8 +1264,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
 
     private void openProjectFolder() {
         if (getProject().getWorkDirectory() == null || !Files.isDirectory(getProject().getWorkDirectory())) {
-            JOptionPane.showMessageDialog(this, "This project does not have a folder. Please save it first.",
-                    "Open project folder", JOptionPane.ERROR_MESSAGE);
+            JIPipeDesktopDialogs.message(this, "Open project folder", "This project does not have a folder. Please save it first.");
             return;
         }
         UIUtils.desktopOpenFile(getProject().getWorkDirectory());
@@ -1331,7 +1330,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
                 getOrOpenPipelineEditorTab(compartment, true);
             }
         } else {
-            JOptionPane.showMessageDialog(this, "Please switch to a graph compartment editor.", "New compartment after current", JOptionPane.ERROR_MESSAGE);
+            JIPipeDesktopDialogs.message(this, "New compartment after current", "Please switch to a graph compartment editor.");
         }
     }
 
@@ -1401,12 +1400,12 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
 
     @Override
     public void showMessageDialog(String message, String title) {
-        JOptionPane.showMessageDialog(getWindow(), message, title, JOptionPane.PLAIN_MESSAGE);
+        JIPipeDesktopDialogs.message(getWindow(), title, message);
     }
 
     @Override
     public void showErrorDialog(String message, String title) {
-        JOptionPane.showMessageDialog(getWindow(), message, title, JOptionPane.ERROR_MESSAGE);
+        JIPipeDesktopDialogs.message(getWindow(), title, message);
     }
 
     /**

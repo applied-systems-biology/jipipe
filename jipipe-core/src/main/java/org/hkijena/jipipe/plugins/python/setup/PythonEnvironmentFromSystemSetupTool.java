@@ -93,12 +93,10 @@ public class PythonEnvironmentFromSystemSetupTool implements JIPipeEnvironmentSe
         // Set default arguments for system Python
         pythonEnvironment.setArguments(new JIPipeExpressionParameter("ARRAY(\"-u\", script_file)"));
 
-        JOptionPane.showMessageDialog(parent,
-                "Python environment configured successfully!\n" +
+        JIPipeDesktopDialogs.message(parent, "Python Configuration", "Python environment configured successfully!\n" +
                         "Python executable: " + selectedPythonPath + "\n" +
                         "Environment type: System\n" +
-                        "You can modify the arguments in the configuration if needed.",
-                "Python Configuration", JOptionPane.INFORMATION_MESSAGE);
+                        "You can modify the arguments in the configuration if needed.");
 
         return true;
     }

@@ -440,7 +440,7 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
             saveDockStateToSettings();
         } catch (Throwable e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Unable to restore template!", "Load template", JOptionPane.ERROR_MESSAGE);
+            JIPipeDesktopDialogs.message(this, "Load template", "Unable to restore template!");
         }
     }
 

@@ -285,19 +285,13 @@ public class ParameterTableEditorWindow extends JFrame {
     private void generateAndReplaceRows(int columnIndex, JIPipeParameterGenerator generator) {
         int[] selectedRows = getSelectedRows(false);
         if (selectedRows.length == 0) {
-            JOptionPane.showMessageDialog(this,
-                    "There are no rows selected!",
-                    "Replace parameter values",
-                    JOptionPane.ERROR_MESSAGE);
+            JIPipeDesktopDialogs.message(this, "Replace parameter values", "There are no rows selected!");
             return;
         }
         List<?> generatedObjects = generator.generate(getDesktopWorkbench(), this, parameterTable.getColumnInfo(columnIndex).getFieldClass());
         if (generatedObjects != null) {
             if (generatedObjects.isEmpty()) {
-                JOptionPane.showMessageDialog(this,
-                        "The list of generated parameters is empty!",
-                        "Generate new rows",
-                        JOptionPane.ERROR_MESSAGE);
+                JIPipeDesktopDialogs.message(this, "Generate new rows", "The list of generated parameters is empty!");
                 return;
             }
             String strategy = "Skip remaining rows";
@@ -350,10 +344,7 @@ public class ParameterTableEditorWindow extends JFrame {
         List<?> generatedObjects = generator.generate(getDesktopWorkbench(), this, parameterTable.getColumnInfo(columnIndex).getFieldClass());
         if (generatedObjects != null) {
             if (generatedObjects.isEmpty()) {
-                JOptionPane.showMessageDialog(this,
-                        "The list of generated parameters is empty!",
-                        "Generate new rows",
-                        JOptionPane.ERROR_MESSAGE);
+                JIPipeDesktopDialogs.message(this, "Generate new rows", "The list of generated parameters is empty!");
                 return;
             }
             for (Object generatedObject : generatedObjects) {

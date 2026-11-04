@@ -228,7 +228,7 @@ public class JIPipeDesktopAlgorithmCacheBrowserUI extends JIPipeDesktopProjectWo
     private void exportCache() {
         Map<String, JIPipeDataTable> slotMap = getProject().getCache().query(graphNode, graphNode.getUUIDInParentGraph(), new JIPipeProgressInfo());
         if (slotMap == null || slotMap.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "There is no cached data to export!", "Export cache", JOptionPane.ERROR_MESSAGE);
+            JIPipeDesktopDialogs.message(this, "Export cache", "There is no cached data to export!");
             return;
         }
         Path outputFolder = JIPipeDesktop.saveDirectory(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export cache", HTMLText.EMPTY);

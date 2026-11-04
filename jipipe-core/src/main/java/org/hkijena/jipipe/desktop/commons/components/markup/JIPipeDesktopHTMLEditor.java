@@ -493,7 +493,7 @@ public class JIPipeDesktopHTMLEditor extends JIPipeDesktopWorkbenchPanel {
             if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
                 try {
                     if (e.getURL() == null) {
-                        JOptionPane.showMessageDialog(this, "This link is invalid! (Content is '" + e.getDescription() + "')", "Visit URL", JOptionPane.ERROR_MESSAGE);
+                        JIPipeDesktopDialogs.message(this, "Visit URL", "This link is invalid! (Content is '" + e.getDescription() + "')");
                         return;
                     }
                     if (JIPipeDesktopDialogs.confirm(this, "Visit URL", "Do you really want to visit " + e.getURL() + "?")) {
@@ -672,7 +672,7 @@ public class JIPipeDesktopHTMLEditor extends JIPipeDesktopWorkbenchPanel {
                             throw new RuntimeException(e);
                         }
                     } catch (MalformedURLException e) {
-                        JOptionPane.showMessageDialog(this, "'" + urlString + "' is not a valid URL!");
+                        JIPipeDesktopDialogs.message(this, "Message", "'" + urlString + "' is not a valid URL!");
                     }
                 });
     }

@@ -48,9 +48,7 @@ public class ExportGlobalEmbeddingDatabaseTool extends JIPipeDesktopMenuExtensio
     private void runExportTool() {
         // Check if AI is enabled
         if (!AIApplicationSettings.getInstance().isEnableAI()) {
-            JOptionPane.showMessageDialog(getDesktopWorkbench().getWindow(),
-                    "AI functionality is disabled. Please enable it in the AI settings.",
-                    getText(), JOptionPane.WARNING_MESSAGE);
+            JIPipeDesktopDialogs.message(getDesktopWorkbench().getWindow(), getText(), "AI functionality is disabled. Please enable it in the AI settings.");
             return;
         }
 
@@ -68,9 +66,7 @@ public class ExportGlobalEmbeddingDatabaseTool extends JIPipeDesktopMenuExtensio
         }
 
         if (modelId == null) {
-            JOptionPane.showMessageDialog(getDesktopWorkbench().getWindow(),
-                    "No embedding model is currently loaded. Please configure and load an embedding model first.",
-                    getText(), JOptionPane.ERROR_MESSAGE);
+            JIPipeDesktopDialogs.message(getDesktopWorkbench().getWindow(), getText(), "No embedding model is currently loaded. Please configure and load an embedding model first.");
             return;
         }
 
@@ -100,13 +96,11 @@ public class ExportGlobalEmbeddingDatabaseTool extends JIPipeDesktopMenuExtensio
 
             // Verify the export by re-checking the count
             int count = nodeIds.size();
-            JOptionPane.showMessageDialog(getDesktopWorkbench().getWindow(),
-                    "Successfully exported " + count + " embedding(s) for model '" + modelId + "'\nto " + outputFile,
-                    getText(), JOptionPane.INFORMATION_MESSAGE);
+            JIPipeDesktopDialogs.message(getDesktopWorkbench().getWindow(), getText(), "Successfully exported " + count + " embedding(s) for model '" + modelId + "'\nto " + outputFile);
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(getDesktopWorkbench().getWindow(),
-                    "Failed to export embedding database: " + e.getMessage(),
-                    getText(), JOptionPane.ERROR_MESSAGE);
+            JIPipeDesktopDialogs.error(getDesktopWorkbench().getWindow(),
+                    getText(),
+                    "Failed to export embedding database: " + e.getMessage(), e);
         }
     }
 

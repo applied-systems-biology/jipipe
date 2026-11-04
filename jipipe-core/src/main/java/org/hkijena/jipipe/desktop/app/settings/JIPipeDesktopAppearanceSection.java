@@ -598,10 +598,7 @@ public class JIPipeDesktopAppearanceSection extends JPanel implements JIPipeDesk
                 "Apply",
                 "Do you want to apply your scale settings also to Fiji/ImageJ?");
         if (!UIUtils.saveUIScaleToJaunch((float) newScale, alsoImageJ)) {
-            JOptionPane.showMessageDialog(workbench != null ? workbench.getWindow() : this,
-                    "Your UI scale setting of " + (int) Math.round(newScale * 100) + "% could not be saved.",
-                    "Appearance",
-                    JOptionPane.ERROR_MESSAGE);
+            JIPipeDesktopDialogs.message(workbench != null ? workbench.getWindow() : this, "Appearance", "Your UI scale setting of " + (int) Math.round(newScale * 100) + "% could not be saved.");
         }
     }
 

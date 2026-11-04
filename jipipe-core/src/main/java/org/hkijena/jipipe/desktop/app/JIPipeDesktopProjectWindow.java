@@ -307,10 +307,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                     SwingUtilities.invokeLater(() -> {
                         Path projectFile = PathUtils.findFileByExtensionRecursivelyIn(finalLoadZipTarget, ".jip");
                         if (projectFile == null) {
-                            JOptionPane.showMessageDialog(JIPipeDesktopProjectWindow.this,
-                                    "No project file in " + finalLoadZipTarget,
-                                    "Load template",
-                                    JOptionPane.ERROR_MESSAGE);
+                            JIPipeDesktopDialogs.message(JIPipeDesktopProjectWindow.this, "Load template", "No project file in " + finalLoadZipTarget);
                         }
                         openProject(projectFile, false);
                     });
@@ -1171,10 +1168,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                         new HTMLText("Please confirm where the RO-Crate contents will be extracted."));
                 if (extractPath != null) {
                     if (!PathUtils.isEmptyOrNonExistingDirectory(extractPath)) {
-                        JOptionPane.showMessageDialog(window,
-                                "The directory " + extractPath + " already exists or is non-empty. Please choose a different directory.",
-                                "Import JIPipe Workflow RO-Crate",
-                                JOptionPane.ERROR_MESSAGE);
+                        JIPipeDesktopDialogs.message(window, "Import JIPipe Workflow RO-Crate", "The directory " + extractPath + " already exists or is non-empty. Please choose a different directory.");
                     } else {
                         break;
                     }
@@ -1201,10 +1195,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                     Path projectFile = finalExtractPath.resolve("project.jip");
                     if (!Files.isRegularFile(projectFile)) {
                         SwingUtilities.invokeLater(() -> {
-                            JOptionPane.showMessageDialog(window,
-                                    "Unable to find project.jip file inside the extracted files!",
-                                    "Import JIPipe Workflow RO-Crate",
-                                    JOptionPane.ERROR_MESSAGE);
+                            JIPipeDesktopDialogs.message(window, "Import JIPipe Workflow RO-Crate", "Unable to find project.jip file inside the extracted files!");
                         });
                     } else {
                         SwingUtilities.invokeLater(() -> {

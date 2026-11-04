@@ -79,7 +79,7 @@ public class JIPipeDesktopDataTableToZIPExporterRun extends JIPipeDesktopWorkben
     @Override
     public void onInterrupted(InterruptedEvent event) {
         if (event.getRun() == this) {
-            JOptionPane.showMessageDialog(getDesktopWorkbench().getWindow(), "Could not export slot data to " + outputZipFile + ". Please take a look at the log (Tools > Logs) to find out more.", "Export slot data", JOptionPane.ERROR_MESSAGE);
+            JIPipeDesktopDialogs.message(getDesktopWorkbench().getWindow(), "Export slot data", "Could not export slot data to " + outputZipFile + ". Please take a look at the log (Tools > Logs) to find out more.");
         }
     }
 

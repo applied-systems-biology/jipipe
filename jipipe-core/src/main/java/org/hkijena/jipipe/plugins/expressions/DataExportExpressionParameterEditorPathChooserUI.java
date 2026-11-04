@@ -484,7 +484,7 @@ public class DataExportExpressionParameterEditorPathChooserUI extends JDialog {
                             Map<String, Path> userPathMap = project.getUserPathMap();
 
                             if (userPathMap.isEmpty()) {
-                                JOptionPane.showMessageDialog(this, "No project directories configured. Please visit the project settings.", "Select project user path", JOptionPane.ERROR_MESSAGE);
+                                JIPipeDesktopDialogs.message(this, "Select project user path", "No project directories configured. Please visit the project settings.");
                                 return;
                             }
 

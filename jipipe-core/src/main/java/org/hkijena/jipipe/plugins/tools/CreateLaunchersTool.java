@@ -77,7 +77,7 @@ public class CreateLaunchersTool extends JIPipeDesktopMenuExtension {
         else if (SystemUtils.IS_OS_MAC_OSX)
             createOSXLauncher(imageJDir);
         else
-            JOptionPane.showMessageDialog(getDesktopWorkbench().getWindow(), "Your operating system is not supported!", "Create launcher", JOptionPane.ERROR_MESSAGE);
+            JIPipeDesktopDialogs.message(getDesktopWorkbench().getWindow(), "Create launcher", "Your operating system is not supported!");
     }
 
     private void createOSXLauncher(Path imageJDir) {
@@ -96,7 +96,7 @@ public class CreateLaunchersTool extends JIPipeDesktopMenuExtension {
         try {
             imageJExecutable = Files.list(imageJDir).filter(p -> Files.isRegularFile(p) && p.getFileName().toString().startsWith("ImageJ") && p.getFileName().toString().endsWith(".exe")).findFirst().get();
         } catch (IOException | NoSuchElementException e) {
-            JOptionPane.showMessageDialog(getDesktopWorkbench().getWindow(), "Could not find ImageJ executable!", "Create launcher", JOptionPane.ERROR_MESSAGE);
+            JIPipeDesktopDialogs.message(getDesktopWorkbench().getWindow(), "Create launcher", "Could not find ImageJ executable!");
             return;
         }
 

@@ -22,6 +22,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -276,9 +277,7 @@ public class JIPipeDesktopUserFriendlyErrorUI extends JIPipeDesktopFormPanel imp
                     if (finalNavigationContext.canNavigate(getDesktopWorkbench())) {
                         finalNavigationContext.navigate(getDesktopWorkbench());
                     } else {
-                        JOptionPane.showMessageDialog(this, "Unable to navigate to '" + finalNavigationContext.renderName() + "'!",
-                                "Navigate",
-                                JOptionPane.ERROR_MESSAGE);
+                        JIPipeDesktopDialogs.message(this, "Navigate", "Unable to navigate to '" + finalNavigationContext.renderName() + "'!");
                     }
                 });
                 actionBar.add(navigateButton);

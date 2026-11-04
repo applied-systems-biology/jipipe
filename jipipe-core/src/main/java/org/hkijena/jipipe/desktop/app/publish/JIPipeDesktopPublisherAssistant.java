@@ -166,8 +166,7 @@ public abstract class JIPipeDesktopPublisherAssistant extends JIPipeDesktopProje
             }
         }
         if (currentStatus == JIPipeDesktopPublisherAssistantConditionStatus.Invalid) {
-            JOptionPane.showMessageDialog(this, "The project cannot be published in the current state.",
-                    getAssistantTitle(), JOptionPane.ERROR_MESSAGE);
+            JIPipeDesktopDialogs.message(this, getAssistantTitle(), "The project cannot be published in the current state.");
             return;
         }
         JIPipeRunnable assistantTask = createAssistantTask();
@@ -241,9 +240,8 @@ public abstract class JIPipeDesktopPublisherAssistant extends JIPipeDesktopProje
 
     @Override
     public void onRunnableInterrupted(JIPipeRunnable.InterruptedEvent event) {
-        JOptionPane.showMessageDialog(this, "There were errors during the export process.\n" +
-                        "Please open the JIPipe log to review them.",
-                getAssistantTitle(), JOptionPane.ERROR_MESSAGE);
+        JIPipeDesktopDialogs.message(this, getAssistantTitle(), "There were errors during the export process.\n" +
+                        "Please open the JIPipe log to review them.");
         JIPipeDesktopRunnableLogsCollection.getInstance().pushToLog(new JIPipeRunnableLogEntry(getAssistantTitle(),
                 LocalDateTime.now(),
                 event.getRun().getProgressInfo().getLog().toString(),

@@ -27,6 +27,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopSegmentedButtonGroup;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.SettingsScopes;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeGeneralUIApplicationSettings;
@@ -534,10 +535,9 @@ public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implem
         try {
             new RawSettingsTableModel(settingsService, entry.scope()).resetKey(entry.path());
         } catch (RuntimeException e) {
-            JOptionPane.showMessageDialog(this,
-                    "Cannot reset '" + entry.path() + "': " + e.getMessage(),
+            JIPipeDesktopDialogs.error(this,
                     "Reset setting",
-                    JOptionPane.ERROR_MESSAGE);
+                    "Cannot reset '" + entry.path() + "': " + e.getMessage(), e);
             return;
         }
         boolean touchedActiveScope = entry.scope() == activeScope;

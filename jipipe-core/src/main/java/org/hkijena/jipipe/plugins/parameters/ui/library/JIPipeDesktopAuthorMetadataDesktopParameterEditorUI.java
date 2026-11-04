@@ -17,6 +17,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterFormPanel;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.ThemeUtils;
@@ -73,7 +74,7 @@ public class JIPipeDesktopAuthorMetadataDesktopParameterEditorUI extends JIPipeD
             JIPipeAuthorMetadata authorMetadata = JsonUtils.readFromString(UIUtils.getStringFromClipboard(), JIPipeAuthorMetadata.class);
             setParameter(authorMetadata, true);
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, e.getMessage(), "Error pasting author", JOptionPane.ERROR_MESSAGE);
+            JIPipeDesktopDialogs.error(this, "Error pasting author", e.getMessage(), e);
         }
     }
 

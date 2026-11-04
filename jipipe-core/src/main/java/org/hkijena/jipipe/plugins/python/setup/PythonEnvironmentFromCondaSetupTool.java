@@ -61,11 +61,9 @@ public class PythonEnvironmentFromCondaSetupTool implements JIPipeEnvironmentSet
                         selectedEnvironment)));
 
         // Show success message
-        JOptionPane.showMessageDialog(parent,
-                "Conda environment configured successfully!\n" +
+        JIPipeDesktopDialogs.message(parent, "Conda Configuration", "Conda environment configured successfully!\n" +
                         "Conda executable: " + selectedCondaPath + "\n" +
-                        "Environment: " + selectedEnvironment,
-                "Conda Configuration", JOptionPane.INFORMATION_MESSAGE);
+                        "Environment: " + selectedEnvironment);
 
         return true;
     }

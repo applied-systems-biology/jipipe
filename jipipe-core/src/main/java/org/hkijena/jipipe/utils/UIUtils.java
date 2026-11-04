@@ -1763,10 +1763,7 @@ public class UIUtils {
             Toolkit.getDefaultToolkit()
                     .getSystemClipboard()
                     .setContents(new StringSelection(text), null);
-            JOptionPane.showMessageDialog(null,
-                    "Could not open the " + label + ". The " + label + " has been copied to your clipboard:\n" + text,
-                    "Fallback: Copied to Clipboard",
-                    JOptionPane.INFORMATION_MESSAGE);
+            JIPipeDesktopDialogs.message(null, "Fallback: Copied to Clipboard", "Could not open the " + label + ". The " + label + " has been copied to your clipboard:\n" + text);
         } catch (HeadlessException | IllegalStateException e) {
             System.err.println("Clipboard fallback failed: " + e.getMessage());
         }
@@ -2191,15 +2188,9 @@ public class UIUtils {
 
     public static void showConnectionErrorMessage(Component parent, JIPipeDataSlot source, JIPipeDataSlot target) {
         if (!JIPipe.getDataTypes().isConvertible(source.getAcceptedDataType(), target.getAcceptedDataType())) {
-            JOptionPane.showMessageDialog(parent,
-                    String.format("Unable to convert data type '%s' to '%s'!\nPlease refer to the data type documentation (top right [?] button) for info about which data types are compatible.", JIPipeDataInfo.getInstance(source.getAcceptedDataType()).getName(), JIPipeDataInfo.getInstance(target.getAcceptedDataType())),
-                    "Unable to connect slots",
-                    JOptionPane.ERROR_MESSAGE);
+            JIPipeDesktopDialogs.message(parent, "Unable to connect slots", String.format("Unable to convert data type '%s' to '%s'!\nPlease refer to the data type documentation (top right [?] button) for info about which data types are compatible.", JIPipeDataInfo.getInstance(source.getAcceptedDataType()).getName(), JIPipeDataInfo.getInstance(target.getAcceptedDataType())));
         } else {
-            JOptionPane.showMessageDialog(parent,
-                    "The connection is not valid. Please check if it a loop/cycle.",
-                    "Unable to connect slots",
-                    JOptionPane.ERROR_MESSAGE);
+            JIPipeDesktopDialogs.message(parent, "Unable to connect slots", "The connection is not valid. Please check if it a loop/cycle.");
         }
     }
 
@@ -2738,7 +2729,7 @@ public class UIUtils {
     }
 
     public static Color selectColor(Component parent, String title, Color defaultValue, boolean withTransparency) {
-        return org.hkijena.jipipe.desktop.commons.components.color.JIPipeDesktopColorChooserDialog.show(parent, title, defaultValue, withTransparency);
+        return JIPipeDesktopDialogs.chooseColor(parent, title, defaultValue, withTransparency).orElse(null);
     }
 
     public static class DragThroughMouseListener implements MouseListener, MouseMotionListener {

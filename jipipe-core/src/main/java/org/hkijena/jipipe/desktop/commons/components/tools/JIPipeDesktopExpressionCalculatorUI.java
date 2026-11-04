@@ -147,7 +147,7 @@ public class JIPipeDesktopExpressionCalculatorUI extends JIPipeDesktopWorkbenchP
                 }
                 expressionEditor.requestFocusInWindow();
             } else {
-                JOptionPane.showMessageDialog(this, "You did not specify a valid variable name", "Set variable", JOptionPane.ERROR_MESSAGE);
+                JIPipeDesktopDialogs.message(this, "Set variable", "You did not specify a valid variable name");
             }
         }
     }

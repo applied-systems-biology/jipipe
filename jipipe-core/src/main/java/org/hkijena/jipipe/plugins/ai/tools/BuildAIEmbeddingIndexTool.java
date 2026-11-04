@@ -60,9 +60,7 @@ public class BuildAIEmbeddingIndexTool extends JIPipeDesktopMenuExtension {
     private void runBuildTool() {
         // Check if AI is enabled
         if (!AIApplicationSettings.getInstance().isEnableAI()) {
-            JOptionPane.showMessageDialog(getDesktopWorkbench().getWindow(),
-                    "AI functionality is disabled. Please enable it in the AI settings.",
-                    getText(), JOptionPane.WARNING_MESSAGE);
+            JIPipeDesktopDialogs.message(getDesktopWorkbench().getWindow(), getText(), "AI functionality is disabled. Please enable it in the AI settings.");
             return;
         }
 
@@ -85,9 +83,7 @@ public class BuildAIEmbeddingIndexTool extends JIPipeDesktopMenuExtension {
         final String modelId = resolvedModelId;
 
         if (modelId == null) {
-            JOptionPane.showMessageDialog(getDesktopWorkbench().getWindow(),
-                    "No embedding model is currently loaded. Please configure and load an embedding model first.",
-                    getText(), JOptionPane.ERROR_MESSAGE);
+            JIPipeDesktopDialogs.message(getDesktopWorkbench().getWindow(), getText(), "No embedding model is currently loaded. Please configure and load an embedding model first.");
             return;
         }
 
@@ -97,9 +93,7 @@ public class BuildAIEmbeddingIndexTool extends JIPipeDesktopMenuExtension {
         // Get the entries and split into global/local
         List<JIPipeNodeDatabaseEntry> entries = aiSearch.getEntries();
         if (entries.isEmpty()) {
-            JOptionPane.showMessageDialog(getDesktopWorkbench().getWindow(),
-                    "The node database is empty. Nothing to embed.",
-                    getText(), JOptionPane.INFORMATION_MESSAGE);
+            JIPipeDesktopDialogs.message(getDesktopWorkbench().getWindow(), getText(), "The node database is empty. Nothing to embed.");
             return;
         }
 
@@ -131,9 +125,7 @@ public class BuildAIEmbeddingIndexTool extends JIPipeDesktopMenuExtension {
         }
 
         if (alreadyEmbedded == entries.size()) {
-            JOptionPane.showMessageDialog(getDesktopWorkbench().getWindow(),
-                    "All " + entries.size() + " entries already have embeddings for model '" + modelId + "'.",
-                    getText(), JOptionPane.INFORMATION_MESSAGE);
+            JIPipeDesktopDialogs.message(getDesktopWorkbench().getWindow(), getText(), "All " + entries.size() + " entries already have embeddings for model '" + modelId + "'.");
             return;
         }
 

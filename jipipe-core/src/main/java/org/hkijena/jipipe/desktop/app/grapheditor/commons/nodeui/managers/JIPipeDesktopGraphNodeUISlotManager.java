@@ -34,7 +34,7 @@ public class JIPipeDesktopGraphNodeUISlotManager {
 
     public void openAddSlotDialog(JIPipeSlotType slotType) {
         if (!JIPipeDesktopProjectWorkbench.canModifySlots(nodeUI.getDesktopWorkbench())) {
-            JOptionPane.showMessageDialog(nodeUI.getGraphCanvasUI().getDesktopWorkbench().getWindow(), "Slots cannot be modified!", "Add slot", JOptionPane.ERROR_MESSAGE);
+            JIPipeDesktopDialogs.message(nodeUI.getGraphCanvasUI().getDesktopWorkbench().getWindow(), "Add slot", "Slots cannot be modified!");
             return;
         }
         JIPipeDesktopAddAlgorithmSlotPanel.showDialog(nodeUI, nodeUI.getGraphCanvasUI().getHistoryJournal(), nodeUI.getNode(), slotType);

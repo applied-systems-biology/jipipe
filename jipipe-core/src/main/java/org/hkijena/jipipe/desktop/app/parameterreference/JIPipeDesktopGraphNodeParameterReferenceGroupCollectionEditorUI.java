@@ -30,6 +30,7 @@ import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdow
 import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterAccessTreeUI;
 import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.pickers.JIPipeDesktopPickNodeDialog;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -176,7 +177,7 @@ public class JIPipeDesktopGraphNodeParameterReferenceGroupCollectionEditorUI ext
                 addParameterReference(group);
             }
         } else {
-            JOptionPane.showMessageDialog(this, "Please add a parameter group first. To do this, click 'Add' and select 'Empty group'.", "Add parameter reference", JOptionPane.ERROR_MESSAGE);
+            JIPipeDesktopDialogs.message(this, "Add parameter reference", "Please add a parameter group first. To do this, click 'Add' and select 'Empty group'.");
         }
     }
 

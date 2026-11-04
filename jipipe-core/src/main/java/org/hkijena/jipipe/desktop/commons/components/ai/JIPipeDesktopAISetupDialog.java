@@ -96,7 +96,7 @@ public class JIPipeDesktopAISetupDialog extends JDialog {
             userConfirmed = false;
             setVisible(false);
             JIPipe.getSettings().saveLater();
-            JOptionPane.showMessageDialog(this, "To fully disable all AI features, JIPipe needs to be restarted.", "Disable AI", JOptionPane.INFORMATION_MESSAGE);
+            JIPipeDesktopDialogs.message(this, "Disable AI", "To fully disable all AI features, JIPipe needs to be restarted.");
         }
     }
 
@@ -107,7 +107,7 @@ public class JIPipeDesktopAISetupDialog extends JDialog {
     private void confirmConfiguration() {
         EmbeddingModelEnvironment embeddingModelEnvironment = (EmbeddingModelEnvironment) embeddingModelConfigurationComponent.getParameterCollection();
         if (!embeddingModelEnvironment.isValid()) {
-            JOptionPane.showMessageDialog(this, "The embedding environment is not correctly configured!", "AI setup", JOptionPane.ERROR_MESSAGE);
+            JIPipeDesktopDialogs.message(this, "AI setup", "The embedding environment is not correctly configured!");
         }
 
         // Update the global settings
@@ -125,7 +125,7 @@ public class JIPipeDesktopAISetupDialog extends JDialog {
             if (artifact instanceof JIPipeRemoteArtifact remoteArtifact) {
                 toInstall.add(remoteArtifact);
             } else if (artifact == null) {
-                JOptionPane.showMessageDialog(this, "Artifact '" + query + "' not found! (No internet?)", "AI setup", JOptionPane.ERROR_MESSAGE);
+                JIPipeDesktopDialogs.message(this, "AI setup", "Artifact '" + query + "' not found! (No internet?)");
                 return;
             }
         }

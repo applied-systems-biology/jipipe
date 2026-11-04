@@ -21,6 +21,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanv
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.properties.JIPipeDesktopDataSlotListCellRenderer;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -93,10 +94,7 @@ public class JIPipeDesktopRewireConnectionsToolUI extends JDialog {
     private void applyRewire() {
         JIPipeDataSlot selectedAlternative = alternativesList.getSelectedValue();
         if (selectedAlternative == null) {
-            JOptionPane.showMessageDialog(this,
-                    "Please select an alternative target from the list.",
-                    "No alternative selected",
-                    JOptionPane.ERROR_MESSAGE);
+            JIPipeDesktopDialogs.message(this, "No alternative selected", "Please select an alternative target from the list.");
             return;
         }
 
@@ -129,10 +127,7 @@ public class JIPipeDesktopRewireConnectionsToolUI extends JDialog {
             }
         } catch (Throwable e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(this,
-                    "The rewire operation failed. No changes were applied.\nPlease check if the new connections lead to the creation of loops.",
-                    "Rewire not possible",
-                    JOptionPane.ERROR_MESSAGE);
+            JIPipeDesktopDialogs.message(this, "Rewire not possible", "The rewire operation failed. No changes were applied.\nPlease check if the new connections lead to the creation of loops.");
             return;
         }
 
@@ -166,10 +161,7 @@ public class JIPipeDesktopRewireConnectionsToolUI extends JDialog {
             }
         } catch (Throwable e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(this,
-                    "The rewire operation failed at phase 2. Please report this to the developer. JIPipe will attempt to undo the changes.",
-                    "Rewire not possible",
-                    JOptionPane.ERROR_MESSAGE);
+            JIPipeDesktopDialogs.message(this, "Rewire not possible", "The rewire operation failed at phase 2. Please report this to the developer. JIPipe will attempt to undo the changes.");
             if (graphCanvasUI.getHistoryJournal() != null) {
                 graphCanvasUI.getHistoryJournal().undo(compartment);
             }

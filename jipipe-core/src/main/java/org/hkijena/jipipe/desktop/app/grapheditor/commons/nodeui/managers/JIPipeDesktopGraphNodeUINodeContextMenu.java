@@ -2,6 +2,7 @@ package org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.managers;
 
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.GraphInteractiveObjectUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -32,10 +33,7 @@ public class JIPipeDesktopGraphNodeUINodeContextMenu {
                     if (entry.matches(Collections.singleton(nodeUI))) {
                         entry.run(nodeUI.getGraphCanvasUI(), Collections.singleton(nodeUI));
                     } else {
-                        JOptionPane.showMessageDialog(nodeUI.getDesktopWorkbench().getWindow(),
-                                "Could not run this operation",
-                                entry.getName(),
-                                JOptionPane.ERROR_MESSAGE);
+                        JIPipeDesktopDialogs.message(nodeUI.getDesktopWorkbench().getWindow(), entry.getName(), "Could not run this operation");
                     }
                 });
                 menu.add(item);

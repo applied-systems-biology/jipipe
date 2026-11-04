@@ -628,7 +628,7 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
                         Files.createDirectory(currentDirectory.resolve(name));
                         refresh();
                     } catch (Exception e) {
-                        JOptionPane.showMessageDialog(this, "Unable to create new directory", "Error", JOptionPane.ERROR_MESSAGE);
+                        JIPipeDesktopDialogs.message(this, "Error", "Unable to create new directory");
                     }
                 });
     }
@@ -854,10 +854,7 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
                         Files.createDirectories(editorPath);
                         results.add(editorPath);
                     } catch (Throwable ignored) {
-                        JOptionPane.showMessageDialog(this,
-                                "Unable to create directory '" + editorPath + "'!",
-                                "Save directory",
-                                JOptionPane.ERROR_MESSAGE);
+                        JIPipeDesktopDialogs.message(this, "Save directory", "Unable to create directory '" + editorPath + "'!");
                     }
                 } else {
                     // Add the extension (if requested)

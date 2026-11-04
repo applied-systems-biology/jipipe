@@ -363,7 +363,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
     private void doRun(JIPipeProjectRunSet runSet) {
         List<JIPipeAlgorithm> nodes = JIPipeUtils.filterAlgorithmsList(runSet.resolveNodes(getProject()));
         if (nodes.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Unable to run the set '" + runSet.getDisplayName() + "'. No nodes found.", "Run set", JOptionPane.ERROR_MESSAGE);
+            JIPipeDesktopDialogs.message(this, "Run set", "Unable to run the set '" + runSet.getDisplayName() + "'. No nodes found.");
             return;
         }
         doRun(nodes);
@@ -372,7 +372,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
     private void doShowResults(JIPipeProjectRunSet runSet) {
         List<JIPipeAlgorithm> nodes = JIPipeUtils.filterAlgorithmsList(runSet.resolveNodes(getProject()));
         if (nodes.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Unable to run the set '" + runSet.getDisplayName() + "'. No nodes found.", "Run set", JOptionPane.ERROR_MESSAGE);
+            JIPipeDesktopDialogs.message(this, "Run set", "Unable to run the set '" + runSet.getDisplayName() + "'. No nodes found.");
             return;
         }
 
@@ -411,7 +411,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
     private void doUpdateCache(JIPipeProjectRunSet runSet, boolean intermediateResults) {
         List<JIPipeAlgorithm> nodes = JIPipeUtils.filterAlgorithmsList(runSet.resolveNodes(getProject()));
         if (nodes.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Unable to run the set '" + runSet.getDisplayName() + "'. No nodes found.", "Run set", JOptionPane.ERROR_MESSAGE);
+            JIPipeDesktopDialogs.message(this, "Run set", "Unable to run the set '" + runSet.getDisplayName() + "'. No nodes found.");
             return;
         }
         doUpdateCache(nodes, intermediateResults);
@@ -832,11 +832,11 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
                         "Please provide at least a unique key that identifies the path and allows to recall it from within the workflow. " +
                         "You can also request that the path must exist."), "Add new project-wide path/directory", JIPipeDesktopParameterFormPanel.DEFAULT_DIALOG_FLAGS)) {
                     if (StringUtils.isNullOrEmpty(entry.getKey())) {
-                        JOptionPane.showMessageDialog(this, "No key was provided", "Add new project-wide path/directory", JOptionPane.ERROR_MESSAGE);
+                        JIPipeDesktopDialogs.message(this, "Add new project-wide path/directory", "No key was provided");
                         continue;
                     }
                     if (getProject().getMetadata().getUserPaths().getUserPathsAsInstance().stream().anyMatch(e -> Objects.equals(e.getKey(), entry.getKey()))) {
-                        JOptionPane.showMessageDialog(this, "The key already exists", "Add new project-wide path/directory", JOptionPane.ERROR_MESSAGE);
+                        JIPipeDesktopDialogs.message(this, "Add new project-wide path/directory", "The key already exists");
                         continue;
                     }
                     getProject().getMetadata().getUserPaths().getPaths().addFromTemplate(entry);
