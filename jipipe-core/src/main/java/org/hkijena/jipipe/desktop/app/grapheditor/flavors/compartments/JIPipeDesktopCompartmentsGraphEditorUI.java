@@ -393,10 +393,13 @@ public class JIPipeDesktopCompartmentsGraphEditorUI extends JIPipeDesktopGraphEd
         if (state == null) {
             return;
         }
+        // Self-heal layouts stored by older versions: the activity state of
+        // context docks is not part of the persisted layout anymore (#1353)
+        state = state.withoutContextDockVisibilities();
         // JIPipeDesktopDockPanel.State has no equals(): compare the serialized
         // form, which is exactly what the document stores.
         if (!JsonUtils.getObjectMapper().valueToTree(state)
-                .equals(JsonUtils.getObjectMapper().valueToTree(getDockPanel().getCurrentState()))) {
+                .equals(JsonUtils.getObjectMapper().valueToTree(getDockPanel().getCurrentState().withoutContextDockVisibilities()))) {
             getDockPanel().restoreState(state);
         }
     }
@@ -407,7 +410,7 @@ public class JIPipeDesktopCompartmentsGraphEditorUI extends JIPipeDesktopGraphEd
             if (compartmentsDockStateBinding == null) {
                 compartmentsDockStateBinding = JIPipe.getSettingsService().bind(SettingsKeys.COMPARTMENTS_DOCK_STATE);
             }
-            compartmentsDockStateBinding.set(getDockPanel().getCurrentState());
+            compartmentsDockStateBinding.set(getDockPanel().getCurrentState().withoutContextDockVisibilities());
         }
     }
 
