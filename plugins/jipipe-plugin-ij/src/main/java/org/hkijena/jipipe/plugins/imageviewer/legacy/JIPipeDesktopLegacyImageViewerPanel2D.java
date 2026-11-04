@@ -32,6 +32,8 @@ import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopCheckBo
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopSmallButtonRibbonAction;
 import org.hkijena.jipipe.desktop.commons.components.textfield.JIPipeDesktopPathEditorComponent;
+import org.hkijena.jipipe.desktop.commons.dialogs.Button;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.display.OpenInImageJ3DViewerDataDisplayOperation;
 import org.hkijena.jipipe.plugins.imagejdatatypes.display.OpenInImageJDataDisplayOperation;
@@ -599,15 +601,12 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
         JTextField baseNameEditor = new JTextField();
         formPanel.addToForm(baseNameEditor, new JLabel("File name prefix"), null);
 
-        int response = JOptionPane.showOptionDialog(this,
-                formPanel,
-                "Export all slices to folder",
-                JOptionPane.OK_CANCEL_OPTION,
-                JOptionPane.PLAIN_MESSAGE,
-                null,
-                null,
-                null);
-        if (response == JOptionPane.OK_OPTION) {
+        Optional<Button> response = JIPipeDesktopDialogs.builder(this,
+                        "Export all slices to folder")
+                .content(formPanel)
+                .buttons(Button.OK, Button.CANCEL)
+                .show();
+        if (response.orElse(null) == Button.OK) {
             JIPipeFileChooserApplicationSettings.getInstance().setLastDataDirectory(exportPathEditor.getPath());
             JIPipe.autoSaveSettings();
             Path targetPath = exportPathEditor.getPath();
@@ -644,15 +643,12 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
         JSlider compressionQualityEditor = new JSlider(0, 100, 100);
         formPanel.addToForm(compressionQualityEditor, new JLabel("Quality"), null);
 
-        int response = JOptionPane.showOptionDialog(this,
-                formPanel,
-                "Export video",
-                JOptionPane.OK_CANCEL_OPTION,
-                JOptionPane.PLAIN_MESSAGE,
-                null,
-                null,
-                null);
-        if (response == JOptionPane.OK_OPTION) {
+        Optional<Button> response = JIPipeDesktopDialogs.builder(this,
+                        "Export video")
+                .content(formPanel)
+                .buttons(Button.OK, Button.CANCEL)
+                .show();
+        if (response.orElse(null) == Button.OK) {
             Video2DExporterRun run = new Video2DExporterRun(
                     imageViewer,
                     path,

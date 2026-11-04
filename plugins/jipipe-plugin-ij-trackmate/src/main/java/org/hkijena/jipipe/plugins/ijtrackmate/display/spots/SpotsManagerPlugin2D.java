@@ -28,6 +28,8 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.tableeditor.JIPipeDesktopTableEditor;
 import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterFormPanel;
+import org.hkijena.jipipe.desktop.commons.dialogs.Button;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopSmallButtonRibbonAction;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopSmallToggleButtonRibbonAction;
@@ -236,17 +238,15 @@ public class SpotsManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D
 
     public SpotsCollectionData getSelectedSpotsOrAll(String title, String message) {
         if (!spotsListControl.getSelectedValuesList().isEmpty()) {
-            int result = JOptionPane.showOptionDialog(getViewerPanel(),
+            Button allSpots = Button.custom("All spots (" + spotsCollection.getNSpots() + ")").asDefault();
+            Button selectedSpots = Button.custom("Selected spots (" + spotsListControl.getSelectedValuesList().size() + ")");
+            Optional<Button> result = JIPipeDesktopDialogs.choose(getViewerPanel(),
                     message,
                     title,
-                    JOptionPane.YES_NO_CANCEL_OPTION,
-                    JOptionPane.QUESTION_MESSAGE,
-                    null,
-                    new Object[]{"All spots (" + spotsCollection.getNSpots() + ")", "Selected spots (" + spotsListControl.getSelectedValuesList().size() + ")", "Cancel"},
-                    "All spots (" + spotsCollection.getNSpots() + ")");
-            if (result == JOptionPane.CANCEL_OPTION)
+                    allSpots, selectedSpots);
+            if (result.isEmpty())
                 return null;
-            else if (result == JOptionPane.YES_OPTION)
+            else if (result.get() == allSpots)
                 return spotsCollection;
             else {
                 SpotsCollectionData newCollectionData = new SpotsCollectionData(spotsCollection);
@@ -285,10 +285,9 @@ public class SpotsManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D
 
 
     private void saveDefaults() {
-        if (JOptionPane.showConfirmDialog(getViewerPanel(),
-                "Do you want to save the spot display settings as default?",
+        if (JIPipeDesktopDialogs.confirm(getViewerPanel(),
                 "Save settings as default",
-                JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                "Do you want to save the spot display settings as default?")) {
             ImageViewerUISpotsDisplayApplicationSettings settings = ImageViewerUISpotsDisplayApplicationSettings.getInstance();
             settings.getSpotDrawer().copyFrom(spotDrawer);
             settings.setShowSpots(displaySpotsViewMenuItem.getState());
@@ -421,7 +420,7 @@ public class SpotsManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D
     public void removeSelectedSpots(boolean deferUploadSlice) {
         if (spotsListControl.getSelectedValuesList().isEmpty())
             return;
-        if (JOptionPane.showConfirmDialog(getViewerPanel(), "Do you really want to remove " + spotsListControl.getSelectedValuesList().size() + "spots?", "Delete spots", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+        if (JIPipeDesktopDialogs.confirm(getViewerPanel(), "Delete spots", "Do you really want to remove " + spotsListControl.getSelectedValuesList().size() + "spots?")) {
             for (Spot spot : spotsListControl.getSelectedValuesList()) {
                 spotsCollection.getSpots().remove(spot, spot.getFeature(Spot.FRAME).intValue());
             }

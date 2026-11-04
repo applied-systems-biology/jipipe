@@ -25,6 +25,8 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.desktop.api.data.JIPipeDesktopDataDisplayOperation;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.commons.dialogs.Button;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.parameters.library.roi.Margin;
@@ -66,17 +68,15 @@ public class AddToROIManagerDataDisplayOperation implements JIPipeDesktopDataDis
         margin.getHeight().ensureExactValue(false);
 
         if (roiManager.getCount() > 0) {
-            int result = JOptionPane.showOptionDialog(desktopWorkbench.getWindow(),
+            Button addToList = Button.custom("Add to list").asDefault();
+            Button newList = Button.custom("New list");
+            Optional<Button> result = JIPipeDesktopDialogs.choose(desktopWorkbench.getWindow(),
                     "The current ROI manager already contains ROI. What should be done?",
                     "Show ROI",
-                    JOptionPane.YES_NO_CANCEL_OPTION,
-                    JOptionPane.QUESTION_MESSAGE,
-                    null,
-                    new Object[]{"Add to list", "New list", "Cancel"},
-                    "Add to list");
-            if (result == JOptionPane.NO_OPTION) {
+                    addToList, newList);
+            if (result.orElse(null) == newList) {
                 roiManager.reset();
-            } else if (result == JOptionPane.CANCEL_OPTION) {
+            } else if (result.isEmpty()) {
                 return;
             }
         }

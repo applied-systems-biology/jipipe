@@ -39,9 +39,13 @@ import org.hkijena.jipipe.api.parameters.RegisterJIPipeParameterCollectionContex
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.commons.dialogs.Button;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.parameters.library.references.ImageJDataImporterRef;
 
 import javax.swing.*;
+
+import java.util.Optional;
 
 @SetJIPipeDocumentation(name = "Import from ImageJ", description = "Runs an ImageJ importer. You can select the utilized importer type in the parameters.")
 @AddJIPipeOutputSlot(value = JIPipeData.class, name = "Output", create = true)
@@ -100,7 +104,11 @@ public class RunImageJImporterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ImageJDataImportOperation operation = new ImageJDataImportOperation(importerType.getInstance());
         this.importParameters.copyTo(operation);
         ImageJDataImporterUI ui = JIPipe.getImageJAdapters().createUIForImportOperation(parent, operation);
-        if (JOptionPane.showConfirmDialog(((JIPipeDesktopWorkbench) parent).getWindow(), ui, "Set import parameters", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
+        Optional<Button> confirmed = JIPipeDesktopDialogs.builder(((JIPipeDesktopWorkbench) parent).getWindow(), "Set import parameters")
+                .content(ui)
+                .buttons(Button.OK, Button.CANCEL)
+                .show();
+        if (confirmed.orElse(null) == Button.OK) {
             operation.copyTo(this.importParameters);
             emitParameterUIChangedEvent();
         }

@@ -27,6 +27,8 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.tableeditor.JIPipeDesktopTableEditor;
 import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterFormPanel;
+import org.hkijena.jipipe.desktop.commons.dialogs.Button;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopLargeButtonRibbonAction;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopSmallButtonRibbonAction;
@@ -114,17 +116,15 @@ public class TracksManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2
 
     public TrackCollectionData getSelectedTracksOrAll(String title, String message) {
         if (!tracksListControl.getSelectedValuesList().isEmpty()) {
-            int result = JOptionPane.showOptionDialog(getViewerPanel(),
+            Button allTracks = Button.custom("All tracks (" + tracksCollection.getNTracks() + ")").asDefault();
+            Button selectedTracks = Button.custom("Selected tracks (" + tracksListControl.getSelectedValuesList().size() + ")");
+            Optional<Button> result = JIPipeDesktopDialogs.choose(getViewerPanel(),
                     message,
                     title,
-                    JOptionPane.YES_NO_CANCEL_OPTION,
-                    JOptionPane.QUESTION_MESSAGE,
-                    null,
-                    new Object[]{"All tracks (" + tracksCollection.getNTracks() + ")", "Selected tracks (" + tracksListControl.getSelectedValuesList().size() + ")", "Cancel"},
-                    "All tracks (" + tracksCollection.getNTracks() + ")");
-            if (result == JOptionPane.CANCEL_OPTION)
+                    allTracks, selectedTracks);
+            if (result.isEmpty())
                 return null;
-            else if (result == JOptionPane.YES_OPTION)
+            else if (result.get() == allTracks)
                 return tracksCollection;
             else {
                 return tracksCollection.filterTracks(new HashSet<>(tracksListControl.getSelectedValuesList()));
@@ -188,10 +188,9 @@ public class TracksManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2
     }
 
     private void saveDefaults() {
-        if (JOptionPane.showConfirmDialog(getViewerPanel(),
-                "Do you want to save the spot display settings as default?",
+        if (JIPipeDesktopDialogs.confirm(getViewerPanel(),
                 "Save settings as default",
-                JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                "Do you want to save the spot display settings as default?")) {
             ImageViewerUITracksDisplayApplicationSettings settings = ImageViewerUITracksDisplayApplicationSettings.getInstance();
             settings.getTrackDrawer().copyFrom(trackDrawer);
             settings.setShowTracks(displayTracksViewMenuItem.getState());
@@ -423,7 +422,7 @@ public class TracksManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2
     public void removeSelectedTracks(boolean deferUploadSlice) {
         if (tracksListControl.getSelectedValuesList().isEmpty())
             return;
-        if (JOptionPane.showConfirmDialog(getViewerPanel(), "Do you really want to remove " + tracksListControl.getSelectedValuesList().size() + "tracks?", "Delete tracks", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+        if (JIPipeDesktopDialogs.confirm(getViewerPanel(), "Delete tracks", "Do you really want to remove " + tracksListControl.getSelectedValuesList().size() + "tracks?")) {
             for (Integer trackId : tracksListControl.getSelectedValuesList()) {
                 tracksCollection.getModel().setTrackVisibility(trackId, false);
             }

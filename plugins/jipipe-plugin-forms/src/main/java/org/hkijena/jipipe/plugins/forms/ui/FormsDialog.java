@@ -30,6 +30,8 @@ import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.desktop.commons.components.validation.JIPipeDesktopUserFriendlyErrorUI;
+import org.hkijena.jipipe.desktop.commons.dialogs.Button;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.forms.FormsPlugin;
 import org.hkijena.jipipe.plugins.forms.datatypes.FormData;
 import org.hkijena.jipipe.plugins.forms.datatypes.ParameterFormData;
@@ -134,19 +136,19 @@ public class FormsDialog extends JFrame {
         JIPipeProgressInfo info = new JIPipeProgressInfo();
         JIPipeValidationReport report = getReportForDataBatch(row, info);
         if (!report.isValid()) {
-            int result = JOptionPane.showOptionDialog(this,
+            Button yes = Button.custom("Yes");
+            Button no = Button.custom("No");
+            Button showErrors = Button.custom("Show errors").asDefault();
+            Optional<Button> result = JIPipeDesktopDialogs.choose(this,
                     "The current batch has settings that are not fully valid. Do you want to continue, anyway?",
                     "Issues found",
-                    JOptionPane.YES_NO_CANCEL_OPTION,
-                    JOptionPane.QUESTION_MESSAGE,
-                    null,
-                    new Object[]{"Yes", "No", "Show errors"},
-                    "Show errors");
-            if (result == JOptionPane.YES_OPTION)
+                    yes, no, showErrors);
+            if (result.orElse(null) == yes)
                 return true;
-            else if (result == JOptionPane.NO_OPTION)
+            else if (result.orElse(null) == no)
                 return false;
             else {
+                // "Show errors" or a dismissal (the window's X / Escape)
                 tabPane.closeAllTabs(true);
                 lastTab = TAB_ISSUES_DETECTED;
                 switchToDataBatchUI(row);
@@ -405,12 +407,10 @@ public class FormsDialog extends JFrame {
 
         JMenuItem applyToAllButton = new JMenuItem("All iteration steps", JIPipe.RESOURCES.getIcon16("actions/dialog-layers.png"));
         applyToAllButton.addActionListener(e -> {
-            if (JOptionPane.showConfirmDialog(this,
-                    "Do you really want to copy the current settings to all other batches?\n" +
-                            "This will replace all existing values.",
+            if (JIPipeDesktopDialogs.confirm(this,
                     "Apply to all iteration steps",
-                    JOptionPane.YES_NO_OPTION,
-                    JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+                    "Do you really want to copy the current settings to all other batches?\n" +
+                            "This will replace all existing values.")) {
                 applyCurrentSettingsToAll(true);
             }
         });
@@ -426,11 +426,9 @@ public class FormsDialog extends JFrame {
                         JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            if (JOptionPane.showConfirmDialog(this,
-                    "Do you really want to copy the current settings to all remaining batches?",
+            if (JIPipeDesktopDialogs.confirm(this,
                     "Apply to all remaining iteration steps",
-                    JOptionPane.YES_NO_OPTION,
-                    JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+                    "Do you really want to copy the current settings to all remaining batches?")) {
                 applyCurrentSettingsToAll(false);
             }
         });
@@ -445,12 +443,10 @@ public class FormsDialog extends JFrame {
         JMenuItem resetVisitedItem = new JMenuItem("'Reviewed' status only", JIPipe.RESOURCES.getIcon16("actions/eye-slash.png"));
         resetVisitedItem.setToolTipText("Marks all iteration steps as not reviewed. This will not change any settings.");
         resetVisitedItem.addActionListener(e -> {
-            if (JOptionPane.showConfirmDialog(this,
-                    "Do you want to set all batches to 'not reviewed'?\n" +
-                            "This will not change any settings already made.",
+            if (JIPipeDesktopDialogs.confirm(this,
                     "Reset 'Reviewed' status only",
-                    JOptionPane.YES_NO_OPTION,
-                    JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+                    "Do you want to set all batches to 'not reviewed'?\n" +
+                            "This will not change any settings already made.")) {
                 for (int i = 0; i < iterationStepStatuses.size(); i++) {
                     iterationStepStatuses.set(i, DataBatchStatus.Unvisited);
                 }
@@ -465,11 +461,9 @@ public class FormsDialog extends JFrame {
         JMenuItem resetCurrentItem = new JMenuItem("Current batch", JIPipe.RESOURCES.getIcon16("actions/clear-brush.png"));
         resetCurrentItem.setToolTipText("Resets the settings of the currently viewed iteration step.");
         resetCurrentItem.addActionListener(e -> {
-            if (JOptionPane.showConfirmDialog(this,
-                    "Do you want to reset all settings of the current batch?",
+            if (JIPipeDesktopDialogs.confirm(this,
                     "Reset current batch",
-                    JOptionPane.YES_NO_OPTION,
-                    JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+                    "Do you want to reset all settings of the current batch?")) {
                 resetCurrentBatch();
             }
         });
@@ -478,11 +472,9 @@ public class FormsDialog extends JFrame {
         JMenuItem resetAllItem = new JMenuItem("All batches", JIPipe.RESOURCES.getIcon16("actions/clear-brush.png"));
         resetAllItem.setToolTipText("Resets the settings of all iteration steps.");
         resetAllItem.addActionListener(e -> {
-            if (JOptionPane.showConfirmDialog(this,
-                    "Do you want to reset all settings of all batches?",
+            if (JIPipeDesktopDialogs.confirm(this,
                     "Reset all batches",
-                    JOptionPane.YES_NO_OPTION,
-                    JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+                    "Do you want to reset all settings of all batches?")) {
                 resetAllBatches(false);
             }
         });
@@ -491,11 +483,9 @@ public class FormsDialog extends JFrame {
         JMenuItem resetUnvisitedItem = new JMenuItem("Non-reviewed batches", JIPipe.RESOURCES.getIcon16("actions/clear-brush.png"));
         resetUnvisitedItem.setToolTipText("Resets the settings of all iteration steps that are not reviewed.");
         resetUnvisitedItem.addActionListener(e -> {
-            if (JOptionPane.showConfirmDialog(this,
-                    "Do you want to reset all settings of all non-reviewed batches?",
+            if (JIPipeDesktopDialogs.confirm(this,
                     "Reset non-reviewed batches",
-                    JOptionPane.YES_NO_OPTION,
-                    JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+                    "Do you want to reset all settings of all non-reviewed batches?")) {
                 resetAllBatches(true);
             }
         });
@@ -644,20 +634,16 @@ public class FormsDialog extends JFrame {
         long unvisited = iterationStepStatuses.stream().filter(iterationStepStatus -> iterationStepStatus == DataBatchStatus.Unvisited).count();
         long invalid = iterationStepStatuses.stream().filter(iterationStepStatus -> iterationStepStatus == DataBatchStatus.Invalid).count();
         if (unvisited > 0) {
-            if (JOptionPane.showConfirmDialog(FormsDialog.this,
-                    "There are " + unvisited + " iteration steps that are not marked as reviewed. Do you want to continue, anyway?",
+            if (!JIPipeDesktopDialogs.confirm(FormsDialog.this,
                     getTitle(),
-                    JOptionPane.YES_NO_OPTION,
-                    JOptionPane.QUESTION_MESSAGE) == JOptionPane.NO_OPTION) {
+                    "There are " + unvisited + " iteration steps that are not marked as reviewed. Do you want to continue, anyway?")) {
                 return;
             }
         }
         if (invalid > 0) {
-            if (JOptionPane.showConfirmDialog(FormsDialog.this,
-                    "There are " + invalid + " iteration steps that report issues. Do you want to continue, anyway?",
+            if (!JIPipeDesktopDialogs.confirm(FormsDialog.this,
                     getTitle(),
-                    JOptionPane.YES_NO_OPTION,
-                    JOptionPane.QUESTION_MESSAGE) == JOptionPane.NO_OPTION) {
+                    "There are " + invalid + " iteration steps that report issues. Do you want to continue, anyway?")) {
                 return;
             }
         }
@@ -671,11 +657,9 @@ public class FormsDialog extends JFrame {
             cancelled = false;
             dispose();
         } else {
-            if (JOptionPane.showConfirmDialog(FormsDialog.this,
-                    "Do you really want to cancel the pipeline?",
+            if (JIPipeDesktopDialogs.confirm(FormsDialog.this,
                     getTitle(),
-                    JOptionPane.YES_NO_OPTION,
-                    JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+                    "Do you really want to cancel the pipeline?")) {
                 cancelled = true;
                 dispose();
             }

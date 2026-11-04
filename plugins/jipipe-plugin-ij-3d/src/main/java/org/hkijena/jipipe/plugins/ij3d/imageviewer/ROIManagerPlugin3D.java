@@ -27,6 +27,8 @@ import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopDummyWorkbench;
 import org.hkijena.jipipe.desktop.app.tableeditor.JIPipeDesktopTableEditor;
 import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
+import org.hkijena.jipipe.desktop.commons.dialogs.Button;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopLargeToggleButtonRibbonAction;
@@ -154,17 +156,15 @@ public class ROIManagerPlugin3D extends JIPipeDesktopLegacyImageViewerPlugin2D {
             return null;
         }
         if (!roiListControl.getSelectedValuesList().isEmpty()) {
-            int result = JOptionPane.showOptionDialog(getViewerPanel(),
+            Button allRoi = Button.custom("All ROI (" + rois.size() + ")").asDefault();
+            Button selectedRoi = Button.custom("Selected ROI (" + roiListControl.getSelectedValuesList().size() + ")");
+            Optional<Button> result = JIPipeDesktopDialogs.choose(getViewerPanel(),
                     message,
                     title,
-                    JOptionPane.YES_NO_CANCEL_OPTION,
-                    JOptionPane.QUESTION_MESSAGE,
-                    null,
-                    new Object[]{"All ROI (" + rois.size() + ")", "Selected ROI (" + roiListControl.getSelectedValuesList().size() + ")", "Cancel"},
-                    "All ROI (" + rois.size() + ")");
-            if (result == JOptionPane.CANCEL_OPTION)
+                    allRoi, selectedRoi);
+            if (result.isEmpty())
                 return null;
-            else if (result == JOptionPane.YES_OPTION)
+            else if (result.get() == allRoi)
                 return rois;
             else {
                 Ij3dSuiteRoiListData roi3DListData = new Ij3dSuiteRoiListData();
@@ -372,10 +372,9 @@ public class ROIManagerPlugin3D extends JIPipeDesktopLegacyImageViewerPlugin2D {
 //    }
 
     private void saveDefaults() {
-        if (JOptionPane.showConfirmDialog(getViewerPanel(),
-                "Do you want to save the ROI display settings as default?",
+        if (JIPipeDesktopDialogs.confirm(getViewerPanel(),
                 "Save settings as default",
-                JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                "Do you want to save the ROI display settings as default?")) {
             ImageViewerUIRoi3dDisplayApplicationSettings settings = ImageViewerUIRoi3dDisplayApplicationSettings.getInstance();
             settings.setShowROI(displayROIViewMenuItem.getState());
             JIPipe.autoSaveSettings();
