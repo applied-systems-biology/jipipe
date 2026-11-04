@@ -43,8 +43,8 @@ import java.util.function.Predicate;
  * The modern dialog API (work item #1341): a static facade over
  * {@link JIPipeDesktopDialog} in which the classic option-pane
  * confusion between "the user closed the window" (CLOSED_OPTION) and a real
- * choice is unrepresentable. Every dismissal — the Cancel button, the window
- * close button, or Escape — funnels into the dialog's single
+ * choice is unrepresentable. Every dismissal - the Cancel button, the window
+ * close button, or Escape - funnels into the dialog's single
  * {@link JIPipeDesktopDialog#dismiss()} path and maps to
  * {@code Optional.empty()} or {@code false} by construction.
  * <p>
@@ -143,7 +143,7 @@ public final class JIPipeDesktopDialogs {
      * Truth table (identical to the former {@code == YES_OPTION}
      * idiom): Yes → {@code true}; No, Cancel, window close, or Escape →
      * {@code false}. There is no way to represent "dismissed" separately
-     * from "No" — by design.
+     * from "No" - by design.
      *
      * @param parent  the parent component, or null for an ownerless dialog
      * @param title   the dialog title
@@ -198,7 +198,7 @@ public final class JIPipeDesktopDialogs {
      * <p>
      * Deliberate behavior change vs. the classic {@code showInputDialog}
      * (spec §4.2): submitting with <em>empty or whitespace-only</em> text
-     * counts as dismiss — the result is {@link Optional#empty()}, never an
+     * counts as dismiss - the result is {@link Optional#empty()}, never an
      * empty string. A caller that genuinely needs an empty value uses the
      * {@code Builder} escape hatch (a later task of #1341).
      *
@@ -218,7 +218,7 @@ public final class JIPipeDesktopDialogs {
         Button ok = Button.OK.asDefault();
         JIPipeDesktopDialog dialog = newInputDialog(parent, title, message, field, ok);
         // Enter inside the field submits the OK action (spec §4.2): the
-        // field's action event (fired on Enter) clicks the OK button — the
+        // field's action event (fired on Enter) clicks the OK button - the
         // same code path as an OK click. Index 0 is the OK button: it is the
         // only caller-provided button (the implicit Cancel is appended last).
         JButton okButton = dialog.getActionButtons().get(0);
@@ -239,7 +239,7 @@ public final class JIPipeDesktopDialogs {
     /**
      * Shows a multi-line text input dialog: a {@link JTextArea} in a scroll
      * pane (≈480×240), pre-filled with {@code initialValue} (null → empty).
-     * Enter inserts a newline — submission is via the OK button only.
+     * Enter inserts a newline - submission is via the OK button only.
      * <p>
      * Same empty-submit rule as {@link #inputText} (spec §4.2): submitting
      * with empty or whitespace-only text counts as dismiss.
@@ -340,7 +340,7 @@ public final class JIPipeDesktopDialogs {
      * re-presents a fresh dialog each round, carrying over the submitted
      * text (reselected) and the error label; the loop ends on a free value
      * or a dismissal. Each round is one modal {@code showAndWait()}
-     * round-trip, and — like every facade method — the whole loop runs on
+     * round-trip, and - like every facade method - the whole loop runs on
      * the event dispatch thread; the facade does not marshal anything.
      * <p>
      * Same empty-submit rule as {@link #inputText} (spec §4.2): submitting
@@ -394,7 +394,7 @@ public final class JIPipeDesktopDialogs {
             }
             // Taken: show the substituted error and re-present for editing.
             // A fresh dialog also starts with an empty result, so a round
-            // that ends without a decision (window close) is a dismissal —
+            // that ends without a decision (window close) is a dismissal -
             // never the previous round's OK.
             error = template.replace("{value}", submitted);
             lastValue = submitted;
@@ -417,7 +417,7 @@ public final class JIPipeDesktopDialogs {
     }
 
     /**
-     * Creates a builder for a fully customized dialog — the escape hatch for
+     * Creates a builder for a fully customized dialog - the escape hatch for
      * dialogs that need arbitrary content, button sets, or sizes beyond the
      * facade's canned methods (spec §4.4).
      *
@@ -439,7 +439,7 @@ public final class JIPipeDesktopDialogs {
      * button entirely; otherwise (the default {@code cancelable == true}) an
      * implicit {@link Button#CANCEL} is appended last unless the effective
      * set already contains one. The append logic lives in the dialog chrome
-     * — the Builder never duplicates it.
+     * - the Builder never duplicates it.
      * <p>
      * {@link #build()} only constructs the dialog; {@link #show()} builds
      * and presents it via the same presenter seam as the facade methods and
@@ -539,7 +539,7 @@ public final class JIPipeDesktopDialogs {
             }
             dialog.setCancelable(cancelable);
             // The chrome appends the implicit Cancel (when cancelable and not
-            // already present) — the Builder never duplicates that logic.
+            // already present) - the Builder never duplicates that logic.
             dialog.setButtons(buttons != null ? buttons : new Button[]{Button.OK});
             if (size != null) {
                 dialog.setSize(size);
@@ -607,10 +607,10 @@ public final class JIPipeDesktopDialogs {
     /**
      * Creates an input dialog: message on top, the given content in the
      * center, cancelable with a default-flagged OK button (the implicit
-     * Cancel is appended by the dialog chrome — always the
+     * Cancel is appended by the dialog chrome - always the
      * {@link Button#CANCEL} constant, never a copy). The {@code ok} instance
      * must be reused for the caller's result comparison: the chrome records
-     * the exact instance it was given ({@code asDefault()} returns a copy —
+     * the exact instance it was given ({@code asDefault()} returns a copy -
      * comparing against the {@link Button#OK} constant would never match).
      */
     private static JIPipeDesktopDialog newInputDialog(Component parent, String title, String message, JComponent content, Button ok) {
@@ -624,8 +624,8 @@ public final class JIPipeDesktopDialogs {
 
     /**
      * Whether the OK button of an input dialog was chosen (by identity: the
-     * dialog preserves the exact instance, so a Cancel click or a dismissal —
-     * which leaves the result empty — is not an OK choice). The compared
+     * dialog preserves the exact instance, so a Cancel click or a dismissal -
+     * which leaves the result empty - is not an OK choice). The compared
      * {@code ok} must be the default-flagged instance the dialog was given
      * (see {@link #newInputDialog}).
      */

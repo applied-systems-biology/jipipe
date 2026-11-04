@@ -173,7 +173,7 @@ class DialogChromeTest {
         assertFalse(d.getMessageLabel().getText().contains("<b>"),
                 "a plain message must not be set as live markup");
 
-        // The ampersand is escaped (first — without double-escaping).
+        // The ampersand is escaped (first - without double-escaping).
         JIPipeDesktopDialog ampersand = newDialog();
         ampersand.addMessage("A & B");
         assertTrue(ampersand.getMessageLabel().getText().contains("A &amp; B"),

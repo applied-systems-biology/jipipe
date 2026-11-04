@@ -38,8 +38,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * The unique-value contract of {@link JIPipeDesktopDialogs#inputUniqueText}
  * (modern dialog API, #1341): submitting an already-taken value keeps the
- * dialog open for editing — an inline error label shows the substituted
- * error template and the field content is reselected — while a free value,
+ * dialog open for editing - an inline error label shows the substituted
+ * error template and the field content is reselected - while a free value,
  * an empty/whitespace submission, or a dismissal ends the dialog.
  * <p>
  * Headless-safe: a capturing {@link DialogPresenter} records the presented
@@ -91,7 +91,7 @@ class InputUniqueTextTest {
     @Test
     void takenValueShowsErrorAndStaysOpen() {
         // Round 1: submit the taken value "a". Every later round leaves the
-        // re-presented dialog undecided — the dialog "stays open" for
+        // re-presented dialog undecided - the dialog "stays open" for
         // editing, so the facade must keep waiting instead of returning.
         AtomicBoolean submitted = new AtomicBoolean();
         JIPipeDesktopDialogs.setPresenter(dialog -> {
@@ -155,7 +155,7 @@ class InputUniqueTextTest {
 
     @Test
     void emptySubmitIsDismissed() {
-        // The empty/whitespace rule of inputText (spec §4.2) applies here —
+        // The empty/whitespace rule of inputText (spec §4.2) applies here -
         // and it must end the loop: with every value "taken" (the predicate
         // below), an exists-check before the blank check would never finish.
         AtomicInteger rounds = new AtomicInteger();

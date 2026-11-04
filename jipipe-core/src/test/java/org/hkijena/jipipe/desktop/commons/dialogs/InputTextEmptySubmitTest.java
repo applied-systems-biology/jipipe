@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * The empty-submit contract of {@link JIPipeDesktopDialogs#inputText}
  * (modern dialog API, #1341, spec §4.2): submitting the field with empty or
- * whitespace-only text counts as <em>dismiss</em> — the result is
+ * whitespace-only text counts as <em>dismiss</em> - the result is
  * {@code Optional.empty()}, never an empty string.
  * <p>
  * Headless-safe: a capturing {@link DialogPresenter} records the constructed
@@ -83,7 +83,7 @@ class InputTextEmptySubmitTest {
 
     /**
      * Installs a deciding presenter that clicks the dialog's OK button
-     * (found by label, not position) inside show() — the decision must happen
+     * (found by label, not position) inside show() - the decision must happen
      * in the real production order: decide, then return.
      */
     private void clickOkOnShow() {
@@ -116,7 +116,7 @@ class InputTextEmptySubmitTest {
         assertTrue(cleared.isEmpty(), "submitting a cleared field must count as dismiss");
 
         // For contrast: dismissing (X / Escape / Cancel funnel into dismiss())
-        // is also empty — the two "no value" cases are collapsed.
+        // is also empty - the two "no value" cases are collapsed.
         JIPipeDesktopDialogs.setPresenter(dialog -> {
             captured = dialog;
             dialog.dismiss();
@@ -156,7 +156,7 @@ class InputTextEmptySubmitTest {
     @Test
     void initialValueIsSet() {
         // No decision needed: the call presents the dialog (and, undecided,
-        // maps to empty) — the captured dialog carries the pre-filled field.
+        // maps to empty) - the captured dialog carries the pre-filled field.
         JIPipeDesktopDialogs.inputText(null, "t", "m", "seed");
         JTextField field = findTextField(captured);
         assertNotNull(field, "inputText must present a single-line text field");

@@ -42,7 +42,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * Headful plumbing test for the real modal path of the modern dialog API
  * (#1341, spec §6.8): unlike the other dialog suites, which install a
  * capturing presenter and never show a dialog, this test exercises the
- * production {@link ModalPresenter} end to end — {@code showAndWait()}
+ * production {@link ModalPresenter} end to end - {@code showAndWait()}
  * blocks a worker thread inside {@code setVisible(true)}, a {@link Timer}
  * (which fires on the event dispatch thread) {@code doClick()}s a button
  * after the dialog was presented, and {@code showAndWait()} returns with the
@@ -60,7 +60,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * The presenter is JVM-static state, so the pre-test presenter is saved and
  * restored around every test. Showing a dialog requires a display, so the
  * suite skips in headless environments (mirroring {@code DialogChromeTest}).
- * No robot is used — the click is an event-driven {@code doClick()} on the
+ * No robot is used - the click is an event-driven {@code doClick()} on the
  * EDT.
  */
 class HeadfulPlumbingTest {
@@ -218,8 +218,8 @@ class HeadfulPlumbingTest {
     }
 
     /**
-     * Input dialogs must open with the focus on their content — the text
-     * field — instead of the OK button (the button panel is added before the
+     * Input dialogs must open with the focus on their content - the text
+     * field - instead of the OK button (the button panel is added before the
      * content in the chrome constructor, so container-order focus traversal
      * would pick the button; {@code showAndWait()} redirects the initial
      * focus to the content).
@@ -294,7 +294,7 @@ class HeadfulPlumbingTest {
         assertTrue(dialog.isContentFocusRequested(),
                 "an input dialog must redirect the initial focus to its content (requestFocusInWindow invoked)");
         assertTrue(focusOwner.get() instanceof JTextField,
-                "an input dialog must give the initial focus to its content (the text field), not the OK button — but was: "
+                "an input dialog must give the initial focus to its content (the text field), not the OK button - but was: "
                         + focusOwner.get());
         worker.join(5_000);
         assertFalse(worker.isAlive(), "the worker thread must have finished after showAndWait() returned");

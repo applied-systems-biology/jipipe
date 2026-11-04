@@ -40,7 +40,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * dialog API, #1341, spec §4.4): the button rules (an explicit set replaces
  * the default, {@code cancelable(false)} suppresses Cancel entirely,
  * otherwise the chrome appends the implicit Cancel), message normalization,
- * custom content and size — and the show/build split ({@code build()} only
+ * custom content and size - and the show/build split ({@code build()} only
  * constructs, {@code show()} presents and returns the chosen button).
  * <p>
  * Headless-safe: a capturing {@link DialogPresenter} records the presented
@@ -145,7 +145,7 @@ class BuilderTest {
         assertEquals("Cancel", buttons.get(1).getText(), "the implicit Cancel must come last");
 
         // An explicit set under the default cancelable(true) gets the
-        // implicit Cancel appended once — by the chrome, not the Builder.
+        // implicit Cancel appended once - by the chrome, not the Builder.
         JIPipeDesktopDialog custom = JIPipeDesktopDialogs.builder(null, "t")
                 .message("m")
                 .buttons(Button.custom("Apply"))

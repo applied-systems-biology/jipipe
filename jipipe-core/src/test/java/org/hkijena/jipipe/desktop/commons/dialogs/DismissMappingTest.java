@@ -38,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * The dismiss-mapping contract of the {@link JIPipeDesktopDialogs} facade
  * (modern dialog API, #1341): dismissing a dialog (the single code path that
  * X, Escape, and the Cancel button all funnel into) must map to
- * {@code Optional.empty()} / {@code false} — never to a real choice.
+ * {@code Optional.empty()} / {@code false} - never to a real choice.
  * <p>
  * Headless-safe: a capturing {@link DialogPresenter} records the constructed
  * dialog instead of showing it, and the user's decision is simulated inside
@@ -178,12 +178,12 @@ class DismissMappingTest {
     @Test
     void inputDialogRegistersDefaultOkButtonAndMatchesResultByIdentity() {
         // The input dialogs hand a default-flagged OK copy to the chrome; the
-        // facade must compare the result against that same copy — asDefault()
+        // facade must compare the result against that same copy - asDefault()
         // returns a copy, so comparing against the Button.OK constant would
         // never match (and Enter would silently do nothing on ~170 dialogs).
         //
         // Undecided first (a decision disposes the dialog, which resets the
-        // root pane's default button — the assertion below must observe the
+        // root pane's default button - the assertion below must observe the
         // presented dialog, not a disposed one).
         JIPipeDesktopDialogs.inputText(null, "t", "m", "abc");
         JButton inputDefault = captured.getRootPane().getDefaultButton();
@@ -202,7 +202,7 @@ class DismissMappingTest {
         assertTrue(captured.getResult().orElseThrow().isDefault(),
                 "the recorded result must be the default-flagged OK copy");
 
-        // Cancel (the implicit last button) is not an OK choice — and, being
+        // Cancel (the implicit last button) is not an OK choice - and, being
         // a different instance, can never be confused with the flagged copy.
         JIPipeDesktopDialogs.setPresenter(dialog -> {
             captured = dialog;

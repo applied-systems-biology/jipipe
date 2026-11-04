@@ -88,7 +88,7 @@ class TypedInputsTest {
 
     /**
      * Installs a deciding presenter that clicks the dialog's OK button
-     * (found by label, not position) inside show() — the decision must happen
+     * (found by label, not position) inside show() - the decision must happen
      * in the real production order: decide, then return.
      */
     private void clickOkOnShow() {

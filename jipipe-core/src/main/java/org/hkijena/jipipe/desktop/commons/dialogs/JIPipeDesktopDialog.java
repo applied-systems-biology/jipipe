@@ -113,7 +113,7 @@ class JIPipeDesktopDialog extends JDialog {
      * characters ({@code &}, {@code <}, {@code >}) escaped so they render
      * verbatim (the classic option pane showed plain strings verbatim); messages
      * that already are a full {@code <html>} document pass through verbatim
-     * (the spec's {@code <html>} pass-through rule — nesting them in the
+     * (the spec's {@code <html>} pass-through rule - nesting them in the
      * wrapper div would mangle their rendering, and their markup is
      * intentional).
      *
@@ -132,7 +132,7 @@ class JIPipeDesktopDialog extends JDialog {
     /**
      * Escapes the HTML-significant characters of a plain message so they
      * render verbatim inside the word-wrapping HTML container. The ampersand
-     * must be replaced first — escaping it after the angle brackets would
+     * must be replaced first - escaping it after the angle brackets would
      * double-escape the entities produced for them.
      */
     private static String escapeHtml(String message) {
@@ -219,7 +219,7 @@ class JIPipeDesktopDialog extends JDialog {
      * panel is added before the content (container order), so without the
      * redirect, input dialogs would open with the OK button focused instead
      * of their text field. Without content (message/confirm/choose dialogs),
-     * nothing is done — the default button receives focus naturally.
+     * nothing is done - the default button receives focus naturally.
      * <p>
      * The redirect is armed at {@code windowOpened} (and deferred one more
      * event-loop hop): a plain {@code invokeLater} queued before presenting
@@ -289,7 +289,7 @@ class JIPipeDesktopDialog extends JDialog {
 
     /**
      * A non-cancel action was clicked: record the button and close the
-     * dialog. Disposes symmetrically to {@link #dismiss()} — otherwise every
+     * dialog. Disposes symmetrically to {@link #dismiss()} - otherwise every
      * decided dialog would keep its native window alive until GC.
      */
     private void onActionClicked(Button b) {
