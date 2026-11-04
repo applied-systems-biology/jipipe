@@ -435,7 +435,7 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
     private void restoreDockStateTemplate(String value) {
         try {
             JIPipeDesktopDockPanel.State state = JsonUtils.readFromString(value, JIPipeDesktopDockPanel.State.class);
-            getDockPanel().restoreState(state);
+            getDockPanel().restoreState(state.withoutContextDockVisibilities());
             saveDockStateToSettings();
         } catch (Throwable e) {
             e.printStackTrace();
@@ -485,7 +485,7 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
     private void createDockStateTemplate() {
         String newValue = StringUtils.nullToEmpty(JOptionPane.showInputDialog(this, "Please input the name of the layout:", "")).trim();
         if (!StringUtils.isNullOrEmpty(newValue)) {
-            JIPipeDesktopDockPanel.State currentState = getDockPanel().getCurrentState();
+            JIPipeDesktopDockPanel.State currentState = getDockPanel().getCurrentState().withoutContextDockVisibilities();
             getDockStateTemplates().add(new StringAndStringPairParameter(newValue, JsonUtils.toJsonString(currentState)));
             saveDockStateTemplates();
         }
