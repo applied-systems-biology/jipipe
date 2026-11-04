@@ -481,14 +481,14 @@ public class ROIManagerPlugin3D extends JIPipeDesktopLegacyImageViewerPlugin2D {
         String currentName = selectedRois.stream().map(Ij3dSuiteRoi::getName).filter(Objects::nonNull).findAny().orElse("");
         JMenuItem setNameItem = new JMenuItem("Set name ...", JIPipe.RESOURCES.getIcon16("actions/tag.png"));
         setNameItem.addActionListener(e -> {
-            String value = JOptionPane.showInputDialog(getViewerPanel(), "Please set the name of the ROIs:", currentName);
-            if (value != null) {
-                for (Ij3dSuiteRoi roi : selectedRois) {
-                    roi.setName(value);
-                }
-                roiListControl.repaint();
-                uploadSliceToCanvas();
-            }
+            JIPipeDesktopDialogs.inputText(getViewerPanel(), "Input", "Please set the name of the ROIs:", currentName)
+                    .ifPresent(value -> {
+                        for (Ij3dSuiteRoi roi : selectedRois) {
+                            roi.setName(value);
+                        }
+                        roiListControl.repaint();
+                        uploadSliceToCanvas();
+                    });
         });
         menu.add(setNameItem);
 
@@ -497,7 +497,7 @@ public class ROIManagerPlugin3D extends JIPipeDesktopLegacyImageViewerPlugin2D {
         int currentCPosition = Math.max(0, selectedRois.stream().map(Ij3dSuiteRoi::getChannel).min(Comparator.naturalOrder()).get());
         JMenuItem setCPositionItem = new JMenuItem("Set channel ...", JIPipe.RESOURCES.getIcon16("actions/mark-location.png"));
         setCPositionItem.addActionListener(e -> {
-            Optional<Integer> value = UIUtils.getIntegerByDialog(getViewerPanel(), "Set channel", "The first index is 1. Set it to zero to make the ROI appear on all channel planes.", currentCPosition, 0, Integer.MAX_VALUE);
+            Optional<Integer> value = JIPipeDesktopDialogs.inputInteger(getViewerPanel(), "Set channel", "The first index is 1. Set it to zero to make the ROI appear on all channel planes.", currentCPosition, 0, Integer.MAX_VALUE);
             if (value.isPresent()) {
                 for (Ij3dSuiteRoi roi : selectedRois) {
                     roi.setChannel(value.get());
@@ -511,7 +511,7 @@ public class ROIManagerPlugin3D extends JIPipeDesktopLegacyImageViewerPlugin2D {
         int currentTPosition = Math.max(0, selectedRois.stream().map(Ij3dSuiteRoi::getFrame).min(Comparator.naturalOrder()).get());
         JMenuItem setTPositionItem = new JMenuItem("Set T position ...", JIPipe.RESOURCES.getIcon16("actions/mark-location.png"));
         setTPositionItem.addActionListener(e -> {
-            Optional<Integer> value = UIUtils.getIntegerByDialog(getViewerPanel(), "Set T position", "The first index is 1. Set it to zero to make the ROI appear on all frame planes.", currentTPosition, 0, Integer.MAX_VALUE);
+            Optional<Integer> value = JIPipeDesktopDialogs.inputInteger(getViewerPanel(), "Set T position", "The first index is 1. Set it to zero to make the ROI appear on all frame planes.", currentTPosition, 0, Integer.MAX_VALUE);
             if (value.isPresent()) {
                 for (Ij3dSuiteRoi roi : selectedRois) {
                     roi.setFrame(value.get());

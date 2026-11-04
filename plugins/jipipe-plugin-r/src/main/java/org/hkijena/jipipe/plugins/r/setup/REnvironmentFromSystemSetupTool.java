@@ -6,6 +6,8 @@ import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironmentSetupTool;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.commons.dialogs.Button;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.r.REnvironment;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
 
@@ -17,6 +19,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class REnvironmentFromSystemSetupTool implements JIPipeEnvironmentSetupTool {
     @Override
@@ -57,18 +60,22 @@ public class REnvironmentFromSystemSetupTool implements JIPipeEnvironmentSetupTo
             }
             options[detectedRPaths.size()] = "Select manually...";
 
-            String selection = (String) JOptionPane.showInputDialog(parent,
+            Button[] optionButtons = new Button[options.length + 1];
+            for (int i = 0; i < options.length; i++) {
+                optionButtons[i] = Button.custom(options[i]);
+            }
+            optionButtons[options.length] = Button.CANCEL;
+            optionButtons[0] = optionButtons[0].asDefault(); // original initialSelectionValue
+            Optional<Button> selectedChoice = JIPipeDesktopDialogs.choose(parent,
                     "The following R executables were found on your system:\n\n" +
                             "Please select which one to use, or choose 'Select manually...' to pick a different location.",
                     "Select R executable",
-                    JOptionPane.QUESTION_MESSAGE,
-                    null,
-                    options,
-                    options[0]);
+                    optionButtons);
 
-            if (selection == null) {
+            if (selectedChoice.isEmpty()) {
                 return false; // User cancelled
             }
+            String selection = selectedChoice.get().getLabel();
 
             if (selection.equals("Select manually...")) {
                 // Manual selection

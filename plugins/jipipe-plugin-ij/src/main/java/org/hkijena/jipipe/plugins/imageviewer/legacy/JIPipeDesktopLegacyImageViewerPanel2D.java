@@ -317,14 +317,14 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
         editButton.setToolTipText("Jump to slice");
         UIUtils.makeButtonFlat25x25(editButton);
         editButton.addActionListener(e -> {
-            String input = JOptionPane.showInputDialog(this,
-                    "Please input a new value for " + name + " (" + slider.getMinimum() + "-" + slider.getMaximum() + ")",
-                    slider.getValue());
-            if (!StringUtils.isNullOrEmpty(input)) {
-                Integer index = NumberUtils.createInteger(input);
-                index = Math.min(slider.getMaximum(), Math.max(slider.getMinimum(), index));
-                slider.setValue(index);
-            }
+            JIPipeDesktopDialogs.inputText(this, "Input",
+                            "Please input a new value for " + name + " (" + slider.getMinimum() + "-" + slider.getMaximum() + ")",
+                            String.valueOf(slider.getValue()))
+                    .ifPresent(input -> {
+                        Integer index = NumberUtils.createInteger(input);
+                        index = Math.min(slider.getMaximum(), Math.max(slider.getMinimum(), index));
+                        slider.setValue(index);
+                    });
         });
         descriptionPanel.add(editButton);
         descriptionPanel.add(animation);
@@ -409,17 +409,18 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
         zoomMenu.addSeparator();
         JMenuItem changeZoomToItem = new JMenuItem("Set zoom value ...");
         changeZoomToItem.addActionListener(e -> {
-            String zoomInput = JOptionPane.showInputDialog(this, "Please enter a new zoom value (in %)", (int) (canvas.getZoom() * 100) + "%");
-            if (!StringUtils.isNullOrEmpty(zoomInput)) {
-                zoomInput = zoomInput.replace("%", "");
-                try {
-                    int percentage = Integer.parseInt(zoomInput);
-                    canvas.setZoom(percentage / 100.0);
-                    updateZoomStatus();
-                } catch (NumberFormatException ex) {
-                    ex.printStackTrace();
-                }
-            }
+            // String input (not inputInteger): the value carries a "%" suffix
+            JIPipeDesktopDialogs.inputText(this, "Input", "Please enter a new zoom value (in %)", (int) (canvas.getZoom() * 100) + "%")
+                    .ifPresent(zoomInput -> {
+                        String percentageString = zoomInput.replace("%", "");
+                        try {
+                            int percentage = Integer.parseInt(percentageString);
+                            canvas.setZoom(percentage / 100.0);
+                            updateZoomStatus();
+                        } catch (NumberFormatException ex) {
+                            ex.printStackTrace();
+                        }
+                    });
         });
         zoomMenu.add(changeZoomToItem);
     }
