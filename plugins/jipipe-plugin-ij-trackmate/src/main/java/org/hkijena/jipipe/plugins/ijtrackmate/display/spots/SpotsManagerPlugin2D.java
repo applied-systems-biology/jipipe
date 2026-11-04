@@ -241,8 +241,8 @@ public class SpotsManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D
             Button allSpots = Button.custom("All spots (" + spotsCollection.getNSpots() + ")").asDefault();
             Button selectedSpots = Button.custom("Selected spots (" + spotsListControl.getSelectedValuesList().size() + ")");
             Optional<Button> result = JIPipeDesktopDialogs.choose(getViewerPanel(),
-                    message,
                     title,
+                    message,
                     allSpots, selectedSpots);
             if (result.isEmpty())
                 return null;

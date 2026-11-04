@@ -119,8 +119,8 @@ public class TracksManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2
             Button allTracks = Button.custom("All tracks (" + tracksCollection.getNTracks() + ")").asDefault();
             Button selectedTracks = Button.custom("Selected tracks (" + tracksListControl.getSelectedValuesList().size() + ")");
             Optional<Button> result = JIPipeDesktopDialogs.choose(getViewerPanel(),
-                    message,
                     title,
+                    message,
                     allTracks, selectedTracks);
             if (result.isEmpty())
                 return null;

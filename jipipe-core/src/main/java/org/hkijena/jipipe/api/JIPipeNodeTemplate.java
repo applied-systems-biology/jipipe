@@ -119,8 +119,8 @@ public class JIPipeNodeTemplate extends AbstractJIPipeParameterCollection {
         Optional<Button> result = Optional.of(globally);
         if (canvasUI.getGraph().getProject() != null) {
             result = JIPipeDesktopDialogs.choose(canvasUI.getDesktopWorkbench().getWindow(),
-                    "Node templates can be stored globally or inside the project. Where should the template be stored?",
                     "Create node template",
+                    "Node templates can be stored globally or inside the project. Where should the template be stored?",
                     globally, insideProject);
         }
         if (result.isEmpty())

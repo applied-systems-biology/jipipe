@@ -111,9 +111,9 @@ public class PythonEnvironmentFromCondaSetupTool implements JIPipeEnvironmentSet
             optionButtons[options.length] = Button.CANCEL;
             optionButtons[0] = optionButtons[0].asDefault(); // original initialSelectionValue
             Optional<Button> selectedChoice = JIPipeDesktopDialogs.choose(parent,
+                    "Select Conda executable",
                     "The following conda executables were found on your system:\n\n" +
                             "Please select which one to use, or choose 'Select manually...' to pick a different location.",
-                    "Select Conda executable",
                     optionButtons);
 
             if (selectedChoice.isEmpty()) {
@@ -176,9 +176,9 @@ public class PythonEnvironmentFromCondaSetupTool implements JIPipeEnvironmentSet
             envButtons.set(0, envButtons.get(0).asDefault()); // original initialSelectionValue
             envButtons.add(Button.CANCEL);
             Optional<Button> envChoice = JIPipeDesktopDialogs.choose(parent,
+                    "Select Conda environment",
                     "The following conda environments are available:\n\n" +
                             "Please select which environment to use:",
-                    "Select Conda environment",
                     envButtons.toArray(new Button[0]));
 
             return envChoice.map(Button::getLabel).orElse(null);

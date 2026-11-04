@@ -547,8 +547,8 @@ public class PathUtils {
             try {
                 if (Files.list(path).findAny().isPresent()) {
                     Optional<Button> response = JIPipeDesktopDialogs.choose(parent,
-                            "The selected directory '" + path + "' is not empty! Remove contents and continue?",
                             "Empty directory expected",
+                            "The selected directory '" + path + "' is not empty! Remove contents and continue?",
                             Button.YES, Button.NO, Button.CANCEL);
                     if (response.orElse(null) == Button.YES) {
                         deleteDirectoryRecursively(path, new JIPipeProgressInfo());

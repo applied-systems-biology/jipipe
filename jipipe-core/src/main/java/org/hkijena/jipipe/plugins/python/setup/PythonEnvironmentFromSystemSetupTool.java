@@ -55,12 +55,12 @@ public class PythonEnvironmentFromSystemSetupTool implements JIPipeEnvironmentSe
         optionButtons[options.length] = Button.CANCEL;
         optionButtons[0] = optionButtons[0].asDefault(); // original initialSelectionValue
         Optional<Button> selectedChoice = JIPipeDesktopDialogs.choose(parent,
+                "Select Python executable",
                 detectedPythonPaths.isEmpty() ?
                         "No Python executables were found on your system.\n\n" +
                                 "Please select a Python executable manually." :
                         "The following Python executables were found on your system:\n\n" +
                                 "Please select which one to use, or choose 'Select Python executable manually...' to pick a different location.",
-                "Select Python executable",
                 optionButtons);
 
         if (selectedChoice.isEmpty()) {

@@ -355,8 +355,8 @@ public class JIPipeDesktop {
             Button fileButton = Button.custom("Open file").asDefault();
             Button directoryButton = Button.custom("Open directory");
             Optional<Button> selected = JIPipeDesktopDialogs.choose(parent,
-                    "Do you want to open a file or a directory?",
                     title,
+                    "Do you want to open a file or a directory?",
                     fileButton, directoryButton);
             if (selected.orElse(null) == fileButton) {
                 return openFile(parent, workbench, key, title, description, fileChooserType, extensionFilters);
@@ -441,8 +441,8 @@ public class JIPipeDesktop {
             Button fileButton = Button.custom("Save file").asDefault();
             Button directoryButton = Button.custom("Select directory");
             Optional<Button> selected = JIPipeDesktopDialogs.choose(parent,
-                    "Do you want to save a file or a directory?",
                     title,
+                    "Do you want to save a file or a directory?",
                     fileButton, directoryButton);
             if (selected.orElse(null) == fileButton) {
                 return saveFile(parent, workbench, key, title, description, fileChooserType, extensionFilters);
@@ -959,8 +959,8 @@ public class JIPipeDesktop {
             Button fileButton = Button.custom("Open file").asDefault();
             Button directoryButton = Button.custom("Open directory");
             Optional<Button> selected = JIPipeDesktopDialogs.choose(parent,
-                    "Do you want to open a file or a directory?",
                     title,
+                    "Do you want to open a file or a directory?",
                     fileButton, directoryButton);
             if (selected.orElse(null) == fileButton) {
                 return openFiles(parent, workbench, key, title, description, fileChooserType, extensionFilters);

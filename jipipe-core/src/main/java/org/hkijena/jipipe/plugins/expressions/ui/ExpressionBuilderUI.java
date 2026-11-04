@@ -425,10 +425,10 @@ public class ExpressionBuilderUI extends JIPipeDesktopWorkbenchPanel {
                     Button insert = Button.custom("Insert").asDefault();
                     Button replace = Button.custom("Replace");
                     Optional<Button> selected = JIPipeDesktopDialogs.choose(this,
+                            "Expression builder",
                             "You still have uncommitted values in the function builder.\n" +
                                     "Do you want to replace the existing expression or insert the function into the expression?\n" +
                                     "You can also ignore the uncommitted changes.",
-                            "Expression builder",
                             ignore, insert, replace, Button.CANCEL);
                     if (selected.orElse(null) == insert) {
                         insertCurrentlyInsertedValue();

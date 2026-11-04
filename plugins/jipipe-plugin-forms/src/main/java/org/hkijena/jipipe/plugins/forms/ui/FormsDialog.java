@@ -140,8 +140,8 @@ public class FormsDialog extends JFrame {
             Button no = Button.custom("No");
             Button showErrors = Button.custom("Show errors").asDefault();
             Optional<Button> result = JIPipeDesktopDialogs.choose(this,
-                    "The current batch has settings that are not fully valid. Do you want to continue, anyway?",
                     "Issues found",
+                    "The current batch has settings that are not fully valid. Do you want to continue, anyway?",
                     yes, no, showErrors);
             if (result.orElse(null) == yes)
                 return true;

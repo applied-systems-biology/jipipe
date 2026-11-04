@@ -177,8 +177,8 @@ public class FilamentsManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlug
             Button allFilaments = Button.custom("All filaments (" + filamentsList.size() + ")").asDefault();
             Button selectedFilaments = Button.custom("Selected filaments (" + filamentsListControl.getSelectedValuesList().size() + ")");
             Optional<Button> result = JIPipeDesktopDialogs.choose(getViewerPanel(),
-                    message,
                     title,
+                    message,
                     allFilaments, selectedFilaments);
             if (result.isEmpty())
                 return null;

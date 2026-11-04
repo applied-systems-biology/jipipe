@@ -149,8 +149,8 @@ public class ROIManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D {
             Button allRoi = Button.custom("All ROI (" + rois.size() + ")").asDefault();
             Button selectedRoi = Button.custom("Selected ROI (" + roiListControl.getSelectedValuesList().size() + ")");
             Optional<Button> result = JIPipeDesktopDialogs.choose(getViewerPanel(),
-                    message,
                     title,
+                    message,
                     allRoi, selectedRoi);
             if (result.isEmpty())
                 return null;

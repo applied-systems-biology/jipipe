@@ -71,8 +71,8 @@ public class AddToROIManagerDataDisplayOperation implements JIPipeDesktopDataDis
             Button addToList = Button.custom("Add to list").asDefault();
             Button newList = Button.custom("New list");
             Optional<Button> result = JIPipeDesktopDialogs.choose(desktopWorkbench.getWindow(),
-                    "The current ROI manager already contains ROI. What should be done?",
                     "Show ROI",
+                    "The current ROI manager already contains ROI. What should be done?",
                     addToList, newList);
             if (result.orElse(null) == newList) {
                 roiManager.reset();

@@ -282,9 +282,9 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                 Button loadWithData = Button.custom("Load with data").asDefault();
                 Button loadOnlyPipeline = Button.custom("Load only pipeline");
                 Optional<Button> selected = JIPipeDesktopDialogs.choose(this,
+                        "Load template",
                         "The template contains " + Precision.round(sizeMB, 2) + " MB of data.\nYou can choose to either load only the " +
                                 "pipeline or extract the template project and related data into a directory.",
-                        "Load template",
                         loadWithData, loadOnlyPipeline);
                 if (selected.isEmpty()) {
                     return;
@@ -378,9 +378,9 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                 Button openProjectCrate = Button.custom("Open project crate").asDefault();
                 Button openLegacyProject = Button.custom("Open legacy project");
                 Optional<Button> selected = JIPipeDesktopDialogs.choose(this,
+                        "Project crate available",
                         "A project crate of this project (" + jipxSibling.getFileName()
                                 + ") exists next to the legacy project. Open that one instead?",
-                        "Project crate available",
                         openProjectCrate, openLegacyProject);
                 if (selected.orElse(null) == openProjectCrate) {
                     openProject(jipxSibling, forceCurrentWindow);
@@ -537,9 +537,9 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                 Button loadInNewTab = Button.custom("Load in new tab").asDefault();
                 Button loadIntoCache = Button.custom("Load into cache");
                 Optional<Button> selected = JIPipeDesktopDialogs.choose(window,
+                        "Open JIPipe output",
                         "You can either open the output in a tab or load them into the cache. " +
                                 "Please note that caching the results might require large amounts of memory.",
-                        "Open JIPipe output",
                         loadInNewTab, loadIntoCache);
 
                 if (selected.orElse(null) == loadInNewTab) {
@@ -639,9 +639,9 @@ public class JIPipeDesktopProjectWindow extends JFrame {
             Button modernFormat = Button.custom("Modern format (Recommended)").asDefault();
             Button legacyFormat = Button.custom("Legacy format");
             Optional<Button> selected = JIPipeDesktopDialogs.choose(this,
+                    "Save project format",
                     "This project uses the legacy file format.\n" +
                             "Saving in the modern format writes a new file next to the legacy one, which is kept.",
-                    "Save project format",
                     modernFormat, legacyFormat);
             if (selected.isEmpty()) {
                 // Dismissal (Escape / closing the dialog window): abort the
@@ -1150,8 +1150,8 @@ public class JIPipeDesktopProjectWindow extends JFrame {
             option = Optional.of(continueButton);
         } else {
             option = JIPipeDesktopDialogs.choose(this,
-                    "The RO-Crate will be extracted to:\n\n" + extractPath + "\n\nDo you want to continue or customize the path?",
                     "Import RO-Crate",
+                    "The RO-Crate will be extracted to:\n\n" + extractPath + "\n\nDo you want to continue or customize the path?",
                     continueButton, customPathButton);
         }
 

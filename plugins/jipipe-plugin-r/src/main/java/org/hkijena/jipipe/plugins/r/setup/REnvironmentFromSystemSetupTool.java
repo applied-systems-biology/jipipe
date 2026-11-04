@@ -65,9 +65,9 @@ public class REnvironmentFromSystemSetupTool implements JIPipeEnvironmentSetupTo
             optionButtons[options.length] = Button.CANCEL;
             optionButtons[0] = optionButtons[0].asDefault(); // original initialSelectionValue
             Optional<Button> selectedChoice = JIPipeDesktopDialogs.choose(parent,
+                    "Select R executable",
                     "The following R executables were found on your system:\n\n" +
                             "Please select which one to use, or choose 'Select manually...' to pick a different location.",
-                    "Select R executable",
                     optionButtons);
 
             if (selectedChoice.isEmpty()) {

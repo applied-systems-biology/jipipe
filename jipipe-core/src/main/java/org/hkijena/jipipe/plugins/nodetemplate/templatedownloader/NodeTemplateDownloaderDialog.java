@@ -148,8 +148,8 @@ public class NodeTemplateDownloaderDialog extends JDialog {
             Button globalStorage = Button.custom("Global storage").asDefault();
             Button projectStorage = Button.custom("Project storage");
             Optional<Button> response = JIPipeDesktopDialogs.choose(this,
-                    "Where should the templates be stored? You can either save them globally or store them inside the current project.",
                     "Download selected templates",
+                    "Where should the templates be stored? You can either save them globally or store them inside the current project.",
                     globalStorage, projectStorage);
             if (response.orElse(null) == globalStorage) {
                 addToProject = false;

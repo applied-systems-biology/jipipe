@@ -1202,8 +1202,8 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         Button zipFile = Button.custom("ZIP file").asDefault();
         Button directory = Button.custom("Directory");
         Optional<Button> selected = JIPipeDesktopDialogs.choose(this,
-                "You can archive the project as directory or ZIP file. Please choose the most convenient option.\nPlease note that the archiving function cannot currently handle projects that involve advanced path processing.",
                 "Archive project",
+                "You can archive the project as directory or ZIP file. Please choose the most convenient option.\nPlease note that the archiving function cannot currently handle projects that involve advanced path processing.",
                 zipFile, directory);
         if (selected.orElse(null) == zipFile) {
             archiveProjectAsZIP();
@@ -1230,8 +1230,8 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         Button zipFile = Button.custom("ZIP file").asDefault();
         Button directory = Button.custom("Directory");
         Optional<Button> selected = JIPipeDesktopDialogs.choose(this,
-                "You can save cached data as directory or ZIP file. Please choose the most convenient option.",
                 title,
+                "You can save cached data as directory or ZIP file. Please choose the most convenient option.",
                 zipFile, directory);
         if (selected.orElse(null) == zipFile) {
             saveProjectAndCacheToZIP(title);
