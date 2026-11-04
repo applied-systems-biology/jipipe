@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
@@ -118,11 +119,8 @@ public class DataExportExpressionParameter extends JIPipeExpressionParameter {
                 Path projectPath = project.getWorkDirectory();
                 if (projectPath != null) {
                     if (path.startsWith(projectPath)) {
-                        if (JOptionPane.showConfirmDialog(parent, "The selected path '" + path + "' is located next to the project file.\n" +
-                                        "Do you want to make the selected path portable for easier reproducibility?",
-                                "Relative path detected",
-                                JOptionPane.YES_NO_OPTION,
-                                JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+                        if (JIPipeDesktopDialogs.confirm(parent, "Relative path detected", "The selected path '" + path + "' is located next to the project file.\n" +
+                                "Do you want to make the selected path portable for easier reproducibility?")) {
                             return new DataExportExpressionParameter("PATH_COMBINE(project_dir, \"" + JIPipeExpressionEvaluator.escapeString(projectPath.relativize(path).toString().replace('\\', '/')) + "\")");
                         }
                     }
@@ -133,11 +131,8 @@ public class DataExportExpressionParameter extends JIPipeExpressionParameter {
                     for (Map.Entry<String, Path> entry : project.getMetadata().getUserPaths().getDirectoryMap(projectPath).entrySet()) {
                         Path userPath = entry.getValue();
                         if (path.startsWith(userPath)) {
-                            if (JOptionPane.showConfirmDialog(parent, "The selected path '" + path + "' is located in the project user path '" + entry.getKey() + "'=" + entry.getValue() + ".\n" +
-                                            "Do you want to make the selected path portable for easier reproducibility?",
-                                    "Relative path detected",
-                                    JOptionPane.YES_NO_OPTION,
-                                    JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+                            if (JIPipeDesktopDialogs.confirm(parent, "Relative path detected", "The selected path '" + path + "' is located in the project user path '" + entry.getKey() + "'=" + entry.getValue() + ".\n" +
+                                    "Do you want to make the selected path portable for easier reproducibility?")) {
                                 if (JIPipeExpressionParameter.isValidVariableName(entry.getKey())) {
                                     return new DataExportExpressionParameter("PATH_COMBINE(project_user_path." + entry.getKey() + ", \"" + JIPipeExpressionEvaluator.escapeString(userPath.relativize(path).toString().replace('\\', '/')) + "\")");
                                 } else {

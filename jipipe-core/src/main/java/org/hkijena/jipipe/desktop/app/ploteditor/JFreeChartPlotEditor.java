@@ -37,6 +37,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.desktop.commons.components.validation.JIPipeDesktopUserFriendlyErrorUI;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.references.JIPipeDataInfoRef;
 import org.hkijena.jipipe.plugins.parameters.library.references.JIPipeDataParameterSettings;
@@ -60,6 +61,7 @@ import javax.swing.*;
 import javax.swing.table.TableModel;
 import java.awt.*;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.List;
@@ -158,13 +160,18 @@ public class JFreeChartPlotEditor extends JIPipeDesktopWorkbenchPanel implements
 
     private void savePlot() {
         Path path = JIPipeDesktop.saveFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Save plot", HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_ZIP);
-        if (UIUtils.checkAndAskIfFileExists(this, path, "Save plot")) {
-            JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
-            try (JIPipeZIPWriteDataStorage storage = new JIPipeZIPWriteDataStorage(progressInfo, path)) {
-                getCurrentPlot().exportData(storage, path.getFileName().toString(), false, progressInfo);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+        if (path == null) {
+            return;
+        }
+        if (Files.isRegularFile(path) && !JIPipeDesktopDialogs.confirm(this, "Save plot",
+                "The file '" + path + "' already exists. Do you want to overwrite the file?")) {
+            return;
+        }
+        JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
+        try (JIPipeZIPWriteDataStorage storage = new JIPipeZIPWriteDataStorage(progressInfo, path)) {
+            getCurrentPlot().exportData(storage, path.getFileName().toString(), false, progressInfo);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 

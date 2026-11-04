@@ -60,6 +60,7 @@ import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeDesktopNode
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeNodeStateChips;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.desktop.commons.components.selection.JIPipeDesktopRichSelectionBox;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.ai.AIApplicationSettings;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.SettingsKeys;
@@ -1494,8 +1495,7 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
     private void templateDelete(CreateNewNodesByTemplateDatabaseEntry entry) {
         JIPipeNodeTemplate template = entry.getTemplate();
         TemplateScope scope = entry.getScope();
-        if (JOptionPane.showConfirmDialog(this, "Do you really want to delete the template \"" + template.getName() + "\"?",
-                "Delete template", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) != JOptionPane.YES_OPTION) {
+        if (!JIPipeDesktopDialogs.confirm(this, "Delete template", "Do you really want to delete the template \"" + template.getName() + "\"?")) {
             return;
         }
         if (templateController.delete(currentProject(), scope, template)) {

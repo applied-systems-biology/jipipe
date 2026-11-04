@@ -83,6 +83,8 @@ import org.hkijena.jipipe.desktop.commons.components.support.JIPipeDesktopSuppor
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.desktop.commons.components.tools.JIPipeDesktopMemoryManager;
 import org.hkijena.jipipe.desktop.commons.components.validation.JIPipeDesktopReloadableValidityChecker;
+import org.hkijena.jipipe.desktop.commons.dialogs.Button;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.desktop.commons.notifications.JIPipeDesktopNotificationButton;
 import org.hkijena.jipipe.desktop.commons.notifications.JIPipeDesktopWorkbenchNotificationInboxUI;
 import org.hkijena.jipipe.plugins.ai.AIApplicationSettings;
@@ -337,20 +339,14 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
                     restoreTabsFromProjectMetadata();
 
                     if (!JIPipeProjectAuthorsApplicationSettings.getInstance().isConfigured()) {
-                        if (JOptionPane.showConfirmDialog(this, "<html>You did not setup the application-wide authors yet,<br/>" +
+                        if (JIPipeDesktopDialogs.confirm(this, "Missing author information", "<html>You did not setup the application-wide authors yet,<br/>" +
                                         "meaning that JIPipe will be unable to associate your projects to you.<br/><br/>" +
-                                        "Do you want to setup the authors now (you only need to do this once!)?</html>",
-                                "Missing author information",
-                                JOptionPane.YES_NO_OPTION,
-                                JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+                                        "Do you want to setup the authors now (you only need to do this once!)?</html>")) {
                             openSettingsSection(SettingsScope.APPLICATION, "org.hkijena.jipipe:project-authors");
                         }
                     } else {
-                        if (JOptionPane.showConfirmDialog(this, "<html>The project needs to be saved to update the author information.<br/>" +
-                                        "Do you want to save the project now?</html>",
-                                "Update author information",
-                                JOptionPane.YES_NO_OPTION,
-                                JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+                        if (JIPipeDesktopDialogs.confirm(this, "Update author information", "<html>The project needs to be saved to update the author information.<br/>" +
+                                        "Do you want to save the project now?</html>")) {
                             getProjectWindow().saveProjectAs(true, true);
                         }
                     }
@@ -1202,21 +1198,16 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
             JOptionPane.showMessageDialog(this, "Please save the project once before using the archive function.", "Archive project", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        int option = JOptionPane.showOptionDialog(this,
+        Button zipFile = Button.custom("ZIP file").asDefault();
+        Button directory = Button.custom("Directory");
+        Optional<Button> selected = JIPipeDesktopDialogs.choose(this,
                 "You can archive the project as directory or ZIP file. Please choose the most convenient option.\nPlease note that the archiving function cannot currently handle projects that involve advanced path processing.",
                 "Archive project",
-                JOptionPane.YES_NO_CANCEL_OPTION,
-                JOptionPane.QUESTION_MESSAGE,
-                null,
-                new Object[]{"ZIP file", "Directory", "Cancel"},
-                "ZIP file");
-        switch (option) {
-            case JOptionPane.YES_OPTION:
-                archiveProjectAsZIP();
-                break;
-            case JOptionPane.NO_OPTION:
-                archiveProjectAsDirectory();
-                break;
+                zipFile, directory);
+        if (selected.orElse(null) == zipFile) {
+            archiveProjectAsZIP();
+        } else if (selected.orElse(null) == directory) {
+            archiveProjectAsDirectory();
         }
     }
 
@@ -1235,21 +1226,16 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
     }
 
     public void saveProjectAndCache(String title, boolean addAsRecentProject) {
-        int option = JOptionPane.showOptionDialog(this,
+        Button zipFile = Button.custom("ZIP file").asDefault();
+        Button directory = Button.custom("Directory");
+        Optional<Button> selected = JIPipeDesktopDialogs.choose(this,
                 "You can save cached data as directory or ZIP file. Please choose the most convenient option.",
                 title,
-                JOptionPane.YES_NO_CANCEL_OPTION,
-                JOptionPane.QUESTION_MESSAGE,
-                null,
-                new Object[]{"ZIP file", "Directory", "Cancel"},
-                "ZIP file");
-        switch (option) {
-            case JOptionPane.YES_OPTION:
-                saveProjectAndCacheToZIP(title);
-                break;
-            case JOptionPane.NO_OPTION:
-                saveProjectAndCacheToDirectory(title, addAsRecentProject);
-                break;
+                zipFile, directory);
+        if (selected.orElse(null) == zipFile) {
+            saveProjectAndCacheToZIP(title);
+        } else if (selected.orElse(null) == directory) {
+            saveProjectAndCacheToDirectory(title, addAsRecentProject);
         }
     }
 

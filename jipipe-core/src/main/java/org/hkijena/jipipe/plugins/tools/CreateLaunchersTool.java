@@ -22,6 +22,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopMenuExtension;
 import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.utils.ResourceUtils;
 
 import javax.swing.*;
@@ -122,11 +123,9 @@ public class CreateLaunchersTool extends JIPipeDesktopMenuExtension {
             IJ.handleException(e);
             return;
         }
-        if (JOptionPane.showConfirmDialog(getDesktopWorkbench().getWindow(),
-                "The launcher was created. Do you want to copy it to the desktop?",
+        if (JIPipeDesktopDialogs.confirm(getDesktopWorkbench().getWindow(),
                 "Create launchers",
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+                "The launcher was created. Do you want to copy it to the desktop?")) {
             // This is apparently very Windows-specific
             Path desktopDirectory = FileSystemView.getFileSystemView().getHomeDirectory().toPath();
             try {
@@ -154,11 +153,9 @@ public class CreateLaunchersTool extends JIPipeDesktopMenuExtension {
             IJ.handleException(e);
         }
         getDesktopWorkbench().sendStatusBarText("Created start-jipipe-linux.sh in the application directory.");
-        if (JOptionPane.showConfirmDialog(getDesktopWorkbench().getWindow(),
-                "The launcher was created. Do you want to add a entry into the application menu?",
+        if (JIPipeDesktopDialogs.confirm(getDesktopWorkbench().getWindow(),
                 "Create launchers",
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+                "The launcher was created. Do you want to add a entry into the application menu?")) {
             String dataHome = System.getenv().getOrDefault("XDG_DATA_HOME", FileUtils.getUserDirectory().toPath().resolve(".local").resolve("share").toString());
             Path applicationsDirectory = Paths.get(dataHome).resolve("applications");
             if (!Files.exists(applicationsDirectory)) {

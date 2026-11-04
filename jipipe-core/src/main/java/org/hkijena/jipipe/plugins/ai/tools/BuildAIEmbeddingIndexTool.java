@@ -26,6 +26,7 @@ import org.hkijena.jipipe.desktop.api.JIPipeDesktopMenuExtension;
 import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.ai.AIApplicationSettings;
 
 import javax.swing.*;
@@ -122,7 +123,7 @@ public class BuildAIEmbeddingIndexTool extends JIPipeDesktopMenuExtension {
         long alreadyEmbedded = alreadyEmbeddedGlobal + alreadyEmbeddedLocal;
 
         if (alreadyEmbedded > 0) {
-            if (JOptionPane.showConfirmDialog(getDesktopWorkbench().getWindow(), "There are already " + alreadyEmbedded + " embeddings. Clear them?", "Compute embeddings", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+            if (JIPipeDesktopDialogs.confirm(getDesktopWorkbench().getWindow(), "Compute embeddings", "There are already " + alreadyEmbedded + " embeddings. Clear them?")) {
                 globalDb.clearModel(modelId);
                 localDb.clearModel(modelId);
                 alreadyEmbedded = 0;
@@ -137,13 +138,13 @@ public class BuildAIEmbeddingIndexTool extends JIPipeDesktopMenuExtension {
         }
 
         // Confirm with the user
-        int result = JOptionPane.showConfirmDialog(getDesktopWorkbench().getWindow(),
+        boolean result = JIPipeDesktopDialogs.confirm(getDesktopWorkbench().getWindow(),
+                getText(),
                 "Compute embeddings for " + (entries.size() - alreadyEmbedded) + " entries " +
                         "(" + alreadyEmbedded + " already cached) using model '" + modelId + "'?\n\n" +
                         "Global entries: " + globalEntries.size() + ", Local entries: " + localEntries.size() + "\n\n" +
-                        "This may take a while depending on the number of entries.",
-                getText(), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-        if (result != JOptionPane.YES_OPTION) {
+                        "This may take a while depending on the number of entries.");
+        if (!result) {
             return;
         }
 

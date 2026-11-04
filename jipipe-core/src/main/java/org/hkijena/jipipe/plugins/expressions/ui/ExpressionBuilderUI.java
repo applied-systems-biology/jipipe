@@ -26,6 +26,8 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
+import org.hkijena.jipipe.desktop.commons.dialogs.Button;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.expressions.*;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
@@ -303,15 +305,13 @@ public class ExpressionBuilderUI extends JIPipeDesktopWorkbenchPanel {
     private void insertCustomVariable() {
         JTextField textField = new JTextField();
         textField.setFont(new Font(Font.MONOSPACED, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
-        int result = JOptionPane.showOptionDialog(
-                this,
-                new Object[]{"Please input the name of the variable:", textField},
-                "Insert custom variable",
-                JOptionPane.OK_CANCEL_OPTION,
-                JOptionPane.QUESTION_MESSAGE,
-                null, null, null);
+        Optional<Button> result = JIPipeDesktopDialogs.builder(this, "Insert custom variable")
+                .message("Please input the name of the variable:")
+                .content(textField)
+                .buttons(Button.OK, Button.CANCEL)
+                .show();
 
-        if (result == JOptionPane.OK_OPTION) {
+        if (result.orElse(null) == Button.OK) {
             String variableName = textField.getText();
             if (variableName != null && !variableName.isEmpty()) {
                 insertVariableAtCaret(variableName);
@@ -421,26 +421,22 @@ public class ExpressionBuilderUI extends JIPipeDesktopWorkbenchPanel {
             ExpressionBuilderInserterUI inserterUI = (ExpressionBuilderInserterUI) tabPane.getCurrentContent();
             if (inserterUI.getInsertedObject() != null) {
                 if (!inserterUI.isInserterCommitted() && inserterUI.parametersWereEdited()) {
-                    int result = JOptionPane.showOptionDialog(this,
+                    Button ignore = Button.custom("Ignore");
+                    Button insert = Button.custom("Insert").asDefault();
+                    Button replace = Button.custom("Replace");
+                    Optional<Button> selected = JIPipeDesktopDialogs.choose(this,
                             "You still have uncommitted values in the function builder.\n" +
                                     "Do you want to replace the existing expression or insert the function into the expression?\n" +
                                     "You can also ignore the uncommitted changes.",
                             "Expression builder",
-                            JOptionPane.DEFAULT_OPTION,
-                            JOptionPane.QUESTION_MESSAGE,
-                            null,
-                            new Object[]{"Ignore", "Insert", "Replace", "Cancel"},
-                            "New window");
-                    switch (result) {
-                        case 1:
-                            insertCurrentlyInsertedValue();
-                            break;
-                        case 2:
-                            expressionEditor.setText("");
-                            insertCurrentlyInsertedValue();
-                            break;
-                        case 3:
-                            return false;
+                            ignore, insert, replace, Button.CANCEL);
+                    if (selected.orElse(null) == insert) {
+                        insertCurrentlyInsertedValue();
+                    } else if (selected.orElse(null) == replace) {
+                        expressionEditor.setText("");
+                        insertCurrentlyInsertedValue();
+                    } else if (selected.orElse(null) == Button.CANCEL) {
+                        return false;
                     }
                 }
             }

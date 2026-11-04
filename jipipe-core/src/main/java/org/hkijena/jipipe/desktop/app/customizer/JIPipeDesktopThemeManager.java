@@ -17,6 +17,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.settings.ThemePreviewPanel;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernThemeStyle;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopUITheme;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeModernThemeStyleParameter;
@@ -200,8 +201,8 @@ public class JIPipeDesktopThemeManager extends JFrame implements ThemeUtils.Avai
         }
         boolean isCurrentStyle = ThemeUtils.getCurrentStyle().getId().equals(style.getId());
         if (isCurrentStyle) {
-            if (JOptionPane.showConfirmDialog(this, "The selected style is currently in use. If you delete it, JIPipe will reset its style to the default.\n" +
-                    "Do you want to delete it anyway?", "Delete style", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
+            if (!JIPipeDesktopDialogs.confirm(this, "Delete style", "The selected style is currently in use. If you delete it, JIPipe will reset its style to the default.\n" +
+                    "Do you want to delete it anyway?")) {
                 return;
             }
 
@@ -214,7 +215,7 @@ public class JIPipeDesktopThemeManager extends JFrame implements ThemeUtils.Avai
                     "Customize JIPipe",
                     JOptionPane.INFORMATION_MESSAGE);
         } else {
-            if (JOptionPane.showConfirmDialog(this, "Do you want to delete the selected style?", "Delete style", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
+            if (!JIPipeDesktopDialogs.confirm(this, "Delete style", "Do you want to delete the selected style?")) {
                 return;
             }
         }

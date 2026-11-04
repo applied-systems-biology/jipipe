@@ -24,6 +24,7 @@ import org.hkijena.jipipe.desktop.commons.components.color.JIPipeDesktopColorCho
 import org.hkijena.jipipe.desktop.commons.components.icons.OverlayJIPipeDesktopColorIcon;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterFormPanel;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.*;
@@ -494,7 +495,7 @@ public class JIPipeDesktopHTMLEditor extends JIPipeDesktopWorkbenchPanel {
                         JOptionPane.showMessageDialog(this, "This link is invalid! (Content is '" + e.getDescription() + "')", "Visit URL", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
-                    if (JOptionPane.showConfirmDialog(this, "Do you really want to visit " + e.getURL() + "?", "Visit URL", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+                    if (JIPipeDesktopDialogs.confirm(this, "Visit URL", "Do you really want to visit " + e.getURL() + "?")) {
                         UIUtils.desktopOpenURL(e.getURL().toURI(), false);
                     }
                 } catch (Exception ex) {

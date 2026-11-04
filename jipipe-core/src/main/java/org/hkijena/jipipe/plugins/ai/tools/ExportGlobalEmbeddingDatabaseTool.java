@@ -21,6 +21,7 @@ import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopMenuExtension;
 import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.ai.AIApplicationSettings;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
@@ -76,12 +77,12 @@ public class ExportGlobalEmbeddingDatabaseTool extends JIPipeDesktopMenuExtensio
         // Check if there are any embeddings to export
         Set<String> nodeIds = embeddingDatabase.getNodeIds(modelId);
         if (nodeIds.isEmpty()) {
-            int result = JOptionPane.showConfirmDialog(getDesktopWorkbench().getWindow(),
+            boolean result = JIPipeDesktopDialogs.confirm(getDesktopWorkbench().getWindow(),
+                    getText(),
                     "The embedding database is empty for model '" + modelId + "'.\n" +
                             "You may need to compute embeddings first by using the AI search.\n\n" +
-                            "Do you want to continue anyway?",
-                    getText(), JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-            if (result != JOptionPane.YES_OPTION) {
+                            "Do you want to continue anyway?");
+            if (!result) {
                 return;
             }
         }

@@ -28,6 +28,7 @@ import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopLargeBu
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopSmallButtonRibbonAction;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -441,7 +442,7 @@ public class ParameterTableEditorWindow extends JFrame {
     }
 
     private void removeSelectedRows() {
-        if (JOptionPane.showConfirmDialog(this, "Do you really want to delete the selected ROW(S)?", "Delete row(s)", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+        if (JIPipeDesktopDialogs.confirm(this, "Delete row(s)", "Do you really want to delete the selected ROW(S)?")) {
             int[] selectedRows = getSelectedRows(true);
             table.setModel(new DefaultTableModel());
             for (int i = selectedRows.length - 1; i >= 0; --i) {
@@ -452,8 +453,8 @@ public class ParameterTableEditorWindow extends JFrame {
     }
 
     private void removeSelectedColumns() {
-        if (JOptionPane.showConfirmDialog(this, "Do you really want to delete the selected COLUMN(S)?\n" +
-                "All settings for the parameter will be gone!", "Delete column(s)", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+        if (JIPipeDesktopDialogs.confirm(this, "Delete column(s)", "Do you really want to delete the selected COLUMN(S)?\n" +
+                "All settings for the parameter will be gone!")) {
             int[] selectedColumns = getSelectedColumns(true);
             table.setModel(new DefaultTableModel());
             for (int i = selectedColumns.length - 1; i >= 0; --i) {

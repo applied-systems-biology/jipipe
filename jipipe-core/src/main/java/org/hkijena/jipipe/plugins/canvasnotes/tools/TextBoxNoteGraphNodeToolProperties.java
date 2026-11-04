@@ -25,6 +25,7 @@ import org.hkijena.jipipe.desktop.commons.components.color.palette.JIPipeDesktop
 import org.hkijena.jipipe.desktop.commons.components.color.palette.JIPipeDesktopColorPaletteUI;
 import org.hkijena.jipipe.desktop.commons.components.color.palette.JIPipeDesktopRegistryBackedColorPaletteUserColorStorage;
 import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterFormPanel;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.canvasnotes.nodes.TextBoxGraphCanvasNote;
 import org.hkijena.jipipe.plugins.nodetemplate.JIPipeNodeTemplatePickerDialog;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
@@ -140,10 +141,9 @@ public class TextBoxNoteGraphNodeToolProperties extends JIPipeDesktopFormGraphEd
     }
 
     private void deletePreset() {
-        if (JOptionPane.showConfirmDialog(this,
-                "Do you really want to delete the current preset?",
+        if (JIPipeDesktopDialogs.confirm(this,
                 "Delete preset",
-                JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                "Do you really want to delete the current preset?")) {
             PRESETS.remove(LAST_PRESET);
             ensureNonEmptyPresets();
             onPresetChanged();

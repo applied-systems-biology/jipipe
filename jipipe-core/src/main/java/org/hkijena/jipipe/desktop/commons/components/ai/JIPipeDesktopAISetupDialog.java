@@ -8,6 +8,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
 import org.hkijena.jipipe.desktop.commons.components.ai.setup.ModelConfigurationComponent;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.ai.AIApplicationSettings;
 import org.hkijena.jipipe.plugins.ai.environments.EmbeddingModelEnvironment;
 import org.hkijena.jipipe.plugins.ai.environments.OptionalEmbeddingModelEnvironment;
@@ -90,8 +91,7 @@ public class JIPipeDesktopAISetupDialog extends JDialog {
     }
 
     private void disableAI() {
-        if (JOptionPane.showConfirmDialog(this, "All AI-related features will be disabled and fully hidden.\nYou will need to go to the application settings to re-enable AI.\nContinue?",
-                "Disable AI", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+        if (JIPipeDesktopDialogs.confirm(this, "Disable AI", "All AI-related features will be disabled and fully hidden.\nYou will need to go to the application settings to re-enable AI.\nContinue?")) {
             AIApplicationSettings.getInstance().setEnableAI(false);
             userConfirmed = false;
             setVisible(false);
@@ -131,7 +131,7 @@ public class JIPipeDesktopAISetupDialog extends JDialog {
         }
 
         if (!toInstall.isEmpty()) {
-            if (JOptionPane.showConfirmDialog(this, "JIPipe needs to download local models. This needs to be done only once.\nContinue?", "AI setup", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
+            if (!JIPipeDesktopDialogs.confirm(this, "AI setup", "JIPipe needs to download local models. This needs to be done only once.\nContinue?")) {
                 return;
             }
             JIPipeArtifactRepositoryApplyInstallUninstallRun run = new JIPipeArtifactRepositoryApplyInstallUninstallRun(toInstall, Collections.emptyList());

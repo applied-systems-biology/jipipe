@@ -26,6 +26,7 @@ import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernThemeStyle;
 import org.hkijena.jipipe.plugins.nodetemplate.NodeTemplatesRefreshedEvent;
 import org.hkijena.jipipe.plugins.nodetemplate.NodeTemplatesRefreshedEventListener;
@@ -427,8 +428,7 @@ public class TemplateManagementDialog extends JFrame implements NodeTemplatesRef
         }
         int n = selected.size();
         String targetName = target == TemplateScope.Global ? "global" : "project";
-        if (JOptionPane.showConfirmDialog(this, "Copy " + n + " template(s) into the " + targetName + " storage?",
-                "Copy to " + targetName + " storage", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) != JOptionPane.YES_OPTION) {
+        if (!JIPipeDesktopDialogs.confirm(this, "Copy to " + targetName + " storage", "Copy " + n + " template(s) into the " + targetName + " storage?")) {
             return;
         }
         for (JIPipeNodeTemplate t : ImmutableList.copyOf(selected)) {
@@ -438,8 +438,7 @@ public class TemplateManagementDialog extends JFrame implements NodeTemplatesRef
 
     private void deleteSelected(List<JIPipeNodeTemplate> selected) {
         int n = selected.size();
-        if (JOptionPane.showConfirmDialog(this, "Delete " + n + " template(s)?",
-                "Delete templates", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) != JOptionPane.YES_OPTION) {
+        if (!JIPipeDesktopDialogs.confirm(this, "Delete templates", "Delete " + n + " template(s)?")) {
             return;
         }
         for (JIPipeNodeTemplate t : ImmutableList.copyOf(selected)) {

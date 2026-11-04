@@ -18,8 +18,9 @@ import ij.Prefs;
 import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.desktop.commons.dialogs.Button;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 
-import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.io.IOException;
@@ -545,16 +546,15 @@ public class PathUtils {
         if (Files.isDirectory(path)) {
             try {
                 if (Files.list(path).findAny().isPresent()) {
-                    int response = JOptionPane.showConfirmDialog(parent,
+                    Optional<Button> response = JIPipeDesktopDialogs.choose(parent,
                             "The selected directory '" + path + "' is not empty! Remove contents and continue?",
                             "Empty directory expected",
-                            JOptionPane.YES_NO_CANCEL_OPTION,
-                            JOptionPane.ERROR_MESSAGE);
-                    if (response == JOptionPane.YES_OPTION) {
+                            Button.YES, Button.NO, Button.CANCEL);
+                    if (response.orElse(null) == Button.YES) {
                         deleteDirectoryRecursively(path, new JIPipeProgressInfo());
                         Files.createDirectories(path);
                         return true;
-                    } else if (response == JOptionPane.NO_OPTION) {
+                    } else if (response.orElse(null) == Button.NO) {
                         return true;
                     } else {
                         return false;

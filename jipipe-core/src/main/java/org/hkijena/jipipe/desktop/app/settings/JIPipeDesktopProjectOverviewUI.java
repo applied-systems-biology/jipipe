@@ -54,6 +54,8 @@ import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopPar
 import org.hkijena.jipipe.desktop.commons.components.project.ArtifactUpgrade;
 import org.hkijena.jipipe.desktop.commons.components.project.ArtifactUpgradeUtils;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
+import org.hkijena.jipipe.desktop.commons.dialogs.Button;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.parameters.api.optional.JIPipeOptionalParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
@@ -388,11 +390,13 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
                     "</html>"));
             formPanel.addToForm(options, new JLabel("Operation"));
 
-            if (JOptionPane.showConfirmDialog(this,
-                    formPanel,
-                    "Show results",
-                    JOptionPane.YES_NO_OPTION,
-                    JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+            Optional<Button> confirmed = JIPipeDesktopDialogs.builder(this,
+                            "Show results")
+                    .content(formPanel)
+                    .buttons(Button.YES, Button.NO)
+                    .cancelable(false)
+                    .show();
+            if (confirmed.orElse(null) == Button.YES) {
                 doUpdateCache(nodesToDo, Objects.equals(options.getSelectedItem(), "Cache intermediate results"));
             }
         }
@@ -550,11 +554,13 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
                     "</html>"));
             formPanel.addToForm(options, new JLabel("Operation"));
 
-            if (JOptionPane.showConfirmDialog(this,
-                    formPanel,
-                    "Show results",
-                    JOptionPane.YES_NO_OPTION,
-                    JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+            Optional<Button> confirmed = JIPipeDesktopDialogs.builder(this,
+                            "Show results")
+                    .content(formPanel)
+                    .buttons(Button.YES, Button.NO)
+                    .cancelable(false)
+                    .show();
+            if (confirmed.orElse(null) == Button.YES) {
                 doUpdateCache(Collections.singletonList(output), Objects.equals(options.getSelectedItem(), "Cache intermediate results"));
             }
         } else {

@@ -8,6 +8,8 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
+import org.hkijena.jipipe.desktop.commons.dialogs.Button;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionEvaluatorSyntaxTokenMaker;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariableInfo;
@@ -132,7 +134,11 @@ public class JIPipeDesktopExpressionCalculatorUI extends JIPipeDesktopWorkbenchP
         UIUtils.requestFocusOnShown(keyField);
 
 
-        if (JOptionPane.showConfirmDialog(this, formPanel, "Set variable", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
+        Optional<Button> result = JIPipeDesktopDialogs.builder(this, "Set variable")
+                .content(formPanel)
+                .buttons(Button.OK, Button.CANCEL)
+                .show();
+        if (result.orElse(null) == Button.OK) {
             if (!StringUtils.isNullOrEmpty(keyField.getText()) && JIPipeExpressionParameter.isValidVariableName(keyField.getText())) {
                 if (StringUtils.isValidDouble(valueField.getText())) {
                     evaluate("SET_VARIABLE(\"" + keyField.getText() + "\", " + valueField.getText() + ")");

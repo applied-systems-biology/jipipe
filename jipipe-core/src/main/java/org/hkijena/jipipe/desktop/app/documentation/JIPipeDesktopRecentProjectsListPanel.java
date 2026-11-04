@@ -22,6 +22,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchPanel;
 import org.hkijena.jipipe.desktop.commons.components.project.JIPipeDesktopRecentProjectListCellRenderer;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -89,22 +90,18 @@ public class JIPipeDesktopRecentProjectsListPanel extends JIPipeDesktopProjectWo
     }
 
     private void clearAll() {
-        if (JOptionPane.showConfirmDialog(SwingUtilities.getWindowAncestor(this),
-                "Do you really want to remove all recent projects from this list?",
+        if (JIPipeDesktopDialogs.confirm(SwingUtilities.getWindowAncestor(this),
                 "Clear recent projects",
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+                "Do you really want to remove all recent projects from this list?")) {
             JIPipe.getInstance().getRecentProjects().clear();
         }
     }
 
     private void deleteSelection() {
         List<Path> selectedValues = recentProjectsList.getSelectedValuesList();
-        if (!selectedValues.isEmpty() && JOptionPane.showConfirmDialog(SwingUtilities.getWindowAncestor(this),
-                "Do you really want to remove the selected recent projects from this list?",
+        if (!selectedValues.isEmpty() && JIPipeDesktopDialogs.confirm(SwingUtilities.getWindowAncestor(this),
                 "Remove recent projects",
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+                "Do you really want to remove the selected recent projects from this list?")) {
             JIPipe.getInstance().getRecentProjects().removeAll(selectedValues);
         }
     }

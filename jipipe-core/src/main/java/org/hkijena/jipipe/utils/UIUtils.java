@@ -34,6 +34,8 @@ import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPan
 import org.hkijena.jipipe.desktop.commons.components.validation.JIPipeDesktopUserFriendlyErrorUI;
 import org.hkijena.jipipe.desktop.commons.components.validation.JIPipeDesktopValidityReportUI;
 import org.hkijena.jipipe.desktop.commons.components.window.JIPipeDesktopAlwaysOnTopToggle;
+import org.hkijena.jipipe.desktop.commons.dialogs.Button;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.desktop.commons.notifications.JIPipeDesktopGenericNotificationInboxUI;
 import org.hkijena.jipipe.desktop.commons.theme.helpers.JIPipeDesktopIslandPanel;
 import org.hkijena.jipipe.desktop.commons.theme.ui.JIPipeDesktopRoundedButtonUI;
@@ -1021,8 +1023,7 @@ public class UIUtils {
         window.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent windowEvent) {
-                if (JOptionPane.showConfirmDialog(windowEvent.getComponent(), message, title,
-                        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+                if (JIPipeDesktopDialogs.confirm(windowEvent.getComponent(), title, message)) {
                     windowEvent.getWindow().dispose();
                 }
             }
@@ -1041,8 +1042,7 @@ public class UIUtils {
         window.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent windowEvent) {
-                if (JOptionPane.showConfirmDialog(windowEvent.getComponent(), message, title,
-                        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+                if (JIPipeDesktopDialogs.confirm(windowEvent.getComponent(), title, message)) {
                     windowEvent.getWindow().dispose();
                 }
             }
@@ -1064,8 +1064,7 @@ public class UIUtils {
             public void windowClosing(WindowEvent windowEvent) {
                 if (!askOnClose.get()) {
                     windowEvent.getWindow().dispose();
-                } else if (JOptionPane.showConfirmDialog(windowEvent.getComponent(), message, title,
-                        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+                } else if (JIPipeDesktopDialogs.confirm(windowEvent.getComponent(), title, message)) {
                     windowEvent.getWindow().dispose();
                 }
             }
@@ -1085,8 +1084,7 @@ public class UIUtils {
         window.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent windowEvent) {
-                if (JOptionPane.showConfirmDialog(windowEvent.getComponent(), message.get(), title,
-                        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+                if (JIPipeDesktopDialogs.confirm(windowEvent.getComponent(), title, message.get())) {
                     windowEvent.getWindow().dispose();
                 }
             }
@@ -1118,47 +1116,6 @@ public class UIUtils {
         label.setFont(new Font(Font.DIALOG, Font.PLAIN, fontSize));
         return label;
     }
-
-    /**
-     * Asks the user how to open a project: In the current window or a new window
-     *
-     * @param parent parent component
-     * @param title  window title
-     * @return {@link JOptionPane}.YES_OPTION to open in this window; {@link JOptionPane}.NO_OPTION to open in a new window; {@link JOptionPane}.CANCEL_OPTION to cancel.
-     */
-    public static int askOpenInCurrentWindow(Component parent, String title) {
-        return JOptionPane.showOptionDialog(parent,
-                "Projects can either be opened in a new window or replace the project in an existing window.",
-                title,
-                JOptionPane.YES_NO_CANCEL_OPTION,
-                JOptionPane.QUESTION_MESSAGE,
-                null,
-                new Object[]{"This window", "New window", "Cancel"},
-                "New window");
-    }
-
-    /**
-     * Checks if a file exists and asks the user if it should be overwritten
-     *
-     * @param parent the parent component
-     * @param path   the path. can be null, will return false
-     * @param title  the title
-     * @return true if the path is OK or the user confirmed, otherwise false
-     */
-    public static boolean checkAndAskIfFileExists(Component parent, Path path, String title) {
-        if (path != null) {
-            if (Files.isRegularFile(path)) {
-                return JOptionPane.showConfirmDialog(parent,
-                        "The file '" + path + "' already exists. Do you want to overwrite the file?",
-                        title,
-                        JOptionPane.YES_NO_OPTION,
-                        JOptionPane.QUESTION_MESSAGE) != JOptionPane.NO_OPTION;
-            }
-            return true;
-        }
-        return false;
-    }
-
 
     /**
      * Opens a dialog showing an exception
@@ -1332,19 +1289,14 @@ public class UIUtils {
         jList.setModel(model);
         jList.setSelectedIndices(Ints.toArray(selectedIndices));
         JScrollPane scrollPane = new JScrollPane(jList);
-        List<Object> content = new ArrayList<>();
-        if (message != null)
-            content.add(message);
-        content.add(scrollPane);
-        int result = JOptionPane.showOptionDialog(
-                parent,
-                content.toArray(),
-                title,
-                JOptionPane.OK_CANCEL_OPTION,
-                JOptionPane.PLAIN_MESSAGE,
-                null, null, null);
 
-        if (result == JOptionPane.OK_OPTION) {
+        Optional<Button> result = JIPipeDesktopDialogs.builder(parent, title)
+                .message(message)
+                .content(scrollPane)
+                .buttons(Button.OK, Button.CANCEL)
+                .show();
+
+        if (result.orElse(null) == Button.OK) {
             return jList.getSelectedValuesList();
         }
         return Collections.emptyList();
@@ -1561,19 +1513,7 @@ public class UIUtils {
      * @return the selected integer or null if cancelled
      */
     public static Optional<Integer> getIntegerByDialog(Component parent, String title, String message, int initialValue, int min, int max) {
-        JSpinner spinner = new JSpinner(new SpinnerNumberModel(initialValue, min, max, 1));
-        int result = JOptionPane.showOptionDialog(
-                parent,
-                new Object[]{message, spinner},
-                title,
-                JOptionPane.OK_CANCEL_OPTION,
-                JOptionPane.QUESTION_MESSAGE,
-                null, null, null);
-
-        if (result == JOptionPane.OK_OPTION) {
-            return Optional.of(((SpinnerNumberModel) spinner.getModel()).getNumber().intValue());
-        }
-        return Optional.empty();
+        return JIPipeDesktopDialogs.inputInteger(parent, title, message, initialValue, min, max);
     }
 
     /**
@@ -1588,19 +1528,7 @@ public class UIUtils {
      * @return the selected double or null if cancelled
      */
     public static Optional<Double> getDoubleByDialog(Component parent, String title, String message, double initialValue, double min, double max) {
-        JSpinner spinner = new JSpinner(new SpinnerNumberModel(initialValue, min, max, 1));
-        int result = JOptionPane.showOptionDialog(
-                parent,
-                new Object[]{message, spinner},
-                title,
-                JOptionPane.OK_CANCEL_OPTION,
-                JOptionPane.QUESTION_MESSAGE,
-                null, null, null);
-
-        if (result == JOptionPane.OK_OPTION) {
-            return Optional.of(((SpinnerNumberModel) spinner.getModel()).getNumber().doubleValue());
-        }
-        return Optional.empty();
+        return JIPipeDesktopDialogs.inputDouble(parent, title, message, initialValue, min, max);
     }
 
     /**
@@ -1623,15 +1551,13 @@ public class UIUtils {
         formPanel.addToForm(spinnerMin, new JLabel("Min"));
         formPanel.addToForm(spinnerMax, new JLabel("Max"));
 
-        int result = JOptionPane.showOptionDialog(
-                parent,
-                new Object[]{message, formPanel},
-                title,
-                JOptionPane.OK_CANCEL_OPTION,
-                JOptionPane.QUESTION_MESSAGE,
-                null, null, null);
+        Optional<Button> result = JIPipeDesktopDialogs.builder(parent, title)
+                .message(message)
+                .content(formPanel)
+                .buttons(Button.OK, Button.CANCEL)
+                .show();
 
-        if (result == JOptionPane.OK_OPTION) {
+        if (result.orElse(null) == Button.OK) {
             return Optional.of(new double[]{((SpinnerNumberModel) spinnerMin.getModel()).getNumber().doubleValue(),
                     ((SpinnerNumberModel) spinnerMax.getModel()).getNumber().doubleValue()});
         }
@@ -1801,11 +1727,7 @@ public class UIUtils {
 
     public static void desktopOpenURL(String url, boolean promptUser) {
         if (promptUser) {
-            int response = JOptionPane.showConfirmDialog(null,
-                    "Do you want to open this URL?\n" + url,
-                    "Open URL",
-                    JOptionPane.YES_NO_OPTION);
-            if (response != JOptionPane.YES_OPTION) {
+            if (!JIPipeDesktopDialogs.confirm(null, "Open URL", "Do you want to open this URL?\n" + url)) {
                 return;
             }
         }

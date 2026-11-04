@@ -27,6 +27,7 @@ import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeDataExporterApplicationSettings;
@@ -148,11 +149,9 @@ public class JIPipeDesktopDataTableToFilesByMetadataExporterRun extends JIPipeDe
     @Override
     public void onFinished(FinishedEvent event) {
         if (event.getRun() == this) {
-            if (JOptionPane.showConfirmDialog(getDesktopWorkbench().getWindow(),
-                    "The data was successfully exported to " + outputPath + ". Do you want to open the folder?",
+            if (JIPipeDesktopDialogs.confirm(getDesktopWorkbench().getWindow(),
                     "Export slot data",
-                    JOptionPane.YES_NO_OPTION,
-                    JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+                    "The data was successfully exported to " + outputPath + ". Do you want to open the folder?")) {
                 UIUtils.desktopOpenFile(outputPath);
             }
         }

@@ -39,6 +39,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.actions.JIPip
 import org.hkijena.jipipe.desktop.app.quickrun.JIPipeDesktopQuickRun;
 import org.hkijena.jipipe.desktop.app.quickrun.JIPipeDesktopQuickRunSettings;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopLargeButtonRibbonAction;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopSmallButtonRibbonAction;
@@ -316,11 +317,9 @@ public class JIPipeDesktopAlgorithmCacheBrowserUI extends JIPipeDesktopProjectWo
             }
         }
         if (!missingSlots.isEmpty()) {
-            if (JOptionPane.showConfirmDialog(this,
-                    "Could not find cached folders for following outputs:\n\n" + String.join("\n", missingSlots) + "\n\nContinue anyway?",
+            if (!JIPipeDesktopDialogs.confirm(this,
                     "Import cache",
-                    JOptionPane.YES_NO_OPTION,
-                    JOptionPane.QUESTION_MESSAGE) == JOptionPane.NO_OPTION) {
+                    "Could not find cached folders for following outputs:\n\n" + String.join("\n", missingSlots) + "\n\nContinue anyway?")) {
                 return;
             }
         }

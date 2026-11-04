@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.data.storage.JIPipeZIPWriteDataStorage;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -67,11 +68,9 @@ public class JIPipeDesktopDataTableToZIPExporterRun extends JIPipeDesktopWorkben
     @Override
     public void onFinished(FinishedEvent event) {
         if (event.getRun() == this) {
-            if (JOptionPane.showConfirmDialog(getDesktopWorkbench().getWindow(),
-                    "The data was successfully exported to " + outputZipFile + ". Do you want to open the file?",
+            if (JIPipeDesktopDialogs.confirm(getDesktopWorkbench().getWindow(),
                     "Export data table as *.zip",
-                    JOptionPane.YES_NO_OPTION,
-                    JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+                    "The data was successfully exported to " + outputZipFile + ". Do you want to open the file?")) {
                 UIUtils.desktopOpenFile(outputZipFile);
             }
         }

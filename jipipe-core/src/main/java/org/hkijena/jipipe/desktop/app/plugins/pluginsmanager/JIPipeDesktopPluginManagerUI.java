@@ -29,6 +29,7 @@ import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdow
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.desktop.commons.components.validation.JIPipeDesktopMessagePanel;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.*;
 
@@ -266,11 +267,8 @@ public class JIPipeDesktopPluginManagerUI extends JIPipeDesktopWorkbenchPanel im
     }
 
     private void closeImageJ() {
-        if (JOptionPane.showConfirmDialog(this, "Do you really want to close ImageJ/JIPipe?\n" +
-                        "Please check if there are no running calculations and unsaved changes.",
-                "Close ImageJ/JIPipe",
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+        if (JIPipeDesktopDialogs.confirm(this, "Close ImageJ/JIPipe", "Do you really want to close ImageJ/JIPipe?\n" +
+                "Please check if there are no running calculations and unsaved changes.")) {
             JIPipe.exitLater(0);
         }
     }

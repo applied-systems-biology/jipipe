@@ -17,6 +17,8 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeNodeTemplate;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
+import org.hkijena.jipipe.desktop.commons.dialogs.Button;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -26,6 +28,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -142,17 +145,15 @@ public class NodeTemplateDownloaderDialog extends JDialog {
 
         JButton downloadButton = new JButton("Download selected templates", JIPipe.RESOURCES.getIcon16("actions/download.png"));
         downloadButton.addActionListener(e -> {
-            int response = JOptionPane.showOptionDialog(this,
+            Button globalStorage = Button.custom("Global storage").asDefault();
+            Button projectStorage = Button.custom("Project storage");
+            Optional<Button> response = JIPipeDesktopDialogs.choose(this,
                     "Where should the templates be stored? You can either save them globally or store them inside the current project.",
                     "Download selected templates",
-                    JOptionPane.YES_NO_CANCEL_OPTION,
-                    JOptionPane.QUESTION_MESSAGE,
-                    null,
-                    new Object[]{"Global storage", "Project storage", "Cancel"},
-                    "Global storage");
-            if (response == JOptionPane.YES_OPTION) {
+                    globalStorage, projectStorage);
+            if (response.orElse(null) == globalStorage) {
                 addToProject = false;
-            } else if (response == JOptionPane.NO_OPTION) {
+            } else if (response.orElse(null) == projectStorage) {
                 addToProject = true;
             } else {
                 return;

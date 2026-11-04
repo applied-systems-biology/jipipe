@@ -36,6 +36,8 @@ import org.hkijena.jipipe.desktop.app.running.logs.JIPipeDesktopRunnableLogsColl
 import org.hkijena.jipipe.desktop.app.running.queue.JIPipeDesktopRunnableQueueButton;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
+import org.hkijena.jipipe.desktop.commons.dialogs.Button;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
@@ -266,7 +268,7 @@ public class JIPipeDesktopBackupManagerPanel extends JIPipeDesktopWorkbenchPanel
     }
 
     private void thinBackups() {
-        if (JOptionPane.showConfirmDialog(this, "Do you really want to cleanup the backups?", "Cleanup backups", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+        if (JIPipeDesktopDialogs.confirm(this, "Cleanup backups", "Do you really want to cleanup the backups?")) {
             ThinBackupsRun run = new ThinBackupsRun(true);
             JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), this, run, JIPipe.getInstance().getProjectBackup().getQueue(), JIPipeDesktopRunExecuteUI.GlobalLogMode.Everything);
         }
@@ -274,11 +276,13 @@ public class JIPipeDesktopBackupManagerPanel extends JIPipeDesktopWorkbenchPanel
 
     private void removeOldBackups() {
         JSpinner daySpinner = new JSpinner(new SpinnerNumberModel(60, 1, Short.MAX_VALUE, 1));
-        if (JOptionPane.showConfirmDialog(this, UIUtils.boxHorizontal(new JLabel("Remove backups older than "),
+        Optional<Button> result = JIPipeDesktopDialogs.builder(this, "Remove old backups")
+                .content(UIUtils.boxHorizontal(new JLabel("Remove backups older than "),
                         daySpinner,
-                        new JLabel(" days")),
-                "Remove old backups",
-                JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
+                        new JLabel(" days")))
+                .buttons(Button.OK, Button.CANCEL)
+                .show();
+        if (result.orElse(null) == Button.OK) {
             int days = ((Number) daySpinner.getModel().getValue()).intValue();
             if (days > 0) {
                 DeleteOldBackupsByAgeRun run = new DeleteOldBackupsByAgeRun(Duration.ofDays(days));
@@ -419,10 +423,9 @@ public class JIPipeDesktopBackupManagerPanel extends JIPipeDesktopWorkbenchPanel
             return;
         }
 
-        if (JOptionPane.showConfirmDialog(this,
-                "Do you really want to delete " + collectionSet.size() + " collections and " + itemSet.size() + " items?",
+        if (JIPipeDesktopDialogs.confirm(this,
                 "Delete selection",
-                JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                "Do you really want to delete " + collectionSet.size() + " collections and " + itemSet.size() + " items?")) {
             // Flatten the selection (the items themselves plus every item of
             // the selected collections) into one list; the deletion runs on
             // the backup queue in the modal run dialog — never on the EDT,
@@ -443,15 +446,15 @@ public class JIPipeDesktopBackupManagerPanel extends JIPipeDesktopWorkbenchPanel
     }
 
     private void removeNamedBackups() {
-        if (JOptionPane.showConfirmDialog(this, "Do you really want to remove all backups of projects that have a storage path?\n" +
-                "Please note that the tool will NOT check if the files are still present at the path.", "Remove backups with project file", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+        if (JIPipeDesktopDialogs.confirm(this, "Remove backups with project file", "Do you really want to remove all backups of projects that have a storage path?\n" +
+                "Please note that the tool will NOT check if the files are still present at the path.")) {
             JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), this, new PruneBackupsRun(false, true), JIPipe.getInstance().getProjectBackup().getQueue(), JIPipeDesktopRunExecuteUI.GlobalLogMode.Everything);
         }
     }
 
     private void removeUnnamedBackups() {
-        if (JOptionPane.showConfirmDialog(this, "Do you really want to remove all backups of projects that have NO storage path because they were never saved?\n" +
-                "It might be possible that some of the affected projects have been saved after the creation of the backup.", "Remove backups with project file", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+        if (JIPipeDesktopDialogs.confirm(this, "Remove backups with project file", "Do you really want to remove all backups of projects that have NO storage path because they were never saved?\n" +
+                "It might be possible that some of the affected projects have been saved after the creation of the backup.")) {
             JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), this, new PruneBackupsRun(true, false), JIPipe.getInstance().getProjectBackup().getQueue(), JIPipeDesktopRunExecuteUI.GlobalLogMode.Everything);
         }
     }

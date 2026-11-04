@@ -19,6 +19,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.settings.ThemePreviewPanel;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterFormPanel;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernThemeStyle;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeGeneralUIApplicationSettings;
@@ -117,7 +118,7 @@ public class JIPipeDesktopThemeEditor extends JFrame implements JIPipeParameterC
 
         // The ID is either new now or it's already a user style
         if (ThemeUtils.getAvailableStyleIds().contains(id)) {
-            if (JOptionPane.showConfirmDialog(this, "The style ID " + id + " already exists. Do you want to overwrite it?", "Save style", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
+            if (!JIPipeDesktopDialogs.confirm(this, "Save style", "The style ID " + id + " already exists. Do you want to overwrite it?")) {
                 return;
             }
         }

@@ -27,6 +27,7 @@ import org.hkijena.jipipe.desktop.app.running.logs.JIPipeDesktopRunnableLogsColl
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.BufferedImageUtils;
@@ -160,8 +161,7 @@ public abstract class JIPipeDesktopPublisherAssistant extends JIPipeDesktopProje
     private void startPublish() {
         updateAssistant();
         if (currentStatus == JIPipeDesktopPublisherAssistantConditionStatus.Warning) {
-            if (JOptionPane.showConfirmDialog(this, "Potential issues with were detected. Do you still want to continue?",
-                    getAssistantTitle(), JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.NO_OPTION) {
+            if (!JIPipeDesktopDialogs.confirm(this, getAssistantTitle(), "Potential issues with were detected. Do you still want to continue?")) {
                 return;
             }
         }

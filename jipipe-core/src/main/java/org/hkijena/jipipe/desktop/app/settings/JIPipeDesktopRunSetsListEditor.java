@@ -25,6 +25,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterFormPanel;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.parameters.library.graph.GraphNodeReferenceParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -150,7 +151,7 @@ public class JIPipeDesktopRunSetsListEditor extends JIPipeDesktopProjectWorkbenc
     }
 
     private void removeSelectedItems() {
-        if (JOptionPane.showConfirmDialog(this, "Do you really want to delete the selected run sets?", "Delete run sets", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
+        if (!JIPipeDesktopDialogs.confirm(this, "Delete run sets", "Do you really want to delete the selected run sets?")) {
             return;
         }
         for (JIPipeProjectRunSet runSet : jList.getSelectedValuesList()) {

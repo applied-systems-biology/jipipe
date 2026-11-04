@@ -24,6 +24,8 @@ import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterFormPanel;
+import org.hkijena.jipipe.desktop.commons.dialogs.Button;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
@@ -112,23 +114,21 @@ public class JIPipeNodeTemplate extends AbstractJIPipeParameterCollection {
         JIPipeGraph subGraph = graph.extract(algorithms, false);
         template.setData(JsonUtils.toPrettyJsonString(subGraph));
 
-        int result = JOptionPane.YES_OPTION;
+        Button globally = Button.custom("Globally").asDefault();
+        Button insideProject = Button.custom("Inside project");
+        Optional<Button> result = Optional.of(globally);
         if (canvasUI.getGraph().getProject() != null) {
-            result = JOptionPane.showOptionDialog(canvasUI.getDesktopWorkbench().getWindow(),
+            result = JIPipeDesktopDialogs.choose(canvasUI.getDesktopWorkbench().getWindow(),
                     "Node templates can be stored globally or inside the project. Where should the template be stored?",
                     "Create node template",
-                    JOptionPane.YES_NO_CANCEL_OPTION,
-                    JOptionPane.QUESTION_MESSAGE,
-                    null,
-                    new Object[]{"Globally", "Inside project", "Cancel"},
-                    "Globally");
+                    globally, insideProject);
         }
-        if (result == JOptionPane.CANCEL_OPTION)
+        if (result.isEmpty())
             return;
 
         if (JIPipeDesktopParameterFormPanel.showDialog(canvasUI.getDesktopWorkbench(), template, new MarkdownText("# Node templates\n\nUse this user interface to modify node templates."), "Create template",
                 JIPipeDesktopParameterFormPanel.WITH_SCROLLING | JIPipeDesktopParameterFormPanel.WITH_SEARCH_BAR | JIPipeDesktopParameterFormPanel.WITH_DOCUMENTATION)) {
-            if (result == JOptionPane.YES_OPTION) {
+            if (result.get() == globally) {
                 // Store globally
                 JIPipe.getNodeTemplates().addToGlobal(template);
             } else {
