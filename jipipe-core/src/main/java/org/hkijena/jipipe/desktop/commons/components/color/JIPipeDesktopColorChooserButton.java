@@ -60,10 +60,10 @@ public class JIPipeDesktopColorChooserButton extends JButton implements ActionLi
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        // The modern chooser (#1341) with the alpha rail (the old plain
-        // JColorChooser could not edit alpha, but its OK result preserved the
-        // initial color's alpha; chooseColor keeps that semantics).
-        Color value = JIPipeDesktopDialogs.chooseColor(this, selectColorPrompt, selectedColor, true).orElse(selectedColor);
+        // Parity with the old plain JColorChooser.showDialog (no alpha rail):
+        // OK preserves the initial color's alpha, but the user cannot edit it.
+        // Flip to true deliberately if alpha selection is ever wanted here.
+        Color value = JIPipeDesktopDialogs.chooseColor(this, selectColorPrompt, selectedColor, false).orElse(selectedColor);
         setSelectedColor(value);
     }
 
