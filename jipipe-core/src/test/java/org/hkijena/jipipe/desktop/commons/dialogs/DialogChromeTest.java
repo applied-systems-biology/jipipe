@@ -32,6 +32,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -118,6 +119,26 @@ class DialogChromeTest {
         notCancelable.setCancelable(false);
         notCancelable.setButtons(Button.YES, Button.NO);
         assertEquals(2, notCancelable.getActionButtons().size(), "non-cancelable dialog must not append a Cancel button");
+    }
+
+    @Test
+    void defaultButtonIsRegisteredOnRootPane() {
+        JIPipeDesktopDialog d = newDialog();
+        Button def = Button.custom("Go").asDefault();
+        d.setButtons(def, Button.CANCEL);
+        JButton go = null;
+        for (JButton jButton : d.getActionButtons()) {
+            if ("Go".equals(jButton.getText())) {
+                go = jButton;
+            }
+        }
+        assertNotNull(go, "the default-flagged button must be among the action buttons");
+        assertSame(go, d.getRootPane().getDefaultButton(),
+                "the default-flagged button must be registered as the root pane's default button (Enter)");
+
+        d.setButtons(Button.YES, Button.NO);
+        assertNull(d.getRootPane().getDefaultButton(),
+                "re-calling setButtons without a default-flagged button must clear a stale default");
     }
 
     @Test

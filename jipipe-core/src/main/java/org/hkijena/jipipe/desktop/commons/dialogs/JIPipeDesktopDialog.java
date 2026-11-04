@@ -122,6 +122,11 @@ class JIPipeDesktopDialog extends JDialog {
      * Installs the action buttons at the bottom of the dialog. If the dialog
      * is {@linkplain #setCancelable(boolean) cancelable} and no
      * {@link Button#CANCEL} is given, a Cancel button is appended last.
+     * <p>
+     * The first button flagged with {@link Button#asDefault()} is registered
+     * as the root pane's default button, so Enter activates it while focus
+     * is not in a component that consumes Enter (e.g. a text field). If no
+     * button is flagged, any previously registered default button is cleared.
      *
      * @param buttons the action buttons, left to right
      */
@@ -135,15 +140,20 @@ class JIPipeDesktopDialog extends JDialog {
         }
 
         JPanel row = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JButton defaultButton = null;
         for (Button b : effective) {
             JButton jButton = new JButton(b.getLabel(), b.getIcon());
             jButton.addActionListener(e -> onActionClicked(b));
+            if (defaultButton == null && b.isDefault()) {
+                defaultButton = jButton;
+            }
             actionButtons.add(jButton);
             row.add(jButton);
         }
         buttonPanel.add(row, BorderLayout.CENTER);
         buttonPanel.revalidate();
         buttonPanel.repaint();
+        getRootPane().setDefaultButton(defaultButton);
     }
 
     /**
