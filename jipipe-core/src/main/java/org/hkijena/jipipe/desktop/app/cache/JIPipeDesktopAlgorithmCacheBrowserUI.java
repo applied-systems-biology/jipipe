@@ -262,13 +262,13 @@ public class JIPipeDesktopAlgorithmCacheBrowserUI extends JIPipeDesktopProjectWo
 //                            "Although the data will be loaded, this could indicate a problem with the cached data.").getHtml(), true);
 //                }
 //                if (stateNode.getInfo() != graphNode.getInfo()) {
-//                    if (JOptionPane.showConfirmDialog(this,
+//                    if (showConfirmDialog(this,
 //                            "It looks like that this folder was created for a different node type.\n" +
 //                                    "The node you have selected has the type ID '" + graphNode.getInfo().getId() + "',\n" +
 //                                    "while the cache folder was created for type ID '" + stateNode.getInfo().getId() + "'.\n\nContinue anyway?",
 //                            "Import cache",
-//                            JOptionPane.YES_NO_OPTION,
-//                            JOptionPane.QUESTION_MESSAGE) == JOptionPane.NO_OPTION) {
+//                            YES_NO_OPTION,
+//                            QUESTION_MESSAGE) == NO_OPTION) {
 //                        return;
 //                    }
 //                } else if ((graphNode instanceof JIPipeAlgorithm) && (stateNode instanceof JIPipeAlgorithm)) {
@@ -281,32 +281,32 @@ public class JIPipeDesktopAlgorithmCacheBrowserUI extends JIPipeDesktopProjectWo
 //                    currentStateIdJson.remove("jipipe:node-alias-id");
 //                    currentStateIdJson.remove("jipipe:node-uuid");
 //                    if (!Objects.equals(stateIdJson, currentStateIdJson)) {
-//                        if (JOptionPane.showConfirmDialog(this,
+//                        if (showConfirmDialog(this,
 //                                "The cache folder was created for a different parameter set.\n\nContinue anyway?",
 //                                "Import cache",
-//                                JOptionPane.YES_NO_OPTION,
-//                                JOptionPane.QUESTION_MESSAGE) == JOptionPane.NO_OPTION) {
+//                                YES_NO_OPTION,
+//                                QUESTION_MESSAGE) == NO_OPTION) {
 //                            return;
 //                        }
 //                    }
 //                }
 //            } catch (Exception e) {
 //                UIUtils.openErrorDialog(this, e);
-//                if (JOptionPane.showConfirmDialog(this,
+//                if (showConfirmDialog(this,
 //                        "There was an error while checking for data compatibility.\n\nContinue anyway?",
 //                        "Import cache",
-//                        JOptionPane.YES_NO_OPTION,
-//                        JOptionPane.QUESTION_MESSAGE) == JOptionPane.NO_OPTION) {
+//                        YES_NO_OPTION,
+//                        QUESTION_MESSAGE) == NO_OPTION) {
 //                    return;
 //                }
 //            }
 //        } else {
-//            if (JOptionPane.showConfirmDialog(this,
+//            if (showConfirmDialog(this,
 //                    "The folder does not contain 'node.json', which is there to check if " +
 //                            "you have chosen the correct node.\n\nContinue anyway?",
 //                    "Import cache",
-//                    JOptionPane.YES_NO_OPTION,
-//                    JOptionPane.QUESTION_MESSAGE) == JOptionPane.NO_OPTION) {
+//                    YES_NO_OPTION,
+//                    QUESTION_MESSAGE) == NO_OPTION) {
 //                return;
 //            }
 //        }

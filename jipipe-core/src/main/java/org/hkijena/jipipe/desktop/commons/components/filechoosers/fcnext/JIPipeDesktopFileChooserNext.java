@@ -905,7 +905,7 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
 //            }
 //
 //            if (foundExisting) {
-//                if (JOptionPane.showConfirmDialog(this, "The selected file(s) already exist. Overwrite them?", "Save file", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
+//                if (showConfirmDialog(this, "The selected file(s) already exist. Overwrite them?", "Save file", YES_NO_OPTION) == NO_OPTION) {
 //                    results.clear();
 //                }
 //            }

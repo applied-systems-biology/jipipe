@@ -41,7 +41,7 @@ import java.util.function.Predicate;
 
 /**
  * The modern dialog API (work item #1341): a static facade over
- * {@link JIPipeDesktopDialog} in which the classic {@code JOptionPane}
+ * {@link JIPipeDesktopDialog} in which the classic option-pane
  * confusion between "the user closed the window" (CLOSED_OPTION) and a real
  * choice is unrepresentable. Every dismissal — the Cancel button, the window
  * close button, or Escape — funnels into the dialog's single
@@ -49,8 +49,8 @@ import java.util.function.Predicate;
  * {@code Optional.empty()} or {@code false} by construction.
  * <p>
  * All methods are application-modal and must be called on the
- * <em>event dispatch thread</em> (the same precondition as today's
- * {@code JOptionPane} call sites). The facade does not marshal calls to the
+ * <em>event dispatch thread</em> (the same precondition as the pre-migration
+ * dialog call sites). The facade does not marshal calls to the
  * EDT itself; doing so would be redundant for the existing call sites and
  * would change the threading semantics of the migration.
  * <p>
@@ -132,7 +132,7 @@ public final class JIPipeDesktopDialogs {
     /**
      * Shows a Yes/No confirmation dialog.
      * <p>
-     * Truth table (identical to the former {@code == JOptionPane.YES_OPTION}
+     * Truth table (identical to the former {@code == YES_OPTION}
      * idiom): Yes → {@code true}; No, Cancel, window close, or Escape →
      * {@code false}. There is no way to represent "dismissed" separately
      * from "No" — by design.
@@ -188,7 +188,7 @@ public final class JIPipeDesktopDialogs {
      * with {@code initialValue} (null → empty) whose content is selected.
      * Enter inside the field and the OK button both submit.
      * <p>
-     * Deliberate behavior change vs. {@code JOptionPane.showInputDialog}
+     * Deliberate behavior change vs. the classic {@code showInputDialog}
      * (spec §4.2): submitting with <em>empty or whitespace-only</em> text
      * counts as dismiss — the result is {@link Optional#empty()}, never an
      * empty string. A caller that genuinely needs an empty value uses the

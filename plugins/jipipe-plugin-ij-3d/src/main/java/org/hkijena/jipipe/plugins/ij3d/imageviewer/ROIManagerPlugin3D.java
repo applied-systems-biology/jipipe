@@ -357,7 +357,7 @@ public class ROIManagerPlugin3D extends JIPipeDesktopLegacyImageViewerPlugin2D {
 //            removeButton.addActionListener(e -> {
 //                if (roiListControl.getSelectedValuesList().isEmpty())
 //                    return;
-//                if (JOptionPane.showConfirmDialog(getViewerPanel(), "Do you really want to remove " + roiListControl.getSelectedValuesList().size() + "ROI?", "Edit ROI", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+//                if (showConfirmDialog(getViewerPanel(), "Do you really want to remove " + roiListControl.getSelectedValuesList().size() + "ROI?", "Edit ROI", YES_NO_OPTION) == YES_OPTION) {
 //                    removeSelectedROIs(false);
 //                }
 //            });

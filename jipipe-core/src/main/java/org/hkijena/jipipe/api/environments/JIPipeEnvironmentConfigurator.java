@@ -185,7 +185,7 @@ public class JIPipeEnvironmentConfigurator<T extends JIPipeEnvironment> implemen
 
                 @Override
                 public void onInterrupted(InterruptedEvent event) {
-                    // The ORIGINAL JOptionPane call had its title/message
+                    // The ORIGINAL message-dialog call had its title/message
                     // arguments swapped (title rendered as the body); this
                     // site intentionally preserves that rendering. Latent
                     // original bug - follow-up candidate.
