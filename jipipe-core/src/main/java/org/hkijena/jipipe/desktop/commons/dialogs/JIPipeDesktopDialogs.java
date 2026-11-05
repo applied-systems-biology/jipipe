@@ -209,7 +209,7 @@ public final class JIPipeDesktopDialogs {
      * @return the submitted text, or empty if the dialog was dismissed or the submission was empty/whitespace-only
      */
     public static Optional<String> inputText(Component parent, String title, String message, String initialValue) {
-        JTextField field = new JTextField(initialValue != null ? initialValue : "");
+        JTextField field = new JTextField(initialValue != null ? initialValue : "", 24);
         field.selectAll();
         // Default-flagged OK: Enter (outside the field) and the initial
         // focus behavior match the classic option pane. The flagged copy
@@ -366,7 +366,7 @@ public final class JIPipeDesktopDialogs {
         // the okChosen identity comparison of its own round).
         Button ok = Button.OK.asDefault();
         while (true) {
-            JTextField field = new JTextField(lastValue);
+            JTextField field = new JTextField(lastValue, 24);
             field.selectAll();
             JLabel errorLabel = new JLabel(error != null ? error : "");
             JPanel content = new JPanel(new BorderLayout(0, 4));

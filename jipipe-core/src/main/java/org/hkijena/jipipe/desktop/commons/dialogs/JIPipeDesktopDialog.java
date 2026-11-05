@@ -45,14 +45,23 @@ class JIPipeDesktopDialog extends JDialog {
      */
     private static DialogPresenter presenter = new ModalPresenter();
 
+    private final Window owner;
     private final JLabel messageLabel;
     private final JPanel buttonPanel = new JPanel(new BorderLayout());
     private final List<JButton> actionButtons = new ArrayList<>();
     private JComponent content;
     private boolean cancelable;
+    private boolean explicitSize;
     private boolean contentFocusRedirectArmed;
     private boolean contentFocusRequested;
     private Button result;
+
+    /**
+     * The narrowest dialog the pack path may produce. Empty or very short
+     * messages would otherwise collapse the window to the button row's width
+     * (reported as a pill-shaped dialog during #1341 testing).
+     */
+    private static final int MINIMUM_WIDTH = 320;
 
     /**
      * Creates a new desktop dialog with the given title.
@@ -62,6 +71,7 @@ class JIPipeDesktopDialog extends JDialog {
      */
     JIPipeDesktopDialog(Window owner, String title) {
         super(owner, title, ModalityType.APPLICATION_MODAL);
+        this.owner = owner;
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setIconImage(UIUtils.getJIPipeIcon128());
         if (owner != null) {
@@ -126,7 +136,14 @@ class JIPipeDesktopDialog extends JDialog {
             messageLabel.setText(message);
             return;
         }
-        messageLabel.setText("<html><div style=\"width: 400px\"> " + escapeHtml(message) + " </div></html>");
+        // The classic option pane rendered multi-line strings on separate
+        // lines, so plain messages turn their line breaks into <br> (after
+        // escaping - <br> must survive as markup).
+        String plain = escapeHtml(message)
+                .replace("\r\n", "<br>")
+                .replace("\r", "<br>")
+                .replace("\n", "<br>");
+        messageLabel.setText("<html><div style=\"width: 400px\"> " + plain + " </div></html>");
     }
 
     /**
@@ -214,6 +231,38 @@ class JIPipeDesktopDialog extends JDialog {
     }
 
     /**
+     * Sizes the dialog for presentation: dialogs without an explicitly set
+     * size are packed to their content (and grown to {@link #MINIMUM_WIDTH}
+     * when the content is too short to be readable), and every dialog is then
+     * centered on its owner. Called by {@link #showAndWait()} right before
+     * presenting - the content and buttons are only fully assembled at that
+     * point, and sizing in the constructor would compute from an empty
+     * content pane (every dialog opened as a 1x56 pixel sliver before this
+     * existed; found during #1341 testing).
+     */
+    void applyDialogSize() {
+        if (!explicitSize) {
+            pack();
+            if (getWidth() < MINIMUM_WIDTH) {
+                setSize(MINIMUM_WIDTH, getHeight());
+            }
+        }
+        setLocationRelativeTo(owner);
+    }
+
+    @Override
+    public void setSize(int width, int height) {
+        explicitSize = true;
+        super.setSize(width, height);
+    }
+
+    @Override
+    public void setSize(Dimension d) {
+        explicitSize = true;
+        super.setSize(d);
+    }
+
+    /**
      * Shows the dialog and blocks until the user has decided. When a content
      * component was set, the initial focus is redirected to it: the button
      * panel is added before the content (container order), so without the
@@ -231,6 +280,7 @@ class JIPipeDesktopDialog extends JDialog {
      * @see #getResult()
      */
     JIPipeDesktopDialog showAndWait() {
+        applyDialogSize();
         if (content != null && !contentFocusRedirectArmed) {
             contentFocusRedirectArmed = true;
             addWindowListener(new WindowAdapter() {

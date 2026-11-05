@@ -183,6 +183,21 @@ class DialogChromeTest {
     }
 
     @Test
+    void messageLineBreaksBecomeMarkup() {
+        // The classic option pane rendered multi-line strings on separate
+        // lines; plain messages must convert their line breaks to <br> (the
+        // escaped text keeps rendering verbatim otherwise). Windows line
+        // endings become exactly one break.
+        JIPipeDesktopDialog d = newDialog();
+        d.addMessage("Line one.\r\nLine two.\nLine three.\rLine four.");
+        String text = d.getMessageLabel().getText();
+        assertTrue(text.contains("Line one.<br>Line two.<br>Line three.<br>Line four."),
+                "line breaks must render as breaks (parity with the classic option pane)");
+        assertFalse(text.contains("\n") || text.contains("\r"),
+                "no raw line break may survive in the label text");
+    }
+
+    @Test
     void addMessagePassesThroughHtmlDocument() {
         // A message that already is a full <html> document must not be nested
         // in the wrapper div (Swing mangles double-wrapped documents).
