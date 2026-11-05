@@ -78,12 +78,13 @@ class ProgressCoalescerTest {
             // head + n = lines 1-2; the burst covers 3..200002; the s record is line 200003.
             // 200k instead of the brief-sketch's 100k: the burst duration is writer-bound, and only
             // a drain longer than the interval guarantees an intermediate batch (more than one event)
+            // R11-corrected window: measured from before the burst loop (the enqueue phase emits
+            // batches too — they must be inside the bound) to after finish() returns; finish()
+            // joins the writer, so the final batch is emitted before it returns
+            long start = System.nanoTime();
             for (int i = 0; i < 200_000; i++) {
                 store.log(node, JIPipeLogLevel.DEBUG, "x");
             }
-            // R11-corrected window: from before the burst loop to after finish() returns — finish()
-            // joins the writer, so the final batch is emitted before it returns
-            long start = System.nanoTime();
             store.finish(JIPipeProgressNodeState.OK);
             long durationMs = (System.nanoTime() - start) / 1_000_000;
             int expectedMax = 1 + (int) Math.ceil(durationMs / 50.0) + 1;
