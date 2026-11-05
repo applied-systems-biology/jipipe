@@ -38,6 +38,9 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithmIterationSte
 import org.hkijena.jipipe.api.nodes.infos.JIPipeEmptyNodeInfo;
 import org.hkijena.jipipe.api.notifications.JIPipeNotification;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationAction;
+import org.hkijena.jipipe.api.progress.JIPipeLogLevel;
+import org.hkijena.jipipe.api.progress.JIPipeProgressLog;
+import org.hkijena.jipipe.api.progress.JIPipeProgressNodeState;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartition;
 import org.hkijena.jipipe.api.runtimepartitioning.RuntimePartitionReferenceParameter;
@@ -53,7 +56,9 @@ import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.traverse.TopologicalOrderIterator;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -149,173 +154,204 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
     public void run() {
         JIPipeProgressInfo progressInfo = getProgressInfo();
 
+        // The root run owns the progress store: all records of the run (including those of child runs)
+        // are written into <temporary-base>/logs/<run-uuid>.ndjson
+        JIPipeProgressLog rootStore = null;
         if (parent == null) {
-            progressInfo.log("\n" +
-                    "\n" +
-                    "     _________  _            _____              __     ___              _  __        __ \n" +
-                    " __ / /  _/ _ \\(_)__  ___   / ___/______ ____  / /    / _ \\__ _____    / |/ /____ __/ /_\n" +
-                    "/ // // // ___/ / _ \\/ -_) / (_ / __/ _ `/ _ \\/ _ \\  / , _/ // / _ \\  /    / -_) \\ / __/\n" +
-                    "\\___/___/_/  /_/ .__/\\__/  \\___/_/  \\_,_/ .__/_//_/ /_/|_|\\_,_/_//_/ /_/|_/\\__/_\\_\\\\__/ \n" +
-                    "              /_/                      /_/                                              \n" +
-                    "\n");
-            progressInfo.log("JIPipe version: " + VersionUtils.getJIPipeVersion());
-            Attributes manifestAttributes = ReflectionUtils.getManifestAttributes();
-            if (manifestAttributes != null) {
-                String implementationDateString = manifestAttributes.getValue("Implementation-Date");
-                progressInfo.log("JIPipe build date: " + StringUtils.orElse(implementationDateString, "N/A"));
-            }
-            progressInfo.log(StringUtils.orElse("ImageJ version: " + IJ.getVersion(), "N/A"));
-            progressInfo.log("Java version: " + StringUtils.orElse(System.getProperty("java.version"), "N/A"));
-            progressInfo.log("Registered nodes types: " + JIPipe.getNodes().getRegisteredNodeInfos().size() + " nodes");
-            progressInfo.log("Registered data types: " + JIPipe.getDataTypes().getRegisteredDataTypes().size() + " types");
-            progressInfo.log("Enabled extensions: " + String.join(", ", JIPipe.getInstance().getPlugins().getActivatedPlugins()));
-            progressInfo.log("Operating system: " + SystemUtils.OS_NAME + " " + SystemUtils.OS_VERSION + " [" + SystemUtils.OS_ARCH + "]");
-            progressInfo.log("Profile directory: " + JIPipe.getJIPipeUserDir(false));
-            progressInfo.log("");
+            progressInfo.setStorageBase(project != null ? project.getTemporaryBaseDirectory() : null,
+                    getRunUUID().toString(), getTaskLabel());
+            rootStore = progressInfo.getStore();
         }
 
-        progressInfo.log("Dissolving tunnels ...");
-        dissolveTunnels(graph, progressInfo.resolve("Preprocessing/Tunnels"));
-        progressInfo.log("Erasing skipped/disabled algorithms (except direct predecessors) ...");
-        cleanGraph(graph, progressInfo.resolve("Preprocessing/Cleanup"));
-        progressInfo.log("Repairing partition assignments ...");
-        fixPartitions(graph, progressInfo.resolve("Fix partitions"));
-
-        long startTime = System.currentTimeMillis();
-        if (parent == null) {
-            progressInfo.log("JIPipe run starting at " + StringUtils.formatDateTime(LocalDateTime.now()));
-        }
-
-        progressInfo.log("Preparing ...");
-        initializeNodeStoragePaths();
-        initializeScratchDirectory();
-        initializeRelativeDirectories();
-        initializeSlotStoragePaths();
-        if (parent == null) {
-            progressInfo.log("Outputs will be written to " + configuration.getOutputPath());
-        }
-
-        // Pre-build environment configuration cache
-        JIPipeEnvironmentConfigurationCache environmentConfigurationCache = new JIPipeEnvironmentConfigurationCache();
-
-        // List of all environments
-        List<JIPipeEnvironmentConfigurator<?>> allEnvironments = new ArrayList<>();
-
-        if (parent == null) {
-            progressInfo.log("Preparing artifacts and environments ...");
-
-            // Gather all environments from all active nodes
-            progressInfo.log("Gathering environments for all nodes ...");
-            for (JIPipeGraphNode graphNode : graph.getGraphNodes()) {
-                graphNode.getEnvironmentDependencies(allEnvironments, environmentConfigurationCache);
-            }
-            allEnvironments.removeIf(Objects::isNull);
-
-            // Apply additional configuration steps
-            progressInfo.log("Configuring environments ...");
-            for (int i = 0; i < allEnvironments.size(); i++) {
-                JIPipeEnvironmentConfigurator<?> reference = allEnvironments.get(i);
-                JIPipeEnvironment environment = reference.get(progressInfo.resolve("Configure environments", i, allEnvironments.size()).resolve(reference.getEnvironmentInfo().getId()));
-                environment.runPreconfigure(this, progressInfo);
-            }
-        }
-
-        boolean runFailed = false;
-
-        try (JIPipeFixedThreadPool threadPool = new JIPipeFixedThreadPool(configuration.getNumThreads())) {
-
-            // Setup context
-            runContext = new JIPipeGraphNodeRunContext();
-            runContext.setGraphRun(this);
-            runContext.setThreadPool(threadPool);
-            runContext.setEnvironmentConfigurationCache(environmentConfigurationCache);
-
-            // Start iteration on initial graph
-            progressInfo.log("--> Starting first iteration ...");
-            runGraph(graph, progressInfo);
-        } catch (Exception e) {
-            runFailed = true;
-            throw new RuntimeException(e);
-        } finally {
-            runContext = null;
-
-            // Clear all slots
-            for (JIPipeGraphNode node : graph.getGraphNodes()) {
-                for (JIPipeInputDataSlot inputSlot : node.getInputSlots()) {
-                    if (inputSlot.getRowCount() > 0) {
-                        progressInfo.log("[!] Slot " + inputSlot.getDisplayName() + " still contains " + inputSlot.getRowCount() + " items! Clearing in post-processing!");
-                    }
-                    inputSlot.clear(false, progressInfo);
-                }
-                for (JIPipeOutputDataSlot outputSlot : node.getOutputSlots()) {
-                    if (!outputSlot.isSkipGC()) {
-                        if (outputSlot.getRowCount() > 0) {
-                            progressInfo.log("[!] Slot " + outputSlot.getDisplayName() + " still contains " + outputSlot.getRowCount() + " items! Clearing in post-processing!");
-                        }
-                        outputSlot.clear(false, progressInfo);
-                    }
-                }
-            }
-
-            // Postprocessing
+        try {
             if (parent == null) {
-                progressInfo.log("Postprocessing steps ...");
+                progressInfo.log("\n" +
+                        "\n" +
+                        "     _________  _            _____              __     ___              _  __        __ \n" +
+                        " __ / /  _/ _ \\(_)__  ___   / ___/______ ____  / /    / _ \\__ _____    / |/ /____ __/ /_\n" +
+                        "/ // // // ___/ / _ \\/ -_) / (_ / __/ _ `/ _ \\/ _ \\  / , _/ // / _ \\  /    / -_) \\ / __/\n" +
+                        "\\___/___/_/  /_/ .__/\\__/  \\___/_/  \\_,_/ .__/_//_/ /_/|_|\\_,_/_//_/ /_/|_/\\__/_\\_\\\\__/ \n" +
+                        "              /_/                      /_/                                              \n" +
+                        "\n");
+                progressInfo.log("JIPipe version: " + VersionUtils.getJIPipeVersion());
+                Attributes manifestAttributes = ReflectionUtils.getManifestAttributes();
+                if (manifestAttributes != null) {
+                    String implementationDateString = manifestAttributes.getValue("Implementation-Date");
+                    progressInfo.log("JIPipe build date: " + StringUtils.orElse(implementationDateString, "N/A"));
+                }
+                progressInfo.log(StringUtils.orElse("ImageJ version: " + IJ.getVersion(), "N/A"));
+                progressInfo.log("Java version: " + StringUtils.orElse(System.getProperty("java.version"), "N/A"));
+                progressInfo.log("Registered nodes types: " + JIPipe.getNodes().getRegisteredNodeInfos().size() + " nodes");
+                progressInfo.log("Registered data types: " + JIPipe.getDataTypes().getRegisteredDataTypes().size() + " types");
+                progressInfo.log("Enabled extensions: " + String.join(", ", JIPipe.getInstance().getPlugins().getActivatedPlugins()));
+                progressInfo.log("Operating system: " + SystemUtils.OS_NAME + " " + SystemUtils.OS_VERSION + " [" + SystemUtils.OS_ARCH + "]");
+                progressInfo.log("Profile directory: " + JIPipe.getJIPipeUserDir(false));
+                progressInfo.log("");
+            }
 
-                // Postprocess environments
-                for (JIPipeEnvironmentConfigurator<?> reference : allEnvironments) {
+            progressInfo.log("Dissolving tunnels ...");
+            dissolveTunnels(graph, progressInfo.resolve("Preprocessing/Tunnels"));
+            progressInfo.log("Erasing skipped/disabled algorithms (except direct predecessors) ...");
+            cleanGraph(graph, progressInfo.resolve("Preprocessing/Cleanup"));
+            progressInfo.log("Repairing partition assignments ...");
+            fixPartitions(graph, progressInfo.resolve("Fix partitions"));
+
+            long startTime = System.currentTimeMillis();
+            if (parent == null) {
+                progressInfo.log("JIPipe run starting at " + StringUtils.formatDateTime(LocalDateTime.now()));
+            }
+
+            progressInfo.log("Preparing ...");
+            initializeNodeStoragePaths();
+            initializeScratchDirectory();
+            initializeRelativeDirectories();
+            initializeSlotStoragePaths();
+            if (parent == null) {
+                progressInfo.log("Outputs will be written to " + configuration.getOutputPath());
+            }
+
+            // Pre-build environment configuration cache
+            JIPipeEnvironmentConfigurationCache environmentConfigurationCache = new JIPipeEnvironmentConfigurationCache();
+
+            // List of all environments
+            List<JIPipeEnvironmentConfigurator<?>> allEnvironments = new ArrayList<>();
+
+            if (parent == null) {
+                progressInfo.log("Preparing artifacts and environments ...");
+
+                // Gather all environments from all active nodes
+                progressInfo.log("Gathering environments for all nodes ...");
+                for (JIPipeGraphNode graphNode : graph.getGraphNodes()) {
+                    graphNode.getEnvironmentDependencies(allEnvironments, environmentConfigurationCache);
+                }
+                allEnvironments.removeIf(Objects::isNull);
+
+                // Apply additional configuration steps
+                progressInfo.log("Configuring environments ...");
+                for (int i = 0; i < allEnvironments.size(); i++) {
+                    JIPipeEnvironmentConfigurator<?> reference = allEnvironments.get(i);
+                    JIPipeEnvironment environment = reference.get(progressInfo.resolve("Configure environments", i, allEnvironments.size()).resolve(reference.getEnvironmentInfo().getId()));
+                    environment.runPreconfigure(this, progressInfo);
+                }
+            }
+
+            boolean runFailed = false;
+
+            try (JIPipeFixedThreadPool threadPool = new JIPipeFixedThreadPool(configuration.getNumThreads())) {
+
+                // Setup context
+                runContext = new JIPipeGraphNodeRunContext();
+                runContext.setGraphRun(this);
+                runContext.setThreadPool(threadPool);
+                runContext.setEnvironmentConfigurationCache(environmentConfigurationCache);
+
+                // Start iteration on initial graph
+                progressInfo.log("--> Starting first iteration ...");
+                runGraph(graph, progressInfo);
+            } catch (Exception e) {
+                runFailed = true;
+                throw new RuntimeException(e);
+            } finally {
+                runContext = null;
+
+                // Clear all slots
+                for (JIPipeGraphNode node : graph.getGraphNodes()) {
+                    for (JIPipeInputDataSlot inputSlot : node.getInputSlots()) {
+                        if (inputSlot.getRowCount() > 0) {
+                            progressInfo.log("[!] Slot " + inputSlot.getDisplayName() + " still contains " + inputSlot.getRowCount() + " items! Clearing in post-processing!");
+                        }
+                        inputSlot.clear(false, progressInfo);
+                    }
+                    for (JIPipeOutputDataSlot outputSlot : node.getOutputSlots()) {
+                        if (!outputSlot.isSkipGC()) {
+                            if (outputSlot.getRowCount() > 0) {
+                                progressInfo.log("[!] Slot " + outputSlot.getDisplayName() + " still contains " + outputSlot.getRowCount() + " items! Clearing in post-processing!");
+                            }
+                            outputSlot.clear(false, progressInfo);
+                        }
+                    }
+                }
+
+                // Postprocessing
+                if (parent == null) {
+                    progressInfo.log("Postprocessing steps ...");
+
+                    // Postprocess environments
+                    for (JIPipeEnvironmentConfigurator<?> reference : allEnvironments) {
+                        try {
+                            reference.get(progressInfo).runPostprocessing(this, progressInfo);
+                        } catch (Throwable e) {
+                            progressInfo.log(e);
+                        }
+                    }
+
+                    Path projectReSavePath = null;
                     try {
-                        reference.get(progressInfo).runPostprocessing(this, progressInfo);
-                    } catch (Throwable e) {
-                        progressInfo.log(e);
+                        if (configuration.getOutputPath() != null && configuration.isStoreToDisk()) {
+                            // Re-save in the project's current format
+                            projectReSavePath = configuration.getOutputPath().resolve("project." +
+                                    (PathUtils.isJipxPath(project.getProjectFile()) ? "jipx" : "jip"));
+                            project.saveProject(projectReSavePath, false);
+                        }
+                    } catch (IOException e) {
+                        progressInfo.log(new JIPipeValidationRuntimeException(e,
+                                "Could not save project to '" + projectReSavePath + "'!",
+                                "Either the path is invalid, or you have no permission to write to the disk, or the disk space is full",
+                                "Check if you can write to the output directory."));
                     }
-                }
 
-                Path projectReSavePath = null;
-                try {
-                    if (configuration.getOutputPath() != null && configuration.isStoreToDisk()) {
-                        // Re-save in the project's current format
-                        projectReSavePath = configuration.getOutputPath().resolve("project." +
-                                (PathUtils.isJipxPath(project.getProjectFile()) ? "jipx" : "jip"));
-                        project.saveProject(projectReSavePath, false);
+                    progressInfo.log("\n\n------------------------");
+                    progressInfo.log("Run ending at " + StringUtils.formatDateTime(LocalDateTime.now()));
+                    progressInfo.log("\n--> Required " + StringUtils.formatDuration(System.currentTimeMillis() - startTime) + " to execute.\n");
+
+                    // Complete the store (final status record, final flush, final batch) before the log is rendered
+                    rootStore.finish(progressInfo.isCancelled() ? JIPipeProgressNodeState.CANCELLED :
+                            (runFailed ? JIPipeProgressNodeState.FAILED : JIPipeProgressNodeState.OK));
+
+                    try {
+                        if (configuration.getOutputPath() != null) {
+                            Path logFile = configuration.getOutputPath().resolve("log.txt");
+                            try (BufferedWriter writer = Files.newBufferedWriter(logFile, Charsets.UTF_8)) {
+                                rootStore.renderText(JIPipeLogLevel.INFO, line -> {
+                                    try {
+                                        writer.append(line).append('\n');
+                                    } catch (IOException e) {
+                                        throw new UncheckedIOException(e);
+                                    }
+                                });
+                            }
+                        }
+                    } catch (IOException | UncheckedIOException e) {
+                        progressInfo.log(new JIPipeValidationRuntimeException(e,
+                                "Could not write log '" + configuration.getOutputPath().resolve("log.txt") + "'!",
+                                "Either the path is invalid, or you have no permission to write to the disk, or the disk space is full",
+                                "Check if you can write to the output directory."));
                     }
-                } catch (IOException e) {
-                    progressInfo.log(new JIPipeValidationRuntimeException(e,
-                            "Could not save project to '" + projectReSavePath + "'!",
-                            "Either the path is invalid, or you have no permission to write to the disk, or the disk space is full",
-                            "Check if you can write to the output directory."));
-                }
 
-                progressInfo.log("\n\n------------------------");
-                progressInfo.log("Run ending at " + StringUtils.formatDateTime(LocalDateTime.now()));
-                progressInfo.log("\n--> Required " + StringUtils.formatDuration(System.currentTimeMillis() - startTime) + " to execute.\n");
-
-                try {
-                    if (configuration.getOutputPath() != null) {
-                        Files.writeString(configuration.getOutputPath().resolve("log.txt"), progressInfo.getLog().toString(), Charsets.UTF_8);
+                    if (!progressInfo.getNotifications().isEmpty()) {
+                        progressInfo.log("\n");
+                        progressInfo.log("--> Graph run generated following reports:");
+                        for (JIPipeNotification notification : progressInfo.getNotifications().getNotifications()) {
+                            progressInfo.log("@" + StringUtils.formatDateTime(notification.getDateTime()) + "    " + notification.getHeading() + ": " + notification.getDescription());
+                        }
                     }
-                } catch (IOException e) {
-                    progressInfo.log(new JIPipeValidationRuntimeException(e,
-                            "Could not write log '" + configuration.getOutputPath().resolve("log.txt") + "'!",
-                            "Either the path is invalid, or you have no permission to write to the disk, or the disk space is full",
-                            "Check if you can write to the output directory."));
-                }
 
-                if (!progressInfo.getNotifications().isEmpty()) {
-                    progressInfo.log("\n");
-                    progressInfo.log("--> Graph run generated following reports:");
-                    for (JIPipeNotification notification : progressInfo.getNotifications().getNotifications()) {
-                        progressInfo.log("@" + StringUtils.formatDateTime(notification.getDateTime()) + "    " + notification.getHeading() + ": " + notification.getDescription());
+                    if ((runFailed && configuration.isCleanupOutputsAfterFailure()) || (!runFailed && configuration.isCleanupOutputsAfterSuccess())) {
+                        if (configuration.getOutputPath() != null) {
+                            progressInfo.log("Removing output directory as requested: " + configuration.getOutputPath());
+                            PathUtils.deleteDirectoryRecursively(configuration.getOutputPath(), progressInfo.resolve("Cleanup"));
+                        }
                     }
-                }
 
-                if ((runFailed && configuration.isCleanupOutputsAfterFailure()) || (!runFailed && configuration.isCleanupOutputsAfterSuccess())) {
-                    if (configuration.getOutputPath() != null) {
-                        progressInfo.log("Removing output directory as requested: " + configuration.getOutputPath());
-                        PathUtils.deleteDirectoryRecursively(configuration.getOutputPath(), progressInfo.resolve("Cleanup"));
-                    }
+                    progressInfo.log("\n------------------------\n\n");
                 }
-
-                progressInfo.log("\n------------------------\n\n");
+            }
+        } finally {
+            // Safety net for exit paths that did not reach the log rendering above (e.g. errors during
+            // preprocessing): finish the store so no run is left unfinished. No-op if already finished.
+            if (rootStore != null) {
+                rootStore.finish(progressInfo.isCancelled() ? JIPipeProgressNodeState.CANCELLED :
+                        JIPipeProgressNodeState.FAILED);
             }
         }
 

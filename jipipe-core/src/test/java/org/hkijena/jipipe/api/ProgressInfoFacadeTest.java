@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.progress.JIPipeLogLevel;
 import org.hkijena.jipipe.api.progress.JIPipeProgressLog;
 import org.hkijena.jipipe.api.progress.JIPipeProgressNode;
 import org.hkijena.jipipe.api.progress.JIPipeProgressNodeKind;
+import org.hkijena.jipipe.api.progress.JIPipeProgressNodeState;
 import org.hkijena.jipipe.api.progress.JIPipeProgressRecord;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -245,6 +246,38 @@ class ProgressInfoFacadeTest {
         }
         assertTrue(Files.exists(file), "the store file should be created after the first record");
         info.getStore().close();
+    }
+
+    @Test
+    void setStorageBaseWithExplicitIdsAdoptsStoreAndRerootsHandle() {
+        JIPipeProgressInfo info = new JIPipeProgressInfo();
+        info.log("before");
+        info.setStorageBase(tmp, "0f75f2a6-6c05-4a10-a9ef-2f7e21a3f5de", "Pipeline run");
+
+        // The handle is re-rooted onto the new store's root node
+        assertEquals(info.getStore().getRootNodeId(), info.getNodeId(), "handle must be re-rooted");
+
+        // Records submitted through the handle go to the new store; the re-root makes
+        // resolve() work (a foreign node id would make beginNode throw)
+        JIPipeProgressInfo child = info.resolve("Child");
+        child.log("after");
+        JIPipeProgressLog store = info.getStore();
+        store.finish(JIPipeProgressNodeState.OK);
+        List<JIPipeProgressRecord> records = store.readRecords(1, 64);
+        assertFalse(records.stream().anyMatch(r -> r instanceof JIPipeProgressRecord.Log log && log.m().equals("before")),
+                "records submitted before the swap stay in the previous store");
+        assertTrue(records.stream().anyMatch(r -> r instanceof JIPipeProgressRecord.Log log && log.m().equals("after")),
+                "records submitted after the swap go to the new store");
+
+        // The explicit run UUID names the file and lands in the head record together with the label
+        Path file = store.getFile();
+        assertNotNull(file, "file-backed store expected");
+        assertEquals("0f75f2a6-6c05-4a10-a9ef-2f7e21a3f5de.ndjson", file.getFileName().toString());
+        assertTrue(file.startsWith(tmp.resolve("logs")));
+        JIPipeProgressRecord.Head head = (JIPipeProgressRecord.Head) store.readRecords(1, 1).getFirst();
+        assertEquals("0f75f2a6-6c05-4a10-a9ef-2f7e21a3f5de", head.run());
+        assertEquals("Pipeline run", head.label());
+        store.close();
     }
 
     @Test

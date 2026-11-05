@@ -70,7 +70,7 @@ public class JIPipeProgressInfo implements Cancelable {
      * store with a file-backed store (root-run creation point, before the first record).
      */
     private volatile JIPipeProgressLog store;
-    private final int nodeId;
+    private volatile int nodeId;
     private final AtomicBoolean cancelled;
     private final AtomicInteger progress;
     private final AtomicInteger maxProgress;
@@ -151,18 +151,48 @@ public class JIPipeProgressInfo implements Cancelable {
     }
 
     /**
-     * Replaces the handle's private silent store with a file-backed store that writes into the
-     * logs base resolved from the given base ({@link JIPipeProgressLog#resolveStorageBase(Path)}).
-     * Root-run creation point only: call this on a fresh root handle before the first record is
-     * submitted and before any child handle is created; records submitted beforehand would remain
-     * in the discarded silent store.
+     * Adopts the given store as this handle's store and re-roots the handle to the store's root
+     * node. All state shared with other handles (cancellation, notifications, progress counters,
+     * output flags) is kept: handles previously derived from this handle remain connected to the
+     * previous store, while records submitted through this handle afterwards go to the new store.
+     * Root-run creation point only: call this before the first record is submitted through this
+     * handle for the new run; records submitted beforehand would remain in the previous store.
+     *
+     * @param store the new progress store
+     */
+    public void setStore(JIPipeProgressLog store) {
+        if (store == null)
+            throw new IllegalArgumentException("Store must not be null");
+        this.store = store;
+        this.nodeId = store.getRootNodeId();
+        logView = null;
+    }
+
+    /**
+     * Replaces the handle's store with a file-backed store that writes into the logs base resolved
+     * from the given base ({@link JIPipeProgressLog#resolveStorageBase(Path)}), using a fresh
+     * random run UUID and no run label. See {@link #setStore(JIPipeProgressLog)} for the
+     * root-run creation point semantics.
      *
      * @param base the storage base (the {@code logs} directory is resolved from it)
      */
     public void setStorageBase(Path base) {
+        setStorageBase(base, UUID.randomUUID().toString(), null);
+    }
+
+    /**
+     * Replaces the handle's store with a file-backed store that writes into the logs base resolved
+     * from the given base ({@link JIPipeProgressLog#resolveStorageBase(Path)}). The store file is
+     * named {@code <runUuid>.ndjson} and the head record carries the run UUID and label.
+     * See {@link #setStore(JIPipeProgressLog)} for the root-run creation point semantics.
+     *
+     * @param base     the storage base (the {@code logs} directory is resolved from it)
+     * @param runUuid  the run UUID (file name and head record)
+     * @param runLabel the run label (head record)
+     */
+    public void setStorageBase(Path base, String runUuid, String runLabel) {
         Path logsBase = JIPipeProgressLog.resolveStorageBase(base);
-        String runUuid = UUID.randomUUID().toString();
-        store = JIPipeProgressLog.create(logsBase.resolve(runUuid + ".ndjson"), runUuid, null);
+        setStore(JIPipeProgressLog.create(logsBase.resolve(runUuid + ".ndjson"), runUuid, runLabel));
     }
 
     /**
