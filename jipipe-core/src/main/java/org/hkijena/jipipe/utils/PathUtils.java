@@ -408,6 +408,21 @@ public class PathUtils {
 
     /**
      * Returns the base directory that contains all profiles
+     * <p>
+     * The base can be overridden for the current process, in this order:
+     * <ol>
+     * <li>the environment variable {@code JIPIPE_OVERRIDE_USER_DIR_BASE} (as
+     * documented in the CLI help),</li>
+     * <li>the initialization settings ({@code JIPipeServiceInitializationSettings#setOverrideUserDirBase},
+     * used by the CLI's {@code --profile-dir} and by tests that redirect the
+     * profile after boot),</li>
+     * <li>the system property {@code jipipe.override.user.dir.base}. Unlike the
+     * environment variable, a system property can be set at runtime, which is
+     * what the test suites' {@code LauncherSessionListener}s do: every test
+     * JVM points its profile base at a temporary directory, so tests that boot
+     * the real JIPipe service never read or write the developer's profile
+     * (work item #1356).</li>
+     * </ol>
      *
      * @return the base directory
      */
@@ -417,6 +432,10 @@ public class PathUtils {
         }
         if (JIPipe.getInstance() != null && JIPipe.getInstance().getInitializationSettings().getOverrideUserDirBase() != null) {
             return JIPipe.getInstance().getInitializationSettings().getOverrideUserDirBase();
+        }
+        String overrideProperty = System.getProperty("jipipe.override.user.dir.base");
+        if (!StringUtils.isNullOrEmpty(overrideProperty)) {
+            return Paths.get(overrideProperty);
         }
         if (SystemUtils.IS_OS_WINDOWS) {
             return Paths.get(System.getenv("APPDATA")).resolve("JIPipe")

@@ -1,1 +1,2 @@
 org.hkijena.jipipe.plugins.scene3d.ImageJLegacyPatcherLauncherSessionListener
+org.hkijena.jipipe.plugins.scene3d.TestProfileIsolationLauncherSessionListener

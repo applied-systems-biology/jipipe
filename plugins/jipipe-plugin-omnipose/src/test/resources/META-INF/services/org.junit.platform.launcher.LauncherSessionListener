@@ -1,1 +1,2 @@
 org.hkijena.jipipe.plugins.omnipose.ImageJLegacyPatcherLauncherSessionListener
+org.hkijena.jipipe.plugins.omnipose.TestProfileIsolationLauncherSessionListener
