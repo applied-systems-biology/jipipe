@@ -19,6 +19,7 @@ import org.hkijena.jipipe.utils.ThemeUtils;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -182,9 +183,21 @@ public final class JIPipeDesktopDialogs {
      * @return the chosen button instance, or empty if the dialog was dismissed
      * @throws IllegalArgumentException if no options are given
      */
+    /**
+     * The widest button row the choose dialog still renders as buttons.
+     * Wider option sets switch to a combo box: five theme templates produced
+     * a ~1000px-wide button row (found in the #1341 UX review). The threshold
+     * is width-based rather than count-based, so a few long labels trigger
+     * the switch just like many short ones.
+     */
+    private static final int MAX_CHOOSE_BUTTON_ROW_WIDTH = 480;
+
     public static Optional<Button> choose(Component parent, String title, String message, Button... options) {
         if (options.length == 0) {
             throw new IllegalArgumentException("choose() requires at least one option");
+        }
+        if (buttonRowWidth(options) > MAX_CHOOSE_BUTTON_ROW_WIDTH) {
+            return chooseViaComboBox(parent, title, message, options);
         }
         JIPipeDesktopDialog dialog = newDialog(parent, title);
         dialog.addMessage(normalizeMessage(message));
@@ -192,6 +205,45 @@ public final class JIPipeDesktopDialogs {
         dialog.setButtons(options);
         dialog.showAndWait();
         return dialog.getResult();
+    }
+
+    /**
+     * @return the width the button row for the given options would occupy
+     * (option buttons plus the implicit Cancel and the row gaps)
+     */
+    private static int buttonRowWidth(Button[] options) {
+        int width = 0;
+        for (Button option : options) {
+            width += new JButton(option.getLabel(), option.getIcon()).getPreferredSize().width;
+        }
+        width += new JButton(Button.CANCEL.getLabel(), Button.CANCEL.getIcon()).getPreferredSize().width;
+        width += 8 * (options.length + 1); // the FlowLayout gaps
+        return width;
+    }
+
+    /**
+     * The combo-box rendering of {@link #choose(Component, String, String, Button...)}
+     * for option sets too wide for a button row. The combo lists the options
+     * (the default-flagged one preselected); OK submits the selected option
+     * and Cancel/dismiss still yields empty, so the result contract of
+     * {@code choose()} is unchanged.
+     */
+    private static Optional<Button> chooseViaComboBox(Component parent, String title,
+                                                      String message, Button... options) {
+        JComboBox<Button> comboBox = new JComboBox<>(options);
+        for (Button option : options) {
+            if (option.isDefault()) {
+                comboBox.setSelectedItem(option);
+                break;
+            }
+        }
+        Button ok = Button.OK.asDefault();
+        JIPipeDesktopDialog dialog = newInputDialog(parent, title, message, comboBox, ok);
+        dialog.showAndWait();
+        if (dialog.getResult().orElse(null) != ok) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable((Button) comboBox.getSelectedItem());
     }
 
     /**

@@ -109,4 +109,10 @@ public final class Button {
     public boolean isDefault() {
         return isDefault;
     }
+
+    @Override
+    public String toString() {
+        // the combo-box rendering of choose()'s list variant uses this
+        return label;
+    }
 }

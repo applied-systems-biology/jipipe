@@ -21,12 +21,18 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
+import java.awt.Component;
+import java.awt.Container;
 import java.awt.GraphicsEnvironment;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -96,6 +102,95 @@ class ChooseButtonsTest {
                 "an explicit CANCEL must not be duplicated by the implicit one");
         assertEquals("Cancel", buttons.get(1).getText(),
                 "the caller's CANCEL keeps its position");
+    }
+
+    @Test
+    void wideOptionSetsSwitchToComboBox() {
+        // Five long options exceed the button-row width threshold: the
+        // choose dialog must render a combo box instead (the theme-template
+        // case from the #1341 UX review).
+        AtomicReference<JIPipeDesktopDialog> captured = new AtomicReference<>();
+        AtomicReference<Optional<Button>> decided = new AtomicReference<>();
+        JIPipeDesktopDialogs.setPresenter(d -> {
+            captured.set(d);
+            // decide inside the presenter: select the third option, click OK
+            JComboBox<?> combo = findComboBox(d);
+            assertNotNull(combo, "a wide option set must render as a combo box");
+            assertEquals(6, combo.getItemCount(), "the combo lists every option");
+            combo.setSelectedIndex(2);
+            for (JButton button : d.getActionButtons()) {
+                if (button.getText().equals("OK")) {
+                    button.doClick();
+                    break;
+                }
+            }
+            return d;
+        });
+        try {
+            Button a = Button.custom("JIPipe Light");
+            Button b = Button.custom("JIPipe Classic Light");
+            Button c = Button.custom("JIPipe Dark");
+            Button e = Button.custom("JIPipe Dark Neon");
+            Button f = Button.custom("JIPipe Dark High Contrast");
+            Button g = Button.custom("JIPipe Dark Mid Contrast");
+            decided.set(JIPipeDesktopDialogs.choose(null, "New theme from template",
+                    "Please select the theme style that you want to use as base:", a, b, c, e, f, g));
+            assertTrue(decided.get().isPresent());
+            assertEquals(c, decided.get().get(), "OK must submit the combo's selected option");
+        } finally {
+            JIPipeDesktopDialogs.setPresenter(new ModalPresenter());
+        }
+    }
+
+    @Test
+    void narrowOptionSetsKeepButtons() {
+        AtomicReference<JIPipeDesktopDialog> captured = new AtomicReference<>();
+        JIPipeDesktopDialogs.setPresenter(d -> {
+            captured.set(d);
+            assertNull(findComboBox(d), "a narrow option set must render buttons, not a combo box");
+            d.dismiss();
+            return d;
+        });
+        try {
+            JIPipeDesktopDialogs.choose(null, "Load template", "Choose:",
+                    Button.custom("Load with data").asDefault(), Button.custom("Load only pipeline"));
+            assertTrue(captured.get().getResult().isEmpty());
+        } finally {
+            JIPipeDesktopDialogs.setPresenter(new ModalPresenter());
+        }
+    }
+
+    @Test
+    void comboVariantStillTreatsDismissAsEmpty() {
+        AtomicReference<Optional<Button>> decided = new AtomicReference<>();
+        JIPipeDesktopDialogs.setPresenter(d -> {
+            JComboBox<?> combo = findComboBox(d);
+            assertNotNull(combo);
+            combo.setSelectedIndex(1);
+            d.dismiss(); // X / Escape / Cancel
+            return d;
+        });
+        try {
+            decided.set(JIPipeDesktopDialogs.choose(null, "New theme from template", "Pick:",
+                    Button.custom("JIPipe Light"), Button.custom("JIPipe Classic Light"),
+                    Button.custom("JIPipe Dark"), Button.custom("JIPipe Dark Neon"),
+                    Button.custom("JIPipe Dark High Contrast"), Button.custom("JIPipe Dark Mid Contrast")));
+            assertTrue(decided.get().isEmpty(), "dismissal must stay empty in the combo variant");
+        } finally {
+            JIPipeDesktopDialogs.setPresenter(new ModalPresenter());
+        }
+    }
+
+    private JComboBox<?> findComboBox(Container container) {
+        for (int i = 0; i < container.getComponentCount(); i++) {
+            Component c = container.getComponent(i);
+            if (c instanceof JComboBox) return (JComboBox<?>) c;
+            if (c instanceof Container) {
+                JComboBox<?> result = findComboBox((Container) c);
+                if (result != null) return result;
+            }
+        }
+        return null;
     }
 
     @Test
