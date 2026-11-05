@@ -17,6 +17,8 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopHTMLEditor;
 import org.hkijena.jipipe.desktop.commons.components.textfield.JIPipeDesktopDocumentChangeListener;
+import org.hkijena.jipipe.desktop.commons.dialogs.Button;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -24,6 +26,7 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import java.awt.*;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Parameter editor for {@link HTMLText}
@@ -115,10 +118,17 @@ public class JIPipeDesktopHTMLTextParameterEditorUI extends JIPipeDesktopParamet
     public JComponent createHeaderControls() {
         JButton editButton = UIUtils.createParameterButton("Edit", JIPipe.RESOURCES.getIcon16("actions/edit.png"),
                 e -> {
-                    HTMLText result = UIUtils.getHTMLByDialog(getDesktopWorkbench(), this, "Edit", null,
-                            new HTMLText(editor.getHTML()));
-                    if (result != null) {
-                        setTextFromDialog(result.getHtml());
+                    // Facade builder (#1341): read the dialog editor's HTML only
+                    // when OK was chosen
+                    JIPipeDesktopHTMLEditor dialogEditor = new JIPipeDesktopHTMLEditor(getDesktopWorkbench(), JIPipeDesktopHTMLEditor.Mode.Full, JIPipeDesktopHTMLEditor.WITH_SCROLL_BAR);
+                    dialogEditor.setText(editor.getHTML());
+                    Optional<Button> result = JIPipeDesktopDialogs.builder(this, "Edit")
+                            .content(dialogEditor)
+                            .buttons(Button.OK, Button.CANCEL)
+                            .size(1024, 768)
+                            .show();
+                    if (result.orElse(null) == Button.OK) {
+                        setTextFromDialog(dialogEditor.getHTML());
                     }
                 });
         editButton.setToolTipText("Edit this HTML text in a dedicated window");

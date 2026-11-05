@@ -32,6 +32,7 @@ import org.hkijena.jipipe.desktop.app.documentation.JIPipeDesktopAlgorithmCompen
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeNodeInfoListCellRenderer;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.cef.JIPipeCefClientService;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
@@ -503,12 +504,12 @@ public class JIPipeDesktopRunSingleAlgorithmWindow extends JFrame implements JIP
 
     @Override
     public void showMessageDialog(String message, String title) {
-        JOptionPane.showMessageDialog(getWindow(), message, title, JOptionPane.PLAIN_MESSAGE);
+        JIPipeDesktopDialogs.message(getWindow(), title, message);
     }
 
     @Override
     public void showErrorDialog(String message, String title) {
-        JOptionPane.showMessageDialog(getWindow(), message, title, JOptionPane.ERROR_MESSAGE);
+        JIPipeDesktopDialogs.message(getWindow(), title, message);
     }
 
     @Override

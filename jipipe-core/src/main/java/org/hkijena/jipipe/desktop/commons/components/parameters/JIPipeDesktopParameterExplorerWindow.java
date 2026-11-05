@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.textfield.JIPipeDesktopReadonlyCopyableTextField;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -162,15 +163,15 @@ public class JIPipeDesktopParameterExplorerWindow extends JFrame implements JIPi
     private void pasteTesterValueJson() {
         String clipboard = UIUtils.getStringFromClipboard();
         if (StringUtils.isNullOrEmpty(clipboard)) {
-            JOptionPane.showMessageDialog(this, "The clipboard is empty!", "Paste JSON", JOptionPane.ERROR_MESSAGE);
+            JIPipeDesktopDialogs.message(this, "Paste JSON", "The clipboard is empty!");
             return;
         }
         try {
             Object data = JsonUtils.getObjectMapper().readerFor(currentValue.getFieldClass()).readValue(clipboard);
             testerValue.set(data);
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "The pasted data is not valid for this parameter!\n"
-                    + e.getMessage(), "Paste JSON", JOptionPane.ERROR_MESSAGE);
+            JIPipeDesktopDialogs.error(this, "Paste JSON", "The pasted data is not valid for this parameter!\n"
+                    + e.getMessage(), e);
             e.printStackTrace();
         }
     }
@@ -178,15 +179,15 @@ public class JIPipeDesktopParameterExplorerWindow extends JFrame implements JIPi
     private void pasteCurrentValueJson() {
         String clipboard = UIUtils.getStringFromClipboard();
         if (StringUtils.isNullOrEmpty(clipboard)) {
-            JOptionPane.showMessageDialog(this, "The clipboard is empty!", "Paste JSON", JOptionPane.ERROR_MESSAGE);
+            JIPipeDesktopDialogs.message(this, "Paste JSON", "The clipboard is empty!");
             return;
         }
         try {
             Object data = JsonUtils.getObjectMapper().readerFor(currentValue.getFieldClass()).readValue(clipboard);
             currentValue.set(data);
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "The pasted data is not valid for this parameter!\n"
-                    + e.getMessage(), "Paste JSON", JOptionPane.ERROR_MESSAGE);
+            JIPipeDesktopDialogs.error(this, "Paste JSON", "The pasted data is not valid for this parameter!\n"
+                    + e.getMessage(), e);
             e.printStackTrace();
         }
     }

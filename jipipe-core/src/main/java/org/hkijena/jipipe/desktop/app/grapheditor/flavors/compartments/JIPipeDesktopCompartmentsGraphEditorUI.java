@@ -63,6 +63,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.actions.JIPip
 import org.hkijena.jipipe.desktop.app.history.JIPipeDesktopHistoryJournalUI;
 import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopRunSetsListEditor;
 import org.hkijena.jipipe.desktop.commons.components.tools.JIPipeDesktopExpressionCalculatorUI;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameterList;
 import org.hkijena.jipipe.plugins.settings.SettingsKeys;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -283,13 +284,13 @@ public class JIPipeDesktopCompartmentsGraphEditorUI extends JIPipeDesktopGraphEd
     public void addCompartment() {
         if (!JIPipeDesktopProjectWorkbench.canAddOrDeleteNodes(getDesktopWorkbench()))
             return;
-        String compartmentName = JOptionPane.showInputDialog(this, "Please enter the name of the compartment", "Compartment");
-        if (compartmentName != null && !compartmentName.trim().isEmpty()) {
-            if (getHistoryJournal() != null) {
-                getHistoryJournal().snapshotBeforeAddCompartment(compartmentName);
-            }
-            getProject().addCompartment(compartmentName);
-        }
+        JIPipeDesktopDialogs.inputText(this, "Input", "Please enter the name of the compartment", "Compartment")
+                .ifPresent(compartmentName -> {
+                    if (getHistoryJournal() != null) {
+                        getHistoryJournal().snapshotBeforeAddCompartment(compartmentName);
+                    }
+                    getProject().addCompartment(compartmentName);
+                });
     }
 
     /**

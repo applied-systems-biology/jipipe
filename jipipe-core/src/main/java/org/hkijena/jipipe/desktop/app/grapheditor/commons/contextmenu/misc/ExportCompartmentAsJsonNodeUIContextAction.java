@@ -21,6 +21,8 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanv
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.NodeUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterFormPanel;
+import org.hkijena.jipipe.desktop.commons.dialogs.Button;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.PathUtils;
@@ -28,6 +30,7 @@ import org.hkijena.jipipe.utils.PathUtils;
 import javax.swing.*;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Optional;
 import java.util.Set;
 
 public class ExportCompartmentAsJsonNodeUIContextAction implements NodeUIContextAction {
@@ -46,8 +49,11 @@ public class ExportCompartmentAsJsonNodeUIContextAction implements NodeUIContext
                 null,
                 JIPipeDesktopParameterFormPanel.WITH_SCROLLING);
 
-        if (JOptionPane.showConfirmDialog(canvasUI.getDesktopWorkbench().getWindow(), metadataEditor, "Export compartment",
-                JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE) == JOptionPane.OK_OPTION) {
+        Optional<Button> confirmed = JIPipeDesktopDialogs.builder(canvasUI.getDesktopWorkbench().getWindow(), "Export compartment")
+                .content(metadataEditor)
+                .buttons(Button.OK, Button.CANCEL)
+                .show();
+        if (confirmed.orElse(null) == Button.OK) {
             Path selectedPath = JIPipeDesktop.saveFile(canvasUI, canvasUI.getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Save JIPipe graph compartment (*.jipc)", HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_JIPC);
             if (selectedPath != null) {
                 try {

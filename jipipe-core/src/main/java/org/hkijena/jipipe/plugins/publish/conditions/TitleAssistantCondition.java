@@ -17,6 +17,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.app.publish.JIPipeDesktopPublisherAssistant;
 import org.hkijena.jipipe.desktop.app.publish.JIPipeDesktopPublisherAssistantCondition;
 import org.hkijena.jipipe.desktop.app.publish.JIPipeDesktopPublisherAssistantConditionStatus;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -34,11 +35,11 @@ public class TitleAssistantCondition extends JIPipeDesktopPublisherAssistantCond
     }
 
     private void editProjectDescription() {
-        String newTitle = JOptionPane.showInputDialog(this, "Please set the title of your project:", StringUtils.nullToEmpty(getProject().getMetadata().getName()));
-        if (!StringUtils.isNullOrEmpty(newTitle)) {
-            getProject().getMetadata().setName(newTitle);
-            getAssistant().updateAssistant();
-        }
+        JIPipeDesktopDialogs.inputText(this, "Input", "Please set the title of your project:", StringUtils.nullToEmpty(getProject().getMetadata().getName()))
+                .ifPresent(newTitle -> {
+                    getProject().getMetadata().setName(newTitle);
+                    getAssistant().updateAssistant();
+                });
     }
 
     @Override

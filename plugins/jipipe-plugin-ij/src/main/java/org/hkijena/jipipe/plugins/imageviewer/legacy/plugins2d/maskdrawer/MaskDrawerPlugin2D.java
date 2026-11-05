@@ -37,6 +37,7 @@ import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.*;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
@@ -258,10 +259,7 @@ public class MaskDrawerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D i
                 ImagePlus image = IJ.openImage(selectedFile.toString());
                 ImageProcessor processor = getCurrentMaskSlice();
                 if (image.getWidth() != processor.getWidth() || image.getHeight() != processor.getHeight()) {
-                    JOptionPane.showMessageDialog(getViewerPanel(),
-                            "The imported mask must have a size of " + processor.getWidth() + "x" + processor.getHeight(),
-                            "Import mask",
-                            JOptionPane.ERROR_MESSAGE);
+                    JIPipeDesktopDialogs.message(getViewerPanel(), "Import mask", "The imported mask must have a size of " + processor.getWidth() + "x" + processor.getHeight());
                     return;
                 }
                 if (image.getBitDepth() != 8) {

@@ -17,6 +17,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.app.publish.JIPipeDesktopPublisherAssistant;
 import org.hkijena.jipipe.desktop.app.publish.JIPipeDesktopPublisherAssistantCondition;
 import org.hkijena.jipipe.desktop.app.publish.JIPipeDesktopPublisherAssistantConditionStatus;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.utils.LicenseUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -56,11 +57,14 @@ public class LicenseAssistantCondition extends JIPipeDesktopPublisherAssistantCo
             }));
         }
         popupMenu.add(UIUtils.createMenuItem("Custom ...", "Enter a custom ID", JIPipe.RESOURCES.getIcon16("actions/edit.png"), () -> {
-            String newLicense = JOptionPane.showInputDialog(this, "Please enter a valid license ID:", "Set license");
-            if (!StringUtils.isNullOrEmpty(newLicense)) {
-                getProject().getMetadata().setLicense(newLicense);
-                getAssistant().updateAssistant();
-            }
+            // "Set license" was the third argument of the former 3-arg
+            // showInputDialog call, i.e. the initial field value (not a title).
+            // Preserved verbatim.
+            JIPipeDesktopDialogs.inputText(this, "Input", "Please enter a valid license ID:", "Set license")
+                    .ifPresent(newLicense -> {
+                        getProject().getMetadata().setLicense(newLicense);
+                        getAssistant().updateAssistant();
+                    });
         }));
 
         popupMenu.addSeparator();

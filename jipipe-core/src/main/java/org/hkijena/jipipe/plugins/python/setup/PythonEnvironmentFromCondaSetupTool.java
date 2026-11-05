@@ -6,6 +6,8 @@ import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironmentSetupTool;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.commons.dialogs.Button;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.python.PythonEnvironment;
 import org.hkijena.jipipe.plugins.python.PythonEnvironmentType;
@@ -21,6 +23,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class PythonEnvironmentFromCondaSetupTool implements JIPipeEnvironmentSetupTool {
     @Override
@@ -58,11 +61,9 @@ public class PythonEnvironmentFromCondaSetupTool implements JIPipeEnvironmentSet
                         selectedEnvironment)));
 
         // Show success message
-        JOptionPane.showMessageDialog(parent,
-                "Conda environment configured successfully!\n" +
+        JIPipeDesktopDialogs.message(parent, "Conda Configuration", "Conda environment configured successfully!\n" +
                         "Conda executable: " + selectedCondaPath + "\n" +
-                        "Environment: " + selectedEnvironment,
-                "Conda Configuration", JOptionPane.INFORMATION_MESSAGE);
+                        "Environment: " + selectedEnvironment);
 
         return true;
     }
@@ -89,14 +90,12 @@ public class PythonEnvironmentFromCondaSetupTool implements JIPipeEnvironmentSet
             }
 
             // Show confirmation dialog
-            int result = JOptionPane.showConfirmDialog(parent,
-                    "Conda executable set to: " + selectedCondaPath + "\n\n" +
-                            "Do you want to continue with this selection?",
+            boolean result = JIPipeDesktopDialogs.confirm(parent,
                     "Confirm Conda Selection",
-                    JOptionPane.YES_NO_OPTION,
-                    JOptionPane.QUESTION_MESSAGE);
+                    "Conda executable set to: " + selectedCondaPath + "\n\n" +
+                            "Do you want to continue with this selection?");
 
-            return result == JOptionPane.YES_OPTION ? selectedCondaPath : null;
+            return result ? selectedCondaPath : null;
         } else {
             // Found conda executables, offer selection to user
             String[] options = new String[detectedCondaPaths.size() + 1];
@@ -105,18 +104,22 @@ public class PythonEnvironmentFromCondaSetupTool implements JIPipeEnvironmentSet
             }
             options[detectedCondaPaths.size()] = "Select manually...";
 
-            String selection = (String) JOptionPane.showInputDialog(parent,
+            Button[] optionButtons = new Button[options.length + 1];
+            for (int i = 0; i < options.length; i++) {
+                optionButtons[i] = Button.custom(options[i]);
+            }
+            optionButtons[options.length] = Button.CANCEL;
+            optionButtons[0] = optionButtons[0].asDefault(); // original initialSelectionValue
+            Optional<Button> selectedChoice = JIPipeDesktopDialogs.choose(parent,
+                    "Select Conda executable",
                     "The following conda executables were found on your system:\n\n" +
                             "Please select which one to use, or choose 'Select manually...' to pick a different location.",
-                    "Select Conda executable",
-                    JOptionPane.QUESTION_MESSAGE,
-                    null,
-                    options,
-                    options[0]);
+                    optionButtons);
 
-            if (selection == null) {
+            if (selectedChoice.isEmpty()) {
                 return null; // User cancelled
             }
+            String selection = selectedChoice.get().getLabel();
 
             Path selectedCondaPath;
             if (selection.equals("Select manually...")) {
@@ -136,14 +139,12 @@ public class PythonEnvironmentFromCondaSetupTool implements JIPipeEnvironmentSet
             }
 
             // Show confirmation dialog
-            int result = JOptionPane.showConfirmDialog(parent,
-                    "Selected conda executable: " + selectedCondaPath + "\n\n" +
-                            "Do you want to continue with this selection?",
+            boolean result = JIPipeDesktopDialogs.confirm(parent,
                     "Confirm Conda Selection",
-                    JOptionPane.YES_NO_OPTION,
-                    JOptionPane.QUESTION_MESSAGE);
+                    "Selected conda executable: " + selectedCondaPath + "\n\n" +
+                            "Do you want to continue with this selection?");
 
-            return result == JOptionPane.YES_OPTION ? selectedCondaPath : null;
+            return result ? selectedCondaPath : null;
         }
     }
 
@@ -157,29 +158,30 @@ public class PythonEnvironmentFromCondaSetupTool implements JIPipeEnvironmentSet
     private String selectCondaEnvironment(Component parent, List<String> environments) {
         if (environments.isEmpty()) {
             // No environments found, use base
-            int result = JOptionPane.showConfirmDialog(parent,
-                    "No conda environments found. Would you like to use the 'base' environment?",
+            boolean result = JIPipeDesktopDialogs.confirm(parent,
                     "No Environments Found",
-                    JOptionPane.YES_NO_OPTION,
-                    JOptionPane.QUESTION_MESSAGE);
+                    "No conda environments found. Would you like to use the 'base' environment?");
 
-            if (result == JOptionPane.YES_OPTION) {
+            if (result) {
                 return "base";
             } else {
                 return null; // User cancelled
             }
         } else {
             // Let user select environment
-            String envSelection = (String) JOptionPane.showInputDialog(parent,
+            List<Button> envButtons = new ArrayList<>();
+            for (String environment : environments) {
+                envButtons.add(Button.custom(environment));
+            }
+            envButtons.set(0, envButtons.get(0).asDefault()); // original initialSelectionValue
+            envButtons.add(Button.CANCEL);
+            Optional<Button> envChoice = JIPipeDesktopDialogs.choose(parent,
+                    "Select Conda environment",
                     "The following conda environments are available:\n\n" +
                             "Please select which environment to use:",
-                    "Select Conda environment",
-                    JOptionPane.QUESTION_MESSAGE,
-                    null,
-                    environments.toArray(new String[0]),
-                    environments.get(0));
+                    envButtons.toArray(new Button[0]));
 
-            return envSelection;
+            return envChoice.map(Button::getLabel).orElse(null);
         }
     }
 

@@ -28,6 +28,7 @@ import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.parameters.api.optional.JIPipeOptionalParameter;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeArtifactQueryParameter;
 
@@ -145,7 +146,7 @@ public class JIPipeEnvironmentConfigurator<T extends JIPipeEnvironment> implemen
                 errorMessage += "</ul>";
             }
             errorMessage += "</html>";
-            JOptionPane.showMessageDialog(parent, errorMessage, title, JOptionPane.ERROR_MESSAGE);
+            JIPipeDesktopDialogs.message(parent, title, errorMessage);
             return;
         }
         JIPipeEnvironment environment = configurationCache.get(baseEnvironment);
@@ -157,8 +158,8 @@ public class JIPipeEnvironmentConfigurator<T extends JIPipeEnvironment> implemen
                 if (configuredArtifactEnvironment.isLoadFromArtifact()) {
                     JIPipeArtifact artifact = configureArtifactQuery(configuredArtifactEnvironment, JIPipeProgressInfo.SILENT);
                     if (artifact instanceof JIPipeRemoteArtifact) {
-                        if (JOptionPane.showConfirmDialog(parent, "<html>JIPipe will need to download the artifact package <pre>" + artifact.getFullId() + "</pre> " +
-                                "Depending on the package and your internet connection this will take a few minutes.<br/>Do you want to continue?</html>", title, JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.NO_OPTION) {
+                        if (!JIPipeDesktopDialogs.confirm(parent, title, "<html>JIPipe will need to download the artifact package <pre>" + artifact.getFullId() + "</pre> " +
+                                "Depending on the package and your internet connection this will take a few minutes.<br/>Do you want to continue?</html>")) {
                             return;
                         }
                     }
@@ -184,7 +185,11 @@ public class JIPipeEnvironmentConfigurator<T extends JIPipeEnvironment> implemen
 
                 @Override
                 public void onInterrupted(InterruptedEvent event) {
-                    JOptionPane.showMessageDialog(parent, title, "The configuration failed or was interrupted.", JOptionPane.ERROR_MESSAGE);
+                    // The ORIGINAL message-dialog call had its title/message
+                    // arguments swapped (title rendered as the body); this
+                    // site intentionally preserves that rendering. Latent
+                    // original bug - follow-up candidate.
+                    JIPipeDesktopDialogs.message(parent, "The configuration failed or was interrupted.", title);
                 }
             };
 

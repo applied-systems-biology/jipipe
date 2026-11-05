@@ -6,6 +6,7 @@ import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironmentSetupTool;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionEvaluator;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringQueryExpressionAndStringPairParameter;
@@ -37,21 +38,17 @@ public class PythonEnvironmentFromVirtualEnvSetupTool implements JIPipeEnvironme
 
         // Validate the selected virtual environment
         if (!isValidVirtualEnvironment(selectedVirtualEnvPath)) {
-            JOptionPane.showMessageDialog(parent,
-                    "The selected directory does not appear to be a valid Python virtual environment.\n" +
-                            "Please select a directory containing a 'pyvenv.cfg' file or the appropriate Python executable.",
-                    getName(), JOptionPane.ERROR_MESSAGE);
+            JIPipeDesktopDialogs.message(parent, getName(), "The selected directory does not appear to be a valid Python virtual environment.\n" +
+                            "Please select a directory containing a 'pyvenv.cfg' file or the appropriate Python executable.");
             return false;
         }
 
         // Configure the Python environment
         configureVirtualEnvironment(pythonEnvironment, selectedVirtualEnvPath);
 
-        JOptionPane.showMessageDialog(parent,
-                "Python virtual environment configured successfully!\n" +
+        JIPipeDesktopDialogs.message(parent, getName(), "Python virtual environment configured successfully!\n" +
                         "Virtual environment directory: " + selectedVirtualEnvPath + "\n" +
-                        "You can modify the arguments in the configuration if needed.",
-                getName(), JOptionPane.INFORMATION_MESSAGE);
+                        "You can modify the arguments in the configuration if needed.");
 
         return true;
     }

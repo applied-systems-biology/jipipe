@@ -99,7 +99,7 @@ public class ImageViewer2DDisplayRangeControl extends JPanel implements ThumbLis
 //        setMinButton.addActionListener(e -> {
 //            if (calibrationPlugin.getCurrentImagePlus().getImage() != null) {
 //                double value = (minSelectableValue + slider.getModel().getThumbAt(0).getPosition() * (maxSelectableValue - minSelectableValue));
-//                Optional<Double> newValue = UIUtils.getDoubleByDialog(getCalibrationPlugin().getViewerPanel(),
+//                Optional<Double> newValue = getDoubleByDialog(getCalibrationPlugin().getViewerPanel(),
 //                        "Set min display value",
 //                        "Please enter the new value:",
 //                        value,
@@ -120,7 +120,7 @@ public class ImageViewer2DDisplayRangeControl extends JPanel implements ThumbLis
 //        setMaxButton.addActionListener(e -> {
 //            if (calibrationPlugin.getCurrentImagePlus().getImage() != null) {
 //                double value = (minSelectableValue + slider.getModel().getThumbAt(1).getPosition() * (maxSelectableValue - minSelectableValue));
-//                Optional<Double> newValue = UIUtils.getDoubleByDialog(getCalibrationPlugin().getViewerPanel(),
+//                Optional<Double> newValue = getDoubleByDialog(getCalibrationPlugin().getViewerPanel(),
 //                        "Set max display value",
 //                        "Please enter the new value:",
 //                        value,

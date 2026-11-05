@@ -50,6 +50,7 @@ import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopSmallTo
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopExtendedDataTableSearchTextFieldTableRowFilter;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariableInfo;
 import org.hkijena.jipipe.plugins.expressions.ui.ExpressionBuilderUI;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
@@ -465,8 +466,8 @@ public class JIPipeDesktopExtendedDataTableUI extends JIPipeDesktopWorkbenchPane
             if (directory != null) {
                 try {
                     if (Files.isDirectory(directory) && Files.list(directory).findAny().isPresent()) {
-                        if (JOptionPane.showConfirmDialog(this, "The selected directory " + directory + " is not empty. The contents will be deleted before writing the outputs. " +
-                                "Continue anyway?", "Export as JIPipe data table", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION)
+                        if (!JIPipeDesktopDialogs.confirm(this, "Export as JIPipe data table", "The selected directory " + directory + " is not empty. The contents will be deleted before writing the outputs. " +
+                                "Continue anyway?"))
                             return;
                     }
                 } catch (Exception e) {
@@ -489,11 +490,9 @@ public class JIPipeDesktopExtendedDataTableUI extends JIPipeDesktopWorkbenchPane
             if (outputZipFile != null) {
                 outputZipFile = PathUtils.ensureExtension(outputZipFile, ".zip");
                 if (Files.isRegularFile(outputZipFile)) {
-                    if (JOptionPane.showConfirmDialog(getDesktopWorkbench().getWindow(),
-                            "The file '" + outputZipFile + "' already exists. Do you want to overwrite the file?",
+                    if (!JIPipeDesktopDialogs.confirm(getDesktopWorkbench().getWindow(),
                             "Export *.zip",
-                            JOptionPane.YES_NO_OPTION,
-                            JOptionPane.QUESTION_MESSAGE) == JOptionPane.NO_OPTION)
+                            "The file '" + outputZipFile + "' already exists. Do you want to overwrite the file?"))
                         return;
                 }
                 JIPipeDesktopDataTableToZIPExporterRun run = new JIPipeDesktopDataTableToZIPExporterRun(getDesktopWorkbench(),

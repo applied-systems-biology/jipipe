@@ -26,6 +26,8 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEdit
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
+import org.hkijena.jipipe.desktop.commons.dialogs.Button;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -123,7 +125,7 @@ public class JIPipeDesktopRuntimePartitionListEditor extends JIPipeDesktopProjec
             }
             message.append("\nDo you really want to remove the selected partitions?");
 
-            if (JOptionPane.showConfirmDialog(this, message.toString(), "Delete runtime partitions", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
+            if (!JIPipeDesktopDialogs.confirm(this, "Delete runtime partitions", message.toString())) {
                 return;
             }
         }

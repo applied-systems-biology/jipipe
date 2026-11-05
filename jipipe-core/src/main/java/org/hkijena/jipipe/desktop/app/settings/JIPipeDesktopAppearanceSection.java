@@ -26,6 +26,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopSegmentedButtonGroup;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernThemeStyle;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopUITheme;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeModernThemeStyleParameter;
@@ -593,15 +594,11 @@ public class JIPipeDesktopAppearanceSection extends JPanel implements JIPipeDesk
         if (newScale == storedEffectiveScale) {
             return;
         }
-        boolean alsoImageJ = JOptionPane.showConfirmDialog(this,
-                "Do you want to apply your scale settings also to Fiji/ImageJ?",
+        boolean alsoImageJ = JIPipeDesktopDialogs.confirm(this,
                 "Apply",
-                JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
+                "Do you want to apply your scale settings also to Fiji/ImageJ?");
         if (!UIUtils.saveUIScaleToJaunch((float) newScale, alsoImageJ)) {
-            JOptionPane.showMessageDialog(workbench != null ? workbench.getWindow() : this,
-                    "Your UI scale setting of " + (int) Math.round(newScale * 100) + "% could not be saved.",
-                    "Appearance",
-                    JOptionPane.ERROR_MESSAGE);
+            JIPipeDesktopDialogs.message(workbench != null ? workbench.getWindow() : this, "Appearance", "Your UI scale setting of " + (int) Math.round(newScale * 100) + "% could not be saved.");
         }
     }
 

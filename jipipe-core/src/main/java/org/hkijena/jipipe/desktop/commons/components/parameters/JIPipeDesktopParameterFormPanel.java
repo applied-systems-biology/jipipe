@@ -23,6 +23,7 @@ import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeGeneralUIApplicationSettings;
 import org.hkijena.jipipe.utils.*;
@@ -648,7 +649,7 @@ public class JIPipeDesktopParameterFormPanel extends JIPipeDesktopFormPanel impl
                     desktopWorkbench.sendStatusBarText("Pasted value into parameter '" + editorUI.getParameterAccess().getName() + "'.");
                 } catch (Throwable ex) {
                     ex.printStackTrace();
-                    JOptionPane.showMessageDialog(desktopWorkbench.getWindow(), "Unable to paste data into parameter '" + editorUI.getParameterAccess().getName() + "'!", "Paste parameter value", JOptionPane.ERROR_MESSAGE);
+                    JIPipeDesktopDialogs.message(desktopWorkbench.getWindow(), "Paste parameter value", "Unable to paste data into parameter '" + editorUI.getParameterAccess().getName() + "'!");
                 }
             });
             optionsMenu.add(pasteItem);

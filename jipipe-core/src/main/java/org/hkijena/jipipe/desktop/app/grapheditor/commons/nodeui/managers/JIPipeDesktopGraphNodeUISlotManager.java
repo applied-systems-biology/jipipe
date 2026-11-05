@@ -12,8 +12,11 @@ import org.hkijena.jipipe.desktop.app.grapheditor.nodefinder.JIPipeDesktopNodeFi
 import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterKeyPickerUI;
 import org.hkijena.jipipe.desktop.commons.components.slots.JIPipeDesktopAddAlgorithmSlotPanel;
 import org.hkijena.jipipe.desktop.commons.components.slots.JIPipeDesktopEditAlgorithmSlotPanel;
+import org.hkijena.jipipe.desktop.commons.dialogs.Button;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.multiparameters.nodes.DefineParametersTableAlgorithm;
 import org.hkijena.jipipe.plugins.parameters.library.table.ParameterTable;
+import org.hkijena.jipipe.utils.StringUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -31,7 +34,7 @@ public class JIPipeDesktopGraphNodeUISlotManager {
 
     public void openAddSlotDialog(JIPipeSlotType slotType) {
         if (!JIPipeDesktopProjectWorkbench.canModifySlots(nodeUI.getDesktopWorkbench())) {
-            JOptionPane.showMessageDialog(nodeUI.getGraphCanvasUI().getDesktopWorkbench().getWindow(), "Slots cannot be modified!", "Add slot", JOptionPane.ERROR_MESSAGE);
+            JIPipeDesktopDialogs.message(nodeUI.getGraphCanvasUI().getDesktopWorkbench().getWindow(), "Add slot", "Slots cannot be modified!");
             return;
         }
         JIPipeDesktopAddAlgorithmSlotPanel.showDialog(nodeUI, nodeUI.getGraphCanvasUI().getHistoryJournal(), nodeUI.getNode(), slotType);
@@ -170,11 +173,18 @@ public class JIPipeDesktopGraphNodeUISlotManager {
     }
 
     public void relabelSlot(JIPipeDataSlot slot) {
-        String newLabel = JOptionPane.showInputDialog(nodeUI,
-                "Please enter a new label for the slot.\nLeave the text empty to remove an existing label.",
-                slot.getInfo().getCustomName());
-        if (newLabel == null)
+        // Empty submit is a wanted value here (it removes the label), so this
+        // site uses the builder instead of inputText, whose empty submit counts
+        // as dismiss (spec #1341 §4.2).
+        JTextField textField = new JTextField(StringUtils.nullToEmpty(slot.getInfo().getCustomName()));
+        Optional<Button> result = JIPipeDesktopDialogs.builder(nodeUI, "Input")
+                .message("Please enter a new label for the slot.\nLeave the text empty to remove an existing label.")
+                .content(textField)
+                .buttons(Button.OK, Button.CANCEL)
+                .show();
+        if (result.orElse(null) != Button.OK)
             return;
+        String newLabel = textField.getText();
         if (nodeUI.getGraphCanvasUI().getHistoryJournal() != null) {
             nodeUI.getGraphCanvasUI().getHistoryJournal().snapshotBeforeLabelSlot(slot, slot.getNode().getCompartmentUUIDInParentGraph());
         }

@@ -22,6 +22,7 @@ import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.desktop.commons.theme.ui.JIPipeDesktopModernPillTabbedPaneUI;
 import org.hkijena.jipipe.desktop.commons.theme.ui.JIPipeDesktopModernTabbedPaneUI;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeGeneralUIApplicationSettings;
@@ -350,10 +351,8 @@ public class JIPipeDesktopTabPane extends JPanel implements Disposable {
             JMenuItem renameButton = new JMenuItem("Rename", JIPipe.RESOURCES.getIcon16("actions/tag.png"));
             UIUtils.makeButtonBorderlessWithoutMargin(renameButton);
             renameButton.addActionListener(e -> {
-                String newName = JOptionPane.showInputDialog(this, "Rename tab '" + tab.getTitle() + "' to ...", tab.getTitle());
-                if (newName != null && !newName.isEmpty()) {
-                    tab.setTitle(newName);
-                }
+                JIPipeDesktopDialogs.inputText(this, "Input", "Rename tab '" + tab.getTitle() + "' to ...", tab.getTitle())
+                        .ifPresent(newName -> tab.setTitle(newName));
             });
             popupMenu.add(renameButton);
         }
@@ -507,8 +506,7 @@ public class JIPipeDesktopTabPane extends JPanel implements Disposable {
         if (tab.closeMode == CloseMode.withoutCloseButton || tab.closeMode == CloseMode.withDisabledCloseButton)
             return;
         if (!JIPipeGeneralUIApplicationSettings.getInstance().isNeverAskOnClosingTabs() && tab.closeMode == CloseMode.withAskOnCloseButton) {
-            if (JOptionPane.showConfirmDialog(tab.getContent(), "Do you really want to close this?",
-                    "Close tab", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+            if (JIPipeDesktopDialogs.confirm(tab.getContent(), "Close tab", "Do you really want to close this?")) {
                 forceCloseTab(tab);
             }
         } else {

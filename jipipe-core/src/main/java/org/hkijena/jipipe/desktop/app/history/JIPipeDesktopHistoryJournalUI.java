@@ -16,6 +16,7 @@ package org.hkijena.jipipe.desktop.app.history;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.history.JIPipeHistoryJournal;
 import org.hkijena.jipipe.api.history.JIPipeHistoryJournalSnapshot;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 
 import javax.swing.*;
 import java.awt.*;
@@ -71,11 +72,9 @@ public class JIPipeDesktopHistoryJournalUI extends JPanel implements JIPipeHisto
     }
 
     private void clearSnapshots() {
-        if (JOptionPane.showConfirmDialog(this,
-                "Do you really want to clear the journal?",
+        if (JIPipeDesktopDialogs.confirm(this,
                 "Clear journal",
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+                "Do you really want to clear the journal?")) {
             getHistoryJournal().clear();
         }
     }

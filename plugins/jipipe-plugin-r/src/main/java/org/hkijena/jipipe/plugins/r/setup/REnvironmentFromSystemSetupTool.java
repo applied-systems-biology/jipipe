@@ -6,6 +6,8 @@ import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironmentSetupTool;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.commons.dialogs.Button;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.r.REnvironment;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
 
@@ -17,6 +19,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class REnvironmentFromSystemSetupTool implements JIPipeEnvironmentSetupTool {
     @Override
@@ -43,10 +46,8 @@ public class REnvironmentFromSystemSetupTool implements JIPipeEnvironmentSetupTo
             rEnvironment.setRExecutablePath(selectedRPath);
             rEnvironment.setRScriptExecutablePath(selectedRPath);
 
-            JOptionPane.showMessageDialog(parent,
-                    "R executable set to: " + selectedRPath + "\n" +
-                            "Note: You may need to manually configure the RScript executable path if it differs from the R executable.",
-                    "R Configuration", JOptionPane.INFORMATION_MESSAGE);
+            JIPipeDesktopDialogs.message(parent, "R Configuration", "R executable set to: " + selectedRPath + "\n" +
+                            "Note: You may need to manually configure the RScript executable path if it differs from the R executable.");
 
             return true;
         } else {
@@ -57,18 +58,22 @@ public class REnvironmentFromSystemSetupTool implements JIPipeEnvironmentSetupTo
             }
             options[detectedRPaths.size()] = "Select manually...";
 
-            String selection = (String) JOptionPane.showInputDialog(parent,
+            Button[] optionButtons = new Button[options.length + 1];
+            for (int i = 0; i < options.length; i++) {
+                optionButtons[i] = Button.custom(options[i]);
+            }
+            optionButtons[options.length] = Button.CANCEL;
+            optionButtons[0] = optionButtons[0].asDefault(); // original initialSelectionValue
+            Optional<Button> selectedChoice = JIPipeDesktopDialogs.choose(parent,
+                    "Select R executable",
                     "The following R executables were found on your system:\n\n" +
                             "Please select which one to use, or choose 'Select manually...' to pick a different location.",
-                    "Select R executable",
-                    JOptionPane.QUESTION_MESSAGE,
-                    null,
-                    options,
-                    options[0]);
+                    optionButtons);
 
-            if (selection == null) {
+            if (selectedChoice.isEmpty()) {
                 return false; // User cancelled
             }
+            String selection = selectedChoice.get().getLabel();
 
             if (selection.equals("Select manually...")) {
                 // Manual selection
@@ -100,11 +105,9 @@ public class REnvironmentFromSystemSetupTool implements JIPipeEnvironmentSetupTo
 
             rEnvironment.setLoadFromArtifact(false);
 
-            JOptionPane.showMessageDialog(parent,
-                    "R environment configured successfully!\n" +
+            JIPipeDesktopDialogs.message(parent, "R Configuration", "R environment configured successfully!\n" +
                             "R executable: " + rEnvironment.getRExecutablePath() + "\n" +
-                            "RScript executable: " + rEnvironment.getRScriptExecutablePath(),
-                    "R Configuration", JOptionPane.INFORMATION_MESSAGE);
+                            "RScript executable: " + rEnvironment.getRScriptExecutablePath());
 
             return true;
         }

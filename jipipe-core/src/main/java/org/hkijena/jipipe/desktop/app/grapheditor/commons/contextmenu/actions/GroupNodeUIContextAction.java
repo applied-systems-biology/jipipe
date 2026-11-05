@@ -26,6 +26,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.NodeUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import javax.swing.*;
@@ -144,7 +145,7 @@ public class GroupNodeUIContextAction implements NodeUIContextAction {
         }
 
 
-        if (JOptionPane.showConfirmDialog(canvasUI.getDesktopWorkbench().getWindow(), "Do you want to keep the selected nodes?", "Group", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
+        if (!JIPipeDesktopDialogs.confirm(canvasUI.getDesktopWorkbench().getWindow(), "Group", "Do you want to keep the selected nodes?")) {
             for (JIPipeGraphNode algorithm : algorithms) {
                 originalGraph.removeNode(algorithm, true);
             }

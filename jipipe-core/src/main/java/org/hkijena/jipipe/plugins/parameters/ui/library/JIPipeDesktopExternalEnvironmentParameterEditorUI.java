@@ -29,6 +29,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterFormPanel;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeArtifactQueryParameter;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.ThemeUtils;
@@ -159,8 +160,8 @@ public class JIPipeDesktopExternalEnvironmentParameterEditorUI extends JIPipeDes
     }
 
     private void loadPreset(JIPipeEnvironment preset) {
-        if (JOptionPane.showConfirmDialog(getDesktopWorkbench().getWindow(), "Do you really want to load " +
-                "the preset '" + preset.getName() + "?", "Load preset", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+        if (JIPipeDesktopDialogs.confirm(getDesktopWorkbench().getWindow(), "Load preset", "Do you really want to load " +
+                "the preset '" + preset.getName() + "?")) {
             setParameter(preset, true);
         }
     }
@@ -171,10 +172,9 @@ public class JIPipeDesktopExternalEnvironmentParameterEditorUI extends JIPipeDes
         parameter.reportValidity(new UnspecifiedValidationReportContext(), JIPipeValidationReportSettings.DEFAULT, report, new JIPipeProgressInfo());
 
         if (!report.isValid()) {
-            if (JOptionPane.showConfirmDialog(getDesktopWorkbench().getWindow(),
-                    "The current settings seem to be invalid. Do you want to save them as preset, anyway?",
+            if (JIPipeDesktopDialogs.confirm(getDesktopWorkbench().getWindow(),
                     "Save preset",
-                    JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                    "The current settings seem to be invalid. Do you want to save them as preset, anyway?")) {
                 return;
             }
         }
@@ -183,10 +183,8 @@ public class JIPipeDesktopExternalEnvironmentParameterEditorUI extends JIPipeDes
         JIPipeParameterTypeInfo typeInfo = JIPipe.getInstance().getParameterTypes().getInfoByFieldClass(fieldClass);
 
         JIPipeEnvironment duplicate = (JIPipeEnvironment) typeInfo.duplicate(parameter);
-        String newName = JOptionPane.showInputDialog(getDesktopWorkbench().getWindow(), "Please insert the name of the preset:", duplicate.getName());
-        if (StringUtils.isNullOrEmpty(newName))
-            return;
-        duplicate.setName(newName);
+        JIPipeDesktopDialogs.inputText(getDesktopWorkbench().getWindow(), "Input", "Please insert the name of the preset:", duplicate.getName())
+                .ifPresent(duplicate::setName);
 
         JIPipe.getInstance().getEnvironments().addPreset(fieldClass, duplicate);
     }

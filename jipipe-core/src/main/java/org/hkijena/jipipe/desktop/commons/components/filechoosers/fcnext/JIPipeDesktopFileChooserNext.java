@@ -8,6 +8,7 @@ import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.textfield.JIPipeDesktopFancyTextField;
 import org.hkijena.jipipe.desktop.commons.components.validation.JIPipeDesktopMessagePanel;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.parameters.library.filesystem.FileChooserBookmark;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
@@ -263,11 +264,11 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
             JButton button = createSidePanelShortcut(bookmark.getName(), JIPipe.RESOURCES.getIcon16("actions/bookmarks.png"), bookmark.getPath());
             JPopupMenu menu = UIUtils.addRightClickPopupMenuToButton(button);
             menu.add(UIUtils.createMenuItem("Rename", "Renames the entry", JIPipe.RESOURCES.getIcon16("actions/accessories-text-editor.png"), () -> {
-                String newName = JOptionPane.showInputDialog(this, "Set the new name of the entry", bookmark.getName());
-                if (!StringUtils.isNullOrEmpty(newName)) {
-                    bookmark.setName(newName);
-                    refreshSidePanel();
-                }
+                JIPipeDesktopDialogs.inputText(this, "Input", "Set the new name of the entry", bookmark.getName())
+                        .ifPresent(newName -> {
+                            bookmark.setName(newName);
+                            refreshSidePanel();
+                        });
             }));
             menu.add(UIUtils.createMenuItem("Remove", "Removes the entry", JIPipe.RESOURCES.getIcon16("actions/gtk-delete.png"), () -> {
                 settings.getBookmarks().remove(bookmark);
@@ -279,14 +280,14 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
     }
 
     private void addBookmark() {
-        String name = JOptionPane.showInputDialog(this, "Enter the name of the bookmark", StringUtils.orElse(currentDirectory.getFileName(), "Root"));
-        if (!StringUtils.isNullOrEmpty(name)) {
-            settings.getBookmarks().add(new FileChooserBookmark(name, currentDirectory));
-            if (JIPipe.isInstantiated()) {
-                JIPipe.getSettings().saveLater();
-            }
-            refreshSidePanel();
-        }
+        JIPipeDesktopDialogs.inputText(this, "Input", "Enter the name of the bookmark", StringUtils.orElse(currentDirectory.getFileName(), "Root"))
+                .ifPresent(name -> {
+                    settings.getBookmarks().add(new FileChooserBookmark(name, currentDirectory));
+                    if (JIPipe.isInstantiated()) {
+                        JIPipe.getSettings().saveLater();
+                    }
+                    refreshSidePanel();
+                });
     }
 
     private void createSidePanelShortcut(CommonDirectory directory) {
@@ -621,15 +622,15 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
     }
 
     private void createDirectory() {
-        String name = JOptionPane.showInputDialog(this, "Please enter the name of the newly created directory");
-        if (!StringUtils.isNullOrEmpty(name)) {
-            try {
-                Files.createDirectory(currentDirectory.resolve(name));
-                refresh();
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(this, "Unable to create new directory", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        }
+        JIPipeDesktopDialogs.inputText(this, "Input", "Please enter the name of the newly created directory", null)
+                .ifPresent(name -> {
+                    try {
+                        Files.createDirectory(currentDirectory.resolve(name));
+                        refresh();
+                    } catch (Exception e) {
+                        JIPipeDesktopDialogs.message(this, "Error", "Unable to create new directory");
+                    }
+                });
     }
 
     private void refresh() {
@@ -853,10 +854,7 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
                         Files.createDirectories(editorPath);
                         results.add(editorPath);
                     } catch (Throwable ignored) {
-                        JOptionPane.showMessageDialog(this,
-                                "Unable to create directory '" + editorPath + "'!",
-                                "Save directory",
-                                JOptionPane.ERROR_MESSAGE);
+                        JIPipeDesktopDialogs.message(this, "Save directory", "Unable to create directory '" + editorPath + "'!");
                     }
                 } else {
                     // Add the extension (if requested)
@@ -907,7 +905,7 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
 //            }
 //
 //            if (foundExisting) {
-//                if (JOptionPane.showConfirmDialog(this, "The selected file(s) already exist. Overwrite them?", "Save file", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
+//                if (showConfirmDialog(this, "The selected file(s) already exist. Overwrite them?", "Save file", YES_NO_OPTION) == NO_OPTION) {
 //                    results.clear();
 //                }
 //            }

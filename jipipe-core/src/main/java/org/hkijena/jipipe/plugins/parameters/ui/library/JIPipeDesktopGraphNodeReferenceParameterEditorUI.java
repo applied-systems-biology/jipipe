@@ -6,6 +6,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.pickers.JIPipeDesktopPickNodeDialog;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.parameters.library.graph.GraphNodeReferenceParameter;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -46,7 +47,7 @@ public class JIPipeDesktopGraphNodeReferenceParameterEditorUI extends JIPipeDesk
                 setParameter(parameter, true);
             }
         } else {
-            JOptionPane.showMessageDialog(this, "Unable to find project", "Edit node reference", JOptionPane.ERROR_MESSAGE);
+            JIPipeDesktopDialogs.message(this, "Edit node reference", "Unable to find project");
         }
     }
 

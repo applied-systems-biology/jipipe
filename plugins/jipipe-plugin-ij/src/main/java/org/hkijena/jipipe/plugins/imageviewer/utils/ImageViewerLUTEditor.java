@@ -20,6 +20,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.desktop.commons.components.pickers.JIPipeDesktopPickEnumValueDialog;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.LUTData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.JIPipeDesktopLegacyImageViewer;
@@ -355,7 +356,7 @@ public abstract class ImageViewerLUTEditor extends JPanel implements ThumbListen
         int index = slider.getSelectedIndex();
         if (index >= 0) {
             Color color = slider.getModel().getThumbAt(index).getObject();
-            color = JColorChooser.showDialog(this, "Select color", color);
+            color = JIPipeDesktopDialogs.chooseColor(this, "Select color", color, false).orElse(null);
             if (color != null) {
                 slider.getModel().getThumbAt(index).setObject(color);
                 updateFromStop(index, color);

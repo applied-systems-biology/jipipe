@@ -24,6 +24,7 @@ import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopDummyWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;
 import org.hkijena.jipipe.desktop.commons.components.app.JIPipeDesktopSplashScreen;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.desktop.commons.notifications.JIPipeDesktopWorkbenchNotificationInboxUI;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeExtensionApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeNotificationUIApplicationSettings;
@@ -72,10 +73,11 @@ public class JIPipeGUICommand implements Command {
         // Check java dependencies
         if (!checkJavaDependencies()) {
             SwingUtilities.invokeLater(() -> JIPipeDesktopSplashScreen.getInstance().hideSplash());
-            if (JOptionPane.showConfirmDialog(null,
+            if (!JIPipeDesktopDialogs.confirm(null,
+                    "Missing dependencies",
                     "JIPipe has detected that you might miss some essential files. Please " +
                             "ensure that you installed following dependencies:\nGuava\nFlexMark\nJackson\nJGraphT\nOpenHTMLToPDF\nMSLinks\nApache Commons\nFontBox\nPDFBox\nAutoLink \n\n" +
-                            "Do you want to continue anyway?", "Missing dependencies", JOptionPane.YES_NO_OPTION, JOptionPane.ERROR_MESSAGE) == JOptionPane.NO_OPTION) {
+                            "Do you want to continue anyway?")) {
                 return;
             }
             SwingUtilities.invokeLater(() -> JIPipeDesktopSplashScreen.getInstance().showSplash(context));

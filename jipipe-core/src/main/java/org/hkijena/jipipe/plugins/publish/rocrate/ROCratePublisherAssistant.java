@@ -22,6 +22,7 @@ import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.publish.JIPipeDesktopPublisherAssistant;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameterList;
 import org.hkijena.jipipe.plugins.publish.conditions.*;
@@ -108,8 +109,7 @@ public final class ROCratePublisherAssistant extends JIPipeDesktopPublisherAssis
     @Override
     public void onPublicationFinished(JIPipeRunnable runnable) {
         if (runnable instanceof CreateROCrateRun run) {
-            if (JOptionPane.showConfirmDialog(this, "<html>The RO-Crate was successfully exported to " + run.getRoCrateFile() + ".<br/>Do you want to open the containing directory?</html>",
-                    "Export finished", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+            if (JIPipeDesktopDialogs.confirm(this, "Export finished", "<html>The RO-Crate was successfully exported to " + run.getRoCrateFile() + ".<br/>Do you want to open the containing directory?</html>")) {
                 UIUtils.desktopOpenFile(run.getRoCrateFile().getParent());
             }
         }

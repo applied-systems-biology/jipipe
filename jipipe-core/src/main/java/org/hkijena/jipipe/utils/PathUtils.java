@@ -18,8 +18,9 @@ import ij.Prefs;
 import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.desktop.commons.dialogs.Button;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 
-import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.io.IOException;
@@ -50,6 +51,7 @@ public class PathUtils {
     public static final FileNameExtensionFilter EXTENSION_FILTER_BMP = new FileNameExtensionFilter("Bitmap image (*.bmp)", "bmp");
     public static final FileNameExtensionFilter EXTENSION_FILTER_TIFF = new FileNameExtensionFilter("TIFF image (*.tif, *.tiff)", "tif", "tiff");
     public static final FileNameExtensionFilter EXTENSION_FILTER_OME_TIFF = new FileNameExtensionFilter("OME TIFF image (*.ome.tif, *.ome.tiff)", "ome.tif", "ome.tiff");
+    public static final FileNameExtensionFilter EXTENSION_FILTER_JIP_JIPX = new FileNameExtensionFilter("JIPipe project (*.jip, *.jipx)", "jipx", "jip");
     public static final FileNameExtensionFilter EXTENSION_FILTER_JIP = new FileNameExtensionFilter("Legacy JIPipe project (*.jip)", "jip");
     public static final FileNameExtensionFilter EXTENSION_FILTER_JIPX = new FileNameExtensionFilter("JIPipe project crate (*.jipx)", "jipx");
     public static final FileNameExtensionFilter EXTENSION_FILTER_JIPE = new FileNameExtensionFilter("JIPipe extension (*.jipe)", "jipe");
@@ -564,16 +566,15 @@ public class PathUtils {
         if (Files.isDirectory(path)) {
             try {
                 if (Files.list(path).findAny().isPresent()) {
-                    int response = JOptionPane.showConfirmDialog(parent,
-                            "The selected directory '" + path + "' is not empty! Remove contents and continue?",
+                    Optional<Button> response = JIPipeDesktopDialogs.choose(parent,
                             "Empty directory expected",
-                            JOptionPane.YES_NO_CANCEL_OPTION,
-                            JOptionPane.ERROR_MESSAGE);
-                    if (response == JOptionPane.YES_OPTION) {
+                            "The selected directory '" + path + "' is not empty! Remove contents and continue?",
+                            Button.YES, Button.NO, Button.CANCEL);
+                    if (response.orElse(null) == Button.YES) {
                         deleteDirectoryRecursively(path, new JIPipeProgressInfo());
                         Files.createDirectories(path);
                         return true;
-                    } else if (response == JOptionPane.NO_OPTION) {
+                    } else if (response.orElse(null) == Button.NO) {
                         return true;
                     } else {
                         return false;

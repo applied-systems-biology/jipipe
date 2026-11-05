@@ -24,6 +24,7 @@ import org.hkijena.jipipe.desktop.api.JIPipeDesktopMenuExtension;
 import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.utils.ui.BusyCursor;
 
 import javax.swing.*;
@@ -45,7 +46,7 @@ public class DissolveCompartmentsTool extends JIPipeDesktopMenuExtension {
 
     private void dissolveCompartments() {
         JIPipeDesktopProjectWorkbench workbench = (JIPipeDesktopProjectWorkbench) getDesktopWorkbench();
-        if (JOptionPane.showConfirmDialog(workbench.getWindow(), "You will lose all manual node positions and all nodes will be put into one compartment. This operation cannot be undone. Do you want to continue?", "Dissolve compartments", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
+        if (!JIPipeDesktopDialogs.confirm(workbench.getWindow(), "Dissolve compartments", "You will lose all manual node positions and all nodes will be put into one compartment. This operation cannot be undone. Do you want to continue?")) {
             return;
         }
         workbench.getDocumentTabPane().closeAllTabs(true);

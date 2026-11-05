@@ -9,6 +9,7 @@ import org.hkijena.jipipe.api.settings.SettingsScope;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.ai.monitor.JIPipeDesktopAIMonitorWindow;
 import org.hkijena.jipipe.desktop.commons.components.icons.SpinnerIcon;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.ai.AIApplicationSettings;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.debounce.StaticDebouncer;
@@ -240,9 +241,7 @@ public class JIPipeDesktopAIStatusControl extends JButton implements Microservic
     private void showErrorDetails() {
         JIPipeAIServiceComponent aiService = JIPipe.getInstance().getAiService();
         String error = aiService.getEmbeddingModelError();
-        JOptionPane.showMessageDialog(this,
-                "AI model error:\n" + (error != null ? error : "Unknown error"),
-                "AI Error", JOptionPane.ERROR_MESSAGE);
+        JIPipeDesktopDialogs.message(this, "AI Error", "AI model error:\n" + (error != null ? error : "Unknown error"));
     }
 
     private void openAIMonitor() {

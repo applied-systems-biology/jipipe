@@ -27,6 +27,7 @@ import org.hkijena.jipipe.desktop.app.running.logs.JIPipeDesktopRunnableLogsColl
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.BufferedImageUtils;
@@ -160,14 +161,12 @@ public abstract class JIPipeDesktopPublisherAssistant extends JIPipeDesktopProje
     private void startPublish() {
         updateAssistant();
         if (currentStatus == JIPipeDesktopPublisherAssistantConditionStatus.Warning) {
-            if (JOptionPane.showConfirmDialog(this, "Potential issues with were detected. Do you still want to continue?",
-                    getAssistantTitle(), JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.NO_OPTION) {
+            if (!JIPipeDesktopDialogs.confirm(this, getAssistantTitle(), "Potential issues with were detected. Do you still want to continue?")) {
                 return;
             }
         }
         if (currentStatus == JIPipeDesktopPublisherAssistantConditionStatus.Invalid) {
-            JOptionPane.showMessageDialog(this, "The project cannot be published in the current state.",
-                    getAssistantTitle(), JOptionPane.ERROR_MESSAGE);
+            JIPipeDesktopDialogs.message(this, getAssistantTitle(), "The project cannot be published in the current state.");
             return;
         }
         JIPipeRunnable assistantTask = createAssistantTask();
@@ -241,9 +240,8 @@ public abstract class JIPipeDesktopPublisherAssistant extends JIPipeDesktopProje
 
     @Override
     public void onRunnableInterrupted(JIPipeRunnable.InterruptedEvent event) {
-        JOptionPane.showMessageDialog(this, "There were errors during the export process.\n" +
-                        "Please open the JIPipe log to review them.",
-                getAssistantTitle(), JOptionPane.ERROR_MESSAGE);
+        JIPipeDesktopDialogs.message(this, getAssistantTitle(), "There were errors during the export process.\n" +
+                        "Please open the JIPipe log to review them.");
         JIPipeDesktopRunnableLogsCollection.getInstance().pushToLog(new JIPipeRunnableLogEntry(getAssistantTitle(),
                 LocalDateTime.now(),
                 event.getRun().getProgressInfo().getLog().toString(),

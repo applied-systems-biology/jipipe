@@ -30,6 +30,8 @@ import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPan
 import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.*;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
+import org.hkijena.jipipe.desktop.commons.dialogs.Button;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.settings.ImageViewerUIRoi2dDisplayApplicationSettings;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJROIUtils;
@@ -140,21 +142,19 @@ public class ROIManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D {
 
     public Roi2dListData getSelectedROIOrAll(String title, String message) {
         if (rois.isEmpty()) {
-            JOptionPane.showMessageDialog(getViewerPanel(), "There are no ROI in the list", title, JOptionPane.ERROR_MESSAGE);
+            JIPipeDesktopDialogs.message(getViewerPanel(), title, "There are no ROI in the list");
             return null;
         }
         if (!roiListControl.getSelectedValuesList().isEmpty()) {
-            int result = JOptionPane.showOptionDialog(getViewerPanel(),
-                    message,
+            Button allRoi = Button.custom("All ROI (" + rois.size() + ")").asDefault();
+            Button selectedRoi = Button.custom("Selected ROI (" + roiListControl.getSelectedValuesList().size() + ")");
+            Optional<Button> result = JIPipeDesktopDialogs.choose(getViewerPanel(),
                     title,
-                    JOptionPane.YES_NO_CANCEL_OPTION,
-                    JOptionPane.QUESTION_MESSAGE,
-                    null,
-                    new Object[]{"All ROI (" + rois.size() + ")", "Selected ROI (" + roiListControl.getSelectedValuesList().size() + ")", "Cancel"},
-                    "All ROI (" + rois.size() + ")");
-            if (result == JOptionPane.CANCEL_OPTION)
+                    message,
+                    allRoi, selectedRoi);
+            if (result.isEmpty())
                 return null;
-            else if (result == JOptionPane.YES_OPTION)
+            else if (result.get() == allRoi)
                 return rois;
             else
                 return new Roi2dListData(roiListControl.getSelectedValuesList());
@@ -183,10 +183,10 @@ public class ROIManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D {
     private void editROIInDialog() {
         List<Roi> selected = roiListControl.getSelectedValuesList();
         if (selected.isEmpty()) {
-            JOptionPane.showMessageDialog(getViewerPanel(), "You have not selected ROI to edit.", "Edit ROI", JOptionPane.ERROR_MESSAGE);
+            JIPipeDesktopDialogs.message(getViewerPanel(), "Edit ROI", "You have not selected ROI to edit.");
         }
         if (selected.size() > 5) {
-            if (JOptionPane.showConfirmDialog(getViewerPanel(), "Do you really want to edit " + selected.size() + "ROI?", "Edit ROI", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
+            if (!JIPipeDesktopDialogs.confirm(getViewerPanel(), "Edit ROI", "Do you really want to edit " + selected.size() + "ROI?")) {
                 return;
             }
         }
@@ -198,7 +198,12 @@ public class ROIManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D {
             documentTabPane.addTab(roi.getName() + "", JIPipe.RESOURCES.getIcon16("data-types/roi.png"), parameterPanel, JIPipeDesktopTabPane.CloseMode.withoutCloseButton, true);
             editors.add(editor);
         }
-        if (UIUtils.showOKCancelDialog(getViewerPanel(), documentTabPane, "Edit ROI")) {
+        Optional<Button> editResult = JIPipeDesktopDialogs.builder(getViewerPanel(), "Edit ROI")
+                .content(documentTabPane)
+                .buttons(Button.OK, Button.CANCEL)
+                .size(800, 600)
+                .show();
+        if (editResult.orElse(null) == Button.OK) {
             for (int i = 0; i < selected.size(); i++) {
                 Roi roi = editors.get(i).applyToRoi(selected.get(i));
                 rois.set(i, roi);
@@ -267,7 +272,7 @@ public class ROIManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D {
 //            removeButton.addActionListener(e -> {
 //                if (roiListControl.getSelectedValuesList().isEmpty())
 //                    return;
-//                if (JOptionPane.showConfirmDialog(getViewerPanel(), "Do you really want to remove " + roiListControl.getSelectedValuesList().size() + "ROI?", "Edit ROI", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+//                if (showConfirmDialog(getViewerPanel(), "Do you really want to remove " + roiListControl.getSelectedValuesList().size() + "ROI?", "Edit ROI", YES_NO_OPTION) == YES_OPTION) {
 //                    removeSelectedROIs(false);
 //                }
 //            });
@@ -282,10 +287,9 @@ public class ROIManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D {
 //    }
 
     private void saveDefaults() {
-        if (JOptionPane.showConfirmDialog(getViewerPanel(),
-                "Do you want to save the ROI display settings as default?",
+        if (JIPipeDesktopDialogs.confirm(getViewerPanel(),
                 "Save settings as default",
-                JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                "Do you want to save the ROI display settings as default?")) {
             ImageViewerUIRoi2dDisplayApplicationSettings settings = ImageViewerUIRoi2dDisplayApplicationSettings.getInstance();
             settings.getRoiDrawer().copyFrom(roiDrawer);
             settings.setRenderROIAsOverlay(renderROIAsOverlayViewMenuItem.getState());
@@ -498,7 +502,7 @@ public class ROIManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D {
         Color currentStrokeColor = selectedRois.stream().map(Roi::getStrokeColor).filter(Objects::nonNull).findAny().orElse(Color.YELLOW);
         JMenuItem setLineColorItem = new JMenuItem("Set line color ...", new SolidColorIcon(16, 16, currentStrokeColor));
         setLineColorItem.addActionListener(e -> {
-            Color value = JColorChooser.showDialog(getViewerPanel(), "Set line color", currentStrokeColor);
+            Color value = JIPipeDesktopDialogs.chooseColor(getViewerPanel(), "Set line color", currentStrokeColor, false).orElse(null);
             if (value != null) {
                 for (Roi roi : selectedRois) {
                     roi.setStrokeColor(value);
@@ -512,7 +516,7 @@ public class ROIManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D {
         Color currentFillColor = selectedRois.stream().map(Roi::getFillColor).filter(Objects::nonNull).findAny().orElse(Color.RED);
         JMenuItem setFillColorItem = new JMenuItem("Set fill color ...", new SolidColorIcon(16, 16, currentFillColor));
         setFillColorItem.addActionListener(e -> {
-            Color value = JColorChooser.showDialog(getViewerPanel(), "Set fill color", currentFillColor);
+            Color value = JIPipeDesktopDialogs.chooseColor(getViewerPanel(), "Set fill color", currentFillColor, false).orElse(null);
             if (value != null) {
                 for (Roi roi : selectedRois) {
                     roi.setFillColor(value);
@@ -526,7 +530,7 @@ public class ROIManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D {
         int currentStrokeThickness = Math.max(1, selectedRois.stream().map(Roi::getStrokeWidth).min(Comparator.naturalOrder()).get().intValue());
         JMenuItem setStrokeThicknessItem = new JMenuItem("Set line width ...", JIPipe.RESOURCES.getIcon16("actions/transform-affect-stroke.png"));
         setStrokeThicknessItem.addActionListener(e -> {
-            Optional<Integer> value = UIUtils.getIntegerByDialog(getViewerPanel(), "Set line width", "Please put the line width here:", currentStrokeThickness, 1, Integer.MAX_VALUE);
+            Optional<Integer> value = JIPipeDesktopDialogs.inputInteger(getViewerPanel(), "Set line width", "Please put the line width here:", currentStrokeThickness, 1, Integer.MAX_VALUE);
             if (value.isPresent()) {
                 for (Roi roi : selectedRois) {
                     roi.setStrokeWidth(value.get());
@@ -540,14 +544,14 @@ public class ROIManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D {
         String currentName = selectedRois.stream().map(Roi::getName).filter(Objects::nonNull).findAny().orElse("");
         JMenuItem setNameItem = new JMenuItem("Set name ...", JIPipe.RESOURCES.getIcon16("actions/tag.png"));
         setNameItem.addActionListener(e -> {
-            String value = JOptionPane.showInputDialog(getViewerPanel(), "Please set the name of the ROIs:", currentName);
-            if (value != null) {
-                for (Roi roi : selectedRois) {
-                    roi.setName(value);
-                }
-                roiListControl.repaint();
-                uploadSliceToCanvas();
-            }
+            JIPipeDesktopDialogs.inputText(getViewerPanel(), "Input", "Please set the name of the ROIs:", currentName)
+                    .ifPresent(value -> {
+                        for (Roi roi : selectedRois) {
+                            roi.setName(value);
+                        }
+                        roiListControl.repaint();
+                        uploadSliceToCanvas();
+                    });
         });
         menu.add(setNameItem);
 
@@ -556,7 +560,7 @@ public class ROIManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D {
         int currentZPosition = Math.max(0, selectedRois.stream().map(Roi::getZPosition).min(Comparator.naturalOrder()).get());
         JMenuItem setZPositionItem = new JMenuItem("Set Z position ...", JIPipe.RESOURCES.getIcon16("actions/mark-location.png"));
         setZPositionItem.addActionListener(e -> {
-            Optional<Integer> value = UIUtils.getIntegerByDialog(getViewerPanel(), "Set Z position", "The first index is 1. Set it to zero to make the ROI appear on all Z planes.", currentZPosition, 0, Integer.MAX_VALUE);
+            Optional<Integer> value = JIPipeDesktopDialogs.inputInteger(getViewerPanel(), "Set Z position", "The first index is 1. Set it to zero to make the ROI appear on all Z planes.", currentZPosition, 0, Integer.MAX_VALUE);
             if (value.isPresent()) {
                 for (Roi roi : selectedRois) {
                     roi.setPosition(roi.getCPosition(), value.get(), roi.getTPosition());
@@ -570,7 +574,7 @@ public class ROIManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D {
         int currentCPosition = Math.max(0, selectedRois.stream().map(Roi::getZPosition).min(Comparator.naturalOrder()).get());
         JMenuItem setCPositionItem = new JMenuItem("Set C position ...", JIPipe.RESOURCES.getIcon16("actions/mark-location.png"));
         setCPositionItem.addActionListener(e -> {
-            Optional<Integer> value = UIUtils.getIntegerByDialog(getViewerPanel(), "Set C position", "The first index is 1. Set it to zero to make the ROI appear on all channel planes.", currentCPosition, 0, Integer.MAX_VALUE);
+            Optional<Integer> value = JIPipeDesktopDialogs.inputInteger(getViewerPanel(), "Set C position", "The first index is 1. Set it to zero to make the ROI appear on all channel planes.", currentCPosition, 0, Integer.MAX_VALUE);
             if (value.isPresent()) {
                 for (Roi roi : selectedRois) {
                     roi.setPosition(value.get(), roi.getZPosition(), roi.getTPosition());
@@ -584,7 +588,7 @@ public class ROIManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D {
         int currentTPosition = Math.max(0, selectedRois.stream().map(Roi::getZPosition).min(Comparator.naturalOrder()).get());
         JMenuItem setTPositionItem = new JMenuItem("Set T position ...", JIPipe.RESOURCES.getIcon16("actions/mark-location.png"));
         setTPositionItem.addActionListener(e -> {
-            Optional<Integer> value = UIUtils.getIntegerByDialog(getViewerPanel(), "Set T position", "The first index is 1. Set it to zero to make the ROI appear on all frame planes.", currentTPosition, 0, Integer.MAX_VALUE);
+            Optional<Integer> value = JIPipeDesktopDialogs.inputInteger(getViewerPanel(), "Set T position", "The first index is 1. Set it to zero to make the ROI appear on all frame planes.", currentTPosition, 0, Integer.MAX_VALUE);
             if (value.isPresent()) {
                 for (Roi roi : selectedRois) {
                     roi.setPosition(roi.getCPosition(), roi.getZPosition(), value.get());

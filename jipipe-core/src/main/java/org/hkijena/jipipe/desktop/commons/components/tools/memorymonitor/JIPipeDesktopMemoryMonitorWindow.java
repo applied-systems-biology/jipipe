@@ -19,6 +19,7 @@ import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.PathUtils;
@@ -149,10 +150,9 @@ public class JIPipeDesktopMemoryMonitorWindow extends JFrame implements JIPipeDe
             try {
                 Files.writeString(savedPath, generateReport());
             } catch (Exception e) {
-                JOptionPane.showMessageDialog(this,
-                        "Failed to save report: " + e.getMessage(),
+                JIPipeDesktopDialogs.error(this,
                         "Error",
-                        JOptionPane.ERROR_MESSAGE);
+                        "Failed to save report: " + e.getMessage(), e);
             }
         }
     }
