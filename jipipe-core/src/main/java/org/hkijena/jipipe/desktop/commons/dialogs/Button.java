@@ -46,7 +46,7 @@ public final class Button {
     /**
      * Standard "No" action button.
      */
-    public static final Button NO = new Button("No", JIPipe.RESOURCES.getIcon16("actions/no.png"), false);
+    public static final Button NO = new Button("No", JIPipe.RESOURCES.getIcon16("actions/message-close.png"), false);
 
     private final String label;
     private final Icon icon;
