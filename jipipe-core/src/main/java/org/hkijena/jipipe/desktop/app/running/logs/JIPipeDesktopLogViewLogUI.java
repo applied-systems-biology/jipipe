@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.desktop.app.running.logs;
 
-import com.google.common.base.CharMatcher;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.progress.JIPipeLogLevel;
 import org.hkijena.jipipe.api.run.JIPipeRunnableLogEntry;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
@@ -29,11 +29,22 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
+/**
+ * Displays one log entry of the Tools &gt; Logs collection. The log is rendered from the entry's
+ * NDJSON data file on demand (when the entry is selected/displayed) — the collection holds no
+ * rendered text. The default view keeps the last {@link #LOG_LINE_LIMIT} lines (bounded memory,
+ * independent of the file size); "Show full log" renders everything.
+ */
 public class JIPipeDesktopLogViewLogUI extends JIPipeDesktopWorkbenchPanel {
     public static int LOG_LINE_LIMIT = 500;
     private final JIPipeRunnableLogEntry logEntry;
@@ -49,20 +60,44 @@ public class JIPipeDesktopLogViewLogUI extends JIPipeDesktopWorkbenchPanel {
     }
 
     private void reloadLog() {
-        if (displayFullLog.isSelected() || CharMatcher.is('\n').countIn(logEntry.getLog()) < LOG_LINE_LIMIT) {
-            logReader.setText(logEntry.getLog());
+        // Render on demand from the entry's data. The bounded view streams the render through a
+        // ring buffer of the last LOG_LINE_LIMIT lines (memory stays bounded for any file size);
+        // the full-log view renders everything, as before.
+        StringBuilder full = displayFullLog.isSelected() ? new StringBuilder() : null;
+        Deque<String> tail = displayFullLog.isSelected() ? null : new ArrayDeque<>(LOG_LINE_LIMIT);
+        int[] totalLines = {0};
+        logEntry.renderText(JIPipeLogLevel.INFO, line -> {
+            totalLines[0]++;
+            if (full != null) {
+                full.append(line).append('\n');
+            } else {
+                if (tail.size() >= LOG_LINE_LIMIT) {
+                    tail.pollFirst();
+                }
+                tail.addLast(line);
+            }
+        });
+        if (full != null) {
+            logReader.setText(full.toString());
+        } else if (totalLines[0] <= LOG_LINE_LIMIT) {
+            logReader.setText(joinLines(tail));
         } else {
             StringBuilder builder = new StringBuilder();
             builder.append("\n");
             builder.append("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n");
             builder.append("Only displaying the last ").append(LOG_LINE_LIMIT).append(" lines\n\n\n");
-            String[] lines = logEntry.getLog().split("\n");
-            for (int i = Math.max(0, lines.length - LOG_LINE_LIMIT); i < lines.length; ++i) {
-                builder.append(lines[i]).append("\n");
-            }
+            builder.append(joinLines(tail));
             logReader.setText(builder.toString());
         }
         SwingUtilities.invokeLater(() -> scrollPane.getVerticalScrollBar().setValue(scrollPane.getVerticalScrollBar().getMaximum()));
+    }
+
+    private static String joinLines(Deque<String> lines) {
+        StringBuilder builder = new StringBuilder();
+        for (String line : lines) {
+            builder.append(line).append('\n');
+        }
+        return builder.toString();
     }
 
     private void initialize() {
@@ -93,7 +128,14 @@ public class JIPipeDesktopLogViewLogUI extends JIPipeDesktopWorkbenchPanel {
 
         toolBar.add(Box.createHorizontalGlue());
 
-        JButton exportButton = new JButton("Export", JIPipe.RESOURCES.getIcon16("actions/document-export.png"));
+        JButton exportDataButton = new JButton("Export data file", JIPipe.RESOURCES.getIcon16("actions/document-export.png"));
+        exportDataButton.addActionListener(e -> exportDataFile());
+        // Entries without a data file (silent/stdout stores) have nothing to export
+        exportDataButton.setEnabled(logEntry.getPath() != null);
+        exportDataButton.setToolTipText("Saves the NDJSON data file of this log");
+        toolBar.add(exportDataButton);
+
+        JButton exportButton = new JButton("Export text", JIPipe.RESOURCES.getIcon16("actions/document-export.png"));
         exportButton.addActionListener(e -> exportLog());
         toolBar.add(exportButton);
 
@@ -105,18 +147,52 @@ public class JIPipeDesktopLogViewLogUI extends JIPipeDesktopWorkbenchPanel {
     private void openLogInExternalTool() {
         Path tempFile = JIPipe.getTemporaryFile("log", ".txt");
         try {
-            Files.write(tempFile, logEntry.getLog().getBytes(StandardCharsets.UTF_8));
+            try (BufferedWriter writer = Files.newBufferedWriter(tempFile, StandardCharsets.UTF_8)) {
+                // Streamed render — no full-buffer copy of the log text
+                logEntry.renderText(JIPipeLogLevel.INFO, line -> {
+                    try {
+                        writer.write(line);
+                        writer.write('\n');
+                    } catch (IOException e) {
+                        throw new UncheckedIOException(e);
+                    }
+                });
+            }
             UIUtils.desktopOpenFile(tempFile.toFile());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private void exportLog() {
-        Path path = JIPipeDesktop.saveFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export log", HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_TXT);
+    /**
+     * Saves the entry's NDJSON data file (the primary export — the raw log data).
+     */
+    private void exportDataFile() {
+        Path path = JIPipeDesktop.saveFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export log data file", HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_NDJSON);
         if (path != null) {
             try {
-                Files.write(path, logEntry.getLog().getBytes(StandardCharsets.UTF_8));
+                Files.copy(logEntry.getPath(), path, StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    /**
+     * Saves the entry's log as rendered text (streamed from the data file).
+     */
+    private void exportLog() {
+        Path path = JIPipeDesktop.saveFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export log as text", HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_TXT);
+        if (path != null) {
+            try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
+                logEntry.renderText(JIPipeLogLevel.INFO, line -> {
+                    try {
+                        writer.write(line);
+                        writer.write('\n');
+                    } catch (IOException e) {
+                        throw new UncheckedIOException(e);
+                    }
+                });
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

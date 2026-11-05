@@ -13,14 +13,24 @@
 
 package org.hkijena.jipipe.api.progress;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
+import org.hkijena.jipipe.utils.json.JsonUtils;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.nio.channels.Channels;
+import java.nio.channels.FileChannel;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -290,6 +300,59 @@ public interface JIPipeProgressLog extends AutoCloseable {
      * @param lineSink the consumer of the rendered lines
      */
     default void renderRecords(List<JIPipeProgressRecord> records, JIPipeLogLevel minLevel, Consumer<String> lineSink) {
+    }
+
+    /**
+     * Renders the records of a store's NDJSON file as compatibility text lines, handing each line
+     * to the sink, using the exact shapes documented for
+     * {@link #renderText(JIPipeLogLevel, Consumer)}. This renders a file that outlived its store
+     * instance (e.g. the data file referenced by a log entry; the store is finished and closed by
+     * the worker before the entry is created, so renders of the complete file are stable).
+     * <p>
+     * The file is streamed in a single pass (bounded memory, independent of the record count).
+     * A truncated final line stops the render at the last parseable record. A missing or
+     * unreadable file renders nothing and never throws.
+     *
+     * @param file     the NDJSON file of a {@link #create(Path, String, String)} store
+     * @param minLevel the minimum level of log records to render
+     * @param lineSink the consumer of the rendered lines
+     */
+    static void renderFile(Path file, JIPipeLogLevel minLevel, Consumer<String> lineSink) {
+        Objects.requireNonNull(minLevel, "Minimum log level must not be null");
+        Objects.requireNonNull(lineSink, "Line sink must not be null");
+        if (file == null) {
+            return;
+        }
+        ObjectMapper mapper = JsonUtils.getObjectMapper();
+        // A full-file walk has no node index: the walk state is derived from the records alone
+        // (the null-store walk renders unknown nodes without a chain)
+        AbstractJIPipeProgressLog.RenderWalk walk = new AbstractJIPipeProgressLog.RenderWalk(null, false);
+        try (FileChannel channel = FileChannel.open(file, StandardOpenOption.READ);
+             BufferedReader reader = new BufferedReader(Channels.newReader(channel, StandardCharsets.UTF_8), 64 * 1024)) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (line.isBlank()) {
+                    continue;
+                }
+                JsonNode node;
+                try {
+                    node = mapper.readTree(line);
+                } catch (JsonProcessingException e) {
+                    // Truncated or corrupt line (typically the final line) — stop at the last parseable line
+                    break;
+                }
+                JIPipeProgressRecord record = FileJIPipeProgressLog.parseRecord(mapper, node);
+                if (record != null) {
+                    walk.render(record, minLevel, lineSink);
+                }
+                // Unknown record types are skipped (forward compatibility)
+            }
+        } catch (IOException e) {
+            // Rendering a file never throws (e.g. the file vanished or is locked); callers
+            // surface the missing data (see JIPipeRunnableLogEntry)
+            System.err.println("Failed to render progress log file " + file);
+            e.printStackTrace();
+        }
     }
 
     /**

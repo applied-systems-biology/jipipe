@@ -829,6 +829,11 @@ public abstract class AbstractJIPipeProgressLog implements JIPipeProgressLog {
         }
 
         private String[] chainFromIndex(int nodeId) {
+            // File-only renders (see JIPipeProgressLog.renderFile) walk all records and have no
+            // node index — an unresolvable node contributes no chain segment
+            if (store == null) {
+                return new String[0];
+            }
             Deque<String> labels = new ArrayDeque<>();
             JIPipeProgressNode node = store.getNode(nodeId);
             while (node != null && node.getId() != ROOT_NODE_ID) {
@@ -850,7 +855,7 @@ public abstract class AbstractJIPipeProgressLog implements JIPipeProgressLog {
             if (state != null) {
                 return state;
             }
-            if (seedProgressFromIndex) {
+            if (seedProgressFromIndex && store != null) {
                 JIPipeProgressNode node = store.getNode(nodeId);
                 if (node != null && node.getMaxProgress() > 0) {
                     state = new int[]{node.getProgress(), node.getMaxProgress()};

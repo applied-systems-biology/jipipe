@@ -12,7 +12,6 @@ import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironmentArchetype;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
@@ -51,7 +50,6 @@ import org.scijava.service.AbstractService;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.nio.file.Path;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Predicate;
 
@@ -407,11 +405,9 @@ public class JIPipeServiceDefaultInitializer extends JIPipeServiceInitializer {
         }
 
 
-        // Push progress into log
-        JIPipeDesktopRunnableLogsCollection.getInstance().pushToLog(new JIPipeRunnableLogEntry("JIPipe initialization",
-                LocalDateTime.now(),
-                getProgressInfo().getLog().toString(),
-                new JIPipeNotificationInbox(), true));
+        // Push progress into log (the entry renders the initialization store's bounded tail
+        // on demand — the initialization store is not file-backed)
+        JIPipeDesktopRunnableLogsCollection.getInstance().pushToLog(new JIPipeRunnableLogEntry(getProgressInfo(), "JIPipe initialization", true));
 
         // Mark log as read
         JIPipeDesktopRunnableLogsCollection.getInstance().markAllAsRead();

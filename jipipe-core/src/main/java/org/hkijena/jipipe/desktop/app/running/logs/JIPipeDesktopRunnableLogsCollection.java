@@ -15,16 +15,30 @@ package org.hkijena.jipipe.desktop.app.running.logs;
 
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
-import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
+import org.hkijena.jipipe.api.project.JIPipeProject;
+import org.hkijena.jipipe.api.progress.JIPipeProgressLog;
+import org.hkijena.jipipe.api.run.JIPipeGraphRun;
 import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeRunnableExecutor;
 import org.hkijena.jipipe.api.run.JIPipeRunnableLogEntry;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeRuntimeApplicationSettings;
 
-import java.time.LocalDateTime;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 
+/**
+ * The Tools &gt; Logs collection: the finished runs of this session. Entries hold a reference to
+ * the run's NDJSON data file (plus metadata) — not a rendered text copy — and are rendered from
+ * that file on demand. The list is bounded by the {@code log-limit} setting: evicting an entry
+ * deletes its data file, which is what bounds the disk usage of kept logs. Clearing the
+ * collection deletes all data files.
+ * <p>
+ * Entries are tagged with their owning project (graph runs). Closing a project window drops that
+ * project's entries and files; global entries persist for the session (their files live in the
+ * global temporary base, which is cleaned up when it gets old).
+ */
 public class JIPipeDesktopRunnableLogsCollection implements JIPipeRunnable.FinishedEventListener, JIPipeRunnable.InterruptedEventListener {
     private static JIPipeDesktopRunnableLogsCollection INSTANCE;
     private final List<JIPipeRunnableLogEntry> logEntries = new ArrayList<>();
@@ -67,33 +81,94 @@ public class JIPipeDesktopRunnableLogsCollection implements JIPipeRunnable.Finis
     }
 
     public void clear() {
+        for (JIPipeRunnableLogEntry entry : logEntries) {
+            entry.deleteDataFile();
+        }
         logEntries.clear();
         logClearedEventEmitter.emit(new LogClearedEvent(this));
         logUpdatedEventEmitter.emit(new LogUpdatedEvent(this));
     }
 
+    /**
+     * Removes and deletes the files of all entries owned by the given project. Called when a
+     * project window closes (the project's temporary base — which contains the log files of its
+     * graph runs — is cleaned up on close).
+     *
+     * @param project the project
+     */
+    public void removeProjectEntries(JIPipeProject project) {
+        if (project == null) {
+            return;
+        }
+        boolean changed = false;
+        Iterator<JIPipeRunnableLogEntry> iterator = logEntries.iterator();
+        while (iterator.hasNext()) {
+            JIPipeRunnableLogEntry entry = iterator.next();
+            if (entry.getProject() == project) {
+                entry.deleteDataFile();
+                iterator.remove();
+                changed = true;
+            }
+        }
+        if (changed) {
+            logClearedEventEmitter.emit(new LogClearedEvent(this));
+            logUpdatedEventEmitter.emit(new LogUpdatedEvent(this));
+        }
+    }
+
     public void pushToLog(JIPipeRunnableLogEntry entry) {
+        insertEntry(entry, resolveLogLimit());
+    }
+
+    /**
+     * Adds an entry to the list, evicting (and deleting the data files of) the oldest entries
+     * while the list would exceed the given limit.
+     *
+     * @param entry the entry to add
+     * @param limit the maximum number of kept entries
+     */
+    void insertEntry(JIPipeRunnableLogEntry entry, int limit) {
+        int effectiveLimit = Math.max(1, limit);
+        while (logEntries.size() + 1 > effectiveLimit) {
+            JIPipeRunnableLogEntry evicted = logEntries.removeFirst();
+            evicted.deleteDataFile();
+        }
         logEntries.add(entry);
         logEntryAddedEventEmitter.emit(new LogEntryAddedEvent(this, entry));
         logUpdatedEventEmitter.emit(new LogUpdatedEvent(this));
     }
 
     public void pushToLog(JIPipeRunnable run, boolean success) {
-        CharSequence log = run.getProgressInfo().getLog();
-        if (log != null && log.length() > 0) {
-            final JIPipeRuntimeApplicationSettings runtimeSettings = JIPipeRuntimeApplicationSettings.getInstance();
-            if (runtimeSettings != null && logEntries.size() + 1 > runtimeSettings.getLogLimit()) {
-                logEntries.removeFirst();
-            }
-            JIPipeRunnableLogEntry entry = new JIPipeRunnableLogEntry(run.getTaskLabel(), LocalDateTime.now(), log.toString(), new JIPipeNotificationInbox(run.getProgressInfo().getNotifications()), success);
-            logEntries.add(entry);
-            if (run.isLogSilent()) {
-                // Auto-mark as read
-                entry.setRead(true);
-            }
-            logEntryAddedEventEmitter.emit(new LogEntryAddedEvent(this, entry));
-            logUpdatedEventEmitter.emit(new LogUpdatedEvent(this));
+        JIPipeProgressLog store = run.getProgressInfo().getStore();
+        // The store file is created lazily on the first flushed record — a run that logged
+        // nothing has neither file nor tail content and gets no entry (as before)
+        Path file = store != null ? store.getFile() : null;
+        boolean hasContent = (file != null && Files.exists(file)) || (store != null && !store.readRecent(1).isEmpty());
+        if (!hasContent) {
+            return;
         }
+        JIPipeRunnableLogEntry entry = new JIPipeRunnableLogEntry(run, success);
+        if (run instanceof JIPipeGraphRun) {
+            entry.setProject(((JIPipeGraphRun) run).getProject());
+        }
+        if (run.isLogSilent()) {
+            // Auto-mark as read
+            entry.setRead(true);
+        }
+        pushToLog(entry);
+    }
+
+    /**
+     * Resolves the maximum number of kept log entries from the {@code log-limit} setting.
+     *
+     * @return the limit (at least 1)
+     */
+    private static int resolveLogLimit() {
+        JIPipeRuntimeApplicationSettings runtimeSettings = JIPipeRuntimeApplicationSettings.getInstance();
+        if (runtimeSettings != null) {
+            return Math.max(1, runtimeSettings.getLogLimit());
+        }
+        return Integer.MAX_VALUE;
     }
 
     public void markAllAsRead() {

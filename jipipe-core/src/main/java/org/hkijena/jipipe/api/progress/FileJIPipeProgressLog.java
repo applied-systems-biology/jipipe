@@ -303,12 +303,15 @@ public class FileJIPipeProgressLog extends AbstractJIPipeProgressLog {
     /**
      * Maps one parsed record line to a record by its {@code t} discriminator. The field serializes
      * last in the line, so lines must be parsed with Jackson — never by string splitting.
+     * <p>
+     * Package-private: also serves {@link JIPipeProgressLog#renderFile(Path, JIPipeLogLevel, Consumer)},
+     * which renders a store file that outlived its store instance.
      *
      * @param mapper the object mapper
      * @param node   the parsed line
      * @return the record, or {@code null} if the record type is unknown or the line is malformed
      */
-    private static JIPipeProgressRecord parseRecord(ObjectMapper mapper, JsonNode node) {
+    static JIPipeProgressRecord parseRecord(ObjectMapper mapper, JsonNode node) {
         String type = node.path("t").asText(null);
         if (type == null) {
             return null;

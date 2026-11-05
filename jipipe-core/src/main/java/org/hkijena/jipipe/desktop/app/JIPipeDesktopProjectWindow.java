@@ -225,6 +225,12 @@ public class JIPipeDesktopProjectWindow extends JFrame {
             projectWorkbench.dispose();
         }
         closeCurrentProject();
+        // Drop the closed project's run-log entries (and their NDJSON data files). The project's
+        // temporary base - which contains the log files of its graph runs - is cleaned up by
+        // project.close(...) above; removing the entries keeps the Tools > Logs list consistent.
+        if (project != null) {
+            JIPipeDesktopRunnableLogsCollection.getInstance().removeProjectEntries(project);
+        }
         OPEN_WINDOWS.remove(this);
         WINDOW_CLOSED_EVENT_EMITTER.emit(new WindowClosedEvent(this));
         super.dispose();
