@@ -15,6 +15,7 @@ package org.hkijena.jipipe.desktop.commons.dialogs;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -34,11 +35,23 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * unsized dialogs to at least the minimum width and keep explicitly sized
  * dialogs (the Builder's {@code size()}) untouched. These assertions pin the
  * size contract of the reported defect, not cosmetic layout.
+ * <p>
+ * The whole class is gated on a display (the standard headless guard of this
+ * package): the chrome is a {@link JDialog}, so constructing it throws
+ * {@link java.awt.HeadlessException} in headless environments (CI) - the
+ * tests skip there instead of failing.
  */
 class DialogSizingTest {
 
     @BeforeAll
     static void boot() {
+        try {
+            if (GraphicsEnvironment.isHeadless()) {
+                Assumptions.assumeTrue(false, "headless environment");
+            }
+        } catch (Throwable t) {
+            Assumptions.assumeTrue(false, "AWT not available: " + t);
+        }
         JIPipe.ensureInstance();
     }
 
