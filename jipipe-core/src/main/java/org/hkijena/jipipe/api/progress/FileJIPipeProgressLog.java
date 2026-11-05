@@ -30,7 +30,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.LockSupport;
@@ -48,6 +50,13 @@ import java.util.function.Consumer;
  * <p>
  * Read-back opens the file with a separate channel and tolerates a truncated final line
  * (writer killed mid-flush): parsing stops at the last parseable line without throwing.
+ * <p>
+ * Batch notifications: the writer thread emits coalesced {@link JIPipeProgressLog.ProgressBatchEvent}s
+ * — at most one per {@link #setCoalesceIntervalMillis(long) coalesce interval}, plus a guaranteed
+ * final batch when the store is closed (via {@link #finish(JIPipeProgressNodeState)} or
+ * {@link #close()}). Listeners run inline on the writer thread and must not block; they must hop
+ * to another thread for heavy work (e.g. Swing). The coalescer state lives in the writer thread
+ * only; events are always emitted outside {@code submitLock} and {@code tailLock}.
  */
 public class FileJIPipeProgressLog extends AbstractJIPipeProgressLog {
 
@@ -79,6 +88,13 @@ public class FileJIPipeProgressLog extends AbstractJIPipeProgressLog {
     private long lastFlushNanos;
     private long recordsSinceFlush;
     private boolean sinkBroken;
+
+    // Coalescer state — writer-thread only, never touched by producers (no synchronization needed)
+    private long lastEmitNanos;
+    private long pendingFromLine;
+    private long pendingToLine;
+    private long lastWrittenLine;
+    private HashSet<Integer> pendingNodes = new HashSet<>();
 
     /**
      * Creates the store and starts the writer thread.
@@ -257,20 +273,31 @@ public class FileJIPipeProgressLog extends AbstractJIPipeProgressLog {
 
     private void writeLoop() {
         lastFlushNanos = System.nanoTime();
+        lastEmitNanos = lastFlushNanos;
         while (true) {
             drainQueue();
             if (isClosed() && queue.isEmpty()) {
                 break;
             }
+            emitPendingIfDue();
             if (recordsSinceFlush > 0 && System.nanoTime() - lastFlushNanos >= FLUSH_INTERVAL_NANOS) {
                 flushSink();
             }
             writerWaiting = true;
             boolean workPending = !queue.isEmpty() || isClosed();
             if (!workPending) {
-                if (recordsSinceFlush > 0) {
-                    // Wake in time for the 250 ms flush
-                    long remaining = FLUSH_INTERVAL_NANOS - (System.nanoTime() - lastFlushNanos);
+                boolean flushWait = recordsSinceFlush > 0;
+                boolean emitWait = pendingFromLine > 0;
+                if (flushWait || emitWait) {
+                    // Wake for whichever deadline comes first: the 250 ms flush or the coalesce
+                    // interval (a pending batch must not wait longer than its interval)
+                    long remaining = Long.MAX_VALUE;
+                    if (flushWait) {
+                        remaining = Math.min(remaining, FLUSH_INTERVAL_NANOS - (System.nanoTime() - lastFlushNanos));
+                    }
+                    if (emitWait) {
+                        remaining = Math.min(remaining, coalesceIntervalNanos() - (System.nanoTime() - lastEmitNanos));
+                    }
                     LockSupport.parkNanos(Math.max(1_000_000L, remaining));
                 } else {
                     LockSupport.park();
@@ -278,6 +305,7 @@ public class FileJIPipeProgressLog extends AbstractJIPipeProgressLog {
             }
             writerWaiting = false;
         }
+        emitFinalBatch();
         flushSink();
         closeSink();
     }
@@ -286,6 +314,7 @@ public class FileJIPipeProgressLog extends AbstractJIPipeProgressLog {
         QueuedRecord entry;
         while ((entry = queue.poll()) != null) {
             queuedRecords.decrementAndGet();
+            trackPending(entry.seq(), entry.record());
             try {
                 applyRecord(entry.seq(), entry.record());
                 if (!sinkBroken) {
@@ -299,7 +328,107 @@ public class FileJIPipeProgressLog extends AbstractJIPipeProgressLog {
                 e.printStackTrace();
                 sinkBroken = true;
             }
+            // Mid-drain emission: a long burst must stream batches while it runs, not only after
+            // the queue has drained (the burst test's more-than-one-batch contract)
+            emitPendingIfDue();
         }
+    }
+
+    /**
+     * Adds one drained record to the pending batch summary. The sequence numbers of queued records
+     * are strictly increasing (assigned under the submission lock, queue is FIFO), so the pending
+     * range is updated monotonically.
+     *
+     * @param seq    the record's line number
+     * @param record the record
+     */
+    private void trackPending(long seq, JIPipeProgressRecord record) {
+        if (pendingFromLine == 0) {
+            pendingFromLine = seq;
+        }
+        pendingToLine = seq;
+        lastWrittenLine = seq;
+        int nodeId = nodeIdOf(record);
+        if (nodeId > 0) {
+            pendingNodes.add(nodeId);
+        }
+    }
+
+    /**
+     * Returns the node id carried by a record, or {@code 0} for run-level records
+     * ({@code head}, {@code s}, {@code w}) that are not attributed to a node.
+     *
+     * @param record the record
+     * @return the node id, or 0
+     */
+    private static int nodeIdOf(JIPipeProgressRecord record) {
+        if (record instanceof JIPipeProgressRecord.Node nodeRecord) {
+            return nodeRecord.id();
+        } else if (record instanceof JIPipeProgressRecord.Log logRecord) {
+            return logRecord.id();
+        } else if (record instanceof JIPipeProgressRecord.Progress progressRecord) {
+            return progressRecord.id();
+        } else if (record instanceof JIPipeProgressRecord.Error errorRecord) {
+            return errorRecord.id();
+        } else if (record instanceof JIPipeProgressRecord.NodeFinished finishRecord) {
+            return finishRecord.id();
+        }
+        return 0;
+    }
+
+    /**
+     * Emits the pending batch if one is due: records are pending and at least one coalesce
+     * interval has passed since the last emission.
+     */
+    private void emitPendingIfDue() {
+        if (pendingFromLine == 0) {
+            return;
+        }
+        if (System.nanoTime() - lastEmitNanos < coalesceIntervalNanos()) {
+            return;
+        }
+        emitPendingBatch(false);
+    }
+
+    /**
+     * Emits and clears the pending batch summary. Called on the writer thread while holding no
+     * lock — the event is delivered synchronously to the listeners on this thread.
+     *
+     * @param finalBatch whether this is the guaranteed final batch
+     */
+    private void emitPendingBatch(boolean finalBatch) {
+        ProgressBatchEvent event = new ProgressBatchEvent(this,
+                (int) pendingFromLine, (int) pendingToLine, pendingNodes, finalBatch);
+        pendingFromLine = 0;
+        pendingToLine = 0;
+        pendingNodes = new HashSet<>();
+        lastEmitNanos = System.nanoTime();
+        emitBatchEvent(event);
+    }
+
+    /**
+     * Emits the guaranteed final batch, called once when the writer loop exits (the store was
+     * closed and the queue is drained). Covers all lines not covered by earlier batches; if every
+     * line was already covered, the final batch is emitted anyway as the terminal signal, as an
+     * empty range ({@code fromLine > toLine}, {@code toLine} = the last written line). A store
+     * that never recorded anything emits nothing.
+     */
+    private void emitFinalBatch() {
+        if (pendingFromLine > 0) {
+            emitPendingBatch(true);
+        } else if (lastWrittenLine > 0) {
+            emitBatchEvent(new ProgressBatchEvent(this,
+                    (int) lastWrittenLine + 1, (int) lastWrittenLine, Set.of(), true));
+        }
+    }
+
+    /**
+     * Returns the coalesce interval in nanoseconds.
+     *
+     * @return the interval in nanoseconds
+     */
+    private long coalesceIntervalNanos() {
+        return getCoalesceIntervalMillis() * 1_000_000L;
     }
 
     private void ensureSink() throws IOException {

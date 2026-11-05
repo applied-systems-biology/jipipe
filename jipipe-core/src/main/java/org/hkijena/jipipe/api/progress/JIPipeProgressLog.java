@@ -265,8 +265,9 @@ public interface JIPipeProgressLog extends AutoCloseable {
     void renderText(JIPipeLogLevel minLevel, Consumer<String> lineSink);
 
     /**
-     * Sets the coalesce interval for batch notifications. Default 100. The behavior is wired by the
-     * coalescer; until then the value is only stored.
+     * Sets the coalesce interval for batch notifications: the minimum time between two batch
+     * events of the writer thread of a file-backed store. Default 100. The final batch is exempt
+     * (always emitted at run end). Has no effect on stores without a writer thread.
      *
      * @param ms the interval in milliseconds
      */
@@ -281,8 +282,15 @@ public interface JIPipeProgressLog extends AutoCloseable {
     void setTailLimit(int records);
 
     /**
-     * Returns the emitter of {@link ProgressBatchEvent}s. The emitter stays idle until the
-     * coalescer is wired.
+     * Returns the emitter of {@link ProgressBatchEvent}s.
+     * <p>
+     * File-backed stores emit coalesced batches on their writer thread: at most one event per
+     * {@link #setCoalesceIntervalMillis(long) coalesce interval} plus a guaranteed final batch
+     * (flagged {@code finalBatch()}) when the store is closed — also on
+     * {@link #finish(JIPipeProgressNodeState)} arriving inside the interval window. Batches
+     * partition the written lines contiguously (no gaps). Listeners run inline on the writer
+     * thread and must not block; heavy work (e.g. UI updates) must hop to another thread.
+     * Silent and stdout stores have no writer thread; their emitters never emit.
      *
      * @return the batch event emitter
      */

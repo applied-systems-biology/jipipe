@@ -479,6 +479,18 @@ public abstract class AbstractJIPipeProgressLog implements JIPipeProgressLog {
     }
 
     /**
+     * Emits a coalesced batch event to the subscribers of {@link #getBatchEventEmitter()}. Called
+     * by implementations that own a writer thread; the event is delivered synchronously to the
+     * listeners on the calling thread. Must never be called while holding {@link #tailLock} or
+     * {@link #submitLock} — listeners run inline and must not block.
+     *
+     * @param event the event
+     */
+    protected final void emitBatchEvent(ProgressBatchEvent event) {
+        batchEventEmitter.emit(event);
+    }
+
+    /**
      * Returns the run UUID written into the head record.
      *
      * @return the run UUID (may be null)
