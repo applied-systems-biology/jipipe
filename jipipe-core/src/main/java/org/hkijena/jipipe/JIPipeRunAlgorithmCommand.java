@@ -150,11 +150,6 @@ public class JIPipeRunAlgorithmCommand extends DynamicCommand implements Initial
             }
         }
         JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
-        // Standalone unfed emitter: the facade no longer exposes/fires the per-line status event path
-        JIPipeProgressInfo.StatusUpdatedEventEmitter statusUpdatedEventEmitter = new JIPipeProgressInfo.StatusUpdatedEventEmitter();
-        statusUpdatedEventEmitter.subscribeLambda((emitter, event) -> {
-            IJ.showStatus("[" + event.getProgress() + "/" + event.getMaxProgress() + "] " + event.getMessage());
-        });
         IJ.showStatus("Running JIPipe node ...");
         IJ.showProgress(1, 3);
 

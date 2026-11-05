@@ -419,8 +419,20 @@ public abstract class AbstractJIPipeProgressLog implements JIPipeProgressLog {
     public void renderText(JIPipeLogLevel minLevel, Consumer<String> lineSink) {
         Objects.requireNonNull(minLevel, "Minimum log level must not be null");
         Objects.requireNonNull(lineSink, "Line sink must not be null");
-        RenderWalk walk = new RenderWalk(this);
+        RenderWalk walk = new RenderWalk(this, false);
         walkRecords(record -> walk.render(record, minLevel, lineSink));
+    }
+
+    @Override
+    public void renderRecords(List<JIPipeProgressRecord> records, JIPipeLogLevel minLevel, Consumer<String> lineSink) {
+        Objects.requireNonNull(minLevel, "Minimum log level must not be null");
+        Objects.requireNonNull(lineSink, "Line sink must not be null");
+        // Per-batch render: seed unknown progress states from the node index's current state
+        // (the batch cannot contain the node's earlier p records)
+        RenderWalk walk = new RenderWalk(this, true);
+        for (JIPipeProgressRecord record : records) {
+            walk.render(record, minLevel, lineSink);
+        }
     }
 
     /**
@@ -708,11 +720,19 @@ public abstract class AbstractJIPipeProgressLog implements JIPipeProgressLog {
         private static final int[] INITIAL_PROGRESS = {1, 1};
 
         private final JIPipeProgressLog store;
+        private final boolean seedProgressFromIndex;
         private final Map<Integer, String[]> nodePaths = new HashMap<>();
         private final Map<Integer, int[]> nodeProgress = new HashMap<>();
 
-        RenderWalk(JIPipeProgressLog store) {
+        /**
+         * @param store                the store
+         * @param seedProgressFromIndex whether unknown progress states fall back to the node index's
+         *                             current state (per-batch renders; {@link #renderText} walks all
+         *                             records and derives the state strictly from them)
+         */
+        RenderWalk(JIPipeProgressLog store, boolean seedProgressFromIndex) {
             this.store = store;
+            this.seedProgressFromIndex = seedProgressFromIndex;
         }
 
         /**
@@ -826,7 +846,18 @@ public abstract class AbstractJIPipeProgressLog implements JIPipeProgressLog {
 
         private int[] currentState(int nodeId) {
             int[] state = nodeProgress.get(nodeId);
-            return state != null ? state : INITIAL_PROGRESS;
+            if (state != null) {
+                return state;
+            }
+            if (seedProgressFromIndex) {
+                JIPipeProgressNode node = store.getNode(nodeId);
+                if (node != null && node.getMaxProgress() > 0) {
+                    state = new int[]{node.getProgress(), node.getMaxProgress()};
+                    nodeProgress.put(nodeId, state);
+                    return state;
+                }
+            }
+            return INITIAL_PROGRESS;
         }
 
         private static String prefix(String[] chain, int[] progress) {

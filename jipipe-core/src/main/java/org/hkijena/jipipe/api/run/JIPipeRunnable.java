@@ -16,6 +16,7 @@ package org.hkijena.jipipe.api.run;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
+import org.hkijena.jipipe.api.progress.JIPipeProgressLog;
 
 import java.util.UUID;
 
@@ -241,20 +242,24 @@ public interface JIPipeRunnable extends Runnable {
     }
 
     /**
-     * Generated when an {@link JIPipeRunnableWorker} reports progress
+     * Generated when an {@link JIPipeRunnableWorker} reports progress. The payload is ONE coalesced
+     * batch ({@link JIPipeProgressLog.ProgressBatchEvent}) of the run's progress store — never a
+     * per-record event. The event is emitted on the store's writer thread; listeners must not
+     * block and must hop to the EDT ({@code SwingUtilities.invokeLater} or a
+     * {@code javax.swing.Timer}) for UI work.
      */
     class ProgressEvent extends AbstractJIPipeEvent {
         private final JIPipeRunnableWorker worker;
-        private final JIPipeProgressInfo.StatusUpdatedEvent status;
+        private final JIPipeProgressLog.ProgressBatchEvent batch;
 
         /**
          * @param worker the worker
-         * @param status the status
+         * @param batch  the coalesced batch of the run's progress store
          */
-        public ProgressEvent(JIPipeRunnableWorker worker, JIPipeProgressInfo.StatusUpdatedEvent status) {
+        public ProgressEvent(JIPipeRunnableWorker worker, JIPipeProgressLog.ProgressBatchEvent batch) {
             super(worker);
             this.worker = worker;
-            this.status = status;
+            this.batch = batch;
         }
 
         public JIPipeRunnableWorker getWorker() {
@@ -265,8 +270,14 @@ public interface JIPipeRunnable extends Runnable {
             return worker.getRun();
         }
 
-        public JIPipeProgressInfo.StatusUpdatedEvent getStatus() {
-            return status;
+        /**
+         * The coalesced batch. The empty-final-batch convention applies: {@code fromLine() >
+         * toLine()} means the run is complete and no new records were written.
+         *
+         * @return the batch
+         */
+        public JIPipeProgressLog.ProgressBatchEvent getBatch() {
+            return batch;
         }
     }
 

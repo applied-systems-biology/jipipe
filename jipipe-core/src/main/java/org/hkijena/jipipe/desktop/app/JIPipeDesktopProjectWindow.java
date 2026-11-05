@@ -20,6 +20,8 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.progress.JIPipeProgressLog;
+import org.hkijena.jipipe.api.progress.JIPipeProgressRecord;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.project.JIPipeProjectTemplate;
@@ -773,20 +775,36 @@ public class JIPipeDesktopProjectWindow extends JFrame {
         // workspace", "Zipping JIPX workspace", "Self-verifying JIPX
         // container"; the re-check resolves to "Re-check saved project".
         // The button shows "Saving… <stage>" (indeterminate - no % bar).
-        final JIPipeProgressInfo.StatusUpdatedEventListener stageListener = event -> {
-            if (event.getProgressInfo() != null && event.getProgressInfo().isCancelled()) {
-                return;
-            }
-            String stage = mapSaveStage(event.getMessage());
-            if (stage == null) {
-                return;
-            }
-            workbench.getProjectSavingEventEmitter().emit(new JIPipeDesktopProjectWorkbench.ProjectSavingEvent(workbench, true, stage));
-        };
-        // Standalone unfed emitter: the facade no longer exposes/fires the per-line status event path
-        // (deprecated trio; removed in the consumer rewrite)
-        final JIPipeProgressInfo.StatusUpdatedEventEmitter stageEventEmitter = new JIPipeProgressInfo.StatusUpdatedEventEmitter();
-        stageEventEmitter.subscribe(stageListener);
+        // One update per coalesced batch of the run's progress store: the
+        // batch's records are mapped on the writer thread, the (at most
+        // one) stage update is hopped to the EDT. The subscription follows
+        // store adoption (the run receives a file-backed store from the
+        // worker before execution).
+        final JIPipeProgressInfo.BatchEventSubscription stageSubscription =
+                run.getProgressInfo().subscribeToBatchEvents(event -> {
+                    if (run.getProgressInfo().isCancelled()) {
+                        return;
+                    }
+                    if (event.fromLine() > event.toLine()) {
+                        return;
+                    }
+                    JIPipeProgressLog store = (JIPipeProgressLog) event.getSource();
+                    List<JIPipeProgressRecord> records = store.readRecords(event.fromLine(), event.toLine() - event.fromLine() + 1);
+                    String stage = null;
+                    for (JIPipeProgressRecord record : records) {
+                        if (record instanceof JIPipeProgressRecord.Log logRecord) {
+                            String mapped = mapSaveStage(logRecord.m());
+                            if (mapped != null) {
+                                stage = mapped;
+                            }
+                        }
+                    }
+                    if (stage == null) {
+                        return;
+                    }
+                    final String stageToSend = stage;
+                    SwingUtilities.invokeLater(() -> workbench.getProjectSavingEventEmitter().emit(new JIPipeDesktopProjectWorkbench.ProjectSavingEvent(workbench, true, stageToSend)));
+                });
 
         // The SAVING state is shown as soon as the run actually starts (not
         // merely when it is enqueued - it may wait behind another save on
@@ -818,7 +836,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
             queue.getFinishedEventEmitter().unsubscribe(finishHolder[0]);
             queue.getInterruptedEventEmitter().unsubscribe(interruptHolder[0]);
             queue.getStartedEventEmitter().unsubscribe(startListener);
-            stageEventEmitter.unsubscribe(stageListener);
+            stageSubscription.close();
             SwingUtilities.invokeLater(() -> onSaveFinished(run, failure, failureStage, savePath, updateSavePath));
         };
         JIPipeRunnable.InterruptedEventListener interruptListener = event -> {
@@ -828,7 +846,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
             queue.getFinishedEventEmitter().unsubscribe(finishHolder[0]);
             queue.getInterruptedEventEmitter().unsubscribe(interruptHolder[0]);
             queue.getStartedEventEmitter().unsubscribe(startListener);
-            stageEventEmitter.unsubscribe(stageListener);
+            stageSubscription.close();
             SwingUtilities.invokeLater(() -> onSaveCancelled(run, savePath));
         };
         finishHolder[0] = finishListener;

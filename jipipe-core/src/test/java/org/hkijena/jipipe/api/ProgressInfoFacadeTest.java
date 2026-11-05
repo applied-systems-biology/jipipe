@@ -433,16 +433,33 @@ class ProgressInfoFacadeTest {
     }
 
     @Test
-    void deprecatedStatusUpdatedTrioIsUnfed() {
+    void batchSubscriptionSurvivesStoreAdoption() throws InterruptedException {
+        // The facade starts on a silent store and adopts a file-backed store (the root-run
+        // creation point): the subscription must migrate to the adopted store's emitter.
         JIPipeProgressInfo info = new JIPipeProgressInfo();
-        int[] events = {0};
-        JIPipeProgressInfo.StatusUpdatedEventListener listener = event -> events[0]++;
-        // The trio still exists as standalone types; the facade no longer exposes an emitter
-        JIPipeProgressInfo.StatusUpdatedEventEmitter emitter = new JIPipeProgressInfo.StatusUpdatedEventEmitter();
-        emitter.subscribe(listener);
-        info.log("nothing emitted");
-        info.setProgress(1, 2);
-        assertEquals(0, events[0]);
-        assertFalse(info.getLog().toString().isEmpty());
+        Path file = tmp.resolve("adopted.ndjson");
+        java.util.concurrent.CopyOnWriteArrayList<JIPipeProgressLog.ProgressBatchEvent> events = new java.util.concurrent.CopyOnWriteArrayList<>();
+        java.util.concurrent.CountDownLatch firstBatch = new java.util.concurrent.CountDownLatch(1);
+        JIPipeProgressInfo.BatchEventSubscription subscription = info.subscribeToBatchEvents(event -> {
+            events.add(event);
+            firstBatch.countDown();
+        });
+        try {
+            assertNull(subscription.getStore().getFile(), "the subscription starts on the handle's store");
+            info.setStorageBase(tmp, "adopted-run", "Adopted run");
+            assertSame(info.getStore(), subscription.getStore(), "the subscription migrated to the adopted store");
+            info.log("after adoption");
+            // The writer emits within one coalesce interval; a generous deadline keeps the test
+            // robust on a cold JVM (the writer's first JSON serialization may warm up Jackson)
+            assertTrue(firstBatch.await(5, java.util.concurrent.TimeUnit.SECONDS),
+                    "batches of the adopted store must reach the subscriber");
+            JIPipeProgressLog.ProgressBatchEvent batch = events.get(0);
+            assertFalse(batch.finalBatch(), "the idle batch is not the final one");
+            assertTrue(batch.toLine() >= 2, "the batch covers the record written after the adoption");
+        } finally {
+            subscription.close();
+            info.getStore().close();
+        }
+        assertNull(subscription.getStore(), "closing the subscription unsubscribes from the store");
     }
 }

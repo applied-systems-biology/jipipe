@@ -3,6 +3,7 @@ package org.hkijena.jipipe.api.service.components;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.progress.JIPipeProgressLog;
 import org.hkijena.jipipe.api.ai.JIPipeEmbeddingAIModelRunner;
 import org.hkijena.jipipe.api.artifacts.JIPipeArtifact;
 import org.hkijena.jipipe.api.artifacts.JIPipeArtifactRepositoryApplyInstallUninstallRun;
@@ -176,9 +177,11 @@ public class JIPipeAIServiceComponent extends JIPipeServiceComponent {
 
     /**
      * Gets the progress info for embedding-related operations.
-     * Subscribe to the embedding progress info's (deprecated, unfed) status-updated emitter to receive log updates.
-     * Note: the facade no longer fires per-line status events; consumers are rewritten onto the progress store's
-     * batch emitter in the consumer rewrite.
+     * Subscribe to the embedding progress info's store batch emitter
+     * ({@link JIPipeProgressInfo#subscribeToBatchEvents(JIPipeProgressLog.ProgressBatchEventListener)})
+     * to receive log updates as coalesced batches. Note: stores without a writer thread (the
+     * embedding progress info uses a silent store) never emit — the tail-populate path
+     * ({@code getLog()}) is the way to read their records.
      *
      * @return the embedding progress info
      */

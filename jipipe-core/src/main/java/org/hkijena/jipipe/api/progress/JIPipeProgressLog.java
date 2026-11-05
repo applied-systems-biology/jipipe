@@ -274,6 +274,25 @@ public interface JIPipeProgressLog extends AutoCloseable {
     void renderText(JIPipeLogLevel minLevel, Consumer<String> lineSink);
 
     /**
+     * Renders the given records as compatibility text lines, handing each line to the sink, using
+     * the exact shapes documented for {@link #renderText(JIPipeLogLevel, Consumer)}. This is the
+     * per-batch render for batch-event consumers: a {@link ProgressBatchEvent} receiver reads the
+     * batch's records via {@link #readRecords(int, int)} and renders them with this method.
+     * <p>
+     * Unlike {@link #renderText(JIPipeLogLevel, Consumer)}, which derives the {@code [v/mx]}
+     * prefixes strictly from the walked records, this method falls back to the node index's
+     * <b>current</b> progress state for nodes whose latest {@code p} record lies before the batch
+     * (a per-batch render cannot see earlier records). This mirrors what a live consumer saw at
+     * the time of the record.
+     *
+     * @param records  the records to render (e.g. one batch's {@link #readRecords(int, int)} result)
+     * @param minLevel the minimum level of log records to render
+     * @param lineSink the consumer of the rendered lines
+     */
+    default void renderRecords(List<JIPipeProgressRecord> records, JIPipeLogLevel minLevel, Consumer<String> lineSink) {
+    }
+
+    /**
      * Sets the coalesce interval for batch notifications: the minimum time between two batch
      * events of the writer thread of a file-backed store. Default 100. The final batch is exempt
      * (always emitted at run end). Has no effect on stores without a writer thread.

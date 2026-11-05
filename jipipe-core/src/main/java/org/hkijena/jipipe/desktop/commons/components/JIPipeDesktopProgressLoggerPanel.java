@@ -15,24 +15,32 @@ package org.hkijena.jipipe.desktop.commons.components;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.progress.JIPipeLogLevel;
+import org.hkijena.jipipe.api.progress.JIPipeProgressLog;
+import org.hkijena.jipipe.api.progress.JIPipeProgressNode;
+import org.hkijena.jipipe.api.progress.JIPipeProgressNodeUtils;
+import org.hkijena.jipipe.api.progress.JIPipeProgressRecord;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.utils.debounce.StaticDebouncer;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * A panel that monitors one or multiple {@link JIPipeProgressInfo} instances and displays their progress.
  * The panel aggregates progress from all sources and displays log messages with source prefixes.
+ * <p>
+ * Updates arrive as coalesced batches from each source's progress store: per batch, only the new
+ * records are read, rendered with the store's render shape, and appended in ONE EDT runnable.
+ * Sources without a writer thread (silent stores) stay idle; they are populated via the
+ * tail-populate path of {@link #addProgressSource(String, JIPipeProgressInfo, boolean)}.
  */
 public class JIPipeDesktopProgressLoggerPanel extends JIPipeDesktopWorkbenchPanel {
-
-    private static final int DEFAULT_DEBOUNCE_MS = 250;
 
     private final Map<String, ProgressSource> sources = new HashMap<>();
     private final ReentrantLock sourcesLock = new ReentrantLock();
@@ -43,14 +51,9 @@ public class JIPipeDesktopProgressLoggerPanel extends JIPipeDesktopWorkbenchPane
     private final LoggerPanel loggerPanel = new LoggerPanel();
     private final JProgressBar progressBar = new JProgressBar();
     private final JLabel statusLabel = new JLabel("Ready ...");
-    private final StaticDebouncer progressDebouncer;
-    private final StringBuilder batchedLogText = new StringBuilder();
     private final JPanel headerButtonPanel = UIUtils.boxHorizontal();
     private final boolean showProgressBar;
 
-    private int batchedTotalProgress = 0;
-    private int batchedTotalMaxProgress = 0;
-    private String batchedStatusText = "Ready ...";
     private boolean autoScrollEnabled = true;
 
     /**
@@ -82,7 +85,6 @@ public class JIPipeDesktopProgressLoggerPanel extends JIPipeDesktopWorkbenchPane
     public JIPipeDesktopProgressLoggerPanel(JIPipeDesktopWorkbench desktopWorkbench, String title, boolean showProgressBar) {
         super(desktopWorkbench);
         this.showProgressBar = showProgressBar;
-        this.progressDebouncer = new StaticDebouncer(DEFAULT_DEBOUNCE_MS, this::updateProgress);
         titleLabel.setText(title);
         initialize();
     }
@@ -193,7 +195,6 @@ public class JIPipeDesktopProgressLoggerPanel extends JIPipeDesktopWorkbenchPane
             sourcesLock.unlock();
         }
     }
-
     /**
      * Removes a progress info source.
      *
@@ -328,30 +329,92 @@ public class JIPipeDesktopProgressLoggerPanel extends JIPipeDesktopWorkbenchPane
 
     private void subscribeToSource(ProgressSource source) {
         if (!source.subscribed && source.progressInfo != null) {
-            source.statusUpdatedEventEmitter.subscribeWeak(source.listener);
+            source.subscription = source.progressInfo.subscribeToBatchEvents(event -> onProgressBatch(source, event));
             source.subscribed = true;
         }
     }
 
     private void unsubscribeFromSource(ProgressSource source) {
-        if (source.subscribed && source.progressInfo != null && source.statusUpdatedEventEmitter != null) {
-            source.statusUpdatedEventEmitter.unsubscribe(source.listener);
+        if (source.subscribed && source.progressInfo != null) {
+            if (source.subscription != null) {
+                source.subscription.close();
+                source.subscription = null;
+            }
             source.subscribed = false;
         }
     }
 
-    private void onProgressStatusUpdated(JIPipeProgressInfo.StatusUpdatedEvent event, String sourceName) {
-        // Format the log message with source prefix
-        String formattedMessage = "[" + sourceName + "] " + event.render();
-        batchedLogText.append("\n").append(formattedMessage);
-        batchedStatusText = event.getMessage();
-
-        // Trigger debounced update
-        progressDebouncer.debounce();
+    /**
+     * Handles one coalesced batch of a source's progress store. Runs on the store's writer thread:
+     * the batch's records are read and rendered here, and the UI update is hopped to the EDT as
+     * ONE runnable per batch (the store's render shapes are used; the append-line cap of the
+     * logger panel applies as before).
+     */
+    private void onProgressBatch(ProgressSource source, JIPipeProgressLog.ProgressBatchEvent event) {
+        JIPipeProgressLog store = (JIPipeProgressLog) event.getSource();
+        boolean emptyFinalBatch = event.fromLine() > event.toLine();
+        List<String> lines = List.of();
+        if (!emptyFinalBatch) {
+            lines = renderBatch(store, event.fromLine(), event.toLine());
+        }
+        // Track the latest changed node for the aggregate progress bar
+        int latestNodeId = JIPipeProgressNodeUtils.latestNodeId(store, event.changedNodes());
+        if (latestNodeId > 0) {
+            source.lastNodeId = latestNodeId;
+        }
+        String status = emptyFinalBatch ? "Finished." : lastLine(lines);
+        List<String> batchLines = lines;
+        SwingUtilities.invokeLater(() -> appendBatch(source, batchLines, status));
     }
 
-    private void updateProgress() {
-        // Calculate aggregate progress
+    /**
+     * Renders the records of a line range with the store's render shape, prefixing each line with
+     * the source name (the same prefix the tail-populate path uses).
+     */
+    private static List<String> renderBatch(JIPipeProgressLog store, int fromLine, int toLine) {
+        List<JIPipeProgressRecord> records = store.readRecords(fromLine, toLine - fromLine + 1);
+        if (records.isEmpty()) {
+            return List.of();
+        }
+        List<String> lines = new ArrayList<>();
+        store.renderRecords(records, JIPipeLogLevel.INFO, line -> {
+            if (!line.isBlank()) {
+                lines.add(line);
+            }
+        });
+        return lines;
+    }
+
+    private static String lastLine(List<String> lines) {
+        return lines.isEmpty() ? null : lines.get(lines.size() - 1);
+    }
+
+    /**
+     * EDT: appends the rendered batch lines (one append per batch) and updates the status label
+     * and the aggregate progress bar.
+     */
+    private void appendBatch(ProgressSource source, List<String> lines, String status) {
+        if (!lines.isEmpty()) {
+            StringBuilder builder = new StringBuilder();
+            for (String line : lines) {
+                if (builder.length() > 0) {
+                    builder.append('\n');
+                }
+                builder.append('[').append(source.name).append("] ").append(line);
+            }
+            loggerPanel.appendLine(builder.toString());
+        }
+        if (status != null) {
+            statusLabel.setText(status);
+        }
+        updateProgressBar();
+    }
+
+    /**
+     * EDT: aggregates the tracked nodes of all sources (determinate states are summed; any
+     * indeterminate source makes the bar indeterminate).
+     */
+    private void updateProgressBar() {
         int totalProgress = 0;
         int totalMaxProgress = 0;
         boolean anyIndeterminate = false;
@@ -361,48 +424,26 @@ public class JIPipeDesktopProgressLoggerPanel extends JIPipeDesktopWorkbenchPane
         try {
             sourceCount = sources.size();
             for (ProgressSource source : sources.values()) {
-                if (source.progressInfo != null) {
-                    int progress = source.progressInfo.getProgress();
-                    int maxProgress = source.progressInfo.getMaxProgress();
-
-                    if (maxProgress <= 1) {
-                        anyIndeterminate = true;
-                    } else {
-                        totalProgress += progress;
-                        totalMaxProgress += maxProgress;
-                    }
+                JIPipeProgressLog store = source.progressInfo != null ? source.progressInfo.getStore() : null;
+                JIPipeProgressNode node = store != null && source.lastNodeId > 0 ? store.getNode(source.lastNodeId) : null;
+                if (node == null || node.getMaxProgress() <= 0) {
+                    anyIndeterminate = true;
+                } else {
+                    totalProgress += node.getProgress();
+                    totalMaxProgress += node.getMaxProgress();
                 }
             }
         } finally {
             sourcesLock.unlock();
         }
 
-        // Make variables effectively final for lambda
-        final int finalTotalProgress = totalProgress;
-        final int finalTotalMaxProgress = totalMaxProgress;
-        final boolean finalAnyIndeterminate = anyIndeterminate;
-        final int finalSourceCount = sourceCount;
-
-        // Update UI on EDT
-        SwingUtilities.invokeLater(() -> {
-            // Update progress bar
-            if (finalAnyIndeterminate || finalSourceCount == 0) {
-                progressBar.setIndeterminate(finalSourceCount > 0);
-            } else {
-                progressBar.setIndeterminate(false);
-                progressBar.setMaximum(finalTotalMaxProgress);
-                progressBar.setValue(finalTotalProgress);
-            }
-
-            // Update status label
-            statusLabel.setText(batchedStatusText);
-
-            // Append batched log text
-            if (batchedLogText.length() > 0) {
-                loggerPanel.appendLine(batchedLogText.toString().trim());
-                batchedLogText.setLength(0);
-            }
-        });
+        if (anyIndeterminate || totalMaxProgress <= 0) {
+            progressBar.setIndeterminate(sourceCount > 0);
+        } else {
+            progressBar.setIndeterminate(false);
+            progressBar.setMaximum(totalMaxProgress);
+            progressBar.setValue(totalProgress);
+        }
     }
 
     /**
@@ -411,20 +452,18 @@ public class JIPipeDesktopProgressLoggerPanel extends JIPipeDesktopWorkbenchPane
     private class ProgressSource {
         final String name;
         final JIPipeProgressInfo progressInfo;
+        JIPipeProgressInfo.BatchEventSubscription subscription;
 
         /**
-         * @deprecated superseded by the progress store's batch emitter; removed in the consumer rewrite.
-         * Standalone and unfed: the facade no longer emits per-line status events.
+         * The node whose state is displayed for this source (the latest node with a progress
+         * update among the batches' changed nodes); written by batch listeners, read on the EDT.
          */
-        @Deprecated
-        final JIPipeProgressInfo.StatusUpdatedEventEmitter statusUpdatedEventEmitter = new JIPipeProgressInfo.StatusUpdatedEventEmitter();
-        final JIPipeProgressInfo.StatusUpdatedEventListener listener;
+        volatile int lastNodeId;
         boolean subscribed;
 
         ProgressSource(String name, JIPipeProgressInfo progressInfo) {
             this.name = name;
             this.progressInfo = progressInfo;
-            this.listener = event -> onProgressStatusUpdated(event, name);
             this.subscribed = false;
         }
     }

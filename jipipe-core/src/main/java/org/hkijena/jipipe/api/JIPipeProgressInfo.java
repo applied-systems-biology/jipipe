@@ -13,8 +13,6 @@
 
 package org.hkijena.jipipe.api;
 
-import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
-import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.notifications.JIPipeNotification;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.progress.JIPipeLogLevel;
@@ -37,6 +35,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
@@ -179,6 +178,22 @@ public class JIPipeProgressInfo implements Cancelable {
         this.store = store;
         this.nodeId = store.getRootNodeId();
         logView = null;
+        fireStoreAdopted();
+    }
+
+    /**
+     * Fires the store-adoption callbacks (registration order). A failing callback must not break
+     * the adoption: it is printed and the remaining callbacks still run.
+     */
+    private void fireStoreAdopted() {
+        for (Runnable callback : storeAdoptedCallbacks) {
+            try {
+                callback.run();
+            } catch (Throwable e) {
+                System.err.println("A store-adoption callback failed");
+                e.printStackTrace();
+            }
+        }
     }
 
     /**
@@ -942,61 +957,100 @@ public class JIPipeProgressInfo implements Cancelable {
     }
 
     /**
-     * @deprecated superseded by the progress store's batch emitter; removed in the consumer rewrite
+     * Registered by long-lived batch-event subscribers (e.g. the runnable worker) that must survive
+     * a store adoption: {@link #setStore(JIPipeProgressLog)} re-roots this handle onto a different
+     * store, and a subscription made to the previous store's batch emitter would silently go dark.
+     * Copy-on-write: callbacks fire on the adopting thread, in registration order, after the
+     * store and node id were updated. The list is per handle instance (a copy created via the copy
+     * constructor starts empty).
      */
-    @Deprecated
-    public interface StatusUpdatedEventListener {
-        void onProgressStatusUpdated(StatusUpdatedEvent event);
+    private final CopyOnWriteArrayList<Runnable> storeAdoptedCallbacks = new CopyOnWriteArrayList<>();
+
+    /**
+     * Registers a callback that is invoked whenever this handle adopts a different progress store
+     * via {@link #setStore(JIPipeProgressLog)} (also via {@link #setStorageBase(Path, String, String)}).
+     * Used to move batch-event subscriptions from the displaced store to the adopted one.
+     *
+     * @param callback the callback (invoked on the adopting thread; must not block)
+     */
+    public void addStoreAdoptedCallback(Runnable callback) {
+        storeAdoptedCallbacks.add(callback);
     }
 
     /**
-     * @deprecated superseded by the progress store's batch emitter; removed in the consumer rewrite
+     * Removes a callback registered via {@link #addStoreAdoptedCallback(Runnable)}.
+     *
+     * @param callback the callback
      */
-    @Deprecated
-    public static class StatusUpdatedEvent extends AbstractJIPipeEvent {
-        private final JIPipeProgressInfo progressInfo;
-        private final int progress;
-        private final int maxProgress;
-        private final String message;
-
-        public StatusUpdatedEvent(JIPipeProgressInfo progressInfo, int progress, int maxProgress, String message) {
-            super(progressInfo);
-            this.progressInfo = progressInfo;
-            this.progress = progress;
-            this.maxProgress = maxProgress;
-            this.message = message;
-        }
-
-        public JIPipeProgressInfo getProgressInfo() {
-            return progressInfo;
-        }
-
-        public int getProgress() {
-            return progress;
-        }
-
-        public int getMaxProgress() {
-            return maxProgress;
-        }
-
-        public String getMessage() {
-            return message;
-        }
-
-        public String render() {
-            return (progressInfo.detachedProgress ? "SUB " : "") + "[" + progress + "/" + maxProgress + "] " + message;
-        }
+    public void removeStoreAdoptedCallback(Runnable callback) {
+        storeAdoptedCallbacks.remove(callback);
     }
 
     /**
-     * @deprecated superseded by the progress store's batch emitter; removed in the consumer rewrite
+     * Subscribes a listener to this handle's current store's batch emitter and keeps the
+     * subscription alive across store adoption: when this handle adopts a different store (see
+     * {@link #setStore(JIPipeProgressLog)}), the subscription migrates to the adopted store's
+     * emitter. Stores without a writer thread (silent/stdout) never emit; their subscriptions
+     * simply stay idle.
+     * <p>
+     * Listeners run inline on the emitting store's writer thread and must not block; UI work must
+     * hop to the EDT ({@code SwingUtilities.invokeLater} or a {@code javax.swing.Timer}).
+     *
+     * @param listener the batch listener
+     * @return the subscription (close it to unsubscribe and stop the migration)
      */
-    @Deprecated
-    public static class StatusUpdatedEventEmitter extends JIPipeEventEmitter<StatusUpdatedEvent, StatusUpdatedEventListener> {
+    public BatchEventSubscription subscribeToBatchEvents(JIPipeProgressLog.ProgressBatchEventListener listener) {
+        BatchEventSubscription subscription = new BatchEventSubscription(listener);
+        subscription.attach(getStore());
+        storeAdoptedCallbacks.add(subscription.migrationCallback);
+        return subscription;
+    }
+
+    /**
+     * A batch-event subscription that follows the handle's store across adoption.
+     * Close it when the consumer goes away.
+     */
+    public final class BatchEventSubscription implements AutoCloseable {
+
+        private final JIPipeProgressLog.ProgressBatchEventListener listener;
+        private final Runnable migrationCallback = this::migrate;
+        private volatile JIPipeProgressLog store;
+
+        private BatchEventSubscription(JIPipeProgressLog.ProgressBatchEventListener listener) {
+            this.listener = listener;
+        }
+
+        /**
+         * Returns the store this subscription is currently subscribed to.
+         *
+         * @return the store, or {@code null} if the handle had no store
+         */
+        public JIPipeProgressLog getStore() {
+            return store;
+        }
 
         @Override
-        protected void call(StatusUpdatedEventListener statusUpdatedEventListener, StatusUpdatedEvent event) {
-            statusUpdatedEventListener.onProgressStatusUpdated(event);
+        public void close() {
+            attach(null);
+            storeAdoptedCallbacks.remove(migrationCallback);
+        }
+
+        private void migrate() {
+            attach(JIPipeProgressInfo.this.getStore());
+        }
+
+        private void attach(JIPipeProgressLog newStore) {
+            JIPipeProgressLog current = store;
+            if (current == newStore) {
+                return;
+            }
+            if (current != null) {
+                current.getBatchEventEmitter().unsubscribe(listener);
+            }
+            store = newStore;
+            if (newStore != null) {
+                newStore.getBatchEventEmitter().subscribe(listener);
+            }
         }
     }
 

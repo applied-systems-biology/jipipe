@@ -1,6 +1,11 @@
 package org.hkijena.jipipe.desktop.app.running.queue;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.progress.JIPipeLogLevel;
+import org.hkijena.jipipe.api.progress.JIPipeProgressLog;
+import org.hkijena.jipipe.api.progress.JIPipeProgressNode;
+import org.hkijena.jipipe.api.progress.JIPipeProgressNodeUtils;
+import org.hkijena.jipipe.api.progress.JIPipeProgressRecord;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeRunnableExecutor;
 import org.hkijena.jipipe.api.run.JIPipeRunnableWorker;
@@ -12,10 +17,11 @@ import org.hkijena.jipipe.desktop.commons.components.icons.JIPipeDesktopRunnable
 import org.hkijena.jipipe.plugins.settings.SettingsKeys;
 import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.utils.debounce.StaticDebouncer;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Unified component that displays the status of a {@link JIPipeRunnableExecutor}
@@ -34,14 +40,16 @@ public class JIPipeDesktopRunQueueLoggerPanel extends JIPipeDesktopWorkbenchPane
     private final LoggerPanel loggerPanel = new LoggerPanel();
     private final JPopupMenu queuePopupMenu = new JPopupMenu();
     private final JCheckBox showLogCheckbox = new JCheckBox("Show log");
-    private final StaticDebouncer progressDebouncer;
-    private final StringBuilder batchedProgressText = new StringBuilder();
     private JIPipeRunnable targetRun;
     private Status targetRunStatus = Status.Enqueued;
     private Component visibleLoggerComponent;
-    private String batchedStatusText = "Ready ...";
-    private int batchedProgressCurrent = 0;
-    private int batchedProgressMax = 0;
+
+    /**
+     * The node whose state is displayed (the latest node with a progress update among the batches'
+     * changed nodes); written by batch listeners (writer thread), read on the EDT.
+     */
+    private volatile JIPipeProgressLog trackedStore;
+    private volatile int trackedNodeId;
     /**
      * The binding to {@link SettingsKeys#RUN_QUEUE_SHOW_LOG}: created once per
      * panel instance and released by {@link #dispose()}.
@@ -51,7 +59,6 @@ public class JIPipeDesktopRunQueueLoggerPanel extends JIPipeDesktopWorkbenchPane
     public JIPipeDesktopRunQueueLoggerPanel(JIPipeDesktopWorkbench desktopWorkbench, JIPipeRunnableExecutor queue) {
         super(desktopWorkbench);
         this.queue = queue;
-        this.progressDebouncer = new StaticDebouncer(250, this::updateProgress);
         this.spinnerIcon = new JIPipeDesktopRunnableQueueSpinnerIcon(this, queue, 32);
         // One binding per panel instance: the panel owns it and releases it
         // in dispose(). The stored value is placed on the checkbox BEFORE
@@ -228,31 +235,61 @@ public class JIPipeDesktopRunQueueLoggerPanel extends JIPipeDesktopWorkbenchPane
         this.targetRun = targetRun;
     }
 
+    /**
+     * Handles ONE coalesced batch of the current run's progress store. Runs on the store's writer
+     * thread: the batch's records are read and rendered here, and the UI update is hopped to the
+     * EDT as ONE runnable per batch. The empty final batch (fromLine &gt; toLine) is ignored — the
+     * run's Finished/Interrupted events set the terminal state.
+     */
     @Override
     public void onRunnableProgress(JIPipeRunnable.ProgressEvent event) {
-        batchedProgressText.append("\n").append(event.getStatus().getMessage());
-        batchedProgressCurrent = event.getStatus().getProgress();
-        batchedProgressMax = event.getStatus().getMaxProgress();
-        batchedStatusText = event.getStatus().getMessage();
-        progressDebouncer.debounce();
+        JIPipeProgressLog.ProgressBatchEvent batch = event.getBatch();
+        if (batch.fromLine() > batch.toLine()) {
+            return;
+        }
+        JIPipeProgressLog store = (JIPipeProgressLog) batch.getSource();
+        List<JIPipeProgressRecord> records = store.readRecords(batch.fromLine(), batch.toLine() - batch.fromLine() + 1);
+        List<String> lines = new ArrayList<>();
+        store.renderRecords(records, JIPipeLogLevel.INFO, line -> {
+            if (!line.isBlank()) {
+                lines.add(line);
+            }
+        });
+        int latestNodeId = JIPipeProgressNodeUtils.latestNodeId(store, batch.changedNodes());
+        String status = lines.isEmpty() ? null : lines.get(lines.size() - 1);
+        SwingUtilities.invokeLater(() -> {
+            if (latestNodeId > 0) {
+                trackedStore = store;
+                trackedNodeId = latestNodeId;
+            }
+            if (!lines.isEmpty()) {
+                loggerPanel.appendLine(String.join("\n", lines));
+            }
+            if (status != null) {
+                statusLabel.setText(status);
+            }
+            updateProgressBar();
+        });
     }
 
-    private void updateProgress() {
-        if (queue.getCurrentRun() != null) {
-            if (batchedProgressMax <= 1) {
-                progressBar.setIndeterminate(true);
-            } else {
-                progressBar.setIndeterminate(false);
-                progressBar.setMaximum(batchedProgressMax);
-                progressBar.setValue(batchedProgressCurrent);
-            }
+    /**
+     * EDT: shows the tracked node's state as the progress bar (indeterminate when the node has no
+     * determinate progress or no run is active).
+     */
+    private void updateProgressBar() {
+        if (queue.getCurrentRun() == null) {
+            progressBar.setIndeterminate(false);
+            return;
+        }
+        JIPipeProgressLog store = trackedStore;
+        JIPipeProgressNode node = store != null && trackedNodeId > 0 ? store.getNode(trackedNodeId) : null;
+        if (node == null || node.getMaxProgress() <= 0) {
+            progressBar.setIndeterminate(true);
         } else {
             progressBar.setIndeterminate(false);
+            progressBar.setMaximum(node.getMaxProgress());
+            progressBar.setValue(node.getProgress());
         }
-
-        statusLabel.setText(batchedStatusText);
-        loggerPanel.appendLine(batchedProgressText.toString().trim());
-        batchedProgressText.setLength(0);
     }
 
     @Override
@@ -261,11 +298,9 @@ public class JIPipeDesktopRunQueueLoggerPanel extends JIPipeDesktopWorkbenchPane
             targetRunStatus = Status.Finished;
         }
         updateHeader();
-        updateProgress();
 
         // Manually update UI
-        batchedStatusText = "Finished.";
-        statusLabel.setText(batchedStatusText);
+        statusLabel.setText("Finished.");
         progressBar.setIndeterminate(false);
         progressBar.setMaximum(1);
         progressBar.setValue(1);
@@ -277,11 +312,9 @@ public class JIPipeDesktopRunQueueLoggerPanel extends JIPipeDesktopWorkbenchPane
             targetRunStatus = Status.Interrupted;
         }
         updateHeader();
-        updateProgress();
 
         // Manually update UI
-        batchedStatusText = "Interrupted.";
-        statusLabel.setText(batchedStatusText);
+        statusLabel.setText("Interrupted.");
         progressBar.setIndeterminate(false);
         progressBar.setMaximum(1);
         progressBar.setValue(1);
@@ -292,14 +325,20 @@ public class JIPipeDesktopRunQueueLoggerPanel extends JIPipeDesktopWorkbenchPane
         if (targetRun != null && event.getRun() == targetRun) {
             targetRunStatus = Status.Running;
         }
+        // A new run: drop the previous run's tracked node state (the bar becomes indeterminate
+        // until the first batch of the new run arrives)
+        trackedStore = null;
+        trackedNodeId = 0;
         updateHeader();
-        updateProgress();
+        updateProgressBar();
     }
 
     @Override
     public void onRunnableEnqueued(JIPipeRunnable.EnqueuedEvent event) {
+        trackedStore = null;
+        trackedNodeId = 0;
         updateHeader();
-        updateProgress();
+        updateProgressBar();
     }
 
     public enum Status {

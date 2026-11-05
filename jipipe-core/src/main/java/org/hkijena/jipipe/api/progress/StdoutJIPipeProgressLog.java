@@ -30,7 +30,7 @@ public class StdoutJIPipeProgressLog extends AbstractJIPipeProgressLog {
      * Walk state of the printed records — the same walk the text renderer uses, fed in submission
      * order, so the printed prefixes (running progress, label chain) match a full render.
      */
-    private final RenderWalk walk = new RenderWalk(this);
+    private final RenderWalk walk = new RenderWalk(this, false);
 
     /**
      * Creates the store.

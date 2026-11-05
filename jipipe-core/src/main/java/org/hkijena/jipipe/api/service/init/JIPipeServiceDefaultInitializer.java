@@ -16,6 +16,9 @@ import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
+import org.hkijena.jipipe.api.progress.JIPipeLogLevel;
+import org.hkijena.jipipe.api.progress.JIPipeProgressLog;
+import org.hkijena.jipipe.api.progress.JIPipeProgressRecord;
 import org.hkijena.jipipe.api.run.JIPipeRunnableLogEntry;
 import org.hkijena.jipipe.api.service.JIPipeInitializationException;
 import org.hkijena.jipipe.api.service.JIPipeService;
@@ -67,11 +70,21 @@ public class JIPipeServiceDefaultInitializer extends JIPipeServiceInitializer {
 
         getProgressInfo().setProgress(0, 5);
         if (isVerbose()) {
-            // Standalone unfed emitter: the facade no longer exposes/fires the per-line status event
-            // path (deprecated trio; removed in the consumer rewrite)
-            JIPipeProgressInfo.StatusUpdatedEventEmitter statusUpdatedEventEmitter = new JIPipeProgressInfo.StatusUpdatedEventEmitter();
-            statusUpdatedEventEmitter.subscribeLambda((emitter, event) -> {
-                getService().getLogService().info(event.getMessage());
+            // Forward every coalesced batch of the initialization progress store as rendered lines
+            // into the log service. The subscription follows store adoption; stores without a
+            // writer thread simply stay idle.
+            getProgressInfo().subscribeToBatchEvents(event -> {
+                if (event.fromLine() > event.toLine()) {
+                    return;
+                }
+                JIPipeProgressLog store = (JIPipeProgressLog) event.getSource();
+                List<JIPipeProgressRecord> records =
+                        store.readRecords(event.fromLine(), event.toLine() - event.fromLine() + 1);
+                store.renderRecords(records, JIPipeLogLevel.INFO, line -> {
+                    if (!line.isBlank()) {
+                        getService().getLogService().info(line);
+                    }
+                });
             });
         }
 
