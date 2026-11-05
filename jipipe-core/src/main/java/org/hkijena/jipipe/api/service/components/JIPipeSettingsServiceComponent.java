@@ -494,6 +494,29 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
     }
 
     /**
+     * <b>Testing only.</b> Runs the pre-save read-merge-write
+     * ({@link #mergeForeignBeforeSave}) for one file-backed scope
+     * synchronously, so a test can exercise the headless foreign-change path
+     * without waiting for a debounce. The settings file watcher is a
+     * documented no-op in a headless JVM (CLI runs, CI), where this merge is
+     * the only way a foreign write ever reaches the live document - the same
+     * path a real headless process takes before every save. It merges only
+     * when the on-disk state differs from what this process last wrote or
+     * merged, exactly like {@link #save()}; it does not write the file.
+     * Not part of the production API; a {@code *ForTesting} seam consistent
+     * with {@link #verifyOwnWriteForTesting(SettingsScope)}.
+     *
+     * @param scope the file-backed scope to merge into
+     */
+    public synchronized void mergeForeignBeforeSaveForTesting(SettingsScope scope) {
+        SettingsFileStore store = stores.get(scope);
+        if (store == null || documents.get(scope) == null) {
+            return;
+        }
+        mergeForeignBeforeSave(scope, store);
+    }
+
+    /**
      * <b>Testing only.</b> The thread that performed the last foreign merge
      * (documented at {@link #applyForeignInto}). Used to prove that the
      * watcher callback only hands off and the file load + merge happen on

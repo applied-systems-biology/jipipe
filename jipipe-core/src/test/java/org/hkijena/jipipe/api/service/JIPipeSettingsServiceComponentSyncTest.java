@@ -70,6 +70,18 @@ class JIPipeSettingsServiceComponentSyncTest {
         return JIPipeSettingsServiceComponent.forTesting(userDir);
     }
 
+    /**
+     * {@code true} in a headless JVM (CI, CLI): the foreign-change watcher is
+     * a documented no-op there, so a test that writes a foreign settings file
+     * must drive the headless merge path (the save-time read-merge-write,
+     * which every real headless process runs before saving) instead of
+     * waiting for a watcher that will never fire. Without a display the
+     * watcher-driven path simply does not exist to observe.
+     */
+    private static boolean headless() {
+        return GraphicsEnvironment.isHeadless();
+    }
+
     private static String fileContent(Path file) throws Exception {
         return Files.readString(file);
     }
@@ -229,6 +241,13 @@ class JIPipeSettingsServiceComponentSyncTest {
         Files.writeString(file,
                 "{\"$schema\": 2, \"state:recent-projects\": [\"/a.jip\", \"/old.jip\"], \"$meta\": { \"writer-id\": \"other\" } }");
 
+        if (headless()) {
+            // The watcher is a documented no-op here; drive the save-time
+            // read-merge-write - the path every headless process takes
+            // before saving - instead of waiting for a merge that cannot
+            // happen.
+            c.mergeForeignBeforeSaveForTesting(SettingsScope.APPLICATION);
+        }
         assertTrue(waitFor(8000, () -> List.of("/a.jip", "/old.jip", "/b.jip")
                         .equals(blockEntries(doc, "state:recent-projects"))),
                 "the union must keep both concurrent appends; document: " + doc.getBlock("state:recent-projects"));
@@ -255,6 +274,12 @@ class JIPipeSettingsServiceComponentSyncTest {
         SettingsDocument doc = c.document(SettingsScope.APPLICATION);
 
         Files.writeString(file, "{\"$schema\": 2, \"$meta\": { \"writer-id\": \"other\" } }");
+        if (headless()) {
+            // No watcher in a headless JVM: the convergence save happens
+            // through the save-time merge floor in real headless runs.
+            c.mergeForeignBeforeSaveForTesting(SettingsScope.APPLICATION);
+            c.saveNowForTesting();
+        }
 
         assertTrue(waitFor(8000, () -> fileContains(file, "\"/a.jip\"")),
                 "the local list must survive the foreign deletion and converge to the file; file: " + fileContent(file));
@@ -278,6 +303,11 @@ class JIPipeSettingsServiceComponentSyncTest {
         SettingsDocument doc = c.document(SettingsScope.APPLICATION);
 
         Files.writeString(file, "{\"$schema\": 2, \"state:recent-projects\": [], \"$meta\": { \"writer-id\": \"other\" } }");
+        if (headless()) {
+            // No watcher in a headless JVM: drive the save-time merge floor
+            // that real headless runs use to adopt foreign writes.
+            c.mergeForeignBeforeSaveForTesting(SettingsScope.APPLICATION);
+        }
 
         assertTrue(waitFor(8000, () -> blockEntries(doc, "state:recent-projects").isEmpty()),
                 "the deliberate cross-instance clear must be adopted; document: " + doc.getBlock("state:recent-projects"));
