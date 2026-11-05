@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>JIPipe — Progress panel redesign (mockup v2)</title>
+<style>
+  :root {
+    --bg: #f5f6f8;
+    --panel: #ffffff;
+    --border: #d8dbe1;
+    --border-strong: #b9bdc6;
+    --text: #22262c;
+    --text-dim: #5f6672;
+    --text-faint: #8b919c;
+    --accent: #6b74e0;
+    --accent-soft: #eceefd;
+    --ok: #3f9d5a;
+    --warn: #c08a1e;
+    --err: #c4453c;
+    --row-hover: #f0f2f6;
+    --chip: #e8eaf0;
+    --mono: ui-monospace, "SF Mono", "DejaVu Sans Mono", Consolas, monospace;
+    --sans: -apple-system, "Segoe UI", Roboto, "DejaVu Sans", sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 24px; background: var(--bg); color: var(--text); font: 13px/1.45 var(--sans); }
+  h1 { font-size: 15px; margin: 0 0 4px 0; font-weight: 600; }
+  .mock-sub { color: var(--text-dim); font-size: 12px; margin-bottom: 16px; }
+
+  .window {
+    background: var(--panel); border: 1px solid var(--border-strong); border-radius: 6px;
+    box-shadow: 0 1px 2px rgba(0,0,0,.06), 0 8px 24px rgba(0,0,0,.05);
+    overflow: hidden; margin-bottom: 28px;
+  }
+  .win-header {
+    display: flex; align-items: center; gap: 10px; padding: 7px 12px;
+    border-bottom: 1px solid var(--border); background: #fbfbfd;
+  }
+  .win-title { font-weight: 600; font-size: 13px; display: flex; align-items: center; gap: 6px; }
+  .win-header .spacer { flex: 1; }
+  .hdr-toggle { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; white-space: nowrap; }
+  .hdr-toggle input { margin: 0; }
+  .hdr-sep { width: 1px; height: 18px; background: var(--border); margin: 0 4px; }
+  .hdr-btn {
+    display: inline-flex; align-items: center; gap: 5px;
+    border: 1px solid var(--border); background: #fff; border-radius: 4px;
+    padding: 3px 8px; font-size: 12px; cursor: pointer;
+  }
+  .hdr-btn:hover { background: var(--row-hover); }
+  .select { border: 1px solid var(--border); background: #fff; border-radius: 4px; padding: 2px 4px; font-size: 12px; }
+
+  .tree { padding: 4px 0 6px 0; }
+  .row {
+    display: flex; align-items: center; gap: 6px;
+    padding: 3px 10px 3px 8px; min-height: 24px;
+    border-bottom: 1px solid #f0f1f4;
+  }
+  .row:hover { background: var(--row-hover); }
+  .row.node { cursor: pointer; }
+  .indent { flex: none; }
+  .caret {
+    flex: none; width: 14px; height: 14px; display: inline-flex; align-items: center; justify-content: center;
+    color: var(--text-dim); font-size: 9px; border-radius: 3px;
+  }
+  .caret:hover { background: #e3e6ec; color: var(--text); }
+  .caret.leaf { visibility: hidden; }
+  .state-ico { flex: none; width: 14px; text-align: center; font-size: 11px; }
+  .st-running { color: var(--accent); }
+  .st-done { color: var(--ok); }
+  .st-fail { color: var(--err); }
+  .st-warn { color: var(--warn); }
+  .lbl { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .lbl .uuid { color: var(--text-faint); font-size: 11.5px; }
+  .row .spacer { flex: 1; min-width: 8px; }
+
+  /* partition badge — small, dim, NOT a grouping row (v2 decision) */
+  .pbadge {
+    flex: none; font-size: 10px; line-height: 15px; padding: 0 5px; border-radius: 3px;
+    background: #f0f1f5; color: var(--text-faint); border: 1px solid #e3e5eb;
+    font-variant-numeric: tabular-nums; letter-spacing: .02em;
+  }
+
+  /* hidden-descendants badge — only when children are not visible */
+  .badge {
+    flex: none; font-size: 11px; line-height: 16px; padding: 0 6px; border-radius: 8px;
+    background: var(--chip); color: var(--text-dim); font-variant-numeric: tabular-nums;
+  }
+  .badge.err { background: #fbecea; color: var(--err); }
+  .badge.debug { background: #eef0f4; color: var(--text-faint); }
+
+  .pbar { display: inline-flex; align-items: center; gap: 7px; flex: none; }
+  .pbar .track {
+    width: 190px; height: 9px; border-radius: 5px; background: #e6e8ee; overflow: hidden;
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.06);
+  }
+  .pbar .fill { height: 100%; background: var(--accent); border-radius: 5px; }
+  .pbar .fill.done { background: var(--ok); }
+  .pbar .fill.fail { background: var(--err); }
+  .pbar .txt { font-family: var(--mono); font-size: 11.5px; color: var(--text-dim); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .phase-tag { font-size: 11.5px; color: var(--text-faint); white-space: nowrap; }
+
+  .spin {
+    width: 12px; height: 12px; border-radius: 50%;
+    border: 2px solid #d5d9e2; border-top-color: var(--accent);
+    animation: spin .9s linear infinite; flex: none;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .details { border-bottom: 1px solid #eceef2; background: #fcfcfd; }
+  .detail {
+    display: flex; gap: 8px; align-items: baseline; padding: 2px 10px 2px 8px;
+    font-family: var(--mono); font-size: 11.5px; color: var(--text-dim);
+    border-bottom: 1px solid #f4f5f7;
+  }
+  .detail .ts { color: var(--text-faint); flex: none; font-size: 11px; }
+  .detail .lvl { flex: none; width: 42px; text-align: right; font-size: 10.5px; letter-spacing: .02em; }
+  .detail .msg { flex: 1; word-break: break-word; }
+  .lvl-INFO { color: #9aa0aa; }
+  .lvl-DEBUG { color: #b3b8c1; }
+  .lvl-WARN { color: var(--warn); font-weight: 600; }
+  .lvl-ERROR { color: var(--err); font-weight: 700; }
+  .detail.is-warn { background: #fdf8ee; }
+  .detail.is-error { background: #fdf1f0; }
+  .detail.more { justify-content: center; color: var(--accent); font-family: var(--sans); font-size: 11.5px; cursor: pointer; }
+  .detail.more:hover { background: var(--accent-soft); }
+
+  .stack-toggle {
+    font-family: var(--sans); font-size: 11px; color: var(--accent); cursor: pointer; white-space: nowrap;
+    border: 1px solid #dfe2f9; background: var(--accent-soft); border-radius: 3px; padding: 0 5px; margin-left: 6px;
+  }
+  .stack {
+    display: none; margin: 4px 0 2px 0; padding: 6px 8px;
+    background: #2b2f36; color: #d9dde4; border-radius: 4px;
+    font-family: var(--mono); font-size: 11px; white-space: pre; overflow-x: auto; line-height: 1.5;
+  }
+  .stack.open { display: block; }
+  .stack .exc { color: #ff9a94; font-weight: 600; }
+  .stack .at { color: #9fb6d4; }
+
+  .win-footer {
+    display: flex; align-items: center; gap: 10px; padding: 7px 12px;
+    border-top: 1px solid var(--border); background: #fbfbfd; font-size: 12px; color: var(--text-dim);
+  }
+  .win-footer .path { color: var(--text); font-weight: 500; }
+  .win-footer .spacer { flex: 1; }
+  .btn-cancel { border: 1px solid var(--border-strong); background: #fff; border-radius: 4px; padding: 3px 12px; font-size: 12px; cursor: pointer; }
+  .note { font-size: 12px; color: var(--text-dim); margin: -8px 0 26px 0; padding: 8px 12px; background: #fff; border: 1px dashed var(--border-strong); border-radius: 6px; }
+  .note b { color: var(--text); }
+</style>
+</head>
+<body>
+
+<h1>Progress panel — design language mockup v2</h1>
+<div class="mock-sub">v2: partitions flattened to a small badge (per #1352 feedback) · <code>+N</code> = hidden descendants, shown only while collapsed · level filter keeps the debug chip.</div>
+
+<div class="note">
+  <b>v2 decisions:</b> no partition grouping rows — partition membership renders as the dim
+  <span class="pbadge">P0</span> chip on each node row (data model still records it; the UI just doesn't spend a tree level on it).
+  <span class="badge">+7</span> appears only while a node's children are hidden. Everything else as v1: inline bars, collapsed
+  details with paging, collapsible stack traces, INFO/DEBUG filter.
+</div>
+
+<!-- ============================ RUN IN PROGRESS ============================ -->
+<div class="window">
+  <div class="win-header">
+    <div class="win-title"><span class="state-ico st-running"><span class="spin"></span></span> Run in progress — <span style="color:var(--text-dim);font-weight:400">Associated spores processing</span></div>
+    <div class="spacer"></div>
+    <label class="hdr-toggle"><input type="checkbox" checked> Show log</label>
+    <label class="hdr-toggle"><input type="checkbox" checked> Auto show progress</label>
+    <label class="hdr-toggle"><input type="checkbox"> Auto view results</label>
+    <div class="hdr-sep"></div>
+    <select class="select" title="Detail level">
+      <option>Level: INFO</option>
+      <option>Level: DEBUG</option>
+    </select>
+    <button class="hdr-btn" title="Copy">⧉ Copy</button>
+    <button class="hdr-btn" title="Export the underlying run data file">⭳ Export</button>
+  </div>
+
+  <div class="tree">
+
+    <!-- run-level phase (collapsed) -->
+    <div class="row node" onclick="toggle('prep')">
+      <span class="indent" style="width:0"></span>
+      <span class="caret" id="c-prep">▶</span>
+      <span class="state-ico st-done">✔</span>
+      <span class="lbl">Preparing <span style="color:var(--text-faint);font-size:11.5px">(tunnels, cleanup, partitions, environments)</span></span>
+      <span class="spacer"></span>
+      <span class="phase-tag">2.1s</span>
+      <span class="badge">+6</span>
+    </div>
+    <div id="prep" style="display:none">
+      <div class="details">
+        <div class="detail"><span class="ts">10:47:29</span><span class="lvl lvl-INFO">INFO</span><span class="msg">Dissolving tunnels …</span></div>
+        <div class="detail"><span class="ts">10:47:29</span><span class="lvl lvl-INFO">INFO</span><span class="msg">Erasing skipped/disabled algorithms …</span></div>
+        <div class="detail"><span class="ts">10:47:29</span><span class="lvl lvl-INFO">INFO</span><span class="msg">Gathering environments for all nodes …</span></div>
+        <div class="detail"><span class="ts">10:47:31</span><span class="lvl lvl-INFO">INFO</span><span class="msg">Outputs will be written to /data/runs/spores-2026-11-05</span></div>
+      </div>
+    </div>
+
+    <!-- node rows: flat, partition as badge -->
+    <div class="row node" onclick="toggle('imp')">
+      <span class="indent" style="width:0"></span>
+      <span class="caret" id="c-imp">▶</span>
+      <span class="state-ico st-done">✔</span>
+      <span class="pbadge" title="Runtime partition">P0</span>
+      <span class="lbl">Import image <span class="uuid">[18ab9963-5ced-450a-a5ab-6c2f2b56e813]</span></span>
+      <span class="spacer"></span>
+      <span class="pbar"><span class="track"><span class="fill done" style="width:100%"></span></span><span class="txt">3/3 (100%)</span></span>
+      <span class="phase-tag">4.2s</span>
+      <span class="badge">+2</span>
+    </div>
+    <div id="imp" style="display:none">
+      <div class="details">
+        <div class="detail"><span class="ts">10:47:31</span><span class="lvl lvl-INFO">INFO</span><span class="msg">Importing from slot <i>Input</i> (3 rows)</span></div>
+        <div class="detail"><span class="ts">10:47:33</span><span class="lvl lvl-INFO">INFO</span><span class="msg">Wrote 3 images to slot <i>Output</i></span></div>
+      </div>
+    </div>
+
+    <div class="row node" onclick="toggle('fp1')">
+      <span class="indent" style="width:0"></span>
+      <span class="caret" id="c-fp1">▶</span>
+      <span class="state-ico st-done">✔</span>
+      <span class="pbadge">P0</span>
+      <span class="lbl">Find particles 2D <span class="uuid">[cdd7502e-09d9-48b3-9bbe-1e274842b19d]</span></span>
+      <span class="spacer"></span>
+      <span class="pbar"><span class="track"><span class="fill done" style="width:100%"></span></span><span class="txt">3/3 (100%)</span></span>
+      <span class="phase-tag">18.9s</span>
+      <span class="badge">+7</span>
+    </div>
+    <div id="fp1" style="display:none">
+      <div class="details">
+        <div class="detail"><span class="ts">10:47:33</span><span class="lvl lvl-INFO">INFO</span><span class="msg">Input from cd365383-bee0-4996-8949-14cb0477b3c (1/1)</span></div>
+        <div class="detail"><span class="ts">10:47:34</span><span class="lvl lvl-INFO">INFO</span><span class="msg">Executing cdd7502e-09d9-48b3-9bbe-1e274842b19d</span></div>
+        <div class="detail"><span class="ts">10:47:34</span><span class="lvl lvl-INFO">INFO</span><span class="msg">Data rows (1/3)</span></div>
+      </div>
+    </div>
+
+    <!-- currently running node (expanded) -->
+    <div class="row node" onclick="toggle('fp2')">
+      <span class="indent" style="width:0"></span>
+      <span class="caret" id="c-fp2">▼</span>
+      <span class="state-ico st-running"><span class="spin"></span></span>
+      <span class="pbadge">P0</span>
+      <span class="lbl">Find particles 2D <span class="uuid">[cdd7502e-09d9-48b3-9bbe-1e274842b19d]</span></span>
+      <span class="spacer"></span>
+      <span class="pbar"><span class="track"><span class="fill" style="width:2.5%"></span></span><span class="txt">5/200 (2%)</span></span>
+      <span class="phase-tag">running 12s</span>
+    </div>
+    <div id="fp2">
+      <div class="details">
+        <div class="detail"><span class="ts">10:48:02</span><span class="lvl lvl-INFO">INFO</span><span class="msg">Input from cd365383-bee0-4996-8949-14cb0477b3c (1/1)</span></div>
+        <div class="detail"><span class="ts">10:48:02</span><span class="lvl lvl-INFO">INFO</span><span class="msg">Executing cdd7502e-09d9-48b3-9bbe-1e274842b19d</span></div>
+      </div>
+
+      <!-- child node of the running node: its own bar; badge visible because ITS children are hidden -->
+      <div class="row node" onclick="toggle('rows')">
+        <span class="indent" style="width:22px"></span>
+        <span class="caret" id="c-rows">▶</span>
+        <span class="state-ico st-running"><span class="spin"></span></span>
+        <span class="lbl">Data rows</span>
+        <span class="spacer"></span>
+        <span class="pbar"><span class="track"><span class="fill" style="width:2.5%"></span></span><span class="txt">5/200 (2%)</span></span>
+        <span class="phase-tag">Particle detection</span>
+        <span class="badge">+4</span>
+      </div>
+      <div id="rows" style="display:none">
+        <div class="details">
+          <div class="detail"><span class="ts">10:48:03</span><span class="lvl lvl-INFO">INFO</span><span class="msg">Row 4/200 — 2,148 candidates, 41 detected</span></div>
+          <div class="detail"><span class="ts">10:48:04</span><span class="lvl lvl-INFO">INFO</span><span class="msg">Row 5/200 — 2,073 candidates, 38 detected</span></div>
+          <div class="detail"><span class="ts">10:48:04</span><span class="lvl lvl-WARN">WARN</span><span class="msg">Row 5/200 — 3 particles at the image border were clipped</span></div>
+          <div class="detail more">Show 4 older records from run data…</div>
+        </div>
+      </div>
+
+      <!-- sibling child: GC -->
+      <div class="row node">
+        <span class="indent" style="width:22px"></span>
+        <span class="caret leaf">▶</span>
+        <span class="state-ico st-done">✔</span>
+        <span class="lbl">GC</span>
+        <span class="spacer"></span>
+        <span class="phase-tag">1/3</span>
+      </div>
+
+      <!-- error inside the running node -->
+      <div class="detail is-error" style="padding-left:30px">
+        <span class="ts">10:48:05</span>
+        <span class="lvl lvl-ERROR">ERROR</span>
+        <span class="msg" style="font-family:var(--sans)">
+          <b>Row 6/200 failed:</b> ImageJ processing error in “Find particles”
+          <span class="stack-toggle" onclick="stack('st1', this)">Show stack trace ▾</span>
+          <div class="stack" id="st1"><span class="exc">org.hkijena.jipipe.api.JIPipeValidationRuntimeException:</span> ImageJ processing error
+    <span class="at">at</span> org.hkijena.jipipe.plugins.imagejalgorithms.nodes.detect.DetectParticles2DAlgorithm.run(DetectParticles2DAlgorithm.java:214)
+    <span class="at">at</span> org.hkijena.jipipe.api.nodes.JIPipeAlgorithm.runIteration(JIPipeAlgorithm.java:512)
+    <span class="at">at</span> org.hkijena.jipipe.api.nodes.JIPipeGraphNode.run(JIPipeGraphNode.java:1188)
+    <span class="at">at</span> org.hkijena.jipipe.api.run.JIPipeGraphRun.runFlowGraphNode(JIPipeGraphRun.java:1033)
+Caused by: <span class="exc">java.lang.IllegalArgumentException:</span> width (0) and height (0) must be &gt; 0
+    <span class="at">at</span> ij.process.FloatProcessor.&lt;init&gt;(FloatProcessor.java:97)
+    <span class="at">… 12 more</span></div>
+        </span>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="win-footer">
+    <span class="state-ico st-running"><span class="spin"></span></span>
+    <span><span class="path">Find particles 2D › Data rows</span> — 5/200 (2%) · Particle detection</span>
+    <span class="spacer"></span>
+    <span style="color:var(--text-faint)">2,340 records · 1.7 MB</span>
+    <button class="btn-cancel">Cancel</button>
+  </div>
+</div>
+
+<!-- ============================ FINISHED RUN ============================ -->
+<div class="window">
+  <div class="win-header">
+    <div class="win-title"><span class="state-ico st-fail">✖</span> All tasks finished — <span style="color:var(--text-dim);font-weight:400">Run ended with errors</span></div>
+    <div class="spacer"></div>
+    <label class="hdr-toggle"><input type="checkbox" checked> Show log</label>
+    <div class="hdr-sep"></div>
+    <select class="select">
+      <option>Level: INFO</option>
+      <option>Level: DEBUG</option>
+    </select>
+    <button class="hdr-btn">⧉ Copy</button>
+    <button class="hdr-btn">⭳ Export</button>
+  </div>
+  <div class="tree">
+    <div class="row node" onclick="toggle('fprep')">
+      <span class="indent" style="width:0"></span>
+      <span class="caret" id="c-fprep">▶</span>
+      <span class="state-ico st-done">✔</span>
+      <span class="lbl">Postprocessing</span>
+      <span class="spacer"></span>
+      <span class="phase-tag">1.3s</span>
+      <span class="badge">+4</span>
+    </div>
+    <div id="fprep" style="display:none">
+      <div class="details">
+        <div class="detail"><span class="ts">10:52:09</span><span class="lvl lvl-INFO">INFO</span><span class="msg">Run ending at 2026-11-05 10:52:10</span></div>
+        <div class="detail"><span class="ts">10:52:10</span><span class="lvl lvl-INFO">INFO</span><span class="msg">Required 04:48 to execute</span></div>
+      </div>
+    </div>
+
+    <div class="row node" onclick="toggle('ffail')">
+      <span class="indent" style="width:0"></span>
+      <span class="caret" id="c-ffail">▼</span>
+      <span class="state-ico st-fail">✖</span>
+      <span class="pbadge">P0</span>
+      <span class="lbl">Filter 2D ROI by overlap <span class="uuid">[a1d4c9e2-3b77-4f0a-9c1d-8e2b5a7f6c30]</span></span>
+      <span class="spacer"></span>
+      <span class="pbar"><span class="track"><span class="fill fail" style="width:2%"></span></span><span class="txt">2/100 (2%)</span></span>
+      <span class="phase-tag">failed</span>
+      <span class="badge debug" title="DEBUG records hidden by the current level filter">1,203 debug</span>
+    </div>
+    <div id="ffail">
+      <div class="details">
+        <div class="detail"><span class="ts">10:51:58</span><span class="lvl lvl-INFO">INFO</span><span class="msg">Input from 18ab9963-5ced-450a-a5ab-6c2f2b56e813 (1/1)</span></div>
+        <div class="detail"><span class="ts">10:51:58</span><span class="lvl lvl-INFO">INFO</span><span class="msg">Executing a1d4c9e2-3b77-4f0a-9c1d-8e2b5a7f6c30</span></div>
+        <div class="detail more">1,203 DEBUG records hidden — switch to Level: DEBUG</div>
+      </div>
+      <div class="detail is-error" style="padding-left:22px">
+        <span class="ts">10:52:10</span>
+        <span class="lvl lvl-ERROR">ERROR</span>
+        <span class="msg" style="font-family:var(--sans)">
+          <b>Run aborted:</b> OutOfMemoryError while comparing ROI pairs
+          <span class="stack-toggle" onclick="stack('st2', this)">Show stack trace ▾</span>
+          <div class="stack" id="st2"><span class="exc">java.lang.OutOfMemoryError:</span> Java heap space
+    <span class="at">at</span> java.awt.geom.Area.intersect(Area.java:1203)
+    <span class="at">at</span> org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.filter.FilterRoi2dByOverlapAlgorithm.runIteration(FilterRoi2dByOverlapAlgorithm.java:329)
+    <span class="at">… 9 more</span></div>
+        </span>
+      </div>
+    </div>
+
+    <div class="row node">
+      <span class="indent" style="width:0"></span>
+      <span class="caret leaf">▶</span>
+      <span class="state-ico st-done">✔</span>
+      <span class="pbadge">P0</span>
+      <span class="lbl">Extract spore features <span class="uuid">[77e0c4a1-92bd-4e5f-b3a1-0c9d8e7f6a52]</span></span>
+      <span class="spacer"></span>
+      <span class="pbar"><span class="track"><span class="fill done" style="width:100%"></span></span><span class="txt">100/100 (100%)</span></span>
+      <span class="phase-tag">31.0s</span>
+      <span class="badge">+3</span>
+    </div>
+  </div>
+  <div class="win-footer">
+    <span class="state-ico st-fail">✖</span>
+    <span>Run ended at 10:52:10 · required <b>04:48</b></span>
+    <span class="spacer"></span>
+    <span style="color:var(--text-faint)">data file: <code style="font-family:var(--mono)">…/JIPipe.tmp.dir/…/logs/8f2c….ndjson</code></span>
+    <button class="btn-cancel">Close</button>
+  </div>
+</div>
+
+<script>
+  function toggle(id) {
+    var body = document.getElementById(id);
+    var caret = document.getElementById('c-' + id);
+    if (!body) return;
+    var open = body.style.display !== 'none';
+    body.style.display = open ? 'none' : 'block';
+    if (caret) caret.textContent = open ? '▶' : '▼';
+    // +N badge only while children are hidden
+    var row = caret && caret.closest ? caret.closest('.row') : null;
+    if (row) {
+      var b = row.querySelector('.badge:not(.debug):not(.err)');
+      if (b) b.style.display = open ? 'none' : '';
+    }
+  }
+  function stack(id, btn) {
+    var el = document.getElementById(id);
+    el.classList.toggle('open');
+    btn.textContent = el.classList.contains('open') ? 'Hide stack trace ▴' : 'Show stack trace ▾';
+  }
+  document.getElementById('fp2').style.display = 'block';
+  document.getElementById('ffail').style.display = 'block';
+</script>
+</body>
+</html>

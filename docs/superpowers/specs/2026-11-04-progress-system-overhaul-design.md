@@ -88,7 +88,7 @@ New package `org.hkijena.jipipe.api.progress`:
   emitter. Also the read-back API (`readRecords(...)`), level-filtered iteration, and the
   compat text renderer.
 - **`JIPipeProgressNode`** — light metadata only: numeric id, parent id, label, kind
-  (`RUN`, `PHASE`, `ITEM`), state (`RUNNING`, `OK`, `FAILED`, `CANCELLED`), progress
+  (`RUN`, `PARTITION`, `PHASE`, `ITEM`), state (`RUNNING`, `OK`, `FAILED`, `CANCELLED`), progress
   (value/max, indeterminate flag), first/last-record sequence range + record count,
   timestamps, activity flag (spinner). **Messages never live in nodes** — they are records
   in the file. The index stays small even for 6 M-record runs because nodes correspond to
@@ -225,29 +225,41 @@ level instead of being deleted.
 
 ## Desktop UI
 
-### Design language (from the approved mockup)
+### Design language (from the approved mockup `ui/v2-progress-panel.html`)
 
-- **Tree rows** for the progress hierarchy: `Partition 0 → Find particles 2D [uuid] → Data
-  rows`, expander + **child-count badge** (`+5`), node state icon (running spinner / done /
-  failed / cancelled).
+- **Flat list of rows — no partition grouping.** Node rows (`Find particles 2D [uuid]`)
+  and phase rows (`Preparing`, `Postprocessing`) sit directly in the list with an
+  expander, state icon (running spinner / done / failed / cancelled) and, when the node
+  belongs to a partition, a small dim **partition chip** (`P0`). Partition nodes are
+  recorded in the data as `PARTITION` kind; the renderer **squashes** them into the chip
+  instead of spending a tree level on them (partitions are a rarely used feature and
+  become even less prominent with #1212 — prominence is a UI decision, not data).
 - **Native inline progress bars** on rows with determinate progress: `Data rows | 5/200 |
-  Particle detection` renders a real bar (`5/200 (2%)`); indeterminate nodes show a spinner.
-- **Collapsed by default:** a node's log records are not dumped; expanding a node shows its
-  records (paged). Millions of records on one node are safe: the detail view reads the last
-  page (default 1,000 records) from the file and pages on demand.
-- **Detail-level filter** (debug/info) in the panel header.
+  Particle detection` renders a real bar (`5/200 (2%)`); indeterminate nodes show a
+  spinner; failed rows' bars turn red.
+- **`+N` badge = hidden descendants, shown only while the row is collapsed** (child nodes
+  + detail records); it disappears on expansion.
+- **Collapsed by default:** a node's log records are not dumped; expanding a node shows
+  its records (paged). Millions of records on one node are safe: the detail view reads
+  the last page (default 1,000 records) from the file and pages on demand ("Show 4 older
+  records from run data…").
+- **Detail-level filter** (INFO/DEBUG) in the panel header. When DEBUG records are hidden
+  by the filter, the row shows a faint `1,203 debug` chip so they remain visible as
+  existing.
 - **Structured errors:** error records render as a one-line summary with a collapsible
   stack trace ("Show stack trace"), not as raw dumps.
-- Auto-scroll behavior as today; header keeps Show log / Auto show progress / Auto view
-  results / Copy.
+- **Footer:** active path breadcrumb + live progress + `N records · size` + the NDJSON
+  data-file path. Header keeps Show log / Auto show progress / Auto view results plus
+  Copy / Export (data file).
 
-### HTML prototype workflow
+### HTML mockups (done)
 
-Before writing Swing code, the design language is iterated as **plain HTML/CSS/JS mockups**
-in `docs/superpowers/specs/2026-11-04-progress-system-overhaul/ui/` (sample data embedded,
-no build system). The user reviews them in the browser; the approved mockup is the design
-contract for the Swing implementation (custom tree renderer with row-suffix components;
-lazy TreeModel fed by batch notifications; virtualized per-node record list).
+The design language was iterated as plain HTML/CSS/JS mockups in
+`docs/superpowers/specs/2026-11-04-progress-system-overhaul/ui/` (sample data embedded,
+no build system): `v1-progress-panel.html` (partition-grouped, superseded) and
+`v2-progress-panel.html` (**approved — the design contract** for the Swing
+implementation: custom tree renderer with row-suffix components; lazy TreeModel fed by
+batch notifications; virtualized per-node record list).
 
 ## Logs collection & viewer (Tools > Logs)
 
@@ -311,7 +323,8 @@ Per repo test policy (non-trivial contracts only; no Swing interaction tests):
    remove the per-line emitter and `ProgressEvent`.
 3. **Logs infra** — `JIPipeRunnableLogEntry` store reference, project tagging, eviction,
    export, streamed `log.txt`, running-log plumbing.
-4. **UI** — HTML mockups → approved design → Swing tree panel + queue-menu rewrite.
+4. **UI** — the approved design contract is `ui/v2-progress-panel.html`; implement the
+   Swing tree panel + queue-menu rewrite against it.
 5. **Cleanup** — verbose-site `debug()` migration (incl. `FilterRoi2dByOverlapAlgorithm`),
    remove old `StringBuilder` machinery, documentation.
 
