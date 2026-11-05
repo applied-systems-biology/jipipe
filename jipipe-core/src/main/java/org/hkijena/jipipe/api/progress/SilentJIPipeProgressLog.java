@@ -34,7 +34,7 @@ public class SilentJIPipeProgressLog extends AbstractJIPipeProgressLog {
     }
 
     @Override
-    protected void writeRecord(JIPipeProgressRecord record) {
+    protected void writeRecord(long line, JIPipeProgressRecord record) {
         // Records are discarded; index and tail are maintained by the abstract base class
     }
 }

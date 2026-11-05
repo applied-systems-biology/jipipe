@@ -45,7 +45,7 @@ public class StdoutJIPipeProgressLog extends AbstractJIPipeProgressLog {
     }
 
     @Override
-    protected void writeRecord(JIPipeProgressRecord record) {
+    protected void writeRecord(long line, JIPipeProgressRecord record) {
         // All log levels print (stdout = full fidelity; no level filter)
         walk.render(record, JIPipeLogLevel.DEBUG, System.out::println);
     }

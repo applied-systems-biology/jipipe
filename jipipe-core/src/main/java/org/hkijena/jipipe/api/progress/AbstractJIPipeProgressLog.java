@@ -34,7 +34,7 @@ import java.util.function.Consumer;
  * Base class for {@link JIPipeProgressLog} implementations. Owns all tree logic — the node index,
  * node id allocation, record sequence numbers, the bounded tail of renderable records, and the
  * coalescer plumbing — exactly once. Implementations differ only in the sink
- * ({@link #writeRecord(JIPipeProgressRecord)}) and in how records are handed to it
+ * ({@link #writeRecord(long, JIPipeProgressRecord)}) and in how records are handed to it
  * ({@link #enqueue(long, JIPipeProgressRecord)}).
  * <p>
  * Record flow: producer methods build a record and call {@link #submit(JIPipeProgressRecord)}, which
@@ -42,7 +42,7 @@ import java.util.function.Consumer;
  * JIPipeProgressRecord)}. The sequence number of a record is its line number (1-based; head = 1), so
  * sequence assignment and hand-off must stay in submission order. The thread that owns the sink then
  * applies the record to the index and tail ({@link #applyRecord(long, JIPipeProgressRecord)}) and
- * writes it ({@link #writeRecord(JIPipeProgressRecord)}): synchronously on the caller thread for the
+ * writes it ({@link #writeRecord(long, JIPipeProgressRecord)}): synchronously on the caller thread for the
  * default implementation of {@link #enqueue(long, JIPipeProgressRecord)}, or on the writer thread for
  * file-backed stores.
  * <p>
@@ -563,9 +563,10 @@ public abstract class AbstractJIPipeProgressLog implements JIPipeProgressLog {
      * Writes one record to the physical sink. Called by the thread that owns the sink, after the
      * record was applied to the index and tail.
      *
+     * @param line   the record's 1-based line number (the sequence number)
      * @param record the record
      */
-    protected abstract void writeRecord(JIPipeProgressRecord record);
+    protected abstract void writeRecord(long line, JIPipeProgressRecord record);
 
     /**
      * Hands one record to the sink. The default delivers synchronously on the calling thread;
@@ -577,7 +578,7 @@ public abstract class AbstractJIPipeProgressLog implements JIPipeProgressLog {
      */
     protected void enqueue(long seq, JIPipeProgressRecord record) {
         applyRecord(seq, record);
-        writeRecord(record);
+        writeRecord(seq, record);
     }
 
     /**

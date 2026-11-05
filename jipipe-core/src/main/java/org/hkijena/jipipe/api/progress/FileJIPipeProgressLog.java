@@ -18,10 +18,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.io.UncheckedIOException;
 import java.nio.channels.Channels;
 import java.nio.charset.StandardCharsets;
@@ -30,6 +29,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -51,6 +51,13 @@ import java.util.function.Consumer;
  * Read-back opens the file with a separate channel and tolerates a truncated final line
  * (writer killed mid-flush): parsing stops at the last parseable line without throwing.
  * <p>
+ * Random-range reads ({@code readRecords(fromLine, ...)}) do not skip-scan from the file start:
+ * the writer thread records a line→byte-offset checkpoint every {@link #CHECKPOINT_INTERVAL_LINES}
+ * lines — the exact byte offset where the checkpointed line starts — and publishes it as an
+ * immutable {@link CheckpointIndex} snapshot through a volatile field. Readers take one volatile
+ * read and never observe a partially built index; the writer never blocks on readers. Lines
+ * before the first checkpoint are scanned from the file start as before.
+ * <p>
  * Batch notifications: the writer thread emits coalesced {@link JIPipeProgressLog.ProgressBatchEvent}s
  * — at most one per {@link #setCoalesceIntervalMillis(long) coalesce interval}, plus a guaranteed
  * final batch when the store is closed (via {@link #finish(JIPipeProgressNodeState)} or
@@ -60,9 +67,17 @@ import java.util.function.Consumer;
  */
 public class FileJIPipeProgressLog extends AbstractJIPipeProgressLog {
 
-    private static final int FLUSH_BUFFER_CHARS = 64 * 1024;
+    private static final int FLUSH_BUFFER_BYTES = 64 * 1024;
     private static final long FLUSH_INTERVAL_NANOS = 250 * 1_000_000L;
     private static final int READ_BUFFER_CHARS = 64 * 1024;
+
+    /**
+     * Every this many lines, the writer thread records the byte offset where the checkpointed
+     * line starts, so that random-range reads can seek there instead of skip-scanning from the
+     * file start. The in-memory index is bounded by the line count divided by this interval
+     * (6,000,000 lines → 600 entries).
+     */
+    private static final long CHECKPOINT_INTERVAL_LINES = 10_000;
 
     /**
      * Number of records read from the file per page while rendering or level-filtered reading
@@ -83,11 +98,17 @@ public class FileJIPipeProgressLog extends AbstractJIPipeProgressLog {
     private final Thread writerThread;
     private volatile boolean writerWaiting;
 
+    // Checkpoint index — the writer thread appends and publishes immutable snapshots; readers
+    // take one volatile read of the current snapshot (never blocked, never sees a partial index)
+    private volatile CheckpointIndex checkpointIndex = CheckpointIndex.EMPTY;
+
     // Writer-thread state only
-    private BufferedWriter sink;
+    private BufferedOutputStream sink;
     private long lastFlushNanos;
     private long recordsSinceFlush;
     private boolean sinkBroken;
+    private long writtenBytes;
+    private long lastCheckpointLine;
 
     // Coalescer state — writer-thread only, never touched by producers (no synchronization needed)
     private long lastEmitNanos;
@@ -142,14 +163,43 @@ public class FileJIPipeProgressLog extends AbstractJIPipeProgressLog {
         }
     }
 
-        @Override
-    protected void writeRecord(JIPipeProgressRecord record) {
+    @Override
+    protected void writeRecord(long line, JIPipeProgressRecord record) {
         try {
-            sink.write(JsonUtils.toJsonString(record));
+            // The record is encoded to bytes here (instead of via a Writer) so that the running
+            // byte offset — and with it the checkpoint index — stays byte-exact
+            byte[] bytes = JsonUtils.toJsonString(record).getBytes(StandardCharsets.UTF_8);
+            // Checkpoint before the write: writtenBytes is the exact byte offset where this line
+            // starts. The checkpoint stays valid even if this write fails (the reader tolerates
+            // a truncated final line).
+            if (line - lastCheckpointLine >= CHECKPOINT_INTERVAL_LINES) {
+                addCheckpoint(line, writtenBytes);
+                lastCheckpointLine = line;
+            }
+            sink.write(bytes);
             sink.write('\n');
+            writtenBytes += bytes.length + 1L;
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
+    }
+
+    /**
+     * Appends one checkpoint to the index and publishes a new immutable snapshot. Called on the
+     * writer thread only; readers pick the snapshot up via the volatile field.
+     *
+     * @param line   the 1-based line number the checkpoint covers
+     * @param offset the byte offset where this line starts
+     */
+    private void addCheckpoint(long line, long offset) {
+        checkpointIndex = checkpointIndex.withEntry(line, offset);
+    }
+
+    /**
+     * Returns the current checkpoint index snapshot (package-private for tests).
+     */
+    CheckpointIndex checkpointIndexForTesting() {
+        return checkpointIndex;
     }
 
     @Override
@@ -162,7 +212,16 @@ public class FileJIPipeProgressLog extends AbstractJIPipeProgressLog {
         // Open a separate channel — never the writer's stream
         try (FileChannel channel = FileChannel.open(file, StandardOpenOption.READ);
              BufferedReader reader = new BufferedReader(Channels.newReader(channel, StandardCharsets.UTF_8), READ_BUFFER_CHARS)) {
-            int toSkip = Math.max(fromLine, 1) - 1;
+            long startLine = Math.max(fromLine, 1);
+            // Seek to the nearest checkpoint at or before the requested line and scan forward
+            // from there; without a covering checkpoint, scan from the file start as before
+            long toSkip = startLine - 1;
+            CheckpointIndex checkpoints = checkpointIndex;
+            int checkpoint = checkpoints.floor(startLine);
+            if (checkpoint >= 0) {
+                channel.position(checkpoints.offsetAt(checkpoint));
+                toSkip = startLine - checkpoints.lineAt(checkpoint);
+            }
             String line;
             while (toSkip > 0 && (line = reader.readLine()) != null) {
                 toSkip--;
@@ -319,7 +378,7 @@ public class FileJIPipeProgressLog extends AbstractJIPipeProgressLog {
                 applyRecord(entry.seq(), entry.record());
                 if (!sinkBroken) {
                     ensureSink();
-                    writeRecord(entry.record());
+                    writeRecord(entry.seq(), entry.record());
                     recordsSinceFlush++;
                 }
             } catch (Throwable e) {
@@ -436,9 +495,12 @@ public class FileJIPipeProgressLog extends AbstractJIPipeProgressLog {
             if (file.getParent() != null) {
                 Files.createDirectories(file.getParent());
             }
-            sink = new BufferedWriter(new OutputStreamWriter(
+            // Appending: start counting bytes at the file's current size so checkpoints stay
+            // byte-exact even if a store writes into a pre-existing file
+            writtenBytes = Files.exists(file) ? Files.size(file) : 0;
+            sink = new BufferedOutputStream(
                     Files.newOutputStream(file, StandardOpenOption.WRITE, StandardOpenOption.CREATE, StandardOpenOption.APPEND),
-                    StandardCharsets.UTF_8), FLUSH_BUFFER_CHARS);
+                    FLUSH_BUFFER_BYTES);
         }
     }
 
@@ -470,5 +532,83 @@ public class FileJIPipeProgressLog extends AbstractJIPipeProgressLog {
     }
 
     private record QueuedRecord(long seq, JIPipeProgressRecord record) {
+    }
+
+    /**
+     * An immutable snapshot of the line→byte-offset checkpoint index. Entries are strictly
+     * increasing in both line number and byte offset. The writer thread replaces the published
+     * snapshot on every checkpoint (once per {@link #CHECKPOINT_INTERVAL_LINES} lines); readers
+     * take one volatile read and use the snapshot without further synchronization, so they never
+     * observe a partially built index and never block the writer.
+     */
+    static final class CheckpointIndex {
+
+        static final CheckpointIndex EMPTY = new CheckpointIndex(new long[0], new long[0]);
+
+        private final long[] lines;
+        private final long[] offsets;
+
+        private CheckpointIndex(long[] lines, long[] offsets) {
+            this.lines = lines;
+            this.offsets = offsets;
+        }
+
+        /**
+         * Returns the number of checkpoints.
+         */
+        int size() {
+            return lines.length;
+        }
+
+        /**
+         * Returns the line number of the checkpoint at {@code index}.
+         */
+        long lineAt(int index) {
+            return lines[index];
+        }
+
+        /**
+         * Returns the byte offset where the line of the checkpoint at {@code index} starts.
+         */
+        long offsetAt(int index) {
+            return offsets[index];
+        }
+
+        /**
+         * Returns the index of the greatest checkpoint whose line is {@code <= line}, or
+         * {@code -1} if no checkpoint covers the line.
+         */
+        int floor(long line) {
+            int low = 0;
+            int high = lines.length - 1;
+            int result = -1;
+            while (low <= high) {
+                int mid = (low + high) >>> 1;
+                if (lines[mid] <= line) {
+                    result = mid;
+                    low = mid + 1;
+                } else {
+                    high = mid - 1;
+                }
+            }
+            return result;
+        }
+
+        /**
+         * Returns a snapshot with one more checkpoint. The arrays are copied (append-only
+         * immutable snapshots) — one copy per {@link #CHECKPOINT_INTERVAL_LINES} records is
+         * negligible.
+         *
+         * @param line   the 1-based line number the new checkpoint covers
+         * @param offset the byte offset where this line starts
+         * @return the new snapshot
+         */
+        CheckpointIndex withEntry(long line, long offset) {
+            long[] newLines = Arrays.copyOf(lines, lines.length + 1);
+            long[] newOffsets = Arrays.copyOf(offsets, offsets.length + 1);
+            newLines[lines.length] = line;
+            newOffsets[offsets.length] = offset;
+            return new CheckpointIndex(newLines, newOffsets);
+        }
     }
 }
