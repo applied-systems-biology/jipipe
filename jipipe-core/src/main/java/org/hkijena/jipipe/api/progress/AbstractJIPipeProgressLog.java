@@ -19,12 +19,16 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Consumer;
 
 /**
  * Base class for {@link JIPipeProgressLog} implementations. Owns all tree logic — the node index,
@@ -381,6 +385,55 @@ public abstract class AbstractJIPipeProgressLog implements JIPipeProgressLog {
         }
     }
 
+    @Override
+    public List<JIPipeProgressRecord> readRecords(int fromLine, int limit, JIPipeLogLevel minLevel) {
+        if (limit <= 0) {
+            return List.of();
+        }
+        List<JIPipeProgressRecord> result = new ArrayList<>();
+        for (JIPipeProgressRecord record : readRecords(fromLine, Integer.MAX_VALUE)) {
+            if (passesLevelFilter(record, minLevel)) {
+                result.add(record);
+                if (result.size() >= limit) {
+                    break;
+                }
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public void renderText(JIPipeLogLevel minLevel, Consumer<String> lineSink) {
+        Objects.requireNonNull(minLevel, "Minimum log level must not be null");
+        Objects.requireNonNull(lineSink, "Line sink must not be null");
+        RenderWalk walk = new RenderWalk(this);
+        walkRecords(record -> walk.render(record, minLevel, lineSink));
+    }
+
+    /**
+     * Hands every readable record of this store, in file order (oldest to newest), to the consumer.
+     * The default serves what the tail holds; file-backed stores stream the file in pages.
+     *
+     * @param recordConsumer the consumer of the records
+     */
+    protected void walkRecords(Consumer<JIPipeProgressRecord> recordConsumer) {
+        for (JIPipeProgressRecord record : readRecords(1, Integer.MAX_VALUE)) {
+            recordConsumer.accept(record);
+        }
+    }
+
+    /**
+     * Returns whether a record passes a level filter: log records must be at or above the minimum
+     * level; all other records have no level and pass.
+     *
+     * @param record   the record
+     * @param minLevel the minimum level
+     * @return true if the record passes
+     */
+    static boolean passesLevelFilter(JIPipeProgressRecord record, JIPipeLogLevel minLevel) {
+        return !(record instanceof JIPipeProgressRecord.Log logRecord) || logRecord.lv() >= minLevel.value();
+    }
+
     // ---------------------------------------------------------------------
     // Settings and plumbing
     // ---------------------------------------------------------------------
@@ -616,6 +669,150 @@ public abstract class AbstractJIPipeProgressLog implements JIPipeProgressLog {
             case "cancel" -> JIPipeProgressNodeState.CANCELLED;
             default -> null;
         };
+    }
+
+    /**
+     * Walk state of the compatibility text renderer: the node paths built from the {@code n}
+     * records (the root's label is never part of a path) and the running per-node progress built
+     * from the {@code p} records. One instance per render; the paths of unknown nodes fall back to
+     * the node index (non-persistent stores keep no {@code n} records in the tail).
+     */
+    private static final class RenderWalk {
+
+        private static final int[] INITIAL_PROGRESS = {1, 1};
+
+        private final JIPipeProgressLog store;
+        private final Map<Integer, String[]> nodePaths = new HashMap<>();
+        private final Map<Integer, int[]> nodeProgress = new HashMap<>();
+
+        RenderWalk(JIPipeProgressLog store) {
+            this.store = store;
+        }
+
+        /**
+         * Renders one record and updates the walk state, handing each produced line to the sink.
+         *
+         * @param record   the record
+         * @param minLevel the minimum level of log records to render
+         * @param lineSink the consumer of the rendered lines
+         */
+        void render(JIPipeProgressRecord record, JIPipeLogLevel minLevel, Consumer<String> lineSink) {
+            if (record instanceof JIPipeProgressRecord.Log logRecord) {
+                if (logRecord.lv() >= minLevel.value()) {
+                    emitPrefixedLines(prefix(chainOf(logRecord.id()), currentState(logRecord.id())),
+                            logRecord.m(), lineSink);
+                }
+            } else if (record instanceof JIPipeProgressRecord.Progress progressRecord) {
+                int percentage = percentage(progressRecord.v(), progressRecord.mx());
+                if (percentage == 50 || percentage == 100) {
+                    // Percentage report of the facade (mirrors its 50 %/100 % throttle); the prefix
+                    // shows the progress as of before this record
+                    lineSink.accept(prefix(chainOf(progressRecord.id()), currentState(progressRecord.id()))
+                            + percentage + "%");
+                }
+                if (progressRecord.mx() > 0) {
+                    // Indeterminate progress does not affect the numeric compat prefix
+                    nodeProgress.put(progressRecord.id(), new int[]{progressRecord.v(), progressRecord.mx()});
+                }
+            } else if (record instanceof JIPipeProgressRecord.Error errorRecord) {
+                String message = errorRecord.m();
+                lineSink.accept(prefix(chainOf(errorRecord.id()), currentState(errorRecord.id()))
+                        + errorRecord.c()
+                        + (message == null || message.isEmpty() ? "" : ": " + message));
+                if (errorRecord.st() != null) {
+                    String[] stackLines = errorRecord.st().split("\n");
+                    // The first stack line repeats "<class>: <message>"
+                    for (int i = 1; i < stackLines.length; i++) {
+                        lineSink.accept("  " + stackLines[i].stripLeading());
+                    }
+                }
+            } else if (record instanceof JIPipeProgressRecord.Notification notificationRecord) {
+                lineSink.accept("@ " + notificationRecord.h() + ": " + notificationRecord.d());
+            } else if (record instanceof JIPipeProgressRecord.Node nodeRecord) {
+                // The root is implied by the head record and its label is never rendered
+                if (nodeRecord.id() != ROOT_NODE_ID) {
+                    nodePaths.put(nodeRecord.id(), childPath(nodeRecord.p(), nodeRecord.l()));
+                }
+            }
+            // Head, node-finished (N), run-status (s), and unknown records render nothing
+        }
+
+        /**
+         * Emits a message as render lines: the first line carries the prefix, the continuation
+         * lines of a multi-line message are emitted as-is (today's log.txt shape).
+         */
+        private static void emitPrefixedLines(String prefix, String message, Consumer<String> lineSink) {
+            String[] fragments = (message == null ? "" : message).split("\n", -1);
+            for (int i = 0; i < fragments.length; i++) {
+                String fragment = fragments[i];
+                if (fragment.endsWith("\r")) {
+                    fragment = fragment.substring(0, fragment.length() - 1);
+                }
+                lineSink.accept(i == 0 ? prefix + fragment : fragment);
+            }
+        }
+
+        /**
+         * Builds the path of a node from the wire parent id: wire parents {@code 0} and {@code 1}
+         * are the root (implied by the head record), so the new path starts empty.
+         */
+        private String[] childPath(int wireParentId, String label) {
+            String[] parentPath;
+            if (wireParentId <= 0 || wireParentId == ROOT_NODE_ID) {
+                parentPath = new String[0];
+            } else {
+                parentPath = chainOf(wireParentId);
+            }
+            String[] path = new String[parentPath.length + 1];
+            System.arraycopy(parentPath, 0, path, 0, parentPath.length);
+            path[parentPath.length] = label == null ? "" : label;
+            return path;
+        }
+
+        /**
+         * Resolves the chain of labels of a node: the running path from the {@code n} records,
+         * falling back to the node index, or an empty chain for unknown nodes.
+         */
+        private String[] chainOf(int nodeId) {
+            String[] path = nodePaths.get(nodeId);
+            if (path == null) {
+                path = chainFromIndex(nodeId);
+                nodePaths.put(nodeId, path);
+            }
+            return path;
+        }
+
+        private String[] chainFromIndex(int nodeId) {
+            Deque<String> labels = new ArrayDeque<>();
+            JIPipeProgressNode node = store.getNode(nodeId);
+            while (node != null && node.getId() != ROOT_NODE_ID) {
+                labels.addFirst(node.getLabel() == null ? "" : node.getLabel());
+                int parentId = node.getParentId();
+                if (parentId <= 0 || parentId == ROOT_NODE_ID) {
+                    break;
+                }
+                node = store.getNode(parentId);
+            }
+            return labels.toArray(new String[0]);
+        }
+
+        private int[] currentState(int nodeId) {
+            int[] state = nodeProgress.get(nodeId);
+            return state != null ? state : INITIAL_PROGRESS;
+        }
+
+        private static int percentage(int value, int max) {
+            return max <= 0 ? -1 : (int) (value * 100L / max);
+        }
+
+        private static String prefix(String[] chain, int[] progress) {
+            StringBuilder builder = new StringBuilder();
+            builder.append('[').append(progress[0]).append('/').append(progress[1]).append(']').append(' ');
+            if (chain.length > 0) {
+                builder.append(String.join(" | ", chain)).append(" | ");
+            }
+            return builder.toString();
+        }
     }
 
     private record TailEntry(long seq, JIPipeProgressRecord record, long chars) {

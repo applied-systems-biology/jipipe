@@ -22,6 +22,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 
 /**
  * A progress store: one instance per top-level run. Records are written as NDJSON (one JSON object
@@ -214,6 +215,54 @@ public interface JIPipeProgressLog extends AutoCloseable {
      * @return the records, oldest to newest; empty if none are available
      */
     List<JIPipeProgressRecord> readRecent(int count);
+
+    /**
+     * Reads records starting at a line number, filtered by log level: log records ({@code l})
+     * below the minimum level are skipped; all other records have no level and are kept. The limit
+     * bounds the number of returned (already filtered) records. On file-backed stores this parses
+     * the file (tolerating a truncated final line); on non-persistent stores this serves what the
+     * tail still holds and never throws.
+     *
+     * @param fromLine the first line number to read (1-based)
+     * @param limit    the maximum number of records to return (after filtering)
+     * @param minLevel the minimum level of log records to return
+     * @return the records, in file order (oldest to newest); empty if none are available
+     */
+    List<JIPipeProgressRecord> readRecords(int fromLine, int limit, JIPipeLogLevel minLevel);
+
+    /**
+     * Renders the records of this store as compatibility text lines, handing each line to the
+     * sink. This is the render behind {@code log.txt} and log views; it is a convenience render,
+     * not a parseable contract. The line shapes:
+     * <ul>
+     * <li>Log records ({@code l}) at a level below {@code minLevel} are omitted entirely; all
+     *     other records are unaffected by the level. A log record renders as
+     *     {@code [v/mx] <chain> | message}, where {@code v/mx} is the node's running progress
+     *     (the last {@code p} record of the node, initially {@code 1/1}) and {@code <chain>} is
+     *     the node's path labels joined with {@code |}. The root's label is not part of the chain;
+     *     a record of the root itself renders without the chain part.</li>
+     * <li>A progress record ({@code p}) renders as {@code [v/mx] <chain> | <p>%} at the facade's
+     *     percentage report points (50 % and 100 %); the prefix shows the progress as of before
+     *     the record. Progress records with another percentage, and progress with an indeterminate
+     *     maximum, update the running progress without rendering.</li>
+     * <li>An error record ({@code e}) renders as {@code [v/mx] <chain> | <class>: <message>}
+     *     followed by one line per stack trace line, indented two spaces.</li>
+     * <li>A notification record ({@code w}) renders as {@code @ <heading>: <description>}
+     *     (run-level — no prefix, no chain).</li>
+     * <li>Head, node ({@code n}), node-finished ({@code N}), and run-status ({@code s}) records
+     *     render nothing.</li>
+     * <li>Multi-line messages hand each continuation line to the sink as its own line.</li>
+     * </ul>
+     * <p>
+     * File-backed stores stream the file in ~10,000-record pages (bounded memory; a store can be
+     * rendered while the run is active, reflecting the flushed records, and after the run).
+     * Non-persistent stores render what the tail holds — tail-bounded, never throws; chain labels
+     * are resolved from the node index when the tail holds no {@code n} records.
+     *
+     * @param minLevel the minimum level of log records to render
+     * @param lineSink the consumer of the rendered lines
+     */
+    void renderText(JIPipeLogLevel minLevel, Consumer<String> lineSink);
 
     /**
      * Sets the coalesce interval for batch notifications. Default 100. The behavior is wired by the

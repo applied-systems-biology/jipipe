@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.LockSupport;
+import java.util.function.Consumer;
 
 /**
  * A progress store that writes NDJSON records to a file via a single async writer thread.
@@ -53,6 +54,12 @@ public class FileJIPipeProgressLog extends AbstractJIPipeProgressLog {
     private static final int FLUSH_BUFFER_CHARS = 64 * 1024;
     private static final long FLUSH_INTERVAL_NANOS = 250 * 1_000_000L;
     private static final int READ_BUFFER_CHARS = 64 * 1024;
+
+    /**
+     * Number of records read from the file per page while rendering or level-filtered reading
+     * (bounded memory, independent of the total record count).
+     */
+    private static final int WALK_PAGE_SIZE = 10_000;
 
     /**
      * Upper bound for the number of queued records (backpressure threshold). Keeps the heap bounded
@@ -167,6 +174,53 @@ public class FileJIPipeProgressLog extends AbstractJIPipeProgressLog {
             // Read-back never throws; return what was read so far
             System.err.println("Failed to read progress records from " + file);
             e.printStackTrace();
+        }
+        return result;
+    }
+
+    @Override
+    protected void walkRecords(Consumer<JIPipeProgressRecord> recordConsumer) {
+        // Stream the file in pages — bounded memory, independent of the total record count
+        int fromLine = 1;
+        while (true) {
+            List<JIPipeProgressRecord> page = readRecords(fromLine, WALK_PAGE_SIZE);
+            if (page.isEmpty()) {
+                break;
+            }
+            for (JIPipeProgressRecord record : page) {
+                recordConsumer.accept(record);
+            }
+            if (page.size() < WALK_PAGE_SIZE) {
+                break;
+            }
+            fromLine += page.size();
+        }
+    }
+
+    @Override
+    public List<JIPipeProgressRecord> readRecords(int fromLine, int limit, JIPipeLogLevel minLevel) {
+        if (limit <= 0) {
+            return List.of();
+        }
+        List<JIPipeProgressRecord> result = new ArrayList<>();
+        int pageStart = Math.max(fromLine, 1);
+        while (result.size() < limit) {
+            List<JIPipeProgressRecord> page = readRecords(pageStart, WALK_PAGE_SIZE);
+            if (page.isEmpty()) {
+                break;
+            }
+            for (JIPipeProgressRecord record : page) {
+                if (passesLevelFilter(record, minLevel)) {
+                    result.add(record);
+                    if (result.size() >= limit) {
+                        break;
+                    }
+                }
+            }
+            if (page.size() < WALK_PAGE_SIZE) {
+                break;
+            }
+            pageStart += page.size();
         }
         return result;
     }
