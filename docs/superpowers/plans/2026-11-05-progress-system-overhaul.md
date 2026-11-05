@@ -89,11 +89,15 @@ void levelEnumValuesMatchSpec() {
 
 ---
 
-### Task 2: Progress store — async writer, node index, bounded tail, scale + truncation tests
+### Task 2: Progress store — interface, implementations, async writer, node index, bounded tail, scale + truncation tests
 
 **Files:**
+- Create: `jipipe-core/src/main/java/org/hkijena/jipipe/api/progress/JIPipeProgressLog.java` (**interface** with static factories `silent()` / `stdout()` / `create(Path, String, String)` and `resolveStorageBase(Path)`)
+- Create: `jipipe-core/src/main/java/org/hkijena/jipipe/api/progress/AbstractJIPipeProgressLog.java` (node index, id allocation, tail ring, coalescer plumbing; `protected abstract void writeRecord(JIPipeProgressRecord record);`)
+- Create: `jipipe-core/src/main/java/org/hkijena/jipipe/api/progress/SilentJIPipeProgressLog.java`
+- Create: `jipipe-core/src/main/java/org/hkijena/jipipe/api/progress/StdoutJIPipeProgressLog.java`
+- Create: `jipipe-core/src/main/java/org/hkijena/jipipe/api/progress/FileJIPipeProgressLog.java` (async writer thread → NDJSON, read-back)
 - Create: `jipipe-core/src/main/java/org/hkijena/jipipe/api/progress/JIPipeProgressNode.java`
-- Create: `jipipe-core/src/main/java/org/hkijena/jipipe/api/progress/JIPipeProgressLog.java`
 - Test: `jipipe-core/src/test/java/org/hkijena/jipipe/api/progress/ProgressStoreTest.java`
 
 **Interfaces:**
@@ -101,34 +105,34 @@ void levelEnumValuesMatchSpec() {
 - Produces (Tasks 3–8 build on these exact signatures):
 
 ```java
-public class JIPipeProgressLog implements AutoCloseable {
-    public static JIPipeProgressLog silent();
-    public static JIPipeProgressLog stdout();                      // prints rendered lines, no file
-    public static JIPipeProgressLog create(Path file, String runUuid, String runLabel); // auto root node, file created lazily on first flush
-    public static Path resolveStorageBase(Path projectTempBaseOrNull); // base.resolve("logs"), global base when null — pure, testable
+public interface JIPipeProgressLog extends AutoCloseable {
+    static JIPipeProgressLog silent()  { return new SilentJIPipeProgressLog(); }
+    static JIPipeProgressLog stdout()  { return new StdoutJIPipeProgressLog(); }
+    static JIPipeProgressLog create(Path file, String runUuid, String runLabel) { return new FileJIPipeProgressLog(file, runUuid, runLabel); } // auto root node, file created lazily on first flush
+    static Path resolveStorageBase(Path projectTempBaseOrNull); // base.resolve("logs"), global base when null — pure, testable
 
-    public Path getFile();                                         // null for silent
-    public int beginNode(int parentId, String label, JIPipeProgressNodeKind kind); // returns nodeId, emits "n"
-    public void log(int nodeId, JIPipeLogLevel level, String message);
-    public void progress(int nodeId, int value, int max);          // max < 0 indeterminate
-    public void error(int nodeId, Throwable e);
-    public void nodeFinished(int nodeId, JIPipeProgressNodeState state); // emits "N"
-    public void finish(JIPipeProgressNodeState runState);          // emits "s", final flush, close
-    public void close();
+    Path getFile();                                                // null for silent/stdout
+    int beginNode(int parentId, String label, JIPipeProgressNodeKind kind); // returns nodeId, emits "n"
+    void log(int nodeId, JIPipeLogLevel level, String message);
+    void progress(int nodeId, int value, int max);                 // max < 0 indeterminate
+    void error(int nodeId, Throwable e);
+    void nodeFinished(int nodeId, JIPipeProgressNodeState state);  // emits "N"
+    void finish(JIPipeProgressNodeState runState);                 // emits "s", final flush, close
+    void close();
 
-    public JIPipeProgressNode getNode(int id);
-    public int getRootNodeId();                                    // 1
-    public int nextNodeId();                                       // peek without creating (facade tests)
+    JIPipeProgressNode getNode(int id);
+    int getRootNodeId();                                           // 1
+    int nextNodeId();                                              // peek without creating (facade tests)
 
-    public List<JIPipeProgressRecord> readRecords(int fromLine, int limit); // fromLine 1-based, line 1 = head
-    public List<JIPipeProgressRecord> readRecent(int count);             // from tail
-    public void renderText(JIPipeLogLevel minLevel, java.util.function.Consumer<String> lineSink);
+    List<JIPipeProgressRecord> readRecords(int fromLine, int limit);        // fromLine 1-based, line 1 = head; non-persistent impls return tail-bounded results, never throw
+    List<JIPipeProgressRecord> readRecent(int count);                       // from tail — works on all implementations
+    void renderText(JIPipeLogLevel minLevel, java.util.function.Consumer<String> lineSink);
 
-    public void setCoalesceIntervalMillis(long ms);   // default 100
-    public void setTailLimit(int records);            // default 8192
-    public ProgressBatchEventEmitter getBatchEventEmitter();  // Task 4 adds the emitter + event class
+    void setCoalesceIntervalMillis(long ms);   // default 100
+    void setTailLimit(int records);            // default 8192
+    ProgressBatchEventEmitter getBatchEventEmitter();  // Task 4 adds the emitter + event class
 
-    public static class ProgressBatchEvent extends AbstractJIPipeEvent {
+    class ProgressBatchEvent extends AbstractJIPipeEvent {
         public int fromLine(); public int toLine(); public Set<Integer> changedNodes(); public boolean finalBatch();
     }
 }
@@ -136,9 +140,11 @@ public class JIPipeProgressLog implements AutoCloseable {
 
 `JIPipeProgressNode`: `int getId()`, `int getParentId()`, `String getLabel()`, `JIPipeProgressNodeKind getKind()`, `JIPipeProgressNodeState getState()`, `int getProgress()`, `int getMaxProgress()`, `int getDescendantNodeCount()`, `long getRecordCount()`, `int getFirstLine()`, `int getLastLine()`.
 
-- Writer: daemon `Thread` per store, `ConcurrentLinkedQueue<Record>` drain loop, flush when buffer ≥ 64 KB or 250 ms elapsed or on `finish()`/`close()`. Encoding (`toJsonString`) happens **on the writer thread**, never on producers.
-- Tail: ring buffer of `setTailLimit` records; `readRecent` serves it; `readRecords` opens the file with a **separate `RandomAccessFile`/channel** (not the writer's stream).
-- `silent()` discards records (no file, no stdout). `stdout()` prints the compatibility line per record (used by CLI).
+- `AbstractJIPipeProgressLog` owns: node index (metadata + firstLine/lastLine/recordCount per node), id allocation (AtomicLong), tail ring, coalescer state, and declares `protected abstract void writeRecord(JIPipeProgressRecord record);` — **all tree logic lives exactly once**; implementations differ only in the sink.
+- `SilentJIPipeProgressLog`: `writeRecord` discards; no thread, no file. Index + tail still maintained (matches today's `SILENT`, whose StringBuilder still accumulated).
+- `StdoutJIPipeProgressLog`: renders each record (compat line) to `System.out` on the **caller thread** (low volume by contract of `STDOUT` users); no file.
+- `FileJIPipeProgressLog`: writer = daemon `Thread`, `ConcurrentLinkedQueue<Record>` drain loop, flush when buffer ≥ 64 KB or 250 ms elapsed or on `finish()`/`close()`. Encoding (`toJsonString`) happens **on the writer thread**, never on producers. Index/tail updates happen on the writer thread (single-writer → no contention); sequence numbers are assigned on enqueue (AtomicLong) so ordering holds.
+- Read-back (`readRecords`) opens the file with a **separate `RandomAccessFile`/channel** (not the writer's stream). Non-persistent impls return tail-bounded results from `readRecords` (never throw) — pinned by test.
 
 **Steps:**
 
@@ -172,6 +178,17 @@ void fileCreatedLazilyOnlyWhenRecordsExist() {
 }
 
 @Test
+void nonPersistentStoresKeepTailAndIndexButNoReadBack() {
+    JIPipeProgressLog stdout = JIPipeProgressLog.stdout();
+    int n = stdout.beginNode(stdout.getRootNodeId(), "Node A", JIPipeProgressNodeKind.ITEM);
+    stdout.log(n, JIPipeLogLevel.INFO, "hello");
+    assertEquals(1, stdout.readRecent(10).size(), "tail maintained on non-persistent stores");
+    assertNotNull(stdout.getNode(n), "index maintained on non-persistent stores");
+    assertTrue(stdout.readRecords(1, 100).size() <= stdout.readRecent(Integer.MAX_VALUE).size(),
+        "readRecords on non-persistent stores never exceeds what the tail holds");
+}
+
+@Test
 void truncatedFinalLineTolerated() throws Exception {
     // write 12 records, flush, then overwrite file cutting the last line in half
     // readRecords(1, 100) returns 11 complete records, no exception
@@ -200,7 +217,7 @@ Run the scale test with `-Dtest=ProgressStoreTest#scaleSixMillionRecordsThroughp
 
 - [ ] **Step 2: Run to verify they fail** — compile error, store missing.
 
-- [ ] **Step 3: Implement** `JIPipeProgressNode`, `JIPipeProgressLog` per the Interfaces block. Writer loop: poll the queue with 250 ms timeout; append; encode on writer thread; track line numbers; update node index (firstLine/lastLine/recordCount) and tail ring on the **writer thread** (single-writer → no contention). `beginNode`/`log`/etc. assign sequence numbers on enqueue (AtomicLong) so index updates stay in order. `readRecords`/`readRecent` may be called from any thread; parse lazily from the file (buffered read from `fromLine`).
+- [ ] **Step 3: Implement** `JIPipeProgressNode`, the `JIPipeProgressLog` interface, `AbstractJIPipeProgressLog`, and the three implementations per the Interfaces block. File writer loop: poll the queue with 250 ms timeout; append; encode on writer thread; track line numbers; update node index (firstLine/lastLine/recordCount) and tail ring on the **writer thread** (single-writer → no contention). `beginNode`/`log`/etc. assign sequence numbers on enqueue (AtomicLong) so index updates stay in order. `readRecords`/`readRecent` may be called from any thread; parse lazily from the file (buffered read from `fromLine`).
 
 - [ ] **Step 4: Run all store tests to verify they pass** — `mvn -q -pl jipipe-core test -o -Dtest=ProgressStoreTest`.
 

@@ -83,10 +83,19 @@ read back from the NDJSON file on demand.
 
 New package `org.hkijena.jipipe.api.progress`:
 
-- **`JIPipeProgressLog`** — the store. One instance per top-level run. Owns: NDJSON file +
-  writer thread, lock-free record queue, node index, bounded tail, coalescer, batch event
-  emitter. Also the read-back API (`readRecords(...)`), level-filtered iteration, and the
-  compat text renderer.
+- **`JIPipeProgressLog`** — the store **interface**, one instance per top-level run. Owns:
+  node index, bounded tail, coalescer, batch event emitter, the record sink, and the
+  read-back API (`readRecords(...)`), level-filtered iteration, and the compat text
+  renderer. Static factories live on the interface and select the implementation:
+  `silent()` → `SilentJIPipeProgressLog` (dummy sink — no file, no output; index + tail
+  still maintained so `getLog()`/progress getters work), `stdout()` →
+  `StdoutJIPipeProgressLog` (prints rendered lines, non-persistent), `create(Path, ...)`
+  → `FileJIPipeProgressLog` (async writer → NDJSON file, full read-back). Shared tree
+  logic (index, id allocation, tail, coalescing) lives in
+  `AbstractJIPipeProgressLog`; implementations differ only in where records go and
+  whether they can be read back: `readRecent(n)` works on all; `readRecords(fromLine,
+  ...)` on non-persistent stores returns only what the tail holds (never throws) — the
+  UI treats that as "no scroll-back".
 - **`JIPipeProgressNode`** — light metadata only: numeric id, parent id, label, kind
   (`RUN`, `PARTITION`, `PHASE`, `ITEM`), state (`RUNNING`, `OK`, `FAILED`, `CANCELLED`), progress
   (value/max, indeterminate flag), first/last-record sequence range + record count,
@@ -153,8 +162,9 @@ first flush; a run that logs nothing creates no file.
 - One writer thread per store drains the queue, encodes JSON, and flushes the
   `BufferedWriter` in batches (≥ 64 KB or ≥ 250 ms, whichever first; final flush at run
   end before the `s:finished` record).
-- `SILENT` uses a null sink (records discarded, no file, no stdout). `STDOUT` prints
-  rendered lines to `System.out` and keeps no file.
+- `SILENT` routes to `SilentJIPipeProgressLog` (dummy sink: records discarded, no file, no
+  stdout; index + tail maintained). `STDOUT` routes to `StdoutJIPipeProgressLog` (renders
+  each record to `System.out`, keeps no file).
 
 ### Bounded memory
 
