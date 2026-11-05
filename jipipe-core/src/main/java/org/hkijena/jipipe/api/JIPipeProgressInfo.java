@@ -157,12 +157,25 @@ public class JIPipeProgressInfo implements Cancelable {
      * previous store, while records submitted through this handle afterwards go to the new store.
      * Root-run creation point only: call this before the first record is submitted through this
      * handle for the new run; records submitted beforehand would remain in the previous store.
+     * <p>
+     * The displaced store is <b>not</b> closed: it may still be referenced by other handles
+     * (handles derived via {@link #resolve(String)} keep their store by design, and a handle
+     * injected into a run carries a store owned by the caller context that created it). Closing it
+     * would silently drop the records of those handles. Its lifecycle — including
+     * {@link JIPipeProgressLog#finish(JIPipeProgressNodeState)} and
+     * {@link JIPipeProgressLog#close()} — remains with its owner. Adopting the store that is
+     * already set is a no-op. The one-run-two-files case is prevented by
+     * {@link #setStorageBase(Path, String, String)}, which reuses a store that already writes the
+     * run's file.
      *
      * @param store the new progress store
      */
     public void setStore(JIPipeProgressLog store) {
         if (store == null)
             throw new IllegalArgumentException("Store must not be null");
+        if (this.store == store) {
+            return;
+        }
         this.store = store;
         this.nodeId = store.getRootNodeId();
         logView = null;
@@ -185,14 +198,24 @@ public class JIPipeProgressInfo implements Cancelable {
      * from the given base ({@link JIPipeProgressLog#resolveStorageBase(Path)}). The store file is
      * named {@code <runUuid>.ndjson} and the head record carries the run UUID and label.
      * See {@link #setStore(JIPipeProgressLog)} for the root-run creation point semantics.
+     * <p>
+     * If the handle's current store already is the file-backed store for this run (same
+     * {@code <runUuid>.ndjson} file — e.g. created by the queue before the run started), it is
+     * reused unchanged and the label is ignored (the head record was written at store creation):
+     * one run never gets a second file (ruling R17). Otherwise the previous store is displaced
+     * but <b>not</b> closed — see {@link #setStore(JIPipeProgressLog)} for why.
      *
      * @param base     the storage base (the {@code logs} directory is resolved from it)
      * @param runUuid  the run UUID (file name and head record)
      * @param runLabel the run label (head record)
      */
     public void setStorageBase(Path base, String runUuid, String runLabel) {
-        Path logsBase = JIPipeProgressLog.resolveStorageBase(base);
-        setStore(JIPipeProgressLog.create(logsBase.resolve(runUuid + ".ndjson"), runUuid, runLabel));
+        Path file = JIPipeProgressLog.resolveStorageBase(base).resolve(runUuid + ".ndjson");
+        JIPipeProgressLog current = store;
+        if (file.equals(current.getFile())) {
+            return;
+        }
+        setStore(JIPipeProgressLog.create(file, runUuid, runLabel));
     }
 
     /**

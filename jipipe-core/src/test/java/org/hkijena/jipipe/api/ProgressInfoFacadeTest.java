@@ -26,11 +26,14 @@ import org.junit.jupiter.api.io.TempDir;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -278,6 +281,59 @@ class ProgressInfoFacadeTest {
         assertEquals("0f75f2a6-6c05-4a10-a9ef-2f7e21a3f5de", head.run());
         assertEquals("Pipeline run", head.label());
         store.close();
+    }
+
+    @Test
+    void setStorageBaseReusesAFileBackedStoreForTheSameRun() throws Exception {
+        // Ruling R17: a caller (e.g. the queue UI) may create the run's store before the run starts
+        // and inject a handle on it — run()'s adoption path must reuse it (never a second file)
+        Path logsBase = tmp.resolve("logs");
+        JIPipeProgressLog runStore = JIPipeProgressLog.create(logsBase.resolve("f81d4fae-7dec-11d0-a765-00a0c91e6bf6.ndjson"),
+                "f81d4fae-7dec-11d0-a765-00a0c91e6bf6", "Pipeline run");
+        JIPipeProgressInfo info = new JIPipeProgressInfo(runStore);
+        info.log("before run()");
+
+        info.setStorageBase(tmp, "f81d4fae-7dec-11d0-a765-00a0c91e6bf6", "Pipeline run");
+
+        assertSame(runStore, info.getStore(), "the run's store must be reused, not replaced");
+        assertEquals(logsBase.resolve("f81d4fae-7dec-11d0-a765-00a0c91e6bf6.ndjson"), info.getStore().getFile());
+
+        // The reused store is the active one: records still land, finish() still emits the status record
+        info.log("during run()");
+        info.getStore().finish(JIPipeProgressNodeState.OK);
+        List<JIPipeProgressRecord> records = info.getStore().readRecords(1, 64);
+        assertTrue(records.stream().anyMatch(r -> r instanceof JIPipeProgressRecord.Log log && log.m().equals("before run()")),
+                "records submitted before the adoption must be kept when the store is reused");
+        assertTrue(records.stream().anyMatch(r -> r instanceof JIPipeProgressRecord.Log log && log.m().equals("during run()")));
+        assertEquals("finished", ((JIPipeProgressRecord.Status) records.get(records.size() - 1)).s());
+
+        // Exactly one store file exists for the run
+        try (Stream<Path> files = Files.list(logsBase)) {
+            assertEquals(1, files.count(), "no second store file may be created for one run");
+        }
+    }
+
+    @Test
+    void setStorageBaseLeavesTheDisplacedStoreOpen() {
+        // Documented semantics: a displaced store is not closed by the facade — it may still be
+        // referenced by other handles (derived handles keep their store; an injected handle's store
+        // is owned by the caller context that created it). Its owner finishes/closes it.
+        JIPipeProgressInfo info = new JIPipeProgressInfo();
+        info.setStorageBase(tmp, "displaced-a", "First");
+        JIPipeProgressLog displaced = info.getStore();
+        info.log("on a");
+
+        info.setStorageBase(tmp, "displaced-b", "Second");
+        assertNotSame(displaced, info.getStore());
+
+        // The displaced store is still open: finish() writes its status record (a closed store
+        // would make finish() a no-op and the file would get no s record)
+        displaced.finish(JIPipeProgressNodeState.OK);
+        List<JIPipeProgressRecord> displacedRecords = displaced.readRecords(1, 64);
+        assertTrue(displacedRecords.stream().anyMatch(r -> r instanceof JIPipeProgressRecord.Log log && log.m().equals("on a")));
+        assertEquals("finished", ((JIPipeProgressRecord.Status) displacedRecords.get(displacedRecords.size() - 1)).s());
+
+        info.getStore().finish(JIPipeProgressNodeState.OK);
     }
 
     @Test
