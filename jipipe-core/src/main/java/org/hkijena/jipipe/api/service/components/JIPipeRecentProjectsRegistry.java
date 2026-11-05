@@ -71,10 +71,17 @@ public final class JIPipeRecentProjectsRegistry extends JIPipeServiceComponent {
      * Registers the block with the settings service once the service is fully
      * constructed. (This component is created before the settings component
      * exists, so a constructor-time call would re-enter the initialization.)
+     * <p>
+     * The block is also registered for <b>union-style merging</b>: the
+     * recent-projects list is additive state, so two instances that each open
+     * a project must end up with both entries - the whole-block foreign-wins
+     * collision rule would silently discard one of them (see
+     * {@link org.hkijena.jipipe.api.service.components.JIPipeSettingsServiceComponent#resolveUnionBlocks}).
      */
     @Override
     public void postprocess(JIPipeProgressInfo progressInfo) {
         settings().registerKey(JIPipeSettingKey.object(BLOCK_PATH, "", String.class));
+        settings().registerUnionMergeBlock(BLOCK_PATH);
     }
 
     public ChangedEventEmitter getChangedEventEmitter() {

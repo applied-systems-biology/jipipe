@@ -18,6 +18,8 @@ import org.hkijena.jipipe.api.settings.JIPipeSettingKey;
 import org.hkijena.jipipe.api.settings.SettingsBinding;
 import org.hkijena.jipipe.api.settings.SettingsDocument;
 import org.hkijena.jipipe.api.settings.SettingsScope;
+import org.hkijena.jipipe.utils.json.JsonUtils;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -25,6 +27,7 @@ import org.junit.jupiter.api.io.TempDir;
 import java.awt.GraphicsEnvironment;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Supplier;
@@ -185,6 +188,100 @@ class JIPipeSettingsServiceComponentSyncTest {
         // now matches it, so the merge adopted it (no re-save needed).
         assertTrue(fileContent(file).contains("\"foreign\""),
                 "the file still holds the foreign value we adopted");
+        c.dispose();
+    }
+
+    private static ArrayNode arrayOf(String... entries) {
+        ArrayNode array = JsonUtils.getObjectMapper().createArrayNode();
+        for (String entry : entries) {
+            array.add(entry);
+        }
+        return array;
+    }
+
+    private static List<String> blockEntries(SettingsDocument doc, String blockPath) {
+        List<String> result = new ArrayList<>();
+        doc.getBlock(blockPath).forEach(node -> result.add(node.asText()));
+        return result;
+    }
+
+    /**
+     * Two instances concurrently appended to a registered union block (the
+     * recent projects list): this process opened project-b while the other
+     * process wrote project-a to the file. The union must keep BOTH entries
+     * (foreign order first, then the local-only entries, deduplicated) where
+     * the whole-block foreign-wins rule would have discarded one of them.
+     */
+    @Test void concurrentAppendsToAUnionBlockAreCombined() throws Exception {
+        JIPipeSettingsServiceComponent c = newComponent(tempDir);
+        c.registerUnionMergeBlock("state:recent-projects");
+        Path file = c.fileFor(SettingsScope.APPLICATION);
+        Files.writeString(file, "{\"$schema\": 2, \"state:recent-projects\": [\"/old.jip\"]}");
+        SettingsDocument doc = c.document(SettingsScope.APPLICATION);
+        assertEquals(List.of("/old.jip"), blockEntries(doc, "state:recent-projects"),
+                "precondition: the document was loaded from the seeded file");
+
+        // This instance opened project-b (its document holds the new list);
+        // the other instance wrote project-a to the file.
+        doc.setBlock("state:recent-projects", arrayOf("/b.jip", "/old.jip"));
+        List<JIPipeSettingsServiceComponent.SettingsChangedEvent> events = new CopyOnWriteArrayList<>();
+        c.getChangedEventEmitter().subscribeLambda((emitter, event) -> events.add(event));
+        Files.writeString(file,
+                "{\"$schema\": 2, \"state:recent-projects\": [\"/a.jip\", \"/old.jip\"], \"$meta\": { \"writer-id\": \"other\" } }");
+
+        assertTrue(waitFor(8000, () -> List.of("/a.jip", "/old.jip", "/b.jip")
+                        .equals(blockEntries(doc, "state:recent-projects"))),
+                "the union must keep both concurrent appends; document: " + doc.getBlock("state:recent-projects"));
+        awaitExternalEvent(events, "state:recent-projects");
+        assertFalse(c.hasForeignConflict(), "a union is not a conflict: no entry was lost");
+
+        // The file still holds the pre-union foreign value, so the union
+        // must be persisted (the converging save fires through saveLater).
+        assertTrue(waitFor(8000, () -> fileContains(file, "\"/b.jip\"")),
+                "the union must reach the file; file: " + fileContent(file));
+        c.dispose();
+    }
+
+    /**
+     * A foreign writer that does not carry the block (a deletion, or a
+     * process that never had recent projects) must not wipe the local list:
+     * the union keeps the local entries and the file converges back to them.
+     */
+    @Test void foreignDeletionOfAUnionBlockKeepsTheLocalList() throws Exception {
+        JIPipeSettingsServiceComponent c = newComponent(tempDir);
+        c.registerUnionMergeBlock("state:recent-projects");
+        Path file = c.fileFor(SettingsScope.APPLICATION);
+        Files.writeString(file, "{\"$schema\": 2, \"state:recent-projects\": [\"/a.jip\", \"/b.jip\"]}");
+        SettingsDocument doc = c.document(SettingsScope.APPLICATION);
+
+        Files.writeString(file, "{\"$schema\": 2, \"$meta\": { \"writer-id\": \"other\" } }");
+
+        assertTrue(waitFor(8000, () -> fileContains(file, "\"/a.jip\"")),
+                "the local list must survive the foreign deletion and converge to the file; file: " + fileContent(file));
+        assertEquals(List.of("/a.jip", "/b.jip"), blockEntries(doc, "state:recent-projects"),
+                "the local list must be unchanged");
+        assertFalse(c.hasForeignConflict(), "keeping the local list is not a conflict");
+        c.dispose();
+    }
+
+    /**
+     * A foreign writer that holds an explicitly EMPTY array cleared the list
+     * deliberately (the "Clear list" button of another instance). The empty
+     * value is adopted as-is: unioning it would resurrect the cleared
+     * entries on every instance.
+     */
+    @Test void deliberateForeignClearOfAUnionBlockIsAdopted() throws Exception {
+        JIPipeSettingsServiceComponent c = newComponent(tempDir);
+        c.registerUnionMergeBlock("state:recent-projects");
+        Path file = c.fileFor(SettingsScope.APPLICATION);
+        Files.writeString(file, "{\"$schema\": 2, \"state:recent-projects\": [\"/a.jip\"]}");
+        SettingsDocument doc = c.document(SettingsScope.APPLICATION);
+
+        Files.writeString(file, "{\"$schema\": 2, \"state:recent-projects\": [], \"$meta\": { \"writer-id\": \"other\" } }");
+
+        assertTrue(waitFor(8000, () -> blockEntries(doc, "state:recent-projects").isEmpty()),
+                "the deliberate cross-instance clear must be adopted; document: " + doc.getBlock("state:recent-projects"));
+        assertFalse(fileContent(file).contains("\"/a.jip\""), "the file keeps the cleared list");
         c.dispose();
     }
 
