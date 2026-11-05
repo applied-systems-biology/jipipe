@@ -262,12 +262,12 @@ class JIPipeDesktopDialog extends JDialog {
         // UX review): every button takes the width of the widest one (after
         // the primary's fill styling, which changes its outline padding),
         // floored so short labels do not produce cramped buttons.
-        int width = UIUtils.STANDARD_BUTTON_HEIGHT;
+        int width = 42;
         for (JButton jButton : actionButtons) {
             width = Math.max(width, jButton.getPreferredSize().width);
         }
         for (JButton jButton : actionButtons) {
-            Dimension d = new Dimension(width, UIUtils.STANDARD_BUTTON_HEIGHT);
+            Dimension d = new Dimension(width, UIUtils.DIALOG_BUTTON_HEIGHT);
             jButton.setPreferredSize(d);
             jButton.setMinimumSize(d);
         }

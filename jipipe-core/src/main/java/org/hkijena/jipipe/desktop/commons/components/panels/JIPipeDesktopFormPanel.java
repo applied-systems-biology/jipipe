@@ -410,7 +410,7 @@ public class JIPipeDesktopFormPanel extends JPanel {
             // dense, which is intentional).
             Dimension hcSize = headerControls.getPreferredSize();
             if (hcSize != null) {
-                headerControls.setMinimumSize(new Dimension(hcSize.width, Math.max(hcSize.height, UIUtils.STANDARD_BUTTON_HEIGHT)));
+                headerControls.setMinimumSize(new Dimension(hcSize.width, Math.max(hcSize.height, UIUtils.PARAMETER_BUTTON_HEIGHT)));
             }
             GridBagConstraints hc = new GridBagConstraints() {
                 {

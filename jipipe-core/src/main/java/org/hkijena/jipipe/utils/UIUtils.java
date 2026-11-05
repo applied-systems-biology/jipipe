@@ -93,7 +93,11 @@ public class UIUtils {
      * Parameter header rows are raised to at least this height so the row
      * action buttons line up across all editors (#1339).
      */
-    public static final int STANDARD_BUTTON_HEIGHT = 27;
+    public static final int PARAMETER_BUTTON_HEIGHT = 27;
+    /**
+     * Height for dialog buttons
+     */
+    public static final int DIALOG_BUTTON_HEIGHT = 32;
 
     public static Window getWindowOrWindowAncestor(Component component) {
         if (component instanceof Window) {
@@ -302,8 +306,8 @@ public class UIUtils {
         }
         // The standard button height (theme Button.font + padding) - parameter
         // header rows take their min height from this (#1339).
-        b.setPreferredSize(new Dimension(b.getPreferredSize().width, STANDARD_BUTTON_HEIGHT));
-        b.setMinimumSize(new Dimension(b.getMinimumSize().width, STANDARD_BUTTON_HEIGHT));
+        b.setPreferredSize(new Dimension(b.getPreferredSize().width, PARAMETER_BUTTON_HEIGHT));
+        b.setMinimumSize(new Dimension(b.getMinimumSize().width, PARAMETER_BUTTON_HEIGHT));
         return b;
     }
 
