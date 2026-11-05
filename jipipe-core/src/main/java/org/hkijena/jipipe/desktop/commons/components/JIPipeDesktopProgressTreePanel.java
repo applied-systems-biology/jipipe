@@ -208,11 +208,7 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
         add(footerPanel, BorderLayout.SOUTH);
 
         showLogCheckBox.setSelected(true);
-        showLogCheckBox.addActionListener(e -> {
-            listScrollPane.setVisible(showLogCheckBox.isSelected());
-            revalidate();
-            repaint();
-        });
+        showLogCheckBox.addActionListener(e -> updateShowLogVisibility());
         autoShowProgressCheckBox.setSelected(true);
         autoShowProgressCheckBox.setToolTipText("Automatically scroll to the currently running node");
         levelComboBox.setToolTipText("Detail level of the record views");
@@ -224,6 +220,21 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
         exportButton.setToolTipText("Export the underlying run data file");
         exportButton.addActionListener(e -> exportDataFile());
         exportButton.setEnabled(false);
+
+        // Apply the initial visibility: the host applies the restored RUN_QUEUE_SHOW_LOG setting
+        // via setShowLogSelected BEFORE this line (a programmatic setSelected fires no ActionEvent,
+        // so the visibility must not rely on the action listener alone)
+        updateShowLogVisibility();
+    }
+
+    /**
+     * Applies the Show log checkbox's state to the list's visibility (both the constructor-time
+     * programmatic restore and user clicks go through this path).
+     */
+    private void updateShowLogVisibility() {
+        listScrollPane.setVisible(showLogCheckBox.isSelected());
+        revalidate();
+        repaint();
     }
 
     // -------------------------------------------------------------------------
@@ -299,6 +310,9 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
 
     public void setShowLogSelected(boolean selected) {
         showLogCheckBox.setSelected(selected);
+        // A programmatic setSelected fires no ActionEvent — the host restores the stored
+        // RUN_QUEUE_SHOW_LOG setting through this setter, so the visibility must be applied here
+        updateShowLogVisibility();
     }
 
     public JCheckBox getShowLogCheckBox() {
