@@ -225,6 +225,38 @@ class ProgressStoreTest {
     }
 
     @Test
+    void tailEvictsByMessageTextWhenRecordsAreHuge() {
+        JIPipeProgressLog store = JIPipeProgressLog.silent();
+        store.setTailLimit(100);
+        // Four 3 MB messages: 12 MB total, over the ~8 MB text cap, but under the count limit (100)
+        for (int i = 1; i <= 4; i++) {
+            store.log(store.getRootNodeId(), JIPipeLogLevel.INFO, "huge-" + i + "-" + "a".repeat(3_000_000));
+        }
+        store.log(store.getRootNodeId(), JIPipeLogLevel.INFO, "small-1");
+        store.log(store.getRootNodeId(), JIPipeLogLevel.INFO, "small-2");
+
+        List<JIPipeProgressRecord> recent = store.readRecent(Integer.MAX_VALUE);
+        // Eviction happened by message text, not count: the two oldest huge records are gone,
+        // and the recent small records survive
+        assertEquals(4, recent.size(), "the tail keeps the most recent records within the text cap");
+        assertTrue(((JIPipeProgressRecord.Log) recent.get(0)).m().startsWith("huge-3-"));
+        assertTrue(((JIPipeProgressRecord.Log) recent.get(1)).m().startsWith("huge-4-"));
+        assertEquals("small-1", ((JIPipeProgressRecord.Log) recent.get(2)).m());
+        assertEquals("small-2", ((JIPipeProgressRecord.Log) recent.get(3)).m());
+        long textChars = recent.stream().mapToLong(r -> ((JIPipeProgressRecord.Log) r).m().length()).sum();
+        assertTrue(textChars <= 8_388_608L, "tail text must stay under the ~8 MB cap, was " + textChars + " chars");
+        assertTrue(textChars >= 6_000_000L, "the retained huge records are still available, was " + textChars + " chars");
+
+        // Shrinking the count limit also shrinks the tail from the head
+        store.setTailLimit(2);
+        recent = store.readRecent(Integer.MAX_VALUE);
+        assertEquals(2, recent.size());
+        assertEquals(List.of("small-1", "small-2"),
+                recent.stream().map(r -> ((JIPipeProgressRecord.Log) r).m()).toList());
+        store.close();
+    }
+
+    @Test
     void resolveStorageBaseIsPure() {
         Path projectBase = tmp.resolve("proj");
         assertEquals(projectBase.resolve("logs"), JIPipeProgressLog.resolveStorageBase(projectBase));

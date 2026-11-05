@@ -43,7 +43,9 @@ import java.util.concurrent.locks.ReentrantLock;
  * file-backed stores.
  * <p>
  * The tail holds the renderable records ({@code l}, {@code p}, {@code e}, {@code w}) only — structural
- * records ({@code head}, {@code n}, {@code N}, {@code s}) render nothing and are excluded. Records with
+ * records ({@code head}, {@code n}, {@code N}, {@code s}) render nothing and are excluded. It is bounded
+ * by the record-count limit (default 8,192) or by ~8 MB of message text, whichever binds first;
+ * eviction removes the oldest entries. Records with
  * a node id ({@code n}, {@code l}, {@code p}, {@code e}, {@code N}) are attributed to that node's range
  * in the index.
  */
@@ -55,6 +57,14 @@ public abstract class AbstractJIPipeProgressLog implements JIPipeProgressLog {
     protected static final int ROOT_NODE_ID = 1;
 
     private static final int DEFAULT_TAIL_LIMIT = 8192;
+
+    /**
+     * Approximate upper bound for the message text retained by the tail, in characters (~8 MB;
+     * one char counts as one byte — the bound is approximate by design). The tail is bounded by
+     * {@link #DEFAULT_TAIL_LIMIT} or by this cap, whichever binds first.
+     */
+    private static final long TAIL_TEXT_LIMIT_CHARS = 8L * 1024 * 1024;
+
     private static final long DEFAULT_COALESCE_INTERVAL_MILLIS = 100;
 
     private final String runUuid;
@@ -69,6 +79,7 @@ public abstract class AbstractJIPipeProgressLog implements JIPipeProgressLog {
     private final ProgressBatchEventEmitter batchEventEmitter = new ProgressBatchEventEmitter();
     private volatile int tailLimit = DEFAULT_TAIL_LIMIT;
     private volatile long coalesceIntervalMillis = DEFAULT_COALESCE_INTERVAL_MILLIS;
+    private long tailChars;
     private volatile boolean started;
     private volatile boolean finished;
     private volatile boolean closed;
@@ -273,13 +284,45 @@ public abstract class AbstractJIPipeProgressLog implements JIPipeProgressLog {
     private void appendTail(long seq, JIPipeProgressRecord record) {
         tailLock.lock();
         try {
-            tail.addLast(new TailEntry(seq, record));
-            while (tail.size() > tailLimit) {
-                tail.pollFirst();
-            }
+            TailEntry entry = new TailEntry(seq, record, estimateTextSize(record));
+            tail.addLast(entry);
+            tailChars += entry.chars();
+            evictTailLocked();
         } finally {
             tailLock.unlock();
         }
+    }
+
+    /**
+     * Evicts entries from the head while the tail is over either bound: the record-count limit or
+     * the message-text cap. Called while holding {@link #tailLock}.
+     */
+    private void evictTailLocked() {
+        while (!tail.isEmpty() && (tail.size() > tailLimit || tailChars > TAIL_TEXT_LIMIT_CHARS)) {
+            tailChars -= tail.pollFirst().chars();
+        }
+    }
+
+    /**
+     * Approximates the text size retained by one tail entry: the characters of its message text
+     * (log message, stack trace, heading/description) plus the label of a progress record.
+     *
+     * @param record the record
+     * @return the approximate retained character count
+     */
+    private static long estimateTextSize(JIPipeProgressRecord record) {
+        if (record instanceof JIPipeProgressRecord.Log logRecord) {
+            return length(logRecord.m());
+        } else if (record instanceof JIPipeProgressRecord.Error errorRecord) {
+            return length(errorRecord.c()) + length(errorRecord.m()) + length(errorRecord.st());
+        } else if (record instanceof JIPipeProgressRecord.Notification notificationRecord) {
+            return length(notificationRecord.h()) + length(notificationRecord.d());
+        }
+        return 0;
+    }
+
+    private static long length(String text) {
+        return text == null ? 0 : text.length();
     }
 
     private static boolean isRenderable(JIPipeProgressRecord record) {
@@ -362,9 +405,7 @@ public abstract class AbstractJIPipeProgressLog implements JIPipeProgressLog {
         tailLimit = limit;
         tailLock.lock();
         try {
-            while (tail.size() > limit) {
-                tail.pollFirst();
-            }
+            evictTailLocked();
         } finally {
             tailLock.unlock();
         }
@@ -577,6 +618,6 @@ public abstract class AbstractJIPipeProgressLog implements JIPipeProgressLog {
         };
     }
 
-    private record TailEntry(long seq, JIPipeProgressRecord record) {
+    private record TailEntry(long seq, JIPipeProgressRecord record, long chars) {
     }
 }

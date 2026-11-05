@@ -224,7 +224,8 @@ public interface JIPipeProgressLog extends AutoCloseable {
     void setCoalesceIntervalMillis(long ms);
 
     /**
-     * Sets the maximum number of renderable records kept in the tail. Default 8192.
+     * Sets the maximum number of renderable records kept in the tail. Default 8192. Independently of
+     * this limit, the tail retains at most ~8 MB of message text — whichever bound binds first.
      *
      * @param records the tail limit
      */
