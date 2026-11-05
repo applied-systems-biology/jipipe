@@ -257,7 +257,7 @@ public class CellposeUtils {
             Path imageFile = ioPath.resolve(entry.getValue() + basePathSuffix);
 
             // Read the slice image
-            progressInfo.log("Reading: " + imageFile);
+            progressInfo.debug("Reading: " + imageFile);
             ImagePlus sliceImg;
             if (useBioFormats) {
                 OMEImageData omeImageData = OMEImageData.simpleOMEImport(imageFile);

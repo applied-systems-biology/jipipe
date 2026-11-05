@@ -385,7 +385,7 @@ public class LegacyCellpose2InferenceAlgorithm extends JIPipeSingleIterationAlgo
         Map<ImageSliceIndex, ImagePlus> sliceMap = new HashMap<>();
         for (Map.Entry<ImageSliceIndex, String> entry : imageInfo.sliceBaseNames.entrySet()) {
             Path imageFile = ioPath.resolve(entry.getValue() + basePathSuffix);
-            progressInfo.log("Reading: " + imageFile);
+            progressInfo.debug("Reading: " + imageFile);
             ImagePlus slice;
             if (useBioFormats) {
                 OMEImageData omeImageData = OMEImageData.simpleOMEImport(imageFile);

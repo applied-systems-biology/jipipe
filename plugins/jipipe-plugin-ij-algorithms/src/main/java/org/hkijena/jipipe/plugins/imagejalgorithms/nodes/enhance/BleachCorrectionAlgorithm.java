@@ -187,7 +187,6 @@ public class BleachCorrectionAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     public static ImagePlus correctBleachExponentialFit(ImagePlus imp, Roi curROI, JIPipeProgressInfo progressInfo) {
-        final boolean verbose = true;
         int[] impdimA = imp.getDimensions();
         progressInfo.log("slices" + Integer.toString(impdimA[3]) + "  -- frames" + Integer.toString(impdimA[4]));
         // progressInfo.log(Integer.toString(imp.getNChannels())+":"+Integer.toString(imp.getNSlices())+":"+
@@ -239,7 +238,7 @@ public class BleachCorrectionAlgorithm extends JIPipeIteratingAlgorithm {
                 //for testing
                 String monitor = orgint + "\t" + corint + "\t" +
                         ratio;
-                progressInfo.log(monitor);
+                progressInfo.debug(monitor);
             }
         }
 
@@ -311,7 +310,7 @@ public class BleachCorrectionAlgorithm extends JIPipeIteratingAlgorithm {
                         ipA = stack.getProcessor(i * zframes + j + 1);
                         ipA.applyTable(F);
                     }
-                    progressInfo.log("corrected time point: " + (i + 1));
+                    progressInfo.debug("corrected time point: " + (i + 1));
                 }
             }
 
@@ -325,7 +324,7 @@ public class BleachCorrectionAlgorithm extends JIPipeIteratingAlgorithm {
                     hA = ipA.getHistogram();
                     F = m.matchHistograms(hA, hB);
                     ipA.applyTable(F);
-                    progressInfo.log("corrected frame: " + (i + 1));
+                    progressInfo.debug("corrected frame: " + (i + 1));
                 }
             }
         }
@@ -377,7 +376,7 @@ public class BleachCorrectionAlgorithm extends JIPipeIteratingAlgorithm {
                     currentInt = imgstat.mean;
                     ratio = referenceInt / currentInt;
                     curip.multiply(ratio);
-                    progressInfo.log("frame" + (i + 1) + "mean int=" + currentInt + " ratio=" + ratio);
+                    progressInfo.debug("frame" + (i + 1) + "mean int=" + currentInt + " ratio=" + ratio);
                 }
 
             }
@@ -405,7 +404,7 @@ public class BleachCorrectionAlgorithm extends JIPipeIteratingAlgorithm {
                         curip.setRoi(0, 0, imp.getWidth(), imp.getHeight());
                         curip.multiply(ratio);
                     }
-                    progressInfo.log("frame" + (i + 1) + "mean int=" + currentInt + " ratio=" + ratio);
+                    progressInfo.debug("frame" + (i + 1) + "mean int=" + currentInt + " ratio=" + ratio);
                 }
             }
         }
