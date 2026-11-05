@@ -757,7 +757,8 @@ public class JIPipeProgressInfo implements Cancelable {
 
     /**
      * Joins the labels of all ancestors of this handle's node up to the root with {@code |}.
-     * The root's label is not part of the chain.
+     * The root's label is not part of the chain; empty or blank labels (a detached progress node)
+     * contribute no segment.
      *
      * @return the label chain (empty for root handles)
      */
@@ -766,7 +767,9 @@ public class JIPipeProgressInfo implements Cancelable {
         Deque<String> labels = new ArrayDeque<>();
         JIPipeProgressNode node = currentStore.getNode(nodeId);
         while (node != null && node.getId() != currentStore.getRootNodeId()) {
-            labels.addFirst(node.getLabel() == null ? "" : node.getLabel());
+            if (node.getLabel() != null && !node.getLabel().isBlank()) {
+                labels.addFirst(node.getLabel());
+            }
             int parentId = node.getParentId();
             if (parentId <= 0 || parentId == currentStore.getRootNodeId()) {
                 break;
@@ -871,11 +874,8 @@ public class JIPipeProgressInfo implements Cancelable {
                     }
                 }
             } else if (record instanceof JIPipeProgressRecord.Progress progressRecord) {
-                int percentage = progressRecord.mx() <= 0 ? -1 : (int) (progressRecord.v() * 100L / progressRecord.mx());
-                if (percentage == 50 || percentage == 100) {
-                    builder.append(renderViewPrefix(progressRecord.id(), nodeProgress))
-                            .append(percentage).append('%').append('\n');
-                }
+                // Progress records render nothing (R15: the facade emits the percentage compat
+                // lines as log records); they only update the running per-node progress
                 if (progressRecord.mx() > 0) {
                     nodeProgress.put(progressRecord.id(), new int[]{progressRecord.v(), progressRecord.mx()});
                 }
@@ -919,6 +919,7 @@ public class JIPipeProgressInfo implements Cancelable {
 
     /**
      * Joins the labels of all ancestors of the given node up to the root with {@code |}.
+     * Empty or blank labels (a detached progress node) contribute no segment.
      *
      * @param id the node id
      * @return the label chain (empty for the root)
@@ -928,7 +929,9 @@ public class JIPipeProgressInfo implements Cancelable {
         Deque<String> labels = new ArrayDeque<>();
         JIPipeProgressNode node = currentStore.getNode(id);
         while (node != null && node.getId() != currentStore.getRootNodeId()) {
-            labels.addFirst(node.getLabel() == null ? "" : node.getLabel());
+            if (node.getLabel() != null && !node.getLabel().isBlank()) {
+                labels.addFirst(node.getLabel());
+            }
             int parentId = node.getParentId();
             if (parentId <= 0 || parentId == currentStore.getRootNodeId()) {
                 break;

@@ -13,10 +13,13 @@
 
 package org.hkijena.jipipe.api;
 
+import org.hkijena.jipipe.api.progress.JIPipeLogLevel;
+
 /**
  * A {@link JIPipeProgressInfo} that logs the progress of 0 to 100 percent.
- * Only reports integer changes in percentage: each report writes a progress record
- * (percentage value, maximum 100) into the node's store.
+ * Only reports integer changes in percentage: each threshold pass writes a progress record
+ * (percentage value, maximum 100) into the node's store and the compatibility percentage line
+ * (an INFO log record with the percentage as message) for the node's chain.
  */
 public class JIPipePercentageProgressInfo extends JIPipeProgressInfo {
 
@@ -47,8 +50,10 @@ public class JIPipePercentageProgressInfo extends JIPipeProgressInfo {
             long time = System.currentTimeMillis();
             lastPercentage = currentPercentage;
             if (time - lastTime > notifyInterval || currentPercentage == 50 || currentPercentage == 100) {
-                // Progress record with the percentage as value and 100 as maximum; the store's
-                // text render reports the 50 %/100 % points as compatibility percentage lines
+                // Compatibility percentage line: an INFO log record with the percentage as message
+                // (the pre-store text mechanism, restored by ruling R15). Emitted before the
+                // progress record so the rendered prefix shows the progress as of before the report
+                log(JIPipeLogLevel.INFO, currentPercentage + "%");
                 recordProgress(currentPercentage, 100);
                 lastTime = time;
             }

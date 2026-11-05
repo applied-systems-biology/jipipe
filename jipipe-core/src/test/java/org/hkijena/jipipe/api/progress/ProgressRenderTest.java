@@ -39,9 +39,11 @@ class ProgressRenderTest {
     /**
      * Golden: records on the node path root → "Partition 0" (PARTITION) → "Node A" (ITEM), emitted
      * in the contract's order, render the exact known lines. The prefix of a line is the node's
-     * running progress: the 50 % percentage report renders with the progress as of before the
-     * record ([5/100]), the error afterwards renders with the updated progress ([50/100]), and the
-     * root-run line has no progress record and renders with the initial 1/1.
+     * running progress: the percentage compat line is an INFO log record ("50%") that the facade
+     * emits before its progress record, so it renders with the progress as of before the report
+     * ([5/100]); the error afterwards renders with the updated progress ([50/100]), and the
+     * root-run line has no progress record and renders with the initial 1/1. Progress records
+     * render nothing — they only update the running progress.
      */
     @Test
     void renderKnownTreeMatchesGolden() {
@@ -58,6 +60,9 @@ class ProgressRenderTest {
             store.log(nodeA, JIPipeLogLevel.INFO, "msg1");
             store.log(nodeA, JIPipeLogLevel.WARN, "[WARNING] clipped");
             store.log(nodeA, JIPipeLogLevel.DEBUG, "debug detail");
+            // Percentage report of the facade: the compat line is an INFO log record emitted
+            // before the progress record (R15) — the progress record itself renders nothing
+            store.log(nodeA, JIPipeLogLevel.INFO, "50%");
             store.progress(nodeA, 50, 100);
             store.error(nodeA, boom);
             store.nodeFinished(nodeA, JIPipeProgressNodeState.OK);

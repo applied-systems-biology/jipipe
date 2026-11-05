@@ -170,6 +170,50 @@ class ProgressInfoFacadeTest {
         assertEquals(List.of(10, 50, 100), reported);
     }
 
+    /**
+     * Each percentage report emits the compatibility percentage line (an INFO log record with the
+     * percentage as message, R15) and the progress record — exactly one of each per threshold
+     * pass, the log record before the progress record (its rendered prefix shows the progress as
+     * of before the report). The throttle is respected: a repeated report re-emits nothing.
+     */
+    @Test
+    void logPercentageEmitsCompatLogLineAndProgressRecord() {
+        JIPipeProgressInfo info = new JIPipeProgressInfo();
+        JIPipePercentageProgressInfo percentage = info.percentage("P");
+        percentage.logPercentage(50, 100);
+
+        JIPipeProgressLog store = info.getStore();
+        List<JIPipeProgressRecord> records = store.readRecords(1, 64);
+        List<JIPipeProgressRecord.Progress> progress = records.stream()
+                .filter(JIPipeProgressRecord.Progress.class::isInstance)
+                .map(JIPipeProgressRecord.Progress.class::cast)
+                .toList();
+        List<JIPipeProgressRecord.Log> logs = records.stream()
+                .filter(JIPipeProgressRecord.Log.class::isInstance)
+                .map(JIPipeProgressRecord.Log.class::cast)
+                .toList();
+        assertEquals(1, progress.size());
+        assertEquals(50, progress.get(0).v());
+        assertEquals(100, progress.get(0).mx());
+        assertEquals(1, logs.size());
+        assertEquals("50%", logs.get(0).m());
+        assertEquals(JIPipeLogLevel.INFO.value(), logs.get(0).lv());
+        // Both records belong to the percentage child node; the log record comes first
+        assertEquals(percentage.getNodeId(), logs.get(0).id());
+        assertEquals(percentage.getNodeId(), progress.get(0).id());
+        assertTrue(records.indexOf(logs.get(0)) < records.indexOf(progress.get(0)),
+                "the compat line must be emitted before the progress record");
+
+        // Rendered: the percentage line comes from the log record (the progress record renders nothing)
+        assertEquals("[1/1] P | 50%\n", info.getLog().toString());
+
+        // Throttle: a repeated 50 % report re-emits nothing
+        percentage.logPercentage(50, 100);
+        records = store.readRecords(1, 64);
+        assertEquals(1, records.stream().filter(JIPipeProgressRecord.Progress.class::isInstance).count());
+        assertEquals(1, records.stream().filter(JIPipeProgressRecord.Log.class::isInstance).count());
+    }
+
     @Test
     void detachProgressCreatesChildNodeWithIndependentCounters() {
         JIPipeProgressInfo info = new JIPipeProgressInfo();
@@ -190,6 +234,38 @@ class ProgressInfoFacadeTest {
         detached.cancel("stop");
         assertTrue(info.isCancelled());
         assertEquals("stop", detached.getCancelReason());
+    }
+
+    /**
+     * A detached progress node has an empty label and must contribute no chain segment: its
+     * records render without a leading or doubled {@code |} separator (store renderer path).
+     */
+    @Test
+    void detachedChildWithEmptyLabelSkipsEmptyChainSegment() {
+        JIPipeProgressInfo info = new JIPipeProgressInfo();
+        JIPipeProgressInfo child = info.resolve("Node A");
+        child.setProgress(3, 10);
+        JIPipeProgressInfo detached = child.detachProgress();
+        detached.log("from detached");
+        // Non-persistent store: getLog renders via the store's text renderer
+        assertEquals("[3/10] Node A | from detached\n", info.getLog().toString());
+    }
+
+    /**
+     * Same chain contract on the facade mirror: a file-backed store's log view renders the
+     * detached (empty-label) node's records without an empty chain segment.
+     */
+    @Test
+    void detachedChildWithEmptyLabelSkipsEmptyChainSegmentInFileStoreView() {
+        JIPipeProgressInfo info = new JIPipeProgressInfo();
+        info.setStorageBase(tmp, "chain-skip-run", "Pipeline run");
+        JIPipeProgressInfo child = info.resolve("Node A");
+        child.setProgress(3, 10);
+        JIPipeProgressInfo detached = child.detachProgress();
+        detached.log("from detached");
+        info.getStore().finish(JIPipeProgressNodeState.OK);
+        // File-backed store: getLog renders from the tail via the facade mirror
+        assertEquals("[3/10] Node A | from detached\n", info.getLog().toString());
     }
 
     @Test

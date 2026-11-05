@@ -16,11 +16,21 @@ package org.hkijena.jipipe.api.progress;
 import java.nio.file.Path;
 
 /**
- * A progress store that renders records as compat lines to {@code System.out} on the calling thread.
- * Non-persistent: no file is written, and read-back serves the tail only. Intended for low-volume
- * use (the caller thread does the rendering).
+ * A progress store that prints records with text-line content ({@code l}, {@code e}, {@code w}) to
+ * {@code System.out} on the calling thread, in the shapes of the shared text renderer
+ * ({@code [v/mx] <chain> | message}, errors with the two-space-indented stack). All log levels
+ * print (stdout = full fidelity). Structural records ({@code head}, {@code n}, {@code N},
+ * {@code s}) and progress records ({@code p}) print nothing. Non-persistent: no file is written,
+ * and read-back serves the tail only. Intended for low-volume use (the caller thread does the
+ * printing).
  */
 public class StdoutJIPipeProgressLog extends AbstractJIPipeProgressLog {
+
+    /**
+     * Walk state of the printed records — the same walk the text renderer uses, fed in submission
+     * order, so the printed prefixes (running progress, label chain) match a full render.
+     */
+    private final RenderWalk walk = new RenderWalk(this);
 
     /**
      * Creates the store.
@@ -36,38 +46,7 @@ public class StdoutJIPipeProgressLog extends AbstractJIPipeProgressLog {
 
     @Override
     protected void writeRecord(JIPipeProgressRecord record) {
-        String line = renderCompatLine(record);
-        if (line != null) {
-            System.out.println(line);
-        }
-    }
-
-    /**
-     * Renders one record as a compat line. Structural records ({@code head}, {@code n}, {@code N},
-     * {@code s}) render nothing. Temporary until the shared text renderer (Task 3) replaces it.
-     *
-     * @param record the record
-     * @return the line, or {@code null} if the record renders nothing
-     */
-    private String renderCompatLine(JIPipeProgressRecord record) {
-        if (record instanceof JIPipeProgressRecord.Log logRecord) {
-            return logRecord.m();
-        } else if (record instanceof JIPipeProgressRecord.Progress progressRecord) {
-            JIPipeProgressNode node = getNode(progressRecord.id());
-            String label = node != null && node.getLabel() != null ? node.getLabel() : "";
-            return "[" + progressRecord.v() + "/" + progressRecord.mx() + "] " + label;
-        } else if (record instanceof JIPipeProgressRecord.Error errorRecord) {
-            StringBuilder builder = new StringBuilder();
-            builder.append(errorRecord.c()).append(": ").append(errorRecord.m());
-            if (errorRecord.st() != null) {
-                for (String stackLine : errorRecord.st().split("\n")) {
-                    builder.append("\n  ").append(stackLine);
-                }
-            }
-            return builder.toString();
-        } else if (record instanceof JIPipeProgressRecord.Notification notificationRecord) {
-            return "@ " + notificationRecord.h() + ": " + notificationRecord.d();
-        }
-        return null;
+        // All log levels print (stdout = full fidelity; no level filter)
+        walk.render(record, JIPipeLogLevel.DEBUG, System.out::println);
     }
 }

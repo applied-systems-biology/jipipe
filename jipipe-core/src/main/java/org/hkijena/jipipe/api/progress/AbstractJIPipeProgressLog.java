@@ -46,8 +46,8 @@ import java.util.function.Consumer;
  * default implementation of {@link #enqueue(long, JIPipeProgressRecord)}, or on the writer thread for
  * file-backed stores.
  * <p>
- * The tail holds the renderable records ({@code l}, {@code p}, {@code e}, {@code w}) only — structural
- * records ({@code head}, {@code n}, {@code N}, {@code s}) render nothing and are excluded. It is bounded
+ * The tail holds the non-structural records ({@code l}, {@code p}, {@code e}, {@code w}) only —
+ * structural records ({@code head}, {@code n}, {@code N}, {@code s}) are excluded. It is bounded
  * by the record-count limit (default 8,192) or by ~8 MB of message text, whichever binds first;
  * eviction removes the oldest entries. Records with
  * a node id ({@code n}, {@code l}, {@code p}, {@code e}, {@code N}) are attributed to that node's range
@@ -700,9 +700,10 @@ public abstract class AbstractJIPipeProgressLog implements JIPipeProgressLog {
      * Walk state of the compatibility text renderer: the node paths built from the {@code n}
      * records (the root's label is never part of a path) and the running per-node progress built
      * from the {@code p} records. One instance per render; the paths of unknown nodes fall back to
-     * the node index (non-persistent stores keep no {@code n} records in the tail).
+     * the node index (non-persistent stores keep no {@code n} records in the tail). Package-private
+     * so that per-record renderers ({@link StdoutJIPipeProgressLog}) reuse the exact same shapes.
      */
-    private static final class RenderWalk {
+    static final class RenderWalk {
 
         private static final int[] INITIAL_PROGRESS = {1, 1};
 
@@ -728,13 +729,8 @@ public abstract class AbstractJIPipeProgressLog implements JIPipeProgressLog {
                             logRecord.m(), lineSink);
                 }
             } else if (record instanceof JIPipeProgressRecord.Progress progressRecord) {
-                int percentage = percentage(progressRecord.v(), progressRecord.mx());
-                if (percentage == 50 || percentage == 100) {
-                    // Percentage report of the facade (mirrors its 50 %/100 % throttle); the prefix
-                    // shows the progress as of before this record
-                    lineSink.accept(prefix(chainOf(progressRecord.id()), currentState(progressRecord.id()))
-                            + percentage + "%");
-                }
+                // Progress records render nothing (R15: the facade emits the percentage compat
+                // lines as log records); they only update the running per-node progress
                 if (progressRecord.mx() > 0) {
                     // Indeterminate progress does not affect the numeric compat prefix
                     nodeProgress.put(progressRecord.id(), new int[]{progressRecord.v(), progressRecord.mx()});
@@ -779,7 +775,8 @@ public abstract class AbstractJIPipeProgressLog implements JIPipeProgressLog {
 
         /**
          * Builds the path of a node from the wire parent id: wire parents {@code 0} and {@code 1}
-         * are the root (implied by the head record), so the new path starts empty.
+         * are the root (implied by the head record), so the new path starts empty. Empty or blank
+         * labels (a detached progress node) contribute no chain segment.
          */
         private String[] childPath(int wireParentId, String label) {
             String[] parentPath;
@@ -788,9 +785,12 @@ public abstract class AbstractJIPipeProgressLog implements JIPipeProgressLog {
             } else {
                 parentPath = chainOf(wireParentId);
             }
+            if (label == null || label.isBlank()) {
+                return parentPath;
+            }
             String[] path = new String[parentPath.length + 1];
             System.arraycopy(parentPath, 0, path, 0, parentPath.length);
-            path[parentPath.length] = label == null ? "" : label;
+            path[parentPath.length] = label;
             return path;
         }
 
@@ -811,7 +811,10 @@ public abstract class AbstractJIPipeProgressLog implements JIPipeProgressLog {
             Deque<String> labels = new ArrayDeque<>();
             JIPipeProgressNode node = store.getNode(nodeId);
             while (node != null && node.getId() != ROOT_NODE_ID) {
-                labels.addFirst(node.getLabel() == null ? "" : node.getLabel());
+                // Empty or blank labels (a detached progress node) contribute no chain segment
+                if (node.getLabel() != null && !node.getLabel().isBlank()) {
+                    labels.addFirst(node.getLabel());
+                }
                 int parentId = node.getParentId();
                 if (parentId <= 0 || parentId == ROOT_NODE_ID) {
                     break;
@@ -824,10 +827,6 @@ public abstract class AbstractJIPipeProgressLog implements JIPipeProgressLog {
         private int[] currentState(int nodeId) {
             int[] state = nodeProgress.get(nodeId);
             return state != null ? state : INITIAL_PROGRESS;
-        }
-
-        private static int percentage(int value, int max) {
-            return max <= 0 ? -1 : (int) (value * 100L / max);
         }
 
         private static String prefix(String[] chain, int[] progress) {

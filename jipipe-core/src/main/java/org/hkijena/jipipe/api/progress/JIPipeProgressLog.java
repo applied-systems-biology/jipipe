@@ -248,12 +248,12 @@ public interface JIPipeProgressLog extends AutoCloseable {
      *     other records are unaffected by the level. A log record renders as
      *     {@code [v/mx] <chain> | message}, where {@code v/mx} is the node's running progress
      *     (the last {@code p} record of the node, initially {@code 1/1}) and {@code <chain>} is
-     *     the node's path labels joined with {@code |}. The root's label is not part of the chain;
-     *     a record of the root itself renders without the chain part.</li>
-     * <li>A progress record ({@code p}) renders as {@code [v/mx] <chain> | <p>%} at the facade's
-     *     percentage report points (50 % and 100 %); the prefix shows the progress as of before
-     *     the record. Progress records with another percentage, and progress with an indeterminate
-     *     maximum, update the running progress without rendering.</li>
+     *     the node's path labels joined with {@code |}, skipping empty labels (a detached
+     *     progress node contributes no segment). The root's label is not part of the chain;
+     *     a record of the root itself renders without the chain part. The facade reports its
+     *     percentage points as {@code l} records (e.g. {@code 50%}).</li>
+     * <li>A progress record ({@code p}) renders nothing; it only updates the running progress
+     *     of the following lines (indeterminate progress does not affect it).</li>
      * <li>An error record ({@code e}) renders as {@code [v/mx] <chain> | <class>: <message>}
      *     followed by one line per stack trace line, indented two spaces.</li>
      * <li>A notification record ({@code w}) renders as {@code @ <heading>: <description>}
