@@ -1,2 +1,3 @@
 org.hkijena.jipipe.ImageJLegacyPatcherLauncherSessionListener
 org.hkijena.jipipe.ImageJHeadlessLogListener
+org.hkijena.jipipe.TestProfileIsolationLauncherSessionListener

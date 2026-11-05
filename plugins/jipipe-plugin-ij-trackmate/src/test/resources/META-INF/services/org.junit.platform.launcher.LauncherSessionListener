@@ -1,1 +1,2 @@
 org.hkijena.jipipe.plugins.ijtrackmate.ImageJLegacyPatcherLauncherSessionListener
+org.hkijena.jipipe.plugins.ijtrackmate.TestProfileIsolationLauncherSessionListener

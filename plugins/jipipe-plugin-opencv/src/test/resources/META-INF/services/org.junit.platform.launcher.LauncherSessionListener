@@ -1,1 +1,2 @@
 org.hkijena.jipipe.plugins.opencv.ImageJLegacyPatcherLauncherSessionListener
+org.hkijena.jipipe.plugins.opencv.TestProfileIsolationLauncherSessionListener

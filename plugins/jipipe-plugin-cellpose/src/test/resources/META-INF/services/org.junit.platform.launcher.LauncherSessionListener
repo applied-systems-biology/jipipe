@@ -1,1 +1,2 @@
 org.hkijena.jipipe.plugins.cellpose.ImageJLegacyPatcherLauncherSessionListener
+org.hkijena.jipipe.plugins.cellpose.TestProfileIsolationLauncherSessionListener
