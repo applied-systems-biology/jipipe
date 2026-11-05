@@ -10,8 +10,6 @@ import java.awt.*;
 
 public class JIPipeDesktopGraphEditorLogPanel extends JIPipeDesktopWorkbenchPanel {
 
-    private final JCheckBox autoShowProgress = new JCheckBox("Auto show progress");
-    private final JCheckBox autoShowResults = new JCheckBox("Auto show results");
     private final JIPipeDesktopRunQueueLoggerPanel loggerPanel;
 
     public JIPipeDesktopGraphEditorLogPanel(JIPipeDesktopWorkbench workbench) {
@@ -21,22 +19,22 @@ public class JIPipeDesktopGraphEditorLogPanel extends JIPipeDesktopWorkbenchPane
     }
 
     private void initialize() {
-        autoShowProgress.setSelected(true);
-        autoShowResults.setSelected(true);
-
         setLayout(new BorderLayout());
         add(loggerPanel, BorderLayout.CENTER);
 
-        loggerPanel.addHeaderPanelComponent(autoShowProgress);
-        loggerPanel.addHeaderPanelComponent(autoShowResults);
+        // The Show log / Auto show progress / Auto view results toggles are provided by the
+        // progress tree panel's header; the editor only preserves its previous defaults here
+        // (the run managers read them via the getters below)
+        loggerPanel.setAutoShowProgressSelected(true);
+        loggerPanel.setAutoViewResultsSelected(true);
         loggerPanel.addDefaultCancelButton();
     }
 
     public boolean isAutoShowProgress() {
-        return autoShowProgress.isSelected();
+        return loggerPanel.isAutoShowProgress();
     }
 
     public boolean isAutoShowResults() {
-        return autoShowResults.isSelected();
+        return loggerPanel.isAutoViewResults();
     }
 }
