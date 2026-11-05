@@ -79,8 +79,8 @@ public class JIPipeDesktopRunnableLogsCollection implements JIPipeRunnable.Finis
     }
 
     public void pushToLog(JIPipeRunnable run, boolean success) {
-        StringBuilder log = run.getProgressInfo().getLog();
-        if (log != null && !log.isEmpty()) {
+        CharSequence log = run.getProgressInfo().getLog();
+        if (log != null && log.length() > 0) {
             final JIPipeRuntimeApplicationSettings runtimeSettings = JIPipeRuntimeApplicationSettings.getInstance();
             if (runtimeSettings != null && logEntries.size() + 1 > runtimeSettings.getLogLimit()) {
                 logEntries.removeFirst();

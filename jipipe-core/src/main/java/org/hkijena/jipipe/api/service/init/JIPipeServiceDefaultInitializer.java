@@ -67,7 +67,10 @@ public class JIPipeServiceDefaultInitializer extends JIPipeServiceInitializer {
 
         getProgressInfo().setProgress(0, 5);
         if (isVerbose()) {
-            getProgressInfo().getStatusUpdatedEventEmitter().subscribeLambda((emitter, event) -> {
+            // Standalone unfed emitter: the facade no longer exposes/fires the per-line status event
+            // path (deprecated trio; removed in the consumer rewrite)
+            JIPipeProgressInfo.StatusUpdatedEventEmitter statusUpdatedEventEmitter = new JIPipeProgressInfo.StatusUpdatedEventEmitter();
+            statusUpdatedEventEmitter.subscribeLambda((emitter, event) -> {
                 getService().getLogService().info(event.getMessage());
             });
         }

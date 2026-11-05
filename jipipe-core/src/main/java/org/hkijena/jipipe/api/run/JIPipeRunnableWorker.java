@@ -30,6 +30,13 @@ public class JIPipeRunnableWorker extends SwingWorker<Throwable, Object> impleme
     private final AtomicLong startTime = new AtomicLong();
     private final AtomicLong endTime = new AtomicLong();
     private final boolean silent;
+
+    /**
+     * @deprecated superseded by the progress store's batch emitter; removed in the consumer rewrite.
+     * Standalone and unfed: the facade no longer emits per-line status events.
+     */
+    @Deprecated
+    private final JIPipeProgressInfo.StatusUpdatedEventEmitter statusUpdatedEventEmitter = new JIPipeProgressInfo.StatusUpdatedEventEmitter();
     private final JIPipeRunnable.InterruptedEventEmitter interruptedEventEmitter = new JIPipeRunnable.InterruptedEventEmitter();
     private final JIPipeRunnable.FinishedEventEmitter finishedEventEmitter = new JIPipeRunnable.FinishedEventEmitter();
     private final JIPipeRunnable.ProgressEventEmitter progressEventEmitter = new JIPipeRunnable.ProgressEventEmitter();
@@ -41,7 +48,7 @@ public class JIPipeRunnableWorker extends SwingWorker<Throwable, Object> impleme
     public JIPipeRunnableWorker(JIPipeRunnable run, boolean silent) {
         this.run = run;
         this.silent = silent;
-        this.run.getProgressInfo().getStatusUpdatedEventEmitter().subscribe(this);
+        this.statusUpdatedEventEmitter.subscribe(this);
     }
 
     @Override

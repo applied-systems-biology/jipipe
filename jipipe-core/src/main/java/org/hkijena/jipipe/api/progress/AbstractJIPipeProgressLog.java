@@ -194,6 +194,19 @@ public abstract class AbstractJIPipeProgressLog implements JIPipeProgressLog {
     }
 
     @Override
+    public final void notification(String heading, String description) {
+        submitLock.lock();
+        try {
+            if (!startRunLocked()) {
+                return;
+            }
+            submitLocked(JIPipeProgressRecord.notification(heading, description, now()));
+        } finally {
+            submitLock.unlock();
+        }
+    }
+
+    @Override
     public final void nodeFinished(int nodeId, JIPipeProgressNodeState state) {
         Objects.requireNonNull(state, "Node state must not be null");
         submitLock.lock();

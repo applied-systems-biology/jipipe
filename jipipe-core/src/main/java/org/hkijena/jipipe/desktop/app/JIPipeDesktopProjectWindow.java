@@ -783,7 +783,10 @@ public class JIPipeDesktopProjectWindow extends JFrame {
             }
             workbench.getProjectSavingEventEmitter().emit(new JIPipeDesktopProjectWorkbench.ProjectSavingEvent(workbench, true, stage));
         };
-        run.getProgressInfo().getStatusUpdatedEventEmitter().subscribe(stageListener);
+        // Standalone unfed emitter: the facade no longer exposes/fires the per-line status event path
+        // (deprecated trio; removed in the consumer rewrite)
+        final JIPipeProgressInfo.StatusUpdatedEventEmitter stageEventEmitter = new JIPipeProgressInfo.StatusUpdatedEventEmitter();
+        stageEventEmitter.subscribe(stageListener);
 
         // The SAVING state is shown as soon as the run actually starts (not
         // merely when it is enqueued - it may wait behind another save on
@@ -815,7 +818,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
             queue.getFinishedEventEmitter().unsubscribe(finishHolder[0]);
             queue.getInterruptedEventEmitter().unsubscribe(interruptHolder[0]);
             queue.getStartedEventEmitter().unsubscribe(startListener);
-            run.getProgressInfo().getStatusUpdatedEventEmitter().unsubscribe(stageListener);
+            stageEventEmitter.unsubscribe(stageListener);
             SwingUtilities.invokeLater(() -> onSaveFinished(run, failure, failureStage, savePath, updateSavePath));
         };
         JIPipeRunnable.InterruptedEventListener interruptListener = event -> {
@@ -825,7 +828,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
             queue.getFinishedEventEmitter().unsubscribe(finishHolder[0]);
             queue.getInterruptedEventEmitter().unsubscribe(interruptHolder[0]);
             queue.getStartedEventEmitter().unsubscribe(startListener);
-            run.getProgressInfo().getStatusUpdatedEventEmitter().unsubscribe(stageListener);
+            stageEventEmitter.unsubscribe(stageListener);
             SwingUtilities.invokeLater(() -> onSaveCancelled(run, savePath));
         };
         finishHolder[0] = finishListener;

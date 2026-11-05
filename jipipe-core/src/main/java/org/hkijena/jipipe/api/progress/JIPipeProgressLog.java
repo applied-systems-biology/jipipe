@@ -152,6 +152,15 @@ public interface JIPipeProgressLog extends AutoCloseable {
     void error(int nodeId, Throwable throwable);
 
     /**
+     * Enqueues a run-level user-facing notification record ({@code w}). The record is not
+     * attributed to a node.
+     *
+     * @param heading     the notification heading
+     * @param description the notification description
+     */
+    void notification(String heading, String description);
+
+    /**
      * Enqueues a node-finished record ({@code N}) and updates the node's state.
      *
      * @param nodeId the node id

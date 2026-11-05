@@ -178,7 +178,7 @@ public class JIPipeDesktopProgressLoggerPanel extends JIPipeDesktopWorkbenchPane
 
             // Populate existing log entries if requested
             if (populateExistingLog) {
-                StringBuilder existingLog = progressInfo.getLog();
+                CharSequence existingLog = progressInfo.getLog();
                 if (existingLog != null && existingLog.length() > 0) {
                     String logText = existingLog.toString();
                     String[] lines = logText.split("\n");
@@ -328,14 +328,14 @@ public class JIPipeDesktopProgressLoggerPanel extends JIPipeDesktopWorkbenchPane
 
     private void subscribeToSource(ProgressSource source) {
         if (!source.subscribed && source.progressInfo != null) {
-            source.progressInfo.getStatusUpdatedEventEmitter().subscribeWeak(source.listener);
+            source.statusUpdatedEventEmitter.subscribeWeak(source.listener);
             source.subscribed = true;
         }
     }
 
     private void unsubscribeFromSource(ProgressSource source) {
-        if (source.subscribed && source.progressInfo != null && source.progressInfo.getStatusUpdatedEventEmitter() != null) {
-            source.progressInfo.getStatusUpdatedEventEmitter().unsubscribe(source.listener);
+        if (source.subscribed && source.progressInfo != null && source.statusUpdatedEventEmitter != null) {
+            source.statusUpdatedEventEmitter.unsubscribe(source.listener);
             source.subscribed = false;
         }
     }
@@ -411,6 +411,13 @@ public class JIPipeDesktopProgressLoggerPanel extends JIPipeDesktopWorkbenchPane
     private class ProgressSource {
         final String name;
         final JIPipeProgressInfo progressInfo;
+
+        /**
+         * @deprecated superseded by the progress store's batch emitter; removed in the consumer rewrite.
+         * Standalone and unfed: the facade no longer emits per-line status events.
+         */
+        @Deprecated
+        final JIPipeProgressInfo.StatusUpdatedEventEmitter statusUpdatedEventEmitter = new JIPipeProgressInfo.StatusUpdatedEventEmitter();
         final JIPipeProgressInfo.StatusUpdatedEventListener listener;
         boolean subscribed;
 

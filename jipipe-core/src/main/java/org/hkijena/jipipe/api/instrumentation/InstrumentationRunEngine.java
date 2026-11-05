@@ -121,13 +121,16 @@ public class InstrumentationRunEngine {
             double fraction = event.getMaxProgress() > 0 ? (double) event.getProgress() / event.getMaxProgress() : 0.0;
             job.updateProgress(fraction, event.getMessage());
         };
-        progressInfo.getStatusUpdatedEventEmitter().subscribe(progressListener);
+        // Standalone unfed emitter: the facade no longer exposes/fires the per-line status event path
+        // (deprecated trio; removed in the consumer rewrite)
+        JIPipeProgressInfo.StatusUpdatedEventEmitter progressEventEmitter = new JIPipeProgressInfo.StatusUpdatedEventEmitter();
+        progressEventEmitter.subscribe(progressListener);
         try {
             job.updateProgress(0.0, "Starting...");
             run.run();
             job.updateProgress(1.0, "Done");
         } finally {
-            progressInfo.getStatusUpdatedEventEmitter().unsubscribe(progressListener);
+            progressEventEmitter.unsubscribe(progressListener);
         }
 
         // Clear data
@@ -164,13 +167,16 @@ public class InstrumentationRunEngine {
             double fraction = event.getMaxProgress() > 0 ? (double) event.getProgress() / event.getMaxProgress() : 0.0;
             job.updateProgress(fraction, event.getMessage());
         };
-        progressInfo.getStatusUpdatedEventEmitter().subscribe(progressListener);
+        // Standalone unfed emitter: the facade no longer exposes/fires the per-line status event path
+        // (deprecated trio; removed in the consumer rewrite)
+        JIPipeProgressInfo.StatusUpdatedEventEmitter progressEventEmitter = new JIPipeProgressInfo.StatusUpdatedEventEmitter();
+        progressEventEmitter.subscribe(progressListener);
         try {
             job.updateProgress(0.0, "Starting...");
             run.run();
             job.updateProgress(1.0, "Done");
         } finally {
-            progressInfo.getStatusUpdatedEventEmitter().unsubscribe(progressListener);
+            progressEventEmitter.unsubscribe(progressListener);
         }
     }
 

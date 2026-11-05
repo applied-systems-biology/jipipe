@@ -176,7 +176,9 @@ public class JIPipeAIServiceComponent extends JIPipeServiceComponent {
 
     /**
      * Gets the progress info for embedding-related operations.
-     * Subscribe to {@code getEmbeddingProgressInfo().getStatusUpdatedEventEmitter()} to receive log updates.
+     * Subscribe to the embedding progress info's (deprecated, unfed) status-updated emitter to receive log updates.
+     * Note: the facade no longer fires per-line status events; consumers are rewritten onto the progress store's
+     * batch emitter in the consumer rewrite.
      *
      * @return the embedding progress info
      */
