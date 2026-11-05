@@ -25,6 +25,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -54,6 +55,7 @@ class JIPipeDesktopDialog extends JDialog {
     private final JPanel bodyPanel = new JPanel(new BorderLayout(0, 12));
     private final JPanel buttonPanel = new JPanel(new BorderLayout());
     private final List<JButton> actionButtons = new ArrayList<>();
+    private final List<Button> buttonDescriptors = new ArrayList<>();
     private JComponent content;
     private boolean cancelable;
     private boolean explicitSize;
@@ -228,23 +230,35 @@ class JIPipeDesktopDialog extends JDialog {
     /**
      * Installs the action buttons at the bottom of the dialog. If the dialog
      * is {@linkplain #setCancelable(boolean) cancelable} and no
-     * {@link Button#CANCEL} is given, a Cancel button is appended last.
+     * {@link Button#CANCEL} is given, a Cancel button is added.
+     * <p>
+     * Button order contract (the #1341 UX review): the Cancel button is
+     * always ordered left-most and the default-flagged action always
+     * right-most; the remaining buttons keep their given order in between.
      * <p>
      * The first button flagged with {@link Button#asDefault()} is registered
      * as the root pane's default button, so Enter activates it while focus
      * is not in a component that consumes Enter (e.g. a text field). If no
      * button is flagged, any previously registered default button is cleared.
+     * A default-flagged {@link Button#CANCEL} is registered for Enter but
+     * never receives the primary fill: Cancel is a dismissal, not an
+     * affirmation.
      *
-     * @param buttons the action buttons, left to right
+     * @param buttons the action buttons in the caller's preferred order
      */
     void setButtons(Button... buttons) {
         buttonPanel.removeAll();
         actionButtons.clear();
+        buttonDescriptors.clear();
 
         List<Button> effective = new ArrayList<>(List.of(buttons));
         if (cancelable && effective.stream().noneMatch(b -> b == Button.CANCEL)) {
             effective.add(Button.CANCEL);
         }
+        // The order contract: Cancel first, the default-flagged action last,
+        // everything else in between. List.sort is stable, so every class
+        // keeps its relative order.
+        effective.sort(Comparator.comparingInt((Button b) -> b == Button.CANCEL ? 0 : b.isDefault() ? 2 : 1));
 
         JPanel row = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
         JButton defaultButton = null;
@@ -253,8 +267,16 @@ class JIPipeDesktopDialog extends JDialog {
             jButton.addActionListener(e -> onActionClicked(b));
             if (defaultButton == null && b.isDefault()) {
                 defaultButton = jButton;
-                styleAsPrimary(jButton);
+                // Cancel never renders as the primary action, even when it is
+                // the default-flagged button (the #1341 UX review): Cancel is
+                // a dismissal, not an affirmation. The label check covers a
+                // default-flagged copy of CANCEL too, which loses the
+                // constant's identity via asDefault().
+                if (!Button.CANCEL.getLabel().equals(b.getLabel())) {
+                    styleAsPrimary(jButton);
+                }
             }
+            buttonDescriptors.add(b);
             actionButtons.add(jButton);
             row.add(jButton);
         }
@@ -429,6 +451,25 @@ class JIPipeDesktopDialog extends JDialog {
     /**
      * @return the action buttons in display order, for tests
      */
+    /**
+     * Resolves a button descriptor to the {@link JButton} installed for it.
+     * Identity comparison: the facade hands its default-flagged copies to
+     * {@link #setButtons(Button...)} and resolves them back this way, so the
+     * Enter wiring works regardless of the button order contract.
+     *
+     * @param descriptor the descriptor instance that was passed to
+     *                   {@link #setButtons(Button...)}
+     * @return the installed button, or null when the descriptor is not present
+     */
+    JButton getActionButton(Button descriptor) {
+        for (int i = 0; i < buttonDescriptors.size(); i++) {
+            if (buttonDescriptors.get(i) == descriptor) {
+                return actionButtons.get(i);
+            }
+        }
+        return null;
+    }
+
     List<JButton> getActionButtons() {
         return actionButtons;
     }

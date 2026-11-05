@@ -141,8 +141,9 @@ class BuilderTest {
         JIPipeDesktopDialog defaults = JIPipeDesktopDialogs.builder(null, "t").message("m").build();
         List<JButton> buttons = defaults.getActionButtons();
         assertEquals(2, buttons.size(), "the default set must be OK plus the implicit Cancel");
-        assertEquals("OK", buttons.get(0).getText(), "the default set must start with OK");
-        assertEquals("Cancel", buttons.get(1).getText(), "the implicit Cancel must come last");
+        assertEquals("Cancel", buttons.get(0).getText(),
+                "the implicit Cancel must be left-most (the button order contract)");
+        assertEquals("OK", buttons.get(1).getText(), "the default set's OK comes after the Cancel button");
 
         // An explicit set under the default cancelable(true) gets the
         // implicit Cancel appended once - by the chrome, not the Builder.
@@ -152,8 +153,9 @@ class BuilderTest {
                 .build();
         List<JButton> customButtons = custom.getActionButtons();
         assertEquals(2, customButtons.size(), "the implicit Cancel must be appended exactly once");
-        assertEquals("Apply", customButtons.get(0).getText(), "the explicit button keeps its position");
-        assertEquals("Cancel", customButtons.get(1).getText(), "the implicit Cancel must come last");
+        assertEquals("Cancel", customButtons.get(0).getText(),
+                "the implicit Cancel must be left-most (the button order contract)");
+        assertEquals("Apply", customButtons.get(1).getText(), "the explicit button comes after the Cancel button");
     }
 
     @Test

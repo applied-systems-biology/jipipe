@@ -274,9 +274,10 @@ public final class JIPipeDesktopDialogs {
         JIPipeDesktopDialog dialog = newInputDialog(parent, title, message, field, ok);
         // Enter inside the field submits the OK action (spec §4.2): the
         // field's action event (fired on Enter) clicks the OK button - the
-        // same code path as an OK click. Index 0 is the OK button: it is the
-        // only caller-provided button (the implicit Cancel is appended last).
-        JButton okButton = dialog.getActionButtons().get(0);
+        // same code path as an OK click. The button is resolved by identity
+        // (the button order contract places Cancel left-most, so no
+        // positional lookup is safe).
+        JButton okButton = dialog.getActionButton(ok);
         field.addActionListener(e -> okButton.doClick());
         dialog.showAndWait();
         if (!okChosen(dialog, ok)) {
@@ -429,10 +430,10 @@ public final class JIPipeDesktopDialogs {
             content.add(errorLabel, BorderLayout.SOUTH);
             JIPipeDesktopDialog dialog = newInputDialog(parent, title, message, content, ok);
             // Enter inside the field submits the OK action (spec §4.2): the
-            // same wiring as inputText. Index 0 is the OK button: it is the
-            // only caller-provided button (the implicit Cancel is appended
-            // last).
-            JButton okButton = dialog.getActionButtons().get(0);
+            // same wiring as inputText. The button is resolved by identity
+            // (the button order contract places Cancel left-most, so no
+            // positional lookup is safe).
+            JButton okButton = dialog.getActionButton(ok);
             field.addActionListener(e -> okButton.doClick());
             dialog.showAndWait();
             if (!okChosen(dialog, ok)) {

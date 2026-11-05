@@ -147,9 +147,9 @@ Semantics, all of which exist to kill the bug class:
 - `confirm` — Yes/No dialog: YES → `true`, NO → `false`, dismissed → `false`.
   (Identical truth table to the current `== JOptionPane.YES_OPTION` idiom, so
   migrations are mechanical.)
-- `choose` — buttons: `options` left-to-right, then an implicit **Cancel**
-  appended (skipped if the caller already included `Button.CANCEL`).
-  Result: the chosen button (same instance), or empty on dismiss.
+- `choose` — buttons: an implicit **Cancel** is added (skipped if the caller
+  already included `Button.CANCEL`). Result: the chosen button (same
+  instance), or empty on dismiss.
 - `message` — OK-only; returns void.
 - `error` — message plus, when `cause != null`, a bounded (≈150px max,
   scrollable) read-only monospaced text area with the stack trace below the
@@ -230,7 +230,13 @@ Button-set rules (unambiguous):
 2. `cancelable(false)` suppresses the Cancel button entirely (non-cancelable
    "proceed" dialogs).
 3. Otherwise (default `cancelable(true)`), an implicit `Button.CANCEL` is
-   appended if the effective set does not already contain one.
+   added if the effective set does not already contain one.
+4. **Button order contract** (the #1341 UX review): the Cancel button is
+   always rendered left-most and the default-flagged action always
+   right-most, regardless of the order the buttons were given in; the
+   remaining buttons keep their relative order in between. A default-flagged
+   Cancel is registered for Enter but never receives the primary fill
+   (Cancel is a dismissal, not an affirmation).
 
 ### 4.5 Test seam — `DialogPresenter`
 

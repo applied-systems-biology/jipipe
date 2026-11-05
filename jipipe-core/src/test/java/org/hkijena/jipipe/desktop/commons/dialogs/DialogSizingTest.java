@@ -85,7 +85,7 @@ class DialogSizingTest {
         for (JButton button : buttons) {
             assertEquals(width, button.getPreferredSize().width,
                     "action buttons must share one width (primary fill included): " + button.getText());
-            assertEquals(UIUtils.PARAMETER_BUTTON_HEIGHT, button.getPreferredSize().height);
+            assertEquals(UIUtils.DIALOG_BUTTON_HEIGHT, button.getPreferredSize().height);
         }
     }
 

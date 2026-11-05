@@ -100,7 +100,7 @@ class DismissMappingTest {
         // Yes → true.
         JIPipeDesktopDialogs.setPresenter(dialog -> {
             captured = dialog;
-            dialog.getActionButtons().get(0).doClick();
+            findButton(dialog, "Yes").doClick();
             return dialog;
         });
         assertTrue(JIPipeDesktopDialogs.confirm(null, "t", "m"),
@@ -114,7 +114,7 @@ class DismissMappingTest {
         // No → false.
         JIPipeDesktopDialogs.setPresenter(dialog -> {
             captured = dialog;
-            dialog.getActionButtons().get(1).doClick();
+            findButton(dialog, "No").doClick();
             return dialog;
         });
         assertFalse(JIPipeDesktopDialogs.confirm(null, "t", "m"),
@@ -138,10 +138,12 @@ class DismissMappingTest {
         assertTrue(dismissed.isEmpty(),
                 "a dismissed choose dialog must return Optional.empty()");
 
-        // Clicking an option → that exact instance.
+        // Clicking an option → that exact instance (resolved by identity: the
+        // order contract places the Cancel button left-most, so no positional
+        // lookup is safe).
         JIPipeDesktopDialogs.setPresenter(dialog -> {
             captured = dialog;
-            dialog.getActionButtons().get(0).doClick();
+            dialog.getActionButton(custom).doClick();
             return dialog;
         });
         Optional<Button> chosen = JIPipeDesktopDialogs.choose(null, "t", "m", custom);
@@ -194,7 +196,7 @@ class DismissMappingTest {
         // is the default-flagged copy (never the Button.OK constant).
         JIPipeDesktopDialogs.setPresenter(dialog -> {
             captured = dialog;
-            dialog.getActionButtons().get(0).doClick();
+            findButton(dialog, "OK").doClick();
             return dialog;
         });
         Optional<String> value = JIPipeDesktopDialogs.inputText(null, "t", "m", "abc");
@@ -202,11 +204,12 @@ class DismissMappingTest {
         assertTrue(captured.getResult().orElseThrow().isDefault(),
                 "the recorded result must be the default-flagged OK copy");
 
-        // Cancel (the implicit last button) is not an OK choice - and, being
-        // a different instance, can never be confused with the flagged copy.
+        // Cancel (left-most per the button order contract) is not an OK
+        // choice - and, being a different instance, can never be confused
+        // with the flagged copy.
         JIPipeDesktopDialogs.setPresenter(dialog -> {
             captured = dialog;
-            dialog.getActionButtons().get(1).doClick();
+            findButton(dialog, "Cancel").doClick();
             return dialog;
         });
         Optional<String> cancelled = JIPipeDesktopDialogs.inputText(null, "t", "m", "abc");
@@ -246,6 +249,15 @@ class DismissMappingTest {
                 if (found != null) {
                     return found;
                 }
+            }
+        }
+        return null;
+    }
+
+    private static JButton findButton(JIPipeDesktopDialog dialog, String label) {
+        for (JButton button : dialog.getActionButtons()) {
+            if (label.equals(button.getText())) {
+                return button;
             }
         }
         return null;

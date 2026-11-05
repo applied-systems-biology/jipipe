@@ -88,8 +88,8 @@ class ChooseButtonsTest {
         List<JButton> buttons = captured.getActionButtons();
         assertEquals(3, buttons.size(),
                 "two options must yield exactly three action buttons (options + one implicit Cancel)");
-        assertEquals("Cancel", buttons.get(2).getText(),
-                "the implicit Cancel must come last");
+        assertEquals("Cancel", buttons.get(0).getText(),
+                "the implicit Cancel must be left-most (the button order contract)");
         assertEquals(1, buttons.stream().filter(b -> "Cancel".equals(b.getText())).count(),
                 "exactly one Cancel button must be present");
     }
@@ -100,8 +100,8 @@ class ChooseButtonsTest {
         List<JButton> buttons = captured.getActionButtons();
         assertEquals(2, buttons.size(),
                 "an explicit CANCEL must not be duplicated by the implicit one");
-        assertEquals("Cancel", buttons.get(1).getText(),
-                "the caller's CANCEL keeps its position");
+        assertEquals("Cancel", buttons.get(0).getText(),
+                "the caller's CANCEL is left-most (the button order contract)");
     }
 
     @Test
@@ -205,7 +205,9 @@ class ChooseButtonsTest {
 
         JIPipeDesktopDialogs.setPresenter(dialog -> {
             captured = dialog;
-            dialog.getActionButtons().get(0).doClick();
+            // Resolved by identity: the order contract places the Cancel
+            // button left-most, so no positional lookup is safe.
+            dialog.getActionButton(custom).doClick();
             return dialog;
         });
         Optional<Button> chosen = JIPipeDesktopDialogs.choose(null, "t", "m", custom);

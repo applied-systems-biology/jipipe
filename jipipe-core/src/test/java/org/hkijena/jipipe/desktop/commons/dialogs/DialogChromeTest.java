@@ -91,7 +91,9 @@ class DialogChromeTest {
         Button b = Button.custom("Do it").asDefault();
         JIPipeDesktopDialog d = newDialog();
         d.setButtons(b, Button.CANCEL);
-        d.getActionButtons().get(0).doClick();
+        // Resolved by identity: the order contract places the default-flagged
+        // action right-most, so no positional lookup is safe.
+        d.getActionButton(b).doClick();
         Optional<Button> result = d.getResult();
         assertTrue(result.isPresent(), "clicking a non-cancel button must set the result");
         assertSame(b, result.get(), "the result must be the exact Button instance the caller passed");
@@ -101,8 +103,7 @@ class DialogChromeTest {
     void cancelClickDismisses() {
         JIPipeDesktopDialog d = newDialog();
         d.setButtons(Button.OK, Button.CANCEL);
-        JButton cancel = d.getActionButtons().get(1);
-        cancel.doClick();
+        d.getActionButton(Button.CANCEL).doClick();
         Optional<Button> result = d.getResult();
         assertTrue(result.isEmpty(), "clicking CANCEL must funnel into dismiss() (empty result)");
     }
@@ -114,12 +115,55 @@ class DialogChromeTest {
         d.setButtons(Button.YES, Button.NO);
         List<JButton> buttons = d.getActionButtons();
         assertEquals(3, buttons.size(), "cancelable dialog must append the implicit Cancel button");
-        assertEquals("Cancel", buttons.get(2).getText(), "implicit Cancel must come last");
+        assertEquals("Cancel", buttons.get(0).getText(),
+                "the implicit Cancel must be left-most (the button order contract)");
 
         JIPipeDesktopDialog notCancelable = newDialog();
         notCancelable.setCancelable(false);
         notCancelable.setButtons(Button.YES, Button.NO);
         assertEquals(2, notCancelable.getActionButtons().size(), "non-cancelable dialog must not append a Cancel button");
+    }
+
+    @Test
+    void buttonOrderContract() {
+        // The #1341 UX review: the Cancel button is always left-most, the
+        // default-flagged action always right-most, the rest keep their given
+        // order in between.
+        JIPipeDesktopDialog d = newDialog();
+        d.setCancelable(true);
+        Button def = Button.custom("Go").asDefault();
+        d.setButtons(def, Button.custom("Mid"), Button.OK);
+        List<JButton> buttons = d.getActionButtons();
+        assertEquals(4, buttons.size());
+        assertEquals("Cancel", buttons.get(0).getText(), "the Cancel button must be left-most");
+        assertEquals("Mid", buttons.get(1).getText(), "middle buttons keep their given order");
+        assertEquals("OK", buttons.get(2).getText());
+        assertEquals("Go", buttons.get(3).getText(), "the default-flagged action must be right-most");
+        assertSame(d.getRootPane().getDefaultButton(), d.getActionButton(def),
+                "the right-most (default-flagged) button must be the root pane's default");
+    }
+
+    @Test
+    void defaultFlaggedCancelGetsNoPrimaryFill() {
+        // The #1341 UX review: if Cancel is the default (primary) button, the
+        // primary rendering is turned off - Cancel is a dismissal, not an
+        // affirmation. It is still registered for Enter.
+        Button cancelCopy = Button.CANCEL.asDefault();
+        JIPipeDesktopDialog d = newDialog();
+        d.setButtons(cancelCopy);
+        JButton cancel = d.getActionButton(cancelCopy);
+        assertNotNull(cancel);
+        assertSame(d.getRootPane().getDefaultButton(), cancel,
+                "the default-flagged Cancel must still be the root pane's default button");
+        assertTrue(cancel.isContentAreaFilled(),
+                "the Cancel button must not receive the primary fill styling");
+
+        // Contrast: a default-flagged non-Cancel button does get the fill.
+        JIPipeDesktopDialog affirmed = newDialog();
+        Button go = Button.custom("Go").asDefault();
+        affirmed.setButtons(go);
+        assertFalse(affirmed.getActionButton(go).isContentAreaFilled(),
+                "a default-flagged affirmative button receives the primary fill");
     }
 
     @Test
