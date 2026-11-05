@@ -14,11 +14,13 @@
 package org.hkijena.jipipe.desktop.commons.dialogs;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.utils.UIUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -68,6 +70,23 @@ class DialogSizingTest {
         dialog.applyDialogSize();
         assertEquals(500, dialog.getWidth());
         assertEquals(300, dialog.getHeight());
+    }
+
+    @Test
+    void actionButtonsHaveEqualWidths() {
+        // Uniform dialog footers (the #1341 UX review): every action button
+        // must share the width of the widest one, primary fill included.
+        JIPipeDesktopDialog dialog = new JIPipeDesktopDialog(null, "Delete rows");
+        dialog.addMessage("Do you really want to delete the selected ROW(S)?");
+        dialog.setButtons(Button.YES.asDefault(), Button.NO, Button.CANCEL);
+        List<JButton> buttons = dialog.getActionButtons();
+        assertEquals(3, buttons.size());
+        int width = buttons.get(0).getPreferredSize().width;
+        for (JButton button : buttons) {
+            assertEquals(width, button.getPreferredSize().width,
+                    "action buttons must share one width (primary fill included): " + button.getText());
+            assertEquals(UIUtils.STANDARD_BUTTON_HEIGHT, button.getPreferredSize().height);
+        }
     }
 
     @Test

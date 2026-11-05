@@ -13,7 +13,10 @@
 
 package org.hkijena.jipipe.desktop.commons.dialogs;
 
+import org.hkijena.jipipe.desktop.commons.theme.ui.JIPipeDesktopRoundedButtonUI;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 
 import javax.swing.*;
 import java.awt.*;
@@ -47,6 +50,8 @@ class JIPipeDesktopDialog extends JDialog {
 
     private final Window owner;
     private final JLabel messageLabel;
+    private final JLabel messageIconLabel = new JLabel();
+    private final JPanel bodyPanel = new JPanel(new BorderLayout(0, 12));
     private final JPanel buttonPanel = new JPanel(new BorderLayout());
     private final List<JButton> actionButtons = new ArrayList<>();
     private JComponent content;
@@ -80,12 +85,28 @@ class JIPipeDesktopDialog extends JDialog {
 
         JPanel contentPane = (JPanel) getContentPane();
         contentPane.setLayout(new BorderLayout());
-        contentPane.setBorder(BorderFactory.createEmptyBorder(8, 10, 8, 10));
+        contentPane.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
 
+        // The message area: optional leading severity icon + word-wrapped text
         messageLabel = new JLabel(" ");
         messageLabel.setHorizontalTextPosition(SwingConstants.LEFT);
-        contentPane.add(messageLabel, BorderLayout.NORTH);
+        messageIconLabel.setVisible(false);
+        messageIconLabel.setVerticalAlignment(SwingConstants.TOP);
+        JPanel messageArea = new JPanel(new BorderLayout(12, 0));
+        messageArea.setOpaque(false);
+        messageArea.add(messageIconLabel, BorderLayout.WEST);
+        messageArea.add(messageLabel, BorderLayout.CENTER);
+        messageLabel.setVerticalAlignment(SwingConstants.TOP);
+
+        // The body (message + optional content) is added to the content pane
+        // at presentation time (applyDialogSize): it is wrapped in a rounded
+        // island panel under the modern theme only when the dialog carries
+        // content (a trace, an input field, a custom component) - for a bare
+        // message the island would be redundant decoration.
+        bodyPanel.setOpaque(false);
+        bodyPanel.add(messageArea, BorderLayout.NORTH);
         contentPane.add(buttonPanel, BorderLayout.SOUTH);
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(12, 0, 0, 0));
 
         // Escape funnels into dismiss() (empty result). Bound via the
         // input/action maps (same key stroke and scope as
@@ -169,7 +190,39 @@ class JIPipeDesktopDialog extends JDialog {
      */
     void addContent(JComponent content) {
         this.content = content;
-        getContentPane().add(content, BorderLayout.CENTER);
+        bodyPanel.add(content, BorderLayout.CENTER);
+        // The body must be part of the content pane from here on (tests build
+        // and inspect the dialog before it is presented); the presentation
+        // step ({@link #applyDialogSize()}) decides the island wrap.
+        getContentPane().add(bodyPanel, BorderLayout.CENTER);
+    }
+
+    /**
+     * Assembles the body into the content pane right before sizing: the
+     * island wrap is only applied when the dialog carries content, so a
+     * message-only dialog stays plain (the user rejected the redundant
+     * island for those during the #1341 UX review).
+     */
+    private void addBodyToContentPane() {
+        JPanel contentPane = (JPanel) getContentPane();
+        JComponent body = content != null
+                ? UIUtils.wrapInBackgroundIslandPanelIfNeeded(bodyPanel)
+                : bodyPanel;
+        contentPane.remove(bodyPanel);
+        contentPane.add(body, BorderLayout.CENTER);
+    }
+
+    /**
+     * Sets the leading severity icon shown next to the message (modern dialog
+     * convention: {@code error()} shows an error icon, {@code message()} an
+     * info icon, {@code confirm()} a question icon; input and choose dialogs
+     * stay iconless). {@code null} hides the icon.
+     *
+     * @param icon the icon, or null for no icon
+     */
+    void setMessageIcon(Icon icon) {
+        messageIconLabel.setIcon(icon);
+        messageIconLabel.setVisible(icon != null);
     }
 
     /**
@@ -193,21 +246,63 @@ class JIPipeDesktopDialog extends JDialog {
             effective.add(Button.CANCEL);
         }
 
-        JPanel row = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JPanel row = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
         JButton defaultButton = null;
         for (Button b : effective) {
             JButton jButton = new JButton(b.getLabel(), b.getIcon());
             jButton.addActionListener(e -> onActionClicked(b));
             if (defaultButton == null && b.isDefault()) {
                 defaultButton = jButton;
+                styleAsPrimary(jButton);
             }
             actionButtons.add(jButton);
             row.add(jButton);
+        }
+        // Equal-width action buttons (uniform dialog footers, per the #1341
+        // UX review): every button takes the width of the widest one (after
+        // the primary's fill styling, which changes its outline padding),
+        // floored so short labels do not produce cramped buttons.
+        int width = UIUtils.STANDARD_BUTTON_HEIGHT;
+        for (JButton jButton : actionButtons) {
+            width = Math.max(width, jButton.getPreferredSize().width);
+        }
+        for (JButton jButton : actionButtons) {
+            Dimension d = new Dimension(width, UIUtils.STANDARD_BUTTON_HEIGHT);
+            jButton.setPreferredSize(d);
+            jButton.setMinimumSize(d);
         }
         buttonPanel.add(row, BorderLayout.CENTER);
         buttonPanel.revalidate();
         buttonPanel.repaint();
         getRootPane().setDefaultButton(defaultButton);
+    }
+
+    /**
+     * Styles the affirmative (default-flagged) button as the dialog's filled
+     * primary action (the Fluent-style "Done"): a rounded button filled with
+     * the theme's accent color - the same emphasized fill the app's primary
+     * parameter actions use - while the remaining actions stay standard theme
+     * buttons.
+     */
+    private void styleAsPrimary(JButton button) {
+        Color fill = ThemeUtils.getCurrentStyle().getParameterActionHighlightedBackground();
+        button.setOpaque(true);
+        button.setContentAreaFilled(false);
+        button.setBackground(fill);
+        button.setForeground(isLight(fill) ? Color.BLACK : Color.WHITE);
+        button.setUI(new JIPipeDesktopRoundedButtonUI(5, fill, fill.darker()));
+        button.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createEmptyBorder(1, 1, 1, 1),
+                BorderFactory.createCompoundBorder(
+                        new RoundedLineBorder(fill, 1, 5),
+                        BorderFactory.createEmptyBorder(1, 12, 1, 12))));
+    }
+
+    /**
+     * @return whether the color is light enough to carry dark text
+     */
+    private static boolean isLight(Color color) {
+        return (0.299 * color.getRed() + 0.587 * color.getGreen() + 0.114 * color.getBlue()) / 255.0 > 0.6;
     }
 
     /**
@@ -241,6 +336,7 @@ class JIPipeDesktopDialog extends JDialog {
      * existed; found during #1341 testing).
      */
     void applyDialogSize() {
+        addBodyToContentPane();
         if (!explicitSize) {
             pack();
             if (getWidth() < MINIMUM_WIDTH) {

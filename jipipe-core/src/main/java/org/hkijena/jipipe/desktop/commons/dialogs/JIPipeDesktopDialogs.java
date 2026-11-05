@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.desktop.commons.dialogs;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.commons.components.color.JIPipeDesktopColorChooserDialog;
 import org.hkijena.jipipe.utils.ThemeUtils;
 
@@ -67,7 +68,6 @@ public final class JIPipeDesktopDialogs {
      * {@link #error} dialogs: the width matches the wrapped message label,
      * and the height is bounded so long traces scroll instead of growing.
      */
-    private static final Dimension ERROR_TRACE_PREFERRED_SIZE = new Dimension(420, 150);
 
     /**
      * Preferred dimensions of the scrollable multi-line input area in
@@ -106,6 +106,7 @@ public final class JIPipeDesktopDialogs {
      */
     public static void message(Component parent, String title, String message) {
         JIPipeDesktopDialog dialog = newDialog(parent, title);
+        dialog.setMessageIcon(JIPipe.RESOURCES.getIcon32("actions/info.png"));
         dialog.addMessage(normalizeMessage(message));
         // Default-flagged OK: Enter acknowledges the dialog (the classic
         // option pane registered OK as the default button everywhere). The
@@ -128,6 +129,7 @@ public final class JIPipeDesktopDialogs {
      */
     public static void error(Component parent, String title, String message, Throwable cause) {
         JIPipeDesktopDialog dialog = newDialog(parent, title);
+        dialog.setMessageIcon(JIPipe.RESOURCES.getIcon32("actions/error.png"));
         dialog.addMessage(normalizeMessage(message));
         if (cause != null) {
             dialog.addContent(tracePane(cause));
@@ -152,6 +154,7 @@ public final class JIPipeDesktopDialogs {
      */
     public static boolean confirm(Component parent, String title, String message) {
         JIPipeDesktopDialog dialog = newDialog(parent, title);
+        dialog.setMessageIcon(JIPipe.RESOURCES.getIcon32("actions/question.png"));
         dialog.addMessage(normalizeMessage(message));
         Button yes = Button.YES.asDefault();
         dialog.setCancelable(true);
@@ -596,11 +599,25 @@ public final class JIPipeDesktopDialogs {
         area.setEditable(false);
         area.setLineWrap(false);
         area.setFont(new Font(Font.MONOSPACED, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
-        area.setPreferredSize(ERROR_TRACE_PREFERRED_SIZE);
+        // Size to the trace's actual content: width capped (long lines scroll
+        // inside the box - a 1000px-wide dialog for one long stack frame is
+        // worse than a scrollbar), height capped at 150px (short traces must
+        // not leave a half-empty gray box; found in the #1341 UX review).
+        Dimension preferred = area.getPreferredSize();
+        area.setPreferredSize(new Dimension(Math.min(Math.max(preferred.width, 420), 680),
+                Math.min(preferred.height + 10, 150)));
+        // A delimited secondary "code" region: the trace sits on the window
+        // background inside a thin theme border, clearly separated from the
+        // message (which lives on the island panel's surface).
+        area.setBackground(ThemeUtils.getCurrentStyle().getWindowBackground());
         JScrollPane pane = new JScrollPane(area,
                 ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
                 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        pane.setBorder(BorderFactory.createEmptyBorder());
+        pane.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(ThemeUtils.getCurrentStyle().getBorderColor()),
+                BorderFactory.createEmptyBorder(4, 4, 4, 4)));
+        pane.setOpaque(false);
+        pane.getViewport().setOpaque(false);
         return pane;
     }
 
