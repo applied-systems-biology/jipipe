@@ -232,11 +232,10 @@ Button-set rules (unambiguous):
 3. Otherwise (default `cancelable(true)`), an implicit `Button.CANCEL` is
    added if the effective set does not already contain one.
 4. **Button order contract** (the #1341 UX review): the Cancel button is
-   always rendered left-most and the default-flagged action always
-   right-most, regardless of the order the buttons were given in; the
-   remaining buttons keep their relative order in between. A default-flagged
-   Cancel is registered for Enter but never receives the primary fill
-   (Cancel is a dismissal, not an affirmation).
+   anchored alone at the dialog's left edge; all other actions group at the
+   right edge, keeping their relative order with the default-flagged action
+   right-most. A default-flagged Cancel is registered for Enter but never
+   receives the primary fill (Cancel is a dismissal, not an affirmation).
 
 ### 4.5 Test seam — `DialogPresenter`
 

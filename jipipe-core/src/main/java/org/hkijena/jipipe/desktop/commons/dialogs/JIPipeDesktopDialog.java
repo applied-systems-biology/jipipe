@@ -233,8 +233,9 @@ class JIPipeDesktopDialog extends JDialog {
      * {@link Button#CANCEL} is given, a Cancel button is added.
      * <p>
      * Button order contract (the #1341 UX review): the Cancel button is
-     * always ordered left-most and the default-flagged action always
-     * right-most; the remaining buttons keep their given order in between.
+     * anchored alone at the dialog's left edge; all other actions group at
+     * the right edge, keeping their given relative order with the
+     * default-flagged action right-most.
      * <p>
      * The first button flagged with {@link Button#asDefault()} is registered
      * as the root pane's default button, so Enter activates it while focus
@@ -260,8 +261,17 @@ class JIPipeDesktopDialog extends JDialog {
         // keeps its relative order.
         effective.sort(Comparator.comparingInt((Button b) -> b == Button.CANCEL ? 0 : b.isDefault() ? 2 : 1));
 
-        JPanel row = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
+        // The footer anchors the Cancel button to the dialog's left edge and
+        // every other action to the right edge (the balanced look chosen in
+        // the #1341 UX review). The layout lives on the button panel itself:
+        // it is stretched to the dialog's full width by the content pane's
+        // SOUTH placement, while the glue absorbs the slack between the two
+        // groups (a nested X_AXIS row would only get its preferred width and
+        // the right group would sit centered instead of right-anchored).
+        buttonPanel.removeAll();
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
         JButton defaultButton = null;
+        boolean firstNonCancel = true;
         for (Button b : effective) {
             JButton jButton = new JButton(b.getLabel(), b.getIcon());
             jButton.addActionListener(e -> onActionClicked(b));
@@ -278,7 +288,21 @@ class JIPipeDesktopDialog extends JDialog {
             }
             buttonDescriptors.add(b);
             actionButtons.add(jButton);
-            row.add(jButton);
+            if (b == Button.CANCEL) {
+                // left-most by the sort contract; no filler before it
+                buttonPanel.add(jButton);
+            } else {
+                if (firstNonCancel) {
+                    // The glue separates Cancel (left-anchored) from the
+                    // action group; in a dialog without a Cancel button it
+                    // right-anchors the whole group instead.
+                    buttonPanel.add(Box.createHorizontalGlue());
+                    firstNonCancel = false;
+                } else {
+                    buttonPanel.add(Box.createHorizontalStrut(8));
+                }
+                buttonPanel.add(jButton);
+            }
         }
         // Equal-width action buttons (uniform dialog footers, per the #1341
         // UX review): every button takes the width of the widest one (after
@@ -290,10 +314,13 @@ class JIPipeDesktopDialog extends JDialog {
         }
         for (JButton jButton : actionButtons) {
             Dimension d = new Dimension(width, UIUtils.DIALOG_BUTTON_HEIGHT);
+            // maximumSize pins the width: the X_AXIS BoxLayout would stretch
+            // buttons that allow more, instead of leaving the slack to the
+            // glue.
             jButton.setPreferredSize(d);
             jButton.setMinimumSize(d);
+            jButton.setMaximumSize(d);
         }
-        buttonPanel.add(row, BorderLayout.CENTER);
         buttonPanel.revalidate();
         buttonPanel.repaint();
         getRootPane().setDefaultButton(defaultButton);
