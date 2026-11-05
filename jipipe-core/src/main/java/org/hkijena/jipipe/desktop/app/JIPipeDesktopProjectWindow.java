@@ -582,6 +582,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                 JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects,
                 "Open JIPipe project",
                 HTMLText.EMPTY,
+                PathUtils.EXTENSION_FILTER_JIP_JIPX,
                 PathUtils.EXTENSION_FILTER_JIP,
                 PathUtils.EXTENSION_FILTER_JIPX,
                 PathUtils.EXTENSION_FILTER_WORKFLOW_RO_CRATE);

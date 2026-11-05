@@ -51,6 +51,7 @@ public class PathUtils {
     public static final FileNameExtensionFilter EXTENSION_FILTER_BMP = new FileNameExtensionFilter("Bitmap image (*.bmp)", "bmp");
     public static final FileNameExtensionFilter EXTENSION_FILTER_TIFF = new FileNameExtensionFilter("TIFF image (*.tif, *.tiff)", "tif", "tiff");
     public static final FileNameExtensionFilter EXTENSION_FILTER_OME_TIFF = new FileNameExtensionFilter("OME TIFF image (*.ome.tif, *.ome.tiff)", "ome.tif", "ome.tiff");
+    public static final FileNameExtensionFilter EXTENSION_FILTER_JIP_JIPX = new FileNameExtensionFilter("JIPipe project (*.jip, *.jipx)", "jipx", "jip");
     public static final FileNameExtensionFilter EXTENSION_FILTER_JIP = new FileNameExtensionFilter("Legacy JIPipe project (*.jip)", "jip");
     public static final FileNameExtensionFilter EXTENSION_FILTER_JIPX = new FileNameExtensionFilter("JIPipe project crate (*.jipx)", "jipx");
     public static final FileNameExtensionFilter EXTENSION_FILTER_JIPE = new FileNameExtensionFilter("JIPipe extension (*.jipe)", "jipe");
