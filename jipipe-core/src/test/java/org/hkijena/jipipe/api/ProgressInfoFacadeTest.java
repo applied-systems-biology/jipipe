@@ -455,6 +455,35 @@ class ProgressInfoFacadeTest {
     }
 
     @Test
+    void resolveWithKindAndLevelEmitsKindAndLevel() {
+        Path logsBase = tmp.resolve("logs");
+        JIPipeProgressLog runStore = JIPipeProgressLog.create(logsBase.resolve("kinds.ndjson"), "kinds", "Kinds");
+        JIPipeProgressInfo info = new JIPipeProgressInfo(runStore);
+        JIPipeProgressInfo gc = info.resolve("GC", JIPipeProgressNodeKind.ITEM, JIPipeLogLevel.DEBUG);
+        gc.log("collecting");
+        JIPipeProgressInfo partition = info.resolve("Partition 0", JIPipeProgressNodeKind.PARTITION);
+
+        JIPipeProgressNode gcNode = runStore.getNode(gc.getNodeId());
+        assertEquals(JIPipeProgressNodeKind.ITEM, gcNode.getKind());
+        assertEquals(JIPipeLogLevel.DEBUG, gcNode.getLevel());
+        JIPipeProgressNode partitionNode = runStore.getNode(partition.getNodeId());
+        assertEquals(JIPipeProgressNodeKind.PARTITION, partitionNode.getKind());
+        assertEquals(JIPipeLogLevel.INFO, partitionNode.getLevel(), "resolve(kind) defaults to INFO");
+
+        runStore.finish(JIPipeProgressNodeState.OK);
+        List<JIPipeProgressRecord.Node> nodes = runStore.readRecords(1, 64).stream()
+                .filter(JIPipeProgressRecord.Node.class::isInstance)
+                .map(JIPipeProgressRecord.Node.class::cast)
+                .collect(java.util.stream.Collectors.toList());
+        JIPipeProgressRecord.Node gcRecord = nodes.stream().filter(r -> r.l().equals("GC")).findFirst().orElseThrow();
+        assertEquals("ITEM", gcRecord.k());
+        assertEquals(10, gcRecord.lv());
+        JIPipeProgressRecord.Node partitionRecord = nodes.stream().filter(r -> r.l().equals("Partition 0")).findFirst().orElseThrow();
+        assertEquals("PARTITION", partitionRecord.k());
+        assertNull(partitionRecord.lv(), "resolve(kind) without a level emits no lv");
+    }
+
+    @Test
     void silentAndStdoutUseTheStoreImplementations() {
         assertNull(JIPipeProgressInfo.SILENT.getStore().getFile());
         assertNull(JIPipeProgressInfo.STDOUT.getStore().getFile());

@@ -151,8 +151,38 @@ class ProgressStoreTest {
     }
 
     @Test
-    void stateWireLiteralsAreMappedExplicitly() throws Exception {
-        Path file = tmp.resolve("states.ndjson");
+    void nodeLevelRoundTripsThroughFileAndIndex() throws Exception {
+        Path file = tmp.resolve("levels.ndjson");
+        JIPipeProgressLog store = JIPipeProgressLog.create(file, "levels", "Levels");
+        int debug = store.beginNode(store.getRootNodeId(), "GC", JIPipeProgressNodeKind.ITEM, null, JIPipeLogLevel.DEBUG);
+        int info = store.beginNode(store.getRootNodeId(), "Node A", JIPipeProgressNodeKind.ITEM);
+        store.finish(JIPipeProgressNodeState.OK);
+
+        // The index carries the level (nodes created without one default to INFO, the root is INFO)
+        assertEquals(JIPipeLogLevel.DEBUG, store.getNode(debug).getLevel());
+        assertEquals(JIPipeLogLevel.INFO, store.getNode(info).getLevel());
+        assertEquals(JIPipeLogLevel.INFO, store.getNode(store.getRootNodeId()).getLevel(), "the root is INFO");
+
+        // The wire record carries the optional lv field (DEBUG=10); INFO nodes carry no lv
+        List<JIPipeProgressRecord> all = readWholeFile(file);
+        JIPipeProgressRecord.Node debugRecord = (JIPipeProgressRecord.Node) all.get(1);
+        assertEquals(10, debugRecord.lv());
+        String debugLine = Files.readAllLines(file, StandardCharsets.UTF_8).get(1);
+        assertTrue(debugLine.contains("\"lv\":10"), debugLine);
+        JIPipeProgressRecord.Node infoRecord = (JIPipeProgressRecord.Node) all.get(2);
+        assertNull(infoRecord.lv(), "absent level: no lv value");
+        String infoLine = Files.readAllLines(file, StandardCharsets.UTF_8).get(2);
+        assertFalse(infoLine.contains("\"lv\""), infoLine);
+
+        // Read-back preserves the level
+        JIPipeProgressLog reader = JIPipeProgressLog.create(file, "reader", "Reader");
+        assertEquals(10, ((JIPipeProgressRecord.Node) reader.readRecords(2, 1).get(0)).lv());
+        assertNull(((JIPipeProgressRecord.Node) reader.readRecords(3, 1).get(0)).lv());
+        reader.close();
+    }
+
+    @Test
+    void stateWireLiteralsAreMappedExplicitly() throws Exception {        Path file = tmp.resolve("states.ndjson");
         try (JIPipeProgressLog store = JIPipeProgressLog.create(file, "states", "States")) {
             int failed = store.beginNode(store.getRootNodeId(), "Failed node", JIPipeProgressNodeKind.ITEM);
             store.nodeFinished(failed, JIPipeProgressNodeState.FAILED);

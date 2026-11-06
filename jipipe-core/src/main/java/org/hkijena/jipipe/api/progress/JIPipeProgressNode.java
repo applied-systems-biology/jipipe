@@ -38,6 +38,7 @@ public class JIPipeProgressNode {
     private final String label;
     private final JIPipeProgressNodeKind kind;
     private final String location;
+    private final JIPipeLogLevel level;
     private final AtomicReference<JIPipeProgressNodeState> state = new AtomicReference<>(JIPipeProgressNodeState.RUNNING);
     private final AtomicInteger progress = new AtomicInteger();
     private final AtomicInteger maxProgress = new AtomicInteger();
@@ -47,11 +48,16 @@ public class JIPipeProgressNode {
     private final AtomicInteger lastLine = new AtomicInteger();
 
     JIPipeProgressNode(int id, int parentId, String label, JIPipeProgressNodeKind kind, String location) {
+        this(id, parentId, label, kind, location, JIPipeLogLevel.INFO);
+    }
+
+    JIPipeProgressNode(int id, int parentId, String label, JIPipeProgressNodeKind kind, String location, JIPipeLogLevel level) {
         this.id = id;
         this.parentId = parentId;
         this.label = label;
         this.kind = kind;
         this.location = location;
+        this.level = level != null ? level : JIPipeLogLevel.INFO;
     }
 
     /**
@@ -98,6 +104,16 @@ public class JIPipeProgressNode {
      */
     public String getLocation() {
         return location;
+    }
+
+    /**
+     * Returns the node level: node metadata for consumers (e.g. the progress panel hides
+     * {@link JIPipeLogLevel#DEBUG} nodes by default); it does not affect the text render.
+     *
+     * @return the level (never {@code null}; a missing {@code lv} field in the record reads as INFO)
+     */
+    public JIPipeLogLevel getLevel() {
+        return level;
     }
 
     /**

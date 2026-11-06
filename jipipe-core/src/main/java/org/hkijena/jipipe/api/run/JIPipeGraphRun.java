@@ -40,6 +40,7 @@ import org.hkijena.jipipe.api.notifications.JIPipeNotification;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationAction;
 import org.hkijena.jipipe.api.progress.JIPipeLogLevel;
 import org.hkijena.jipipe.api.progress.JIPipeProgressLog;
+import org.hkijena.jipipe.api.progress.JIPipeProgressNodeKind;
 import org.hkijena.jipipe.api.progress.JIPipeProgressNodeState;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartition;
@@ -75,6 +76,7 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
     private final JIPipeGraphRunConfiguration configuration;
     private final List<JIPipeRuntimePartition> runtimePartitions;
     private JIPipeGraphNodeRunContext runContext;
+    private final Map<Object, JIPipeProgressInfo> nodeProgressHandles = new HashMap<>();
 
     public JIPipeGraphRun(JIPipeGraphRun parent, JIPipeGraph graph, JIPipeGraphRunConfiguration configuration) {
         this.parent = parent;
@@ -162,6 +164,9 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
                     getRunUUID().toString(), getTaskLabel());
             rootStore = progressInfo.getStore();
         }
+
+        // Reset the per-run cache of node progress handles (R28) so it cannot leak across runs
+        nodeProgressHandles.clear();
 
         try {
             if (parent == null) {
@@ -576,10 +581,13 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
 
         if (passThroughMode) {
             // Non-iterating mode
-            JIPipeProgressInfo partitionProgress = progressInfo.resolve("Partition " + partitionId);
-            runPassThroughPartitionNodeSet(graph, partitionNodeSet, gcGraph, runtimePartition, partitionProgress);
+            // R26: the partition node is a PARTITION-kind grouping node (squashed by the panel into a
+            // chip); partition-scope narration goes to the run root, the partition handle is solely
+            // the parent for node rows
+            JIPipeProgressInfo partitionProgress = progressInfo.resolve("Partition " + partitionId, JIPipeProgressNodeKind.PARTITION);
+            runPassThroughPartitionNodeSet(graph, partitionNodeSet, gcGraph, runtimePartition, progressInfo, partitionProgress);
         } else {
-            runIteratingPartitionNodeSet(graph, partitionNodeSet, gcGraph, runtimePartition, progressInfo.resolve("Looped partition " + partitionId));
+            runIteratingPartitionNodeSet(graph, partitionNodeSet, gcGraph, runtimePartition, progressInfo.resolve("Looped partition " + partitionId, JIPipeProgressNodeKind.PARTITION));
         }
     }
 
@@ -762,13 +770,14 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
                 JIPipeDataSlot outputSlot = graph.getGraph().getEdgeSource(graphEdge);
 
                 if (!inputSlot.isSkipDataGathering()) {
-                    inputSlot.addDataFromTable(outputSlot, progressInfo.resolve(outputSlot.getDisplayName() + " >>> " + inputSlot.getDisplayName()));
+                    // R28: the gathering operation nests under the consuming node's row
+                    inputSlot.addDataFromTable(outputSlot, nodeProgressHandle(inputSlot.getNode(), progressInfo).resolve(outputSlot.getDisplayName() + " >>> " + inputSlot.getDisplayName()));
                 } else {
                     progressInfo.log("NOT copying " + outputSlot.getDisplayName() + " >>> " + inputSlot.getDisplayName() + " [data gathering disabled]");
                 }
 
                 if (gcGraph != null) {
-                    gcGraph.removeOutputToInputEdge(outputSlot, inputSlot, progressInfo.resolve("GC"));
+                    gcGraph.removeOutputToInputEdge(outputSlot, inputSlot, nodeProgressHandle(inputSlot.getNode(), progressInfo).resolve("GC", JIPipeProgressNodeKind.ITEM, JIPipeLogLevel.DEBUG));
                 }
             }
         }
@@ -841,12 +850,12 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
                     // Not needed (done earlier)
                     for (JIPipeInputDataSlot inputSlot : node.getInputSlots()) {
                         for (JIPipeGraphEdge graphEdge : graph.getGraph().incomingEdgesOf(inputSlot)) {
-                            gcGraph.removeOutputToInputEdge(graph.getGraph().getEdgeSource(graphEdge), inputSlot, progressInfo.resolve("GC"));
+                            gcGraph.removeOutputToInputEdge(graph.getGraph().getEdgeSource(graphEdge), inputSlot, nodeProgressHandle(node, progressInfo).resolve("GC", JIPipeProgressNodeKind.ITEM, JIPipeLogLevel.DEBUG));
                         }
                     }
-                    gcGraph.removeInputToNodeEdge((JIPipeAlgorithm) node, progressInfo.resolve("GC"));
+                    gcGraph.removeInputToNodeEdge((JIPipeAlgorithm) node, nodeProgressHandle(node, progressInfo).resolve("GC", JIPipeProgressNodeKind.ITEM, JIPipeLogLevel.DEBUG));
                     for (JIPipeOutputDataSlot outputSlot : node.getOutputSlots()) {
-                        gcGraph.removeNodeToOutputEdge(outputSlot, progressInfo.resolve("GC"));
+                        gcGraph.removeNodeToOutputEdge(outputSlot, nodeProgressHandle(node, progressInfo).resolve("GC", JIPipeProgressNodeKind.ITEM, JIPipeLogLevel.DEBUG));
                     }
                 }
             }
@@ -901,15 +910,16 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
         JsonUtils.saveToFile(extracted, outputDir.resolve("graph.json"));
     }
 
-    private void runPassThroughPartitionNodeSet(JIPipeGraph graph, Set<JIPipeGraphNode> nodeFilter, JIPipeGraphRunGCGraph gcGraph, JIPipeRuntimePartition runtimePartition, JIPipeProgressInfo progressInfo) {
+    private void runPassThroughPartitionNodeSet(JIPipeGraph graph, Set<JIPipeGraphNode> nodeFilter, JIPipeGraphRunGCGraph gcGraph, JIPipeRuntimePartition runtimePartition, JIPipeProgressInfo progressInfo, JIPipeProgressInfo runProgress) {
 
         // A copy of the graph that is destroyed
         JIPipeGraphRunDataFlowGraph dataFlowGraph = new JIPipeGraphRunDataFlowGraph(graph, nodeFilter);
-        progressInfo.log("Built data flow graph " + dataFlowGraph);
+        // R26: partition nodes are recordless — partition-scope narration goes to the run root
+        runProgress.log("Built data flow graph " + dataFlowGraph);
 
         int progress = 0;
         final int maxProgress = dataFlowGraph.vertexSet().size();
-        progressInfo.setProgress(progress, maxProgress);
+        runProgress.setProgress(progress, maxProgress);
 
         // Save for error state
         Map<UUID, Map<String, JIPipeDataTable>> continueOnErrorBackup = new HashMap<>();
@@ -926,8 +936,8 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
 
                 // Increment progress
                 ++progress;
-                progressInfo.setProgress(progress, maxProgress);
-                progressInfo.log("");
+                runProgress.setProgress(progress, maxProgress);
+                runProgress.log("");
 
                 // Find the best candidate (shortest path)
                 Object nextVertex = dataFlowGraph.getBestNextVertex();
@@ -1043,6 +1053,17 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
     }
 
 
+    /**
+     * Returns the per-run progress handle of a graph node, creating it as a child of the given
+     * parent on first use (R28: operations of a node nest under the node's single row). The
+     * node's location URI carries the graph node UUID (spec §Desktop UI "Location URIs"): the
+     * progress tree UI renders it as the faint [uuid] suffix and can navigate to the node.
+     */
+    private JIPipeProgressInfo nodeProgressHandle(JIPipeGraphNode node, JIPipeProgressInfo parent) {
+        return nodeProgressHandles.computeIfAbsent(node,
+                key -> parent.resolve(node.getDisplayName(), "node://" + node.getUUIDInParentGraph()));
+    }
+
     private void runFlowGraphNode(Object flowGraphNode, JIPipeGraphRunDataFlowGraph dataFlowGraph, JIPipeGraphRunGCGraph gcGraph, boolean skipWorkload, JIPipeRuntimePartition runtimePartition, JIPipeProgressInfo progressInfo) {
         if (flowGraphNode instanceof JIPipeInputDataSlot) {
             runInputFlowGraphNode(flowGraphNode, dataFlowGraph, gcGraph, skipWorkload, progressInfo);
@@ -1061,10 +1082,9 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
 
     private void runAlgorithmFlowGraphNode(Object flowGraphNode, JIPipeGraphRunDataFlowGraph dataFlowGraph, JIPipeGraphRunGCGraph gcGraph, boolean skipWorkload, JIPipeProgressInfo progressInfo) {
         JIPipeAlgorithm algorithm = (JIPipeAlgorithm) flowGraphNode;
-        // The node's location URI carries the graph node UUID (spec §Desktop UI "Location URIs"):
-        // the progress tree UI renders it as the faint [uuid] suffix and can navigate to the node
-        JIPipeProgressInfo algorithmProgress = progressInfo.resolve(algorithm.getDisplayName(), "node://" + algorithm.getUUIDInParentGraph());
-        progressInfo.log("+N " + algorithm.getDisplayName());
+        // R28: the node row is the cached per-node handle (the former "+N" narration line is
+        // superseded by the row itself)
+        JIPipeProgressInfo algorithmProgress = nodeProgressHandle(algorithm, progressInfo);
         algorithmProgress.log("Executing " + algorithm.getUUIDInParentGraph());
 
         if (!skipWorkload) {
@@ -1087,7 +1107,7 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
         }
 
         if (gcGraph != null) {
-            gcGraph.removeInputToNodeEdge(algorithm, progressInfo.resolve("GC"));
+            gcGraph.removeInputToNodeEdge(algorithm, algorithmProgress.resolve("GC", JIPipeProgressNodeKind.ITEM, JIPipeLogLevel.DEBUG));
         }
 
         // Remove vertex
@@ -1096,13 +1116,14 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
 
     private void runOutputFlowGraphNode(Object flowGraphNode, JIPipeGraphRunDataFlowGraph dataFlowGraph, JIPipeGraphRunGCGraph gcGraph, JIPipeProgressInfo progressInfo) {
         JIPipeOutputDataSlot outputSlot = (JIPipeOutputDataSlot) flowGraphNode;
-        progressInfo.log("+O " + outputSlot.getDisplayName());
-        progressInfo.resolve(outputSlot.getNode().getDisplayName()).log("Contents of data slot " + outputSlot);
-
-        JIPipeOutputDataSlot outputDataSlot = (JIPipeOutputDataSlot) flowGraphNode;
+        // R28: the "+O" narration and the contents log are records on the owning node's row
+        // (the former duplicate child row with the node's display name is gone)
+        JIPipeProgressInfo nodeProgress = nodeProgressHandle(outputSlot.getNode(), progressInfo);
+        nodeProgress.log("+O " + outputSlot.getDisplayName());
+        nodeProgress.log("Contents of data slot " + outputSlot);
 
         if (gcGraph != null) {
-            gcGraph.removeNodeToOutputEdge(outputDataSlot, progressInfo.resolve("GC"));
+            gcGraph.removeNodeToOutputEdge(outputSlot, nodeProgress.resolve("GC", JIPipeProgressNodeKind.ITEM, JIPipeLogLevel.DEBUG));
         }
 
         // Remove vertex
@@ -1110,10 +1131,13 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
     }
 
     private void runInputFlowGraphNode(Object flowGraphNode, JIPipeGraphRunDataFlowGraph dataFlowGraph, JIPipeGraphRunGCGraph gcGraph, boolean skipWorkload, JIPipeProgressInfo progressInfo) {
-        progressInfo.log("+I " + ((JIPipeInputDataSlot) flowGraphNode).getDisplayName());
+        JIPipeInputDataSlot inputSlot = (JIPipeInputDataSlot) flowGraphNode;
+        // R28: the "+I" narration and the gathering operations go under the consuming node's row;
+        // creating the row here is correct — the node appears when its inputs gather
+        JIPipeProgressInfo nodeProgress = nodeProgressHandle(inputSlot.getNode(), progressInfo);
+        nodeProgress.log("+I " + inputSlot.getDisplayName());
 
         // Add data from incoming edges within graph
-        JIPipeInputDataSlot inputSlot = (JIPipeInputDataSlot) flowGraphNode;
         Set<JIPipeGraphEdge> incomingEdges = graph.getGraph().incomingEdgesOf(inputSlot);
 
         for (JIPipeGraphEdge graphEdge : incomingEdges) {
@@ -1122,14 +1146,14 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
 
             if (!skipWorkload) {
                 if (!inputSlot.isSkipDataGathering()) {
-                    inputSlot.addDataFromTable(outputSlot, progressInfo.resolve(outputSlot.getDisplayName() + " >>> " + inputSlot.getDisplayName()));
+                    inputSlot.addDataFromTable(outputSlot, nodeProgress.resolve(outputSlot.getDisplayName() + " >>> " + inputSlot.getDisplayName()));
                 } else {
-                    progressInfo.log("NOT copying " + outputSlot.getDisplayName() + " >>> " + inputSlot.getDisplayName() + " [data gathering disabled]");
+                    nodeProgress.log("NOT copying " + outputSlot.getDisplayName() + " >>> " + inputSlot.getDisplayName() + " [data gathering disabled]");
                 }
             }
 
             if (gcGraph != null) {
-                gcGraph.removeOutputToInputEdge(outputSlot, inputSlot, progressInfo.resolve("GC"));
+                gcGraph.removeOutputToInputEdge(outputSlot, inputSlot, nodeProgress.resolve("GC", JIPipeProgressNodeKind.ITEM, JIPipeLogLevel.DEBUG));
             }
         }
 

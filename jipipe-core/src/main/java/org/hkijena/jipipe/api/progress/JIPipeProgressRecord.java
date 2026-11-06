@@ -61,10 +61,11 @@ public sealed interface JIPipeProgressRecord {
      * @param l   node label
      * @param k   node kind name
      * @param loc optional location URI ({@code node://<uuid>} today; free-form for future schemes; {@code null} = no location)
+     * @param lv  optional node level ({@link JIPipeLogLevel#value()}; {@code null} = INFO — old files without the field read as INFO)
      * @param ts  epoch millis
      */
     @JsonIgnoreProperties(ignoreUnknown = true)
-    record Node(@JsonProperty("id") int id, @JsonProperty("p") int p, @JsonProperty("l") String l, @JsonProperty("k") String k, @JsonProperty("loc") @JsonInclude(JsonInclude.Include.NON_NULL) String loc, @JsonProperty("ts") long ts) implements JIPipeProgressRecord {
+    record Node(@JsonProperty("id") int id, @JsonProperty("p") int p, @JsonProperty("l") String l, @JsonProperty("k") String k, @JsonProperty("loc") @JsonInclude(JsonInclude.Include.NON_NULL) String loc, @JsonProperty("lv") @JsonInclude(JsonInclude.Include.NON_NULL) Integer lv, @JsonProperty("ts") long ts) implements JIPipeProgressRecord {
 
         @Override
         public String type() {
@@ -196,7 +197,7 @@ public sealed interface JIPipeProgressRecord {
      * @return the record
      */
     static JIPipeProgressRecord node(int id, int p, String l, String k, long ts) {
-        return new Node(id, p, l, k, null, ts);
+        return new Node(id, p, l, k, null, null, ts);
     }
 
     /**
@@ -211,7 +212,23 @@ public sealed interface JIPipeProgressRecord {
      * @return the record
      */
     static JIPipeProgressRecord node(int id, int p, String l, String k, String loc, long ts) {
-        return new Node(id, p, l, k, loc, ts);
+        return new Node(id, p, l, k, loc, null, ts);
+    }
+
+    /**
+     * Creates a {@link Node} record with an optional location URI and an optional node level.
+     *
+     * @param id  node id
+     * @param p   parent node id ({@code 0} = root)
+     * @param l   node label
+     * @param k   node kind name ({@link JIPipeProgressNodeKind} name)
+     * @param loc the location URI (e.g. {@code node://<uuid>}), or {@code null} for no location
+     * @param lv  the node level ({@link JIPipeLogLevel#value()}), or {@code null} for INFO
+     * @param ts  epoch millis
+     * @return the record
+     */
+    static JIPipeProgressRecord node(int id, int p, String l, String k, String loc, Integer lv, long ts) {
+        return new Node(id, p, l, k, loc, lv, ts);
     }
 
     /**

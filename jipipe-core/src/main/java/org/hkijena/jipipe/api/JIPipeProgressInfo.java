@@ -434,7 +434,7 @@ public class JIPipeProgressInfo implements Cancelable {
      * @return progress info with the same properties as the current one, but with messages prepended
      */
     public JIPipeProgressInfo resolve(String logPrepend) {
-        return resolve(logPrepend, null);
+        return resolve(logPrepend, (String) null);
     }
 
     /**
@@ -449,6 +449,37 @@ public class JIPipeProgressInfo implements Cancelable {
     public JIPipeProgressInfo resolve(String logPrepend, String location) {
         JIPipeProgressLog currentStore = store;
         int childNodeId = currentStore.beginNode(nodeId, logPrepend, JIPipeProgressNodeKind.ITEM, location);
+        return new JIPipeProgressInfo(currentStore, childNodeId, this,
+                new AtomicInteger(0), new AtomicInteger(1), false);
+    }
+
+    /**
+     * Creates a sub-progress that has the same cancellation, but shows the new category in front of sub-messages.
+     * The sub-progress is a child node of the current node with its own progress counters and the given node kind
+     * (e.g. {@link JIPipeProgressNodeKind#PARTITION} for a partition grouping node).
+     *
+     * @param logPrepend the category
+     * @param kind       the node kind of the child node
+     * @return progress info with the same properties as the current one, but with messages prepended
+     */
+    public JIPipeProgressInfo resolve(String logPrepend, JIPipeProgressNodeKind kind) {
+        return resolve(logPrepend, kind, JIPipeLogLevel.INFO);
+    }
+
+    /**
+     * Creates a sub-progress that has the same cancellation, but shows the new category in front of sub-messages.
+     * The sub-progress is a child node of the current node with its own progress counters, the given node kind, and
+     * the given node level (e.g. {@link JIPipeProgressNodeKind#ITEM} + {@link JIPipeLogLevel#DEBUG} for an operation
+     * that consumers hide by default, like garbage collection).
+     *
+     * @param logPrepend the category
+     * @param kind       the node kind of the child node
+     * @param level      the node level of the child node, or {@code null} for {@link JIPipeLogLevel#INFO}
+     * @return progress info with the same properties as the current one, but with messages prepended
+     */
+    public JIPipeProgressInfo resolve(String logPrepend, JIPipeProgressNodeKind kind, JIPipeLogLevel level) {
+        JIPipeProgressLog currentStore = store;
+        int childNodeId = currentStore.beginNode(nodeId, logPrepend, kind, null, level);
         return new JIPipeProgressInfo(currentStore, childNodeId, this,
                 new AtomicInteger(0), new AtomicInteger(1), false);
     }
