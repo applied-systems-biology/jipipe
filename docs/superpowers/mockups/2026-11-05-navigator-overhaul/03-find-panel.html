@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Navigator overhaul - Prototype 03: Find panel</title>
+<style>
+  :root {
+    --panel: #f7f7f7;
+    --border: #cfcfcf;
+    --border-soft: #e0e0e0;
+    --text: #262626;
+    --text-dim: #6b6b6b;
+    --accent: #1976d2;
+    --accent-soft: #e3f0fb;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Segoe UI", system-ui, sans-serif;
+    background: #ffffff; color: var(--text);
+    padding: 24px; font-size: 13px;
+    display: flex; gap: 28px; align-items: flex-start; justify-content: center; flex-wrap: wrap;
+  }
+  .side { max-width: 600px; }
+  h1 { font-size: 17px; margin-bottom: 4px; }
+  .intro { color: var(--text-dim); margin-bottom: 14px; max-width: 560px; line-height: 1.45; }
+  .hint { margin-top: 10px; font-size: 12px; color: var(--text-dim); line-height: 1.6; }
+  .hint code { background: #f2f2f2; padding: 0 4px; border-radius: 3px; }
+
+  /* ------------- the panel itself ------------- */
+  .panel {
+    width: 340px; height: 720px;
+    background: var(--panel); border: 1px solid var(--border); border-radius: 6px;
+    display: flex; flex-direction: column; overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,.08);
+  }
+  .panel-title {
+    padding: 7px 10px; font-weight: 600; font-size: 12px;
+    border-bottom: 1px solid var(--border-soft);
+    display: flex; align-items: center; gap: 6px; color: #333;
+  }
+  .panel-title .sub { color: var(--text-dim); font-weight: 400; }
+  .toolbar {
+    display: flex; align-items: center; gap: 2px;
+    padding: 3px 6px; background: #efefef; border-bottom: 1px solid var(--border-soft);
+  }
+  .tbtn {
+    min-width: 26px; height: 24px; border: 1px solid transparent; border-radius: 4px;
+    background: transparent; color: #444; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; padding: 0 5px; font-size: 11px; gap: 4px;
+  }
+  .tbtn:hover { background: #e2e2e2; border-color: #d0d0d0; }
+  .tbtn svg { width: 14px; height: 14px; }
+  .tbtn.pin-on { color: var(--accent); background: var(--accent-soft); }
+  .tsep { width: 1px; height: 18px; background: var(--border); margin: 0 4px; }
+  .toolbar .spacer { flex: 1; }
+
+  .searchbar { padding: 7px 8px; border-bottom: 1px solid var(--border-soft); }
+  .searchbar input {
+    width: 100%; padding: 5px 8px; border: 1px solid var(--border);
+    border-radius: 4px; font-size: 12px; background: #fff;
+  }
+  .searchbar input:focus { outline: 1.5px solid var(--accent); }
+
+  .body { flex: 1; display: flex; min-height: 0; }
+  .tree-pane { flex: 1; overflow: auto; padding: 4px 0; min-width: 0; }
+  .list-pane {
+    width: 0; overflow: hidden; border-left: 1px solid var(--border-soft);
+    background: #fcfcfc; display: flex; flex-direction: column;
+  }
+  /* tier: comfortable (two-pane) */
+  .panel.wide .list-pane { width: 150px; flex: none; }
+  .panel.wide .tree-pane { max-width: none; }
+
+  .group-head {
+    display: flex; align-items: center; gap: 6px;
+    padding: 4px 10px; font-weight: 600; font-size: 12px; cursor: pointer;
+    border-bottom: 1px solid transparent;
+  }
+  .group-head:hover { background: #ececec; }
+  .group-head .caret { width: 10px; color: #999; font-size: 9px; }
+  .group-dot { width: 11px; height: 11px; border-radius: 3px; border: 1px solid rgba(0,0,0,.28); flex: none; }
+  .group-head .count { color: var(--text-dim); font-weight: 400; margin-left: auto; font-size: 11px; }
+
+  .entry {
+    display: flex; align-items: center; gap: 7px;
+    padding: 3px 10px 3px 30px; cursor: pointer; font-size: 12px;
+    border-bottom: 1px solid transparent;
+  }
+  .entry:hover { background: #ececec; }
+  .entry.selected { background: var(--accent-soft); box-shadow: inset 2px 0 0 var(--accent); }
+  .entry .nicon { width: 14px; height: 14px; border-radius: 3px; flex: none; border: 1px solid rgba(0,0,0,.25); }
+  .entry .name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .entry .name mark { background: #ffe58a; color: inherit; padding: 0 1px; border-radius: 2px; }
+  .entry .uuid { color: #9a9a9a; font-size: 10px; font-family: monospace; margin-left: auto; }
+  .entry .pin { color: var(--accent); font-size: 11px; }
+  .entry .badge-comp {
+    font-size: 9px; color: #6b4fa0; background: #f0e8fa; border: 1px solid #d8c6f2;
+    padding: 0 4px; border-radius: 7px; margin-left: 4px;
+  }
+  .comp-group {
+    margin-top: 4px; border-top: 1px solid #eee2fb; background: #faf7fe;
+  }
+  .comp-head {
+    display: flex; align-items: center; gap: 6px;
+    padding: 4px 10px; color: #6b4fa0; font-weight: 600; font-size: 11px; cursor: pointer;
+  }
+  .comp-head .caret { color: #b39ddb; }
+  .footnote { padding: 6px 10px; color: var(--text-dim); font-size: 11px; border-top: 1px solid var(--border-soft); }
+
+  /* list pane (right side, comfortable tier) */
+  .list-head { padding: 5px 8px; font-size: 10px; letter-spacing: .06em; text-transform: uppercase; color: #9a9a9a; border-bottom: 1px solid var(--border-soft); }
+  .litem { display: flex; align-items: center; gap: 6px; padding: 3px 8px; font-size: 11px; cursor: pointer; }
+  .litem:hover { background: #ececec; }
+  .litem .nicon { width: 12px; height: 12px; border-radius: 2px; border: 1px solid rgba(0,0,0,.25); flex: none; }
+  .litem .lname { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  /* ---------------- canvas ------------- */
+  .canvas-area { width: 600px; height: 720px; position: relative; background: #fafafa; border: 1px solid #ddd; border-radius: 6px; overflow: hidden; }
+  .graph-svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .gnode {
+    position: absolute; border-radius: 5px; border: 1px solid; min-width: 96px;
+    font-size: 10px; z-index: 3; cursor: grab;
+    background-image: radial-gradient(rgba(0,0,0,.09) 1px, transparent 1.1px); background-size: 6px 6px;
+  }
+  .gnode .gn-head {
+    padding: 2px 6px; display: flex; align-items: center; gap: 4px;
+    border-bottom: 1px solid rgba(0,0,0,.18); border-radius: 4px 4px 0 0;
+    white-space: nowrap; overflow: hidden;
+  }
+  .gnode .gn-body { height: 20px; }
+  .gnode.selected { outline: 2px solid #1976d2; outline-offset: 1px; }
+  .gnode.dragging { cursor: grabbing; opacity: .9; z-index: 9; }
+
+  .cnote {
+    position: absolute; z-index: 1; border-radius: 6px; border-width: 1.5px; border-style: solid;
+    padding: 5px 9px; font-weight: 600; font-size: 11px; cursor: move;
+  }
+  .cnote.dragging { z-index: 10; }
+  .cnote .cnt { display: block; font-weight: 400; font-size: 9px; opacity: .6; }
+</style>
+</head>
+<body>
+
+<div class="side">
+  <h1>Prototype 03 &mdash; "Find" panel</h1>
+  <p class="intro">
+    Search bar + node tree, grouped by canvas notes. The canvas on the right is live: <b>drag nodes</b> in and out of
+    notes and the grouping updates. Notes that overlap a node at its center claim it; a node can belong to several notes
+    and then appears under each. Nodes in no note land in the <b>Ungrouped</b> root group. Other compartments only show up
+    while a search is active.
+  </p>
+
+  <div class="panel" id="panel">
+    <div class="panel-title">Find <span class="sub" id="panel-sub">- 14 nodes in 3 groups</span></div>
+    <div class="toolbar">
+      <button class="tbtn" id="btn-clear" title="Clear search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+      <button class="tbtn" id="btn-pins" title="Show pinned nodes only">Pinned only</button>
+      <div class="tsep"></div>
+      <button class="tbtn" id="btn-tuning" title="Tier tuning"><span id="tier-label">wide</span></button>
+      <span class="spacer"></span>
+    </div>
+    <div class="searchbar">
+      <input id="search" placeholder="Search name, description or UUID" autocomplete="off">
+    </div>
+    <div class="body">
+      <div class="tree-pane" id="tree"></div>
+      <div class="list-pane">
+        <div class="list-head">In group</div>
+        <div id="list" style="overflow:auto;flex:1"></div>
+      </div>
+    </div>
+    <div class="footnote">Double-click jumps to the node. Double-click the empty bar to clear.</div>
+  </div>
+
+  <div class="hint">
+    <b>Interactions to try</b><br>
+    - Type <code>find</code>, <code>deep</code> (description), or a UUID fragment like <code>a3f8</code>.<br>
+    - Drag <b>Threshold (Li)</b> out of the yellow note: it becomes ungrouped.<br>
+    - Drag <b>Measure</b> onto the yellow note: it then appears under both <i>Segmentation</i> and <i>QC</i>.<br>
+    - Make the panel narrower than ~380px (browser resize) and click <code>wide</code> to preview the compact tier.
+  </div>
+</div>
+
+<div class="side">
+  <h1>Live canvas</h1>
+  <p class="intro" style="margin-bottom:8px">Note titles become group names; note fill/border become the group icon color.</p>
+  <div class="canvas-area" id="canvas">
+    <div class="cnote" style="left:40px;top:60px;width:300px;height:260px;background:#fff8d6;border-color:#e6d98a" data-note="seg">
+      Segmentation<span class="cnt">note title "Segmentation"</span>
+    </div>
+    <div class="cnote" style="left:210px;top:230px;width:200px;height:180px;background:#e3f0fb;border-color:#a8cbe8" data-note="qc">
+      QC<span class="cnt">overlaps the yellow note</span>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+
+// ============ tunable constants (mirror the planned Java static finals) ============
+const COMPACT_TIER_WIDTH = 380;     // NodeBrowserModel.TIER_COMPACT threshold
+const GROUP_CLAIM = "center";       // "center" | "intersect" - how a note claims a node
+const COMP_TITLE_MAX = 40;          // chars of note title in a group label
+
+// ============ data ============
+// hue mirrors the taxonomy fill used by real nodes
+const NODES = [
+  { id: "n1",  uuid: "a3f8c012", name: "Import image",        hue: 136, x: 20,  y: 20,  desc: "Reads images from a folder" },
+  { id: "n2",  uuid: "c04d1177", name: "Split channels",      hue: 186, x: 170, y: 20,  desc: "Splits multi-channel images" },
+  { id: "n3",  uuid: "77b1e20a", name: "Threshold (Li)",      hue: 186, x: 60,  y: 110, desc: "Deep learning inspired threshold selection" },
+  { id: "n4",  uuid: "2f60aa13", name: "Background subtract", hue: 186, x: 190, y: 110, desc: "Rolling ball background subtraction" },
+  { id: "n5",  uuid: "a3f89901", name: "Find particles 2D",   hue: 350, x: 70,  y: 210, desc: "Particle detection by local maxima" },
+  { id: "n6",  uuid: "0c31bd44", name: "Find nuclei 2D",      hue: 350, x: 200, y: 210, desc: "Deep stained nuclei detection" },
+  { id: "n7",  uuid: "9e2255c8", name: "Measure",             hue: 30,  x: 290, y: 250, desc: "Calculates statistics of particles" },
+  { id: "n8",  uuid: "5b9a0f31", name: "Filter results",      hue: 186, x: 360, y: 320, desc: "Filters table rows by expression" },
+  { id: "n9",  uuid: "d33712ab", name: "Export to CSV",       hue: 160, x: 410, y: 420, desc: "Writes tables to CSV files" },
+  { id: "n10", uuid: "e0118c73", name: "Statistics",          hue: 30,  x: 290, y: 490, desc: "Aggregates measurements per image" },
+  { id: "n11", uuid: "6a24b9d0", name: "Plot",                hue: 60,  x: 420, y: 520, desc: "Plots measurements" },
+  { id: "n12", uuid: "b8f01e52", name: "Annotate table",      hue: 210, x: 300, y: 610, desc: "Adds annotations to a table" },
+  { id: "n13", uuid: "1d7c6a90", name: "Merge lists",         hue: 186, x: 130, y: 560, desc: "Merges multiple tables" },
+  { id: "n14", uuid: "c5e83b10", name: "Export ROI",          hue: 160, x: 40,  y: 640, desc: "Exports ROIs to files" }
+];
+const NODE_W = 110, NODE_H = 44;
+
+let notes = [
+  { id: "seg", title: "Segmentation", bg: "#fff8d6", border: "#e6d98a" },
+  { id: "qc",  title: "QC",           bg: "#e3f0fb", border: "#a8cbe8" }
+];
+
+let pinned = new Set(["n5"]);
+let selectedId = "n5";
+let collapsed = new Set();
+let query = "";
+let showPinnedOnly = false;
+let forceTier = null;   // null = auto, or "compact"/"wide"
+
+// ============ state: node positions (offsets inside the note canvas) ============
+// note rects are read from the DOM; node x/y are relative to the canvas
+
+// ============ geometry helpers ============
+function noteRect(noteEl) {
+  // offsets are canvas-relative (offsetParent = .canvas-area)
+  return { x: noteEl.offsetLeft, y: noteEl.offsetTop, w: noteEl.offsetWidth, h: noteEl.offsetHeight };
+}
+function nodeCenter(n) { return { x: n.x + NODE_W / 2, y: n.y + NODE_H / 2 }; }
+function noteClaimsNote(n, rect) {
+  const c = nodeCenter(n);
+  if (GROUP_CLAIM === "center") {
+    return c.x >= rect.x && c.x <= rect.x + rect.w && c.y >= rect.y && c.y <= rect.y + rect.h;
+  }
+  return !(n.x + NODE_W < rect.x || n.x > rect.x + rect.w || n.y + NODE_H < rect.y || n.y > rect.y + rect.h);
+}
+
+function membership() {
+  const res = {};
+  const noteEls = [...document.querySelectorAll(".cnote")];
+  for (const n of NODES) {
+    const ids = [];
+    for (const el of noteEls) {
+      if (noteClaimsNote(n, noteRect(el))) ids.push(el.dataset.note);
+    }
+    res[n.id] = ids;
+  }
+  return res;
+}
+
+// ============ rendering: tree ============
+const tree = document.getElementById("tree");
+const list = document.getElementById("list");
+
+function matches(n, q) {
+  if (!q) return true;
+  const t = q.toLowerCase();
+  return n.name.toLowerCase().includes(t) || n.desc.toLowerCase().includes(t) || n.uuid.includes(t);
+}
+function hl(text, q) {
+  if (!q) return text;
+  const i = text.toLowerCase().indexOf(q.toLowerCase());
+  if (i < 0) return text;
+  return text.slice(0, i) + "<mark>" + text.slice(i, i + q.length) + "</mark>" + text.slice(i + q.length);
+}
+function nodeIcon(hue) {
+  return `background:hsl(${hue},15%,80%);border-color:hsl(${hue},35%,45%)`;
+}
+function entryHTML(n, extra) {
+  const sel = n.id === selectedId ? " selected" : "";
+  return `<div class="entry${sel}" data-id="${n.id}">
+    <span class="nicon" style="${nodeIcon(n.hue)}"></span>
+    <span class="name">${hl(n.name, query)}</span>
+    ${pinned.has(n.id) ? '<span class="pin">&#128204;</span>' : ""}
+    ${extra || ""}
+    <span class="uuid">${n.uuid.slice(0, 4)}&#2026;</span>
+  </div>`;
+}
+
+function render() {
+  const mem = membership();
+  const searching = query.trim().length > 0;
+  let html = "";
+  let visibleCount = 0;
+  let groupCount = 0;
+
+  // note groups ordered by the note's top-left position on the canvas (reading order)
+  const rects = {};
+  document.querySelectorAll(".cnote").forEach(el => rects[el.dataset.note] = noteRect(el));
+  const orderedNotes = notes
+    .filter(n => rects[n.id])
+    .sort((a, b) => (rects[a.id].y - rects[b.id].y) || (rects[a.id].x - rects[b.id].x));
+
+  for (const note of orderedNotes) {
+    let members = NODES.filter(n => mem[n.id].includes(note.id));
+    if (showPinnedOnly) members = members.filter(n => pinned.has(n.id));
+    members = members.filter(n => matches(n, query));
+    if (!members.length && searching) continue;
+    groupCount++;
+    const isCollapsed = collapsed.has(note.id);
+    html += `<div class="group-head" data-group="${note.id}">
+      <span class="caret">${isCollapsed ? "&#9654;" : "&#9660;"}</span>
+      <span class="group-dot" style="background:${note.bg};border-color:${note.border}"></span>
+      ${note.title}<span class="count">${members.length}</span>
+    </div>`;
+    if (!isCollapsed) members.forEach(n => { html += entryHTML(n); visibleCount++; });
+  }
+
+  // ungrouped
+  let ungrouped = NODES.filter(n => mem[n.id].length === 0);
+  if (showPinnedOnly) ungrouped = ungrouped.filter(n => pinned.has(n.id));
+  ungrouped = ungrouped.filter(n => matches(n, query));
+  if (ungrouped.length || (!searching && !showPinnedOnly)) {
+    groupCount++;
+    const isCollapsed = collapsed.has("__ungrouped");
+    html += `<div class="group-head" data-group="__ungrouped">
+      <span class="caret">${isCollapsed ? "&#9654;" : "&#9660;"}</span>
+      <span class="group-dot" style="background:#ececec;border-color:#c4c4c4"></span>
+      Ungrouped<span class="count">${ungrouped.length}</span>
+    </div>`;
+    if (!isCollapsed) ungrouped.forEach(n => { html += entryHTML(n); visibleCount++; });
+  }
+
+  // other compartments: only while searching
+  if (searching) {
+    const extra = [
+      { id: "c1", uuid: "f11aa277", name: "Find particles 2D", hue: 350, comp: "Control pipeline" },
+      { id: "c2", uuid: "92bb0c41", name: "Measure", hue: 30, comp: "Control pipeline" },
+      { id: "c3", uuid: "7c0de981", name: "Threshold (Li)", hue: 186, comp: "Validation pipeline" }
+    ].filter(n => matches(n, query));
+    if (extra.length) {
+      const isCollapsed = collapsed.has("__compartments");
+      html += `<div class="comp-group"><div class="comp-head" data-group="__compartments">
+        <span class="caret">${isCollapsed ? "&#9654;" : "&#9660;"}</span>
+        Other compartments<span class="count" style="margin-left:auto">${extra.length}</span>
+      </div>`;
+      if (!isCollapsed) extra.forEach(n => {
+        html += `<div class="entry" data-id="${n.id}">
+          <span class="nicon" style="${nodeIcon(n.hue)}"></span>
+          <span class="name">${hl(n.name, query)}</span>
+          <span class="badge-comp">${n.comp.split(" ")[0]}</span>
+        </div>`;
+      });
+      html += `</div>`;
+    }
+  }
+
+  if (!html) html = `<div style="padding:20px 14px;color:#9a9a9a;font-size:12px;line-height:1.6">No node matches "${query}".</div>`;
+  tree.innerHTML = html;
+
+  document.getElementById("panel-sub").textContent = `- ${NODES.length} nodes in ${groupCount} groups`;
+
+  // right list pane: members of the group under the mouse? Show selection's group members
+  renderList(mem);
+}
+
+function renderList(mem) {
+  const sel = NODES.find(n => n.id === selectedId);
+  if (!sel) { list.innerHTML = ""; return; }
+  const ids = mem[sel.id];
+  const memberIds = ids.length ? NODES.filter(n => ids.includes(n.id)).map(n => n.id) : NODES.filter(n => mem[n.id].length === 0).map(n => n.id);
+  list.innerHTML = memberIds.map(id => {
+    const n = NODES.find(x => x.id === id);
+    return `<div class="litem" data-id="${n.id}"><span class="nicon" style="${nodeIcon(n.hue)}"></span><span class="lname">${n.name}</span></div>`;
+  }).join("");
+}
+
+// ============ interaction: tree ============
+tree.addEventListener("click", e => {
+  const head = e.target.closest(".group-head, .comp-head");
+  if (head) { const g = head.dataset.group; collapsed.has(g) ? collapsed.delete(g) : collapsed.add(g); render(); return; }
+  const entry = e.target.closest(".entry");
+  if (entry) { const id = entry.dataset.id; if (document.getElementById("canvas").querySelector(`[data-id="${id}"]`)) selectNode(id); }
+});
+tree.addEventListener("dblclick", e => {
+  const entry = e.target.closest(".entry");
+  if (entry) flashNode(entry.dataset.id);
+});
+list.addEventListener("click", e => {
+  const item = e.target.closest(".litem");
+  if (item) selectNode(item.dataset.id);
+});
+
+document.getElementById("search").addEventListener("input", e => { query = e.target.value; render(); });
+document.getElementById("btn-clear").onclick = () => { query = ""; document.getElementById("search").value = ""; render(); };
+document.getElementById("btn-pins").onclick = (e) => {
+  showPinnedOnly = !showPinnedOnly;
+  e.currentTarget.classList.toggle("pin-on", showPinnedOnly);
+  render();
+};
+document.getElementById("btn-tuning").onclick = () => {
+  const p = document.getElementById("panel");
+  forceTier = forceTier === "compact" ? null : forceTier === "wide" ? "compact" : "wide";
+  applyTier();
+};
+
+function applyTier() {
+  const p = document.getElementById("panel");
+  const tier = forceTier || (p.clientWidth < COMPACT_TIER_WIDTH ? "compact" : "wide");
+  p.classList.toggle("wide", tier === "wide");
+  document.getElementById("tier-label").textContent = tier;
+}
+
+// ============ canvas: nodes ============
+const canvas = document.getElementById("canvas");
+
+function renderCanvas() {
+  canvas.querySelectorAll(".gnode").forEach(el => el.remove());
+  for (const n of NODES) {
+    const el = document.createElement("div");
+    el.className = "gnode" + (n.id === selectedId ? " selected" : "");
+    el.dataset.id = n.id;
+    el.style.left = n.x + "px";
+    el.style.top = n.y + "px";
+    el.style.width = NODE_W + "px";
+    el.style.background = `hsl(${n.hue},15%,80%)`;
+    el.style.borderColor = `hsl(${n.hue},35%,45%)`;
+    el.innerHTML = `<div class="gn-head" style="background:hsl(${n.hue},4%,64%)">${n.name}</div><div class="gn-body"></div>`;
+    canvas.appendChild(el);
+  }
+}
+function selectNode(id) {
+  selectedId = id;
+  renderCanvas();
+  render();
+  const el = canvas.querySelector(`.gnode[data-id="${id}"]`);
+  if (el) el.scrollIntoView({ block: "nearest" });
+}
+function flashNode(id) { selectNode(id); }
+
+// drag nodes
+let drag = null;
+canvas.addEventListener("mousedown", e => {
+  const gn = e.target.closest(".gnode");
+  if (gn) {
+    const n = NODES.find(x => x.id === gn.dataset.id);
+    const r = canvas.getBoundingClientRect();
+    drag = { node: n, el: gn, dx: e.clientX - r.left - n.x, dy: e.clientY - r.top - n.y };
+    gn.classList.add("dragging");
+    e.preventDefault();
+  }
+});
+window.addEventListener("mousemove", e => {
+  if (!drag) return;
+  const r = canvas.getBoundingClientRect();
+  drag.node.x = Math.max(0, Math.min(r.width - NODE_W, e.clientX - r.left - drag.dx));
+  drag.node.y = Math.max(0, Math.min(r.height - NODE_H, e.clientY - r.top - drag.dy));
+  drag.el.style.left = drag.node.x + "px";
+  drag.el.style.top = drag.node.y + "px";
+});
+window.addEventListener("mouseup", () => {
+  if (drag) { drag.el.classList.remove("dragging"); drag = null; render(); }
+});
+
+// drag notes too (to prove grouping is positional)
+let ndrag = null;
+canvas.addEventListener("mousedown", e => {
+  const cn = e.target.closest(".cnote");
+  if (cn && !e.target.closest(".gnode")) {
+    const r = canvas.getBoundingClientRect();
+    ndrag = { el: cn, dx: e.clientX - r.left - cn.offsetLeft, dy: e.clientY - r.top - cn.offsetTop };
+    cn.classList.add("dragging");
+  }
+});
+window.addEventListener("mousemove", e => {
+  if (!ndrag) return;
+  const r = canvas.getBoundingClientRect();
+  ndrag.el.style.left = Math.max(0, e.clientX - r.left - ndrag.dx) + "px";
+  ndrag.el.style.top = Math.max(0, e.clientY - r.top - ndrag.dy) + "px";
+});
+window.addEventListener("mouseup", () => {
+  if (ndrag) { ndrag.el.classList.remove("dragging"); ndrag = null; render(); }
+});
+
+// init
+renderCanvas();
+render();
+applyTier();
+new ResizeObserver(applyTier).observe(document.getElementById("panel"));
+</script>
+</body>
+</html>

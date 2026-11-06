@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Navigator overhaul - Prototype 04: Floating map</title>
+<style>
+  :root {
+    --border: #cfcfcf;
+    --border-soft: #e0e0e0;
+    --text: #262626;
+    --text-dim: #6b6b6b;
+    --accent: #1976d2;
+    --accent-soft: #e3f0fb;
+    --panel: #f7f7f7;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Segoe UI", system-ui, sans-serif;
+    background: #fff; color: var(--text); font-size: 13px;
+    display: flex; flex-direction: column; gap: 16px; padding: 24px; align-items: center;
+  }
+  h1 { font-size: 17px; }
+  .intro { color: var(--text-dim); max-width: 760px; line-height: 1.45; }
+  .wrap { display: flex; gap: 24px; align-items: flex-start; }
+
+  /* ---------- editor frame ---------- */
+  .editor {
+    width: 780px; height: 560px; border: 1px solid var(--border); border-radius: 6px;
+    background: var(--panel); overflow: hidden; display: flex; flex-direction: column;
+    box-shadow: 0 1px 4px rgba(0,0,0,.08);
+  }
+  .menubar { display: flex; gap: 14px; padding: 4px 10px; background: #fff; border-bottom: 1px solid var(--border-soft); color: var(--text-dim); font-size: 12px; }
+  .toolbar {
+    display: flex; align-items: center; gap: 2px; padding: 3px 8px;
+    background: var(--panel); border-bottom: 1px solid var(--border-soft);
+  }
+  .tool {
+    height: 28px; min-width: 28px; border-radius: 4px; border: none; background: transparent;
+    color: #444; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    padding: 0 7px; gap: 6px; font-size: 12px;
+  }
+  .tool:hover { background: #e8e8e8; }
+  .tool.on { background: var(--accent-soft); color: var(--accent); }
+  .tool svg { width: 16px; height: 16px; }
+  .tsep { width: 1px; height: 20px; background: var(--border); margin: 0 6px; }
+  .spacer { flex: 1; }
+
+  /* ---------- canvas ---------- */
+  .canvas-area { flex: 1; position: relative; overflow: hidden; background: #fafafa; cursor: grab; }
+  .canvas-area.panning { cursor: grabbing; }
+  .world { position: absolute; transform-origin: 0 0; will-change: transform; }
+  .graph-svg { position: absolute; inset: 0; }
+  .gnode {
+    position: absolute; border-radius: 5px; border: 1px solid;
+    font-size: 10px; background-image: radial-gradient(rgba(0,0,0,.09) 1px, transparent 1.1px);
+    background-size: 7px 7px;
+  }
+  .gnode .gn-head {
+    padding: 2px 6px; white-space: nowrap; border-bottom: 1px solid rgba(0,0,0,.18);
+    border-radius: 4px 4px 0 0; overflow: hidden;
+  }
+  .gnode .gn-body { height: 22px; }
+  .cnote { position: absolute; border-radius: 6px; border-width: 2px; border-style: solid; padding: 5px 10px; font-weight: 600; font-size: 12px; }
+  .cnote .cnt { display: block; font-weight: 400; font-size: 9px; opacity: .6; }
+
+  /* ---------- the floating map ---------- */
+  .fmap {
+    position: absolute; z-index: 50; width: 280px; height: 200px;
+    border: 1px solid var(--border); border-radius: 8px;
+    background: rgba(250,250,250,.97);
+    box-shadow: 0 6px 22px rgba(0,0,0,.22);
+    display: flex; flex-direction: column;
+  }
+  .fmap.hidden { display: none; }
+  .fmap-head {
+    display: flex; align-items: center; gap: 4px;
+    padding: 3px 5px 3px 8px; background: #f0f0f0;
+    border-bottom: 1px solid var(--border-soft);
+    border-radius: 8px 8px 0 0;
+    cursor: grab; font-size: 11px; font-weight: 600; color: #555;
+    user-select: none;
+  }
+  .fmap-head:active { cursor: grabbing; }
+  .fmap.locked .fmap-head { cursor: default; }
+  .fmap-head .grip { color: #aaa; letter-spacing: 1px; }
+  .fmap.locked .fmap-head .grip { opacity: .3; }
+  .fmap-head .spacer { flex: 1; }
+  .fbtn {
+    width: 20px; height: 20px; border-radius: 4px; border: none;
+    background: transparent; color: #666; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .fbtn:hover { background: #e2e2e2; }
+  .fbtn.on { background: var(--accent-soft); color: var(--accent); }
+  .fbtn svg { width: 13px; height: 13px; }
+  .fmap-body { flex: 1; position: relative; overflow: hidden; cursor: crosshair; }
+  .fmap-body svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .m-view {
+    position: absolute; border: 2px solid var(--accent);
+    background: rgba(25,118,210,.10); border-radius: 2px; cursor: pointer;
+  }
+  .fmap-resize {
+    position: absolute; right: 0; bottom: 0; width: 14px; height: 14px;
+    cursor: nwse-resize; z-index: 2;
+  }
+  .fmap-resize::after {
+    content: ""; position: absolute; right: 3px; bottom: 3px;
+    border-right: 3px solid #b8b8b8; border-bottom: 3px solid #b8b8b8;
+    width: 7px; height: 7px;
+  }
+  .fmap.locked .fmap-resize { display: none; }
+  .fmap-layers {
+    display: none; gap: 12px; padding: 5px 10px;
+    border-bottom: 1px solid var(--border-soft); background: #fbfbfb;
+    font-size: 11px; align-items: center;
+  }
+  .fmap-layers.open { display: flex; }
+  .fmap-layers label { display: flex; align-items: center; gap: 4px; cursor: pointer; }
+
+  /* ---------- side info ---------- */
+  .info { width: 320px; display: flex; flex-direction: column; gap: 12px; }
+  .info h2 { font-size: 13px; }
+  .card { border: 1px solid var(--border-soft); border-radius: 6px; background: #fcfcfc; padding: 10px 12px; font-size: 12px; line-height: 1.55; color: var(--text-dim); }
+  .card code { background: #f0f0f0; padding: 0 4px; border-radius: 3px; font-size: 11px; }
+  pre.settings {
+    font-family: ui-monospace, monospace; font-size: 11px; line-height: 1.5;
+    background: #262626; color: #d8f0d8; border-radius: 6px; padding: 10px 12px;
+    overflow: auto; max-height: 300px;
+  }
+  .checkline { display: flex; align-items: center; gap: 6px; margin: 3px 0; }
+</style>
+</head>
+<body>
+
+<h1>Prototype 04 &mdash; Floating map (minimap)</h1>
+<p class="intro">
+  The map leaves the dock and floats over the canvas. Drag its header to move it, resize from the bottom-right corner,
+  lock it in place, or hide it entirely via the toolbar toggle (like today's dock panel visibility).
+  Its layers (nodes / edges / canvas notes) toggle from its header. The viewport rectangle is live:
+  drag the canvas to pan and the rectangle follows; drag the rectangle inside the map to pan the canvas.
+  Position, size, visibility and layers are all part of the persisted settings (shown on the right).
+</p>
+
+<div class="wrap">
+  <div class="editor">
+    <div class="menubar"><span>File</span><span>Edit</span><span>Project</span><span>Run</span><span>Help</span></div>
+    <div class="toolbar">
+      <button class="tool" title="Select"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 3l7 17 2.5-7.5L21 10z"/></svg></button>
+      <button class="tool" title="Move"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 9l-3 3 3 3M9 5l3-3 3 3M15 19l-3 3-3-3M19 9l3 3-3 3M2 12h20M12 2v20"/></svg></button>
+      <button class="tool" title="Connect"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="5" cy="19" r="2"/><circle cx="19" cy="5" r="2"/><path d="M6.5 17.5L17.5 6.5"/></svg></button>
+      <div class="tsep"></div>
+      <button class="tool" title="Zoom"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-5-5"/></svg></button>
+      <button class="tool" id="btn-zoom-out" title="Zoom out" style="min-width:24px">&minus;</button>
+      <span class="tool" id="zoom-lbl" style="cursor:default;min-width:44px">100%</span>
+      <button class="tool" id="btn-zoom-in" title="Zoom in" style="min-width:24px">+</button>
+      <div class="spacer"></div>
+      <button class="tool on" id="btn-map" title="Show or hide the map">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"/><path d="M9 4v14M15 6v14"/></svg>
+        Map
+      </button>
+    </div>
+
+    <div class="canvas-area" id="canvasArea">
+      <div class="world" id="world">
+        <svg class="graph-svg" width="1600" height="1100"></svg>
+        <div class="cnote" id="note-seg" style="left:180px;top:120px;width:520px;height:300px;background:#fff8d6;border-color:#e6d98a">Segmentation<span class="cnt">canvas note</span></div>
+        <div class="cnote" id="note-qc" style="left:700px;top:520px;width:320px;height:220px;background:#e3f0fb;border-color:#a8cbe8">QC<span class="cnt">canvas note</span></div>
+      </div>
+
+      <div class="fmap" id="fmap" style="left:470px;top:16px">
+        <div class="fmap-head" id="fmap-head">
+          <span class="grip">&#8942;&#8942;</span> Map
+          <span class="spacer"></span>
+          <button class="fbtn on" id="btn-layers" title="Layers">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l9 5-9 5-9-5 9-5z"/><path d="M3 13l9 5 9-5"/></svg>
+          </button>
+          <button class="fbtn" id="btn-lock" title="Lock position">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+          </button>
+          <button class="fbtn" id="btn-close" title="Hide map">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg>
+          </button>
+        </div>
+        <div class="fmap-body" id="fmap-body">
+          <svg id="fmap-svg"></svg>
+          <div class="m-view" id="mview"></div>
+        </div>
+        <div class="fmap-resize" id="fmap-resize"></div>
+        <div class="fmap-layers" id="fmap-layers">
+          <label><input type="checkbox" id="lyr-nodes" checked> Nodes</label>
+          <label><input type="checkbox" id="lyr-edges" checked> Edges</label>
+          <label><input type="checkbox" id="lyr-notes" checked> Canvas notes</label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="info">
+    <div class="card">
+      <h2>How to test</h2>
+      Drag the canvas background &rarr; pan, the blue rectangle follows.<br>
+      Drag the blue rectangle inside the map &rarr; pans the canvas.<br>
+      Drag the map header / resize corner &rarr; move + resize (blocked while locked).<br>
+      Header buttons: layers, lock, hide. Toolbar "Map" toggles it back.
+    </div>
+    <div class="card">
+      <h2>Persisted settings</h2>
+      One JSON value in the graph editor's settings (same binding family as the dock state,
+      so it syncs across open editors of the same graph and is shared between instances):
+    </div>
+    <pre class="settings" id="settings-pre"></pre>
+    <div class="card">
+      <h2>Open points</h2>
+      <div class="checkline"><input type="checkbox" id="chk-zoom" checked> Map honors canvas zoom</div>
+      <div class="checkline"><input type="checkbox" id="chk-follow" checked> Map clamps to canvas bounds</div>
+      Layer set: nodes / edges / canvas notes (extendable later, e.g. selection, data flow)
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+
+// ============ tunable constants ============
+const WORLD_W = 1600, WORLD_H = 1100;
+const MAP_DEFAULT_X = 470, MAP_DEFAULT_Y = 16;
+const MAP_DEFAULT_W = 280, MAP_DEFAULT_H = 200;
+const MAP_MIN_W = 180, MAP_MIN_H = 130;
+const MAP_MARGIN = 8;                 // clamp margin from canvas edges
+const DEFAULT_LAYERS = { nodes: true, edges: true, notes: true };
+
+// ============ demo nodes ============
+const NODES = [
+  { x: 60,  y: 60,  w: 150, hue: 136, name: "Import image" },
+  { x: 300, y: 60,  w: 150, hue: 186, name: "Split channels" },
+  { x: 540, y: 40,  w: 150, hue: 186, name: "Gray channel" },
+  { x: 540, y: 180, w: 150, hue: 186, name: "Green channel" },
+  { x: 780, y: 40,  w: 150, hue: 186, name: "Background subtract" },
+  { x: 780, y: 180, w: 150, hue: 186, name: "Threshold (Li)" },
+  { x: 300, y: 300, w: 150, hue: 186, name: "Threshold (Otsu)" },
+  { x: 1020, y: 120, w: 150, hue: 350, name: "Find particles 2D" },
+  { x: 1260, y: 40,  w: 150, hue: 30,  name: "Measure" },
+  { x: 1260, y: 200, w: 150, hue: 186, name: "Filter by size" },
+  { x: 1020, y: 300, w: 150, hue: 186, name: "Find nuclei 2D" },
+  { x: 1020, y: 520, w: 150, hue: 30,  name: "Measure" },
+  { x: 1260, y: 520, w: 150, hue: 60,  name: "Plot" },
+  { x: 1260, y: 660, w: 150, hue: 160, name: "Export to CSV" },
+  { x: 780, y: 560, w: 150, hue: 160, name: "Export ROI" },
+  { x: 300, y: 560, w: 150, hue: 186, name: "Merge lists" },
+  { x: 60,  y: 560, w: 150, hue: 136, name: "Import image" },
+  { x: 300, y: 800, w: 150, hue: 30,  name: "Statistics" },
+  { x: 540, y: 800, w: 150, hue: 210, name: "Annotate table" },
+  { x: 780, y: 800, w: 150, hue: 160, name: "Export summary" }
+];
+const H = 58;
+const EDGES = [
+  [0,1],[1,2],[1,3],[2,4],[3,5],[3,6],[5,7],[7,8],[7,9],[6,10],[10,11],[10,12],[7,11],[11,13],[12,13],[4,14],[1,15],[15,16],[16,17],[17,18],[18,19],[6,17]
+];
+
+// ============ world ============
+const world = document.getElementById("world");
+const canvasArea = document.getElementById("canvasArea");
+let camX = -20, camY = -20;
+let zoom = 1;
+
+// edges
+const svg = world.querySelector("graph-svg, .graph-svg");
+let ehtml = "";
+for (const [a, b] of EDGES) {
+  const A = NODES[a], B = NODES[b];
+  const x1 = A.x + A.w, y1 = A.y + H / 2, x2 = B.x, y2 = B.y + H / 2;
+  const mx = (x1 + x2) / 2;
+  ehtml += `<path d="M ${x1} ${y1} C ${mx} ${y1}, ${mx} ${y2}, ${x2} ${y2}" stroke="#8a8a8a" stroke-width="2" fill="none" opacity=".8"/>`;
+}
+svg.innerHTML = ehtml;
+
+// nodes
+NODES.forEach(n => {
+  const el = document.createElement("div");
+  el.className = "gnode";
+  el.style.cssText = `left:${n.x}px;top:${n.y}px;width:${n.w}px;background:hsl(${n.hue},15%,80%);border-color:hsl(${n.hue},35%,45%)`;
+  el.innerHTML = `<div class="gn-head" style="background:hsl(${n.hue},4%,64%)">${n.name}</div><div class="gn-body"></div>`;
+  world.appendChild(el);
+});
+
+function applyCam() {
+  world.style.transform = `translate(${-camX * zoom}px, ${-camY * zoom}px) scale(${zoom})`;
+  document.getElementById("zoom-lbl").textContent = Math.round(zoom * 100) + "%";
+  updateMap();
+}
+
+// canvas pan (accounting for zoom)
+let panning = null;
+canvasArea.addEventListener("mousedown", e => {
+  if (e.target.closest(".fmap")) return;
+  panning = { x: e.clientX, y: e.clientY, cx: camX, cy: camY };
+  canvasArea.classList.add("panning");
+});
+window.addEventListener("mousemove", e => {
+  if (!panning) return;
+  camX = panning.cx - (e.clientX - panning.x) / zoom;
+  camY = panning.cy - (e.clientY - panning.y) / zoom;
+  applyCam();
+});
+window.addEventListener("mouseup", () => { panning = null; canvasArea.classList.remove("panning"); });
+
+// ============ the map ============
+const fmap = document.getElementById("fmap");
+const fmapHead = document.getElementById("fmap-head");
+const fmapResize = document.getElementById("fmap-resize");
+const fmapBody = document.getElementById("fmap-body");
+const fmapSvg = document.getElementById("fmap-svg");
+const mview = document.getElementById("mview");
+
+const state = {
+  visible: true,
+  locked: false,
+  x: MAP_DEFAULT_X, y: MAP_DEFAULT_Y, w: MAP_DEFAULT_W, h: MAP_DEFAULT_H,
+  layers: { ...DEFAULT_LAYERS }
+};
+
+function mapScale() {
+  // the map fits the whole world, keeping aspect ratio, centered
+  const s = Math.min(state.w / WORLD_W, state.h / WORLD_H);
+  return s;
+}
+
+function updateMap() {
+  const s = mapScale();
+  const ox = (state.w - WORLD_W * s) / 2;
+  const oy = (state.h - WORLD_H * s) / 2;
+  fmapSvg.setAttribute("viewBox", `0 0 ${state.w} ${state.h}`);
+  let h = `<g transform="translate(${ox},${oy}) scale(${s})">`;
+  const notes = document.querySelectorAll(".cnote");
+  if (state.layers.notes) {
+    for (const el of notes) {
+      h += `<rect x="${el.offsetLeft}" y="${el.offsetTop}" width="${el.offsetWidth}" height="${el.offsetHeight}" rx="6" fill="${el.style.background}" stroke="${el.style.borderColor}" stroke-width="2"/>`;
+    }
+  }
+  if (state.layers.edges) {
+    for (const [a, b] of EDGES) {
+      const A = NODES[a], B = NODES[b];
+      const x1 = A.x + A.w, y1 = A.y + H / 2, x2 = B.x, y2 = B.y + H / 2;
+      const mx = (x1 + x2) / 2;
+      h += `<path d="M ${x1} ${y1} C ${mx} ${y1}, ${mx} ${y2}, ${x2} ${y2}" stroke="#8a8a8a" stroke-width="3" fill="none"/>`;
+    }
+  }
+  if (state.layers.nodes) {
+    for (const n of NODES) {
+      h += `<rect x="${n.x}" y="${n.y}" width="${n.w}" height="${H}" rx="5" fill="hsl(${n.hue},15%,72%)" stroke="hsl(${n.hue},35%,45%)" stroke-width="1.5"/>`;
+    }
+  }
+  h += `</g>`;
+  fmapSvg.innerHTML = h;
+
+  // viewport rect: the canvas viewport in world coordinates is
+  // (-camX, -camY) .. (-camX + arW/zoom, -camY + arH/zoom)
+  const ar = canvasArea.getBoundingClientRect();
+  const vx = ox + (-camX) * s, vy = oy + (-camY) * s;
+  const vw = (ar.width / zoom) * s, vh = (ar.height / zoom) * s;
+  mview.style.left = vx + "px";
+  mview.style.top = vy + "px";
+  mview.style.width = vw + "px";
+  mview.style.height = vh + "px";
+
+  renderSettings();
+}
+
+// viewport rect drag -> pan canvas
+let mviewDrag = null;
+mview.addEventListener("mousedown", e => {
+  e.stopPropagation();
+  mviewDrag = { x: e.clientX, y: e.clientY, cx: camX, cy: camY };
+});
+window.addEventListener("mousemove", e => {
+  if (!mviewDrag) return;
+  const s = mapScale();
+  camX = mviewDrag.cx - (e.clientX - mviewDrag.x) / (s * zoom);
+  camY = mviewDrag.cy - (e.clientY - mviewDrag.y) / (s * zoom);
+  applyCam();
+});
+window.addEventListener("mouseup", () => { mviewDrag = null; });
+
+// move
+let moveDrag = null;
+fmapHead.addEventListener("mousedown", e => {
+  if (state.locked || e.target.closest(".fbtn")) return;
+  moveDrag = { x: e.clientX, y: e.clientY, x0: state.x, y0: state.y };
+  e.preventDefault();
+});
+window.addEventListener("mousemove", e => {
+  if (!moveDrag) return;
+  const ar = canvasArea.getBoundingClientRect();
+  state.x = clampX(moveDrag.x0 + e.clientX - moveDrag.x);
+  state.y = clampY(moveDrag.y0 + e.clientY - moveDrag.y);
+  applyMapPos();
+});
+window.addEventListener("mouseup", () => { moveDrag = null; });
+
+function clampX(x) { return Math.max(MAP_MARGIN, Math.min(canvasArea.clientWidth - state.w - MAP_MARGIN, x)); }
+function clampY(y) { return Math.max(MAP_MARGIN, Math.min(canvasArea.clientHeight - state.h - MAP_MARGIN, y)); }
+function applyMapPos() {
+  fmap.style.left = state.x + "px";
+  fmap.style.top = state.y + "px";
+  fmap.style.width = state.w + "px";
+  fmap.style.height = state.h + "px";
+  updateMap();
+}
+
+// resize
+let resDrag = null;
+fmapResize.addEventListener("mousedown", e => {
+  if (state.locked) return;
+  resDrag = { x: e.clientX, y: e.clientY, w0: state.w, h0: state.h };
+  e.preventDefault();
+});
+window.addEventListener("mousemove", e => {
+  if (!resDrag) return;
+  state.w = Math.max(MAP_MIN_W, Math.min(canvasArea.clientWidth - state.x - MAP_MARGIN, resDrag.w0 + e.clientX - resDrag.x));
+  state.h = Math.max(MAP_MIN_H, Math.min(canvasArea.clientHeight - state.y - MAP_MARGIN, resDrag.h0 + e.clientY - resDrag.y));
+  applyMapPos();
+});
+window.addEventListener("mouseup", () => { resDrag = null; });
+
+// header buttons
+document.getElementById("btn-lock").onclick = function() {
+  state.locked = !state.locked;
+  fmap.classList.toggle("locked", state.locked);
+  this.classList.toggle("on", state.locked);
+  renderSettings();
+};
+let layersOpen = false;
+document.getElementById("btn-layers").onclick = function() {
+  layersOpen = !layersOpen;
+  this.classList.toggle("on", layersOpen);
+  document.getElementById("fmap-layers").classList.toggle("open", layersOpen);
+};
+document.getElementById("btn-close").onclick = () => setVisible(false);
+document.getElementById("btn-map").onclick = function() {
+  setVisible(!state.visible);
+  this.classList.toggle("on", state.visible);
+};
+// layer toggles
+for (const key of ["nodes", "edges", "notes"]) {
+  document.getElementById("lyr-" + key).addEventListener("change", e => {
+    state.layers[key] = e.target.checked;
+    updateMap();
+  });
+}
+// zoom (around the canvas center)
+function zoomAt(factor) {
+  const ar = canvasArea.getBoundingClientRect();
+  const cx = camX + ar.width / 2 / zoom;
+  const cy = camY + ar.height / 2 / zoom;
+  zoom = Math.max(0.1, Math.min(4, zoom * factor));
+  camX = cx - ar.width / 2 / zoom;
+  camY = cy - ar.height / 2 / zoom;
+  applyCam();
+}
+document.getElementById("btn-zoom-in").onclick = () => zoomAt(1.25);
+document.getElementById("btn-zoom-out").onclick = () => zoomAt(0.8);
+function setVisible(v) {
+  state.visible = v;
+  fmap.classList.toggle("hidden", !v);
+  renderSettings();
+}
+
+// settings preview (also demonstrates the persisted shape)
+function renderSettings() {
+  document.getElementById("settings-pre").textContent =
+JSON.stringify({
+  map: {
+    visible: state.visible,
+    position: { x: Math.round(state.x), y: Math.round(state.y) },
+    size: { w: Math.round(state.w), h: Math.round(state.h) },
+    locked: state.locked,
+    layers: { ...state.layers }
+  }
+}, null, 2);
+}
+
+// notes: zoom and clamping behavior are implemented in this prototype;
+// the checkboxes above are only markers of what the final implementation tunes.
+
+applyCam();
+</script>
+</body>
+</html>
