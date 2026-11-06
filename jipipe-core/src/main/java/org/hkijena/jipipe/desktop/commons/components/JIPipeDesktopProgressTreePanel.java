@@ -45,9 +45,12 @@ import java.text.NumberFormat;
 import java.time.Duration;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Deque;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -73,9 +76,21 @@ import java.util.concurrent.atomic.AtomicLong;
  * <p>
  * <b>Row model:</b> a flat, virtualized {@link JList} of {@link Row} snapshots — node rows and
  * phase rows sit directly in the list; {@code PARTITION}-kind nodes are squashed into the dim
- * {@code P0} chip of their descendants (never rendered as rows). Expanding a node shows its records
- * (paged — the last {@value #DETAIL_PAGE_SIZE} records by default, older pages via
- * {@code Show N older records from run data…}), read from the checkpointed store off the EDT.
+ * {@code P0} chip of their descendants (never rendered as rows). Expanded nodes show their records
+ * in one of two detail modes (R30):
+ * <ul>
+ * <li><b>Virtual mode</b> (all of the node's own records pass the category toggles): the detail
+ * block maps the node's own record lines contiguously (row ↔ line; the list extent equals the
+ * detail size — the scrollbar is proportional to the real content). Lines load in chunks of
+ * {@value #VIRTUAL_CHUNK_LINES} around the viewport via the checkpointed
+ * {@code readRecords(fromLine, limit)} off the EDT; unloaded lines render as {@code …}
+ * placeholder rows; the cache is pruned beyond the viewport window, so memory stays bounded
+ * regardless of the record count. The tail grows live: the view follows it while the detail
+ * autoscroll is engaged (scroll-up disengages, the go-to-end button re-engages).</li>
+ * <li><b>Paged mode</b> (the node has records hidden by the toggles): the last
+ * {@value #DETAIL_PAGE_SIZE} records plus the {@code Show N older records from run data…} row,
+ * re-read on demand.</li>
+ * </ul>
  */
 public class JIPipeDesktopProgressTreePanel extends JPanel {
 
@@ -85,6 +100,17 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
     private static final int DETAIL_PAGE_SIZE = 1000;
     private static final int COPY_LINE_LIMIT = 8192;
     private static final int CATCH_UP_PAGE_SIZE = 10_000;
+
+    /**
+     * R30 chunked virtual detail loading. A chunk covers {@value #VIRTUAL_CHUNK_LINES} of a node's
+     * own record lines; the viewport plus {@value #VIRTUAL_PREFETCH_CHUNKS} adjacent chunks are kept
+     * loaded, everything outside is pruned. The cache bound is therefore
+     * {@code VIRTUAL_CACHED_CHUNKS * VIRTUAL_CHUNK_LINES} records per expanded node (17 × 512 =
+     * 8,704), independent of the node's record count.
+     */
+    private static final int VIRTUAL_CHUNK_LINES = 512;
+    private static final int VIRTUAL_PREFETCH_CHUNKS = 2;
+    private static final int VIRTUAL_CACHED_CHUNKS = 2 * VIRTUAL_PREFETCH_CHUNKS + 1;
 
     /**
      * The record categories of the toggle-button filter (R22): debug = {@code l}@DEBUG, info =
@@ -113,7 +139,7 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
     private final JPanel headerComponentsPanel = UIUtils.boxHorizontal();
 
     // --- Center (the flat row list) ---
-    private final DefaultListModel<JIPipeDesktopProgressTreeRowRenderer.Row> listModel = new DefaultListModel<>();
+    private final ProgressListModel listModel = new ProgressListModel();
     private final ProgressTreeList list;
     private final JScrollPane listScrollPane;
     private final JIPipeDesktopProgressTreeRowRenderer renderer;
@@ -126,6 +152,8 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
     private final JLabel footerRecordsLabel = new JLabel();
     private final JLabel footerFileLabel = new JLabel();
     private final JPanel footerButtons = UIUtils.boxHorizontal();
+    private final JToggleButton detailAutoscrollButton = new JToggleButton(JIPipe.RESOURCES.getIcon16("actions/arrow-down-double.png"));
+    private final JButton detailGoToEndButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/go-bottom.png"));
 
     // --- Store state (batch listeners run on the store's writer thread; the EDT consumes) ---
     private final Object storeLock = new Object();
@@ -162,6 +190,36 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
 
     // EDT-only
     private final Map<Integer, Integer> rowPositions = new HashMap<>();
+    /**
+     * The virtual detail blocks emitted by the current rebuild pass (R21) — passed to the row
+     * model's reset. EDT-only, valid only during {@code updateTreeModel}.
+     */
+    private final List<VirtualBlock> rebuildBlocks = new ArrayList<>();
+    private int rebuildBlockShift;
+
+    // --- Virtual detail scroll state (R30; all EDT-only) ---
+    /**
+     * The node whose detail tail the view follows while {@link #detailAutoscroll} is engaged
+     * (the most recently expanded node, re-targeted by the go-to-end button).
+     */
+    private int autoscrollNodeId;
+    private boolean detailAutoscroll;
+    /**
+     * Pending scroll-to-detail-end request (expansion and the go-to-end button set it; the next
+     * refresh tick applies it once the row positions are known).
+     */
+    private int scrollToDetailEndNodeId;
+    /**
+     * The most recently expanded node (the go-to-end/autoscroll target when the viewport is
+     * outside any detail block).
+     */
+    private int lastExpandedNodeId;
+    /**
+     * True while a programmatic scroll runs — the adjustment listener must not interpret it as a
+     * manual scroll-up (which disengages the detail autoscroll).
+     */
+    private boolean scrollProgrammatic;
+    private int lastScrollValue;
 
     private final Timer refreshTimer;
     private final ExecutorService backgroundExecutor = Executors.newSingleThreadExecutor(runnable -> {
@@ -230,6 +288,23 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
         listScrollPane.setBorder(BorderFactory.createEmptyBorder(4, 0, 4, 0));
         add(listScrollPane, BorderLayout.CENTER);
 
+        // Scroll tracking (R30): a manual scroll-up pauses the detail tail follow; every scroll
+        // position change loads the chunks of the surrounding viewport
+        listScrollPane.getVerticalScrollBar().addAdjustmentListener(e -> {
+            int value = e.getAdjustable().getValue();
+            boolean scrolledUp = value < lastScrollValue;
+            lastScrollValue = value;
+            if (scrolledUp && detailAutoscroll && !scrollProgrammatic) {
+                detailAutoscroll = false;
+                autoscrollNodeId = 0;
+                detailAutoscrollButton.setSelected(false);
+            }
+            JIPipeProgressLog s = store;
+            if (s != null) {
+                scheduleVirtualChunkLoads(s);
+            }
+        });
+
         // Footer: state icon | breadcrumb + live progress | N records · size | data file | buttons
         JPanel footerPanel = new JPanel(new BorderLayout(8, 0));
         footerPanel.setOpaque(false);
@@ -242,14 +317,36 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
         footerStatusLabel.setForeground(style.getTextMuted());
         footerStateLabel.setAlignmentY(0.5f);
         footerStatusLabel.setAlignmentY(0.5f);
-        JPanel footerLeft = UIUtils.boxHorizontal(footerStateLabel, footerStatusLabel);
-        footerLeft.setOpaque(false);
         footerRecordsLabel.setFont(footerRecordsLabel.getFont().deriveFont(12.0f));
         footerRecordsLabel.setForeground(style.getTextMuted());
         footerRecordsLabel.setAlignmentY(0.5f);
         footerFileLabel.setFont(footerFileLabel.getFont().deriveFont(12.0f));
         footerFileLabel.setForeground(style.getTextMuted());
         footerFileLabel.setAlignmentY(0.5f);
+
+        // Detail scroll controls (R30): tail follow + go-to-end. Independent of the header's
+        // "Auto show progress" (which governs the row list, not the expanded details).
+        detailAutoscrollButton.setEnabled(false);
+        detailAutoscrollButton.setToolTipText("Follow the tail of the expanded records (scrolling up pauses it)");
+        detailAutoscrollButton.addActionListener(e -> {
+            if (detailAutoscrollButton.isSelected()) {
+                int nodeId = currentDetailNodeId();
+                if (nodeId > 0) {
+                    engageDetailAutoscroll(nodeId);
+                } else {
+                    detailAutoscrollButton.setSelected(false);
+                }
+            } else {
+                detailAutoscroll = false;
+                autoscrollNodeId = 0;
+            }
+        });
+        detailGoToEndButton.setEnabled(false);
+        detailGoToEndButton.setToolTipText("Jump to the newest record of the expanded node");
+        detailGoToEndButton.addActionListener(e -> goToNewestRecords());
+        JPanel footerLeft = UIUtils.boxHorizontal(footerStateLabel, footerStatusLabel, Box.createHorizontalStrut(10), detailAutoscrollButton, detailGoToEndButton);
+        footerLeft.setOpaque(false);
+
         // Struts separate the information segments and the button group
         JPanel footerRight = UIUtils.boxHorizontal(footerRecordsLabel, Box.createHorizontalStrut(12), footerFileLabel, Box.createHorizontalStrut(12), footerButtons);
         footerRight.setOpaque(false);
@@ -469,7 +566,7 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
         }
         dirty = true;
         SwingUtilities.invokeLater(() -> {
-            listModel.clear();
+            listModel.reset(List.of(), List.of());
             rowPositions.clear();
             updateFooter();
         });
@@ -610,6 +707,9 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
         updateCategoryButtons();
         scheduleFileSizeUpdate(s);
         updateSpinners(s);
+        scheduleVirtualChunkLoads(s);
+        followDetailTail();
+        updateDetailControls();
         autoScroll();
     }
 
@@ -621,6 +721,8 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
     private void updateTreeModel(JIPipeProgressLog s) {
         List<JIPipeDesktopProgressTreeRowRenderer.Row> rows = new ArrayList<>();
         rowPositions.clear();
+        rebuildBlocks.clear();
+        rebuildBlockShift = 0;
         Map<Integer, List<Integer>> childMap = new HashMap<>();
         int nextId = s.nextNodeId();
         for (int id = 2; id < nextId; id++) {
@@ -634,8 +736,7 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
         }
         nodeState(s.getRootNodeId());
         appendNodeRow(s, childMap, s.getNode(s.getRootNodeId()), 0, null, rows);
-        listModel.removeAllElements();
-        listModel.addAll(rows);
+        listModel.reset(rows, new ArrayList<>(rebuildBlocks));
     }
 
     /**
@@ -692,9 +793,29 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
                 node.getMaxProgress() > 0 ? node.getProgress() : -1,
                 node.getMaxProgress() > 0 ? node.getMaxProgress() : -1,
                 phaseText(node, firstTs, lastTs)));
-        rowPositions.put(id, rows.size() - 1);
+        rowPositions.put(id, rows.size() - 1 + rebuildBlockShift);
         if (state != null && state.expanded) {
-            appendDetailRows(rows, id, state, node);
+            if (state.virtual != null) {
+                // R30 virtual mode: the node's own records all pass the current toggles — the
+                // detail area becomes a contiguous virtual block (row ↔ own record line) whose
+                // rows are served from the chunk cache; a late batch that brings records hidden
+                // by the toggles demotes the node back to the paged mode
+                if (ownHiddenRecordCount(state) > 0) {
+                    state.virtual = null;
+                    if (!state.loading) {
+                        loadDetailPage(s, id, false);
+                    }
+                    appendDetailRows(rows, id, state, node);
+                } else {
+                    VirtualBlock block = buildVirtualBlock(s, childMap, node, rows.size(), state);
+                    if (block != null) {
+                        rebuildBlocks.add(block);
+                        rebuildBlockShift += block.extent;
+                    }
+                }
+            } else {
+                appendDetailRows(rows, id, state, node);
+            }
             walkChildren(s, childMap, id, depth + 1, inheritedChip, rows);
         }
     }
@@ -826,7 +947,7 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
             boolean hasStack = isError && ((JIPipeProgressRecord.Error) record).st() != null
                     && !((JIPipeProgressRecord.Error) record).st().isBlank();
             boolean stackOpen = hasStack && openStacks.contains(errorKey(nodeId, (JIPipeProgressRecord.Error) record));
-            rows.add(new JIPipeDesktopProgressTreeRowRenderer.DetailRow(nodeId, record, hasStack, stackOpen));
+            rows.add(new JIPipeDesktopProgressTreeRowRenderer.DetailRow(nodeId, record, hasStack, stackOpen, -1));
             if (stackOpen) {
                 for (String line : ((JIPipeProgressRecord.Error) record).st().split("\n")) {
                     rows.add(new JIPipeDesktopProgressTreeRowRenderer.StackRow(nodeId, line));
@@ -850,6 +971,11 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
             if (state == null || !state.expanded || state.loading) {
                 continue;
             }
+            if (state.virtual != null) {
+                // Virtual mode: the block extent follows the node's line range on the next
+                // rebuild; only the paged mode re-reads pages
+                continue;
+            }
             loadDetailPage(s, nodeId, false);
         }
     }
@@ -869,7 +995,8 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
      */
     private void loadDetailPage(JIPipeProgressLog s, int nodeId, boolean older) {
         NodeUiState state = nodeStates.get(nodeId);
-        if (state == null) {
+        if (state == null || state.virtual != null) {
+            // Virtual nodes render from the chunk cache, not from pages
             return;
         }
         state.loading = true;
@@ -994,12 +1121,413 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
         JIPipeProgressLog s = store;
         if (s != null) {
             for (NodeUiState state : nodeStates.values()) {
-                if (state.expanded && state.loaded && !state.loading) {
-                    loadDetailPage(s, state.nodeId, false);
+                if (!state.expanded) {
+                    continue;
+                }
+                // Mode re-evaluation (R30): a node whose own records are now (or no longer)
+                // hidden by the toggles switches between the virtual and the paged detail mode
+                if (state.virtual != null) {
+                    if (ownHiddenRecordCount(state) > 0) {
+                        // Demote to paged
+                        state.virtual = null;
+                        state.loaded = false;
+                        state.loading = false;
+                        loadDetailPage(s, state.nodeId, false);
+                    }
+                } else if (!state.loading && state.loaded) {
+                    if (ownHiddenRecordCount(state) == 0) {
+                        // Promote to virtual; a previous chunk cache is still valid (it holds
+                        // unfiltered records — the category filter applies per rendered row)
+                        state.loaded = false;
+                        state.pageFromLine = 0;
+                        state.detailPage = List.of();
+                        state.hasOlder = false;
+                        state.virtual = new VirtualDetailState();
+                    } else {
+                        // Stay paged: re-read so the new filter applies
+                        loadDetailPage(s, state.nodeId, false);
+                    }
                 }
             }
         }
         refreshNow();
+    }
+
+    // -------------------------------------------------------------------------
+    // Virtual detail mode (R30)
+    // -------------------------------------------------------------------------
+
+    /**
+     * The node's own record count that the current category toggles hide (Log records per level
+     * plus Error records — all ERROR-category). Notifications are not attributed to nodes and
+     * are filtered per rendered row instead.
+     */
+    private long ownHiddenRecordCount(NodeUiState state) {
+        EnumSet<RecordCategory> visible = visibleCategories;
+        long hidden = 0;
+        if (!visible.contains(RecordCategory.DEBUG)) {
+            hidden += state.debugCount.get();
+        }
+        if (!visible.contains(RecordCategory.INFO)) {
+            hidden += state.infoCount.get();
+        }
+        if (!visible.contains(RecordCategory.WARNING)) {
+            hidden += state.warnCount.get();
+        }
+        if (!visible.contains(RecordCategory.ERROR)) {
+            hidden += state.errorCount.get();
+        }
+        return hidden;
+    }
+
+    /**
+     * Builds the virtual block of an expanded unfiltered node: its own-line windows (record range
+     * minus descendants' ranges, the node's own {@code n} record trimmed) plus its open stack
+     * anchors. Returns {@code null} when the node has no own lines to show (an empty block is
+     * not added).
+     */
+    private VirtualBlock buildVirtualBlock(JIPipeProgressLog s, Map<Integer, List<Integer>> childMap,
+                                           JIPipeProgressNode node, int rowsBefore, NodeUiState state) {
+        // Child nodes open with their own n record (renders nothing); the run root has no n
+        // record — its first line is a real record
+        long from = node.getId() == s.getRootNodeId() ? node.getFirstLine() : node.getFirstLine() + 1L;
+        long to = node.getLastLine();
+        // The end is NOT trimmed: a node's last line is its N record only when it finished
+        // normally — the run root has no N record, and a node may log past its N record
+        if (to < from) {
+            return null;
+        }
+        List<long[]> windows = ownWindows(s, childMap, node.getId(), from, to);
+        if (windows.isEmpty()) {
+            return null;
+        }
+        return new VirtualBlock(node.getId(), rowsBefore, windows, state.virtual.stackAnchors);
+    }
+
+    /**
+     * Splits {@code [from, to]} into the node's own-line windows: the range minus the merged
+     * record ranges of ALL descendants (their records render under their own rows). Windows are
+     * disjoint and ascending; each is stored as {@code {start, lineCount}}.
+     */
+    private List<long[]> ownWindows(JIPipeProgressLog s, Map<Integer, List<Integer>> childMap,
+                                    int nodeId, long from, long to) {
+        List<long[]> ranges = new ArrayList<>();
+        Deque<Integer> stack = new ArrayDeque<>(childMap.getOrDefault(nodeId, List.of()));
+        while (!stack.isEmpty()) {
+            int id = stack.pop();
+            JIPipeProgressNode descendant = s.getNode(id);
+            if (descendant == null) {
+                continue;
+            }
+            List<Integer> children = childMap.get(id);
+            if (children != null) {
+                for (int child : children) {
+                    stack.push(child);
+                }
+            }
+            if (descendant.getFirstLine() > 0 && descendant.getLastLine() >= descendant.getFirstLine()) {
+                ranges.add(new long[]{descendant.getFirstLine(), descendant.getLastLine()});
+            }
+        }
+        ranges.sort(Comparator.comparingLong(range -> range[0]));
+        List<long[]> windows = new ArrayList<>();
+        long cursor = from;
+        for (long[] range : ranges) {
+            long start = Math.max(range[0], from);
+            long end = Math.min(range[1], to);
+            if (end < start) {
+                continue;
+            }
+            if (start > cursor) {
+                windows.add(new long[]{cursor, start - cursor});
+            }
+            cursor = Math.max(cursor, end + 1);
+            if (cursor > to) {
+                break;
+            }
+        }
+        if (cursor <= to) {
+            windows.add(new long[]{cursor, to - cursor + 1});
+        }
+        return windows;
+    }
+
+    /**
+     * Ensures the chunks around the viewport of every visible virtual block are loaded (R30) and
+     * prunes the caches outside the viewport window. Cache bound per expanded node:
+     * {@code VIRTUAL_CACHED_CHUNKS × VIRTUAL_CHUNK_LINES} records — independent of the node's
+     * record count.
+     */
+    private void scheduleVirtualChunkLoads(JIPipeProgressLog s) {
+        List<VirtualBlock> blocks = listModel.blocks();
+        if (blocks.isEmpty()) {
+            return;
+        }
+        int first = list.getFirstVisibleIndex();
+        int last = list.getLastVisibleIndex();
+        if (first < 0 || last < 0) {
+            return;
+        }
+        int gen = generation.get();
+        for (VirtualBlock block : blocks) {
+            if (block.startIndex + block.extent <= first || block.startIndex > last) {
+                continue;
+            }
+            NodeUiState state = nodeStates.get(block.nodeId);
+            VirtualDetailState virtual = state != null ? state.virtual : null;
+            if (virtual == null) {
+                continue;
+            }
+            // The viewport's own-line span (stack rows carry no chunk lines)
+            int j0 = Math.max(0, first - block.startIndex);
+            int j1 = Math.min(block.extent - 1, last - block.startIndex);
+            long line0 = Long.MAX_VALUE;
+            long line1 = Long.MIN_VALUE;
+            for (int j = j0; j <= j1; j++) {
+                int flat = block.flatOfRow(j);
+                if (flat >= 0) {
+                    long line = block.rawLineOfFlat(flat);
+                    line0 = Math.min(line0, line);
+                    line1 = Math.max(line1, line);
+                }
+            }
+            if (line1 < line0) {
+                continue;
+            }
+            long keepLo = line0 - (long) VIRTUAL_CACHED_CHUNKS * VIRTUAL_CHUNK_LINES;
+            long keepHi = line1 + (long) VIRTUAL_CACHED_CHUNKS * VIRTUAL_CHUNK_LINES;
+            long loadLo = Math.max(block.firstOwnLine(), line0 - (long) VIRTUAL_PREFETCH_CHUNKS * VIRTUAL_CHUNK_LINES);
+            long loadHi = Math.min(block.lastOwnLine(), line1 + (long) VIRTUAL_PREFETCH_CHUNKS * VIRTUAL_CHUNK_LINES);
+            for (int w = 0; w < block.windowStarts.length; w++) {
+                long windowStart = block.windowStarts[w];
+                long windowEnd = windowStart + block.windowLines[w] - 1;
+                if (windowEnd < loadLo || windowStart > loadHi) {
+                    continue;
+                }
+                long from = Math.max(windowStart, loadLo);
+                long base = windowStart + (from - windowStart) / VIRTUAL_CHUNK_LINES * VIRTUAL_CHUNK_LINES;
+                for (; base <= Math.min(windowEnd, loadHi); base += VIRTUAL_CHUNK_LINES) {
+                    int key = (int) base;
+                    if (!virtual.chunks.containsKey(key) && virtual.loadingChunks.add(key)) {
+                        int span = (int) Math.min(VIRTUAL_CHUNK_LINES, windowEnd - base + 1);
+                        submitChunkRead(s, gen, block.nodeId, key, span);
+                    }
+                }
+            }
+            virtual.chunks.keySet().removeIf(base -> base + VIRTUAL_CHUNK_LINES - 1 < keepLo || base > keepHi);
+        }
+    }
+
+    /**
+     * Reads one detail chunk off the EDT (checkpointed seek + bounded parse) and applies it on
+     * the EDT in O(chunk). An empty result (the file has not caught up with the node index yet)
+     * is not cached — the next viewport change retries.
+     */
+    private void submitChunkRead(JIPipeProgressLog s, int gen, int nodeId, int baseLine, int span) {
+        backgroundExecutor.submit(() -> {
+            List<JIPipeProgressRecord> records;
+            try {
+                if (gen != generation.get() || store != s) {
+                    return;
+                }
+                records = s.readRecords(baseLine, span);
+            } catch (Exception e) {
+                log.error("Failed to read progress records at line {}", baseLine, e);
+                records = List.of();
+            }
+            List<JIPipeProgressRecord> read = records;
+            SwingUtilities.invokeLater(() -> {
+                NodeUiState state = nodeStates.get(nodeId);
+                VirtualDetailState virtual = state != null ? state.virtual : null;
+                if (virtual == null || gen != generation.get()) {
+                    return;
+                }
+                virtual.loadingChunks.remove(baseLine);
+                if (!read.isEmpty()) {
+                    virtual.chunks.put(baseLine, read);
+                }
+                list.repaint();
+            });
+        });
+    }
+
+    /**
+     * Resolves a block-local row to its content: a stack-trace line of an open anchor, a detail
+     * record from the chunk cache, or one of the empty-row types (placeholder for unloaded
+     * chunks, skip for records that render nothing).
+     */
+    private JIPipeDesktopProgressTreeRowRenderer.Row virtualRowOf(VirtualBlock block, int row) {
+        NodeUiState state = nodeStates.get(block.nodeId);
+        VirtualDetailState virtual = state != null ? state.virtual : null;
+        if (virtual == null) {
+            // The block is stale (the mode changed since this rebuild) — replaced on the next tick
+            return new JIPipeDesktopProgressTreeRowRenderer.PlaceholderRow(block.nodeId);
+        }
+        int adjusted = row;
+        for (int i = 0; i < block.anchors.size(); i++) {
+            int anchorRow = block.anchorRows[i];
+            if (adjusted <= anchorRow) {
+                break;
+            }
+            if (adjusted <= anchorRow + block.anchorLengths[i]) {
+                return new JIPipeDesktopProgressTreeRowRenderer.StackRow(block.nodeId,
+                        block.anchors.get(i).lines()[adjusted - anchorRow - 1]);
+            }
+            adjusted -= block.anchorLengths[i];
+        }
+        long line = block.rawLineOfFlat(adjusted);
+        int chunkBase = (int) block.chunkBaseOf(line);
+        List<JIPipeProgressRecord> chunk = chunkBase >= 0 ? virtual.chunks.get(chunkBase) : null;
+        if (chunk == null || line - chunkBase >= chunk.size()) {
+            // Unloaded chunk, or the file has not caught up with the read window yet
+            return new JIPipeDesktopProgressTreeRowRenderer.PlaceholderRow(block.nodeId);
+        }
+        JIPipeProgressRecord record = chunk.get((int) (line - chunkBase));
+        if (record instanceof JIPipeProgressRecord.Log logRecord && logRecord.id() == block.nodeId) {
+            // Virtual mode implies all own records pass the toggles
+            return new JIPipeDesktopProgressTreeRowRenderer.DetailRow(block.nodeId, record, false, false, (int) line);
+        }
+        if (record instanceof JIPipeProgressRecord.Error errorRecord && errorRecord.id() == block.nodeId) {
+            boolean hasStack = errorRecord.st() != null && !errorRecord.st().isBlank();
+            boolean stackOpen = hasStack && openStacks.contains(errorKey(block.nodeId, errorRecord));
+            return new JIPipeDesktopProgressTreeRowRenderer.DetailRow(block.nodeId, record, hasStack, stackOpen, (int) line);
+        }
+        if (record instanceof JIPipeProgressRecord.Notification && visibleCategories.contains(RecordCategory.WARNING)) {
+            // Run-level notifications render inside the node whose range covers them (R22)
+            return new JIPipeDesktopProgressTreeRowRenderer.DetailRow(block.nodeId, record, false, false, (int) line);
+        }
+        // Progress/node/node-finished records (and interleaved records of other nodes) render
+        // nothing — the row keeps the line mapping exact
+        return new JIPipeDesktopProgressTreeRowRenderer.SkipRow(block.nodeId);
+    }
+
+    /**
+     * Applies the pending scroll-to-detail-end request and, while the detail autoscroll is
+     * engaged, keeps the followed node's detail tail visible as it grows.
+     */
+    private void followDetailTail() {
+        if (scrollToDetailEndNodeId > 0) {
+            int nodeId = scrollToDetailEndNodeId;
+            scrollToDetailEndNodeId = 0;
+            NodeUiState state = nodeStates.get(nodeId);
+            if (state != null && state.expanded) {
+                if (state.virtual != null) {
+                    VirtualBlock block = blockOfNode(nodeId);
+                    if (block != null) {
+                        ensureVisibleRow(block.startIndex + block.extent - 1);
+                    }
+                } else {
+                    Integer index = rowPositions.get(nodeId);
+                    if (index != null) {
+                        ensureVisibleRow(Math.min(index + 1, listModel.getSize() - 1));
+                    }
+                }
+            }
+        }
+        if (!detailAutoscroll || autoscrollNodeId <= 0) {
+            return;
+        }
+        NodeUiState state = nodeStates.get(autoscrollNodeId);
+        if (state == null || !state.expanded || state.virtual == null) {
+            detailAutoscroll = false;
+            autoscrollNodeId = 0;
+            detailAutoscrollButton.setSelected(false);
+            return;
+        }
+        VirtualBlock block = blockOfNode(autoscrollNodeId);
+        if (block != null && block.extent > 0) {
+            ensureVisibleRow(block.startIndex + block.extent - 1);
+        }
+    }
+
+    /**
+     * Engages the detail tail follow for the node (the expansion and go-to-end paths): the next
+     * ticks scroll to its detail end and keep it visible while records arrive.
+     */
+    private void engageDetailAutoscroll(int nodeId) {
+        detailAutoscroll = true;
+        autoscrollNodeId = nodeId;
+        scrollToDetailEndNodeId = nodeId;
+        detailAutoscrollButton.setSelected(true);
+        refreshNow();
+    }
+
+    /**
+     * The node whose detail the scroll controls act on: the block at the viewport's center, else
+     * the most recently expanded node, else any expanded node.
+     */
+    private int currentDetailNodeId() {
+        int center = (list.getFirstVisibleIndex() + list.getLastVisibleIndex()) / 2;
+        if (center >= 0) {
+            VirtualBlock block = listModel.blockAt(center);
+            if (block != null) {
+                return block.nodeId;
+            }
+        }
+        NodeUiState state = nodeStates.get(lastExpandedNodeId);
+        if (state != null && state.expanded) {
+            return lastExpandedNodeId;
+        }
+        for (int id : expandedNodeIds) {
+            return id;
+        }
+        return -1;
+    }
+
+    /**
+     * The go-to-end action: virtual nodes jump to their detail tail (re-engaging the follow);
+     * paged nodes drop any loaded older history and show the newest page.
+     */
+    private void goToNewestRecords() {
+        int nodeId = currentDetailNodeId();
+        if (nodeId <= 0) {
+            return;
+        }
+        NodeUiState state = nodeStates.get(nodeId);
+        JIPipeProgressLog s = store;
+        if (state == null || !state.expanded || s == null) {
+            return;
+        }
+        if (state.virtual != null) {
+            engageDetailAutoscroll(nodeId);
+        } else {
+            state.pageFromLine = 0;
+            if (!state.loading) {
+                loadDetailPage(s, nodeId, false);
+            }
+            scrollToDetailEndNodeId = nodeId;
+            refreshNow();
+        }
+    }
+
+    private void updateDetailControls() {
+        boolean anyExpanded = store != null && !expandedNodeIds.isEmpty();
+        detailAutoscrollButton.setEnabled(anyExpanded);
+        detailGoToEndButton.setEnabled(anyExpanded);
+        if (detailAutoscrollButton.isSelected() != detailAutoscroll) {
+            detailAutoscrollButton.setSelected(detailAutoscroll);
+        }
+    }
+
+    private VirtualBlock blockOfNode(int nodeId) {
+        for (VirtualBlock block : listModel.blocks()) {
+            if (block.nodeId == nodeId) {
+                return block;
+            }
+        }
+        return null;
+    }
+
+    private void ensureVisibleRow(int index) {
+        if (index < 0 || index >= listModel.getSize()) {
+            return;
+        }
+        scrollProgrammatic = true;
+        try {
+            list.ensureIndexIsVisible(index);
+        } finally {
+            scrollProgrammatic = false;
+        }
     }
 
     // -------------------------------------------------------------------------
@@ -1129,6 +1657,11 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
         if (!autoShowProgressCheckBox.isSelected() || latestNodeId <= 0) {
             return;
         }
+        if (detailAutoscroll) {
+            // The engaged detail tail follow owns the viewport while it runs (the two scrolls
+            // would fight); it disengages on scroll-up, handing control back to this row follow
+            return;
+        }
         JIPipeProgressLog s = store;
         JIPipeProgressNode root = s != null ? s.getNode(s.getRootNodeId()) : null;
         if (root == null || root.getState() != JIPipeProgressNodeState.RUNNING) {
@@ -1171,20 +1704,44 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
         state.expanded = !state.expanded;
         if (state.expanded) {
             expandedNodeIds.add(nodeId);
+            lastExpandedNodeId = nodeId;
         } else {
             expandedNodeIds.remove(nodeId);
+            // Collapse frees the chunk cache (the virtual state is rebuilt on the next expansion)
+            state.virtual = null;
+            if (autoscrollNodeId == nodeId) {
+                detailAutoscroll = false;
+                autoscrollNodeId = 0;
+                detailAutoscrollButton.setSelected(false);
+            }
         }
         JIPipeProgressLog s = store;
-        if (state.expanded && s != null && !state.loaded && !state.loading) {
-            loadDetailPage(s, nodeId, false);
+        if (state.expanded && s != null) {
+            if (ownHiddenRecordCount(state) == 0) {
+                // R30 virtual mode: expansion opens at the tail with the follow engaged
+                if (state.virtual == null) {
+                    state.virtual = new VirtualDetailState();
+                }
+                engageDetailAutoscroll(nodeId);
+            } else if (!state.loaded && !state.loading) {
+                loadDetailPage(s, nodeId, false);
+            }
         }
         refreshNow();
     }
 
-    private void toggleStack(int nodeId, JIPipeProgressRecord.Error error) {
+    private void toggleStack(int nodeId, JIPipeProgressRecord.Error error, int line) {
         String key = errorKey(nodeId, error);
+        NodeUiState state = nodeStates.get(nodeId);
         if (!openStacks.remove(key)) {
             openStacks.add(key);
+            if (state != null && state.virtual != null && line > 0 && error.st() != null) {
+                // Virtual mode: the open stack inserts its lines after the error row — the block
+                // snapshot carries the anchor (rebuilt by the refresh below)
+                state.virtual.stackAnchors.add(new StackAnchor(line, key, error.st().split("\n")));
+            }
+        } else if (state != null && state.virtual != null) {
+            state.virtual.stackAnchors.removeIf(anchor -> anchor.key().equals(key));
         }
         refreshNow();
     }
@@ -1358,9 +1915,268 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
         volatile boolean hasOlder;
         volatile int pageFromLine;
         volatile List<JIPipeProgressRecord> detailPage = List.of();
+        /**
+         * The virtual detail state (R30 unfiltered mode); {@code null} while the node is
+         * collapsed or in the paged mode. Mutated on the EDT only.
+         */
+        volatile VirtualDetailState virtual;
 
         private NodeUiState(int nodeId) {
             this.nodeId = nodeId;
+        }
+    }
+
+    /**
+     * The virtual detail state of one expanded node (R30 unfiltered mode; created on expansion,
+     * freed on collapse and on mode switches). The chunk cache is pruned to the viewport window
+     * on every tick — the bound is {@code VIRTUAL_CACHED_CHUNKS × VIRTUAL_CHUNK_LINES} (17 × 512
+     * = 8,704 records per node), independent of the node's record count. Mutated on the EDT only.
+     */
+    private static final class VirtualDetailState {
+        /** Loaded chunks keyed by their first record line. */
+        final Map<Integer, List<JIPipeProgressRecord>> chunks = new HashMap<>();
+        /** Chunk reads in flight (deduplication between viewport changes). */
+        final Set<Integer> loadingChunks = new HashSet<>();
+        /** Open stack traces, anchored at their error record's line (drives the block mapping). */
+        final List<StackAnchor> stackAnchors = new ArrayList<>();
+    }
+
+    /**
+     * An opened stack trace of a virtual detail: its lines render as extra rows after the error
+     * row; the anchor keeps them alive even when the error's chunk is pruned from the cache.
+     */
+    private record StackAnchor(int errorLine, String key, String[] lines) {
+    }
+
+    /**
+     * One virtual detail block in the row space (rebuilt per dirty tick with the rest of the row
+     * snapshot, R21): the node's own record lines — its range minus its descendants' ranges,
+     * since descendants render under their own rows — mapped flat and contiguous. Row
+     * {@code startIndex + j} resolves to a raw line, or to a line of an open stack trace (which
+     * inserts extra rows after its error row). Chunk loads change row content, never indices:
+     * the extent is stable while loading.
+     */
+    private final class VirtualBlock {
+        final int nodeId;
+        final int rowsBefore;
+        final long[] windowStarts;
+        final int[] windowLines;
+        final int[] windowOffsets;
+        final int totalLines;
+        final List<StackAnchor> anchors;
+        final int[] anchorRows;
+        final int[] anchorLengths;
+        final int extent;
+        int startIndex;
+
+        VirtualBlock(int nodeId, int rowsBefore, List<long[]> windows, List<StackAnchor> stackAnchors) {
+            this.nodeId = nodeId;
+            this.rowsBefore = rowsBefore;
+            int windowCount = windows.size();
+            this.windowStarts = new long[windowCount];
+            this.windowLines = new int[windowCount];
+            this.windowOffsets = new int[windowCount];
+            int offset = 0;
+            for (int i = 0; i < windowCount; i++) {
+                windowStarts[i] = windows.get(i)[0];
+                windowLines[i] = (int) windows.get(i)[1];
+                windowOffsets[i] = offset;
+                offset += windowLines[i];
+            }
+            this.totalLines = offset;
+            // Open stacks sorted by their error line; each anchor's row is the raw row of its
+            // error line shifted by the lengths of the anchors before it. Anchors whose error
+            // line is outside the windows (a stale remnant) cannot be mapped and are dropped.
+            List<StackAnchor> sorted = new ArrayList<>(stackAnchors);
+            sorted.removeIf(anchor -> flatOfLine(anchor.errorLine()) < 0);
+            sorted.sort(Comparator.comparingInt(StackAnchor::errorLine));
+            this.anchors = sorted;
+            this.anchorRows = new int[sorted.size()];
+            this.anchorLengths = new int[sorted.size()];
+            int shift = 0;
+            for (int i = 0; i < sorted.size(); i++) {
+                anchorLengths[i] = sorted.get(i).lines().length;
+                anchorRows[i] = flatOfLine(sorted.get(i).errorLine()) + shift;
+                shift += anchorLengths[i];
+            }
+            this.extent = totalLines + shift;
+        }
+
+        int firstOwnLine() {
+            return (int) windowStarts[0];
+        }
+
+        int lastOwnLine() {
+            return (int) (windowStarts[windowStarts.length - 1] + windowLines[windowStarts.length - 1] - 1);
+        }
+
+        /**
+         * The window containing the raw line, or -1.
+         */
+        int windowIndexOf(long line) {
+            int lo = 0;
+            int hi = windowStarts.length - 1;
+            while (lo <= hi) {
+                int mid = (lo + hi) >>> 1;
+                if (windowStarts[mid] <= line) {
+                    if (line < windowStarts[mid] + windowLines[mid]) {
+                        return mid;
+                    }
+                    lo = mid + 1;
+                } else {
+                    hi = mid - 1;
+                }
+            }
+            return -1;
+        }
+
+        /**
+         * The raw own line of a flat index in {@code [0, totalLines)}. The flat index IS the raw
+         * row (the windows concatenate without gaps).
+         */
+        long rawLineOfFlat(int flat) {
+            int lo = 0;
+            int hi = windowOffsets.length - 1;
+            int found = 0;
+            while (lo <= hi) {
+                int mid = (lo + hi) >>> 1;
+                if (windowOffsets[mid] <= flat) {
+                    found = mid;
+                    lo = mid + 1;
+                } else {
+                    hi = mid - 1;
+                }
+            }
+            return windowStarts[found] + (flat - windowOffsets[found]);
+        }
+
+        /**
+         * The flat index (raw row) of a raw line, or -1 when the line is outside the windows.
+         */
+        int flatOfLine(long line) {
+            int w = windowIndexOf(line);
+            return w < 0 ? -1 : windowOffsets[w] + (int) (line - windowStarts[w]);
+        }
+
+        /**
+         * De-adjusts a block-local row into a flat index, or -1 when the row is a line of an
+         * open stack trace.
+         */
+        int flatOfRow(int row) {
+            int adjusted = row;
+            for (int i = 0; i < anchorRows.length; i++) {
+                if (adjusted <= anchorRows[i]) {
+                    break;
+                }
+                if (adjusted <= anchorRows[i] + anchorLengths[i]) {
+                    return -1;
+                }
+                adjusted -= anchorLengths[i];
+            }
+            return adjusted;
+        }
+
+        /**
+         * The first line of the chunk covering the raw line.
+         */
+        long chunkBaseOf(long line) {
+            int w = windowIndexOf(line);
+            if (w < 0) {
+                return -1;
+            }
+            long within = line - windowStarts[w];
+            return windowStarts[w] + within / VIRTUAL_CHUNK_LINES * VIRTUAL_CHUNK_LINES;
+        }
+    }
+
+    /**
+     * The flat row list's model: the materialized row snapshot (rebuilt per dirty tick, R21)
+     * plus the virtual detail blocks (R30). A block occupies a contiguous index range; its rows
+     * are computed on demand from the chunk cache — the {@link JList} asks only for the visible
+     * indices, so a node with millions of records costs O(viewport) per paint while the
+     * scrollbar is proportional to the real content (the virtual scrollbar).
+     */
+    private class ProgressListModel extends AbstractListModel<JIPipeDesktopProgressTreeRowRenderer.Row> {
+        private List<JIPipeDesktopProgressTreeRowRenderer.Row> materialized = List.of();
+        private List<VirtualBlock> blocks = List.of();
+        private int size;
+
+        /**
+         * Replaces the whole row space (the R21 full-row rebuild). Block start indices are
+         * assigned here: a block starts at its materialized row position plus the extents of all
+         * earlier blocks.
+         */
+        void reset(List<JIPipeDesktopProgressTreeRowRenderer.Row> materialized, List<VirtualBlock> blocks) {
+            int oldSize = size;
+            int shifted = 0;
+            for (VirtualBlock block : blocks) {
+                block.startIndex = block.rowsBefore + shifted;
+                shifted += block.extent;
+            }
+            this.materialized = materialized;
+            this.blocks = blocks;
+            this.size = materialized.size() + shifted;
+            if (oldSize > 0) {
+                fireIntervalRemoved(this, 0, oldSize - 1);
+            }
+            if (size > 0) {
+                fireIntervalAdded(this, 0, size - 1);
+            }
+        }
+
+        List<VirtualBlock> blocks() {
+            return blocks;
+        }
+
+        VirtualBlock blockAt(int index) {
+            int lo = 0;
+            int hi = blocks.size() - 1;
+            int found = -1;
+            while (lo <= hi) {
+                int mid = (lo + hi) >>> 1;
+                if (blocks.get(mid).startIndex <= index) {
+                    found = mid;
+                    lo = mid + 1;
+                } else {
+                    hi = mid - 1;
+                }
+            }
+            if (found < 0) {
+                return null;
+            }
+            VirtualBlock block = blocks.get(found);
+            return index < block.startIndex + block.extent ? block : null;
+        }
+
+        @Override
+        public int getSize() {
+            return size;
+        }
+
+        @Override
+        public JIPipeDesktopProgressTreeRowRenderer.Row getElementAt(int index) {
+            if (index < 0 || index >= size) {
+                return new JIPipeDesktopProgressTreeRowRenderer.SkipRow(-1);
+            }
+            VirtualBlock block = blockAt(index);
+            if (block == null) {
+                // A materialized row: the flat index includes the extents of the virtual blocks
+                // emitted before it — subtract them (blocks are few; the walk is trivial)
+                int shift = 0;
+                for (VirtualBlock earlier : blocks) {
+                    if (earlier.startIndex >= index) {
+                        break;
+                    }
+                    shift += earlier.extent;
+                }
+                int materializedIndex = index - shift;
+                // Clamped defensively: the Swing UI may query indices from a stale layout state
+                // while the model is being reset
+                return materializedIndex >= 0 && materializedIndex < materialized.size()
+                        ? materialized.get(materializedIndex)
+                        : new JIPipeDesktopProgressTreeRowRenderer.SkipRow(-1);
+            }
+            return virtualRowOf(block, index - block.startIndex);
         }
     }
 
@@ -1394,14 +2210,14 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
 
         private JIPipeDesktopProgressTreeRowRenderer.Row rowAtPoint(MouseEvent e) {
             int index = locationToIndex(e.getPoint());
-            if (index < 0 || index >= listModel.size()) {
+            if (index < 0 || index >= listModel.getSize()) {
                 return null;
             }
             Rectangle bounds = getCellBounds(index, index);
             if (bounds == null || !bounds.contains(e.getPoint())) {
                 return null;
             }
-            return listModel.get(index);
+            return listModel.getElementAt(index);
         }
 
         private void handleClick(JIPipeDesktopProgressTreeRowRenderer.Row row) {
@@ -1411,12 +2227,25 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
                 }
             } else if (row instanceof JIPipeDesktopProgressTreeRowRenderer.DetailRow detailRow) {
                 if (detailRow.hasStack() && detailRow.record() instanceof JIPipeProgressRecord.Error error) {
-                    toggleStack(detailRow.nodeId(), error);
+                    toggleStack(detailRow.nodeId(), error, detailRow.line());
                 }
             } else if (row instanceof JIPipeDesktopProgressTreeRowRenderer.StackRow stackRow) {
                 // Clicking anywhere in an opened stack block closes it
                 NodeUiState state = nodeStates.get(stackRow.nodeId());
-                if (state != null) {
+                if (state != null && state.virtual != null) {
+                    // Virtual mode: find the open anchor that carries this line
+                    StackAnchor matched = null;
+                    for (StackAnchor anchor : state.virtual.stackAnchors) {
+                        if (Arrays.asList(anchor.lines()).contains(stackRow.line())) {
+                            matched = anchor;
+                            break;
+                        }
+                    }
+                    if (matched != null) {
+                        openStacks.remove(matched.key());
+                        state.virtual.stackAnchors.remove(matched);
+                    }
+                } else if (state != null) {
                     for (JIPipeProgressRecord record : state.detailPage) {
                         if (record instanceof JIPipeProgressRecord.Error error
                                 && error.st() != null && error.st().contains(stackRow.line())) {
@@ -1428,6 +2257,35 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
                 refreshNow();
             } else if (row instanceof JIPipeDesktopProgressTreeRowRenderer.MoreRow moreRow) {
                 showOlderRecords(moreRow.nodeId());
+            }
+        }
+
+        /**
+         * The rows fill the viewport width (no horizontal scrolling: long detail messages clip,
+         * the tooltip carries the full text). This also keeps the Swing list's layout state
+         * O(1): without a fixed cell width, the UI walks EVERY model index to find the widest
+         * row — catastrophic with virtual detail extents of millions of rows.
+         */
+        @Override
+        public boolean getScrollableTracksViewportWidth() {
+            return true;
+        }
+
+        @Override
+        public void doLayout() {
+            super.doLayout();
+            Integer current = getFixedCellWidth();
+            if (getWidth() > 0 && (current == null || current != getWidth())) {
+                setFixedCellWidth(getWidth());
+            }
+        }
+
+        @Override
+        public void addNotify() {
+            super.addNotify();
+            Integer current = getFixedCellWidth();
+            if (getWidth() > 0 && (current == null || current != getWidth())) {
+                setFixedCellWidth(getWidth());
             }
         }
 
