@@ -22,6 +22,7 @@ import org.hkijena.jipipe.utils.ThemeUtils;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.RoundRectangle2D;
+import java.awt.image.BufferedImage;
 import java.text.NumberFormat;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -48,6 +49,7 @@ public class JIPipeDesktopProgressTreeRowRenderer implements ListCellRenderer<JI
 
     private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm:ss").withZone(ZoneId.systemDefault());
     private static final int INDENT_PER_LEVEL = 22;
+    private static final Font PROGRESS_TEXT_FONT = new Font(Font.MONOSPACED, Font.PLAIN, 11);
 
     /**
      * One row of the flat tree list. Sealed: the row types below.
@@ -158,6 +160,13 @@ public class JIPipeDesktopProgressTreeRowRenderer implements ListCellRenderer<JI
     private final Color colorStackForeground = new Color(0xd9dde4);
 
     /**
+     * Width of the fixed v/mx text sub-column, measured from the actual monospace font using the
+     * widest sensible value ({@code 8888/8888 (888%)}) plus a little slack — a hardcoded width
+     * clipped right-aligned values into wrong leading digits (e.g. "42/100 (42%)" in 80px).
+     */
+    private final int progressTextColumnWidth;
+
+    /**
      * @param spinnerIcon the shared running spinner (its repaint parent is the list)
      */
     public JIPipeDesktopProgressTreeRowRenderer(SpinnerIcon spinnerIcon) {
@@ -174,6 +183,13 @@ public class JIPipeDesktopProgressTreeRowRenderer implements ListCellRenderer<JI
         colorRowBackground = themeStyle.getPanelBackground();
         colorDetailBackground = mix(themeStyle.getPanelBackground(), themeStyle.getTextForeground(), 0.035f);
         colorChipBackground = mix(themeStyle.getPanelBackground(), themeStyle.getTextForeground(), 0.07f);
+        // Measure once (the font is a fixed constant of the renderer; the width stays stable
+        // across rows, which is what the fixed segments require)
+        BufferedImage measureImage = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
+        Graphics2D measureGraphics = measureImage.createGraphics();
+        measureGraphics.setFont(PROGRESS_TEXT_FONT);
+        progressTextColumnWidth = measureGraphics.getFontMetrics().stringWidth("8888/8888 (888%)") + 4;
+        measureGraphics.dispose();
     }
 
     /**
@@ -320,13 +336,13 @@ public class JIPipeDesktopProgressTreeRowRenderer implements ListCellRenderer<JI
         JLabel progressTextLabel = new JLabel(row.progressMax > 0
                 ? row.progressValue + "/" + row.progressMax + " (" + progressPercent(row) + "%)"
                 : "");
-        progressTextLabel.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 11));
+        progressTextLabel.setFont(PROGRESS_TEXT_FONT);
         progressTextLabel.setForeground(colorDim);
         progressTextLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-        progressTextLabel.setPreferredSize(new Dimension(80, 14));
-        progressTextLabel.setMaximumSize(new Dimension(80, 14));
+        progressTextLabel.setPreferredSize(new Dimension(progressTextColumnWidth, 14));
+        progressTextLabel.setMaximumSize(new Dimension(progressTextColumnWidth, 14));
         progressSegment.add(progressTextLabel);
-        Dimension progressSegmentSize = new Dimension(110 + 6 + 80, 18);
+        Dimension progressSegmentSize = new Dimension(110 + 6 + progressTextColumnWidth, 18);
         progressSegment.setPreferredSize(progressSegmentSize);
         progressSegment.setMaximumSize(progressSegmentSize);
         progressSegment.setAlignmentY(0.5f);
