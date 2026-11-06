@@ -15,16 +15,17 @@ package org.hkijena.jipipe.desktop.app.running.logs;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.progress.JIPipeLogLevel;
+import org.hkijena.jipipe.api.progress.JIPipeProgressLog;
 import org.hkijena.jipipe.api.run.JIPipeRunnableLogEntry;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopProgressTreePanel;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.desktop.commons.notifications.JIPipeDesktopGenericNotificationInboxUI;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.PathUtils;
-import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -36,68 +37,81 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayDeque;
-import java.util.Deque;
 
 /**
- * Displays one log entry of the Tools &gt; Logs collection. The log is rendered from the entry's
- * NDJSON data file on demand (when the entry is selected/displayed) — the collection holds no
- * rendered text. The default view keeps the last {@link #LOG_LINE_LIMIT} lines (bounded memory,
- * independent of the file size); "Show full log" renders everything.
+ * Displays one log entry of the Tools &gt; Logs collection. The "Log" tab hosts the v2 progress
+ * tree panel ({@link JIPipeDesktopProgressTreePanel}) instead of the former flat monospace text
+ * view: the entry's progress data is bound as a store, and the panel renders the node tree with
+ * expandable record details, level filters, and the status footer.
+ * <p>
+ * The store binding: an entry with an NDJSON data file reopens the file read-only
+ * ({@link JIPipeProgressLog#openReadOnly(Path)} — no writer, no mutation); an entry of a
+ * silent/stdout run has no data file, and the collection keeps its store, which is bound directly.
+ * Both kinds are finished and closed before the entry exists, so no batches ever arrive — the
+ * panel renders statically from its initial catch-up scan. The "Notifications" tab, "Export data
+ * file", and "Export text" are kept.
  */
-public class JIPipeDesktopLogViewLogUI extends JIPipeDesktopWorkbenchPanel {
-    public static int LOG_LINE_LIMIT = 500;
+public class JIPipeDesktopLogViewLogUI extends JIPipeDesktopWorkbenchPanel implements JIPipeProgressLog.ProgressBatchEventListener {
     private final JIPipeRunnableLogEntry logEntry;
-    private final JCheckBox displayFullLog = new JCheckBox("Show full log");
-    private final JTextPane logReader = new JTextPane();
-    private JScrollPane scrollPane;
+    private final JIPipeDesktopProgressTreePanel treePanel;
+    private JIPipeDesktopTabPane tabPane;
+    private JIPipeProgressLog boundStore;
 
     public JIPipeDesktopLogViewLogUI(JIPipeDesktopWorkbench workbench, JIPipeRunnableLogEntry logEntry) {
         super(workbench);
         this.logEntry = logEntry;
+        this.treePanel = new JIPipeDesktopProgressTreePanel(workbench);
+        // The progress tree fills the tab (the checkbox is a run-manager convenience; the log
+        // viewer always shows the tree)
+        treePanel.setShowLogSelected(true);
         initialize();
-        reloadLog();
+        bindLog();
     }
 
-    private void reloadLog() {
-        // Render on demand from the entry's data. The bounded view streams the render through a
-        // ring buffer of the last LOG_LINE_LIMIT lines (memory stays bounded for any file size);
-        // the full-log view renders everything, as before.
-        StringBuilder full = displayFullLog.isSelected() ? new StringBuilder() : null;
-        Deque<String> tail = displayFullLog.isSelected() ? null : new ArrayDeque<>(LOG_LINE_LIMIT);
-        int[] totalLines = {0};
-        logEntry.renderText(JIPipeLogLevel.INFO, line -> {
-            totalLines[0]++;
-            if (full != null) {
-                full.append(line).append('\n');
-            } else {
-                if (tail.size() >= LOG_LINE_LIMIT) {
-                    tail.pollFirst();
-                }
-                tail.addLast(line);
-            }
-        });
-        if (full != null) {
-            logReader.setText(full.toString());
-        } else if (totalLines[0] <= LOG_LINE_LIMIT) {
-            logReader.setText(joinLines(tail));
-        } else {
-            StringBuilder builder = new StringBuilder();
-            builder.append("\n");
-            builder.append("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n");
-            builder.append("Only displaying the last ").append(LOG_LINE_LIMIT).append(" lines\n\n\n");
-            builder.append(joinLines(tail));
-            logReader.setText(builder.toString());
+    /**
+     * Binds the entry's progress data to the tree panel. The batch listener is subscribed before
+     * the store is set — the safe ordering for any store that could still emit.
+     */
+    private void bindLog() {
+        Path dataFile = logEntry.getPath();
+        JIPipeProgressLog store = null;
+        if (dataFile != null && Files.exists(dataFile)) {
+            // Finished file-backed run: reopen the completed NDJSON file read-only
+            store = JIPipeProgressLog.openReadOnly(dataFile);
+        } else if (dataFile == null) {
+            // Silent/stdout run: the collection keeps the store itself
+            store = logEntry.getStore();
         }
-        SwingUtilities.invokeLater(() -> scrollPane.getVerticalScrollBar().setValue(scrollPane.getVerticalScrollBar().getMaximum()));
+        if (store == null) {
+            // No data file (removed, e.g. evicted) and no store — the placeholder of the former
+            // flat view (renderText's unavailable-data contract)
+            remove(tabPane);
+            add(new JLabel(JIPipeRunnableLogEntry.DATA_UNAVAILABLE_LINE, SwingConstants.CENTER), BorderLayout.CENTER);
+            revalidate();
+            repaint();
+            return;
+        }
+        boundStore = store;
+        store.getBatchEventEmitter().subscribe(this);
+        treePanel.setProgressStore(store);
     }
 
-    private static String joinLines(Deque<String> lines) {
-        StringBuilder builder = new StringBuilder();
-        for (String line : lines) {
-            builder.append(line).append('\n');
+    @Override
+    public void onProgressBatch(JIPipeProgressLog.ProgressBatchEvent event) {
+        treePanel.onProgressBatch(event);
+    }
+
+    /**
+     * Unsubscribes the batch listener and stops the tree panel's timer and background reads.
+     * Called before the viewer shows a different entry (one panel per opened entry — the
+     * subscription must not outlive the panel).
+     */
+    public void dispose() {
+        if (boundStore != null) {
+            boundStore.getBatchEventEmitter().unsubscribe(this);
+            boundStore = null;
         }
-        return builder.toString();
+        treePanel.dispose();
     }
 
     private void initialize() {
@@ -108,13 +122,11 @@ public class JIPipeDesktopLogViewLogUI extends JIPipeDesktopWorkbenchPanel {
         toolBar.setFloatable(false);
 
         add(toolBar, BorderLayout.NORTH);
-        JIPipeDesktopTabPane tabPane = new JIPipeDesktopTabPane(false, JIPipeDesktopTabPane.Style.Right);
+        tabPane = new JIPipeDesktopTabPane(false, JIPipeDesktopTabPane.Style.Right);
         add(tabPane, BorderLayout.CENTER);
 
-        // Init reader
-        logReader.setFont(new Font(Font.MONOSPACED, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
-        scrollPane = new JScrollPane(logReader);
-        tabPane.addTab("Log", JIPipe.RESOURCES.getIcon32("actions/rabbitvcs-show_log.png"), scrollPane, JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
+        // Init progress tree
+        tabPane.addTab("Log", JIPipe.RESOURCES.getIcon32("actions/rabbitvcs-show_log.png"), treePanel, JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
 
         // Init notifications
         tabPane.addTab("Notifications",
@@ -123,9 +135,6 @@ public class JIPipeDesktopLogViewLogUI extends JIPipeDesktopWorkbenchPanel {
                 JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
 
         // Init toolbar
-        toolBar.add(displayFullLog);
-        displayFullLog.addActionListener(e -> reloadLog());
-
         toolBar.add(Box.createHorizontalGlue());
 
         JButton exportDataButton = new JButton("Export data file", JIPipe.RESOURCES.getIcon16("actions/document-export.png"));

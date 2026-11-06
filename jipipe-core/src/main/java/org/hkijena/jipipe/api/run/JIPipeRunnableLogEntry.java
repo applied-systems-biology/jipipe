@@ -106,6 +106,18 @@ public class JIPipeRunnableLogEntry {
     }
 
     /**
+     * Returns the non-persistent store this entry holds. File-backed runs reference only their
+     * NDJSON data file (finished and closed before the entry was created) — reopen it read-only
+     * via {@link JIPipeProgressLog#openReadOnly(Path)}. Silent/stdout runs keep no file; this
+     * method returns their store (finished and closed, rendering its bounded in-memory tail).
+     *
+     * @return the store, or {@code null} for entries with a data file or without any store
+     */
+    public JIPipeProgressLog getStore() {
+        return store;
+    }
+
+    /**
      * Returns the NDJSON data file holding this entry's log.
      *
      * @return the data file, or {@code null} if the run's store wrote no file (silent/stdout)

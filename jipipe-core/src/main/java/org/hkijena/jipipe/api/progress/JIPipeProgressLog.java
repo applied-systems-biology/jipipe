@@ -88,6 +88,39 @@ public interface JIPipeProgressLog extends AutoCloseable {
     }
 
     /**
+     * Opens the NDJSON file of a completed run as a <b>read-only</b> store view: no writer thread,
+     * no file mutation (the file is only ever opened for reading), an emitter that never emits.
+     * <p>
+     * At construction the file is scanned once, in one sequential pass, to build the same
+     * structures a writer-fed store keeps: the line→byte-offset checkpoint index and the node
+     * index (decoded {@code n}, {@code p}, {@code N} records, plus the per-node record ranges
+     * from the attributed records). Together with
+     * the file's decode, the scan costs about one read of the file: opening a ~GB log takes seconds,
+     * once, not per interaction. The initial catch-up scan of the progress tree panel issues a
+     * second full read (that one decodes nothing — it only counts categories), so a very large
+     * log opens with about two file reads' worth of I/O; the panel's paged/virtual detail reads
+     * after that are checkpointed seeks.
+     * <p>
+     * After construction the view behaves exactly like the writer-fed store:
+     * {@link #readRecords(int, int)}, {@link #readRecent(int)}, {@link #getNode(int)}, and
+     * {@link #renderText(JIPipeLogLevel, Consumer)} serve the complete file, tolerating a truncated
+     * final line. The store is born closed, so producer calls ({@code beginNode}, {@code log},
+     * ...) are dropped exactly like on a closed writer-fed store, and {@link #close()} only
+     * releases the background scan (idempotent; reads keep working afterwards).
+     * <p>
+     * A missing or unreadable file yields an empty view rather than an exception — the caller
+     * surfaces the missing data (see {@code JIPipeRunnableLogEntry#DATA_UNAVAILABLE_LINE}).
+     * A file without a parseable run-status record (a writer killed before the final flush)
+     * reopens with the root node's state CANCELLED — a dead run must never render as live.
+     *
+     * @param file the NDJSON file of a {@link #create(Path, String, String)} store
+     * @return the read-only store view
+     */
+    static JIPipeProgressLog openReadOnly(Path file) {
+        return FileJIPipeProgressLog.openReadOnly(file);
+    }
+
+    /**
      * Resolves the logs base directory for a temporary base.
      *
      * @param projectTempBaseOrNull the temporary base to append {@code logs} to, or {@code null} to

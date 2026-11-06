@@ -19,8 +19,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.io.BufferedOutputStream;
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.nio.channels.Channels;
 import java.nio.charset.StandardCharsets;
@@ -64,6 +67,14 @@ import java.util.function.Consumer;
  * {@link #close()}). Listeners run inline on the writer thread and must not block; they must hop
  * to another thread for heavy work (e.g. Swing). The coalescer state lives in the writer thread
  * only; events are always emitted outside {@code submitLock} and {@code tailLock}.
+ * <p>
+ * <b>Read-only mode</b> ({@link JIPipeProgressLog#openReadOnly(Path)}): a private constructor
+ * creates a mode of this class with no writer thread and a born-closed store — producer calls are
+ * dropped, {@code close()} is a no-op, the emitter never emits, and the file is opened for reading
+ * only. A one-pass background scan at construction builds the checkpoint index and replays the
+ * decoded records into the node index and tail ({@code applyScannedRecord}); the scan thread is
+ * joined by the constructor, so the store is fully indexed when {@code openReadOnly} returns.
+ * Read-back behaves exactly like a writer-fed store (checkpointed seeks, truncation tolerance).
  */
 public class FileJIPipeProgressLog extends AbstractJIPipeProgressLog {
 
@@ -132,6 +143,48 @@ public class FileJIPipeProgressLog extends AbstractJIPipeProgressLog {
         this.writerThread.start();
     }
 
+    /**
+     * Creates the read-only reopen of a completed store file (see
+     * {@link JIPipeProgressLog#openReadOnly(Path)}).
+     *
+     * @param file the completed NDJSON file (opened for reading only)
+     * @return the read-only store view
+     */
+    static JIPipeProgressLog openReadOnly(Path file) {
+        return new FileJIPipeProgressLog(file);
+    }
+
+    /**
+     * Creates the read-only reopen of a completed store file: no writer thread, the store is born
+     * closed (producer calls are dropped, {@code close()} is a no-op), and a background one-pass
+     * scan builds the checkpoint index and replays the records into the node index and tail. The
+     * run UUID and label come from the file's head record, so the reopened root node equals the
+     * original's. The scan thread is joined here, so the store is fully indexed when the
+     * constructor returns.
+     *
+     * @param file the completed NDJSON file (opened for reading only)
+     */
+    private FileJIPipeProgressLog(Path file) {
+        super(headRunUuid(file), headRunLabel(file));
+        this.file = file;
+        this.writerThread = null;
+        // Born closed: every producer entry point drops its record (the same semantic as a
+        // closed writer-fed store), and a later close() is an idempotent no-op
+        close();
+        Thread scanThread = new Thread(this::scanReadOnly, "JIPipe-Progress-Reopen-" + file.getFileName());
+        scanThread.setDaemon(true);
+        scanThread.start();
+        boolean interrupted = false;
+        try {
+            scanThread.join();
+        } catch (InterruptedException e) {
+            interrupted = true;
+        }
+        if (interrupted) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
     @Override
     public Path getFile() {
         return file;
@@ -155,12 +208,155 @@ public class FileJIPipeProgressLog extends AbstractJIPipeProgressLog {
 
     @Override
     protected void onClose() {
+        if (writerThread == null) {
+            // Read-only reopen: no writer thread to stop (close() is a no-op)
+            return;
+        }
         LockSupport.unpark(writerThread);
         try {
             writerThread.join();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
+    }
+
+    /**
+     * Returns the run UUID of a store file's head record (line 1) — the reopened root node's
+     * metadata must equal the original's.
+     *
+     * @param file the completed NDJSON file
+     * @return the run UUID, or {@code null} if the file has no readable head record
+     */
+    private static String headRunUuid(Path file) {
+        return headRecordField(file, "run");
+    }
+
+    /**
+     * Returns the run label of a store file's head record (line 1).
+     *
+     * @param file the completed NDJSON file
+     * @return the run label, or {@code null} if the file has no readable head record
+     */
+    private static String headRunLabel(Path file) {
+        return headRecordField(file, "label");
+    }
+
+    /**
+     * Reads one field of a store file's head record (line 1). Never throws — an unreadable or
+     * malformed file yields {@code null} (the scan tolerates it the same way).
+     *
+     * @param file  the completed NDJSON file
+     * @param field the head record's field name ({@code run} or {@code label})
+     * @return the field value, or {@code null}
+     */
+    private static String headRecordField(Path file, String field) {
+        try (BufferedReader reader = Files.newBufferedReader(file, StandardCharsets.UTF_8)) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (line.isBlank()) {
+                    continue;
+                }
+                try {
+                    JsonNode node = JsonUtils.getObjectMapper().readTree(line);
+                    if ("head".equals(node.path("t").asText(null))) {
+                        return node.path(field).asText(null);
+                    }
+                    // The first record is not a head record (not a store file)
+                    return null;
+                } catch (JsonProcessingException e) {
+                    return null;
+                }
+            }
+        } catch (IOException e) {
+            // Unreadable file — the scan will tolerate it too
+        }
+        return null;
+    }
+
+    /**
+     * The read-only reopen scan: one sequential pass over the file that tracks byte offsets
+     * exactly, records a line→byte-offset checkpoint every {@link #CHECKPOINT_INTERVAL_LINES}
+     * lines, and replays every decoded record into the node index and tail — the same updates
+     * the writer thread performs for a live store, minus the file write. A truncated final line
+     * is tolerated exactly like in {@link #readRecords(int, int)} (the scan stops serving records
+     * there; earlier lines are unaffected). The scan never throws: an unreadable file leaves a
+     * partial index, which the reads tolerate.
+     */
+    private void scanReadOnly() {
+        ObjectMapper mapper = JsonUtils.getObjectMapper();
+        long lineNo = 0;
+        long lineStart = 0;
+        long lastCheckpointLine = 0;
+        ByteArrayOutputStream lineBuffer = new ByteArrayOutputStream(READ_BUFFER_CHARS);
+        byte[] buffer = new byte[READ_BUFFER_CHARS];
+        try (InputStream input = new BufferedInputStream(Files.newInputStream(file, StandardOpenOption.READ), READ_BUFFER_CHARS)) {
+            long pos = 0; // absolute byte offset where buffer[0] starts
+            int read;
+            while ((read = input.read(buffer)) > 0) {
+                int lineBegin = 0;
+                for (int i = 0; i < read; i++) {
+                    if (buffer[i] != '\n') {
+                        continue;
+                    }
+                    lineBuffer.write(buffer, lineBegin, i - lineBegin);
+                    lineBegin = i + 1;
+                    lineNo++;
+                    // Checkpoint before applying the line: the entry's offset is where THIS line
+                    // starts (the same bookkeeping the writer thread does before its write)
+                    if (lineNo - lastCheckpointLine >= CHECKPOINT_INTERVAL_LINES) {
+                        addCheckpoint(lineNo, lineStart);
+                        lastCheckpointLine = lineNo;
+                    }
+                    applyScannedLine(mapper, lineBuffer, lineNo);
+                    lineBuffer.reset();
+                    lineStart = pos + i + 1;
+                }
+                lineBuffer.write(buffer, lineBegin, read - lineBegin);
+                pos += read;
+            }
+            // A final line without a trailing newline (a truncated write): count and try to
+            // parse it — the same tolerance readRecords applies
+            if (lineBuffer.size() > 0) {
+                lineNo++;
+                if (lineNo - lastCheckpointLine >= CHECKPOINT_INTERVAL_LINES) {
+                    addCheckpoint(lineNo, lineStart);
+                    lastCheckpointLine = lineNo;
+                }
+                applyScannedLine(mapper, lineBuffer, lineNo);
+            }
+        } catch (IOException e) {
+            System.err.println("Failed to scan progress log file " + file);
+            e.printStackTrace();
+        }
+        // A file without a parseable run-status record (the writer was killed before the final
+        // flush) must not reopen as a live run
+        finishScannedRunWithoutStatus();
+    }
+
+    /**
+     * Decodes one scanned line and replays the record into the index and tail. Blank, corrupt,
+     * and unknown-typed lines are skipped (forward compatibility — the same tolerance
+     * {@link #readRecords(int, int)} applies).
+     *
+     * @param mapper     the object mapper
+     * @param lineBuffer the line's bytes (without the terminating newline)
+     * @param lineNo     the line's 1-based number
+     */
+    private void applyScannedLine(ObjectMapper mapper, ByteArrayOutputStream lineBuffer, long lineNo) {
+        if (lineBuffer.size() == 0) {
+            return;
+        }
+        JsonNode node;
+        try {
+            node = mapper.readTree(lineBuffer.toByteArray());
+        } catch (IOException e) {
+            return; // truncated or corrupt line (typically the final line)
+        }
+        JIPipeProgressRecord record = parseRecord(mapper, node);
+        if (record != null) {
+            applyScannedRecord(lineNo, record);
+        }
+        // Unknown record types are skipped (forward compatibility)
     }
 
     @Override

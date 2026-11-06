@@ -654,6 +654,138 @@ public abstract class AbstractJIPipeProgressLog implements JIPipeProgressLog {
         return parent;
     }
 
+    // ---------------------------------------------------------------------
+    // Read-only reopen (the scan of JIPipeProgressLog.openReadOnly)
+    // ---------------------------------------------------------------------
+
+    /**
+     * Terminates the root node of a read-only reopen whose file holds no parseable run-status
+     * record — the writer was killed before it could flush the terminal record. A writer-fed
+     * store's root state is set in memory by {@code finish()} and is not derivable from the file;
+     * the reopen maps the absent status to CANCELLED so that consumers never render a dead run
+     * as live (the progress panel spins while the root is RUNNING).
+     */
+    final void finishScannedRunWithoutStatus() {
+        if (rootNode.getState() == JIPipeProgressNodeState.RUNNING) {
+            rootNode.setState(JIPipeProgressNodeState.CANCELLED);
+        }
+    }
+
+    /**
+     * Applies one record decoded by the read-only reopen scan. Called on the scanning thread —
+     * the thread that owns the index while the scan runs. Compared to
+     * {@link #applyRecord(long, JIPipeProgressRecord)}, the scan must first <em>create</em> the
+     * nodes it meets (a writer-fed store creates them on the producer thread via
+     * {@code beginNode()}, before their {@code n} record reaches the sink) and reconstructs the
+     * root's state from the run-status record (a writer-fed store sets it directly in
+     * {@code finish()}, before the record is enqueued).
+     *
+     * @param seq    the record's line number
+     * @param record the decoded record
+     */
+    final void applyScannedRecord(long seq, JIPipeProgressRecord record) {
+        if (record instanceof JIPipeProgressRecord.Node nodeRecord) {
+            registerScannedNode(nodeRecord);
+        } else if (record instanceof JIPipeProgressRecord.Status statusRecord) {
+            JIPipeProgressNodeState state = mapRunStateFromWire(statusRecord.s());
+            if (state != null) {
+                rootNode.setState(state);
+            }
+        }
+        applyRecord(seq, record);
+    }
+
+    /**
+     * Registers a node decoded by the read-only reopen scan: the same index updates
+     * {@code beginNode()} performs on the producer thread (create the metadata, link it into the
+     * ancestors' descendant counts, advance the id counter) minus the record submission. The
+     * parent's {@code n} record precedes the child's in file order, so the parent is always
+     * registered already; a node that is already registered (or an invalid id) is ignored.
+     *
+     * @param nodeRecord the decoded {@code n} record
+     */
+    private void registerScannedNode(JIPipeProgressRecord.Node nodeRecord) {
+        int id = nodeRecord.id();
+        if (id <= 0 || nodes.containsKey(id)) {
+            return;
+        }
+        int wireParentId = nodeRecord.p();
+        JIPipeProgressNode parent;
+        if (wireParentId <= 0 || wireParentId == ROOT_NODE_ID) {
+            parent = rootNode;
+        } else {
+            parent = nodes.get(wireParentId);
+        }
+        if (parent == null) {
+            // Tolerate a corrupt parent reference the same way the render walk does (the root)
+            parent = rootNode;
+        }
+        JIPipeProgressNode node = new JIPipeProgressNode(id, parent.getId(), nodeRecord.l(),
+                mapNodeKindFromWire(nodeRecord.k()), nodeRecord.loc(), mapNodeLevelFromWire(nodeRecord.lv()));
+        nodes.put(id, node);
+        for (JIPipeProgressNode ancestor = parent; ancestor != null; ancestor = nodes.get(ancestor.getParentId())) {
+            ancestor.incrementDescendantNodeCount();
+        }
+        nodeIdCounter.getAndAccumulate(id, Math::max);
+    }
+
+    /**
+     * Maps the {@code k} field of an {@code n} record back to a node kind. Unknown names are
+     * mapped to {@code null} (the kind is left unset) — the wire contract may gain kinds that an
+     * older reader does not know.
+     *
+     * @param wire the wire literal
+     * @return the kind, or {@code null}
+     */
+    private static JIPipeProgressNodeKind mapNodeKindFromWire(String wire) {
+        if (wire == null) {
+            return null;
+        }
+        try {
+            return JIPipeProgressNodeKind.valueOf(wire);
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
+    }
+
+    /**
+     * Maps the {@code lv} field of an {@code n} record back to a log level.
+     *
+     * @param value the numeric level, or {@code null} for INFO (old files without the field)
+     * @return the level (never {@code null})
+     */
+    private static JIPipeLogLevel mapNodeLevelFromWire(Integer value) {
+        if (value == null) {
+            return JIPipeLogLevel.INFO;
+        }
+        if (value <= JIPipeLogLevel.DEBUG.value()) {
+            return JIPipeLogLevel.DEBUG;
+        } else if (value <= JIPipeLogLevel.INFO.value()) {
+            return JIPipeLogLevel.INFO;
+        } else if (value <= JIPipeLogLevel.WARN.value()) {
+            return JIPipeLogLevel.WARN;
+        }
+        return JIPipeLogLevel.ERROR;
+    }
+
+    /**
+     * Maps the wire literal of an {@code s} record back to a run state (the inverse of
+     * {@link #mapRunStateToWire(JIPipeProgressNodeState)}). Unknown literals are mapped to
+     * {@code null} (the root's state is left unchanged).
+     *
+     * @param wire the wire literal
+     * @return the state, or {@code null}
+     */
+    static JIPipeProgressNodeState mapRunStateFromWire(String wire) {
+        return switch (wire) {
+            case "running" -> JIPipeProgressNodeState.RUNNING;
+            case "finished" -> JIPipeProgressNodeState.OK;
+            case "failed" -> JIPipeProgressNodeState.FAILED;
+            case "cancelled" -> JIPipeProgressNodeState.CANCELLED;
+            default -> null;
+        };
+    }
+
     private static long now() {
         return System.currentTimeMillis();
     }
