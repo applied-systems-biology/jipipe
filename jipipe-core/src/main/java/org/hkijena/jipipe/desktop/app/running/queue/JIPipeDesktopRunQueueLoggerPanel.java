@@ -107,8 +107,9 @@ public class JIPipeDesktopRunQueueLoggerPanel extends JIPipeDesktopWorkbenchPane
         headerPanel.setBorder(UIUtils.createEmptyBorder(8));
         add(headerPanel, BorderLayout.NORTH);
 
-        Component visibleTreeComponent = UIUtils.wrapInBackgroundIslandPanelIfNeeded(treePanel);
-        add(visibleTreeComponent, BorderLayout.CENTER);
+        // The progress panel fills the window edge-to-edge: the background island's rim reads as a
+        // stray border seam between the panel and the window edge
+        add(treePanel, BorderLayout.CENTER);
 
         UIUtils.addReloadablePopupMenuToButton(queueButton, queuePopupMenu, this::reloadQueuePopupMenu);
     }

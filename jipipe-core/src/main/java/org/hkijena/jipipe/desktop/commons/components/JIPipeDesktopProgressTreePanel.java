@@ -193,19 +193,32 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
     private void initialize() {
         setLayout(new BorderLayout());
 
+        // Flat chrome on the panel background: the panel fills its host edge-to-edge, with the
+        // header/footer as flat strips separated by hairlines (mockup: no rounded island, no rim)
+        var style = ThemeUtils.getCurrentStyle();
+        setOpaque(true);
+        setBackground(style.getPanelBackground());
+
         // Header: Show log / Auto show progress / Auto view results | category toggles | Copy | Export
         JPanel headerPanel = new JPanel(new BorderLayout(8, 0));
+        headerPanel.setOpaque(false);
         headerPanel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createEmptyBorder(6, 8, 6, 8),
-                BorderFactory.createMatteBorder(0, 0, 1, 0, ThemeUtils.getCurrentStyle().getBorderColor())));
+                BorderFactory.createEmptyBorder(8, 12, 8, 12),
+                BorderFactory.createMatteBorder(0, 0, 1, 0, style.getBorderColor())));
         JPanel headerLeft = UIUtils.boxHorizontal(showLogCheckBox, autoShowProgressCheckBox, autoViewResultsCheckBox);
         JPanel headerRight = UIUtils.boxHorizontal(debugToggleButton, infoToggleButton, warningToggleButton, errorToggleButton, copyButton, exportButton, headerComponentsPanel);
+        headerLeft.setOpaque(false);
+        headerRight.setOpaque(false);
+        headerComponentsPanel.setOpaque(false);
+        for (JComponent component : List.of(showLogCheckBox, autoShowProgressCheckBox, autoViewResultsCheckBox,
+                debugToggleButton, infoToggleButton, warningToggleButton, errorToggleButton, copyButton, exportButton, headerComponentsPanel)) {
+            component.setAlignmentY(0.5f);
+        }
         headerPanel.add(headerLeft, BorderLayout.WEST);
         headerPanel.add(headerRight, BorderLayout.EAST);
         add(headerPanel, BorderLayout.NORTH);
 
         // Center: the flat, virtualized row list
-        var style = ThemeUtils.getCurrentStyle();
         list.setBackground(style.getPanelBackground());
         list.setCellRenderer(renderer);
         list.setFont(list.getFont().deriveFont(12.0f));
@@ -219,19 +232,28 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
 
         // Footer: state icon | breadcrumb + live progress | N records · size | data file | buttons
         JPanel footerPanel = new JPanel(new BorderLayout(8, 0));
+        footerPanel.setOpaque(false);
         footerPanel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createMatteBorder(1, 0, 0, 0, ThemeUtils.getCurrentStyle().getBorderColor()),
-                BorderFactory.createEmptyBorder(6, 8, 6, 8)));
+                BorderFactory.createMatteBorder(1, 0, 0, 0, style.getBorderColor()),
+                BorderFactory.createEmptyBorder(8, 12, 8, 12)));
         footerStateLabel.setIcon(footerSpinner);
         footerStateLabel.setFont(footerStateLabel.getFont().deriveFont(12.0f));
         footerStatusLabel.setFont(footerStatusLabel.getFont().deriveFont(12.0f));
         footerStatusLabel.setForeground(style.getTextMuted());
+        footerStateLabel.setAlignmentY(0.5f);
+        footerStatusLabel.setAlignmentY(0.5f);
         JPanel footerLeft = UIUtils.boxHorizontal(footerStateLabel, footerStatusLabel);
+        footerLeft.setOpaque(false);
         footerRecordsLabel.setFont(footerRecordsLabel.getFont().deriveFont(12.0f));
         footerRecordsLabel.setForeground(style.getTextMuted());
+        footerRecordsLabel.setAlignmentY(0.5f);
         footerFileLabel.setFont(footerFileLabel.getFont().deriveFont(12.0f));
         footerFileLabel.setForeground(style.getTextMuted());
-        JPanel footerRight = UIUtils.boxHorizontal(footerRecordsLabel, footerFileLabel, footerButtons);
+        footerFileLabel.setAlignmentY(0.5f);
+        // Struts separate the information segments and the button group
+        JPanel footerRight = UIUtils.boxHorizontal(footerRecordsLabel, Box.createHorizontalStrut(12), footerFileLabel, Box.createHorizontalStrut(12), footerButtons);
+        footerRight.setOpaque(false);
+        footerButtons.setOpaque(false);
         footerPanel.add(footerLeft, BorderLayout.WEST);
         footerPanel.add(footerRight, BorderLayout.EAST);
         add(footerPanel, BorderLayout.SOUTH);
@@ -1012,14 +1034,18 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
         JIPipeProgressNode root = s.getNode(s.getRootNodeId());
         JIPipeProgressNodeState rootState = root != null ? root.getState() : JIPipeProgressNodeState.RUNNING;
         boolean running = rootState == JIPipeProgressNodeState.RUNNING;
-        footerStateLabel.setIcon(running ? footerSpinner : null);
-        if (!running) {
-            footerStateLabel.setText(rootState == JIPipeProgressNodeState.OK ? "✔" : "✖");
-            footerStateLabel.setForeground(rootState == JIPipeProgressNodeState.OK
-                    ? ThemeUtils.getCurrentStyle().getSuccessColor()
-                    : ThemeUtils.getCurrentStyle().getDangerColor());
+        footerStateLabel.setText("");
+        if (running) {
+            footerStateLabel.setIcon(footerSpinner);
         } else {
-            footerStateLabel.setText("");
+            // Finished states show a resource icon (16px, the same icons the rest of the run UI uses) —
+            // no UTF-8 glyphs, which rendered inconsistently across fonts
+            switch (rootState) {
+                case OK -> footerStateLabel.setIcon(JIPipe.RESOURCES.getIcon16("emblems/emblem-success.png"));
+                case FAILED -> footerStateLabel.setIcon(JIPipe.RESOURCES.getIcon16("emblems/emblem-error.png"));
+                case CANCELLED -> footerStateLabel.setIcon(JIPipe.RESOURCES.getIcon16("actions/gtk-cancel.png"));
+                default -> footerStateLabel.setIcon(null);
+            }
         }
 
         String status;
