@@ -97,7 +97,8 @@ New package `org.hkijena.jipipe.api.progress`:
   ...)` on non-persistent stores returns only what the tail holds (never throws) — the
   UI treats that as "no scroll-back".
 - **`JIPipeProgressNode`** — light metadata only: numeric id, parent id, label, kind
-  (`RUN`, `PARTITION`, `PHASE`, `ITEM`), state (`RUNNING`, `OK`, `FAILED`, `CANCELLED`), progress
+  (`RUN`, `PARTITION`, `PHASE`, `ITEM`), state (`RUNNING`, `OK`, `FAILED`, `CANCELLED`), optional
+  location URI (`node://<uuid>` today; free-form for future schemes), progress
   (value/max, indeterminate flag), first/last-record sequence range + record count,
   timestamps, activity flag (spinner). **Messages never live in nodes** — they are records
   in the file. The index stays small even for 6 M-record runs because nodes correspond to
@@ -113,7 +114,7 @@ millis. Levels follow the log4j-style scale: `10`=DEBUG, `20`=INFO, `30`=WARN, `
 | `t` | meaning | fields |
 |---|---|---|
 | `head` | file header, always line 1 | `v` (schema version, `1`), `run` (run UUID), `label`, `app` (JIPipe version), `ts` |
-| `n` | node created | `id`, `p` (parent id, `0` = root), `l` (label), `k` (kind), `ts` |
+| `n` | node created | `id`, `p` (parent id, `0` = root), `l` (label), `k` (kind), `loc` (optional location URI, e.g. `node://<uuid>`; free-form, forward-extensible), `ts` |
 | `N` | node finished | `id`, `s` (`ok`/`fail`/`cancel`), `ts` |
 | `l` | log record | `id`, `lv`, `m` (message), `ts` |
 | `p` | progress state | `id`, `v` (value), `mx` (max; negative = indeterminate), `ts` |
@@ -253,9 +254,16 @@ level instead of being deleted.
   its records (paged). Millions of records on one node are safe: the detail view reads
   the last page (default 1,000 records) from the file and pages on demand ("Show 4 older
   records from run data…").
-- **Detail-level filter** (INFO/DEBUG) in the panel header. When DEBUG records are hidden
-  by the filter, the row shows a faint `1,203 debug` chip so they remain visible as
-  existing.
+- **Detail-level filter** replaced by a **toggle-button group** in the panel header:
+  `[debug | info | warning (count) | error (count)]` — each button toggles its category's
+  visibility and carries a live per-category record count (glanceable volume). Buckets:
+  debug = `l`@DEBUG, info = `l`@INFO, warning = `l`@WARN **+ notification (`w`) records**,
+  error = `l`@ERROR + `e` records. DEBUG off by default, others on. Notifications render as
+  warning-tinted entries (`heading: description`).
+- **Location URIs:** nodes carry an optional free-form location URI (`n.loc`; graph-run
+  nodes are tagged `node://<algorithm-uuid>`); rows render the faint `[uuid]` suffix
+  derived from `node://` URIs. Future schemes (e.g. parameter locations) reuse the field
+  without UI changes.
 - **Structured errors:** error records render as a one-line summary with a collapsible
   stack trace ("Show stack trace"), not as raw dumps.
 - **Footer:** active path breadcrumb + live progress + `N records · size` + the NDJSON
