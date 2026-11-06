@@ -235,9 +235,8 @@ public abstract class JIPipeDesktopPublisherAssistant extends JIPipeDesktopProje
 
     @Override
     public void onRunnableInterrupted(JIPipeRunnable.InterruptedEvent event) {
-        JOptionPane.showMessageDialog(this, "There were errors during the export process.\n" +
-                        "Please open the JIPipe log to review them.",
-                getAssistantTitle(), JOptionPane.ERROR_MESSAGE);
+        JIPipeDesktopDialogs.message(this, getAssistantTitle(), "There were errors during the export process.\n" +
+                "Please open the JIPipe log to review them.");
         // The entry references the run's NDJSON data file — the log is rendered on demand
         JIPipeDesktopRunnableLogsCollection.getInstance().pushToLog(new JIPipeRunnableLogEntry(event.getRun().getProgressInfo(), getAssistantTitle(), false));
         switchToSetup();
