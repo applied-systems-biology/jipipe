@@ -89,7 +89,7 @@ public class JIPipeDesktopRunnableQueueButtonMenuItem extends JMenuItem implemen
 
     /**
      * EDT: refreshes the displayed state when a batch arrived since the last refresh. The batch
-     * listeners only set the dirty flag — all UI updates happen here, at most one per 500 ms.
+     * listeners only set the dirty flag - all UI updates happen here, at most one per 500 ms.
      */
     private void refreshIfDirty() {
         if (!progressDirty) {
@@ -157,7 +157,7 @@ public class JIPipeDesktopRunnableQueueButtonMenuItem extends JMenuItem implemen
         if (chain.isEmpty()) {
             return progress.isEmpty() ? "In progress ..." : progress;
         }
-        return progress.isEmpty() ? chain : chain + " — " + progress;
+        return progress.isEmpty() ? chain : chain + " - " + progress;
     }
 
     /**
@@ -202,7 +202,7 @@ public class JIPipeDesktopRunnableQueueButtonMenuItem extends JMenuItem implemen
 
     /**
      * Triggered when a worker reports progress. Runs on the store's writer thread: only the dirty
-     * flag and the tracked node are set — the refresh timer (EDT) does the UI work.
+     * flag and the tracked node are set - the refresh timer (EDT) does the UI work.
      *
      * @param event Generated event
      */

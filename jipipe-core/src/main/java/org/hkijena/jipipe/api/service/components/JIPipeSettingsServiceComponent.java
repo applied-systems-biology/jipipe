@@ -84,7 +84,7 @@ import java.util.function.Predicate;
  * <li><b>Typed access.</b> {@link #bind(JIPipeSettingKey)} registers the key
  * and hands out a live {@link SettingsBinding}. Bindings handed out by this
  * component are tracked and closed in {@link #dispose()}; a caller may close
- * a binding early — its later close by the component is then a no-op, and
+ * a binding early - its later close by the component is then a no-op, and
  * {@code get()}/{@code set()} on a closed binding keep working, so tracking
  * cannot break early-closed bindings.</li>
  * <li><b>Sheet projection.</b> {@link #attachSheet(JIPipeApplicationSettingsSheet)}
@@ -99,7 +99,7 @@ import java.util.function.Predicate;
  * <li><b>Multi-instance sync.</b> Each file-backed scope is watched by a
  * {@link SettingsFileWatching} (started lazily with the document, inert in
  * headless JVMs). When another JIPipe process writes the file, the
- * watcher's callback — invoked under the watcher's instance monitor —
+ * watcher's callback - invoked under the watcher's instance monitor -
  * does nothing but hand the file off to a single-thread executor, which
  * loads the file into a temporary document and runs the per-block
  * {@link SettingsDocumentMerger#merge} against the live document under
@@ -158,7 +158,7 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
      * {@link JIPipe#getJIPipeUserDir(boolean)} would return the developer's
      * profile while the startup migration (which resolves the directory at
      * initialization time, when the override is set) runs against the override
-     * profile — the two would read and write different files. Guarded by the
+     * profile - the two would read and write different files. Guarded by the
      * component monitor.
      */
     private Path resolvedUserDir;
@@ -247,7 +247,7 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
      * nothing in that case, and the slot stays empty.
      * <p>
      * Monitor discipline: a plain {@link LinkedHashMap}, only read and
-     * written by methods that run under the component monitor —
+     * written by methods that run under the component monitor -
      * {@code document()}, {@code startWatchingFor()},
      * {@code handleForeignChange()} (the executor thread),
      * {@code recordOwnFingerprint()} (from the executor or from
@@ -277,7 +277,7 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
      * <p>
      * Concurrent: the tracking listener (see {@link
      * #registerLocalChangeListener}) fires on whatever thread mutates the
-     * document — typically the EDT for a {@code binding.set()} — which does
+     * document - typically the EDT for a {@code binding.set()} - which does
      * <em>not</em> hold the component's monitor, while the merge and save
      * paths read the set under it. The outer map and each inner set are
      * therefore concurrent; {@link #recordSyncPoint} atomically replaces
@@ -298,8 +298,8 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
      * is read from this cache.
      * <p>
      * Concurrent (outer and inner): {@link #onPathChanged} runs on whatever
-     * thread mutates the document — the EDT for a local {@code binding.set()}
-     * and the foreign-merge executor for an adopted/conflicted block — so the
+     * thread mutates the document - the EDT for a local {@code binding.set()}
+     * and the foreign-merge executor for an adopted/conflicted block - so the
      * cache is written from multiple threads, outside the component's
      * monitor.
      */
@@ -318,7 +318,7 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
      * {@link #observeBlockWrites}), per document. Prevents duplicate
      * listeners on re-bind.
      * <p>
-     * Monitor discipline: only touched under the component monitor — by
+     * Monitor discipline: only touched under the component monitor - by
      * {@code bind()}, {@code attachSheet()} (via {@code attachBridge}),
      * the merge paths and {@code reload}/{@code dispose}.
      */
@@ -390,7 +390,7 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
      * right before its first affected block is resolved, so a test can
      * deterministically simulate a local edit landing <em>during</em> the
      * merge (after the locally-changed set snapshot, before the merge writes
-     * the block — the window the second pass closes). {@code null} in
+     * the block - the window the second pass closes). {@code null} in
      * production.
      */
     private volatile Runnable midMergeHookForTesting;
@@ -418,7 +418,7 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
      * the override user-dir base
      * ({@link JIPipeServiceInitializationSettings#setOverrideUserDirBase(Path)},
      * the CLI's {@code --override-profile}) is installed on the service
-     * <em>after</em> the service — and therefore this component — has been
+     * <em>after</em> the service - and therefore this component - has been
      * constructed. Resolving the directory here would cache the real profile
      * directory and silently ignore the override, so the component would load
      * and save a different profile than the one the startup migration
@@ -457,7 +457,7 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
      * constructed without a {@link JIPipeService} (passing {@code null}) and
      * with an injected user directory, so the full code path can be exercised
      * without initializing the service. Every service-dependent access is
-     * null-guarded — {@link #getProgressInfo()} returns {@code null} instead
+     * null-guarded - {@link #getProgressInfo()} returns {@code null} instead
      * of throwing.
      *
      * @param userDir the directory the settings files are read from and written to
@@ -468,7 +468,7 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
     }
 
     /**
-     * <b>Testing only — not part of the production API.</b> Runs the
+     * <b>Testing only - not part of the production API.</b> Runs the
      * post-save read-back verification
      * ({@link #verifyOwnWrite(SettingsFileStore, SettingsDocument, String)})
      * for one file-backed scope synchronously, so a test can
@@ -869,7 +869,7 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
         // this exact state is handled, so the watcher must not deliver it
         // again as a new change (a second delivery would re-merge the same
         // content against an already-updated baseline and could adopt the
-        // local blocks as foreign deletions — data loss).
+        // local blocks as foreign deletions - data loss).
         FileFingerprint foreignFingerprint = fingerprintOrNull(store);
         Path file = store.file();
         if (isUnreadableSettingsFile(file)) {
@@ -968,7 +968,7 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
      * lock, not this component's monitor. So an EDT edit can land after the
      * merge snapshotted the locally-changed set but before the merge reaches
      * that block; the first pass would then see "not changed locally, foreign
-     * differs" and adopt the foreign value, silently discarding the edit —
+     * differs" and adopt the foreign value, silently discarding the edit -
      * the same loss class the save-time merge exists to prevent.
      * <p>
      * Two mechanisms close this, in this order, and only when an edit actually
@@ -980,8 +980,8 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
      * back, so an adoption that overwrote an edit cannot destroy its data.</li>
      * <li><b>One bounded second pass</b> over exactly the raced blocks. Its
      * baseline is the first pass's result with every adopted block set to the
-     * <em>foreign</em> value — i.e. what both sides agreed on after the first
-     * pass — not the live document (which holds the local edits and would
+     * <em>foreign</em> value - i.e. what both sides agreed on after the first
+     * pass - not the live document (which holds the local edits and would
      * make the foreign value look "changed", turning the block into a
      * conflict the foreign side would win). With that baseline the foreign
      * side counts as unchanged and the block is <b>kept</b>, so the caller
@@ -1031,7 +1031,7 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
         try {
             Set<String> changedBefore = new LinkedHashSet<>(locallyChangedBlocks.getOrDefault(doc, Set.of()));
             // The testing hook fires inside the first pass, before the first
-            // block is resolved — the exact window a concurrent EDT write
+            // block is resolved - the exact window a concurrent EDT write
             // lands in (the locally-changed set was just snapshotted above).
             mergeInProgress = true;
             SettingsDocumentMerger.MergeResult first;
@@ -1042,7 +1042,7 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
             } finally {
                 mergeInProgress = false;
             }
-            // Step 1 — restore: a local edit that lost the race against the
+            // Step 1 - restore: a local edit that lost the race against the
             // first pass (the pass adopted the foreign value over it) is put
             // back from the value the local-change listener captured while
             // the pass ran. Without this the edit's value would be gone.
@@ -1051,7 +1051,7 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
                 doc.setBlock(edit.getKey(), edit.getValue());
             }
             pendingLocalEdits.clear();
-            // Step 2 — second pass: re-merge with the CURRENT locally-changed
+            // Step 2 - second pass: re-merge with the CURRENT locally-changed
             // set and a baseline in which every block the first pass adopted
             // holds the foreign value, so the restored (or racing) local edit
             // is classified "foreign unchanged, changed locally" and KEPT.
@@ -1398,7 +1398,7 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
         Objects.requireNonNull(key, "key");
         // Materialize the document first, then register: registerKey makes the
         // key's block and sub-path observable, which must happen on a
-        // materialized document — otherwise the first write of a new setting
+        // materialized document - otherwise the first write of a new setting
         // (block absent at bind time, the common case) would fire no change
         // event at all.
         SettingsDocument doc = document(key.scope());
@@ -1434,7 +1434,7 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
      * {@link SettingsAccessPolicy#READ_ONLY} policy would protect the value
      * from. The method exists so the future #1102 runtime host can override the
      * decision in one place: it installs a {@link #setWriteGuard} predicate and
-     * the guard becomes the policy check — the {@link JIPipeSettingKey#access()}
+     * the guard becomes the policy check - the {@link JIPipeSettingKey#access()}
      * policy is what that predicate is expected to enforce (e.g. reject
      * user-originated writes to {@code RUNTIME_ADMIN} and every write to
      * {@code READ_ONLY} while a remote runtime owns the document).
@@ -1457,7 +1457,7 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
      * <p>
      * There is exactly one guard per component (i.e. per settings service):
      * installing a new one replaces the previous one, and it also governs
-     * bindings handed out earlier — they hold a live reference to this
+     * bindings handed out earlier - they hold a live reference to this
      * component, not a copy of the guard.
      * <p>
      * {@code null} clears the guard, i.e. every key is writable again.
@@ -1507,7 +1507,7 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
      * <p>
      * Thread-safety: the whole cycle (mark quiescent → write) holds the
      * component monitor, so a mutation from another thread (e.g. a sheet edit
-     * on the EDT) can never run while the document is marked quiescent — its
+     * on the EDT) can never run while the document is marked quiescent - its
      * events and local-change tracking are therefore never suppressed.
      *
      * @param doc the document to write to
@@ -1529,8 +1529,8 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
      * {@link ChangeOrigin}.
      * <p>
      * This is the origin-carrying write seam. The origin a change is reported
-     * with — and, for a local origin, whether it schedules the debounced
-     * auto-save (see {@link #scheduleSaveForLocalEdit}) — is read from the
+     * with - and, for a local origin, whether it schedules the debounced
+     * auto-save (see {@link #scheduleSaveForLocalEdit}) - is read from the
      * private {@link #foreignMergeOrigin} thread-local by the document's path
      * listeners. The merge path sets that thread-local itself; every other
      * writer (bindings, sheet bridges) keeps the default
@@ -1550,7 +1550,7 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
      * path listeners, and those exist only for observed/tracked locations. A
      * raw edit may address a location no binding ever touched (an unbound
      * pass-through block), which a plain {@link SettingsDocument#set} would
-     * change silently — not broadcast, never saved, and misclassified by a
+     * change silently - not broadcast, never saved, and misclassified by a
      * concurrent foreign merge. ("Observable"/"tracked" is thus a superset of
      * what a binding observed; it broadens what is reported, never what an
      * existing write does.)
@@ -1575,8 +1575,8 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
         ensureObserved(doc, blockPath, subPath);
         // ... and the local-change tracking that every binding and bridge
         // registers (auto-save + merge classification). Without it a raw edit
-        // to a location no binding ever touched — an unbound pass-through
-        // block, exactly what the raw editor exists for — would be broadcast
+        // to a location no binding ever touched - an unbound pass-through
+        // block, exactly what the raw editor exists for - would be broadcast
         // but never saved, and a concurrent foreign merge of that block would
         // adopt the foreign value over the user's edit. Idempotent per
         // document+location (see registerLocalChangeListener), so this is a
@@ -1674,7 +1674,7 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
      * <p>
      * <b>Auto-persist.</b> A genuine local write also schedules the
      * debounced save ({@link #saveLater()}). This is the trigger that makes
-     * a UI parameter edit — or any feature write — durable without an
+     * a UI parameter edit - or any feature write - durable without an
      * explicit save by the caller (see {@link #scheduleSaveForLocalEdit}).
      */
     private void registerLocalChangeListener(SettingsDocument doc, String blockPath, String subPath) {
@@ -1722,7 +1722,7 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
      * the engine's own machinery out of the cycle:
      * <ul>
      * <li><b>Foreign merges</b> ({@link ChangeOrigin#EXTERNAL_FILE}) are
-     * excluded — the merge path already schedules its own converging
+     * excluded - the merge path already schedules its own converging
      * {@link #saveLater()} (see {@code applyForeignInto}); a local edit and a
      * foreign change in the same window coalesce into that one save.</li>
      * <li><b>Quiescent bookkeeping writes</b> return before this method (see
@@ -1785,7 +1785,7 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
      * <em>after</em> this call (a sheet registered very early in startup, or
      * a component constructed on a profile that is migrated afterwards), the
      * fresh document is seeded from the sheet's current values and the
-     * bridge is re-created against it — see {@link #ensureAttachedSheetsSeeded}.
+     * bridge is re-created against it - see {@link #ensureAttachedSheetsSeeded}.
      * Without that, the sheet would hold an unsaved state the document never
      * sees.
      *
@@ -1870,7 +1870,7 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
      * Creates, attaches, and aligns a bridge for one sheet: after
      * {@link SettingsSheetBridge#attach()} (which seeds an absent block from
      * the sheet's current values), the block's stored values are applied into
-     * the sheet, so a pre-existing file's content reaches the sheet — matching
+     * the sheet, so a pre-existing file's content reaches the sheet - matching
      * today's reload-after-registration sequence.
      */
     private SettingsSheetBridge attachBridge(SettingsDocument app, JIPipeApplicationSettingsSheet sheet) {
@@ -1970,8 +1970,8 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
      * verification below can only see writes that land <em>after</em> our
      * write). Before writing, each scope therefore checks whether the
      * on-disk state still equals the state this process last wrote or merged
-     * (its own fingerprint or its last-synced fingerprint). If it does not —
-     * a foreign writer got there first — the foreign file is merged into the
+     * (its own fingerprint or its last-synced fingerprint). If it does not -
+     * a foreign writer got there first - the foreign file is merged into the
      * live document with the same per-block rules and events as the watcher
      * path ({@link #mergeForeignFile}) <em>first</em>, and only the merged
      * result is written. If it does, the save proceeds unchanged.
@@ -1980,7 +1980,7 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
      * present on disk at the moment of the pre-write fingerprint check is
      * merged before it can be replaced. It does not make a save atomic with
      * respect to a foreign write that lands <em>between</em> that check and
-     * the write — such a write is the post-save verification's job (below),
+     * the write - such a write is the post-save verification's job (below),
      * and a foreign write landing between the verification's own two reads is
      * undetectable by content comparison. The residual windows are
      * microsecond-scale, not zero.
@@ -1992,7 +1992,7 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
      * suppression window (a foreign write interleaved between this process's
      * write and its fingerprint read would otherwise be silently absorbed,
      * leaving the in-memory state diverged from disk with no event to
-     * reconcile it — see {@code SettingsFileWatcher}).
+     * reconcile it - see {@code SettingsFileWatcher}).
      * <p>
      * Ordering per scope: flush bridges → pre-save check → (merge if the
      * file is foreign) → stamp → write → record sync point → record own
@@ -2007,7 +2007,7 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
         // source, the document the copy), so it runs quiescently: it must not
         // dispatch change events, not mark the sheet blocks as locally changed
         // (which would turn a foreign write to a sheet block into a conflict
-        // instead of a clean merge), and above all NOT schedule another save —
+        // instead of a clean merge), and above all NOT schedule another save -
         // an unguarded flush re-triggers the debounced save through the sheet
         // block's local-change listener, so every save would schedule the next
         // one, forever. Quiescence gates only those listener side effects: the
@@ -2069,9 +2069,9 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
      * live document before the save may replace it.
      * <p>
      * Three states are distinguished by the fingerprint alone (no content
-     * read is needed): absent file (nothing to lose — write), a fingerprint
-     * equal to the recorded own/last-synced one (no foreign writer — write),
-     * and anything else (foreign — merge first). A file that cannot be
+     * read is needed): absent file (nothing to lose - write), a fingerprint
+     * equal to the recorded own/last-synced one (no foreign writer - write),
+     * and anything else (foreign - merge first). A file that cannot be
      * fingerprinted is treated like a foreign change and goes through the
      * merge, which is non-destructive (see the guarded load in
      * {@link #mergeForeignFile}): either the foreign content is merged, or it
@@ -2117,19 +2117,19 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
      * absorb such a write: it suppresses changes whose fingerprint equals the
      * one the owner recorded after its save, and the owner records that
      * fingerprint from the file as it is <em>at the moment of the read</em>
-     * — so a foreign write that lands before that read is recorded as our
+     * - so a foreign write that lands before that read is recorded as our
      * own and never reported. This check compares the read-back content
      * against what this process actually wrote, so that case is detected and
      * merged.
      * <p>
      * It complements (and does not replace) the pre-save read-merge-write in
-     * {@link #save()}, which covers the opposite direction — a foreign write
+     * {@link #save()}, which covers the opposite direction - a foreign write
      * that landed <em>before</em> our write would otherwise have been
      * replaced blindly.
      * <p>
      * On a mismatch the observed file content is fed through
-     * {@link #mergeForeignFile} — the same merge implementation the watcher
-     * path uses — so the foreign blocks are adopted/conflicted/kept with
+     * {@link #mergeForeignFile} - the same merge implementation the watcher
+     * path uses - so the foreign blocks are adopted/conflicted/kept with
      * events. This method runs from {@link #save()} while the component's
      * monitor is already held; {@code mergeForeignFile} deliberately does not
      * re-acquire it, so no extra lock hop or deadlock is involved.
@@ -2160,7 +2160,7 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
             // reads, the content no longer equals ours, so the mismatch
             // branch routes it through the merge instead of recording the
             // foreign fingerprint as our own (which the watcher would
-            // then suppress — the loss this check exists to prevent).
+            // then suppress - the loss this check exists to prevent).
             FileFingerprint own = fingerprintOrNull(store);
             String onDisk = Files.readString(file, StandardCharsets.UTF_8);
             if (onDisk.equals(SettingsDocumentIO.toPrettyString(doc))) {
@@ -2203,7 +2203,7 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
         }
         // Headless path: schedule (or reschedule) one save 250 ms out,
         // cancelling the previous task so the quiet period restarts on every
-        // call — the same semantics as Swing's Timer.restart().
+        // call - the same semantics as Swing's Timer.restart().
         synchronized (saveLaterLock) {
             ScheduledFuture<?> previous = pendingSaveTask;
             if (previous != null) {
@@ -2505,8 +2505,8 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
     /**
      * Normalizes a block path plus sub-path into the listener key form
      * {@code "<blockPath>/<subPath>"}. Delegates to
-     * {@link SettingsDocument#listenerPath} — the exact normalization the
-     * document uses for dispatch — so registration and notification can never
+     * {@link SettingsDocument#listenerPath} - the exact normalization the
+     * document uses for dispatch - so registration and notification can never
      * drift apart.
      */
     private static String location(String blockPath, String subPath) {

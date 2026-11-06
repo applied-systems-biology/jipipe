@@ -1518,7 +1518,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
      * <p>
      * <b>The tab pane is the load-bearing link:</b>
      * {@link JIPipeDesktopTabPane#dispose()} iterates every registered tab and
-     * calls {@link Disposable#dispose()} on each {@link Disposable} content —
+     * calls {@link Disposable#dispose()} on each {@link Disposable} content -
      * which includes the settings tab (unsubscribes its
      * {@code SettingsChangedEvent} listener) and every graph editor
      * ({@link JIPipeDesktopPipelineGraphEditorUI}, the compartment editor),

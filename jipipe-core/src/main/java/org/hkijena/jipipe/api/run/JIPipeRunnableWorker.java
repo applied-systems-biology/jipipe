@@ -41,7 +41,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * Store attach (non-graph runs): a run submitted through a queue whose progress info still has a
  * silent store receives a file-backed store before execution, so UI consumers are not dark. The
  * attached store is finished and closed by the worker when the run ends (unless the run replaced
- * it — the displaced store never received records and is closed at the adoption point).
+ * it - the displaced store never received records and is closed at the adoption point).
  */
 public class JIPipeRunnableWorker extends SwingWorker<Throwable, Void> {
     private final JIPipeRunnable run;
@@ -207,7 +207,7 @@ public class JIPipeRunnableWorker extends SwingWorker<Throwable, Void> {
 
     /**
      * Closes the attached store if the run adopted a different store. Adoption happens before the
-     * first record of the new store, so the displaced store never received records — closing it
+     * first record of the new store, so the displaced store never received records - closing it
      * (without a finish record) stops its writer thread and releases the log file name.
      */
     private void onStoreAdopted() {

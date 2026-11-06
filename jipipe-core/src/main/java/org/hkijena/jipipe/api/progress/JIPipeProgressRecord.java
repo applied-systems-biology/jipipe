@@ -61,7 +61,7 @@ public sealed interface JIPipeProgressRecord {
      * @param l   node label
      * @param k   node kind name
      * @param loc optional location URI ({@code node://<uuid>} today; free-form for future schemes; {@code null} = no location)
-     * @param lv  optional node level ({@link JIPipeLogLevel#value()}; {@code null} = INFO — old files without the field read as INFO)
+     * @param lv  optional node level ({@link JIPipeLogLevel#value()}; {@code null} = INFO - old files without the field read as INFO)
      * @param ts  epoch millis
      */
     @JsonIgnoreProperties(ignoreUnknown = true)

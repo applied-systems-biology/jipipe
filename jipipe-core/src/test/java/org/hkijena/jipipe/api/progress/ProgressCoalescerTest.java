@@ -79,7 +79,7 @@ class ProgressCoalescerTest {
             // 200k instead of the brief-sketch's 100k: the burst duration is writer-bound, and only
             // a drain longer than the interval guarantees an intermediate batch (more than one event)
             // R11-corrected window: measured from before the burst loop (the enqueue phase emits
-            // batches too — they must be inside the bound) to after finish() returns; finish()
+            // batches too - they must be inside the bound) to after finish() returns; finish()
             // joins the writer, so the final batch is emitted before it returns
             long start = System.nanoTime();
             for (int i = 0; i < 200_000; i++) {

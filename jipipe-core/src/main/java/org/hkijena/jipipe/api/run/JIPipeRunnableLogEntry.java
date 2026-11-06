@@ -27,23 +27,23 @@ import java.util.function.Consumer;
 
 /**
  * A finished run inside the Tools &gt; Logs collection. Entries hold a reference to the run's
- * NDJSON data file ({@code <run-uuid>.ndjson}; see {@link JIPipeProgressLog}) plus run metadata —
+ * NDJSON data file ({@code <run-uuid>.ndjson}; see {@link JIPipeProgressLog}) plus run metadata -
  * never a rendered copy of the log text. The log is rendered from the file on demand
  * ({@link #renderText(Consumer)}), so neither the heap nor the collection scales with the log
  * volume; deleting the file (eviction, clear, project close) is what bounds the disk usage.
  * <p>
  * Runs on non-persistent stores ({@link JIPipeProgressLog#silent()}/{@link JIPipeProgressLog#stdout()})
- * have no file — those entries hold the store itself and render its bounded in-memory tail while
+ * have no file - those entries hold the store itself and render its bounded in-memory tail while
  * the store is alive.
  */
 public class JIPipeRunnableLogEntry {
 
     /**
      * The single line rendered when the log data is unavailable (no data file and no store, the
-     * file was removed — e.g. evicted or cleaned up with the project's temporary directory — or
+     * file was removed - e.g. evicted or cleaned up with the project's temporary directory - or
      * the render found no renderable records at any level).
      */
-    public static final String DATA_UNAVAILABLE_LINE = "[log data unavailable — removed]";
+    public static final String DATA_UNAVAILABLE_LINE = "[log data unavailable - removed]";
 
     /**
      * Builds the single line rendered when the log data exists but renders nothing at the
@@ -55,7 +55,7 @@ public class JIPipeRunnableLogEntry {
      * @return the hint line
      */
     public static String belowLevelLine(int count, JIPipeLogLevel minLevel) {
-        return "[" + count + " records below " + minLevel.name() + " level — enable debug in the progress panel]";
+        return "[" + count + " records below " + minLevel.name() + " level: enable debug in the progress panel]";
     }
 
     private final String name;
@@ -94,7 +94,7 @@ public class JIPipeRunnableLogEntry {
         this.success = success;
         JIPipeProgressLog progressStore = progressInfo.getStore();
         this.dataFile = progressStore != null ? progressStore.getFile() : null;
-        // File-backed stores are finished and closed before an entry is created — the NDJSON file
+        // File-backed stores are finished and closed before an entry is created - the NDJSON file
         // is the durable artifact, so only the file is referenced. Non-persistent stores
         // (silent/stdout) keep their records only in the bounded in-memory tail, so the entry
         // holds the store itself to stay renderable.
@@ -107,7 +107,7 @@ public class JIPipeRunnableLogEntry {
 
     /**
      * Returns the non-persistent store this entry holds. File-backed runs reference only their
-     * NDJSON data file (finished and closed before the entry was created) — reopen it read-only
+     * NDJSON data file (finished and closed before the entry was created) - reopen it read-only
      * via {@link JIPipeProgressLog#openReadOnly(Path)}. Silent/stdout runs keep no file; this
      * method returns their store (finished and closed, rendering its bounded in-memory tail).
      *
@@ -167,7 +167,7 @@ public class JIPipeRunnableLogEntry {
     /**
      * Renders this entry's log as compatibility text lines at INFO level (the shape behind
      * {@code log.txt} and the former {@code getLog()} view), handing each line to the sink.
-     * The data is read on demand — from the NDJSON file, or from the store's tail for
+     * The data is read on demand - from the NDJSON file, or from the store's tail for
      * non-persistent stores.
      * <p>
      * This never throws and always produces at least one line: unavailable data (missing file,
@@ -217,7 +217,7 @@ public class JIPipeRunnableLogEntry {
 
     /**
      * Deletes this entry's NDJSON data file (if any). Called by the log collection when the entry
-     * is evicted, the collection is cleared, or the owning project closes — this is what bounds
+     * is evicted, the collection is cleared, or the owning project closes - this is what bounds
      * the disk usage of kept logs. Never throws; a file that cannot be deleted (e.g. locked by a
      * viewer on Windows) is reported and left in place (temporary-directory cleanup removes it
      * later).

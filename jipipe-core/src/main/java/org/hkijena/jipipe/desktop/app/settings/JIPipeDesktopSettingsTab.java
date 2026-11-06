@@ -186,7 +186,7 @@ public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implem
 
     /**
      * The since-open audit of settings changes (modern settings system, Task
-     * 21). Every change event — all scopes, all origins — is recorded here; the
+     * 21). Every change event - all scopes, all origins - is recorded here; the
      * changes strip renders the active scope's entries. The log is thread-safe
      * and holds no listeners, so {@link #dispose()} has nothing to unbind.
      */
@@ -243,7 +243,7 @@ public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implem
     /**
      * The application sheets and their scope: the scope of a sheet is the one
      * routed for its block ({@link SettingsScopes#scopeByBlock()}), defaulting
-     * to {@link SettingsScope#APPLICATION} — everything not routed to the
+     * to {@link SettingsScope#APPLICATION} - everything not routed to the
      * runtime document is a user preference.
      *
      * @param sheets the registered application sheets
@@ -519,7 +519,7 @@ public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implem
 
     /**
      * Resets one entry's location to its default through the raw editor's
-     * model — the reviewed documented-vs-pass-through reset lives there and is
+     * model - the reviewed documented-vs-pass-through reset lives there and is
      * not re-implemented here. The model is a throwaway: its constructor only
      * captures the service and the scope's document and registers no listener,
      * and {@link RawSettingsTableModel#resetKey(String)} writes through the
@@ -543,7 +543,7 @@ public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implem
         boolean touchedActiveScope = entry.scope() == activeScope;
         SwingUtilities.invokeLater(() -> {
             // The reset emitted its own change event, whose later refresh would
-            // suffice — refreshing here too keeps the strip honest even if the
+            // suffice - refreshing here too keeps the strip honest even if the
             // scope was switched in between.
             if (touchedActiveScope) {
                 rebuildRightPane();
@@ -581,7 +581,7 @@ public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implem
 
             // The live views over the project metadata (user paths, project-wide
             // parameters, metadata without those parts). They are built here, over
-            // the CURRENT project, and shown as sections only — never registered
+            // the CURRENT project, and shown as sections only - never registered
             // on the project, so they are never persisted (the metadata is
             // persisted natively; registering these would write it twice).
             List<SettingsTreeModel.SheetNode> viewNodes = ProjectSettingsViews.sectionNodes(getDesktopWorkbench().getProject());
@@ -829,8 +829,8 @@ public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implem
     /**
      * A plain section form: the sheet's parameters plus the scope's
      * documentation. PROJECT sections use {@code documentation/project-settings.md}
-     * — the same documentation and flags the deleted project-settings modal
-     * used — which also covers the live views ({@link ProjectSettingsViews}).
+     * - the same documentation and flags the deleted project-settings modal
+     * used - which also covers the live views ({@link ProjectSettingsViews}).
      */
     private JIPipeDesktopParameterFormPanel createPlainFormPanel(JIPipeParameterCollection sheet, SettingsScope scope) {
         boolean projectScope = scope == SettingsScope.PROJECT;
@@ -848,8 +848,8 @@ public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implem
 
     private void onSettingsChanged(JIPipeSettingsServiceComponent.SettingsChangedEvent event) {
         // The log is the audit of everything that changed since the tab opened:
-        // every scope, every origin. It is thread-safe, so recording here — on
-        // whatever thread mutated the document — is safe; the strip then
+        // every scope, every origin. It is thread-safe, so recording here - on
+        // whatever thread mutated the document - is safe; the strip then
         // re-reads the log on the EDT.
         changeLog.record(event, RawSettingsTableModel.truncate(RawSettingsTableModel.render(event.getNewValue())));
         SwingUtilities.invokeLater(this::refreshChangesStrip);

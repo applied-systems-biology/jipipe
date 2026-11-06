@@ -48,7 +48,7 @@ import java.util.function.Consumer;
  * backpressure kicks in only when the writer falls far behind). The writer thread drains the queue,
  * encodes records on the writer thread, appends them to the file, and flushes when 64 KB have been
  * buffered, after 250 ms, or on {@code finish()}/{@code close()}. The file is created lazily on the
- * first flushed record. Index and tail are updated on the writer thread (single writer — no
+ * first flushed record. Index and tail are updated on the writer thread (single writer - no
  * contention). Sequence numbers are assigned on submission, so submission order equals line order.
  * <p>
  * Read-back opens the file with a separate channel and tolerates a truncated final line
@@ -56,20 +56,20 @@ import java.util.function.Consumer;
  * <p>
  * Random-range reads ({@code readRecords(fromLine, ...)}) do not skip-scan from the file start:
  * the writer thread records a line→byte-offset checkpoint every {@link #CHECKPOINT_INTERVAL_LINES}
- * lines — the exact byte offset where the checkpointed line starts — and publishes it as an
+ * lines - the exact byte offset where the checkpointed line starts - and publishes it as an
  * immutable {@link CheckpointIndex} snapshot through a volatile field. Readers take one volatile
  * read and never observe a partially built index; the writer never blocks on readers. Lines
  * before the first checkpoint are scanned from the file start as before.
  * <p>
  * Batch notifications: the writer thread emits coalesced {@link JIPipeProgressLog.ProgressBatchEvent}s
- * — at most one per {@link #setCoalesceIntervalMillis(long) coalesce interval}, plus a guaranteed
+ * - at most one per {@link #setCoalesceIntervalMillis(long) coalesce interval}, plus a guaranteed
  * final batch when the store is closed (via {@link #finish(JIPipeProgressNodeState)} or
  * {@link #close()}). Listeners run inline on the writer thread and must not block; they must hop
  * to another thread for heavy work (e.g. Swing). The coalescer state lives in the writer thread
  * only; events are always emitted outside {@code submitLock} and {@code tailLock}.
  * <p>
  * <b>Read-only mode</b> ({@link JIPipeProgressLog#openReadOnly(Path)}): a private constructor
- * creates a mode of this class with no writer thread and a born-closed store — producer calls are
+ * creates a mode of this class with no writer thread and a born-closed store - producer calls are
  * dropped, {@code close()} is a no-op, the emitter never emits, and the file is opened for reading
  * only. A one-pass background scan at construction builds the checkpoint index and replays the
  * decoded records into the node index and tail ({@code applyScannedRecord}); the scan thread is
@@ -109,7 +109,7 @@ public class FileJIPipeProgressLog extends AbstractJIPipeProgressLog {
     private final Thread writerThread;
     private volatile boolean writerWaiting;
 
-    // Checkpoint index — the writer thread appends and publishes immutable snapshots; readers
+    // Checkpoint index - the writer thread appends and publishes immutable snapshots; readers
     // take one volatile read of the current snapshot (never blocked, never sees a partial index)
     private volatile CheckpointIndex checkpointIndex = CheckpointIndex.EMPTY;
 
@@ -121,7 +121,7 @@ public class FileJIPipeProgressLog extends AbstractJIPipeProgressLog {
     private long writtenBytes;
     private long lastCheckpointLine;
 
-    // Coalescer state — writer-thread only, never touched by producers (no synchronization needed)
+    // Coalescer state - writer-thread only, never touched by producers (no synchronization needed)
     private long lastEmitNanos;
     private long pendingFromLine;
     private long pendingToLine;
@@ -221,7 +221,7 @@ public class FileJIPipeProgressLog extends AbstractJIPipeProgressLog {
     }
 
     /**
-     * Returns the run UUID of a store file's head record (line 1) — the reopened root node's
+     * Returns the run UUID of a store file's head record (line 1) - the reopened root node's
      * metadata must equal the original's.
      *
      * @param file the completed NDJSON file
@@ -242,7 +242,7 @@ public class FileJIPipeProgressLog extends AbstractJIPipeProgressLog {
     }
 
     /**
-     * Reads one field of a store file's head record (line 1). Never throws — an unreadable or
+     * Reads one field of a store file's head record (line 1). Never throws - an unreadable or
      * malformed file yields {@code null} (the scan tolerates it the same way).
      *
      * @param file  the completed NDJSON file
@@ -268,7 +268,7 @@ public class FileJIPipeProgressLog extends AbstractJIPipeProgressLog {
                 }
             }
         } catch (IOException e) {
-            // Unreadable file — the scan will tolerate it too
+            // Unreadable file - the scan will tolerate it too
         }
         return null;
     }
@@ -276,7 +276,7 @@ public class FileJIPipeProgressLog extends AbstractJIPipeProgressLog {
     /**
      * The read-only reopen scan: one sequential pass over the file that tracks byte offsets
      * exactly, records a line→byte-offset checkpoint every {@link #CHECKPOINT_INTERVAL_LINES}
-     * lines, and replays every decoded record into the node index and tail — the same updates
+     * lines, and replays every decoded record into the node index and tail - the same updates
      * the writer thread performs for a live store, minus the file write. A truncated final line
      * is tolerated exactly like in {@link #readRecords(int, int)} (the scan stops serving records
      * there; earlier lines are unaffected). The scan never throws: an unreadable file leaves a
@@ -315,7 +315,7 @@ public class FileJIPipeProgressLog extends AbstractJIPipeProgressLog {
                 pos += read;
             }
             // A final line without a trailing newline (a truncated write): count and try to
-            // parse it — the same tolerance readRecords applies
+            // parse it - the same tolerance readRecords applies
             if (lineBuffer.size() > 0) {
                 lineNo++;
                 if (lineNo - lastCheckpointLine >= CHECKPOINT_INTERVAL_LINES) {
@@ -335,7 +335,7 @@ public class FileJIPipeProgressLog extends AbstractJIPipeProgressLog {
 
     /**
      * Decodes one scanned line and replays the record into the index and tail. Blank, corrupt,
-     * and unknown-typed lines are skipped (forward compatibility — the same tolerance
+     * and unknown-typed lines are skipped (forward compatibility - the same tolerance
      * {@link #readRecords(int, int)} applies).
      *
      * @param mapper     the object mapper
@@ -363,7 +363,7 @@ public class FileJIPipeProgressLog extends AbstractJIPipeProgressLog {
     protected void writeRecord(long line, JIPipeProgressRecord record) {
         try {
             // The record is encoded to bytes here (instead of via a Writer) so that the running
-            // byte offset — and with it the checkpoint index — stays byte-exact
+            // byte offset - and with it the checkpoint index - stays byte-exact
             byte[] bytes = JsonUtils.toJsonString(record).getBytes(StandardCharsets.UTF_8);
             // Checkpoint before the write: writtenBytes is the exact byte offset where this line
             // starts. The checkpoint stays valid even if this write fails (the reader tolerates
@@ -405,7 +405,7 @@ public class FileJIPipeProgressLog extends AbstractJIPipeProgressLog {
         }
         List<JIPipeProgressRecord> result = new ArrayList<>();
         ObjectMapper mapper = JsonUtils.getObjectMapper();
-        // Open a separate channel — never the writer's stream
+        // Open a separate channel - never the writer's stream
         try (FileChannel channel = FileChannel.open(file, StandardOpenOption.READ);
              BufferedReader reader = new BufferedReader(Channels.newReader(channel, StandardCharsets.UTF_8), READ_BUFFER_CHARS)) {
             long startLine = Math.max(fromLine, 1);
@@ -431,7 +431,7 @@ public class FileJIPipeProgressLog extends AbstractJIPipeProgressLog {
                     try {
                         node = mapper.readTree(line);
                     } catch (JsonProcessingException e) {
-                        // Truncated or corrupt line (typically the final line) — stop at the last parseable line
+                        // Truncated or corrupt line (typically the final line) - stop at the last parseable line
                         break;
                     }
                     JIPipeProgressRecord record = parseRecord(mapper, node);
@@ -451,7 +451,7 @@ public class FileJIPipeProgressLog extends AbstractJIPipeProgressLog {
 
     @Override
     protected void walkRecords(Consumer<JIPipeProgressRecord> recordConsumer) {
-        // Stream the file in pages — bounded memory, independent of the total record count
+        // Stream the file in pages - bounded memory, independent of the total record count
         int fromLine = 1;
         while (true) {
             List<JIPipeProgressRecord> page = readRecords(fromLine, WALK_PAGE_SIZE);
@@ -498,7 +498,7 @@ public class FileJIPipeProgressLog extends AbstractJIPipeProgressLog {
 
     /**
      * Maps one parsed record line to a record by its {@code t} discriminator. The field serializes
-     * last in the line, so lines must be parsed with Jackson — never by string splitting.
+     * last in the line, so lines must be parsed with Jackson - never by string splitting.
      * <p>
      * Package-private: also serves {@link JIPipeProgressLog#renderFile(Path, JIPipeLogLevel, Consumer)},
      * which renders a store file that outlived its store instance.
@@ -650,7 +650,7 @@ public class FileJIPipeProgressLog extends AbstractJIPipeProgressLog {
 
     /**
      * Emits and clears the pending batch summary. Called on the writer thread while holding no
-     * lock — the event is delivered synchronously to the listeners on this thread.
+     * lock - the event is delivered synchronously to the listeners on this thread.
      *
      * @param finalBatch whether this is the guaranteed final batch
      */
@@ -795,7 +795,7 @@ public class FileJIPipeProgressLog extends AbstractJIPipeProgressLog {
 
         /**
          * Returns a snapshot with one more checkpoint. The arrays are copied (append-only
-         * immutable snapshots) — one copy per {@link #CHECKPOINT_INTERVAL_LINES} records is
+         * immutable snapshots) - one copy per {@link #CHECKPOINT_INTERVAL_LINES} records is
          * negligible.
          *
          * @param line   the 1-based line number the new checkpoint covers

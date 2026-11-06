@@ -108,7 +108,7 @@ public class JIPipeServiceDefaultInitializer extends JIPipeServiceInitializer {
         // Re-read the extension settings AFTER the profile upgrades AND the
         // settings migration: both rewrote the settings file, and
         // `extensionSettings` is consumed by the pre-activation checks below
-        // (isIgnorePreActivationChecks, isValidateNodeTypes) — reading it
+        // (isIgnorePreActivationChecks, isValidateNodeTypes) - reading it
         // before the migration made those decisions on defaults instead of the
         // user's values. Nothing between the first read (above) and this point
         // consumes it, so this is a single, correct re-read.
@@ -406,7 +406,7 @@ public class JIPipeServiceDefaultInitializer extends JIPipeServiceInitializer {
 
 
         // Push progress into log (the entry renders the initialization store's bounded tail
-        // on demand — the initialization store is not file-backed)
+        // on demand - the initialization store is not file-backed)
         JIPipeDesktopRunnableLogsCollection.getInstance().pushToLog(new JIPipeRunnableLogEntry(getProgressInfo(), "JIPipe initialization", true));
 
         // Mark log as read
@@ -427,7 +427,7 @@ public class JIPipeServiceDefaultInitializer extends JIPipeServiceInitializer {
      * {@link JIPipeInitializationException}: the legacy files may already have
      * been moved into {@code settings-migration-backup/}, and a later save
      * would write a new-format {@code settings.json} from the (empty or
-     * partial) document — after which {@code needsMigration} is false forever
+     * partial) document - after which {@code needsMigration} is false forever
      * and the user's values would sit only in the backup. Continuing would
      * therefore silently clear the user's settings. A carry-over failure is
      * not load-bearing (it only recovers unknown blocks from sibling

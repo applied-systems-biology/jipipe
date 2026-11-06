@@ -179,7 +179,7 @@ public class JIPipeDesktopProgressLoggerPanel extends JIPipeDesktopWorkbenchPane
             subscribeToSource(source);
 
             // Populate existing log entries if requested. File-backed stores are re-read from the
-            // record tail on every open (no cached view — re-opening shows the current state);
+            // record tail on every open (no cached view - re-opening shows the current state);
             // handles on non-persistent stores keep the (cached) getLog() view.
             if (populateExistingLog) {
                 JIPipeProgressLog store = progressInfo.getStore();

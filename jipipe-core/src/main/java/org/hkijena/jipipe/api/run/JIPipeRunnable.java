@@ -243,7 +243,7 @@ public interface JIPipeRunnable extends Runnable {
 
     /**
      * Generated when an {@link JIPipeRunnableWorker} reports progress. The payload is ONE coalesced
-     * batch ({@link JIPipeProgressLog.ProgressBatchEvent}) of the run's progress store — never a
+     * batch ({@link JIPipeProgressLog.ProgressBatchEvent}) of the run's progress store - never a
      * per-record event. The event is emitted on the store's writer thread; listeners must not
      * block and must hop to the EDT ({@code SwingUtilities.invokeLater} or a
      * {@code javax.swing.Timer}) for UI work.

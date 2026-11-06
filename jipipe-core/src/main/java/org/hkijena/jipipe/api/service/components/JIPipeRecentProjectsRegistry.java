@@ -176,8 +176,8 @@ public final class JIPipeRecentProjectsRegistry extends JIPipeServiceComponent {
      * Since the startup profile migration converts {@code recent-projects.txt}
      * into {@code state:recent-projects} (and moves the file into the backup
      * directory), this is normally a no-op. It still works if a legacy
-     * {@code recent-projects.txt} — or a 5.x {@code settings.json} holding the
-     * old {@code org.hkijena.jipipe:projects/recent-projects} list — exists:
+     * {@code recent-projects.txt} - or a 5.x {@code settings.json} holding the
+     * old {@code org.hkijena.jipipe:projects/recent-projects} list - exists:
      * its entries are appended, and the legacy file is only removed once its
      * content is persisted in the document.
      */

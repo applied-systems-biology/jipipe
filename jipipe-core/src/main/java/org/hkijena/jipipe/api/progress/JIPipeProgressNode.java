@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * Light metadata of one node inside the progress tree, as tracked by the progress store's node index.
  * <p>
  * Nodes correspond to {@code beginNode()}/resolve calls, not log lines, so the index stays small even for
- * runs with millions of records. Messages never live here — they are records in the NDJSON log. Record
+ * runs with millions of records. Messages never live here - they are records in the NDJSON log. Record
  * attribution: a record with a node {@code id} ({@code n}, {@code N}, {@code l}, {@code p}, {@code e})
  * is attributed to that node's range ({@link #getFirstLine()}, {@link #getLastLine()},
  * {@link #getRecordCount()}).

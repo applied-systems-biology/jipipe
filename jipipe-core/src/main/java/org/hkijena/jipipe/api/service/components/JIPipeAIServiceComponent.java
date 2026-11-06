@@ -53,7 +53,7 @@ public class JIPipeAIServiceComponent extends JIPipeServiceComponent {
      * <p>
      * Built on a file-backed store in the global temporary base
      * ({@link JIPipeProgressLog#resolveStorageBase()}; the store's NDJSON file is created lazily by
-     * the writer thread on the first flushed record — no disk cost until records flow), so the
+     * the writer thread on the first flushed record - no disk cost until records flow), so the
      * monitor's embedding log page receives coalesced batch events and can re-read the record tail
      * on every open. A silent store would be dead UI: it never emits batches. The handle is created
      * directly on the store (not via {@code setStorageBase}), which is for adopting into an

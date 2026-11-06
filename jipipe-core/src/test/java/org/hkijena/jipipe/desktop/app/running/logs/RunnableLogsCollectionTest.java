@@ -40,7 +40,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Pure-JVM tests for the Tools &gt; Logs collection file lifecycle: eviction over the log limit
  * deletes the evicted entry's NDJSON data file (the disk bound), clearing the collection deletes
- * all data files, and rendering an entry never throws — a missing file renders the placeholder
+ * all data files, and rendering an entry never throws - a missing file renders the placeholder
  * line. No Swing component is instantiated.
  * <p>
  * Eviction is driven through the package-private {@code insertEntry(entry, limit)} helper:
@@ -53,7 +53,7 @@ class RunnableLogsCollectionTest {
     Path tmp;
 
     /**
-     * Creates an entry whose data file is a real, finished NDJSON store file — mirroring the
+     * Creates an entry whose data file is a real, finished NDJSON store file - mirroring the
      * worker, which finishes and closes the store before the log entry is created.
      */
     private JIPipeRunnableLogEntry createEntryWithData(String label) {
@@ -69,7 +69,7 @@ class RunnableLogsCollectionTest {
 
             @Override
             public void run() {
-                // Never executed — the store is finished before the entry is created
+                // Never executed - the store is finished before the entry is created
             }
         };
         run.getProgressInfo().setStore(store);
@@ -134,7 +134,7 @@ class RunnableLogsCollectionTest {
 
     @Test
     void silentStoreEntryRendersFromStoreTail() {
-        // Non-persistent stores (silent/stdout) have no file — entries render from the store's
+        // Non-persistent stores (silent/stdout) have no file - entries render from the store's
         // bounded in-memory tail instead
         JIPipeProgressLog silent = JIPipeProgressLog.silent();
         silent.log(silent.getRootNodeId(), JIPipeLogLevel.INFO, "tail content");
@@ -147,7 +147,7 @@ class RunnableLogsCollectionTest {
 
     @Test
     void entryWithoutDataRendersPlaceholder() {
-        // A silent store without records renders nothing — the entry-level render must still
+        // A silent store without records renders nothing - the entry-level render must still
         // produce the placeholder line (never an empty view, never an exception)
         JIPipeRunnableLogEntry entry = new JIPipeRunnableLogEntry(new JIPipeProgressInfo(JIPipeProgressLog.silent()), "empty", true);
         assertNull(entry.getPath());
@@ -171,7 +171,7 @@ class RunnableLogsCollectionTest {
     @Test
     void debugOnlyEntryRendersBelowLevelHint() {
         // A run whose records are all below INFO (DEBUG-only logging): the data file exists with
-        // data — the entry must say so instead of claiming the data was removed
+        // data - the entry must say so instead of claiming the data was removed
         Path file = tmp.resolve(UUID.randomUUID() + ".ndjson");
         JIPipeProgressLog store = JIPipeProgressLog.create(file, UUID.randomUUID().toString(), "debug-only");
         store.log(store.getRootNodeId(), JIPipeLogLevel.DEBUG, "debug-only line");
@@ -184,7 +184,7 @@ class RunnableLogsCollectionTest {
 
             @Override
             public void run() {
-                // Never executed — the store is finished before the entry is created
+                // Never executed - the store is finished before the entry is created
             }
         };
         run.getProgressInfo().setStore(store);
@@ -192,14 +192,14 @@ class RunnableLogsCollectionTest {
         List<String> lines = new ArrayList<>();
         entry.renderText(lines::add);
         assertEquals(1, lines.size(), "a below-INFO-only entry renders exactly the hint line");
-        assertEquals("[1 records below INFO level — enable debug in the progress panel]", lines.get(0),
+        assertEquals("[1 records below INFO level: enable debug in the progress panel]", lines.get(0),
                 "the hint names the probed count and the level");
     }
 
     @Test
     void fileWithoutRenderableRecordsStillRendersPlaceholder() {
         // A data file that exists but holds no renderable records at any level (only progress
-        // records): the probe finds nothing renderable — the genuine no-data placeholder applies
+        // records): the probe finds nothing renderable - the genuine no-data placeholder applies
         Path file = tmp.resolve(UUID.randomUUID() + ".ndjson");
         JIPipeProgressLog store = JIPipeProgressLog.create(file, UUID.randomUUID().toString(), "progress-only");
         store.progress(store.getRootNodeId(), 1, 10);
@@ -212,7 +212,7 @@ class RunnableLogsCollectionTest {
 
             @Override
             public void run() {
-                // Never executed — the store is finished before the entry is created
+                // Never executed - the store is finished before the entry is created
             }
         };
         run.getProgressInfo().setStore(store);

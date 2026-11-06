@@ -201,7 +201,7 @@ public class InstrumentationRunEngine {
      * Extracts the {@code job_progress} message of a coalesced batch: the last non-empty rendered
      * line of the batch's records. The documented messages:
      * <ul>
-     *     <li>An empty final batch ({@code fromLine() > toLine()} — the run-complete convention)
+     *     <li>An empty final batch ({@code fromLine() > toLine()} - the run-complete convention)
      *     maps to {@code "Done"}.</li>
      *     <li>A non-final batch without rendered lines maps to {@code null} (no progress update is
      *     sent).</li>

@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Tests for random-range reads ({@code readRecords(fromLine, limit)}) of the file-backed progress
  * store: every range must return exactly the records an independent full scan of the NDJSON file
- * returns — early ranges before the first checkpoint, ranges at checkpoint boundaries, mid-file
+ * returns - early ranges before the first checkpoint, ranges at checkpoint boundaries, mid-file
  * and near-end ranges, and ranges over a file with a truncated final line. The write side records
  * line→byte-offset checkpoints so reads can seek instead of skip-scanning from the file start
  * (ruling R18); these tests pin that the seek path stays byte-exact.
@@ -44,7 +44,7 @@ class FileJIPipeProgressLogReadTest {
 
     /**
      * Reads and parses all records of an NDJSON file independently of the store's own reader.
-     * Only for complete files — a truncated final line makes the raw parse throw.
+     * Only for complete files - a truncated final line makes the raw parse throw.
      */
     private static List<JIPipeProgressRecord> readWholeFile(Path file) throws IOException {
         ObjectMapper mapper = JsonUtils.getObjectMapper();
@@ -142,7 +142,7 @@ class FileJIPipeProgressLogReadTest {
         // Past the end
         assertTrue(store.readRecords(26_000, 10).isEmpty(), "no records past the end of the file");
 
-        // The level-filtered overload pages through readRecords — it must stay consistent with
+        // The level-filtered overload pages through readRecords - it must stay consistent with
         // an independent filter over the full-scan reference
         List<JIPipeProgressRecord> expectedInfo = reference.stream()
                 .skip(15_000 - 1)
@@ -173,7 +173,7 @@ class FileJIPipeProgressLogReadTest {
         store.finish(JIPipeProgressNodeState.OK);
         store.close();
 
-        // Cut the final line (the "s" record) in half — the last checkpoint covers line 10,000,
+        // Cut the final line (the "s" record) in half - the last checkpoint covers line 10,000,
         // well before the truncation point
         List<String> lines = Files.readAllLines(file, StandardCharsets.UTF_8);
         assertEquals(12_004, lines.size());
@@ -184,7 +184,7 @@ class FileJIPipeProgressLogReadTest {
         // Reference: the store's scan-from-start path (line 1 has no covering checkpoint), which
         // tolerates the truncated final line; the independent parser cannot read this file
         List<JIPipeProgressRecord> reference = store.readRecords(1, 20_000);
-        assertEquals(12_003, reference.size(), "complete records only — the truncated line is dropped");
+        assertEquals(12_003, reference.size(), "complete records only: the truncated line is dropped");
         assertEquals("N", reference.get(reference.size() - 1).type());
 
         // Ranges that seek to the checkpoint at line 10,000 and read past the truncation point
@@ -196,7 +196,7 @@ class FileJIPipeProgressLogReadTest {
     @Test
     void smallFileScansFromStartWithoutCheckpoints() throws Exception {
         Path file = tmp.resolve("small.ndjson");
-        // 1 + 4 + 487 + 4 + 1 = 497 lines — fewer lines than the checkpoint interval
+        // 1 + 4 + 487 + 4 + 1 = 497 lines - fewer lines than the checkpoint interval
         FileJIPipeProgressLog store = writeMixedRecords(file, 487);
         List<JIPipeProgressRecord> reference = readWholeFile(file);
         assertEquals(497, reference.size());
@@ -240,7 +240,7 @@ class FileJIPipeProgressLogReadTest {
 
     /**
      * Computes the byte offset where {@code line} (1-based) starts, by counting the UTF-8 bytes
-     * of the preceding lines — independently of the store's own bookkeeping.
+     * of the preceding lines - independently of the store's own bookkeeping.
      */
     private static long byteOffsetOfLineStart(Path file, int line) throws IOException {
         byte[] bytes = Files.readAllBytes(file);

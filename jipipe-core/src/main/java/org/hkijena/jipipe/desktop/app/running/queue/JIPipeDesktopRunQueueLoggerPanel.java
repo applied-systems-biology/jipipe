@@ -21,7 +21,7 @@ import java.awt.event.ItemListener;
  * Unified component that displays the status of a {@link JIPipeRunnableExecutor}.
  * <p>
  * The flat log was replaced by the v2 progress tree panel
- * ({@link JIPipeDesktopProgressTreePanel} — the Swing implementation of the approved mockup
+ * ({@link JIPipeDesktopProgressTreePanel} - the Swing implementation of the approved mockup
  * {@code ui/v2-progress-panel.html}): node/phase rows with inline progress, expanded record views,
  * level filter, and a footer with the running path, live progress, record count, and data file.
  * The old flat log remains in use by the AI monitor ({@code JIPipeDesktopProgressLoggerPanel}).
@@ -220,7 +220,7 @@ public class JIPipeDesktopRunQueueLoggerPanel extends JIPipeDesktopWorkbenchPane
     /**
      * Forwards ONE coalesced batch of a run's progress store to the tree panel. Runs on the store's
      * writer thread; all reads and UI updates are handled inside the tree panel (no per-record work
-     * here). The empty final batch (fromLine &gt; toLine) is forwarded as the refresh signal — the
+     * here). The empty final batch (fromLine &gt; toLine) is forwarded as the refresh signal - the
      * run's Finished/Interrupted events set the terminal state. Batches of other runs are ignored
      * when a target run is set (run dialogs show their own run).
      */

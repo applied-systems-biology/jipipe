@@ -34,8 +34,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests for the read-only reopen ({@link JIPipeProgressLog#openReadOnly(java.nio.file.Path)}): a
- * reopened store must be indistinguishable from the writer-fed store that wrote the file — same
- * node tree, same record reads (the checkpoint seek path must be byte-exact), same text render —
+ * reopened store must be indistinguishable from the writer-fed store that wrote the file - same
+ * node tree, same record reads (the checkpoint seek path must be byte-exact), same text render -
  * while never mutating the file, never emitting batches, and dropping producer calls (the store
  * is born closed). The scan must also tolerate a truncated final line exactly like a read.
  */
@@ -86,7 +86,7 @@ class FileJIPipeProgressLogReadOnlyTest {
 
     /**
      * Asserts that the reopened store's node with the given id is a faithful copy of the
-     * original's — all metadata the store's node index tracks.
+     * original's - all metadata the store's node index tracks.
      */
     private static void assertNodeEquals(JIPipeProgressNode expected, JIPipeProgressNode actual, int id) {
         assertNotNull(expected, "the original store must have node " + id);
@@ -134,7 +134,7 @@ class FileJIPipeProgressLogReadOnlyTest {
         }
         assertNull(reopened.getNode(original.nextNodeId()), "no node past the allocated ids");
 
-        // Record reads are equal — full range and the checkpoint boundaries (lines 10,000 and
+        // Record reads are equal - full range and the checkpoint boundaries (lines 10,000 and
         // 20,000 must be served by the reopened store's own seek index)
         List<JIPipeProgressRecord> reference = original.readRecords(1, 100_000);
         assertTrue(reference.size() > 20_000, "the generated stream must exercise the checkpoint path");
@@ -172,7 +172,7 @@ class FileJIPipeProgressLogReadOnlyTest {
         assertEquals(size, attributesAfter.size(), "the reopen must not change the file size");
         assertEquals(mtime, attributesAfter.lastModifiedTime(), "the reopen must not change the file mtime");
 
-        // close() is a no-op — the file stays untouched and the store stays readable
+        // close() is a no-op - the file stays untouched and the store stays readable
         reopened.close();
         BasicFileAttributes attributesAfterClose = Files.readAttributes(file, BasicFileAttributes.class);
         assertEquals(size, attributesAfterClose.size());
@@ -203,7 +203,7 @@ class FileJIPipeProgressLogReadOnlyTest {
         reopened.nodeFinished(reopened.getRootNodeId(), JIPipeProgressNodeState.OK);
         int strayNode = reopened.beginNode(reopened.getRootNodeId(), "must be dropped", JIPipeProgressNodeKind.ITEM);
         reopened.finish(JIPipeProgressNodeState.OK);
-        // A dropped beginNode returns a distinct, unused id (the closed-store contract) — the id
+        // A dropped beginNode returns a distinct, unused id (the closed-store contract) - the id
         // is burned but no node is registered
         assertTrue(strayNode >= nodeCount, "a dropped beginNode returns an unused id");
         assertNull(reopened.getNode(strayNode), "no node was registered");
@@ -246,10 +246,10 @@ class FileJIPipeProgressLogReadOnlyTest {
         FileTime mtime = Files.getLastModifiedTime(file);
         JIPipeProgressLog reopened = JIPipeProgressLog.openReadOnly(file);
 
-        // The original (writer-fed) store reads the file directly and keeps its in-memory tail —
+        // The original (writer-fed) store reads the file directly and keeps its in-memory tail -
         // the reopened store must match both
         assertEquals(original.readRecords(1, 100_000), reopened.readRecords(1, 100_000),
-                "complete records only — the truncated line is dropped");
+                "complete records only: the truncated line is dropped");
         assertEquals(original.readRecords(10_500, 2_000), reopened.readRecords(10_500, 2_000),
                 "a checkpointed read over a truncated file returns the complete prefix");
         assertEquals(original.readRecent(50), reopened.readRecent(50));

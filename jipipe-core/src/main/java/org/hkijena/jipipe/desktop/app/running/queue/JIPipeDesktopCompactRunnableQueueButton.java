@@ -154,7 +154,7 @@ public class JIPipeDesktopCompactRunnableQueueButton extends JButton implements 
 
     /**
      * EDT: refreshes the displayed state when a batch arrived since the last refresh. The batch
-     * listeners only set the dirty flag — all UI updates happen here, at most one per 500 ms.
+     * listeners only set the dirty flag - all UI updates happen here, at most one per 500 ms.
      */
     private void refreshIfDirty() {
         if (!progressDirty) {
@@ -182,7 +182,7 @@ public class JIPipeDesktopCompactRunnableQueueButton extends JButton implements 
                 String chain = JIPipeProgressNodeUtils.labelChain(store, node.getId());
                 setToolTipText(chain.isEmpty()
                         ? node.getProgress() + "/" + node.getMaxProgress()
-                        : chain + " — " + node.getProgress() + "/" + node.getMaxProgress());
+                        : chain + " - " + node.getProgress() + "/" + node.getMaxProgress());
             } else {
                 lastProgress = 0;
                 lastMaxProgress = 0;
@@ -226,7 +226,7 @@ public class JIPipeDesktopCompactRunnableQueueButton extends JButton implements 
 
     /**
      * Triggered when a worker reports progress. Runs on the store's writer thread: only the dirty
-     * flag and the tracked node are set — the refresh timer (EDT) does the UI work.
+     * flag and the tracked node are set - the refresh timer (EDT) does the UI work.
      */
     @Override
     public void onRunnableProgress(JIPipeRunnable.ProgressEvent event) {

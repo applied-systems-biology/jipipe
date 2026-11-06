@@ -2347,7 +2347,7 @@ public class UIUtils {
      * bundled JDK's {@code SunGraphicsEnvironment#getScaleFactor} accepts:
      * plain numbers (e.g. {@code 2}, {@code 1.5}), percentages (e.g.
      * {@code 150%}), multipliers (e.g. {@code 2x}) and dpi values (e.g.
-     * {@code 192dpi}) — users can edit the tomls by hand. The auto markers
+     * {@code 192dpi}) - users can edit the tomls by hand. The auto markers
      * ({@code true}, empty) and unparsable values yield {@code null}: the
      * automatic (system) scale applies.
      *

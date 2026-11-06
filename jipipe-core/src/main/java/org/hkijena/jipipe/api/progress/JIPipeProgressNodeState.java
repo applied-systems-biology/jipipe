@@ -17,7 +17,7 @@ package org.hkijena.jipipe.api.progress;
  * State of a node inside the progress tree.
  * <p>
  * The enum NAMES are not the wire contract: the NDJSON wire literals are produced by the explicit
- * mappings in {@link AbstractJIPipeProgressLog} — {@code mapNodeStateToWire} writes
+ * mappings in {@link AbstractJIPipeProgressLog} - {@code mapNodeStateToWire} writes
  * {@code ok|fail|cancel} into the {@code s} field of {@code N} records, and
  * {@code mapRunStateToWire} writes {@code running|finished|failed|cancelled} into the {@code s}
  * field of {@code s} records. Only those literals and the mapping methods are part of the

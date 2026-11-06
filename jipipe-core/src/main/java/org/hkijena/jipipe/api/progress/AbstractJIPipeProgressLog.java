@@ -31,9 +31,9 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 
 /**
- * Base class for {@link JIPipeProgressLog} implementations. Owns all tree logic — the node index,
+ * Base class for {@link JIPipeProgressLog} implementations. Owns all tree logic - the node index,
  * node id allocation, record sequence numbers, the bounded tail of renderable records, and the
- * coalescer plumbing — exactly once. Implementations differ only in the sink
+ * coalescer plumbing - exactly once. Implementations differ only in the sink
  * ({@link #writeRecord(long, JIPipeProgressRecord)}) and in how records are handed to it
  * ({@link #enqueue(long, JIPipeProgressRecord)}).
  * <p>
@@ -46,7 +46,7 @@ import java.util.function.Consumer;
  * default implementation of {@link #enqueue(long, JIPipeProgressRecord)}, or on the writer thread for
  * file-backed stores.
  * <p>
- * The tail holds the non-structural records ({@code l}, {@code p}, {@code e}, {@code w}) only —
+ * The tail holds the non-structural records ({@code l}, {@code p}, {@code e}, {@code w}) only -
  * structural records ({@code head}, {@code n}, {@code N}, {@code s}) are excluded. It is bounded
  * by the record-count limit (default 8,192) or by ~8 MB of message text, whichever binds first;
  * eviction removes the oldest entries. Records with
@@ -64,7 +64,7 @@ public abstract class AbstractJIPipeProgressLog implements JIPipeProgressLog {
 
     /**
      * Approximate upper bound for the message text retained by the tail, in characters (~8 MB;
-     * one char counts as one byte — the bound is approximate by design). The tail is bounded by
+     * one char counts as one byte - the bound is approximate by design). The tail is bounded by
      * {@link #DEFAULT_TAIL_LIMIT} or by this cap, whichever binds first.
      */
     private static final long TAIL_TEXT_LIMIT_CHARS = 8L * 1024 * 1024;
@@ -259,7 +259,7 @@ public abstract class AbstractJIPipeProgressLog implements JIPipeProgressLog {
     }
 
     // ---------------------------------------------------------------------
-    // Tree logic — applied by the thread that owns the sink
+    // Tree logic - applied by the thread that owns the sink
     // ---------------------------------------------------------------------
 
     /**
@@ -510,7 +510,7 @@ public abstract class AbstractJIPipeProgressLog implements JIPipeProgressLog {
      * Emits a coalesced batch event to the subscribers of {@link #getBatchEventEmitter()}. Called
      * by implementations that own a writer thread; the event is delivered synchronously to the
      * listeners on the calling thread. Must never be called while holding {@link #tailLock} or
-     * {@link #submitLock} — listeners run inline and must not block.
+     * {@link #submitLock} - listeners run inline and must not block.
      *
      * @param event the event
      */
@@ -660,7 +660,7 @@ public abstract class AbstractJIPipeProgressLog implements JIPipeProgressLog {
 
     /**
      * Terminates the root node of a read-only reopen whose file holds no parseable run-status
-     * record — the writer was killed before it could flush the terminal record. A writer-fed
+     * record - the writer was killed before it could flush the terminal record. A writer-fed
      * store's root state is set in memory by {@code finish()} and is not derivable from the file;
      * the reopen maps the absent status to CANCELLED so that consumers never render a dead run
      * as live (the progress panel spins while the root is RUNNING).
@@ -672,7 +672,7 @@ public abstract class AbstractJIPipeProgressLog implements JIPipeProgressLog {
     }
 
     /**
-     * Applies one record decoded by the read-only reopen scan. Called on the scanning thread —
+     * Applies one record decoded by the read-only reopen scan. Called on the scanning thread -
      * the thread that owns the index while the scan runs. Compared to
      * {@link #applyRecord(long, JIPipeProgressRecord)}, the scan must first <em>create</em> the
      * nodes it meets (a writer-fed store creates them on the producer thread via
@@ -731,7 +731,7 @@ public abstract class AbstractJIPipeProgressLog implements JIPipeProgressLog {
 
     /**
      * Maps the {@code k} field of an {@code n} record back to a node kind. Unknown names are
-     * mapped to {@code null} (the kind is left unset) — the wire contract may gain kinds that an
+     * mapped to {@code null} (the kind is left unset) - the wire contract may gain kinds that an
      * older reader does not know.
      *
      * @param wire the wire literal
@@ -965,7 +965,7 @@ public abstract class AbstractJIPipeProgressLog implements JIPipeProgressLog {
 
         private String[] chainFromIndex(int nodeId) {
             // File-only renders (see JIPipeProgressLog.renderFile) walk all records and have no
-            // node index — an unresolvable node contributes no chain segment
+            // node index - an unresolvable node contributes no chain segment
             if (store == null) {
                 return new String[0];
             }

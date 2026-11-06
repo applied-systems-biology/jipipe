@@ -47,7 +47,7 @@ import java.util.function.Consumer;
  * <p>
  * Wire contract: the sequence number of a record is its line number (1-based; the head record is
  * line 1). The run's root node ({@code id} 1) is created automatically and is implied by the head
- * record — it has no {@code n} record; children of the root reference it via {@code p=0}. Readers
+ * record - it has no {@code n} record; children of the root reference it via {@code p=0}. Readers
  * tolerate a truncated final line (writer killed mid-flush) and unknown record types/fields.
  */
 public interface JIPipeProgressLog extends AutoCloseable {
@@ -76,7 +76,7 @@ public interface JIPipeProgressLog extends AutoCloseable {
     /**
      * Creates a file-backed store that writes NDJSON records via a single async writer thread.
      * The root node is created automatically. The file is created lazily by the writer thread on the
-     * first flushed record — a run that never records anything creates no file.
+     * first flushed record - a run that never records anything creates no file.
      *
      * @param file     the NDJSON file (typically named {@code <run-uuid>.ndjson} inside a logs base)
      * @param runUuid  the run UUID (written into the head record)
@@ -97,7 +97,7 @@ public interface JIPipeProgressLog extends AutoCloseable {
      * from the attributed records). Together with
      * the file's decode, the scan costs about one read of the file: opening a ~GB log takes seconds,
      * once, not per interaction. The initial catch-up scan of the progress tree panel issues a
-     * second full read (that one decodes nothing — it only counts categories), so a very large
+     * second full read (that one decodes nothing - it only counts categories), so a very large
      * log opens with about two file reads' worth of I/O; the panel's paged/virtual detail reads
      * after that are checkpointed seeks.
      * <p>
@@ -108,10 +108,10 @@ public interface JIPipeProgressLog extends AutoCloseable {
      * ...) are dropped exactly like on a closed writer-fed store, and {@link #close()} only
      * releases the background scan (idempotent; reads keep working afterwards).
      * <p>
-     * A missing or unreadable file yields an empty view rather than an exception — the caller
+     * A missing or unreadable file yields an empty view rather than an exception - the caller
      * surfaces the missing data (see {@code JIPipeRunnableLogEntry#DATA_UNAVAILABLE_LINE}).
      * A file without a parseable run-status record (a writer killed before the final flush)
-     * reopens with the root node's state CANCELLED — a dead run must never render as live.
+     * reopens with the root node's state CANCELLED - a dead run must never render as live.
      *
      * @param file the NDJSON file of a {@link #create(Path, String, String)} store
      * @return the read-only store view
@@ -330,7 +330,7 @@ public interface JIPipeProgressLog extends AutoCloseable {
      * <li>An error record ({@code e}) renders as {@code [v/mx] <chain> | <class>: <message>}
      *     followed by one line per stack trace line, indented two spaces.</li>
      * <li>A notification record ({@code w}) renders as {@code @ <heading>: <description>}
-     *     (run-level — no prefix, no chain).</li>
+     *     (run-level - no prefix, no chain).</li>
      * <li>Head, node ({@code n}), node-finished ({@code N}), and run-status ({@code s}) records
      *     render nothing.</li>
      * <li>Multi-line messages hand each continuation line to the sink as its own line.</li>
@@ -338,7 +338,7 @@ public interface JIPipeProgressLog extends AutoCloseable {
      * <p>
      * File-backed stores stream the file in ~10,000-record pages (bounded memory; a store can be
      * rendered while the run is active, reflecting the flushed records, and after the run).
-     * Non-persistent stores render what the tail holds — tail-bounded, never throws; chain labels
+     * Non-persistent stores render what the tail holds - tail-bounded, never throws; chain labels
      * are resolved from the node index when the tail holds no {@code n} records.
      *
      * @param minLevel the minimum level of log records to render
@@ -401,7 +401,7 @@ public interface JIPipeProgressLog extends AutoCloseable {
                 try {
                     node = mapper.readTree(line);
                 } catch (JsonProcessingException e) {
-                    // Truncated or corrupt line (typically the final line) — stop at the last parseable line
+                    // Truncated or corrupt line (typically the final line) - stop at the last parseable line
                     break;
                 }
                 JIPipeProgressRecord record = FileJIPipeProgressLog.parseRecord(mapper, node);
@@ -429,7 +429,7 @@ public interface JIPipeProgressLog extends AutoCloseable {
 
     /**
      * Sets the maximum number of renderable records kept in the tail. Default 8192. Independently of
-     * this limit, the tail retains at most ~8 MB of message text — whichever bound binds first.
+     * this limit, the tail retains at most ~8 MB of message text - whichever bound binds first.
      *
      * @param records the tail limit
      */
@@ -440,7 +440,7 @@ public interface JIPipeProgressLog extends AutoCloseable {
      * <p>
      * File-backed stores emit coalesced batches on their writer thread: at most one event per
      * {@link #setCoalesceIntervalMillis(long) coalesce interval} plus a guaranteed final batch
-     * (flagged {@code finalBatch()}) when the store is closed — also on
+     * (flagged {@code finalBatch()}) when the store is closed - also on
      * {@link #finish(JIPipeProgressNodeState)} arriving inside the interval window. Batches
      * partition the written lines contiguously (no gaps). Listeners run inline on the writer
      * thread and must not block; heavy work (e.g. UI updates) must hop to another thread.
@@ -455,7 +455,7 @@ public interface JIPipeProgressLog extends AutoCloseable {
      * final batch at run end. Consumers never receive per-record events on the hot path.
      * <p>
      * Empty-final-batch convention: {@code fromLine() > toLine()} marks the guaranteed final batch
-     * of a run whose records were all covered by earlier batches — the run is complete and no new
+     * of a run whose records were all covered by earlier batches - the run is complete and no new
      * records are attached (consumers must not render the range).
      */
     class ProgressBatchEvent extends AbstractJIPipeEvent {

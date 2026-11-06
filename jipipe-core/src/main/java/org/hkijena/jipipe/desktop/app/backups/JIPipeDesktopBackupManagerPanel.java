@@ -73,7 +73,7 @@ public class JIPipeDesktopBackupManagerPanel extends JIPipeDesktopWorkbenchPanel
 
     /**
      * Cached total size of the unique objects in the content-addressed store,
-     * recomputed once per collect cycle (off the EDT — it is a full recursive
+     * recomputed once per collect cycle (off the EDT - it is a full recursive
      * walk of {@code store/objects/} that would freeze the panel on a NAS path
      * if run per tree selection). {@code null} = not yet computed (the first
      * paint before the first collect finishes shows "unknown").
@@ -214,7 +214,7 @@ public class JIPipeDesktopBackupManagerPanel extends JIPipeDesktopWorkbenchPanel
      * (unique data: Y)". X is the sum of the sizes of all loaded backup
      * items (cheap, in-memory); Y is the total size of the unique files held
      * by the content-addressed store (shared between backups is counted
-     * once), read from {@link #cachedStoreBytes} — it is NEVER walked here,
+     * once), read from {@link #cachedStoreBytes} - it is NEVER walked here,
      * because this label is rebuilt on every tree selection and the walk is
      * a full recursive pass over {@code store/objects/} (a NAS backup path
      * would freeze the panel per click). The cache is recomputed once per
@@ -241,7 +241,7 @@ public class JIPipeDesktopBackupManagerPanel extends JIPipeDesktopWorkbenchPanel
      * background: {@code totalObjectBytes()} walks the whole objects tree and
      * is too heavy for the EDT. The footer is refreshed on the EDT once the
      * value (or a failure) is in. Called once per collect cycle, when new
-     * collections arrive. A recompute already in flight is not stacked — the
+     * collections arrive. A recompute already in flight is not stacked - the
      * walk's result simply belongs to the next cycle then.
      */
     private void refreshStoreBytes() {
@@ -319,7 +319,7 @@ public class JIPipeDesktopBackupManagerPanel extends JIPipeDesktopWorkbenchPanel
                 return;
             }
             RestoreSnapshotRun run = new RestoreSnapshotRun(JIPipe.getInstance().getProjectBackup().getStore(), snapshot, path);
-            // Modal progress dialog — the restore is explicitly initiated by
+            // Modal progress dialog - the restore is explicitly initiated by
             // the user and may take a while for large snapshots. The dialog
             // stays open until the user closes it, so the project is only
             // opened after a successful restore.
@@ -428,7 +428,7 @@ public class JIPipeDesktopBackupManagerPanel extends JIPipeDesktopWorkbenchPanel
                 "Do you really want to delete " + collectionSet.size() + " collections and " + itemSet.size() + " items?")) {
             // Flatten the selection (the items themselves plus every item of
             // the selected collections) into one list; the deletion runs on
-            // the backup queue in the modal run dialog — never on the EDT,
+            // the backup queue in the modal run dialog - never on the EDT,
             // because a snapshot deletion takes the cross-process store write
             // lock with a 60 s bound (a concurrent instance holding it must
             // not freeze the UI). This mirrors the adjacent maintenance buttons.
@@ -438,7 +438,7 @@ public class JIPipeDesktopBackupManagerPanel extends JIPipeDesktopWorkbenchPanel
             }
             JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), this, new DeleteBackupsRun(items),
                     JIPipe.getInstance().getProjectBackup().getQueue(), JIPipeDesktopRunExecuteUI.GlobalLogMode.Everything);
-            // runInDialog is modal — by the time it returns the deletion has
+            // runInDialog is modal - by the time it returns the deletion has
             // finished, so the tree (and the cached store stats) can be
             // refreshed via the collect-finished listener.
             reloadBackups();
@@ -460,10 +460,10 @@ public class JIPipeDesktopBackupManagerPanel extends JIPipeDesktopWorkbenchPanel
     }
 
     /**
-     * Starts a backup verification in the background (NON-MODAL — the user
+     * Starts a backup verification in the background (NON-MODAL - the user
      * keeps working; the result arrives in the status bar and, on problems,
      * in the notification inbox). The run is enqueued on the backup queue;
-     * its log entry is pushed manually and marked read (the #753 pattern —
+     * its log entry is pushed manually and marked read (the #753 pattern -
      * the run-logs collection only auto-subscribes to the global queue, and
      * {@code isLogSilent()} auto-marks the entry as read).
      */
@@ -474,7 +474,7 @@ public class JIPipeDesktopBackupManagerPanel extends JIPipeDesktopWorkbenchPanel
         // Self-unsubscribing listeners (the #753 pattern): the backup queue
         // is long-lived and also used by the periodic backup timer, so
         // subscribeLambdaOnce would be consumed by whichever run finishes
-        // first — the listeners must stay until THIS run completes.
+        // first - the listeners must stay until THIS run completes.
         final JIPipeRunnable.FinishedEventListener[] finishHolder = new JIPipeRunnable.FinishedEventListener[1];
         final JIPipeRunnable.InterruptedEventListener[] interruptHolder = new JIPipeRunnable.InterruptedEventListener[1];
         JIPipeRunnable.FinishedEventListener finishListener = event -> {
@@ -515,14 +515,14 @@ public class JIPipeDesktopBackupManagerPanel extends JIPipeDesktopWorkbenchPanel
                         + " backups, " + report.objectsChecked + " files (" + StringUtils.formatSize(report.bytesChecked) + "). All good.");
             } else {
                 getDesktopWorkbench().sendStatusBarText("Backup verification found " + report.problems.size()
-                        + " problem(s) — see the notification inbox");
+                        + " problem(s) - see the notification inbox");
                 JIPipeNotificationInbox.getInstance().push(new JIPipeNotification(
                         "Backup verification found " + report.problems.size() + " problem(s)",
                         String.join("\n", report.problems)));
             }
         } else {
-            // Cancellation or an I/O failure — the reason is in the run log
-            getDesktopWorkbench().sendStatusBarText("Backup verification could not be completed — see the run log");
+            // Cancellation or an I/O failure - the reason is in the run log
+            getDesktopWorkbench().sendStatusBarText("Backup verification could not be completed - see the run log");
         }
         // The backup queue is NOT the global queue the run-logs collection
         // auto-subscribes to, so the entry is pushed manually here (the #753
@@ -603,7 +603,7 @@ public class JIPipeDesktopBackupManagerPanel extends JIPipeDesktopWorkbenchPanel
         if (event.getRun() instanceof CollectBackupsRun) {
             this.backupCollections = ((CollectBackupsRun) event.getRun()).getOutput();
             refreshTree();
-            // New collections arrived (a collect cycle finished) — recompute
+            // New collections arrived (a collect cycle finished) - recompute
             // the cached store size in the background; the footer refreshes
             // itself on the EDT when the value lands.
             refreshStoreBytes();

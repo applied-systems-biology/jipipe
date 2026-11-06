@@ -107,7 +107,7 @@ public class JIPipeServiceNoImageJInitializer extends JIPipeServiceInitializer {
     @Override
     public void runPostprocessing() {
         // Push progress into log (the entry renders the initialization store's bounded tail
-        // on demand — the initialization store is not file-backed)
+        // on demand - the initialization store is not file-backed)
         JIPipeDesktopRunnableLogsCollection.getInstance().pushToLog(new JIPipeRunnableLogEntry(getProgressInfo(), "JIPipe initialization", true));
 
         // Mark log as read

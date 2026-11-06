@@ -117,7 +117,7 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
      * The live binding to {@link SettingsKeys#SHOW_DOCK_TOOLBAR_LABELS}. Bound
      * once with this editor, subscribed for live updates and written through
      * when the dock panel's own toggle changes. Released in {@link #dispose()}
-     * — a binding registers a document path listener, so its owner must close
+     * - a binding registers a document path listener, so its owner must close
      * it when the owner dies.
      */
     private SettingsBinding<Boolean> showDockToolbarLabelsBinding;
@@ -497,7 +497,7 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
      * Writes the layout template list modified in place by
      * {@link #manageDockStateTemplates()}/{@link #createDockStateTemplate()} to
      * its setting. The list is the live value read from the setting, so it has
-     * to go back through the editor's binding — an explicit settings save alone
+     * to go back through the editor's binding - an explicit settings save alone
      * does not see the in-place change. Reuses the binding created by the read
      * path: repeated saves never add a document listener.
      */

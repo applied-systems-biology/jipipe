@@ -201,7 +201,7 @@ class ProgressInfoFacadeTest {
 
     /**
      * Each percentage report emits the compatibility percentage line (an INFO log record with the
-     * percentage as message, R15) and the progress record — exactly one of each per threshold
+     * percentage as message, R15) and the progress record - exactly one of each per threshold
      * pass, the log record before the progress record (its rendered prefix shows the progress as
      * of before the report). The throttle is respected: a repeated report re-emits nothing.
      */
@@ -391,7 +391,7 @@ class ProgressInfoFacadeTest {
     @Test
     void setStorageBaseReusesAFileBackedStoreForTheSameRun() throws Exception {
         // Ruling R17: a caller (e.g. the queue UI) may create the run's store before the run starts
-        // and inject a handle on it — run()'s adoption path must reuse it (never a second file)
+        // and inject a handle on it - run()'s adoption path must reuse it (never a second file)
         Path logsBase = tmp.resolve("logs");
         JIPipeProgressLog runStore = JIPipeProgressLog.create(logsBase.resolve("f81d4fae-7dec-11d0-a765-00a0c91e6bf6.ndjson"),
                 "f81d4fae-7dec-11d0-a765-00a0c91e6bf6", "Pipeline run");
@@ -420,7 +420,7 @@ class ProgressInfoFacadeTest {
 
     @Test
     void setStorageBaseLeavesTheDisplacedStoreOpen() {
-        // Documented semantics: a displaced store is not closed by the facade — it may still be
+        // Documented semantics: a displaced store is not closed by the facade - it may still be
         // referenced by other handles (derived handles keep their store; an injected handle's store
         // is owned by the caller context that created it). Its owner finishes/closes it.
         JIPipeProgressInfo info = new JIPipeProgressInfo();

@@ -160,9 +160,9 @@ public class JIPipeProgressInfo implements Cancelable {
      * The displaced store is <b>not</b> closed: it may still be referenced by other handles
      * (handles derived via {@link #resolve(String)} keep their store by design, and a handle
      * injected into a run carries a store owned by the caller context that created it). Closing it
-     * would silently drop the records of those handles. Its lifecycle — including
+     * would silently drop the records of those handles. Its lifecycle - including
      * {@link JIPipeProgressLog#finish(JIPipeProgressNodeState)} and
-     * {@link JIPipeProgressLog#close()} — remains with its owner. Adopting the store that is
+     * {@link JIPipeProgressLog#close()} - remains with its owner. Adopting the store that is
      * already set is a no-op. The one-run-two-files case is prevented by
      * {@link #setStorageBase(Path, String, String)}, which reuses a store that already writes the
      * run's file.
@@ -215,10 +215,10 @@ public class JIPipeProgressInfo implements Cancelable {
      * See {@link #setStore(JIPipeProgressLog)} for the root-run creation point semantics.
      * <p>
      * If the handle's current store already is the file-backed store for this run (same
-     * {@code <runUuid>.ndjson} file — e.g. created by the queue before the run started), it is
+     * {@code <runUuid>.ndjson} file - e.g. created by the queue before the run started), it is
      * reused unchanged and the label is ignored (the head record was written at store creation):
      * one run never gets a second file (ruling R17). Otherwise the previous store is displaced
-     * but <b>not</b> closed — see {@link #setStore(JIPipeProgressLog)} for why.
+     * but <b>not</b> closed - see {@link #setStore(JIPipeProgressLog)} for why.
      *
      * @param base     the storage base (the {@code logs} directory is resolved from it)
      * @param runUuid  the run UUID (file name and head record)
@@ -867,7 +867,7 @@ public class JIPipeProgressInfo implements Cancelable {
     /**
      * Lazily rendered, cached compatibility view of the store's recent records. Non-persistent
      * stores render via {@link JIPipeProgressLog#renderText} (serves the in-memory tail); file-backed
-     * stores render from the bounded tail via {@link JIPipeProgressLog#readRecent(int)} — never the
+     * stores render from the bounded tail via {@link JIPipeProgressLog#readRecent(int)} - never the
      * whole file.
      */
     private final class LazyLogView implements CharSequence {

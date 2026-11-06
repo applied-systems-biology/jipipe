@@ -30,7 +30,7 @@ import java.util.*;
 
 /**
  * The Tools &gt; Logs collection: the finished runs of this session. Entries hold a reference to
- * the run's NDJSON data file (plus metadata) — not a rendered text copy — and are rendered from
+ * the run's NDJSON data file (plus metadata) - not a rendered text copy - and are rendered from
  * that file on demand. The list is bounded by the {@code log-limit} setting: evicting an entry
  * deletes its data file, which is what bounds the disk usage of kept logs. Clearing the
  * collection deletes all data files.
@@ -91,8 +91,8 @@ public class JIPipeDesktopRunnableLogsCollection implements JIPipeRunnable.Finis
 
     /**
      * Removes and deletes the files of all entries owned by the given project. Called when a
-     * project window closes (the project's temporary base — which contains the log files of its
-     * graph runs — is cleaned up on close).
+     * project window closes (the project's temporary base - which contains the log files of its
+     * graph runs - is cleaned up on close).
      *
      * @param project the project
      */
@@ -140,7 +140,7 @@ public class JIPipeDesktopRunnableLogsCollection implements JIPipeRunnable.Finis
 
     public void pushToLog(JIPipeRunnable run, boolean success) {
         JIPipeProgressLog store = run.getProgressInfo().getStore();
-        // The store file is created lazily on the first flushed record — a run that logged
+        // The store file is created lazily on the first flushed record - a run that logged
         // nothing has neither file nor tail content and gets no entry (as before)
         Path file = store != null ? store.getFile() : null;
         boolean hasContent = (file != null && Files.exists(file)) || (store != null && !store.readRecent(1).isEmpty());

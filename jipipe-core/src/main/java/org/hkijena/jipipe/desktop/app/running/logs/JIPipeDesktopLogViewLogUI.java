@@ -45,9 +45,9 @@ import java.nio.file.StandardCopyOption;
  * expandable record details, level filters, and the status footer.
  * <p>
  * The store binding: an entry with an NDJSON data file reopens the file read-only
- * ({@link JIPipeProgressLog#openReadOnly(Path)} — no writer, no mutation); an entry of a
+ * ({@link JIPipeProgressLog#openReadOnly(Path)} - no writer, no mutation); an entry of a
  * silent/stdout run has no data file, and the collection keeps its store, which is bound directly.
- * Both kinds are finished and closed before the entry exists, so no batches ever arrive — the
+ * Both kinds are finished and closed before the entry exists, so no batches ever arrive - the
  * panel renders statically from its initial catch-up scan. The "Notifications" tab, "Export data
  * file", and "Export text" are kept.
  */
@@ -70,7 +70,7 @@ public class JIPipeDesktopLogViewLogUI extends JIPipeDesktopWorkbenchPanel imple
 
     /**
      * Binds the entry's progress data to the tree panel. The batch listener is subscribed before
-     * the store is set — the safe ordering for any store that could still emit.
+     * the store is set - the safe ordering for any store that could still emit.
      */
     private void bindLog() {
         Path dataFile = logEntry.getPath();
@@ -83,7 +83,7 @@ public class JIPipeDesktopLogViewLogUI extends JIPipeDesktopWorkbenchPanel imple
             store = logEntry.getStore();
         }
         if (store == null) {
-            // No data file (removed, e.g. evicted) and no store — the placeholder of the former
+            // No data file (removed, e.g. evicted) and no store - the placeholder of the former
             // flat view (renderText's unavailable-data contract)
             remove(tabPane);
             add(new JLabel(JIPipeRunnableLogEntry.DATA_UNAVAILABLE_LINE, SwingConstants.CENTER), BorderLayout.CENTER);
@@ -103,7 +103,7 @@ public class JIPipeDesktopLogViewLogUI extends JIPipeDesktopWorkbenchPanel imple
 
     /**
      * Unsubscribes the batch listener and stops the tree panel's timer and background reads.
-     * Called before the viewer shows a different entry (one panel per opened entry — the
+     * Called before the viewer shows a different entry (one panel per opened entry - the
      * subscription must not outlive the panel).
      */
     public void dispose() {
@@ -157,7 +157,7 @@ public class JIPipeDesktopLogViewLogUI extends JIPipeDesktopWorkbenchPanel imple
         Path tempFile = JIPipe.getTemporaryFile("log", ".txt");
         try {
             try (BufferedWriter writer = Files.newBufferedWriter(tempFile, StandardCharsets.UTF_8)) {
-                // Streamed render — no full-buffer copy of the log text
+                // Streamed render - no full-buffer copy of the log text
                 logEntry.renderText(JIPipeLogLevel.INFO, line -> {
                     try {
                         writer.write(line);
@@ -174,7 +174,7 @@ public class JIPipeDesktopLogViewLogUI extends JIPipeDesktopWorkbenchPanel imple
     }
 
     /**
-     * Saves the entry's NDJSON data file (the primary export — the raw log data).
+     * Saves the entry's NDJSON data file (the primary export - the raw log data).
      */
     private void exportDataFile() {
         Path path = JIPipeDesktop.saveFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export log data file", HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_NDJSON);

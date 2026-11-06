@@ -43,7 +43,7 @@ class ProgressRenderTest {
      * emits before its progress record, so it renders with the progress as of before the report
      * ([5/100]); the error afterwards renders with the updated progress ([50/100]), and the
      * root-run line has no progress record and renders with the initial 1/1. Progress records
-     * render nothing — they only update the running progress.
+     * render nothing - they only update the running progress.
      */
     @Test
     void renderKnownTreeMatchesGolden() {
@@ -61,7 +61,7 @@ class ProgressRenderTest {
             store.log(nodeA, JIPipeLogLevel.WARN, "[WARNING] clipped");
             store.log(nodeA, JIPipeLogLevel.DEBUG, "debug detail");
             // Percentage report of the facade: the compat line is an INFO log record emitted
-            // before the progress record (R15) — the progress record itself renders nothing
+            // before the progress record (R15) - the progress record itself renders nothing
             store.log(nodeA, JIPipeLogLevel.INFO, "50%");
             store.progress(nodeA, 50, 100);
             store.error(nodeA, boom);
@@ -140,7 +140,7 @@ class ProgressRenderTest {
             store.log(node, JIPipeLogLevel.DEBUG, "d2");
             store.finish(JIPipeProgressNodeState.OK);
             List<JIPipeProgressRecord> infoRecords = store.readRecords(1, 100, JIPipeLogLevel.INFO);
-            // head, n, l(i1), p, s — the DEBUG log records are dropped, all other records pass
+            // head, n, l(i1), p, s - the DEBUG log records are dropped, all other records pass
             assertEquals(5, infoRecords.size());
             assertTrue(infoRecords.stream().noneMatch(record ->
                     record instanceof JIPipeProgressRecord.Log logRecord
