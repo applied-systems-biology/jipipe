@@ -121,6 +121,36 @@ class ProgressStoreTest {
     }
 
     @Test
+    void nodeLocationRoundTripsThroughFileAndIndex() throws Exception {
+        Path file = tmp.resolve("loc.ndjson");
+        JIPipeProgressLog store = JIPipeProgressLog.create(file, "loc", "Locations");
+        int tagged = store.beginNode(store.getRootNodeId(), "Tagged node", JIPipeProgressNodeKind.ITEM, "node://abc");
+        int untagged = store.beginNode(store.getRootNodeId(), "Untagged node", JIPipeProgressNodeKind.ITEM);
+        store.finish(JIPipeProgressNodeState.OK);
+
+        // The index carries the location (and null for untagged nodes and the root)
+        assertEquals("node://abc", store.getNode(tagged).getLocation());
+        assertNull(store.getNode(untagged).getLocation());
+        assertNull(store.getNode(store.getRootNodeId()).getLocation(), "the root has no location");
+
+        // The wire record carries the optional loc field
+        List<JIPipeProgressRecord> all = readWholeFile(file);
+        JIPipeProgressRecord.Node taggedRecord = (JIPipeProgressRecord.Node) all.get(1);
+        assertEquals("node://abc", taggedRecord.loc());
+        assertNull(((JIPipeProgressRecord.Node) all.get(2)).loc(), "absent location: no loc value");
+        String taggedLine = Files.readAllLines(file, StandardCharsets.UTF_8).get(1);
+        assertTrue(taggedLine.contains("\"loc\":\"node://abc\""), taggedLine);
+        String untaggedLine = Files.readAllLines(file, StandardCharsets.UTF_8).get(2);
+        assertFalse(untaggedLine.contains("\"loc\""), untaggedLine);
+
+        // Read-back through the store's own reader (an old reader sees no loc; a new one sees the URI)
+        JIPipeProgressLog reader = JIPipeProgressLog.create(file, "reader", "Reader");
+        JIPipeProgressRecord.Node readBack = (JIPipeProgressRecord.Node) reader.readRecords(2, 1).get(0);
+        assertEquals("node://abc", readBack.loc());
+        reader.close();
+    }
+
+    @Test
     void stateWireLiteralsAreMappedExplicitly() throws Exception {
         Path file = tmp.resolve("states.ndjson");
         try (JIPipeProgressLog store = JIPipeProgressLog.create(file, "states", "States")) {

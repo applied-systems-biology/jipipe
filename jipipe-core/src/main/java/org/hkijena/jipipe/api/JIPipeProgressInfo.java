@@ -434,8 +434,21 @@ public class JIPipeProgressInfo implements Cancelable {
      * @return progress info with the same properties as the current one, but with messages prepended
      */
     public JIPipeProgressInfo resolve(String logPrepend) {
+        return resolve(logPrepend, null);
+    }
+
+    /**
+     * Creates a sub-progress that has the same cancellation, but shows the new category in front of sub-messages.
+     * The sub-progress is a child node of the current node with its own progress counters, carrying an optional
+     * location URI (e.g. {@code node://<uuid>} for a graph-run algorithm node).
+     *
+     * @param logPrepend the category
+     * @param location   the free-form location URI of the child node, or {@code null} for no location
+     * @return progress info with the same properties as the current one, but with messages prepended
+     */
+    public JIPipeProgressInfo resolve(String logPrepend, String location) {
         JIPipeProgressLog currentStore = store;
-        int childNodeId = currentStore.beginNode(nodeId, logPrepend, JIPipeProgressNodeKind.ITEM);
+        int childNodeId = currentStore.beginNode(nodeId, logPrepend, JIPipeProgressNodeKind.ITEM, location);
         return new JIPipeProgressInfo(currentStore, childNodeId, this,
                 new AtomicInteger(0), new AtomicInteger(1), false);
     }

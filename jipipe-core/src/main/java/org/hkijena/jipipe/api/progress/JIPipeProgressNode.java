@@ -37,6 +37,7 @@ public class JIPipeProgressNode {
     private final int parentId;
     private final String label;
     private final JIPipeProgressNodeKind kind;
+    private final String location;
     private final AtomicReference<JIPipeProgressNodeState> state = new AtomicReference<>(JIPipeProgressNodeState.RUNNING);
     private final AtomicInteger progress = new AtomicInteger();
     private final AtomicInteger maxProgress = new AtomicInteger();
@@ -45,11 +46,12 @@ public class JIPipeProgressNode {
     private final AtomicInteger firstLine = new AtomicInteger();
     private final AtomicInteger lastLine = new AtomicInteger();
 
-    JIPipeProgressNode(int id, int parentId, String label, JIPipeProgressNodeKind kind) {
+    JIPipeProgressNode(int id, int parentId, String label, JIPipeProgressNodeKind kind, String location) {
         this.id = id;
         this.parentId = parentId;
         this.label = label;
         this.kind = kind;
+        this.location = location;
     }
 
     /**
@@ -86,6 +88,16 @@ public class JIPipeProgressNode {
      */
     public JIPipeProgressNodeKind getKind() {
         return kind;
+    }
+
+    /**
+     * Returns the optional location URI of the node (e.g. {@code node://<uuid>} for a graph-run
+     * algorithm node; free-form for future schemes).
+     *
+     * @return the location URI, or {@code null} if the node has no location
+     */
+    public String getLocation() {
+        return location;
     }
 
     /**

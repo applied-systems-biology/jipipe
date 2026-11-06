@@ -15,6 +15,7 @@ package org.hkijena.jipipe.api.progress;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
  * One record of the NDJSON progress log (one JSON object per line; spec §Record types).
@@ -55,14 +56,15 @@ public sealed interface JIPipeProgressRecord {
     /**
      * Node created ({@code k} is the name of a {@link JIPipeProgressNodeKind}).
      *
-     * @param id node id
-     * @param p  parent node id ({@code 0} = root)
-     * @param l  node label
-     * @param k  node kind name
-     * @param ts epoch millis
+     * @param id  node id
+     * @param p   parent node id ({@code 0} = root)
+     * @param l   node label
+     * @param k   node kind name
+     * @param loc optional location URI ({@code node://<uuid>} today; free-form for future schemes; {@code null} = no location)
+     * @param ts  epoch millis
      */
     @JsonIgnoreProperties(ignoreUnknown = true)
-    record Node(@JsonProperty("id") int id, @JsonProperty("p") int p, @JsonProperty("l") String l, @JsonProperty("k") String k, @JsonProperty("ts") long ts) implements JIPipeProgressRecord {
+    record Node(@JsonProperty("id") int id, @JsonProperty("p") int p, @JsonProperty("l") String l, @JsonProperty("k") String k, @JsonProperty("loc") @JsonInclude(JsonInclude.Include.NON_NULL) String loc, @JsonProperty("ts") long ts) implements JIPipeProgressRecord {
 
         @Override
         public String type() {
@@ -194,7 +196,22 @@ public sealed interface JIPipeProgressRecord {
      * @return the record
      */
     static JIPipeProgressRecord node(int id, int p, String l, String k, long ts) {
-        return new Node(id, p, l, k, ts);
+        return new Node(id, p, l, k, null, ts);
+    }
+
+    /**
+     * Creates a {@link Node} record with an optional location URI.
+     *
+     * @param id  node id
+     * @param p   parent node id ({@code 0} = root)
+     * @param l   node label
+     * @param k   node kind name ({@link JIPipeProgressNodeKind} name)
+     * @param loc the location URI (e.g. {@code node://<uuid>}), or {@code null} for no location
+     * @param ts  epoch millis
+     * @return the record
+     */
+    static JIPipeProgressRecord node(int id, int p, String l, String k, String loc, long ts) {
+        return new Node(id, p, l, k, loc, ts);
     }
 
     /**

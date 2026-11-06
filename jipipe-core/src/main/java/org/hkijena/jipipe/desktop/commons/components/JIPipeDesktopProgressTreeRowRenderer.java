@@ -52,7 +52,7 @@ public class JIPipeDesktopProgressTreeRowRenderer implements ListCellRenderer<JI
     /**
      * One row of the flat tree list. Sealed: the row types below.
      */
-    public sealed interface Row permits NodeRow, DetailRow, StackRow, MoreRow, DebugHiddenRow, LoadingRow {
+    public sealed interface Row permits NodeRow, DetailRow, StackRow, MoreRow, LoadingRow {
     }
 
     /**
@@ -135,12 +135,6 @@ public class JIPipeDesktopProgressTreeRowRenderer implements ListCellRenderer<JI
     }
 
     /**
-     * "N DEBUG records hidden — switch to Level: DEBUG" action row.
-     */
-    public record DebugHiddenRow(int nodeId, int count) implements Row {
-    }
-
-    /**
      * Placeholder while a node's record page is being read.
      */
     public record LoadingRow(int nodeId) implements Row {
@@ -209,8 +203,6 @@ public class JIPipeDesktopProgressTreeRowRenderer implements ListCellRenderer<JI
             return renderStackRow(stackRow);
         } else if (value instanceof MoreRow moreRow) {
             return renderActionRow("Show " + formatCount(moreRow.olderCount()) + " older records from run data…", colorAccent);
-        } else if (value instanceof DebugHiddenRow debugRow) {
-            return renderActionRow(formatCount(debugRow.count()) + " DEBUG records hidden — switch to Level: DEBUG", colorAccent);
         } else if (value instanceof LoadingRow) {
             return renderActionRow("Loading records…", colorFaint);
         }
@@ -378,6 +370,13 @@ public class JIPipeDesktopProgressTreeRowRenderer implements ListCellRenderer<JI
             levelColor = colorFail;
             background = mix(colorRowBackground, colorFail, 0.07f);
             message = error.c() + (error.m() == null || error.m().isEmpty() ? "" : ": " + error.m());
+        } else if (row.record instanceof JIPipeProgressRecord.Notification notification) {
+            // Run-level user-facing notifications render as warning-tinted entries (R22)
+            ts = notification.ts();
+            levelText = "WARN";
+            levelColor = colorWarn;
+            background = mix(colorRowBackground, colorWarn, 0.07f);
+            message = notification.h() + (notification.d() == null || notification.d().isEmpty() ? "" : ": " + notification.d());
         } else {
             ts = 0;
             message = row.record.type();

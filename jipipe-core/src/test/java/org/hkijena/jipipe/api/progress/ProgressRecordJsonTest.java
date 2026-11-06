@@ -16,8 +16,11 @@ package org.hkijena.jipipe.api.progress;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -54,5 +57,27 @@ class ProgressRecordJsonTest {
         assertEquals("e", JIPipeProgressRecord.error(2, "java.lang.RuntimeException", "boom", null, 0L).type());
         assertEquals("s", JIPipeProgressRecord.status("running", 0L).type());
         assertEquals("w", JIPipeProgressRecord.notification("h", "d", 0L).type());
+    }
+
+    @Test
+    void nodeRecordCarriesOptionalLocation() throws IOException {
+        // Location URIs are optional (spec §Record types): present when tagged, absent otherwise
+        JIPipeProgressRecord.Node withLocation = (JIPipeProgressRecord.Node) JIPipeProgressRecord.node(2, 0, "Node A", JIPipeProgressNodeKind.ITEM.name(), "node://abc", 0L);
+        assertEquals("node://abc", withLocation.loc());
+        String json = JsonUtils.toJsonString(withLocation);
+        assertTrue(json.contains("\"loc\":\"node://abc\""), json);
+        assertFalse(json.contains("\n"), "NDJSON records must be single-line");
+
+        // Absent location: the field is omitted (old readers without the field keep working,
+        // new readers see null)
+        JIPipeProgressRecord.Node withoutLocation = (JIPipeProgressRecord.Node) JIPipeProgressRecord.node(2, 0, "Node A", JIPipeProgressNodeKind.ITEM.name(), 0L);
+        assertNull(withoutLocation.loc());
+        String plainJson = JsonUtils.toJsonString(withoutLocation);
+        assertFalse(plainJson.contains("loc"), plainJson);
+
+        // A line without the loc field deserializes to null (old files)
+        JIPipeProgressRecord.Node readBack = JsonUtils.getObjectMapper().readValue(plainJson, JIPipeProgressRecord.Node.class);
+        assertNull(readBack.loc());
+        assertEquals("Node A", readBack.l());
     }
 }

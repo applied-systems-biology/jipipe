@@ -133,7 +133,20 @@ public interface JIPipeProgressLog extends AutoCloseable {
      * @param kind     the node kind
      * @return the new node's id
      */
-    int beginNode(int parentId, String label, JIPipeProgressNodeKind kind);
+    default int beginNode(int parentId, String label, JIPipeProgressNodeKind kind) {
+        return beginNode(parentId, label, kind, null);
+    }
+
+    /**
+     * Creates a child node and enqueues its {@code n} record, carrying an optional location URI.
+     *
+     * @param parentId the parent node id ({@link #getRootNodeId()} for top-level nodes)
+     * @param label    the node label
+     * @param kind     the node kind
+     * @param location the free-form location URI (e.g. {@code node://<uuid>}), or {@code null} for no location
+     * @return the new node's id
+     */
+    int beginNode(int parentId, String label, JIPipeProgressNodeKind kind, String location);
 
     /**
      * Enqueues a log record ({@code l}) attached to a node.

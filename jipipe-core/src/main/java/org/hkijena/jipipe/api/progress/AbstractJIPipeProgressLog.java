@@ -97,7 +97,7 @@ public abstract class AbstractJIPipeProgressLog implements JIPipeProgressLog {
     protected AbstractJIPipeProgressLog(String runUuid, String runLabel) {
         this.runUuid = runUuid;
         this.runLabel = runLabel;
-        this.rootNode = new JIPipeProgressNode(ROOT_NODE_ID, 0, runLabel, JIPipeProgressNodeKind.RUN);
+        this.rootNode = new JIPipeProgressNode(ROOT_NODE_ID, 0, runLabel, JIPipeProgressNodeKind.RUN, null);
         this.nodes.put(ROOT_NODE_ID, rootNode);
     }
 
@@ -124,7 +124,7 @@ public abstract class AbstractJIPipeProgressLog implements JIPipeProgressLog {
     }
 
     @Override
-    public final int beginNode(int parentId, String label, JIPipeProgressNodeKind kind) {
+    public final int beginNode(int parentId, String label, JIPipeProgressNodeKind kind, String location) {
         Objects.requireNonNull(kind, "Node kind must not be null");
         submitLock.lock();
         try {
@@ -134,14 +134,14 @@ public abstract class AbstractJIPipeProgressLog implements JIPipeProgressLog {
             }
             JIPipeProgressNode parent = resolveParentLocked(parentId);
             int id = (int) nodeIdCounter.incrementAndGet();
-            JIPipeProgressNode node = new JIPipeProgressNode(id, parent.getId(), label, kind);
+            JIPipeProgressNode node = new JIPipeProgressNode(id, parent.getId(), label, kind, location);
             nodes.put(id, node);
             for (JIPipeProgressNode ancestor = parent; ancestor != null; ancestor = nodes.get(ancestor.getParentId())) {
                 ancestor.incrementDescendantNodeCount();
             }
             // Children of the root reference it via p=0 (the root is implied by the head record)
             int wireParent = parent.getId() == ROOT_NODE_ID ? 0 : parent.getId();
-            submitLocked(JIPipeProgressRecord.node(id, wireParent, label, kind.name(), now()));
+            submitLocked(JIPipeProgressRecord.node(id, wireParent, label, kind.name(), location, now()));
             return id;
         } finally {
             submitLock.unlock();

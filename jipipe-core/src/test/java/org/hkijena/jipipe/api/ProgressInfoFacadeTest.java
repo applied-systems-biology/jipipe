@@ -91,14 +91,43 @@ class ProgressInfoFacadeTest {
         assertEquals("boom", error.m());
     }
 
+    @Test
+    void resolveCarriesLocationIntoNodeRecord(@TempDir Path dir) {
+        Path file = dir.resolve("facade-loc.ndjson");
+        JIPipeProgressLog store = JIPipeProgressLog.create(file, "facade-loc", "Facade locations");
+        JIPipeProgressInfo info = new JIPipeProgressInfo(store);
+        JIPipeProgressInfo tagged = info.resolve("Node A", "node://abc");
+        JIPipeProgressInfo plain = tagged.resolve("Plain child");
+        store.finish(JIPipeProgressNodeState.OK);
+
+        // The index carries the location; resolve() without a location leaves it null
+        assertEquals("node://abc", store.getNode(tagged.getNodeId()).getLocation());
+        assertNull(store.getNode(plain.getNodeId()).getLocation());
+
+        // The child node's n record carries the loc field (file-backed stores read it back)
+        JIPipeProgressRecord.Node nodeRecord = store.readRecords(1, 16).stream()
+                .filter(JIPipeProgressRecord.Node.class::isInstance)
+                .map(JIPipeProgressRecord.Node.class::cast)
+                .filter(record -> "Node A".equals(record.l()))
+                .findFirst().orElse(null);
+        assertNotNull(nodeRecord, "n record of the tagged node expected");
+        assertEquals("node://abc", nodeRecord.loc());
+        JIPipeProgressRecord.Node plainRecord = store.readRecords(1, 16).stream()
+                .filter(JIPipeProgressRecord.Node.class::isInstance)
+                .map(JIPipeProgressRecord.Node.class::cast)
+                .filter(record -> "Plain child".equals(record.l()))
+                .findFirst().orElse(null);
+        assertNotNull(plainRecord, "n record of the untagged node expected");
+        assertNull(plainRecord.loc());
+    }
+
     private static JIPipeProgressRecord.Log assertLog(List<JIPipeProgressRecord> records, String message) {
         return records.stream()
                 .filter(JIPipeProgressRecord.Log.class::isInstance)
                 .map(JIPipeProgressRecord.Log.class::cast)
                 .filter(record -> message.equals(record.m()))
                 .findFirst()
-                .orElseThrow(() -> new AssertionError("No log record with message: " + message));
-    }
+                .orElseThrow(() -> new AssertionError("No log record with message: " + message));    }
 
     @Test
     void getLogViewRendersTail() {

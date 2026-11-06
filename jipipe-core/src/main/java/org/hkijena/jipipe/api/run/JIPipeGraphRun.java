@@ -1061,7 +1061,9 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
 
     private void runAlgorithmFlowGraphNode(Object flowGraphNode, JIPipeGraphRunDataFlowGraph dataFlowGraph, JIPipeGraphRunGCGraph gcGraph, boolean skipWorkload, JIPipeProgressInfo progressInfo) {
         JIPipeAlgorithm algorithm = (JIPipeAlgorithm) flowGraphNode;
-        JIPipeProgressInfo algorithmProgress = progressInfo.resolve(algorithm.getDisplayName());
+        // The node's location URI carries the graph node UUID (spec §Desktop UI "Location URIs"):
+        // the progress tree UI renders it as the faint [uuid] suffix and can navigate to the node
+        JIPipeProgressInfo algorithmProgress = progressInfo.resolve(algorithm.getDisplayName(), "node://" + algorithm.getUUIDInParentGraph());
         progressInfo.log("+N " + algorithm.getDisplayName());
         algorithmProgress.log("Executing " + algorithm.getUUIDInParentGraph());
 

@@ -46,6 +46,7 @@ import java.time.Duration;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,8 +57,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * The v2 progress tree panel — the Swing implementation of the approved design contract
@@ -88,9 +87,16 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
     private static final int CATCH_UP_PAGE_SIZE = 10_000;
 
     /**
-     * Matches a trailing {@code [uuid]} suffix of a node label — rendered faintly (mockup element).
+     * The record categories of the toggle-button filter (R22): debug = {@code l}@DEBUG, info =
+     * {@code l}@INFO, warning = {@code l}@WARN + notification ({@code w}) records, error =
+     * {@code l}@ERROR + error ({@code e}) records.
      */
-    private static final Pattern TRAILING_UUID = Pattern.compile("^(.*) \\[([0-9a-fA-F][0-9a-zA-Z-]{7,})]$");
+    private enum RecordCategory {
+        DEBUG,
+        INFO,
+        WARNING,
+        ERROR
+    }
 
     private final JIPipeDesktopWorkbench workbench;
 
@@ -98,7 +104,10 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
     private final JCheckBox showLogCheckBox = new JCheckBox("Show log");
     private final JCheckBox autoShowProgressCheckBox = new JCheckBox("Auto show progress");
     private final JCheckBox autoViewResultsCheckBox = new JCheckBox("Auto view results");
-    private final JComboBox<String> levelComboBox = new JComboBox<>(new String[]{"Level: INFO", "Level: DEBUG"});
+    private final JToggleButton debugToggleButton = new JToggleButton("debug");
+    private final JToggleButton infoToggleButton = new JToggleButton("info");
+    private final JToggleButton warningToggleButton = new JToggleButton("warning");
+    private final JToggleButton errorToggleButton = new JToggleButton("error");
     private final JButton copyButton = new JButton("Copy", JIPipe.RESOURCES.getIcon16("actions/copy.png"));
     private final JButton exportButton = new JButton("Export", JIPipe.RESOURCES.getIcon16("actions/document-export.png"));
     private final JPanel headerComponentsPanel = UIUtils.boxHorizontal();
@@ -126,13 +135,30 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
     private final Map<Integer, String> partitionChips = new ConcurrentHashMap<>();
     private final Set<String> openStacks = ConcurrentHashMap.newKeySet();
     private final Set<Integer> pendingNodeIds = ConcurrentHashMap.newKeySet();
+    /**
+     * The currently expanded nodes (mirrors {@link NodeUiState#expanded} for the writer thread,
+     * which re-reads running expanded nodes on every batch so that run-level notification records
+     * appear in their detail windows).
+     */
+    private final Set<Integer> expandedNodeIds = ConcurrentHashMap.newKeySet();
     private final AtomicBoolean catchUpScheduled = new AtomicBoolean();
     private volatile boolean dirty;
     private volatile int latestNodeId;
     private volatile long latestNodeTs;
     private volatile long lastKnownLine;
     private volatile long fileSize;
-    private volatile JIPipeLogLevel minLevel = JIPipeLogLevel.INFO;
+
+    /**
+     * The visible record categories of the toggle-button filter (R22). Replaced — never mutated —
+     * on the EDT (button clicks); read on background threads (detail page filtering).
+     */
+    private volatile EnumSet<RecordCategory> visibleCategories = EnumSet.of(RecordCategory.INFO, RecordCategory.WARNING, RecordCategory.ERROR);
+
+    /**
+     * Live per-category record counts (the toggle buttons' glanceable volumes). Incremented by the
+     * batch/catch-up record accumulation (off the EDT); read on the EDT (button labels).
+     */
+    private final AtomicLong[] categoryCounts = new AtomicLong[RecordCategory.values().length];
 
     // EDT-only
     private final Map<Integer, Integer> rowPositions = new HashMap<>();
@@ -151,6 +177,9 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
      */
     public JIPipeDesktopProgressTreePanel(JIPipeDesktopWorkbench workbench) {
         this.workbench = workbench;
+        for (RecordCategory category : RecordCategory.values()) {
+            categoryCounts[category.ordinal()] = new AtomicLong();
+        }
         this.list = new ProgressTreeList();
         this.rowSpinner = new SpinnerIcon(list, 14);
         this.renderer = new JIPipeDesktopProgressTreeRowRenderer(rowSpinner);
@@ -164,13 +193,13 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
     private void initialize() {
         setLayout(new BorderLayout());
 
-        // Header: Show log / Auto show progress / Auto view results | Level select | Copy | Export
+        // Header: Show log / Auto show progress / Auto view results | category toggles | Copy | Export
         JPanel headerPanel = new JPanel(new BorderLayout(8, 0));
         headerPanel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createEmptyBorder(6, 8, 6, 8),
                 BorderFactory.createMatteBorder(0, 0, 1, 0, ThemeUtils.getCurrentStyle().getBorderColor())));
         JPanel headerLeft = UIUtils.boxHorizontal(showLogCheckBox, autoShowProgressCheckBox, autoViewResultsCheckBox);
-        JPanel headerRight = UIUtils.boxHorizontal(levelComboBox, copyButton, exportButton, headerComponentsPanel);
+        JPanel headerRight = UIUtils.boxHorizontal(debugToggleButton, infoToggleButton, warningToggleButton, errorToggleButton, copyButton, exportButton, headerComponentsPanel);
         headerPanel.add(headerLeft, BorderLayout.WEST);
         headerPanel.add(headerRight, BorderLayout.EAST);
         add(headerPanel, BorderLayout.NORTH);
@@ -211,10 +240,21 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
         showLogCheckBox.addActionListener(e -> updateShowLogVisibility());
         autoShowProgressCheckBox.setSelected(true);
         autoShowProgressCheckBox.setToolTipText("Automatically scroll to the currently running node");
-        levelComboBox.setToolTipText("Detail level of the record views");
-        levelComboBox.addActionListener(e -> {
-            setMinLevel(levelComboBox.getSelectedIndex() == 1 ? JIPipeLogLevel.DEBUG : JIPipeLogLevel.INFO);
-        });
+        // Toggle-button filter (R22): each button toggles its category's visibility and carries a
+        // live per-category record count. Default: debug off, info/warning/error on.
+        debugToggleButton.setSelected(false);
+        debugToggleButton.setToolTipText("Toggle DEBUG records (per-item/per-pair logging)");
+        infoToggleButton.setSelected(true);
+        infoToggleButton.setToolTipText("Toggle INFO records");
+        warningToggleButton.setSelected(true);
+        warningToggleButton.setToolTipText("Toggle warnings (including run-level notifications)");
+        errorToggleButton.setSelected(true);
+        errorToggleButton.setToolTipText("Toggle errors");
+        debugToggleButton.addActionListener(e -> toggleCategory(RecordCategory.DEBUG, debugToggleButton.isSelected()));
+        infoToggleButton.addActionListener(e -> toggleCategory(RecordCategory.INFO, infoToggleButton.isSelected()));
+        warningToggleButton.addActionListener(e -> toggleCategory(RecordCategory.WARNING, warningToggleButton.isSelected()));
+        errorToggleButton.addActionListener(e -> toggleCategory(RecordCategory.ERROR, errorToggleButton.isSelected()));
+        updateCategoryButtons();
         copyButton.setToolTipText("Copy the rendered log (last " + NumberFormat.getIntegerInstance().format(COPY_LINE_LIMIT) + " lines)");
         copyButton.addActionListener(e -> copyToClipboard());
         exportButton.setToolTipText("Export the underlying run data file");
@@ -298,6 +338,14 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
             }
             if (batch.fromLine() > 1 && catchUpScheduled.compareAndSet(false, true)) {
                 scheduleCatchUp(batch.fromLine() - 1);
+            }
+            // Run-level records (notifications) change no node: re-read expanded RUNNING nodes so
+            // new notifications surface in their detail windows
+            for (Integer expandedId : expandedNodeIds) {
+                JIPipeProgressNode expandedNode = batchStore.getNode(expandedId);
+                if (expandedNode != null && expandedNode.getState() == JIPipeProgressNodeState.RUNNING) {
+                    pendingNodeIds.add(expandedId);
+                }
             }
         }
         pendingNodeIds.addAll(batch.changedNodes());
@@ -387,10 +435,14 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
             partitionChips.clear();
             openStacks.clear();
             pendingNodeIds.clear();
+            expandedNodeIds.clear();
             latestNodeId = 0;
             latestNodeTs = 0;
             lastKnownLine = 0;
             fileSize = 0;
+            for (AtomicLong count : categoryCounts) {
+                count.set(0);
+            }
             catchUpScheduled.set(false);
         }
         dirty = true;
@@ -403,11 +455,17 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
 
     /**
      * Accumulates the per-node counters (first/last timestamp, hidden-debug count, renderable
-     * record count) from records. Called on the writer thread (per batch) and on the background
-     * executor (catch-up scan); all state is atomic.
+     * record count) and the per-category record counts (the toggle buttons' volumes) from records.
+     * Called on the writer thread (per batch) and on the background executor (catch-up scan); all
+     * state is atomic. Batch deltas plus the catch-up scan partition the record lines exactly once,
+     * so the counts are exact for the observed range.
      */
     private void accumulate(List<JIPipeProgressRecord> records) {
         for (JIPipeProgressRecord record : records) {
+            RecordCategory category = categoryOf(record);
+            if (category != null) {
+                categoryCounts[category.ordinal()].incrementAndGet();
+            }
             int nodeId = recordNodeId(record);
             if (nodeId <= 0) {
                 continue;
@@ -430,6 +488,33 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
                 latestNodeTs = ts;
                 latestNodeId = nodeId;
             }
+        }
+    }
+
+    /**
+     * Returns the record's filter category ({@code null} for records that render nothing:
+     * progress, node, node-finished, head, and run-status records).
+     */
+    private static RecordCategory categoryOf(JIPipeProgressRecord record) {
+        if (record instanceof JIPipeProgressRecord.Log logRecord) {
+            return categoryOfLevel(logRecord.lv());
+        } else if (record instanceof JIPipeProgressRecord.Error) {
+            return RecordCategory.ERROR;
+        } else if (record instanceof JIPipeProgressRecord.Notification) {
+            return RecordCategory.WARNING;
+        }
+        return null;
+    }
+
+    private static RecordCategory categoryOfLevel(int levelValue) {
+        if (levelValue <= JIPipeLogLevel.DEBUG.value()) {
+            return RecordCategory.DEBUG;
+        } else if (levelValue <= JIPipeLogLevel.INFO.value()) {
+            return RecordCategory.INFO;
+        } else if (levelValue <= JIPipeLogLevel.WARN.value()) {
+            return RecordCategory.WARNING;
+        } else {
+            return RecordCategory.ERROR;
         }
     }
 
@@ -497,6 +582,7 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
         updateTreeModel(s);
         scheduleDetailReloads(s);
         updateFooter();
+        updateCategoryButtons();
         scheduleFileSizeUpdate(s);
         updateSpinners(s);
         autoScroll();
@@ -546,14 +632,17 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
                     || (state != null && state.renderableCount.get() > 0)
                     || node.getRecordCount() > 0;
             String label = node.getLabel();
-            String uuidSuffix = null;
             if (label == null || label.isBlank()) {
                 label = "(unnamed)";
-            } else {
-                Matcher matcher = TRAILING_UUID.matcher(label);
-                if (matcher.matches()) {
-                    label = matcher.group(1);
-                    uuidSuffix = "[" + matcher.group(2) + "]";
+            }
+            // The faint [uuid] suffix is derived from a node:// location URI (R23); other/absent
+            // locations render no suffix
+            String uuidSuffix = null;
+            String location = node.getLocation();
+            if (location != null && location.startsWith("node://")) {
+                String uuid = location.substring("node://".length());
+                if (!uuid.isBlank()) {
+                    uuidSuffix = "[" + uuid + "]";
                 }
             }
             int badgeCount = (int) Math.min(Integer.MAX_VALUE,
@@ -562,9 +651,9 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
             long firstTs = 0;
             long lastTs = 0;
             if (state != null) {
-                debugCount = minLevel == JIPipeLogLevel.INFO
-                        ? (int) Math.min(Integer.MAX_VALUE, state.debugCount.get())
-                        : 0;
+                debugCount = visibleCategories.contains(RecordCategory.DEBUG)
+                        ? 0
+                        : (int) Math.min(Integer.MAX_VALUE, state.debugCount.get());
                 firstTs = state.firstTs.get();
                 lastTs = state.lastTs.get();
             }
@@ -630,8 +719,8 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
     }
 
     /**
-     * Appends the detail rows of an expanded node: its records (last page), the hidden-debug line,
-     * and the "show older" action.
+     * Appends the detail rows of an expanded node: its records (last page; run-level notification
+     * records render where they fall), and the "show older" action.
      */
     private void appendDetailRows(List<JIPipeDesktopProgressTreeRowRenderer.Row> rows, int nodeId,
                                   NodeUiState state, JIPipeProgressNode node) {
@@ -644,7 +733,8 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
         for (JIPipeProgressRecord record : state.detailPage) {
             boolean isLog = record instanceof JIPipeProgressRecord.Log;
             boolean isError = record instanceof JIPipeProgressRecord.Error;
-            if (!isLog && !isError) {
+            boolean isNotification = record instanceof JIPipeProgressRecord.Notification;
+            if (!isLog && !isError && !isNotification) {
                 // Progress (p), node (n), and node-finished (N) records render nothing
                 continue;
             }
@@ -656,13 +746,6 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
                 for (String line : ((JIPipeProgressRecord.Error) record).st().split("\n")) {
                     rows.add(new JIPipeDesktopProgressTreeRowRenderer.StackRow(nodeId, line));
                 }
-            }
-        }
-        if (minLevel == JIPipeLogLevel.INFO) {
-            long debugHidden = state.debugCount.get();
-            if (debugHidden > 0) {
-                rows.add(new JIPipeDesktopProgressTreeRowRenderer.DebugHiddenRow(nodeId,
-                        (int) Math.min(Integer.MAX_VALUE, debugHidden)));
             }
         }
         if (state.hasOlder) {
@@ -721,19 +804,18 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
                 if (node != null && node.getLastLine() > 0) {
                     int firstLine = node.getFirstLine();
                     int lastLine = node.getLastLine();
-                    JIPipeLogLevel level = minLevel;
                     if (mergeOlder) {
                         // The window before the loaded history (exactly one page wide)
                         from = Math.max(firstLine, fromHint);
                         List<JIPipeProgressRecord> raw = s.readRecords(from, Math.max(1, prevFrom - from));
-                        page = filterPage(raw, nodeId, level);
+                        page = filterPage(raw, nodeId);
                         hasOlder = from > firstLine;
                     } else {
                         int tailStart = Math.max(firstLine, lastLine - DETAIL_PAGE_SIZE + 1);
                         // Keep the history pages the user already loaded
                         from = state.loaded ? Math.min(state.pageFromLine, tailStart) : tailStart;
                         List<JIPipeProgressRecord> raw = s.readRecords(from, Math.max(1, lastLine - from + 1));
-                        page = filterPage(raw, nodeId, level);
+                        page = filterPage(raw, nodeId);
                         hasOlder = from > firstLine;
                     }
                 }
@@ -753,10 +835,22 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
         });
     }
 
-    private static List<JIPipeProgressRecord> filterPage(List<JIPipeProgressRecord> raw, int nodeId, JIPipeLogLevel level) {
+    /**
+     * Filters one read window down to the detail rows of a node: renderable records of the node
+     * itself that pass the category filter (R22), plus run-level notification records ({@code w},
+     * warning category) that fall into the window — they render inside the node whose range covers
+     * them. Progress/node/node-finished records render nothing and are dropped here.
+     */
+    private List<JIPipeProgressRecord> filterPage(List<JIPipeProgressRecord> raw, int nodeId) {
+        EnumSet<RecordCategory> visible = visibleCategories;
         List<JIPipeProgressRecord> filtered = new ArrayList<>();
         for (JIPipeProgressRecord record : raw) {
-            if (recordNodeId(record) != nodeId || !passesLevel(record, level)) {
+            RecordCategory category = categoryOf(record);
+            if (category == null || !visible.contains(category)) {
+                continue;
+            }
+            int id = recordNodeId(record);
+            if (id != nodeId && !(record instanceof JIPipeProgressRecord.Notification)) {
                 continue;
             }
             filtered.add(record);
@@ -796,12 +890,22 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
         refreshNow();
     }
 
-    private void setMinLevel(JIPipeLogLevel level) {
-        if (minLevel == level) {
-            return;
+    /**
+     * Applies a category toggle (R22): updates the visible set, re-reads the detail pages of the
+     * expanded nodes (the filter changes what they show), and refreshes the row list (the debug
+     * chips depend on the visibility).
+     *
+     * @param category the category
+     * @param visible  whether the category's records are shown
+     */
+    private void toggleCategory(RecordCategory category, boolean visible) {
+        EnumSet<RecordCategory> next = EnumSet.copyOf(visibleCategories);
+        if (visible) {
+            next.add(category);
+        } else {
+            next.remove(category);
         }
-        minLevel = level;
-        // The level filter changes what the detail pages (and the debug chips) show
+        visibleCategories = next;
         JIPipeProgressLog s = store;
         if (s != null) {
             for (NodeUiState state : nodeStates.values()) {
@@ -814,8 +918,23 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
     }
 
     // -------------------------------------------------------------------------
-    // Footer, spinners, auto-scroll
+    // Footer, filter buttons, spinners, auto-scroll
     // -------------------------------------------------------------------------
+
+    /**
+     * EDT: updates the toggle buttons' labels with the live per-category record counts (the
+     * glanceable volumes; counts are accumulated off the EDT).
+     */
+    private void updateCategoryButtons() {
+        debugToggleButton.setText("debug (" + formatCount(categoryCounts[RecordCategory.DEBUG.ordinal()].get()) + ")");
+        infoToggleButton.setText("info (" + formatCount(categoryCounts[RecordCategory.INFO.ordinal()].get()) + ")");
+        warningToggleButton.setText("warning (" + formatCount(categoryCounts[RecordCategory.WARNING.ordinal()].get()) + ")");
+        errorToggleButton.setText("error (" + formatCount(categoryCounts[RecordCategory.ERROR.ordinal()].get()) + ")");
+    }
+
+    private static String formatCount(long count) {
+        return NumberFormat.getIntegerInstance().format(count);
+    }
 
     private void updateFooter() {
         JIPipeProgressLog s = store;
@@ -962,6 +1081,11 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
     private void toggleNode(int nodeId) {
         NodeUiState state = nodeState(nodeId);
         state.expanded = !state.expanded;
+        if (state.expanded) {
+            expandedNodeIds.add(nodeId);
+        } else {
+            expandedNodeIds.remove(nodeId);
+        }
         JIPipeProgressLog s = store;
         if (state.expanded && s != null && !state.loaded && !state.loading) {
             loadDetailPage(s, nodeId, false);
@@ -1001,14 +1125,14 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
             return;
         }
         int gen = generation.get();
-        JIPipeLogLevel level = minLevel;
         backgroundExecutor.submit(() -> {
             try {
                 // Bounded render from the store's tail (a full render of a huge log must not be
-                // copied into the clipboard)
+                // copied into the clipboard); the compat text render keeps its INFO-minLevel
+                // behavior regardless of the category filter (R22)
                 List<JIPipeProgressRecord> recent = s.readRecent(COPY_LINE_LIMIT);
                 StringBuilder builder = new StringBuilder();
-                s.renderRecords(recent, level, line -> builder.append(line).append('\n'));
+                s.renderRecords(recent, JIPipeLogLevel.INFO, line -> builder.append(line).append('\n'));
                 String text = builder.toString();
                 SwingUtilities.invokeLater(() -> {
                     if (gen == generation.get()) {
@@ -1076,14 +1200,6 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
             return headRecord.ts();
         }
         return 0;
-    }
-
-    /**
-     * Whether a record passes the level filter (log records must be at or above the minimum level;
-     * all other records have no level and pass — same rule as the store's renderer).
-     */
-    private static boolean passesLevel(JIPipeProgressRecord record, JIPipeLogLevel level) {
-        return !(record instanceof JIPipeProgressRecord.Log logRecord) || logRecord.lv() >= level.value();
     }
 
     /**
@@ -1177,8 +1293,7 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
                     boolean interactive = row instanceof JIPipeDesktopProgressTreeRowRenderer.NodeRow nodeRow && nodeRow.isExpandable()
                             || row instanceof JIPipeDesktopProgressTreeRowRenderer.DetailRow detailRow && detailRow.hasStack()
                             || row instanceof JIPipeDesktopProgressTreeRowRenderer.StackRow
-                            || row instanceof JIPipeDesktopProgressTreeRowRenderer.MoreRow
-                            || row instanceof JIPipeDesktopProgressTreeRowRenderer.DebugHiddenRow;
+                            || row instanceof JIPipeDesktopProgressTreeRowRenderer.MoreRow;
                     setCursor(Cursor.getPredefinedCursor(interactive ? Cursor.HAND_CURSOR : Cursor.DEFAULT_CURSOR));
                 }
             };
@@ -1222,8 +1337,6 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
                 refreshNow();
             } else if (row instanceof JIPipeDesktopProgressTreeRowRenderer.MoreRow moreRow) {
                 showOlderRecords(moreRow.nodeId());
-            } else if (row instanceof JIPipeDesktopProgressTreeRowRenderer.DebugHiddenRow) {
-                levelComboBox.setSelectedIndex(1);
             }
         }
 
@@ -1244,6 +1357,9 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
                             builder.append(" — ").append(progress);
                         }
                         builder.append(" [").append(node.getState()).append("]");
+                        if (node.getLocation() != null) {
+                            builder.append("\n").append(node.getLocation());
+                        }
                     }
                 }
                 return builder.toString();
@@ -1252,9 +1368,9 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
                     return logRecord.m();
                 } else if (detailRow.record() instanceof JIPipeProgressRecord.Error errorRecord) {
                     return errorRecord.c() + (errorRecord.m() == null || errorRecord.m().isEmpty() ? "" : ": " + errorRecord.m());
+                } else if (detailRow.record() instanceof JIPipeProgressRecord.Notification notificationRecord) {
+                    return notificationRecord.h() + (notificationRecord.d() == null || notificationRecord.d().isEmpty() ? "" : ": " + notificationRecord.d());
                 }
-            } else if (row instanceof JIPipeDesktopProgressTreeRowRenderer.DebugHiddenRow debugRow) {
-                return "DEBUG records are hidden by the current level filter";
             }
             return null;
         }
