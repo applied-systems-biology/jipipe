@@ -922,12 +922,11 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
     // -------------------------------------------------------------------------
 
     /**
-     * EDT: updates the toggle buttons' labels with the live per-category record counts (the
-     * glanceable volumes; counts are accumulated off the EDT).
+     * EDT: updates the warning/error toggle buttons' labels with the live record counts (the
+     * glanceable volumes; counts are accumulated off the EDT). The debug/info buttons carry plain
+     * labels per the literal R22 design.
      */
     private void updateCategoryButtons() {
-        debugToggleButton.setText("debug (" + formatCount(categoryCounts[RecordCategory.DEBUG.ordinal()].get()) + ")");
-        infoToggleButton.setText("info (" + formatCount(categoryCounts[RecordCategory.INFO.ordinal()].get()) + ")");
         warningToggleButton.setText("warning (" + formatCount(categoryCounts[RecordCategory.WARNING.ordinal()].get()) + ")");
         errorToggleButton.setText("error (" + formatCount(categoryCounts[RecordCategory.ERROR.ordinal()].get()) + ")");
     }
