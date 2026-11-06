@@ -22,7 +22,6 @@ import org.hkijena.jipipe.utils.ThemeUtils;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.RoundRectangle2D;
-import java.awt.image.BufferedImage;
 import java.text.NumberFormat;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -49,7 +48,6 @@ public class JIPipeDesktopProgressTreeRowRenderer implements ListCellRenderer<JI
 
     private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm:ss").withZone(ZoneId.systemDefault());
     private static final int INDENT_PER_LEVEL = 22;
-    private static final Font PROGRESS_TEXT_FONT = new Font(Font.MONOSPACED, Font.PLAIN, 11);
 
     /**
      * One row of the flat tree list. Sealed: the row types below.
@@ -160,11 +158,39 @@ public class JIPipeDesktopProgressTreeRowRenderer implements ListCellRenderer<JI
     private final Color colorStackForeground = new Color(0xd9dde4);
 
     /**
-     * Width of the fixed v/mx text sub-column, measured from the actual monospace font using the
-     * widest sensible value ({@code 8888/8888 (888%)}) plus a little slack — a hardcoded width
-     * clipped right-aligned values into wrong leading digits (e.g. "42/100 (42%)" in 80px).
+     * Font-identity cache for the fixed text-bearing columns: the widths are derived from the live
+     * fonts (theme mono size for the v/mx text, the list font for the phase/status column) and stay
+     * stable for as long as the font object is the same — which is what aligns the columns across
+     * rows. A different font object (user font/size change → the theme reinstalls component fonts)
+     * re-derives them once, not per row.
      */
-    private final int progressTextColumnWidth;
+    private Font measuredFont;
+    private Font progressTextFont;
+    private Font phaseFont;
+    private int progressTextColumnWidth;
+    private int phaseColumnWidth;
+
+    /**
+     * Re-derives the font-dependent geometry when the list's font changed (identity check — one
+     * {@code stringWidth} per font change, not per row). Called from
+     * {@link #getListCellRendererComponent} before any row is rendered.
+     *
+     * @param list the rendering list (its font is the basis; its font metrics do the measuring)
+     */
+    private void updateFontDependentWidths(JList<?> list) {
+        Font listFont = list.getFont();
+        if (listFont == measuredFont) {
+            return;
+        }
+        measuredFont = listFont;
+        // Monospace text in rows uses the theme's normal font size (codebase precedent:
+        // JIPipeDesktopLogViewLogUI), not a hardcoded size
+        progressTextFont = new Font(Font.MONOSPACED, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeNormal());
+        phaseFont = listFont.deriveFont(listFont.getSize2D() - 0.5f);
+        progressTextColumnWidth = list.getFontMetrics(progressTextFont).stringWidth("8888/8888 (888%)") + 4;
+        // Widest sensible phase/status text: a run running for a full day in seconds
+        phaseColumnWidth = list.getFontMetrics(phaseFont).stringWidth("running 86400s") + 6;
+    }
 
     /**
      * @param spinnerIcon the shared running spinner (its repaint parent is the list)
@@ -183,13 +209,6 @@ public class JIPipeDesktopProgressTreeRowRenderer implements ListCellRenderer<JI
         colorRowBackground = themeStyle.getPanelBackground();
         colorDetailBackground = mix(themeStyle.getPanelBackground(), themeStyle.getTextForeground(), 0.035f);
         colorChipBackground = mix(themeStyle.getPanelBackground(), themeStyle.getTextForeground(), 0.07f);
-        // Measure once (the font is a fixed constant of the renderer; the width stays stable
-        // across rows, which is what the fixed segments require)
-        BufferedImage measureImage = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
-        Graphics2D measureGraphics = measureImage.createGraphics();
-        measureGraphics.setFont(PROGRESS_TEXT_FONT);
-        progressTextColumnWidth = measureGraphics.getFontMetrics().stringWidth("8888/8888 (888%)") + 4;
-        measureGraphics.dispose();
     }
 
     /**
@@ -211,6 +230,8 @@ public class JIPipeDesktopProgressTreeRowRenderer implements ListCellRenderer<JI
 
     @Override
     public Component getListCellRendererComponent(JList<? extends Row> list, Row value, int index, boolean isSelected, boolean cellHasFocus) {
+        // Font-relative geometry: re-derive the fixed text-column widths when the font changed
+        updateFontDependentWidths(list);
         if (value instanceof NodeRow nodeRow) {
             return renderNodeRow(list, nodeRow);
         } else if (value instanceof DetailRow detailRow) {
@@ -336,7 +357,7 @@ public class JIPipeDesktopProgressTreeRowRenderer implements ListCellRenderer<JI
         JLabel progressTextLabel = new JLabel(row.progressMax > 0
                 ? row.progressValue + "/" + row.progressMax + " (" + progressPercent(row) + "%)"
                 : "");
-        progressTextLabel.setFont(PROGRESS_TEXT_FONT);
+        progressTextLabel.setFont(progressTextFont);
         progressTextLabel.setForeground(colorDim);
         progressTextLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         progressTextLabel.setPreferredSize(new Dimension(progressTextColumnWidth, 14));
@@ -348,14 +369,14 @@ public class JIPipeDesktopProgressTreeRowRenderer implements ListCellRenderer<JI
         progressSegment.setAlignmentY(0.5f);
         east.add(progressSegment);
 
-        // The phase/status text is the last column: fixed width, right-aligned (rows without a
-        // phase reserve the same space)
+        // The phase/status text is the last column: fixed (font-derived) width, right-aligned
+        // (rows without a phase reserve the same space)
         JLabel phaseLabel = new JLabel(row.phaseText == null ? "" : row.phaseText);
-        phaseLabel.setFont(phaseLabel.getFont().deriveFont(11.5f));
+        phaseLabel.setFont(phaseFont);
         phaseLabel.setForeground(colorFaint);
         phaseLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-        phaseLabel.setPreferredSize(new Dimension(90, 14));
-        phaseLabel.setMaximumSize(new Dimension(90, 14));
+        phaseLabel.setPreferredSize(new Dimension(phaseColumnWidth, 14));
+        phaseLabel.setMaximumSize(new Dimension(phaseColumnWidth, 14));
         phaseLabel.setAlignmentY(0.5f);
         east.add(phaseLabel);
         panel.add(east, BorderLayout.EAST);
@@ -427,7 +448,7 @@ public class JIPipeDesktopProgressTreeRowRenderer implements ListCellRenderer<JI
         west.setOpaque(false);
         west.setLayout(new BoxLayout(west, BoxLayout.X_AXIS));
         JLabel tsLabel = new JLabel(TIME_FORMAT.format(Instant.ofEpochMilli(ts)));
-        tsLabel.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 11));
+        tsLabel.setFont(progressTextFont);
         tsLabel.setForeground(colorFaint);
         west.add(tsLabel);
         west.add(Box.createHorizontalStrut(8));
@@ -458,7 +479,7 @@ public class JIPipeDesktopProgressTreeRowRenderer implements ListCellRenderer<JI
 
     private Component renderStackRow(StackRow row) {
         JLabel label = new JLabel(row.line());
-        label.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 11));
+        label.setFont(progressTextFont);
         label.setForeground(colorStackForeground);
         label.setBackground(colorStackBackground);
         label.setOpaque(true);
