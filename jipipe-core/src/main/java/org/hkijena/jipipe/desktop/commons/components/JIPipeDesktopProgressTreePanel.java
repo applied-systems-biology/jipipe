@@ -62,26 +62,26 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * The v2 progress tree panel — the Swing implementation of the approved design contract
+ * The v2 progress tree panel - the Swing implementation of the approved design contract
  * ({@code docs/superpowers/specs/2026-11-04-progress-system-overhaul/ui/v2-progress-panel.html}).
  * Replaces the flat log in the run window; the AI monitor keeps the old
  * {@link JIPipeDesktopProgressLoggerPanel}.
  * <p>
  * <b>Update driver:</b> batch events ({@link #onProgressBatch}) arrive on the store's writer thread
  * and only mark the model dirty (they read the batch's records once to maintain the per-node
- * timestamp/debug counters — the same bounded batch reads the previous flat panels did, but no
+ * timestamp/debug counters - the same bounded batch reads the previous flat panels did, but no
  * rendering). A 250 ms {@link Timer} rebuilds the visible rows from the store's node index
  * (in-memory {@code getNode} reads) and schedules bounded record reads for expanded rows on a
  * background executor; results are applied on the EDT. No per-record work happens on the EDT.
  * <p>
- * <b>Row model:</b> a flat, virtualized {@link JList} of {@link Row} snapshots — node rows and
+ * <b>Row model:</b> a flat, virtualized {@link JList} of {@link Row} snapshots - node rows and
  * phase rows sit directly in the list; {@code PARTITION}-kind nodes are squashed into the dim
  * {@code P0} chip of their descendants (never rendered as rows). Expanded nodes show their records
  * in one of two detail modes (R30):
  * <ul>
  * <li><b>Virtual mode</b> (all of the node's own records pass the category toggles): the detail
  * block maps the node's own record lines contiguously (row ↔ line; the list extent equals the
- * detail size — the scrollbar is proportional to the real content). Lines load in chunks of
+ * detail size - the scrollbar is proportional to the real content). Lines load in chunks of
  * {@value #VIRTUAL_CHUNK_LINES} around the viewport via the checkpointed
  * {@code readRecords(fromLine, limit)} off the EDT; unloaded lines render as {@code …}
  * placeholder rows; the cache is pruned beyond the viewport window, so memory stays bounded
@@ -105,7 +105,7 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
      * R30 chunked virtual detail loading. A chunk covers {@value #VIRTUAL_CHUNK_LINES} of a node's
      * own record lines. Around the viewport's line span, {@value #VIRTUAL_PREFETCH_CHUNKS} chunks
      * toward each side are loaded, and {@value #VIRTUAL_CACHED_CHUNKS} chunks toward each side are
-     * kept — everything outside is pruned. The cache bound is therefore about
+     * kept - everything outside is pruned. The cache bound is therefore about
      * {@code (2 * VIRTUAL_CACHED_CHUNKS + 2) * VIRTUAL_CHUNK_LINES ≈ 13 × 512 ≈ 6,700} records per
      * expanded node (the +2 covers the chunks the viewport span itself straddles), independent of
      * the node's record count.
@@ -179,7 +179,7 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
     private volatile long fileSize;
 
     /**
-     * The visible record categories of the toggle-button filter (R22). Replaced — never mutated —
+     * The visible record categories of the toggle-button filter (R22). Replaced - never mutated -
      * on the EDT (button clicks); read on background threads (detail page filtering).
      */
     private volatile EnumSet<RecordCategory> visibleCategories = EnumSet.of(RecordCategory.INFO, RecordCategory.WARNING, RecordCategory.ERROR);
@@ -193,7 +193,7 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
     // EDT-only
     private final Map<Integer, Integer> rowPositions = new HashMap<>();
     /**
-     * The virtual detail blocks emitted by the current rebuild pass (R21) — passed to the row
+     * The virtual detail blocks emitted by the current rebuild pass (R21) - passed to the row
      * model's reset. EDT-only, valid only during {@code updateTreeModel}.
      */
     private final List<VirtualBlock> rebuildBlocks = new ArrayList<>();
@@ -217,7 +217,7 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
      */
     private int lastExpandedNodeId;
     /**
-     * True while a programmatic scroll runs — the adjustment listener must not interpret it as a
+     * True while a programmatic scroll runs - the adjustment listener must not interpret it as a
      * manual scroll-up (which disengages the detail autoscroll).
      */
     private boolean scrollProgrammatic;
@@ -225,7 +225,7 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
     /**
      * The model size at the last adjustment event: a model shrink (a closed stack trace, an
      * eroded parent window over a growing descendant) clamps the scrollbar value while the
-     * viewport stays pinned — that decrease is not a user scroll-up.
+     * viewport stays pinned - that decrease is not a user scroll-up.
      */
     private int lastScrollModelSize;
 
@@ -239,7 +239,7 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
     /**
      * Creates a new progress tree panel.
      *
-     * @param workbench the desktop workbench (used by the Export action; may be null — Export stays disabled)
+     * @param workbench the desktop workbench (used by the Export action; may be null - Export stays disabled)
      */
     public JIPipeDesktopProgressTreePanel(JIPipeDesktopWorkbench workbench) {
         this.workbench = workbench;
@@ -303,7 +303,7 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
             int modelSize = listModel.getSize();
             boolean scrolledUp = value < lastScrollValue;
             // A model shrink clamps the scrollbar value while the viewport stays pinned at the
-            // bottom — that decrease is not a user scroll-up (the follow re-asserts the tail
+            // bottom - that decrease is not a user scroll-up (the follow re-asserts the tail
             // position right after the rebuild)
             boolean modelShrank = modelSize < lastScrollModelSize;
             lastScrollValue = value;
@@ -415,7 +415,7 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
     // -------------------------------------------------------------------------
 
     /**
-     * Shows the progress of the given store (called with the run's current store — a graph run may
+     * Shows the progress of the given store (called with the run's current store - a graph run may
      * adopt a new store mid-flight; the first batch of the new store switches the view).
      *
      * @param newStore the store (may be null to clear)
@@ -432,7 +432,7 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
         // A store attached while its run already finished will not emit batches anymore, and
         // silent/stdout stores never emit: read their existing records once. Active file-backed
         // stores schedule the same catch-up from their first batch (covering only the pre-attach
-        // lines — batches cover the rest without double-counting).
+        // lines - batches cover the rest without double-counting).
         JIPipeProgressNode root = newStore != null ? newStore.getNode(newStore.getRootNodeId()) : null;
         if (newStore != null && (root == null || root.getState() != JIPipeProgressNodeState.RUNNING || newStore.getFile() == null)
                 && catchUpScheduled.compareAndSet(false, true)) {
@@ -452,7 +452,7 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
      * Handles ONE coalesced batch of the monitored store. Runs on the store's writer thread: reads
      * the batch's records once to maintain the per-node timestamp/debug counters (bounded by the
      * coalesce interval), marks the model dirty, and hops everything else to the EDT.
-     * The empty final batch (fromLine &gt; toLine) only triggers a refresh — the run's
+     * The empty final batch (fromLine &gt; toLine) only triggers a refresh - the run's
      * Finished/Interrupted events own the terminal state.
      *
      * @param batch the coalesced batch
@@ -491,7 +491,7 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
 
     public void setShowLogSelected(boolean selected) {
         showLogCheckBox.setSelected(selected);
-        // A programmatic setSelected fires no ActionEvent — the host restores the stored
+        // A programmatic setSelected fires no ActionEvent - the host restores the stored
         // RUN_QUEUE_SHOW_LOG setting through this setter, so the visibility must be applied here
         updateShowLogVisibility();
     }
@@ -659,8 +659,8 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
     }
 
     /**
-     * Reads all records before the given line (exclusive) once — covers the records that were
-     * written before the panel attached to the store — and applies them to the counters.
+     * Reads all records before the given line (exclusive) once - covers the records that were
+     * written before the panel attached to the store - and applies them to the counters.
      *
      * @param upToLineExclusive the last line to stop before ({@link Integer#MAX_VALUE} = until the end)
      */
@@ -729,8 +729,10 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
 
     /**
      * Rebuilds the flat row list from the store's node index (in-memory {@code getNode} reads only).
-     * The run's root node is emitted as the FIRST row (R26): its records hold the run-level
-     * narration (banner, version, data-flow-graph messages).
+     * The root node renders as a row only when it holds visible records (R33): non-graph runs
+     * keep their narration root row, while graph runs (V3-1: a recordless root, narration in the
+     * "Pipeline setup"/"Pipeline finished" phase rows) show their node and phase rows directly at
+     * the top level with no "Pipeline run" grouping row.
      */
     private void updateTreeModel(JIPipeProgressLog s) {
         List<JIPipeDesktopProgressTreeRowRenderer.Row> rows = new ArrayList<>();
@@ -749,14 +751,23 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
             childMap.computeIfAbsent(parentId, k -> new ArrayList<>()).add(id);
         }
         nodeState(s.getRootNodeId());
-        appendNodeRow(s, childMap, s.getNode(s.getRootNodeId()), 0, null, rows);
+        int rootNodeId = s.getRootNodeId();
+        NodeUiState rootState = nodeStates.get(rootNodeId);
+        if (rootState != null && visibleRecordCount(rootState) > 0) {
+            // Non-graph run: the root's own records render under the root row, as before (R26)
+            appendNodeRow(s, childMap, s.getNode(rootNodeId), 0, null, rows);
+        } else {
+            // Graph run (or a root whose records are all hidden by the toggles): no grouping row;
+            // the top-level children start at depth 0. A recordless root also has no detail area.
+            walkChildren(s, childMap, rootNodeId, 0, null, rows);
+        }
         listModel.reset(rows, new ArrayList<>(rebuildBlocks));
     }
 
     /**
      * Emits one node row (with its detail rows when expanded) and recurses into its visible
      * children. All visibility/expandability/badge numbers are computed under the CURRENT filter
-     * state (R27/R29) — the full-row-snapshot rebuild (R21) recomputes them on every dirty tick
+     * state (R27/R29) - the full-row-snapshot rebuild (R21) recomputes them on every dirty tick
      * and on toggle flips without any accounting changes.
      */
     private void appendNodeRow(JIPipeProgressLog s, Map<Integer, List<Integer>> childMap,
@@ -810,7 +821,7 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
         rowPositions.put(id, rows.size() - 1 + rebuildBlockShift);
         if (state != null && state.expanded) {
             if (state.virtual != null) {
-                // R30 virtual mode: the node's own records all pass the current toggles — the
+                // R30 virtual mode: the node's own records all pass the current toggles - the
                 // detail area becomes a contiguous virtual block (row ↔ own record line) whose
                 // rows are served from the chunk cache; a late batch that brings records hidden
                 // by the toggles demotes the node back to the paged mode
@@ -847,7 +858,7 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
                 continue;
             }
             if (node.getKind() == JIPipeProgressNodeKind.PARTITION) {
-                // v2 decision: partitions squash into the dim chip of their descendants — no row,
+                // v2 decision: partitions squash into the dim chip of their descendants - no row,
                 // same depth (the data model still records them; the UI spends no tree level)
                 walkChildren(s, childMap, id, depth, partitionChipFor(id), rows);
                 continue;
@@ -876,7 +887,7 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
     /**
      * Counts the descendant NODES of a node that are visible under the current filters (the R29
      * badge number). Squashed partition nodes contribute no row and are not counted, but their
-     * children are; DEBUG-level nodes count as hidden — together with their whole subtree — while
+     * children are; DEBUG-level nodes count as hidden - together with their whole subtree - while
      * the debug toggle is off (R27). Walks the child map built in this cycle.
      */
     private int countVisibleDescendantNodes(JIPipeProgressLog s, Map<Integer, List<Integer>> childMap, int nodeId) {
@@ -889,7 +900,7 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
                 continue;
             }
             if (node.getKind() == JIPipeProgressNodeKind.PARTITION) {
-                // Squashed: not a row — but its children are rows, so recurse without counting it
+                // Squashed: not a row - but its children are rows, so recurse without counting it
                 List<Integer> partitionChildren = childMap.get(id);
                 if (partitionChildren != null) {
                     for (int child : partitionChildren) {
@@ -981,7 +992,7 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
     private void scheduleDetailReloads(JIPipeProgressLog s) {
         for (Integer nodeId : pendingNodeIds) {
             NodeUiState state = nodeStates.get(nodeId);
-            // Remove per id (not clear()) — a batch concurrently adding ids must not lose them
+            // Remove per id (not clear()) - a batch concurrently adding ids must not lose them
             pendingNodeIds.remove(nodeId);
             if (state == null || !state.expanded || state.loading) {
                 continue;
@@ -996,13 +1007,13 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
     }
 
     /**
-     * Reads a page of a node's records from the store (off the EDT — checkpointed seek + bounded
+     * Reads a page of a node's records from the store (off the EDT - checkpointed seek + bounded
      * parse) and applies it on the EDT.
      * <ul>
      * <li>Default (refresh/expand): the node's last page (up to {@value #DETAIL_PAGE_SIZE} records),
      * extended upwards by any older pages the user loaded before.</li>
      * <li>{@code older}: the page before the currently loaded history, prepended to it
-     * ("Show N older records from run data…" — the shown records accumulate).</li>
+     * ("Show N older records from run data…" - the shown records accumulate).</li>
      * </ul>
      *
      * @param nodeId the node
@@ -1065,7 +1076,7 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
     /**
      * Filters one read window down to the detail rows of a node: renderable records of the node
      * itself that pass the category filter (R22), plus run-level notification records ({@code w},
-     * warning category) that fall into the window — they render inside the node whose range covers
+     * warning category) that fall into the window - they render inside the node whose range covers
      * them. Progress/node/node-finished records render nothing and are dropped here.
      */
     private List<JIPipeProgressRecord> filterPage(List<JIPipeProgressRecord> raw, int nodeId) {
@@ -1105,7 +1116,7 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
             state.hasOlder = hasOlder;
         } else {
             if (state.pageFromLine > 0 && state.pageFromLine < from) {
-                // An older-page merge happened since this read was scheduled — it stays visible;
+                // An older-page merge happened since this read was scheduled - it stays visible;
                 // the next batch refresh re-reads from its (earlier) start
                 return;
             }
@@ -1153,7 +1164,7 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
                 } else if (!state.loading && state.loaded) {
                     if (ownHiddenRecordCount(state) == 0) {
                         // Promote to virtual; a previous chunk cache is still valid (it holds
-                        // unfiltered records — the category filter applies per rendered row)
+                        // unfiltered records - the category filter applies per rendered row)
                         state.loaded = false;
                         state.pageFromLine = 0;
                         state.detailPage = List.of();
@@ -1176,7 +1187,7 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
 
     /**
      * The node's own record count that the current category toggles hide (Log records per level
-     * plus Error records — all ERROR-category). Notifications are not attributed to nodes and
+     * plus Error records - all ERROR-category). Notifications are not attributed to nodes and
      * are filtered per rendered row instead.
      */
     private long ownHiddenRecordCount(NodeUiState state) {
@@ -1206,11 +1217,11 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
     private VirtualBlock buildVirtualBlock(JIPipeProgressLog s, Map<Integer, List<Integer>> childMap,
                                            JIPipeProgressNode node, int rowsBefore, NodeUiState state) {
         // Child nodes open with their own n record (renders nothing); the run root has no n
-        // record — its first line is a real record
+        // record - its first line is a real record
         long from = node.getId() == s.getRootNodeId() ? node.getFirstLine() : node.getFirstLine() + 1L;
         long to = node.getLastLine();
         // The end is NOT trimmed: a node's last line is its N record only when it finished
-        // normally — the run root has no N record, and a node may log past its N record
+        // normally - the run root has no N record, and a node may log past its N record
         if (to < from) {
             return null;
         }
@@ -1299,7 +1310,7 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
      * Prunes the node's chunk cache to the currently visible viewport's keep window. Called on
      * the EDT apply path: a queued read can land long after its scheduling event (a fast fling
      * across a huge block queues a read per traversed chunk), so the bound is re-enforced when
-     * each read lands. A block that is currently not visible keeps nothing — its chunks are
+     * each read lands. A block that is currently not visible keeps nothing - its chunks are
      * re-read on the next viewport change.
      */
     private void pruneChunkCache(int nodeId, VirtualDetailState virtual) {
@@ -1316,7 +1327,7 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
 
     /**
      * Ensures the chunks around the viewport of every visible virtual block are loaded (R30) and
-     * prunes the caches outside the viewport window (≈13 chunks per expanded node — see the
+     * prunes the caches outside the viewport window (≈13 chunks per expanded node - see the
      * {@code VIRTUAL_*} constants).
      */
     private void scheduleVirtualChunkLoads(JIPipeProgressLog s) {
@@ -1368,7 +1379,7 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
      * would strand the rows between the cached length and the window end as permanent
      * placeholders. A short (or empty) read stays uncached and retries on the next scheduling
      * event (bounded by the event rate; a truncated final line is never requested because the
-     * node index never counts it). The keep-window bound is re-enforced when the read lands —
+     * node index never counts it). The keep-window bound is re-enforced when the read lands -
      * a fling can have moved the viewport far away while the read was in flight.
      */
     private void submitChunkRead(JIPipeProgressLog s, int gen, int nodeId, int baseLine, int span) {
@@ -1409,7 +1420,7 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
         NodeUiState state = nodeStates.get(block.nodeId);
         VirtualDetailState virtual = state != null ? state.virtual : null;
         if (virtual == null) {
-            // The block is stale (the mode changed since this rebuild) — replaced on the next tick
+            // The block is stale (the mode changed since this rebuild) - replaced on the next tick
             return new JIPipeDesktopProgressTreeRowRenderer.PlaceholderRow(block.nodeId);
         }
         int adjusted = row;
@@ -1446,7 +1457,7 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
             return new JIPipeDesktopProgressTreeRowRenderer.DetailRow(block.nodeId, record, false, false, (int) line);
         }
         // Progress/node/node-finished records (and interleaved records of other nodes) render
-        // nothing — the row keeps the line mapping exact
+        // nothing - the row keeps the line mapping exact
         return new JIPipeDesktopProgressTreeRowRenderer.SkipRow(block.nodeId);
     }
 
@@ -1467,13 +1478,13 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
                     ensureVisibleRow(block.startIndex + block.extent - 1);
                 }
             } else if (state.loaded && !state.loading) {
-                // Paged go-to-end: land on the LAST row of the detail block (the newest record —
+                // Paged go-to-end: land on the LAST row of the detail block (the newest record -
                 // the page's rows have replaced the old ones here). While a page load is in
                 // flight the request stays pending; applyDetailPage's refresh re-issues it.
                 scrollToDetailEndNodeId = 0;
                 ensureVisibleRow(lastDetailRowIndex(nodeId));
             }
-            // else: a paged page load is in flight — the request is consumed once its rows apply
+            // else: a paged page load is in flight - the request is consumed once its rows apply
         }
         if (!detailAutoscroll || autoscrollNodeId <= 0) {
             return;
@@ -1493,7 +1504,7 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
 
     /**
      * The row index of the last row of a node's detail block: the rows between the node's row
-     * and the next node row (its first visible child, or the next sibling — whichever follows).
+     * and the next node row (its first visible child, or the next sibling - whichever follows).
      * Returns -1 when the node's row is not in the current model (an ancestor is collapsed).
      */
     private int lastDetailRowIndex(int nodeId) {
@@ -1636,7 +1647,7 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
         if (running) {
             footerStateLabel.setIcon(footerSpinner);
         } else {
-            // Finished states show a resource icon (16px, the same icons the rest of the run UI uses) —
+            // Finished states show a resource icon (16px, the same icons the rest of the run UI uses) -
             // no UTF-8 glyphs, which rendered inconsistently across fonts
             switch (rootState) {
                 case OK -> footerStateLabel.setIcon(JIPipe.RESOURCES.getIcon16("emblems/emblem-success.png"));
@@ -1651,7 +1662,7 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
         if (running && latest != null) {
             String chain = labelPath(s, latest);
             String progress = progressText(latest);
-            status = chain + (progress.isEmpty() ? "" : " — " + progress);
+            status = chain + (progress.isEmpty() ? "" : " - " + progress);
             if (status.isBlank()) {
                 status = "Running ...";
             }
@@ -1706,7 +1717,7 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
                     }
                 });
             } catch (IOException ignored) {
-                // The file may not exist yet (nothing flushed) — keep the current footer
+                // The file may not exist yet (nothing flushed) - keep the current footer
             }
         });
     }
@@ -1807,7 +1818,7 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
         if (!openStacks.remove(key)) {
             openStacks.add(key);
             if (state != null && state.virtual != null && line > 0 && error.st() != null) {
-                // Virtual mode: the open stack inserts its lines after the error row — the block
+                // Virtual mode: the open stack inserts its lines after the error row - the block
                 // snapshot carries the anchor (rebuilt by the refresh below)
                 state.virtual.stackAnchors.add(new StackAnchor(line, key, error.st().split("\n")));
             }
@@ -1826,7 +1837,7 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
     }
 
     private static String errorKey(int nodeId, JIPipeProgressRecord.Error error) {
-        // Records carry no sequence number — the stable identity of an error across page re-reads
+        // Records carry no sequence number - the stable identity of an error across page re-reads
         // is its node, timestamp, and class (identical errors at the same millisecond merge)
         return nodeId + "@" + error.ts() + "@" + error.c();
     }
@@ -2009,7 +2020,7 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
     /**
      * The virtual detail state of one expanded node (R30 unfiltered mode; created on expansion,
      * freed on collapse and on mode switches). The chunk cache is pruned to the viewport window
-     * on every tick and on every chunk apply — the bound is about 13 chunks × 512 ≈ 6,700
+     * on every tick and on every chunk apply - the bound is about 13 chunks × 512 ≈ 6,700
      * records per node (see the {@code VIRTUAL_*} constants), independent of the node's record
      * count. Mutated on the EDT only.
      */
@@ -2031,8 +2042,8 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
 
     /**
      * One virtual detail block in the row space (rebuilt per dirty tick with the rest of the row
-     * snapshot, R21): the node's own record lines — its range minus its descendants' ranges,
-     * since descendants render under their own rows — mapped flat and contiguous. Row
+     * snapshot, R21): the node's own record lines - its range minus its descendants' ranges,
+     * since descendants render under their own rows - mapped flat and contiguous. Row
      * {@code startIndex + j} resolves to a raw line, or to a line of an open stack trace (which
      * inserts extra rows after its error row). Chunk loads change row content, never indices:
      * the extent is stable while loading.
@@ -2173,7 +2184,7 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
     /**
      * The flat row list's model: the materialized row snapshot (rebuilt per dirty tick, R21)
      * plus the virtual detail blocks (R30). A block occupies a contiguous index range; its rows
-     * are computed on demand from the chunk cache — the {@link JList} asks only for the visible
+     * are computed on demand from the chunk cache - the {@link JList} asks only for the visible
      * indices, so a node with millions of records costs O(viewport) per paint while the
      * scrollbar is proportional to the real content (the virtual scrollbar).
      */
@@ -2242,7 +2253,7 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
             VirtualBlock block = blockAt(index);
             if (block == null) {
                 // A materialized row: the flat index includes the extents of the virtual blocks
-                // emitted before it — subtract them (blocks are few; the walk is trivial)
+                // emitted before it - subtract them (blocks are few; the walk is trivial)
                 int shift = 0;
                 for (VirtualBlock earlier : blocks) {
                     if (earlier.startIndex >= index) {
@@ -2345,7 +2356,7 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
          * The rows fill the viewport width (no horizontal scrolling: long detail messages clip,
          * the tooltip carries the full text). This also keeps the Swing list's layout state
          * O(1): without a fixed cell width, the UI walks EVERY model index to find the widest
-         * row — catastrophic with virtual detail extents of millions of rows.
+         * row - catastrophic with virtual detail extents of millions of rows.
          */
         @Override
         public boolean getScrollableTracksViewportWidth() {
@@ -2384,7 +2395,7 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
                     if (node != null) {
                         String progress = progressText(node);
                         if (!progress.isEmpty()) {
-                            builder.append(" — ").append(progress);
+                            builder.append(" - ").append(progress);
                         }
                         builder.append(" [").append(node.getState()).append("]");
                         if (node.getLocation() != null) {

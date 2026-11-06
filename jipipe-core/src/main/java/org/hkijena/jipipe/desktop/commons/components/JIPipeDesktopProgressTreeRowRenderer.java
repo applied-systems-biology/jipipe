@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.desktop.commons.components;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.progress.JIPipeLogLevel;
 import org.hkijena.jipipe.api.progress.JIPipeProgressNodeState;
 import org.hkijena.jipipe.api.progress.JIPipeProgressRecord;
@@ -28,11 +29,11 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
 /**
- * Renders the flat rows of the {@link JIPipeDesktopProgressTreePanel} — the Swing implementation of
+ * Renders the flat rows of the {@link JIPipeDesktopProgressTreePanel} - the Swing implementation of
  * the v2 design contract ({@code docs/superpowers/specs/2026-11-04-progress-system-overhaul/ui/v2-progress-panel.html}).
  * <p>
  * Rows are plain data snapshots (built by the panel's refresh cycle); the renderer is stateless
- * except for its prebuilt colors. Rows are painted fresh per render call — the list renders only
+ * except for its prebuilt colors. Rows are painted fresh per render call - the list renders only
  * the visible rows (virtualized), so allocations are bounded by the viewport.
  * <p>
  * Node rows: indent, expander caret, state icon (running spinner / done / failed / cancelled),
@@ -41,7 +42,7 @@ import java.time.format.DateTimeFormatter;
  * progress bar with mono {@code v/mx (pct%)} text, and a phase tag (duration / {@code running Ns} /
  * {@code failed}). Detail rows: timestamp + level + message (WARN/ERROR tinted), error rows with a
  * one-line summary and a {@code Show stack trace} toggle, dark monospace stack lines,
- * {@code Show N older records from run data…} and {@code N DEBUG records hidden — switch to Level:
+ * {@code Show N older records from run data…} and {@code N DEBUG records hidden - switch to Level:
  * DEBUG} action rows.
  */
 public class JIPipeDesktopProgressTreeRowRenderer implements ListCellRenderer<JIPipeDesktopProgressTreeRowRenderer.Row> {
@@ -119,7 +120,7 @@ public class JIPipeDesktopProgressTreeRowRenderer implements ListCellRenderer<JI
     /**
      * One record of an expanded node (log message or error summary).
      * <p>
-     * {@code line} is the record's line number — the identity used by the virtual detail layer
+     * {@code line} is the record's line number - the identity used by the virtual detail layer
      * (R30) to cache and to toggle stack traces; the paged mode uses it only for identity.
      */
     public record DetailRow(int nodeId, JIPipeProgressRecord record, boolean hasStack, boolean stackOpen, int line) implements Row {
@@ -180,7 +181,7 @@ public class JIPipeDesktopProgressTreeRowRenderer implements ListCellRenderer<JI
     /**
      * Font-identity cache for the fixed text-bearing columns: the widths are derived from the live
      * fonts (theme mono size for the v/mx text, the list font for the phase/status column) and stay
-     * stable for as long as the font object is the same — which is what aligns the columns across
+     * stable for as long as the font object is the same - which is what aligns the columns across
      * rows. A different font object (user font/size change → the theme reinstalls component fonts)
      * re-derives them once, not per row.
      */
@@ -191,7 +192,7 @@ public class JIPipeDesktopProgressTreeRowRenderer implements ListCellRenderer<JI
     private int phaseColumnWidth;
 
     /**
-     * Re-derives the font-dependent geometry when the list's font changed (identity check — one
+     * Re-derives the font-dependent geometry when the list's font changed (identity check - one
      * {@code stringWidth} per font change, not per row). Called from
      * {@link #getListCellRendererComponent} before any row is rendered.
      *
@@ -263,7 +264,7 @@ public class JIPipeDesktopProgressTreeRowRenderer implements ListCellRenderer<JI
         } else if (value instanceof LoadingRow) {
             return renderActionRow("Loading records…", colorFaint);
         } else if (value instanceof PlaceholderRow) {
-            // Unloaded chunk: a lightweight placeholder row — the chunk load for the surrounding
+            // Unloaded chunk: a lightweight placeholder row - the chunk load for the surrounding
             // viewport replaces it with the real rows
             return renderVirtualRow("…", colorFaint);
         } else if (value instanceof SkipRow) {
@@ -292,6 +293,8 @@ public class JIPipeDesktopProgressTreeRowRenderer implements ListCellRenderer<JI
         caretLabel.setForeground(colorDim);
         caretLabel.setPreferredSize(new Dimension(14, 14));
         west.add(caretLabel);
+        // Fixed gap so the caret triangle and the state icon never touch, at any indent level
+        west.add(Box.createHorizontalStrut(3));
 
         JLabel stateLabel = new JLabel();
         stateLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -299,13 +302,15 @@ public class JIPipeDesktopProgressTreeRowRenderer implements ListCellRenderer<JI
         if (row.state == JIPipeProgressNodeState.RUNNING) {
             stateLabel.setIcon(spinnerIcon);
         } else {
-            stateLabel.setText(row.state == JIPipeProgressNodeState.OK ? "✔" : "✖");
-            stateLabel.setFont(stateLabel.getFont().deriveFont(11.0f));
-            stateLabel.setForeground(switch (row.state) {
-                case OK -> colorOk;
-                case FAILED -> colorFail;
-                case CANCELLED -> colorDim;
-                default -> colorDim;
+            // Resource state icons (R33): no UTF8 glyphs (they render inconsistently across OS
+            // fonts); the same icons the footer's state label uses. CANCELLED previously fell
+            // into the failure glyph branch and now gets its own icon.
+            stateLabel.setText("");
+            stateLabel.setIcon(switch (row.state) {
+                case OK -> JIPipe.RESOURCES.getIcon16("emblems/emblem-success.png");
+                case FAILED -> JIPipe.RESOURCES.getIcon16("emblems/emblem-error.png");
+                case CANCELLED -> JIPipe.RESOURCES.getIcon16("actions/gtk-cancel.png");
+                default -> null;
             });
         }
         west.add(stateLabel);
@@ -340,8 +345,8 @@ public class JIPipeDesktopProgressTreeRowRenderer implements ListCellRenderer<JI
         }
         panel.add(center, BorderLayout.CENTER);
 
-        // East: right-aligned fixed-order segments — [+N badge] [progress bar + v/mx text]
-        // [phase/status text] — with stable widths, so bars and the status column align across
+        // East: right-aligned fixed-order segments - [+N badge] [progress bar + v/mx text]
+        // [phase/status text] - with stable widths, so bars and the status column align across
         // rows even when some rows lack progress (user report "Align")
         JPanel east = new JPanel();
         east.setOpaque(false);
@@ -372,7 +377,7 @@ public class JIPipeDesktopProgressTreeRowRenderer implements ListCellRenderer<JI
         }
 
         // The progress segment always occupies its fixed width (a row without determinate
-        // progress leaves it empty — no bar is painted, but the phase/status column does not
+        // progress leaves it empty - no bar is painted, but the phase/status column does not
         // shift); the v/mx text is right-aligned within its fixed sub-width
         JPanel progressSegment = new JPanel();
         progressSegment.setOpaque(false);
