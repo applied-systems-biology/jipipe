@@ -978,7 +978,7 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
                         nodeProgressHandle(algorithm, progressInfo).log("Backing up inputs of " + algorithm.getDisplayName() + " [" + uuid + "]");
                         Map<String, JIPipeDataTable> slotMap = new HashMap<>();
                         for (JIPipeInputDataSlot inputSlot : algorithm.getInputSlots()) {
-                            JIPipeDataTable backupTable = new JIPipeDataTable(inputSlot, true, progressInfo);
+                            JIPipeDataTable backupTable = new JIPipeDataTable(inputSlot, true, runProgress);
                             slotMap.put(inputSlot.getName(), backupTable);
                         }
                         continueOnErrorBackup.put(uuid, slotMap);
