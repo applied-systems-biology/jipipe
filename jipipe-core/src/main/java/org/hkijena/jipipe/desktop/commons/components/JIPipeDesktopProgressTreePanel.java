@@ -477,12 +477,15 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
                 state.lastTs.accumulateAndGet(ts, Math::max);
             }
             if (record instanceof JIPipeProgressRecord.Log logRecord) {
-                if (logRecord.lv() < JIPipeLogLevel.INFO.value()) {
-                    state.debugCount.incrementAndGet();
+                RecordCategory logCategory = categoryOfLevel(logRecord.lv());
+                switch (logCategory) {
+                    case DEBUG -> state.debugCount.incrementAndGet();
+                    case INFO -> state.infoCount.incrementAndGet();
+                    case WARNING -> state.warnCount.incrementAndGet();
+                    case ERROR -> state.errorCount.incrementAndGet();
                 }
-                state.renderableCount.incrementAndGet();
             } else if (record instanceof JIPipeProgressRecord.Error) {
-                state.renderableCount.incrementAndGet();
+                state.errorCount.incrementAndGet();
             }
             if (ts >= latestNodeTs) {
                 latestNodeTs = ts;
@@ -590,6 +593,8 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
 
     /**
      * Rebuilds the flat row list from the store's node index (in-memory {@code getNode} reads only).
+     * The run's root node is emitted as the FIRST row (R26): its records hold the run-level
+     * narration (banner, version, data-flow-graph messages).
      */
     private void updateTreeModel(JIPipeProgressLog s) {
         List<JIPipeDesktopProgressTreeRowRenderer.Row> rows = new ArrayList<>();
@@ -605,13 +610,75 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
             int parentId = node.getParentId() <= 0 ? s.getRootNodeId() : node.getParentId();
             childMap.computeIfAbsent(parentId, k -> new ArrayList<>()).add(id);
         }
-        walkRows(s, childMap, s.getRootNodeId(), 0, null, rows);
+        nodeState(s.getRootNodeId());
+        appendNodeRow(s, childMap, s.getNode(s.getRootNodeId()), 0, null, rows);
         listModel.removeAllElements();
         listModel.addAll(rows);
     }
 
-    private void walkRows(JIPipeProgressLog s, Map<Integer, List<Integer>> childMap, int parentId, int depth,
-                          String inheritedChip, List<JIPipeDesktopProgressTreeRowRenderer.Row> rows) {
+    /**
+     * Emits one node row (with its detail rows when expanded) and recurses into its visible
+     * children. All visibility/expandability/badge numbers are computed under the CURRENT filter
+     * state (R27/R29) — the full-row-snapshot rebuild (R21) recomputes them on every dirty tick
+     * and on toggle flips without any accounting changes.
+     */
+    private void appendNodeRow(JIPipeProgressLog s, Map<Integer, List<Integer>> childMap,
+                               JIPipeProgressNode node, int depth, String inheritedChip,
+                               List<JIPipeDesktopProgressTreeRowRenderer.Row> rows) {
+        int id = node.getId();
+        NodeUiState state = nodeStates.get(id);
+        // R29: the +N badge is the hidden CHILD NODE count only (visible under the current
+        // filters, never records); the triangle needs visible children or visible records
+        int visibleDescendantNodes = countVisibleDescendantNodes(s, childMap, id);
+        long visibleRecords = state != null ? visibleRecordCount(state) : 0;
+        boolean expandable = visibleDescendantNodes > 0 || visibleRecords > 0;
+        String label = node.getLabel();
+        if (label == null || label.isBlank()) {
+            label = "(unnamed)";
+        }
+        // The faint [uuid] suffix is derived from a node:// location URI (R23); other/absent
+        // locations render no suffix
+        String uuidSuffix = null;
+        String location = node.getLocation();
+        if (location != null && location.startsWith("node://")) {
+            String uuid = location.substring("node://".length());
+            if (!uuid.isBlank()) {
+                uuidSuffix = "[" + uuid + "]";
+            }
+        }
+        int debugChipCount = 0;
+        long firstTs = 0;
+        long lastTs = 0;
+        if (state != null) {
+            debugChipCount = visibleCategories.contains(RecordCategory.DEBUG)
+                    ? 0
+                    : (int) Math.min(Integer.MAX_VALUE, state.debugCount.get());
+            firstTs = state.firstTs.get();
+            lastTs = state.lastTs.get();
+        }
+        rows.add(new JIPipeDesktopProgressTreeRowRenderer.NodeRow(
+                id,
+                depth,
+                inheritedChip,
+                label,
+                uuidSuffix,
+                node.getState(),
+                expandable,
+                state != null && state.expanded,
+                visibleDescendantNodes,
+                debugChipCount,
+                node.getMaxProgress() > 0 ? node.getProgress() : -1,
+                node.getMaxProgress() > 0 ? node.getMaxProgress() : -1,
+                phaseText(node, firstTs, lastTs)));
+        rowPositions.put(id, rows.size() - 1);
+        if (state != null && state.expanded) {
+            appendDetailRows(rows, id, state, node);
+            walkChildren(s, childMap, id, depth + 1, inheritedChip, rows);
+        }
+    }
+
+    private void walkChildren(JIPipeProgressLog s, Map<Integer, List<Integer>> childMap, int parentId, int depth,
+                              String inheritedChip, List<JIPipeDesktopProgressTreeRowRenderer.Row> rows) {
         List<Integer> children = childMap.get(parentId);
         if (children == null) {
             return;
@@ -624,58 +691,15 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
             if (node.getKind() == JIPipeProgressNodeKind.PARTITION) {
                 // v2 decision: partitions squash into the dim chip of their descendants — no row,
                 // same depth (the data model still records them; the UI spends no tree level)
-                walkRows(s, childMap, id, depth, partitionChipFor(id), rows);
+                walkChildren(s, childMap, id, depth, partitionChipFor(id), rows);
                 continue;
             }
-            NodeUiState state = nodeStates.get(id);
-            boolean expandable = node.getDescendantNodeCount() > 0
-                    || (state != null && state.renderableCount.get() > 0)
-                    || node.getRecordCount() > 0;
-            String label = node.getLabel();
-            if (label == null || label.isBlank()) {
-                label = "(unnamed)";
+            if (node.getLevel() == JIPipeLogLevel.DEBUG && !visibleCategories.contains(RecordCategory.DEBUG)) {
+                // R27: DEBUG-level nodes hide with their whole subtree while the debug toggle is
+                // off (graph-run debug content: GC nodes and their records)
+                continue;
             }
-            // The faint [uuid] suffix is derived from a node:// location URI (R23); other/absent
-            // locations render no suffix
-            String uuidSuffix = null;
-            String location = node.getLocation();
-            if (location != null && location.startsWith("node://")) {
-                String uuid = location.substring("node://".length());
-                if (!uuid.isBlank()) {
-                    uuidSuffix = "[" + uuid + "]";
-                }
-            }
-            int badgeCount = (int) Math.min(Integer.MAX_VALUE,
-                    node.getRecordCount() + node.getDescendantNodeCount() + descendantRecordCount(s, childMap, id));
-            int debugCount = 0;
-            long firstTs = 0;
-            long lastTs = 0;
-            if (state != null) {
-                debugCount = visibleCategories.contains(RecordCategory.DEBUG)
-                        ? 0
-                        : (int) Math.min(Integer.MAX_VALUE, state.debugCount.get());
-                firstTs = state.firstTs.get();
-                lastTs = state.lastTs.get();
-            }
-            rows.add(new JIPipeDesktopProgressTreeRowRenderer.NodeRow(
-                    id,
-                    depth,
-                    inheritedChip,
-                    label,
-                    uuidSuffix,
-                    node.getState(),
-                    expandable,
-                    state != null && state.expanded,
-                    badgeCount,
-                    debugCount,
-                    node.getMaxProgress() > 0 ? node.getProgress() : -1,
-                    node.getMaxProgress() > 0 ? node.getMaxProgress() : -1,
-                    phaseText(node, firstTs, lastTs)));
-            rowPositions.put(id, rows.size() - 1);
-            if (state != null && state.expanded) {
-                appendDetailRows(rows, id, state, node);
-                walkRows(s, childMap, id, depth + 1, inheritedChip, rows);
-            }
+            appendNodeRow(s, childMap, node, depth, inheritedChip, rows);
         }
     }
 
@@ -692,10 +716,13 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
     }
 
     /**
-     * Sums the record counts of all descendants of a node (walks the child map built in this cycle).
+     * Counts the descendant NODES of a node that are visible under the current filters (the R29
+     * badge number). Squashed partition nodes contribute no row and are not counted, but their
+     * children are; DEBUG-level nodes count as hidden — together with their whole subtree — while
+     * the debug toggle is off (R27). Walks the child map built in this cycle.
      */
-    private long descendantRecordCount(JIPipeProgressLog s, Map<Integer, List<Integer>> childMap, int nodeId) {
-        long total = 0;
+    private int countVisibleDescendantNodes(JIPipeProgressLog s, Map<Integer, List<Integer>> childMap, int nodeId) {
+        int total = 0;
         Deque<Integer> stack = new ArrayDeque<>(childMap.getOrDefault(nodeId, List.of()));
         while (!stack.isEmpty()) {
             int id = stack.pop();
@@ -703,13 +730,49 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
             if (node == null) {
                 continue;
             }
-            total += node.getRecordCount();
+            if (node.getKind() == JIPipeProgressNodeKind.PARTITION) {
+                // Squashed: not a row — but its children are rows, so recurse without counting it
+                List<Integer> partitionChildren = childMap.get(id);
+                if (partitionChildren != null) {
+                    for (int child : partitionChildren) {
+                        stack.push(child);
+                    }
+                }
+                continue;
+            }
+            if (node.getLevel() == JIPipeLogLevel.DEBUG && !visibleCategories.contains(RecordCategory.DEBUG)) {
+                // Hidden with its whole subtree (R27)
+                continue;
+            }
+            total++;
             List<Integer> children = childMap.get(id);
             if (children != null) {
                 for (int child : children) {
                     stack.push(child);
                 }
             }
+        }
+        return total;
+    }
+
+    /**
+     * The node's own record count under the current category filter (the R29 triangle check:
+     * visible records &gt; 0 makes a records-only node expandable).
+     */
+    private long visibleRecordCount(NodeUiState state) {
+        EnumSet<RecordCategory> visible = visibleCategories;
+        long total = 0;
+        if (visible.contains(RecordCategory.DEBUG)) {
+            total += state.debugCount.get();
+        }
+        if (visible.contains(RecordCategory.INFO)) {
+            total += state.infoCount.get();
+        }
+        if (visible.contains(RecordCategory.WARNING)) {
+            total += state.warnCount.get();
+        }
+        if (visible.contains(RecordCategory.ERROR)) {
+            total += state.errorCount.get();
         }
         return total;
     }
@@ -1252,14 +1315,17 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
     /**
      * Per-node UI state. Created lazily by batch listeners (writer thread), the catch-up task
      * (background), and the EDT refresh cycle; counters are atomic. Display state (expansion,
-     * detail pages) is only written on the EDT.
+     * detail pages) is only written on the EDT. The per-category counters feed the R29
+     * visibility checks (expandability, visible records) and the debug chip.
      */
     private static final class NodeUiState {
         final int nodeId;
         final AtomicLong firstTs = new AtomicLong();
         final AtomicLong lastTs = new AtomicLong();
         final AtomicLong debugCount = new AtomicLong();
-        final AtomicLong renderableCount = new AtomicLong();
+        final AtomicLong infoCount = new AtomicLong();
+        final AtomicLong warnCount = new AtomicLong();
+        final AtomicLong errorCount = new AtomicLong();
         volatile boolean expanded;
         volatile boolean loading;
         volatile boolean loaded;

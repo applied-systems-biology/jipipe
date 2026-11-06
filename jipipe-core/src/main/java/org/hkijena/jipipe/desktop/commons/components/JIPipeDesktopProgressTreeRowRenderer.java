@@ -275,7 +275,9 @@ public class JIPipeDesktopProgressTreeRowRenderer implements ListCellRenderer<JI
         }
         panel.add(center, BorderLayout.CENTER);
 
-        // East: debug chip + hidden badge + progress bar + progress text + phase tag
+        // East: right-aligned fixed-order segments — [+N badge] [progress bar + v/mx text]
+        // [phase/status text] — with stable widths, so bars and the status column align across
+        // rows even when some rows lack progress (user report "Align")
         JPanel east = new JPanel();
         east.setOpaque(false);
         east.setLayout(new BoxLayout(east, BoxLayout.X_AXIS));
@@ -287,6 +289,7 @@ public class JIPipeDesktopProgressTreeRowRenderer implements ListCellRenderer<JI
             debugChip.setBackground(colorChipBackground);
             debugChip.setOpaque(true);
             debugChip.setBorder(BorderFactory.createEmptyBorder(1, 6, 1, 6));
+            debugChip.setAlignmentY(0.5f);
             east.add(debugChip);
             east.add(Box.createHorizontalStrut(6));
         }
@@ -298,29 +301,47 @@ public class JIPipeDesktopProgressTreeRowRenderer implements ListCellRenderer<JI
             badgeLabel.setBackground(colorChipBackground);
             badgeLabel.setOpaque(true);
             badgeLabel.setBorder(BorderFactory.createEmptyBorder(1, 6, 1, 6));
+            badgeLabel.setAlignmentY(0.5f);
             east.add(badgeLabel);
             east.add(Box.createHorizontalStrut(6));
         }
 
-        if (row.progressMax > 0) {
-            ProgressBar bar = new ProgressBar();
-            bar.setValue(row.progressValue, row.progressMax, barColor(row));
-            bar.setAlignmentY(0.5f);
-            east.add(bar);
-            east.add(Box.createHorizontalStrut(7));
-            JLabel progressTextLabel = new JLabel(row.progressValue + "/" + row.progressMax + " (" + progressPercent(row) + "%)");
-            progressTextLabel.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 11));
-            progressTextLabel.setForeground(colorDim);
-            east.add(progressTextLabel);
-        }
+        // The progress segment always occupies its fixed width (a row without determinate
+        // progress leaves it empty — no bar is painted, but the phase/status column does not
+        // shift); the v/mx text is right-aligned within its fixed sub-width
+        JPanel progressSegment = new JPanel();
+        progressSegment.setOpaque(false);
+        progressSegment.setLayout(new BoxLayout(progressSegment, BoxLayout.X_AXIS));
+        ProgressBar bar = new ProgressBar();
+        bar.setValue(row.progressValue, row.progressMax, barColor(row));
+        bar.setAlignmentY(0.5f);
+        progressSegment.add(bar);
+        progressSegment.add(Box.createHorizontalStrut(6));
+        JLabel progressTextLabel = new JLabel(row.progressMax > 0
+                ? row.progressValue + "/" + row.progressMax + " (" + progressPercent(row) + "%)"
+                : "");
+        progressTextLabel.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 11));
+        progressTextLabel.setForeground(colorDim);
+        progressTextLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+        progressTextLabel.setPreferredSize(new Dimension(80, 14));
+        progressTextLabel.setMaximumSize(new Dimension(80, 14));
+        progressSegment.add(progressTextLabel);
+        Dimension progressSegmentSize = new Dimension(110 + 6 + 80, 18);
+        progressSegment.setPreferredSize(progressSegmentSize);
+        progressSegment.setMaximumSize(progressSegmentSize);
+        progressSegment.setAlignmentY(0.5f);
+        east.add(progressSegment);
 
-        if (row.phaseText != null && !row.phaseText.isEmpty()) {
-            east.add(Box.createHorizontalStrut(8));
-            JLabel phaseLabel = new JLabel(row.phaseText);
-            phaseLabel.setFont(phaseLabel.getFont().deriveFont(11.5f));
-            phaseLabel.setForeground(colorFaint);
-            east.add(phaseLabel);
-        }
+        // The phase/status text is the last column: fixed width, right-aligned (rows without a
+        // phase reserve the same space)
+        JLabel phaseLabel = new JLabel(row.phaseText == null ? "" : row.phaseText);
+        phaseLabel.setFont(phaseLabel.getFont().deriveFont(11.5f));
+        phaseLabel.setForeground(colorFaint);
+        phaseLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+        phaseLabel.setPreferredSize(new Dimension(90, 14));
+        phaseLabel.setMaximumSize(new Dimension(90, 14));
+        phaseLabel.setAlignmentY(0.5f);
+        east.add(phaseLabel);
         panel.add(east, BorderLayout.EAST);
 
         return panel;
@@ -482,6 +503,11 @@ public class JIPipeDesktopProgressTreeRowRenderer implements ListCellRenderer<JI
 
         @Override
         protected void paintComponent(Graphics g) {
+            if (max <= 0) {
+                // No determinate progress: no bar is painted (the segment width is still reserved
+                // so the phase/status column aligns across rows)
+                return;
+            }
             Graphics2D graphics2D = (Graphics2D) g.create();
             graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             int width = getWidth();
