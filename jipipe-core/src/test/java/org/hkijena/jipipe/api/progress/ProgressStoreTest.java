@@ -182,7 +182,8 @@ class ProgressStoreTest {
     }
 
     @Test
-    void stateWireLiteralsAreMappedExplicitly() throws Exception {        Path file = tmp.resolve("states.ndjson");
+    void stateWireLiteralsAreMappedExplicitly() throws Exception {
+        Path file = tmp.resolve("states.ndjson");
         try (JIPipeProgressLog store = JIPipeProgressLog.create(file, "states", "States")) {
             int failed = store.beginNode(store.getRootNodeId(), "Failed node", JIPipeProgressNodeKind.ITEM);
             store.nodeFinished(failed, JIPipeProgressNodeState.FAILED);

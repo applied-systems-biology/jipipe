@@ -583,14 +583,18 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
             // Non-iterating mode
             // R26: the partition node is a PARTITION-kind grouping node (squashed by the panel into a
             // chip); partition-scope narration goes to the run root, the partition handle is solely
-            // the parent for node rows
+            // the parent for node rows.
+            // Binding: 5th argument = the PARTITION handle (parent of node rows and op children),
+            // 6th argument = the run-root handle (narration, progress, spacers, failure banners).
             JIPipeProgressInfo partitionProgress = progressInfo.resolve("Partition " + partitionId, JIPipeProgressNodeKind.PARTITION);
-            runPassThroughPartitionNodeSet(graph, partitionNodeSet, gcGraph, runtimePartition, progressInfo, partitionProgress);
+            runPassThroughPartitionNodeSet(graph, partitionNodeSet, gcGraph, runtimePartition, partitionProgress, progressInfo);
         } else {
             // R26: partition nodes are recordless — wrapper/partition machinery narration goes to
-            // the run root; the partition handle is solely the parent for node rows and op children
-            runIteratingPartitionNodeSet(graph, partitionNodeSet, gcGraph, runtimePartition, progressInfo,
-                    progressInfo.resolve("Looped partition " + partitionId, JIPipeProgressNodeKind.PARTITION));
+            // the run root; the partition handle is solely the parent for node rows and op children.
+            // Binding: 5th argument = the PARTITION handle (parent of node rows and op children),
+            // 6th argument = the run-root handle (narration, progress, spacers, failure banners).
+            JIPipeProgressInfo partitionProgress = progressInfo.resolve("Looped partition " + partitionId, JIPipeProgressNodeKind.PARTITION);
+            runIteratingPartitionNodeSet(graph, partitionNodeSet, gcGraph, runtimePartition, partitionProgress, progressInfo);
         }
     }
 
@@ -793,7 +797,7 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
             targetInputSlot.addDataFromTable(originalInputSlot, runProgress.resolve("I -> W-I"));
 
             // GC the original
-            originalInputSlot.clear(false, progressInfo);
+            originalInputSlot.clear(false, runProgress);
 
 //            System.out.println("GWI: " + targetInputSlot);
         }
@@ -820,7 +824,7 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
                 }
 
                 // Clean to prevent moving corrupted data out
-                graphWrapperAlgorithm.clearSlotData(false, progressInfo);
+                graphWrapperAlgorithm.clearSlotData(false, runProgress);
 
                 progressInfo.getNotifications().push(new JIPipeNotification(UUID.randomUUID().toString(), "Part of the pipeline failed",
                         "Iteration step for partition " + project.getRuntimePartitions().getFullName(runtimePartition) + " failed. " +
@@ -838,11 +842,11 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
             targetOutputSlot.addDataFromTable(sourceOutputSlot, runProgress.resolve("W-O -> O [" + sourceOutputSlot.getDisplayName() + " >>> " + targetOutputSlot.getDisplayName() + "]"));
 
             // GC the wrapped
-            sourceOutputSlot.clear(false, progressInfo);
+            sourceOutputSlot.clear(false, runProgress);
         }
 
         // Cleanup to be sure
-        graphWrapperAlgorithm.clearSlotData(false, progressInfo);
+        graphWrapperAlgorithm.clearSlotData(false, runProgress);
 
         // Trigger GC
         if (gcGraph != null) {
@@ -1003,7 +1007,7 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
                 }
 
                 // Dump errored data
-                exportFailedInputs(graph, nodeFilter, continueOnErrorBackup, progressInfo);
+                exportFailedInputs(graph, nodeFilter, continueOnErrorBackup, runProgress);
 
                 // Cleanup
                 while (!dataFlowGraph.vertexSet().isEmpty()) {
@@ -1025,7 +1029,7 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
             // Cleanup backup tables
             for (Map.Entry<UUID, Map<String, JIPipeDataTable>> nodeEntry : continueOnErrorBackup.entrySet()) {
                 for (JIPipeDataTable dataTable : nodeEntry.getValue().values()) {
-                    dataTable.clear(false, progressInfo);
+                    dataTable.clear(false, runProgress);
                 }
             }
 
