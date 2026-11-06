@@ -26,6 +26,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopSegmentedButtonGroup;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernThemeStyle;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopUITheme;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeModernThemeStyleParameter;
@@ -133,6 +134,13 @@ public class JIPipeDesktopAppearanceSection extends JPanel implements JIPipeDesk
      */
     private final double storedEffectiveScale;
     private final JIPipeDesktopSegmentedButtonGroup scaleGroup = new JIPipeDesktopSegmentedButtonGroup();
+
+    /**
+     * The scale segment that was selected when the section was opened: the one
+     * the running JVM applies. A different selection means the stored scale is
+     * waiting for a restart (see {@link ThemeUtils#setUiScaleRestartReason(String)}).
+     */
+    private int appliedScaleSegment;
 
     private boolean disposed;
 
@@ -511,7 +519,7 @@ public class JIPipeDesktopAppearanceSection extends JPanel implements JIPipeDesk
         }
         JIPipeDesktopModernThemeStyle style = ThemeUtils.getStyleFromId(styleId);
         previewPanel.setTheme(theme);
-        previewPanel.setThemeStyle(style);
+        previewPanel.setThemeStyle(style != null ? style : new JIPipeDesktopModernThemeStyle());
         // The preview scale is RELATIVE to the stored effective scale (1.0 =
         // "looks like now"). The old slider-derived formula was inaccurate:
         // the slider's value was unattached to the stored setting until the
@@ -537,6 +545,7 @@ public class JIPipeDesktopAppearanceSection extends JPanel implements JIPipeDesk
         // one, which only changes on restart): auto → nearest offered,
         // fractional → the integer the JVM truncates to.
         scaleGroup.setSelectedIndex(scaleSegmentOf(storedEffectiveScale));
+        appliedScaleSegment = scaleGroup.getSelectedIndex();
         // A click both updates the preview and is the Apply point (no drag
         // exists to defer the write to).
         scaleGroup.addSelectionListener(idx -> {
@@ -577,21 +586,30 @@ public class JIPipeDesktopAppearanceSection extends JPanel implements JIPipeDesk
             return;
         }
         double newScale = UIUtils.OFFERED_UI_SCALES.get(segmentIndex);
+        // The header hint follows the user's choice immediately (§1351): a
+        // scale other than the one the running JVM applies needs a restart.
+        updateScaleRestartReason(segmentIndex);
         // No write when the stored value already applies as the chosen scale
         // (e.g. a stored 2.5 and a 200% selection both truncate to 2).
         if (newScale == storedEffectiveScale) {
             return;
         }
-        boolean alsoImageJ = JOptionPane.showConfirmDialog(this,
-                "Do you want to apply your scale settings also to Fiji/ImageJ?",
+        boolean alsoImageJ = JIPipeDesktopDialogs.confirm(this,
                 "Apply",
-                JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
+                "Do you want to apply your scale settings also to Fiji/ImageJ?");
         if (!UIUtils.saveUIScaleToJaunch((float) newScale, alsoImageJ)) {
-            JOptionPane.showMessageDialog(workbench != null ? workbench.getWindow() : this,
-                    "Your UI scale setting of " + (int) Math.round(newScale * 100) + "% could not be saved.",
-                    "Appearance",
-                    JOptionPane.ERROR_MESSAGE);
+            JIPipeDesktopDialogs.message(workbench != null ? workbench.getWindow() : this, "Appearance", "Your UI scale setting of " + (int) Math.round(newScale * 100) + "% could not be saved.");
         }
+    }
+
+    /**
+     * Reports the chosen scale to the restart-needed state of the settings tab
+     * (the scale is not a settings key, so nothing else can see it).
+     *
+     * @param segmentIndex the selected segment
+     */
+    private void updateScaleRestartReason(int segmentIndex) {
+        ThemeUtils.setUiScaleRestartReason(segmentIndex == appliedScaleSegment ? null : "UI scale");
     }
 
     // ------------------------------------------------------------------
@@ -674,6 +692,11 @@ public class JIPipeDesktopAppearanceSection extends JPanel implements JIPipeDesk
             return;
         }
         disposed = true;
+        // Leave the restart hint of the header: it is this section's, and the
+        // header must not keep claiming a restart after the user moved away.
+        if (PAGE_ACCESSIBILITY.equals(page)) {
+            ThemeUtils.setUiScaleRestartReason(null);
+        }
         model.unsubscribe(documentListener);
         trees.clear();
         formPanel.clear();

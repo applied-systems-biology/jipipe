@@ -22,6 +22,8 @@ import org.hkijena.jipipe.api.data.storage.JIPipeZIPWriteDataStorage;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.tableeditor.JIPipeDesktopTableEditor;
 import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterFormPanel;
+import org.hkijena.jipipe.desktop.commons.dialogs.Button;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopSmallButtonRibbonAction;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopSmallToggleButtonRibbonAction;
@@ -172,17 +174,15 @@ public class FilamentsManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlug
 
     public Filaments3DGraphData getSelectedFilamentsOrAll(String title, String message) {
         if (!filamentsListControl.getSelectedValuesList().isEmpty()) {
-            int result = JOptionPane.showOptionDialog(getViewerPanel(),
-                    message,
+            Button allFilaments = Button.custom("All filaments (" + filamentsList.size() + ")").asDefault();
+            Button selectedFilaments = Button.custom("Selected filaments (" + filamentsListControl.getSelectedValuesList().size() + ")");
+            Optional<Button> result = JIPipeDesktopDialogs.choose(getViewerPanel(),
                     title,
-                    JOptionPane.YES_NO_CANCEL_OPTION,
-                    JOptionPane.QUESTION_MESSAGE,
-                    null,
-                    new Object[]{"All filaments (" + filamentsList.size() + ")", "Selected filaments (" + filamentsListControl.getSelectedValuesList().size() + ")", "Cancel"},
-                    "All filaments (" + filamentsList.size() + ")");
-            if (result == JOptionPane.CANCEL_OPTION)
+                    message,
+                    allFilaments, selectedFilaments);
+            if (result.isEmpty())
                 return null;
-            else if (result == JOptionPane.YES_OPTION) {
+            else if (result.get() == allFilaments) {
                 Filaments3DGraphData copy = new Filaments3DGraphData();
                 for (Filaments3DGraphData data : filamentsList) {
                     copy.mergeWith(data);
@@ -228,10 +228,9 @@ public class FilamentsManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlug
     }
 
     private void saveDefaults() {
-        if (JOptionPane.showConfirmDialog(getViewerPanel(),
-                "Do you want to save the filament display settings as default?",
+        if (JIPipeDesktopDialogs.confirm(getViewerPanel(),
                 "Save settings as default",
-                JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                "Do you want to save the filament display settings as default?")) {
             ImageViewerUIFilamentDisplayApplicationSettings settings = ImageViewerUIFilamentDisplayApplicationSettings.getInstance();
             settings.getFilamentDrawer().copyFrom(filamentsDrawer);
             settings.setShowFilaments(displayFilamentsViewMenuItem.getState());
@@ -381,7 +380,7 @@ public class FilamentsManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlug
     public void removeSelectedSpots(boolean deferUploadSlice) {
         if (filamentsListControl.getSelectedValuesList().isEmpty())
             return;
-        if (JOptionPane.showConfirmDialog(getViewerPanel(), "Do you really want to remove " + filamentsListControl.getSelectedValuesList().size() + "filaments?", "Delete filaments", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+        if (JIPipeDesktopDialogs.confirm(getViewerPanel(), "Delete filaments", "Do you really want to remove " + filamentsListControl.getSelectedValuesList().size() + "filaments?")) {
             filamentsList.removeAll(filamentsListControl.getSelectedValuesList());
             updateFilamentsJList(deferUploadSlice);
         }

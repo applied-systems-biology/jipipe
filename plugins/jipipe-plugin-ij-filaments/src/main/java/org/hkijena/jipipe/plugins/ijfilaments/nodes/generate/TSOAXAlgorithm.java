@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.api.nodes.AddJIPipeDesktopNodeQuickAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
@@ -181,10 +182,7 @@ public abstract class TSOAXAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         if (filePath != null) {
             openParameterFile(filePath);
             emitParameterUIChangedEvent();
-            JOptionPane.showMessageDialog(canvasUI.getDesktopWorkbench().getWindow(),
-                    "TSOAX parameters were successfully imported",
-                    "Load TSOAX parameters",
-                    JOptionPane.INFORMATION_MESSAGE);
+            JIPipeDesktopDialogs.message(canvasUI.getDesktopWorkbench().getWindow(), "Load TSOAX parameters", "TSOAX parameters were successfully imported");
         }
     }
 

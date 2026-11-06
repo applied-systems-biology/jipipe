@@ -26,6 +26,7 @@ import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.plugins.artifactsmanager.JIPipeDesktopArtifactManagerUI;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.artifacts.JIPipeArtifactApplicationSettings;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
@@ -135,7 +136,7 @@ public class JIPipeDesktopArtifactsOptionsControl extends JButton implements JIP
             }
         };
         JIPipeDesktopRunExecuteUI.runInDialog(workbench, workbench.getWindow(), runnable);
-        JOptionPane.showMessageDialog(workbench.getWindow(), "The operation finished", "Fix broken project-wide services", JOptionPane.INFORMATION_MESSAGE);
+        JIPipeDesktopDialogs.message(workbench.getWindow(), "Fix broken project-wide services", "The operation finished");
     }
 
     private void openEnvironmentApplicationSettings() {
@@ -152,11 +153,8 @@ public class JIPipeDesktopArtifactsOptionsControl extends JButton implements JIP
         settings.getRepositories().add(new JIPipeArtifactRepositoryReference("Local", selectedPath.toString(), "", JIPipeArtifactRepositoryType.LocalDirectory));
         JIPipe.getSettings().saveLater();
 
-        JOptionPane.showMessageDialog(workbench.getWindow(),
-                "<html>The local directory " + selectedPath + " was added to the list of repositories.<br/>" +
-                        "If you want to remove/change the repositories, navigate to the application settings.</html>",
-                "Add local repository",
-                JOptionPane.INFORMATION_MESSAGE);
+        JIPipeDesktopDialogs.message(workbench.getWindow(), "Add local repository", "<html>The local directory " + selectedPath + " was added to the list of repositories.<br/>" +
+                        "If you want to remove/change the repositories, navigate to the application settings.</html>");
 
         refreshArtifacts();
     }

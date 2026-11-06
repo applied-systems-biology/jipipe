@@ -26,6 +26,7 @@ import org.hkijena.jipipe.desktop.api.JIPipeDesktopMenuExtension;
 import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.ai.AIApplicationSettings;
 
 import javax.swing.*;
@@ -59,9 +60,7 @@ public class BuildAIEmbeddingIndexTool extends JIPipeDesktopMenuExtension {
     private void runBuildTool() {
         // Check if AI is enabled
         if (!AIApplicationSettings.getInstance().isEnableAI()) {
-            JOptionPane.showMessageDialog(getDesktopWorkbench().getWindow(),
-                    "AI functionality is disabled. Please enable it in the AI settings.",
-                    getText(), JOptionPane.WARNING_MESSAGE);
+            JIPipeDesktopDialogs.message(getDesktopWorkbench().getWindow(), getText(), "AI functionality is disabled. Please enable it in the AI settings.");
             return;
         }
 
@@ -84,9 +83,7 @@ public class BuildAIEmbeddingIndexTool extends JIPipeDesktopMenuExtension {
         final String modelId = resolvedModelId;
 
         if (modelId == null) {
-            JOptionPane.showMessageDialog(getDesktopWorkbench().getWindow(),
-                    "No embedding model is currently loaded. Please configure and load an embedding model first.",
-                    getText(), JOptionPane.ERROR_MESSAGE);
+            JIPipeDesktopDialogs.message(getDesktopWorkbench().getWindow(), getText(), "No embedding model is currently loaded. Please configure and load an embedding model first.");
             return;
         }
 
@@ -96,9 +93,7 @@ public class BuildAIEmbeddingIndexTool extends JIPipeDesktopMenuExtension {
         // Get the entries and split into global/local
         List<JIPipeNodeDatabaseEntry> entries = aiSearch.getEntries();
         if (entries.isEmpty()) {
-            JOptionPane.showMessageDialog(getDesktopWorkbench().getWindow(),
-                    "The node database is empty. Nothing to embed.",
-                    getText(), JOptionPane.INFORMATION_MESSAGE);
+            JIPipeDesktopDialogs.message(getDesktopWorkbench().getWindow(), getText(), "The node database is empty. Nothing to embed.");
             return;
         }
 
@@ -122,7 +117,7 @@ public class BuildAIEmbeddingIndexTool extends JIPipeDesktopMenuExtension {
         long alreadyEmbedded = alreadyEmbeddedGlobal + alreadyEmbeddedLocal;
 
         if (alreadyEmbedded > 0) {
-            if (JOptionPane.showConfirmDialog(getDesktopWorkbench().getWindow(), "There are already " + alreadyEmbedded + " embeddings. Clear them?", "Compute embeddings", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+            if (JIPipeDesktopDialogs.confirm(getDesktopWorkbench().getWindow(), "Compute embeddings", "There are already " + alreadyEmbedded + " embeddings. Clear them?")) {
                 globalDb.clearModel(modelId);
                 localDb.clearModel(modelId);
                 alreadyEmbedded = 0;
@@ -130,20 +125,18 @@ public class BuildAIEmbeddingIndexTool extends JIPipeDesktopMenuExtension {
         }
 
         if (alreadyEmbedded == entries.size()) {
-            JOptionPane.showMessageDialog(getDesktopWorkbench().getWindow(),
-                    "All " + entries.size() + " entries already have embeddings for model '" + modelId + "'.",
-                    getText(), JOptionPane.INFORMATION_MESSAGE);
+            JIPipeDesktopDialogs.message(getDesktopWorkbench().getWindow(), getText(), "All " + entries.size() + " entries already have embeddings for model '" + modelId + "'.");
             return;
         }
 
         // Confirm with the user
-        int result = JOptionPane.showConfirmDialog(getDesktopWorkbench().getWindow(),
+        boolean result = JIPipeDesktopDialogs.confirm(getDesktopWorkbench().getWindow(),
+                getText(),
                 "Compute embeddings for " + (entries.size() - alreadyEmbedded) + " entries " +
                         "(" + alreadyEmbedded + " already cached) using model '" + modelId + "'?\n\n" +
                         "Global entries: " + globalEntries.size() + ", Local entries: " + localEntries.size() + "\n\n" +
-                        "This may take a while depending on the number of entries.",
-                getText(), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-        if (result != JOptionPane.YES_OPTION) {
+                        "This may take a while depending on the number of entries.");
+        if (!result) {
             return;
         }
 

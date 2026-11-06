@@ -23,6 +23,9 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.slots.JIPipeDesktopAddAlgorithmSlotPanel;
 import org.hkijena.jipipe.desktop.commons.components.slots.JIPipeDesktopEditAlgorithmSlotPanel;
+import org.hkijena.jipipe.desktop.commons.dialogs.Button;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
+import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -31,6 +34,7 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -133,7 +137,7 @@ public class JIPipeDesktopGraphNodeSlotEditorUI extends JPanel implements JIPipe
             return;
         }
         if (!slot.getInfo().isUserModifiable()) {
-            JOptionPane.showMessageDialog(this, "This slot cannot be edited.", "Edit slot", JOptionPane.ERROR_MESSAGE);
+            JIPipeDesktopDialogs.message(this, "Edit slot", "This slot cannot be edited.");
             return;
         }
         if (slot.getSlotType() == JIPipeSlotType.Input && canModifyInputSlots()) {
@@ -146,9 +150,21 @@ public class JIPipeDesktopGraphNodeSlotEditorUI extends JPanel implements JIPipe
     private void relabelSlot() {
         JIPipeDataSlot slot = getSelectedSlot();
         if (slot != null) {
-            String newLabel = JOptionPane.showInputDialog(this,
-                    "Please enter a new label for the slot.\nLeave the text empty to remove an existing label.",
-                    slot.getInfo().getCustomName());
+            // Empty submit is a wanted value here (it removes the label), so
+            // this site uses the builder instead of inputText, whose empty
+            // submit counts as dismiss (spec #1341 §4.2). A dismissal makes no
+            // change (the former call passed the null result of a dismissal
+            // into setCustomName, clearing the label - not reproducible with
+            // the new API, where dismissal is not a value).
+            JTextField textField = new JTextField(StringUtils.nullToEmpty(slot.getInfo().getCustomName()));
+            Optional<Button> result = JIPipeDesktopDialogs.builder(this, "Input")
+                    .message("Please enter a new label for the slot.\nLeave the text empty to remove an existing label.")
+                    .content(textField)
+                    .buttons(Button.OK, Button.CANCEL)
+                    .show();
+            if (result.orElse(null) != Button.OK)
+                return;
+            String newLabel = textField.getText();
             if (editorUI.getHistoryJournal() != null) {
                 editorUI.getHistoryJournal().snapshotBeforeLabelSlot(slot, slot.getNode().getCompartmentUUIDInParentGraph());
             }
@@ -222,10 +238,7 @@ public class JIPipeDesktopGraphNodeSlotEditorUI extends JPanel implements JIPipe
         JIPipeMutableSlotConfiguration slotConfiguration = (JIPipeMutableSlotConfiguration) node.getSlotConfiguration();
         for (JIPipeDataSlot slot : toRemove) {
             if (!slot.getInfo().isUserModifiable()) {
-                JOptionPane.showMessageDialog(this,
-                        String.format("The slot '%s' cannot be remove.", slot.getName()),
-                        "Remove slot",
-                        JOptionPane.ERROR_MESSAGE);
+                JIPipeDesktopDialogs.message(this, "Remove slot", String.format("The slot '%s' cannot be remove.", slot.getName()));
                 continue;
             }
             if (editorUI.getHistoryJournal() != null) {

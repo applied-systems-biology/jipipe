@@ -1,1 +1,2 @@
 org.hkijena.jipipe.plugins.omero.ImageJLegacyPatcherLauncherSessionListener
+org.hkijena.jipipe.plugins.omero.TestProfileIsolationLauncherSessionListener

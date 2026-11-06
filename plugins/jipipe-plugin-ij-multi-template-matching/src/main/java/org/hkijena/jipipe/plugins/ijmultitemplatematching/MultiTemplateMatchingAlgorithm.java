@@ -40,6 +40,8 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.RegisterJIPipeParameterCollectionContextAction;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
+import org.hkijena.jipipe.desktop.commons.dialogs.Button;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
@@ -63,6 +65,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
@@ -462,23 +465,19 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
         formPanel.addToForm(startAngle, new JLabel("Start angle"), null);
         formPanel.addToForm(endAngle, new JLabel("End angle"), null);
         formPanel.addToForm(angleStep, new JLabel("Increment"), null);
-        int result = JOptionPane.showOptionDialog(
+        Optional<Button> result = JIPipeDesktopDialogs.builder(
                 ((JIPipeDesktopWorkbench) workbench).getWindow(),
-                new Object[]{formPanel},
-                "Generate angles",
-                JOptionPane.OK_CANCEL_OPTION,
-                JOptionPane.QUESTION_MESSAGE,
-                null, null, null);
+                "Generate angles")
+                .content(formPanel)
+                .buttons(Button.OK, Button.CANCEL)
+                .show();
 
-        if (result == JOptionPane.OK_OPTION) {
+        if (result.orElse(null) == Button.OK) {
             int startAngleValue = ((SpinnerNumberModel) startAngle.getModel()).getNumber().intValue();
             int endAngleValue = ((SpinnerNumberModel) endAngle.getModel()).getNumber().intValue();
             int step = ((SpinnerNumberModel) angleStep.getModel()).getNumber().intValue();
             if (endAngleValue < startAngleValue) {
-                JOptionPane.showMessageDialog(((JIPipeDesktopWorkbench) workbench).getWindow(),
-                        "The start angle must be less than the end angle!",
-                        "Generate angles",
-                        JOptionPane.ERROR_MESSAGE);
+                JIPipeDesktopDialogs.message(((JIPipeDesktopWorkbench) workbench).getWindow(), "Generate angles", "The start angle must be less than the end angle!");
                 return;
             }
             StringBuilder stringBuilder = new StringBuilder();

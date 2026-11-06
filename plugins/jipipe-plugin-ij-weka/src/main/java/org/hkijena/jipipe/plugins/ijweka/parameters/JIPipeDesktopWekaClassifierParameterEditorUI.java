@@ -16,6 +16,8 @@ package org.hkijena.jipipe.plugins.ijweka.parameters;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
+import org.hkijena.jipipe.desktop.commons.dialogs.Button;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.UIUtils;
 import weka.classifiers.Classifier;
@@ -27,6 +29,7 @@ import weka.gui.PropertyPanel;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Optional;
 
 public class JIPipeDesktopWekaClassifierParameterEditorUI extends JIPipeDesktopParameterEditorUI<WekaClassifierParameter> {
     private JButton currentlyDisplayed;
@@ -80,7 +83,12 @@ public class JIPipeDesktopWekaClassifierParameterEditorUI extends JIPipeDesktopP
                 "click the white area next to 'Choose'."), JIPipeDesktopFormPanel.WITH_SCROLLING | JIPipeDesktopFormPanel.WITH_DOCUMENTATION);
         formPanel.addToForm(propertyPanel, new JLabel("Classifier"), null);
 
-        if (UIUtils.showOKCancelDialog(getDesktopWorkbench().getWindow(), formPanel, "Edit classifier")) {
+        Optional<Button> result = JIPipeDesktopDialogs.builder(getDesktopWorkbench().getWindow(), "Edit classifier")
+                .content(formPanel)
+                .buttons(Button.OK, Button.CANCEL)
+                .size(800, 600)
+                .show();
+        if (result.orElse(null) == Button.OK) {
             WekaClassifierParameter newParameter = new WekaClassifierParameter();
             newParameter.setClassifier((Classifier) editor.getValue());
             setParameter(newParameter, true);

@@ -18,13 +18,18 @@ import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.model.ZipParameters;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.project.io.JIPipeLegacyProjectReader;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
+import org.hkijena.jipipe.plugins.filesystem.datasources.FileListDataSource;
+import org.hkijena.jipipe.plugins.parameters.library.filesystem.PathList;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -298,5 +303,58 @@ class JIPipeXProjectReaderTest {
                 "Expected the exception to name the missing required part '" + requiredPart + "', got: " + e.getMessage());
         assertFalse(e instanceof NullPointerException,
                 "The reader must not reach a NullPointerException for a missing required part: " + e);
+    }
+
+    /**
+     * A project with a File list node that references a file relatively must,
+     * after loading from a .jipx container, resolve the relative path against
+     * the project directory (the parent directory of the .jipx file), like
+     * the legacy reader does. Otherwise the node validation reports the path
+     * as missing although it exists inside the project directory (issue #1350).
+     */
+    @Test
+    void loadJipxPropagatesWorkDirectoryToNodes() throws IOException {
+        // The file that the File list node references relatively
+        Files.writeString(tmp.resolve("blobs.gif"), "fake image data");
+
+        JIPipeProject creator = new JIPipeProject();
+        creator.setWorkDirectory(tmp);
+        try {
+            // The node lives in a COMPARTMENT - real projects always place
+            // nodes inside a compartment (see JIPipeBackupRestoreTest)
+            JIPipeProjectCompartment compartment = creator.addCompartment("Main");
+            FileListDataSource node = JIPipe.createNode(FileListDataSource.class);
+            node.setFiles(new PathList(java.util.List.of(Path.of("blobs.gif"))));
+            creator.getGraph().insertNode(node, compartment.getProjectCompartmentUUID());
+
+            new JIPipeXProjectWriter().write(creator, tmp.resolve("blobs-test.jipx"), JIPipeProgressInfo.SILENT);
+        } finally {
+            creator.close(JIPipeProgressInfo.SILENT);
+        }
+
+        JIPipeProject project = new JIPipeXProjectReader().read(tmp.resolve("blobs-test.jipx"),
+                new UnspecifiedValidationReportContext(), new JIPipeValidationReport(),
+                new JIPipeNotificationInbox(), JIPipeProgressInfo.SILENT);
+        try {
+            FileListDataSource loadedNode = project.getGraph().getGraphNodes().stream()
+                    .filter(n -> n instanceof FileListDataSource)
+                    .map(FileListDataSource.class::cast)
+                    .findFirst().orElseThrow(() -> new AssertionError("the loaded project must contain the File list node"));
+            assertEquals(tmp, loadedNode.getProjectDirectory(),
+                    "loading a .jipx container must set the project directory of the loaded nodes");
+            assertEquals(tmp, loadedNode.getBaseDirectory(),
+                    "loading a .jipx container must set the base directory of the loaded nodes");
+
+            // The validation of the File list node must resolve 'blobs.gif'
+            // against the project directory, so the path exists
+            JIPipeValidationReport report = new JIPipeValidationReport();
+            loadedNode.reportValidity(new UnspecifiedValidationReportContext(), JIPipeValidationReportSettings.DEFAULT, report, JIPipeProgressInfo.SILENT);
+            for (JIPipeValidationReportEntry entry : report) {
+                assertNotEquals("Input path does not exist!", entry.getTitle(),
+                        "relative paths must be resolved against the project directory: " + entry.getExplanation());
+            }
+        } finally {
+            project.close(JIPipeProgressInfo.SILENT);
+        }
     }
 }

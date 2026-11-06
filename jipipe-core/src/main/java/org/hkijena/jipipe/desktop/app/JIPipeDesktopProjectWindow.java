@@ -42,6 +42,8 @@ import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
 import org.hkijena.jipipe.desktop.app.running.logs.JIPipeDesktopRunnableLogsCollection;
 import org.hkijena.jipipe.desktop.commons.components.app.JIPipeDesktopSplashScreen;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
+import org.hkijena.jipipe.desktop.commons.dialogs.Button;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.desktop.commons.events.WindowClosedEvent;
 import org.hkijena.jipipe.desktop.commons.events.WindowClosedEventEmitter;
 import org.hkijena.jipipe.desktop.commons.events.WindowOpenedEvent;
@@ -285,27 +287,20 @@ public class JIPipeDesktopProjectWindow extends JFrame {
         if (template.getZipFile() != null && Files.isRegularFile(template.getZipFile())) {
             try {
                 double sizeMB = Files.size(template.getZipFile()) / 1024.0 / 1024.0;
-                int result = JOptionPane.showOptionDialog(this,
+                Button loadWithData = Button.custom("Load with data").asDefault();
+                Button loadOnlyPipeline = Button.custom("Load only pipeline");
+                Optional<Button> selected = JIPipeDesktopDialogs.choose(this,
+                        "Load template",
                         "The template contains " + Precision.round(sizeMB, 2) + " MB of data.\nYou can choose to either load only the " +
                                 "pipeline or extract the template project and related data into a directory.",
-                        "Load template",
-                        JOptionPane.YES_NO_CANCEL_OPTION,
-                        JOptionPane.QUESTION_MESSAGE,
-                        null,
-                        new Object[]{"Load with data", "Load only pipeline", "Cancel"},
-                        "Load with data");
-                switch (result) {
-                    case JOptionPane.CANCEL_OPTION:
-                    case JOptionPane.CLOSED_OPTION: // the window's X / Escape cancels, too
-                        return;
-                    case JOptionPane.NO_OPTION:
-                        break;
-                    case JOptionPane.YES_OPTION:
-                        loadZipTarget = JIPipeDesktop.saveDirectory(this,
-                                getProjectWorkbench(),
-                                JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects,
-                                "Load template: Choose an empty directory", HTMLText.EMPTY);
-                        break;
+                        loadWithData, loadOnlyPipeline);
+                if (selected.isEmpty()) {
+                    return;
+                } else if (selected.get() == loadWithData) {
+                    loadZipTarget = JIPipeDesktop.saveDirectory(this,
+                            getProjectWorkbench(),
+                            JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects,
+                            "Load template: Choose an empty directory", HTMLText.EMPTY);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -320,10 +315,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                     SwingUtilities.invokeLater(() -> {
                         Path projectFile = PathUtils.findFileByExtensionRecursivelyIn(finalLoadZipTarget, ".jip");
                         if (projectFile == null) {
-                            JOptionPane.showMessageDialog(JIPipeDesktopProjectWindow.this,
-                                    "No project file in " + finalLoadZipTarget,
-                                    "Load template",
-                                    JOptionPane.ERROR_MESSAGE);
+                            JIPipeDesktopDialogs.message(JIPipeDesktopProjectWindow.this, "Load template", "No project file in " + finalLoadZipTarget);
                         }
                         openProject(projectFile, false);
                     });
@@ -391,26 +383,25 @@ public class JIPipeDesktopProjectWindow extends JFrame {
             // across NAS/SFTP/USB copies, the user decides which is current).
             Path jipxSibling = PathUtils.findJipxSibling(path);
             if (jipxSibling != null) {
-                int choice = JOptionPane.showOptionDialog(this,
+                Button openProjectCrate = Button.custom("Open project crate").asDefault();
+                Button openLegacyProject = Button.custom("Open legacy project");
+                Optional<Button> selected = JIPipeDesktopDialogs.choose(this,
+                        "Project crate available",
                         "A project crate of this project (" + jipxSibling.getFileName()
                                 + ") exists next to the legacy project. Open that one instead?",
-                        "Project crate available",
-                        JOptionPane.YES_NO_CANCEL_OPTION,
-                        JOptionPane.QUESTION_MESSAGE, null,
-                        new String[]{"Open project crate", "Open legacy project", "Cancel"},
-                        "Open project crate");
-                if (choice == JOptionPane.YES_OPTION) {
+                        openProjectCrate, openLegacyProject);
+                if (selected.orElse(null) == openProjectCrate) {
                     openProject(jipxSibling, forceCurrentWindow);
                     return;
                 }
                 // Anything that is not an explicit "open the legacy project"
-                // (NO_OPTION) aborts the open: CANCEL_OPTION (the Cancel
-                // button) and CLOSED_OPTION (the window's X / Escape) - a
-                // press of X must not be treated as a choice.
-                if (choice != JOptionPane.NO_OPTION) {
+                // aborts the open: the implicit Cancel button and a dismissal
+                // (the window's X / Escape) - a press of X must not be
+                // treated as a choice.
+                if (selected.isEmpty()) {
                     return;
                 }
-                // NO_OPTION: continue with the legacy .jip
+                // "Open legacy project": continue with the legacy .jip
             }
             JIPipeValidationReport report = new JIPipeValidationReport();
             JIPipeNotificationInbox notifications = new JIPipeNotificationInbox();
@@ -551,17 +542,15 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                 JIPipe.getInstance().getRecentProjects().add(path);
 
                 // Give user the option to either open in tab or cache
-                int selectedOption = JOptionPane.showOptionDialog(window,
+                Button loadInNewTab = Button.custom("Load in new tab").asDefault();
+                Button loadIntoCache = Button.custom("Load into cache");
+                Optional<Button> selected = JIPipeDesktopDialogs.choose(window,
+                        "Open JIPipe output",
                         "You can either open the output in a tab or load them into the cache. " +
                                 "Please note that caching the results might require large amounts of memory.",
-                        "Open JIPipe output",
-                        JOptionPane.YES_NO_CANCEL_OPTION,
-                        JOptionPane.QUESTION_MESSAGE,
-                        null,
-                        new Object[]{"Load in new tab", "Load into cache", "Cancel"},
-                        "Load in new tab");
+                        loadInNewTab, loadIntoCache);
 
-                if (selectedOption == JOptionPane.YES_OPTION) {
+                if (selected.orElse(null) == loadInNewTab) {
                     // Create a new tab
                     window.getProjectWorkbench().getDocumentTabPane().addTab("Results",
                             JIPipe.RESOURCES.getIcon16("actions/document-open-folder.png"),
@@ -569,7 +558,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                             JIPipeDesktopTabPane.CloseMode.withAskOnCloseButton,
                             true);
                     window.getProjectWorkbench().getDocumentTabPane().switchToLastTab();
-                } else if (selectedOption == JOptionPane.NO_OPTION) {
+                } else if (selected.orElse(null) == loadIntoCache) {
                     // Load into cache with a run
                     JIPipeDesktopRunExecuteUI.runInDialog(projectWorkbench, this, new JIPipeDesktopLoadResultDirectoryIntoCacheRun(projectWorkbench, project, path, true));
                 }
@@ -601,6 +590,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                 JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects,
                 "Open JIPipe project",
                 HTMLText.EMPTY,
+                PathUtils.EXTENSION_FILTER_JIP_JIPX,
                 PathUtils.EXTENSION_FILTER_JIP,
                 PathUtils.EXTENSION_FILTER_JIPX,
                 PathUtils.EXTENSION_FILTER_WORKFLOW_RO_CRATE);
@@ -655,20 +645,19 @@ public class JIPipeDesktopProjectWindow extends JFrame {
         if (!JIPipeProjectSaveTarget.isLegacyCompatible(getProject())) {
             savePath = PathUtils.replaceExtension(savePath, ".jip", ".jipx");
         } else if (JIPipeProjectSaveTarget.shouldPrompt(savePath, avoidDialog, updateSavePath)) {
-            int result = JOptionPane.showOptionDialog(this,
+            Button modernFormat = Button.custom("Modern format (Recommended)").asDefault();
+            Button legacyFormat = Button.custom("Legacy format");
+            Optional<Button> selected = JIPipeDesktopDialogs.choose(this,
+                    "Save project format",
                     "This project uses the legacy file format.\n" +
                             "Saving in the modern format writes a new file next to the legacy one, which is kept.",
-                    "Save project format",
-                    JOptionPane.YES_NO_CANCEL_OPTION,
-                    JOptionPane.QUESTION_MESSAGE, null,
-                    new Object[]{"Modern format (Recommended)", "Legacy format", "Cancel"},
-                    "Modern format (Recommended)");
-            if (result != JOptionPane.YES_OPTION && result != JOptionPane.NO_OPTION) {
-                // CANCEL_OPTION, and CLOSED_OPTION (Escape / closing the
-                // dialog window): abort the save (spec §7).
+                    modernFormat, legacyFormat);
+            if (selected.isEmpty()) {
+                // Dismissal (Escape / closing the dialog window): abort the
+                // save (spec §7).
                 return;
             }
-            if (result == JOptionPane.YES_OPTION) {
+            if (selected.get() == modernFormat) {
                 // A sibling .jipx in the same directory: replace the
                 // extension, preserving the base name's original casing -
                 // the original .jip is never touched on disk.
@@ -1019,16 +1008,21 @@ public class JIPipeDesktopProjectWindow extends JFrame {
      * @return The window that holds the project
      */
     private JIPipeDesktopProjectWindow openProjectInThisOrNewWindow(String messageTitle, JIPipeProject project, boolean showIntroduction, boolean isNewProject) {
-        switch (UIUtils.askOpenInCurrentWindow(this, messageTitle)) {
-            case JOptionPane.YES_OPTION:
-                closeAllBalloons();
-                closeCurrentProject();
-                loadProject(project, false, isNewProject);
-                return this;
-            case JOptionPane.NO_OPTION:
-                return newWindow(context, project, showIntroduction, isNewProject);
+        Button thisWindow = Button.custom("This window");
+        Button newWindow = Button.custom("New window").asDefault();
+        Optional<Button> selected = JIPipeDesktopDialogs.choose(this, messageTitle,
+                "Projects can either be opened in a new window or replace the project in an existing window.",
+                thisWindow, newWindow);
+        if (selected.isEmpty()) {
+            return null;
+        } else if (selected.get() == thisWindow) {
+            closeAllBalloons();
+            closeCurrentProject();
+            loadProject(project, false, isNewProject);
+            return this;
+        } else {
+            return newWindow(context, project, showIntroduction, isNewProject);
         }
-        return null;
     }
 
     private void closeCurrentProject() {
@@ -1093,14 +1087,14 @@ public class JIPipeDesktopProjectWindow extends JFrame {
         }
         try {
             if (Files.exists(directory) && Files.list(directory).count() > 0) {
-                if (JOptionPane.showConfirmDialog(this, "The selected directory " + directory + " is not empty. The contents will be deleted before writing the outputs. " +
-                        "Continue anyway?", "Save project and cache", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
+                if (!JIPipeDesktopDialogs.confirm(this, "Save project and cache", "The selected directory " + directory + " is not empty. The contents will be deleted before writing the outputs. " +
+                        "Continue anyway?")) {
                     return;
                 }
             }
             if (Files.exists(directory) && Files.list(directory).count() > 0 && !Files.exists(directory.resolve("project.jip"))) {
-                if (JOptionPane.showConfirmDialog(this, "The selected directory " + directory + " does not look like an old output. Please note that the directory will be deleted!" +
-                        "Continue anyway?", "Save project and cache", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
+                if (!JIPipeDesktopDialogs.confirm(this, "Save project and cache", "The selected directory " + directory + " does not look like an old output. Please note that the directory will be deleted!" +
+                        "Continue anyway?")) {
                     return;
                 }
             }
@@ -1175,38 +1169,34 @@ public class JIPipeDesktopProjectWindow extends JFrame {
         String uniqueFileNameNoExt = StringUtils.makeUniqueString(fileNameNoExt, "-", str -> Files.exists(baseExtractPath.resolve(str)));
         extractPath = baseExtractPath.resolve(uniqueFileNameNoExt);
 
-        int option;
+        Button continueButton = Button.custom("Continue").asDefault();
+        Button customPathButton = Button.custom("Select custom path");
+
+        Optional<Button> option;
 
         if (nonInteractive) {
-            option = JOptionPane.YES_OPTION;
+            option = Optional.of(continueButton);
         } else {
-            option = JOptionPane.showOptionDialog(this,
-                    "The RO-Crate will be extracted to:\n\n" + extractPath + "\n\nDo you want to continue or customize the path?",
+            option = JIPipeDesktopDialogs.choose(this,
                     "Import RO-Crate",
-                    JOptionPane.YES_NO_CANCEL_OPTION,
-                    JOptionPane.QUESTION_MESSAGE,
-                    null,
-                    new Object[]{"Continue", "Select custom path", "Cancel"},
-                    "Continue");
+                    "The RO-Crate will be extracted to:\n\n" + extractPath + "\n\nDo you want to continue or customize the path?",
+                    continueButton, customPathButton);
         }
 
-        // Any result that is not an explicit choice (the window's X /
-        // Escape) cancels the import.
-        if (option != JOptionPane.YES_OPTION && option != JOptionPane.NO_OPTION) {
+        // Any result that is not an explicit choice (a dismissal via the
+        // window's X / Escape) cancels the import.
+        if (option.isEmpty()) {
             return;
         }
 
         // Ask for a non-existing extract path
-        if (option == JOptionPane.NO_OPTION) {
+        if (option.get() == customPathButton) {
             while (true) {
                 extractPath = JIPipeDesktop.saveDirectory(this, getProjectWorkbench(), projectPath.getParent().resolve(fileNameNoExt), "Import JIPipe Workflow RO-Crate - Target directory",
                         new HTMLText("Please confirm where the RO-Crate contents will be extracted."));
                 if (extractPath != null) {
                     if (!PathUtils.isEmptyOrNonExistingDirectory(extractPath)) {
-                        JOptionPane.showMessageDialog(window,
-                                "The directory " + extractPath + " already exists or is non-empty. Please choose a different directory.",
-                                "Import JIPipe Workflow RO-Crate",
-                                JOptionPane.ERROR_MESSAGE);
+                        JIPipeDesktopDialogs.message(window, "Import JIPipe Workflow RO-Crate", "The directory " + extractPath + " already exists or is non-empty. Please choose a different directory.");
                     } else {
                         break;
                     }
@@ -1233,10 +1223,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                     Path projectFile = finalExtractPath.resolve("project.jip");
                     if (!Files.isRegularFile(projectFile)) {
                         SwingUtilities.invokeLater(() -> {
-                            JOptionPane.showMessageDialog(window,
-                                    "Unable to find project.jip file inside the extracted files!",
-                                    "Import JIPipe Workflow RO-Crate",
-                                    JOptionPane.ERROR_MESSAGE);
+                            JIPipeDesktopDialogs.message(window, "Import JIPipe Workflow RO-Crate", "Unable to find project.jip file inside the extracted files!");
                         });
                     } else {
                         SwingUtilities.invokeLater(() -> {

@@ -65,7 +65,8 @@ public class JIPipeDesktopPipelineGraphEditorRunManager extends JIPipeDesktopGra
 
     @Override
     protected void showResults() {
-        getDockPanel().activatePanel(JIPipeDesktopPipelineGraphEditorUI.DOCK_NODE_CONTEXT_RESULTS, true);
+        // Transient: must not enter the persisted layout (#1353)
+        getDockPanel().activatePanel(JIPipeDesktopPipelineGraphEditorUI.DOCK_NODE_CONTEXT_RESULTS, false);
         getDockPanel().getPanelComponent(JIPipeDesktopPipelineGraphEditorUI.DOCK_NODE_CONTEXT_RESULTS, JIPipeDesktopAlgorithmCacheBrowserUI.class).refreshTable();
     }
 

@@ -131,6 +131,14 @@ public class JIPipeXProjectReader implements JIPipeProjectReader {
         // machinery applies).
         project.fromJson(JIPipeProjectParts.assembleParts(parts, manifest.getJipipeVersion()),
                 context, report, notifications, progressInfo);
+        // (e2) Propagate the work directory into the nodes loaded by
+        // fromJson. The setWorkDirectory call in (a) ran while the graph
+        // was still empty, so without this call the loaded nodes keep
+        // unset base/project directories - relative paths of data source
+        // nodes would then fall back to the user home (issue #1350). The
+        // legacy reader calls setWorkDirectory after fromJson for the
+        // same reason.
+        project.setWorkDirectory(path.getParent());
         // (f) Same reader contract as the legacy reader.
         project.validateUserPaths(notifications);
         if (JIPipeProjectDefaultsApplicationSettings.getInstance().isAutoFixProjectEnvironments()) {

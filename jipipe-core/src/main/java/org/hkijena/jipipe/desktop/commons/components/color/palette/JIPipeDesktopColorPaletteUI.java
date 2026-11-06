@@ -24,6 +24,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.commons.components.layouts.JIPipeDesktopWrapLayout;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterFormPanel;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.parameters.ui.library.ColorParameterSettings;
 import org.hkijena.jipipe.utils.ColorUtils;
@@ -114,7 +115,7 @@ public class JIPipeDesktopColorPaletteUI extends JIPipeDesktopWorkbenchPanel {
     }
 
     private void deleteUserColor(JIPipeDesktopColorPaletteColor color) {
-        if (JOptionPane.showConfirmDialog(this, "Do you really want to remove the selected color?", "Remove custom color", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+        if (JIPipeDesktopDialogs.confirm(this, "Remove custom color", "Do you really want to remove the selected color?")) {
             userColors.removeColor(color);
         }
     }

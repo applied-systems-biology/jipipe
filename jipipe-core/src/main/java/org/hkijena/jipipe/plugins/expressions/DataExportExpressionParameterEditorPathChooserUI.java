@@ -11,6 +11,8 @@ import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.icons.JIPipeDesktopDualIcon;
 import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterFormPanel;
+import org.hkijena.jipipe.desktop.commons.dialogs.Button;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.expressions.ui.ExpressionBuilderSyntaxChecker;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
@@ -482,22 +484,27 @@ public class DataExportExpressionParameterEditorPathChooserUI extends JDialog {
                             Map<String, Path> userPathMap = project.getUserPathMap();
 
                             if (userPathMap.isEmpty()) {
-                                JOptionPane.showMessageDialog(this, "No project directories configured. Please visit the project settings.", "Select project user path", JOptionPane.ERROR_MESSAGE);
+                                JIPipeDesktopDialogs.message(this, "Select project user path", "No project directories configured. Please visit the project settings.");
                                 return;
                             }
 
-                            Object selected = JOptionPane.showInputDialog(this,
-                                    "Select the project user path key",
-                                    "Use project-wide user path",
-                                    JOptionPane.PLAIN_MESSAGE,
-                                    null,
-                                    userPathMap.keySet().toArray(new String[0]),
-                                    userPathMap.keySet().iterator().next());
-                            if (selected instanceof String) {
-                                entry.sourceType = EntrySourceType.ProjectUserPath;
-                                entry.content = (String) selected;
-                                onEntriesUpdated();
+                            // Original initialSelectionValue: the first key
+                            String[] userPathKeys = userPathMap.keySet().toArray(new String[0]);
+                            Button[] pathOptions = new Button[userPathKeys.length + 1];
+                            for (int keyIndex = 0; keyIndex < userPathKeys.length; keyIndex++) {
+                                pathOptions[keyIndex] = Button.custom(userPathKeys[keyIndex]);
                             }
+                            pathOptions[userPathKeys.length] = Button.CANCEL;
+                            pathOptions[0] = pathOptions[0].asDefault();
+                            Optional<Button> selected = JIPipeDesktopDialogs.choose(this,
+                                    "Use project-wide user path",
+                                    "Select the project user path key",
+                                    pathOptions);
+                            selected.ifPresent(chosen -> {
+                                entry.sourceType = EntrySourceType.ProjectUserPath;
+                                entry.content = chosen.getLabel();
+                                onEntriesUpdated();
+                            });
                         }
                     }));
             popupMenu.add(UIUtils.createMenuItem("Custom",
@@ -516,12 +523,12 @@ public class DataExportExpressionParameterEditorPathChooserUI extends JDialog {
                 "Use an annotation or expression variable",
                 JIPipe.RESOURCES.getIcon16("data-types/annotation.png"),
                 () -> {
-                    String name = JOptionPane.showInputDialog(this, "Enter variable name", "");
-                    if (!StringUtils.isNullOrEmpty(name)) {
-                        entry.sourceType = EntrySourceType.Variable;
-                        entry.content = name;
-                        onEntriesUpdated();
-                    }
+                    JIPipeDesktopDialogs.inputText(this, "Input", "Enter variable name", null)
+                            .ifPresent(name -> {
+                                entry.sourceType = EntrySourceType.Variable;
+                                entry.content = name;
+                                onEntriesUpdated();
+                            });
                 }));
         popupMenu.add(UIUtils.createMenuItem("Joined annotations/variables",
                 "Join multiple annotations/variables with a custom delimiter",
@@ -545,24 +552,24 @@ public class DataExportExpressionParameterEditorPathChooserUI extends JDialog {
                 "Input a raw expression",
                 JIPipe.RESOURCES.getIcon16("actions/insert-math-expression.png"),
                 () -> {
-                    String name = JOptionPane.showInputDialog(this, "Enter expression", "");
-                    if (!StringUtils.isNullOrEmpty(name)) {
-                        entry.sourceType = EntrySourceType.Expression;
-                        entry.content = name;
-                        onEntriesUpdated();
-                    }
+                    JIPipeDesktopDialogs.inputText(this, "Input", "Enter expression", null)
+                            .ifPresent(name -> {
+                                entry.sourceType = EntrySourceType.Expression;
+                                entry.content = name;
+                                onEntriesUpdated();
+                            });
                 }));
         if (i > 0) {
             popupMenu.add(UIUtils.createMenuItem("Custom",
                     "Enters a custom name",
                     JIPipe.RESOURCES.getIcon16("actions/text-convert-to-regular.png"),
                     () -> {
-                        String name = JOptionPane.showInputDialog(this, "Enter custom name", "");
-                        if (!StringUtils.isNullOrEmpty(name)) {
-                            entry.sourceType = EntrySourceType.Custom;
-                            entry.content = name;
-                            onEntriesUpdated();
-                        }
+                        JIPipeDesktopDialogs.inputText(this, "Input", "Enter custom name", null)
+                                .ifPresent(name -> {
+                                    entry.sourceType = EntrySourceType.Custom;
+                                    entry.content = name;
+                                    onEntriesUpdated();
+                                });
                     }));
             popupMenu.addSeparator();
             popupMenu.add(UIUtils.createMenuItem("Remove", "Removes this subdirectory",
@@ -627,12 +634,12 @@ public class DataExportExpressionParameterEditorPathChooserUI extends JDialog {
                 "Use an annotation or expression variable",
                 JIPipe.RESOURCES.getIcon16("data-types/annotation.png"),
                 () -> {
-                    String name = JOptionPane.showInputDialog(this, "Enter variable name", "");
-                    if (!StringUtils.isNullOrEmpty(name)) {
-                        entry.sourceType = EntrySourceType.Variable;
-                        entry.content = name;
-                        onEntriesUpdated();
-                    }
+                    JIPipeDesktopDialogs.inputText(this, "Input", "Enter variable name", null)
+                            .ifPresent(name -> {
+                                entry.sourceType = EntrySourceType.Variable;
+                                entry.content = name;
+                                onEntriesUpdated();
+                            });
                 }));
         popupMenu.add(UIUtils.createMenuItem("Joined annotations/variables",
                 "Join multiple annotations/variables with a custom delimiter",
@@ -656,23 +663,23 @@ public class DataExportExpressionParameterEditorPathChooserUI extends JDialog {
                 "Input a raw expression",
                 JIPipe.RESOURCES.getIcon16("actions/insert-math-expression.png"),
                 () -> {
-                    String name = JOptionPane.showInputDialog(this, "Enter expression", "");
-                    if (!StringUtils.isNullOrEmpty(name)) {
-                        entry.sourceType = EntrySourceType.Expression;
-                        entry.content = name;
-                        onEntriesUpdated();
-                    }
+                    JIPipeDesktopDialogs.inputText(this, "Input", "Enter expression", null)
+                            .ifPresent(name -> {
+                                entry.sourceType = EntrySourceType.Expression;
+                                entry.content = name;
+                                onEntriesUpdated();
+                            });
                 }));
         popupMenu.add(UIUtils.createMenuItem("Custom",
                 "Enters a custom name",
                 JIPipe.RESOURCES.getIcon16("actions/text-convert-to-regular.png"),
                 () -> {
-                    String name = JOptionPane.showInputDialog(this, "Enter custom name", "");
-                    if (!StringUtils.isNullOrEmpty(name)) {
-                        entry.sourceType = EntrySourceType.Custom;
-                        entry.content = name;
-                        onEntriesUpdated();
-                    }
+                    JIPipeDesktopDialogs.inputText(this, "Input", "Enter custom name", null)
+                            .ifPresent(name -> {
+                                entry.sourceType = EntrySourceType.Custom;
+                                entry.content = name;
+                                onEntriesUpdated();
+                            });
                 }));
     }
 

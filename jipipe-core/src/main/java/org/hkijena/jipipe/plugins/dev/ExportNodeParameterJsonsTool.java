@@ -27,6 +27,7 @@ import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopMenuExtension;
 import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -99,7 +100,7 @@ public class ExportNodeParameterJsonsTool extends JIPipeDesktopMenuExtension {
                 output.set("edges", JsonUtils.getObjectMapper().createArrayNode());
                 JsonUtils.saveToFile(output, outputDirectory.resolve(fileName));
             }
-            JOptionPane.showMessageDialog(getDesktopWorkbench().getWindow(), "OK", getText(), JOptionPane.INFORMATION_MESSAGE);
+            JIPipeDesktopDialogs.message(getDesktopWorkbench().getWindow(), getText(), "OK");
         }
     }
 

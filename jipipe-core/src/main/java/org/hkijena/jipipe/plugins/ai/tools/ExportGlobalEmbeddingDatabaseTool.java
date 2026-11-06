@@ -21,6 +21,7 @@ import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopMenuExtension;
 import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.ai.AIApplicationSettings;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
@@ -47,9 +48,7 @@ public class ExportGlobalEmbeddingDatabaseTool extends JIPipeDesktopMenuExtensio
     private void runExportTool() {
         // Check if AI is enabled
         if (!AIApplicationSettings.getInstance().isEnableAI()) {
-            JOptionPane.showMessageDialog(getDesktopWorkbench().getWindow(),
-                    "AI functionality is disabled. Please enable it in the AI settings.",
-                    getText(), JOptionPane.WARNING_MESSAGE);
+            JIPipeDesktopDialogs.message(getDesktopWorkbench().getWindow(), getText(), "AI functionality is disabled. Please enable it in the AI settings.");
             return;
         }
 
@@ -67,21 +66,19 @@ public class ExportGlobalEmbeddingDatabaseTool extends JIPipeDesktopMenuExtensio
         }
 
         if (modelId == null) {
-            JOptionPane.showMessageDialog(getDesktopWorkbench().getWindow(),
-                    "No embedding model is currently loaded. Please configure and load an embedding model first.",
-                    getText(), JOptionPane.ERROR_MESSAGE);
+            JIPipeDesktopDialogs.message(getDesktopWorkbench().getWindow(), getText(), "No embedding model is currently loaded. Please configure and load an embedding model first.");
             return;
         }
 
         // Check if there are any embeddings to export
         Set<String> nodeIds = embeddingDatabase.getNodeIds(modelId);
         if (nodeIds.isEmpty()) {
-            int result = JOptionPane.showConfirmDialog(getDesktopWorkbench().getWindow(),
+            boolean result = JIPipeDesktopDialogs.confirm(getDesktopWorkbench().getWindow(),
+                    getText(),
                     "The embedding database is empty for model '" + modelId + "'.\n" +
                             "You may need to compute embeddings first by using the AI search.\n\n" +
-                            "Do you want to continue anyway?",
-                    getText(), JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-            if (result != JOptionPane.YES_OPTION) {
+                            "Do you want to continue anyway?");
+            if (!result) {
                 return;
             }
         }
@@ -99,13 +96,11 @@ public class ExportGlobalEmbeddingDatabaseTool extends JIPipeDesktopMenuExtensio
 
             // Verify the export by re-checking the count
             int count = nodeIds.size();
-            JOptionPane.showMessageDialog(getDesktopWorkbench().getWindow(),
-                    "Successfully exported " + count + " embedding(s) for model '" + modelId + "'\nto " + outputFile,
-                    getText(), JOptionPane.INFORMATION_MESSAGE);
+            JIPipeDesktopDialogs.message(getDesktopWorkbench().getWindow(), getText(), "Successfully exported " + count + " embedding(s) for model '" + modelId + "'\nto " + outputFile);
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(getDesktopWorkbench().getWindow(),
-                    "Failed to export embedding database: " + e.getMessage(),
-                    getText(), JOptionPane.ERROR_MESSAGE);
+            JIPipeDesktopDialogs.error(getDesktopWorkbench().getWindow(),
+                    getText(),
+                    "Failed to export embedding database: " + e.getMessage(), e);
         }
     }
 

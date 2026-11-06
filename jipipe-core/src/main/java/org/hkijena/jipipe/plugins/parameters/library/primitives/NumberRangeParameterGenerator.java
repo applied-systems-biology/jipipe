@@ -22,6 +22,7 @@ import org.hkijena.jipipe.api.service.components.JIPipeParameterTypesServiceComp
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import javax.swing.*;
@@ -97,10 +98,7 @@ public class NumberRangeParameterGenerator extends DefaultJIPipeParameterGenerat
         }
 
         if (outsideRange) {
-            JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(parent),
-                    "Numbers outside the supported range [" + rangeMin + ", " + rangeMax + "] have been ignored.",
-                    getName(),
-                    JOptionPane.WARNING_MESSAGE);
+            JIPipeDesktopDialogs.message(SwingUtilities.getWindowAncestor(parent), getName(), "Numbers outside the supported range [" + rangeMin + ", " + rangeMax + "] have been ignored.");
         }
         return result;
     }

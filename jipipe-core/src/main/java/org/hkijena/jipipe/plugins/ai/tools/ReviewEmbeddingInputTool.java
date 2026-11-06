@@ -18,6 +18,7 @@ import org.hkijena.jipipe.desktop.api.JIPipeDesktopMenuExtension;
 import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.ai.AIApplicationSettings;
 
 import javax.swing.*;
@@ -44,9 +45,7 @@ public class ReviewEmbeddingInputTool extends JIPipeDesktopMenuExtension {
     private void runReviewTool() {
         // Check if AI is enabled
         if (!AIApplicationSettings.getInstance().isEnableAI()) {
-            JOptionPane.showMessageDialog(getDesktopWorkbench().getWindow(),
-                    "AI functionality is disabled. Please enable it in the AI settings.",
-                    getText(), JOptionPane.WARNING_MESSAGE);
+            JIPipeDesktopDialogs.message(getDesktopWorkbench().getWindow(), getText(), "AI functionality is disabled. Please enable it in the AI settings.");
             return;
         }
 

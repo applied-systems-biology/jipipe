@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.service.components.JIPipeSettingsServiceComponent;
 import org.hkijena.jipipe.api.settings.SettingsScope;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Disposable;
 
@@ -320,14 +321,14 @@ public class JIPipeDesktopRawSettingsSection extends JPanel implements Disposabl
                 + (row.isDocumented() ? " &mdash; " + escapeHtml(row.typeLabel())
                 + (row.description().isEmpty() ? "" : "<br>" + escapeHtml(row.description())) : "")
                 + "<br>Edit the value as JSON.</html>";
-        String edited = UIUtils.getMultiLineStringByDialog(this, "Edit raw setting", message, current);
+        String edited = JIPipeDesktopDialogs.inputMultiLine(this, "Edit raw setting", message, current).orElse(null);
         if (edited == null) {
             return;
         }
         try {
             model.setValue(row.path(), edited);
         } catch (IllegalArgumentException e) {
-            JOptionPane.showMessageDialog(this, e.getMessage(), "Invalid value", JOptionPane.ERROR_MESSAGE);
+            JIPipeDesktopDialogs.error(this, "Invalid value", e.getMessage(), e);
             return;
         }
         reload();
@@ -342,8 +343,7 @@ public class JIPipeDesktopRawSettingsSection extends JPanel implements Disposabl
         String question = row.isDocumented()
                 ? "Reset '" + row.path() + "' to its default" + (row.defaultText().isEmpty() ? "" : " (" + row.defaultText() + ")") + "?"
                 : "Remove the pass-through value at '" + row.path() + "'? It has no default to restore.";
-        if (JOptionPane.showConfirmDialog(this, question, "Reset setting",
-                JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION) {
+        if (!JIPipeDesktopDialogs.confirm(this, "Reset setting", question)) {
             return;
         }
         model.resetKey(row.path());

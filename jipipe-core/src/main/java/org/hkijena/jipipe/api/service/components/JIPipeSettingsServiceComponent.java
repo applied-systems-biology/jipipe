@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.api.service.components;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
@@ -50,6 +51,7 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -205,6 +207,14 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
      * {@link #isRegisteredBlock}); guarded by the component monitor.
      */
     private final Set<String> registeredKeyBlockPaths = new LinkedHashSet<>();
+    /**
+     * The block paths registered for <b>union-style merging</b> through
+     * {@link #registerUnionMergeBlock}: additive state (today the recent
+     * projects list) whose concurrent writes from two instances must combine
+     * instead of colliding. Consulted by {@link #resolveUnionBlocks}; guarded
+     * by the component monitor.
+     */
+    private final Set<String> unionMergeBlocks = new LinkedHashSet<>();
     /**
      * The settings blocks recovered by {@link #runCarryOver()} in this
      * session, mapped to the sibling version they came from, so the UI can
@@ -481,6 +491,29 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
             return;
         }
         verifyOwnWrite(store, doc, "during a test");
+    }
+
+    /**
+     * <b>Testing only.</b> Runs the pre-save read-merge-write
+     * ({@link #mergeForeignBeforeSave}) for one file-backed scope
+     * synchronously, so a test can exercise the headless foreign-change path
+     * without waiting for a debounce. The settings file watcher is a
+     * documented no-op in a headless JVM (CLI runs, CI), where this merge is
+     * the only way a foreign write ever reaches the live document - the same
+     * path a real headless process takes before every save. It merges only
+     * when the on-disk state differs from what this process last wrote or
+     * merged, exactly like {@link #save()}; it does not write the file.
+     * Not part of the production API; a {@code *ForTesting} seam consistent
+     * with {@link #verifyOwnWriteForTesting(SettingsScope)}.
+     *
+     * @param scope the file-backed scope to merge into
+     */
+    public synchronized void mergeForeignBeforeSaveForTesting(SettingsScope scope) {
+        SettingsFileStore store = stores.get(scope);
+        if (store == null || documents.get(scope) == null) {
+            return;
+        }
+        mergeForeignBeforeSave(scope, store);
     }
 
     /**
@@ -990,6 +1023,10 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
         }
         foreignMergeOrigin.set(ChangeOrigin.EXTERNAL_FILE);
         lastMergeThreadName = Thread.currentThread().getName();
+        // Union-style state blocks are resolved BEFORE the pass, so a
+        // concurrent append from both instances combines instead of one side
+        // losing its entry to the whole-block foreign-wins rule.
+        boolean unionResolved = resolveUnionBlocks(doc, foreign);
         SettingsDocumentMerger.MergeResult result;
         try {
             Set<String> changedBefore = new LinkedHashSet<>(locallyChangedBlocks.getOrDefault(doc, Set.of()));
@@ -1058,15 +1095,123 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
         } finally {
             foreignMergeOrigin.remove();
         }
-        if (result.requiresSave()) {
+        if (result.requiresSave() || unionResolved) {
             // Kept blocks are newer than the foreign file (we re-save so
             // the file converges), and a conflicted merge must write the
             // winning foreign values back so both processes end up with
-            // the same content. saveLater() coalesces with pending
-            // debounced saves and self-ignores its own write.
+            // the same content. A resolved union block must likewise be
+            // persisted: the file still holds the pre-union foreign value.
+            // saveLater() coalesces with pending debounced saves and
+            // self-ignores its own write.
             saveLater();
         }
         return result;
+    }
+
+    /**
+     * Pre-resolves the registered union-style state blocks (see
+     * {@link #registerUnionMergeBlock}) before the merge pass runs, so two
+     * instances that concurrently appended to the same additive state - the
+     * recent projects list, where each instance opened a different project -
+     * end up with <b>both</b> entries instead of the whole-block
+     * foreign-wins collision of {@link SettingsDocumentMerger} discarding one
+     * of them.
+     * <p>
+     * For every registered block whose local and foreign values are both
+     * arrays of text entries (the foreign side may also lack the block), the
+     * order-preserving union - the foreign entries first (the on-disk truth's
+     * order), then the entries only the local document holds - is written
+     * into <b>both</b> documents. The merge pass then sees structurally equal
+     * values and skips the block, so neither an adoption nor a conflict can
+     * drop an entry. Writing the local document fires the observed paths'
+     * change events under the {@link ChangeOrigin#EXTERNAL_FILE} origin (the
+     * caller has set it), so the UI treats the union like any other
+     * cross-instance sync.
+     * <p>
+     * Deliberate exceptions:
+     * <ul>
+     * <li>A foreign value that is an <b>empty array</b> is a deliberate
+     * cross-instance clear (the "Clear list" button of another instance) and
+     * is adopted as-is: unioning would resurrect the cleared entries on
+     * every other instance.</li>
+     * <li>A foreign <b>deletion</b> (the block is absent) cannot be
+     * distinguished from a writer that never held the block, so the union
+     * keeps the local entries and equalizes the foreign document - the merge
+     * then keeps the block where the whole-block rule would have adopted the
+     * deletion and lost the local list.</li>
+     * <li>Equal values and values that are not text arrays are left to the
+     * regular merge pass untouched.</li>
+     * </ul>
+     * Must run under the component monitor with the merge origin already
+     * set (both true for the {@link #applyForeignInto} call site).
+     *
+     * @param doc the live document
+     * @param foreign the foreign document loaded from the other process
+     * @return whether a document was changed and the file must converge
+     * through a save
+     */
+    private boolean resolveUnionBlocks(SettingsDocument doc, SettingsDocument foreign) {
+        boolean changed = false;
+        for (String blockPath : unionMergeBlocks) {
+            JsonNode localValue = doc.getBlock(blockPath);
+            JsonNode foreignValue = foreign.getBlock(blockPath);
+            if (localValue.equals(foreignValue)) {
+                continue; // in sync: the pass would skip the block anyway
+            }
+            if (foreignValue.isArray() && foreignValue.isEmpty()) {
+                continue; // deliberate cross-instance clear: adopt it
+            }
+            if (!localValue.isArray() || (!foreignValue.isArray() && !foreignValue.isMissingNode())) {
+                continue; // not the additive array shape this union is for
+            }
+            JsonNode union = unionArrays(foreignValue, localValue);
+            if (union == null) {
+                continue; // unexpected element shape: leave the block to the regular merge
+            }
+            if (!union.equals(localValue)) {
+                doc.setBlock(blockPath, union);
+                changed = true;
+            }
+            if (!foreignValue.equals(union)) {
+                foreign.setBlock(blockPath, union);
+                changed = true;
+            }
+        }
+        return changed;
+    }
+
+    /**
+     * Order-preserving union of two JSON arrays of text entries: the entries
+     * of {@code first} (the foreign side's order), then the entries only
+     * {@code second} holds, in their order. Entries are deduplicated by their
+     * text - the same identity rule the registry's list API applies to the
+     * paths.
+     *
+     * @param first the first array (may be a missing node: contributes nothing)
+     * @param second the second array
+     * @return the union array, or {@code null} when an array holds a
+     * non-text entry (the caller then leaves the block to the regular merge)
+     */
+    private static JsonNode unionArrays(JsonNode first, JsonNode second) {
+        ArrayNode union = JsonUtils.getObjectMapper().createArrayNode();
+        Set<String> seen = new HashSet<>();
+        for (JsonNode node : first) {
+            if (!node.isTextual()) {
+                return null;
+            }
+            if (seen.add(node.asText())) {
+                union.add(node.asText());
+            }
+        }
+        for (JsonNode node : second) {
+            if (!node.isTextual()) {
+                return null;
+            }
+            if (seen.add(node.asText())) {
+                union.add(node.asText());
+            }
+        }
+        return union;
     }
 
     /**
@@ -1200,6 +1345,25 @@ public final class JIPipeSettingsServiceComponent extends JIPipeServiceComponent
                 ensureObserved(doc, key.blockPath(), key.subPath());
             }
         }
+    }
+
+    /**
+     * Registers a block for <b>union-style merging</b>: when a foreign merge
+     * touches the block, the local and foreign arrays are combined
+     * (order-preserving, deduplicated; see {@link #resolveUnionBlocks})
+     * instead of the whole-block foreign-wins rule of
+     * {@link SettingsDocumentMerger} deciding the value alone. This is the
+     * right semantics for additive state - today the recent projects list,
+     * where two instances that each opened a project must end up with both
+     * entries in the list.
+     * <p>
+     * The registration is idempotent; a path no document carries is legal
+     * (the block is simply never unioned until it exists).
+     *
+     * @param blockPath the canonical block path
+     */
+    public synchronized void registerUnionMergeBlock(String blockPath) {
+        unionMergeBlocks.add(Objects.requireNonNull(blockPath, "blockPath"));
     }
 
     /**

@@ -17,6 +17,7 @@ import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.desktop.commons.components.icons.JIPipeDesktopColorIcon;
 import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.utils.ColorUtils;
 
 import javax.swing.*;
@@ -59,10 +60,11 @@ public class JIPipeDesktopColorChooserButton extends JButton implements ActionLi
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        Color value = JColorChooser.showDialog(this, selectColorPrompt, selectedColor);
-        if (value != null) {
-            setSelectedColor(value);
-        }
+        // Parity with the old plain JColorChooser.showDialog (no alpha rail):
+        // OK preserves the initial color's alpha, but the user cannot edit it.
+        // Flip to true deliberately if alpha selection is ever wanted here.
+        Color value = JIPipeDesktopDialogs.chooseColor(this, selectColorPrompt, selectedColor, false).orElse(selectedColor);
+        setSelectedColor(value);
     }
 
     public Color getSelectedColor() {

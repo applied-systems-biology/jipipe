@@ -19,6 +19,8 @@ import org.hkijena.jipipe.desktop.commons.components.filechoosers.fcadvanced.JIP
 import org.hkijena.jipipe.desktop.commons.components.filechoosers.fcnative.ModernNativeFileChooser;
 import org.hkijena.jipipe.desktop.commons.components.filechoosers.fcnative.ModernNativeFileChooserResponse;
 import org.hkijena.jipipe.desktop.commons.components.filechoosers.fcnext.JIPipeDesktopFileChooserNext;
+import org.hkijena.jipipe.desktop.commons.dialogs.Button;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.*;
@@ -35,6 +37,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -349,20 +352,18 @@ public class JIPipeDesktop {
 
         // No OS has native Path selection dialogs, so let the user choose
         if (fileChooserType == JIPipeFileChooserApplicationSettings.FileChooserType.ModernNative && instance.isAskOnNativePathSelect()) {
-            int option = JOptionPane.showOptionDialog(parent,
-                    "Do you want to open a file or a directory?",
+            Button fileButton = Button.custom("Open file").asDefault();
+            Button directoryButton = Button.custom("Open directory");
+            Optional<Button> selected = JIPipeDesktopDialogs.choose(parent,
                     title,
-                    JOptionPane.YES_NO_CANCEL_OPTION,
-                    JOptionPane.QUESTION_MESSAGE,
-                    null,
-                    new Object[]{"Open file", "Open directory", "Cancel"},
-                    "Open file");
-            return switch (option) {
-                case JOptionPane.YES_OPTION ->
-                        openFile(parent, workbench, key, title, description, fileChooserType, extensionFilters);
-                case JOptionPane.NO_OPTION -> openDirectory(parent, workbench, key, title, description);
-                default -> null;
-            };
+                    "Do you want to open a file or a directory?",
+                    fileButton, directoryButton);
+            if (selected.orElse(null) == fileButton) {
+                return openFile(parent, workbench, key, title, description, fileChooserType, extensionFilters);
+            } else if (selected.orElse(null) == directoryButton) {
+                return openDirectory(parent, workbench, key, title, description);
+            }
+            return null;
         }
 
         if (fileChooserType == JIPipeFileChooserApplicationSettings.FileChooserType.Standard) {
@@ -437,20 +438,18 @@ public class JIPipeDesktop {
 
         // No OS has native Path selection dialogs, so let the user choose
         if (fileChooserType == JIPipeFileChooserApplicationSettings.FileChooserType.ModernNative && instance.isAskOnNativePathSelect()) {
-            int option = JOptionPane.showOptionDialog(parent,
-                    "Do you want to save a file or a directory?",
+            Button fileButton = Button.custom("Save file").asDefault();
+            Button directoryButton = Button.custom("Select directory");
+            Optional<Button> selected = JIPipeDesktopDialogs.choose(parent,
                     title,
-                    JOptionPane.YES_NO_CANCEL_OPTION,
-                    JOptionPane.QUESTION_MESSAGE,
-                    null,
-                    new Object[]{"Save file", "Select directory", "Cancel"},
-                    "Save file");
-            return switch (option) {
-                case JOptionPane.YES_OPTION ->
-                        saveFile(parent, workbench, key, title, description, fileChooserType, extensionFilters);
-                case JOptionPane.NO_OPTION -> saveDirectory(parent, workbench, key, title, description);
-                default -> null;
-            };
+                    "Do you want to save a file or a directory?",
+                    fileButton, directoryButton);
+            if (selected.orElse(null) == fileButton) {
+                return saveFile(parent, workbench, key, title, description, fileChooserType, extensionFilters);
+            } else if (selected.orElse(null) == directoryButton) {
+                return saveDirectory(parent, workbench, key, title, description);
+            }
+            return null;
         }
 
         Path currentPath = instance.getLastDirectoryBy(workbench, key);
@@ -957,20 +956,18 @@ public class JIPipeDesktop {
 
         // No OS has native Path selection dialogs, so let the user choose
         if (fileChooserType == JIPipeFileChooserApplicationSettings.FileChooserType.ModernNative && instance.isAskOnNativePathSelect()) {
-            int option = JOptionPane.showOptionDialog(parent,
-                    "Do you want to open a file or a directory?",
+            Button fileButton = Button.custom("Open file").asDefault();
+            Button directoryButton = Button.custom("Open directory");
+            Optional<Button> selected = JIPipeDesktopDialogs.choose(parent,
                     title,
-                    JOptionPane.YES_NO_CANCEL_OPTION,
-                    JOptionPane.QUESTION_MESSAGE,
-                    null,
-                    new Object[]{"Open file", "Open directory", "Cancel"},
-                    "Open file");
-            return switch (option) {
-                case JOptionPane.YES_OPTION ->
-                        openFiles(parent, workbench, key, title, description, fileChooserType, extensionFilters);
-                case JOptionPane.NO_OPTION -> openDirectories(parent, workbench, key, title, description);
-                default -> null;
-            };
+                    "Do you want to open a file or a directory?",
+                    fileButton, directoryButton);
+            if (selected.orElse(null) == fileButton) {
+                return openFiles(parent, workbench, key, title, description, fileChooserType, extensionFilters);
+            } else if (selected.orElse(null) == directoryButton) {
+                return openDirectories(parent, workbench, key, title, description);
+            }
+            return null;
         }
 
         Path currentPath = instance.getLastDirectoryBy(workbench, key);

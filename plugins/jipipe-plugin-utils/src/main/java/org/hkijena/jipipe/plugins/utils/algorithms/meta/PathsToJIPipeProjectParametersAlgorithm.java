@@ -40,6 +40,7 @@ import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportCon
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterAccessTreeUI;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.PathData;
 import org.hkijena.jipipe.plugins.multiparameters.datatypes.ParametersData;
 import org.hkijena.jipipe.plugins.parameters.library.graph.InputSlotMapParameterCollection;
@@ -122,7 +123,7 @@ public class PathsToJIPipeProjectParametersAlgorithm extends JIPipeIteratingAlgo
                 }
                 tree.removeParameterByKey("exported-parameters");
                 if (tree.getParameters().isEmpty()) {
-                    JOptionPane.showMessageDialog(window, "No compatible parameters found. Please add string or path parameters to the list of project-wide parameters.", "Import parameters", JOptionPane.ERROR_MESSAGE);
+                    JIPipeDesktopDialogs.message(window, "Import parameters", "No compatible parameters found. Please add string or path parameters to the list of project-wide parameters.");
                     return;
                 }
                 List<Object> objects = JIPipeDesktopParameterAccessTreeUI.showPickerDialog(window, tree, "Select parameters to import");

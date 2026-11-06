@@ -17,6 +17,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterFormPanel;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -91,11 +92,9 @@ public class JIPipeDesktopPlotSeriesEditorUI extends JIPipeDesktopWorkbenchPanel
     }
 
     private void removeSeries() {
-        if (JOptionPane.showConfirmDialog(SwingUtilities.getWindowAncestor(this),
-                "Do you really want to remove the series '" + seriesBuilder.getName() + "'?",
+        if (JIPipeDesktopDialogs.confirm(SwingUtilities.getWindowAncestor(this),
                 "Delete series",
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+                "Do you really want to remove the series '" + seriesBuilder.getName() + "'?")) {
             seriesBuilder.getPlotBuilderUI().removeSeries(seriesBuilder);
         }
     }

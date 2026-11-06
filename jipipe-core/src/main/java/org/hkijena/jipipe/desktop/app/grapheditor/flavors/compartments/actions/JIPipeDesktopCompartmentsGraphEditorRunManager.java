@@ -70,7 +70,8 @@ public class JIPipeDesktopCompartmentsGraphEditorRunManager extends JIPipeDeskto
 
     @Override
     protected void showResults() {
-        getDockPanel().activatePanel(JIPipeDesktopCompartmentsGraphEditorUI.DOCK_NODE_CONTEXT_RESULTS, true);
+        // Transient: must not enter the persisted layout (#1353)
+        getDockPanel().activatePanel(JIPipeDesktopCompartmentsGraphEditorUI.DOCK_NODE_CONTEXT_RESULTS, false);
         getDockPanel().getPanelComponent(JIPipeDesktopCompartmentsGraphEditorUI.DOCK_NODE_CONTEXT_RESULTS, JIPipeDesktopCompartmentGraphEditorResultsPanel.class).refreshTables();
     }
 

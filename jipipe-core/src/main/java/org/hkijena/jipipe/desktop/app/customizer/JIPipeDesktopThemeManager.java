@@ -17,6 +17,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.settings.ThemePreviewPanel;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernThemeStyle;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopUITheme;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeModernThemeStyleParameter;
@@ -48,7 +49,10 @@ public class JIPipeDesktopThemeManager extends JFrame implements ThemeUtils.Avai
     private void reloadList() {
         DefaultListModel<JIPipeDesktopModernThemeStyle> model = new DefaultListModel<>();
         for (String id : ThemeUtils.getAvailableStyleIds()) {
-            model.addElement(ThemeUtils.getStyleFromId(id));
+            JIPipeDesktopModernThemeStyle style = ThemeUtils.getStyleFromId(id);
+            if (style != null) {
+                model.addElement(style);
+            }
         }
         styleJList.setModel(model);
     }
@@ -125,25 +129,18 @@ public class JIPipeDesktopThemeManager extends JFrame implements ThemeUtils.Avai
                     id = id.substring(0, id.length() - 5);
                 }
                 if (StringUtils.isNullOrEmpty(id)) {
-                    JOptionPane.showMessageDialog(this,
-                            "Unable to  determine style id",
-                            progress + "Error",
-                            JOptionPane.ERROR_MESSAGE);
+                    JIPipeDesktopDialogs.message(this, progress + "Error", "Unable to  determine style id");
                 }
                 if (availableStyleIds.contains(id)) {
-                    JOptionPane.showMessageDialog(this, "Unable to find a unique ID for the style you want to import!\n" +
-                            "Consider renaming the file.", progress + "Error", JOptionPane.ERROR_MESSAGE);
+                    JIPipeDesktopDialogs.message(this, progress + "Error", "Unable to find a unique ID for the style you want to import!\n" +
+                            "Consider renaming the file.");
                 }
                 ThemeUtils.saveStyle(style, id);
-                JOptionPane.showMessageDialog(this,
-                        "Successfully imported " + path + " as " + id,
-                        progress + "Success",
-                        JOptionPane.INFORMATION_MESSAGE);
+                JIPipeDesktopDialogs.message(this, progress + "Success", "Successfully imported " + path + " as " + id);
             } catch (Exception e) {
-                JOptionPane.showMessageDialog(this,
-                        "Unable to read " + path.toString(),
+                JIPipeDesktopDialogs.message(this,
                         progress + "Error",
-                        JOptionPane.ERROR_MESSAGE);
+                        "Unable to read " + path.toString());
             }
         }
 
@@ -180,10 +177,7 @@ public class JIPipeDesktopThemeManager extends JFrame implements ThemeUtils.Avai
 
         JIPipe.getSettings().save();
 
-        JOptionPane.showMessageDialog(workbench.getWindow(),
-                "Please restart ImageJ/JIPipe to apply the settings",
-                "Customize JIPipe",
-                JOptionPane.INFORMATION_MESSAGE);
+        JIPipeDesktopDialogs.message(workbench.getWindow(), "Customize JIPipe", "Please restart ImageJ/JIPipe to apply the settings");
     }
 
     private void deleteSelectedTheme() {
@@ -192,13 +186,13 @@ public class JIPipeDesktopThemeManager extends JFrame implements ThemeUtils.Avai
             return;
         }
         if (style.isBuiltIn()) {
-            JOptionPane.showMessageDialog(themePreviewPanel, "You cannot delete built-in styles", "Delete style", JOptionPane.ERROR_MESSAGE);
+            JIPipeDesktopDialogs.message(themePreviewPanel, "Delete style", "You cannot delete built-in styles");
             return;
         }
         boolean isCurrentStyle = ThemeUtils.getCurrentStyle().getId().equals(style.getId());
         if (isCurrentStyle) {
-            if (JOptionPane.showConfirmDialog(this, "The selected style is currently in use. If you delete it, JIPipe will reset its style to the default.\n" +
-                    "Do you want to delete it anyway?", "Delete style", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
+            if (!JIPipeDesktopDialogs.confirm(this, "Delete style", "The selected style is currently in use. If you delete it, JIPipe will reset its style to the default.\n" +
+                    "Do you want to delete it anyway?")) {
                 return;
             }
 
@@ -206,12 +200,9 @@ public class JIPipeDesktopThemeManager extends JFrame implements ThemeUtils.Avai
             uiSettings.setThemeStyle(new JIPipeModernThemeStyleParameter(ThemeUtils.DEFAULT_STYLE_ID));
             JIPipe.getSettings().save();
 
-            JOptionPane.showMessageDialog(this,
-                    "Please restart ImageJ/JIPipe to apply the settings",
-                    "Customize JIPipe",
-                    JOptionPane.INFORMATION_MESSAGE);
+            JIPipeDesktopDialogs.message(this, "Customize JIPipe", "Please restart ImageJ/JIPipe to apply the settings");
         } else {
-            if (JOptionPane.showConfirmDialog(this, "Do you want to delete the selected style?", "Delete style", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
+            if (!JIPipeDesktopDialogs.confirm(this, "Delete style", "Do you want to delete the selected style?")) {
                 return;
             }
         }
@@ -225,7 +216,7 @@ public class JIPipeDesktopThemeManager extends JFrame implements ThemeUtils.Avai
             return;
         }
         if (style.isBuiltIn()) {
-            JOptionPane.showMessageDialog(themePreviewPanel, "You cannot edit built-in styles. But you can create your own style based on a copy.", "Edit style", JOptionPane.INFORMATION_MESSAGE);
+            JIPipeDesktopDialogs.message(themePreviewPanel, "Edit style", "You cannot edit built-in styles. But you can create your own style based on a copy.");
             style = new JIPipeDesktopModernThemeStyle(style);
             style.setId(null);
             style.setSavePath(null);

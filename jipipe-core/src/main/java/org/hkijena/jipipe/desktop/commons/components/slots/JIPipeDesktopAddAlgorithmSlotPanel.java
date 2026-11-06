@@ -22,6 +22,7 @@ import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPan
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeDesktopDataInfoListCellRenderer;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.desktop.commons.components.textfield.JIPipeDesktopDocumentChangeListener;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -238,7 +239,7 @@ public class JIPipeDesktopAddAlgorithmSlotPanel extends JPanel {
 
         String slotName = nameEditor.getText().trim();
         if (!JIPipeDataSlotInfo.isValidName(slotName)) {
-            JOptionPane.showMessageDialog(this, "The name '" + slotName + "' is not a valid slot name. It can only contain alphanumeric characters and following characters: . _ , #");
+            JIPipeDesktopDialogs.message(this, "Message", "The name '" + slotName + "' is not a valid slot name. It can only contain alphanumeric characters and following characters: . _ , #");
             return;
         }
 

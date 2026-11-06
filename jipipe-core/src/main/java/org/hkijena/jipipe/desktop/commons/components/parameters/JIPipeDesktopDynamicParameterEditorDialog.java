@@ -22,6 +22,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.pickers.JIPipeDesktopParameterTypeInfoPicker;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
@@ -255,18 +256,12 @@ public class JIPipeDesktopDynamicParameterEditorDialog extends JDialog implement
         Set<String> existing = parameterEntryList.stream().map(ParameterEntry::getKey).collect(Collectors.toSet());
         for (String s : existing) {
             if (StringUtils.isNullOrEmpty(StringUtils.nullToEmpty(s).trim())) {
-                JOptionPane.showMessageDialog(this,
-                        "The unique parameter keys cannot be empty!",
-                        "Empty keys found",
-                        JOptionPane.ERROR_MESSAGE);
+                JIPipeDesktopDialogs.message(this, "Empty keys found", "The unique parameter keys cannot be empty!");
                 return false;
             }
         }
         if (existing.size() != parameterEntryList.size()) {
-            JOptionPane.showMessageDialog(this,
-                    "There are " + (parameterEntryList.size() - existing.size()) + " entries that share the same key. Please ensure that each parameter has its unique key!",
-                    "Non-unique keys found",
-                    JOptionPane.ERROR_MESSAGE);
+            JIPipeDesktopDialogs.message(this, "Non-unique keys found", "There are " + (parameterEntryList.size() - existing.size()) + " entries that share the same key. Please ensure that each parameter has its unique key!");
             return false;
         }
         return true;

@@ -17,6 +17,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.metadata.JIPipeOrganizationMetadata;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterFormPanel;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.ThemeUtils;
@@ -73,7 +74,7 @@ public class JIPipeDesktopOrganizationMetadataParameterEditorUI extends JIPipeDe
             JIPipeOrganizationMetadata organizationMetadata = JsonUtils.readFromString(UIUtils.getStringFromClipboard(), JIPipeOrganizationMetadata.class);
             setParameter(organizationMetadata, true);
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, e.getMessage(), "Error pasting organization", JOptionPane.ERROR_MESSAGE);
+            JIPipeDesktopDialogs.error(this, "Error pasting organization", e.getMessage(), e);
         }
     }
 

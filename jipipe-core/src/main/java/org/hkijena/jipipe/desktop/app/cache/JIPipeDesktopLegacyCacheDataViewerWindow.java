@@ -30,6 +30,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFlexContentPanel;
 import org.hkijena.jipipe.desktop.commons.components.window.JIPipeDesktopAlwaysOnTopToggle;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeGeneralUIApplicationSettings;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -196,15 +197,15 @@ public abstract class JIPipeDesktopLegacyCacheDataViewerWindow extends JFrame im
     }
 
     private void gotoUserDefinedRow() {
-        String input = JOptionPane.showInputDialog(this,
-                "Please input the target row (1 is the first item):",
-                getDataSource().getRow() + 1);
-        if (!StringUtils.isNullOrEmpty(input)) {
-            Integer index = NumberUtils.createInteger(input);
-            if (index != null) {
-                gotoRow(index);
-            }
-        }
+        JIPipeDesktopDialogs.inputText(this, "Input",
+                        "Please input the target row (1 is the first item):",
+                        String.valueOf(getDataSource().getRow() + 1))
+                .ifPresent(input -> {
+                    Integer index = NumberUtils.createInteger(input);
+                    if (index != null) {
+                        gotoRow(index);
+                    }
+                });
     }
 
     private void gotoRow(int row) {

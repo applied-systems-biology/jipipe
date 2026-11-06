@@ -34,6 +34,7 @@ import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPan
 import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.desktop.commons.components.validation.JIPipeDesktopMessagePanel;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
@@ -309,7 +310,7 @@ public class JIPipeDesktopArtifactManagerUI extends JIPipeDesktopWorkbenchPanel 
             message.append(" ").append(StringUtils.formatPluralS(toUninstall.size(), "artifact")).append(" will be removed\n");
         }
         message.append("\nDo you want to continue?");
-        if (JOptionPane.showConfirmDialog(this, message.toString(), "Apply changes", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+        if (JIPipeDesktopDialogs.confirm(this, "Apply changes", message.toString())) {
             JIPipeArtifactRepositoryApplyInstallUninstallRun run = new JIPipeArtifactRepositoryApplyInstallUninstallRun(toInstall, toUninstall);
             JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), this, run, JIPipeQueuedRunnableExecutor.getInstance(), JIPipeDesktopRunExecuteUI.GlobalLogMode.Everything);
         }

@@ -1,1 +1,2 @@
 org.hkijena.jipipe.plugins.python.ImageJLegacyPatcherLauncherSessionListener
+org.hkijena.jipipe.plugins.python.TestProfileIsolationLauncherSessionListener

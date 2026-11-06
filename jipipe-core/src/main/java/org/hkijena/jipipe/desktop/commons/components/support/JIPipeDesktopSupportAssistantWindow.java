@@ -16,6 +16,7 @@ package org.hkijena.jipipe.desktop.commons.components.support;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -68,7 +69,7 @@ public class JIPipeDesktopSupportAssistantWindow extends JFrame {
 
     private void doActionSendEMail() {
         UIUtils.copyToClipboard(SUPPORT_EMAIL);
-        JOptionPane.showMessageDialog(this, "The E-Mail address '" + SUPPORT_EMAIL + "' was copied.", "Send E-Mail", JOptionPane.INFORMATION_MESSAGE);
+        JIPipeDesktopDialogs.message(this, "Send E-Mail", "The E-Mail address '" + SUPPORT_EMAIL + "' was copied.");
     }
 
     private void initializeResourcesTab() {

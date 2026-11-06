@@ -63,6 +63,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.actions.JIPip
 import org.hkijena.jipipe.desktop.app.history.JIPipeDesktopHistoryJournalUI;
 import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopRunSetsListEditor;
 import org.hkijena.jipipe.desktop.commons.components.tools.JIPipeDesktopExpressionCalculatorUI;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameterList;
 import org.hkijena.jipipe.plugins.settings.SettingsKeys;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -283,13 +284,13 @@ public class JIPipeDesktopCompartmentsGraphEditorUI extends JIPipeDesktopGraphEd
     public void addCompartment() {
         if (!JIPipeDesktopProjectWorkbench.canAddOrDeleteNodes(getDesktopWorkbench()))
             return;
-        String compartmentName = JOptionPane.showInputDialog(this, "Please enter the name of the compartment", "Compartment");
-        if (compartmentName != null && !compartmentName.trim().isEmpty()) {
-            if (getHistoryJournal() != null) {
-                getHistoryJournal().snapshotBeforeAddCompartment(compartmentName);
-            }
-            getProject().addCompartment(compartmentName);
-        }
+        JIPipeDesktopDialogs.inputText(this, "Input", "Please enter the name of the compartment", "Compartment")
+                .ifPresent(compartmentName -> {
+                    if (getHistoryJournal() != null) {
+                        getHistoryJournal().snapshotBeforeAddCompartment(compartmentName);
+                    }
+                    getProject().addCompartment(compartmentName);
+                });
     }
 
     /**
@@ -393,10 +394,13 @@ public class JIPipeDesktopCompartmentsGraphEditorUI extends JIPipeDesktopGraphEd
         if (state == null) {
             return;
         }
+        // Self-heal layouts stored by older versions: the activity state of
+        // context docks is not part of the persisted layout anymore (#1353)
+        state = state.withoutContextDockVisibilities();
         // JIPipeDesktopDockPanel.State has no equals(): compare the serialized
         // form, which is exactly what the document stores.
         if (!JsonUtils.getObjectMapper().valueToTree(state)
-                .equals(JsonUtils.getObjectMapper().valueToTree(getDockPanel().getCurrentState()))) {
+                .equals(JsonUtils.getObjectMapper().valueToTree(getDockPanel().getCurrentState().withoutContextDockVisibilities()))) {
             getDockPanel().restoreState(state);
         }
     }
@@ -407,7 +411,7 @@ public class JIPipeDesktopCompartmentsGraphEditorUI extends JIPipeDesktopGraphEd
             if (compartmentsDockStateBinding == null) {
                 compartmentsDockStateBinding = JIPipe.getSettingsService().bind(SettingsKeys.COMPARTMENTS_DOCK_STATE);
             }
-            compartmentsDockStateBinding.set(getDockPanel().getCurrentState());
+            compartmentsDockStateBinding.set(getDockPanel().getCurrentState().withoutContextDockVisibilities());
         }
     }
 

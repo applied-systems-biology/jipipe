@@ -54,6 +54,8 @@ import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopPar
 import org.hkijena.jipipe.desktop.commons.components.project.ArtifactUpgrade;
 import org.hkijena.jipipe.desktop.commons.components.project.ArtifactUpgradeUtils;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
+import org.hkijena.jipipe.desktop.commons.dialogs.Button;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.parameters.api.optional.JIPipeOptionalParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
@@ -257,7 +259,12 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
     private void editProjectDescription() {
         JIPipeDesktopHTMLEditor editor = new JIPipeDesktopHTMLEditor(getDesktopProjectWorkbench(), JIPipeDesktopHTMLEditor.Mode.Full, JIPipeDesktopHTMLEditor.WITH_SCROLL_BAR);
         editor.setText(getProject().getMetadata().getDescription().getHtml());
-        if (UIUtils.showConfirmDialog(this, "Edit project description", new Dimension(800, 600), editor)) {
+        Optional<Button> result = JIPipeDesktopDialogs.builder(this, "Edit project description")
+                .content(editor)
+                .buttons(Button.OK, Button.CANCEL)
+                .size(800, 600)
+                .show();
+        if (result.orElse(null) == Button.OK) {
             getProject().getMetadata().setDescription(new HTMLText(editor.getHTML()));
             refreshCenterPanel();
         }
@@ -356,7 +363,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
     private void doRun(JIPipeProjectRunSet runSet) {
         List<JIPipeAlgorithm> nodes = JIPipeUtils.filterAlgorithmsList(runSet.resolveNodes(getProject()));
         if (nodes.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Unable to run the set '" + runSet.getDisplayName() + "'. No nodes found.", "Run set", JOptionPane.ERROR_MESSAGE);
+            JIPipeDesktopDialogs.message(this, "Run set", "Unable to run the set '" + runSet.getDisplayName() + "'. No nodes found.");
             return;
         }
         doRun(nodes);
@@ -365,7 +372,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
     private void doShowResults(JIPipeProjectRunSet runSet) {
         List<JIPipeAlgorithm> nodes = JIPipeUtils.filterAlgorithmsList(runSet.resolveNodes(getProject()));
         if (nodes.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Unable to run the set '" + runSet.getDisplayName() + "'. No nodes found.", "Run set", JOptionPane.ERROR_MESSAGE);
+            JIPipeDesktopDialogs.message(this, "Run set", "Unable to run the set '" + runSet.getDisplayName() + "'. No nodes found.");
             return;
         }
 
@@ -388,11 +395,13 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
                     "</html>"));
             formPanel.addToForm(options, new JLabel("Operation"));
 
-            if (JOptionPane.showConfirmDialog(this,
-                    formPanel,
-                    "Show results",
-                    JOptionPane.YES_NO_OPTION,
-                    JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+            Optional<Button> confirmed = JIPipeDesktopDialogs.builder(this,
+                            "Show results")
+                    .content(formPanel)
+                    .buttons(Button.YES, Button.NO)
+                    .cancelable(false)
+                    .show();
+            if (confirmed.orElse(null) == Button.YES) {
                 doUpdateCache(nodesToDo, Objects.equals(options.getSelectedItem(), "Cache intermediate results"));
             }
         }
@@ -402,7 +411,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
     private void doUpdateCache(JIPipeProjectRunSet runSet, boolean intermediateResults) {
         List<JIPipeAlgorithm> nodes = JIPipeUtils.filterAlgorithmsList(runSet.resolveNodes(getProject()));
         if (nodes.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Unable to run the set '" + runSet.getDisplayName() + "'. No nodes found.", "Run set", JOptionPane.ERROR_MESSAGE);
+            JIPipeDesktopDialogs.message(this, "Run set", "Unable to run the set '" + runSet.getDisplayName() + "'. No nodes found.");
             return;
         }
         doUpdateCache(nodes, intermediateResults);
@@ -550,11 +559,13 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
                     "</html>"));
             formPanel.addToForm(options, new JLabel("Operation"));
 
-            if (JOptionPane.showConfirmDialog(this,
-                    formPanel,
-                    "Show results",
-                    JOptionPane.YES_NO_OPTION,
-                    JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+            Optional<Button> confirmed = JIPipeDesktopDialogs.builder(this,
+                            "Show results")
+                    .content(formPanel)
+                    .buttons(Button.YES, Button.NO)
+                    .cancelable(false)
+                    .show();
+            if (confirmed.orElse(null) == Button.YES) {
                 doUpdateCache(Collections.singletonList(output), Objects.equals(options.getSelectedItem(), "Cache intermediate results"));
             }
         } else {
@@ -640,11 +651,14 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
             }));
         }
         popupMenu.add(UIUtils.createMenuItem("Custom ...", "Enter a custom ID", JIPipe.RESOURCES.getIcon16("actions/edit.png"), () -> {
-            String newLicense = JOptionPane.showInputDialog(this, "Please enter a valid license ID:", "Set license");
-            if (!StringUtils.isNullOrEmpty(newLicense)) {
-                getProject().getMetadata().setLicense(newLicense);
-                refreshAll();
-            }
+            // "Set license" was the third argument of the former 3-arg
+            // showInputDialog call, i.e. the initial field value (not a title).
+            // Preserved verbatim.
+            JIPipeDesktopDialogs.inputText(this, "Input", "Please enter a valid license ID:", "Set license")
+                    .ifPresent(newLicense -> {
+                        getProject().getMetadata().setLicense(newLicense);
+                        refreshAll();
+                    });
         }));
 
         popupMenu.addSeparator();
@@ -818,11 +832,11 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
                         "Please provide at least a unique key that identifies the path and allows to recall it from within the workflow. " +
                         "You can also request that the path must exist."), "Add new project-wide path/directory", JIPipeDesktopParameterFormPanel.DEFAULT_DIALOG_FLAGS)) {
                     if (StringUtils.isNullOrEmpty(entry.getKey())) {
-                        JOptionPane.showMessageDialog(this, "No key was provided", "Add new project-wide path/directory", JOptionPane.ERROR_MESSAGE);
+                        JIPipeDesktopDialogs.message(this, "Add new project-wide path/directory", "No key was provided");
                         continue;
                     }
                     if (getProject().getMetadata().getUserPaths().getUserPathsAsInstance().stream().anyMatch(e -> Objects.equals(e.getKey(), entry.getKey()))) {
-                        JOptionPane.showMessageDialog(this, "The key already exists", "Add new project-wide path/directory", JOptionPane.ERROR_MESSAGE);
+                        JIPipeDesktopDialogs.message(this, "Add new project-wide path/directory", "The key already exists");
                         continue;
                     }
                     getProject().getMetadata().getUserPaths().getPaths().addFromTemplate(entry);

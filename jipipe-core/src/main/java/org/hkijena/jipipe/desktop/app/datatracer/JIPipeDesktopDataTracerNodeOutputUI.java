@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchPanel;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.data.WeakStore;
@@ -103,7 +104,7 @@ public class JIPipeDesktopDataTracerNodeOutputUI extends JIPipeDesktopProjectWor
             GraphNodeValidationReportContext context = new GraphNodeValidationReportContext(node);
             context.navigate(getDesktopWorkbench());
         } else {
-            JOptionPane.showMessageDialog(getDesktopWorkbench().getWindow(), "The node could not be found!", "Go to node", JOptionPane.ERROR_MESSAGE);
+            JIPipeDesktopDialogs.message(getDesktopWorkbench().getWindow(), "Go to node", "The node could not be found!");
         }
     }
 

@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeExample;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchPanel;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.nodeexamples.JIPipeNodeExampleListCellRenderer;
 import org.hkijena.jipipe.plugins.nodetemplate.NodeTemplatesRefreshedEvent;
 import org.hkijena.jipipe.plugins.nodetemplate.NodeTemplatesRefreshedEventListener;
@@ -73,8 +74,8 @@ public class JIPipeDesktopNodeExamplesUI extends JIPipeDesktopProjectWorkbenchPa
         if (example == null) {
             return;
         }
-        if (JOptionPane.showConfirmDialog(SwingUtilities.getWindowAncestor(this), "Do you really want to load the example '" + example.getNodeTemplate().getName() + "'?\n" +
-                "This will override all your existing settings.", "Load example", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.NO_OPTION) {
+        if (!JIPipeDesktopDialogs.confirm(SwingUtilities.getWindowAncestor(this), "Load example", "Do you really want to load the example '" + example.getNodeTemplate().getName() + "'?\n" +
+                "This will override all your existing settings.")) {
             return;
         }
         algorithm.loadExample(example);

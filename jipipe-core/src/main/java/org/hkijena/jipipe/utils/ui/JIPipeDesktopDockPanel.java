@@ -1053,6 +1053,33 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
             visibilities.put(id, visible);
         }
 
+    /**
+     * Returns a copy of this state that is safe to persist: the activity state
+     * of context docks (ids starting with an underscore) is dropped. Context
+     * docks are selection-scoped: which of them are available and their
+     * default activity state is owned by the code that adds them, so a
+     * persisted transient hide (for example the results dock taking over the
+     * top-right slot while a run is shown) must not suppress that default
+     * (#1353). Placements, the activity state of persistent docks, sizes and
+     * ratios are kept.
+     *
+     * @return a sanitized copy; this state is not modified
+     */
+    public State withoutContextDockVisibilities() {
+        State copy = new State();
+        copy.visibilities.putAll(visibilities);
+        copy.visibilities.keySet().removeIf(id -> id.startsWith("_"));
+        copy.locations.putAll(locations);
+        copy.mainSplitPaneRatio = mainSplitPaneRatio;
+        copy.leftPanelWidth = leftPanelWidth;
+        copy.rightPanelWidth = rightPanelWidth;
+        copy.leftSplitPaneRatio = leftSplitPaneRatio;
+        copy.rightSplitPaneRatio = rightSplitPaneRatio;
+        copy.alwaysShowLeftPanel = alwaysShowLeftPanel;
+        copy.alwaysShowRightPanel = alwaysShowRightPanel;
+        return copy;
+    }
+
         @JsonGetter("main-split-pane-ratio")
         public double getMainSplitPaneRatio() {
             return mainSplitPaneRatio;

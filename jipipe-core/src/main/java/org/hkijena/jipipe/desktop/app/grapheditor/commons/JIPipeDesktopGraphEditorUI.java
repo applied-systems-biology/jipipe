@@ -43,6 +43,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.events.NodeUIAc
 import org.hkijena.jipipe.desktop.app.grapheditor.contextpanel.JIPipeDesktopGraphEditorContextPanel;
 import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeDesktopGenericListCellRenderer;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameter;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameterList;
@@ -435,11 +436,11 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
     private void restoreDockStateTemplate(String value) {
         try {
             JIPipeDesktopDockPanel.State state = JsonUtils.readFromString(value, JIPipeDesktopDockPanel.State.class);
-            getDockPanel().restoreState(state);
+            getDockPanel().restoreState(state.withoutContextDockVisibilities());
             saveDockStateToSettings();
         } catch (Throwable e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Unable to restore template!", "Load template", JOptionPane.ERROR_MESSAGE);
+            JIPipeDesktopDialogs.message(this, "Load template", "Unable to restore template!");
         }
     }
 
@@ -483,12 +484,13 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
     }
 
     private void createDockStateTemplate() {
-        String newValue = StringUtils.nullToEmpty(JOptionPane.showInputDialog(this, "Please input the name of the layout:", "")).trim();
-        if (!StringUtils.isNullOrEmpty(newValue)) {
-            JIPipeDesktopDockPanel.State currentState = getDockPanel().getCurrentState();
-            getDockStateTemplates().add(new StringAndStringPairParameter(newValue, JsonUtils.toJsonString(currentState)));
-            saveDockStateTemplates();
-        }
+        JIPipeDesktopDialogs.inputText(this, "Input", "Please input the name of the layout:", null)
+                .map(String::trim)
+                .ifPresent(newValue -> {
+                    JIPipeDesktopDockPanel.State currentState = getDockPanel().getCurrentState().withoutContextDockVisibilities();
+                    getDockStateTemplates().add(new StringAndStringPairParameter(newValue, JsonUtils.toJsonString(currentState)));
+                    saveDockStateTemplates();
+                });
     }
 
     /**
@@ -559,16 +561,17 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
                 JIPipe.RESOURCES.getIcon16("actions/edit-reset.png"), () -> canvasUI.setZoom(1)));
         JMenuItem changeZoomToItem = new JMenuItem("Set zoom value ...");
         changeZoomToItem.addActionListener(e -> {
-            String zoomInput = JOptionPane.showInputDialog(this, "Please enter a new zoom value (in %)", (int) (canvasUI.getZoom() * 100) + "%");
-            if (!StringUtils.isNullOrEmpty(zoomInput)) {
-                zoomInput = zoomInput.replace("%", "");
-                try {
-                    int percentage = Integer.parseInt(zoomInput);
-                    canvasUI.setZoom(percentage / 100.0);
-                } catch (NumberFormatException ex) {
-                    ex.printStackTrace();
-                }
-            }
+            // String input (not inputInteger): the value carries a "%" suffix
+            JIPipeDesktopDialogs.inputText(this, "Input", "Please enter a new zoom value (in %)", (int) (canvasUI.getZoom() * 100) + "%")
+                    .ifPresent(zoomInput -> {
+                        String percentageString = zoomInput.replace("%", "");
+                        try {
+                            int percentage = Integer.parseInt(percentageString);
+                            canvasUI.setZoom(percentage / 100.0);
+                        } catch (NumberFormatException ex) {
+                            ex.printStackTrace();
+                        }
+                    });
         });
         zoomMenu.add(changeZoomToItem);
         zoomPanel.add(zoomButton, BorderLayout.CENTER);

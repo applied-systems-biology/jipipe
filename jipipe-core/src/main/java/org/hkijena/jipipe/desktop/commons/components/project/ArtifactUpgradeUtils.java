@@ -22,6 +22,7 @@ import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.service.components.JIPipeEnvironmentsServiceComponent;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.parameters.api.optional.JIPipeOptionalParameter;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeArtifactQueryParameter;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeDefaultEnvironmentsApplicationSettings;
@@ -68,7 +69,7 @@ public class ArtifactUpgradeUtils {
             }
 
             if (numSuccesses > 0) {
-                JOptionPane.showMessageDialog(workbench.getWindow(), StringUtils.wrapHtml(StringUtils.formatPluralS(numSuccesses, "artifact") + " were updated.<br/>JIPipe will automatically take care of downloading and setting up the artifacts."));
+                JIPipeDesktopDialogs.message(workbench.getWindow(), "Message", StringUtils.wrapHtml(StringUtils.formatPluralS(numSuccesses, "artifact") + " were updated.<br/>JIPipe will automatically take care of downloading and setting up the artifacts."));
             }
         }
     }
@@ -76,16 +77,12 @@ public class ArtifactUpgradeUtils {
     public static void findAndShowUpgradeDialog(JIPipeDesktopWorkbench workbench, JIPipeGraphNode node, Class<? extends JIPipeArtifactEnvironment> environmentClass) {
         JIPipeArtifactEnvironment environment = resolveActualEnvironment(node, environmentClass);
         if (environment == null) {
-            JOptionPane.showMessageDialog(workbench.getWindow(),
-                    "Could not find the environment in the project settings.\nPlease update the Cellpose artifact manually.",
-                    "Update Cellpose", JOptionPane.WARNING_MESSAGE);
+            JIPipeDesktopDialogs.message(workbench.getWindow(), "Update Cellpose", "Could not find the environment in the project settings.\nPlease update the Cellpose artifact manually.");
             return;
         }
         List<ArtifactUpgrade> upgrades = findAvailableUpgrades(environment);
         if (upgrades.isEmpty()) {
-            JOptionPane.showMessageDialog(workbench.getWindow(),
-                    "No newer Cellpose artifacts were found.\nPlease install a newer Cellpose artifact manually.",
-                    "Update Cellpose", JOptionPane.INFORMATION_MESSAGE);
+            JIPipeDesktopDialogs.message(workbench.getWindow(), "Update Cellpose", "No newer Cellpose artifacts were found.\nPlease install a newer Cellpose artifact manually.");
             return;
         }
         showUpgradeDialog(workbench, upgrades);

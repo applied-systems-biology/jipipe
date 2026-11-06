@@ -21,6 +21,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanv
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.NodeAndEdgesUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.edgeui.JIPipeDesktopGraphEdgeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeGraphEditorUIApplicationSettings;
 
 import javax.swing.*;
@@ -64,9 +65,8 @@ public class DeleteCompartmentNodesAndEdgesContextAction implements NodeAndEdges
             subject += "edges";
         }
 
-        if (!JIPipeGraphEditorUIApplicationSettings.getInstance().isAskOnDeleteCompartment() || JOptionPane.showConfirmDialog(canvasUI.getDesktopWorkbench().getWindow(),
-                "Do you really want to remove the selected " + subject + "?", "Delete " + subject,
-                JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+        if (!JIPipeGraphEditorUIApplicationSettings.getInstance().isAskOnDeleteCompartment() || JIPipeDesktopDialogs.confirm(canvasUI.getDesktopWorkbench().getWindow(),
+                "Delete " + subject, "Do you really want to remove the selected " + subject + "?")) {
             if (!edgeSelection.isEmpty()) {
                 for (JIPipeDesktopGraphEdgeUI edgeUI : edgeSelection) {
                     canvasUI.getGraph().disconnect(edgeUI.getSource(), edgeUI.getTarget(), true);

@@ -36,6 +36,9 @@ import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportCon
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.project.JIPipeDesktopProjectOutputTreePanel;
+import org.hkijena.jipipe.desktop.commons.dialogs.Button;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
+
 import org.hkijena.jipipe.plugins.filesystem.dataypes.FolderData;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
@@ -49,6 +52,7 @@ import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.awt.*;
 import java.nio.file.Path;
+import java.util.Optional;
 
 @SetJIPipeDocumentation(name = "Get JIPipe slot folder", description = "Extracts a slot output folder from a JIPipe output. Use the 'Set output slot' button to select the correct parameters.")
 @AddJIPipeInputSlot(value = JIPipeOutputData.class, name = "JIPipe output", create = true)
@@ -127,15 +131,14 @@ public class GetJIPipeSlotFolderAlgorithm extends JIPipeSimpleIteratingAlgorithm
                 JIPipeProject project = JIPipeProject.loadProject(projectFile, new UnspecifiedValidationReportContext(), new JIPipeValidationReport(), new JIPipeNotificationInbox(), JIPipeProgressInfo.STDOUT);
                 JIPipeDesktopProjectOutputTreePanel panel = new JIPipeDesktopProjectOutputTreePanel(project);
                 panel.setBorder(UIUtils.createControlBorder());
-                int result = JOptionPane.showOptionDialog(
+                Optional<Button> result = JIPipeDesktopDialogs.builder(
                         window,
-                        new Object[]{panel},
-                        "Select slot",
-                        JOptionPane.OK_CANCEL_OPTION,
-                        JOptionPane.PLAIN_MESSAGE,
-                        null, null, null);
+                        "Select slot")
+                        .content(panel)
+                        .buttons(Button.OK, Button.CANCEL)
+                        .show();
 
-                if (result == JOptionPane.OK_OPTION) {
+                if (result.orElse(null) == Button.OK) {
                     Object component = panel.getTree().getLastSelectedPathComponent();
                     if (component instanceof DefaultMutableTreeNode node) {
                         if (node.getUserObject() instanceof JIPipeDataSlot slot) {
@@ -144,10 +147,10 @@ public class GetJIPipeSlotFolderAlgorithm extends JIPipeSimpleIteratingAlgorithm
                             ParameterUtils.setParameter(this, "compartment-id",
                                     slot.getNode().getProjectCompartment().getAliasIdInParentGraph());
                         } else {
-                            JOptionPane.showMessageDialog(window, "Please select a slot", "Error", JOptionPane.ERROR_MESSAGE);
+                            JIPipeDesktopDialogs.message(window, "Error", "Please select a slot");
                         }
                     } else {
-                        JOptionPane.showMessageDialog(window, "Please select a slot", "Error", JOptionPane.ERROR_MESSAGE);
+                        JIPipeDesktopDialogs.message(window, "Error", "Please select a slot");
                     }
                 }
             } catch (Exception e) {

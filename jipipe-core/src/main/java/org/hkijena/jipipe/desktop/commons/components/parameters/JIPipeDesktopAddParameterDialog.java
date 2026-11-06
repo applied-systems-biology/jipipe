@@ -21,6 +21,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeParameterTypeInfoListCellRenderer;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
@@ -186,7 +187,7 @@ public class JIPipeDesktopAddParameterDialog extends JIPipeDesktopWorkbenchPanel
             return false;
         String id = currentSettings.getId();
         if (id == null || id.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "The unique key cannot be empty!", "Add parameter", JOptionPane.ERROR_MESSAGE);
+            JIPipeDesktopDialogs.message(this, "Add parameter", "The unique key cannot be empty!");
             return false;
         }
         return true;

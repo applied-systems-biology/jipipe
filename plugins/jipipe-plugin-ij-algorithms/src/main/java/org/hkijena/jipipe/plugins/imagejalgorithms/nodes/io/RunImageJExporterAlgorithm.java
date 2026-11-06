@@ -38,9 +38,13 @@ import org.hkijena.jipipe.api.parameters.RegisterJIPipeParameterCollectionContex
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.commons.dialogs.Button;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.parameters.library.references.ImageJDataExporterRef;
 
 import javax.swing.*;
+
+import java.util.Optional;
 
 @SetJIPipeDocumentation(name = "Export to ImageJ", description = "Runs an ImageJ exporter. You can select the utilized exporter type in the parameters.")
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Input", create = true)
@@ -93,16 +97,17 @@ public class RunImageJExporterAlgorithm extends JIPipeMergingAlgorithm {
     @RegisterJIPipeParameterCollectionContextAction(icon = "actions/configure.png")
     public void setExporterParametersFromUI(JIPipeWorkbench parent) {
         if (exporterType.getInstance() == null) {
-            JOptionPane.showMessageDialog(((JIPipeDesktopWorkbench) parent).getWindow(),
-                    "Please select an exporter type, first!",
-                    "Set export parameters",
-                    JOptionPane.ERROR_MESSAGE);
+            JIPipeDesktopDialogs.message(((JIPipeDesktopWorkbench) parent).getWindow(), "Set export parameters", "Please select an exporter type, first!");
             return;
         }
         ImageJDataExportOperation operation = new ImageJDataExportOperation(exporterType.getInstance());
         this.exportParameters.copyTo(operation);
         ImageJDataExporterUI ui = JIPipe.getImageJAdapters().createUIForExportOperation(parent, operation);
-        if (JOptionPane.showConfirmDialog(((JIPipeDesktopWorkbench) parent).getWindow(), ui, "Set export parameters", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
+        Optional<Button> confirmed = JIPipeDesktopDialogs.builder(((JIPipeDesktopWorkbench) parent).getWindow(), "Set export parameters")
+                .content(ui)
+                .buttons(Button.OK, Button.CANCEL)
+                .show();
+        if (confirmed.orElse(null) == Button.OK) {
             operation.copyTo(this.exportParameters);
             emitParameterUIChangedEvent();
         }

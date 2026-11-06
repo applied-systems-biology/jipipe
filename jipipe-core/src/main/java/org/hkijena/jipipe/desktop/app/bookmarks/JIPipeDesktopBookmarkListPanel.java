@@ -28,6 +28,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.GraphInter
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.JIPipeDesktopPipelineGraphEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -157,7 +158,7 @@ public class JIPipeDesktopBookmarkListPanel extends JIPipeDesktopWorkbenchPanel 
     private void removeSelectedBookmarks() {
         List<JIPipeGraphNode> selection = nodeJList.getSelectedValuesList();
         if (!selection.isEmpty()) {
-            if (JOptionPane.showConfirmDialog(this, "Do you really want to remove the selected bookmarks?", "Remove bookmarks", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.NO_OPTION) {
+            if (!JIPipeDesktopDialogs.confirm(this, "Remove bookmarks", "Do you really want to remove the selected bookmarks?")) {
                 return;
             }
             for (JIPipeGraphNode node : selection) {

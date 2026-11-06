@@ -77,7 +77,9 @@ public class JIPipeDesktopProjectOverviewRunManager implements JIPipeRunnable.Fi
         }
 
         if (getLogPanel().isAutoShowProgress() && allowChangePanels) {
-            getDockPanel().activatePanel(JIPipeDesktopGraphEditorUI.DOCK_LOG, true);
+            // Transient: the run manager restores the previous layout when the
+            // run finishes, so this must not enter the persisted layout (#1353)
+            getDockPanel().activatePanel(JIPipeDesktopGraphEditorUI.DOCK_LOG, false);
         }
 
         // Create an enqueue the run

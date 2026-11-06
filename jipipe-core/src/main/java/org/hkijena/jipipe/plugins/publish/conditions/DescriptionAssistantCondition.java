@@ -18,11 +18,13 @@ import org.hkijena.jipipe.desktop.app.publish.JIPipeDesktopPublisherAssistant;
 import org.hkijena.jipipe.desktop.app.publish.JIPipeDesktopPublisherAssistantCondition;
 import org.hkijena.jipipe.desktop.app.publish.JIPipeDesktopPublisherAssistantConditionStatus;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopHTMLEditor;
+import org.hkijena.jipipe.desktop.commons.dialogs.Button;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
-import java.awt.*;
+import java.util.Optional;
 
 public class DescriptionAssistantCondition extends JIPipeDesktopPublisherAssistantCondition {
     public DescriptionAssistantCondition(JIPipeDesktopPublisherAssistant assistant) {
@@ -37,7 +39,12 @@ public class DescriptionAssistantCondition extends JIPipeDesktopPublisherAssista
     private void editProjectDescription() {
         JIPipeDesktopHTMLEditor editor = new JIPipeDesktopHTMLEditor(getDesktopProjectWorkbench(), JIPipeDesktopHTMLEditor.Mode.Full, JIPipeDesktopHTMLEditor.WITH_SCROLL_BAR);
         editor.setText(getProject().getMetadata().getDescription().getHtml());
-        if (UIUtils.showConfirmDialog(this, "Edit project description", new Dimension(800, 600), editor)) {
+        Optional<Button> result = JIPipeDesktopDialogs.builder(this, "Edit project description")
+                .content(editor)
+                .size(800, 600)
+                .buttons(Button.OK, Button.CANCEL)
+                .show();
+        if (result.isPresent() && result.get() == Button.OK) {
             getProject().getMetadata().setDescription(new HTMLText(editor.getHTML()));
             getAssistant().updateAssistant();
         }

@@ -37,6 +37,7 @@ import org.hkijena.jipipe.api.parameters.RegisterJIPipeParameterCollectionContex
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
@@ -49,6 +50,7 @@ import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 import javax.swing.*;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
@@ -202,17 +204,17 @@ public class ArrangeChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @SetJIPipeDocumentation(name = "Simple reorder", description = "Allows you to input the reordering like in ImageJ.")
     @RegisterJIPipeParameterCollectionContextAction(icon = "apps/imagej.png")
     public void setToExample(JIPipeWorkbench parent) {
-        String reordering = JOptionPane.showInputDialog(((JIPipeDesktopWorkbench) parent).getWindow(),
+        Optional<String> reorderingResult = JIPipeDesktopDialogs.inputText(((JIPipeDesktopWorkbench) parent).getWindow(), "Input",
                 "Please put in the list of numbers how the channels should be re-ordered. " +
                         "For example '1,2,3'.\n\nPlease note that the first channel index is one (like in ImageJ).\nThe 'Channel reordering' " +
                         "parameter indexes channels starting from zero.",
                 "1,2,3");
-        if (reordering == null)
+        if (!reorderingResult.isPresent())
             return;
-        IntegerRange range = new IntegerRange(reordering);
+        IntegerRange range = new IntegerRange(reorderingResult.get());
         List<Integer> channelIndices = range.tryGetIntegers(0, 0, new JIPipeExpressionVariablesMap());
         if (channelIndices == null || channelIndices.isEmpty() || channelIndices.stream().anyMatch(i -> i <= 0)) {
-            JOptionPane.showMessageDialog(((JIPipeDesktopWorkbench) parent).getWindow(), "Invalid channel indices. Please provide a comma separated list of positive numbers.");
+            JIPipeDesktopDialogs.message(((JIPipeDesktopWorkbench) parent).getWindow(), "Message", "Invalid channel indices. Please provide a comma separated list of positive numbers.");
             return;
         }
         channelReordering.clear();
