@@ -178,15 +178,31 @@ public class JIPipeDesktopProgressLoggerPanel extends JIPipeDesktopWorkbenchPane
             sources.put(name, source);
             subscribeToSource(source);
 
-            // Populate existing log entries if requested
+            // Populate existing log entries if requested. File-backed stores are re-read from the
+            // record tail on every open (no cached view — re-opening shows the current state);
+            // handles on non-persistent stores keep the (cached) getLog() view.
             if (populateExistingLog) {
-                CharSequence existingLog = progressInfo.getLog();
-                if (existingLog != null && existingLog.length() > 0) {
-                    String logText = existingLog.toString();
-                    String[] lines = logText.split("\n");
-                    for (String line : lines) {
-                        if (!line.trim().isEmpty()) {
-                            loggerPanel.appendLine("[" + name + "] " + line);
+                JIPipeProgressLog store = progressInfo.getStore();
+                if (store != null && store.getFile() != null) {
+                    List<String> rendered = new ArrayList<>();
+                    store.renderRecords(store.readRecent(Integer.MAX_VALUE), JIPipeLogLevel.INFO,
+                            line -> {
+                                if (!line.isBlank()) {
+                                    rendered.add(line);
+                                }
+                            });
+                    for (String line : rendered) {
+                        loggerPanel.appendLine("[" + name + "] " + line);
+                    }
+                } else {
+                    CharSequence existingLog = progressInfo.getLog();
+                    if (existingLog != null && existingLog.length() > 0) {
+                        String logText = existingLog.toString();
+                        String[] lines = logText.split("\n");
+                        for (String line : lines) {
+                            if (!line.trim().isEmpty()) {
+                                loggerPanel.appendLine("[" + name + "] " + line);
+                            }
                         }
                     }
                 }

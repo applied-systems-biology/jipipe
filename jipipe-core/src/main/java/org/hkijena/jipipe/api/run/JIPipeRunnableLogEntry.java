@@ -41,9 +41,22 @@ public class JIPipeRunnableLogEntry {
     /**
      * The single line rendered when the log data is unavailable (no data file and no store, the
      * file was removed — e.g. evicted or cleaned up with the project's temporary directory — or
-     * the render produced no lines).
+     * the render found no renderable records at any level).
      */
     public static final String DATA_UNAVAILABLE_LINE = "[log data unavailable — removed]";
+
+    /**
+     * Builds the single line rendered when the log data exists but renders nothing at the
+     * requested level (e.g. a DEBUG-only run viewed at INFO): the hint names the probed record
+     * count and the level.
+     *
+     * @param count    the probed count (rendered-line count of the lowest-level probe render)
+     * @param minLevel the requested minimum level
+     * @return the hint line
+     */
+    public static String belowLevelLine(int count, JIPipeLogLevel minLevel) {
+        return "[" + count + " records below " + minLevel.name() + " level — enable debug in the progress panel]";
+    }
 
     private final String name;
     private final LocalDateTime dateTime;
@@ -173,7 +186,20 @@ public class JIPipeRunnableLogEntry {
             store.renderText(minLevel, countingSink);
         }
         if (lines[0] == 0) {
-            lineSink.accept(DATA_UNAVAILABLE_LINE);
+            // Distinguish "no data at all" from "data exists but renders nothing at the requested
+            // level" (e.g. a DEBUG-only run viewed at INFO): probe once at the lowest level and
+            // count what renders there
+            int[] probe = {0};
+            if (dataFile != null) {
+                JIPipeProgressLog.renderFile(dataFile, JIPipeLogLevel.DEBUG, line -> probe[0]++);
+            } else if (store != null) {
+                store.renderText(JIPipeLogLevel.DEBUG, line -> probe[0]++);
+            }
+            if (probe[0] > 0) {
+                lineSink.accept(belowLevelLine(probe[0], minLevel));
+            } else {
+                lineSink.accept(DATA_UNAVAILABLE_LINE);
+            }
         }
     }
 

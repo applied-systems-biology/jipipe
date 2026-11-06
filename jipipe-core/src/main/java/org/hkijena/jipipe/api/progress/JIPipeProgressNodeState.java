@@ -15,7 +15,13 @@ package org.hkijena.jipipe.api.progress;
 
 /**
  * State of a node inside the progress tree.
- * The enum name is part of the NDJSON wire contract ({@code s} field of {@code N} and {@code s} records) and must not be renamed.
+ * <p>
+ * The enum NAMES are not the wire contract: the NDJSON wire literals are produced by the explicit
+ * mappings in {@link AbstractJIPipeProgressLog} — {@code mapNodeStateToWire} writes
+ * {@code ok|fail|cancel} into the {@code s} field of {@code N} records, and
+ * {@code mapRunStateToWire} writes {@code running|finished|failed|cancelled} into the {@code s}
+ * field of {@code s} records. Only those literals and the mapping methods are part of the
+ * NDJSON contract (a renamed or added constant changes nothing on disk unless the mappings change).
  */
 public enum JIPipeProgressNodeState {
 

@@ -403,6 +403,10 @@ public interface JIPipeProgressLog extends AutoCloseable {
     /**
      * A batch of new/changed records, emitted at most once per coalesce interval plus a guaranteed
      * final batch at run end. Consumers never receive per-record events on the hot path.
+     * <p>
+     * Empty-final-batch convention: {@code fromLine() > toLine()} marks the guaranteed final batch
+     * of a run whose records were all covered by earlier batches — the run is complete and no new
+     * records are attached (consumers must not render the range).
      */
     class ProgressBatchEvent extends AbstractJIPipeEvent {
 

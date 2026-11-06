@@ -169,6 +169,61 @@ class RunnableLogsCollectionTest {
     }
 
     @Test
+    void debugOnlyEntryRendersBelowLevelHint() {
+        // A run whose records are all below INFO (DEBUG-only logging): the data file exists with
+        // data — the entry must say so instead of claiming the data was removed
+        Path file = tmp.resolve(UUID.randomUUID() + ".ndjson");
+        JIPipeProgressLog store = JIPipeProgressLog.create(file, UUID.randomUUID().toString(), "debug-only");
+        store.log(store.getRootNodeId(), JIPipeLogLevel.DEBUG, "debug-only line");
+        store.finish(JIPipeProgressNodeState.OK);
+        DefaultJIPipeRunnable run = new DefaultJIPipeRunnable() {
+            @Override
+            public String getTaskLabel() {
+                return "debug-only";
+            }
+
+            @Override
+            public void run() {
+                // Never executed — the store is finished before the entry is created
+            }
+        };
+        run.getProgressInfo().setStore(store);
+        JIPipeRunnableLogEntry entry = new JIPipeRunnableLogEntry(run, true);
+        List<String> lines = new ArrayList<>();
+        entry.renderText(lines::add);
+        assertEquals(1, lines.size(), "a below-INFO-only entry renders exactly the hint line");
+        assertEquals("[1 records below INFO level — enable debug in the progress panel]", lines.get(0),
+                "the hint names the probed count and the level");
+    }
+
+    @Test
+    void fileWithoutRenderableRecordsStillRendersPlaceholder() {
+        // A data file that exists but holds no renderable records at any level (only progress
+        // records): the probe finds nothing renderable — the genuine no-data placeholder applies
+        Path file = tmp.resolve(UUID.randomUUID() + ".ndjson");
+        JIPipeProgressLog store = JIPipeProgressLog.create(file, UUID.randomUUID().toString(), "progress-only");
+        store.progress(store.getRootNodeId(), 1, 10);
+        store.finish(JIPipeProgressNodeState.OK);
+        DefaultJIPipeRunnable run = new DefaultJIPipeRunnable() {
+            @Override
+            public String getTaskLabel() {
+                return "progress-only";
+            }
+
+            @Override
+            public void run() {
+                // Never executed — the store is finished before the entry is created
+            }
+        };
+        run.getProgressInfo().setStore(store);
+        JIPipeRunnableLogEntry entry = new JIPipeRunnableLogEntry(run, true);
+        List<String> lines = new ArrayList<>();
+        entry.renderText(lines::add);
+        assertEquals(1, lines.size());
+        assertTrue(lines.get(0).contains("unavailable"), "unexpected line: " + lines.get(0));
+    }
+
+    @Test
     void renderFileToleratesTruncatedLastLine() throws IOException {
         // The reader tolerates a truncated final line (writer killed mid-flush)
         Path file = tmp.resolve("truncated.ndjson");

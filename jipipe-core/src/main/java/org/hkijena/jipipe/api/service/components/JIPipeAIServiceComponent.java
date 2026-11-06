@@ -14,6 +14,7 @@ import org.hkijena.jipipe.api.microservice.MicroserviceState;
 import org.hkijena.jipipe.api.microservice.ServiceAwareEphemeralExecutor;
 import org.hkijena.jipipe.api.microservice.ServiceAwareQueuedExecutor;
 import org.hkijena.jipipe.api.nodes.database.embeddings.JIPipeGlobalEmbeddingSearch;
+import org.hkijena.jipipe.api.progress.JIPipeProgressLog;
 import org.hkijena.jipipe.api.run.JIPipeRunnableExecutor;
 import org.hkijena.jipipe.api.servers.JIPipeServerLease;
 import org.hkijena.jipipe.api.service.JIPipeService;
@@ -23,8 +24,10 @@ import org.hkijena.jipipe.plugins.ai.EmbeddingModelType;
 import org.hkijena.jipipe.plugins.ai.environments.EmbeddingModelEnvironment;
 import org.hkijena.jipipe.plugins.embeddingserver.EmbeddingServerInstance;
 
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -47,8 +50,25 @@ public class JIPipeAIServiceComponent extends JIPipeServiceComponent {
     /**
      * Progress info for embedding-related operations (model loading, embedding computation, cache I/O).
      * The AI monitor window can subscribe to this to display logs in the UI.
+     * <p>
+     * Built on a file-backed store in the global temporary base
+     * ({@link JIPipeProgressLog#resolveStorageBase()}; the store's NDJSON file is created lazily by
+     * the writer thread on the first flushed record — no disk cost until records flow), so the
+     * monitor's embedding log page receives coalesced batch events and can re-read the record tail
+     * on every open. A silent store would be dead UI: it never emits batches. The handle is created
+     * directly on the store (not via {@code setStorageBase}), which is for adopting into an
+     * existing handle; this handle owns its store for the service's lifetime.
      */
-    private final JIPipeProgressInfo embeddingProgressInfo = new JIPipeProgressInfo();
+    private final JIPipeProgressInfo embeddingProgressInfo = createEmbeddingProgressInfo();
+
+    /**
+     * Creates the embedding progress handle on its file-backed store.
+     */
+    private static JIPipeProgressInfo createEmbeddingProgressInfo() {
+        String runUuid = UUID.randomUUID().toString();
+        Path file = JIPipeProgressLog.resolveStorageBase().resolve(runUuid + ".ndjson");
+        return new JIPipeProgressInfo(JIPipeProgressLog.create(file, runUuid, "AI embedding operations"));
+    }
 
     public JIPipeAIServiceComponent(JIPipeService service) {
         super(service);
@@ -179,9 +199,8 @@ public class JIPipeAIServiceComponent extends JIPipeServiceComponent {
      * Gets the progress info for embedding-related operations.
      * Subscribe to the embedding progress info's store batch emitter
      * ({@link JIPipeProgressInfo#subscribeToBatchEvents(JIPipeProgressLog.ProgressBatchEventListener)})
-     * to receive log updates as coalesced batches. Note: stores without a writer thread (the
-     * embedding progress info uses a silent store) never emit — the tail-populate path
-     * ({@code getLog()}) is the way to read their records.
+     * to receive log updates as coalesced batches. The handle is file-backed (global temporary
+     * base), so batches flow and the record tail can be re-read on every UI open.
      *
      * @return the embedding progress info
      */
