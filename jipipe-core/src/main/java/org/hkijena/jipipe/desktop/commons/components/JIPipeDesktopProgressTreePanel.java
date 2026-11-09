@@ -99,6 +99,10 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
 
     private static final Logger log = LoggerFactory.getLogger(JIPipeDesktopProgressTreePanel.class);
 
+    public static final String ICON_STATUS_OK = "actions/circle-check.png";
+    public static final String ICON_STATUS_ERROR = "emblems/vcs-conflicting.png";
+    public static final String ICON_STATUS_CANCELLED = "emblems/emblem-unavailable.png";
+
     private static final int REFRESH_INTERVAL_MILLIS = 250;
     private static final int DETAIL_PAGE_SIZE = 1000;
     private static final int COPY_LINE_LIMIT = 8192;
@@ -1798,9 +1802,9 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
             // Finished states show a resource icon (16px, the same icons the rest of the run UI uses) -
             // no UTF-8 glyphs, which rendered inconsistently across fonts
             switch (rootState) {
-                case OK -> footerStateLabel.setIcon(JIPipe.RESOURCES.getIcon16("emblems/emblem-success.png"));
-                case FAILED -> footerStateLabel.setIcon(JIPipe.RESOURCES.getIcon16("emblems/emblem-error.png"));
-                case CANCELLED -> footerStateLabel.setIcon(JIPipe.RESOURCES.getIcon16("actions/gtk-cancel.png"));
+                case OK -> footerStateLabel.setIcon(JIPipe.RESOURCES.getIcon16(ICON_STATUS_OK));
+                case FAILED -> footerStateLabel.setIcon(JIPipe.RESOURCES.getIcon16(ICON_STATUS_ERROR));
+                case CANCELLED -> footerStateLabel.setIcon(JIPipe.RESOURCES.getIcon16(ICON_STATUS_CANCELLED));
                 default -> footerStateLabel.setIcon(null);
             }
         }

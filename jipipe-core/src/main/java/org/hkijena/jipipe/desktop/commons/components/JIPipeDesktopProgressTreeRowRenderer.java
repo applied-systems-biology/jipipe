@@ -294,9 +294,9 @@ public class JIPipeDesktopProgressTreeRowRenderer implements ListCellRenderer<JI
             // into the failure glyph branch and now gets its own icon.
             stateLabel.setText("");
             stateLabel.setIcon(switch (row.state) {
-                case OK -> JIPipe.RESOURCES.getIcon16("emblems/emblem-success.png");
-                case FAILED -> JIPipe.RESOURCES.getIcon16("emblems/emblem-error.png");
-                case CANCELLED -> JIPipe.RESOURCES.getIcon16("actions/gtk-cancel.png");
+                case OK -> JIPipe.RESOURCES.getIcon16(JIPipeDesktopProgressTreePanel.ICON_STATUS_OK);
+                case FAILED -> JIPipe.RESOURCES.getIcon16(JIPipeDesktopProgressTreePanel.ICON_STATUS_ERROR);
+                case CANCELLED -> JIPipe.RESOURCES.getIcon16(JIPipeDesktopProgressTreePanel.ICON_STATUS_CANCELLED);
                 default -> null;
             });
         }
