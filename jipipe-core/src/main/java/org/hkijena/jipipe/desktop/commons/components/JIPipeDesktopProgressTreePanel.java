@@ -494,7 +494,7 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
             long prevLastKnown = lastKnownLine;
             // Read the batch's records once (the same bounded reads the previous flat panels did)
             // to maintain the timestamps and hidden-debug counters; no rendering, no EDT work
-            accumulate(batchStore.readRecords(batch.fromLine(), batch.toLine() - batch.fromLine() + 1));
+            accumulate(batchStore, batchStore.readRecords(batch.fromLine(), batch.toLine() - batch.fromLine() + 1));
             if (batch.toLine() > lastKnownLine) {
                 lastKnownLine = batch.toLine();
             }
@@ -629,10 +629,12 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
      * state is atomic. Batch deltas plus the catch-up scan partition the record lines exactly once,
      * so the counts are exact for the observed range.
      */
-    private void accumulate(List<JIPipeProgressRecord> records) {
+    private void accumulate(JIPipeProgressLog s, List<JIPipeProgressRecord> records) {
+        int rootNodeId = s.getRootNodeId();
         for (JIPipeProgressRecord record : records) {
             // R41: remember the newest determinate-progress node for the running footer (the
-            // catch-up scan feeds the same records, so a mid-run attach heals it too)
+            // catch-up scan feeds the same records, so a mid-run attach heals it too). The footer
+            // read filters root and phase nodes out (fix round 1, F6).
             if (record instanceof JIPipeProgressRecord.Progress progressRecord && progressRecord.mx() > 0) {
                 footerProgressNodeId = progressRecord.id();
             }
@@ -660,6 +662,11 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
                 }
             } else if (record instanceof JIPipeProgressRecord.Error) {
                 state.errorCount.incrementAndGet();
+            }
+            // R38 machinery progress lands on the run root; a root p record is run-level noise,
+            // not a step - it must not capture the footer's latest-node narration (fix round 1, F6)
+            if (nodeId == rootNodeId && record instanceof JIPipeProgressRecord.Progress) {
+                continue;
             }
             if (ts >= latestNodeTs) {
                 latestNodeTs = ts;
@@ -721,7 +728,7 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
                 if (page.isEmpty()) {
                     break;
                 }
-                accumulate(page);
+                accumulate(storeSnapshot, page);
                 if (upToLineExclusive == Integer.MAX_VALUE || page.size() < limit) {
                     // Reached the end (or the requested bound): the scanned lines are the full record count
                     lastKnownLine = Math.max(lastKnownLine, from + page.size() - 1);
@@ -1826,12 +1833,17 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
         String status;
         // R41: while the run is running, the footer prefers the most recent node with determinate
         // progress over the newest node - during an iteration the newest node is the freshly
-        // resolved slice/item row (no counters), which would hide the "5/200 (2%)" narration
+        // resolved slice/item row (no counters), which would hide the "5/200 (2%)" narration.
+        // Fix round 1 (F6): the preference excludes root and phase nodes - root machinery
+        // progress (R38) narrates the run level, not the step the run is in, so during a
+        // counterless node the newest node's label chain is the better narration
         JIPipeProgressNode footerNode = null;
         if (running) {
             int progressNodeId = footerProgressNodeId;
             JIPipeProgressNode progressNode = progressNodeId > 0 ? s.getNode(progressNodeId) : null;
-            if (progressNode != null && progressNode.getMaxProgress() > 0) {
+            if (progressNode != null && progressNodeId != s.getRootNodeId()
+                    && progressNode.getKind() != JIPipeProgressNodeKind.PHASE
+                    && progressNode.getMaxProgress() > 0) {
                 footerNode = progressNode;
             } else {
                 footerNode = latestNodeId > 0 ? s.getNode(latestNodeId) : null;

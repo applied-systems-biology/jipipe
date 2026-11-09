@@ -443,15 +443,15 @@ public class JIPipeDesktopProgressTreeRowRenderer implements ListCellRenderer<JI
     }
 
     /**
-     * The bar fill color: the state color for a finished node (OK green, FAILED red), the accent
-     * color while running - and green once a running node reached its total (the mockup's
-     * {@code .fill.done} behavior for the common run-to-completion case).
+     * The bar fill color, derived from the node state only: the accent color while running,
+     * ok-green for a finished node, err-red for a failed one (the mockup's {@code .fill},
+     * {@code .fill.done}, and {@code .fill.fail} classes).
      */
     private Color barFillColor(NodeRow row) {
         if (row.state == JIPipeProgressNodeState.FAILED) {
             return colorFail;
         }
-        if (row.state == JIPipeProgressNodeState.OK || (row.progressMax > 0 && row.progressValue >= row.progressMax)) {
+        if (row.state == JIPipeProgressNodeState.OK) {
             return colorOk;
         }
         return colorAccent;
@@ -459,12 +459,13 @@ public class JIPipeDesktopProgressTreeRowRenderer implements ListCellRenderer<JI
 
     /**
      * The fill fraction of a row's bar: {@code v/mx} clamped to [0,1] (duplicate parallel-loop
-     * records can push v past mx), or 1.0 for a finished node - the mockup paints a done node's
-     * bar full in its state color regardless of where the counters stopped (row-limited runs end
-     * below their label total).
+     * records can push v past mx). A finished (OK) node paints full regardless of where the
+     * counters stopped (the mockup's {@code .fill.done} at width 100%; row-limited runs end below
+     * their label total); a FAILED node paints its counter fraction in red (the mockup's failed
+     * row: {@code .fill.fail} at width 2% beside "2/100 (2%)").
      */
     private static float barFillFraction(NodeRow row) {
-        if (row.state == JIPipeProgressNodeState.OK || row.state == JIPipeProgressNodeState.FAILED) {
+        if (row.state == JIPipeProgressNodeState.OK) {
             return 1f;
         }
         if (row.progressMax <= 0) {
@@ -474,11 +475,11 @@ public class JIPipeDesktopProgressTreeRowRenderer implements ListCellRenderer<JI
     }
 
     /**
-     * Whether the bar renders full-width (a finished node, or a running node that reached its total).
+     * Whether the bar renders full-width (a finished node only; a running node that reached its
+     * total fills the track through the clamped fraction, in the accent color).
      */
     private static boolean barFillFull(NodeRow row) {
-        return row.state == JIPipeProgressNodeState.OK || row.state == JIPipeProgressNodeState.FAILED
-                || (row.progressMax > 0 && row.progressValue >= row.progressMax);
+        return row.state == JIPipeProgressNodeState.OK;
     }
 
     private static int progressPercent(NodeRow row) {
