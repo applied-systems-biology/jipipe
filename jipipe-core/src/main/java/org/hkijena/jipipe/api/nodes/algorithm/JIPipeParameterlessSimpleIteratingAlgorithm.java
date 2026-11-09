@@ -42,6 +42,7 @@ import org.hkijena.jipipe.utils.ParameterUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -103,6 +104,8 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
             JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", row, 1);
             JIPipeSingleIterationStep iterationStep = new JIPipeSingleIterationStep(this);
             runIteration(iterationStep, new JIPipeMutableIterationContext(row, 1), slotProgress);
+            // R41: the data row completed (single-row variant)
+            progressInfo.setProgress(row + 1, 1);
         } else {
 
             boolean withLimit = iterationStepGenerationSettings.getLimit().isEnabled();
@@ -121,9 +124,14 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
                     iterationStep.setInputData(getFirstInputSlot(), i);
                     iterationStep.addMergedTextAnnotations(getFirstInputSlot().getTextAnnotations(i), JIPipeTextAnnotationMergeMode.Merge);
                     runIteration(iterationStep, new JIPipeMutableIterationContext(i, getFirstInputSlot().getRowCount()), slotProgress);
+                    // R41: the data row completed
+                    progressInfo.setProgress(i + 1, getFirstInputSlot().getRowCount());
                 }
             } else {
                 List<Runnable> tasks = new ArrayList<>();
+                // R41: rows complete out of order in parallel mode, so the completed count is
+                // atomic and monotonic instead of the row index
+                AtomicInteger completedRows = new AtomicInteger();
                 for (int i = 0; i < getFirstInputSlot().getRowCount(); i++) {
                     if (withLimit && !allowedIndices.contains(i))
                         continue;
@@ -136,6 +144,7 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
                         iterationStep.setInputData(getFirstInputSlot(), rowIndex);
                         iterationStep.addMergedTextAnnotations(getFirstInputSlot().getTextAnnotations(rowIndex), JIPipeTextAnnotationMergeMode.Merge);
                         runIteration(iterationStep, new JIPipeMutableIterationContext(rowIndex, getFirstInputSlot().getRowCount()), slotProgress);
+                        progressInfo.setProgress(completedRows.incrementAndGet(), getFirstInputSlot().getRowCount());
                     });
                 }
                 progressInfo.log(String.format("Running %d batches (batch size %d) in parallel. Available threads = %d",

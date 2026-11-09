@@ -81,6 +81,8 @@ public class ImpImageUtils {
                         progressInfo.resolveAndLog("Slice", iterationIndex++, img.getSize()).log("z=" + z + ", c=" + c + ", t=" + t);
                         BufferedImage processor = img.getImage(c, z, t);
                         function.accept(processor, new ImageSliceIndex(c, z, t));
+                        // R41: the slice completed (iterationIndex was post-incremented above)
+                        progressInfo.setProgress(iterationIndex, img.getSize());
                     }
                 }
             }

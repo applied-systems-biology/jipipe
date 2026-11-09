@@ -27,6 +27,8 @@ public class ImageJIterationUtils {
                 ImageProcessor ip = img.getImageStack().getProcessor(i + 1);
                 progressInfo.resolveAndLog("Slice", i, img.getImageStackSize());
                 function.accept(ip);
+                // R41: the slice completed (bar on the row that owns the "Slice i/N" children)
+                progressInfo.setProgress(i + 1, img.getImageStackSize());
             }
         } else {
             function.accept(img.getProcessor());
@@ -48,6 +50,8 @@ public class ImageJIterationUtils {
                 ImageProcessor ip = img.getImageStack().getProcessor(i + 1);
                 progressInfo.resolveAndLog("Slice", i, img.getStackSize());
                 function.accept(ip, i);
+                // R41: the slice completed (bar on the row that owns the "Slice i/N" children)
+                progressInfo.setProgress(i + 1, img.getStackSize());
             }
         } else {
             function.accept(img.getProcessor(), 0);
@@ -73,6 +77,8 @@ public class ImageJIterationUtils {
                         progressInfo.resolveAndLog("Slice", iterationIndex++, img.getStackSize()).log("z=" + z + ", c=" + c + ", t=" + t);
                         ImageProcessor processor = img.getImageStack().getProcessor(index);
                         function.accept(processor, new ImageSliceIndex(c, z, t));
+                        // R41: the slice completed (iterationIndex was post-incremented above)
+                        progressInfo.setProgress(iterationIndex, img.getStackSize());
                     }
                 }
             }
@@ -99,6 +105,8 @@ public class ImageJIterationUtils {
                     progressInfo.resolveAndLog("Frame/Channel", iterationIndex, img.getNChannels() * img.getNFrames()).log("c=" + c + ", t=" + t);
                     JIPipeProgressInfo stackProgress = progressInfo.resolveAndLog("Frame/Channel", iterationIndex, img.getNChannels() * img.getNFrames()).resolve("c=" + c + ", t=" + t);
                     function.accept(cube, new ImageSliceIndex(c, -1, t), stackProgress);
+                    // R41: the slice completed (bar on the row that owns the children)
+                    progressInfo.setProgress(iterationIndex + 1, img.getNChannels() * img.getNFrames());
                     ++iterationIndex;
                 }
             }
@@ -118,6 +126,9 @@ public class ImageJIterationUtils {
                     progressInfo.resolveAndLog("Z/Channel", iterationIndex, img.getNSlices() * img.getNFrames()).log("z=" + z + ", t=" + t);
                     JIPipeProgressInfo stackProgress = progressInfo.resolveAndLog("Z/Channel", iterationIndex, img.getNChannels() * img.getNFrames()).resolve("z=" + z + ", t=" + t);
                     function.accept(cube, new ImageSliceIndex(-1, z, t), stackProgress);
+                    // R41: the slice completed (label total is the one of the first resolveAndLog;
+                    // the pre-existing total mismatch between the two resolveAndLog calls is preserved)
+                    progressInfo.setProgress(iterationIndex + 1, img.getNSlices() * img.getNFrames());
                     ++iterationIndex;
                 }
             }
@@ -143,6 +154,8 @@ public class ImageJIterationUtils {
                 progressInfo.resolveAndLog("Frame", iterationIndex, img.getNFrames()).log("t=" + t);
                 JIPipeProgressInfo stackProgress = progressInfo.resolveAndLog("Frame", iterationIndex, img.getNFrames()).resolve("t=" + t);
                 function.accept(cube, new ImageSliceIndex(-1, -1, t), stackProgress);
+                // R41: the slice completed (bar on the row that owns the children)
+                progressInfo.setProgress(iterationIndex + 1, img.getNFrames());
                 ++iterationIndex;
             }
         } else {
@@ -167,6 +180,9 @@ public class ImageJIterationUtils {
                 progressInfo.resolveAndLog("Channel", iterationIndex, img.getNFrames()).log("c=" + c);
                 JIPipeProgressInfo stackProgress = progressInfo.resolveAndLog("Channel", iterationIndex, img.getNChannels()).resolve("c=" + c);
                 function.accept(cube, new ImageSliceIndex(c, -1, -1), stackProgress);
+                // R41: the slice completed (label total is the one of the first resolveAndLog;
+                // the pre-existing total mismatch between the two resolveAndLog calls is preserved)
+                progressInfo.setProgress(iterationIndex + 1, img.getNFrames());
                 ++iterationIndex;
             }
         } else {
@@ -191,6 +207,9 @@ public class ImageJIterationUtils {
                 progressInfo.resolveAndLog("Slice", iterationIndex, img.getNFrames()).log("z=" + z);
                 JIPipeProgressInfo stackProgress = progressInfo.resolveAndLog("Slice", iterationIndex, img.getNSlices()).resolve("z=" + z);
                 function.accept(cube, new ImageSliceIndex(-1, z, -1), stackProgress);
+                // R41: the slice completed (label total is the one of the first resolveAndLog;
+                // the pre-existing total mismatch between the two resolveAndLog calls is preserved)
+                progressInfo.setProgress(iterationIndex + 1, img.getNFrames());
                 ++iterationIndex;
             }
         } else {
@@ -217,6 +236,8 @@ public class ImageJIterationUtils {
                         JIPipeProgressInfo stackProgress = progressInfo.resolveAndLog("Slice", iterationIndex++, img.getStackSize()).resolve("z=" + z + ", c=" + c + ", t=" + t);
                         ImageProcessor processor = img.getImageStack().getProcessor(index);
                         function.accept(processor, new ImageSliceIndex(c, z, t), stackProgress);
+                        // R41: the slice completed (iterationIndex was post-incremented above)
+                        progressInfo.setProgress(iterationIndex, img.getStackSize());
                     }
                 }
             }
@@ -246,6 +267,8 @@ public class ImageJIterationUtils {
                         ImageProcessor processor = sourceImage.getImageStack().getProcessor(index);
                         ImageProcessor resultProcessor = function.apply(processor, new ImageSliceIndex(c, z, t));
                         stack.setProcessor(resultProcessor, index);
+                        // R41: the slice completed (iterationIndex was post-incremented above)
+                        progressInfo.setProgress(iterationIndex, sourceImage.getStackSize());
                     }
                 }
             }
@@ -281,6 +304,8 @@ public class ImageJIterationUtils {
                         return;
                     progressInfo.resolveAndLog("Slice", iterationIndex++, img.getStackSize()).log("z=" + z + ", c=" + c + ", t=" + t);
                     channels.put(c, img.getStack().getProcessor(img.getStackIndex(c + 1, z + 1, t + 1)));
+                    // R41: the slice completed (iterationIndex was post-incremented above)
+                    progressInfo.setProgress(iterationIndex, img.getStackSize());
                 }
                 function.accept(channels, new ImageSliceIndex(-1, z, t));
             }

@@ -126,6 +126,8 @@ public class OpenCvImageUtils {
                         progressInfo.resolveAndLog("Slice", iterationIndex++, img.getSize()).log("z=" + z + ", c=" + c + ", t=" + t);
                         opencv_core.Mat processor = img.getImage(c, z, t);
                         function.accept(processor, new ImageSliceIndex(c, z, t));
+                        // R41: the slice completed (iterationIndex was post-incremented above)
+                        progressInfo.setProgress(iterationIndex, img.getSize());
                     }
                 }
             }
@@ -154,6 +156,8 @@ public class OpenCvImageUtils {
                         opencv_core.Mat processor = img.getImage(c, z, t);
                         ImageSliceIndex index = new ImageSliceIndex(c, z, t);
                         result.put(index, function.apply(processor, index));
+                        // R41: the slice completed (iterationIndex was post-incremented above)
+                        progressInfo.setProgress(iterationIndex, img.getSize());
                     }
                 }
             }

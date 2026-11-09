@@ -143,6 +143,8 @@ public class IJ3DUtils {
                 Objects3DPopulation population = new Objects3DPopulation(imageHandler);
 
                 roi3DList.addFromPopulation(population, group.getKey().getC() + 1, group.getKey().getT() + 1);
+                // R41: the slice completed (bar on the row that owns the "Slice i/N" children)
+                progressInfo.setProgress(i + 1, groups.size());
             }
         } else {
             for (int i = 0; i < groups.size(); i++) {
@@ -171,7 +173,8 @@ public class IJ3DUtils {
                         }
                     }
                 }
-
+                // R41: the slice completed (bar on the row that owns the "Slice i/N" children)
+                progressInfo.setProgress(i + 1, groups.size());
             }
         }
         return roi3DList;

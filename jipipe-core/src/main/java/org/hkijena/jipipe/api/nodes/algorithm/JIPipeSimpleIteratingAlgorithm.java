@@ -48,6 +48,7 @@ import org.hkijena.jipipe.utils.ui.ViewOnlyMenuItem;
 
 import java.util.*;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.Future;
 
 /**
@@ -229,9 +230,14 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
                 } else {
                     runIteration(iterationSteps.get(i), new JIPipeMutableIterationContext(i, numIterationSteps), runContext, slotProgress);
                 }
+                // R41: the data row completed
+                progressInfo.setProgress(i + 1, iterationSteps.size());
             }
         } else {
             List<Runnable> tasks = new ArrayList<>();
+            // R41: rows complete out of order in parallel mode, so the completed count is atomic
+            // and monotonic instead of the row index
+            AtomicInteger completedRows = new AtomicInteger();
             for (int i = 0; i < iterationSteps.size(); i++) {
                 int iterationStepIndex = i;
                 JIPipeParameterTree finalTree = tree;
@@ -245,6 +251,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
                     } else {
                         runIteration(iterationSteps.get(iterationStepIndex), new JIPipeMutableIterationContext(iterationStepIndex, numIterationSteps), runContext, slotProgress);
                     }
+                    progressInfo.setProgress(completedRows.incrementAndGet(), numIterationSteps);
                 });
             }
 

@@ -182,6 +182,8 @@ public abstract class JIPipeSingleIterationAlgorithm extends JIPipeParameterSlot
             } else {
                 runIteration(iterationStep, new JIPipeMutableIterationContext(row, 1), runContext, slotProgress);
             }
+            // R41: the data row completed (single-row variant)
+            progressInfo.setProgress(row + 1, 1);
             restoreAdaptiveParameters(tree, parameterBackups);
             return;
         }
@@ -204,6 +206,8 @@ public abstract class JIPipeSingleIterationAlgorithm extends JIPipeParameterSlot
             } else {
                 runIteration(iterationSteps.get(i), new JIPipeMutableIterationContext(i, iterationSteps.size()), runContext, slotProgress);
             }
+            // R41: the data row completed
+            progressInfo.setProgress(i + 1, iterationSteps.size());
         }
 
         restoreAdaptiveParameters(tree, parameterBackups);
