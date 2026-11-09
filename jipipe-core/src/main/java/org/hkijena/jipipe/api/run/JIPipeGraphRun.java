@@ -40,6 +40,7 @@ import org.hkijena.jipipe.api.notifications.JIPipeNotification;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationAction;
 import org.hkijena.jipipe.api.progress.JIPipeLogLevel;
 import org.hkijena.jipipe.api.progress.JIPipeProgressLog;
+import org.hkijena.jipipe.api.progress.JIPipeProgressNode;
 import org.hkijena.jipipe.api.progress.JIPipeProgressNodeKind;
 import org.hkijena.jipipe.api.progress.JIPipeProgressNodeState;
 import org.hkijena.jipipe.api.project.JIPipeProject;
@@ -170,7 +171,9 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
         nodeProgressHandles.clear();
 
         // R32: narration lives in dedicated phase nodes; the run-root handle stays recordless
-        // (parent of node rows and partition nodes only)
+        // (parent of node rows and partition nodes only). R38: the setup phase may receive records
+        // AFTER it is finished (mid-run machinery lines): the store allows records for finished
+        // nodes, the row keeps its finished state while its detail grows.
         JIPipeProgressInfo setupProgress = null;
         JIPipeProgressInfo finishedProgress = null;
 
@@ -259,6 +262,9 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
 
                 // Start iteration on initial graph
                 setupProgress.log("--> Starting first iteration ...");
+                // R38: the setup phase is complete once node execution begins (its row stops
+                // spinning); mid-run machinery narration may still land in the finished node
+                setupProgress.finishNode(JIPipeProgressNodeState.OK);
                 runGraph(graph, progressInfo, setupProgress);
             } catch (Exception e) {
                 runFailed = true;
@@ -318,10 +324,16 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
                     finishedProgress.log("Run ending at " + StringUtils.formatDateTime(LocalDateTime.now()));
                     finishedProgress.log("--> Required " + StringUtils.formatDuration(System.currentTimeMillis() - startTime) + " to execute.");
 
-                    // R32: the phase nodes finish with the run state before the store records the run status
+                    // R32: the phase nodes finish with the run state before the store records the run status.
+                    // R38: "Pipeline setup" normally finished when node execution began - the run state
+                    // here is the fallback for a setup that was still running (failed/cancelled before
+                    // execution started). "Pipeline finished" is always finished here.
                     JIPipeProgressNodeState runState = progressInfo.isCancelled() ? JIPipeProgressNodeState.CANCELLED :
                             (runFailed ? JIPipeProgressNodeState.FAILED : JIPipeProgressNodeState.OK);
-                    rootStore.nodeFinished(setupProgress.getNodeId(), runState);
+                    JIPipeProgressNode setupNode = rootStore.getNode(setupProgress.getNodeId());
+                    if (setupNode != null && setupNode.getState() == JIPipeProgressNodeState.RUNNING) {
+                        rootStore.nodeFinished(setupProgress.getNodeId(), runState);
+                    }
                     rootStore.nodeFinished(finishedProgress.getNodeId(), runState);
 
                     // Complete the store (final status record, final flush, final batch) before the log is rendered
@@ -369,8 +381,13 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
             if (rootStore != null) {
                 JIPipeProgressNodeState runState = progressInfo.isCancelled() ? JIPipeProgressNodeState.CANCELLED :
                         JIPipeProgressNodeState.FAILED;
+                // R38: the setup phase is finished only if it is still running (it normally finished
+                // when node execution began); "Pipeline finished" only exists once the run-end block started
                 if (setupProgress != null) {
-                    rootStore.nodeFinished(setupProgress.getNodeId(), runState);
+                    JIPipeProgressNode setupNode = rootStore.getNode(setupProgress.getNodeId());
+                    if (setupNode != null && setupNode.getState() == JIPipeProgressNodeState.RUNNING) {
+                        rootStore.nodeFinished(setupProgress.getNodeId(), runState);
+                    }
                 }
                 if (finishedProgress != null) {
                     rootStore.nodeFinished(finishedProgress.getNodeId(), runState);
@@ -609,9 +626,10 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
             // chip); partition machinery narration goes to the "Pipeline setup" phase, the partition
             // handle is solely the parent for node rows.
             // Binding: 5th argument = the PARTITION handle (parent of node rows and op children),
-            // 6th argument = the "Pipeline setup" phase handle (narration, progress, failure banners).
+            // 6th argument = the "Pipeline setup" phase handle (narration, failure banners),
+            // 7th argument = the run-root handle (machinery progress for the footer, R38).
             JIPipeProgressInfo partitionProgress = progressInfo.resolve("Partition " + partitionId, JIPipeProgressNodeKind.PARTITION);
-            runPassThroughPartitionNodeSet(graph, partitionNodeSet, gcGraph, runtimePartition, partitionProgress, setupProgress);
+            runPassThroughPartitionNodeSet(graph, partitionNodeSet, gcGraph, runtimePartition, partitionProgress, setupProgress, progressInfo);
         } else {
             // R26: partition nodes are recordless. Wrapper/partition machinery narration goes to the
             // "Pipeline setup" phase; the partition handle is solely the parent for node rows and op
@@ -952,7 +970,7 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
         }
     }
 
-    private void runPassThroughPartitionNodeSet(JIPipeGraph graph, Set<JIPipeGraphNode> nodeFilter, JIPipeGraphRunGCGraph gcGraph, JIPipeRuntimePartition runtimePartition, JIPipeProgressInfo progressInfo, JIPipeProgressInfo setupProgress) {
+    private void runPassThroughPartitionNodeSet(JIPipeGraph graph, Set<JIPipeGraphNode> nodeFilter, JIPipeGraphRunGCGraph gcGraph, JIPipeRuntimePartition runtimePartition, JIPipeProgressInfo progressInfo, JIPipeProgressInfo setupProgress, JIPipeProgressInfo rootProgress) {
 
         // A copy of the graph that is destroyed
         JIPipeGraphRunDataFlowGraph dataFlowGraph = new JIPipeGraphRunDataFlowGraph(graph, nodeFilter);
@@ -962,7 +980,9 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
 
         int progress = 0;
         final int maxProgress = dataFlowGraph.vertexSet().size();
-        setupProgress.setProgress(progress, maxProgress);
+        // R38: machinery progress feeds the footer via the run root (p records on the root render
+        // nowhere and keep the conditional root row hidden)
+        rootProgress.setProgress(progress, maxProgress);
 
         // Save for error state
         Map<UUID, Map<String, JIPipeDataTable>> continueOnErrorBackup = new HashMap<>();
@@ -979,7 +999,7 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
 
                 // Increment progress
                 ++progress;
-                setupProgress.setProgress(progress, maxProgress);
+                rootProgress.setProgress(progress, maxProgress);
 
                 // Find the best candidate (shortest path)
                 Object nextVertex = dataFlowGraph.getBestNextVertex();
