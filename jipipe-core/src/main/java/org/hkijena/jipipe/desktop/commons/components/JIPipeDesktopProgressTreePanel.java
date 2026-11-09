@@ -186,6 +186,12 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
     private volatile int latestNodeId;
     private volatile long latestNodeTs;
     private volatile long lastKnownLine;
+    /**
+     * True while one scheduler pass is queued behind a chunk apply (EDT-only): a chained scan's
+     * discovered boundary can make a successor chunk schedulable that the previous pass could
+     * not fill - the passes coalesce so a burst of applies queues one pass, not one per chunk.
+     */
+    private boolean chunkApplyPassQueued;
     private volatile long fileSize;
 
     /**
@@ -716,11 +722,22 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
     }
 
     private void refreshTick() {
-        if (!dirty || !SwingUtilities.isEventDispatchThread()) {
+        if (!SwingUtilities.isEventDispatchThread()) {
+            return;
+        }
+        JIPipeProgressLog s = store;
+        // The chunk scheduler runs on EVERY tick (R37), not only on dirty ones: after the run's
+        // last batch nothing sets dirty, and expansion's single pass starves whenever its reads
+        // come up short or fail - in a finished run there are no batches and (without scrolling)
+        // no further scheduling events, so placeholders would persist forever. The scheduler is
+        // an async-load-completion concern; the model rebuild below stays batch-driven (R21).
+        if (s != null) {
+            scheduleVirtualChunkLoads(s);
+        }
+        if (!dirty) {
             return;
         }
         dirty = false;
-        JIPipeProgressLog s = store;
         if (s == null) {
             updateFooter();
             return;
@@ -731,7 +748,6 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
         updateCategoryButtons();
         scheduleFileSizeUpdate(s);
         updateSpinners(s);
-        scheduleVirtualChunkLoads(s);
         followDetailTail();
         updateDetailControls();
         autoScroll();
@@ -884,13 +900,16 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
 
     /**
      * The phase tag of a node row: duration, {@code running Ns}, {@code failed}, or {@code cancelled}.
+     * A finished row with records always shows its duration - also {@code 0.0s} when all records
+     * share one millisecond (an empty tag reads as "no duration measured", which was the
+     * inconsistency the user flagged on same-millisecond rows like the Storage rows, R37).
      */
     private static String phaseText(JIPipeProgressNode node, long firstTs, long lastTs) {
         return switch (node.getState()) {
             case FAILED -> "failed";
             case CANCELLED -> "cancelled";
             case RUNNING -> firstTs > 0 ? "running " + Math.max(1, (System.currentTimeMillis() - firstTs) / 1000) + "s" : "running";
-            case OK -> firstTs > 0 && lastTs > firstTs ? formatDuration(lastTs - firstTs) : "";
+            case OK -> firstTs > 0 ? formatDuration(Math.max(0, lastTs - firstTs)) : "";
         };
     }
 
@@ -1349,6 +1368,26 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
     }
 
     /**
+     * Queues ONE scheduler pass after a chunk apply (R37): the fresh chunk may have crossed
+     * chunk boundaries whose discovery makes a successor chunk schedulable that the previous
+     * pass could not fill (and in a finished run no tick-triggering event may follow). The
+     * pass runs on the EDT after the apply settles; concurrent applies coalesce into one pass.
+     */
+    private void scheduleVirtualChunkLoadsAfterApply() {
+        if (chunkApplyPassQueued) {
+            return;
+        }
+        chunkApplyPassQueued = true;
+        SwingUtilities.invokeLater(() -> {
+            chunkApplyPassQueued = false;
+            JIPipeProgressLog s = store;
+            if (s != null) {
+                scheduleVirtualChunkLoads(s);
+            }
+        });
+    }
+
+    /**
      * Whether the record is a renderable record of the node (own {@code l}/{@code e}; R36 slots).
      * Run-level notifications ({@code w}) are root-scoped and never belong to a node's slots -
      * post-V3-1 they land in the phase rows' ranges.
@@ -1497,16 +1536,19 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
             SwingUtilities.invokeLater(() -> {
                 NodeUiState state = nodeStates.get(nodeId);
                 VirtualDetailState virtual = state != null ? state.virtual : null;
-                if (virtual == null || gen != generation.get()) {
-                    return;
-                }
-                virtual.loadingChunks.remove(slotBase);
-                if (read != null && read.size() == span) {
-                    virtual.chunks.put(slotBase, read);
-                    virtual.boundaries.putAll(foundBoundaries);
-                    pruneChunkCache(nodeId, virtual);
+                if (virtual != null) {
+                    // The in-flight marker is ALWAYS cleaned while the state exists (also when
+                    // the apply is stale): a key left behind would make every future scheduler
+                    // pass skip this chunk - placeholders forever (R37)
+                    virtual.loadingChunks.remove(slotBase);
+                    if (read != null && read.size() == span && gen == generation.get()) {
+                        virtual.chunks.put(slotBase, read);
+                        virtual.boundaries.putAll(foundBoundaries);
+                        pruneChunkCache(nodeId, virtual);
+                    }
                 }
                 list.repaint();
+                scheduleVirtualChunkLoadsAfterApply();
             });
         });
     }
