@@ -452,7 +452,7 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
         JIPipeProgressNode root = newStore != null ? newStore.getNode(newStore.getRootNodeId()) : null;
         if (newStore != null && (root == null || root.getState() != JIPipeProgressNodeState.RUNNING || newStore.getFile() == null)
                 && catchUpScheduled.compareAndSet(false, true)) {
-            scheduleCatchUp(Integer.MAX_VALUE);
+            scheduleCatchUp(1, Integer.MAX_VALUE);
         }
         refreshNow();
     }
@@ -479,14 +479,23 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
             switchStore(batchStore);
         }
         if (batch.fromLine() <= batch.toLine()) {
+            // The accumulated prefix as this batch sees it: the gap check below must judge
+            // contiguity against the value before this batch, not after its own advance
+            long prevLastKnown = lastKnownLine;
             // Read the batch's records once (the same bounded reads the previous flat panels did)
             // to maintain the timestamps and hidden-debug counters; no rendering, no EDT work
             accumulate(batchStore.readRecords(batch.fromLine(), batch.toLine() - batch.fromLine() + 1));
             if (batch.toLine() > lastKnownLine) {
                 lastKnownLine = batch.toLine();
             }
-            if (batch.fromLine() > 1 && catchUpScheduled.compareAndSet(false, true)) {
-                scheduleCatchUp(batch.fromLine() - 1);
+            // A catch-up is needed only for lines that no batch fed yet: fromLine beyond the
+            // already-accumulated prefix. The first batch of a live run starts at line 1 and
+            // every later batch continues contiguously, so a fromLine > 1 on its own is normal,
+            // not a gap. Triggering the catch-up on fromLine > 1 re-accumulated the covered
+            // prefix and counted its records twice: the inflated extents made every tail read
+            // come up short, so the expanded nodes' placeholders never resolved (V6-1).
+            if (batch.fromLine() > prevLastKnown + 1) {
+                scheduleCatchUp((int) Math.min(prevLastKnown + 1, batch.fromLine() - 1L), batch.fromLine() - 1);
             }
             // Run-level records (notifications) change no node: re-read expanded RUNNING nodes so
             // new notifications surface in their detail windows
@@ -675,16 +684,21 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
     }
 
     /**
-     * Reads all records before the given line (exclusive) once - covers the records that were
-     * written before the panel attached to the store - and applies them to the counters.
+     * Reads all records in the given line range once - covers the records that were written
+     * before the panel attached to the store (full scan at attach time) or that sit in a gap
+     * between the accumulated prefix and a later batch (bounded scan) - and applies them to the
+     * counters. Ranges scheduled from the batch handler never overlap: each starts after the
+     * accumulated prefix of its triggering batch, which is monotonically ahead of every earlier
+     * scheduling point, so every covered line is counted exactly once.
      *
+     * @param fromLine          the first line to read
      * @param upToLineExclusive the last line to stop before ({@link Integer#MAX_VALUE} = until the end)
      */
-    private void scheduleCatchUp(int upToLineExclusive) {
+    private void scheduleCatchUp(int fromLine, int upToLineExclusive) {
         int gen = generation.get();
         JIPipeProgressLog storeSnapshot = store;
         backgroundExecutor.submit(() -> {
-            int from = 1;
+            int from = fromLine;
             while (from < upToLineExclusive && gen == generation.get() && !Thread.currentThread().isInterrupted()) {
                 int limit = Math.min(CATCH_UP_PAGE_SIZE, upToLineExclusive - from);
                 List<JIPipeProgressRecord> page = storeSnapshot.readRecords(from, limit);
