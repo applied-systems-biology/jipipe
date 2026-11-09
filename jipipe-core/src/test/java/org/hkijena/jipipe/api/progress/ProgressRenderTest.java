@@ -140,12 +140,13 @@ class ProgressRenderTest {
             store.log(node, JIPipeLogLevel.DEBUG, "d2");
             store.finish(JIPipeProgressNodeState.OK);
             List<JIPipeProgressRecord> infoRecords = store.readRecords(1, 100, JIPipeLogLevel.INFO);
-            // head, n, l(i1), p, s - the DEBUG log records are dropped, all other records pass
-            assertEquals(5, infoRecords.size());
+            // head, n, l(i1), p, N(swept), s - the DEBUG log records are dropped, all other records
+            // pass; the sweep's N record for the still-RUNNING node carries no level and passes
+            assertEquals(6, infoRecords.size());
             assertTrue(infoRecords.stream().noneMatch(record ->
                     record instanceof JIPipeProgressRecord.Log logRecord
                             && logRecord.lv() < JIPipeLogLevel.INFO.value()));
-            assertEquals(7, store.readRecords(1, 100, JIPipeLogLevel.DEBUG).size());
+            assertEquals(8, store.readRecords(1, 100, JIPipeLogLevel.DEBUG).size());
         }
         JIPipeProgressLog silent = JIPipeProgressLog.silent();
         int silentNode = silent.beginNode(silent.getRootNodeId(), "Node A", JIPipeProgressNodeKind.ITEM);

@@ -182,6 +182,40 @@ class ProgressStoreTest {
     }
 
     @Test
+    void finishSweepsRunningNodesBeforeTheStatusRecord() throws Exception {
+        // R35: a node still RUNNING at finish time must not survive as an eternal spinner
+        Path file = tmp.resolve("sweep.ndjson");
+        JIPipeProgressLog store = JIPipeProgressLog.create(file, "sweep", "Sweep");
+        int finishedEarly = store.beginNode(store.getRootNodeId(), "Finished early", JIPipeProgressNodeKind.ITEM);
+        store.nodeFinished(finishedEarly, JIPipeProgressNodeState.OK);
+        int abandonedA = store.beginNode(store.getRootNodeId(), "Abandoned A", JIPipeProgressNodeKind.ITEM);
+        int abandonedB = store.beginNode(finishedEarly, "Abandoned B", JIPipeProgressNodeKind.ITEM);
+        store.finish(JIPipeProgressNodeState.FAILED);
+
+        // A node finished earlier keeps its state; swept nodes take the run's final state
+        assertEquals(JIPipeProgressNodeState.OK, store.getNode(finishedEarly).getState());
+        assertEquals(JIPipeProgressNodeState.FAILED, store.getNode(abandonedA).getState());
+        assertEquals(JIPipeProgressNodeState.FAILED, store.getNode(abandonedB).getState());
+        assertEquals(JIPipeProgressNodeState.FAILED, store.getNode(store.getRootNodeId()).getState());
+
+        // The swept N records precede the final s record
+        List<JIPipeProgressRecord> all = readWholeFile(file);
+        int statusIndex = all.size() - 1;
+        assertEquals("s", all.get(statusIndex).type());
+        assertTrue(all.subList(0, statusIndex).stream().anyMatch(r -> r instanceof JIPipeProgressRecord.NodeFinished finish
+                        && finish.id() == abandonedA),
+                "an N record for the swept node must precede the s record");
+
+        // The same sweep maps RUNNING nodes to OK on a successful finish
+        Path okFile = tmp.resolve("sweep-ok.ndjson");
+        JIPipeProgressLog okStore = JIPipeProgressLog.create(okFile, "sweep-ok", "Sweep OK");
+        int abandoned = okStore.beginNode(okStore.getRootNodeId(), "Legacy scope", JIPipeProgressNodeKind.ITEM);
+        okStore.finish(JIPipeProgressNodeState.OK);
+        assertEquals(JIPipeProgressNodeState.OK, okStore.getNode(abandoned).getState());
+        assertEquals(JIPipeProgressNodeState.OK, okStore.getNode(abandoned).getState());
+    }
+
+    @Test
     void stateWireLiteralsAreMappedExplicitly() throws Exception {
         Path file = tmp.resolve("states.ndjson");
         try (JIPipeProgressLog store = JIPipeProgressLog.create(file, "states", "States")) {

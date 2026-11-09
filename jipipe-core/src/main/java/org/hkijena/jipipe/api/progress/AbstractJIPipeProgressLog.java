@@ -217,6 +217,13 @@ public abstract class AbstractJIPipeProgressLog implements JIPipeProgressLog {
             if (!startRunLocked()) {
                 return;
             }
+            // The index state is applied synchronously (the writer re-applies the same state when
+            // it drains the N record), so consumers and the finish sweep see the terminal state
+            // immediately instead of at the next writer drain
+            JIPipeProgressNode node = nodes.get(nodeId);
+            if (node != null) {
+                node.setState(state);
+            }
             submitLocked(JIPipeProgressRecord.nodeFinished(nodeId, mapNodeStateToWire(state), now()));
         } finally {
             submitLock.unlock();
@@ -233,6 +240,18 @@ public abstract class AbstractJIPipeProgressLog implements JIPipeProgressLog {
             }
             if (!started) {
                 enqueueHeadLocked();
+            }
+            // R35 finish sweep: a node still RUNNING at finish time either completed as part of a
+            // legacy resolve scope (successful run) or was abandoned (failed/cancelled run) - it
+            // must not survive as an eternal spinner. The sweep runs BEFORE the final s record, so
+            // the swept N records precede it in file order. The root is excluded (it finishes via
+            // the s record below).
+            for (JIPipeProgressNode node : nodes.values()) {
+                if (node.getId() != ROOT_NODE_ID && node.getState() == JIPipeProgressNodeState.RUNNING) {
+                    node.setState(runState);
+                    long sweptSeq = sequenceCounter.incrementAndGet();
+                    enqueue(sweptSeq, JIPipeProgressRecord.nodeFinished(node.getId(), mapNodeStateToWire(runState), now()));
+                }
             }
             rootNode.setState(runState);
             long seq = sequenceCounter.incrementAndGet();
@@ -668,6 +687,25 @@ public abstract class AbstractJIPipeProgressLog implements JIPipeProgressLog {
     final void finishScannedRunWithoutStatus() {
         if (rootNode.getState() == JIPipeProgressNodeState.RUNNING) {
             rootNode.setState(JIPipeProgressNodeState.CANCELLED);
+        }
+    }
+
+    /**
+     * Applies the finish sweep to a read-only reopen: nodes that the file leaves RUNNING (written
+     * before node finishing existed, or abandoned when the writer was killed) take the root's
+     * reconstructed state, so old log entries display terminal states instead of eternal
+     * spinners. In-memory only: no records are emitted and the file is never mutated. Called
+     * after the scan, when the root's state is final.
+     */
+    final void sweepScannedRunningNodes() {
+        JIPipeProgressNodeState rootState = rootNode.getState();
+        if (rootState == JIPipeProgressNodeState.RUNNING) {
+            return;
+        }
+        for (JIPipeProgressNode node : nodes.values()) {
+            if (node.getId() != ROOT_NODE_ID && node.getState() == JIPipeProgressNodeState.RUNNING) {
+                node.setState(rootState);
+            }
         }
     }
 

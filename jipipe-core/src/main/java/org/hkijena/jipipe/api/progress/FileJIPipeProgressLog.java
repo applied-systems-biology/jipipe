@@ -331,6 +331,9 @@ public class FileJIPipeProgressLog extends AbstractJIPipeProgressLog {
         // A file without a parseable run-status record (the writer was killed before the final
         // flush) must not reopen as a live run
         finishScannedRunWithoutStatus();
+        // R35: rows that the file leaves RUNNING (pre-lifecycle files, abandoned nodes) take the
+        // root's reconstructed state so the viewer renders terminal states, not eternal spinners
+        sweepScannedRunningNodes();
     }
 
     /**

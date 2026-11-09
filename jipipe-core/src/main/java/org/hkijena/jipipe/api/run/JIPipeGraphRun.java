@@ -65,6 +65,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.jar.Attributes;
 import java.util.stream.Collectors;
 
@@ -193,11 +194,14 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
             }
 
             setupProgress.log("Dissolving tunnels ...");
-            dissolveTunnels(graph, setupProgress.resolve("Preprocessing/Tunnels"));
+            JIPipeProgressInfo tunnelsStep = setupProgress.resolve("Preprocessing/Tunnels");
+            finishWhenDone(tunnelsStep, () -> dissolveTunnels(graph, tunnelsStep));
             setupProgress.log("Erasing skipped/disabled algorithms (except direct predecessors) ...");
-            cleanGraph(graph, setupProgress.resolve("Preprocessing/Cleanup"));
+            JIPipeProgressInfo cleanupGraphStep = setupProgress.resolve("Preprocessing/Cleanup");
+            finishWhenDone(cleanupGraphStep, () -> cleanGraph(graph, cleanupGraphStep));
             setupProgress.log("Repairing partition assignments ...");
-            fixPartitions(graph, setupProgress.resolve("Fix partitions"));
+            JIPipeProgressInfo fixPartitionsStep = setupProgress.resolve("Fix partitions");
+            finishWhenDone(fixPartitionsStep, () -> fixPartitions(graph, fixPartitionsStep));
 
             long startTime = System.currentTimeMillis();
             if (parent == null) {
@@ -233,8 +237,13 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
                 setupProgress.log("Configuring environments ...");
                 for (int i = 0; i < allEnvironments.size(); i++) {
                     JIPipeEnvironmentConfigurator<?> reference = allEnvironments.get(i);
-                    JIPipeEnvironment environment = reference.get(setupProgress.resolve("Configure environments", i, allEnvironments.size()).resolve(reference.getEnvironmentInfo().getId()));
-                    environment.runPreconfigure(this, setupProgress);
+                    JIPipeProgressInfo configureStep = setupProgress.resolve("Configure environments", i, allEnvironments.size());
+                    JIPipeProgressInfo environmentStep = configureStep.resolve(reference.getEnvironmentInfo().getId());
+                    JIPipeEnvironment environment = finishWhenDone(environmentStep, () -> reference.get(environmentStep));
+                    // Alias for the lambda: setupProgress is re-assigned at try start, so it is not
+                    // effectively final
+                    JIPipeProgressInfo setupPhase = setupProgress;
+                    finishWhenDone(configureStep, () -> environment.runPreconfigure(this, setupPhase));
                 }
             }
 
@@ -348,7 +357,8 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
                     if ((runFailed && configuration.isCleanupOutputsAfterFailure()) || (!runFailed && configuration.isCleanupOutputsAfterSuccess())) {
                         if (configuration.getOutputPath() != null) {
                             finishedProgress.log("Removing output directory as requested: " + configuration.getOutputPath());
-                            PathUtils.deleteDirectoryRecursively(configuration.getOutputPath(), finishedProgress.resolve("Cleanup"));
+                            JIPipeProgressInfo cleanupStep = finishedProgress.resolve("Cleanup");
+                            finishWhenDone(cleanupStep, () -> PathUtils.deleteDirectoryRecursively(configuration.getOutputPath(), cleanupStep));
                         }
                     }
                 }
@@ -376,31 +386,36 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
         for (JIPipeGraphNode graphNode : graph.getGraphNodes()) {
             if (graphNode instanceof JIPipeDataFlowTunnelExit tunnelExit) {
                 JIPipeProgressInfo nodeProgress = progressInfo.resolveAndLog("Tunnel exit " + graphNode.getUUIDInParentGraph() + " (TUN " + tunnelExit.getTunnelKeyGroup() + "/" + tunnelExit.getTunnelKey() + ")");
-                List<JIPipeDataFlowTunnelEntrance> tunnelEntrances = JIPipeDataFlowTunnelUtils.findTunnelEntrances(graph, tunnelExit.getCompartmentUUIDInParentGraph(), tunnelExit.getTunnelKeyGroup(), tunnelExit.getTunnelKey());
-                if (tunnelEntrances.size() > 1) {
-                    JIPipeValidationReportContext.UNSPECIFIED.graph(graph)
-                            .node(graphNode).error().title("Duplicate tunnel entrance '" + tunnelExit.getTunnelKey() + "'")
-                            .explanation("A tunnel with duplicate entrances within a compartment was detected. Unable to continue.")
-                            .details(tunnelExit.getTunnelKeyGroup() + "/" + tunnelExit.getTunnelKey() + " in compartment " + tunnelExit.getCompartmentUUIDInParentGraph() + " @ node " + tunnelExit.getUUIDInParentGraph())
-                            .buildAndThrow();
-                } else if (tunnelEntrances.size() == 1) {
-                    JIPipeDataFlowTunnelEntrance tunnelEntrance = tunnelEntrances.getFirst();
+                try {
+                    List<JIPipeDataFlowTunnelEntrance> tunnelEntrances = JIPipeDataFlowTunnelUtils.findTunnelEntrances(graph, tunnelExit.getCompartmentUUIDInParentGraph(), tunnelExit.getTunnelKeyGroup(), tunnelExit.getTunnelKey());
+                    if (tunnelEntrances.size() > 1) {
+                        JIPipeValidationReportContext.UNSPECIFIED.graph(graph)
+                                .node(graphNode).error().title("Duplicate tunnel entrance '" + tunnelExit.getTunnelKey() + "'")
+                                .explanation("A tunnel with duplicate entrances within a compartment was detected. Unable to continue.")
+                                .details(tunnelExit.getTunnelKeyGroup() + "/" + tunnelExit.getTunnelKey() + " in compartment " + tunnelExit.getCompartmentUUIDInParentGraph() + " @ node " + tunnelExit.getUUIDInParentGraph())
+                                .buildAndThrow();
+                    } else if (tunnelEntrances.size() == 1) {
+                        JIPipeDataFlowTunnelEntrance tunnelEntrance = tunnelEntrances.getFirst();
 
-                    for (JIPipeOutputDataSlot outputSlot : tunnelExit.getOutputSlots()) {
-                        nodeProgress.log("Processing slot " + outputSlot.getName() + " ...");
-                        Set<JIPipeDataSlot> newInputSlots = graph.getOutputOutgoingTargetSlots(outputSlot);
-                        Set<JIPipeDataSlot> newOutputSlots = graph.getInputIncomingSourceSlots(tunnelEntrance.getInputSlot(outputSlot.getName()));
+                        for (JIPipeOutputDataSlot outputSlot : tunnelExit.getOutputSlots()) {
+                            nodeProgress.log("Processing slot " + outputSlot.getName() + " ...");
+                            Set<JIPipeDataSlot> newInputSlots = graph.getOutputOutgoingTargetSlots(outputSlot);
+                            Set<JIPipeDataSlot> newOutputSlots = graph.getInputIncomingSourceSlots(tunnelEntrance.getInputSlot(outputSlot.getName()));
 
-                        // Connect the corresponding output of the tunnel entrance to the new inputs
-                        for (JIPipeDataSlot newInputSlot : newInputSlots) {
-                            for (JIPipeDataSlot newOutputSlot : newOutputSlots) {
-                                nodeProgress.log("Connect " + newOutputSlot.getDisplayName() + " -> " + newInputSlot.getDisplayName());
-                                graph.connect(newOutputSlot, newInputSlot);
+                            // Connect the corresponding output of the tunnel entrance to the new inputs
+                            for (JIPipeDataSlot newInputSlot : newInputSlots) {
+                                for (JIPipeDataSlot newOutputSlot : newOutputSlots) {
+                                    nodeProgress.log("Connect " + newOutputSlot.getDisplayName() + " -> " + newInputSlot.getDisplayName());
+                                    graph.connect(newOutputSlot, newInputSlot);
+                                }
                             }
                         }
+                    } else {
+                        progressInfo.log("[WARN] No tunnel entrance found for " + tunnelExit.getTunnelKeyGroup() + "/" + tunnelExit.getTunnelKey() + " in compartment " + tunnelExit.getCompartmentUUIDInParentGraph() + ": ignoring");
                     }
-                } else {
-                    progressInfo.log("[WARN] No tunnel entrance found for " + tunnelExit.getTunnelKeyGroup() + "/" + tunnelExit.getTunnelKey() + " in compartment " + tunnelExit.getCompartmentUUIDInParentGraph() + ": ignoring");
+                    nodeProgress.finishNode(JIPipeProgressNodeState.OK);
+                } finally {
+                    nodeProgress.finishNode(JIPipeProgressNodeState.FAILED);
                 }
             }
         }
@@ -788,13 +803,16 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
 
                 if (!inputSlot.isSkipDataGathering()) {
                     // R28: the gathering operation nests under the consuming node's row
-                    inputSlot.addDataFromTable(outputSlot, nodeProgressHandle(inputSlot.getNode(), progressInfo).resolve(outputSlot.getDisplayName() + " >>> " + inputSlot.getDisplayName()));
+                    // R35: the gathering operation row terminates with the operation
+                    JIPipeProgressInfo gatherStep = nodeProgressHandle(inputSlot.getNode(), progressInfo).resolve(outputSlot.getDisplayName() + " >>> " + inputSlot.getDisplayName());
+                    finishWhenDone(gatherStep, () -> inputSlot.addDataFromTable(outputSlot, gatherStep));
                 } else {
                     nodeProgressHandle(inputSlot.getNode(), progressInfo).log("NOT copying " + outputSlot.getDisplayName() + " >>> " + inputSlot.getDisplayName() + " [data gathering disabled]");
                 }
 
                 if (gcGraph != null) {
-                    gcGraph.removeOutputToInputEdge(outputSlot, inputSlot, nodeProgressHandle(inputSlot.getNode(), progressInfo).resolve("GC", JIPipeProgressNodeKind.ITEM, JIPipeLogLevel.DEBUG));
+                    JIPipeProgressInfo gcStep = nodeProgressHandle(inputSlot.getNode(), progressInfo).resolve("GC", JIPipeProgressNodeKind.ITEM, JIPipeLogLevel.DEBUG);
+                    finishWhenDone(gcStep, () -> gcGraph.removeOutputToInputEdge(outputSlot, inputSlot, gcStep));
                 }
             }
         }
@@ -804,7 +822,8 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
         for (Map.Entry<JIPipeDataSlot, String> entry : inputMap.entrySet()) {
             JIPipeInputDataSlot originalInputSlot = (JIPipeInputDataSlot) entry.getKey();
             JIPipeInputDataSlot targetInputSlot = graphWrapperAlgorithm.getInputSlot(entry.getValue());
-            targetInputSlot.addDataFromTable(originalInputSlot, setupProgress.resolve("I -> W-I"));
+            JIPipeProgressInfo moveStep = setupProgress.resolve("I -> W-I");
+            finishWhenDone(moveStep, () -> targetInputSlot.addDataFromTable(originalInputSlot, moveStep));
 
             // GC the original
             originalInputSlot.clear(false, setupProgress);
@@ -846,7 +865,8 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
         for (Map.Entry<JIPipeDataSlot, String> entry : outputMap.entrySet()) {
             JIPipeOutputDataSlot targetOutputSlot = (JIPipeOutputDataSlot) entry.getKey();
             JIPipeOutputDataSlot sourceOutputSlot = graphWrapperAlgorithm.getOutputSlot(entry.getValue());
-            targetOutputSlot.addDataFromTable(sourceOutputSlot, setupProgress.resolve("W-O -> O [" + sourceOutputSlot.getDisplayName() + " >>> " + targetOutputSlot.getDisplayName() + "]"));
+            JIPipeProgressInfo moveStep = setupProgress.resolve("W-O -> O [" + sourceOutputSlot.getDisplayName() + " >>> " + targetOutputSlot.getDisplayName() + "]");
+            finishWhenDone(moveStep, () -> targetOutputSlot.addDataFromTable(sourceOutputSlot, moveStep));
 
             // GC the wrapped
             sourceOutputSlot.clear(false, setupProgress);
@@ -864,12 +884,15 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
                     // Not needed (done earlier)
                     for (JIPipeInputDataSlot inputSlot : node.getInputSlots()) {
                         for (JIPipeGraphEdge graphEdge : graph.getGraph().incomingEdgesOf(inputSlot)) {
-                            gcGraph.removeOutputToInputEdge(graph.getGraph().getEdgeSource(graphEdge), inputSlot, nodeProgressHandle(node, progressInfo).resolve("GC", JIPipeProgressNodeKind.ITEM, JIPipeLogLevel.DEBUG));
+                            JIPipeProgressInfo gcStep = nodeProgressHandle(node, progressInfo).resolve("GC", JIPipeProgressNodeKind.ITEM, JIPipeLogLevel.DEBUG);
+                            finishWhenDone(gcStep, () -> gcGraph.removeOutputToInputEdge(graph.getGraph().getEdgeSource(graphEdge), inputSlot, gcStep));
                         }
                     }
-                    gcGraph.removeInputToNodeEdge((JIPipeAlgorithm) node, nodeProgressHandle(node, progressInfo).resolve("GC", JIPipeProgressNodeKind.ITEM, JIPipeLogLevel.DEBUG));
+                    JIPipeProgressInfo nodeGcStep = nodeProgressHandle(node, progressInfo).resolve("GC", JIPipeProgressNodeKind.ITEM, JIPipeLogLevel.DEBUG);
+                    finishWhenDone(nodeGcStep, () -> gcGraph.removeInputToNodeEdge((JIPipeAlgorithm) node, nodeGcStep));
                     for (JIPipeOutputDataSlot outputSlot : node.getOutputSlots()) {
-                        gcGraph.removeNodeToOutputEdge(outputSlot, nodeProgressHandle(node, progressInfo).resolve("GC", JIPipeProgressNodeKind.ITEM, JIPipeLogLevel.DEBUG));
+                        JIPipeProgressInfo gcStep = nodeProgressHandle(node, progressInfo).resolve("GC", JIPipeProgressNodeKind.ITEM, JIPipeLogLevel.DEBUG);
+                        finishWhenDone(gcStep, () -> gcGraph.removeNodeToOutputEdge(outputSlot, gcStep));
                     }
                 }
             }
@@ -903,25 +926,30 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
                 })));
 
         progressInfo = progressInfo.resolve("Export failed inputs");
-        progressInfo.log("Target directory: " + outputDir);
         try {
-            Files.createDirectories(outputDir);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        for (Map.Entry<UUID, Map<String, JIPipeDataTable>> nodeMap : inputs.entrySet()) {
-            for (Map.Entry<String, JIPipeDataTable> slotMap : nodeMap.getValue().entrySet()) {
-                Path slotOutputDir = outputDir.resolve(nodeMap.getKey().toString()).resolve(slotMap.getKey());
-                progressInfo.log("Writing input '" + slotMap.getKey() + "' of '" + nodeMap.getKey() + "' to " + slotOutputDir);
-                slotMap.getValue().exportData(new JIPipeFileSystemWriteDataStorage(progressInfo, slotOutputDir), progressInfo);
+            progressInfo.log("Target directory: " + outputDir);
+            try {
+                Files.createDirectories(outputDir);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-        }
 
-        // Export the graph
-        progressInfo.log("Exporting graph ...");
-        JIPipeGraph extracted = graph.extractShallow(partitionNodeSet, true, false);
-        JsonUtils.saveToFile(extracted, outputDir.resolve("graph.json"));
+            for (Map.Entry<UUID, Map<String, JIPipeDataTable>> nodeMap : inputs.entrySet()) {
+                for (Map.Entry<String, JIPipeDataTable> slotMap : nodeMap.getValue().entrySet()) {
+                    Path slotOutputDir = outputDir.resolve(nodeMap.getKey().toString()).resolve(slotMap.getKey());
+                    progressInfo.log("Writing input '" + slotMap.getKey() + "' of '" + nodeMap.getKey() + "' to " + slotOutputDir);
+                    slotMap.getValue().exportData(new JIPipeFileSystemWriteDataStorage(progressInfo, slotOutputDir), progressInfo);
+                }
+            }
+
+            // Export the graph
+            progressInfo.log("Exporting graph ...");
+            JIPipeGraph extracted = graph.extractShallow(partitionNodeSet, true, false);
+            JsonUtils.saveToFile(extracted, outputDir.resolve("graph.json"));
+            progressInfo.finishNode(JIPipeProgressNodeState.OK);
+        } finally {
+            progressInfo.finishNode(JIPipeProgressNodeState.FAILED);
+        }
     }
 
     private void runPassThroughPartitionNodeSet(JIPipeGraph graph, Set<JIPipeGraphNode> nodeFilter, JIPipeGraphRunGCGraph gcGraph, JIPipeRuntimePartition runtimePartition, JIPipeProgressInfo progressInfo, JIPipeProgressInfo setupProgress) {
@@ -1023,7 +1051,8 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
                     }
 
                     // Execute operation & cleanup
-                    runFlowGraphNode(nextVertex, dataFlowGraph, gcGraph, true, runtimePartition, progressInfo.resolve("Cleanup"));
+                    JIPipeProgressInfo cleanupStep = progressInfo.resolve("Cleanup");
+                    finishWhenDone(cleanupStep, () -> runFlowGraphNode(nextVertex, dataFlowGraph, gcGraph, true, runtimePartition, cleanupStep));
                 }
             } else {
                 throw e;
@@ -1075,6 +1104,31 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
                 key -> parent.resolve(node.getDisplayName(), "node://" + node.getUUIDInParentGraph()));
     }
 
+    /**
+     * Runs an operation and finishes its operation row (R35): OK when the operation completes,
+     * FAILED when it throws (the exception propagates). An operation row never survives RUNNING.
+     *
+     * @param step      the operation row created for the operation
+     * @param operation the operation
+     * @return the operation's result
+     */
+    private <T> T finishWhenDone(JIPipeProgressInfo step, Supplier<T> operation) {
+        try {
+            T result = operation.get();
+            step.finishNode(JIPipeProgressNodeState.OK);
+            return result;
+        } finally {
+            step.finishNode(JIPipeProgressNodeState.FAILED);
+        }
+    }
+
+    private void finishWhenDone(JIPipeProgressInfo step, Runnable operation) {
+        finishWhenDone(step, () -> {
+            operation.run();
+            return null;
+        });
+    }
+
     private void runFlowGraphNode(Object flowGraphNode, JIPipeGraphRunDataFlowGraph dataFlowGraph, JIPipeGraphRunGCGraph gcGraph, boolean skipWorkload, JIPipeRuntimePartition runtimePartition, JIPipeProgressInfo progressInfo) {
         if (flowGraphNode instanceof JIPipeInputDataSlot) {
             runInputFlowGraphNode(flowGraphNode, dataFlowGraph, gcGraph, skipWorkload, progressInfo);
@@ -1107,6 +1161,7 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
                         algorithmProgress.log("Not runnable (skipped/disabled/node info not marked as runnable). Workload will not be executed!");
                     }
                 } catch (Exception e) {
+                    algorithmProgress.finishNode(JIPipeProgressNodeState.FAILED);
                     throw new JIPipeValidationRuntimeException(
                             new GraphNodeValidationReportContext(algorithm),
                             e,
@@ -1115,10 +1170,13 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
                             "Please follow the instructions for the other error messages.");
                 }
             }
+            // R35: the node row terminates when its workload completes (cache hit, skipped/disabled, or run returned)
+            algorithmProgress.finishNode(JIPipeProgressNodeState.OK);
         }
 
         if (gcGraph != null) {
-            gcGraph.removeInputToNodeEdge(algorithm, algorithmProgress.resolve("GC", JIPipeProgressNodeKind.ITEM, JIPipeLogLevel.DEBUG));
+            JIPipeProgressInfo gcStep = algorithmProgress.resolve("GC", JIPipeProgressNodeKind.ITEM, JIPipeLogLevel.DEBUG);
+            finishWhenDone(gcStep, () -> gcGraph.removeInputToNodeEdge(algorithm, gcStep));
         }
 
         // Remove vertex
@@ -1134,7 +1192,8 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
         nodeProgress.log("Contents of data slot " + outputSlot);
 
         if (gcGraph != null) {
-            gcGraph.removeNodeToOutputEdge(outputSlot, nodeProgress.resolve("GC", JIPipeProgressNodeKind.ITEM, JIPipeLogLevel.DEBUG));
+            JIPipeProgressInfo gcStep = nodeProgress.resolve("GC", JIPipeProgressNodeKind.ITEM, JIPipeLogLevel.DEBUG);
+            finishWhenDone(gcStep, () -> gcGraph.removeNodeToOutputEdge(outputSlot, gcStep));
         }
 
         // Remove vertex
@@ -1157,14 +1216,17 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
 
             if (!skipWorkload) {
                 if (!inputSlot.isSkipDataGathering()) {
-                    inputSlot.addDataFromTable(outputSlot, nodeProgress.resolve(outputSlot.getDisplayName() + " >>> " + inputSlot.getDisplayName()));
+                    // R35: the gathering operation row terminates with the operation
+                    JIPipeProgressInfo gatherStep = nodeProgress.resolve(outputSlot.getDisplayName() + " >>> " + inputSlot.getDisplayName());
+                    finishWhenDone(gatherStep, () -> inputSlot.addDataFromTable(outputSlot, gatherStep));
                 } else {
                     nodeProgress.log("NOT copying " + outputSlot.getDisplayName() + " >>> " + inputSlot.getDisplayName() + " [data gathering disabled]");
                 }
             }
 
             if (gcGraph != null) {
-                gcGraph.removeOutputToInputEdge(outputSlot, inputSlot, nodeProgress.resolve("GC", JIPipeProgressNodeKind.ITEM, JIPipeLogLevel.DEBUG));
+                JIPipeProgressInfo gcStep = nodeProgress.resolve("GC", JIPipeProgressNodeKind.ITEM, JIPipeLogLevel.DEBUG);
+                finishWhenDone(gcStep, () -> gcGraph.removeOutputToInputEdge(outputSlot, inputSlot, gcStep));
             }
         }
 
@@ -1183,7 +1245,9 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
             return false;
         if (!(runAlgorithm instanceof JIPipeAlgorithm))
             return false;
-        Map<String, JIPipeDataTable> cachedData = project.getCache().query(runAlgorithm, runAlgorithm.getUUIDInParentGraph(), progressInfo.resolve("Query cache"));
+        JIPipeProgressInfo queryStep = progressInfo.resolve("Query cache");
+        Map<String, JIPipeDataTable> cachedData = finishWhenDone(queryStep,
+                () -> project.getCache().query(runAlgorithm, runAlgorithm.getUUIDInParentGraph(), queryStep));
         if (!cachedData.isEmpty()) {
             progressInfo.log("Accessing cache of node " + runAlgorithm.getUUIDInParentGraph() + " (" + runAlgorithm.getDisplayName() + ")");
             for (JIPipeDataSlot outputSlot : runAlgorithm.getOutputSlots()) {
@@ -1247,40 +1311,46 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
 
     private void storeOutput(JIPipeOutputDataSlot outputDataSlot) {
         JIPipeProgressInfo storageProgress = getProgressInfo().resolve("Storage");
-        if (project != null && configuration.isStoreToCache()) {
-            if (!configuration.getDisableStoreToCacheNodes().contains(outputDataSlot.getNode().getUUIDInParentGraph()) && !outputDataSlot.isSkipCache()) {
-                storageProgress.log("Storing " + outputDataSlot.getDisplayName() + " into cache");
-                project.getCache().store(outputDataSlot.getNode(), outputDataSlot.getNode().getUUIDInParentGraph(), outputDataSlot, outputDataSlot.getName(), storageProgress);
-            } else {
-                storageProgress.log("NOT storing " + outputDataSlot.getDisplayName() + " [deactivated in config]");
-            }
-        }
-        if (configuration.isStoreToDisk() && !configuration.getDisableStoreToDiskNodes().contains(outputDataSlot.getNode().getUUIDInParentGraph()) && outputDataSlot.getInfo().isStoreToDisk() && !outputDataSlot.isSkipExport()) {
-            JIPipeRuntimePartition runtimePartition = getRuntimePartition(((JIPipeAlgorithm) outputDataSlot.getNode()).getRuntimePartition());
-
-            JIPipeDataTable filtered = outputDataSlot.filter((table, row) -> {
-                JIPipeDataInfo info = table.getDataInfo(row);
-                if (info.isHeavy()) {
-                    return runtimePartition.getOutputSettings().isExportHeavyData();
+        try {
+            if (project != null && configuration.isStoreToCache()) {
+                if (!configuration.getDisableStoreToCacheNodes().contains(outputDataSlot.getNode().getUUIDInParentGraph()) && !outputDataSlot.isSkipCache()) {
+                    storageProgress.log("Storing " + outputDataSlot.getDisplayName() + " into cache");
+                    project.getCache().store(outputDataSlot.getNode(), outputDataSlot.getNode().getUUIDInParentGraph(), outputDataSlot, outputDataSlot.getName(), storageProgress);
                 } else {
-                    return runtimePartition.getOutputSettings().isExportLightweightData();
+                    storageProgress.log("NOT storing " + outputDataSlot.getDisplayName() + " [deactivated in config]");
                 }
-            });
-
-            if (filtered.isEmpty()) {
-                storageProgress.log("NOT Storing " + outputDataSlot.getDisplayName() + " to hard drive (is empty)");
-                return;
             }
+            if (configuration.isStoreToDisk() && !configuration.getDisableStoreToDiskNodes().contains(outputDataSlot.getNode().getUUIDInParentGraph()) && outputDataSlot.getInfo().isStoreToDisk() && !outputDataSlot.isSkipExport()) {
+                JIPipeRuntimePartition runtimePartition = getRuntimePartition(((JIPipeAlgorithm) outputDataSlot.getNode()).getRuntimePartition());
 
-            JIPipeProgressInfo saveProgress = storageProgress.resolveAndLog(String.format("Saving data in slot '%s' (data type %s)", outputDataSlot.getDisplayName(), JIPipeDataInfo.getInstance(outputDataSlot.getAcceptedDataType()).getName()));
-            storageProgress.log("Storing " + outputDataSlot.getDisplayName() + " to hard drive");
+                JIPipeDataTable filtered = outputDataSlot.filter((table, row) -> {
+                    JIPipeDataInfo info = table.getDataInfo(row);
+                    if (info.isHeavy()) {
+                        return runtimePartition.getOutputSettings().isExportHeavyData();
+                    } else {
+                        return runtimePartition.getOutputSettings().isExportLightweightData();
+                    }
+                });
 
-            try {
-                filtered.exportData(new JIPipeFileSystemWriteDataStorage(saveProgress, outputDataSlot.getSlotStoragePath()), saveProgress);
-            } finally {
-                filtered.clear(false, getProgressInfo());
-                outputDataSlot.clear(false, getProgressInfo());
+                if (filtered.isEmpty()) {
+                    storageProgress.log("NOT Storing " + outputDataSlot.getDisplayName() + " to hard drive (is empty)");
+                } else {
+                    JIPipeProgressInfo saveProgress = storageProgress.resolveAndLog(String.format("Saving data in slot '%s' (data type %s)", outputDataSlot.getDisplayName(), JIPipeDataInfo.getInstance(outputDataSlot.getAcceptedDataType()).getName()));
+                    storageProgress.log("Storing " + outputDataSlot.getDisplayName() + " to hard drive");
+
+                    try {
+                        filtered.exportData(new JIPipeFileSystemWriteDataStorage(saveProgress, outputDataSlot.getSlotStoragePath()), saveProgress);
+                        saveProgress.finishNode(JIPipeProgressNodeState.OK);
+                    } finally {
+                        filtered.clear(false, storageProgress);
+                        outputDataSlot.clear(false, storageProgress);
+                        saveProgress.finishNode(JIPipeProgressNodeState.FAILED);
+                    }
+                }
             }
+            storageProgress.finishNode(JIPipeProgressNodeState.OK);
+        } finally {
+            storageProgress.finishNode(JIPipeProgressNodeState.FAILED);
         }
     }
 }

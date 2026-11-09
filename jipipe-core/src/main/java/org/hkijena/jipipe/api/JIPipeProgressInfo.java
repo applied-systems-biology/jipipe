@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.progress.JIPipeLogLevel;
 import org.hkijena.jipipe.api.progress.JIPipeProgressLog;
 import org.hkijena.jipipe.api.progress.JIPipeProgressNode;
 import org.hkijena.jipipe.api.progress.JIPipeProgressNodeKind;
+import org.hkijena.jipipe.api.progress.JIPipeProgressNodeState;
 import org.hkijena.jipipe.api.progress.JIPipeProgressRecord;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.scijava.Cancelable;
@@ -34,6 +35,7 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -71,6 +73,7 @@ public class JIPipeProgressInfo implements Cancelable {
     private volatile JIPipeProgressLog store;
     private volatile int nodeId;
     private final AtomicBoolean cancelled;
+    private final AtomicBoolean nodeFinished = new AtomicBoolean();
     private final AtomicInteger progress;
     private final AtomicInteger maxProgress;
     private final AtomicInteger numLines;
@@ -249,6 +252,28 @@ public class JIPipeProgressInfo implements Cancelable {
      */
     public int getNodeId() {
         return nodeId;
+    }
+
+    /**
+     * Finishes this handle's node with the given state: emits the node-finished record and sets
+     * the index state. The intended pattern is finish-at-operation-end: every row created via
+     * {@link #resolve(String)} reaches a terminal state when its operation completes, so consumers
+     * render a spinner only while the operation actually runs. Guarded: the first call wins, any
+     * further call on the same handle instance is a no-op; a call on the store's root handle is a
+     * no-op (the root finishes via {@link JIPipeProgressLog#finish(JIPipeProgressNodeState)});
+     * calls after the store closed are dropped by the store.
+     *
+     * @param state the finish state
+     */
+    public void finishNode(JIPipeProgressNodeState state) {
+        Objects.requireNonNull(state, "State must not be null");
+        if (nodeId == store.getRootNodeId()) {
+            return;
+        }
+        if (nodeFinished.getAndSet(true)) {
+            return;
+        }
+        store.nodeFinished(nodeId, state);
     }
 
     public void clearLog() {

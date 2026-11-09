@@ -484,6 +484,29 @@ class ProgressInfoFacadeTest {
     }
 
     @Test
+    void finishNodeEmitsNodeFinishedOnceAndIgnoresTheRoot() {
+        Path logsBase = tmp.resolve("logs");
+        JIPipeProgressLog store = JIPipeProgressLog.create(logsBase.resolve("finish-node.ndjson"), "finish-node", "FinishNode");
+        JIPipeProgressInfo info = new JIPipeProgressInfo(store);
+        JIPipeProgressInfo node = info.resolve("Node A");
+
+        node.finishNode(JIPipeProgressNodeState.OK);
+        node.finishNode(JIPipeProgressNodeState.FAILED); // guarded: the first call wins
+        info.finishNode(JIPipeProgressNodeState.OK); // the root handle finishes via store.finish
+
+        store.finish(JIPipeProgressNodeState.OK);
+        List<JIPipeProgressRecord.NodeFinished> finishes = store.readRecords(1, 64).stream()
+                .filter(JIPipeProgressRecord.NodeFinished.class::isInstance)
+                .map(JIPipeProgressRecord.NodeFinished.class::cast)
+                .collect(java.util.stream.Collectors.toList());
+        assertEquals(1, finishes.size(), "exactly one N record: the guarded second call and the root call are no-ops");
+        assertEquals(node.getNodeId(), finishes.get(0).id());
+        assertEquals("ok", finishes.get(0).s());
+        assertEquals(JIPipeProgressNodeState.OK, store.getNode(node.getNodeId()).getState());
+        store.close();
+    }
+
+    @Test
     void silentAndStdoutUseTheStoreImplementations() {
         assertNull(JIPipeProgressInfo.SILENT.getStore().getFile());
         assertNull(JIPipeProgressInfo.STDOUT.getStore().getFile());

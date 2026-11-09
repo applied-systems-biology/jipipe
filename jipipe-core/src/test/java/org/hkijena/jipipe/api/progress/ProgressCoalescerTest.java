@@ -91,7 +91,7 @@ class ProgressCoalescerTest {
             assertTrue(seen.size() <= expectedMax,
                     "burst of 200k must not produce 200k events; saw " + seen.size() + " in " + durationMs + " ms (max " + expectedMax + ")");
             assertTrue(seen.size() > 1, "a long-enough burst must produce more than one batch; saw " + seen.size());
-            assertCoveredWithoutGaps(seen, 200_003);
+            assertCoveredWithoutGaps(seen, 200_004);
         } finally {
             store.close();
         }
@@ -107,9 +107,9 @@ class ProgressCoalescerTest {
             store.log(node, JIPipeLogLevel.INFO, "one");
             store.log(node, JIPipeLogLevel.INFO, "two");
             store.log(node, JIPipeLogLevel.INFO, "three");
-            // head + n + 3 logs + s = 6 lines; finish() arrives deep inside the interval window
+            // head + n + 3 logs + N(swept) + s = 7 lines; finish() arrives deep inside the interval window
             store.finish(JIPipeProgressNodeState.OK);
-            assertCoveredWithoutGaps(seen, 6);
+            assertCoveredWithoutGaps(seen, 7);
             assertTrue(seen.get(seen.size() - 1).finalBatch(), "the last event is the final batch");
         } finally {
             store.close();
@@ -138,7 +138,8 @@ class ProgressCoalescerTest {
             assertEquals(1, seen.size(), "exactly one batch while the run is idle");
             assertFalse(seen.get(0).finalBatch(), "the idle batch is not the final one");
             store.finish(JIPipeProgressNodeState.OK);
-            assertCoveredWithoutGaps(seen, 4);
+            // head + n + log + N(swept) + s = 5 lines
+            assertCoveredWithoutGaps(seen, 5);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new RuntimeException(e);
