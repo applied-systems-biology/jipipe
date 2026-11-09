@@ -1337,7 +1337,7 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
                     storageProgress.log("Storing " + outputDataSlot.getDisplayName() + " into cache");
                     project.getCache().store(outputDataSlot.getNode(), outputDataSlot.getNode().getUUIDInParentGraph(), outputDataSlot, outputDataSlot.getName(), storageProgress);
                 } else {
-                    storageProgress.log("NOT storing " + outputDataSlot.getDisplayName() + " [deactivated in config]");
+                    storageProgress.debug("NOT storing " + outputDataSlot.getDisplayName() + " [deactivated in config]");
                 }
             }
             if (configuration.isStoreToDisk() && !configuration.getDisableStoreToDiskNodes().contains(outputDataSlot.getNode().getUUIDInParentGraph()) && outputDataSlot.getInfo().isStoreToDisk() && !outputDataSlot.isSkipExport()) {
@@ -1353,7 +1353,7 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
                 });
 
                 if (filtered.isEmpty()) {
-                    storageProgress.log("NOT Storing " + outputDataSlot.getDisplayName() + " to hard drive (is empty)");
+                    storageProgress.debug("NOT Storing " + outputDataSlot.getDisplayName() + " to hard drive (is empty)");
                 } else {
                     JIPipeProgressInfo saveProgress = storageProgress.resolveAndLog(String.format("Saving data in slot '%s' (data type %s)", outputDataSlot.getDisplayName(), JIPipeDataInfo.getInstance(outputDataSlot.getAcceptedDataType()).getName()));
                     storageProgress.log("Storing " + outputDataSlot.getDisplayName() + " to hard drive");
