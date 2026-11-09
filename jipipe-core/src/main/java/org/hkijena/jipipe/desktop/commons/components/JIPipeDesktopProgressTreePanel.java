@@ -1400,24 +1400,38 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
      * Tail window scan (R36): reads the node's last line window with a growing margin, collects
      * own renderable records, and keeps the last {@code span} of the requested range. Used for
      * the newest slots, where a forward scan would have to traverse the whole node; a short
-     * collect (the buffered writer still lags the counters) is retried with a doubled margin,
-     * bounded by the node's record range.
+     * collect (the writer still lags the counters) is retried with a doubled margin, bounded by
+     * the node's record range.
+     * <p>
+     * The window ends at the panel's own accumulated line (the counter-consistent prefix), not
+     * at the drain-time node index: the index can be ahead of the counters, and anchoring at its
+     * end would label not-yet-counted records with the top slots - producing a chunk that fills
+     * exactly, passes the stale check, and keeps shifted content until viewport pruning (fix
+     * round 1, finding 1).
      */
     private List<JIPipeProgressRecord> scanTailWindow(JIPipeProgressLog s, JIPipeProgressNode node, int nodeId,
                                                       int slotBase, int span, int extent,
                                                       Map<Integer, Integer> discovered) {
         int needed = extent - slotBase;
+        if (needed <= 0) {
+            // The extent moved past this chunk between schedule and read: nothing to fill
+            return null;
+        }
         int firstLine = node.getFirstLine();
-        int lastLine = node.getLastLine();
-        int rangeLines = lastLine - firstLine + 1;
+        int countedLast = (int) Math.min(node.getLastLine(), lastKnownLine);
+        if (countedLast < firstLine) {
+            // No counted record of the node yet - retry on a later scheduling event
+            return null;
+        }
+        int rangeLines = countedLast - firstLine + 1;
         int margin = Math.min(rangeLines, Math.max(1024, needed * 4));
         List<JIPipeProgressRecord> collected = new ArrayList<>();
         List<Integer> lines = new ArrayList<>();
         while (true) {
-            int from = Math.max(firstLine, lastLine - margin + 1);
+            int from = Math.max(firstLine, countedLast - margin + 1);
             collected.clear();
             lines.clear();
-            List<JIPipeProgressRecord> window = s.readRecords(from, lastLine - from + 1);
+            List<JIPipeProgressRecord> window = s.readRecords(from, countedLast - from + 1);
             for (int i = 0; i < window.size(); i++) {
                 JIPipeProgressRecord record = window.get(i);
                 if (isOwnRenderable(record, nodeId)) {
@@ -2162,7 +2176,11 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
             for (int i = 0; i < sorted.size(); i++) {
                 anchorSlots[i] = sorted.get(i).errorSlot();
                 anchorLengths[i] = sorted.get(i).lines().length;
-                anchorRows[i] = anchorSlots[i] + shift;
+                // anchorRows are the anchor positions in UNSHIFTED slot space: the row walk
+                // (flatOfRow / virtualRowOf) strips the PREVIOUS anchors' stack rows from the
+                // block-local row before comparing, so comparing against a fully-shifted
+                // position would misplace every anchor after the first (fix round 1, finding 2)
+                anchorRows[i] = anchorSlots[i];
                 shift += anchorLengths[i];
             }
             this.extent = slotCount + shift;
