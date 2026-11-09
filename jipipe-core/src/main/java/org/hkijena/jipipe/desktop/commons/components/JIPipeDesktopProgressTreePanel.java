@@ -1796,7 +1796,9 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
         if (running && latest != null) {
             String chain = labelPath(s, latest);
             String progress = progressText(latest);
-            status = chain + (progress.isEmpty() ? "" : " - " + progress);
+            // No chain for a root-level progress record (V5-2): use the progress text alone
+            // instead of a leading separator (would render as " - 3/7 (43%)")
+            status = chain + (progress.isEmpty() ? "" : (chain.isEmpty() ? "" : " - ") + progress);
             if (status.isBlank()) {
                 status = "Running ...";
             }
