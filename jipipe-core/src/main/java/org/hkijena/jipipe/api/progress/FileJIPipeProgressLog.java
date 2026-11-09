@@ -658,6 +658,12 @@ public class FileJIPipeProgressLog extends AbstractJIPipeProgressLog {
      * @param finalBatch whether this is the guaranteed final batch
      */
     private void emitPendingBatch(boolean finalBatch) {
+        // The batch contract promises that a receiver's readRecords(fromLine, ...) over the
+        // event's range returns the full range: flush the sink so the covered lines are visible
+        // to readers. Without this, a receiver reading an unflushed tail gets a short read and
+        // permanently loses those records from its counters (batch ranges never overlap
+        // backwards, so nothing re-reads them later).
+        flushSink();
         ProgressBatchEvent event = new ProgressBatchEvent(this,
                 (int) pendingFromLine, (int) pendingToLine, pendingNodes, finalBatch);
         pendingFromLine = 0;

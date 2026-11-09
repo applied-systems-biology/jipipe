@@ -80,13 +80,16 @@ import java.util.concurrent.atomic.AtomicLong;
  * in one of two detail modes (R30):
  * <ul>
  * <li><b>Virtual mode</b> (all of the node's own records pass the category toggles): the detail
- * block maps the node's own record lines contiguously (row ↔ line; the list extent equals the
- * detail size - the scrollbar is proportional to the real content). Lines load in chunks of
- * {@value #VIRTUAL_CHUNK_LINES} around the viewport via the checkpointed
- * {@code readRecords(fromLine, limit)} off the EDT; unloaded lines render as {@code …}
- * placeholder rows; the cache is pruned beyond the viewport window, so memory stays bounded
- * regardless of the record count. The tail grows live: the view follows it while the detail
- * autoscroll is engaged (scroll-up disengages, the go-to-end button re-engages).</li>
+ * block maps the node's renderable records ({@code l}/{@code e}) contiguously - detail slot k is
+ * the k-th renderable record of the node, ordered by line (R36; the list extent equals the
+ * renderable count, so the scrollbar is proportional to the real content and structural records
+ * never occupy rows). Chunks of {@value #VIRTUAL_CHUNK_SLOTS} slots load around the viewport off
+ * the EDT: a chunk is filled by a forward scan from the nearest cached slot-to-line boundary (or
+ * the node's first line), and the newest slots load from the node's last line window with a
+ * growing margin; unloaded slots render as {@code …} placeholder rows; the chunk and boundary
+ * caches are pruned beyond the viewport window, so memory stays bounded regardless of the record
+ * count. The tail grows live: the view follows it while the detail autoscroll is engaged
+ * (scroll-up disengages, the go-to-end button re-engages).</li>
  * <li><b>Paged mode</b> (the node has records hidden by the toggles): the last
  * {@value #DETAIL_PAGE_SIZE} records plus the {@code Show N older records from run data…} row,
  * re-read on demand.</li>
@@ -102,17 +105,24 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
     private static final int CATCH_UP_PAGE_SIZE = 10_000;
 
     /**
-     * R30 chunked virtual detail loading. A chunk covers {@value #VIRTUAL_CHUNK_LINES} of a node's
-     * own record lines. Around the viewport's line span, {@value #VIRTUAL_PREFETCH_CHUNKS} chunks
-     * toward each side are loaded, and {@value #VIRTUAL_CACHED_CHUNKS} chunks toward each side are
-     * kept - everything outside is pruned. The cache bound is therefore about
-     * {@code (2 * VIRTUAL_CACHED_CHUNKS + 2) * VIRTUAL_CHUNK_LINES ≈ 13 × 512 ≈ 6,700} records per
-     * expanded node (the +2 covers the chunks the viewport span itself straddles), independent of
-     * the node's record count.
+     * R36 chunked virtual detail loading over slot space. A chunk covers
+     * {@value #VIRTUAL_CHUNK_SLOTS} renderable records (detail slots; structural records occupy
+     * no slots). Around the viewport's slot span, {@value #VIRTUAL_PREFETCH_CHUNKS} chunks toward
+     * each side are loaded, and {@value #VIRTUAL_CACHED_CHUNKS} chunks toward each side are kept
+     * - everything outside is pruned (chunks and slot-to-line boundaries alike). The cache bound
+     * is therefore about {@code (2 * VIRTUAL_CACHED_CHUNKS + 2) * VIRTUAL_CHUNK_SLOTS ≈ 13 × 512
+     * ≈ 6,700} records plus the boundaries per expanded node (the +2 covers the chunks the
+     * viewport span itself straddles), independent of the node's record count.
      */
-    private static final int VIRTUAL_CHUNK_LINES = 512;
+    private static final int VIRTUAL_CHUNK_SLOTS = 512;
     private static final int VIRTUAL_PREFETCH_CHUNKS = 2;
     private static final int VIRTUAL_CACHED_CHUNKS = 2 * VIRTUAL_PREFETCH_CHUNKS + 1;
+    /**
+     * Chunks whose slot range reaches the newest slots load from the node's last line window
+     * (a growing margin) instead of a forward scan: a forward scan from the node's start would
+     * traverse the whole node once it is under a few thousand renderable records.
+     */
+    private static final int VIRTUAL_TAIL_WINDOW_SLOTS = 4 * VIRTUAL_CHUNK_SLOTS;
 
     /**
      * The record categories of the toggle-button filter (R22): debug = {@code l}@DEBUG, info =
@@ -833,7 +843,7 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
                     }
                     appendDetailRows(rows, id, state, node);
                 } else {
-                    VirtualBlock block = buildVirtualBlock(s, childMap, node, rows.size(), state);
+                    VirtualBlock block = buildVirtualBlock(id, rows.size(), state);
                     if (block != null) {
                         rebuildBlocks.add(block);
                         rebuildBlockShift += block.extent;
@@ -1209,83 +1219,35 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
     }
 
     /**
-     * Builds the virtual block of an expanded unfiltered node: its own-line windows (record range
-     * minus descendants' ranges, the node's own {@code n} record trimmed) plus its open stack
-     * anchors. Returns {@code null} when the node has no own lines to show (an empty block is
-     * not added).
+     * The node's renderable record count: the sum of its per-category counters (the exact number
+     * of own {@code l}/{@code e} records - the same source the R29 visibility checks use). This
+     * is the virtual detail's slot count (R36).
      */
-    private VirtualBlock buildVirtualBlock(JIPipeProgressLog s, Map<Integer, List<Integer>> childMap,
-                                           JIPipeProgressNode node, int rowsBefore, NodeUiState state) {
-        // Child nodes open with their own n record (renders nothing); the run root has no n
-        // record - its first line is a real record
-        long from = node.getId() == s.getRootNodeId() ? node.getFirstLine() : node.getFirstLine() + 1L;
-        long to = node.getLastLine();
-        // The end is NOT trimmed: a node's last line is its N record only when it finished
-        // normally - the run root has no N record, and a node may log past its N record
-        if (to < from) {
-            return null;
-        }
-        List<long[]> windows = ownWindows(s, childMap, node.getId(), from, to);
-        if (windows.isEmpty()) {
-            return null;
-        }
-        return new VirtualBlock(node.getId(), rowsBefore, windows, state.virtual.stackAnchors);
+    private static int renderableRecordCount(NodeUiState state) {
+        long total = state.debugCount.get() + state.infoCount.get()
+                + state.warnCount.get() + state.errorCount.get();
+        return (int) Math.min(Integer.MAX_VALUE, total);
     }
 
     /**
-     * Splits {@code [from, to]} into the node's own-line windows: the range minus the merged
-     * record ranges of ALL descendants (their records render under their own rows). Windows are
-     * disjoint and ascending; each is stored as {@code {start, lineCount}}.
+     * Builds the virtual block of an expanded unfiltered node: one row per renderable record
+     * (detail slot; R36) plus its open stack anchors. Structural records (child {@code n}/{@code
+     * N}, own {@code p}) and other nodes' records occupy no slots and never render. Returns
+     * {@code null} when the node has nothing to show (an empty block is not added).
      */
-    private List<long[]> ownWindows(JIPipeProgressLog s, Map<Integer, List<Integer>> childMap,
-                                    int nodeId, long from, long to) {
-        List<long[]> ranges = new ArrayList<>();
-        Deque<Integer> stack = new ArrayDeque<>(childMap.getOrDefault(nodeId, List.of()));
-        while (!stack.isEmpty()) {
-            int id = stack.pop();
-            JIPipeProgressNode descendant = s.getNode(id);
-            if (descendant == null) {
-                continue;
-            }
-            List<Integer> children = childMap.get(id);
-            if (children != null) {
-                for (int child : children) {
-                    stack.push(child);
-                }
-            }
-            if (descendant.getFirstLine() > 0 && descendant.getLastLine() >= descendant.getFirstLine()) {
-                ranges.add(new long[]{descendant.getFirstLine(), descendant.getLastLine()});
-            }
+    private VirtualBlock buildVirtualBlock(int nodeId, int rowsBefore, NodeUiState state) {
+        if (renderableRecordCount(state) == 0 && state.virtual.stackAnchors.isEmpty()) {
+            return null;
         }
-        ranges.sort(Comparator.comparingLong(range -> range[0]));
-        List<long[]> windows = new ArrayList<>();
-        long cursor = from;
-        for (long[] range : ranges) {
-            long start = Math.max(range[0], from);
-            long end = Math.min(range[1], to);
-            if (end < start) {
-                continue;
-            }
-            if (start > cursor) {
-                windows.add(new long[]{cursor, start - cursor});
-            }
-            cursor = Math.max(cursor, end + 1);
-            if (cursor > to) {
-                break;
-            }
-        }
-        if (cursor <= to) {
-            windows.add(new long[]{cursor, to - cursor + 1});
-        }
-        return windows;
+        return new VirtualBlock(nodeId, rowsBefore, renderableRecordCount(state), state.virtual.stackAnchors);
     }
 
     /**
-     * The current viewport's own-line span within the block ({@code {minLine, maxLine}}), or
+     * The current viewport's slot span within the block ({@code {minSlot, maxSlot}}), or
      * {@code null} when the block is not visible (or the layout cannot measure it yet). Stack
-     * rows carry no chunk lines and are skipped.
+     * rows carry no slots and are skipped.
      */
-    private long[] visibleLineSpan(VirtualBlock block) {
+    private long[] visibleSlotSpan(VirtualBlock block) {
         int first = list.getFirstVisibleIndex();
         int last = list.getLastVisibleIndex();
         if (first < 0 || last < 0 || block.startIndex + block.extent <= first || block.startIndex > last) {
@@ -1293,41 +1255,42 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
         }
         int j0 = Math.max(0, first - block.startIndex);
         int j1 = Math.min(block.extent - 1, last - block.startIndex);
-        long line0 = Long.MAX_VALUE;
-        long line1 = Long.MIN_VALUE;
+        long slot0 = Long.MAX_VALUE;
+        long slot1 = Long.MIN_VALUE;
         for (int j = j0; j <= j1; j++) {
-            int flat = block.flatOfRow(j);
-            if (flat >= 0) {
-                long line = block.rawLineOfFlat(flat);
-                line0 = Math.min(line0, line);
-                line1 = Math.max(line1, line);
+            int slot = block.flatOfRow(j);
+            if (slot >= 0) {
+                slot0 = Math.min(slot0, slot);
+                slot1 = Math.max(slot1, slot);
             }
         }
-        return line1 < line0 ? null : new long[]{line0, line1};
+        return slot1 < slot0 ? null : new long[]{slot0, slot1};
     }
 
     /**
-     * Prunes the node's chunk cache to the currently visible viewport's keep window. Called on
-     * the EDT apply path: a queued read can land long after its scheduling event (a fast fling
-     * across a huge block queues a read per traversed chunk), so the bound is re-enforced when
-     * each read lands. A block that is currently not visible keeps nothing - its chunks are
-     * re-read on the next viewport change.
+     * Prunes the node's chunk and boundary caches to the currently visible viewport's keep
+     * window. Called on the EDT apply path: a queued read can land long after its scheduling
+     * event (a fast fling across a huge block queues a read per traversed chunk), so the bound
+     * is re-enforced when each read lands. A block that is currently not visible keeps nothing -
+     * its chunks are re-read on the next viewport change.
      */
     private void pruneChunkCache(int nodeId, VirtualDetailState virtual) {
         VirtualBlock block = blockOfNode(nodeId);
-        long[] span = block != null ? visibleLineSpan(block) : null;
+        long[] span = block != null ? visibleSlotSpan(block) : null;
         if (span == null) {
             virtual.chunks.clear();
+            virtual.boundaries.clear();
             return;
         }
-        long keepLo = span[0] - (long) VIRTUAL_CACHED_CHUNKS * VIRTUAL_CHUNK_LINES;
-        long keepHi = span[1] + (long) VIRTUAL_CACHED_CHUNKS * VIRTUAL_CHUNK_LINES;
-        virtual.chunks.keySet().removeIf(base -> base + VIRTUAL_CHUNK_LINES - 1 < keepLo || base > keepHi);
+        long keepLo = span[0] - (long) VIRTUAL_CACHED_CHUNKS * VIRTUAL_CHUNK_SLOTS;
+        long keepHi = span[1] + (long) VIRTUAL_CACHED_CHUNKS * VIRTUAL_CHUNK_SLOTS;
+        virtual.chunks.keySet().removeIf(base -> base + VIRTUAL_CHUNK_SLOTS - 1 < keepLo || base > keepHi);
+        virtual.boundaries.keySet().removeIf(base -> base + VIRTUAL_CHUNK_SLOTS - 1 < keepLo || base > keepHi);
     }
 
     /**
-     * Ensures the chunks around the viewport of every visible virtual block are loaded (R30) and
-     * prunes the caches outside the viewport window (≈13 chunks per expanded node - see the
+     * Ensures the chunks around the viewport of every visible virtual block are loaded (R30/R36)
+     * and prunes the caches outside the viewport window (≈13 chunks per expanded node - see the
      * {@code VIRTUAL_*} constants).
      */
     private void scheduleVirtualChunkLoads(JIPipeProgressLog s) {
@@ -1342,68 +1305,191 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
             if (virtual == null) {
                 continue;
             }
-            long[] visibleSpan = visibleLineSpan(block);
+            long[] visibleSpan = visibleSlotSpan(block);
             if (visibleSpan == null) {
                 continue;
             }
-            long line0 = visibleSpan[0];
-            long line1 = visibleSpan[1];
-            long keepLo = line0 - (long) VIRTUAL_CACHED_CHUNKS * VIRTUAL_CHUNK_LINES;
-            long keepHi = line1 + (long) VIRTUAL_CACHED_CHUNKS * VIRTUAL_CHUNK_LINES;
-            long loadLo = Math.max(block.firstOwnLine(), line0 - (long) VIRTUAL_PREFETCH_CHUNKS * VIRTUAL_CHUNK_LINES);
-            long loadHi = Math.min(block.lastOwnLine(), line1 + (long) VIRTUAL_PREFETCH_CHUNKS * VIRTUAL_CHUNK_LINES);
-            for (int w = 0; w < block.windowStarts.length; w++) {
-                long windowStart = block.windowStarts[w];
-                long windowEnd = windowStart + block.windowLines[w] - 1;
-                if (windowEnd < loadLo || windowStart > loadHi) {
-                    continue;
-                }
-                long from = Math.max(windowStart, loadLo);
-                long base = windowStart + (from - windowStart) / VIRTUAL_CHUNK_LINES * VIRTUAL_CHUNK_LINES;
-                for (; base <= Math.min(windowEnd, loadHi); base += VIRTUAL_CHUNK_LINES) {
-                    int key = (int) base;
-                    if (!virtual.chunks.containsKey(key) && virtual.loadingChunks.add(key)) {
-                        int span = (int) Math.min(VIRTUAL_CHUNK_LINES, windowEnd - base + 1);
-                        submitChunkRead(s, gen, block.nodeId, key, span);
+            JIPipeProgressNode node = s.getNode(block.nodeId);
+            if (node == null || node.getFirstLine() <= 0) {
+                continue;
+            }
+            long slot0 = visibleSpan[0];
+            long slot1 = visibleSpan[1];
+            long keepLo = slot0 - (long) VIRTUAL_CACHED_CHUNKS * VIRTUAL_CHUNK_SLOTS;
+            long keepHi = slot1 + (long) VIRTUAL_CACHED_CHUNKS * VIRTUAL_CHUNK_SLOTS;
+            long loadLo = Math.max(0, slot0 - (long) VIRTUAL_PREFETCH_CHUNKS * VIRTUAL_CHUNK_SLOTS);
+            long loadHi = Math.min(block.slotCount - 1L, slot1 + (long) VIRTUAL_PREFETCH_CHUNKS * VIRTUAL_CHUNK_SLOTS);
+            for (long base = loadLo - loadLo % VIRTUAL_CHUNK_SLOTS; base <= loadHi; base += VIRTUAL_CHUNK_SLOTS) {
+                int key = (int) base;
+                // A cached chunk may be STALE: its span was computed from the extent when it
+                // loaded, and the last chunk's span grows with the tail (slotCount - base).
+                // Serve-from-cache only when the chunk covers the slots the current extent
+                // expects; a stale chunk re-loads like a missing one (its size is always the
+                // complete span of an earlier extent, so the re-read converges).
+                List<JIPipeProgressRecord> cached = virtual.chunks.get(key);
+                int expected = (int) Math.min(VIRTUAL_CHUNK_SLOTS, block.slotCount - base);
+                if ((cached == null || cached.size() < expected) && virtual.loadingChunks.add(key)) {
+                    int span = (int) Math.min(VIRTUAL_CHUNK_SLOTS, block.slotCount - base);
+                    // Chain the scan from the nearest cached slot-to-line boundary at or before
+                    // the chunk; the implied slot 0 starts at the node's first record line
+                    int chainSlot = 0;
+                    int chainLine = node.getFirstLine();
+                    for (Map.Entry<Integer, Integer> boundary : virtual.boundaries.entrySet()) {
+                        if (boundary.getKey() <= key && boundary.getKey() > chainSlot) {
+                            chainSlot = boundary.getKey();
+                            chainLine = boundary.getValue();
+                        }
                     }
+                    submitChunkRead(s, gen, block.nodeId, key, span, chainSlot, chainLine);
                 }
             }
-            virtual.chunks.keySet().removeIf(base -> base + VIRTUAL_CHUNK_LINES - 1 < keepLo || base > keepHi);
+            virtual.chunks.keySet().removeIf(base -> base + VIRTUAL_CHUNK_SLOTS - 1 < keepLo || base > keepHi);
+            virtual.boundaries.keySet().removeIf(base -> base + VIRTUAL_CHUNK_SLOTS - 1 < keepLo || base > keepHi);
         }
     }
 
     /**
-     * Reads one detail chunk off the EDT (checkpointed seek + bounded parse) and applies it on
-     * the EDT in O(chunk). Only COMPLETE reads are cached ({@code read.size() == span}): a short
-     * read means the buffered writer still lags the node index at the live tail, and caching it
-     * would strand the rows between the cached length and the window end as permanent
-     * placeholders. A short (or empty) read stays uncached and retries on the next scheduling
-     * event (bounded by the event rate; a truncated final line is never requested because the
-     * node index never counts it). The keep-window bound is re-enforced when the read lands -
-     * a fling can have moved the viewport far away while the read was in flight.
+     * Whether the record is a renderable record of the node (own {@code l}/{@code e}; R36 slots).
+     * Run-level notifications ({@code w}) are root-scoped and never belong to a node's slots -
+     * post-V3-1 they land in the phase rows' ranges.
      */
-    private void submitChunkRead(JIPipeProgressLog s, int gen, int nodeId, int baseLine, int span) {
+    private static boolean isOwnRenderable(JIPipeProgressRecord record, int nodeId) {
+        if (record instanceof JIPipeProgressRecord.Log logRecord) {
+            return logRecord.id() == nodeId;
+        }
+        return record instanceof JIPipeProgressRecord.Error errorRecord && errorRecord.id() == nodeId;
+    }
+
+    /**
+     * Forward slot scan (R36): reads the node's record lines from the chained boundary, counting
+     * own renderable records until the chunk's slots are collected. Structural records and other
+     * nodes' records are skipped, never cached, never rendered. Bounded by the node's record
+     * range; every crossed chunk boundary is discovered so later loads chain closer.
+     */
+    private List<JIPipeProgressRecord> scanForwardChunks(JIPipeProgressLog s, JIPipeProgressNode node, int nodeId,
+                                                         int slotBase, int span, int chainSlot, int chainLine,
+                                                         Map<Integer, Integer> discovered) {
+        List<JIPipeProgressRecord> slice = new ArrayList<>(span);
+        int slot = chainSlot;
+        int line = chainLine;
+        int lastLine = node.getLastLine();
+        while (slice.size() < span && line <= lastLine) {
+            List<JIPipeProgressRecord> page = s.readRecords(line, 512);
+            if (page.isEmpty()) {
+                break;
+            }
+            for (int i = 0; i < page.size() && slice.size() < span; i++) {
+                JIPipeProgressRecord record = page.get(i);
+                if (!isOwnRenderable(record, nodeId)) {
+                    continue;
+                }
+                if (slot % VIRTUAL_CHUNK_SLOTS == 0) {
+                    discovered.put(slot, line + i);
+                }
+                if (slot >= slotBase) {
+                    slice.add(record);
+                }
+                slot++;
+            }
+            line += page.size();
+        }
+        return slice.size() == span ? slice : null;
+    }
+
+    /**
+     * Tail window scan (R36): reads the node's last line window with a growing margin, collects
+     * own renderable records, and keeps the last {@code span} of the requested range. Used for
+     * the newest slots, where a forward scan would have to traverse the whole node; a short
+     * collect (the buffered writer still lags the counters) is retried with a doubled margin,
+     * bounded by the node's record range.
+     */
+    private List<JIPipeProgressRecord> scanTailWindow(JIPipeProgressLog s, JIPipeProgressNode node, int nodeId,
+                                                      int slotBase, int span, int extent,
+                                                      Map<Integer, Integer> discovered) {
+        int needed = extent - slotBase;
+        int firstLine = node.getFirstLine();
+        int lastLine = node.getLastLine();
+        int rangeLines = lastLine - firstLine + 1;
+        int margin = Math.min(rangeLines, Math.max(1024, needed * 4));
+        List<JIPipeProgressRecord> collected = new ArrayList<>();
+        List<Integer> lines = new ArrayList<>();
+        while (true) {
+            int from = Math.max(firstLine, lastLine - margin + 1);
+            collected.clear();
+            lines.clear();
+            List<JIPipeProgressRecord> window = s.readRecords(from, lastLine - from + 1);
+            for (int i = 0; i < window.size(); i++) {
+                JIPipeProgressRecord record = window.get(i);
+                if (isOwnRenderable(record, nodeId)) {
+                    collected.add(record);
+                    lines.add(from + i);
+                }
+            }
+            if (collected.size() >= needed || from <= firstLine) {
+                break;
+            }
+            margin = Math.min(rangeLines, margin * 2);
+        }
+        if (collected.size() < needed) {
+            return null;
+        }
+        int offset = collected.size() - needed;
+        List<JIPipeProgressRecord> slice = new ArrayList<>(span);
+        for (int j = 0; j < span; j++) {
+            int index = offset + j;
+            slice.add(collected.get(index));
+            int slot = extent - collected.size() + index;
+            if (slot % VIRTUAL_CHUNK_SLOTS == 0) {
+                discovered.put(slot, lines.get(index));
+            }
+        }
+        return slice;
+    }
+
+    /**
+     * Loads one detail chunk off the EDT (R36 slot space) and applies it on the EDT in O(chunk).
+     * The newest slots load from the node's last line window; everything else loads by a forward
+     * scan chained from the nearest cached slot-to-line boundary. The chunk applies only when it
+     * filled completely: a short fill means the buffered writer still lags the counters at the
+     * live tail, and caching it would strand the remaining slots as permanent placeholders - it
+     * stays uncached and retries on the next scheduling event (bounded by the event rate). The
+     * keep-window bound is re-enforced when the read lands: a fling can have moved the viewport
+     * far away while the read was in flight.
+     */
+    private void submitChunkRead(JIPipeProgressLog s, int gen, int nodeId, int slotBase, int span, int chainSlot, int chainLine) {
         backgroundExecutor.submit(() -> {
-            List<JIPipeProgressRecord> records;
+            List<JIPipeProgressRecord> slice = null;
+            Map<Integer, Integer> discovered = new HashMap<>();
             try {
                 if (gen != generation.get() || store != s) {
                     return;
                 }
-                records = s.readRecords(baseLine, span);
+                JIPipeProgressNode node = s.getNode(nodeId);
+                NodeUiState readState = nodeStates.get(nodeId);
+                if (node != null && node.getFirstLine() > 0 && node.getLastLine() >= node.getFirstLine() && readState != null) {
+                    int extent = renderableRecordCount(readState);
+                    if (extent - slotBase <= VIRTUAL_TAIL_WINDOW_SLOTS) {
+                        slice = scanTailWindow(s, node, nodeId, slotBase, span, extent, discovered);
+                    } else {
+                        slice = scanForwardChunks(s, node, nodeId, slotBase, span, chainSlot, chainLine, discovered);
+                    }
+                }
             } catch (Exception e) {
-                log.error("Failed to read progress records at line {}", baseLine, e);
-                records = List.of();
+                log.error("Failed to read progress records of node {} at slot {}", nodeId, slotBase, e);
+                slice = null;
             }
-            List<JIPipeProgressRecord> read = records;
+            List<JIPipeProgressRecord> read = slice;
+            Map<Integer, Integer> foundBoundaries = discovered;
             SwingUtilities.invokeLater(() -> {
                 NodeUiState state = nodeStates.get(nodeId);
                 VirtualDetailState virtual = state != null ? state.virtual : null;
                 if (virtual == null || gen != generation.get()) {
                     return;
                 }
-                virtual.loadingChunks.remove(baseLine);
-                if (read.size() >= span) {
-                    virtual.chunks.put(baseLine, read);
+                virtual.loadingChunks.remove(slotBase);
+                if (read != null && read.size() == span) {
+                    virtual.chunks.put(slotBase, read);
+                    virtual.boundaries.putAll(foundBoundaries);
                     pruneChunkCache(nodeId, virtual);
                 }
                 list.repaint();
@@ -1412,9 +1498,8 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
     }
 
     /**
-     * Resolves a block-local row to its content: a stack-trace line of an open anchor, a detail
-     * record from the chunk cache, or one of the empty-row types (placeholder for unloaded
-     * chunks, skip for records that render nothing).
+     * Resolves a block-local row to its content: a stack-trace line of an open anchor, the
+     * detail record of its slot from the chunk cache, or a placeholder for an unloaded chunk.
      */
     private JIPipeDesktopProgressTreeRowRenderer.Row virtualRowOf(VirtualBlock block, int row) {
         NodeUiState state = nodeStates.get(block.nodeId);
@@ -1423,6 +1508,7 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
             // The block is stale (the mode changed since this rebuild) - replaced on the next tick
             return new JIPipeDesktopProgressTreeRowRenderer.PlaceholderRow(block.nodeId);
         }
+        // Open stack traces insert their lines after their error row (anchored by slot)
         int adjusted = row;
         for (int i = 0; i < block.anchors.size(); i++) {
             int anchorRow = block.anchorRows[i];
@@ -1435,30 +1521,22 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
             }
             adjusted -= block.anchorLengths[i];
         }
-        long line = block.rawLineOfFlat(adjusted);
-        int chunkBase = (int) block.chunkBaseOf(line);
-        List<JIPipeProgressRecord> chunk = chunkBase >= 0 ? virtual.chunks.get(chunkBase) : null;
-        if (chunk == null || line - chunkBase >= chunk.size()) {
-            // Unloaded chunk, or the file has not caught up with the read window yet
+        int slot = adjusted;
+        int chunkBase = slot - slot % VIRTUAL_CHUNK_SLOTS;
+        List<JIPipeProgressRecord> chunk = virtual.chunks.get(chunkBase);
+        if (chunk == null || slot - chunkBase >= chunk.size()) {
+            // Unloaded chunk, or the file has not caught up with the counters yet
             return new JIPipeDesktopProgressTreeRowRenderer.PlaceholderRow(block.nodeId);
         }
-        JIPipeProgressRecord record = chunk.get((int) (line - chunkBase));
-        if (record instanceof JIPipeProgressRecord.Log logRecord && logRecord.id() == block.nodeId) {
-            // Virtual mode implies all own records pass the toggles
-            return new JIPipeDesktopProgressTreeRowRenderer.DetailRow(block.nodeId, record, false, false, (int) line);
-        }
-        if (record instanceof JIPipeProgressRecord.Error errorRecord && errorRecord.id() == block.nodeId) {
+        JIPipeProgressRecord record = chunk.get(slot - chunkBase);
+        if (record instanceof JIPipeProgressRecord.Error errorRecord) {
             boolean hasStack = errorRecord.st() != null && !errorRecord.st().isBlank();
             boolean stackOpen = hasStack && openStacks.contains(errorKey(block.nodeId, errorRecord));
-            return new JIPipeDesktopProgressTreeRowRenderer.DetailRow(block.nodeId, record, hasStack, stackOpen, (int) line);
+            return new JIPipeDesktopProgressTreeRowRenderer.DetailRow(block.nodeId, record, hasStack, stackOpen, slot);
         }
-        if (record instanceof JIPipeProgressRecord.Notification && visibleCategories.contains(RecordCategory.WARNING)) {
-            // Run-level notifications render inside the node whose range covers them (R22)
-            return new JIPipeDesktopProgressTreeRowRenderer.DetailRow(block.nodeId, record, false, false, (int) line);
-        }
-        // Progress/node/node-finished records (and interleaved records of other nodes) render
-        // nothing - the row keeps the line mapping exact
-        return new JIPipeDesktopProgressTreeRowRenderer.SkipRow(block.nodeId);
+        // Own log record (the chunk holds only the node's own renderable records; virtual mode
+        // implies all of them pass the toggles)
+        return new JIPipeDesktopProgressTreeRowRenderer.DetailRow(block.nodeId, record, false, false, slot);
     }
 
     /**
@@ -1812,15 +1890,15 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
         refreshNow();
     }
 
-    private void toggleStack(int nodeId, JIPipeProgressRecord.Error error, int line) {
+    private void toggleStack(int nodeId, JIPipeProgressRecord.Error error, int slot) {
         String key = errorKey(nodeId, error);
         NodeUiState state = nodeStates.get(nodeId);
         if (!openStacks.remove(key)) {
             openStacks.add(key);
-            if (state != null && state.virtual != null && line > 0 && error.st() != null) {
+            if (state != null && state.virtual != null && slot >= 0 && error.st() != null) {
                 // Virtual mode: the open stack inserts its lines after the error row - the block
                 // snapshot carries the anchor (rebuilt by the refresh below)
-                state.virtual.stackAnchors.add(new StackAnchor(line, key, error.st().split("\n")));
+                state.virtual.stackAnchors.add(new StackAnchor(slot, key, error.st().split("\n")));
             }
         } else if (state != null && state.virtual != null) {
             state.virtual.stackAnchors.removeIf(anchor -> anchor.key().equals(key));
@@ -2025,11 +2103,17 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
      * count. Mutated on the EDT only.
      */
     private static final class VirtualDetailState {
-        /** Loaded chunks keyed by their first record line. */
+        /** Loaded chunks keyed by their first detail slot. */
         final Map<Integer, List<JIPipeProgressRecord>> chunks = new HashMap<>();
+        /**
+         * Discovered slot-to-line boundaries keyed by chunk-base slots: the line that holds the
+         * chunk's first record. Lets a chunk's forward scan chain from the nearest cached
+         * boundary instead of rescanning from the node's first record.
+         */
+        final Map<Integer, Integer> boundaries = new HashMap<>();
         /** Chunk reads in flight (deduplication between viewport changes). */
         final Set<Integer> loadingChunks = new HashSet<>();
-        /** Open stack traces, anchored at their error record's line (drives the block mapping). */
+        /** Open stack traces, anchored at their error record's slot (drives the block mapping). */
         final List<StackAnchor> stackAnchors = new ArrayList<>();
     }
 
@@ -2037,121 +2121,55 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
      * An opened stack trace of a virtual detail: its lines render as extra rows after the error
      * row; the anchor keeps them alive even when the error's chunk is pruned from the cache.
      */
-    private record StackAnchor(int errorLine, String key, String[] lines) {
+    private record StackAnchor(int errorSlot, String key, String[] lines) {
     }
 
     /**
      * One virtual detail block in the row space (rebuilt per dirty tick with the rest of the row
-     * snapshot, R21): the node's own record lines - its range minus its descendants' ranges,
-     * since descendants render under their own rows - mapped flat and contiguous. Row
-     * {@code startIndex + j} resolves to a raw line, or to a line of an open stack trace (which
-     * inserts extra rows after its error row). Chunk loads change row content, never indices:
-     * the extent is stable while loading.
+     * snapshot, R21): the node's renderable records ({@code l}/{@code e}, R36) mapped flat and
+     * contiguous as detail slots. Row {@code startIndex + j} resolves to a detail slot, or to a
+     * line of an open stack trace (which inserts extra rows after its error row). Structural
+     * records (child {@code n}/{@code N}, own {@code p}) and run-level notifications occupy no
+     * slots and never render here. Chunk loads change row content, never indices: the extent is
+     * stable while loading.
      */
     private final class VirtualBlock {
         final int nodeId;
         final int rowsBefore;
-        final long[] windowStarts;
-        final int[] windowLines;
-        final int[] windowOffsets;
-        final int totalLines;
+        final int slotCount;
         final List<StackAnchor> anchors;
+        final int[] anchorSlots;
         final int[] anchorRows;
         final int[] anchorLengths;
         final int extent;
         int startIndex;
 
-        VirtualBlock(int nodeId, int rowsBefore, List<long[]> windows, List<StackAnchor> stackAnchors) {
+        VirtualBlock(int nodeId, int rowsBefore, int slotCount, List<StackAnchor> stackAnchors) {
             this.nodeId = nodeId;
             this.rowsBefore = rowsBefore;
-            int windowCount = windows.size();
-            this.windowStarts = new long[windowCount];
-            this.windowLines = new int[windowCount];
-            this.windowOffsets = new int[windowCount];
-            int offset = 0;
-            for (int i = 0; i < windowCount; i++) {
-                windowStarts[i] = windows.get(i)[0];
-                windowLines[i] = (int) windows.get(i)[1];
-                windowOffsets[i] = offset;
-                offset += windowLines[i];
-            }
-            this.totalLines = offset;
-            // Open stacks sorted by their error line; each anchor's row is the raw row of its
-            // error line shifted by the lengths of the anchors before it. Anchors whose error
-            // line is outside the windows (a stale remnant) cannot be mapped and are dropped.
+            this.slotCount = slotCount;
+            // Open stacks sorted by their error slot; each anchor's row is its error slot
+            // shifted by the lengths of the anchors before it. Anchors outside the current slot
+            // range (a stale remnant) cannot be mapped and are dropped.
             List<StackAnchor> sorted = new ArrayList<>(stackAnchors);
-            sorted.removeIf(anchor -> flatOfLine(anchor.errorLine()) < 0);
-            sorted.sort(Comparator.comparingInt(StackAnchor::errorLine));
+            sorted.removeIf(anchor -> anchor.errorSlot() < 0 || anchor.errorSlot() >= slotCount);
+            sorted.sort(Comparator.comparingInt(StackAnchor::errorSlot));
             this.anchors = sorted;
+            this.anchorSlots = new int[sorted.size()];
             this.anchorRows = new int[sorted.size()];
             this.anchorLengths = new int[sorted.size()];
             int shift = 0;
             for (int i = 0; i < sorted.size(); i++) {
+                anchorSlots[i] = sorted.get(i).errorSlot();
                 anchorLengths[i] = sorted.get(i).lines().length;
-                anchorRows[i] = flatOfLine(sorted.get(i).errorLine()) + shift;
+                anchorRows[i] = anchorSlots[i] + shift;
                 shift += anchorLengths[i];
             }
-            this.extent = totalLines + shift;
-        }
-
-        int firstOwnLine() {
-            return (int) windowStarts[0];
-        }
-
-        int lastOwnLine() {
-            return (int) (windowStarts[windowStarts.length - 1] + windowLines[windowStarts.length - 1] - 1);
+            this.extent = slotCount + shift;
         }
 
         /**
-         * The window containing the raw line, or -1.
-         */
-        int windowIndexOf(long line) {
-            int lo = 0;
-            int hi = windowStarts.length - 1;
-            while (lo <= hi) {
-                int mid = (lo + hi) >>> 1;
-                if (windowStarts[mid] <= line) {
-                    if (line < windowStarts[mid] + windowLines[mid]) {
-                        return mid;
-                    }
-                    lo = mid + 1;
-                } else {
-                    hi = mid - 1;
-                }
-            }
-            return -1;
-        }
-
-        /**
-         * The raw own line of a flat index in {@code [0, totalLines)}. The flat index IS the raw
-         * row (the windows concatenate without gaps).
-         */
-        long rawLineOfFlat(int flat) {
-            int lo = 0;
-            int hi = windowOffsets.length - 1;
-            int found = 0;
-            while (lo <= hi) {
-                int mid = (lo + hi) >>> 1;
-                if (windowOffsets[mid] <= flat) {
-                    found = mid;
-                    lo = mid + 1;
-                } else {
-                    hi = mid - 1;
-                }
-            }
-            return windowStarts[found] + (flat - windowOffsets[found]);
-        }
-
-        /**
-         * The flat index (raw row) of a raw line, or -1 when the line is outside the windows.
-         */
-        int flatOfLine(long line) {
-            int w = windowIndexOf(line);
-            return w < 0 ? -1 : windowOffsets[w] + (int) (line - windowStarts[w]);
-        }
-
-        /**
-         * De-adjusts a block-local row into a flat index, or -1 when the row is a line of an
+         * De-adjusts a block-local row into a detail slot, or -1 when the row is a line of an
          * open stack trace.
          */
         int flatOfRow(int row) {
@@ -2166,18 +2184,6 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
                 adjusted -= anchorLengths[i];
             }
             return adjusted;
-        }
-
-        /**
-         * The first line of the chunk covering the raw line.
-         */
-        long chunkBaseOf(long line) {
-            int w = windowIndexOf(line);
-            if (w < 0) {
-                return -1;
-            }
-            long within = line - windowStarts[w];
-            return windowStarts[w] + within / VIRTUAL_CHUNK_LINES * VIRTUAL_CHUNK_LINES;
         }
     }
 
@@ -2248,7 +2254,7 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
         @Override
         public JIPipeDesktopProgressTreeRowRenderer.Row getElementAt(int index) {
             if (index < 0 || index >= size) {
-                return new JIPipeDesktopProgressTreeRowRenderer.SkipRow(-1);
+                return new JIPipeDesktopProgressTreeRowRenderer.PlaceholderRow(-1);
             }
             VirtualBlock block = blockAt(index);
             if (block == null) {
@@ -2266,7 +2272,7 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
                 // while the model is being reset
                 return materializedIndex >= 0 && materializedIndex < materialized.size()
                         ? materialized.get(materializedIndex)
-                        : new JIPipeDesktopProgressTreeRowRenderer.SkipRow(-1);
+                        : new JIPipeDesktopProgressTreeRowRenderer.PlaceholderRow(-1);
             }
             return virtualRowOf(block, index - block.startIndex);
         }
@@ -2319,7 +2325,7 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
                 }
             } else if (row instanceof JIPipeDesktopProgressTreeRowRenderer.DetailRow detailRow) {
                 if (detailRow.hasStack() && detailRow.record() instanceof JIPipeProgressRecord.Error error) {
-                    toggleStack(detailRow.nodeId(), error, detailRow.line());
+                    toggleStack(detailRow.nodeId(), error, detailRow.slot());
                 }
             } else if (row instanceof JIPipeDesktopProgressTreeRowRenderer.StackRow stackRow) {
                 // Clicking anywhere in an opened stack block closes it

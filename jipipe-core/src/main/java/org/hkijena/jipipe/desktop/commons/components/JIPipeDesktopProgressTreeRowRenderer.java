@@ -53,7 +53,7 @@ public class JIPipeDesktopProgressTreeRowRenderer implements ListCellRenderer<JI
     /**
      * One row of the flat tree list. Sealed: the row types below.
      */
-    public sealed interface Row permits NodeRow, DetailRow, StackRow, MoreRow, LoadingRow, PlaceholderRow, SkipRow {
+    public sealed interface Row permits NodeRow, DetailRow, StackRow, MoreRow, LoadingRow, PlaceholderRow {
     }
 
     /**
@@ -120,10 +120,10 @@ public class JIPipeDesktopProgressTreeRowRenderer implements ListCellRenderer<JI
     /**
      * One record of an expanded node (log message or error summary).
      * <p>
-     * {@code line} is the record's line number - the identity used by the virtual detail layer
-     * (R30) to cache and to toggle stack traces; the paged mode uses it only for identity.
+     * {@code slot} is the record's detail slot - the identity used by the virtual detail layer
+     * (R36) to cache chunks and to anchor stack traces; the paged mode uses -1.
      */
-    public record DetailRow(int nodeId, JIPipeProgressRecord record, boolean hasStack, boolean stackOpen, int line) implements Row {
+    public record DetailRow(int nodeId, JIPipeProgressRecord record, boolean hasStack, boolean stackOpen, int slot) implements Row {
     }
 
     /**
@@ -150,15 +150,6 @@ public class JIPipeDesktopProgressTreeRowRenderer implements ListCellRenderer<JI
      * requested for the surrounding viewport replaces it with the real record rows.
      */
     public record PlaceholderRow(int nodeId) implements Row {
-    }
-
-    /**
-     * A virtual detail row for a record that renders nothing in the detail area (a progress
-     * {@code p}, node {@code n}, or node-finished {@code N} record, or a record of a descendant
-     * node). It keeps the row↔line mapping exact and measures the real render cost of a node's
-     * record flood.
-     */
-    public record SkipRow(int nodeId) implements Row {
     }
 
     private final SpinnerIcon spinnerIcon;
@@ -267,10 +258,6 @@ public class JIPipeDesktopProgressTreeRowRenderer implements ListCellRenderer<JI
             // Unloaded chunk: a lightweight placeholder row - the chunk load for the surrounding
             // viewport replaces it with the real rows
             return renderVirtualRow("…", colorFaint);
-        } else if (value instanceof SkipRow) {
-            // A record that renders nothing: keep the row (the extent must match the real
-            // content) but mark it as empty
-            return renderVirtualRow("·", mix(colorFaint, colorRowBackground, 0.45f));
         }
         return new JLabel();
     }
