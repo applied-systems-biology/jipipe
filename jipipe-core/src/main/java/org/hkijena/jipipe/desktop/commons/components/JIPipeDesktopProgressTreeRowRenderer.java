@@ -22,6 +22,7 @@ import org.hkijena.jipipe.utils.ThemeUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
 import java.text.NumberFormat;
 import java.time.Instant;
@@ -72,11 +73,20 @@ public class JIPipeDesktopProgressTreeRowRenderer implements ListCellRenderer<JI
         private final int debugCount;
         private final int progressValue;
         private final int progressMax;
+        private final boolean showProgressBar;
         private final String phaseText;
 
         public NodeRow(int nodeId, int depth, String partitionChip, String label, String uuidSuffix,
                        JIPipeProgressNodeState state, boolean expandable, boolean expanded,
                        int badgeCount, int debugCount, int progressValue, int progressMax, String phaseText) {
+            this(nodeId, depth, partitionChip, label, uuidSuffix, state, expandable, expanded,
+                    badgeCount, debugCount, progressValue, progressMax, true, phaseText);
+        }
+
+        public NodeRow(int nodeId, int depth, String partitionChip, String label, String uuidSuffix,
+                       JIPipeProgressNodeState state, boolean expandable, boolean expanded,
+                       int badgeCount, int debugCount, int progressValue, int progressMax,
+                       boolean showProgressBar, String phaseText) {
             this.nodeId = nodeId;
             this.depth = depth;
             this.partitionChip = partitionChip;
@@ -89,7 +99,16 @@ public class JIPipeDesktopProgressTreeRowRenderer implements ListCellRenderer<JI
             this.debugCount = debugCount;
             this.progressValue = progressValue;
             this.progressMax = progressMax;
+            this.showProgressBar = showProgressBar;
             this.phaseText = phaseText;
+        }
+
+        /**
+         * Whether the row renders its inline progress bar. False for phase rows (R38: machinery
+         * progress lands on the ruleless run root, the mockup's phase-row bars predate that ruling).
+         */
+        public boolean isShowProgressBar() {
+            return showProgressBar;
         }
 
         public int getNodeId() {
@@ -159,6 +178,7 @@ public class JIPipeDesktopProgressTreeRowRenderer implements ListCellRenderer<JI
     private final Color colorOk;
     private final Color colorFail;
     private final Color colorWarn;
+    private final Color colorBarTrack;
     private final Color colorText;
     private final Color colorDim;
     private final Color colorFaint;
@@ -182,6 +202,12 @@ public class JIPipeDesktopProgressTreeRowRenderer implements ListCellRenderer<JI
     private int progressTextColumnWidth;
     private int phaseColumnWidth;
 
+    // The mockup's .pbar track proportions, scaled from the progress text size (190x9 at 11.5px
+    // text): the track is about 16.5x the text size wide and 0.78x tall, so bars scale with the
+    // user's font instead of a hardcoded pixel width (round-2 geometry ruling)
+    private int barTrackWidth;
+    private int barTrackHeight;
+
     /**
      * Re-derives the font-dependent geometry when the list's font changed (identity check - one
      * {@code stringWidth} per font change, not per row). Called from
@@ -200,6 +226,10 @@ public class JIPipeDesktopProgressTreeRowRenderer implements ListCellRenderer<JI
         progressTextFont = new Font(Font.MONOSPACED, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeNormal());
         phaseFont = listFont.deriveFont(listFont.getSize2D() - 0.5f);
         progressTextColumnWidth = list.getFontMetrics(progressTextFont).stringWidth("8888/8888 (888%)") + 4;
+        float statusTextSize = progressTextFont.getSize2D();
+        barTrackWidth = Math.round(statusTextSize * 190f / 11.5f);
+        // At least 7px tall so the rounded track reads as a bar at every font size
+        barTrackHeight = Math.max(7, Math.round(statusTextSize * 9f / 11.5f));
         // Widest sensible phase/status text: a run running for a full day in seconds
         phaseColumnWidth = list.getFontMetrics(phaseFont).stringWidth("running 86400s") + 6;
     }
@@ -214,6 +244,9 @@ public class JIPipeDesktopProgressTreeRowRenderer implements ListCellRenderer<JI
         colorOk = themeStyle.getSuccessColor();
         colorFail = themeStyle.getDangerColor();
         colorWarn = themeStyle.getWarningColor();
+        // The bar track: a neutral, slightly darker shade of the row background (the mockup's
+        // #e6e8ee on its near-white rows), so it reads as a recessed track in every theme
+        colorBarTrack = mix(themeStyle.getPanelBackground(), themeStyle.getTextForeground(), 0.10f);
         colorText = themeStyle.getTextForeground();
         colorDim = themeStyle.getTextMuted();
         colorFaint = mix(colorDim, themeStyle.getPanelBackground(), 0.45f);
@@ -369,12 +402,16 @@ public class JIPipeDesktopProgressTreeRowRenderer implements ListCellRenderer<JI
         JPanel progressSegment = new JPanel();
         progressSegment.setOpaque(false);
         progressSegment.setLayout(new BoxLayout(progressSegment, BoxLayout.X_AXIS));
-        ProgressBar bar = new ProgressBar();
-        bar.setValue(row.progressValue, row.progressMax, barColor(row));
+        // R38: a row that must not show a bar renders with max <= 0 (no bar, no v/mx text), while
+        // the fixed-width segment keeps the phase/status column aligned across rows
+        int barMax = row.showProgressBar ? row.progressMax : 0;
+        int barValue = row.showProgressBar ? row.progressValue : 0;
+        ProgressBar bar = new ProgressBar(barTrackWidth, barTrackHeight, colorBarTrack);
+        bar.setProgress(barValue, barMax, barFillFraction(row), barFillFull(row), barFillColor(row));
         bar.setAlignmentY(0.5f);
         progressSegment.add(bar);
-        progressSegment.add(Box.createHorizontalStrut(6));
-        JLabel progressTextLabel = new JLabel(row.progressMax > 0
+        progressSegment.add(Box.createHorizontalStrut(7));
+        JLabel progressTextLabel = new JLabel(barMax > 0
                 ? row.progressValue + "/" + row.progressMax + " (" + progressPercent(row) + "%)"
                 : "");
         progressTextLabel.setFont(progressTextFont);
@@ -383,7 +420,8 @@ public class JIPipeDesktopProgressTreeRowRenderer implements ListCellRenderer<JI
         progressTextLabel.setPreferredSize(new Dimension(progressTextColumnWidth, 14));
         progressTextLabel.setMaximumSize(new Dimension(progressTextColumnWidth, 14));
         progressSegment.add(progressTextLabel);
-        Dimension progressSegmentSize = new Dimension(110 + 6 + progressTextColumnWidth, 18);
+        Dimension progressSegmentSize = new Dimension(barTrackWidth + 7 + progressTextColumnWidth,
+                Math.max(18, barTrackHeight + 4));
         progressSegment.setPreferredSize(progressSegmentSize);
         progressSegment.setMaximumSize(progressSegmentSize);
         progressSegment.setAlignmentY(0.5f);
@@ -404,7 +442,12 @@ public class JIPipeDesktopProgressTreeRowRenderer implements ListCellRenderer<JI
         return panel;
     }
 
-    private Color barColor(NodeRow row) {
+    /**
+     * The bar fill color: the state color for a finished node (OK green, FAILED red), the accent
+     * color while running - and green once a running node reached its total (the mockup's
+     * {@code .fill.done} behavior for the common run-to-completion case).
+     */
+    private Color barFillColor(NodeRow row) {
         if (row.state == JIPipeProgressNodeState.FAILED) {
             return colorFail;
         }
@@ -414,8 +457,33 @@ public class JIPipeDesktopProgressTreeRowRenderer implements ListCellRenderer<JI
         return colorAccent;
     }
 
+    /**
+     * The fill fraction of a row's bar: {@code v/mx} clamped to [0,1] (duplicate parallel-loop
+     * records can push v past mx), or 1.0 for a finished node - the mockup paints a done node's
+     * bar full in its state color regardless of where the counters stopped (row-limited runs end
+     * below their label total).
+     */
+    private static float barFillFraction(NodeRow row) {
+        if (row.state == JIPipeProgressNodeState.OK || row.state == JIPipeProgressNodeState.FAILED) {
+            return 1f;
+        }
+        if (row.progressMax <= 0) {
+            return 0f;
+        }
+        return (float) Math.max(0, Math.min(1, row.progressValue / (double) row.progressMax));
+    }
+
+    /**
+     * Whether the bar renders full-width (a finished node, or a running node that reached its total).
+     */
+    private static boolean barFillFull(NodeRow row) {
+        return row.state == JIPipeProgressNodeState.OK || row.state == JIPipeProgressNodeState.FAILED
+                || (row.progressMax > 0 && row.progressValue >= row.progressMax);
+    }
+
     private static int progressPercent(NodeRow row) {
-        return Math.max(0, Math.min(100, (int) Math.round(100.0 * row.progressValue / row.progressMax)));
+        // Truncated like the mockup ("5/200 (2%)" for 2.5%), never rounded
+        return Math.max(0, Math.min(100, (int) (100.0 * row.progressValue / row.progressMax)));
     }
 
     private Component renderDetailRow(JList<? extends Row> list, DetailRow row) {
@@ -552,21 +620,39 @@ public class JIPipeDesktopProgressTreeRowRenderer implements ListCellRenderer<JI
 
     /**
      * The inline progress bar of a node row (rounded track + fill, like the mockup's {@code .pbar}).
+     * The fill fraction is {@code v/mx} clamped to [0,1]; a finished node shows the full bar in
+     * its state color (OK green, FAILED red), a running one the accent color - derived from the
+     * node state, not from {@code v == mx}, because row-limited runs end below their label total.
      */
-    private static class ProgressBar extends JComponent {
+    private static final class ProgressBar extends JComponent {
+        private static final Color TRACK_INSET_SHADOW = new Color(0, 0, 0, 15);
+        private final int trackWidth;
+        private final int trackHeight;
+        private final Color track;
         private int value;
         private int max;
+        private float fraction;
+        private boolean full;
         private Color fill;
 
-        void setValue(int value, int max, Color fill) {
+        ProgressBar(int trackWidth, int trackHeight, Color track) {
+            this.trackWidth = trackWidth;
+            this.trackHeight = trackHeight;
+            this.track = track;
+            setOpaque(false);
+        }
+
+        void setProgress(int value, int max, float fraction, boolean full, Color fill) {
             this.value = value;
             this.max = max;
+            this.fraction = fraction;
+            this.full = full;
             this.fill = fill;
         }
 
         @Override
         public Dimension getPreferredSize() {
-            return new Dimension(110, 9);
+            return new Dimension(trackWidth, trackHeight);
         }
 
         @Override
@@ -575,34 +661,34 @@ public class JIPipeDesktopProgressTreeRowRenderer implements ListCellRenderer<JI
         }
 
         @Override
+        public Dimension getMinimumSize() {
+            return getPreferredSize();
+        }
+
+        @Override
         protected void paintComponent(Graphics g) {
             if (max <= 0) {
-                // No determinate progress: no bar is painted (the segment width is still reserved
-                // so the phase/status column aligns across rows)
+                // Determinate progress only: a row without counters paints nothing
                 return;
             }
             Graphics2D graphics2D = (Graphics2D) g.create();
             graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            int width = getWidth();
-            int height = getHeight();
-            graphics2D.setPaint(mixTrack());
-            graphics2D.fill(new RoundRectangle2D.Float(0, 0, width, height, height, height));
-            if (max > 0 && value > 0) {
-                int fillWidth = (int) Math.min(width, Math.round(width * (value / (double) max)));
-                if (fillWidth > 0) {
-                    graphics2D.setPaint(fill);
-                    graphics2D.fill(new RoundRectangle2D.Float(0, 0, Math.max(height, fillWidth), height, height, height));
-                }
+            float width = getWidth();
+            float height = getHeight();
+            float radius = height;
+            // The track: a neutral, slightly darker pill (the mockup's #e6e8ee reads the same in
+            // light and dark themes)
+            graphics2D.setPaint(track);
+            graphics2D.fill(new RoundRectangle2D.Float(0, 0, width, height, radius, radius));
+            // The mockup's subtle inset shadow along the track's top edge (inset 0 1px 1px rgba(0,0,0,.06))
+            graphics2D.setPaint(TRACK_INSET_SHADOW);
+            graphics2D.fill(new Rectangle2D.Float(1f, 0f, Math.max(0f, width - 2f), 1f));
+            float fillWidth = full ? width : Math.min(width, width * Math.max(0f, Math.min(1f, fraction)));
+            if (fillWidth > 0f) {
+                graphics2D.setPaint(fill);
+                graphics2D.fill(new RoundRectangle2D.Float(0, 0, Math.max(height, fillWidth), height, radius, radius));
             }
             graphics2D.dispose();
-        }
-
-        private Color mixTrack() {
-            // Dim track derived from the fill color (keeps the bar readable in dark themes)
-            return new Color(
-                    fill.getRed() / 4 + 192,
-                    fill.getGreen() / 4 + 192,
-                    fill.getBlue() / 4 + 192);
         }
     }
 }

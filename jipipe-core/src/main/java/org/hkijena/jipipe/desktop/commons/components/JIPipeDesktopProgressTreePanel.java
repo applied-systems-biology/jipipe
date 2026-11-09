@@ -188,6 +188,12 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
     private final AtomicBoolean catchUpScheduled = new AtomicBoolean();
     private volatile boolean dirty;
     private volatile int latestNodeId;
+    /**
+     * The most recent node that reported determinate progress ({@code mx > 0}); the running
+     * footer prefers it over the newest node, because the newest node during an iteration is the
+     * freshly resolved slice/item row whose own counters stay at zero (R41).
+     */
+    private volatile int footerProgressNodeId;
     private volatile long latestNodeTs;
     private volatile long lastKnownLine;
     /**
@@ -599,6 +605,7 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
             pendingNodeIds.clear();
             expandedNodeIds.clear();
             latestNodeId = 0;
+            footerProgressNodeId = 0;
             latestNodeTs = 0;
             lastKnownLine = 0;
             fileSize = 0;
@@ -624,6 +631,11 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
      */
     private void accumulate(List<JIPipeProgressRecord> records) {
         for (JIPipeProgressRecord record : records) {
+            // R41: remember the newest determinate-progress node for the running footer (the
+            // catch-up scan feeds the same records, so a mid-run attach heals it too)
+            if (record instanceof JIPipeProgressRecord.Progress progressRecord && progressRecord.mx() > 0) {
+                footerProgressNodeId = progressRecord.id();
+            }
             RecordCategory category = categoryOf(record);
             if (category != null) {
                 categoryCounts[category.ordinal()].incrementAndGet();
@@ -861,6 +873,8 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
                 debugChipCount,
                 node.getMaxProgress() > 0 ? node.getProgress() : -1,
                 node.getMaxProgress() > 0 ? node.getMaxProgress() : -1,
+                // R38: phase rows render no bar (machinery progress lives on the run root)
+                node.getKind() != JIPipeProgressNodeKind.PHASE,
                 phaseText(node, firstTs, lastTs)));
         rowPositions.put(id, rows.size() - 1 + rebuildBlockShift);
         if (state != null && state.expanded) {
@@ -1810,10 +1824,22 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
         }
 
         String status;
-        JIPipeProgressNode latest = latestNodeId > 0 ? s.getNode(latestNodeId) : null;
-        if (running && latest != null) {
-            String chain = labelPath(s, latest);
-            String progress = progressText(latest);
+        // R41: while the run is running, the footer prefers the most recent node with determinate
+        // progress over the newest node - during an iteration the newest node is the freshly
+        // resolved slice/item row (no counters), which would hide the "5/200 (2%)" narration
+        JIPipeProgressNode footerNode = null;
+        if (running) {
+            int progressNodeId = footerProgressNodeId;
+            JIPipeProgressNode progressNode = progressNodeId > 0 ? s.getNode(progressNodeId) : null;
+            if (progressNode != null && progressNode.getMaxProgress() > 0) {
+                footerNode = progressNode;
+            } else {
+                footerNode = latestNodeId > 0 ? s.getNode(latestNodeId) : null;
+            }
+        }
+        if (running && footerNode != null) {
+            String chain = labelPath(s, footerNode);
+            String progress = progressText(footerNode);
             // No chain for a root-level progress record (V5-2): use the progress text alone
             // instead of a leading separator (would render as " - 3/7 (43%)")
             status = chain + (progress.isEmpty() ? "" : (chain.isEmpty() ? "" : " - ") + progress);
@@ -2119,7 +2145,8 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
         if (node.getMaxProgress() <= 0) {
             return "";
         }
-        int percent = Math.max(0, Math.min(100, (int) Math.round(100.0 * node.getProgress() / node.getMaxProgress())));
+        // Truncated like the mockup ("5/200 (2%)" for 2.5%), never rounded
+        int percent = Math.max(0, Math.min(100, (int) (100.0 * node.getProgress() / node.getMaxProgress())));
         return node.getProgress() + "/" + node.getMaxProgress() + " (" + percent + "%)";
     }
 
