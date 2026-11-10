@@ -194,6 +194,16 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
      * freshly resolved slice/item row whose own counters stay at zero (R41).
      */
     private volatile int footerProgressNodeId;
+    /**
+     * The active node (R44): the newest RUNNING node that passes the level filters, recomputed
+     * per model rebuild. 0 while no node runs.
+     */
+    private int activeNodeId;
+    /**
+     * The active node that the auto-expand/scroll last acted on (R44): a change - or the active
+     * row disappearing from the model - re-arms the chain expansion and the scroll.
+     */
+    private int lastFollowedActiveNodeId;
     private volatile long latestNodeTs;
     private volatile long lastKnownLine;
     /**
@@ -609,6 +619,8 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
             expandedNodeIds.clear();
             latestNodeId = 0;
             footerProgressNodeId = 0;
+            activeNodeId = 0;
+            lastFollowedActiveNodeId = 0;
             latestNodeTs = 0;
             lastKnownLine = 0;
             fileSize = 0;
@@ -783,6 +795,7 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
             return;
         }
         updateTreeModel(s);
+        followActiveNode();
         scheduleDetailReloads(s);
         updateFooter();
         updateCategoryButtons();
@@ -807,6 +820,11 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
         rebuildBlockShift = 0;
         Map<Integer, List<Integer>> childMap = new HashMap<>();
         int nextId = s.nextNodeId();
+        // R44: the active node is the newest RUNNING node that passes the level filters (its row
+        // renders - R42 keeps RUNNING leaves); "newest" by the node's last record timestamp
+        int newestRunningId = 0;
+        long newestRunningTs = Long.MIN_VALUE;
+        boolean debugVisible = visibleCategories.contains(RecordCategory.DEBUG);
         for (int id = 2; id < nextId; id++) {
             JIPipeProgressNode node = s.getNode(id);
             if (node == null) {
@@ -815,7 +833,17 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
             nodeState(id);
             int parentId = node.getParentId() <= 0 ? s.getRootNodeId() : node.getParentId();
             childMap.computeIfAbsent(parentId, k -> new ArrayList<>()).add(id);
+            if (node.getState() == JIPipeProgressNodeState.RUNNING
+                    && (node.getLevel() != JIPipeLogLevel.DEBUG || debugVisible)) {
+                NodeUiState candidateState = nodeStates.get(id);
+                long ts = candidateState != null ? candidateState.lastTs.get() : 0;
+                if (ts >= newestRunningTs) {
+                    newestRunningTs = ts;
+                    newestRunningId = id;
+                }
+            }
         }
+        activeNodeId = newestRunningId;
         nodeState(s.getRootNodeId());
         int rootNodeId = s.getRootNodeId();
         NodeUiState rootState = nodeStates.get(rootNodeId);
@@ -849,6 +877,12 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
         int visibleDescendantNodes = countVisibleDescendantNodes(s, childMap, id);
         long visibleRecords = state != null ? visibleRecordCount(state) : 0;
         boolean expandable = visibleDescendantNodes > 0 || visibleRecords > 0;
+        // R42: a finished node that is not expandable under the current filters renders nothing -
+        // its row would be an empty stub (e.g. a Storage node whose only record is the hidden
+        // debug "NOT storing" line). A RUNNING leaf always keeps its row (spinner, active step).
+        if (!expandable && node.getState() != JIPipeProgressNodeState.RUNNING) {
+            return;
+        }
         String label = node.getLabel();
         if (label == null || label.isBlank()) {
             label = "(unnamed)";
@@ -987,12 +1021,18 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
                 // Hidden with its whole subtree (R27)
                 continue;
             }
-            total++;
-            List<Integer> children = childMap.get(id);
-            if (children != null) {
-                for (int child : children) {
-                    stack.push(child);
-                }
+            // R42: the badge counts only nodes that RENDER a row. A descendant that is finished,
+            // has no visible records, and renders no visible descendants is skipped by
+            // appendNodeRow - counting it would promise a +N that reveals nothing. A rendering
+            // descendant's children are counted by the recursive walk (each subtree once), so the
+            // walk does not push them again; a non-rendering descendant's subtree is pruned (by
+            // its own condition it has no rendering descendants).
+            NodeUiState descendantState = nodeStates.get(id);
+            boolean rendersRow = node.getState() == JIPipeProgressNodeState.RUNNING
+                    || (descendantState != null && visibleRecordCount(descendantState) > 0)
+                    || countVisibleDescendantNodes(s, childMap, id) > 0;
+            if (rendersRow) {
+                total++;
             }
         }
         return total;
@@ -1930,6 +1970,76 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
             rowSpinner.stop();
             footerSpinner.stop();
         }
+    }
+
+    /**
+     * R44: keeps the active node visible. Triggered only on an active-node change or when the
+     * active row is missing from the model (hidden under a collapsed ancestor) - never on every
+     * tick. Expands the active node and its ancestor chain (mirroring toggleNode's expansion
+     * semantics, including the detail tail follow for the RUNNING node itself), rebuilds, and
+     * scrolls the row into view. Unrelated collapsed subtrees are never touched, and nothing is
+     * ever collapsed. No-op when "Auto show progress" is off.
+     */
+    private void followActiveNode() {
+        if (!autoShowProgressCheckBox.isSelected() || activeNodeId <= 0) {
+            return;
+        }
+        JIPipeProgressLog s = store;
+        if (s == null) {
+            return;
+        }
+        boolean changed = activeNodeId != lastFollowedActiveNodeId;
+        Integer row = rowPositions.get(activeNodeId);
+        if (!changed && row != null) {
+            // The active node is unchanged and its row exists (it may be scrolled out of the
+            // viewport - that is the user's scroll, which this follow must not fight)
+            return;
+        }
+        lastFollowedActiveNodeId = activeNodeId;
+        boolean expanded = expandActiveNodeChain(s, activeNodeId);
+        if (expanded) {
+            // Rebuild within this tick: the expanded rows must exist before the scroll
+            refreshNow();
+        }
+        int target = rowPositions.getOrDefault(activeNodeId, -1);
+        if (target >= 0) {
+            list.ensureIndexIsVisible(target);
+        }
+    }
+
+    /**
+     * R44: expands the node and every ancestor on its chain (the node itself, if running, with
+     * the detail tail follow engaged - the same side effects a user's expansion has). Only sets
+     * flags that are not already set; returns whether anything changed (a rebuild is needed).
+     */
+    private boolean expandActiveNodeChain(JIPipeProgressLog s, int nodeId) {
+        boolean changed = false;
+        JIPipeProgressNode node = s.getNode(nodeId);
+        while (node != null && node.getId() != s.getRootNodeId()) {
+            int id = node.getId();
+            NodeUiState state = nodeStates.get(id);
+            if (state != null && !state.expanded) {
+                state.expanded = true;
+                expandedNodeIds.add(id);
+                lastExpandedNodeId = id;
+                changed = true;
+                if (node.getState() == JIPipeProgressNodeState.RUNNING && ownHiddenRecordCount(state) == 0
+                        && state.virtual == null) {
+                    // The active node's detail opens at the tail with the follow engaged
+                    state.virtual = new VirtualDetailState();
+                    detailAutoscroll = true;
+                    autoscrollNodeId = id;
+                    scrollToDetailEndNodeId = id;
+                    detailAutoscrollButton.setSelected(true);
+                }
+            }
+            int parentId = node.getParentId();
+            if (parentId <= 0) {
+                break;
+            }
+            node = s.getNode(parentId);
+        }
+        return changed;
     }
 
     private void autoScroll() {
