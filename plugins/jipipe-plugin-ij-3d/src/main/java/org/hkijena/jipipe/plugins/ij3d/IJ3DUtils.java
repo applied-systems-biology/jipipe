@@ -23,6 +23,7 @@ import mcib3d.image3d.ImageFloat;
 import mcib3d.image3d.ImageHandler;
 import org.apache.commons.lang3.function.TriFunction;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.progress.JIPipeProgressNodeState;
 import org.hkijena.jipipe.plugins.ij3d.datatypes.Ij3dSuiteRoi;
 import org.hkijena.jipipe.plugins.ij3d.datatypes.Ij3dSuiteRoiListData;
 import org.hkijena.jipipe.plugins.ij3d.utils.Roi3dMeasurement;
@@ -131,18 +132,24 @@ public class IJ3DUtils {
                 if (progressInfo.isCancelled())
                     return null;
                 Map.Entry<ImageSliceIndex, List<Roi>> group = groups.get(i);
-                progressInfo.resolveAndLog("Slice", i, groups.size());
+                JIPipeProgressInfo sliceProgress = progressInfo.resolveAndLog("Slice", i, groups.size());
+                // R48: the item finishes at its operation end (OK after the work, FAILED in the
+                // finally; finishNode is idempotent, so the success path keeps OK)
+                try {
+                    Roi2dListData forGroup = new Roi2dListData();
+                    forGroup.addAll(group.getValue());
+                    ImagePlus mask = forGroup.toMask(new Margin(), true, true, 1);
 
-                Roi2dListData forGroup = new Roi2dListData();
-                forGroup.addAll(group.getValue());
-                ImagePlus mask = forGroup.toMask(new Margin(), true, true, 1);
+                    progressInfo.log("Detecting connected components ...");
+                    ImagePlus labels = ImageJAlgorithmUtils.connectedComponents3D(mask, neighborhood, 32);
+                    ImageFloat imageHandler = new ImageFloat(labels);
+                    Objects3DPopulation population = new Objects3DPopulation(imageHandler);
 
-                progressInfo.log("Detecting connected components ...");
-                ImagePlus labels = ImageJAlgorithmUtils.connectedComponents3D(mask, neighborhood, 32);
-                ImageFloat imageHandler = new ImageFloat(labels);
-                Objects3DPopulation population = new Objects3DPopulation(imageHandler);
-
-                roi3DList.addFromPopulation(population, group.getKey().getC() + 1, group.getKey().getT() + 1);
+                    roi3DList.addFromPopulation(population, group.getKey().getC() + 1, group.getKey().getT() + 1);
+                    sliceProgress.finishNode(JIPipeProgressNodeState.OK);
+                } finally {
+                    sliceProgress.finishNode(JIPipeProgressNodeState.FAILED);
+                }
                 // R41: the slice completed (bar on the row that owns the "Slice i/N" children)
                 progressInfo.setProgress(i + 1, groups.size());
             }
@@ -152,26 +159,33 @@ public class IJ3DUtils {
                     return null;
                 Map.Entry<ImageSliceIndex, List<Roi>> group = groups.get(i);
                 JIPipeProgressInfo sliceProgress = progressInfo.resolveAndLog("Slice", i, groups.size());
-                List<Roi> rois = group.getValue();
-                for (int j = 0; j < rois.size(); j++) {
-                    Roi roi = rois.get(j);
-                    sliceProgress.resolveAndLog("ROI", j, rois.size());
+                // R48: the item finishes at its operation end (OK after the work, FAILED in the
+                // finally; finishNode is idempotent, so the success path keeps OK)
+                try {
+                    List<Roi> rois = group.getValue();
+                    for (int j = 0; j < rois.size(); j++) {
+                        Roi roi = rois.get(j);
+                        sliceProgress.resolveAndLog("ROI", j, rois.size());
 
-                    Roi2dListData singleton = new Roi2dListData();
-                    singleton.add(roi);
+                        Roi2dListData singleton = new Roi2dListData();
+                        singleton.add(roi);
 
-                    ImagePlus mask = singleton.toMask(new Margin(), true, true, 1);
-                    ImageHandler imageHandler = ImageHandler.wrap(mask);
-                    Objects3DPopulation population = new Objects3DPopulation(imageHandler);
+                        ImagePlus mask = singleton.toMask(new Margin(), true, true, 1);
+                        ImageHandler imageHandler = ImageHandler.wrap(mask);
+                        Objects3DPopulation population = new Objects3DPopulation(imageHandler);
 
-                    for (Ij3dSuiteRoi roi3D : roi3DList.addFromPopulation(population, group.getKey().getC() + 1, group.getKey().getT() + 1)) {
-                        if (roi.getFillColor() != null) {
-                            roi3D.setFillColor(roi.getFillColor());
-                        }
-                        if (!StringUtils.isNullOrEmpty(roi.getName())) {
-                            roi3D.getObject3D().setName(roi.getName());
+                        for (Ij3dSuiteRoi roi3D : roi3DList.addFromPopulation(population, group.getKey().getC() + 1, group.getKey().getT() + 1)) {
+                            if (roi.getFillColor() != null) {
+                                roi3D.setFillColor(roi.getFillColor());
+                            }
+                            if (!StringUtils.isNullOrEmpty(roi.getName())) {
+                                roi3D.getObject3D().setName(roi.getName());
+                            }
                         }
                     }
+                    sliceProgress.finishNode(JIPipeProgressNodeState.OK);
+                } finally {
+                    sliceProgress.finishNode(JIPipeProgressNodeState.FAILED);
                 }
                 // R41: the slice completed (bar on the row that owns the "Slice i/N" children)
                 progressInfo.setProgress(i + 1, groups.size());

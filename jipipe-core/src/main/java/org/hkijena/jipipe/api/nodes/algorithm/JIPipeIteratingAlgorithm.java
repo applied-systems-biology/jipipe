@@ -19,6 +19,7 @@ import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.*;
+import org.hkijena.jipipe.api.progress.JIPipeProgressNodeState;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeData;
@@ -345,11 +346,18 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
                     return;
                 }
                 JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", i, iterationSteps.size());
-                uploadAdaptiveParameters(iterationSteps.get(i), tree, parameterBackups, progressInfo);
-                if (isPassThrough()) {
-                    runPassThrough(slotProgress, iterationSteps.get(i));
-                } else {
-                    runIteration(iterationSteps.get(i), new JIPipeMutableIterationContext(i, iterationSteps.size()), runContext, slotProgress);
+                // R48: the item finishes at its operation end (OK after the work, FAILED in the
+                // finally; finishNode is idempotent, so the success path keeps OK)
+                try {
+                    uploadAdaptiveParameters(iterationSteps.get(i), tree, parameterBackups, progressInfo);
+                    if (isPassThrough()) {
+                        runPassThrough(slotProgress, iterationSteps.get(i));
+                    } else {
+                        runIteration(iterationSteps.get(i), new JIPipeMutableIterationContext(i, iterationSteps.size()), runContext, slotProgress);
+                    }
+                    slotProgress.finishNode(JIPipeProgressNodeState.OK);
+                } finally {
+                    slotProgress.finishNode(JIPipeProgressNodeState.FAILED);
                 }
                 // R41: the data row completed
                 progressInfo.setProgress(i + 1, iterationSteps.size());
@@ -368,11 +376,18 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
                     if (progressInfo.isCancelled())
                         return;
                     JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", iterationStepIndex, finalDataBatches.size());
-                    uploadAdaptiveParameters(finalDataBatches.get(iterationStepIndex), finalTree, parameterBackups, progressInfo);
-                    if (isPassThrough()) {
-                        runPassThrough(slotProgress, finalDataBatches.get(iterationStepIndex));
-                    } else {
-                        runIteration(finalDataBatches.get(iterationStepIndex), new JIPipeMutableIterationContext(iterationStepIndex, numIterationSteps), runContext, slotProgress);
+                    // R48: the item finishes inside its own task (OK after the work, FAILED in
+                    // the finally; finishNode is idempotent, so the success path keeps OK)
+                    try {
+                        uploadAdaptiveParameters(finalDataBatches.get(iterationStepIndex), finalTree, parameterBackups, progressInfo);
+                        if (isPassThrough()) {
+                            runPassThrough(slotProgress, finalDataBatches.get(iterationStepIndex));
+                        } else {
+                            runIteration(finalDataBatches.get(iterationStepIndex), new JIPipeMutableIterationContext(iterationStepIndex, numIterationSteps), runContext, slotProgress);
+                        }
+                        slotProgress.finishNode(JIPipeProgressNodeState.OK);
+                    } finally {
+                        slotProgress.finishNode(JIPipeProgressNodeState.FAILED);
                     }
                     progressInfo.setProgress(completedRows.incrementAndGet(), numIterationSteps);
                 });

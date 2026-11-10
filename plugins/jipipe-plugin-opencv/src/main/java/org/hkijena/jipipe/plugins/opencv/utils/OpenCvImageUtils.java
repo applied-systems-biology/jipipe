@@ -21,6 +21,7 @@ import org.bytedeco.javacpp.indexer.UShortRawIndexer;
 import org.bytedeco.javacpp.opencv_core;
 import org.bytedeco.javacpp.opencv_imgproc;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.progress.JIPipeProgressNodeState;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.opencv.datatypes.OpenCvImageData;
 
@@ -123,9 +124,17 @@ public class OpenCvImageUtils {
                     for (int c = 0; c < img.getNumChannels(); c++) {
                         if (progressInfo.isCancelled())
                             return;
-                        progressInfo.resolveAndLog("Slice", iterationIndex++, img.getSize()).log("z=" + z + ", c=" + c + ", t=" + t);
-                        opencv_core.Mat processor = img.getImage(c, z, t);
-                        function.accept(processor, new ImageSliceIndex(c, z, t));
+                        JIPipeProgressInfo sliceProgress = progressInfo.resolveAndLog("Slice", iterationIndex++, img.getSize());
+                        sliceProgress.log("z=" + z + ", c=" + c + ", t=" + t);
+                        // R48: the item finishes at its operation end (OK after the work, FAILED
+                        // in the finally; finishNode is idempotent, so the success path keeps OK)
+                        try {
+                            opencv_core.Mat processor = img.getImage(c, z, t);
+                            function.accept(processor, new ImageSliceIndex(c, z, t));
+                            sliceProgress.finishNode(JIPipeProgressNodeState.OK);
+                        } finally {
+                            sliceProgress.finishNode(JIPipeProgressNodeState.FAILED);
+                        }
                         // R41: the slice completed (iterationIndex was post-incremented above)
                         progressInfo.setProgress(iterationIndex, img.getSize());
                     }
@@ -152,10 +161,18 @@ public class OpenCvImageUtils {
                     for (int c = 0; c < img.getNumChannels(); c++) {
                         if (progressInfo.isCancelled())
                             return null;
-                        progressInfo.resolveAndLog("Slice", iterationIndex++, img.getSize()).log("z=" + z + ", c=" + c + ", t=" + t);
-                        opencv_core.Mat processor = img.getImage(c, z, t);
-                        ImageSliceIndex index = new ImageSliceIndex(c, z, t);
-                        result.put(index, function.apply(processor, index));
+                        JIPipeProgressInfo sliceProgress = progressInfo.resolveAndLog("Slice", iterationIndex++, img.getSize());
+                        sliceProgress.log("z=" + z + ", c=" + c + ", t=" + t);
+                        // R48: the item finishes at its operation end (OK after the work, FAILED
+                        // in the finally; finishNode is idempotent, so the success path keeps OK)
+                        try {
+                            opencv_core.Mat processor = img.getImage(c, z, t);
+                            ImageSliceIndex index = new ImageSliceIndex(c, z, t);
+                            result.put(index, function.apply(processor, index));
+                            sliceProgress.finishNode(JIPipeProgressNodeState.OK);
+                        } finally {
+                            sliceProgress.finishNode(JIPipeProgressNodeState.FAILED);
+                        }
                         // R41: the slice completed (iterationIndex was post-incremented above)
                         progressInfo.setProgress(iterationIndex, img.getSize());
                     }

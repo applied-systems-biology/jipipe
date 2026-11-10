@@ -4,6 +4,7 @@ import ij.ImagePlus;
 import ij.ImageStack;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.progress.JIPipeProgressNodeState;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 import org.hkijena.jipipe.utils.TriConsumer;
 
@@ -25,8 +26,15 @@ public class ImageJIterationUtils {
         if (img.hasImageStack()) {
             for (int i = 0; i < img.getImageStackSize(); ++i) {
                 ImageProcessor ip = img.getImageStack().getProcessor(i + 1);
-                progressInfo.resolveAndLog("Slice", i, img.getImageStackSize());
-                function.accept(ip);
+                JIPipeProgressInfo sliceProgress = progressInfo.resolveAndLog("Slice", i, img.getImageStackSize());
+                // R48: the item finishes at its operation end (OK after the work, FAILED in the
+                // finally; finishNode is idempotent, so the success path keeps OK)
+                try {
+                    function.accept(ip);
+                    sliceProgress.finishNode(JIPipeProgressNodeState.OK);
+                } finally {
+                    sliceProgress.finishNode(JIPipeProgressNodeState.FAILED);
+                }
                 // R41: the slice completed (bar on the row that owns the "Slice i/N" children)
                 progressInfo.setProgress(i + 1, img.getImageStackSize());
             }
@@ -48,8 +56,15 @@ public class ImageJIterationUtils {
                 if (progressInfo.isCancelled())
                     return;
                 ImageProcessor ip = img.getImageStack().getProcessor(i + 1);
-                progressInfo.resolveAndLog("Slice", i, img.getStackSize());
-                function.accept(ip, i);
+                JIPipeProgressInfo sliceProgress = progressInfo.resolveAndLog("Slice", i, img.getStackSize());
+                // R48: the item finishes at its operation end (OK after the work, FAILED in the
+                // finally; finishNode is idempotent, so the success path keeps OK)
+                try {
+                    function.accept(ip, i);
+                    sliceProgress.finishNode(JIPipeProgressNodeState.OK);
+                } finally {
+                    sliceProgress.finishNode(JIPipeProgressNodeState.FAILED);
+                }
                 // R41: the slice completed (bar on the row that owns the "Slice i/N" children)
                 progressInfo.setProgress(i + 1, img.getStackSize());
             }
@@ -74,9 +89,17 @@ public class ImageJIterationUtils {
                         if (progressInfo.isCancelled())
                             return;
                         int index = img.getStackIndex(c + 1, z + 1, t + 1);
-                        progressInfo.resolveAndLog("Slice", iterationIndex++, img.getStackSize()).log("z=" + z + ", c=" + c + ", t=" + t);
+                        JIPipeProgressInfo sliceProgress = progressInfo.resolveAndLog("Slice", iterationIndex++, img.getStackSize());
+                        sliceProgress.log("z=" + z + ", c=" + c + ", t=" + t);
                         ImageProcessor processor = img.getImageStack().getProcessor(index);
-                        function.accept(processor, new ImageSliceIndex(c, z, t));
+                        // R48: the item finishes at its operation end (OK after the work, FAILED
+                        // in the finally; finishNode is idempotent, so the success path keeps OK)
+                        try {
+                            function.accept(processor, new ImageSliceIndex(c, z, t));
+                            sliceProgress.finishNode(JIPipeProgressNodeState.OK);
+                        } finally {
+                            sliceProgress.finishNode(JIPipeProgressNodeState.FAILED);
+                        }
                         // R41: the slice completed (iterationIndex was post-incremented above)
                         progressInfo.setProgress(iterationIndex, img.getStackSize());
                     }
@@ -102,9 +125,22 @@ public class ImageJIterationUtils {
                     if (progressInfo.isCancelled())
                         return;
                     ImagePlus cube = ImageJUtils.extractCTStack(img, c, t);
-                    progressInfo.resolveAndLog("Frame/Channel", iterationIndex, img.getNChannels() * img.getNFrames()).log("c=" + c + ", t=" + t);
-                    JIPipeProgressInfo stackProgress = progressInfo.resolveAndLog("Frame/Channel", iterationIndex, img.getNChannels() * img.getNFrames()).resolve("c=" + c + ", t=" + t);
-                    function.accept(cube, new ImageSliceIndex(c, -1, t), stackProgress);
+                    // The two resolve calls create two sibling items (the pre-existing label row
+                    // and the row that owns the work children) - both get the R48 lifecycle end
+                    JIPipeProgressInfo labelProgress = progressInfo.resolveAndLog("Frame/Channel", iterationIndex, img.getNChannels() * img.getNFrames());
+                    labelProgress.log("c=" + c + ", t=" + t);
+                    JIPipeProgressInfo itemProgress = progressInfo.resolveAndLog("Frame/Channel", iterationIndex, img.getNChannels() * img.getNFrames());
+                    JIPipeProgressInfo stackProgress = itemProgress.resolve("c=" + c + ", t=" + t);
+                    // R48: the items finish at the operation end (OK after the work, FAILED in
+                    // the finally; finishNode is idempotent, so the success path keeps OK)
+                    try {
+                        function.accept(cube, new ImageSliceIndex(c, -1, t), stackProgress);
+                        labelProgress.finishNode(JIPipeProgressNodeState.OK);
+                        itemProgress.finishNode(JIPipeProgressNodeState.OK);
+                    } finally {
+                        labelProgress.finishNode(JIPipeProgressNodeState.FAILED);
+                        itemProgress.finishNode(JIPipeProgressNodeState.FAILED);
+                    }
                     // R41: the slice completed (bar on the row that owns the children)
                     progressInfo.setProgress(iterationIndex + 1, img.getNChannels() * img.getNFrames());
                     ++iterationIndex;
@@ -123,9 +159,22 @@ public class ImageJIterationUtils {
                     if (progressInfo.isCancelled())
                         return;
                     ImagePlus cube = ImageJUtils.extractZTStack(img, z, t);
-                    progressInfo.resolveAndLog("Z/Channel", iterationIndex, img.getNSlices() * img.getNFrames()).log("z=" + z + ", t=" + t);
-                    JIPipeProgressInfo stackProgress = progressInfo.resolveAndLog("Z/Channel", iterationIndex, img.getNChannels() * img.getNFrames()).resolve("z=" + z + ", t=" + t);
-                    function.accept(cube, new ImageSliceIndex(-1, z, t), stackProgress);
+                    // The two resolve calls create two sibling items (the pre-existing label row
+                    // and the row that owns the work children) - both get the R48 lifecycle end
+                    JIPipeProgressInfo labelProgress = progressInfo.resolveAndLog("Z/Channel", iterationIndex, img.getNSlices() * img.getNFrames());
+                    labelProgress.log("z=" + z + ", t=" + t);
+                    JIPipeProgressInfo itemProgress = progressInfo.resolveAndLog("Z/Channel", iterationIndex, img.getNChannels() * img.getNFrames());
+                    JIPipeProgressInfo stackProgress = itemProgress.resolve("z=" + z + ", t=" + t);
+                    // R48: the items finish at the operation end (OK after the work, FAILED in
+                    // the finally; finishNode is idempotent, so the success path keeps OK)
+                    try {
+                        function.accept(cube, new ImageSliceIndex(-1, z, t), stackProgress);
+                        labelProgress.finishNode(JIPipeProgressNodeState.OK);
+                        itemProgress.finishNode(JIPipeProgressNodeState.OK);
+                    } finally {
+                        labelProgress.finishNode(JIPipeProgressNodeState.FAILED);
+                        itemProgress.finishNode(JIPipeProgressNodeState.FAILED);
+                    }
                     // R41: the slice completed (label total is the one of the first resolveAndLog;
                     // the pre-existing total mismatch between the two resolveAndLog calls is preserved)
                     progressInfo.setProgress(iterationIndex + 1, img.getNSlices() * img.getNFrames());
@@ -151,9 +200,22 @@ public class ImageJIterationUtils {
                 if (progressInfo.isCancelled())
                     return;
                 ImagePlus cube = ImageJUtils.extractTHyperStack(img, t);
-                progressInfo.resolveAndLog("Frame", iterationIndex, img.getNFrames()).log("t=" + t);
-                JIPipeProgressInfo stackProgress = progressInfo.resolveAndLog("Frame", iterationIndex, img.getNFrames()).resolve("t=" + t);
-                function.accept(cube, new ImageSliceIndex(-1, -1, t), stackProgress);
+                // The two resolve calls create two sibling items (the pre-existing label row
+                // and the row that owns the work children) - both get the R48 lifecycle end
+                JIPipeProgressInfo labelProgress = progressInfo.resolveAndLog("Frame", iterationIndex, img.getNFrames());
+                labelProgress.log("t=" + t);
+                JIPipeProgressInfo itemProgress = progressInfo.resolveAndLog("Frame", iterationIndex, img.getNFrames());
+                JIPipeProgressInfo stackProgress = itemProgress.resolve("t=" + t);
+                // R48: the items finish at the operation end (OK after the work, FAILED in the
+                // finally; finishNode is idempotent, so the success path keeps OK)
+                try {
+                    function.accept(cube, new ImageSliceIndex(-1, -1, t), stackProgress);
+                    labelProgress.finishNode(JIPipeProgressNodeState.OK);
+                    itemProgress.finishNode(JIPipeProgressNodeState.OK);
+                } finally {
+                    labelProgress.finishNode(JIPipeProgressNodeState.FAILED);
+                    itemProgress.finishNode(JIPipeProgressNodeState.FAILED);
+                }
                 // R41: the slice completed (bar on the row that owns the children)
                 progressInfo.setProgress(iterationIndex + 1, img.getNFrames());
                 ++iterationIndex;
@@ -177,9 +239,22 @@ public class ImageJIterationUtils {
                 if (progressInfo.isCancelled())
                     return;
                 ImagePlus cube = ImageJUtils.extractCHyperStack(img, c);
-                progressInfo.resolveAndLog("Channel", iterationIndex, img.getNFrames()).log("c=" + c);
-                JIPipeProgressInfo stackProgress = progressInfo.resolveAndLog("Channel", iterationIndex, img.getNChannels()).resolve("c=" + c);
-                function.accept(cube, new ImageSliceIndex(c, -1, -1), stackProgress);
+                // The two resolve calls create two sibling items (the pre-existing label row
+                // and the row that owns the work children) - both get the R48 lifecycle end
+                JIPipeProgressInfo labelProgress = progressInfo.resolveAndLog("Channel", iterationIndex, img.getNFrames());
+                labelProgress.log("c=" + c);
+                JIPipeProgressInfo itemProgress = progressInfo.resolveAndLog("Channel", iterationIndex, img.getNChannels());
+                JIPipeProgressInfo stackProgress = itemProgress.resolve("c=" + c);
+                // R48: the items finish at the operation end (OK after the work, FAILED in the
+                // finally; finishNode is idempotent, so the success path keeps OK)
+                try {
+                    function.accept(cube, new ImageSliceIndex(c, -1, -1), stackProgress);
+                    labelProgress.finishNode(JIPipeProgressNodeState.OK);
+                    itemProgress.finishNode(JIPipeProgressNodeState.OK);
+                } finally {
+                    labelProgress.finishNode(JIPipeProgressNodeState.FAILED);
+                    itemProgress.finishNode(JIPipeProgressNodeState.FAILED);
+                }
                 // R41: the slice completed (label total is the one of the first resolveAndLog;
                 // the pre-existing total mismatch between the two resolveAndLog calls is preserved)
                 progressInfo.setProgress(iterationIndex + 1, img.getNFrames());
@@ -204,9 +279,22 @@ public class ImageJIterationUtils {
                 if (progressInfo.isCancelled())
                     return;
                 ImagePlus cube = ImageJUtils.extractZHyperStack(img, z);
-                progressInfo.resolveAndLog("Slice", iterationIndex, img.getNFrames()).log("z=" + z);
-                JIPipeProgressInfo stackProgress = progressInfo.resolveAndLog("Slice", iterationIndex, img.getNSlices()).resolve("z=" + z);
-                function.accept(cube, new ImageSliceIndex(-1, z, -1), stackProgress);
+                // The two resolve calls create two sibling items (the pre-existing label row
+                // and the row that owns the work children) - both get the R48 lifecycle end
+                JIPipeProgressInfo labelProgress = progressInfo.resolveAndLog("Slice", iterationIndex, img.getNFrames());
+                labelProgress.log("z=" + z);
+                JIPipeProgressInfo itemProgress = progressInfo.resolveAndLog("Slice", iterationIndex, img.getNSlices());
+                JIPipeProgressInfo stackProgress = itemProgress.resolve("z=" + z);
+                // R48: the items finish at the operation end (OK after the work, FAILED in the
+                // finally; finishNode is idempotent, so the success path keeps OK)
+                try {
+                    function.accept(cube, new ImageSliceIndex(-1, z, -1), stackProgress);
+                    labelProgress.finishNode(JIPipeProgressNodeState.OK);
+                    itemProgress.finishNode(JIPipeProgressNodeState.OK);
+                } finally {
+                    labelProgress.finishNode(JIPipeProgressNodeState.FAILED);
+                    itemProgress.finishNode(JIPipeProgressNodeState.FAILED);
+                }
                 // R41: the slice completed (label total is the one of the first resolveAndLog;
                 // the pre-existing total mismatch between the two resolveAndLog calls is preserved)
                 progressInfo.setProgress(iterationIndex + 1, img.getNFrames());
@@ -233,9 +321,17 @@ public class ImageJIterationUtils {
                         if (progressInfo.isCancelled())
                             return;
                         int index = img.getStackIndex(c + 1, z + 1, t + 1);
-                        JIPipeProgressInfo stackProgress = progressInfo.resolveAndLog("Slice", iterationIndex++, img.getStackSize()).resolve("z=" + z + ", c=" + c + ", t=" + t);
+                        JIPipeProgressInfo sliceProgress = progressInfo.resolveAndLog("Slice", iterationIndex++, img.getStackSize());
+                        JIPipeProgressInfo stackProgress = sliceProgress.resolve("z=" + z + ", c=" + c + ", t=" + t);
                         ImageProcessor processor = img.getImageStack().getProcessor(index);
-                        function.accept(processor, new ImageSliceIndex(c, z, t), stackProgress);
+                        // R48: the item finishes at its operation end (OK after the work, FAILED
+                        // in the finally; finishNode is idempotent, so the success path keeps OK)
+                        try {
+                            function.accept(processor, new ImageSliceIndex(c, z, t), stackProgress);
+                            sliceProgress.finishNode(JIPipeProgressNodeState.OK);
+                        } finally {
+                            sliceProgress.finishNode(JIPipeProgressNodeState.FAILED);
+                        }
                         // R41: the slice completed (iterationIndex was post-incremented above)
                         progressInfo.setProgress(iterationIndex, img.getStackSize());
                     }
@@ -263,10 +359,18 @@ public class ImageJIterationUtils {
                         if (progressInfo.isCancelled())
                             return null;
                         int index = sourceImage.getStackIndex(c + 1, z + 1, t + 1);
-                        progressInfo.resolveAndLog("Slice", iterationIndex++, sourceImage.getStackSize()).log("z=" + z + ", c=" + c + ", t=" + t);
+                        JIPipeProgressInfo sliceProgress = progressInfo.resolveAndLog("Slice", iterationIndex++, sourceImage.getStackSize());
+                        sliceProgress.log("z=" + z + ", c=" + c + ", t=" + t);
                         ImageProcessor processor = sourceImage.getImageStack().getProcessor(index);
-                        ImageProcessor resultProcessor = function.apply(processor, new ImageSliceIndex(c, z, t));
-                        stack.setProcessor(resultProcessor, index);
+                        // R48: the item finishes at its operation end (OK after the work, FAILED
+                        // in the finally; finishNode is idempotent, so the success path keeps OK)
+                        try {
+                            ImageProcessor resultProcessor = function.apply(processor, new ImageSliceIndex(c, z, t));
+                            stack.setProcessor(resultProcessor, index);
+                            sliceProgress.finishNode(JIPipeProgressNodeState.OK);
+                        } finally {
+                            sliceProgress.finishNode(JIPipeProgressNodeState.FAILED);
+                        }
                         // R41: the slice completed (iterationIndex was post-incremented above)
                         progressInfo.setProgress(iterationIndex, sourceImage.getStackSize());
                     }
@@ -302,8 +406,16 @@ public class ImageJIterationUtils {
                 for (int c = 0; c < img.getNChannels(); c++) {
                     if (progressInfo.isCancelled())
                         return;
-                    progressInfo.resolveAndLog("Slice", iterationIndex++, img.getStackSize()).log("z=" + z + ", c=" + c + ", t=" + t);
-                    channels.put(c, img.getStack().getProcessor(img.getStackIndex(c + 1, z + 1, t + 1)));
+                    JIPipeProgressInfo sliceProgress = progressInfo.resolveAndLog("Slice", iterationIndex++, img.getStackSize());
+                    sliceProgress.log("z=" + z + ", c=" + c + ", t=" + t);
+                    // R48: the item finishes at its operation end (OK after the work, FAILED in
+                    // the finally; finishNode is idempotent, so the success path keeps OK)
+                    try {
+                        channels.put(c, img.getStack().getProcessor(img.getStackIndex(c + 1, z + 1, t + 1)));
+                        sliceProgress.finishNode(JIPipeProgressNodeState.OK);
+                    } finally {
+                        sliceProgress.finishNode(JIPipeProgressNodeState.FAILED);
+                    }
                     // R41: the slice completed (iterationIndex was post-incremented above)
                     progressInfo.setProgress(iterationIndex, img.getStackSize());
                 }
