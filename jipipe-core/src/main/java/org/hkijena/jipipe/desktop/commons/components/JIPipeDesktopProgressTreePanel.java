@@ -168,7 +168,7 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
     private final JLabel footerRecordsLabel = new JLabel();
     private final JLabel footerFileLabel = new JLabel();
     private final JPanel footerButtons = UIUtils.boxHorizontal();
-    private final JToggleButton detailAutoscrollButton = new JToggleButton(JIPipe.RESOURCES.getIcon16("actions/arrow-down-double.png"));
+    private final JToggleButton detailAutoscrollButton = new JToggleButton("Follow");
     private final JButton detailGoToEndButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/go-bottom.png"));
 
     // --- Store state (batch listeners run on the store's writer thread; the EDT consumes) ---
@@ -384,7 +384,7 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
         detailGoToEndButton.setEnabled(false);
         detailGoToEndButton.setToolTipText("Jump to the newest record of the expanded node");
         detailGoToEndButton.addActionListener(e -> goToNewestRecords());
-        JPanel footerLeft = UIUtils.boxHorizontal(footerStateLabel, footerStatusLabel, Box.createHorizontalStrut(10), detailAutoscrollButton, detailGoToEndButton);
+        JPanel footerLeft = UIUtils.boxHorizontal(footerStateLabel, Box.createHorizontalStrut(8), footerStatusLabel, Box.createHorizontalStrut(10), detailAutoscrollButton, detailGoToEndButton);
         footerLeft.setOpaque(false);
 
         // Struts separate the information segments and the button group
