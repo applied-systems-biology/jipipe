@@ -812,7 +812,14 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
         setupProgress.log("Gathering inputs ...");
         for (Map.Entry<JIPipeDataSlot, String> entry : inputMap.entrySet()) {
             JIPipeInputDataSlot inputSlot = (JIPipeInputDataSlot) entry.getKey();
-            nodeProgressHandle(inputSlot.getNode(), progressInfo).log("+I " + inputSlot.getDisplayName());
+            // R51: the slot narration is debug-level (not informative enough for INFO) and names
+            // the node UUID (the same idiom as the "Executing <uuid>" record); without a node the
+            // rendered slot name is the fallback (mirrors getDisplayName's null tolerance)
+            JIPipeGraphNode inputNode = inputSlot.getNode();
+            String slotNarration = inputNode != null
+                    ? inputSlot.getName() + " (" + inputNode.getUUIDInParentGraph() + ")"
+                    : inputSlot.getDisplayName();
+            nodeProgressHandle(inputNode, progressInfo).debug("+I " + slotNarration);
 
             // Add data from incoming edges within graph
             Set<JIPipeGraphEdge> incomingEdges = graph.getGraph().incomingEdgesOf(inputSlot);
@@ -1208,7 +1215,12 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
         // R28: the "+O" narration and the contents log are records on the owning node's row
         // (the former duplicate child row with the node's display name is gone)
         JIPipeProgressInfo nodeProgress = nodeProgressHandle(outputSlot.getNode(), progressInfo);
-        nodeProgress.log("+O " + outputSlot.getDisplayName());
+        // R51: debug-level with the node UUID (the same idiom as the "Executing <uuid>" record)
+        JIPipeGraphNode outputNode = outputSlot.getNode();
+        String outputNarration = outputNode != null
+                ? outputSlot.getName() + " (" + outputNode.getUUIDInParentGraph() + ")"
+                : outputSlot.getDisplayName();
+        nodeProgress.debug("+O " + outputNarration);
         nodeProgress.log("Contents of data slot " + outputSlot);
 
         if (gcGraph != null) {
@@ -1225,7 +1237,13 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
         // R28: the "+I" narration and the gathering operations go under the consuming node's row;
         // creating the row here is correct: the node appears when its inputs gather
         JIPipeProgressInfo nodeProgress = nodeProgressHandle(inputSlot.getNode(), progressInfo);
-        nodeProgress.log("+I " + inputSlot.getDisplayName());
+        // R51: debug-level with the node UUID (the same idiom as the "Executing <uuid>" record);
+        // without a node the rendered slot name is the fallback
+        JIPipeGraphNode inputNode = inputSlot.getNode();
+        String inputNarration = inputNode != null
+                ? inputSlot.getName() + " (" + inputNode.getUUIDInParentGraph() + ")"
+                : inputSlot.getDisplayName();
+        nodeProgress.debug("+I " + inputNarration);
 
         // Add data from incoming edges within graph
         Set<JIPipeGraphEdge> incomingEdges = graph.getGraph().incomingEdgesOf(inputSlot);

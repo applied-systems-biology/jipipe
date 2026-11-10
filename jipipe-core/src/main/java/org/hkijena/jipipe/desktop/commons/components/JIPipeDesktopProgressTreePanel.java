@@ -678,10 +678,16 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
             if (ts > 0) {
                 state.firstTs.compareAndExchange(0, ts);
                 state.lastTs.accumulateAndGet(ts, Math::max);
-                // R49: the activity start excludes the node's own creation record (a
+                // R49/R52: the activity start excludes the node's own creation record (a
                 // pipeline-setup created algorithm would otherwise carry its creation time as
                 // its activity start and the sibling sort would degenerate to creation order)
-                if (!(record instanceof JIPipeProgressRecord.Node)) {
+                // and DEBUG-level log records (the +I/+O slot narration and the Storage records
+                // are debug - they stamp data arrival, not work start; a never-executed node
+                // keeps no stamp and sorts into the never-started group). Non-Log records
+                // always stamp.
+                if (!(record instanceof JIPipeProgressRecord.Node)
+                        && !(record instanceof JIPipeProgressRecord.Log logRecord
+                        && logRecord.lv() == JIPipeLogLevel.DEBUG.value())) {
                     state.workFirstTs.compareAndExchange(0, ts);
                 }
             }
@@ -1110,7 +1116,9 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
      * R49: the subtree-activity start of a node - the timestamp its subtree first did any work:
      * the node's own first work-record timestamp (workFirstTs, which excludes the node's own
      * creation record - firstTs carries the creation time of nodes created before their work and
-     * would degenerate the sort to creation order), else the earliest started descendant's, else
+     * would degenerate the sort to creation order - and the DEBUG-level log records, whose
+     * arrival is not work: a never-executed node keeps no stamp and sorts into the never-started
+     * group, R52), else the earliest started descendant's, else
      * {@link Long#MAX_VALUE} for a subtree where nothing started yet (such rows render after all
      * started ones). Memoized bottom-up over the child map (each node computed once per rebuild),
      * so the sibling sort stays O(n log n) without per-child subtree flattens. The min over
