@@ -2548,6 +2548,8 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
 
                 @Override
                 public void mouseEntered(MouseEvent e) {
+                    // A fresh arm: re-anchor even if the cursor re-enters over the same row
+                    lastTipRowKey = null;
                     recordCursorAnchor(e);
                 }
 
@@ -2591,12 +2593,20 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
 
         /**
          * R43: records where the cursor is (screen coordinates, stable across scrolls) and which
-         * row was under it - the reference state of the stale-tip invalidation.
+         * row was under it - the reference state of the stale-tip invalidation and the source of
+         * the returned tooltip location. The anchor is re-armed only when the armed row CHANGES:
+         * within a row both the anchor and the returned location stay constant, so the manager's
+         * unchanged branch keeps the visible tip in place instead of recreating the popup per
+         * mouse-move event.
          */
         private void recordCursorAnchor(MouseEvent e) {
-            lastTipScreenPoint = new Point(e.getXOnScreen(), e.getYOnScreen());
             JIPipeDesktopProgressTreeRowRenderer.Row row = rowAtPoint(e);
-            lastTipRowKey = row != null ? rowKey(row) : null;
+            String rowKey = row != null ? rowKey(row) : null;
+            if (java.util.Objects.equals(rowKey, lastTipRowKey)) {
+                return;
+            }
+            lastTipScreenPoint = new Point(e.getXOnScreen(), e.getYOnScreen());
+            lastTipRowKey = rowKey;
         }
 
         /**
@@ -2687,10 +2697,23 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
         public String getToolTipText(MouseEvent event) {
             // R43: re-derive the point from the event's screen coordinates (cursorContentPoint)
             // so a stale re-query names the row that is under the stationary cursor NOW, and
-            // refresh the anchor with the current truth
+            // re-anchor when the armed row changed (never per event - the anchor must stay
+            // constant within a row, see recordCursorAnchor)
             JIPipeDesktopProgressTreeRowRenderer.Row row = rowAtPoint(cursorContentPoint(event));
-            lastTipScreenPoint = new Point(event.getXOnScreen(), event.getYOnScreen());
-            lastTipRowKey = row != null ? rowKey(row) : null;
+            String rowKey = row != null ? rowKey(row) : null;
+            if (!java.util.Objects.equals(rowKey, lastTipRowKey)) {
+                lastTipScreenPoint = new Point(event.getXOnScreen(), event.getYOnScreen());
+                lastTipRowKey = rowKey;
+            }
+            return tooltipTextForRow(row);
+        }
+
+        /**
+         * The tooltip text for a row, or null for rows without one (stack lines, more-rows,
+         * placeholders, loading rows). Shared by {@link #getToolTipText} and
+         * {@link #getToolTipLocation} so both report the same row content.
+         */
+        private String tooltipTextForRow(JIPipeDesktopProgressTreeRowRenderer.Row row) {
             if (row == null) {
                 return null;
             }
@@ -2727,24 +2750,40 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
         }
 
         /**
-         * R43: anchors the tooltip to the cursor. ToolTipManager.showTipWindow computes the tip
-         * location as the list's on-screen origin AT SHOW TIME plus the returned component
-         * relative location (measured: with a marker (37, 53) the tip lands exactly at
-         * origin + (37, 53); with a null location it uses the event point AT EVENT TIME plus the
-         * origin at show time plus (0, 20)). The list is the scroll view content: its origin
-         * moves with every tail-follow scroll between the arming event and the show, which
-         * displaced the tip upward by the accumulated scroll delta - and with the app's
-         * effectively infinite dismiss delay (JIPipeGUICommand) the displaced tip then never
-         * auto-hides. Returning the cursor's CURRENT component-relative position plus the
-         * standard (0, 20) offset cancels the origin: the tip lands at the cursor's event-time
-         * screen position plus (0, 20) whenever the origin is unchanged between this call and
-         * the show - always true for the lazy arm path, where the manager calls this immediately
-         * before showTipWindow.
+         * R43: anchors the tooltip to the armed cursor position. ToolTipManager.showTipWindow
+         * computes the tip location as the list's on-screen origin AT SHOW TIME plus the
+         * returned component-relative location (measured with a marker override: the tip lands
+         * exactly at origin + returned point; with a null location it uses the event point AT
+         * EVENT TIME plus the origin at show time plus (0, 20)). The list is the scroll view
+         * content: its origin moves with every tail-follow scroll between the arming event and
+         * the show, which displaced the tip upward by the accumulated scroll delta - and with
+         * the app's effectively infinite dismiss delay (JIPipeGUICommand) the displaced tip then
+         * never auto-hides.
+         *
+         * <p>The returned point is derived from the STORED per-arm screen anchor (see
+         * {@link #recordCursorAnchor}), not from the live event position: within the armed row
+         * the point is constant (the manager's unchanged branch keeps the visible tip in place
+         * instead of recreating the popup per mouse-move event), and at the lazy timer fire the
+         * same derivation with the show-time origin lands the tip exactly at the armed cursor
+         * screen position plus the standard (0, 20) offset - including across scrolls, because
+         * the anchor is screen-invariant.
+         *
+         * <p>A row without tooltip text returns a null location: with a non-null location the
+         * manager's changed branch would show an EMPTY tip window for the null text (its
+         * showTipWindow has no null-text guard) that then lingers for the app's infinite dismiss
+         * delay; the null location routes the transition through the manager's clean-hide branch.
          */
         @Override
         public Point getToolTipLocation(MouseEvent event) {
-            Point point = cursorContentPoint(event);
-            return new Point(point.x, point.y + 20);
+            if (tooltipTextForRow(rowAtPoint(cursorContentPoint(event))) == null) {
+                return null;
+            }
+            Point screen = lastTipScreenPoint;
+            if (screen == null || !isShowing()) {
+                return null;
+            }
+            Point origin = getLocationOnScreen();
+            return new Point(screen.x - origin.x, screen.y - origin.y + 20);
         }
 
         /**
