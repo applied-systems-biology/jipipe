@@ -200,6 +200,18 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
      */
     private int activeNodeId;
     /**
+     * R47: true while the run root's state is RUNNING (recomputed per model rebuild) - the
+     * condition under which the finished children of RUNNING nodes collapse into "Finished
+     * items" gate rows. After the run all gates dissolve.
+     */
+    private boolean runActive;
+    /**
+     * R47: the parents whose gate is currently REVEALED (double-clicked). EDT-only; cleared on
+     * store switch. The gate itself always renders while its parent runs; this set only decides
+     * whether the grouped children render with it.
+     */
+    private final Set<Integer> revealedGateNodeIds = new HashSet<>();
+    /**
      * The active node that the auto-expand/scroll last acted on (R44): a change - or the active
      * row disappearing from the model - re-arms the chain expansion and the scroll.
      */
@@ -326,7 +338,6 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
         list.setFont(list.getFont().deriveFont(12.0f));
         list.setFixedCellHeight(Math.max(22, getFontMetrics(list.getFont()).getHeight() + 9));
         list.setLayoutOrientation(JList.VERTICAL);
-        ToolTipManager.sharedInstance().registerComponent(list);
         listScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         listScrollPane.getViewport().setBackground(style.getPanelBackground());
         listScrollPane.setBorder(BorderFactory.createEmptyBorder(4, 0, 4, 0));
@@ -344,9 +355,6 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
             boolean modelShrank = modelSize < lastScrollModelSize;
             lastScrollValue = value;
             lastScrollModelSize = modelSize;
-            // R43: rows moved under a stationary cursor - a visible or pending tooltip would
-            // name a row that is no longer under it
-            list.invalidateStaleTooltip();
             if (scrolledUp && !modelShrank && detailAutoscroll && !scrollProgrammatic) {
                 detailAutoscroll = false;
                 autoscrollNodeId = 0;
@@ -427,8 +435,9 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
         warningToggleButton.addActionListener(e -> toggleCategory(RecordCategory.WARNING, warningToggleButton.isSelected()));
         errorToggleButton.addActionListener(e -> toggleCategory(RecordCategory.ERROR, errorToggleButton.isSelected()));
         updateCategoryButtons();
-        copyButton.setToolTipText("Copy the rendered log (last " + NumberFormat.getIntegerInstance().format(COPY_LINE_LIMIT) + " lines)");
-        copyButton.addActionListener(e -> copyToClipboard());
+        copyButton.setToolTipText("Copy the selected rows, or the whole rendered log (last "
+                + NumberFormat.getIntegerInstance().format(COPY_LINE_LIMIT) + " lines) when nothing is selected)");
+        copyButton.addActionListener(e -> copySelectionOrWholeLog());
         exportButton.setToolTipText("Export the underlying run data file");
         exportButton.addActionListener(e -> exportDataFile());
         exportButton.setEnabled(false);
@@ -620,6 +629,8 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
             latestNodeId = 0;
             footerProgressNodeId = 0;
             activeNodeId = 0;
+            runActive = false;
+            revealedGateNodeIds.clear();
             lastFollowedActiveNodeId = 0;
             latestNodeTs = 0;
             lastKnownLine = 0;
@@ -846,6 +857,9 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
         activeNodeId = newestRunningId;
         nodeState(s.getRootNodeId());
         int rootNodeId = s.getRootNodeId();
+        JIPipeProgressNode rootNode = s.getNode(rootNodeId);
+        // R47: the gates exist only while the run root is RUNNING
+        runActive = rootNode != null && rootNode.getState() == JIPipeProgressNodeState.RUNNING;
         NodeUiState rootState = nodeStates.get(rootNodeId);
         if (rootState != null && visibleRecordCount(rootState) > 0) {
             // Non-graph run: the root's own records render under the root row, as before (R26)
@@ -856,8 +870,6 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
             walkChildren(s, childMap, rootNodeId, 0, null, rows);
         }
         listModel.reset(rows, new ArrayList<>(rebuildBlocks));
-        // R43: the rebuild may have moved different rows under a stationary cursor
-        list.invalidateStaleTooltip();
     }
 
     /**
@@ -952,9 +964,49 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
 
     private void walkChildren(JIPipeProgressLog s, Map<Integer, List<Integer>> childMap, int parentId, int depth,
                               String inheritedChip, List<JIPipeDesktopProgressTreeRowRenderer.Row> rows) {
+        walkChildren(s, childMap, parentId, depth, inheritedChip, rows, null);
+    }
+
+    /**
+     * The gate collector of one RUNNING parent (R47): the finished, non-phase children collapse
+     * into ONE synthetic gate row rendered at the first grouped child's store position. The
+     * collector persists through partition squashes (a partition's children are the parent's
+     * children at the same depth).
+     */
+    private static final class GateCollector {
+        final List<Integer> ids = new ArrayList<>();
+        final int parentId;
+        final int depth;
+        final String inheritedChip;
+        long firstTs = Long.MAX_VALUE;
+        long lastTs = Long.MIN_VALUE;
+        boolean emitted;
+
+        GateCollector(int parentId, int depth, String inheritedChip) {
+            this.parentId = parentId;
+            this.depth = depth;
+            this.inheritedChip = inheritedChip;
+        }
+    }
+
+    private void walkChildren(JIPipeProgressLog s, Map<Integer, List<Integer>> childMap, int parentId, int depth,
+                              String inheritedChip, List<JIPipeDesktopProgressTreeRowRenderer.Row> rows,
+                              GateCollector inheritedGate) {
         List<Integer> children = childMap.get(parentId);
         if (children == null) {
             return;
+        }
+        JIPipeProgressNode parentNode = s.getNode(parentId);
+        GateCollector gate = inheritedGate;
+        if (gate == null && runActive && parentNode != null
+                && parentNode.getState() == JIPipeProgressNodeState.RUNNING
+                && parentNode.getKind() != JIPipeProgressNodeKind.PARTITION
+                && parentId != s.getRootNodeId()) {
+            // R47 (amended): only the finished children of RUNNING work nodes gate - finished
+            // TOP items stay fully visible and explorable while something else runs. A
+            // PARTITION is structural (squashed; its children ARE the top-level rows) and
+            // never hosts a gate.
+            gate = new GateCollector(parentId, depth, inheritedChip);
         }
         for (int id : children) {
             JIPipeProgressNode node = s.getNode(id);
@@ -964,7 +1016,7 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
             if (node.getKind() == JIPipeProgressNodeKind.PARTITION) {
                 // v2 decision: partitions squash into the dim chip of their descendants - no row,
                 // same depth (the data model still records them; the UI spends no tree level)
-                walkChildren(s, childMap, id, depth, partitionChipFor(id), rows);
+                walkChildren(s, childMap, id, depth, partitionChipFor(id), rows, gate);
                 continue;
             }
             if (node.getLevel() == JIPipeLogLevel.DEBUG && !visibleCategories.contains(RecordCategory.DEBUG)) {
@@ -972,7 +1024,47 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
                 // off (graph-run debug content: GC nodes and their records)
                 continue;
             }
+            if (gate != null && node.getState() != JIPipeProgressNodeState.RUNNING
+                    && node.getKind() != JIPipeProgressNodeKind.PHASE) {
+                // R47: the finished child joins the parent's gate (PHASE children always render;
+                // RUNNING children render as the active work)
+                NodeUiState childState = nodeStates.get(id);
+                long firstTs = childState != null ? childState.firstTs.get() : 0;
+                long lastTs = childState != null ? childState.lastTs.get() : 0;
+                if (firstTs > 0) {
+                    gate.firstTs = Math.min(gate.firstTs, firstTs);
+                }
+                gate.lastTs = Math.max(gate.lastTs, lastTs);
+                gate.ids.add(id);
+                continue;
+            }
+            flushGate(s, childMap, gate, rows);
             appendNodeRow(s, childMap, node, depth, inheritedChip, rows);
+        }
+        flushGate(s, childMap, gate, rows);
+    }
+
+    /**
+     * Renders the pending gate row of a RUNNING parent (lazily: the gate renders at the first
+     * grouped child's store position with the FULL group; revealed, the grouped children render
+     * in place at their normal child depth, in store order).
+     */
+    private void flushGate(JIPipeProgressLog s, Map<Integer, List<Integer>> childMap, GateCollector gate,
+                           List<JIPipeDesktopProgressTreeRowRenderer.Row> rows) {
+        if (gate == null || gate.emitted || gate.ids.isEmpty()) {
+            return;
+        }
+        gate.emitted = true;
+        boolean revealed = revealedGateNodeIds.contains(gate.parentId);
+        rows.add(new JIPipeDesktopProgressTreeRowRenderer.FinishedItemsGateRow(
+                gate.parentId, gate.depth, gate.ids.size(), gate.firstTs, gate.lastTs, revealed));
+        if (revealed) {
+            for (int id : gate.ids) {
+                JIPipeProgressNode node = s.getNode(id);
+                if (node != null) {
+                    appendNodeRow(s, childMap, node, gate.depth, gate.inheritedChip, rows);
+                }
+            }
         }
     }
 
@@ -998,11 +1090,52 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
      * the debug toggle is off (R27). Walks the child map built in this cycle.
      */
     private int countVisibleDescendantNodes(JIPipeProgressLog s, Map<Integer, List<Integer>> childMap, int nodeId) {
+        // R47: this node's children gate iff this node is a RUNNING non-root work node while the
+        // run is active (the same predicate walkChildren uses)
+        JIPipeProgressNode parentNode = s.getNode(nodeId);
+        boolean parentRunning = runActive && parentNode != null
+                && parentNode.getState() == JIPipeProgressNodeState.RUNNING
+                && parentNode.getKind() != JIPipeProgressNodeKind.PARTITION
+                && nodeId != s.getRootNodeId();
+        return countChildRows(s, childMap, nodeId, parentRunning);
+    }
+
+    /**
+     * The rows contributed by the children of {@code parentId} under the current filters - the
+     * +N badge aggregate of the parent's expansion. Squashed partitions flatten (their children
+     * render at this level, the gate context continues through them), debug-hidden children
+     * contribute nothing (R27), and a RUNNING parent's finished non-phase children collapse into
+     * the parent's gate row (R47): the gate counts ONCE, regardless of its grouped count (the
+     * grouped count lives on the gate's own badge).
+     */
+    private int countChildRows(JIPipeProgressLog s, Map<Integer, List<Integer>> childMap, int parentId,
+                               boolean parentRunning) {
+        boolean debugVisible = visibleCategories.contains(RecordCategory.DEBUG);
         int total = 0;
-        for (int child : childMap.getOrDefault(nodeId, List.of())) {
-            total += countRenderedSubtreeNodes(s, childMap, child);
+        int gated = 0;
+        for (int child : childMap.getOrDefault(parentId, List.of())) {
+            JIPipeProgressNode childNode = s.getNode(child);
+            if (childNode == null) {
+                continue;
+            }
+            if (childNode.getKind() == JIPipeProgressNodeKind.PARTITION) {
+                // Squashed: not a row - its children render at this level, the gate continues
+                total += countChildRows(s, childMap, child, parentRunning);
+                continue;
+            }
+            if (childNode.getLevel() == JIPipeLogLevel.DEBUG && !debugVisible) {
+                // Hidden with its whole subtree (R27)
+                continue;
+            }
+            if (parentRunning && childNode.getState() != JIPipeProgressNodeState.RUNNING
+                    && childNode.getKind() != JIPipeProgressNodeKind.PHASE) {
+                // R47: joins the parent's gate row - aggregated as ONE below
+                gated++;
+                continue;
+            }
+            total += countRenderedSubtreeNodes(s, childMap, child, parentRunning);
         }
-        return total;
+        return gated > 0 ? total + 1 : total;
     }
 
     /**
@@ -1014,30 +1147,36 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
      * rendering descendants renders no row and contributes nothing to its ancestors' counts
      * (its subtree contributes nothing through it - by the skip condition it has none).
      */
-    private int countRenderedSubtreeNodes(JIPipeProgressLog s, Map<Integer, List<Integer>> childMap, int nodeId) {
+    private int countRenderedSubtreeNodes(JIPipeProgressLog s, Map<Integer, List<Integer>> childMap, int nodeId,
+                                          boolean parentRunning) {
         JIPipeProgressNode node = s.getNode(nodeId);
         if (node == null) {
             return 0;
-        }
-        if (node.getKind() == JIPipeProgressNodeKind.PARTITION) {
-            // Squashed: not a row - its children are
-            int total = 0;
-            for (int child : childMap.getOrDefault(nodeId, List.of())) {
-                total += countRenderedSubtreeNodes(s, childMap, child);
-            }
-            return total;
         }
         if (node.getLevel() == JIPipeLogLevel.DEBUG && !visibleCategories.contains(RecordCategory.DEBUG)) {
             // Hidden with its whole subtree (R27)
             return 0;
         }
-        int childTotal = 0;
-        for (int child : childMap.getOrDefault(nodeId, List.of())) {
-            childTotal += countRenderedSubtreeNodes(s, childMap, child);
+        if (parentRunning && node.getState() != JIPipeProgressNodeState.RUNNING
+                && node.getKind() != JIPipeProgressNodeKind.PHASE
+                && node.getKind() != JIPipeProgressNodeKind.PARTITION) {
+            // R47: the finished child of a RUNNING parent renders inside the parent's gate row;
+            // the caller's aggregation (countChildRows) replaces all grouped children with the
+            // gate's ONE row
+            return 1;
+        }
+        // The node's own children aggregate through countChildRows with the node's own gate
+        // predicate (a RUNNING node hosts a gate, a finished one does not); a squashed partition
+        // renders no row of its own (its children are the rows, the gate continues through it)
+        boolean selfRunning = node.getState() == JIPipeProgressNodeState.RUNNING;
+        boolean hostsGate = selfRunning && node.getKind() != JIPipeProgressNodeKind.PARTITION
+                && nodeId != s.getRootNodeId();
+        int childTotal = countChildRows(s, childMap, nodeId, hostsGate);
+        if (node.getKind() == JIPipeProgressNodeKind.PARTITION) {
+            return childTotal;
         }
         NodeUiState state = nodeStates.get(nodeId);
-        boolean selfRenders = node.getState() == JIPipeProgressNodeState.RUNNING
-                || (state != null && visibleRecordCount(state) > 0);
+        boolean selfRenders = selfRunning || (state != null && visibleRecordCount(state) > 0);
         if (!selfRenders && childTotal == 0) {
             // R42: a finished node with no visible records and no rendering descendants is
             // skipped by appendNodeRow - counting it would promise a +N that reveals nothing
@@ -2097,6 +2236,17 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
     // Row interaction
     // -------------------------------------------------------------------------
 
+    /**
+     * R47: reveals or re-hides the "Finished items" gate of a RUNNING parent (double-click on
+     * the gate row). The rebuild applies the reveal state.
+     */
+    private void toggleFinishedItemsGate(int parentNodeId) {
+        if (!revealedGateNodeIds.remove(parentNodeId)) {
+            revealedGateNodeIds.add(parentNodeId);
+        }
+        refreshNow();
+    }
+
     private void toggleNode(int nodeId) {
         NodeUiState state = nodeState(nodeId);
         state.expanded = !state.expanded;
@@ -2196,6 +2346,213 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
                 log.error("Failed to copy the progress log", e);
             }
         });
+    }
+
+    /**
+     * R46: copies the selected rows in list order, or - with an empty selection - the whole
+     * rendered log ({@link #copyToClipboard}). Shared by Ctrl+C on the list and the copy button.
+     */
+    private void copySelectionOrWholeLog() {
+        if (list.getSelectedIndices().length > 0) {
+            copySelectedRows();
+        } else {
+            copyToClipboard();
+        }
+    }
+
+    /**
+     * R46: copies the selected rows. The rows and their virtual-block slot context are captured
+     * on the EDT (the model is an EDT-rebuilt snapshot; the captured rows are immutable); the
+     * store reads (detail records, uncached virtual chunks) run on the background executor.
+     * Bound by {@link #COPY_LINE_LIMIT} with a trailing truncation note.
+     */
+    private void copySelectedRows() {
+        // EDT capture: row + (for virtual detail rows) the containing block and the detail slot
+        record SelectedRow(JIPipeDesktopProgressTreeRowRenderer.Row row, VirtualBlock block, Integer slot) {
+        }
+        List<SelectedRow> selected = new ArrayList<>();
+        for (int index : list.getSelectedIndices()) {
+            VirtualBlock block = listModel.blockAt(index);
+            Integer slot = null;
+            if (block != null) {
+                int flat = block.flatOfRow(index - block.startIndex);
+                if (flat >= 0) {
+                    slot = flat;
+                }
+            }
+            selected.add(new SelectedRow(listModel.getElementAt(index), block, slot));
+        }
+        // Snapshots of the virtual caches (plain maps mutated on the EDT - copied for the
+        // background read)
+        Map<Integer, Map<Integer, List<JIPipeProgressRecord>>> chunkSnapshots = new HashMap<>();
+        Map<Integer, Map<Integer, Integer>> boundarySnapshots = new HashMap<>();
+        for (SelectedRow entry : selected) {
+            if (entry.block() != null && !chunkSnapshots.containsKey(entry.block().nodeId)) {
+                NodeUiState state = nodeStates.get(entry.block().nodeId);
+                if (state != null && state.virtual != null) {
+                    chunkSnapshots.put(entry.block().nodeId, Map.copyOf(state.virtual.chunks));
+                    boundarySnapshots.put(entry.block().nodeId, Map.copyOf(state.virtual.boundaries));
+                }
+            }
+        }
+        int gen = generation.get();
+        backgroundExecutor.submit(() -> {
+            try {
+                JIPipeProgressLog s = store;
+                if (s == null) {
+                    return;
+                }
+                StringBuilder builder = new StringBuilder();
+                int lines = 0;
+                boolean truncated = false;
+                int i = 0;
+                while (i < selected.size() && !truncated) {
+                    SelectedRow entry = selected.get(i);
+                    if (entry.row() instanceof JIPipeDesktopProgressTreeRowRenderer.PlaceholderRow
+                            && entry.block() != null && entry.slot() != null) {
+                        // A contiguous run of unloaded virtual rows is read in one scan
+                        int j = i;
+                        Integer lastSlot = entry.slot();
+                        while (j + 1 < selected.size()
+                                && selected.get(j + 1).row() instanceof JIPipeDesktopProgressTreeRowRenderer.PlaceholderRow
+                                && selected.get(j + 1).block() == entry.block()
+                                && selected.get(j + 1).slot() != null
+                                && selected.get(j + 1).slot() == lastSlot + 1) {
+                            j++;
+                            lastSlot = selected.get(j).slot();
+                        }
+                        List<JIPipeProgressRecord> records = virtualSlotRecords(s, entry.block(),
+                                chunkSnapshots.get(entry.block().nodeId),
+                                boundarySnapshots.get(entry.block().nodeId),
+                                entry.slot(), lastSlot);
+                        if (records != null) {
+                            for (JIPipeProgressRecord record : records) {
+                                if (lines >= COPY_LINE_LIMIT) {
+                                    truncated = true;
+                                    break;
+                                }
+                                lines += appendRecordLines(s, record, builder, lines);
+                            }
+                        }
+                        i = j + 1;
+                        continue;
+                    }
+                    if (lines >= COPY_LINE_LIMIT) {
+                        truncated = true;
+                        break;
+                    }
+                    lines += appendRowCopyLines(s, entry.row(), builder, lines);
+                    i++;
+                }
+                if (truncated) {
+                    builder.append("... (truncated at ").append(COPY_LINE_LIMIT).append(" lines)\n");
+                }
+                String text = builder.toString();
+                SwingUtilities.invokeLater(() -> {
+                    if (gen == generation.get()) {
+                        Toolkit.getDefaultToolkit().getSystemClipboard()
+                                .setContents(new StringSelection(text), null);
+                    }
+                });
+            } catch (Exception e) {
+                log.error("Failed to copy the selected progress rows", e);
+            }
+        });
+    }
+
+    /**
+     * Appends the copy lines of one row (R46); returns the number of lines appended. Node rows
+     * carry their full snapshot information (label, chip, progress, state, duration, location);
+     * detail rows render like the whole-log copy; stack lines carry the whole-log copy's two
+     * space indent.
+     */
+    private int appendRowCopyLines(JIPipeProgressLog s, JIPipeDesktopProgressTreeRowRenderer.Row row,
+                                   StringBuilder builder, int existingLines) {
+        if (row instanceof JIPipeDesktopProgressTreeRowRenderer.NodeRow nodeRow) {
+            String text = list.rowCopyText(nodeRow);
+            int lines = 1 + (text.length() - text.replace("\n", "").length());
+            builder.append(text).append('\n');
+            return lines;
+        }
+        if (row instanceof JIPipeDesktopProgressTreeRowRenderer.DetailRow detailRow) {
+            return appendRecordLines(s, detailRow.record(), builder, existingLines);
+        }
+        if (row instanceof JIPipeDesktopProgressTreeRowRenderer.StackRow stackRow) {
+            // The whole-log copy renders stack lines indented two spaces
+            builder.append("  ").append(stackRow.line()).append('\n');
+            return 1;
+        }
+        if (row instanceof JIPipeDesktopProgressTreeRowRenderer.FinishedItemsGateRow gateRow) {
+            builder.append("Finished items (").append(gateRow.count()).append(")\n");
+            return 1;
+        }
+        if (row instanceof JIPipeDesktopProgressTreeRowRenderer.MoreRow moreRow) {
+            builder.append("Show ").append(moreRow.olderCount()).append(" older records from run data...\n");
+            return 1;
+        }
+        if (row instanceof JIPipeDesktopProgressTreeRowRenderer.LoadingRow) {
+            builder.append("Loading records...\n");
+            return 1;
+        }
+        return 0;
+    }
+
+    /**
+     * Appends the whole-log-format lines of one record (the same rendering
+     * {@link #copyToClipboard} uses); returns the number of lines appended.
+     */
+    private int appendRecordLines(JIPipeProgressLog s, JIPipeProgressRecord record,
+                                  StringBuilder builder, int existingLines) {
+        int[] before = {builder.length()};
+        s.renderRecords(List.of(record), JIPipeLogLevel.INFO, line -> builder.append(line).append('\n'));
+        int appended = builder.length() - before[0];
+        // The line count: the rendered text minus its trailing newline, split on newlines
+        return Math.max(1, appended <= 1 ? 1 : (int) builder.substring(before[0]).chars().filter(c -> c == '\n').count());
+    }
+
+    /**
+     * Reads the records of a virtual detail's slot range (R46 copy): served from the chunk cache
+     * snapshot where cached, else one synchronous forward scan chained from the nearest cached
+     * boundary (the same scan the async chunk loader runs). Returns null when the scan comes up
+     * short (the writer still lags) - the copy omits those rows.
+     */
+    private List<JIPipeProgressRecord> virtualSlotRecords(JIPipeProgressLog s, VirtualBlock block,
+                                                          Map<Integer, List<JIPipeProgressRecord>> chunks,
+                                                          Map<Integer, Integer> boundaries,
+                                                          int slotLo, int slotHi) {
+        int span = slotHi - slotLo + 1;
+        // Serve the cached chunks first
+        List<JIPipeProgressRecord> cached = new ArrayList<>(span);
+        boolean allCached = true;
+        for (int slot = slotLo; slot <= slotHi; slot++) {
+            int base = slot - slot % VIRTUAL_CHUNK_SLOTS;
+            List<JIPipeProgressRecord> chunk = chunks != null ? chunks.get(base) : null;
+            if (chunk != null && slot - base < chunk.size()) {
+                cached.add(chunk.get(slot - base));
+            } else {
+                allCached = false;
+                break;
+            }
+        }
+        if (allCached) {
+            return cached;
+        }
+        // Synchronous scan for the uncached range
+        JIPipeProgressNode node = s.getNode(block.nodeId);
+        if (node == null) {
+            return null;
+        }
+        int chainSlot = 0;
+        int chainLine = node.getFirstLine();
+        if (boundaries != null) {
+            for (Map.Entry<Integer, Integer> boundary : boundaries.entrySet()) {
+                if (boundary.getKey() <= slotLo && boundary.getKey() >= chainSlot) {
+                    chainSlot = boundary.getKey();
+                    chainLine = boundary.getValue();
+                }
+            }
+        }
+        return scanForwardChunks(s, node, block.nodeId, slotLo, span, chainSlot, chainLine, new HashMap<>());
     }
 
     private void exportDataFile() {
@@ -2523,34 +2880,33 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
     }
 
     /**
-     * The row list: row-specific tooltips, hand cursor over interactive rows, and click routing
-     * (expander toggles, stack trace toggles, paging, and the level-filter shortcut).
+     * The row list: hand cursor over interactive rows, selection, and click routing (expander
+     * toggles, stack trace toggles, paging, and the level-filter shortcut). Row tooltips were
+     * removed (R46): the information need is served by row selection + copy.
      */
     private class ProgressTreeList extends JList<JIPipeDesktopProgressTreeRowRenderer.Row> {
-
-        // R43: the tooltip anchor - the cursor's SCREEN position at the last arm (from the
-        // event's on-screen coordinates; invariant under scrolling) and the value key of the row
-        // that was under it. Armed by this list's own mouse listeners and refreshed by the
-        // tooltip queries (the manager's lazy re-query can revisit a stale event after a scroll).
-        // While a tip is visible or pending NO mouse events arrive, so a scroll or a model
-        // rebuild can silently move different rows under the stationary cursor - the
-        // invalidation below then resets the manager
-        private Point lastTipScreenPoint;
-        private String lastTipRowKey;
 
         private ProgressTreeList() {
             super(listModel);
             MouseAdapter mouseAdapter = new MouseAdapter() {
+                private Point pressPoint;
+
                 @Override
-                public void mouseClicked(MouseEvent e) {
-                    handleClick(rowAtPoint(e));
+                public void mousePressed(MouseEvent e) {
+                    pressPoint = e.getPoint();
                 }
 
                 @Override
-                public void mouseEntered(MouseEvent e) {
-                    // A fresh arm: re-anchor even if the cursor re-enters over the same row
-                    lastTipRowKey = null;
-                    recordCursorAnchor(e);
+                public void mouseClicked(MouseEvent e) {
+                    // R46: ctrl/shift-click and drag extend the selection without toggling - the
+                    // toggle is a plain single click's action only (a gate's reveal is a
+                    // double-click's action, R47)
+                    boolean selectionModifiers = e.isControlDown() || e.isShiftDown();
+                    boolean drag = pressPoint != null
+                            && pressPoint.distance(e.getPoint()) > 4;
+                    if (!selectionModifiers && !drag) {
+                        handleClick(rowAtPoint(e), e.getClickCount());
+                    }
                 }
 
                 @Override
@@ -2561,18 +2917,43 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
                             || row instanceof JIPipeDesktopProgressTreeRowRenderer.StackRow
                             || row instanceof JIPipeDesktopProgressTreeRowRenderer.MoreRow;
                     setCursor(Cursor.getPredefinedCursor(interactive ? Cursor.HAND_CURSOR : Cursor.DEFAULT_CURSOR));
-                    recordCursorAnchor(e);
-                }
-
-                @Override
-                public void mouseExited(MouseEvent e) {
-                    // The cursor left the list: no row is under it, nothing is protected
-                    lastTipScreenPoint = null;
-                    lastTipRowKey = null;
                 }
             };
             addMouseListener(mouseAdapter);
             addMouseMotionListener(mouseAdapter);
+            // R46: the list is selectable; Ctrl+C copies the selection (or the whole log when
+            // nothing is selected)
+            setFocusable(true);
+            setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+            getInputMap(WHEN_FOCUSED).put(KeyStroke.getKeyStroke("control C"), "copy-rows");
+            getActionMap().put("copy-rows", new AbstractAction() {
+                @Override
+                public void actionPerformed(java.awt.event.ActionEvent e) {
+                    copySelectionOrWholeLog();
+                }
+            });
+            JMenuItem copySelectedItem = new JMenuItem("Copy selected rows");
+            copySelectedItem.addActionListener(e -> copySelectedRows());
+            JMenuItem copyWholeItem = new JMenuItem("Copy whole log");
+            copyWholeItem.addActionListener(e -> copyToClipboard());
+            JPopupMenu copyMenu = new JPopupMenu();
+            copyMenu.add(copySelectedItem);
+            copyMenu.add(copyWholeItem);
+            copyMenu.addPopupMenuListener(new javax.swing.event.PopupMenuListener() {
+                @Override
+                public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent e) {
+                    copySelectedItem.setEnabled(list.getSelectedIndices().length > 0);
+                }
+
+                @Override
+                public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent e) {
+                }
+
+                @Override
+                public void popupMenuCanceled(javax.swing.event.PopupMenuEvent e) {
+                }
+            });
+            setComponentPopupMenu(copyMenu);
         }
 
         private JIPipeDesktopProgressTreeRowRenderer.Row rowAtPoint(MouseEvent e) {
@@ -2591,41 +2972,13 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
             return listModel.getElementAt(index);
         }
 
-        /**
-         * R43: records where the cursor is (screen coordinates, stable across scrolls) and which
-         * row was under it - the reference state of the stale-tip invalidation and the source of
-         * the returned tooltip location. The anchor is re-armed only when the armed row CHANGES:
-         * within a row both the anchor and the returned location stay constant, so the manager's
-         * unchanged branch keeps the visible tip in place instead of recreating the popup per
-         * mouse-move event.
-         */
-        private void recordCursorAnchor(MouseEvent e) {
-            JIPipeDesktopProgressTreeRowRenderer.Row row = rowAtPoint(e);
-            String rowKey = row != null ? rowKey(row) : null;
-            if (java.util.Objects.equals(rowKey, lastTipRowKey)) {
-                return;
-            }
-            lastTipScreenPoint = new Point(e.getXOnScreen(), e.getYOnScreen());
-            lastTipRowKey = rowKey;
-        }
-
-        /**
-         * R43: the list-relative point of the event's cursor position, derived from the event's
-         * on-screen coordinates and the list's CURRENT origin. For a fresh event this equals the
-         * event point; for a stale re-query of a stationary cursor after a scroll (the manager
-         * re-queries the armed event at timer-fire time) the list origin has moved and the event
-         * point no longer names the row under the cursor - the screen-derived point does.
-         */
-        private Point cursorContentPoint(MouseEvent event) {
-            if (isShowing() && (event.getXOnScreen() != 0 || event.getYOnScreen() != 0)) {
-                Point origin = getLocationOnScreen();
-                return new Point(event.getXOnScreen() - origin.x, event.getYOnScreen() - origin.y);
-            }
-            return event.getPoint();
-        }
-
-        private void handleClick(JIPipeDesktopProgressTreeRowRenderer.Row row) {
-            if (row instanceof JIPipeDesktopProgressTreeRowRenderer.NodeRow nodeRow) {
+        private void handleClick(JIPipeDesktopProgressTreeRowRenderer.Row row, int clickCount) {
+            if (row instanceof JIPipeDesktopProgressTreeRowRenderer.FinishedItemsGateRow gateRow) {
+                // R47: the gate's reveal is double-click-only; a single click only selects
+                if (clickCount >= 2) {
+                    toggleFinishedItemsGate(gateRow.parentNodeId());
+                }
+            } else if (row instanceof JIPipeDesktopProgressTreeRowRenderer.NodeRow nodeRow) {
                 if (nodeRow.isExpandable()) {
                     toggleNode(nodeRow.getNodeId());
                 }
@@ -2693,27 +3046,13 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
             }
         }
 
-        @Override
-        public String getToolTipText(MouseEvent event) {
-            // R43: re-derive the point from the event's screen coordinates (cursorContentPoint)
-            // so a stale re-query names the row that is under the stationary cursor NOW, and
-            // re-anchor when the armed row changed (never per event - the anchor must stay
-            // constant within a row, see recordCursorAnchor)
-            JIPipeDesktopProgressTreeRowRenderer.Row row = rowAtPoint(cursorContentPoint(event));
-            String rowKey = row != null ? rowKey(row) : null;
-            if (!java.util.Objects.equals(rowKey, lastTipRowKey)) {
-                lastTipScreenPoint = new Point(event.getXOnScreen(), event.getYOnScreen());
-                lastTipRowKey = rowKey;
-            }
-            return tooltipTextForRow(row);
-        }
-
         /**
-         * The tooltip text for a row, or null for rows without one (stack lines, more-rows,
-         * placeholders, loading rows). Shared by {@link #getToolTipText} and
-         * {@link #getToolTipLocation} so both report the same row content.
+         * The copy text of a row (R46 - formerly the row tooltip): the row's full information as
+         * one line - node rows carry label, partition chip, progress, state and the node://
+         * location; detail rows carry the record's message. Null for rows without text (stack
+         * lines, more-rows, placeholders, loading rows).
          */
-        private String tooltipTextForRow(JIPipeDesktopProgressTreeRowRenderer.Row row) {
+        private String rowCopyText(JIPipeDesktopProgressTreeRowRenderer.Row row) {
             if (row == null) {
                 return null;
             }
@@ -2722,19 +3061,21 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
                 if (nodeRow.getPartitionChip() != null) {
                     builder.append(" (").append(nodeRow.getPartitionChip()).append(")");
                 }
-                JIPipeProgressLog s = store;
-                if (s != null) {
-                    JIPipeProgressNode node = s.getNode(nodeRow.getNodeId());
-                    if (node != null) {
-                        String progress = progressText(node);
-                        if (!progress.isEmpty()) {
-                            builder.append(" - ").append(progress);
-                        }
-                        builder.append(" [").append(node.getState()).append("]");
-                        if (node.getLocation() != null) {
-                            builder.append("\n").append(node.getLocation());
-                        }
-                    }
+                if (nodeRow.getProgressMax() > 0) {
+                    // Truncated like the row's bar text ("5/200 (2%)"), never rounded
+                    int percent = Math.max(0, Math.min(100,
+                            (int) (100.0 * nodeRow.getProgressValue() / nodeRow.getProgressMax())));
+                    builder.append(" - ").append(nodeRow.getProgressValue()).append('/')
+                            .append(nodeRow.getProgressMax()).append(" (").append(percent).append("%)");
+                }
+                builder.append(" [").append(nodeRow.getState()).append(']');
+                if (nodeRow.getPhaseText() != null && !nodeRow.getPhaseText().isBlank()) {
+                    builder.append(' ').append(nodeRow.getPhaseText());
+                }
+                if (nodeRow.getUuidSuffix() != null) {
+                    String uuid = nodeRow.getUuidSuffix();
+                    builder.append('\n').append("node://")
+                            .append(uuid, 1, uuid.length() - 1);
                 }
                 return builder.toString();
             } else if (row instanceof JIPipeDesktopProgressTreeRowRenderer.DetailRow detailRow) {
@@ -2749,101 +3090,5 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
             return null;
         }
 
-        /**
-         * R43: anchors the tooltip to the armed cursor position. ToolTipManager.showTipWindow
-         * computes the tip location as the list's on-screen origin AT SHOW TIME plus the
-         * returned component-relative location (measured with a marker override: the tip lands
-         * exactly at origin + returned point; with a null location it uses the event point AT
-         * EVENT TIME plus the origin at show time plus (0, 20)). The list is the scroll view
-         * content: its origin moves with every tail-follow scroll between the arming event and
-         * the show, which displaced the tip upward by the accumulated scroll delta - and with
-         * the app's effectively infinite dismiss delay (JIPipeGUICommand) the displaced tip then
-         * never auto-hides.
-         *
-         * <p>The returned point is derived from the STORED per-arm screen anchor (see
-         * {@link #recordCursorAnchor}), not from the live event position: within the armed row
-         * the point is constant (the manager's unchanged branch keeps the visible tip in place
-         * instead of recreating the popup per mouse-move event), and at the lazy timer fire the
-         * same derivation with the show-time origin lands the tip exactly at the armed cursor
-         * screen position plus the standard (0, 20) offset - including across scrolls, because
-         * the anchor is screen-invariant.
-         *
-         * <p>A row without tooltip text returns a null location: with a non-null location the
-         * manager's changed branch would show an EMPTY tip window for the null text (its
-         * showTipWindow has no null-text guard) that then lingers for the app's infinite dismiss
-         * delay; the null location routes the transition through the manager's clean-hide branch.
-         */
-        @Override
-        public Point getToolTipLocation(MouseEvent event) {
-            if (tooltipTextForRow(rowAtPoint(cursorContentPoint(event))) == null) {
-                return null;
-            }
-            Point screen = lastTipScreenPoint;
-            if (screen == null || !isShowing()) {
-                return null;
-            }
-            Point origin = getLocationOnScreen();
-            return new Point(screen.x - origin.x, screen.y - origin.y + 20);
-        }
-
-        /**
-         * R43: hides the visible tooltip - and cancels a pending arm - when the row under the
-         * (stationary) cursor changed since the cursor's position was recorded. The tip is placed
-         * correctly at show time ({@link #getToolTipLocation} anchors it to the cursor), but a
-         * scroll or a model rebuild moves different rows under the stationary cursor, and the
-         * armed tooltip would then name a row that is no longer under it (stranding). The check
-         * re-derives the content point from the anchor's screen position against the CURRENT
-         * origin, so consecutive adjustment events without a new mouse position cannot drift. A
-         * pending arm whose row is still under the cursor is never killed - the show the user is
-         * waiting for proceeds, anchored. The reset goes through ToolTipManager's public
-         * mousePressed hook: it hides the visible tip, stops the pending show timers, and clears
-         * the armed component and event - without it, a timer that is still running from the
-         * hover re-shows a stale tip (the mouse listeners stay registered, so the next real
-         * mouse move re-arms tooltips normally).
-         */
-        private void invalidateStaleTooltip() {
-            Point screen = lastTipScreenPoint;
-            String armedKey = lastTipRowKey;
-            if (screen == null || armedKey == null || !isShowing()) {
-                return;
-            }
-            Point origin = getLocationOnScreen();
-            Point contentPoint = new Point(screen.x - origin.x, screen.y - origin.y);
-            String currentKey = null;
-            JIPipeDesktopProgressTreeRowRenderer.Row row = rowAtPoint(contentPoint);
-            if (row != null) {
-                currentKey = rowKey(row);
-            }
-            if (!java.util.Objects.equals(armedKey, currentKey)) {
-                ToolTipManager.sharedInstance().mousePressed(new MouseEvent(this, MouseEvent.MOUSE_PRESSED,
-                        System.currentTimeMillis(), 0, contentPoint.x, contentPoint.y, screen.x, screen.y,
-                        1, false, 1));
-                lastTipRowKey = null;
-                lastTipScreenPoint = null;
-            }
-        }
-
-        /**
-         * R43: the value identity of a row for tooltip invalidation: stable across model rebuilds
-         * (the row objects are rebuilt per tick), so an unchanged tree does not kill a visible tip.
-         */
-        private static String rowKey(JIPipeDesktopProgressTreeRowRenderer.Row row) {
-            if (row instanceof JIPipeDesktopProgressTreeRowRenderer.NodeRow nodeRow) {
-                return "n" + nodeRow.getNodeId();
-            }
-            if (row instanceof JIPipeDesktopProgressTreeRowRenderer.DetailRow detailRow) {
-                return "d" + detailRow.nodeId() + ":" + detailRow.slot();
-            }
-            if (row instanceof JIPipeDesktopProgressTreeRowRenderer.StackRow stackRow) {
-                return "s" + stackRow.nodeId() + ":" + stackRow.line();
-            }
-            if (row instanceof JIPipeDesktopProgressTreeRowRenderer.MoreRow moreRow) {
-                return "m" + moreRow.nodeId() + ":" + moreRow.olderCount();
-            }
-            if (row instanceof JIPipeDesktopProgressTreeRowRenderer.PlaceholderRow placeholderRow) {
-                return "p" + placeholderRow.nodeId();
-            }
-            return String.valueOf(row);
-        }
     }
 }
