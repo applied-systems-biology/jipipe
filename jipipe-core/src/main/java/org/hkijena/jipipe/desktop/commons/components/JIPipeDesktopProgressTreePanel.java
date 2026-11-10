@@ -678,6 +678,12 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
             if (ts > 0) {
                 state.firstTs.compareAndExchange(0, ts);
                 state.lastTs.accumulateAndGet(ts, Math::max);
+                // R49: the activity start excludes the node's own creation record (a
+                // pipeline-setup created algorithm would otherwise carry its creation time as
+                // its activity start and the sibling sort would degenerate to creation order)
+                if (!(record instanceof JIPipeProgressRecord.Node)) {
+                    state.workFirstTs.compareAndExchange(0, ts);
+                }
             }
             if (record instanceof JIPipeProgressRecord.Log logRecord) {
                 RecordCategory logCategory = categoryOfLevel(logRecord.lv());
@@ -1045,12 +1051,43 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
                 }
             }
         }
+        // R49: siblings render in execution chronology - creation order reads as pipeline order
+        // (all algorithm rows are created at pipeline setup), so the running branch would render
+        // ABOVE chains that already executed. The sort key is the child's subtree-activity start
+        // (memoized bottom-up, no per-child subtree flatten), never-started rows render last,
+        // ties break by node id (deterministic; keeps creation order within a timestamp group).
+        Map<Integer, Long> subtreeStartMemo = new HashMap<>();
+        for (List<Integer> children : childMap.values()) {
+            children.sort(Comparator.comparingLong((Integer child) -> subtreeActivityStart(childMap, child, subtreeStartMemo))
+                    .thenComparing(child -> child));
+        }
         activeNodeId = newestRunningId;
         nodeState(s.getRootNodeId());
         int rootNodeId = s.getRootNodeId();
         JIPipeProgressNode rootNode = s.getNode(rootNodeId);
+        // R50: the root's RUNNING -> terminal transition collapses the whole tree (one pass,
+        // BEFORE the rows are built, so a single rebuild renders the collapsed tree). The flag
+        // flip is the guard: a later rebuild sees runActive already false and does nothing.
+        // Unconditional (not gated on the auto-show checkbox). Post-finish the log starts
+        // compact; the user re-expands what they want.
+        boolean previousRunActive = runActive;
         // R47: the gates exist only while the run root is RUNNING
         runActive = rootNode != null && rootNode.getState() == JIPipeProgressNodeState.RUNNING;
+        if (previousRunActive && !runActive) {
+            expandedNodeIds.clear();
+            for (NodeUiState state : nodeStates.values()) {
+                state.expanded = false;
+                state.virtual = null;
+            }
+            revealedGateNodeIds.clear();
+            openStacks.clear();
+            // Disengage the follows (symmetric with expandActiveNodeChain engaging them)
+            detailAutoscroll = false;
+            autoscrollNodeId = 0;
+            scrollToDetailEndNodeId = 0;
+            lastFollowedActiveNodeId = 0;
+            detailAutoscrollButton.setSelected(false);
+        }
         NodeUiState rootState = nodeStates.get(rootNodeId);
         if (rootState != null && visibleRecordCount(rootState) > 0) {
             // Non-graph run: the root's own records render under the root row, as before (R26)
@@ -1067,6 +1104,38 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
         List<String> selectionKeys = captureSelectionKeys();
         listModel.reset(rows, new ArrayList<>(rebuildBlocks));
         restoreSelection(selectionKeys);
+    }
+
+    /**
+     * R49: the subtree-activity start of a node - the timestamp its subtree first did any work:
+     * the node's own first work-record timestamp (workFirstTs, which excludes the node's own
+     * creation record - firstTs carries the creation time of nodes created before their work and
+     * would degenerate the sort to creation order), else the earliest started descendant's, else
+     * {@link Long#MAX_VALUE} for a subtree where nothing started yet (such rows render after all
+     * started ones). Memoized bottom-up over the child map (each node computed once per rebuild),
+     * so the sibling sort stays O(n log n) without per-child subtree flattens. The min over
+     * children is order-insensitive, so the recursion tolerates sibling lists being sorted
+     * concurrently.
+     */
+    private long subtreeActivityStart(Map<Integer, List<Integer>> childMap, int nodeId, Map<Integer, Long> memo) {
+        Long cached = memo.get(nodeId);
+        if (cached != null) {
+            return cached;
+        }
+        NodeUiState state = nodeStates.get(nodeId);
+        long own = state != null ? state.workFirstTs.get() : 0;
+        long result;
+        if (own > 0) {
+            result = own;
+        } else {
+            long earliest = Long.MAX_VALUE;
+            for (int child : childMap.getOrDefault(nodeId, List.of())) {
+                earliest = Math.min(earliest, subtreeActivityStart(childMap, child, memo));
+            }
+            result = earliest;
+        }
+        memo.put(nodeId, result);
+        return result;
     }
 
     /**
@@ -2895,6 +2964,13 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
     private static final class NodeUiState {
         final int nodeId;
         final AtomicLong firstTs = new AtomicLong();
+        /**
+         * R49: the first WORK-record timestamp of the node - every record except the node's own
+         * creation ('n') record. NodeUiState.firstTs is set from the creation record too, so it
+         * carries the node's creation time for nodes created before their work (pipeline-setup
+         * created algorithms); the sibling sort needs the activity start, not the creation time.
+         */
+        final AtomicLong workFirstTs = new AtomicLong();
         final AtomicLong lastTs = new AtomicLong();
         final AtomicLong debugCount = new AtomicLong();
         final AtomicLong infoCount = new AtomicLong();
