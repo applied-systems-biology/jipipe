@@ -39,7 +39,9 @@ import java.time.format.DateTimeFormatter;
  * <p>
  * Node rows: indent, expander caret, state icon (running spinner / done / failed / cancelled),
  * dim partition chip ({@code P0}), label with a faint {@code [uuid]} suffix when the label carries
- * one, {@code +N} hidden-descendants badge (collapsed only), faint {@code <n> debug} chip, inline
+ * one, {@code +N} hidden-descendants badge (collapsed only; R29: all descendant nodes under the
+ * current filters, R42: excluding finished nodes with no visible records and no rendering
+ * descendants), faint {@code <n> debug} chip, inline
  * progress bar with mono {@code v/mx (pct%)} text, and a phase tag (duration / {@code running Ns} /
  * {@code failed}). Detail rows: timestamp + level + message (WARN/ERROR tinted), error rows with a
  * one-line summary and a {@code Show stack trace} toggle, dark monospace stack lines,

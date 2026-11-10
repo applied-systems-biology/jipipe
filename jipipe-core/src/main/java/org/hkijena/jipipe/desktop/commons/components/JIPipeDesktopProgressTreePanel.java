@@ -342,11 +342,11 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
             // bottom - that decrease is not a user scroll-up (the follow re-asserts the tail
             // position right after the rebuild)
             boolean modelShrank = modelSize < lastScrollModelSize;
-            int scrollDelta = value - lastScrollValue;
             lastScrollValue = value;
             lastScrollModelSize = modelSize;
-            // R43: rows moved under a stationary cursor - a visible tooltip would be stranded
-            list.invalidateStaleTooltip(scrollDelta);
+            // R43: rows moved under a stationary cursor - a visible or pending tooltip would
+            // name a row that is no longer under it
+            list.invalidateStaleTooltip();
             if (scrolledUp && !modelShrank && detailAutoscroll && !scrollProgrammatic) {
                 detailAutoscroll = false;
                 autoscrollNodeId = 0;
@@ -856,9 +856,8 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
             walkChildren(s, childMap, rootNodeId, 0, null, rows);
         }
         listModel.reset(rows, new ArrayList<>(rebuildBlocks));
-        // R43: the rebuild may have moved different rows under a stationary cursor (no scroll:
-        // the cursor's list-relative point is unchanged)
-        list.invalidateStaleTooltip(0);
+        // R43: the rebuild may have moved different rows under a stationary cursor
+        list.invalidateStaleTooltip();
     }
 
     /**
@@ -1000,42 +999,51 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
      */
     private int countVisibleDescendantNodes(JIPipeProgressLog s, Map<Integer, List<Integer>> childMap, int nodeId) {
         int total = 0;
-        Deque<Integer> stack = new ArrayDeque<>(childMap.getOrDefault(nodeId, List.of()));
-        while (!stack.isEmpty()) {
-            int id = stack.pop();
-            JIPipeProgressNode node = s.getNode(id);
-            if (node == null) {
-                continue;
-            }
-            if (node.getKind() == JIPipeProgressNodeKind.PARTITION) {
-                // Squashed: not a row - but its children are rows, so recurse without counting it
-                List<Integer> partitionChildren = childMap.get(id);
-                if (partitionChildren != null) {
-                    for (int child : partitionChildren) {
-                        stack.push(child);
-                    }
-                }
-                continue;
-            }
-            if (node.getLevel() == JIPipeLogLevel.DEBUG && !visibleCategories.contains(RecordCategory.DEBUG)) {
-                // Hidden with its whole subtree (R27)
-                continue;
-            }
-            // R42: the badge counts only nodes that RENDER a row. A descendant that is finished,
-            // has no visible records, and renders no visible descendants is skipped by
-            // appendNodeRow - counting it would promise a +N that reveals nothing. A rendering
-            // descendant's children are counted by the recursive walk (each subtree once), so the
-            // walk does not push them again; a non-rendering descendant's subtree is pruned (by
-            // its own condition it has no rendering descendants).
-            NodeUiState descendantState = nodeStates.get(id);
-            boolean rendersRow = node.getState() == JIPipeProgressNodeState.RUNNING
-                    || (descendantState != null && visibleRecordCount(descendantState) > 0)
-                    || countVisibleDescendantNodes(s, childMap, id) > 0;
-            if (rendersRow) {
-                total++;
-            }
+        for (int child : childMap.getOrDefault(nodeId, List.of())) {
+            total += countRenderedSubtreeNodes(s, childMap, child);
         }
         return total;
+    }
+
+    /**
+     * R29/R42: the number of rendered rows in the subtree rooted at {@code nodeId} - the value
+     * the {@code +N} badge aggregates. The walk visits ALL descendants (the badge stays "how
+     * many hidden descendant nodes are here", not a direct-children count); partition nodes are
+     * squashed (not a row, their children are), and debug-hidden nodes hide their whole subtree
+     * (R27). Per node, the R42 skip applies: a finished node with no visible records and no
+     * rendering descendants renders no row and contributes nothing to its ancestors' counts
+     * (its subtree contributes nothing through it - by the skip condition it has none).
+     */
+    private int countRenderedSubtreeNodes(JIPipeProgressLog s, Map<Integer, List<Integer>> childMap, int nodeId) {
+        JIPipeProgressNode node = s.getNode(nodeId);
+        if (node == null) {
+            return 0;
+        }
+        if (node.getKind() == JIPipeProgressNodeKind.PARTITION) {
+            // Squashed: not a row - its children are
+            int total = 0;
+            for (int child : childMap.getOrDefault(nodeId, List.of())) {
+                total += countRenderedSubtreeNodes(s, childMap, child);
+            }
+            return total;
+        }
+        if (node.getLevel() == JIPipeLogLevel.DEBUG && !visibleCategories.contains(RecordCategory.DEBUG)) {
+            // Hidden with its whole subtree (R27)
+            return 0;
+        }
+        int childTotal = 0;
+        for (int child : childMap.getOrDefault(nodeId, List.of())) {
+            childTotal += countRenderedSubtreeNodes(s, childMap, child);
+        }
+        NodeUiState state = nodeStates.get(nodeId);
+        boolean selfRenders = node.getState() == JIPipeProgressNodeState.RUNNING
+                || (state != null && visibleRecordCount(state) > 0);
+        if (!selfRenders && childTotal == 0) {
+            // R42: a finished node with no visible records and no rendering descendants is
+            // skipped by appendNodeRow - counting it would promise a +N that reveals nothing
+            return 0;
+        }
+        return 1 + childTotal;
     }
 
     /**
@@ -2021,7 +2029,8 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
             if (state != null && !state.expanded) {
                 state.expanded = true;
                 expandedNodeIds.add(id);
-                lastExpandedNodeId = id;
+                // Not lastExpandedNodeId: the auto-expansion must not retarget the scroll
+                // controls (currentDetailNodeId) away from the user's last manual expansion
                 changed = true;
                 if (node.getState() == JIPipeProgressNodeState.RUNNING && ownHiddenRecordCount(state) == 0
                         && state.virtual == null) {
@@ -2519,12 +2528,14 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
      */
     private class ProgressTreeList extends JList<JIPipeDesktopProgressTreeRowRenderer.Row> {
 
-        // R43: the row the tooltip machinery last armed on (its component-relative mouse point and
-        // a value key of the row under it). While the cursor is stationary NO mouse events arrive,
-        // so a scroll or a model rebuild can silently move different rows under it - without the
-        // invalidation below, the visible tooltip stays where it was shown (stranded over a
-        // different row, e.g. at the top of a scrolled live window)
-        private Point lastTipMousePoint;
+        // R43: the tooltip anchor - the cursor's SCREEN position at the last arm (from the
+        // event's on-screen coordinates; invariant under scrolling) and the value key of the row
+        // that was under it. Armed by this list's own mouse listeners and refreshed by the
+        // tooltip queries (the manager's lazy re-query can revisit a stale event after a scroll).
+        // While a tip is visible or pending NO mouse events arrive, so a scroll or a model
+        // rebuild can silently move different rows under the stationary cursor - the
+        // invalidation below then resets the manager
+        private Point lastTipScreenPoint;
         private String lastTipRowKey;
 
         private ProgressTreeList() {
@@ -2536,6 +2547,11 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
                 }
 
                 @Override
+                public void mouseEntered(MouseEvent e) {
+                    recordCursorAnchor(e);
+                }
+
+                @Override
                 public void mouseMoved(MouseEvent e) {
                     JIPipeDesktopProgressTreeRowRenderer.Row row = rowAtPoint(e);
                     boolean interactive = row instanceof JIPipeDesktopProgressTreeRowRenderer.NodeRow nodeRow && nodeRow.isExpandable()
@@ -2543,6 +2559,14 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
                             || row instanceof JIPipeDesktopProgressTreeRowRenderer.StackRow
                             || row instanceof JIPipeDesktopProgressTreeRowRenderer.MoreRow;
                     setCursor(Cursor.getPredefinedCursor(interactive ? Cursor.HAND_CURSOR : Cursor.DEFAULT_CURSOR));
+                    recordCursorAnchor(e);
+                }
+
+                @Override
+                public void mouseExited(MouseEvent e) {
+                    // The cursor left the list: no row is under it, nothing is protected
+                    lastTipScreenPoint = null;
+                    lastTipRowKey = null;
                 }
             };
             addMouseListener(mouseAdapter);
@@ -2550,15 +2574,44 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
         }
 
         private JIPipeDesktopProgressTreeRowRenderer.Row rowAtPoint(MouseEvent e) {
-            int index = locationToIndex(e.getPoint());
+            return rowAtPoint(e.getPoint());
+        }
+
+        private JIPipeDesktopProgressTreeRowRenderer.Row rowAtPoint(Point point) {
+            int index = locationToIndex(point);
             if (index < 0 || index >= listModel.getSize()) {
                 return null;
             }
             Rectangle bounds = getCellBounds(index, index);
-            if (bounds == null || !bounds.contains(e.getPoint())) {
+            if (bounds == null || !bounds.contains(point)) {
                 return null;
             }
             return listModel.getElementAt(index);
+        }
+
+        /**
+         * R43: records where the cursor is (screen coordinates, stable across scrolls) and which
+         * row was under it - the reference state of the stale-tip invalidation.
+         */
+        private void recordCursorAnchor(MouseEvent e) {
+            lastTipScreenPoint = new Point(e.getXOnScreen(), e.getYOnScreen());
+            JIPipeDesktopProgressTreeRowRenderer.Row row = rowAtPoint(e);
+            lastTipRowKey = row != null ? rowKey(row) : null;
+        }
+
+        /**
+         * R43: the list-relative point of the event's cursor position, derived from the event's
+         * on-screen coordinates and the list's CURRENT origin. For a fresh event this equals the
+         * event point; for a stale re-query of a stationary cursor after a scroll (the manager
+         * re-queries the armed event at timer-fire time) the list origin has moved and the event
+         * point no longer names the row under the cursor - the screen-derived point does.
+         */
+        private Point cursorContentPoint(MouseEvent event) {
+            if (isShowing() && (event.getXOnScreen() != 0 || event.getYOnScreen() != 0)) {
+                Point origin = getLocationOnScreen();
+                return new Point(event.getXOnScreen() - origin.x, event.getYOnScreen() - origin.y);
+            }
+            return event.getPoint();
         }
 
         private void handleClick(JIPipeDesktopProgressTreeRowRenderer.Row row) {
@@ -2632,12 +2685,15 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
 
         @Override
         public String getToolTipText(MouseEvent event) {
-            JIPipeDesktopProgressTreeRowRenderer.Row row = rowAtPoint(event);
-            // R43: remember where the cursor was when the tooltip machinery asked - the reference
-            // point of the invalidation (the cursor is stationary while a tip is visible, so no
-            // newer point exists)
-            lastTipMousePoint = event.getPoint();
-            lastTipRowKey = rowKey(row);
+            // R43: re-derive the point from the event's screen coordinates (cursorContentPoint)
+            // so a stale re-query names the row that is under the stationary cursor NOW, and
+            // refresh the anchor with the current truth
+            JIPipeDesktopProgressTreeRowRenderer.Row row = rowAtPoint(cursorContentPoint(event));
+            lastTipScreenPoint = new Point(event.getXOnScreen(), event.getYOnScreen());
+            lastTipRowKey = row != null ? rowKey(row) : null;
+            if (row == null) {
+                return null;
+            }
             if (row instanceof JIPipeDesktopProgressTreeRowRenderer.NodeRow nodeRow) {
                 StringBuilder builder = new StringBuilder(nodeRow.getLabel());
                 if (nodeRow.getPartitionChip() != null) {
@@ -2671,43 +2727,60 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
         }
 
         /**
-         * R43: hides the visible tooltip when the row under the (stationary) cursor changed -
-         * the tip is placed correctly at show time (event screen coordinates), but a scroll or a
-         * model rebuild moves rows under a stationary cursor and leaves the tip stranded over a
-         * different row. The row is identified by value (the node/slot identity, stable across
-         * rebuilds) at the cursor's current point; a changed row hides the tip via ToolTipManager's
-         * enabled toggle (the documented public API; the tip re-arms on the next mouse move).
-         *
-         * @param scrollDelta the scroll position change since the last call (0 for a pure model
-         *                    change): the cursor's list-relative point moves with the content
+         * R43: anchors the tooltip to the cursor. ToolTipManager.showTipWindow computes the tip
+         * location as the list's on-screen origin AT SHOW TIME plus the returned component
+         * relative location (measured: with a marker (37, 53) the tip lands exactly at
+         * origin + (37, 53); with a null location it uses the event point AT EVENT TIME plus the
+         * origin at show time plus (0, 20)). The list is the scroll view content: its origin
+         * moves with every tail-follow scroll between the arming event and the show, which
+         * displaced the tip upward by the accumulated scroll delta - and with the app's
+         * effectively infinite dismiss delay (JIPipeGUICommand) the displaced tip then never
+         * auto-hides. Returning the cursor's CURRENT component-relative position plus the
+         * standard (0, 20) offset cancels the origin: the tip lands at the cursor's event-time
+         * screen position plus (0, 20) whenever the origin is unchanged between this call and
+         * the show - always true for the lazy arm path, where the manager calls this immediately
+         * before showTipWindow.
          */
-        private void invalidateStaleTooltip(int scrollDelta) {
-            Point point = lastTipMousePoint;
+        @Override
+        public Point getToolTipLocation(MouseEvent event) {
+            Point point = cursorContentPoint(event);
+            return new Point(point.x, point.y + 20);
+        }
+
+        /**
+         * R43: hides the visible tooltip - and cancels a pending arm - when the row under the
+         * (stationary) cursor changed since the cursor's position was recorded. The tip is placed
+         * correctly at show time ({@link #getToolTipLocation} anchors it to the cursor), but a
+         * scroll or a model rebuild moves different rows under the stationary cursor, and the
+         * armed tooltip would then name a row that is no longer under it (stranding). The check
+         * re-derives the content point from the anchor's screen position against the CURRENT
+         * origin, so consecutive adjustment events without a new mouse position cannot drift. A
+         * pending arm whose row is still under the cursor is never killed - the show the user is
+         * waiting for proceeds, anchored. The reset goes through ToolTipManager's public
+         * mousePressed hook: it hides the visible tip, stops the pending show timers, and clears
+         * the armed component and event - without it, a timer that is still running from the
+         * hover re-shows a stale tip (the mouse listeners stay registered, so the next real
+         * mouse move re-arms tooltips normally).
+         */
+        private void invalidateStaleTooltip() {
+            Point screen = lastTipScreenPoint;
             String armedKey = lastTipRowKey;
-            if (point == null || armedKey == null) {
+            if (screen == null || armedKey == null || !isShowing()) {
                 return;
             }
-            if (scrollDelta != 0) {
-                point = new Point(point.x, point.y + scrollDelta);
-            }
+            Point origin = getLocationOnScreen();
+            Point contentPoint = new Point(screen.x - origin.x, screen.y - origin.y);
             String currentKey = null;
-            int index = locationToIndex(point);
-            if (index >= 0 && index < listModel.getSize()) {
-                Rectangle bounds = getCellBounds(index, index);
-                if (bounds != null && bounds.contains(point)) {
-                    currentKey = rowKey(listModel.getElementAt(index));
-                }
+            JIPipeDesktopProgressTreeRowRenderer.Row row = rowAtPoint(contentPoint);
+            if (row != null) {
+                currentKey = rowKey(row);
             }
             if (!java.util.Objects.equals(armedKey, currentKey)) {
-                // Reset the manager's armed state through its public mousePressed hook: it hides
-                // the visible tip, stops the pending show timers, and clears the armed component
-                // and text - without it, a timer that is still running from the hover re-shows
-                // the stale tip (the mouse listener stay registered, so the next real mouse move
-                // re-arms tooltips normally)
-                ToolTipManager.sharedInstance().mousePressed(new MouseEvent(list, MouseEvent.MOUSE_PRESSED,
-                        System.currentTimeMillis(), 0, point.x, point.y, 0, 0, 1, false, 1));
+                ToolTipManager.sharedInstance().mousePressed(new MouseEvent(this, MouseEvent.MOUSE_PRESSED,
+                        System.currentTimeMillis(), 0, contentPoint.x, contentPoint.y, screen.x, screen.y,
+                        1, false, 1));
                 lastTipRowKey = null;
-                lastTipMousePoint = null;
+                lastTipScreenPoint = null;
             }
         }
 
