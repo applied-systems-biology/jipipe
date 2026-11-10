@@ -1123,4 +1123,73 @@ public class JIPipeProgressInfo implements Cancelable {
         }
     }
 
+    /**
+     * Subscribes a synchronous per-record listener (R45a) to this handle's current store and
+     * keeps the subscription alive across store adoption: when this handle adopts a different
+     * store (see {@link #setStore(JIPipeProgressLog)}), the subscription migrates to the adopted
+     * store. Unlike {@link #subscribeToBatchEvents}, the listener fires for every store type -
+     * including silent stores, which never emit batch events - once per record on the submitting
+     * thread.
+     * <p>
+     * Listeners run inline while the store's submission lock is held and must be cheap; UI work
+     * must hop to the EDT.
+     *
+     * @param listener the record listener
+     * @return the subscription (close it to unsubscribe and stop the migration)
+     */
+    public RecordSubscription subscribeToRecords(JIPipeProgressLog.ProgressRecordListener listener) {
+        RecordSubscription subscription = new RecordSubscription(listener);
+        subscription.attach(getStore());
+        storeAdoptedCallbacks.add(subscription.migrationCallback);
+        return subscription;
+    }
+
+    /**
+     * A synchronous per-record subscription that follows the handle's store across adoption.
+     * Close it when the consumer goes away.
+     */
+    public final class RecordSubscription implements AutoCloseable {
+
+        private final JIPipeProgressLog.ProgressRecordListener listener;
+        private final Runnable migrationCallback = this::migrate;
+        private volatile JIPipeProgressLog store;
+
+        private RecordSubscription(JIPipeProgressLog.ProgressRecordListener listener) {
+            this.listener = listener;
+        }
+
+        /**
+         * Returns the store this subscription is currently subscribed to.
+         *
+         * @return the store, or {@code null} if the handle had no store
+         */
+        public JIPipeProgressLog getStore() {
+            return store;
+        }
+
+        @Override
+        public void close() {
+            attach(null);
+            storeAdoptedCallbacks.remove(migrationCallback);
+        }
+
+        private void migrate() {
+            attach(JIPipeProgressInfo.this.getStore());
+        }
+
+        private void attach(JIPipeProgressLog newStore) {
+            JIPipeProgressLog current = store;
+            if (current == newStore) {
+                return;
+            }
+            if (current != null) {
+                current.removeProgressRecordListener(listener);
+            }
+            store = newStore;
+            if (newStore != null) {
+                newStore.addProgressRecordListener(listener);
+            }
+        }
+    }
+
 }

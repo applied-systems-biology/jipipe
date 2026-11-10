@@ -451,6 +451,53 @@ public interface JIPipeProgressLog extends AutoCloseable {
     ProgressBatchEventEmitter getBatchEventEmitter();
 
     /**
+     * Subscribes a synchronous per-record listener (R45a): it is invoked once per record on the
+     * submitting thread, as the record is submitted via
+     * {@code beginNode}/{@code log}/{@code progress}/{@code error}/{@code notification}/
+     * {@code nodeFinished} - for every store type, including stores without a writer thread
+     * (silent/stdout) whose batch emitter never emits. This is the store-agnostic replacement
+     * for the pre-store-refactor synchronous status emitter; the coalesced
+     * {@link ProgressBatchEvent} path of file-backed stores is unaffected and remains the
+     * transport for run panels.
+     * <p>
+     * Listeners run inline while the store's submission lock is held and must be cheap: no
+     * store submission calls beyond trivial reads, no blocking, and UI work must hop to the
+     * EDT. The record is rendered with the node index state as of submission (exact for
+     * silent/stdout stores, whose index is applied synchronously; a file-backed store applies
+     * the record to its index on the writer thread, so a just-submitted progress record renders
+     * with the previous counter state). Head, node-finished-sweep, and run-status records are
+     * not submitted through the record path and do not fire the hook (they render nothing).
+     *
+     * @param listener the listener
+     */
+    void addProgressRecordListener(ProgressRecordListener listener);
+
+    /**
+     * Removes a listener registered via {@link #addProgressRecordListener(ProgressRecordListener)}.
+     *
+     * @param listener the listener
+     */
+    void removeProgressRecordListener(ProgressRecordListener listener);
+
+    /**
+     * A synchronous per-record notification (R45a): the store that submitted the record, the
+     * record's sequence number (its line number), and the record itself. Delivered on the
+     * submitting thread before any coalesced {@link ProgressBatchEvent} of the same record.
+     */
+    @FunctionalInterface
+    interface ProgressRecordListener {
+
+        /**
+         * Called once per submitted record.
+         *
+         * @param store    the store that submitted the record
+         * @param sequence the record's sequence number (its line number)
+         * @param record   the record
+         */
+        void onProgressRecord(JIPipeProgressLog store, long sequence, JIPipeProgressRecord record);
+    }
+
+    /**
      * A batch of new/changed records, emitted at most once per coalesce interval plus a guaranteed
      * final batch at run end. Consumers never receive per-record events on the hot path.
      * <p>

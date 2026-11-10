@@ -20,6 +20,7 @@ import java.io.StringWriter;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -81,6 +82,14 @@ public abstract class AbstractJIPipeProgressLog implements JIPipeProgressLog {
     private final ReentrantLock tailLock = new ReentrantLock();
     private final ReentrantLock submitLock = new ReentrantLock();
     private final ProgressBatchEventEmitter batchEventEmitter = new ProgressBatchEventEmitter();
+    /**
+     * The synchronous per-record listeners (R45a): invoked on the submitting thread, once per
+     * record submitted through the public record path - for every store type, including stores
+     * without a writer thread whose batch emitter never emits. Copy-on-write: iteration during a
+     * fire is lock-free.
+     */
+    private final CopyOnWriteArrayList<JIPipeProgressLog.ProgressRecordListener> recordListeners =
+            new CopyOnWriteArrayList<>();
     private volatile int tailLimit = DEFAULT_TAIL_LIMIT;
     private volatile long coalesceIntervalMillis = DEFAULT_COALESCE_INTERVAL_MILLIS;
     private long tailChars;
@@ -525,6 +534,16 @@ public abstract class AbstractJIPipeProgressLog implements JIPipeProgressLog {
         return batchEventEmitter;
     }
 
+    @Override
+    public final void addProgressRecordListener(JIPipeProgressLog.ProgressRecordListener listener) {
+        recordListeners.add(listener);
+    }
+
+    @Override
+    public final void removeProgressRecordListener(JIPipeProgressLog.ProgressRecordListener listener) {
+        recordListeners.remove(listener);
+    }
+
     /**
      * Emits a coalesced batch event to the subscribers of {@link #getBatchEventEmitter()}. Called
      * by implementations that own a writer thread; the event is delivered synchronously to the
@@ -658,6 +677,20 @@ public abstract class AbstractJIPipeProgressLog implements JIPipeProgressLog {
         awaitCapacity();
         long seq = sequenceCounter.incrementAndGet();
         enqueue(seq, record);
+        if (!recordListeners.isEmpty()) {
+            // R45a: the synchronous per-record hook - fires on this (submitting) thread for
+            // every store type, independent of the coalesced batch path. The silent/stdout
+            // implementations applied the record to the index inside enqueue, so a listener
+            // rendering the record sees the current index state. Guarded by isEmpty(): the
+            // common case (no listeners on run stores) costs one read.
+            for (JIPipeProgressLog.ProgressRecordListener listener : recordListeners) {
+                try {
+                    listener.onProgressRecord(this, seq, record);
+                } catch (Throwable t) {
+                    t.printStackTrace();
+                }
+            }
+        }
     }
 
     private JIPipeProgressNode resolveParentLocked(int parentId) {
