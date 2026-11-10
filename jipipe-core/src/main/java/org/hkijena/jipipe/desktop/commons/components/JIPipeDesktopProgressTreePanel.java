@@ -51,6 +51,7 @@ import java.util.Deque;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -436,7 +437,7 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
         errorToggleButton.addActionListener(e -> toggleCategory(RecordCategory.ERROR, errorToggleButton.isSelected()));
         updateCategoryButtons();
         copyButton.setToolTipText("Copy the selected rows, or the whole rendered log (last "
-                + NumberFormat.getIntegerInstance().format(COPY_LINE_LIMIT) + " lines) when nothing is selected)");
+                + NumberFormat.getIntegerInstance().format(COPY_LINE_LIMIT) + " lines) when nothing is selected");
         copyButton.addActionListener(e -> copySelectionOrWholeLog());
         exportButton.setToolTipText("Export the underlying run data file");
         exportButton.addActionListener(e -> exportDataFile());
@@ -824,6 +825,196 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
      * "Pipeline setup"/"Pipeline finished" phase rows) show their node and phase rows directly at
      * the top level with no "Pipeline run" grouping row.
      */
+    /**
+     * The rebuild-stable identity of a row (fix round 1, R46): the shape of the former
+     * tooltip-era row key derivation. Node rows key by node id, detail rows by node id + detail
+     * slot, stack rows by node id + line, more/loading rows by their identity fields, gate rows
+     * by parent node id. A row inside a virtual block (detail or placeholder) is keyed by node
+     * id + slot instead (the "v" prefix) - the capture derives the slot from the containing
+     * block, since the row object alone cannot distinguish the slots of a placeholder.
+     */
+    private static String selectionKey(JIPipeDesktopProgressTreeRowRenderer.Row row) {
+        if (row instanceof JIPipeDesktopProgressTreeRowRenderer.NodeRow nodeRow) {
+            return "n" + nodeRow.getNodeId();
+        }
+        if (row instanceof JIPipeDesktopProgressTreeRowRenderer.DetailRow detailRow) {
+            if (detailRow.slot() >= 0) {
+                return "d" + detailRow.nodeId() + ":" + detailRow.slot();
+            }
+            // A paged detail row has no slot (the page is a sliding window over the node's
+            // records): the record's own content keys it, so the selection follows the record
+            // until the record falls off the page
+            return "d" + detailRow.nodeId() + ":r" + recordKey(detailRow.record());
+        }
+        if (row instanceof JIPipeDesktopProgressTreeRowRenderer.StackRow stackRow) {
+            return "s" + stackRow.nodeId() + ":" + stackRow.line();
+        }
+        if (row instanceof JIPipeDesktopProgressTreeRowRenderer.MoreRow moreRow) {
+            return "m" + moreRow.nodeId() + ":" + moreRow.olderCount();
+        }
+        if (row instanceof JIPipeDesktopProgressTreeRowRenderer.LoadingRow loadingRow) {
+            return "l" + loadingRow.nodeId();
+        }
+        if (row instanceof JIPipeDesktopProgressTreeRowRenderer.FinishedItemsGateRow gateRow) {
+            return "g" + gateRow.parentNodeId();
+        }
+        if (row instanceof JIPipeDesktopProgressTreeRowRenderer.PlaceholderRow placeholderRow) {
+            // Without the block context (never the case on a real capture) the node id is all
+            // the row carries
+            return "p" + placeholderRow.nodeId();
+        }
+        return String.valueOf(row);
+    }
+
+    /**
+     * The content identity of a record (paged detail rows have no slot to key by): the record
+     * type, its timestamp, and its message fields.
+     */
+    private static String recordKey(JIPipeProgressRecord record) {
+        if (record instanceof JIPipeProgressRecord.Log logRecord) {
+            return logRecord.ts() + ":" + logRecord.lv() + ":" + logRecord.m();
+        }
+        if (record instanceof JIPipeProgressRecord.Error errorRecord) {
+            return errorRecord.ts() + ":e:" + errorRecord.c() + ":" + errorRecord.m();
+        }
+        if (record instanceof JIPipeProgressRecord.Notification notificationRecord) {
+            return notificationRecord.ts() + ":w:" + notificationRecord.h() + ":" + notificationRecord.d();
+        }
+        return String.valueOf(record);
+    }
+
+    /**
+     * Captures the current selection as rebuild-stable row keys (fix round 1, R46). Runs on the
+     * EDT before a model reset.
+     */
+    private List<String> captureSelectionKeys() {
+        int[] selected = list.getSelectedIndices();
+        if (selected.length == 0) {
+            return List.of();
+        }
+        List<String> keys = new ArrayList<>(selected.length);
+        for (int index : selected) {
+            JIPipeDesktopProgressTreeRowRenderer.Row row = listModel.getElementAt(index);
+            VirtualBlock block = listModel.blockAt(index);
+            if (block != null && !(row instanceof JIPipeDesktopProgressTreeRowRenderer.StackRow)) {
+                int slot = block.flatOfRow(index - block.startIndex);
+                if (slot >= 0) {
+                    // The block context refines the key: detail and placeholder rows are
+                    // distinct per slot (the row objects alone are not)
+                    keys.add("v" + block.nodeId + ":" + slot);
+                    continue;
+                }
+            }
+            keys.add(selectionKey(row));
+        }
+        return keys;
+    }
+
+    /**
+     * Restores the selection captured before a model reset (fix round 1, R46): the keys resolve
+     * against the REBUILT model - materialized rows by a direct walk, virtual rows by their slot
+     * within the node's block. Keys that no longer resolve are simply dropped.
+     */
+    private void restoreSelection(List<String> keys) {
+        if (keys.isEmpty() || listModel.getSize() == 0) {
+            return;
+        }
+        Set<String> wanted = new HashSet<>(keys);
+        List<Integer> indices = new ArrayList<>();
+        // Materialized rows: the flat index of materialized row i is i plus the extents of the
+        // virtual blocks starting at or before it (the inverse of getElementAt's shift walk)
+        for (int i = 0; i < listModel.materialized.size() && !wanted.isEmpty(); i++) {
+            JIPipeDesktopProgressTreeRowRenderer.Row row = listModel.materialized.get(i);
+            int flat = i;
+            for (VirtualBlock block : listModel.blocks) {
+                if (block.startIndex <= flat) {
+                    flat += block.extent;
+                } else {
+                    break;
+                }
+            }
+            if (wanted.remove(selectionKey(row))) {
+                indices.add(flat);
+            }
+        }
+        // Virtual rows: the key names the node and the slot (or the stack line); the node's
+        // block maps it to the local row (rows after an OPEN stack trace shift by the trace's
+        // line count - the inverse of flatOfRow)
+        Iterator<String> wantedIterator = wanted.iterator();
+        while (wantedIterator.hasNext()) {
+            String key = wantedIterator.next();
+            if (!(key.startsWith("v") || key.startsWith("s"))) {
+                continue;
+            }
+            int colon = key.indexOf(':', 1);
+            if (colon < 0) {
+                continue;
+            }
+            int nodeId;
+            try {
+                nodeId = Integer.parseInt(key.substring(1, colon));
+            } catch (NumberFormatException e) {
+                continue;
+            }
+            VirtualBlock block = null;
+            for (VirtualBlock candidate : listModel.blocks) {
+                if (candidate.nodeId == nodeId) {
+                    block = candidate;
+                    break;
+                }
+            }
+            if (block == null) {
+                continue;
+            }
+            int local;
+            if (key.startsWith("v")) {
+                int slot;
+                try {
+                    slot = Integer.parseInt(key.substring(colon + 1));
+                } catch (NumberFormatException e) {
+                    continue;
+                }
+                if (slot >= block.slotCount) {
+                    continue;
+                }
+                local = slot;
+                for (int i = 0; i < block.anchorSlots.length; i++) {
+                    if (block.anchorSlots[i] < slot) {
+                        local += block.anchorLengths[i];
+                    }
+                }
+            } else {
+                // A stack line inside the block: find the anchor carrying the line
+                String line = key.substring(colon + 1);
+                local = -1;
+                for (int i = 0; i < block.anchors.size() && local < 0; i++) {
+                    String[] lines = block.anchors.get(i).lines();
+                    for (int k = 0; k < lines.length; k++) {
+                        if (lines[k].equals(line)) {
+                            local = block.anchorSlots[i] + 1 + k;
+                            for (int j = 0; j < i; j++) {
+                                local += block.anchorLengths[j];
+                            }
+                            break;
+                        }
+                    }
+                }
+                if (local < 0) {
+                    continue;
+                }
+            }
+            indices.add(block.startIndex + local);
+            wantedIterator.remove();
+        }
+        if (!indices.isEmpty()) {
+            int[] restored = new int[indices.size()];
+            for (int i = 0; i < indices.size(); i++) {
+                restored[i] = indices.get(i);
+            }
+            list.setSelectedIndices(restored);
+        }
+    }
+
     private void updateTreeModel(JIPipeProgressLog s) {
         List<JIPipeDesktopProgressTreeRowRenderer.Row> rows = new ArrayList<>();
         rowPositions.clear();
@@ -863,13 +1054,19 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
         NodeUiState rootState = nodeStates.get(rootNodeId);
         if (rootState != null && visibleRecordCount(rootState) > 0) {
             // Non-graph run: the root's own records render under the root row, as before (R26)
-            appendNodeRow(s, childMap, s.getNode(rootNodeId), 0, null, rows);
+            appendNodeRow(s, childMap, s.getNode(rootNodeId), 0, null, rows, false);
         } else {
             // Graph run (or a root whose records are all hidden by the toggles): no grouping row;
             // the top-level children start at depth 0. A recordless root also has no detail area.
             walkChildren(s, childMap, rootNodeId, 0, null, rows);
         }
+        // Fix round 1 (R46): the reset's range events make the list UI re-sync its selection
+        // model, which would wipe the selection on EVERY rebuild - and the panel rebuilds on
+        // every dirty tick of a live run. The selection is captured as rebuild-stable row keys
+        // and restored after the reset (rows that no longer exist are dropped).
+        List<String> selectionKeys = captureSelectionKeys();
         listModel.reset(rows, new ArrayList<>(rebuildBlocks));
+        restoreSelection(selectionKeys);
     }
 
     /**
@@ -880,7 +1077,8 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
      */
     private void appendNodeRow(JIPipeProgressLog s, Map<Integer, List<Integer>> childMap,
                                JIPipeProgressNode node, int depth, String inheritedChip,
-                               List<JIPipeDesktopProgressTreeRowRenderer.Row> rows) {
+                               List<JIPipeDesktopProgressTreeRowRenderer.Row> rows,
+                               boolean revealedGateChild) {
         int id = node.getId();
         NodeUiState state = nodeStates.get(id);
         // R29: the +N badge is the hidden CHILD NODE count only (visible under the current
@@ -891,7 +1089,11 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
         // R42: a finished node that is not expandable under the current filters renders nothing -
         // its row would be an empty stub (e.g. a Storage node whose only record is the hidden
         // debug "NOT storing" line). A RUNNING leaf always keeps its row (spinner, active step).
-        if (!expandable && node.getState() != JIPipeProgressNodeState.RUNNING) {
+        // Exception (fix round 1): a REVEALED gate's grouped children render regardless of R42 -
+        // the gate's badge counts all finished children of the running parent, so the reveal
+        // must deliver exactly that count (no silent R42 skips inside a revealed gate). R42
+        // still applies everywhere else (children of finished nodes, after the run).
+        if (!revealedGateChild && !expandable && node.getState() != JIPipeProgressNodeState.RUNNING) {
             return;
         }
         String label = node.getLabel();
@@ -1039,7 +1241,7 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
                 continue;
             }
             flushGate(s, childMap, gate, rows);
-            appendNodeRow(s, childMap, node, depth, inheritedChip, rows);
+            appendNodeRow(s, childMap, node, depth, inheritedChip, rows, false);
         }
         flushGate(s, childMap, gate, rows);
     }
@@ -1062,7 +1264,9 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
             for (int id : gate.ids) {
                 JIPipeProgressNode node = s.getNode(id);
                 if (node != null) {
-                    appendNodeRow(s, childMap, node, gate.depth, gate.inheritedChip, rows);
+                    // Revealed gate children bypass R42 (fix round 1): the reveal delivers
+                    // exactly the gate badge's count
+                    appendNodeRow(s, childMap, node, gate.depth, gate.inheritedChip, rows, true);
                 }
             }
         }
@@ -1133,7 +1337,7 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
                 gated++;
                 continue;
             }
-            total += countRenderedSubtreeNodes(s, childMap, child, parentRunning);
+            total += countRenderedSubtreeNodes(s, childMap, child);
         }
         return gated > 0 ? total + 1 : total;
     }
@@ -1145,10 +1349,11 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
      * squashed (not a row, their children are), and debug-hidden nodes hide their whole subtree
      * (R27). Per node, the R42 skip applies: a finished node with no visible records and no
      * rendering descendants renders no row and contributes nothing to its ancestors' counts
-     * (its subtree contributes nothing through it - by the skip condition it has none).
+     * (its subtree contributes nothing through it - by the skip condition it has none). Gated
+     * children (the R47 collapse) never reach this walk: countChildRows filters them out and
+     * aggregates them into the gate's ONE row.
      */
-    private int countRenderedSubtreeNodes(JIPipeProgressLog s, Map<Integer, List<Integer>> childMap, int nodeId,
-                                          boolean parentRunning) {
+    private int countRenderedSubtreeNodes(JIPipeProgressLog s, Map<Integer, List<Integer>> childMap, int nodeId) {
         JIPipeProgressNode node = s.getNode(nodeId);
         if (node == null) {
             return 0;
@@ -1157,19 +1362,16 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
             // Hidden with its whole subtree (R27)
             return 0;
         }
-        if (parentRunning && node.getState() != JIPipeProgressNodeState.RUNNING
-                && node.getKind() != JIPipeProgressNodeKind.PHASE
-                && node.getKind() != JIPipeProgressNodeKind.PARTITION) {
-            // R47: the finished child of a RUNNING parent renders inside the parent's gate row;
-            // the caller's aggregation (countChildRows) replaces all grouped children with the
-            // gate's ONE row
-            return 1;
-        }
         // The node's own children aggregate through countChildRows with the node's own gate
         // predicate (a RUNNING node hosts a gate, a finished one does not); a squashed partition
-        // renders no row of its own (its children are the rows, the gate continues through it)
+        // renders no row of its own (its children are the rows, the gate continues through it).
+        // runActive is part of the gate predicate (the same predicate walkChildren uses), though
+        // the caller only reaches this walk while a model rebuild ran with the current runActive.
+        // Invariant: countChildRows filters gated children out BEFORE delegating here - this
+        // method is never reached with a gated (finished, non-phase) child of a RUNNING parent.
         boolean selfRunning = node.getState() == JIPipeProgressNodeState.RUNNING;
-        boolean hostsGate = selfRunning && node.getKind() != JIPipeProgressNodeKind.PARTITION
+        boolean hostsGate = runActive && selfRunning
+                && node.getKind() != JIPipeProgressNodeKind.PARTITION
                 && nodeId != s.getRootNodeId();
         int childTotal = countChildRows(s, childMap, nodeId, hostsGate);
         if (node.getKind() == JIPipeProgressNodeKind.PARTITION) {
@@ -2469,7 +2671,7 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
     private int appendRowCopyLines(JIPipeProgressLog s, JIPipeDesktopProgressTreeRowRenderer.Row row,
                                    StringBuilder builder, int existingLines) {
         if (row instanceof JIPipeDesktopProgressTreeRowRenderer.NodeRow nodeRow) {
-            String text = list.rowCopyText(nodeRow);
+            String text = list.nodeCopyText(nodeRow);
             int lines = 1 + (text.length() - text.replace("\n", "").length());
             builder.append(text).append('\n');
             return lines;
@@ -2499,15 +2701,38 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
 
     /**
      * Appends the whole-log-format lines of one record (the same rendering
-     * {@link #copyToClipboard} uses); returns the number of lines appended.
+     * {@link #copyToClipboard} uses); returns the number of lines appended. The record renders
+     * at its OWN level (fix round 1): the selection copy delivers what the user sees - a visible
+     * DEBUG row must not vanish from the copy (the whole-log copy keeps its INFO-minLevel
+     * behavior, R22).
      */
     private int appendRecordLines(JIPipeProgressLog s, JIPipeProgressRecord record,
                                   StringBuilder builder, int existingLines) {
         int[] before = {builder.length()};
-        s.renderRecords(List.of(record), JIPipeLogLevel.INFO, line -> builder.append(line).append('\n'));
+        JIPipeLogLevel minLevel = record instanceof JIPipeProgressRecord.Log logRecord
+                ? levelOfValue(logRecord.lv())
+                : JIPipeLogLevel.INFO;
+        s.renderRecords(List.of(record), minLevel, line -> builder.append(line).append('\n'));
         int appended = builder.length() - before[0];
         // The line count: the rendered text minus its trailing newline, split on newlines
         return Math.max(1, appended <= 1 ? 1 : (int) builder.substring(before[0]).chars().filter(c -> c == '\n').count());
+    }
+
+    /**
+     * The log level of a wire {@code lv} value (unknown values fall down to the nearest known
+     * level at or below).
+     */
+    private static JIPipeLogLevel levelOfValue(int value) {
+        JIPipeLogLevel best = JIPipeLogLevel.DEBUG;
+        for (JIPipeLogLevel level : JIPipeLogLevel.values()) {
+            if (level.value() == value) {
+                return level;
+            }
+            if (level.value() < value) {
+                best = level;
+            }
+        }
+        return best;
     }
 
     /**
@@ -3019,9 +3244,9 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
 
         /**
          * The rows fill the viewport width (no horizontal scrolling: long detail messages clip,
-         * the tooltip carries the full text). This also keeps the Swing list's layout state
-         * O(1): without a fixed cell width, the UI walks EVERY model index to find the widest
-         * row - catastrophic with virtual detail extents of millions of rows.
+         * the selection copy carries the full text). This also keeps the Swing list's layout
+         * state O(1): without a fixed cell width, the UI walks EVERY model index to find the
+         * widest row - catastrophic with virtual detail extents of millions of rows.
          */
         @Override
         public boolean getScrollableTracksViewportWidth() {
@@ -3052,42 +3277,34 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
          * location; detail rows carry the record's message. Null for rows without text (stack
          * lines, more-rows, placeholders, loading rows).
          */
-        private String rowCopyText(JIPipeDesktopProgressTreeRowRenderer.Row row) {
-            if (row == null) {
-                return null;
+        /**
+         * The copy text of a node row (R46): the row's full information as one line - label,
+         * partition chip, progress, state, duration - plus the node:// location line. Detail
+         * rows copy through {@code appendRecordLines} (the whole-log format); the other row
+         * kinds carry their rendered action text (appendRowCopyLines).
+         */
+        private String nodeCopyText(JIPipeDesktopProgressTreeRowRenderer.NodeRow nodeRow) {
+            StringBuilder builder = new StringBuilder(nodeRow.getLabel());
+            if (nodeRow.getPartitionChip() != null) {
+                builder.append(" (").append(nodeRow.getPartitionChip()).append(")");
             }
-            if (row instanceof JIPipeDesktopProgressTreeRowRenderer.NodeRow nodeRow) {
-                StringBuilder builder = new StringBuilder(nodeRow.getLabel());
-                if (nodeRow.getPartitionChip() != null) {
-                    builder.append(" (").append(nodeRow.getPartitionChip()).append(")");
-                }
-                if (nodeRow.getProgressMax() > 0) {
-                    // Truncated like the row's bar text ("5/200 (2%)"), never rounded
-                    int percent = Math.max(0, Math.min(100,
-                            (int) (100.0 * nodeRow.getProgressValue() / nodeRow.getProgressMax())));
-                    builder.append(" - ").append(nodeRow.getProgressValue()).append('/')
-                            .append(nodeRow.getProgressMax()).append(" (").append(percent).append("%)");
-                }
-                builder.append(" [").append(nodeRow.getState()).append(']');
-                if (nodeRow.getPhaseText() != null && !nodeRow.getPhaseText().isBlank()) {
-                    builder.append(' ').append(nodeRow.getPhaseText());
-                }
-                if (nodeRow.getUuidSuffix() != null) {
-                    String uuid = nodeRow.getUuidSuffix();
-                    builder.append('\n').append("node://")
-                            .append(uuid, 1, uuid.length() - 1);
-                }
-                return builder.toString();
-            } else if (row instanceof JIPipeDesktopProgressTreeRowRenderer.DetailRow detailRow) {
-                if (detailRow.record() instanceof JIPipeProgressRecord.Log logRecord) {
-                    return logRecord.m();
-                } else if (detailRow.record() instanceof JIPipeProgressRecord.Error errorRecord) {
-                    return errorRecord.c() + (errorRecord.m() == null || errorRecord.m().isEmpty() ? "" : ": " + errorRecord.m());
-                } else if (detailRow.record() instanceof JIPipeProgressRecord.Notification notificationRecord) {
-                    return notificationRecord.h() + (notificationRecord.d() == null || notificationRecord.d().isEmpty() ? "" : ": " + notificationRecord.d());
-                }
+            if (nodeRow.getProgressMax() > 0) {
+                // Truncated like the row's bar text ("5/200 (2%)"), never rounded
+                int percent = Math.max(0, Math.min(100,
+                        (int) (100.0 * nodeRow.getProgressValue() / nodeRow.getProgressMax())));
+                builder.append(" - ").append(nodeRow.getProgressValue()).append('/')
+                        .append(nodeRow.getProgressMax()).append(" (").append(percent).append("%)");
             }
-            return null;
+            builder.append(" [").append(nodeRow.getState()).append(']');
+            if (nodeRow.getPhaseText() != null && !nodeRow.getPhaseText().isBlank()) {
+                builder.append(' ').append(nodeRow.getPhaseText());
+            }
+            if (nodeRow.getUuidSuffix() != null) {
+                String uuid = nodeRow.getUuidSuffix();
+                builder.append('\n').append("node://")
+                        .append(uuid, 1, uuid.length() - 1);
+            }
+            return builder.toString();
         }
 
     }
