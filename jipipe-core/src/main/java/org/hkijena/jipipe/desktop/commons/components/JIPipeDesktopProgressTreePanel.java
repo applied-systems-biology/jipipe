@@ -332,8 +332,11 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
             // bottom - that decrease is not a user scroll-up (the follow re-asserts the tail
             // position right after the rebuild)
             boolean modelShrank = modelSize < lastScrollModelSize;
+            int scrollDelta = value - lastScrollValue;
             lastScrollValue = value;
             lastScrollModelSize = modelSize;
+            // R43: rows moved under a stationary cursor - a visible tooltip would be stranded
+            list.invalidateStaleTooltip(scrollDelta);
             if (scrolledUp && !modelShrank && detailAutoscroll && !scrollProgrammatic) {
                 detailAutoscroll = false;
                 autoscrollNodeId = 0;
@@ -825,6 +828,9 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
             walkChildren(s, childMap, rootNodeId, 0, null, rows);
         }
         listModel.reset(rows, new ArrayList<>(rebuildBlocks));
+        // R43: the rebuild may have moved different rows under a stationary cursor (no scroll:
+        // the cursor's list-relative point is unchanged)
+        list.invalidateStaleTooltip(0);
     }
 
     /**
@@ -2403,6 +2409,14 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
      */
     private class ProgressTreeList extends JList<JIPipeDesktopProgressTreeRowRenderer.Row> {
 
+        // R43: the row the tooltip machinery last armed on (its component-relative mouse point and
+        // a value key of the row under it). While the cursor is stationary NO mouse events arrive,
+        // so a scroll or a model rebuild can silently move different rows under it - without the
+        // invalidation below, the visible tooltip stays where it was shown (stranded over a
+        // different row, e.g. at the top of a scrolled live window)
+        private Point lastTipMousePoint;
+        private String lastTipRowKey;
+
         private ProgressTreeList() {
             super(listModel);
             MouseAdapter mouseAdapter = new MouseAdapter() {
@@ -2509,6 +2523,11 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
         @Override
         public String getToolTipText(MouseEvent event) {
             JIPipeDesktopProgressTreeRowRenderer.Row row = rowAtPoint(event);
+            // R43: remember where the cursor was when the tooltip machinery asked - the reference
+            // point of the invalidation (the cursor is stationary while a tip is visible, so no
+            // newer point exists)
+            lastTipMousePoint = event.getPoint();
+            lastTipRowKey = rowKey(row);
             if (row instanceof JIPipeDesktopProgressTreeRowRenderer.NodeRow nodeRow) {
                 StringBuilder builder = new StringBuilder(nodeRow.getLabel());
                 if (nodeRow.getPartitionChip() != null) {
@@ -2539,6 +2558,70 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
                 }
             }
             return null;
+        }
+
+        /**
+         * R43: hides the visible tooltip when the row under the (stationary) cursor changed -
+         * the tip is placed correctly at show time (event screen coordinates), but a scroll or a
+         * model rebuild moves rows under a stationary cursor and leaves the tip stranded over a
+         * different row. The row is identified by value (the node/slot identity, stable across
+         * rebuilds) at the cursor's current point; a changed row hides the tip via ToolTipManager's
+         * enabled toggle (the documented public API; the tip re-arms on the next mouse move).
+         *
+         * @param scrollDelta the scroll position change since the last call (0 for a pure model
+         *                    change): the cursor's list-relative point moves with the content
+         */
+        private void invalidateStaleTooltip(int scrollDelta) {
+            Point point = lastTipMousePoint;
+            String armedKey = lastTipRowKey;
+            if (point == null || armedKey == null) {
+                return;
+            }
+            if (scrollDelta != 0) {
+                point = new Point(point.x, point.y + scrollDelta);
+            }
+            String currentKey = null;
+            int index = locationToIndex(point);
+            if (index >= 0 && index < listModel.getSize()) {
+                Rectangle bounds = getCellBounds(index, index);
+                if (bounds != null && bounds.contains(point)) {
+                    currentKey = rowKey(listModel.getElementAt(index));
+                }
+            }
+            if (!java.util.Objects.equals(armedKey, currentKey)) {
+                // Reset the manager's armed state through its public mousePressed hook: it hides
+                // the visible tip, stops the pending show timers, and clears the armed component
+                // and text - without it, a timer that is still running from the hover re-shows
+                // the stale tip (the mouse listener stay registered, so the next real mouse move
+                // re-arms tooltips normally)
+                ToolTipManager.sharedInstance().mousePressed(new MouseEvent(list, MouseEvent.MOUSE_PRESSED,
+                        System.currentTimeMillis(), 0, point.x, point.y, 0, 0, 1, false, 1));
+                lastTipRowKey = null;
+                lastTipMousePoint = null;
+            }
+        }
+
+        /**
+         * R43: the value identity of a row for tooltip invalidation: stable across model rebuilds
+         * (the row objects are rebuilt per tick), so an unchanged tree does not kill a visible tip.
+         */
+        private static String rowKey(JIPipeDesktopProgressTreeRowRenderer.Row row) {
+            if (row instanceof JIPipeDesktopProgressTreeRowRenderer.NodeRow nodeRow) {
+                return "n" + nodeRow.getNodeId();
+            }
+            if (row instanceof JIPipeDesktopProgressTreeRowRenderer.DetailRow detailRow) {
+                return "d" + detailRow.nodeId() + ":" + detailRow.slot();
+            }
+            if (row instanceof JIPipeDesktopProgressTreeRowRenderer.StackRow stackRow) {
+                return "s" + stackRow.nodeId() + ":" + stackRow.line();
+            }
+            if (row instanceof JIPipeDesktopProgressTreeRowRenderer.MoreRow moreRow) {
+                return "m" + moreRow.nodeId() + ":" + moreRow.olderCount();
+            }
+            if (row instanceof JIPipeDesktopProgressTreeRowRenderer.PlaceholderRow placeholderRow) {
+                return "p" + placeholderRow.nodeId();
+            }
+            return String.valueOf(row);
         }
     }
 }
