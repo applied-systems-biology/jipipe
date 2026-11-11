@@ -17,14 +17,14 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.project.JIPipeProject;
+import org.hkijena.jipipe.api.settings.JIPipeSettingKey;
 import org.hkijena.jipipe.api.settings.SettingsBinding;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
-import org.hkijena.jipipe.desktop.app.bookmarks.JIPipeDesktopBookmarkListPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.addnodepanel.JIPipeDesktopNodeBrowser;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorLogPanel;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorMinimap;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopMapState;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.GraphInteractiveObjectUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.actions.*;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.add.AddNewCompartmentUIContextAction;
@@ -167,28 +167,16 @@ public class JIPipeDesktopCompartmentsGraphEditorUI extends JIPipeDesktopGraphEd
                 JIPipeDesktopDockPanel.PanelLocation.TopLeft,
                 true,
                 0, new JIPipeDesktopExpressionCalculatorUI(getDesktopWorkbench()));
-        getDockPanel().addDockPanel(JIPipeDesktopGraphEditorUI.DOCK_MAP,
-                "Navigator",
-                JIPipe.RESOURCES.getIcon24("actions/compass.png"),
-                JIPipeDesktopDockPanel.PanelLocation.TopLeft,
-                true,
-                0, new JIPipeDesktopGraphEditorMinimap(this));
         getDockPanel().addDockPanel(DOCK_QUICK_GUIDE,
                 "Quick guide",
                 JIPipe.RESOURCES.getIcon24("actions/help-about.png"),
-                JIPipeDesktopDockPanel.PanelLocation.BottomLeft,
+                JIPipeDesktopDockPanel.PanelLocation.TopLeft,
                 true,
                 0, new JIPipeDesktopCompartmentsQuickGuidePanel(getDesktopWorkbench(), this));
-        getDockPanel().addDockPanel(JIPipeDesktopGraphEditorUI.DOCK_BOOKMARKS,
-                "Bookmarks",
-                JIPipe.RESOURCES.getIcon24("actions/bookmarks.png"),
-                JIPipeDesktopDockPanel.PanelLocation.BottomLeft,
-                false,
-                0, new JIPipeDesktopBookmarkListPanel(getDesktopWorkbench(), getGraph(), this, null));
         getDockPanel().addDockPanel(JIPipeDesktopGraphEditorUI.DOCK_HISTORY,
                 "History",
                 JIPipe.RESOURCES.getIcon24("actions/edit-undo-history.png"),
-                JIPipeDesktopDockPanel.PanelLocation.BottomLeft,
+                JIPipeDesktopDockPanel.PanelLocation.TopLeft,
                 false,
                 0, new JIPipeDesktopHistoryJournalUI(getHistoryJournal()));
         getDockPanel().addDockPanel(JIPipeDesktopGraphEditorUI.DOCK_LOG,
@@ -200,7 +188,7 @@ public class JIPipeDesktopCompartmentsGraphEditorUI extends JIPipeDesktopGraphEd
         getDockPanel().addDockPanel(DOCK_ADD_NODES,
                 "Add nodes",
                 JIPipe.RESOURCES.getIcon24("actions/node-add.png"),
-                JIPipeDesktopDockPanel.PanelLocation.BottomLeft,
+                JIPipeDesktopDockPanel.PanelLocation.TopLeft,
                 false,
                 JIPipeDesktopDockPanel.UI_ORDER_PINNED,
                 nodeBrowser);
@@ -374,6 +362,11 @@ public class JIPipeDesktopCompartmentsGraphEditorUI extends JIPipeDesktopGraphEd
     }
 
     @Override
+    protected JIPipeSettingKey<JIPipeDesktopMapState> getMapStateKey() {
+        return SettingsKeys.COMPARTMENTS_MAP_STATE;
+    }
+
+    @Override
     protected void restoreDockStateFromSettings() {
         if (!JIPipe.isInstantiated()) {
             return;
@@ -417,6 +410,7 @@ public class JIPipeDesktopCompartmentsGraphEditorUI extends JIPipeDesktopGraphEd
 
     @Override
     protected void closeDockStateBinding() {
+        super.closeDockStateBinding();
         if (compartmentsDockStateBinding != null) {
             compartmentsDockStateBinding.close();
             compartmentsDockStateBinding = null;
@@ -440,11 +434,9 @@ public class JIPipeDesktopCompartmentsGraphEditorUI extends JIPipeDesktopGraphEd
         state.setLeftPanelWidth(350);
         state.setRightPanelWidth(500);
 
-        state.put(DOCK_MAP, true, JIPipeDesktopDockPanel.PanelLocation.TopLeft);
-        state.put(DOCK_QUICK_GUIDE, true, JIPipeDesktopDockPanel.PanelLocation.BottomLeft);
-        state.put(DOCK_ADD_NODES, false, JIPipeDesktopDockPanel.PanelLocation.BottomLeft);
-        state.put(DOCK_BOOKMARKS, false, JIPipeDesktopDockPanel.PanelLocation.BottomLeft);
-        state.put(DOCK_HISTORY, false, JIPipeDesktopDockPanel.PanelLocation.BottomLeft);
+        state.put(DOCK_QUICK_GUIDE, true, JIPipeDesktopDockPanel.PanelLocation.TopLeft);
+        state.put(DOCK_ADD_NODES, false, JIPipeDesktopDockPanel.PanelLocation.TopLeft);
+        state.put(DOCK_HISTORY, false, JIPipeDesktopDockPanel.PanelLocation.TopLeft);
 
         state.put(DOCK_NODE_CONTEXT_HELP, true, JIPipeDesktopDockPanel.PanelLocation.BottomRight);
         state.put(DOCK_LOG, false, JIPipeDesktopDockPanel.PanelLocation.BottomBottom);

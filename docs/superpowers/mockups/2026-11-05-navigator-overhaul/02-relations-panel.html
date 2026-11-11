@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Navigator overhaul - Prototype 02: Relations panel (rev 3)</title>
+<style>
+  :root {
+    --panel: #f7f7f7;
+    --border: #cfcfcf;
+    --border-soft: #e0e0e0;
+    --text: #262626;
+    --text-dim: #6b6b6b;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Segoe UI", system-ui, sans-serif;
+    background: #ffffff; color: var(--text);
+    padding: 24px; font-size: 13px;
+    display: flex; gap: 28px; align-items: flex-start; justify-content: center; flex-wrap: wrap;
+  }
+  .side { max-width: 560px; }
+  h1 { font-size: 17px; margin-bottom: 4px; }
+  .intro { color: var(--text-dim); margin-bottom: 14px; max-width: 520px; line-height: 1.45; }
+  .legend { margin-top: 14px; font-size: 12px; color: var(--text-dim); line-height: 1.9; }
+  .legend b { color: var(--text); }
+  .legend .chip {
+    display: inline-block; width: 34px; height: 14px; border-radius: 3px; vertical-align: -2px;
+    margin-right: 5px; border: 1px solid hsl(210,35%,45%);
+    background: hsl(210,15%,80%); background-image: radial-gradient(rgba(0,0,0,.12) 1px, transparent 1.2px);
+    background-size: 6px 6px;
+  }
+  .assumptions { margin-top: 10px; font-size: 12px; color: var(--text-dim); line-height: 1.55; }
+  .assumptions code { background: #f2f2f2; padding: 0 4px; border-radius: 3px; }
+
+  /* ------------- the panel itself ------------- */
+  .panel {
+    width: 340px; height: 700px;
+    background: var(--panel); border: 1px solid var(--border); border-radius: 6px;
+    display: flex; flex-direction: column; overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,.08);
+  }
+  .panel-title {
+    padding: 7px 10px; font-weight: 600; font-size: 12px;
+    border-bottom: 1px solid var(--border-soft);
+    display: flex; align-items: center; gap: 6px; color: #333;
+    white-space: nowrap; overflow: hidden;
+  }
+  .panel-title .sub { color: var(--text-dim); font-weight: 400; overflow: hidden; text-overflow: ellipsis; }
+  .toolbar {
+    display: flex; align-items: center; gap: 2px;
+    padding: 3px 6px; background: #efefef; border-bottom: 1px solid var(--border-soft);
+  }
+  .tbtn {
+    min-width: 26px; height: 24px; border: 1px solid transparent; border-radius: 4px;
+    background: transparent; color: #444; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; padding: 0 4px;
+  }
+  .tbtn:hover:not(:disabled) { background: #e2e2e2; border-color: #d0d0d0; }
+  .tbtn:disabled { color: #b5b5b5; cursor: default; }
+  .tbtn svg { width: 14px; height: 14px; }
+  .tsep { width: 1px; height: 18px; background: var(--border); margin: 0 4px; }
+  .toolbar .hintlbl { margin-left: auto; color: #9a9a9a; font-size: 10px; padding-right: 4px; }
+
+  .rel-scroll { flex: 1; overflow: auto; }
+  .rel-inner { display: flex; flex-direction: column; gap: 8px; padding: 10px 10px 18px; }
+  .rel-row { display: flex; gap: 8px; align-items: stretch; width: 100%; }
+  .rel-row > .card { flex: 1 1 0; min-width: 0; }
+
+  /* ----- JIPipe node card: fill + pattern + border come from the node, panel only sets opacity ----- */
+  .card {
+    --h: 210;
+    border-radius: 5px; overflow: hidden; cursor: pointer; position: relative;
+    background: hsl(var(--h), 15%, 80%);
+    border: 1px solid hsl(var(--h), 35%, 45%);
+    display: flex; flex-direction: column;
+    opacity: .6;                                  /* related default */
+    transition: opacity .12s;
+  }
+  .card .hd {
+    padding: 3px 7px; font-size: 11px; font-weight: 600; color: #1c2b36;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    display: flex; align-items: center; gap: 5px;
+    background: linear-gradient(90deg, hsl(var(--h), 4%, 64%), hsl(var(--h), 15%, 80%));
+    border-bottom: 1px solid hsl(var(--h), 20%, 55%);
+  }
+  .card .hd .ticon { flex: none; width: 12px; height: 12px; border-radius: 2px; background: rgba(0,0,0,.25); }
+  .card .bd {
+    flex: 1; min-height: 18px;
+    background-image: radial-gradient(rgba(0,0,0,.10) 1px, transparent 1.2px);
+    background-size: 7px 7px;
+  }
+  .card:hover { box-shadow: 0 2px 6px rgba(0,0,0,.25); }
+
+  /* the single extra factor: opacity */
+  .card.central { opacity: 1; border-width: 2px; }
+  .card.hist-1 { opacity: .85; }
+  .card.hist-2 { opacity: .80; }
+  .card.hist-3 { opacity: .75; }
+  .card.hist-4 { opacity: .70; }
+  .card.hist-5 { opacity: .65; }
+  /* everything else (related, trail older than 5): .60 from the base rule */
+
+  .more-btn {
+    flex: 1 1 0; min-height: 44px; border-radius: 5px;
+    border: 1px dashed #a0a0a0; background: #f2f2f2; color: #555;
+    font-size: 11px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px;
+  }
+  .more-btn:hover { background: #e9e9e9; color: #333; }
+  .more-btn b { font-size: 13px; }
+
+  .empty { padding: 30px 16px; color: #9a9a9a; text-align: center; font-size: 12px; line-height: 1.6; }
+
+  /* demo controls */
+  .demo {
+    margin-top: 14px; border: 1px dashed var(--border); border-radius: 6px;
+    padding: 10px 12px; font-size: 12px; color: var(--text-dim); background: #fcfcfc;
+  }
+  .demo b { color: var(--text); }
+  .demo select { margin: 0 4px; padding: 2px 4px; }
+  .demo button {
+    border: 1px solid var(--border); background: #fff; border-radius: 4px;
+    padding: 2px 8px; cursor: pointer; font-size: 11px; margin: 2px 0;
+  }
+  .demo button:hover { background: #f0f0f0; }
+</style>
+</head>
+<body>
+
+<div class="side">
+  <h1>Prototype 02 rev 3 &mdash; Node relations panel</h1>
+  <p class="intro">
+    Cards render like real JIPipe nodes (taxonomy fill color, framework pattern, border) but without slots.
+    The panel contributes exactly one factor: <b>opacity</b>. Current node 100%, related 60%, and the last
+    visited nodes fade 85% &rarr; 65% over five steps back, after which they are indistinguishable from
+    related nodes. Click a card to navigate.
+  </p>
+
+  <div class="panel">
+    <div class="panel-title">Node relations <span class="sub" id="title-sub"></span></div>
+    <div class="toolbar">
+      <button class="tbtn" id="btn-back" title="Navigate back">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 14L4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-4"/></svg>
+      </button>
+      <button class="tbtn" id="btn-fwd" title="Navigate forward">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 14l5-5-5-5"/><path d="M20 9H9a5 5 0 0 0 0 10h4"/></svg>
+      </button>
+      <div class="tsep"></div>
+      <button class="tbtn" id="btn-up" title="Go to nearest upstream node">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+      </button>
+      <button class="tbtn" id="btn-down" title="Go to nearest downstream node">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>
+      </button>
+      <span class="hintlbl">up / center / down</span>
+    </div>
+    <div class="rel-scroll"><div class="rel-inner" id="rel-inner"></div></div>
+  </div>
+
+  <div class="legend">
+    <span class="chip" style="opacity:1"></span><b>current (100%)</b> &nbsp;
+    <span class="chip" style="opacity:.85"></span><b>1 back (85%)</b> &nbsp;
+    <span class="chip" style="opacity:.8"></span><b>2 (80%)</b> &nbsp;
+    <span class="chip" style="opacity:.75"></span><b>3 (75%)</b> &nbsp;
+    <span class="chip" style="opacity:.7"></span><b>4 (70%)</b> &nbsp;
+    <span class="chip" style="opacity:.65"></span><b>5 (65%)</b> &nbsp;
+    <span class="chip" style="opacity:.6"></span><b>related (60%)</b>
+  </div>
+
+  <div class="assumptions" id="assumptions">
+    Fill/pattern/border are the node's own (demo uses the real taxonomy hues: Images 186&deg;, Data sources 136&deg;,
+    Statistics 30&deg;, Plotting 60&deg;, Export ~160&deg;, Scripting 300&deg;). The trail ramp uses 5 equal 5% steps;
+    older steps drop to the related level. The current node gets a 2px border in its own border color as the
+    only extra cue - remove it if pure opacity is enough. <code>+N</code> collapses layers with more than 4 nodes.
+  </div>
+
+  <div class="demo">
+    <b>Demo controls</b> (not part of the design):<br>
+    Center: <select id="demo-center"></select>
+    <button id="demo-multi">select 2 nodes</button>
+    <button id="demo-reset">reset trail</button>
+  </div>
+</div>
+
+<div class="side">
+  <h1>The demo pipeline</h1>
+  <p class="intro">
+    Try <b>Find particles 2D</b> (downstream level 2 has 6 nodes, so <b>+N</b> appears), then follow
+    Measure, Filter by size, Merge lists back and forth and watch the opacity ramp. The graph below
+    stands in for the canvas and uses the same fills.
+  </p>
+  <svg id="mini-graph" width="560" height="440" viewBox="-20 -80 1760 620" style="background:#fafafa;border:1px solid #ddd;border-radius:6px"></svg>
+  <div class="intro" style="margin-top:8px">Click a node to change the selection.</div>
+</div>
+
+<script>
+"use strict";
+
+// ---------------- demo data (hues mirror the real taxonomy leaves) ----------------
+const NODES = {
+  "import":  { name: "Import image",        hue: 136, x: 0,    y: 260 },
+  "split":   { name: "Split channels",      hue: 186, x: 220,  y: 260 },
+  "gray":    { name: "Gray channel",        hue: 186, x: 440,  y: 140 },
+  "green":   { name: "Green channel",       hue: 186, x: 440,  y: 380 },
+  "bgsub":   { name: "Background subtract", hue: 186, x: 660,  y: 140 },
+  "th-li":   { name: "Threshold (Li)",      hue: 186, x: 880,  y: 140 },
+  "th-otsu": { name: "Threshold (Otsu)",    hue: 186, x: 660,  y: 380 },
+  "find":    { name: "Find particles 2D",   hue: 350, x: 1100, y: 260 },
+  "measure": { name: "Measure",             hue: 30,  x: 1320, y: 100 },
+  "f-size":  { name: "Filter by size",      hue: 186, x: 1320, y: 240 },
+  "f-shape": { name: "Filter by shape",     hue: 186, x: 1320, y: 390 },
+  "stats":   { name: "Statistics",          hue: 30,  x: 1540, y: -60 },
+  "plot":    { name: "Plot",                hue: 60,  x: 1540, y: 20 },
+  "csv":     { name: "Export to CSV",       hue: 160, x: 1540, y: 100 },
+  "annot":   { name: "Annotate table",      hue: 210, x: 1540, y: 180 },
+  "summary": { name: "Export summary",      hue: 160, x: 1540, y: 260 },
+  "merge":   { name: "Merge lists",         hue: 186, x: 1540, y: 340 },
+  "roi":     { name: "Export ROI",          hue: 160, x: 1540, y: 460 }
+};
+const EDGES = [
+  ["import","split"], ["split","gray"], ["split","green"],
+  ["gray","bgsub"], ["bgsub","th-li"], ["green","th-otsu"],
+  ["th-li","find"], ["th-otsu","find"],
+  ["find","measure"], ["find","f-size"], ["find","f-shape"],
+  ["measure","stats"], ["measure","plot"], ["measure","csv"], ["measure","annot"], ["measure","summary"],
+  ["f-size","merge"], ["f-shape","merge"], ["merge","roi"]
+];
+
+const upEdges = {}, downEdges = {};
+for (const id in NODES) { upEdges[id] = []; downEdges[id] = []; }
+EDGES.forEach(([a, b]) => { downEdges[a].push(b); upEdges[b].push(a); });
+
+const MAX_PER_ROW = 4;
+const RAMP_STEPS = 5;   // 85% -> 65%, then related level
+
+function dist(a, b) { return Math.hypot(NODES[a].x - NODES[b].x, NODES[a].y - NODES[b].y); }
+function bfs(start, adjacency) {
+  const d = {}; d[start] = 0; const q = [start];
+  while (q.length) {
+    const cur = q.shift();
+    for (const n of adjacency[cur]) if (d[n] === undefined) { d[n] = d[cur] + 1; q.push(n); }
+  }
+  delete d[start];
+  return d;
+}
+
+// ---------------- state ----------------
+let centers = new Set(["find"]);
+let history = ["find"];
+let histIdx = 0;
+let expanded = new Set();
+
+function trailRank() {
+  const rank = {};
+  for (let i = histIdx - 1, r = 1; i >= 0 && r <= RAMP_STEPS; i--, r++) {
+    const id = history[i];
+    if (!(id in rank)) rank[id] = r;
+  }
+  return rank;
+}
+function distToCenters(id) { let m = Infinity; for (const c of centers) m = Math.min(m, dist(id, c)); return m; }
+
+function computeLayers() {
+  let up = {}, down = {};
+  for (const c of centers) {
+    const u = bfs(c, upEdges), d = bfs(c, downEdges);
+    for (const k in u) if (up[k] === undefined || u[k] < up[k]) up[k] = u[k];
+    for (const k in d) if (down[k] === undefined || d[k] < down[k]) down[k] = d[k];
+  }
+  for (const id in up) if (down[id] !== undefined && down[id] < up[id]) delete up[id];
+  for (const id in down) if (up[id] !== undefined && up[id] < down[id]) delete down[id];
+  const byLevel = map => {
+    const lv = {};
+    for (const id in map) (lv[map[id]] = lv[map[id]] || []).push(id);
+    for (const l in lv) lv[l].sort((a, b) => distToCenters(a) - distToCenters(b));
+    return lv;
+  };
+  return { up: byLevel(up), down: byLevel(down) };
+}
+
+// ---------------- rendering ----------------
+const inner = document.getElementById("rel-inner");
+
+function cardHTML(id, extraCls) {
+  const n = NODES[id];
+  return `<div class="card ${extraCls || ""}" data-id="${id}" title="${n.name}" style="--h:${n.hue}">
+    <div class="hd"><span class="ticon"></span>${n.name}</div>
+    <div class="bd"></div>
+  </div>`;
+}
+
+function rowHTML(ids, key, rank) {
+  const isExpanded = expanded.has(key);
+  const shown = isExpanded ? ids : ids.slice(0, MAX_PER_ROW);
+  let html = "";
+  for (const id of shown) {
+    let cls;
+    if (centers.has(id)) cls = "central";
+    else if (rank[id]) cls = "hist-" + rank[id];
+    else cls = "";
+    html += cardHTML(id, cls);
+  }
+  if (!isExpanded && ids.length > MAX_PER_ROW) {
+    html += `<div class="more-btn" data-more="${key}"><b>+</b> ${ids.length - MAX_PER_ROW} more</div>`;
+  }
+  return html;
+}
+
+function render() {
+  const { up, down } = computeLayers();
+  const rank = trailRank();
+  let html = "";
+
+  Object.keys(up).map(Number).sort((a, b) => b - a).forEach(lvl => {
+    html += `<div class="rel-row">${rowHTML(up[lvl], "up:" + lvl, rank)}</div>`;
+  });
+  html += `<div class="rel-row">${[...centers].map(id => cardHTML(id, "central")).join("")}</div>`;
+  Object.keys(down).map(Number).sort((a, b) => a - b).forEach(lvl => {
+    html += `<div class="rel-row">${rowHTML(down[lvl], "down:" + lvl, rank)}</div>`;
+  });
+
+  if (!Object.keys(up).length && !Object.keys(down).length) {
+    html = `<div class="empty">The selected node has no related nodes.</div>`;
+  }
+  inner.innerHTML = html;
+
+  document.getElementById("title-sub").textContent =
+    "- " + [...centers].map(id => NODES[id].name).join(" + ");
+  document.getElementById("btn-back").disabled = histIdx <= 0;
+  document.getElementById("btn-fwd").disabled = histIdx >= history.length - 1;
+  document.getElementById("btn-up").disabled = centers.size !== 1 || !up["1"];
+  document.getElementById("btn-down").disabled = centers.size !== 1 || !down["1"];
+
+  if (centers.size === 1) document.getElementById("demo-center").value = [...centers][0];
+  renderMini();
+}
+
+// ---------------- interaction ----------------
+function navigate(id) {
+  centers = new Set([id]);
+  history = history.slice(0, histIdx + 1);
+  if (history[history.length - 1] !== id) history.push(id);
+  if (history.length > 11) history = history.slice(history.length - 11);
+  histIdx = history.length - 1;
+  expanded = new Set();
+  render();
+}
+function goBack() { if (histIdx > 0) { histIdx--; centers = new Set([history[histIdx]]); expanded = new Set(); render(); } }
+function goFwd() { if (histIdx < history.length - 1) { histIdx++; centers = new Set([history[histIdx]]); expanded = new Set(); render(); } }
+function goDir(adjacency) {
+  const c = [...centers][0];
+  const cand = (adjacency[c] || []).slice().sort((a, b) => distToCenters(a) - distToCenters(b));
+  if (cand.length) navigate(cand[0]);
+}
+
+inner.addEventListener("click", e => {
+  const more = e.target.closest(".more-btn");
+  if (more) { expanded.add(more.dataset.more); render(); return; }
+  const card = e.target.closest(".card");
+  if (card && !card.classList.contains("central")) navigate(card.dataset.id);
+});
+document.getElementById("btn-back").onclick = goBack;
+document.getElementById("btn-fwd").onclick = goFwd;
+document.getElementById("btn-up").onclick = () => goDir(upEdges);
+document.getElementById("btn-down").onclick = () => goDir(downEdges);
+
+const sel = document.getElementById("demo-center");
+for (const id in NODES) { const o = document.createElement("option"); o.value = id; o.textContent = NODES[id].name; sel.appendChild(o); }
+sel.onchange = () => navigate(sel.value);
+document.getElementById("demo-multi").onclick = () => { centers = new Set(["f-size", "f-shape"]); render(); };
+document.getElementById("demo-reset").onclick = () => { history = [[...centers][0]]; histIdx = 0; render(); };
+
+// ---------------- mini graph ----------------
+const mg = document.getElementById("mini-graph");
+function fillFor(hue) { return `hsl(${hue},15%,80%)`; }
+function borderFor(hue) { return `hsl(${hue},35%,45%)`; }
+function renderMini() {
+  let svg = "";
+  EDGES.forEach(([a, b]) => {
+    const A = NODES[a], B = NODES[b];
+    svg += `<path d="M ${A.x + 90} ${A.y + 30} C ${A.x + 130} ${A.y + 30}, ${B.x - 40} ${B.y + 30}, ${B.x} ${B.y + 30}" stroke="#9e9e9e" stroke-width="2" fill="none" opacity=".7"/>`;
+  });
+  for (const id in NODES) {
+    const n = NODES[id];
+    const s = centers.has(id);
+    svg += `<g data-id="${id}" style="cursor:pointer">
+      <rect x="${n.x}" y="${n.y}" width="90" height="60" rx="6" fill="${fillFor(n.hue)}" stroke="${s ? borderFor(n.hue) : borderFor(n.hue)}" stroke-width="${s ? 3 : 1.5}"/>
+      <rect x="${n.x}" y="${n.y}" width="90" height="24" rx="6" fill="hsl(${n.hue},4%,64%)" opacity=".85"/>
+      <text x="${n.x + 6}" y="${n.y + 16}" font-size="10" font-family="Segoe UI" fill="#1c2b36">${n.name.length > 14 ? n.name.slice(0, 13) + "…" : n.name}</text>
+    </g>`;
+  }
+  mg.innerHTML = svg;
+}
+mg.addEventListener("click", e => { const g = e.target.closest("g[data-id]"); if (g) navigate(g.dataset.id); });
+
+render();
+</script>
+</body>
+</html>

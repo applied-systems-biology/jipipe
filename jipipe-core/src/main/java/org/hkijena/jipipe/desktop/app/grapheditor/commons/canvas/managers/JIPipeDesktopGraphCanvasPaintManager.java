@@ -6,11 +6,15 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasGrid;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasResources;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.MapLayer;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.edgeui.JIPipeDesktopGraphEdgeUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopAnnotationGraphNodeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 
 import java.awt.*;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
 public class JIPipeDesktopGraphCanvasPaintManager {
     private final JIPipeDesktopGraphCanvasUI canvasUI;
@@ -192,7 +196,7 @@ public class JIPipeDesktopGraphCanvasPaintManager {
     }
 
     /**
-     * Draws a minimap of this canvas.
+     * Draws a minimap of this canvas with all layers enabled.
      *
      * @param graphics2D the graphics
      * @param scale      the scale
@@ -200,13 +204,32 @@ public class JIPipeDesktopGraphCanvasPaintManager {
      * @param viewY      move the locations by this value
      */
     public void paintMiniMap(Graphics2D graphics2D, double scale, int viewX, int viewY) {
+        paintMiniMap(graphics2D, scale, viewX, viewY, EnumSet.allOf(MapLayer.class));
+    }
 
-        paintMinimapEdges(graphics2D, scale, viewX, viewY);
+    /**
+     * Draws a minimap of this canvas, restricted to the given layers.
+     *
+     * @param graphics2D the graphics
+     * @param scale      the scale
+     * @param viewX      move the locations by this value
+     * @param viewY      move the locations by this value
+     * @param layers     the layers to draw
+     */
+    public void paintMiniMap(Graphics2D graphics2D, double scale, int viewX, int viewY, Set<MapLayer> layers) {
+
+        if (layers.contains(MapLayer.EDGES)) {
+            paintMinimapEdges(graphics2D, scale, viewX, viewY);
+        }
 
         Stroke defaultStroke = JIPipeDesktopGraphCanvasResources.STROKE_UNIT;
         Stroke selectedStroke = JIPipeDesktopGraphCanvasResources.STROKE_SELECTION;
 
         for (JIPipeDesktopGraphNodeUI nodeUI : canvasUI.getNodeUIs().values()) {
+            MapLayer nodeLayer = nodeUI instanceof JIPipeDesktopAnnotationGraphNodeUI ? MapLayer.NOTES : MapLayer.NODES;
+            if (!layers.contains(nodeLayer)) {
+                continue;
+            }
             int x = (int) (nodeUI.getX() * scale) + viewX;
             int y = (int) (nodeUI.getY() * scale) + viewY;
             int width = (int) (nodeUI.getWidth() * scale);
