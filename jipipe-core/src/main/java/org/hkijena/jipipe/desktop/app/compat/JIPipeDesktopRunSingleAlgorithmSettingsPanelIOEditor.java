@@ -19,7 +19,9 @@ import org.hkijena.jipipe.api.compat.ImageJDataImportOperation;
 import org.hkijena.jipipe.api.history.JIPipeDummyGraphHistoryJournal;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.settings.JIPipeSettingKey;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopMapState;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameterList;
@@ -66,6 +68,27 @@ public class JIPipeDesktopRunSingleAlgorithmSettingsPanelIOEditor extends JIPipe
 
     @Override
     protected void saveDockStateToSettings() {
+
+    }
+
+    /**
+     * This editor does not persist its layout: like its dock state, its
+     * floating map state is not persisted. The key is never read or written,
+     * because {@link #initializeMapStateFromSettings()} and
+     * {@link #saveMapStateToSettings()} are inert here.
+     */
+    @Override
+    protected JIPipeSettingKey<JIPipeDesktopMapState> getMapStateKey() {
+        return null;
+    }
+
+    @Override
+    protected void initializeMapStateFromSettings() {
+
+    }
+
+    @Override
+    protected void saveMapStateToSettings() {
 
     }
 

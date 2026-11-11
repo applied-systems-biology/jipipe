@@ -17,12 +17,14 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.project.JIPipeProject;
+import org.hkijena.jipipe.api.settings.JIPipeSettingKey;
 import org.hkijena.jipipe.api.settings.SettingsBinding;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.grapheditor.addnodepanel.JIPipeDesktopNodeBrowser;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorLogPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopMapState;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.GraphInteractiveObjectUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.actions.*;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.add.AddNewCompartmentUIContextAction;
@@ -360,6 +362,11 @@ public class JIPipeDesktopCompartmentsGraphEditorUI extends JIPipeDesktopGraphEd
     }
 
     @Override
+    protected JIPipeSettingKey<JIPipeDesktopMapState> getMapStateKey() {
+        return SettingsKeys.COMPARTMENTS_MAP_STATE;
+    }
+
+    @Override
     protected void restoreDockStateFromSettings() {
         if (!JIPipe.isInstantiated()) {
             return;
@@ -403,6 +410,7 @@ public class JIPipeDesktopCompartmentsGraphEditorUI extends JIPipeDesktopGraphEd
 
     @Override
     protected void closeDockStateBinding() {
+        super.closeDockStateBinding();
         if (compartmentsDockStateBinding != null) {
             compartmentsDockStateBinding.close();
             compartmentsDockStateBinding = null;

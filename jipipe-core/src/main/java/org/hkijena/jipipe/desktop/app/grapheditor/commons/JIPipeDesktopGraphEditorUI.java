@@ -24,6 +24,7 @@ import org.hkijena.jipipe.api.history.JIPipeHistoryJournal;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.taxonomy.TaxonomyView;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.api.settings.JIPipeSettingKey;
 import org.hkijena.jipipe.api.settings.SettingsBinding;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
@@ -136,6 +137,24 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
      */
     private SettingsBinding<StringAndStringPairParameterList> dockLayoutTemplatesBinding;
     private JScrollPane scrollPane;
+    /**
+     * The floating map panel over the canvas, placed on the overlay's drag
+     * layer. Created in {@link #initialize()} before the toolbar, so the
+     * map toggle can bind to it.
+     */
+    private JIPipeDesktopFloatingMapPanel floatingMapPanel;
+    /**
+     * The toolbar toggle that shows or hides {@link #floatingMapPanel}.
+     */
+    private JToggleButton mapToggle;
+    /**
+     * The live binding to {@link #getMapStateKey()}. Created lazily (the
+     * editor may be built before the settings service exists) and closed in
+     * {@link #closeDockStateBinding()} when the editor is disposed. A
+     * binding registers a document path listener, so its owner must close it
+     * when the owner dies.
+     */
+    private SettingsBinding<JIPipeDesktopMapState> mapStateBinding;
     private Point panningOffset = null;
     private Point panningScrollbarOffset = null;
     private boolean isPanning = false;
@@ -170,6 +189,7 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
         // Always show right panel
         dockPanel.setAlwaysShowRightPanel(true);
         restoreDockStateFromSettings();
+        initializeMapStateFromSettings();
 
         dockPanel.getPanelSideVisibilityChangedEventEmitter().subscribe(this);
         rebuildContextPanel();
@@ -188,6 +208,72 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
     protected abstract void restoreDockStateFromSettings();
 
     protected abstract void saveDockStateToSettings();
+
+    /**
+     * @return the settings key that stores this flavor's floating map state
+     * (the counterpart of the flavor's dock state). A flavor that does not
+     * persist its map (see
+     * {@link org.hkijena.jipipe.desktop.app.compat.JIPipeDesktopRunSingleAlgorithmSettingsPanelIOEditor})
+     * returns null and keeps {@link #initializeMapStateFromSettings()} and
+     * {@link #saveMapStateToSettings()} inert, so the key is never read or
+     * written.
+     */
+    protected abstract JIPipeSettingKey<JIPipeDesktopMapState> getMapStateKey();
+
+    /**
+     * Connects the floating map panel to {@link #getMapStateKey()}, using the
+     * same binding pattern as the flavor dock states: the stored value is
+     * applied to the panel, every change made by another view (a second
+     * graph editor, the settings UI, a merged foreign write) is re-applied
+     * live, and the panel's own changes are written through by
+     * {@link #saveMapStateToSettings()}.
+     */
+    protected void initializeMapStateFromSettings() {
+        if (!JIPipe.isInstantiated()) {
+            return;
+        }
+        mapStateBinding = JIPipe.getSettingsService().bind(getMapStateKey());
+        applyMapState(mapStateBinding.get());
+        mapStateBinding.subscribe(this::applyMapState);
+    }
+
+    /**
+     * Applies a map state to the floating map panel and syncs the toolbar
+     * toggle. The panel itself ignores states equal to the current one, so
+     * the echo of our own write is inert.
+     *
+     * @param state the (new) map state
+     */
+    private void applyMapState(JIPipeDesktopMapState state) {
+        floatingMapPanel.applyState(state);
+        mapToggle.setSelected(state.isVisible());
+    }
+
+    /**
+     * Writes the floating map panel's state through to
+     * {@link #getMapStateKey()}. Called after every user change of the map
+     * (move, resize, lock, layers, visibility), never per mouse move.
+     */
+    protected void saveMapStateToSettings() {
+        if (JIPipe.isInstantiated()) {
+            if (mapStateBinding == null) {
+                mapStateBinding = JIPipe.getSettingsService().bind(getMapStateKey());
+            }
+            mapStateBinding.set(floatingMapPanel.getState());
+        }
+    }
+
+    /**
+     * Shows or hides the floating map: the shared path of the toolbar toggle
+     * and the map header's hide button (the map panel invokes this method).
+     *
+     * @param visible whether the map is shown
+     */
+    void setMapVisible(boolean visible) {
+        floatingMapPanel.setVisibleInCanvas(visible);
+        mapToggle.setSelected(visible);
+        saveMapStateToSettings();
+    }
 
     @Override
     public void dispose() {
@@ -217,12 +303,17 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
     }
 
     /**
-     * Releases the flavor's dock-state binding (see
-     * {@link #restoreDockStateFromSettings()}). Overridden by every flavor
-     * that binds a dock state; the binding is created by the subclass, so only
-     * the subclass knows which field to close.
+     * Releases the base-owned map-state binding, then lets the flavor
+     * release its own dock-state binding. Overridden by every flavor that
+     * binds a dock state: the override must call
+     * {@code super.closeDockStateBinding()} (the map binding is owned by
+     * this base class) and close its own dock-state binding field.
      */
     protected void closeDockStateBinding() {
+        if (mapStateBinding != null) {
+            mapStateBinding.close();
+            mapStateBinding = null;
+        }
     }
 
     @Override
@@ -256,6 +347,10 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
         return canvasUI;
     }
 
+    public JIPipeDesktopFloatingMapPanel getFloatingMapPanel() {
+        return floatingMapPanel;
+    }
+
     private void initialize() {
         setLayout(new BorderLayout());
 
@@ -274,8 +369,22 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 
+        JLayeredPane mapOverlay = new JLayeredPane();
+        mapOverlay.add(scrollPane, JLayeredPane.DEFAULT_LAYER);
+        floatingMapPanel = new JIPipeDesktopFloatingMapPanel(this);
+        mapOverlay.add(floatingMapPanel, JLayeredPane.DRAG_LAYER);
+        // A layered pane has no layout manager: keep the scroll pane
+        // covering the overlay at all times
+        mapOverlay.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                scrollPane.setBounds(0, 0, mapOverlay.getWidth(), mapOverlay.getHeight());
+            }
+        });
         JPanel mainPanel = new JPanel(new BorderLayout());
-        mainPanel.add(scrollPane, BorderLayout.CENTER);
+        // The toolbar stays outside the overlay, so the floating map can
+        // never cover it; the overlay wraps only the scroll pane
+        mainPanel.add(mapOverlay, BorderLayout.CENTER);
         mainPanel.add(toolBar, BorderLayout.NORTH);
 
         dockPanel.setMainComponent(mainPanel);
@@ -367,6 +476,11 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
         initializeCommonToolbarExport();
         toolBar.addSeparator();
         initializeCommonToolbarZoom();
+        mapToggle = new JToggleButton(JIPipe.RESOURCES.getIcon16("actions/map.png"));
+        mapToggle.setToolTipText("Show or hide the floating map");
+        UIUtils.makeButtonFlatWithSize(mapToggle, 32, 3);
+        mapToggle.addActionListener(e -> setMapVisible(mapToggle.isSelected()));
+        toolBar.add(mapToggle);
         toolBar.add(Box.createHorizontalStrut(8));
     }
 

@@ -24,6 +24,7 @@ import org.hkijena.jipipe.api.history.JIPipeDedicatedGraphHistoryJournal;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepAlgorithm;
 import org.hkijena.jipipe.api.parameters.RegisterJIPipeParameterCollectionContextAction;
+import org.hkijena.jipipe.api.settings.JIPipeSettingKey;
 import org.hkijena.jipipe.api.settings.SettingsBinding;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
@@ -33,6 +34,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.addnodepanel.JIPipeDesktopNode
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorLogPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopMapState;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.GraphInteractiveObjectUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.NodeContextActionWrapperUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.actions.*;
@@ -487,6 +489,11 @@ public class JIPipeDesktopPipelineGraphEditorUI extends JIPipeDesktopGraphEditor
     }
 
     @Override
+    protected JIPipeSettingKey<JIPipeDesktopMapState> getMapStateKey() {
+        return SettingsKeys.PIPELINE_MAP_STATE;
+    }
+
+    @Override
     protected void restoreDockStateFromSettings() {
         if (!JIPipe.isInstantiated()) {
             return;
@@ -530,6 +537,7 @@ public class JIPipeDesktopPipelineGraphEditorUI extends JIPipeDesktopGraphEditor
 
     @Override
     protected void closeDockStateBinding() {
+        super.closeDockStateBinding();
         if (pipelineDockStateBinding != null) {
             pipelineDockStateBinding.close();
             pipelineDockStateBinding = null;
