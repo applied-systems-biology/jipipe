@@ -28,11 +28,9 @@ import org.hkijena.jipipe.api.settings.SettingsBinding;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.batchassistant.JIPipeDesktopDataBatchAssistantUI;
-import org.hkijena.jipipe.desktop.app.bookmarks.JIPipeDesktopBookmarkListPanel;
 import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopAlgorithmCacheBrowserUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.addnodepanel.JIPipeDesktopNodeBrowser;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorLogPanel;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorMinimap;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.GraphInteractiveObjectUIContextAction;
@@ -247,35 +245,23 @@ public class JIPipeDesktopPipelineGraphEditorUI extends JIPipeDesktopGraphEditor
                 JIPipeDesktopDockPanel.PanelLocation.TopLeft,
                 true,
                 0, new JIPipeDesktopExpressionCalculatorUI(getDesktopWorkbench()));
-        getDockPanel().addDockPanel(JIPipeDesktopGraphEditorUI.DOCK_MAP,
-                "Navigator",
-                JIPipe.RESOURCES.getIcon24("actions/compass.png"),
-                JIPipeDesktopDockPanel.PanelLocation.TopLeft,
-                true,
-                0, new JIPipeDesktopGraphEditorMinimap(this));
 
         getDockPanel().addDockPanel(DOCK_QUICK_GUIDE,
                 "Quick guide",
                 JIPipe.RESOURCES.getIcon24("actions/help-about.png"),
-                JIPipeDesktopDockPanel.PanelLocation.BottomLeft,
+                JIPipeDesktopDockPanel.PanelLocation.TopLeft,
                 true,
                 0, new JIPipeDesktopPipelineQuickGuidePanel(getDesktopWorkbench(), this));
         getDockPanel().addDockPanel(DOCK_ADD_NODES,
                 "Add nodes",
                 JIPipe.RESOURCES.getIcon24("actions/node-add.png"),
-                JIPipeDesktopDockPanel.PanelLocation.BottomLeft,
+                JIPipeDesktopDockPanel.PanelLocation.TopLeft,
                 false,
                 JIPipeDesktopDockPanel.UI_ORDER_PINNED, nodeBrowser);
-        getDockPanel().addDockPanel(JIPipeDesktopGraphEditorUI.DOCK_BOOKMARKS,
-                "Bookmarks",
-                JIPipe.RESOURCES.getIcon24("actions/bookmarks.png"),
-                JIPipeDesktopDockPanel.PanelLocation.BottomLeft,
-                false,
-                0, new JIPipeDesktopBookmarkListPanel(getDesktopWorkbench(), getGraph(), this, null));
         getDockPanel().addDockPanel(JIPipeDesktopGraphEditorUI.DOCK_HISTORY,
                 "History",
                 JIPipe.RESOURCES.getIcon24("actions/edit-undo-history.png"),
-                JIPipeDesktopDockPanel.PanelLocation.BottomLeft,
+                JIPipeDesktopDockPanel.PanelLocation.TopLeft,
                 false,
                 0, new JIPipeDesktopHistoryJournalUI(getHistoryJournal()));
         getDockPanel().addDockPanel(JIPipeDesktopGraphEditorUI.DOCK_LOG,
@@ -567,11 +553,9 @@ public class JIPipeDesktopPipelineGraphEditorUI extends JIPipeDesktopGraphEditor
         state.setLeftPanelWidth(350);
         state.setRightPanelWidth(500);
 
-        state.put(DOCK_MAP, true, JIPipeDesktopDockPanel.PanelLocation.TopLeft);
-        state.put(DOCK_QUICK_GUIDE, true, JIPipeDesktopDockPanel.PanelLocation.BottomLeft);
-        state.put(DOCK_ADD_NODES, false, JIPipeDesktopDockPanel.PanelLocation.BottomLeft);
-        state.put(DOCK_BOOKMARKS, false, JIPipeDesktopDockPanel.PanelLocation.BottomLeft);
-        state.put(DOCK_HISTORY, false, JIPipeDesktopDockPanel.PanelLocation.BottomLeft);
+        state.put(DOCK_QUICK_GUIDE, true, JIPipeDesktopDockPanel.PanelLocation.TopLeft);
+        state.put(DOCK_ADD_NODES, false, JIPipeDesktopDockPanel.PanelLocation.TopLeft);
+        state.put(DOCK_HISTORY, false, JIPipeDesktopDockPanel.PanelLocation.TopLeft);
 
         state.put(DOCK_LOG, false, JIPipeDesktopDockPanel.PanelLocation.BottomBottom);
         state.put(DOCK_ERRORS, false, JIPipeDesktopDockPanel.PanelLocation.BottomRight);

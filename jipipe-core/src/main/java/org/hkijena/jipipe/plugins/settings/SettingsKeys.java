@@ -16,6 +16,7 @@ package org.hkijena.jipipe.plugins.settings;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.jipipe.api.settings.JIPipeSettingKey;
 import org.hkijena.jipipe.api.settings.SettingsScope;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopMapState;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameterList;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 
@@ -91,6 +92,26 @@ public final class SettingsKeys {
                     .scope(SettingsScope.APPLICATION)
                     .name("Compartments editor dock layout")
                     .description("The dock panel layout of the compartments graph editor");
+
+    /**
+     * The pipeline graph editor's floating map.
+     */
+    public static final JIPipeSettingKey<JIPipeDesktopMapState> PIPELINE_MAP_STATE =
+            JIPipeSettingKey.object("registry:ui-graph-editor", "pipeline/map-state", JIPipeDesktopMapState.class)
+                    .defaultValue(JIPipeDesktopMapState.defaultState())
+                    .scope(SettingsScope.APPLICATION)
+                    .name("Pipeline editor floating map")
+                    .description("The floating map of the pipeline graph editor");
+
+    /**
+     * The compartments graph editor's floating map.
+     */
+    public static final JIPipeSettingKey<JIPipeDesktopMapState> COMPARTMENTS_MAP_STATE =
+            JIPipeSettingKey.object("registry:ui-graph-editor", "compartments/map-state", JIPipeDesktopMapState.class)
+                    .defaultValue(JIPipeDesktopMapState.defaultState())
+                    .scope(SettingsScope.APPLICATION)
+                    .name("Compartments editor floating map")
+                    .description("The floating map of the compartments graph editor");
 
     // ------------------------------------------------------------------
     // Dock layouts (registry DB "ui-dock")

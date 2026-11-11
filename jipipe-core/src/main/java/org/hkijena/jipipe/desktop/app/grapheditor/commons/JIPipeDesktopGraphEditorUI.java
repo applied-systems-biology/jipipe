@@ -83,8 +83,6 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
 
     public static final String DOCK_LOG = "LOG_v2";
     public static final String DOCK_HISTORY = "HISTORY";
-    public static final String DOCK_BOOKMARKS = "BOOKMARKS";
-    public static final String DOCK_MAP = "MAP";
     public static final String DOCK_ERRORS = "ERRORS";
     public static final String DOCK_CALCULATOR = "CALCULATOR";
     public static final String DOCK_CONTEXT_PANEL = "CONTEXT_PANEL";
