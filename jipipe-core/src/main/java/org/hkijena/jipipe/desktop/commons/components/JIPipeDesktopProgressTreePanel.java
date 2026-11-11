@@ -65,8 +65,8 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * The v2 progress tree panel - the Swing implementation of the approved design contract
  * ({@code docs/superpowers/specs/2026-11-04-progress-system-overhaul/ui/v2-progress-panel.html}).
- * Replaces the flat log in the run window; the AI monitor keeps the old
- * {@link JIPipeDesktopProgressLoggerPanel}.
+ * Replaces the flat log everywhere: run window, Tools &gt; Logs viewer, editor dock, and the
+ * AI monitor.
  * <p>
  * <b>Update driver:</b> batch events ({@link #onProgressBatch}) arrive on the store's writer thread
  * and only mark the model dirty (they read the batch's records once to maintain the per-node

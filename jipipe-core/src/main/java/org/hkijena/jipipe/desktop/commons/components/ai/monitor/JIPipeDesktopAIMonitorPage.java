@@ -38,4 +38,12 @@ public abstract class JIPipeDesktopAIMonitorPage extends JIPipeDesktopWorkbenchP
      * Refreshes the page content.
      */
     public abstract void refresh();
+
+    /**
+     * Releases the page's resources (event subscriptions, hosted panels' timers and background
+     * reads). Called by the monitor window's dispose chain; pages without resources keep the
+     * empty base implementation.
+     */
+    public void dispose() {
+    }
 }

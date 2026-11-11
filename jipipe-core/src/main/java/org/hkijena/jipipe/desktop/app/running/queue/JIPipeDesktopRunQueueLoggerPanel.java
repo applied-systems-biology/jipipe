@@ -24,7 +24,6 @@ import java.awt.event.ItemListener;
  * ({@link JIPipeDesktopProgressTreePanel} - the Swing implementation of the approved mockup
  * {@code ui/v2-progress-panel.html}): node/phase rows with inline progress, expanded record views,
  * level filter, and a footer with the running path, live progress, record count, and data file.
- * The old flat log remains in use by the AI monitor ({@code JIPipeDesktopProgressLoggerPanel}).
  */
 public class JIPipeDesktopRunQueueLoggerPanel extends JIPipeDesktopWorkbenchPanel implements JIPipeRunnable.StartedEventListener, JIPipeRunnable.InterruptedEventListener, JIPipeRunnable.ProgressEventListener, JIPipeRunnable.FinishedEventListener, JIPipeRunnable.EnqeuedEventListener {
 
