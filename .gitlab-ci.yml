@@ -21,26 +21,46 @@ variables:
   MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
   DOCKER_TLS_CERTDIR: ""
 
-.default_build_template:
-  interruptible: true
-  retry: 1
-  image: maven:3-eclipse-temurin-21-jammy
+# One base image for everything JIPipe CI (see ci/Dockerfile): built and
+# pushed by the jipipe_ci_base_image job when ci/Dockerfile changes on
+# master, so no job installs packages at runtime and no build depends on
+# the Ubuntu or Alpine mirrors being reachable.
+default:
+  image: appsysbiohkijena/jipipe-ci-base:latest
+
+.jipipe_ci:
   before_script:
-    - apt-get update
-    - apt-get install -y nsis git git-lfs zip unzip
     - git lfs install --force
     - git config --global --add safe.directory "$CI_PROJECT_DIR"
 
+jipipe_ci_base_image:
+  stage: ".pre"
+  image: docker:24
+  services:
+    - docker:24-dind
+  before_script: []
+  script:
+    - docker login -u "$DOCKER_HUB_USERNAME" -p "$DOCKER_HUB_TOKEN"
+    - docker build -t appsysbiohkijena/jipipe-ci-base:latest -f ci/Dockerfile .
+    - docker push appsysbiohkijena/jipipe-ci-base:latest
+  rules:
+    # Rebuild the base image automatically on master; on feature branches the
+    # job is available manually (pushing from a branch requires
+    # DOCKER_HUB_TOKEN, which is protected and only available on master).
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - ci/Dockerfile
+    - if: $CI_COMMIT_BRANCH
+      changes:
+        - ci/Dockerfile
+      when: manual
+      allow_failure: true
+
 distribution_package:
   stage: package
+  extends: .jipipe_ci
   interruptible: true
   retry: 1
-  image: maven:3-eclipse-temurin-21-jammy
-  before_script:
-    - apt-get update
-    - apt-get install -y nsis git git-lfs zip unzip
-    - git lfs install --force
-    - git config --global --add safe.directory "$CI_PROJECT_DIR"
   script:
     - mvn -B -ntp -DskipTests dependency:go-offline
     - git clone --depth 1 https://asb-git.hki-jena.de/RGerst/jipipe-distribution-files.git
@@ -62,13 +82,10 @@ distribution_package:
 
 upload_to_package_registry:
   stage: publish
+  extends: .jipipe_ci
   needs:
     - job: distribution_package
       artifacts: true
-  image: maven:3-eclipse-temurin-21-jammy
-  before_script:
-    - apt-get update
-    - apt-get install -y git curl jq
   script:
     - set -euo pipefail
 
@@ -270,6 +287,7 @@ upload_to_package_registry:
 
 sync_github_repo:
   stage: publish
+  extends: .jipipe_ci
   retry: 1
   needs:
     - job: distribution_package
@@ -278,9 +296,6 @@ sync_github_repo:
     # remote that does not already share its ancestry ("remote unpack
     # failed: index-pack failed" - the pack would miss parent objects).
     GIT_DEPTH: "0"
-  image: alpine:3.19
-  before_script:
-    - apk add --no-cache git git-lfs bash
   script:
     - set -euo pipefail
     - |
@@ -316,14 +331,12 @@ sync_github_repo:
 
 upload_to_github_prerelease:
   stage: publish
+  extends: .jipipe_ci
   retry: 1
   needs:
     - job: distribution_package
       artifacts: true
     - job: sync_github_repo
-  image: alpine:3.19
-  before_script:
-    - apk add --no-cache github-cli bash curl jq
   script:
     - set -euo pipefail
     - |
@@ -440,16 +453,14 @@ upload_to_github_prerelease:
 
 docker_build_push:
   stage: publish
+  extends: .jipipe_ci
   needs:
     - job: distribution_package
       artifacts: true
     - job: upload_to_package_registry
       artifacts: true
-  image: docker:24
   services:
     - docker:24-dind
-  before_script:
-    - apk add --no-cache curl jq bash
   script:
     - set -euo pipefail
     - |
@@ -480,12 +491,9 @@ docker_build_push:
 
 build_feature_branch:
   stage: build
+  extends: .jipipe_ci
   interruptible: true
   retry: 1
-  image: maven:3-eclipse-temurin-21-jammy
-  before_script:
-    - apt-get update
-    - apt-get install -y zip wget
   script:
     - echo "Pre-warming dependencies..."
     - mvn -B -ntp -DskipTests dependency:go-offline
@@ -506,14 +514,9 @@ build_feature_branch:
 
 feature_branch_package:
   stage: package
+  extends: .jipipe_ci
   interruptible: true
   retry: 1
-  image: maven:3-eclipse-temurin-21-jammy
-  before_script:
-    - apt-get update
-    - apt-get install -y git git-lfs zip unzip wget
-    - git lfs install --force
-    - git config --global --add safe.directory "$CI_PROJECT_DIR"
   script:
     - mvn -B -ntp -DskipTests dependency:go-offline
     - git clone --depth 1 https://asb-git.hki-jena.de/RGerst/jipipe-distribution-files.git
