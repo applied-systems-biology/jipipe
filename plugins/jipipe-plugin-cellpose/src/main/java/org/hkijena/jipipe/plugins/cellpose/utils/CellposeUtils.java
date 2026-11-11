@@ -139,6 +139,20 @@ public class CellposeUtils {
         }
     }
 
+    /**
+     * R54b: wraps the given handle in the tqdm progress bar parser (the same wrapper the runner
+     * uses internally). Use for Cellpose/Omnipose Python calls that bypass
+     * {@link #runCellpose(PythonEnvironment, List, boolean, JIPipeProgressInfo)} and call
+     * {@code PythonUtils.runPython} directly.
+     *
+     * @param progressInfo the handle that receives the subprocess output lines
+     * @return the wrapped handle: tqdm bar lines drive its progress counter (max first, then the
+     * current step; last match wins), all other lines pass through byte-identically
+     */
+    public static JIPipeProgressInfo withCellposeProgressBar(JIPipeProgressInfo progressInfo) {
+        return new TqdmProgressInfo(progressInfo);
+    }
+
     public static String getCellposeCustomCode() {
         if (CELLPOSE_CUSTOM_CODE == null) {
             try {

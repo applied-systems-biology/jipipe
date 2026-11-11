@@ -373,7 +373,7 @@ public class Cellpose1InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
         }
 
         // Run script
-        PythonUtils.runPython(code.toString(), environment, Collections.emptyList(), false, progressInfo);
+        PythonUtils.runPython(code.toString(), environment, Collections.emptyList(), false, CellposeUtils.withCellposeProgressBar(progressInfo));
 
 
         for (int i = 0; i < inputRowList.size(); i++) {
