@@ -479,12 +479,15 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
         initializeCommonToolbarLayout();
         initializeCommonToolbarExport();
         toolBar.addSeparator();
-        initializeCommonToolbarZoom();
+
         mapToggle = new JToggleButton(JIPipe.RESOURCES.getIcon16("actions/map.png"));
         mapToggle.setToolTipText("Show or hide the floating map");
         UIUtils.makeButtonFlatWithSize(mapToggle, 32, 3);
         mapToggle.addActionListener(e -> setMapVisible(mapToggle.isSelected()));
         toolBar.add(mapToggle);
+
+        initializeCommonToolbarZoom();
+
         toolBar.add(Box.createHorizontalStrut(8));
     }
 
