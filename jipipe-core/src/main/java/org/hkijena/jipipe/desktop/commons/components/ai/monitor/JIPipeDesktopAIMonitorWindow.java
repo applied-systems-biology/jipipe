@@ -37,7 +37,7 @@ import java.util.List;
  * <ul>
  *     <li><b>Overview</b> - shows embedding model status, model type, model ID, start/stop controls, and AI config button</li>
  *     <li><b>Log</b> - displays the AI service task queue log via {@link org.hkijena.jipipe.desktop.app.running.queue.JIPipeDesktopRunQueueLoggerPanel}</li>
- *     <li><b>Embedding log</b> - displays the embedding model operation log via {@link org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopProgressLoggerPanel}</li>
+ *     <li><b>Embedding log</b> - displays the embedding model operation log via {@link org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopProgressTreePanel}</li>
  * </ul>
  * <p>
  * Subscribes to {@link org.hkijena.jipipe.api.microservice.MicroserviceStateChangeEventEmitter} on the
@@ -123,6 +123,11 @@ public class JIPipeDesktopAIMonitorWindow extends JFrame implements Microservice
     public void dispose() {
         refreshTimer.stop();
         JIPipe.getInstance().getAiService().getEmbeddingModelService().getStateChangeEventEmitter().unsubscribe(this);
+        // The pages release their own subscriptions (store batches, queue events) - without this
+        // loop a disposed monitor window keeps them alive (R25/R56)
+        for (JIPipeDesktopAIMonitorPage page : pages) {
+            page.dispose();
+        }
         super.dispose();
     }
 }

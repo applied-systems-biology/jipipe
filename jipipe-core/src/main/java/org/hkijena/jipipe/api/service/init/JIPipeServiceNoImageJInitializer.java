@@ -4,7 +4,6 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeInitializationReport;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.run.JIPipeRunnableLogEntry;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.api.service.JIPipeServiceComponent;
@@ -15,7 +14,6 @@ import org.hkijena.jipipe.api.service.events.JIPipePluginRegisteredEvent;
 import org.hkijena.jipipe.desktop.app.running.logs.JIPipeDesktopRunnableLogsCollection;
 import org.scijava.service.AbstractService;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -108,11 +106,9 @@ public class JIPipeServiceNoImageJInitializer extends JIPipeServiceInitializer {
 
     @Override
     public void runPostprocessing() {
-        // Push progress into log
-        JIPipeDesktopRunnableLogsCollection.getInstance().pushToLog(new JIPipeRunnableLogEntry("JIPipe initialization",
-                LocalDateTime.now(),
-                getProgressInfo().getLog().toString(),
-                new JIPipeNotificationInbox(), true));
+        // Push progress into log (the entry renders the initialization store's bounded tail
+        // on demand - the initialization store is not file-backed)
+        JIPipeDesktopRunnableLogsCollection.getInstance().pushToLog(new JIPipeRunnableLogEntry(getProgressInfo(), "JIPipe initialization", true));
 
         // Mark log as read
         JIPipeDesktopRunnableLogsCollection.getInstance().markAllAsRead();

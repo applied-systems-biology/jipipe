@@ -17,6 +17,7 @@ import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import org.hkijena.jipipe.api.JIPipeIterationStepGenerationResult;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.progress.JIPipeProgressNodeState;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -42,6 +43,7 @@ import org.hkijena.jipipe.utils.ParameterUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -101,8 +103,17 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
         if (getInputSlots().isEmpty()) {
             final int row = 0;
             JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", row, 1);
-            JIPipeSingleIterationStep iterationStep = new JIPipeSingleIterationStep(this);
-            runIteration(iterationStep, new JIPipeMutableIterationContext(row, 1), slotProgress);
+            // R48: the item finishes at its operation end (OK after the work, FAILED in the
+            // finally; finishNode is idempotent, so the success path keeps OK)
+            try {
+                JIPipeSingleIterationStep iterationStep = new JIPipeSingleIterationStep(this);
+                runIteration(iterationStep, new JIPipeMutableIterationContext(row, 1), slotProgress);
+                slotProgress.finishNode(JIPipeProgressNodeState.OK);
+            } finally {
+                slotProgress.finishNode(JIPipeProgressNodeState.FAILED);
+            }
+            // R41: the data row completed (single-row variant)
+            progressInfo.setProgress(row + 1, 1);
         } else {
 
             boolean withLimit = iterationStepGenerationSettings.getLimit().isEnabled();
@@ -117,13 +128,25 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
                     if (progressInfo.isCancelled())
                         return;
                     JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", i, getFirstInputSlot().getRowCount());
-                    JIPipeSingleIterationStep iterationStep = new JIPipeSingleIterationStep(this);
-                    iterationStep.setInputData(getFirstInputSlot(), i);
-                    iterationStep.addMergedTextAnnotations(getFirstInputSlot().getTextAnnotations(i), JIPipeTextAnnotationMergeMode.Merge);
-                    runIteration(iterationStep, new JIPipeMutableIterationContext(i, getFirstInputSlot().getRowCount()), slotProgress);
+                    // R48: the item finishes at its operation end (OK after the work, FAILED in
+                    // the finally; finishNode is idempotent, so the success path keeps OK)
+                    try {
+                        JIPipeSingleIterationStep iterationStep = new JIPipeSingleIterationStep(this);
+                        iterationStep.setInputData(getFirstInputSlot(), i);
+                        iterationStep.addMergedTextAnnotations(getFirstInputSlot().getTextAnnotations(i), JIPipeTextAnnotationMergeMode.Merge);
+                        runIteration(iterationStep, new JIPipeMutableIterationContext(i, getFirstInputSlot().getRowCount()), slotProgress);
+                        slotProgress.finishNode(JIPipeProgressNodeState.OK);
+                    } finally {
+                        slotProgress.finishNode(JIPipeProgressNodeState.FAILED);
+                    }
+                    // R41: the data row completed
+                    progressInfo.setProgress(i + 1, getFirstInputSlot().getRowCount());
                 }
             } else {
                 List<Runnable> tasks = new ArrayList<>();
+                // R41: rows complete out of order in parallel mode, so the completed count is
+                // atomic and monotonic instead of the row index
+                AtomicInteger completedRows = new AtomicInteger();
                 for (int i = 0; i < getFirstInputSlot().getRowCount(); i++) {
                     if (withLimit && !allowedIndices.contains(i))
                         continue;
@@ -132,10 +155,18 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
                         if (progressInfo.isCancelled())
                             return;
                         JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", rowIndex, getFirstInputSlot().getRowCount());
-                        JIPipeSingleIterationStep iterationStep = new JIPipeSingleIterationStep(this);
-                        iterationStep.setInputData(getFirstInputSlot(), rowIndex);
-                        iterationStep.addMergedTextAnnotations(getFirstInputSlot().getTextAnnotations(rowIndex), JIPipeTextAnnotationMergeMode.Merge);
-                        runIteration(iterationStep, new JIPipeMutableIterationContext(rowIndex, getFirstInputSlot().getRowCount()), slotProgress);
+                        // R48: the item finishes inside its own task (OK after the work, FAILED
+                        // in the finally; finishNode is idempotent, so the success path keeps OK)
+                        try {
+                            JIPipeSingleIterationStep iterationStep = new JIPipeSingleIterationStep(this);
+                            iterationStep.setInputData(getFirstInputSlot(), rowIndex);
+                            iterationStep.addMergedTextAnnotations(getFirstInputSlot().getTextAnnotations(rowIndex), JIPipeTextAnnotationMergeMode.Merge);
+                            runIteration(iterationStep, new JIPipeMutableIterationContext(rowIndex, getFirstInputSlot().getRowCount()), slotProgress);
+                            slotProgress.finishNode(JIPipeProgressNodeState.OK);
+                        } finally {
+                            slotProgress.finishNode(JIPipeProgressNodeState.FAILED);
+                        }
+                        progressInfo.setProgress(completedRows.incrementAndGet(), getFirstInputSlot().getRowCount());
                     });
                 }
                 progressInfo.log(String.format("Running %d batches (batch size %d) in parallel. Available threads = %d",

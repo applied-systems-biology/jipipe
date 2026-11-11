@@ -12,10 +12,11 @@ import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironmentArchetype;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
+import org.hkijena.jipipe.api.progress.JIPipeLogLevel;
+import org.hkijena.jipipe.api.progress.JIPipeProgressLog;
 import org.hkijena.jipipe.api.run.JIPipeRunnableLogEntry;
 import org.hkijena.jipipe.api.service.JIPipeInitializationException;
 import org.hkijena.jipipe.api.service.JIPipeService;
@@ -48,7 +49,6 @@ import org.scijava.service.AbstractService;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.nio.file.Path;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Predicate;
 
@@ -67,9 +67,18 @@ public class JIPipeServiceDefaultInitializer extends JIPipeServiceInitializer {
 
         getProgressInfo().setProgress(0, 5);
         if (isVerbose()) {
-            getProgressInfo().getStatusUpdatedEventEmitter().subscribeLambda((emitter, event) -> {
-                getService().getLogService().info(event.getMessage());
-            });
+            // R45a: forward every initialization record to the log service as it is submitted.
+            // The synchronous per-record hook fires on the submitting thread for every store
+            // type - the initialization store is a silent store, which has no writer thread and
+            // therefore never emits the coalesced batch events the previous bridge relied on
+            // (the splash then stayed on its initial status text). The subscription follows
+            // store adoption.
+            getProgressInfo().subscribeToRecords((store, sequence, record) -> store.renderRecords(
+                    List.of(record), JIPipeLogLevel.INFO, line -> {
+                        if (!line.isBlank()) {
+                            getService().getLogService().info(line);
+                        }
+                    }));
         }
 
         IJ.showStatus("Initializing JIPipe ...");
@@ -94,7 +103,7 @@ public class JIPipeServiceDefaultInitializer extends JIPipeServiceInitializer {
         // Re-read the extension settings AFTER the profile upgrades AND the
         // settings migration: both rewrote the settings file, and
         // `extensionSettings` is consumed by the pre-activation checks below
-        // (isIgnorePreActivationChecks, isValidateNodeTypes) — reading it
+        // (isIgnorePreActivationChecks, isValidateNodeTypes) - reading it
         // before the migration made those decisions on defaults instead of the
         // user's values. Nothing between the first read (above) and this point
         // consumes it, so this is a single, correct re-read.
@@ -391,11 +400,9 @@ public class JIPipeServiceDefaultInitializer extends JIPipeServiceInitializer {
         }
 
 
-        // Push progress into log
-        JIPipeDesktopRunnableLogsCollection.getInstance().pushToLog(new JIPipeRunnableLogEntry("JIPipe initialization",
-                LocalDateTime.now(),
-                getProgressInfo().getLog().toString(),
-                new JIPipeNotificationInbox(), true));
+        // Push progress into log (the entry renders the initialization store's bounded tail
+        // on demand - the initialization store is not file-backed)
+        JIPipeDesktopRunnableLogsCollection.getInstance().pushToLog(new JIPipeRunnableLogEntry(getProgressInfo(), "JIPipe initialization", true));
 
         // Mark log as read
         JIPipeDesktopRunnableLogsCollection.getInstance().markAllAsRead();
@@ -415,7 +422,7 @@ public class JIPipeServiceDefaultInitializer extends JIPipeServiceInitializer {
      * {@link JIPipeInitializationException}: the legacy files may already have
      * been moved into {@code settings-migration-backup/}, and a later save
      * would write a new-format {@code settings.json} from the (empty or
-     * partial) document — after which {@code needsMigration} is false forever
+     * partial) document - after which {@code needsMigration} is false forever
      * and the user's values would sit only in the backup. Continuing would
      * therefore silently clear the user's settings. A carry-over failure is
      * not load-bearing (it only recovers unknown blocks from sibling

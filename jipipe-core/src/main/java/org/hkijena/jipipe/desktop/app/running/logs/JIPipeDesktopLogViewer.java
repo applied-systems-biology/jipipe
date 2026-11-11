@@ -28,6 +28,7 @@ import java.awt.*;
 public class JIPipeDesktopLogViewer extends JIPipeDesktopProjectWorkbenchPanel implements JIPipeDesktopRunnableLogsCollection.LogClearedEventListener, JIPipeDesktopRunnableLogsCollection.LogEntryAddedEventListener, JIPipeDesktopRunnableLogsCollection.LogUpdatedEventListener {
     private final JList<JIPipeRunnableLogEntry> logEntryJList = new JList<>();
     private JIPipeRunnableLogEntry currentlyDisplayedLog;
+    private JIPipeDesktopLogViewLogUI currentlyShownLog;
     private JIPipeDesktopSplitPane splitPane;
 
     public JIPipeDesktopLogViewer(JIPipeDesktopProjectWorkbench workbenchUI) {
@@ -100,7 +101,13 @@ public class JIPipeDesktopLogViewer extends JIPipeDesktopProjectWorkbenchPanel i
 
     public void showLog(JIPipeRunnableLogEntry entry) {
         currentlyDisplayedLog = entry;
-        splitPane.setRightComponent(UIUtils.wrapInIslandPanelIfNeeded(new JIPipeDesktopLogViewLogUI(getDesktopWorkbench(), entry)));
+        // One panel per opened entry: releasing the previous one unsubscribes its batch listener
+        // and stops its tree panel's timer and background reads (no listener leak per entry)
+        if (currentlyShownLog != null) {
+            currentlyShownLog.dispose();
+        }
+        currentlyShownLog = new JIPipeDesktopLogViewLogUI(getDesktopWorkbench(), entry);
+        splitPane.setRightComponent(UIUtils.wrapInIslandPanelIfNeeded(currentlyShownLog));
         JIPipeDesktopRunnableLogsCollection.getInstance().markAsRead(entry);
         splitPane.applyRatio();
     }

@@ -6,6 +6,11 @@ import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.grouping.JIPipeGraphWrapperAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.progress.JIPipeLogLevel;
+import org.hkijena.jipipe.api.progress.JIPipeProgressLog;
+import org.hkijena.jipipe.api.progress.JIPipeProgressNode;
+import org.hkijena.jipipe.api.progress.JIPipeProgressNodeUtils;
+import org.hkijena.jipipe.api.progress.JIPipeProgressRecord;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.run.JIPipeGraphRun;
 import org.hkijena.jipipe.api.run.JIPipeGraphRunConfiguration;
@@ -117,17 +122,10 @@ public class InstrumentationRunEngine {
         }
 
         job.setStatus(InstrumentationJobStatus.RUNNING);
-        JIPipeProgressInfo.StatusUpdatedEventListener progressListener = event -> {
-            double fraction = event.getMaxProgress() > 0 ? (double) event.getProgress() / event.getMaxProgress() : 0.0;
-            job.updateProgress(fraction, event.getMessage());
-        };
-        progressInfo.getStatusUpdatedEventEmitter().subscribe(progressListener);
-        try {
+        try (JIPipeProgressInfo.BatchEventSubscription subscription = forwardBatchesToJob(job)) {
             job.updateProgress(0.0, "Starting...");
             run.run();
             job.updateProgress(1.0, "Done");
-        } finally {
-            progressInfo.getStatusUpdatedEventEmitter().unsubscribe(progressListener);
         }
 
         // Clear data
@@ -160,18 +158,71 @@ public class InstrumentationRunEngine {
         run.setProgressInfo(progressInfo);
 
         job.setStatus(InstrumentationJobStatus.RUNNING);
-        JIPipeProgressInfo.StatusUpdatedEventListener progressListener = event -> {
-            double fraction = event.getMaxProgress() > 0 ? (double) event.getProgress() / event.getMaxProgress() : 0.0;
-            job.updateProgress(fraction, event.getMessage());
-        };
-        progressInfo.getStatusUpdatedEventEmitter().subscribe(progressListener);
-        try {
+        try (JIPipeProgressInfo.BatchEventSubscription subscription = forwardBatchesToJob(job)) {
             job.updateProgress(0.0, "Starting...");
             run.run();
             job.updateProgress(1.0, "Done");
-        } finally {
-            progressInfo.getStatusUpdatedEventEmitter().unsubscribe(progressListener);
         }
+    }
+
+    /**
+     * Forwards every coalesced batch of the run's progress store as ONE {@code job_progress}
+     * update: the message is the last rendered line of the batch (see
+     * {@link #batchProgressMessage(JIPipeProgressLog, JIPipeProgressLog.ProgressBatchEvent)}), the
+     * fraction is derived from the batch's latest determinate node. The subscription follows store
+     * adoption (the run creates its file-backed store at the start of {@code run()}).
+     *
+     * @param job the job receiving the progress updates
+     * @return the subscription (close it to unsubscribe)
+     */
+    private JIPipeProgressInfo.BatchEventSubscription forwardBatchesToJob(InstrumentationJob job) {
+        return progressInfo.subscribeToBatchEvents(event -> {
+            JIPipeProgressLog store = (JIPipeProgressLog) event.getSource();
+            String message = batchProgressMessage(store, event);
+            if (message == null) {
+                return;
+            }
+            double fraction;
+            if (event.fromLine() > event.toLine()) {
+                // Empty final batch = run complete
+                fraction = 1.0;
+            } else {
+                int latestNodeId = JIPipeProgressNodeUtils.latestNodeId(store, event.changedNodes());
+                JIPipeProgressNode node = latestNodeId > 0 ? store.getNode(latestNodeId) : null;
+                fraction = node != null && node.getMaxProgress() > 0
+                        ? (double) node.getProgress() / node.getMaxProgress()
+                        : job.getProgress();
+            }
+            job.updateProgress(fraction, message);
+        });
+    }
+
+    /**
+     * Extracts the {@code job_progress} message of a coalesced batch: the last non-empty rendered
+     * line of the batch's records. The documented messages:
+     * <ul>
+     *     <li>An empty final batch ({@code fromLine() > toLine()} - the run-complete convention)
+     *     maps to {@code "Done"}.</li>
+     *     <li>A non-final batch without rendered lines maps to {@code null} (no progress update is
+     *     sent).</li>
+     * </ul>
+     *
+     * @param store the progress store that emitted the batch
+     * @param batch the batch
+     * @return the message, or {@code null} if the batch produces no progress update
+     */
+    static String batchProgressMessage(JIPipeProgressLog store, JIPipeProgressLog.ProgressBatchEvent batch) {
+        if (batch.fromLine() > batch.toLine()) {
+            return "Done";
+        }
+        List<JIPipeProgressRecord> records = store.readRecords(batch.fromLine(), batch.toLine() - batch.fromLine() + 1);
+        String[] last = new String[1];
+        store.renderRecords(records, JIPipeLogLevel.INFO, line -> {
+            if (!line.isBlank()) {
+                last[0] = line;
+            }
+        });
+        return last[0];
     }
 
     private Set<JIPipeGraphNode> findPredecessorsWithoutCache(JIPipeGraphRun run, List<JIPipeGraphNode> targetNodeCopies) {

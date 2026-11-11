@@ -46,6 +46,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class CellposeUtils {
 
@@ -53,6 +55,39 @@ public class CellposeUtils {
 
     private CellposeUtils() {
 
+    }
+
+    /**
+     * R54b: wraps the progress handle that is passed to the Cellpose/Omnipose Python subprocess so
+     * that tqdm progress bars drive the subprocess row's progress counter. All state is shared with
+     * the wrapped handle via the copy constructor (same store, node, counters, cancellation), and
+     * {@link #log(String)} always delegates, so the rendered log lines stay byte-identical.
+     */
+    private static class TqdmProgressInfo extends JIPipeProgressInfo {
+
+        /**
+         * Matches the bar part of a tqdm redraw, e.g.
+         * {@code 2026-11-11 10:14:23,367 [utils INFO] 0%|          | 0/4 [00:00<?, ?it/s]}:
+         * group 1 is the floor percentage (unused - the cur/total fraction is more precise),
+         * group 2 is the current step, group 3 is the total step count.
+         */
+        private static final Pattern TQDM_PATTERN = Pattern.compile("(\\d{1,3})%\\|[^|]*\\|\\s*(\\d+)/(\\d+)");
+
+        TqdmProgressInfo(JIPipeProgressInfo other) {
+            super(other);
+        }
+
+        @Override
+        public void log(String message) {
+            Matcher matcher = TQDM_PATTERN.matcher(message);
+            if (matcher.find()) {
+                // Max first: avoids a transient progress > max while the panel reads both counters.
+                // The last match wins; a later bar with a different total updates the max.
+                setMaxProgress(Integer.parseInt(matcher.group(3)));
+                setProgress(Integer.parseInt(matcher.group(2)));
+            }
+            super.log(message);
+        }
     }
 
     public static void runCellpose(PythonEnvironment environment, List<String> arguments, boolean suppressLogs, JIPipeProgressInfo progressInfo) {
@@ -68,6 +103,9 @@ public class CellposeUtils {
         }
 
         // Run the module
+        // R54b: every subprocess output line is routed through log(); the wrapper turns tqdm bar
+        // lines into progress counter updates while keeping the rendered lines byte-identical
+        JIPipeProgressInfo tqdmProgress = new TqdmProgressInfo(progressInfo);
         try {
             PythonUtils.runPython(arguments.toArray(new String[0]),
                     environment,
@@ -75,7 +113,7 @@ public class CellposeUtils {
                     additionalEnvironmentVariables,
                     suppressLogs,
                     false,
-                    progressInfo);
+                    tqdmProgress);
         } catch (Exception e) {
             // Search for the hallmarks of CUDA issues
             String logAsString = progressInfo.getLog().toString();
@@ -99,6 +137,20 @@ public class CellposeUtils {
 
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * R54b: wraps the given handle in the tqdm progress bar parser (the same wrapper the runner
+     * uses internally). Use for Cellpose/Omnipose Python calls that bypass
+     * {@link #runCellpose(PythonEnvironment, List, boolean, JIPipeProgressInfo)} and call
+     * {@code PythonUtils.runPython} directly.
+     *
+     * @param progressInfo the handle that receives the subprocess output lines
+     * @return the wrapped handle: tqdm bar lines drive its progress counter (max first, then the
+     * current step; last match wins), all other lines pass through byte-identically
+     */
+    public static JIPipeProgressInfo withCellposeProgressBar(JIPipeProgressInfo progressInfo) {
+        return new TqdmProgressInfo(progressInfo);
     }
 
     public static String getCellposeCustomCode() {
@@ -257,7 +309,7 @@ public class CellposeUtils {
             Path imageFile = ioPath.resolve(entry.getValue() + basePathSuffix);
 
             // Read the slice image
-            progressInfo.log("Reading: " + imageFile);
+            progressInfo.debug("Reading: " + imageFile);
             ImagePlus sliceImg;
             if (useBioFormats) {
                 OMEImageData omeImageData = OMEImageData.simpleOMEImport(imageFile);

@@ -17,6 +17,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import org.hkijena.jipipe.api.AddJIPipeDocumentationDescription;
 import org.hkijena.jipipe.api.JIPipeIterationStepGenerationResult;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.progress.JIPipeProgressNodeState;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -174,14 +175,23 @@ public abstract class JIPipeSingleIterationAlgorithm extends JIPipeParameterSlot
                 return;
             final int row = 0;
             JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", row, 1);
-            JIPipeMultiIterationStep iterationStep = new JIPipeMultiIterationStep(this);
-            iterationStep.addMergedTextAnnotations(parameterAnnotations, iterationStepGenerationSettings.getAnnotationMergeStrategy());
-            uploadAdaptiveParameters(iterationStep, tree, parameterBackups, progressInfo);
-            if (isPassThrough()) {
-                runPassThrough(slotProgress, iterationStep);
-            } else {
-                runIteration(iterationStep, new JIPipeMutableIterationContext(row, 1), runContext, slotProgress);
+            // R48: the item finishes at its operation end (OK after the work, FAILED in the
+            // finally; finishNode is idempotent, so the success path keeps OK)
+            try {
+                JIPipeMultiIterationStep iterationStep = new JIPipeMultiIterationStep(this);
+                iterationStep.addMergedTextAnnotations(parameterAnnotations, iterationStepGenerationSettings.getAnnotationMergeStrategy());
+                uploadAdaptiveParameters(iterationStep, tree, parameterBackups, progressInfo);
+                if (isPassThrough()) {
+                    runPassThrough(slotProgress, iterationStep);
+                } else {
+                    runIteration(iterationStep, new JIPipeMutableIterationContext(row, 1), runContext, slotProgress);
+                }
+                slotProgress.finishNode(JIPipeProgressNodeState.OK);
+            } finally {
+                slotProgress.finishNode(JIPipeProgressNodeState.FAILED);
             }
+            // R41: the data row completed (single-row variant)
+            progressInfo.setProgress(row + 1, 1);
             restoreAdaptiveParameters(tree, parameterBackups);
             return;
         }
@@ -198,12 +208,21 @@ public abstract class JIPipeSingleIterationAlgorithm extends JIPipeParameterSlot
                 return;
             }
             JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", i, iterationSteps.size());
-            uploadAdaptiveParameters(iterationSteps.get(i), tree, parameterBackups, progressInfo);
-            if (isPassThrough()) {
-                runPassThrough(slotProgress, iterationSteps.get(i));
-            } else {
-                runIteration(iterationSteps.get(i), new JIPipeMutableIterationContext(i, iterationSteps.size()), runContext, slotProgress);
+            // R48: the item finishes at its operation end (OK after the work, FAILED in the
+            // finally; finishNode is idempotent, so the success path keeps OK)
+            try {
+                uploadAdaptiveParameters(iterationSteps.get(i), tree, parameterBackups, progressInfo);
+                if (isPassThrough()) {
+                    runPassThrough(slotProgress, iterationSteps.get(i));
+                } else {
+                    runIteration(iterationSteps.get(i), new JIPipeMutableIterationContext(i, iterationSteps.size()), runContext, slotProgress);
+                }
+                slotProgress.finishNode(JIPipeProgressNodeState.OK);
+            } finally {
+                slotProgress.finishNode(JIPipeProgressNodeState.FAILED);
             }
+            // R41: the data row completed
+            progressInfo.setProgress(i + 1, iterationSteps.size());
         }
 
         restoreAdaptiveParameters(tree, parameterBackups);

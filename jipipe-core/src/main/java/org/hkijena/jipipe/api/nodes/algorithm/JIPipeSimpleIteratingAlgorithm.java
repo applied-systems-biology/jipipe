@@ -20,6 +20,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeFixedThreadPool;
 import org.hkijena.jipipe.api.JIPipeIterationStepGenerationResult;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.progress.JIPipeProgressNodeState;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
@@ -48,6 +49,7 @@ import org.hkijena.jipipe.utils.ui.ViewOnlyMenuItem;
 
 import java.util.*;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.Future;
 
 /**
@@ -223,15 +225,27 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
                     return;
                 }
                 JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", i, iterationSteps.size());
-                uploadAdaptiveParameters(iterationSteps.get(i), tree, parameterBackups, progressInfo);
-                if (isPassThrough()) {
-                    runPassThrough(slotProgress, iterationSteps.get(i));
-                } else {
-                    runIteration(iterationSteps.get(i), new JIPipeMutableIterationContext(i, numIterationSteps), runContext, slotProgress);
+                // R48: the item finishes at its operation end (OK after the work, FAILED in the
+                // finally; finishNode is idempotent, so the success path keeps OK)
+                try {
+                    uploadAdaptiveParameters(iterationSteps.get(i), tree, parameterBackups, progressInfo);
+                    if (isPassThrough()) {
+                        runPassThrough(slotProgress, iterationSteps.get(i));
+                    } else {
+                        runIteration(iterationSteps.get(i), new JIPipeMutableIterationContext(i, numIterationSteps), runContext, slotProgress);
+                    }
+                    slotProgress.finishNode(JIPipeProgressNodeState.OK);
+                } finally {
+                    slotProgress.finishNode(JIPipeProgressNodeState.FAILED);
                 }
+                // R41: the data row completed
+                progressInfo.setProgress(i + 1, iterationSteps.size());
             }
         } else {
             List<Runnable> tasks = new ArrayList<>();
+            // R41: rows complete out of order in parallel mode, so the completed count is atomic
+            // and monotonic instead of the row index
+            AtomicInteger completedRows = new AtomicInteger();
             for (int i = 0; i < iterationSteps.size(); i++) {
                 int iterationStepIndex = i;
                 JIPipeParameterTree finalTree = tree;
@@ -239,12 +253,20 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
                     if (progressInfo.isCancelled())
                         return;
                     JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", iterationStepIndex, iterationSteps.size());
-                    uploadAdaptiveParameters(iterationSteps.get(iterationStepIndex), finalTree, parameterBackups, progressInfo);
-                    if (isPassThrough()) {
-                        runPassThrough(slotProgress, iterationSteps.get(iterationStepIndex));
-                    } else {
-                        runIteration(iterationSteps.get(iterationStepIndex), new JIPipeMutableIterationContext(iterationStepIndex, numIterationSteps), runContext, slotProgress);
+                    // R48: the item finishes inside its own task (OK after the work, FAILED in
+                    // the finally; finishNode is idempotent, so the success path keeps OK)
+                    try {
+                        uploadAdaptiveParameters(iterationSteps.get(iterationStepIndex), finalTree, parameterBackups, progressInfo);
+                        if (isPassThrough()) {
+                            runPassThrough(slotProgress, iterationSteps.get(iterationStepIndex));
+                        } else {
+                            runIteration(iterationSteps.get(iterationStepIndex), new JIPipeMutableIterationContext(iterationStepIndex, numIterationSteps), runContext, slotProgress);
+                        }
+                        slotProgress.finishNode(JIPipeProgressNodeState.OK);
+                    } finally {
+                        slotProgress.finishNode(JIPipeProgressNodeState.FAILED);
                     }
+                    progressInfo.setProgress(completedRows.incrementAndGet(), numIterationSteps);
                 });
             }
 

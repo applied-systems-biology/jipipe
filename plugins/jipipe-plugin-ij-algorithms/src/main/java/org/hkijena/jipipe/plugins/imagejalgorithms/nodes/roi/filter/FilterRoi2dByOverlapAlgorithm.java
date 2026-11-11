@@ -307,13 +307,13 @@ public class FilterRoi2dByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
 
     private void logCandidateFilterVerbose(MeasuredRoi candidate, MeasuredRoi filter, String text, JIPipePercentageProgressInfo progressInfo) {
         if (verbose) {
-            progressInfo.log("candidate=" + candidate.roi + " & filter=" + filter.roi + " --> " + text);
+            progressInfo.debug("candidate=" + candidate.roi + " & filter=" + filter.roi + " --> " + text);
         }
     }
 
     private void logCandidateVerbose(MeasuredRoi candidate, String text, JIPipePercentageProgressInfo progressInfo) {
         if (verbose) {
-            progressInfo.log("candidate=" + candidate.roi + " --> " + text);
+            progressInfo.debug("candidate=" + candidate.roi + " --> " + text);
         }
     }
 

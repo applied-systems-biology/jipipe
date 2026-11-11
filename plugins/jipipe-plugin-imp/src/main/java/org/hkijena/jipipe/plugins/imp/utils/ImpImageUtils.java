@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.plugins.imp.utils;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.progress.JIPipeProgressNodeState;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.imp.datatypes.ImpImageData;
 
@@ -78,9 +79,19 @@ public class ImpImageUtils {
                     for (int c = 0; c < img.getNumChannels(); c++) {
                         if (progressInfo.isCancelled())
                             return;
-                        progressInfo.resolveAndLog("Slice", iterationIndex++, img.getSize()).log("z=" + z + ", c=" + c + ", t=" + t);
-                        BufferedImage processor = img.getImage(c, z, t);
-                        function.accept(processor, new ImageSliceIndex(c, z, t));
+                        JIPipeProgressInfo sliceProgress = progressInfo.resolveAndLog("Slice", iterationIndex++, img.getSize());
+                        sliceProgress.log("z=" + z + ", c=" + c + ", t=" + t);
+                        // R48: the item finishes at its operation end (OK after the work, FAILED
+                        // in the finally; finishNode is idempotent, so the success path keeps OK)
+                        try {
+                            BufferedImage processor = img.getImage(c, z, t);
+                            function.accept(processor, new ImageSliceIndex(c, z, t));
+                            sliceProgress.finishNode(JIPipeProgressNodeState.OK);
+                        } finally {
+                            sliceProgress.finishNode(JIPipeProgressNodeState.FAILED);
+                        }
+                        // R41: the slice completed (iterationIndex was post-incremented above)
+                        progressInfo.setProgress(iterationIndex, img.getSize());
                     }
                 }
             }

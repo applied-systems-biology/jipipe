@@ -51,4 +51,15 @@ public class JIPipeDesktopAIMonitorLogPage extends JIPipeDesktopAIMonitorPage {
     public void refresh() {
         // The log panel auto-updates via its event subscriptions
     }
+
+    /**
+     * The queue logger panel owns its show-log settings binding and stops the tree panel's
+     * timer and background reads - released with the page (called by the monitor window's
+     * dispose chain).
+     */
+    @Override
+    public void dispose() {
+        loggerPanel.dispose();
+        super.dispose();
+    }
 }

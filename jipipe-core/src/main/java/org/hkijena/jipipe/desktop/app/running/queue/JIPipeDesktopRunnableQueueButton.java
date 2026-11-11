@@ -15,6 +15,9 @@ package org.hkijena.jipipe.desktop.app.running.queue;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
+import org.hkijena.jipipe.api.progress.JIPipeProgressLog;
+import org.hkijena.jipipe.api.progress.JIPipeProgressNode;
+import org.hkijena.jipipe.api.progress.JIPipeProgressNodeUtils;
 import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeRunnableExecutor;
@@ -48,6 +51,16 @@ public class JIPipeDesktopRunnableQueueButton extends JButton implements JIPipeD
 
     private String taskSingleEnqueuedRunningLabel = "1 task running (+ %d enqueued)";
 
+    /**
+     * The node whose state is displayed (the latest node with a progress update among the batches'
+     * changed nodes) and the store it belongs to. Written by batch listeners (writer thread), read
+     * by the refresh timer (EDT).
+     */
+    private volatile JIPipeProgressLog trackedStore;
+    private volatile int trackedNodeId;
+    private volatile boolean progressDirty;
+    private final Timer refreshTimer = new Timer(500, e -> refreshIfDirty());
+
     public JIPipeDesktopRunnableQueueButton(JIPipeDesktopWorkbench desktopWorkbench) {
         this(desktopWorkbench, JIPipeQueuedRunnableExecutor.getInstance());
     }
@@ -63,6 +76,7 @@ public class JIPipeDesktopRunnableQueueButton extends JButton implements JIPipeD
         runnerQueue.getProgressEventEmitter().subscribeWeak(this);
         runnerQueue.getFinishedEventEmitter().subscribeWeak(this);
         runnerQueue.getEnqueuedEventEmitter().subscribeWeak(this);
+        refreshTimer.start();
     }
 
     @Override
@@ -178,15 +192,28 @@ public class JIPipeDesktopRunnableQueueButton extends JButton implements JIPipeD
     }
 
     /**
-     * Updates the UI status
+     * EDT: refreshes the displayed state when a batch arrived since the last refresh. The batch
+     * listeners only set the dirty flag - all UI updates happen here, at most one per 500 ms.
+     */
+    private void refreshIfDirty() {
+        if (!progressDirty) {
+            return;
+        }
+        progressDirty = false;
+        updateStatus();
+    }
+
+    /**
+     * Updates the UI status. The progress bar shows the tracked node's live state from the run's
+     * progress store (the latest node with a progress update), not the root handle's counters
+     * (which stay at their initial values).
      */
     public void updateStatus() {
         JIPipeRunnable currentRun = runnerQueue.getCurrentRun();
         if (currentRun != null) {
             processAlreadyQueued = true;
             showProgress = true;
-            lastProgress = currentRun.getProgressInfo().getProgress();
-            lastMaxProgress = currentRun.getProgressInfo().getMaxProgress();
+            applyTrackedNodeState();
             setIcon(throbberIcon);
             int size = runnerQueue.size();
             if (size <= 1) {
@@ -203,10 +230,31 @@ public class JIPipeDesktopRunnableQueueButton extends JButton implements JIPipeD
             } else {
                 setText(tasksFinishedLabel);
             }
+            setToolTipText(null);
             repaint();
         }
 
 //        reloadMenu();
+    }
+
+    /**
+     * EDT: applies the tracked node's progress state to the painted progress bar. Nodes without a
+     * determinate progress show no bar fill (indeterminate state).
+     */
+    private void applyTrackedNodeState() {
+        JIPipeProgressLog store = trackedStore;
+        JIPipeProgressNode node = store != null && trackedNodeId > 0 ? store.getNode(trackedNodeId) : null;
+        if (node != null && node.getMaxProgress() > 0) {
+            lastProgress = node.getProgress();
+            lastMaxProgress = node.getMaxProgress();
+            String chain = JIPipeProgressNodeUtils.labelChain(store, node.getId());
+            setToolTipText(chain.isEmpty()
+                    ? node.getProgress() + "/" + node.getMaxProgress()
+                    : chain + " - " + node.getProgress() + "/" + node.getMaxProgress());
+        } else {
+            lastProgress = 0;
+            lastMaxProgress = 0;
+        }
     }
 
     @Override
@@ -250,11 +298,23 @@ public class JIPipeDesktopRunnableQueueButton extends JButton implements JIPipeD
         updateStatus();
     }
 
+    /**
+     * Triggered when a worker reports progress. Runs on the store's writer thread: only the dirty
+     * flag and the tracked node are set - the refresh timer (EDT) does the UI work.
+     */
     @Override
     public void onRunnableProgress(JIPipeRunnable.ProgressEvent event) {
-        JIPipeRunnable currentRun = event.getRun();
-        lastProgress = currentRun.getProgressInfo().getProgress();
-        lastMaxProgress = currentRun.getProgressInfo().getMaxProgress();
+        JIPipeProgressLog.ProgressBatchEvent batch = event.getBatch();
+        if (batch.fromLine() > batch.toLine()) {
+            return;
+        }
+        JIPipeProgressLog store = (JIPipeProgressLog) batch.getSource();
+        int latestNodeId = JIPipeProgressNodeUtils.latestNodeId(store, batch.changedNodes());
+        if (latestNodeId > 0) {
+            trackedStore = store;
+            trackedNodeId = latestNodeId;
+        }
+        progressDirty = true;
     }
 
     @Override

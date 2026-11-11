@@ -20,6 +20,8 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.progress.JIPipeProgressLog;
+import org.hkijena.jipipe.api.progress.JIPipeProgressRecord;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.project.JIPipeProjectTemplate;
@@ -217,7 +219,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
         // Release the per-window UI tree FIRST (tab pane → tab contents →
         // graph editors' settings bindings, the settings tab's change-event
         // subscription, ...) while the settings service and the project are
-        // still alive. closeCurrentProject() then runs project.close(...) —
+        // still alive. closeCurrentProject() then runs project.close(...) -
         // project teardown only, it does not touch the workbench (the
         // progress dialog is this window's own JFrame and the runnables are
         // driven by the queued executor).
@@ -225,6 +227,12 @@ public class JIPipeDesktopProjectWindow extends JFrame {
             projectWorkbench.dispose();
         }
         closeCurrentProject();
+        // Drop the closed project's run-log entries (and their NDJSON data files). The project's
+        // temporary base - which contains the log files of its graph runs - is cleaned up by
+        // project.close(...) above; removing the entries keeps the Tools > Logs list consistent.
+        if (project != null) {
+            JIPipeDesktopRunnableLogsCollection.getInstance().removeProjectEntries(project);
+        }
         OPEN_WINDOWS.remove(this);
         WINDOW_CLOSED_EVENT_EMITTER.emit(new WindowClosedEvent(this));
         super.dispose();
@@ -762,17 +770,36 @@ public class JIPipeDesktopProjectWindow extends JFrame {
         // workspace", "Zipping JIPX workspace", "Self-verifying JIPX
         // container"; the re-check resolves to "Re-check saved project".
         // The button shows "Saving… <stage>" (indeterminate - no % bar).
-        final JIPipeProgressInfo.StatusUpdatedEventListener stageListener = event -> {
-            if (event.getProgressInfo() != null && event.getProgressInfo().isCancelled()) {
-                return;
-            }
-            String stage = mapSaveStage(event.getMessage());
-            if (stage == null) {
-                return;
-            }
-            workbench.getProjectSavingEventEmitter().emit(new JIPipeDesktopProjectWorkbench.ProjectSavingEvent(workbench, true, stage));
-        };
-        run.getProgressInfo().getStatusUpdatedEventEmitter().subscribe(stageListener);
+        // One update per coalesced batch of the run's progress store: the
+        // batch's records are mapped on the writer thread, the (at most
+        // one) stage update is hopped to the EDT. The subscription follows
+        // store adoption (the run receives a file-backed store from the
+        // worker before execution).
+        final JIPipeProgressInfo.BatchEventSubscription stageSubscription =
+                run.getProgressInfo().subscribeToBatchEvents(event -> {
+                    if (run.getProgressInfo().isCancelled()) {
+                        return;
+                    }
+                    if (event.fromLine() > event.toLine()) {
+                        return;
+                    }
+                    JIPipeProgressLog store = (JIPipeProgressLog) event.getSource();
+                    List<JIPipeProgressRecord> records = store.readRecords(event.fromLine(), event.toLine() - event.fromLine() + 1);
+                    String stage = null;
+                    for (JIPipeProgressRecord record : records) {
+                        if (record instanceof JIPipeProgressRecord.Log logRecord) {
+                            String mapped = mapSaveStage(logRecord.m());
+                            if (mapped != null) {
+                                stage = mapped;
+                            }
+                        }
+                    }
+                    if (stage == null) {
+                        return;
+                    }
+                    final String stageToSend = stage;
+                    SwingUtilities.invokeLater(() -> workbench.getProjectSavingEventEmitter().emit(new JIPipeDesktopProjectWorkbench.ProjectSavingEvent(workbench, true, stageToSend)));
+                });
 
         // The SAVING state is shown as soon as the run actually starts (not
         // merely when it is enqueued - it may wait behind another save on
@@ -804,7 +831,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
             queue.getFinishedEventEmitter().unsubscribe(finishHolder[0]);
             queue.getInterruptedEventEmitter().unsubscribe(interruptHolder[0]);
             queue.getStartedEventEmitter().unsubscribe(startListener);
-            run.getProgressInfo().getStatusUpdatedEventEmitter().unsubscribe(stageListener);
+            stageSubscription.close();
             SwingUtilities.invokeLater(() -> onSaveFinished(run, failure, failureStage, savePath, updateSavePath));
         };
         JIPipeRunnable.InterruptedEventListener interruptListener = event -> {
@@ -814,7 +841,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
             queue.getFinishedEventEmitter().unsubscribe(finishHolder[0]);
             queue.getInterruptedEventEmitter().unsubscribe(interruptHolder[0]);
             queue.getStartedEventEmitter().unsubscribe(startListener);
-            run.getProgressInfo().getStatusUpdatedEventEmitter().unsubscribe(stageListener);
+            stageSubscription.close();
             SwingUtilities.invokeLater(() -> onSaveCancelled(run, savePath));
         };
         finishHolder[0] = finishListener;

@@ -7,18 +7,23 @@ import org.hkijena.jipipe.api.run.JIPipeRunnableWorker;
 import org.hkijena.jipipe.api.settings.SettingsBinding;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
-import org.hkijena.jipipe.desktop.commons.components.LoggerPanel;
-import org.hkijena.jipipe.desktop.commons.components.icons.JIPipeDesktopRunnableQueueSpinnerIcon;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopProgressTreePanel;
 import org.hkijena.jipipe.plugins.settings.SettingsKeys;
 import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.utils.debounce.StaticDebouncer;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
 /**
- * Unified component that displays the status of a {@link JIPipeRunnableExecutor}
+ * Unified component that displays the status of a {@link JIPipeRunnableExecutor}.
+ * <p>
+ * The flat log was replaced by the v2 progress tree panel
+ * ({@link JIPipeDesktopProgressTreePanel} - the Swing implementation of the approved mockup
+ * {@code ui/v2-progress-panel.html}): node/phase rows with inline progress, expanded record views,
+ * level filter, and a footer with the running path, live progress, record count, and data file.
  */
 public class JIPipeDesktopRunQueueLoggerPanel extends JIPipeDesktopWorkbenchPanel implements JIPipeRunnable.StartedEventListener, JIPipeRunnable.InterruptedEventListener, JIPipeRunnable.ProgressEventListener, JIPipeRunnable.FinishedEventListener, JIPipeRunnable.EnqeuedEventListener {
 
@@ -26,50 +31,41 @@ public class JIPipeDesktopRunQueueLoggerPanel extends JIPipeDesktopWorkbenchPane
 
     private final JLabel titleLabel = new JLabel();
     private final JButton queueButton = new JButton("Queue", JIPipe.RESOURCES.getIcon16("actions/list-check.png"));
-    private final JIPipeDesktopRunnableQueueSpinnerIcon spinnerIcon;
-    private final JLabel statusLabel = new JLabel("Ready ...");
-    private final JProgressBar progressBar = new JProgressBar();
-    private final JPanel buttonPanel = UIUtils.boxHorizontal();
     private final JPanel headerButtonPanel = UIUtils.boxHorizontal();
-    private final LoggerPanel loggerPanel = new LoggerPanel();
+    private final JIPipeDesktopProgressTreePanel treePanel;
     private final JPopupMenu queuePopupMenu = new JPopupMenu();
-    private final JCheckBox showLogCheckbox = new JCheckBox("Show log");
-    private final StaticDebouncer progressDebouncer;
-    private final StringBuilder batchedProgressText = new StringBuilder();
     private JIPipeRunnable targetRun;
     private Status targetRunStatus = Status.Enqueued;
-    private Component visibleLoggerComponent;
-    private String batchedStatusText = "Ready ...";
-    private int batchedProgressCurrent = 0;
-    private int batchedProgressMax = 0;
+
     /**
      * The binding to {@link SettingsKeys#RUN_QUEUE_SHOW_LOG}: created once per
-     * panel instance and released by {@link #dispose()}.
+     * panel instance and released by {@link #dispose()}. The tree panel's Show log
+     * checkbox is the UI surface; the binding is synced from it.
      */
     private SettingsBinding<Boolean> showLogBinding;
+    private final ItemListener showLogSyncListener;
 
     public JIPipeDesktopRunQueueLoggerPanel(JIPipeDesktopWorkbench desktopWorkbench, JIPipeRunnableExecutor queue) {
         super(desktopWorkbench);
         this.queue = queue;
-        this.progressDebouncer = new StaticDebouncer(250, this::updateProgress);
-        this.spinnerIcon = new JIPipeDesktopRunnableQueueSpinnerIcon(this, queue, 32);
-        // One binding per panel instance: the panel owns it and releases it
-        // in dispose(). The stored value is placed on the checkbox BEFORE
-        // initialize() registers the checkbox's action listener, so the
-        // initial apply can never echo a write back into the binding (an
-        // echo of the default value would hit the document's remove path and
-        // fire a spurious change event for a location that does not exist).
-        // The logger's VISIBILITY is applied at the end of the constructor,
-        // once the logger component exists - the checkbox alone is not
-        // enough, because the visibility depends on it. Without a running
-        // settings service the checkbox simply starts checked and keeps its
-        // value in memory.
+        this.treePanel = new JIPipeDesktopProgressTreePanel(desktopWorkbench);
+        // One binding per panel instance: the panel owns it and releases it in dispose().
+        // The stored value is placed on the tree panel's checkbox BEFORE the sync listener
+        // is registered, so the initial apply can never echo a write back into the binding
+        // (same pattern as the previous Show log checkbox). Without a running settings
+        // service the checkbox simply starts checked and keeps its value in memory.
         if (JIPipe.isInstantiated()) {
             showLogBinding = JIPipe.getSettingsService().bind(SettingsKeys.RUN_QUEUE_SHOW_LOG);
-            showLogCheckbox.setSelected(showLogBinding.get());
+            treePanel.setShowLogSelected(showLogBinding.get());
         } else {
-            showLogCheckbox.setSelected(true);
+            treePanel.setShowLogSelected(true);
         }
+        this.showLogSyncListener = e -> {
+            if (showLogBinding != null) {
+                showLogBinding.set(e.getStateChange() == ItemEvent.SELECTED);
+            }
+        };
+        treePanel.getShowLogCheckBox().addItemListener(showLogSyncListener);
 
         initialize();
 
@@ -79,28 +75,27 @@ public class JIPipeDesktopRunQueueLoggerPanel extends JIPipeDesktopWorkbenchPane
         queue.getFinishedEventEmitter().subscribeWeak(this);
         queue.getEnqueuedEventEmitter().subscribeWeak(this);
 
-        // Load existing log
+        // Show the current run's progress tree (if one is already active)
         if (queue.getCurrentRun() != null) {
-            loggerPanel.setLogText(queue.getCurrentRun().getProgressInfo().getLog().toString());
+            treePanel.setProgressStore(queue.getCurrentRun().getProgressInfo().getStore());
         }
 
-        addHeaderPanelComponent(showLogCheckbox);
         updateHeader();
-        updateLoggerVisibility();
     }
 
     /**
-     * Releases the show-log binding (its document path listener) with the
-     * panel. Called by {@link JIPipeDesktopRunExecuteUI} when its dialog is
-     * disposed; panels hosted in a long-lived dock (the graph editor log)
-     * keep their binding for the workbench's lifetime, which is bounded by
-     * one panel per editor.
+     * Releases the show-log binding (its document path listener) with the panel.
+     * Called by {@link JIPipeDesktopRunExecuteUI} when its dialog is disposed; panels hosted
+     * in a long-lived dock (the graph editor log) keep their binding for the workbench's
+     * lifetime, which is bounded by one panel per editor.
      */
     public void dispose() {
+        treePanel.getShowLogCheckBox().removeItemListener(showLogSyncListener);
         if (showLogBinding != null) {
             showLogBinding.close();
             showLogBinding = null;
         }
+        treePanel.dispose();
     }
 
     private void initialize() {
@@ -110,43 +105,12 @@ public class JIPipeDesktopRunQueueLoggerPanel extends JIPipeDesktopWorkbenchPane
         JPanel headerPanel = UIUtils.boxHorizontal(titleLabel, Box.createHorizontalGlue(), headerButtonPanel, Box.createHorizontalStrut(16), queueButton);
         headerPanel.setBorder(UIUtils.createEmptyBorder(8));
         add(headerPanel, BorderLayout.NORTH);
-        if (ThemeUtils.isUsingModernTheme()) {
-            UIUtils.makeNonOpaque(loggerPanel, true);
-        }
 
-        visibleLoggerComponent = UIUtils.wrapInBackgroundIslandPanelIfNeeded(loggerPanel);
-        add(visibleLoggerComponent, BorderLayout.CENTER);
-
-        statusLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeSmall()));
-        statusLabel.setForeground(ThemeUtils.getCurrentStyle().getTextMuted());
-
-        JPanel bottomPanel = new JPanel(new BorderLayout(16, 16));
-        bottomPanel.setBorder(UIUtils.createEmptyBorder(8));
-        bottomPanel.add(new JLabel(spinnerIcon), BorderLayout.WEST);
-
-        JPanel statusInfoPanel = new JPanel(new GridBagLayout());
-        progressBar.setMaximumSize(new Dimension(Short.MAX_VALUE, 4));
-        progressBar.setMinimumSize(new Dimension(32, 4));
-        progressBar.setPreferredSize(new Dimension(100, 4));
-        statusInfoPanel.add(progressBar, new GridBagConstraints(0, 0, 1, 1, 1, 0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, UIUtils.UI_PADDING, 0, 0));
-        statusInfoPanel.add(statusLabel, new GridBagConstraints(0, 1, 1, 1, 1, 0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, UIUtils.UI_PADDING, 0, 0));
-
-        bottomPanel.add(statusInfoPanel, BorderLayout.CENTER);
-        bottomPanel.add(buttonPanel, BorderLayout.EAST);
-        add(bottomPanel, BorderLayout.SOUTH);
+        // The progress panel fills the window edge-to-edge: the background island's rim reads as a
+        // stray border seam between the panel and the window edge
+        add(treePanel, BorderLayout.CENTER);
 
         UIUtils.addReloadablePopupMenuToButton(queueButton, queuePopupMenu, this::reloadQueuePopupMenu);
-
-        showLogCheckbox.addActionListener(e -> {
-            if (showLogBinding != null) {
-                showLogBinding.set(showLogCheckbox.isSelected());
-            }
-            updateLoggerVisibility();
-        });
-    }
-
-    private void updateLoggerVisibility() {
-        visibleLoggerComponent.setVisible(showLogCheckbox.isSelected());
     }
 
     private void reloadQueuePopupMenu() {
@@ -217,7 +181,7 @@ public class JIPipeDesktopRunQueueLoggerPanel extends JIPipeDesktopWorkbenchPane
     }
 
     public void addButton(JButton button) {
-        buttonPanel.add(button);
+        treePanel.addFooterComponent(button);
     }
 
     public JIPipeRunnable getTargetRun() {
@@ -226,33 +190,45 @@ public class JIPipeDesktopRunQueueLoggerPanel extends JIPipeDesktopWorkbenchPane
 
     public void setTargetRun(JIPipeRunnable targetRun) {
         this.targetRun = targetRun;
+        updateHeader();
     }
 
+    /**
+     * Whether to automatically scroll the tree to the running node (also drives the graph
+     * editor's dock behavior via the hosting panel).
+     */
+    public boolean isAutoShowProgress() {
+        return treePanel.isAutoShowProgress();
+    }
+
+    public void setAutoShowProgressSelected(boolean selected) {
+        treePanel.setAutoShowProgressSelected(selected);
+    }
+
+    /**
+     * Semantic passthrough for run managers (auto-open results).
+     */
+    public boolean isAutoViewResults() {
+        return treePanel.isAutoViewResults();
+    }
+
+    public void setAutoViewResultsSelected(boolean selected) {
+        treePanel.setAutoViewResultsSelected(selected);
+    }
+
+    /**
+     * Forwards ONE coalesced batch of a run's progress store to the tree panel. Runs on the store's
+     * writer thread; all reads and UI updates are handled inside the tree panel (no per-record work
+     * here). The empty final batch (fromLine &gt; toLine) is forwarded as the refresh signal - the
+     * run's Finished/Interrupted events set the terminal state. Batches of other runs are ignored
+     * when a target run is set (run dialogs show their own run).
+     */
     @Override
     public void onRunnableProgress(JIPipeRunnable.ProgressEvent event) {
-        batchedProgressText.append("\n").append(event.getStatus().getMessage());
-        batchedProgressCurrent = event.getStatus().getProgress();
-        batchedProgressMax = event.getStatus().getMaxProgress();
-        batchedStatusText = event.getStatus().getMessage();
-        progressDebouncer.debounce();
-    }
-
-    private void updateProgress() {
-        if (queue.getCurrentRun() != null) {
-            if (batchedProgressMax <= 1) {
-                progressBar.setIndeterminate(true);
-            } else {
-                progressBar.setIndeterminate(false);
-                progressBar.setMaximum(batchedProgressMax);
-                progressBar.setValue(batchedProgressCurrent);
-            }
-        } else {
-            progressBar.setIndeterminate(false);
+        if (targetRun != null && event.getRun() != targetRun) {
+            return;
         }
-
-        statusLabel.setText(batchedStatusText);
-        loggerPanel.appendLine(batchedProgressText.toString().trim());
-        batchedProgressText.setLength(0);
+        treePanel.onProgressBatch(event.getBatch());
     }
 
     @Override
@@ -261,14 +237,6 @@ public class JIPipeDesktopRunQueueLoggerPanel extends JIPipeDesktopWorkbenchPane
             targetRunStatus = Status.Finished;
         }
         updateHeader();
-        updateProgress();
-
-        // Manually update UI
-        batchedStatusText = "Finished.";
-        statusLabel.setText(batchedStatusText);
-        progressBar.setIndeterminate(false);
-        progressBar.setMaximum(1);
-        progressBar.setValue(1);
     }
 
     @Override
@@ -277,14 +245,6 @@ public class JIPipeDesktopRunQueueLoggerPanel extends JIPipeDesktopWorkbenchPane
             targetRunStatus = Status.Interrupted;
         }
         updateHeader();
-        updateProgress();
-
-        // Manually update UI
-        batchedStatusText = "Interrupted.";
-        statusLabel.setText(batchedStatusText);
-        progressBar.setIndeterminate(false);
-        progressBar.setMaximum(1);
-        progressBar.setValue(1);
     }
 
     @Override
@@ -292,14 +252,18 @@ public class JIPipeDesktopRunQueueLoggerPanel extends JIPipeDesktopWorkbenchPane
         if (targetRun != null && event.getRun() == targetRun) {
             targetRunStatus = Status.Running;
         }
+        // A new run: show its progress tree (the store arrives with the run's first batch;
+        // graph runs adopt their own store inside run()). A dialog with a target run ignores
+        // the starts of unrelated runs.
+        if (targetRun == null || event.getRun() == targetRun) {
+            treePanel.reset();
+        }
         updateHeader();
-        updateProgress();
     }
 
     @Override
     public void onRunnableEnqueued(JIPipeRunnable.EnqueuedEvent event) {
         updateHeader();
-        updateProgress();
     }
 
     public enum Status {

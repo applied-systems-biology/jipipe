@@ -220,7 +220,9 @@ public class JIPipeDesktopSplashScreen extends JWindow implements LogListener, C
 
     @Override
     public void messageLogged(LogMessage message) {
-        statusLabel.setText(message.text());
+        // Log listeners are invoked on the logging thread - for progress-store records that is
+        // the store's submitting thread (R45a), not the EDT. The label update must hop.
+        SwingUtilities.invokeLater(() -> statusLabel.setText(message.text()));
     }
 
     @Override

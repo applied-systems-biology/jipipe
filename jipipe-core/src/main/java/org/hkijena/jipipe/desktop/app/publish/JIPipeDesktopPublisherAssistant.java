@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.desktop.app.publish;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeDummyParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
@@ -38,7 +37,6 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -215,11 +213,8 @@ public abstract class JIPipeDesktopPublisherAssistant extends JIPipeDesktopProje
 
     @Override
     public void onRunnableFinished(JIPipeRunnable.FinishedEvent event) {
-        JIPipeDesktopRunnableLogsCollection.getInstance().pushToLog(new JIPipeRunnableLogEntry(getAssistantTitle(),
-                LocalDateTime.now(),
-                event.getRun().getProgressInfo().getLog().toString(),
-                new JIPipeNotificationInbox(),
-                true));
+        // The entry references the run's NDJSON data file - the log is rendered on demand
+        JIPipeDesktopRunnableLogsCollection.getInstance().pushToLog(new JIPipeRunnableLogEntry(event.getRun().getProgressInfo(), getAssistantTitle(), true));
         onPublicationFinished(event.getRun());
         closePublisher();
     }
@@ -241,12 +236,9 @@ public abstract class JIPipeDesktopPublisherAssistant extends JIPipeDesktopProje
     @Override
     public void onRunnableInterrupted(JIPipeRunnable.InterruptedEvent event) {
         JIPipeDesktopDialogs.message(this, getAssistantTitle(), "There were errors during the export process.\n" +
-                        "Please open the JIPipe log to review them.");
-        JIPipeDesktopRunnableLogsCollection.getInstance().pushToLog(new JIPipeRunnableLogEntry(getAssistantTitle(),
-                LocalDateTime.now(),
-                event.getRun().getProgressInfo().getLog().toString(),
-                new JIPipeNotificationInbox(),
-                false));
+                "Please open the JIPipe log to review them.");
+        // The entry references the run's NDJSON data file - the log is rendered on demand
+        JIPipeDesktopRunnableLogsCollection.getInstance().pushToLog(new JIPipeRunnableLogEntry(event.getRun().getProgressInfo(), getAssistantTitle(), false));
         switchToSetup();
     }
 

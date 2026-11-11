@@ -121,7 +121,7 @@ public class JIPipeDesktopRawSettingsSection extends JPanel implements Disposabl
 
     /**
      * Opens the settings tab on the raw editor (e.g. from a hidden power-user
-     * action) — the entry point that keeps the section reachable without hunting
+     * action) - the entry point that keeps the section reachable without hunting
      * for it in the tree.
      *
      * @param workbench the workbench

@@ -19,6 +19,7 @@ import gnu.trove.set.hash.TIntHashSet;
 import org.hkijena.jipipe.api.AddJIPipeDocumentationDescription;
 import org.hkijena.jipipe.api.JIPipeIterationStepGenerationResult;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.progress.JIPipeProgressNodeState;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
@@ -43,6 +44,7 @@ import org.hkijena.jipipe.utils.ParameterUtils;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -178,17 +180,37 @@ public abstract class JIPipeIteratingMissingDataGeneratorAlgorithm extends JIPip
                 if (progressInfo.isCancelled())
                     return;
                 JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", i, iterationSteps.size());
-                runIteration(iterationSteps.get(i), new JIPipeMutableIterationContext(i, numIterationSteps), runContext, slotProgress);
+                // R48: the item finishes at its operation end (OK after the work, FAILED in the
+                // finally; finishNode is idempotent, so the success path keeps OK)
+                try {
+                    runIteration(iterationSteps.get(i), new JIPipeMutableIterationContext(i, numIterationSteps), runContext, slotProgress);
+                    slotProgress.finishNode(JIPipeProgressNodeState.OK);
+                } finally {
+                    slotProgress.finishNode(JIPipeProgressNodeState.FAILED);
+                }
+                // R41: the data row completed
+                progressInfo.setProgress(i + 1, iterationSteps.size());
             }
         } else {
             List<Runnable> tasks = new ArrayList<>();
+            // R41: rows complete out of order in parallel mode, so the completed count is atomic
+            // and monotonic instead of the row index
+            AtomicInteger completedRows = new AtomicInteger();
             for (int i = 0; i < getFirstInputSlot().getRowCount(); i++) {
                 int rowIndex = i;
                 tasks.add(() -> {
                     if (progressInfo.isCancelled())
                         return;
                     JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", rowIndex, iterationSteps.size());
-                    runIteration(iterationSteps.get(rowIndex), new JIPipeMutableIterationContext(rowIndex, numIterationSteps), runContext, slotProgress);
+                    // R48: the item finishes inside its own task (OK after the work, FAILED in
+                    // the finally; finishNode is idempotent, so the success path keeps OK)
+                    try {
+                        runIteration(iterationSteps.get(rowIndex), new JIPipeMutableIterationContext(rowIndex, numIterationSteps), runContext, slotProgress);
+                        slotProgress.finishNode(JIPipeProgressNodeState.OK);
+                    } finally {
+                        slotProgress.finishNode(JIPipeProgressNodeState.FAILED);
+                    }
+                    progressInfo.setProgress(completedRows.incrementAndGet(), iterationSteps.size());
                 });
             }
             progressInfo.log(String.format("Running %d batches (batch size %d) in parallel. Available threads = %d",

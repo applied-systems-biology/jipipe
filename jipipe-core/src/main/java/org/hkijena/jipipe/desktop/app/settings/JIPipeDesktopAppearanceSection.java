@@ -48,7 +48,7 @@ import java.util.function.Consumer;
 
 /**
  * One merged section of the settings tab (Appearance, Accessibility or the
- * Keyboard placeholder) — the {@code JIPipeDesktopCustomizerDialog} replacement
+ * Keyboard placeholder) - the {@code JIPipeDesktopCustomizerDialog} replacement
  * (modern settings system, Task 19).
  * <p>
  * <b>Header.</b> Name, description, a "Modified" badge and a "Reset section"
@@ -63,7 +63,7 @@ import java.util.function.Consumer;
  * <b>Content.</b> The section shows <em>selected</em> parameters of
  * <em>already registered</em> sheets (see
  * {@link AppearanceSectionModel#parametersBySheet(String)}) inside one
- * {@link JIPipeDesktopFormPanel}, grouped by topic — one Appearance section, not
+ * {@link JIPipeDesktopFormPanel}, grouped by topic - one Appearance section, not
  * two subsheets. Editors are created over the live sheet instances through
  * their {@link JIPipeParameterTree} node (never a new sheet instance), so an
  * edit fires the sheet's {@code ParameterChangedEvent} → the settings engine's
@@ -75,13 +75,13 @@ import java.util.function.Consumer;
  * <p>
  * <b>UI scale.</b> Not a settings key (it lives in the jaunch config files): a
  * segmented control offering the integral scales the bundled JDK applies on
- * this platform (100/200/300% — the X11 AWT scale is an {@code int}, so
+ * this platform (100/200/300% - the X11 AWT scale is an {@code int}, so
  * fractional values are silently truncated or ignored, see
  * {@link UIUtils#OFFERED_UI_SCALES}). The initial selection reads the
  * <em>stored</em> value's effective scale (auto → the nearest offered one);
  * selecting a different segment asks whether to apply the scale to
  * Fiji/ImageJ too, calls {@link UIUtils#saveUIScaleToJaunch(float, boolean)}
- * and reports a failed write with an error dialog — the old dialog's Apply
+ * and reports a failed write with an error dialog - the old dialog's Apply
  * path. The Accessibility page also hosts the {@link ThemePreviewPanel}
  * scaled relative to the stored effective scale, so the chosen scale can be
  * seen before the restart it requires.
@@ -183,8 +183,8 @@ public class JIPipeDesktopAppearanceSection extends JPanel implements JIPipeDesk
      * ({@code new JIPipeGeneralUIApplicationSettings()},
      * {@code new JIPipeFileChooserApplicationSettings()}): settings sheets are
      * plain parameter containers with no constructor side effects, and a fresh
-     * instance holds exactly the defaults. The instances are read only — never
-     * registered, never attached to a bridge, never kept — so no second sheet
+     * instance holds exactly the defaults. The instances are read only - never
+     * registered, never attached to a bridge, never kept - so no second sheet
      * can exist for a block.
      *
      * @return {@code blockPath + "/" + key} → the default value as JSON
@@ -253,7 +253,7 @@ public class JIPipeDesktopAppearanceSection extends JPanel implements JIPipeDesk
     }
 
     /**
-     * Opens the settings tab on the merged Appearance section — the entry point
+     * Opens the settings tab on the merged Appearance section - the entry point
      * that replaced the "Customize JIPipe" dialog (Tools menu, welcome panel).
      *
      * @param workbench the workbench (must be a project workbench)

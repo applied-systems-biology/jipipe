@@ -13,98 +13,286 @@
 
 package org.hkijena.jipipe.api;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
-import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
+import org.hkijena.jipipe.api.notifications.JIPipeNotification;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
+import org.hkijena.jipipe.api.progress.JIPipeLogLevel;
+import org.hkijena.jipipe.api.progress.JIPipeProgressLog;
+import org.hkijena.jipipe.api.progress.JIPipeProgressNode;
+import org.hkijena.jipipe.api.progress.JIPipeProgressNodeKind;
+import org.hkijena.jipipe.api.progress.JIPipeProgressNodeState;
+import org.hkijena.jipipe.api.progress.JIPipeProgressRecord;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
-import org.hkijena.jipipe.utils.StringUtils;
 import org.scijava.Cancelable;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.nio.file.Path;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.StampedLock;
 import java.util.function.BiConsumer;
 
 /**
  * This object is available inside a {@link JIPipeRunnable} and contains methods to report progress, logs, and request cancellation.
+ * <p>
+ * Since 6.0.0, this class is a thin handle {@code (store, nodeId)} over a {@link JIPipeProgressLog} (the progress store):
+ * every message, progress update, and error is recorded in the store as an NDJSON record attached to the handle's node,
+ * and {@link #resolve(String)} creates child nodes, forming the progress tree of the run.
+ * {@link #SILENT} is a handle on a store that discards records, {@link #STDOUT} is a handle on a store that renders
+ * records to stdout, and {@link #JIPipeProgressInfo()} creates a handle on a private silent store (no file).
  */
 public class JIPipeProgressInfo implements Cancelable {
 
-    public static final JIPipeProgressInfo SILENT = new JIPipeProgressInfo();
-    public static final JIPipeProgressInfo STDOUT = new JIPipeProgressInfo();
+    /**
+     * A progress info that discards all records (store {@link JIPipeProgressLog#silent()}).
+     */
+    public static final JIPipeProgressInfo SILENT = new JIPipeProgressInfo(JIPipeProgressLog.silent());
+
+    /**
+     * A progress info that renders each record as a compatibility line to stdout
+     * (store {@link JIPipeProgressLog#stdout()}).
+     */
+    public static final JIPipeProgressInfo STDOUT = new JIPipeProgressInfo(JIPipeProgressLog.stdout());
 
     private static final String[] SPINNER_1 = new String[]{"⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"};
 
-    static {
-        STDOUT.setLogToStdOut(true);
-    }
+    /**
+     * The progress store. Volatile: {@link #setStorageBase(Path)} may replace a fresh root's silent
+     * store with a file-backed store (root-run creation point, before the first record).
+     */
+    private volatile JIPipeProgressLog store;
+    private volatile int nodeId;
+    private final AtomicBoolean cancelled;
+    private final AtomicBoolean nodeFinished = new AtomicBoolean();
+    private final AtomicInteger progress;
+    private final AtomicInteger maxProgress;
+    private final AtomicInteger numLines;
+    private final AtomicBoolean withSpinner;
+    private final AtomicBoolean logToStdOut;
+    private volatile String cancelReason;
+    private JIPipeNotificationInbox notifications;
+    private final JIPipeNotificationInbox.PushedEventListener notificationListener;
+    private boolean detachedProgress;
+    private CharSequence logView;
 
-    private final StampedLock stampedLock;
-    private AtomicBoolean cancelled = new AtomicBoolean();
-    private AtomicInteger progress = new AtomicInteger(0);
-    private AtomicInteger maxProgress = new AtomicInteger(1);
-    private AtomicInteger numLines = new AtomicInteger(0);
-    private AtomicBoolean withSpinner = new AtomicBoolean(false);
-    private StringBuilder log = new StringBuilder();
-    private String logPrepend = "";
-    private AtomicBoolean logToStdOut = new AtomicBoolean(false);
-    private boolean detachedProgress = false;
-    private String cancelReason;
-    private StatusUpdatedEventEmitter statusUpdatedEventEmitter;
-    private JIPipeNotificationInbox notifications = new JIPipeNotificationInbox();
-
+    /**
+     * Creates a progress info on a private silent store (no file; the record tail is maintained so
+     * {@link #getLog()} works).
+     */
     public JIPipeProgressInfo() {
-        this.statusUpdatedEventEmitter = new StatusUpdatedEventEmitter();
-        this.stampedLock = new StampedLock();
+        this(JIPipeProgressLog.silent());
     }
 
+    /**
+     * Creates a root progress info handle on an existing store (the handle's node is the store's root node).
+     * Used at run-creation points that own their store.
+     *
+     * @param store the progress store
+     */
+    public JIPipeProgressInfo(JIPipeProgressLog store) {
+        this.store = store;
+        this.nodeId = store.getRootNodeId();
+        this.cancelled = new AtomicBoolean();
+        this.progress = new AtomicInteger(0);
+        this.maxProgress = new AtomicInteger(1);
+        this.numLines = new AtomicInteger(0);
+        this.withSpinner = new AtomicBoolean(false);
+        this.logToStdOut = new AtomicBoolean(false);
+        this.cancelReason = null;
+        this.notificationListener = this::onNotificationPushed;
+        this.notifications = new JIPipeNotificationInbox();
+        this.notifications.getPushedEventEmitter().subscribeWeak(this.notificationListener);
+        this.detachedProgress = false;
+    }
+
+    /**
+     * Creates a handle that shares the state of another handle (same store and node, same counters,
+     * cancellation, notifications, and settings).
+     *
+     * @param other the other progress info
+     */
     public JIPipeProgressInfo(JIPipeProgressInfo other) {
-        this.stampedLock = other.stampedLock;
-        this.statusUpdatedEventEmitter = other.statusUpdatedEventEmitter;
+        this.store = other.store;
+        this.nodeId = other.nodeId;
         this.cancelled = other.cancelled;
         this.progress = other.progress;
         this.maxProgress = other.maxProgress;
-        this.log = other.log;
-        this.logPrepend = other.logPrepend;
-        this.logToStdOut = other.logToStdOut;
-        this.detachedProgress = other.detachedProgress;
-        this.cancelReason = other.cancelReason;
         this.numLines = other.numLines;
         this.withSpinner = other.withSpinner;
+        this.logToStdOut = other.logToStdOut;
+        this.cancelReason = other.cancelReason;
         this.notifications = other.notifications;
+        this.notificationListener = other.notificationListener;
+        this.detachedProgress = other.detachedProgress;
+    }
+
+    private JIPipeProgressInfo(JIPipeProgressLog store, int nodeId, JIPipeProgressInfo parent,
+                               AtomicInteger progress, AtomicInteger maxProgress, boolean detachedProgress) {
+        this.store = store;
+        this.nodeId = nodeId;
+        this.cancelled = parent.cancelled;
+        this.progress = progress;
+        this.maxProgress = maxProgress;
+        this.numLines = parent.numLines;
+        this.withSpinner = parent.withSpinner;
+        this.logToStdOut = parent.logToStdOut;
+        this.cancelReason = parent.cancelReason;
+        this.notifications = parent.notifications;
+        this.notificationListener = parent.notificationListener;
+        this.detachedProgress = detachedProgress;
+    }
+
+    /**
+     * Adopts the given store as this handle's store and re-roots the handle to the store's root
+     * node. All state shared with other handles (cancellation, notifications, progress counters,
+     * output flags) is kept: handles previously derived from this handle remain connected to the
+     * previous store, while records submitted through this handle afterwards go to the new store.
+     * Root-run creation point only: call this before the first record is submitted through this
+     * handle for the new run; records submitted beforehand would remain in the previous store.
+     * <p>
+     * The displaced store is <b>not</b> closed: it may still be referenced by other handles
+     * (handles derived via {@link #resolve(String)} keep their store by design, and a handle
+     * injected into a run carries a store owned by the caller context that created it). Closing it
+     * would silently drop the records of those handles. Its lifecycle - including
+     * {@link JIPipeProgressLog#finish(JIPipeProgressNodeState)} and
+     * {@link JIPipeProgressLog#close()} - remains with its owner. Adopting the store that is
+     * already set is a no-op. The one-run-two-files case is prevented by
+     * {@link #setStorageBase(Path, String, String)}, which reuses a store that already writes the
+     * run's file.
+     *
+     * @param store the new progress store
+     */
+    public void setStore(JIPipeProgressLog store) {
+        if (store == null)
+            throw new IllegalArgumentException("Store must not be null");
+        if (this.store == store) {
+            return;
+        }
+        this.store = store;
+        this.nodeId = store.getRootNodeId();
+        logView = null;
+        fireStoreAdopted();
+    }
+
+    /**
+     * Fires the store-adoption callbacks (registration order). A failing callback must not break
+     * the adoption: it is printed and the remaining callbacks still run.
+     */
+    private void fireStoreAdopted() {
+        for (Runnable callback : storeAdoptedCallbacks) {
+            try {
+                callback.run();
+            } catch (Throwable e) {
+                System.err.println("A store-adoption callback failed");
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Replaces the handle's store with a file-backed store that writes into the logs base resolved
+     * from the given base ({@link JIPipeProgressLog#resolveStorageBase(Path)}), using a fresh
+     * random run UUID and no run label. See {@link #setStore(JIPipeProgressLog)} for the
+     * root-run creation point semantics.
+     *
+     * @param base the storage base (the {@code logs} directory is resolved from it)
+     */
+    public void setStorageBase(Path base) {
+        setStorageBase(base, UUID.randomUUID().toString(), null);
+    }
+
+    /**
+     * Replaces the handle's store with a file-backed store that writes into the logs base resolved
+     * from the given base ({@link JIPipeProgressLog#resolveStorageBase(Path)}). The store file is
+     * named {@code <runUuid>.ndjson} and the head record carries the run UUID and label.
+     * See {@link #setStore(JIPipeProgressLog)} for the root-run creation point semantics.
+     * <p>
+     * If the handle's current store already is the file-backed store for this run (same
+     * {@code <runUuid>.ndjson} file - e.g. created by the queue before the run started), it is
+     * reused unchanged and the label is ignored (the head record was written at store creation):
+     * one run never gets a second file (ruling R17). Otherwise the previous store is displaced
+     * but <b>not</b> closed - see {@link #setStore(JIPipeProgressLog)} for why.
+     *
+     * @param base     the storage base (the {@code logs} directory is resolved from it)
+     * @param runUuid  the run UUID (file name and head record)
+     * @param runLabel the run label (head record)
+     */
+    public void setStorageBase(Path base, String runUuid, String runLabel) {
+        Path file = JIPipeProgressLog.resolveStorageBase(base).resolve(runUuid + ".ndjson");
+        JIPipeProgressLog current = store;
+        if (file.equals(current.getFile())) {
+            return;
+        }
+        setStore(JIPipeProgressLog.create(file, runUuid, runLabel));
+    }
+
+    /**
+     * Returns the progress store this handle writes into.
+     *
+     * @return the store
+     */
+    public JIPipeProgressLog getStore() {
+        return store;
+    }
+
+    /**
+     * Returns the id of this handle's node inside the store ({@link JIPipeProgressLog#getRootNodeId()} for root handles).
+     *
+     * @return the node id
+     */
+    public int getNodeId() {
+        return nodeId;
+    }
+
+    /**
+     * Finishes this handle's node with the given state: emits the node-finished record and sets
+     * the index state. The intended pattern is finish-at-operation-end: every row created via
+     * {@link #resolve(String)} reaches a terminal state when its operation completes, so consumers
+     * render a spinner only while the operation actually runs. Guarded: the first call wins, any
+     * further call on the same handle instance is a no-op; a call on the store's root handle is a
+     * no-op (the root finishes via {@link JIPipeProgressLog#finish(JIPipeProgressNodeState)});
+     * calls after the store closed are dropped by the store.
+     *
+     * @param state the finish state
+     */
+    public void finishNode(JIPipeProgressNodeState state) {
+        Objects.requireNonNull(state, "State must not be null");
+        if (nodeId == store.getRootNodeId()) {
+            return;
+        }
+        if (nodeFinished.getAndSet(true)) {
+            return;
+        }
+        store.nodeFinished(nodeId, state);
     }
 
     public void clearLog() {
-        long stamp = stampedLock.writeLock();
-        try {
-            log.setLength(0);
-        } finally {
-            stampedLock.unlock(stamp);
-        }
+        logView = null;
     }
 
     public void incrementProgress() {
-        long stamp = stampedLock.writeLock();
-        try {
-            progress.getAndIncrement();
-        } finally {
-            stampedLock.unlock(stamp);
-        }
+        progress.incrementAndGet();
+        recordProgress();
     }
 
+    /**
+     * Returns the label chain of this handle's node (the labels of all ancestors up to the root,
+     * joined with {@code |}; empty for root handles). Supersedes the former {@code logPrepend} field.
+     *
+     * @return the label chain
+     */
     public String getLogPrepend() {
-        return logPrepend;
-    }
-
-    public StatusUpdatedEventEmitter getStatusUpdatedEventEmitter() {
-        return statusUpdatedEventEmitter;
-    }
-
-    public void setStatusUpdatedEventEmitter(StatusUpdatedEventEmitter statusUpdatedEventEmitter) {
-        this.statusUpdatedEventEmitter = statusUpdatedEventEmitter;
+        return getLabelChain();
     }
 
     public int getProgress() {
@@ -113,6 +301,7 @@ public class JIPipeProgressInfo implements Cancelable {
 
     public void setProgress(int progress) {
         this.progress.set(progress);
+        recordProgress();
     }
 
     public int getMaxProgress() {
@@ -121,6 +310,7 @@ public class JIPipeProgressInfo implements Cancelable {
 
     public void setMaxProgress(int maxProgress) {
         this.maxProgress.set(maxProgress);
+        recordProgress();
     }
 
     public boolean isCancelled() {
@@ -146,14 +336,30 @@ public class JIPipeProgressInfo implements Cancelable {
         cancelled.set(true);
     }
 
-    public StringBuilder getLog() {
-        return log;
+    /**
+     * Returns the log as a rendered, tail-bounded view of the store's records.
+     * The view is lazily rendered on first access and cached until {@link #clearLog()}.
+     *
+     * @return the log view
+     */
+    public CharSequence getLog() {
+        if (logView == null) {
+            logView = new LazyLogView();
+        }
+        return logView;
     }
 
     public boolean isLogToStdOut() {
         return logToStdOut.get();
     }
 
+    /**
+     * If enabled, each log record is additionally printed as a rendered line to stdout on the
+     * calling thread. Handles on a {@link JIPipeProgressLog#stdout()} store do not need this flag
+     * (the store renders records itself).
+     *
+     * @param value whether logs should be printed to stdout
+     */
     public void setLogToStdOut(boolean value) {
         logToStdOut.set(value);
     }
@@ -171,42 +377,53 @@ public class JIPipeProgressInfo implements Cancelable {
     }
 
     public void setNotifications(JIPipeNotificationInbox notifications) {
+        if (this.notifications == notifications) {
+            return;
+        }
+        if (this.notifications != null && notificationListener != null) {
+            this.notifications.getPushedEventEmitter().unsubscribe(notificationListener);
+        }
         this.notifications = notifications;
+        if (notifications != null && notificationListener != null) {
+            notifications.getPushedEventEmitter().subscribeWeak(notificationListener);
+        }
     }
 
     /**
-     * Writes a message into the log
+     * Writes a message into the log (INFO level)
      *
      * @param message the message
      */
     public void log(String message) {
-        long stamp = stampedLock.writeLock();
-        try {
-            if (detachedProgress) {
-                log.append("SUB ");
-            }
-            log.append("<").append(progress).append("/").append(maxProgress).append("> ");
+        log(JIPipeLogLevel.INFO, message);
+    }
 
-            if (withSpinner.get()) {
-                log.append(SPINNER_1[numLines.get() % SPINNER_1.length]).append(" ");
-            }
-
-            log.append(logPrepend);
-
-            boolean needsSeparator = !StringUtils.isNullOrEmpty(logPrepend) && !StringUtils.isNullOrEmpty(message);
-            if (needsSeparator)
-                log.append(" | ");
-            log.append(" ").append(message);
-            log.append("\n");
-            StatusUpdatedEvent event = new StatusUpdatedEvent(this, progress.get(), maxProgress.get(), logPrepend + (needsSeparator ? " | " : " ") + message);
-            if (logToStdOut.get()) {
-                System.out.println(event.render());
-            }
-            numLines.getAndIncrement();
-            statusUpdatedEventEmitter.emit(event);
-        } finally {
-            stampedLock.unlock(stamp);
+    /**
+     * Writes a message into the log at the given level
+     *
+     * @param level   the log level
+     * @param message the message
+     */
+    public void log(JIPipeLogLevel level, String message) {
+        String msg = message;
+        if (withSpinner.get()) {
+            msg = SPINNER_1[Math.floorMod(numLines.get(), SPINNER_1.length)] + " " + msg;
         }
+        numLines.incrementAndGet();
+        JIPipeProgressLog currentStore = store;
+        currentStore.log(nodeId, level, msg);
+        if (logToStdOut.get()) {
+            System.out.println(renderStdoutLine(msg));
+        }
+    }
+
+    /**
+     * Writes a message into the log at DEBUG level
+     *
+     * @param message the message
+     */
+    public void debug(String message) {
+        log(JIPipeLogLevel.DEBUG, message);
     }
 
     /**
@@ -220,44 +437,80 @@ public class JIPipeProgressInfo implements Cancelable {
 
     /**
      * Creates a sub-progress that detaches the references to the global process counters.
+     * The sub-progress is a child node with its own progress counters (initialized from the
+     * current counters); cancellation and notifications remain shared.
      *
      * @return progress info with the same properties as the current one, but with a detached progress
      */
     public JIPipeProgressInfo detachProgress() {
-        long stamp = stampedLock.readLock();
-        try {
-            JIPipeProgressInfo result = new JIPipeProgressInfo(this);
-            result.detachedProgress = true;
-            result.progress = new AtomicInteger(this.progress.get());
-            result.maxProgress = new AtomicInteger(this.maxProgress.get());
-            return result;
-        } finally {
-            stampedLock.unlock(stamp);
-        }
+        JIPipeProgressLog currentStore = store;
+        int childNodeId = currentStore.beginNode(nodeId, "", JIPipeProgressNodeKind.ITEM);
+        JIPipeProgressInfo result = new JIPipeProgressInfo(currentStore, childNodeId, this,
+                new AtomicInteger(progress.get()), new AtomicInteger(maxProgress.get()), true);
+        currentStore.progress(childNodeId, progress.get(), maxProgress.get());
+        return result;
     }
 
     /**
-     * Creates a sub-progress that has the same cancellation and progress, but shows the new category in front of sub-messages
+     * Creates a sub-progress that has the same cancellation, but shows the new category in front of sub-messages.
+     * The sub-progress is a child node of the current node with its own progress counters.
      *
      * @param logPrepend the category
      * @return progress info with the same properties as the current one, but with messages prepended
      */
     public JIPipeProgressInfo resolve(String logPrepend) {
-        long stamp = stampedLock.readLock();
-        try {
-            JIPipeProgressInfo result = new JIPipeProgressInfo(this);
-            if (StringUtils.isNullOrEmpty(result.logPrepend))
-                result.logPrepend = logPrepend;
-            else
-                result.logPrepend = result.logPrepend + " | " + logPrepend;
-            return result;
-        } finally {
-            stampedLock.unlock(stamp);
-        }
+        return resolve(logPrepend, (String) null);
     }
 
     /**
-     * Creates a sub-progress that has the same cancellation and progress, but shows the new category in front of sub-messages.
+     * Creates a sub-progress that has the same cancellation, but shows the new category in front of sub-messages.
+     * The sub-progress is a child node of the current node with its own progress counters, carrying an optional
+     * location URI (e.g. {@code node://<uuid>} for a graph-run algorithm node).
+     *
+     * @param logPrepend the category
+     * @param location   the free-form location URI of the child node, or {@code null} for no location
+     * @return progress info with the same properties as the current one, but with messages prepended
+     */
+    public JIPipeProgressInfo resolve(String logPrepend, String location) {
+        JIPipeProgressLog currentStore = store;
+        int childNodeId = currentStore.beginNode(nodeId, logPrepend, JIPipeProgressNodeKind.ITEM, location);
+        return new JIPipeProgressInfo(currentStore, childNodeId, this,
+                new AtomicInteger(0), new AtomicInteger(1), false);
+    }
+
+    /**
+     * Creates a sub-progress that has the same cancellation, but shows the new category in front of sub-messages.
+     * The sub-progress is a child node of the current node with its own progress counters and the given node kind
+     * (e.g. {@link JIPipeProgressNodeKind#PARTITION} for a partition grouping node).
+     *
+     * @param logPrepend the category
+     * @param kind       the node kind of the child node
+     * @return progress info with the same properties as the current one, but with messages prepended
+     */
+    public JIPipeProgressInfo resolve(String logPrepend, JIPipeProgressNodeKind kind) {
+        return resolve(logPrepend, kind, JIPipeLogLevel.INFO);
+    }
+
+    /**
+     * Creates a sub-progress that has the same cancellation, but shows the new category in front of sub-messages.
+     * The sub-progress is a child node of the current node with its own progress counters, the given node kind, and
+     * the given node level (e.g. {@link JIPipeProgressNodeKind#ITEM} + {@link JIPipeLogLevel#DEBUG} for an operation
+     * that consumers hide by default, like garbage collection).
+     *
+     * @param logPrepend the category
+     * @param kind       the node kind of the child node
+     * @param level      the node level of the child node, or {@code null} for {@link JIPipeLogLevel#INFO}
+     * @return progress info with the same properties as the current one, but with messages prepended
+     */
+    public JIPipeProgressInfo resolve(String logPrepend, JIPipeProgressNodeKind kind, JIPipeLogLevel level) {
+        JIPipeProgressLog currentStore = store;
+        int childNodeId = currentStore.beginNode(nodeId, logPrepend, kind, null, level);
+        return new JIPipeProgressInfo(currentStore, childNodeId, this,
+                new AtomicInteger(0), new AtomicInteger(1), false);
+    }
+
+    /**
+     * Creates a sub-progress that has the same cancellation, but shows the new category in front of sub-messages.
      * This is a shortcut for resolve(text + " " + (index + 1) + "/" + size)
      *
      * @param text  the category
@@ -270,19 +523,17 @@ public class JIPipeProgressInfo implements Cancelable {
     }
 
     /**
-     * Applies resolve(logPrepend) and then logs an empty message
+     * Applies resolve(logPrepend). The node row is the rendered line, so no additional record is written.
      *
      * @param logPrepend the category
      * @return progress info with the same properties as the current one, but with messages prepended
      */
     public JIPipeProgressInfo resolveAndLog(String logPrepend) {
-        JIPipeProgressInfo resolve = resolve(logPrepend);
-        resolve.log("");
-        return resolve;
+        return resolve(logPrepend);
     }
 
     /**
-     * Creates a sub-progress that has the same cancellation and progress, but shows the new category in front of sub-messages.
+     * Creates a sub-progress that has the same cancellation, but shows the new category in front of sub-messages.
      * Shortcut for resolveAndLog(text + " " + (index + 1) + "/" + size)
      *
      * @param text  the category
@@ -295,7 +546,7 @@ public class JIPipeProgressInfo implements Cancelable {
     }
 
     /**
-     * Applies a for-each operation where the progress is logged
+     * Applies a for-each operation where each item is processed with its own child progress
      *
      * @param text       the text
      * @param collection the iterated collection
@@ -308,7 +559,6 @@ public class JIPipeProgressInfo implements Cancelable {
         for (T item : collection) {
             if (isCancelled())
                 return;
-            log(text + " " + (current + 1) + "/" + size);
             JIPipeProgressInfo itemProgress = resolveAndLog(text + " " + (current + 1) + "/" + size);
             function.accept(item, itemProgress);
             ++current;
@@ -316,7 +566,7 @@ public class JIPipeProgressInfo implements Cancelable {
     }
 
     /**
-     * Applies a for-each operation where the progress is logged
+     * Applies a for-each operation where each item is processed with its own child progress
      *
      * @param text       the text
      * @param collection the iterated collection
@@ -329,7 +579,6 @@ public class JIPipeProgressInfo implements Cancelable {
         for (T item : collection) {
             if (isCancelled())
                 return;
-            log(text + " " + (current + 1) + "/" + size);
             JIPipeProgressInfo itemProgress = resolveAndLog(text + " " + (current + 1) + "/" + size);
             function.accept(item, itemProgress);
             ++current;
@@ -337,7 +586,7 @@ public class JIPipeProgressInfo implements Cancelable {
     }
 
     /**
-     * Applies a for-each operation where the progress is logged
+     * Applies a for-each operation where each item is processed with its own child progress
      *
      * @param text       the text
      * @param collection the iterated collection
@@ -349,7 +598,6 @@ public class JIPipeProgressInfo implements Cancelable {
         for (int item : collection) {
             if (isCancelled())
                 return;
-            log(text + " " + (current + 1) + "/" + size);
             JIPipeProgressInfo itemProgress = resolveAndLog(text + " " + (current + 1) + "/" + size);
             function.accept(item, itemProgress);
             ++current;
@@ -357,7 +605,7 @@ public class JIPipeProgressInfo implements Cancelable {
     }
 
     /**
-     * Applies a for-each operation where the progress is logged
+     * Applies a for-each operation where each item is processed with its own child progress
      *
      * @param text       the text
      * @param collection the iterated collection
@@ -369,7 +617,6 @@ public class JIPipeProgressInfo implements Cancelable {
         for (byte item : collection) {
             if (isCancelled())
                 return;
-            log(text + " " + (current + 1) + "/" + size);
             JIPipeProgressInfo itemProgress = resolveAndLog(text + " " + (current + 1) + "/" + size);
             function.accept(item, itemProgress);
             ++current;
@@ -377,7 +624,7 @@ public class JIPipeProgressInfo implements Cancelable {
     }
 
     /**
-     * Applies a for-each operation where the progress is logged
+     * Applies a for-each operation where each item is processed with its own child progress
      *
      * @param text       the text
      * @param collection the iterated collection
@@ -389,7 +636,6 @@ public class JIPipeProgressInfo implements Cancelable {
         for (long item : collection) {
             if (isCancelled())
                 return;
-            log(text + " " + (current + 1) + "/" + size);
             JIPipeProgressInfo itemProgress = resolveAndLog(text + " " + (current + 1) + "/" + size);
             function.accept(item, itemProgress);
             ++current;
@@ -397,7 +643,7 @@ public class JIPipeProgressInfo implements Cancelable {
     }
 
     /**
-     * Applies a for-each operation where the progress is logged
+     * Applies a for-each operation where each item is processed with its own child progress
      *
      * @param text       the text
      * @param collection the iterated collection
@@ -409,7 +655,6 @@ public class JIPipeProgressInfo implements Cancelable {
         for (short item : collection) {
             if (isCancelled())
                 return;
-            log(text + " " + (current + 1) + "/" + size);
             JIPipeProgressInfo itemProgress = resolveAndLog(text + " " + (current + 1) + "/" + size);
             function.accept(item, itemProgress);
             ++current;
@@ -417,7 +662,7 @@ public class JIPipeProgressInfo implements Cancelable {
     }
 
     /**
-     * Applies a for-each operation where the progress is logged
+     * Applies a for-each operation where each item is processed with its own child progress
      *
      * @param text       the text
      * @param collection the iterated collection
@@ -429,7 +674,6 @@ public class JIPipeProgressInfo implements Cancelable {
         for (float item : collection) {
             if (isCancelled())
                 return;
-            log(text + " " + (current + 1) + "/" + size);
             JIPipeProgressInfo itemProgress = resolveAndLog(text + " " + (current + 1) + "/" + size);
             function.accept(item, itemProgress);
             ++current;
@@ -437,7 +681,7 @@ public class JIPipeProgressInfo implements Cancelable {
     }
 
     /**
-     * Applies a for-each operation where the progress is logged
+     * Applies a for-each operation where each item is processed with its own child progress
      *
      * @param text       the text
      * @param collection the iterated collection
@@ -462,16 +706,19 @@ public class JIPipeProgressInfo implements Cancelable {
      * @param total the max progress
      */
     public void setProgress(int count, int total) {
-        setProgress(count);
-        setMaxProgress(total);
+        progress.set(count);
+        maxProgress.set(total);
+        recordProgress();
     }
 
     public void addMaxProgress(int maxProgress) {
-        this.maxProgress.getAndAccumulate(maxProgress, Integer::sum);
+        this.maxProgress.addAndGet(maxProgress);
+        recordProgress();
     }
 
     public void addProgress(int progress) {
-        this.progress.getAndAccumulate(progress, Integer::sum);
+        this.progress.addAndGet(progress);
+        recordProgress();
     }
 
     public JIPipePercentageProgressInfo percentage(String text) {
@@ -482,19 +729,23 @@ public class JIPipeProgressInfo implements Cancelable {
         if (e == null) {
             return;
         }
-        try {
-            log(ExceptionUtils.getStackTrace(e));
-        } catch (Throwable ex) {
-            log(e.getMessage());
+        JIPipeProgressLog currentStore = store;
+        currentStore.error(nodeId, e);
+        if (logToStdOut.get()) {
+            for (String line : renderErrorLines(e.getClass().getName(),
+                    e.getMessage() == null ? "" : e.getMessage(),
+                    renderStackTrace(e))) {
+                System.out.println(line);
+            }
         }
     }
 
     public void error(String message) {
-        log("[ERROR] " + message);
+        log(JIPipeLogLevel.ERROR, "[ERROR] " + message);
     }
 
     public void warn(String message) {
-        log("[WARNING] " + message);
+        log(JIPipeLogLevel.WARN, "[WARNING] " + message);
     }
 
     public void aggressiveError(String... text) {
@@ -532,50 +783,412 @@ public class JIPipeProgressInfo implements Cancelable {
         }
     }
 
-    public interface StatusUpdatedEventListener {
-        void onProgressStatusUpdated(StatusUpdatedEvent event);
+    // ---------------------------------------------------------------------
+    // Internals
+    // ---------------------------------------------------------------------
+
+    /**
+     * Writes the current counters into the node's progress record.
+     */
+    private void recordProgress() {
+        JIPipeProgressLog currentStore = store;
+        currentStore.progress(nodeId, progress.get(), maxProgress.get());
     }
 
-    public static class StatusUpdatedEvent extends AbstractJIPipeEvent {
-        private final JIPipeProgressInfo progressInfo;
-        private final int progress;
-        private final int maxProgress;
-        private final String message;
-
-        public StatusUpdatedEvent(JIPipeProgressInfo progressInfo, int progress, int maxProgress, String message) {
-            super(progressInfo);
-            this.progressInfo = progressInfo;
-            this.progress = progress;
-            this.maxProgress = maxProgress;
-            this.message = message;
-        }
-
-        public JIPipeProgressInfo getProgressInfo() {
-            return progressInfo;
-        }
-
-        public int getProgress() {
-            return progress;
-        }
-
-        public int getMaxProgress() {
-            return maxProgress;
-        }
-
-        public String getMessage() {
-            return message;
-        }
-
-        public String render() {
-            return (progressInfo.detachedProgress ? "SUB " : "") + "[" + progress + "/" + maxProgress + "] " + message;
-        }
+    /**
+     * Writes the given counters into the node's progress record and the handle's fast-path counters.
+     * Used by subclasses in the same package (for example the percentage progress).
+     *
+     * @param value the progress value
+     * @param max   the progress maximum
+     */
+    void recordProgress(int value, int max) {
+        progress.set(value);
+        maxProgress.set(max);
+        JIPipeProgressLog currentStore = store;
+        currentStore.progress(nodeId, value, max);
     }
 
-    public static class StatusUpdatedEventEmitter extends JIPipeEventEmitter<StatusUpdatedEvent, StatusUpdatedEventListener> {
+    /**
+     * Records a run-level notification into the store as a {@code w} record. Subscribed weakly to
+     * the notification inbox of the root handle.
+     *
+     * @param event the push event
+     */
+    private void onNotificationPushed(JIPipeNotificationInbox.PushedEvent event) {
+        JIPipeNotification notification = event.getNotification();
+        JIPipeProgressLog currentStore = store;
+        currentStore.notification(notification.getHeading(), notification.getDescription());
+    }
+
+    /**
+     * Renders a log record as a compatibility line for stdout printing
+     * ({@code [v/mx] <chain> | message}).
+     *
+     * @param message the record message
+     * @return the line
+     */
+    private String renderStdoutLine(String message) {
+        StringBuilder builder = new StringBuilder();
+        builder.append('[').append(progress.get()).append('/').append(maxProgress.get()).append(']').append(' ');
+        String chain = getLabelChain();
+        if (!chain.isEmpty()) {
+            builder.append(chain).append(" | ");
+        }
+        builder.append(message);
+        return builder.toString();
+    }
+
+    /**
+     * Joins the labels of all ancestors of this handle's node up to the root with {@code |}.
+     * The root's label is not part of the chain; empty or blank labels (a detached progress node)
+     * contribute no segment.
+     *
+     * @return the label chain (empty for root handles)
+     */
+    private String getLabelChain() {
+        JIPipeProgressLog currentStore = store;
+        Deque<String> labels = new ArrayDeque<>();
+        JIPipeProgressNode node = currentStore.getNode(nodeId);
+        while (node != null && node.getId() != currentStore.getRootNodeId()) {
+            if (node.getLabel() != null && !node.getLabel().isBlank()) {
+                labels.addFirst(node.getLabel());
+            }
+            int parentId = node.getParentId();
+            if (parentId <= 0 || parentId == currentStore.getRootNodeId()) {
+                break;
+            }
+            node = currentStore.getNode(parentId);
+        }
+        return String.join(" | ", labels);
+    }
+
+    /**
+     * Renders an error into compatibility lines: the summary line and the indented stack lines.
+     *
+     * @param className the exception class name
+     * @param message   the exception message
+     * @param stack     the stack trace
+     * @return the lines
+     */
+    private static List<String> renderErrorLines(String className, String message, String stack) {
+        List<String> lines = new ArrayList<>();
+        lines.add(className + (message == null || message.isEmpty() ? "" : ": " + message));
+        if (stack != null) {
+            String[] stackLines = stack.split("\n");
+            for (int i = 1; i < stackLines.length; i++) {
+                lines.add("  " + stackLines[i].stripLeading());
+            }
+        }
+        return lines;
+    }
+
+    private static String renderStackTrace(Throwable throwable) {
+        StringWriter stringWriter = new StringWriter();
+        throwable.printStackTrace(new PrintWriter(stringWriter));
+        return stringWriter.toString();
+    }
+
+    /**
+     * Lazily rendered, cached compatibility view of the store's recent records. Non-persistent
+     * stores render via {@link JIPipeProgressLog#renderText} (serves the in-memory tail); file-backed
+     * stores render from the bounded tail via {@link JIPipeProgressLog#readRecent(int)} - never the
+     * whole file.
+     */
+    private final class LazyLogView implements CharSequence {
+
+        private volatile String rendered;
+
+        private synchronized String text() {
+            if (rendered == null) {
+                StringBuilder builder = new StringBuilder();
+                JIPipeProgressLog currentStore = store;
+                if (currentStore.getFile() == null) {
+                    // Non-persistent store: renderText walks the in-memory tail (bounded)
+                    currentStore.renderText(JIPipeLogLevel.INFO, line -> builder.append(line).append('\n'));
+                } else {
+                    renderRecentInto(builder);
+                }
+                rendered = builder.toString();
+            }
+            return rendered;
+        }
 
         @Override
-        protected void call(StatusUpdatedEventListener statusUpdatedEventListener, StatusUpdatedEvent event) {
-            statusUpdatedEventListener.onProgressStatusUpdated(event);
+        public int length() {
+            return text().length();
+        }
+
+        @Override
+        public char charAt(int index) {
+            return text().charAt(index);
+        }
+
+        @Override
+        public CharSequence subSequence(int start, int end) {
+            return text().subSequence(start, end);
+        }
+
+        @Override
+        public String toString() {
+            return text();
+        }
+    }
+
+    /**
+     * Renders the recent records of a file-backed store into compatibility lines (bounded by the
+     * store's tail; mirrors the shapes of the store's text render).
+     *
+     * @param builder the target
+     */
+    private void renderRecentInto(StringBuilder builder) {
+        JIPipeProgressLog currentStore = store;
+        Map<Integer, int[]> nodeProgress = new HashMap<>();
+        for (JIPipeProgressRecord record : currentStore.readRecent(Integer.MAX_VALUE)) {
+            if (record instanceof JIPipeProgressRecord.Log logRecord) {
+                if (logRecord.lv() >= JIPipeLogLevel.INFO.value()) {
+                    String prefix = renderViewPrefix(logRecord.id(), nodeProgress);
+                    String[] fragments = (logRecord.m() == null ? "" : logRecord.m()).split("\n", -1);
+                    for (int i = 0; i < fragments.length; i++) {
+                        String fragment = fragments[i];
+                        if (fragment.endsWith("\r")) {
+                            fragment = fragment.substring(0, fragment.length() - 1);
+                        }
+                        builder.append(i == 0 ? prefix + fragment : fragment).append('\n');
+                    }
+                }
+            } else if (record instanceof JIPipeProgressRecord.Progress progressRecord) {
+                // Progress records render nothing (R15: the facade emits the percentage compat
+                // lines as log records); they only update the running per-node progress
+                if (progressRecord.mx() > 0) {
+                    nodeProgress.put(progressRecord.id(), new int[]{progressRecord.v(), progressRecord.mx()});
+                }
+            } else if (record instanceof JIPipeProgressRecord.Error errorRecord) {
+                List<String> lines = renderErrorLines(errorRecord.c(), errorRecord.m(), errorRecord.st());
+                for (int i = 0; i < lines.size(); i++) {
+                    if (i == 0) {
+                        // The summary line carries the prefix
+                        builder.append(renderViewPrefix(errorRecord.id(), nodeProgress)).append(lines.get(0)).append('\n');
+                    } else {
+                        builder.append(lines.get(i)).append('\n');
+                    }
+                }
+            } else if (record instanceof JIPipeProgressRecord.Notification notificationRecord) {
+                builder.append("@ ").append(notificationRecord.h()).append(": ").append(notificationRecord.d()).append('\n');
+            }
+        }
+    }
+
+    /**
+     * Builds the {@code [v/mx] <chain> | } prefix of a view line: the node's last known progress
+     * (initially 1/1) and its label chain from the node index.
+     *
+     * @param nodeId       the node id
+     * @param nodeProgress the running progress states collected during the render walk
+     * @return the prefix
+     */
+    private String renderViewPrefix(int nodeId, Map<Integer, int[]> nodeProgress) {
+        int[] state = nodeProgress.get(nodeId);
+        if (state == null) {
+            state = new int[]{1, 1};
+        }
+        StringBuilder builder = new StringBuilder();
+        builder.append('[').append(state[0]).append('/').append(state[1]).append(']').append(' ');
+        String chain = getLabelChain(nodeId);
+        if (!chain.isEmpty()) {
+            builder.append(chain).append(" | ");
+        }
+        return builder.toString();
+    }
+
+    /**
+     * Joins the labels of all ancestors of the given node up to the root with {@code |}.
+     * Empty or blank labels (a detached progress node) contribute no segment.
+     *
+     * @param id the node id
+     * @return the label chain (empty for the root)
+     */
+    private String getLabelChain(int id) {
+        JIPipeProgressLog currentStore = store;
+        Deque<String> labels = new ArrayDeque<>();
+        JIPipeProgressNode node = currentStore.getNode(id);
+        while (node != null && node.getId() != currentStore.getRootNodeId()) {
+            if (node.getLabel() != null && !node.getLabel().isBlank()) {
+                labels.addFirst(node.getLabel());
+            }
+            int parentId = node.getParentId();
+            if (parentId <= 0 || parentId == currentStore.getRootNodeId()) {
+                break;
+            }
+            node = currentStore.getNode(parentId);
+        }
+        return String.join(" | ", labels);
+    }
+
+    /**
+     * Registered by long-lived batch-event subscribers (e.g. the runnable worker) that must survive
+     * a store adoption: {@link #setStore(JIPipeProgressLog)} re-roots this handle onto a different
+     * store, and a subscription made to the previous store's batch emitter would silently go dark.
+     * Copy-on-write: callbacks fire on the adopting thread, in registration order, after the
+     * store and node id were updated. The list is per handle instance (a copy created via the copy
+     * constructor starts empty).
+     */
+    private final CopyOnWriteArrayList<Runnable> storeAdoptedCallbacks = new CopyOnWriteArrayList<>();
+
+    /**
+     * Registers a callback that is invoked whenever this handle adopts a different progress store
+     * via {@link #setStore(JIPipeProgressLog)} (also via {@link #setStorageBase(Path, String, String)}).
+     * Used to move batch-event subscriptions from the displaced store to the adopted one.
+     *
+     * @param callback the callback (invoked on the adopting thread; must not block)
+     */
+    public void addStoreAdoptedCallback(Runnable callback) {
+        storeAdoptedCallbacks.add(callback);
+    }
+
+    /**
+     * Removes a callback registered via {@link #addStoreAdoptedCallback(Runnable)}.
+     *
+     * @param callback the callback
+     */
+    public void removeStoreAdoptedCallback(Runnable callback) {
+        storeAdoptedCallbacks.remove(callback);
+    }
+
+    /**
+     * Subscribes a listener to this handle's current store's batch emitter and keeps the
+     * subscription alive across store adoption: when this handle adopts a different store (see
+     * {@link #setStore(JIPipeProgressLog)}), the subscription migrates to the adopted store's
+     * emitter. Stores without a writer thread (silent/stdout) never emit; their subscriptions
+     * simply stay idle.
+     * <p>
+     * Listeners run inline on the emitting store's writer thread and must not block; UI work must
+     * hop to the EDT ({@code SwingUtilities.invokeLater} or a {@code javax.swing.Timer}).
+     *
+     * @param listener the batch listener
+     * @return the subscription (close it to unsubscribe and stop the migration)
+     */
+    public BatchEventSubscription subscribeToBatchEvents(JIPipeProgressLog.ProgressBatchEventListener listener) {
+        BatchEventSubscription subscription = new BatchEventSubscription(listener);
+        subscription.attach(getStore());
+        storeAdoptedCallbacks.add(subscription.migrationCallback);
+        return subscription;
+    }
+
+    /**
+     * A batch-event subscription that follows the handle's store across adoption.
+     * Close it when the consumer goes away.
+     */
+    public final class BatchEventSubscription implements AutoCloseable {
+
+        private final JIPipeProgressLog.ProgressBatchEventListener listener;
+        private final Runnable migrationCallback = this::migrate;
+        private volatile JIPipeProgressLog store;
+
+        private BatchEventSubscription(JIPipeProgressLog.ProgressBatchEventListener listener) {
+            this.listener = listener;
+        }
+
+        /**
+         * Returns the store this subscription is currently subscribed to.
+         *
+         * @return the store, or {@code null} if the handle had no store
+         */
+        public JIPipeProgressLog getStore() {
+            return store;
+        }
+
+        @Override
+        public void close() {
+            attach(null);
+            storeAdoptedCallbacks.remove(migrationCallback);
+        }
+
+        private void migrate() {
+            attach(JIPipeProgressInfo.this.getStore());
+        }
+
+        private void attach(JIPipeProgressLog newStore) {
+            JIPipeProgressLog current = store;
+            if (current == newStore) {
+                return;
+            }
+            if (current != null) {
+                current.getBatchEventEmitter().unsubscribe(listener);
+            }
+            store = newStore;
+            if (newStore != null) {
+                newStore.getBatchEventEmitter().subscribe(listener);
+            }
+        }
+    }
+
+    /**
+     * Subscribes a synchronous per-record listener (R45a) to this handle's current store and
+     * keeps the subscription alive across store adoption: when this handle adopts a different
+     * store (see {@link #setStore(JIPipeProgressLog)}), the subscription migrates to the adopted
+     * store. Unlike {@link #subscribeToBatchEvents}, the listener fires for every store type -
+     * including silent stores, which never emit batch events - once per record on the submitting
+     * thread.
+     * <p>
+     * Listeners run inline while the store's submission lock is held and must be cheap; UI work
+     * must hop to the EDT.
+     *
+     * @param listener the record listener
+     * @return the subscription (close it to unsubscribe and stop the migration)
+     */
+    public RecordSubscription subscribeToRecords(JIPipeProgressLog.ProgressRecordListener listener) {
+        RecordSubscription subscription = new RecordSubscription(listener);
+        subscription.attach(getStore());
+        storeAdoptedCallbacks.add(subscription.migrationCallback);
+        return subscription;
+    }
+
+    /**
+     * A synchronous per-record subscription that follows the handle's store across adoption.
+     * Close it when the consumer goes away.
+     */
+    public final class RecordSubscription implements AutoCloseable {
+
+        private final JIPipeProgressLog.ProgressRecordListener listener;
+        private final Runnable migrationCallback = this::migrate;
+        private volatile JIPipeProgressLog store;
+
+        private RecordSubscription(JIPipeProgressLog.ProgressRecordListener listener) {
+            this.listener = listener;
+        }
+
+        /**
+         * Returns the store this subscription is currently subscribed to.
+         *
+         * @return the store, or {@code null} if the handle had no store
+         */
+        public JIPipeProgressLog getStore() {
+            return store;
+        }
+
+        @Override
+        public void close() {
+            attach(null);
+            storeAdoptedCallbacks.remove(migrationCallback);
+        }
+
+        private void migrate() {
+            attach(JIPipeProgressInfo.this.getStore());
+        }
+
+        private void attach(JIPipeProgressLog newStore) {
+            JIPipeProgressLog current = store;
+            if (current == newStore) {
+                return;
+            }
+            if (current != null) {
+                current.removeProgressRecordListener(listener);
+            }
+            store = newStore;
+            if (newStore != null) {
+                newStore.addProgressRecordListener(listener);
+            }
         }
     }
 

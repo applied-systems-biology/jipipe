@@ -150,9 +150,6 @@ public class JIPipeRunAlgorithmCommand extends DynamicCommand implements Initial
             }
         }
         JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
-        progressInfo.getStatusUpdatedEventEmitter().subscribeLambda((emitter, event) -> {
-            IJ.showStatus("[" + event.getProgress() + "/" + event.getMaxProgress() + "] " + event.getMessage());
-        });
         IJ.showStatus("Running JIPipe node ...");
         IJ.showProgress(1, 3);
 

@@ -43,6 +43,7 @@ import org.hkijena.jipipe.plugins.cellpose.legacy.PretrainedLegacyCellpose2Train
 import org.hkijena.jipipe.plugins.cellpose.legacy.datatypes.LegacyCellposeModelData;
 import org.hkijena.jipipe.plugins.cellpose.legacy.datatypes.LegacyCellposeSizeModelData;
 import org.hkijena.jipipe.plugins.cellpose.parameters.cp2.Cellpose2GPUSettings;
+import org.hkijena.jipipe.plugins.cellpose.utils.CellposeUtils;
 import org.hkijena.jipipe.plugins.expressions.DataAnnotationQueryExpression;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.binary.ConnectedComponentsLabeling2DAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.binary.ConnectedComponentsLabeling3DAlgorithm;
@@ -547,7 +548,7 @@ public class Cellpose1TrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
         arguments.add(minTrainMasks + "");
 
         // Run the module
-        PythonUtils.runPython(arguments.toArray(new String[0]), environment, Collections.emptyList(), Collections.emptyMap(), false, false, progressInfo);
+        PythonUtils.runPython(arguments.toArray(new String[0]), environment, Collections.emptyList(), Collections.emptyMap(), false, false, CellposeUtils.withCellposeProgressBar(progressInfo));
 
         // Extract the model
         Path modelsPath = trainingDir.resolve("models");

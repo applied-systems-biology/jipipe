@@ -1,0 +1,1087 @@
+/*
+ * Copyright by Zoltán Cseresnyés, Ruman Gerst
+ *
+ * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
+ * https://www.leibniz-hki.de/en/applied-systems-biology.html
+ * HKI-Center for Systems Biology of Infection
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
+ * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
+ *
+ * The project code is licensed under MIT.
+ * See the LICENSE file provided with the code for the full license.
+ */
+
+package org.hkijena.jipipe.api.progress;
+
+import org.hkijena.jipipe.JIPipe;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Consumer;
+
+/**
+ * Base class for {@link JIPipeProgressLog} implementations. Owns all tree logic - the node index,
+ * node id allocation, record sequence numbers, the bounded tail of renderable records, and the
+ * coalescer plumbing - exactly once. Implementations differ only in the sink
+ * ({@link #writeRecord(long, JIPipeProgressRecord)}) and in how records are handed to it
+ * ({@link #enqueue(long, JIPipeProgressRecord)}).
+ * <p>
+ * Record flow: producer methods build a record and call {@link #submit(JIPipeProgressRecord)}, which
+ * atomically assigns the next sequence number and hands the record to {@link #enqueue(long,
+ * JIPipeProgressRecord)}. The sequence number of a record is its line number (1-based; head = 1), so
+ * sequence assignment and hand-off must stay in submission order. The thread that owns the sink then
+ * applies the record to the index and tail ({@link #applyRecord(long, JIPipeProgressRecord)}) and
+ * writes it ({@link #writeRecord(long, JIPipeProgressRecord)}): synchronously on the caller thread for the
+ * default implementation of {@link #enqueue(long, JIPipeProgressRecord)}, or on the writer thread for
+ * file-backed stores.
+ * <p>
+ * The tail holds the non-structural records ({@code l}, {@code p}, {@code e}, {@code w}) only -
+ * structural records ({@code head}, {@code n}, {@code N}, {@code s}) are excluded. It is bounded
+ * by the record-count limit (default 8,192) or by ~8 MB of message text, whichever binds first;
+ * eviction removes the oldest entries. Records with
+ * a node id ({@code n}, {@code l}, {@code p}, {@code e}, {@code N}) are attributed to that node's range
+ * in the index.
+ */
+public abstract class AbstractJIPipeProgressLog implements JIPipeProgressLog {
+
+    /**
+     * The id of the automatically created root node.
+     */
+    protected static final int ROOT_NODE_ID = 1;
+
+    private static final int DEFAULT_TAIL_LIMIT = 8192;
+
+    /**
+     * Approximate upper bound for the message text retained by the tail, in characters (~8 MB;
+     * one char counts as one byte - the bound is approximate by design). The tail is bounded by
+     * {@link #DEFAULT_TAIL_LIMIT} or by this cap, whichever binds first.
+     */
+    private static final long TAIL_TEXT_LIMIT_CHARS = 8L * 1024 * 1024;
+
+    private static final long DEFAULT_COALESCE_INTERVAL_MILLIS = 100;
+
+    private final String runUuid;
+    private final String runLabel;
+    private final JIPipeProgressNode rootNode;
+    private final ConcurrentMap<Integer, JIPipeProgressNode> nodes = new ConcurrentHashMap<>();
+    private final AtomicLong nodeIdCounter = new AtomicLong(ROOT_NODE_ID);
+    private final AtomicLong sequenceCounter = new AtomicLong();
+    private final ArrayDeque<TailEntry> tail = new ArrayDeque<>();
+    private final ReentrantLock tailLock = new ReentrantLock();
+    private final ReentrantLock submitLock = new ReentrantLock();
+    private final ProgressBatchEventEmitter batchEventEmitter = new ProgressBatchEventEmitter();
+    /**
+     * The synchronous per-record listeners (R45a): invoked on the submitting thread, once per
+     * record submitted through the public record path - for every store type, including stores
+     * without a writer thread whose batch emitter never emits. Copy-on-write: iteration during a
+     * fire is lock-free.
+     */
+    private final CopyOnWriteArrayList<JIPipeProgressLog.ProgressRecordListener> recordListeners =
+            new CopyOnWriteArrayList<>();
+    private volatile int tailLimit = DEFAULT_TAIL_LIMIT;
+    private volatile long coalesceIntervalMillis = DEFAULT_COALESCE_INTERVAL_MILLIS;
+    private long tailChars;
+    private volatile boolean started;
+    private volatile boolean finished;
+    private volatile boolean closed;
+
+    /**
+     * Creates the store and its automatically created root node.
+     *
+     * @param runUuid  the run UUID ({@code null} for stores that write no head record file)
+     * @param runLabel the run label ({@code null} for stores that write no head record file)
+     */
+    protected AbstractJIPipeProgressLog(String runUuid, String runLabel) {
+        this.runUuid = runUuid;
+        this.runLabel = runLabel;
+        this.rootNode = new JIPipeProgressNode(ROOT_NODE_ID, 0, runLabel, JIPipeProgressNodeKind.RUN, null);
+        this.nodes.put(ROOT_NODE_ID, rootNode);
+    }
+
+    // ---------------------------------------------------------------------
+    // Producer API
+    // ---------------------------------------------------------------------
+
+    @Override
+    public final int getRootNodeId() {
+        return ROOT_NODE_ID;
+    }
+
+    @Override
+    public final int nextNodeId() {
+        return (int) Math.min(nodeIdCounter.get() + 1, Integer.MAX_VALUE);
+    }
+
+    @Override
+    public final JIPipeProgressNode getNode(int id) {
+        if (id <= 0) {
+            return null;
+        }
+        return nodes.get(id);
+    }
+
+    @Override
+    public final int beginNode(int parentId, String label, JIPipeProgressNodeKind kind, String location, JIPipeLogLevel level) {
+        Objects.requireNonNull(kind, "Node kind must not be null");
+        JIPipeLogLevel nodeLevel = level != null ? level : JIPipeLogLevel.INFO;
+        submitLock.lock();
+        try {
+            if (!startRunLocked()) {
+                // The store is closed: return a distinct, unused id (records are dropped anyway)
+                return (int) Math.min(nodeIdCounter.incrementAndGet(), Integer.MAX_VALUE);
+            }
+            JIPipeProgressNode parent = resolveParentLocked(parentId);
+            int id = (int) nodeIdCounter.incrementAndGet();
+            JIPipeProgressNode node = new JIPipeProgressNode(id, parent.getId(), label, kind, location, nodeLevel);
+            nodes.put(id, node);
+            for (JIPipeProgressNode ancestor = parent; ancestor != null; ancestor = nodes.get(ancestor.getParentId())) {
+                ancestor.incrementDescendantNodeCount();
+            }
+            // Children of the root reference it via p=0 (the root is implied by the head record).
+            // The optional lv field is omitted for INFO so existing n records stay byte-identical.
+            int wireParent = parent.getId() == ROOT_NODE_ID ? 0 : parent.getId();
+            Integer wireLevel = nodeLevel != JIPipeLogLevel.INFO ? nodeLevel.value() : null;
+            submitLocked(JIPipeProgressRecord.node(id, wireParent, label, kind.name(), location, wireLevel, now()));
+            return id;
+        } finally {
+            submitLock.unlock();
+        }
+    }
+
+    @Override
+    public final void log(int nodeId, JIPipeLogLevel level, String message) {
+        Objects.requireNonNull(level, "Log level must not be null");
+        submitLock.lock();
+        try {
+            if (!startRunLocked()) {
+                return;
+            }
+            submitLocked(JIPipeProgressRecord.log(nodeId, level.value(), message, now()));
+        } finally {
+            submitLock.unlock();
+        }
+    }
+
+    @Override
+    public final void progress(int nodeId, int value, int max) {
+        submitLock.lock();
+        try {
+            if (!startRunLocked()) {
+                return;
+            }
+            submitLocked(JIPipeProgressRecord.progress(nodeId, value, max, now()));
+        } finally {
+            submitLock.unlock();
+        }
+    }
+
+    @Override
+    public final void error(int nodeId, Throwable throwable) {
+        Objects.requireNonNull(throwable, "Throwable must not be null");
+        submitLock.lock();
+        try {
+            if (!startRunLocked()) {
+                return;
+            }
+            submitLocked(JIPipeProgressRecord.error(nodeId,
+                    throwable.getClass().getName(),
+                    throwable.getMessage() == null ? "" : throwable.getMessage(),
+                    renderStackTrace(throwable),
+                    now()));
+        } finally {
+            submitLock.unlock();
+        }
+    }
+
+    @Override
+    public final void notification(String heading, String description) {
+        submitLock.lock();
+        try {
+            if (!startRunLocked()) {
+                return;
+            }
+            submitLocked(JIPipeProgressRecord.notification(heading, description, now()));
+        } finally {
+            submitLock.unlock();
+        }
+    }
+
+    @Override
+    public final void nodeFinished(int nodeId, JIPipeProgressNodeState state) {
+        Objects.requireNonNull(state, "Node state must not be null");
+        submitLock.lock();
+        try {
+            if (!startRunLocked()) {
+                return;
+            }
+            // The index state is applied synchronously (the writer re-applies the same state when
+            // it drains the N record), so consumers and the finish sweep see the terminal state
+            // immediately instead of at the next writer drain
+            JIPipeProgressNode node = nodes.get(nodeId);
+            if (node != null) {
+                node.setState(state);
+            }
+            submitLocked(JIPipeProgressRecord.nodeFinished(nodeId, mapNodeStateToWire(state), now()));
+        } finally {
+            submitLock.unlock();
+        }
+    }
+
+    @Override
+    public final void finish(JIPipeProgressNodeState runState) {
+        Objects.requireNonNull(runState, "Run state must not be null");
+        submitLock.lock();
+        try {
+            if (closed || finished) {
+                return;
+            }
+            if (!started) {
+                enqueueHeadLocked();
+            }
+            // R35 finish sweep: a node still RUNNING at finish time either completed as part of a
+            // legacy resolve scope (successful run) or was abandoned (failed/cancelled run) - it
+            // must not survive as an eternal spinner. The sweep runs BEFORE the final s record, so
+            // the swept N records precede it in file order. The root is excluded (it finishes via
+            // the s record below).
+            for (JIPipeProgressNode node : nodes.values()) {
+                if (node.getId() != ROOT_NODE_ID && node.getState() == JIPipeProgressNodeState.RUNNING) {
+                    node.setState(runState);
+                    long sweptSeq = sequenceCounter.incrementAndGet();
+                    enqueue(sweptSeq, JIPipeProgressRecord.nodeFinished(node.getId(), mapNodeStateToWire(runState), now()));
+                }
+            }
+            rootNode.setState(runState);
+            long seq = sequenceCounter.incrementAndGet();
+            enqueue(seq, JIPipeProgressRecord.status(mapRunStateToWire(runState), now()));
+            finished = true;
+        } finally {
+            submitLock.unlock();
+        }
+        close();
+    }
+
+    @Override
+    public final void close() {
+        submitLock.lock();
+        try {
+            if (closed) {
+                return;
+            }
+            closed = true;
+        } finally {
+            submitLock.unlock();
+        }
+        onClose();
+    }
+
+    // ---------------------------------------------------------------------
+    // Tree logic - applied by the thread that owns the sink
+    // ---------------------------------------------------------------------
+
+    /**
+     * Applies a record to the node index and the tail. Called by the thread that owns the sink:
+     * the writer thread for file-backed stores, the calling thread otherwise.
+     *
+     * @param seq    the record's sequence number (its line number)
+     * @param record the record
+     */
+    protected final void applyRecord(long seq, JIPipeProgressRecord record) {
+        if (record instanceof JIPipeProgressRecord.Node nodeRecord) {
+            attribute(seq, nodes.get(nodeRecord.id()));
+        } else if (record instanceof JIPipeProgressRecord.Log logRecord) {
+            attribute(seq, nodes.get(logRecord.id()));
+        } else if (record instanceof JIPipeProgressRecord.Progress progressRecord) {
+            JIPipeProgressNode node = nodes.get(progressRecord.id());
+            if (node != null) {
+                node.setProgress(progressRecord.v(), progressRecord.mx());
+                attribute(seq, node);
+            }
+        } else if (record instanceof JIPipeProgressRecord.Error errorRecord) {
+            attribute(seq, nodes.get(errorRecord.id()));
+        } else if (record instanceof JIPipeProgressRecord.NodeFinished finishRecord) {
+            JIPipeProgressNode node = nodes.get(finishRecord.id());
+            if (node != null) {
+                node.setState(mapNodeStateFromWire(finishRecord.s()));
+                attribute(seq, node);
+            }
+        }
+        // Run-level records (head, s) and notifications (w) are not attributed to a node
+        if (isRenderable(record)) {
+            appendTail(seq, record);
+        }
+    }
+
+    private static void attribute(long seq, JIPipeProgressNode node) {
+        if (node != null) {
+            node.recordAt(seq);
+        }
+    }
+
+    private void appendTail(long seq, JIPipeProgressRecord record) {
+        tailLock.lock();
+        try {
+            TailEntry entry = new TailEntry(seq, record, estimateTextSize(record));
+            tail.addLast(entry);
+            tailChars += entry.chars();
+            evictTailLocked();
+        } finally {
+            tailLock.unlock();
+        }
+    }
+
+    /**
+     * Evicts entries from the head while the tail is over either bound: the record-count limit or
+     * the message-text cap. Called while holding {@link #tailLock}.
+     */
+    private void evictTailLocked() {
+        while (!tail.isEmpty() && (tail.size() > tailLimit || tailChars > TAIL_TEXT_LIMIT_CHARS)) {
+            tailChars -= tail.pollFirst().chars();
+        }
+    }
+
+    /**
+     * Approximates the text size retained by one tail entry: the characters of its message text
+     * (log message, stack trace, heading/description) plus the label of a progress record.
+     *
+     * @param record the record
+     * @return the approximate retained character count
+     */
+    private static long estimateTextSize(JIPipeProgressRecord record) {
+        if (record instanceof JIPipeProgressRecord.Log logRecord) {
+            return length(logRecord.m());
+        } else if (record instanceof JIPipeProgressRecord.Error errorRecord) {
+            return length(errorRecord.c()) + length(errorRecord.m()) + length(errorRecord.st());
+        } else if (record instanceof JIPipeProgressRecord.Notification notificationRecord) {
+            return length(notificationRecord.h()) + length(notificationRecord.d());
+        }
+        return 0;
+    }
+
+    private static long length(String text) {
+        return text == null ? 0 : text.length();
+    }
+
+    private static boolean isRenderable(JIPipeProgressRecord record) {
+        return record instanceof JIPipeProgressRecord.Log
+                || record instanceof JIPipeProgressRecord.Progress
+                || record instanceof JIPipeProgressRecord.Error
+                || record instanceof JIPipeProgressRecord.Notification;
+    }
+
+    // ---------------------------------------------------------------------
+    // Read-back
+    // ---------------------------------------------------------------------
+
+    @Override
+    public List<JIPipeProgressRecord> readRecords(int fromLine, int limit) {
+        if (limit <= 0) {
+            return List.of();
+        }
+        long start = Math.max(fromLine, 1);
+        List<JIPipeProgressRecord> result = new ArrayList<>();
+        tailLock.lock();
+        try {
+            for (TailEntry entry : tail) {
+                if (entry.seq() >= start) {
+                    result.add(entry.record());
+                    if (result.size() >= limit) {
+                        break;
+                    }
+                }
+            }
+        } finally {
+            tailLock.unlock();
+        }
+        return result;
+    }
+
+    @Override
+    public List<JIPipeProgressRecord> readRecent(int count) {
+        if (count <= 0) {
+            return List.of();
+        }
+        tailLock.lock();
+        try {
+            int skip = Math.max(0, tail.size() - count);
+            List<JIPipeProgressRecord> result = new ArrayList<>(tail.size() - skip);
+            for (TailEntry entry : tail) {
+                if (skip > 0) {
+                    skip--;
+                } else {
+                    result.add(entry.record());
+                }
+            }
+            return result;
+        } finally {
+            tailLock.unlock();
+        }
+    }
+
+    @Override
+    public List<JIPipeProgressRecord> readRecords(int fromLine, int limit, JIPipeLogLevel minLevel) {
+        if (limit <= 0) {
+            return List.of();
+        }
+        List<JIPipeProgressRecord> result = new ArrayList<>();
+        for (JIPipeProgressRecord record : readRecords(fromLine, Integer.MAX_VALUE)) {
+            if (passesLevelFilter(record, minLevel)) {
+                result.add(record);
+                if (result.size() >= limit) {
+                    break;
+                }
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public void renderText(JIPipeLogLevel minLevel, Consumer<String> lineSink) {
+        Objects.requireNonNull(minLevel, "Minimum log level must not be null");
+        Objects.requireNonNull(lineSink, "Line sink must not be null");
+        RenderWalk walk = new RenderWalk(this, false);
+        walkRecords(record -> walk.render(record, minLevel, lineSink));
+    }
+
+    @Override
+    public void renderRecords(List<JIPipeProgressRecord> records, JIPipeLogLevel minLevel, Consumer<String> lineSink) {
+        Objects.requireNonNull(minLevel, "Minimum log level must not be null");
+        Objects.requireNonNull(lineSink, "Line sink must not be null");
+        // Per-batch render: seed unknown progress states from the node index's current state
+        // (the batch cannot contain the node's earlier p records)
+        RenderWalk walk = new RenderWalk(this, true);
+        for (JIPipeProgressRecord record : records) {
+            walk.render(record, minLevel, lineSink);
+        }
+    }
+
+    /**
+     * Hands every readable record of this store, in file order (oldest to newest), to the consumer.
+     * The default serves what the tail holds; file-backed stores stream the file in pages.
+     *
+     * @param recordConsumer the consumer of the records
+     */
+    protected void walkRecords(Consumer<JIPipeProgressRecord> recordConsumer) {
+        for (JIPipeProgressRecord record : readRecords(1, Integer.MAX_VALUE)) {
+            recordConsumer.accept(record);
+        }
+    }
+
+    /**
+     * Returns whether a record passes a level filter: log records must be at or above the minimum
+     * level; all other records have no level and pass.
+     *
+     * @param record   the record
+     * @param minLevel the minimum level
+     * @return true if the record passes
+     */
+    static boolean passesLevelFilter(JIPipeProgressRecord record, JIPipeLogLevel minLevel) {
+        return !(record instanceof JIPipeProgressRecord.Log logRecord) || logRecord.lv() >= minLevel.value();
+    }
+
+    // ---------------------------------------------------------------------
+    // Settings and plumbing
+    // ---------------------------------------------------------------------
+
+    @Override
+    public void setCoalesceIntervalMillis(long ms) {
+        coalesceIntervalMillis = ms;
+    }
+
+    /**
+     * Returns the coalesce interval in milliseconds (used by the coalescer).
+     *
+     * @return the interval in milliseconds
+     */
+    protected final long getCoalesceIntervalMillis() {
+        return coalesceIntervalMillis;
+    }
+
+    @Override
+    public void setTailLimit(int records) {
+        int limit = Math.max(0, records);
+        tailLimit = limit;
+        tailLock.lock();
+        try {
+            evictTailLocked();
+        } finally {
+            tailLock.unlock();
+        }
+    }
+
+    /**
+     * Returns the current tail limit.
+     *
+     * @return the tail limit
+     */
+    protected final int getTailLimit() {
+        return tailLimit;
+    }
+
+    @Override
+    public ProgressBatchEventEmitter getBatchEventEmitter() {
+        return batchEventEmitter;
+    }
+
+    @Override
+    public final void addProgressRecordListener(JIPipeProgressLog.ProgressRecordListener listener) {
+        recordListeners.add(listener);
+    }
+
+    @Override
+    public final void removeProgressRecordListener(JIPipeProgressLog.ProgressRecordListener listener) {
+        recordListeners.remove(listener);
+    }
+
+    /**
+     * Emits a coalesced batch event to the subscribers of {@link #getBatchEventEmitter()}. Called
+     * by implementations that own a writer thread; the event is delivered synchronously to the
+     * listeners on the calling thread. Must never be called while holding {@link #tailLock} or
+     * {@link #submitLock} - listeners run inline and must not block.
+     *
+     * @param event the event
+     */
+    protected final void emitBatchEvent(ProgressBatchEvent event) {
+        batchEventEmitter.emit(event);
+    }
+
+    /**
+     * Returns the run UUID written into the head record.
+     *
+     * @return the run UUID (may be null)
+     */
+    protected final String getRunUuid() {
+        return runUuid;
+    }
+
+    /**
+     * Returns the run label written into the head record.
+     *
+     * @return the run label (may be null)
+     */
+    protected final String getRunLabel() {
+        return runLabel;
+    }
+
+    /**
+     * Returns whether the store is closed. Records submitted after closing are dropped.
+     *
+     * @return true if closed
+     */
+    protected final boolean isClosed() {
+        return closed;
+    }
+
+    /**
+     * Returns whether the run was finished ({@link #finish(JIPipeProgressNodeState)} was called).
+     * The run-status record was the last accepted record.
+     *
+     * @return true if finished
+     */
+    protected final boolean isFinished() {
+        return finished;
+    }
+
+    /**
+     * Called once when the store is closed, after no further records will be submitted.
+     * The default implementation does nothing.
+     */
+    protected void onClose() {
+    }
+
+    /**
+     * Writes one record to the physical sink. Called by the thread that owns the sink, after the
+     * record was applied to the index and tail.
+     *
+     * @param line   the record's 1-based line number (the sequence number)
+     * @param record the record
+     */
+    protected abstract void writeRecord(long line, JIPipeProgressRecord record);
+
+    /**
+     * Hands one record to the sink. The default delivers synchronously on the calling thread;
+     * implementations may queue the record for delivery on another thread. Called while holding the
+     * submission lock, in submission order (the sequence number was already assigned).
+     *
+     * @param seq    the record's sequence number (its line number)
+     * @param record the record
+     */
+    protected void enqueue(long seq, JIPipeProgressRecord record) {
+        applyRecord(seq, record);
+        writeRecord(seq, record);
+    }
+
+    /**
+     * Blocks while the sink's queue is full (backpressure). The default does nothing. Called while
+     * holding the submission lock and before the sequence number is assigned; the sink's consumer
+     * must never wait for this lock.
+     */
+    protected void awaitCapacity() {
+    }
+
+    // ---------------------------------------------------------------------
+    // Internals
+    // ---------------------------------------------------------------------
+
+    private JIPipeProgressRecord headRecord(long ts) {
+        return JIPipeProgressRecord.head(1, runUuid, runLabel, JIPipe.getJIPipeVersion(), ts);
+    }
+
+    /**
+     * Enqueues the head record. Must be called before the first record of a run so that the head is
+     * line 1. Called while holding the submission lock.
+     */
+    private void enqueueHeadLocked() {
+        started = true;
+        long seq = sequenceCounter.incrementAndGet();
+        enqueue(seq, headRecord(now()));
+    }
+
+    /**
+     * Ensures the head record is enqueued before the first real record.
+     * Called while holding the submission lock.
+     *
+     * @return false if the store is closed (the caller must drop the record)
+     */
+    private boolean startRunLocked() {
+        if (closed) {
+            return false;
+        }
+        if (!started) {
+            enqueueHeadLocked();
+        }
+        return true;
+    }
+
+    /**
+     * Assigns the next sequence number, waits for queue capacity, and hands the record to the sink.
+     * Called while holding the submission lock.
+     *
+     * @param record the record
+     */
+    private void submitLocked(JIPipeProgressRecord record) {
+        if (closed || finished) {
+            return;
+        }
+        awaitCapacity();
+        long seq = sequenceCounter.incrementAndGet();
+        enqueue(seq, record);
+        if (!recordListeners.isEmpty()) {
+            // R45a: the synchronous per-record hook - fires on this (submitting) thread for
+            // every store type, independent of the coalesced batch path. The silent/stdout
+            // implementations applied the record to the index inside enqueue, so a listener
+            // rendering the record sees the current index state. Guarded by isEmpty(): the
+            // common case (no listeners on run stores) costs one read.
+            for (JIPipeProgressLog.ProgressRecordListener listener : recordListeners) {
+                try {
+                    listener.onProgressRecord(this, seq, record);
+                } catch (Throwable t) {
+                    t.printStackTrace();
+                }
+            }
+        }
+    }
+
+    private JIPipeProgressNode resolveParentLocked(int parentId) {
+        JIPipeProgressNode parent;
+        if (parentId <= 0 || parentId == ROOT_NODE_ID) {
+            parent = rootNode;
+        } else {
+            parent = nodes.get(parentId);
+        }
+        if (parent == null) {
+            throw new IllegalArgumentException("Unknown parent node id: " + parentId);
+        }
+        return parent;
+    }
+
+    // ---------------------------------------------------------------------
+    // Read-only reopen (the scan of JIPipeProgressLog.openReadOnly)
+    // ---------------------------------------------------------------------
+
+    /**
+     * Terminates the root node of a read-only reopen whose file holds no parseable run-status
+     * record - the writer was killed before it could flush the terminal record. A writer-fed
+     * store's root state is set in memory by {@code finish()} and is not derivable from the file;
+     * the reopen maps the absent status to CANCELLED so that consumers never render a dead run
+     * as live (the progress panel spins while the root is RUNNING).
+     */
+    final void finishScannedRunWithoutStatus() {
+        if (rootNode.getState() == JIPipeProgressNodeState.RUNNING) {
+            rootNode.setState(JIPipeProgressNodeState.CANCELLED);
+        }
+    }
+
+    /**
+     * Applies the finish sweep to a read-only reopen: nodes that the file leaves RUNNING (written
+     * before node finishing existed, or abandoned when the writer was killed) take the root's
+     * reconstructed state, so old log entries display terminal states instead of eternal
+     * spinners. In-memory only: no records are emitted and the file is never mutated. Called
+     * after the scan, when the root's state is final.
+     */
+    final void sweepScannedRunningNodes() {
+        JIPipeProgressNodeState rootState = rootNode.getState();
+        if (rootState == JIPipeProgressNodeState.RUNNING) {
+            return;
+        }
+        for (JIPipeProgressNode node : nodes.values()) {
+            if (node.getId() != ROOT_NODE_ID && node.getState() == JIPipeProgressNodeState.RUNNING) {
+                node.setState(rootState);
+            }
+        }
+    }
+
+    /**
+     * Applies one record decoded by the read-only reopen scan. Called on the scanning thread -
+     * the thread that owns the index while the scan runs. Compared to
+     * {@link #applyRecord(long, JIPipeProgressRecord)}, the scan must first <em>create</em> the
+     * nodes it meets (a writer-fed store creates them on the producer thread via
+     * {@code beginNode()}, before their {@code n} record reaches the sink) and reconstructs the
+     * root's state from the run-status record (a writer-fed store sets it directly in
+     * {@code finish()}, before the record is enqueued).
+     *
+     * @param seq    the record's line number
+     * @param record the decoded record
+     */
+    final void applyScannedRecord(long seq, JIPipeProgressRecord record) {
+        if (record instanceof JIPipeProgressRecord.Node nodeRecord) {
+            registerScannedNode(nodeRecord);
+        } else if (record instanceof JIPipeProgressRecord.Status statusRecord) {
+            JIPipeProgressNodeState state = mapRunStateFromWire(statusRecord.s());
+            if (state != null) {
+                rootNode.setState(state);
+            }
+        }
+        applyRecord(seq, record);
+    }
+
+    /**
+     * Registers a node decoded by the read-only reopen scan: the same index updates
+     * {@code beginNode()} performs on the producer thread (create the metadata, link it into the
+     * ancestors' descendant counts, advance the id counter) minus the record submission. The
+     * parent's {@code n} record precedes the child's in file order, so the parent is always
+     * registered already; a node that is already registered (or an invalid id) is ignored.
+     *
+     * @param nodeRecord the decoded {@code n} record
+     */
+    private void registerScannedNode(JIPipeProgressRecord.Node nodeRecord) {
+        int id = nodeRecord.id();
+        if (id <= 0 || nodes.containsKey(id)) {
+            return;
+        }
+        int wireParentId = nodeRecord.p();
+        JIPipeProgressNode parent;
+        if (wireParentId <= 0 || wireParentId == ROOT_NODE_ID) {
+            parent = rootNode;
+        } else {
+            parent = nodes.get(wireParentId);
+        }
+        if (parent == null) {
+            // Tolerate a corrupt parent reference the same way the render walk does (the root)
+            parent = rootNode;
+        }
+        JIPipeProgressNode node = new JIPipeProgressNode(id, parent.getId(), nodeRecord.l(),
+                mapNodeKindFromWire(nodeRecord.k()), nodeRecord.loc(), mapNodeLevelFromWire(nodeRecord.lv()));
+        nodes.put(id, node);
+        for (JIPipeProgressNode ancestor = parent; ancestor != null; ancestor = nodes.get(ancestor.getParentId())) {
+            ancestor.incrementDescendantNodeCount();
+        }
+        nodeIdCounter.getAndAccumulate(id, Math::max);
+    }
+
+    /**
+     * Maps the {@code k} field of an {@code n} record back to a node kind. Unknown names are
+     * mapped to {@code null} (the kind is left unset) - the wire contract may gain kinds that an
+     * older reader does not know.
+     *
+     * @param wire the wire literal
+     * @return the kind, or {@code null}
+     */
+    private static JIPipeProgressNodeKind mapNodeKindFromWire(String wire) {
+        if (wire == null) {
+            return null;
+        }
+        try {
+            return JIPipeProgressNodeKind.valueOf(wire);
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
+    }
+
+    /**
+     * Maps the {@code lv} field of an {@code n} record back to a log level.
+     *
+     * @param value the numeric level, or {@code null} for INFO (old files without the field)
+     * @return the level (never {@code null})
+     */
+    private static JIPipeLogLevel mapNodeLevelFromWire(Integer value) {
+        if (value == null) {
+            return JIPipeLogLevel.INFO;
+        }
+        if (value <= JIPipeLogLevel.DEBUG.value()) {
+            return JIPipeLogLevel.DEBUG;
+        } else if (value <= JIPipeLogLevel.INFO.value()) {
+            return JIPipeLogLevel.INFO;
+        } else if (value <= JIPipeLogLevel.WARN.value()) {
+            return JIPipeLogLevel.WARN;
+        }
+        return JIPipeLogLevel.ERROR;
+    }
+
+    /**
+     * Maps the wire literal of an {@code s} record back to a run state (the inverse of
+     * {@link #mapRunStateToWire(JIPipeProgressNodeState)}). Unknown literals are mapped to
+     * {@code null} (the root's state is left unchanged).
+     *
+     * @param wire the wire literal
+     * @return the state, or {@code null}
+     */
+    static JIPipeProgressNodeState mapRunStateFromWire(String wire) {
+        return switch (wire) {
+            case "running" -> JIPipeProgressNodeState.RUNNING;
+            case "finished" -> JIPipeProgressNodeState.OK;
+            case "failed" -> JIPipeProgressNodeState.FAILED;
+            case "cancelled" -> JIPipeProgressNodeState.CANCELLED;
+            default -> null;
+        };
+    }
+
+    private static long now() {
+        return System.currentTimeMillis();
+    }
+
+    private static String renderStackTrace(Throwable throwable) {
+        StringWriter stringWriter = new StringWriter();
+        throwable.printStackTrace(new PrintWriter(stringWriter));
+        return stringWriter.toString();
+    }
+
+    /**
+     * Maps a node finish state to its wire literal ({@code s} field of {@code N} records).
+     * The literals are part of the NDJSON contract and must not change.
+     *
+     * @param state the state
+     * @return the wire literal
+     */
+    static String mapNodeStateToWire(JIPipeProgressNodeState state) {
+        return switch (state) {
+            case OK -> "ok";
+            case FAILED -> "fail";
+            case CANCELLED -> "cancel";
+            case RUNNING -> throw new IllegalArgumentException("A node cannot finish into state RUNNING");
+        };
+    }
+
+    /**
+     * Maps a run state to its wire literal ({@code s} field of {@code s} records).
+     * The literals are part of the NDJSON contract and must not change.
+     *
+     * @param state the state
+     * @return the wire literal
+     */
+    static String mapRunStateToWire(JIPipeProgressNodeState state) {
+        return switch (state) {
+            case RUNNING -> "running";
+            case OK -> "finished";
+            case FAILED -> "failed";
+            case CANCELLED -> "cancelled";
+        };
+    }
+
+    /**
+     * Maps the wire literal of an {@code N} record back to a node state. Unknown literals are mapped
+     * to {@code null} (the state is left unchanged).
+     *
+     * @param wire the wire literal
+     * @return the state, or {@code null}
+     */
+    static JIPipeProgressNodeState mapNodeStateFromWire(String wire) {
+        return switch (wire) {
+            case "ok" -> JIPipeProgressNodeState.OK;
+            case "fail" -> JIPipeProgressNodeState.FAILED;
+            case "cancel" -> JIPipeProgressNodeState.CANCELLED;
+            default -> null;
+        };
+    }
+
+    /**
+     * Walk state of the compatibility text renderer: the node paths built from the {@code n}
+     * records (the root's label is never part of a path) and the running per-node progress built
+     * from the {@code p} records. One instance per render; the paths of unknown nodes fall back to
+     * the node index (non-persistent stores keep no {@code n} records in the tail). Package-private
+     * so that per-record renderers ({@link StdoutJIPipeProgressLog}) reuse the exact same shapes.
+     */
+    static final class RenderWalk {
+
+        private static final int[] INITIAL_PROGRESS = {1, 1};
+
+        private final JIPipeProgressLog store;
+        private final boolean seedProgressFromIndex;
+        private final Map<Integer, String[]> nodePaths = new HashMap<>();
+        private final Map<Integer, int[]> nodeProgress = new HashMap<>();
+
+        /**
+         * @param store                the store
+         * @param seedProgressFromIndex whether unknown progress states fall back to the node index's
+         *                             current state (per-batch renders; {@link #renderText} walks all
+         *                             records and derives the state strictly from them)
+         */
+        RenderWalk(JIPipeProgressLog store, boolean seedProgressFromIndex) {
+            this.store = store;
+            this.seedProgressFromIndex = seedProgressFromIndex;
+        }
+
+        /**
+         * Renders one record and updates the walk state, handing each produced line to the sink.
+         *
+         * @param record   the record
+         * @param minLevel the minimum level of log records to render
+         * @param lineSink the consumer of the rendered lines
+         */
+        void render(JIPipeProgressRecord record, JIPipeLogLevel minLevel, Consumer<String> lineSink) {
+            if (record instanceof JIPipeProgressRecord.Log logRecord) {
+                if (logRecord.lv() >= minLevel.value()) {
+                    emitPrefixedLines(prefix(chainOf(logRecord.id()), currentState(logRecord.id())),
+                            logRecord.m(), lineSink);
+                }
+            } else if (record instanceof JIPipeProgressRecord.Progress progressRecord) {
+                // Progress records render nothing (R15: the facade emits the percentage compat
+                // lines as log records); they only update the running per-node progress
+                if (progressRecord.mx() > 0) {
+                    // Indeterminate progress does not affect the numeric compat prefix
+                    nodeProgress.put(progressRecord.id(), new int[]{progressRecord.v(), progressRecord.mx()});
+                }
+            } else if (record instanceof JIPipeProgressRecord.Error errorRecord) {
+                String message = errorRecord.m();
+                lineSink.accept(prefix(chainOf(errorRecord.id()), currentState(errorRecord.id()))
+                        + errorRecord.c()
+                        + (message == null || message.isEmpty() ? "" : ": " + message));
+                if (errorRecord.st() != null) {
+                    String[] stackLines = errorRecord.st().split("\n");
+                    // The first stack line repeats "<class>: <message>"
+                    for (int i = 1; i < stackLines.length; i++) {
+                        lineSink.accept("  " + stackLines[i].stripLeading());
+                    }
+                }
+            } else if (record instanceof JIPipeProgressRecord.Notification notificationRecord) {
+                lineSink.accept("@ " + notificationRecord.h() + ": " + notificationRecord.d());
+            } else if (record instanceof JIPipeProgressRecord.Node nodeRecord) {
+                // The root is implied by the head record and its label is never rendered
+                if (nodeRecord.id() != ROOT_NODE_ID) {
+                    nodePaths.put(nodeRecord.id(), childPath(nodeRecord.p(), nodeRecord.l()));
+                }
+            }
+            // Head, node-finished (N), run-status (s), and unknown records render nothing
+        }
+
+        /**
+         * Emits a message as render lines: the first line carries the prefix, the continuation
+         * lines of a multi-line message are emitted as-is (today's log.txt shape).
+         */
+        private static void emitPrefixedLines(String prefix, String message, Consumer<String> lineSink) {
+            String[] fragments = (message == null ? "" : message).split("\n", -1);
+            for (int i = 0; i < fragments.length; i++) {
+                String fragment = fragments[i];
+                if (fragment.endsWith("\r")) {
+                    fragment = fragment.substring(0, fragment.length() - 1);
+                }
+                lineSink.accept(i == 0 ? prefix + fragment : fragment);
+            }
+        }
+
+        /**
+         * Builds the path of a node from the wire parent id: wire parents {@code 0} and {@code 1}
+         * are the root (implied by the head record), so the new path starts empty. Empty or blank
+         * labels (a detached progress node) contribute no chain segment.
+         */
+        private String[] childPath(int wireParentId, String label) {
+            String[] parentPath;
+            if (wireParentId <= 0 || wireParentId == ROOT_NODE_ID) {
+                parentPath = new String[0];
+            } else {
+                parentPath = chainOf(wireParentId);
+            }
+            if (label == null || label.isBlank()) {
+                return parentPath;
+            }
+            String[] path = new String[parentPath.length + 1];
+            System.arraycopy(parentPath, 0, path, 0, parentPath.length);
+            path[parentPath.length] = label;
+            return path;
+        }
+
+        /**
+         * Resolves the chain of labels of a node: the running path from the {@code n} records,
+         * falling back to the node index, or an empty chain for unknown nodes.
+         */
+        private String[] chainOf(int nodeId) {
+            String[] path = nodePaths.get(nodeId);
+            if (path == null) {
+                path = chainFromIndex(nodeId);
+                nodePaths.put(nodeId, path);
+            }
+            return path;
+        }
+
+        private String[] chainFromIndex(int nodeId) {
+            // File-only renders (see JIPipeProgressLog.renderFile) walk all records and have no
+            // node index - an unresolvable node contributes no chain segment
+            if (store == null) {
+                return new String[0];
+            }
+            Deque<String> labels = new ArrayDeque<>();
+            JIPipeProgressNode node = store.getNode(nodeId);
+            while (node != null && node.getId() != ROOT_NODE_ID) {
+                // Empty or blank labels (a detached progress node) contribute no chain segment
+                if (node.getLabel() != null && !node.getLabel().isBlank()) {
+                    labels.addFirst(node.getLabel());
+                }
+                int parentId = node.getParentId();
+                if (parentId <= 0 || parentId == ROOT_NODE_ID) {
+                    break;
+                }
+                node = store.getNode(parentId);
+            }
+            return labels.toArray(new String[0]);
+        }
+
+        private int[] currentState(int nodeId) {
+            int[] state = nodeProgress.get(nodeId);
+            if (state != null) {
+                return state;
+            }
+            if (seedProgressFromIndex && store != null) {
+                JIPipeProgressNode node = store.getNode(nodeId);
+                if (node != null && node.getMaxProgress() > 0) {
+                    state = new int[]{node.getProgress(), node.getMaxProgress()};
+                    nodeProgress.put(nodeId, state);
+                    return state;
+                }
+            }
+            return INITIAL_PROGRESS;
+        }
+
+        private static String prefix(String[] chain, int[] progress) {
+            StringBuilder builder = new StringBuilder();
+            builder.append('[').append(progress[0]).append('/').append(progress[1]).append(']').append(' ');
+            if (chain.length > 0) {
+                builder.append(String.join(" | ", chain)).append(" | ");
+            }
+            return builder.toString();
+        }
+    }
+
+    private record TailEntry(long seq, JIPipeProgressRecord record, long chars) {
+    }
+}

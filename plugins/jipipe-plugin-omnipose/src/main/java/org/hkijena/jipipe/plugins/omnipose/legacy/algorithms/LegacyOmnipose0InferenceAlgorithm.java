@@ -293,11 +293,27 @@ public class LegacyOmnipose0InferenceAlgorithm extends JIPipeSingleIterationAlgo
         }
 
         // Fetch the data from the directory
+        // R54a: the row's bar advances per imported results image (one shared counter for both
+        // branches; the bar is skipped entirely when no results were produced)
+        int resultTotal = runWith2D.size() + runWith3D.size();
+        if (resultTotal > 0) {
+            progressInfo.setMaxProgress(resultTotal);
+            progressInfo.setProgress(0);
+        }
+        int resultDone = 0;
         for (CellposeImageInfo imageInfo : runWith2D) {
             extractDataFromInfo(iterationStep, imageInfo, io2DPath, progressInfo.resolve("Importing results row " + imageInfo.sourceRow));
+            ++resultDone;
+            if (resultTotal > 0) {
+                progressInfo.setProgress(resultDone);
+            }
         }
         for (CellposeImageInfo imageInfo : runWith3D) {
             extractDataFromInfo(iterationStep, imageInfo, io3DPath, progressInfo.resolve("Importing results row " + imageInfo.sourceRow));
+            ++resultDone;
+            if (resultTotal > 0) {
+                progressInfo.setProgress(resultDone);
+            }
         }
 
         // Cleanup
@@ -362,7 +378,7 @@ public class LegacyOmnipose0InferenceAlgorithm extends JIPipeSingleIterationAlgo
         Map<ImageSliceIndex, ImagePlus> sliceMap = new HashMap<>();
         for (Map.Entry<ImageSliceIndex, String> entry : imageInfo.sliceBaseNames.entrySet()) {
             Path imageFile = ioPath.resolve(entry.getValue() + basePathSuffix);
-            progressInfo.log("Reading: " + imageFile);
+            progressInfo.debug("Reading: " + imageFile);
             ImagePlus slice;
             if (useBioFormats) {
                 OMEImageData omeImageData = OMEImageData.simpleOMEImport(imageFile);

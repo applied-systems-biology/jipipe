@@ -385,6 +385,18 @@ operations. Key commands: `list_projects`, `select_project`, `query_graph`, `que
 5. Use `ctx.getGraph()` (not `ctx.getProject().getGraph()`) to respect the graph override mechanism used by the AI
    agent's stage system
 
+## Progress system (6.0.0)
+
+Progress logging is store-based, in the `api/progress` package: [`JIPipeProgressLog`](jipipe-core/src/main/java/org/hkijena/jipipe/api/progress/JIPipeProgressLog.java)
+is the store interface (silent, stdout, and file-backed NDJSON implementations); record types are `JIPipeProgressRecord`,
+`JIPipeProgressNode`/`JIPipeProgressNodeKind`/`JIPipeProgressNodeState`, and `JIPipeLogLevel`. Memory is bounded: only the
+node index and a tail of recent records are held, and random-range reads use a checkpoint index. [`JIPipeProgressInfo`](jipipe-core/src/main/java/org/hkijena/jipipe/api/JIPipeProgressInfo.java)
+is a handle over the store: `log()` emits an INFO record, `debug()` a DEBUG (10) record - use `debug()` for per-item/per-pair
+logging (hidden by the INFO-level UI filter and text render), `log()` for per-run messages. Consumers receive coalesced
+`ProgressBatchEvent`s (at most one per 100 ms plus a final empty batch, where `fromLine > toLine`). Logs live as
+`logs/<run-uuid>.ndjson` in the project/global temp directory - never in the output folder; `log.txt` in output folders is a
+streamed compat render of the store.
+
 ## Distribution Build Scripts
 
 The ZIP build scripts (`dist/zip/build.sh`, `dist/zip/build-release.sh`, `dist/zip/build-no-dependencies.sh`) are

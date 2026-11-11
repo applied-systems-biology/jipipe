@@ -116,7 +116,7 @@ class JIPipeSettingsServiceComponentSyncTest {
     /**
      * A file change made by "another process" is detected by the watcher,
      * merged into the live document, re-emitted with the EXTERNAL_FILE
-     * origin, and visible through the binding — without a conflict flag
+     * origin, and visible through the binding - without a conflict flag
      * (no unsaved local edit was lost).
      */
     @Test void foreignFileChangeIsAdoptedWithExternalFileOrigin() throws Exception {
@@ -157,7 +157,7 @@ class JIPipeSettingsServiceComponentSyncTest {
      * before the read-back, and (3) the post-save verification reads the
      * file back and finds it differs from what this process wrote. Without
      * the verification, step 3 would record the foreign fingerprint as our
-     * own and the foreign change would never be reported — the watcher's
+     * own and the foreign change would never be reported - the watcher's
      * documented false negative. With it, the foreign content is fed
      * through the merge path. The assertions run <em>immediately after</em>
      * the verification returns, long before the watcher's 2 s poll could
@@ -490,8 +490,8 @@ class JIPipeSettingsServiceComponentSyncTest {
     }
 
     /**
-     * Proves the watcher callback does not block on file I/O: the merge —
-     * which reads the settings file from disk — must run on the
+     * Proves the watcher callback does not block on file I/O: the merge -
+     * which reads the settings file from disk - must run on the
      * component's single-thread foreign-change executor, not on the
      * watcher's worker thread (which invokes the callback while holding
      * its instance monitor; a heavy callback there would block
@@ -501,7 +501,7 @@ class JIPipeSettingsServiceComponentSyncTest {
      * <ol>
      * <li>the thread that performed the merge (recorded by the component)
      * is {@code jipipe-settings-foreign-merge}, never a
-     * {@code SettingsFileWatcher-*} thread — if the merge were inlined into
+     * {@code SettingsFileWatcher-*} thread - if the merge were inlined into
      * the callback this fails;</li>
      * <li>the change event reaches subscribers on the Swing EDT when a
      * display is present, i.e. never on the merge executor (mutation of UI
