@@ -2451,8 +2451,11 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
                 // controls (currentDetailNodeId) away from the user's last manual expansion
                 changed = true;
                 if (node.getState() == JIPipeProgressNodeState.RUNNING && ownHiddenRecordCount(state) == 0
-                        && state.virtual == null) {
-                    // The active node's detail opens at the tail with the follow engaged
+                        && state.virtual == null && id == nodeId) {
+                    // The active node's detail opens at the tail with the follow engaged. The
+                    // ancestors above it are expanded (so the active row stays visible) but do
+                    // NOT retarget the detail follow - that must point at the active node
+                    // itself, the deepest RUNNING node that is streaming records (R53).
                     state.virtual = new VirtualDetailState();
                     detailAutoscroll = true;
                     autoscrollNodeId = id;
