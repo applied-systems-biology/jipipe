@@ -167,10 +167,7 @@ public class JIPipeDesktopFloatingMapPanel extends JIPipeDesktopWorkbenchPanel i
             public void componentResized(ComponentEvent e) {
                 // The canvas fills the editor overlay: apply the initial
                 // anchor and clamp the map into the resized overlay
-                ensureAnchored();
-                clampPosition();
-                applyBounds();
-                mapBody.repaint();
+                reclampToOverlay();
             }
         });
     }
@@ -286,6 +283,11 @@ public class JIPipeDesktopFloatingMapPanel extends JIPipeDesktopWorkbenchPanel i
         // settings service. Its shared default instance is handed out for an
         // absent setting, and it must not be touched.
         JIPipeDesktopMapState applied = new JIPipeDesktopMapState(newState);
+        // A hand-edited settings file can store an unusable size: clamp it to
+        // the resize minimum, so the panel never collapses below a clickable
+        // size (the position is clamped separately in applyStateToUI)
+        applied.setSize(Math.max(MAP_MIN_WIDTH, applied.getWidth()),
+                Math.max(MAP_MIN_HEIGHT, applied.getHeight()));
         if (headerDragging || resizeDragging) {
             applied.setPosition(state.getX(), state.getY());
             applied.setSize(state.getWidth(), state.getHeight());
@@ -416,6 +418,21 @@ public class JIPipeDesktopFloatingMapPanel extends JIPipeDesktopWorkbenchPanel i
     }
 
     /**
+     * Re-applies the initial anchor and clamps the map into the overlay,
+     * then repaints. Called when the overlay (this panel's parent) or the
+     * canvas resizes. The canvas preferred size is content-driven, so it does
+     * not follow the overlay whenever the content exceeds the viewport
+     * (window un-maximize, splitter drag): clamping must not rely on canvas
+     * resize events alone.
+     */
+    void reclampToOverlay() {
+        ensureAnchored();
+        clampPosition();
+        applyBounds();
+        mapBody.repaint();
+    }
+
+    /**
      * Keeps the map inside the overlay, {@link #MAP_EDGE_MARGIN} away from
      * its edges. Skipped while the overlay has no real size yet, so a stored
      * position is not clamped toward 0 before the first layout.
@@ -509,7 +526,7 @@ public class JIPipeDesktopFloatingMapPanel extends JIPipeDesktopWorkbenchPanel i
 
         @Override
         public void mousePressed(MouseEvent e) {
-            if (state.isLocked()) {
+            if (!SwingUtilities.isLeftMouseButton(e) || state.isLocked()) {
                 return;
             }
             pressScreen = e.getLocationOnScreen();
@@ -555,7 +572,7 @@ public class JIPipeDesktopFloatingMapPanel extends JIPipeDesktopWorkbenchPanel i
 
         @Override
         public void mousePressed(MouseEvent e) {
-            if (state.isLocked()) {
+            if (!SwingUtilities.isLeftMouseButton(e) || state.isLocked()) {
                 return;
             }
             pressScreen = e.getLocationOnScreen();
@@ -611,11 +628,17 @@ public class JIPipeDesktopFloatingMapPanel extends JIPipeDesktopWorkbenchPanel i
             MouseAdapter panController = new MouseAdapter() {
                 @Override
                 public void mousePressed(MouseEvent e) {
+                    if (!SwingUtilities.isLeftMouseButton(e)) {
+                        return;
+                    }
                     scrollTo(e.getPoint());
                 }
 
                 @Override
                 public void mouseDragged(MouseEvent e) {
+                    if (!SwingUtilities.isLeftMouseButton(e)) {
+                        return;
+                    }
                     scrollTo(e.getPoint());
                 }
             };

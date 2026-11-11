@@ -370,7 +370,7 @@ public class JIPipeDesktopMapState {
         }
 
         /**
-         * Resizes the size.
+         * Sets the size.
          *
          * @param w the new width
          * @param h the new height
