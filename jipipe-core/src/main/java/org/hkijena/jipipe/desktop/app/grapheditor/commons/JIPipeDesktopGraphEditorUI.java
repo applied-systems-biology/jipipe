@@ -379,6 +379,10 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
             @Override
             public void componentResized(ComponentEvent e) {
                 scrollPane.setBounds(0, 0, mapOverlay.getWidth(), mapOverlay.getHeight());
+                // Manual bounds trigger no layout pass: revalidate and repaint
+                // explicitly so the viewport follows the grown scroll pane
+                scrollPane.revalidate();
+                scrollPane.repaint();
                 // The canvas preferred size is content-driven: it does not
                 // follow the overlay when the content exceeds the viewport,
                 // so the map re-clamps against the resized overlay here
