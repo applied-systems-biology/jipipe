@@ -41,6 +41,7 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -266,7 +267,11 @@ public class JIPipeDesktopRelationsPanel extends JIPipeDesktopWorkbenchPanel imp
         if (nodeId == null) {
             return;
         }
-        trail.navigateTo(nodeId);
+        if (!Objects.equals(nodeId, trail.current())) {
+            // No consecutive duplicate: a reveal of the current node (card
+            // re-click) keeps the trail untouched so back is never a dead step
+            trail.navigateTo(nodeId);
+        }
         reveal(nodeId);
     }
 
