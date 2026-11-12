@@ -348,6 +348,16 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
         treeScroll = new JScrollPane(tree);
 
         inGroupList.setCellRenderer(new JIPipeDesktopNodeDatabaseEntryListCellRenderer());
+        // Double-click navigates like the tree rows (the Add nodes results
+        // list resolves the selected value the same way)
+        inGroupList.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (SwingUtilities.isLeftMouseButton(e) && e.getClickCount() == 2) {
+                    navigateToSelectedPaneEntry();
+                }
+            }
+        });
         inGroupScroll = new JScrollPane(inGroupList);
         inGroupPanel.setLayout(new BorderLayout());
         inGroupHeader.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
@@ -1124,8 +1134,8 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
                 continue;
             }
             // The Add-nodes results-list row for this member: the entry wraps
-            // the live node (getGraphNode() maps back for any future click
-            // use; the pane stays display-only)
+            // the live node (getGraphNode() maps back for the double-click
+            // navigation)
             listModel.addElement(createPaneEntry(entry, node));
         }
         inGroupList.setModel(listModel);
@@ -1206,6 +1216,27 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
             return;
         }
         navigateTo(nodeRow.entry());
+    }
+
+    /**
+     * Navigates to the entry double-clicked in the "In group" pane: the pane
+     * entry wraps the live node; the matching FindEntry of the current pane
+     * population (the selected row's post-filter entries) provides the
+     * navigation data (node id, compartment id).
+     */
+    private void navigateToSelectedPaneEntry() {
+        ExistingPipelineNodeDatabaseEntry paneEntry = inGroupList.getSelectedValue();
+        JIPipeGraphNode node = paneEntry != null ? paneEntry.getGraphNode() : null;
+        UUID nodeId = node != null ? node.getUUIDInParentGraph() : null;
+        if (nodeId == null) {
+            return;
+        }
+        for (FindEntry entry : selectedRowMembers()) {
+            if (entry.getNodeId().equals(nodeId)) {
+                navigateTo(entry);
+                return;
+            }
+        }
     }
 
     /**
