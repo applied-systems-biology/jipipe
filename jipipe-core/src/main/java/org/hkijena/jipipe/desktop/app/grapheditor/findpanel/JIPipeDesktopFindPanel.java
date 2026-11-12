@@ -1527,12 +1527,18 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
             spatialChip2D.setVisible(spatial.contains(JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D));
             spatialChip3D.setVisible(spatial.contains(JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D));
             // The badge abbreviates the compartment name to its first word;
-            // the full name lives in the badge tooltip
+            // the full name is surfaced in the row tooltip (JTree tooltips
+            // only consult the top-level renderer component, not child
+            // components, so the badge itself cannot carry it)
             nodeBadgeLabel.setText(firstWord(entry.getCompartmentName()));
-            nodeBadgeLabel.setToolTipText(entry.getCompartmentName());
             nodeBadgeLabel.setVisible(nodeRow.crossCompartment());
-            // The full UUID lives in the row tooltip
-            nodePanel.setToolTipText("UUID: " + entry.getUuidString());
+            // The row tooltip carries the full UUID, and for cross-compartment
+            // rows also the full compartment name the badge abbreviates
+            String rowTooltip = "UUID: " + entry.getUuidString();
+            if (nodeRow.crossCompartment()) {
+                rowTooltip += "\nCompartment: " + entry.getCompartmentName();
+            }
+            nodePanel.setToolTipText(rowTooltip);
             // Force a synchronous re-layout with freshly measured sizes:
             // JLabel.setText only queues an async revalidate, and
             // CellRendererPane's validate() no-ops on a still-valid
