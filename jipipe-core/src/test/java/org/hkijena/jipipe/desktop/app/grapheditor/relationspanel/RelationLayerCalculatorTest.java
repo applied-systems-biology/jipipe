@@ -199,18 +199,19 @@ class RelationLayerCalculatorTest {
     }
 
     /**
-     * The center feeds "ghost", which has no position and which feeds "d":
-     * no crash, no layer entry for the unknown id, and no downstream layer
-     * for d either.
+     * The center feeds "ghost", which has no position and which feeds "d",
+     * which has one: the BFS traverses THROUGH the position-less id, so "d"
+     * appears downstream at BFS distance 2, while "ghost" itself gets no
+     * layer entry and no crash happens.
      */
     @Test
     void unknownIdsInAdjacencyAreIgnored() {
         Result result = RelationLayerCalculator.compute(
                 List.of("c"),
-                nodes(new NodePos("u", -100, 0), new NodePos("c", 0, 0)),
+                nodes(new NodePos("u", -100, 0), new NodePos("c", 0, 0), new NodePos("d", 200, 0)),
                 Map.of("c", List.of("ghost"), "ghost", List.of("d")),
                 Map.of("c", List.of("u")));
-        assertTrue(result.downstream().isEmpty());
+        assertEquals(List.of(List.of(new Layer("d", 2.0))), result.downstream());
         assertEquals(List.of(List.of("u")), idsPerLevel(result.upstream()));
         assertFalse(result.centers().contains("ghost"));
     }

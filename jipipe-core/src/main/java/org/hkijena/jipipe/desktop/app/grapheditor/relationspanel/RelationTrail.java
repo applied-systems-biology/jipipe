@@ -55,9 +55,14 @@ public class RelationTrail {
      * Navigates to a node: drops the forward history, appends the node and
      * caps the history at {@code maxSteps} entries by dropping the oldest.
      *
-     * @param nodeId the node to navigate to
+     * @param nodeId the node to navigate to; null is a no-op (null is the
+     *               "impossible" sentinel of {@link #goBack()} and
+     *               {@link #goForward()}, so it must not enter the history)
      */
     public void navigateTo(String nodeId) {
+        if (nodeId == null) {
+            return;
+        }
         if (index < history.size() - 1) {
             history.subList(index + 1, history.size()).clear();
         }

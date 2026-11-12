@@ -28,8 +28,9 @@ import java.awt.Color;
  * <p>
  * A pure value resolver over {@link JIPipeNodeInfo} and the current theme
  * style: it returns the exact values the card's {@code paintComponent}
- * needs, with the same gate and sources the canvas node uses
- * ({@code JIPipeDesktopGraphNodeUI}).
+ * needs. Its pattern gate is ONE condition stricter than the canvas node's
+ * ({@code JIPipeDesktopGraphNodeUI}): frameworks without a registered
+ * pattern family get no card pattern.
  */
 public final class RelationCardAppearance {
 

@@ -37,6 +37,24 @@ class RelationTrailTest {
         assertNull(trail.goForward());
     }
 
+    /**
+     * null is the "impossible" sentinel of goBack/goForward and must not
+     * enter the history: navigating to null changes nothing.
+     */
+    @Test
+    void navigateToNullIsANoOp() {
+        RelationTrail trail = new RelationTrail(6);
+        trail.navigateTo(null);
+        assertEquals(0, trail.stepCount());
+        assertNull(trail.current());
+        assertFalse(trail.canGoBack());
+        trail.navigateTo("a");
+        trail.navigateTo(null);
+        assertEquals(1, trail.stepCount());
+        assertEquals("a", trail.current());
+        assertFalse(trail.canGoForward());
+    }
+
     @Test
     void navigateToAppendsAndClearsForward() {
         RelationTrail trail = new RelationTrail(6);
