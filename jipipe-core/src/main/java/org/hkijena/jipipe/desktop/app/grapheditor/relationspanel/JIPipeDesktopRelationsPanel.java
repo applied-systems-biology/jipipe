@@ -176,9 +176,11 @@ public class JIPipeDesktopRelationsPanel extends JIPipeDesktopWorkbenchPanel imp
      */
     private Set<String> currentIds = new LinkedHashSet<>();
     /**
-     * The visible window's displacement in lanes from the center-pinned
-     * position: positive reveals more upstream rows, negative more downstream
-     * rows. Only edge tile clicks and Refocus change it.
+     * The visible window's displacement in lanes from the centered position:
+     * positive reveals more upstream rows, negative more downstream rows.
+     * Clamped so the window never leaves the row sequence (see
+     * {@code BodyPanel.geometry()}); only edge tile clicks and Refocus change
+     * it.
      */
     private int windowShift;
     /**
@@ -673,8 +675,11 @@ public class JIPipeDesktopRelationsPanel extends JIPipeDesktopWorkbenchPanel imp
 
     /**
      * Re-syncs the edge tiles with the geometry and re-runs the body layout.
+     * The stored window shift is normalized first: a resize can change the
+     * clamp range, and the stored shift must stay within it.
      */
     private void relayoutBody() {
+        windowShift = body.geometry().shift();
         body.syncEdgeTiles();
         body.revalidate();
         body.repaint();
@@ -717,12 +722,14 @@ public class JIPipeDesktopRelationsPanel extends JIPipeDesktopWorkbenchPanel imp
             return;
         }
         boolean wasEmpty = focusedIds.isEmpty();
-        updateCurrent(selectionIds);
         if (selectionIds.size() == 1) {
             // A canvas-driven selection of a single node is a navigation;
             // multi-selections do not append (the trail tracks single centers)
             trail.navigateTo(selectionIds.iterator().next());
         }
+        // After the trail mutation, so the toolbar reflects the final trail
+        // state (updateCurrent refreshes it last)
+        updateCurrent(selectionIds);
         if (wasEmpty && !selectionIds.isEmpty()) {
             // The initial populate: focus the current selection (not a
             // navigation of an existing layout)
@@ -862,10 +869,16 @@ public class JIPipeDesktopRelationsPanel extends JIPipeDesktopWorkbenchPanel imp
     }
 
     /**
-     * The geometry of the center-pinned layout for one layout pass.
+     * The geometry of the center-pinned layout for one layout pass: the
+     * center row's top y, the clamped window shift, the lanes that fit on
+     * each side, the edge tile flags, the truthful hidden-row counts
+     * (including each side's displaced outermost visible row) and the
+     * first/last visible row indices of the row sequence.
      */
-    private record BodyGeometry(int centerTop, boolean topTile, boolean bottomTile,
-                                int hiddenAbove, int hiddenBelow) {
+    private record BodyGeometry(int centerTop, int shift, int rowsAbove, int rowsBelow,
+                                boolean topTile, boolean bottomTile,
+                                int hiddenAbove, int hiddenBelow,
+                                int firstVisible, int lastVisible) {
     }
 
     /**
@@ -885,13 +898,18 @@ public class JIPipeDesktopRelationsPanel extends JIPipeDesktopWorkbenchPanel imp
         private DashTile bottomEdgeTile;
 
         /**
-         * Replaces the row model (and its children).
+         * Replaces the row model (and its children). The edge tiles are
+         * removed with the children and are recreated by the next
+         * {@link #syncEdgeTiles()} (their fields must not survive the
+         * removal, or the tiles would be orphaned).
          *
          * @param newRows the new rows
          */
         void setRows(List<BodyRow> newRows) {
             rows.clear();
             removeAll();
+            topEdgeTile = null;
+            bottomEdgeTile = null;
             for (BodyRow row : newRows) {
                 rows.add(row);
                 for (JComponent item : row.items) {
@@ -901,62 +919,75 @@ public class JIPipeDesktopRelationsPanel extends JIPipeDesktopWorkbenchPanel imp
         }
 
         /**
-         * The top y of the focused center row for the current window shift:
-         * the centered position plus the shift in lanes (a positive shift
-         * moves the content down, revealing more upstream rows).
+         * The index of the focused center row (slot 0) in the row sequence.
          */
-        private int centerTop() {
-            int centeredTop = Math.max(0, (getHeight() - CARD_HEIGHT) / 2);
-            return centeredTop + windowShift * ROW_PITCH;
+        private int centerRowIndex() {
+            for (int i = 0; i < rows.size(); ++i) {
+                if (rows.get(i).slot == 0) {
+                    return i;
+                }
+            }
+            return rows.size();
         }
 
         /**
-         * The geometry of the current state: which edge tiles are needed and
-         * how many rows they hide (including rows displaced by the tiles'
-         * slots).
+         * The geometry of the current state: the visible window (the lanes
+         * that fit the body height) slid over the row sequence, which edge
+         * tiles are needed and how many rows they hide.
+         * <p>
+         * The window state ({@code windowShift}, in lanes from the centered
+         * position) is clamped so the window can never leave the row
+         * sequence: the first visible row is the sequence's start
+         * (equivalent to a window start clamped to
+         * {@code [0, max(0, totalRows - visibleRows)]}) and the last visible
+         * row is its end. While the window is shifted, the opposite side's
+         * tile always exists (it displaces that side's outermost visible
+         * row), so there is always a tile to come back, and every shown
+         * label counts only rows that are really invisible.
          */
         private BodyGeometry geometry() {
-            int centerTop = centerTop();
             int height = getHeight();
-            boolean topTile = false;
-            boolean bottomTile = false;
-            for (BodyRow row : rows) {
-                int y = centerTop + row.slot * ROW_PITCH;
-                if (y < 0 || y + CARD_HEIGHT > height) {
-                    if (row.slot < 0) {
-                        topTile = true;
-                    } else if (row.slot > 0) {
-                        bottomTile = true;
-                    }
-                }
-            }
+            int centeredTop = Math.max(0, (height - CARD_HEIGHT) / 2);
+            int rowsAbove = Math.max(0, centeredTop / ROW_PITCH);
+            int rowsBelow = Math.max(0, (height - centeredTop - CARD_HEIGHT) / ROW_PITCH);
+            int centerIndex = centerRowIndex();
+            int totalRows = rows.size();
+            int downstreamCount = totalRows - 1 - centerIndex;
+            // Clamp: sliding stops when the slid-to side is fully revealed
+            int minShift = Math.min(0, rowsBelow - downstreamCount);
+            int maxShift = Math.max(0, centerIndex - rowsAbove);
+            int shift = Math.max(minShift, Math.min(maxShift, windowShift));
             int hiddenAbove = 0;
             int hiddenBelow = 0;
-            if (topTile) {
-                // Rows out of view or overlapping the top tile's slot
-                for (BodyRow row : rows) {
-                    if (row.slot >= 0) {
-                        continue;
+            int firstVisible = -1;
+            int lastVisible = -1;
+            for (int i = 0; i < totalRows; ++i) {
+                int lane = rows.get(i).slot + shift;
+                if (lane < -rowsAbove) {
+                    ++hiddenAbove;
+                } else if (lane > rowsBelow) {
+                    ++hiddenBelow;
+                } else {
+                    if (firstVisible < 0) {
+                        firstVisible = i;
                     }
-                    int y = centerTop + row.slot * ROW_PITCH;
-                    if (y < CARD_HEIGHT) {
-                        ++hiddenAbove;
-                    }
+                    lastVisible = i;
                 }
             }
-            if (bottomTile) {
-                // Rows out of view or overlapping the bottom tile's slot
-                for (BodyRow row : rows) {
-                    if (row.slot <= 0) {
-                        continue;
-                    }
-                    int y = centerTop + row.slot * ROW_PITCH;
-                    if (y + CARD_HEIGHT > height - CARD_HEIGHT) {
-                        ++hiddenBelow;
-                    }
-                }
+            // While shifted, the opposite side's tile is the way back and
+            // must exist even when that side has no hidden rows of its own
+            boolean topTile = hiddenAbove > 0 || shift < 0;
+            boolean bottomTile = hiddenBelow > 0 || shift > 0;
+            // A shown tile displaces its side's outermost visible row (the
+            // label counts it, so every counted row is really invisible)
+            if (topTile && firstVisible >= 0) {
+                ++hiddenAbove;
             }
-            return new BodyGeometry(centerTop, topTile, bottomTile, hiddenAbove, hiddenBelow);
+            if (bottomTile && lastVisible >= 0) {
+                ++hiddenBelow;
+            }
+            return new BodyGeometry(centeredTop + shift * ROW_PITCH, shift, rowsAbove, rowsBelow,
+                    topTile, bottomTile, hiddenAbove, hiddenBelow, firstVisible, lastVisible);
         }
 
         /**
@@ -989,12 +1020,14 @@ public class JIPipeDesktopRelationsPanel extends JIPipeDesktopWorkbenchPanel imp
 
         /**
          * Slides the visible window by one lane in the given direction
-         * (positive reveals more upstream rows) and re-layouts.
+         * (positive reveals more upstream rows) and re-layouts. The shift is
+         * clamped to the row sequence.
          *
          * @param delta the lane delta
          */
         private void shiftWindow(int delta) {
             windowShift += delta;
+            windowShift = geometry().shift();
             relayoutBody();
         }
 
@@ -1034,7 +1067,7 @@ public class JIPipeDesktopRelationsPanel extends JIPipeDesktopWorkbenchPanel imp
             int height = getHeight();
             // The lane separators sit midway in the gap between consecutive
             // lanes
-            double firstLine = centerTop() - ROW_GAP / 2.0;
+            double firstLine = geometry().centerTop() - ROW_GAP / 2.0;
             int pitch = ROW_PITCH;
             int minK = (int) Math.ceil((0 - firstLine) / pitch);
             int maxK = (int) Math.floor((height - firstLine) / pitch);
@@ -1058,7 +1091,7 @@ public class JIPipeDesktopRelationsPanel extends JIPipeDesktopWorkbenchPanel imp
          */
         private void paintNoRelationsHint(Graphics2D g2) {
             String text = focusedIds.size() == 1 ? NO_RELATIONS_HINT_SINGULAR : NO_RELATIONS_HINT_PLURAL;
-            int y = centerTop() + ROW_PITCH;
+            int y = geometry().centerTop() + ROW_PITCH;
             if (y < 0 || y + CARD_HEIGHT > getHeight()) {
                 return;
             }
@@ -1074,11 +1107,13 @@ public class JIPipeDesktopRelationsPanel extends JIPipeDesktopWorkbenchPanel imp
             int height = getHeight();
             int innerX = BODY_PADDING;
             int innerWidth = Math.max(0, getWidth() - 2 * BODY_PADDING);
-            for (BodyRow row : rows) {
-                int y = geo.centerTop() + row.slot * ROW_PITCH;
-                boolean visible = y >= 0 && y + CARD_HEIGHT <= height
-                        && !(geo.topTile() && y < CARD_HEIGHT)
-                        && !(geo.bottomTile() && y + CARD_HEIGHT > height - CARD_HEIGHT);
+            for (int i = 0; i < rows.size(); ++i) {
+                BodyRow row = rows.get(i);
+                int lane = row.slot + geo.shift();
+                int y = geo.centerTop() + lane * ROW_PITCH;
+                boolean displaced = (geo.topTile() && i == geo.firstVisible())
+                        || (geo.bottomTile() && i == geo.lastVisible());
+                boolean visible = lane >= -geo.rowsAbove() && lane <= geo.rowsBelow() && !displaced;
                 if (!visible) {
                     // Hidden rows (or rows displaced by an edge tile) paint
                     // nowhere; the edge tile represents them
@@ -1128,12 +1163,24 @@ public class JIPipeDesktopRelationsPanel extends JIPipeDesktopWorkbenchPanel imp
                 }
             }
             int available = width - (count - 1) * CARD_GAP - (int) fixedTotal;
+            int lastStretchable = -1;
+            for (int i = 0; i < count; ++i) {
+                if (items.get(i) instanceof RelationCard) {
+                    lastStretchable = i;
+                }
+            }
             int xCursor = x;
             for (int i = 0; i < count; ++i) {
                 JComponent item = items.get(i);
                 int itemWidth;
                 if (item instanceof RelationCard) {
-                    if (stretchableTotal > 0) {
+                    if (i == lastStretchable) {
+                        // Remainder absorption: the last stretchable item
+                        // ends exactly at the row's right edge, so rounding
+                        // of the proportional widths cannot overflow or fall
+                        // short
+                        itemWidth = x + width - xCursor;
+                    } else if (stretchableTotal > 0) {
                         itemWidth = (int) Math.round(available * (double) preferredWidths[i] / stretchableTotal);
                     } else {
                         itemWidth = available / Math.max(1, stretchableCount);
