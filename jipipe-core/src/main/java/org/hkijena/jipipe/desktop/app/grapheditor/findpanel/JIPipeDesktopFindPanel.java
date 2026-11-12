@@ -16,14 +16,20 @@ package org.hkijena.jipipe.desktop.app.grapheditor.findpanel;
 import com.google.common.collect.BiMap;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
+import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataInfo;
+import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.annotation.JIPipeGraphCanvasNote;
 import org.hkijena.jipipe.api.nodes.database.entries.ExistingPipelineNodeDatabaseEntry;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension;
 import org.hkijena.jipipe.api.nodes.taxonomy.NoFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.TaxonomyView;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
@@ -33,9 +39,12 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEdit
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.events.JIPipeDesktopGraphCanvasUIUpdatedEvent;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.events.JIPipeDesktopGraphCanvasUIUpdatedEventListener;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.JIPipeDesktopCompartmentsGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.JIPipeDesktopPipelineGraphEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.icons.ColoredCircleIcon;
+import org.hkijena.jipipe.desktop.commons.components.layouts.JIPipeDesktopWrapLayout;
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeDesktopNodeDatabaseEntryListCellRenderer;
+import org.hkijena.jipipe.desktop.commons.components.selection.JIPipeDesktopRichSelectionBox;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.plugins.canvasnotes.nodes.DefaultTextBoxGraphCanvasNote;
 import org.hkijena.jipipe.plugins.canvasnotes.nodes.TextBoxGraphCanvasNote;
@@ -205,7 +214,17 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
     // --- Toolbar ---
     private final JToolBar toolBar = new JToolBar();
     private final SearchTextField searchField = new SearchTextField(SEARCH_PLACEHOLDER_TEXT);
-    private final JToggleButton pinnedOnlyButton = new JToggleButton("Pinned only");
+
+    // --- Filter bar (the Add-nodes filter facets; empty selection = disabled) ---
+    private final JPanel filterBar = new JPanel();
+    private final JComboBox<Object> frameworkCombo = new JComboBox<>();
+    private JIPipeDesktopRichSelectionBox dataTypeBox;
+    private JIPipeDesktopRichSelectionBox tagsBox;
+    private final JToggleButton pinnedOnlyButton = new JToggleButton(JIPipe.RESOURCES.getIcon16("actions/window-pin.png"));
+    private String filterFrameworkId;
+    private final Set<Class<? extends JIPipeData>> filterInputDataTypes = new LinkedHashSet<>();
+    private final Set<Class<? extends JIPipeData>> filterOutputDataTypes = new LinkedHashSet<>();
+    private final Set<String> filterTags = new LinkedHashSet<>();
 
     // --- Body (tree + "In group" pane, tier-aware) ---
     private final JPanel bodyPanel = new JPanel();
@@ -292,6 +311,7 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
         searchTimer.setRepeats(false);
 
         initializeToolbar();
+        initializeFilterBar();
 
         treeModel = new DefaultTreeModel(new DefaultMutableTreeNode());
         tree = new JTree(treeModel);
@@ -402,10 +422,145 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
             rebuildTree();
         });
         toolBar.add(clearSearchButton);
+    }
 
+    /**
+     * The Add-nodes-style filter bar (without the kinds box - existing nodes
+     * have no kind): framework combo, data types box, tags box, and the pinned
+     * toggle. Every change triggers the same debounced rebuild path the search
+     * uses.
+     */
+    private void initializeFilterBar() {
+        filterBar.setLayout(new JIPipeDesktopWrapLayout(FlowLayout.LEFT));
+        filterBar.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
+
+        // Framework combo (first item = "all frameworks" sentinel): only
+        // frameworks with at least one node visible in THIS editor role are
+        // listed - a framework nobody's nodes use (e.g. Comet) would just be
+        // an empty, confusing filter option
+        frameworkCombo.addItem(new AllFrameworksSentinel());
+        Set<String> populatedFrameworks = new LinkedHashSet<>();
+        boolean compartmentsEditor = graphEditorUI instanceof JIPipeDesktopCompartmentsGraphEditorUI;
+        for (JIPipeNodeInfo info : JIPipe.getNodes().getRegisteredNodeInfos().values()) {
+            TaxonomyView.BehaviorFlags flags = TaxonomyView.behaviorFlags(info);
+            boolean visibleInRole = compartmentsEditor ? flags.isVisibleInCompartments() : flags.isVisibleInPipeline();
+            if (!visibleInRole) {
+                continue;
+            }
+            populatedFrameworks.add(info.getFramework().getId());
+        }
+        for (JIPipeNodeTaxonomyFramework framework : JIPipe.getNodes().getFrameworks().all()) {
+            if (populatedFrameworks.contains(framework.getId())) {
+                frameworkCombo.addItem(framework);
+            }
+        }
+        frameworkCombo.addActionListener(e -> {
+            Object selected = frameworkCombo.getSelectedItem();
+            filterFrameworkId = selected instanceof JIPipeNodeTaxonomyFramework framework ? framework.getId() : null;
+            scheduleSearchRebuild();
+        });
+        frameworkCombo.setRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                if (value instanceof JIPipeNodeTaxonomyFramework framework) {
+                    setText(framework.getName());
+                }
+                return this;
+            }
+        });
+        filterBar.add(frameworkCombo);
+
+        // Data types (input + output, multi): one option per unhidden
+        // registered data type, split into the Input and Output groups, each
+        // carrying the data type's icon
+        dataTypeBox = new JIPipeDesktopRichSelectionBox("All data", "Data", true, true, this::createDataTypeOptions, selection -> {
+            filterInputDataTypes.clear();
+            filterOutputDataTypes.clear();
+            for (JIPipeDesktopRichSelectionBox.Option<?> option : selection) {
+                if (option.getValue() instanceof TypedDataValue typed) {
+                    if (typed.input()) {
+                        filterInputDataTypes.add(typed.dataClass());
+                    } else {
+                        filterOutputDataTypes.add(typed.dataClass());
+                    }
+                }
+            }
+            scheduleSearchRebuild();
+        });
+        dataTypeBox.setToolTipText("Filter by input and/or output data type (select one or more)");
+        filterBar.add(dataTypeBox);
+
+        // Tags (multi): the merged tag vocabulary (node-level + function-path
+        // tags of all registered nodes) - the same set the filter predicate
+        // matches against
+        tagsBox = new JIPipeDesktopRichSelectionBox("All tags", "Tags", true, this::createTagOptions, selection -> {
+            filterTags.clear();
+            for (JIPipeDesktopRichSelectionBox.Option<?> option : selection) {
+                if (option.getValue() instanceof String tag) {
+                    filterTags.add(tag);
+                }
+            }
+            scheduleSearchRebuild();
+        });
+        filterBar.add(tagsBox);
+        filterBar.add(Box.createHorizontalStrut(8));
+
+        // The pinned toggle (icon-only, like the Add nodes filter bar)
         pinnedOnlyButton.setToolTipText("Show only pinned nodes");
-        pinnedOnlyButton.addActionListener(e -> rebuildTree());
-        toolBar.add(pinnedOnlyButton);
+        UIUtils.makeButtonFlatWithSize(pinnedOnlyButton, TOOLBAR_BUTTON_SIZE);
+        pinnedOnlyButton.addActionListener(e -> scheduleSearchRebuild());
+        filterBar.add(pinnedOnlyButton);
+    }
+
+    /**
+     * The data-type options of the "Data" rich selection box: one per
+     * unhidden registered data type, sorted by display name, split into the
+     * "Input" and "Output" groups, each carrying the data type's icon.
+     */
+    private List<JIPipeDesktopRichSelectionBox.Option<?>> createDataTypeOptions() {
+        List<JIPipeDesktopRichSelectionBox.Option<?>> options = new ArrayList<>();
+        Map<String, Class<? extends JIPipeData>> dataTypes = JIPipe.getDataTypes().getUnhiddenRegisteredDataTypes();
+        List<String> sortedIds = new ArrayList<>(dataTypes.keySet());
+        sortedIds.sort(Comparator.comparing(id -> JIPipeDataInfo.getInstance(dataTypes.get(id)).getName()));
+        for (String id : sortedIds) {
+            Class<? extends JIPipeData> dataClass = dataTypes.get(id);
+            options.add(new JIPipeDesktopRichSelectionBox.Option<>(new TypedDataValue(dataClass, true),
+                    JIPipeDataInfo.getInstance(dataClass).getName(), JIPipe.getDataTypes().getIconFor(dataClass), "Input"));
+        }
+        for (String id : sortedIds) {
+            Class<? extends JIPipeData> dataClass = dataTypes.get(id);
+            options.add(new JIPipeDesktopRichSelectionBox.Option<>(new TypedDataValue(dataClass, false),
+                    JIPipeDataInfo.getInstance(dataClass).getName(), JIPipe.getDataTypes().getIconFor(dataClass), "Output"));
+        }
+        return options;
+    }
+
+    /**
+     * The tag options of the "Tags" rich selection box: the merged tag
+     * vocabulary (node-level + function-path tags of all nodes), sorted.
+     */
+    private List<JIPipeDesktopRichSelectionBox.Option<?>> createTagOptions() {
+        Set<String> allTags = new LinkedHashSet<>();
+        for (JIPipeNodeTaxonomyFunction function : JIPipe.getNodes().getFunctions().all()) {
+            allTags.addAll(function.getTags());
+        }
+        for (JIPipeNodeInfo info : JIPipe.getNodes().getRegisteredNodeInfos().values()) {
+            allTags.addAll(info.getMergedTags());
+        }
+        List<JIPipeDesktopRichSelectionBox.Option<?>> options = new ArrayList<>();
+        for (String tag : allTags.stream().sorted(Comparator.naturalOrder()).toList()) {
+            options.add(new JIPipeDesktopRichSelectionBox.Option<>(tag, tag, JIPipe.RESOURCES.getIcon16("actions/tag.png"), null));
+        }
+        return options;
+    }
+
+    /**
+     * Whether any facet filter restricts the tree (framework, data types or
+     * tags).
+     */
+    private boolean hasActiveFacetFilters() {
+        return filterFrameworkId != null || !filterTags.isEmpty() || !filterInputDataTypes.isEmpty() || !filterOutputDataTypes.isEmpty();
     }
 
     private void registerNodeEvents() {
@@ -498,6 +653,9 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
         }
         lastRenderedTier = tier;
         bodyPanel.removeAll();
+        // The filter bar sits at the top of the body (below the search
+        // toolbar, above the tree/list), like the Add nodes panel
+        bodyPanel.add(filterBar, BorderLayout.NORTH);
         if (tier == TIER_COMPACT) {
             bodyPanel.add(treeScroll, BorderLayout.CENTER);
         } else {
@@ -548,6 +706,9 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
                 String query = searchField.getText().trim();
                 boolean searching = !query.isEmpty();
                 boolean pinnedOnly = pinnedOnlyButton.isSelected();
+                // Empty groups are hidden whenever ANY restricting state is
+                // active; with no restricting state they stay visible
+                boolean restricting = searching || pinnedOnly || hasActiveFacetFilters();
 
                 CanvasState canvasState = collectCanvasState(project);
                 List<NoteGroupingCalculator.Group> groups = NoteGroupingCalculator.group(canvasState.nodeRefs(), canvasState.noteRefs());
@@ -555,15 +716,16 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
 
                 for (NoteGroupingCalculator.Group group : groups) {
                     addGroupRow(root, group.noteId(), group.title(), group.fill(), group.border(),
-                            filterEntries(group.nodes().stream().map(NoteGroupingCalculator.NodeRef::entry).toList(), query, pinnedOnly),
-                            false, searching);
+                            filterEntries(group.nodes().stream().map(NoteGroupingCalculator.NodeRef::entry).toList(), query),
+                            false, restricting);
                 }
                 // The "Ungrouped" group is last with the neutral colors; while
-                // a search is active it is skipped when nothing matches (like
-                // all other empty groups), otherwise it is always shown.
+                // any restricting state is active it is skipped when nothing
+                // matches (like all other empty groups), otherwise it is
+                // always shown.
                 addGroupRow(root, UNGROUPED_GROUP_ID, "Ungrouped", UNGROUPED_FILL, UNGROUPED_BORDER,
-                        filterEntries(ungrouped.stream().map(NoteGroupingCalculator.NodeRef::entry).toList(), query, pinnedOnly),
-                        false, searching);
+                        filterEntries(ungrouped.stream().map(NoteGroupingCalculator.NodeRef::entry).toList(), query),
+                        false, restricting);
 
                 if (searching) {
                     addCompartmentGroups(root, project, query, pinnedOnly);
@@ -672,7 +834,32 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
                 }
             }
         }
-        return new FindEntry(node.getUUIDInParentGraph(), nodeDisplayTitle(node), nodeDescription(node), uuidString(node), compartmentId, compartmentName, node.isBookmarked());
+        return new FindEntry(node.getUUIDInParentGraph(), nodeDisplayTitle(node), nodeDescription(node), uuidString(node), compartmentId, compartmentName, node.isBookmarked(),
+                node.getInfo().getFramework().getId(), node.getInfo().getMergedTags(), nodeInputDataTypes(node), nodeOutputDataTypes(node));
+    }
+
+    /**
+     * The data classes of the node's input slots (the input facet of the
+     * filter bar).
+     */
+    private static Set<Class<? extends JIPipeData>> nodeInputDataTypes(JIPipeGraphNode node) {
+        Set<Class<? extends JIPipeData>> dataTypes = new LinkedHashSet<>();
+        for (JIPipeInputDataSlot slot : node.getInputSlotMap().values()) {
+            dataTypes.add(slot.getInfo().getDataClass());
+        }
+        return dataTypes;
+    }
+
+    /**
+     * The data classes of the node's output slots (the output facet of the
+     * filter bar).
+     */
+    private static Set<Class<? extends JIPipeData>> nodeOutputDataTypes(JIPipeGraphNode node) {
+        Set<Class<? extends JIPipeData>> dataTypes = new LinkedHashSet<>();
+        for (JIPipeOutputDataSlot slot : node.getOutputSlotMap().values()) {
+            dataTypes.add(slot.getInfo().getDataClass());
+        }
+        return dataTypes;
     }
 
     /**
@@ -700,13 +887,19 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
         return uuid != null ? uuid.toString() : "";
     }
 
-    private static List<FindEntry> filterEntries(List<FindEntry> entries, String query, boolean pinnedOnly) {
+    private List<FindEntry> filterEntries(List<FindEntry> entries, String query) {
         List<FindEntry> result = new ArrayList<>();
+        boolean pinnedOnly = pinnedOnlyButton.isSelected();
         for (FindEntry entry : entries) {
             if (!entry.matches(query)) {
                 continue;
             }
             if (pinnedOnly && !entry.isBookmarked()) {
+                continue;
+            }
+            // The Add-nodes filter facets (framework, data types, tags); an
+            // empty selection disables the respective check
+            if (!entry.matchesFacets(filterFrameworkId, filterTags, filterInputDataTypes, filterOutputDataTypes)) {
                 continue;
             }
             result.add(entry);
@@ -759,6 +952,9 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
                 continue;
             }
             if (pinnedOnly && !entry.isBookmarked()) {
+                continue;
+            }
+            if (!entry.matchesFacets(filterFrameworkId, filterTags, filterInputDataTypes, filterOutputDataTypes)) {
                 continue;
             }
             if (entry.getCompartmentId() == null) {
@@ -1100,6 +1296,23 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
         public String getName() {
             return displayName;
         }
+    }
+
+    /**
+     * The framework filter's sentinel combo item ("all frameworks").
+     */
+    private static final class AllFrameworksSentinel {
+        @Override
+        public String toString() {
+            return "All frameworks";
+        }
+    }
+
+    /**
+     * A data-type filter option: the data class plus the slot direction it
+     * applies to.
+     */
+    private record TypedDataValue(Class<? extends JIPipeData> dataClass, boolean input) {
     }
 
     // ------------------------------------------------------------------

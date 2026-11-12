@@ -13,15 +13,21 @@
 
 package org.hkijena.jipipe.desktop.app.grapheditor.findpanel;
 
+import org.hkijena.jipipe.api.data.JIPipeData;
+
+import java.util.Collections;
 import java.util.Locale;
+import java.util.Set;
 import java.util.UUID;
 
 /**
  * A single searchable row of the Find panel: a graph node with its display
- * name, description and identity, ready to be filtered by a query string.
+ * name, description, identity and the Add-nodes filter facets (framework,
+ * tags, input/output data types), ready to be filtered by a query string and
+ * the filter bar.
  * <p>
  * Plain value class: all fields are set via the constructor and exposed via
- * accessors (no setters).
+ * accessors (no setters). The facet sets are copied and unmodifiable.
  */
 public class FindEntry {
 
@@ -32,8 +38,13 @@ public class FindEntry {
     private final UUID compartmentId;
     private final String compartmentName;
     private final boolean bookmarked;
+    private final String frameworkId;
+    private final Set<String> tags;
+    private final Set<Class<? extends JIPipeData>> inputDataTypes;
+    private final Set<Class<? extends JIPipeData>> outputDataTypes;
 
-    public FindEntry(UUID nodeId, String name, String description, String uuidString, UUID compartmentId, String compartmentName, boolean bookmarked) {
+    public FindEntry(UUID nodeId, String name, String description, String uuidString, UUID compartmentId, String compartmentName, boolean bookmarked,
+                     String frameworkId, Set<String> tags, Set<Class<? extends JIPipeData>> inputDataTypes, Set<Class<? extends JIPipeData>> outputDataTypes) {
         this.nodeId = nodeId;
         this.name = name;
         this.description = description;
@@ -41,6 +52,10 @@ public class FindEntry {
         this.compartmentId = compartmentId;
         this.compartmentName = compartmentName;
         this.bookmarked = bookmarked;
+        this.frameworkId = frameworkId;
+        this.tags = tags == null ? Set.of() : Set.copyOf(tags);
+        this.inputDataTypes = inputDataTypes == null ? Set.of() : Set.copyOf(inputDataTypes);
+        this.outputDataTypes = outputDataTypes == null ? Set.of() : Set.copyOf(outputDataTypes);
     }
 
     public UUID getNodeId() {
@@ -71,6 +86,22 @@ public class FindEntry {
         return bookmarked;
     }
 
+    public String getFrameworkId() {
+        return frameworkId;
+    }
+
+    public Set<String> getTags() {
+        return tags;
+    }
+
+    public Set<Class<? extends JIPipeData>> getInputDataTypes() {
+        return inputDataTypes;
+    }
+
+    public Set<Class<? extends JIPipeData>> getOutputDataTypes() {
+        return outputDataTypes;
+    }
+
     /**
      * Returns true if this entry matches the query.
      * <p>
@@ -84,6 +115,30 @@ public class FindEntry {
         }
         String needle = query.toLowerCase(Locale.ROOT);
         return containsIgnoreCase(name, needle) || containsIgnoreCase(description, needle) || containsIgnoreCase(uuidString, needle);
+    }
+
+    /**
+     * Returns true if this entry matches the active facet filters, mirroring
+     * the Add-nodes filter semantics ({@code NodeBrowserModel.matches}): an
+     * empty facet selection (or a {@code null} framework id) disables that
+     * dimension; the tag filter passes when the entry's tags intersect the
+     * selection; the input/output filters pass when at least one of the
+     * entry's input/output slots has a selected data class.
+     */
+    public boolean matchesFacets(String frameworkId, Set<String> tags, Set<Class<? extends JIPipeData>> inputDataTypes, Set<Class<? extends JIPipeData>> outputDataTypes) {
+        if (frameworkId != null && !frameworkId.equals(this.frameworkId)) {
+            return false;
+        }
+        if (tags != null && !tags.isEmpty() && Collections.disjoint(tags, this.tags)) {
+            return false;
+        }
+        if (inputDataTypes != null && !inputDataTypes.isEmpty() && Collections.disjoint(inputDataTypes, this.inputDataTypes)) {
+            return false;
+        }
+        if (outputDataTypes != null && !outputDataTypes.isEmpty() && Collections.disjoint(outputDataTypes, this.outputDataTypes)) {
+            return false;
+        }
+        return true;
     }
 
     private static boolean containsIgnoreCase(String text, String lowerCaseNeedle) {

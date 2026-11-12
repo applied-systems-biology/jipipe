@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -46,7 +47,7 @@ class NoteGroupingCalculatorTest {
     }
 
     private static NodeRef node(String id, String name, Rectangle rect) {
-        return new NodeRef(id, rect, new FindEntry(UUID.randomUUID(), name, "", id, UUID.randomUUID(), "Compartment", false));
+        return new NodeRef(id, rect, new FindEntry(UUID.randomUUID(), name, "", id, UUID.randomUUID(), "Compartment", false, null, Set.of(), Set.of(), Set.of()));
     }
 
     private static List<String> ids(List<NodeRef> nodes) {
