@@ -243,6 +243,14 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
      */
     private final Map<UUID, JIPipeGraphNode> nodesById = new HashMap<>();
     /**
+     * The node ids visible on the current canvas (the current compartment's
+     * nodes in the pipeline flavor, the compartments in the compartments
+     * flavor). Rebuilt on every rebuild; excludes the canvas nodes from the
+     * cross-compartment search results and drives the compartment badge of
+     * the "All" group's node rows.
+     */
+    private final Set<UUID> canvasNodeIds = new HashSet<>();
+    /**
      * The nodes whose parameter events this panel is subscribed to. The
      * subscriptions are weak, but {@code subscribeWeak} does not dedupe, so
      * without this set every graph-changed event would stack another
@@ -524,6 +532,7 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
         try {
             groupRows.clear();
             nodesById.clear();
+            canvasNodeIds.clear();
             DefaultMutableTreeNode root = new DefaultMutableTreeNode();
 
             // Remember the selected row across the rebuild (the model reload
@@ -557,7 +566,7 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
                         false, searching);
 
                 if (searching) {
-                    addCompartmentGroups(root, project, canvasState.canvasNodeIds(), query, pinnedOnly);
+                    addCompartmentGroups(root, project, query, pinnedOnly);
                 }
 
                 // The synthetic "All" group goes first: every entry currently
@@ -595,7 +604,6 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
     private CanvasState collectCanvasState(JIPipeProject project) {
         List<NoteGroupingCalculator.NodeRef> nodeRefs = new ArrayList<>();
         List<NoteGroupingCalculator.NoteRef> noteRefs = new ArrayList<>();
-        Set<UUID> canvasNodeIds = new HashSet<>();
         BiMap<JIPipeGraphNode, JIPipeDesktopGraphNodeUI> nodeUIs = graphEditorUI.getCanvasUI().getNodeUIs();
         for (Map.Entry<JIPipeGraphNode, JIPipeDesktopGraphNodeUI> nodeUI : nodeUIs.entrySet()) {
             JIPipeGraphNode node = nodeUI.getKey();
@@ -616,7 +624,7 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
             nodesById.put(nodeId, node);
             nodeRefs.add(new NoteGroupingCalculator.NodeRef(uuidString(node), bounds, createEntry(node, project)));
         }
-        return new CanvasState(nodeRefs, noteRefs, canvasNodeIds);
+        return new CanvasState(nodeRefs, noteRefs);
     }
 
     /**
@@ -715,7 +723,10 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
         DefaultMutableTreeNode groupNode = new DefaultMutableTreeNode(groupRow);
         for (FindEntry entry : entries) {
             JIPipeGraphNode node = nodesById.get(entry.getNodeId());
-            groupNode.add(new DefaultMutableTreeNode(new NodeRow(entry, compartmentGroup, node != null ? node.getInfo() : null)));
+            // The "All" group mixes canvas and cross-compartment entries: the
+            // badge follows each entry, not the group
+            boolean crossCompartment = GROUP_ID_ALL.equals(groupId) ? !canvasNodeIds.contains(entry.getNodeId()) : compartmentGroup;
+            groupNode.add(new DefaultMutableTreeNode(new NodeRow(entry, crossCompartment, node != null ? node.getInfo() : null)));
         }
         root.add(groupNode);
         return groupNode;
@@ -733,7 +744,7 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
      * only), ordered by compartment name, appended after the current-canvas
      * groups.
      */
-    private void addCompartmentGroups(DefaultMutableTreeNode root, JIPipeProject project, Set<UUID> canvasNodeIds, String query, boolean pinnedOnly) {
+    private void addCompartmentGroups(DefaultMutableTreeNode root, JIPipeProject project, String query, boolean pinnedOnly) {
         Map<UUID, List<FindEntry>> entriesByCompartment = new HashMap<>();
         for (JIPipeGraphNode node : project.getGraph().getGraphNodes()) {
             if (node instanceof JIPipeGraphCanvasNote) {
@@ -1068,7 +1079,7 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
     /**
      * The current canvas state used for one rebuild.
      */
-    private record CanvasState(List<NoteGroupingCalculator.NodeRef> nodeRefs, List<NoteGroupingCalculator.NoteRef> noteRefs, Set<UUID> canvasNodeIds) {
+    private record CanvasState(List<NoteGroupingCalculator.NodeRef> nodeRefs, List<NoteGroupingCalculator.NoteRef> noteRefs) {
     }
 
     /**
@@ -1167,7 +1178,7 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
         private final JLabel fallbackLabel = new JLabel();
 
         private FindTreeCellRenderer() {
-            // Group rows: colored circle + bold title + right-aligned count
+            // Group rows: colored circle + bold title + count badge
             groupTitlePanel.setLayout(new BoxLayout(groupTitlePanel, BoxLayout.X_AXIS));
             groupTitlePanel.setOpaque(false);
             groupCircleLabel.setAlignmentY(Component.CENTER_ALIGNMENT);
