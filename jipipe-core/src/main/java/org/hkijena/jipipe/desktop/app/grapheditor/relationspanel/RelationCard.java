@@ -35,10 +35,11 @@ import java.util.function.Consumer;
  * <p>
  * The panel contributes exactly one visual factor over the resolved
  * {@link RelationCardAppearance.Appearance}: the card opacity (the
- * visitation trail ramp), applied to the whole card while painting. The
- * preferred size is MEASURED from the header name and icon (repo policy:
- * never assume text sizes). A single click navigates to the card's node via
- * the callback given by the panel.
+ * visitation trail ramp), applied to the whole card while painting. The 2px
+ * border marks the current node (the trail's current / selected node), which
+ * can sit anywhere in the displayed rows. The preferred size is MEASURED from
+ * the header name and icon (repo policy: never assume text sizes). A single
+ * click navigates to the card's node via the callback given by the panel.
  */
 public class RelationCard extends JComponent {
 
@@ -51,10 +52,10 @@ public class RelationCard extends JComponent {
     static final int HEADER_ICON_TEXT_GAP = 4;
 
     /**
-     * Border widths: 1px normally, 2px for the current-center card.
+     * Border widths: 1px normally, 2px for the current card.
      */
     static final int BORDER_WIDTH = 1;
-    static final int CURRENT_CENTER_BORDER_WIDTH = 2;
+    static final int CURRENT_BORDER_WIDTH = 2;
 
     /**
      * The header band desaturation: the same HSB factors the canvas node uses
@@ -71,7 +72,7 @@ public class RelationCard extends JComponent {
     private final JIPipeNodeInfo info;
     private final RelationCardAppearance.Appearance appearance;
     private final Consumer<String> navigationCallback;
-    private final boolean currentCenter;
+    private boolean current;
     private float opacity;
 
     /**
@@ -84,20 +85,20 @@ public class RelationCard extends JComponent {
      * @param appearance         the resolved look (fill, border, pattern)
      * @param opacity            the current card opacity (the trail ramp
      *                           factor the panel resolved)
-     * @param currentCenter      whether the card is a current-center card
+     * @param current            whether the card shows the current node
      *                           (drawn with the thicker border)
      * @param navigationCallback called with the node id when the card is
      *                           clicked
      */
     public RelationCard(String nodeId, String displayName, JIPipeNodeInfo info,
-                        RelationCardAppearance.Appearance appearance, float opacity, boolean currentCenter,
+                        RelationCardAppearance.Appearance appearance, float opacity, boolean current,
                         Consumer<String> navigationCallback) {
         this.nodeId = nodeId;
         this.displayName = displayName;
         this.info = info;
         this.appearance = appearance;
         this.opacity = opacity;
-        this.currentCenter = currentCenter;
+        this.current = current;
         this.navigationCallback = navigationCallback;
         setOpaque(false);
         setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -127,6 +128,17 @@ public class RelationCard extends JComponent {
     }
 
     /**
+     * Sets whether this card shows the current node (2px border) and
+     * repaints.
+     *
+     * @param current the new current state
+     */
+    public void setCurrent(boolean current) {
+        this.current = current;
+        repaint();
+    }
+
+    /**
      * The preferred width is derived from the MEASURED header name and icon,
      * clamped to the panel's card minimum; the height is the panel's card
      * height (a layout minimum, grown when the measured header band needs
@@ -148,13 +160,15 @@ public class RelationCard extends JComponent {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g.create();
         try {
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
             // The single visual factor the panel adds: the trail ramp opacity
             g2.setComposite(AlphaComposite.SrcOver.derive(Math.max(0f, Math.min(1f, opacity))));
             int width = getWidth();
             int height = getHeight();
             FontMetrics metrics = g2.getFontMetrics();
             int headerHeight = measuredHeaderHeight(metrics);
-            int border = currentCenter ? CURRENT_CENTER_BORDER_WIDTH : BORDER_WIDTH;
+            int border = current ? CURRENT_BORDER_WIDTH : BORDER_WIDTH;
 
             // Fill over the whole card
             g2.setPaint(appearance.fill());
@@ -184,7 +198,7 @@ public class RelationCard extends JComponent {
             UIUtils.drawStringVerticallyCentered(g2, fittedName(metrics, availableNameWidth), x,
                     headerHeight / 2, metrics);
 
-            // Border: 1px, 2px for the current-center card (painted inside)
+            // Border: 1px, 2px for the current card (painted inside)
             g2.setPaint(appearance.border());
             g2.fillRect(0, 0, width, border);
             g2.fillRect(0, height - border, width, border);
