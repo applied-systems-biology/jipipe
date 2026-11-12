@@ -33,8 +33,9 @@ public class NoteGroupingCalculator {
     /**
      * The claim mode used by {@link #group(Collection, Collection)} and
      * {@link #ungrouped(Collection, Collection)}: a note claims a node when
-     * the center of the node rectangle lies inside the note rectangle
-     * (inclusive bounds).
+     * the center of the node rectangle lies inside the note rectangle, with
+     * AWT {@link Rectangle#contains(double, double)} semantics: the left and
+     * top edges are inclusive, the right and bottom edges are exclusive.
      */
     public static final String GROUP_CLAIM = "center";
 
@@ -131,9 +132,7 @@ public class NoteGroupingCalculator {
         Rectangle nodeRect = node.rect();
         double centerX = nodeRect.getX() + nodeRect.getWidth() / 2.0;
         double centerY = nodeRect.getY() + nodeRect.getHeight() / 2.0;
-        return centerX >= noteRect.getMinX()
-                && centerX <= noteRect.getMaxX()
-                && centerY >= noteRect.getMinY()
-                && centerY <= noteRect.getMaxY();
+        // AWT Rectangle semantics: left/top inclusive, right/bottom exclusive
+        return noteRect.contains(centerX, centerY);
     }
 }

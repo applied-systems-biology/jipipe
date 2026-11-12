@@ -86,15 +86,46 @@ class NoteGroupingCalculatorTest {
     }
 
     @Test
-    void centerOnTheNoteEdgeIsStillClaimedInclusiveBounds() {
+    void centerOnTheLeftOrTopNoteEdgeIsClaimedInclusiveBounds() {
         NoteRef main = note("note-main", new Rectangle(0, 0, 100, 100), "Main");
-        // center (100, 50) lies exactly on the right edge of the note
-        NodeRef edgeNode = node("edge", "Alpha", new Rectangle(90, 40, 20, 20));
+        // center (0, 50) lies exactly on the left edge of the note
+        NodeRef leftEdge = node("left", "Alpha", new Rectangle(-10, 40, 20, 20));
+        // center (50, 0) lies exactly on the top edge of the note
+        NodeRef topEdge = node("top", "Bravo", new Rectangle(40, -10, 20, 20));
 
-        List<NoteGroupingCalculator.Group> groups = NoteGroupingCalculator.group(Collections.singletonList(edgeNode), Collections.singletonList(main));
+        List<NoteGroupingCalculator.Group> groups = NoteGroupingCalculator.group(Arrays.asList(leftEdge, topEdge), Collections.singletonList(main));
 
         assertEquals(1, groups.size());
-        assertEquals(Collections.singletonList("edge"), ids(groups.get(0).nodes()));
+        assertEquals(Arrays.asList("left", "top"), ids(groups.get(0).nodes()));
+    }
+
+    @Test
+    void centerOnTheRightOrBottomNoteEdgeIsNotClaimedExclusiveBounds() {
+        NoteRef main = note("note-main", new Rectangle(0, 0, 100, 100), "Main");
+        // center (100, 50) lies exactly on the right edge of the note
+        NodeRef rightEdge = node("right", "Alpha", new Rectangle(90, 40, 20, 20));
+        // center (50, 100) lies exactly on the bottom edge of the note
+        NodeRef bottomEdge = node("bottom", "Bravo", new Rectangle(40, 90, 20, 20));
+
+        List<NoteGroupingCalculator.NodeRef> nodes = Arrays.asList(rightEdge, bottomEdge);
+        List<NoteGroupingCalculator.Group> groups = NoteGroupingCalculator.group(nodes, Collections.singletonList(main));
+
+        // the titled note still forms its (empty) group; the edge nodes are ungrouped
+        assertEquals(1, groups.size());
+        assertTrue(groups.get(0).nodes().isEmpty());
+        assertEquals(Arrays.asList("right", "bottom"), ids(NoteGroupingCalculator.ungrouped(nodes, Collections.singletonList(main))));
+    }
+
+    @Test
+    void nullTitleNoteFormsNoGroupAndItsNodesStayUngrouped() {
+        NoteRef nullTitle = note("note-null", new Rectangle(0, 0, 100, 100), null);
+
+        NodeRef inNull = node("in-null", "Zulu", new Rectangle(40, 40, 20, 20));
+
+        List<NoteGroupingCalculator.Group> groups = NoteGroupingCalculator.group(Collections.singletonList(inNull), Collections.singletonList(nullTitle));
+
+        assertTrue(groups.isEmpty());
+        assertEquals(Collections.singletonList("in-null"), ids(NoteGroupingCalculator.ungrouped(Collections.singletonList(inNull), Collections.singletonList(nullTitle))));
     }
 
     @Test

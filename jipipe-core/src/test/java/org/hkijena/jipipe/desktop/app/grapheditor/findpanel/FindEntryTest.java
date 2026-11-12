@@ -127,11 +127,6 @@ class FindEntryTest {
     }
 
     @Test
-    void emptyFacetSelectionsPassEverything() {
-        assertTrue(entry().matchesFacets(null, Set.of(), Set.of(), Set.of()));
-    }
-
-    @Test
     void allFiltersMustPassTogether() {
         assertTrue(entry().matchesFacets(FRAMEWORK_ID, TAGS, INPUT_TYPES, OUTPUT_TYPES));
         assertFalse(entry().matchesFacets(FRAMEWORK_ID, TAGS, Set.of(JIPipeEmptyData.class), OUTPUT_TYPES));

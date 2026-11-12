@@ -63,6 +63,7 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.DefaultTreeSelectionModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreeCellRenderer;
+import javax.swing.tree.TreeSelectionModel;
 import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.*;
@@ -108,17 +109,17 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
      * Panels narrower than this are in the compact tier (tree only). Mirrors
      * {@code NodeBrowserModel.COMPACT_TIER_MAX_WIDTH}.
      */
-    public static final int COMPACT_TIER_WIDTH = 380;
+    static final int COMPACT_TIER_WIDTH = 380;
     /**
      * Neutral fill for the "Ungrouped" group and for groups whose note carries
      * no usable colors.
      */
-    public static final Color UNGROUPED_FILL = new Color(0xe8e8e8);
+    static final Color UNGROUPED_FILL = new Color(0xe8e8e8);
     /**
      * Neutral border for the "Ungrouped" group and for groups whose note
      * carries no usable colors.
      */
-    public static final Color UNGROUPED_BORDER = new Color(0xc4c4c4);
+    static final Color UNGROUPED_BORDER = new Color(0xc4c4c4);
 
     /**
      * Coalesces event storms (graph changes fire continuously during drags)
@@ -230,6 +231,11 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
     private final JList<ExistingPipelineNodeDatabaseEntry> inGroupList = new JList<>();
     private final JScrollPane inGroupScroll;
     private final JPanel inGroupPanel = new JPanel();
+    /**
+     * The header label of the "In group" pane (reads "In group (matching)"
+     * while a restricting state is active).
+     */
+    private final JLabel inGroupHeader = new JLabel("In group");
 
     /**
      * The debounce timer for event-driven rebuilds (restarted by
@@ -344,7 +350,6 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
         inGroupList.setCellRenderer(new JIPipeDesktopNodeDatabaseEntryListCellRenderer());
         inGroupScroll = new JScrollPane(inGroupList);
         inGroupPanel.setLayout(new BorderLayout());
-        JLabel inGroupHeader = new JLabel("In group");
         inGroupHeader.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
         inGroupHeader.setForeground(DIM_TEXT_COLOR);
         inGroupHeader.setFont(inGroupHeader.getFont().deriveFont(Font.BOLD, IN_GROUP_HEADER_FONT_SIZE));
@@ -540,6 +545,15 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
         return filterFrameworkId != null || !filterTags.isEmpty() || !filterInputDataTypes.isEmpty() || !filterOutputDataTypes.isEmpty();
     }
 
+    /**
+     * Whether any restricting state is currently active (a non-blank search,
+     * the pinned filter or an active facet filter): empty groups are hidden
+     * and the "In group" pane marks its member list as filtered.
+     */
+    private boolean isRestricting() {
+        return !searchField.getText().trim().isEmpty() || pinnedOnlyButton.isSelected() || hasActiveFacetFilters();
+    }
+
     private void registerNodeEvents() {
         JIPipeGraph graph = graphEditorUI.getGraph();
         Set<JIPipeGraphNode> liveNodes = new HashSet<>();
@@ -547,10 +561,18 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
         if (graph.getProject() != null) {
             subscribeNodeEvents(graph.getProject().getCompartmentGraph().getGraphNodes(), liveNodes);
         }
-        // Nodes removed from the graphs are dropped from the tracking set:
-        // their weak subscribers die with the node, so removal is enough
-        // (and the set must not retain dead nodes).
-        parameterEventNodes.retainAll(liveNodes);
+        // Nodes removed from the graphs: unsubscribe explicitly and drop
+        // them from the tracking set (the set must not retain dead nodes).
+        // Without the unsubscribe, undo (remove + re-add of the SAME node
+        // instance) re-subscribes while the old weak subscription is still
+        // alive on the live instance, so parameter events would dispatch
+        // twice.
+        for (JIPipeGraphNode removed : new ArrayList<>(parameterEventNodes)) {
+            if (!liveNodes.contains(removed)) {
+                removed.getParameterChangedEventEmitter().unsubscribe(this);
+                parameterEventNodes.remove(removed);
+            }
+        }
     }
 
     private void subscribeNodeEvents(Set<JIPipeGraphNode> nodes, Set<JIPipeGraphNode> liveNodes) {
@@ -678,6 +700,7 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
             UUID selectedNodeId = selectedEntryNodeId();
             String selectedGroupId = selectedGroupId();
 
+            boolean restricting = false;
             JIPipeProject project = getProject();
             if (project != null) {
                 String query = searchField.getText().trim();
@@ -685,7 +708,7 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
                 boolean pinnedOnly = pinnedOnlyButton.isSelected();
                 // Empty groups are hidden whenever ANY restricting state is
                 // active; with no restricting state they stay visible
-                boolean restricting = searching || pinnedOnly || hasActiveFacetFilters();
+                restricting = searching || pinnedOnly || hasActiveFacetFilters();
 
                 CanvasState canvasState = collectCanvasState(project);
                 List<NoteGroupingCalculator.Group> groups = NoteGroupingCalculator.group(canvasState.nodeRefs(), canvasState.noteRefs());
@@ -693,7 +716,7 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
 
                 for (NoteGroupingCalculator.Group group : groups) {
                     addGroupRow(root, group.noteId(), group.title(), group.fill(), group.border(),
-                            filterEntries(group.nodes().stream().map(NoteGroupingCalculator.NodeRef::entry).toList(), query),
+                            filterEntries(group.nodes().stream().map(NoteGroupingCalculator.NodeRef::entry).toList(), query, pinnedOnly),
                             false, restricting);
                 }
                 // The "Ungrouped" group is last with the neutral colors; while
@@ -701,7 +724,7 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
                 // matches (like all other empty groups), otherwise it is
                 // always shown.
                 addGroupRow(root, UNGROUPED_GROUP_ID, "Ungrouped", UNGROUPED_FILL, UNGROUPED_BORDER,
-                        filterEntries(ungrouped.stream().map(NoteGroupingCalculator.NodeRef::entry).toList(), query),
+                        filterEntries(ungrouped.stream().map(NoteGroupingCalculator.NodeRef::entry).toList(), query, pinnedOnly),
                         false, restricting);
 
                 if (searching) {
@@ -719,7 +742,10 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
                         }
                     }
                 }
-                DefaultMutableTreeNode allNode = addGroupRow(root, GROUP_ID_ALL, "All", UNGROUPED_FILL, UNGROUPED_BORDER, allEntries, false, true);
+                // The All row follows the same hide-when-empty rule as the
+                // other groups: it stays visible on an empty project (nothing
+                // restricts the tree) and hides while restricted and empty
+                DefaultMutableTreeNode allNode = addGroupRow(root, GROUP_ID_ALL, "All", UNGROUPED_FILL, UNGROUPED_BORDER, allEntries, false, restricting);
                 if (allNode != null && root.getChildCount() > 1) {
                     root.insert(allNode, 0);
                 }
@@ -730,7 +756,7 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
             if (!reapplySelection(selectedGroupId, selectedNodeId)) {
                 selectAllRow();
             }
-            updateInGroupPane();
+            updateInGroupPane(restricting);
         } finally {
             rebuilding = false;
         }
@@ -864,9 +890,13 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
         return uuid != null ? uuid.toString() : "";
     }
 
-    private List<FindEntry> filterEntries(List<FindEntry> entries, String query) {
+    /**
+     * Filters the entries by the query, the pinned filter and the facet
+     * filters. {@code pinnedOnly} is the snapshot taken by the caller (the
+     * rebuild reads the toggle once so every consumer sees the same value).
+     */
+    private List<FindEntry> filterEntries(List<FindEntry> entries, String query, boolean pinnedOnly) {
         List<FindEntry> result = new ArrayList<>();
-        boolean pinnedOnly = pinnedOnlyButton.isSelected();
         for (FindEntry entry : entries) {
             if (!entry.matches(query)) {
                 continue;
@@ -1003,7 +1033,9 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
             for (Enumeration<? extends TreeNode> children = root.children(); children.hasMoreElements(); ) {
                 DefaultMutableTreeNode child = (DefaultMutableTreeNode) children.nextElement();
                 if (child.getUserObject() instanceof GroupRow groupRow && groupId.equals(groupRow.groupId())) {
-                    tree.setSelectionPath(new TreePath(child.getPath()));
+                    TreePath path = new TreePath(child.getPath());
+                    tree.setSelectionPath(path);
+                    tree.scrollPathToVisible(path);
                     return true;
                 }
             }
@@ -1017,7 +1049,9 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
             for (Enumeration<? extends TreeNode> leafChildren = groupNode.children(); leafChildren.hasMoreElements(); ) {
                 DefaultMutableTreeNode leafNode = (DefaultMutableTreeNode) leafChildren.nextElement();
                 if (leafNode.getUserObject() instanceof NodeRow nodeRow && nodeId.equals(nodeRow.entry().getNodeId())) {
-                    tree.setSelectionPath(new TreePath(leafNode.getPath()));
+                    TreePath path = new TreePath(leafNode.getPath());
+                    tree.setSelectionPath(path);
+                    tree.scrollPathToVisible(path);
                     return true;
                 }
             }
@@ -1034,7 +1068,9 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
         for (Enumeration<? extends TreeNode> children = root.children(); children.hasMoreElements(); ) {
             DefaultMutableTreeNode child = (DefaultMutableTreeNode) children.nextElement();
             if (child.getUserObject() instanceof GroupRow groupRow && GROUP_ID_ALL.equals(groupRow.groupId())) {
-                tree.setSelectionPath(new TreePath(child.getPath()));
+                TreePath path = new TreePath(child.getPath());
+                tree.setSelectionPath(path);
+                tree.scrollPathToVisible(path);
                 return;
             }
         }
@@ -1062,7 +1098,7 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
         if (rebuilding) {
             return;
         }
-        updateInGroupPane();
+        updateInGroupPane(isRestricting());
     }
 
     private DefaultMutableTreeNode selectedTreeNode() {
@@ -1073,7 +1109,14 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
         return selectionPath.getLastPathComponent() instanceof DefaultMutableTreeNode node ? node : null;
     }
 
-    private void updateInGroupPane() {
+    /**
+     * Repopulates the "In group" pane from the current tree selection. While
+     * a restricting state is active (search, pinned filter or facets) the
+     * header reads "In group (matching)" so the post-filter member list is
+     * self-explanatory.
+     */
+    private void updateInGroupPane(boolean restricting) {
+        inGroupHeader.setText(restricting ? "In group (matching)" : "In group");
         DefaultListModel<ExistingPipelineNodeDatabaseEntry> listModel = new DefaultListModel<>();
         for (FindEntry entry : selectedRowMembers()) {
             JIPipeGraphNode node = nodesById.get(entry.getNodeId());
@@ -1301,8 +1344,15 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
      * selectable while keeping the invisible root unselectable. A request
      * that contains only unselectable rows keeps the previous selection
      * instead of clearing it (clicking a non-row must not deselect).
+     * <p>
+     * Single selection only: the pane and the selection restore follow one
+     * lead row, so ctrl-click cannot mix group and node selections.
      */
     private static final class RowSelectionModel extends DefaultTreeSelectionModel {
+        private RowSelectionModel() {
+            setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+        }
+
         private TreePath[] filterSelectableRows(TreePath[] paths) {
             if (paths == null) {
                 return null;
@@ -1476,7 +1526,10 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
             spatialChip3DLabel.setForeground(nodePanel.getForeground());
             spatialChip2D.setVisible(spatial.contains(JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D));
             spatialChip3D.setVisible(spatial.contains(JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D));
-            nodeBadgeLabel.setText(entry.getCompartmentName());
+            // The badge abbreviates the compartment name to its first word;
+            // the full name lives in the badge tooltip
+            nodeBadgeLabel.setText(firstWord(entry.getCompartmentName()));
+            nodeBadgeLabel.setToolTipText(entry.getCompartmentName());
             nodeBadgeLabel.setVisible(nodeRow.crossCompartment());
             // The full UUID lives in the row tooltip
             nodePanel.setToolTipText("UUID: " + entry.getUuidString());
@@ -1554,6 +1607,24 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
             if (foreground != null) {
                 component.setForeground(foreground);
             }
+        }
+
+        /**
+         * The first whitespace-separated word of the compartment name (the
+         * badge abbreviates to the first word; the full name lives in the
+         * badge tooltip).
+         */
+        private static String firstWord(String text) {
+            if (text == null) {
+                return null;
+            }
+            String trimmed = text.trim();
+            for (int i = 0; i < trimmed.length(); i++) {
+                if (Character.isWhitespace(trimmed.charAt(i))) {
+                    return trimmed.substring(0, i);
+                }
+            }
+            return trimmed;
         }
     }
 

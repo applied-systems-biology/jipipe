@@ -35,6 +35,11 @@ public class FindEntry {
     private final String name;
     private final String description;
     private final String uuidString;
+    // Precomputed lowercase haystacks of the query match (matches() runs for
+    // every entry on every rebuild)
+    private final String nameLowerCase;
+    private final String descriptionLowerCase;
+    private final String uuidStringLowerCase;
     private final UUID compartmentId;
     private final String compartmentName;
     private final boolean bookmarked;
@@ -49,6 +54,9 @@ public class FindEntry {
         this.name = name;
         this.description = description;
         this.uuidString = uuidString;
+        this.nameLowerCase = lowerCase(name);
+        this.descriptionLowerCase = lowerCase(description);
+        this.uuidStringLowerCase = lowerCase(uuidString);
         this.compartmentId = compartmentId;
         this.compartmentName = compartmentName;
         this.bookmarked = bookmarked;
@@ -106,7 +114,8 @@ public class FindEntry {
      * Returns true if this entry matches the query.
      * <p>
      * The match is a case-insensitive {@code contains} on the name, the
-     * description and the UUID string. A {@code null} or empty query matches
+     * description and the UUID string; the lowercase haystacks are
+     * precomputed in the constructor. A {@code null} or empty query matches
      * every entry.
      */
     public boolean matches(String query) {
@@ -114,7 +123,7 @@ public class FindEntry {
             return true;
         }
         String needle = query.toLowerCase(Locale.ROOT);
-        return containsIgnoreCase(name, needle) || containsIgnoreCase(description, needle) || containsIgnoreCase(uuidString, needle);
+        return contains(nameLowerCase, needle) || contains(descriptionLowerCase, needle) || contains(uuidStringLowerCase, needle);
     }
 
     /**
@@ -141,7 +150,11 @@ public class FindEntry {
         return true;
     }
 
-    private static boolean containsIgnoreCase(String text, String lowerCaseNeedle) {
-        return text != null && text.toLowerCase(Locale.ROOT).contains(lowerCaseNeedle);
+    private static String lowerCase(String text) {
+        return text != null ? text.toLowerCase(Locale.ROOT) : null;
+    }
+
+    private static boolean contains(String lowerCaseText, String lowerCaseNeedle) {
+        return lowerCaseText != null && lowerCaseText.contains(lowerCaseNeedle);
     }
 }
