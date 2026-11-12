@@ -1175,11 +1175,16 @@ public class JIPipeDesktopRelationsPanel extends JIPipeDesktopWorkbenchPanel imp
                 int itemWidth;
                 if (item instanceof RelationCard) {
                     if (i == lastStretchable) {
-                        // Remainder absorption: the last stretchable item
-                        // ends exactly at the row's right edge, so rounding
-                        // of the proportional widths cannot overflow or fall
-                        // short
-                        itemWidth = x + width - xCursor;
+                        // Remainder absorption: the last stretchable item ends
+                        // exactly where the items that follow it begin (the row
+                        // right edge when nothing follows, so rounding of the
+                        // proportional widths cannot overflow or fall short),
+                        // minus the following fixed items' widths and gaps
+                        int trailing = 0;
+                        for (int j = i + 1; j < count; ++j) {
+                            trailing += preferredWidths[j] + CARD_GAP;
+                        }
+                        itemWidth = x + width - xCursor - trailing;
                     } else if (stretchableTotal > 0) {
                         itemWidth = (int) Math.round(available * (double) preferredWidths[i] / stretchableTotal);
                     } else {
