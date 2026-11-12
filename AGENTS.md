@@ -278,6 +278,25 @@ user-facing strings. Use a regular hyphen, a colon, a comma, or a period instead
 searches and diffs predictable and avoids AI-sounding typography. (The existing codebase uses
 plain hyphens in prose, e.g. `- The codebase has ...`; follow that.)
 
+### Never Assume Text Sizes - Measure Them (CRITICAL)
+
+Never hardcode pixel widths, heights, offsets, or gaps that depend on rendered text. Text
+dimensions vary with font, font size, scaling, Look and Feel, language, and content, so any
+assumed size clips or misplaces text. Always measure:
+
+- Position or size text-dependent components from the component's own preferred size, or from
+  `FontMetrics`/`SwingUtilities.computeStringWidth` measured against the actual string and font.
+- In custom cell renderers (tree/list), text changes via `JLabel.setText()` only queue an
+  asynchronous revalidate, and `CellRendererPane.validate()` no-ops while the row container is
+  still flagged valid - so the layout would render the PREVIOUS row's measured bounds. After
+  changing any text in a reused renderer row, force a synchronous re-layout:
+  `panel.invalidate(); panel.validate();` (see `JIPipeDesktopFindPanel.FindTreeCellRenderer`).
+- Fixed-size struts/padding around text are allowed only as gaps (they do not encode a text
+  size); anything that must enclose or align with text (badges, chips, columns, dialogs) must
+  derive its size from measurement.
+- Audit rule for reviews: in new UI code, flag `setPreferredSize`/`new Dimension`/fixed-width
+  arithmetic on or near text-bearing components unless the value is measured or a pure gap.
+
 ### General Principles
 
 1. **Follow existing patterns** - The codebase has consistent patterns for plugin registration and algorithm
