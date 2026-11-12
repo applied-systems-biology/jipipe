@@ -18,6 +18,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.MapLayer;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.events.JIPipeDesktopGraphCanvasUIUpdatedEvent;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.events.JIPipeDesktopGraphCanvasUIUpdatedEventListener;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopMapState.AnchorMode;
 import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -27,7 +28,9 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.EnumMap;
 import java.util.EnumSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -76,6 +79,17 @@ public class JIPipeDesktopFloatingMapPanel extends JIPipeDesktopWorkbenchPanel i
     public static final int MAP_DEFAULT_OFFSET = 16;
 
     /**
+     * The anchor modes in the order they appear in the anchor menu: the nine
+     * snapping points in reading order ({@link AnchorMode#Auto} is a separate
+     * entry above them).
+     */
+    private static final AnchorMode[] ANCHOR_MENU_ORDER = {
+            AnchorMode.TopLeft, AnchorMode.TopCenter, AnchorMode.TopRight,
+            AnchorMode.CenterLeft, AnchorMode.CenterCenter, AnchorMode.CenterRight,
+            AnchorMode.BottomLeft, AnchorMode.BottomCenter, AnchorMode.BottomRight
+    };
+
+    /**
      * Side length of the bottom-right resize handle (the only resize
      * affordance, per prototype 04).
      */
@@ -115,6 +129,8 @@ public class JIPipeDesktopFloatingMapPanel extends JIPipeDesktopWorkbenchPanel i
     private final MapBody mapBody;
     private final JToolBar header;
     private final JToggleButton lockButton;
+    private final JButton anchorButton;
+    private final Map<AnchorMode, JRadioButtonMenuItem> anchorMenuItems = new EnumMap<>(AnchorMode.class);
     private final JComponent resizeHandle;
     private final JCheckBoxMenuItem nodesLayerItem;
     private final JCheckBoxMenuItem edgesLayerItem;
@@ -123,6 +139,13 @@ public class JIPipeDesktopFloatingMapPanel extends JIPipeDesktopWorkbenchPanel i
     private boolean headerDragging;
     private boolean resizeDragging;
     private boolean anchored;
+
+    /**
+     * The effective anchor of an {@link AnchorMode#Auto} map: the snapping
+     * point detected at the first layout or the last drag release. Always
+     * {@code null} while the state carries a concrete anchor.
+     */
+    private AnchorMode resolvedAnchor;
 
     /**
      * @param graphEditorUI the graph editor that displays this map
@@ -138,6 +161,7 @@ public class JIPipeDesktopFloatingMapPanel extends JIPipeDesktopWorkbenchPanel i
         this.edgesLayerItem = new JCheckBoxMenuItem("Edges");
         this.notesLayerItem = new JCheckBoxMenuItem("Canvas notes");
         this.lockButton = createLockButton();
+        this.anchorButton = createAnchorButton();
         this.resizeHandle = createResizeHandle();
         this.mapBody = new MapBody();
         this.header = createHeader();
@@ -165,8 +189,8 @@ public class JIPipeDesktopFloatingMapPanel extends JIPipeDesktopWorkbenchPanel i
         graphEditorUI.getCanvasUI().addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
-                // The canvas fills the editor overlay: apply the initial
-                // anchor and clamp the map into the resized overlay
+                // The canvas fills the editor overlay: re-place the map at
+                // its anchor and clamp it into the resized overlay
                 reclampToOverlay();
             }
         });
@@ -213,6 +237,9 @@ public class JIPipeDesktopFloatingMapPanel extends JIPipeDesktopWorkbenchPanel i
         layersMenu.add(edgesLayerItem);
         layersMenu.add(notesLayerItem);
 
+        toolBar.add(anchorButton);
+        toolBar.add(Box.createHorizontalStrut(2));
+
         toolBar.add(lockButton);
         toolBar.add(Box.createHorizontalStrut(2));
 
@@ -240,6 +267,97 @@ public class JIPipeDesktopFloatingMapPanel extends JIPipeDesktopWorkbenchPanel i
             graphEditorUI.saveMapStateToSettings();
         });
         return button;
+    }
+
+    /**
+     * Creates the anchor configuration button: a reloadable popup menu (see
+     * UIUtils) with the Auto mode and the nine snapping points, each with its
+     * anchor icon.
+     */
+    private JButton createAnchorButton() {
+        JButton button = new JButton(JIPipe.RESOURCES.getIcon16("actions/anchor.png"));
+        UIUtils.makeButtonFlatWithSize(button, 20, 2);
+        button.setToolTipText("Map anchor");
+
+        JPopupMenu menu = new JPopupMenu();
+        ButtonGroup group = new ButtonGroup();
+        JRadioButtonMenuItem autoItem = new JRadioButtonMenuItem("Auto", JIPipe.RESOURCES.getIcon16("actions/anchor.png"));
+        autoItem.addActionListener(e -> applyAnchorChoice(AnchorMode.Auto));
+        group.add(autoItem);
+        anchorMenuItems.put(AnchorMode.Auto, autoItem);
+        menu.add(autoItem);
+        menu.add(new JSeparator());
+        for (AnchorMode mode : ANCHOR_MENU_ORDER) {
+            JRadioButtonMenuItem item = new JRadioButtonMenuItem(anchorLabel(mode), JIPipe.RESOURCES.getIcon16(anchorIcon(mode)));
+            item.addActionListener(e -> applyAnchorChoice(mode));
+            group.add(item);
+            anchorMenuItems.put(mode, item);
+            menu.add(item);
+        }
+        UIUtils.addReloadablePopupMenuToButton(button, menu, this::reloadAnchorMenu);
+        return button;
+    }
+
+    /**
+     * Syncs the anchor menu items with the current state before the popup is
+     * shown.
+     */
+    private void reloadAnchorMenu() {
+        AnchorMode selected = state.getAnchor();
+        for (Map.Entry<AnchorMode, JRadioButtonMenuItem> entry : anchorMenuItems.entrySet()) {
+            entry.getValue().setSelected(entry.getKey() == selected);
+        }
+    }
+
+    /**
+     * Applies an anchor choice from the menu. Auto only switches the mode:
+     * the snapping point is detected again at the next drag release. A
+     * concrete anchor snaps the map flush to the snapping point (offset =
+     * the edge margin; centered axes ignore it) and stays selected until
+     * changed again.
+     *
+     * @param mode the chosen anchor mode
+     */
+    private void applyAnchorChoice(AnchorMode mode) {
+        state.setAnchor(mode);
+        if (mode != AnchorMode.Auto) {
+            resolvedAnchor = mode;
+            state.setAnchorOffset(MAP_EDGE_MARGIN, MAP_EDGE_MARGIN);
+            placeIntoOverlay();
+            applyBounds();
+            mapBody.repaint();
+        }
+        graphEditorUI.saveMapStateToSettings();
+    }
+
+    private static String anchorLabel(AnchorMode mode) {
+        return switch (mode) {
+            case Auto -> "Auto";
+            case TopLeft -> "Top left";
+            case TopCenter -> "Top center";
+            case TopRight -> "Top right";
+            case CenterLeft -> "Center left";
+            case CenterCenter -> "Center";
+            case CenterRight -> "Center right";
+            case BottomLeft -> "Bottom left";
+            case BottomCenter -> "Bottom center";
+            case BottomRight -> "Bottom right";
+        };
+    }
+
+    private static String anchorIcon(AnchorMode mode) {
+        return switch (mode) {
+            case Auto -> "actions/anchor.png";
+            case TopLeft -> "actions/anchor-top-left.png";
+            case TopCenter -> "actions/anchor-top-center.png";
+            case TopRight -> "actions/anchor-top-right.png";
+            case CenterLeft -> "actions/anchor-center-left.png";
+            case CenterCenter -> "actions/anchor-center-center.png";
+            case CenterRight -> "actions/anchor-center-right.png";
+            case BottomLeft -> "actions/anchor-bottom-left.png";
+            case BottomCenter -> "actions/anchor-bottom-center.png";
+            case BottomRight -> "actions/anchor-bottom-right.png";
+        };
     }
 
     private JComponent createResizeHandle() {
@@ -285,7 +403,8 @@ public class JIPipeDesktopFloatingMapPanel extends JIPipeDesktopWorkbenchPanel i
         JIPipeDesktopMapState applied = new JIPipeDesktopMapState(newState);
         // A hand-edited settings file can store an unusable size: clamp it to
         // the resize minimum, so the panel never collapses below a clickable
-        // size (the position is clamped separately in applyStateToUI)
+        // size (the position is re-placed from the anchor separately in
+        // applyStateToUI)
         applied.setSize(Math.max(MAP_MIN_WIDTH, applied.getWidth()),
                 Math.max(MAP_MIN_HEIGHT, applied.getHeight()));
         if (headerDragging || resizeDragging) {
@@ -368,7 +487,7 @@ public class JIPipeDesktopFloatingMapPanel extends JIPipeDesktopWorkbenchPanel i
      */
     private void applyStateToUI() {
         ensureAnchored();
-        clampPosition();
+        placeIntoOverlay();
         applyBounds();
         applyVisibility();
         applyLock();
@@ -385,8 +504,10 @@ public class JIPipeDesktopFloatingMapPanel extends JIPipeDesktopWorkbenchPanel i
 
     private void applyLock() {
         lockButton.setSelected(state.isLocked());
-        // While locked, drags are rejected by the controllers and the resize
-        // affordance is removed
+        // While locked, drags are rejected by the controllers, the resize
+        // affordance is removed and the anchor cannot be changed (it would
+        // move the map)
+        anchorButton.setEnabled(!state.isLocked());
         resizeHandle.setVisible(!state.isLocked());
         header.setCursor(state.isLocked() ? Cursor.getDefaultCursor() : Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
     }
@@ -398,10 +519,15 @@ public class JIPipeDesktopFloatingMapPanel extends JIPipeDesktopWorkbenchPanel i
     }
 
     /**
-     * Applies the initial anchor of a fresh (never moved) map: the canvas
-     * top-right corner, offset by {@link #MAP_DEFAULT_OFFSET}. The anchor is
-     * applied at the first layout that gives the overlay a real size; until
-     * then an unsized overlay would anchor to 0.
+     * Resolves the anchor of a map that has not been laid out yet: a fresh
+     * (never moved) map anchors itself to the canvas top-right corner,
+     * offset by {@link #MAP_DEFAULT_OFFSET}; an auto map with a stored
+     * position detects its snapping point from that position. A concrete
+     * anchor needs no resolution: its persisted offset glues the map to the
+     * snapping point in the current overlay (applied by
+     * {@link #placeIntoOverlay()}). The resolution runs at the first layout
+     * that gives the overlay a real size; until then an unsized overlay
+     * would anchor to 0.
      */
     private void ensureAnchored() {
         if (anchored) {
@@ -412,22 +538,77 @@ public class JIPipeDesktopFloatingMapPanel extends JIPipeDesktopWorkbenchPanel i
             return;
         }
         anchored = true;
+        if (state.getAnchor() != AnchorMode.Auto) {
+            return;
+        }
         if (state.getX() == 0 && state.getY() == 0) {
-            state.setPosition(parent.getWidth() - state.getWidth() - MAP_DEFAULT_OFFSET, MAP_DEFAULT_OFFSET);
+            resolvedAnchor = AnchorMode.TopRight;
+            state.setAnchorOffset(MAP_DEFAULT_OFFSET, MAP_DEFAULT_OFFSET);
+        } else {
+            resolvedAnchor = AnchorMode.detect(parent.getWidth(), parent.getHeight(),
+                    state.getWidth(), state.getHeight(), state.getX(), state.getY());
+            Point offset = resolvedAnchor.captureOffset(parent.getWidth(), parent.getHeight(),
+                    state.getWidth(), state.getHeight(), state.getX(), state.getY());
+            state.setAnchorOffset(offset.x, offset.y);
         }
     }
 
     /**
-     * Re-applies the initial anchor and clamps the map into the overlay,
-     * then repaints. Called when the overlay (this panel's parent) or the
+     * Places the map into the overlay according to its anchor and offset,
+     * then clamps it as a safety (for example when the map is larger than
+     * the overlay). Auto maps use the resolved (detected) anchor; a map
+     * whose anchor was never resolved keeps its position (clamp only).
+     * Placement is skipped while the user drags, so an external state cannot
+     * pull the map out from under the mouse.
+     */
+    private void placeIntoOverlay() {
+        Container parent = getParent();
+        if (parent == null || parent.getWidth() <= 0 || parent.getHeight() <= 0) {
+            return;
+        }
+        AnchorMode resolved = state.getAnchor() != AnchorMode.Auto ? state.getAnchor() : resolvedAnchor;
+        if (!headerDragging && !resizeDragging && resolved != null) {
+            Point position = resolved.place(parent.getWidth(), parent.getHeight(),
+                    state.getWidth(), state.getHeight(),
+                    state.getAnchorOffset().getX(), state.getAnchorOffset().getY());
+            state.setPosition(position.x, position.y);
+        }
+        clampPosition();
+    }
+
+    /**
+     * Re-resolves the anchor after a drag or resize: in Auto mode, the
+     * snapping point is detected from the current position; a manually
+     * chosen anchor is kept. The offset is always re-captured from the
+     * current position, so the map keeps its place relative to the anchored
+     * sides.
+     */
+    private void adoptAnchorFromPosition() {
+        Container parent = getParent();
+        if (parent == null || parent.getWidth() <= 0 || parent.getHeight() <= 0) {
+            return;
+        }
+        AnchorMode anchor = state.getAnchor() != AnchorMode.Auto
+                ? state.getAnchor()
+                : AnchorMode.detect(parent.getWidth(), parent.getHeight(),
+                state.getWidth(), state.getHeight(), state.getX(), state.getY());
+        resolvedAnchor = anchor;
+        Point offset = anchor.captureOffset(parent.getWidth(), parent.getHeight(),
+                state.getWidth(), state.getHeight(), state.getX(), state.getY());
+        state.setAnchorOffset(offset.x, offset.y);
+    }
+
+    /**
+     * Re-applies the anchor and clamps the map into the overlay, then
+     * repaints. Called when the overlay (this panel's parent) or the
      * canvas resizes. The canvas preferred size is content-driven, so it does
      * not follow the overlay whenever the content exceeds the viewport
-     * (window un-maximize, splitter drag): clamping must not rely on canvas
+     * (window un-maximize, splitter drag): re-placing must not rely on canvas
      * resize events alone.
      */
     void reclampToOverlay() {
         ensureAnchored();
-        clampPosition();
+        placeIntoOverlay();
         applyBounds();
         mapBody.repaint();
     }
@@ -556,6 +737,7 @@ public class JIPipeDesktopFloatingMapPanel extends JIPipeDesktopWorkbenchPanel i
             pressScreen = null;
             startPosition = null;
             if (moved) {
+                adoptAnchorFromPosition();
                 graphEditorUI.saveMapStateToSettings();
             }
         }
@@ -609,6 +791,9 @@ public class JIPipeDesktopFloatingMapPanel extends JIPipeDesktopWorkbenchPanel i
             pressScreen = null;
             startSize = null;
             if (resized) {
+                // The size changed: re-capture the anchor offset so the next
+                // placement keeps the map where it is
+                adoptAnchorFromPosition();
                 graphEditorUI.saveMapStateToSettings();
             }
         }

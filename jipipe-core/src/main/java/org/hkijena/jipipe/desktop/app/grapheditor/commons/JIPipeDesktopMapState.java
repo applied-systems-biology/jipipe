@@ -17,7 +17,9 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import org.hkijena.jipipe.plugins.parameters.library.roi.Anchor;
 
+import java.awt.Point;
 import java.util.Objects;
 
 /**
@@ -29,13 +31,16 @@ import java.util.Objects;
  * and {@link org.hkijena.jipipe.plugins.settings.SettingsKeys#COMPARTMENTS_MAP_STATE}.
  * The stored JSON shape is:
  * <pre>{@code
- * {"visible":true,"position":{"x":470,"y":16},"size":{"w":280,"h":200},"locked":false,"layers":{"nodes":true,"edges":true,"notes":true}}
+ * {"visible":true,"position":{"x":470,"y":16},"size":{"w":280,"h":200},"locked":false,"anchor":"Auto","anchorOffset":{"x":0,"y":0},"layers":{"nodes":true,"edges":true,"notes":true}}
  * }</pre>
  * Missing fields fall back to the field's default value. A stored position of
  * {@code 0,0} means that the user has not moved the map yet: the map panel
- * then applies its initial anchor itself.
+ * then applies its initial anchor itself. The {@code anchor} selects one of
+ * the nine snapping points (or {@code Auto}, where the snapping point is
+ * detected from the position); the {@code anchorOffset} keeps the map's
+ * distance to the anchored side(s) so the position survives overlay resizes.
  */
-@JsonPropertyOrder({"visible", "position", "size", "locked", "layers"})
+@JsonPropertyOrder({"visible", "position", "size", "locked", "anchor", "anchorOffset", "layers"})
 public class JIPipeDesktopMapState {
 
     /**
@@ -52,6 +57,8 @@ public class JIPipeDesktopMapState {
     private Position position = new Position();
     private Size size = new Size();
     private boolean locked = false;
+    private AnchorMode anchor = AnchorMode.Auto;
+    private AnchorOffset anchorOffset = new AnchorOffset();
     private Layers layers = new Layers();
 
     public JIPipeDesktopMapState() {
@@ -67,6 +74,8 @@ public class JIPipeDesktopMapState {
         this.position = new Position(source.position);
         this.size = new Size(source.size);
         this.locked = source.locked;
+        this.anchor = source.anchor;
+        this.anchorOffset = new AnchorOffset(source.anchorOffset);
         this.layers = new Layers(source.layers);
     }
 
@@ -115,6 +124,57 @@ public class JIPipeDesktopMapState {
     @JsonSetter("locked")
     public void setLocked(boolean locked) {
         this.locked = locked;
+    }
+
+    /**
+     * @return the anchor mode of the map
+     */
+    @JsonGetter("anchor")
+    public AnchorMode getAnchor() {
+        return anchor;
+    }
+
+    /**
+     * Sets the anchor mode. A {@code null} value (from a hand-edited
+     * settings file) falls back to {@link AnchorMode#Auto}.
+     *
+     * @param anchor the anchor mode
+     */
+    @JsonSetter("anchor")
+    public void setAnchor(AnchorMode anchor) {
+        this.anchor = anchor == null ? AnchorMode.Auto : anchor;
+    }
+
+    /**
+     * @return the offset of the map relative to its anchor
+     */
+    @JsonGetter("anchorOffset")
+    public AnchorOffset getAnchorOffset() {
+        return anchorOffset;
+    }
+
+    /**
+     * Sets the offset. A {@code null} value (from a hand-edited settings
+     * file) falls back to the zero offset.
+     *
+     * @param anchorOffset the offset
+     */
+    @JsonSetter("anchorOffset")
+    public void setAnchorOffset(AnchorOffset anchorOffset) {
+        this.anchorOffset = anchorOffset == null ? new AnchorOffset() : anchorOffset;
+    }
+
+    /**
+     * Sets the offset values.
+     * Convenience accessor for the anchor offset.
+     * Not part of the JSON shape.
+     *
+     * @param x the offset x value
+     * @param y the offset y value
+     */
+    @JsonIgnore
+    public void setAnchorOffset(int x, int y) {
+        anchorOffset.setPosition(x, y);
     }
 
     @JsonGetter("layers")
@@ -250,12 +310,14 @@ public class JIPipeDesktopMapState {
                 && locked == that.locked
                 && Objects.equals(position, that.position)
                 && Objects.equals(size, that.size)
+                && anchor == that.anchor
+                && Objects.equals(anchorOffset, that.anchorOffset)
                 && Objects.equals(layers, that.layers);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(visible, position, size, locked, layers);
+        return Objects.hash(visible, position, size, locked, anchor, anchorOffset, layers);
     }
 
     /**
@@ -466,6 +528,229 @@ public class JIPipeDesktopMapState {
         @Override
         public int hashCode() {
             return Objects.hash(nodes, edges, notes);
+        }
+    }
+
+    /**
+     * The offset of the map relative to its anchor: the distance to the
+     * anchored side(s). On centered axes the value is stored but ignored by
+     * the placement (the axis is aligned to the exact center).
+     */
+    @JsonPropertyOrder({"x", "y"})
+    public static class AnchorOffset {
+        private int x = 0;
+        private int y = 0;
+
+        public AnchorOffset() {
+        }
+
+        /**
+         * Creates a copy of a source offset.
+         *
+         * @param source the offset to copy
+         */
+        public AnchorOffset(AnchorOffset source) {
+            this.x = source.x;
+            this.y = source.y;
+        }
+
+        @JsonGetter("x")
+        public int getX() {
+            return x;
+        }
+
+        @JsonSetter("x")
+        public void setX(int x) {
+            this.x = x;
+        }
+
+        @JsonGetter("y")
+        public int getY() {
+            return y;
+        }
+
+        @JsonSetter("y")
+        public void setY(int y) {
+            this.y = y;
+        }
+
+        /**
+         * Sets the offset values.
+         *
+         * @param x the offset x value
+         * @param y the offset y value
+         */
+        public void setPosition(int x, int y) {
+            setX(x);
+            setY(y);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+            AnchorOffset offset = (AnchorOffset) o;
+            return x == offset.x && y == offset.y;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(x, y);
+        }
+    }
+
+    /**
+     * The anchor mode of the floating map: either {@link #Auto} (the anchor
+     * is detected automatically) or one of the nine snapping points of the
+     * existing {@link org.hkijena.jipipe.plugins.parameters.library.roi.Anchor}
+     * parameter.
+     * <p>
+     * Per axis, an anchor is {@code relative == 0} (left/top: the offset is
+     * the distance to the left/top edge), {@code relative == 0.5} (centered:
+     * the axis is aligned to the exact center and the offset is ignored), or
+     * {@code relative == 1} (right/bottom: the offset is the distance to the
+     * right/bottom edge).
+     */
+    public enum AnchorMode {
+        Auto(null),
+        TopLeft(Anchor.TopLeft),
+        TopCenter(Anchor.TopCenter),
+        TopRight(Anchor.TopRight),
+        CenterLeft(Anchor.CenterLeft),
+        CenterCenter(Anchor.CenterCenter),
+        CenterRight(Anchor.CenterRight),
+        BottomLeft(Anchor.BottomLeft),
+        BottomCenter(Anchor.BottomCenter),
+        BottomRight(Anchor.BottomRight);
+
+        private final Anchor anchor;
+
+        /**
+         * Per axis, the maximum difference between the two edge distances at
+         * which the axis counts as centered.
+         */
+        private static final int CENTER_TOLERANCE = 24;
+
+        AnchorMode(Anchor anchor) {
+            this.anchor = anchor;
+        }
+
+        /**
+         * @return the underlying snapping point, or {@code null} for {@link #Auto}
+         */
+        public Anchor getAnchor() {
+            return anchor;
+        }
+
+        /**
+         * Computes the map position for this anchor inside an overlay.
+         *
+         * @param parentWidth  the overlay width
+         * @param parentHeight the overlay height
+         * @param width        the map width
+         * @param height       the map height
+         * @param offsetX      the captured offset of the horizontal axis
+         * @param offsetY      the captured offset of the vertical axis
+         * @return the map position (top-left corner)
+         */
+        public Point place(int parentWidth, int parentHeight, int width, int height, int offsetX, int offsetY) {
+            requireAnchor();
+            return new Point(placeAxis(anchor.getRelativeX(), parentWidth, width, offsetX),
+                    placeAxis(anchor.getRelativeY(), parentHeight, height, offsetY));
+        }
+
+        /**
+         * Places one axis: left/top keeps the offset, centered aligns to the
+         * exact center, right/bottom measures the offset from the far edge.
+         */
+        private static int placeAxis(double relative, int parentSize, int size, int offset) {
+            if (relative == 0) {
+                return offset;
+            }
+            if (relative == 0.5) {
+                return (parentSize - size) / 2;
+            }
+            return parentSize - size - offset;
+        }
+
+        /**
+         * Detects the snapping point that best matches a map position: per
+         * axis, the closer edge wins; an axis whose two edge distances differ
+         * by at most a small tolerance is centered.
+         *
+         * @param parentWidth  the overlay width
+         * @param parentHeight the overlay height
+         * @param width        the map width
+         * @param height       the map height
+         * @param x            the map x coordinate
+         * @param y            the map y coordinate
+         * @return the detected anchor (never {@link #Auto})
+         */
+        public static AnchorMode detect(int parentWidth, int parentHeight, int width, int height, int x, int y) {
+            double relativeX = detectAxis(parentWidth, width, x);
+            double relativeY = detectAxis(parentHeight, height, y);
+            for (AnchorMode mode : values()) {
+                if (mode.anchor != null
+                        && mode.anchor.getRelativeX() == relativeX
+                        && mode.anchor.getRelativeY() == relativeY) {
+                    return mode;
+                }
+            }
+            throw new IllegalStateException("No anchor matches " + relativeX + ", " + relativeY);
+        }
+
+        /**
+         * Detects one axis: the closer edge wins; an axis whose two edge
+         * distances differ by at most {@link #CENTER_TOLERANCE} is centered.
+         */
+        private static double detectAxis(int parentSize, int size, int coordinate) {
+            int low = coordinate;
+            int high = parentSize - size - coordinate;
+            if (Math.abs(low - high) <= CENTER_TOLERANCE) {
+                return 0.5;
+            }
+            return low < high ? 0 : 1;
+        }
+
+        /**
+         * Captures the offset of a map position for this anchor: the
+         * distances to the anchored sides (raw coordinates for centered
+         * axes, where the offset is ignored by {@link #place}).
+         *
+         * @param parentWidth  the overlay width
+         * @param parentHeight the overlay height
+         * @param width        the map width
+         * @param height       the map height
+         * @param x            the map x coordinate
+         * @param y            the map y coordinate
+         * @return the offset for this anchor
+         */
+        public Point captureOffset(int parentWidth, int parentHeight, int width, int height, int x, int y) {
+            requireAnchor();
+            return new Point(captureAxis(anchor.getRelativeX(), parentWidth, width, x),
+                    captureAxis(anchor.getRelativeY(), parentHeight, height, y));
+        }
+
+        /**
+         * Captures one axis: right/bottom measures from the far edge; the raw
+         * coordinate is kept for left/top and centered axes (centered axes
+         * ignore the offset on placement).
+         */
+        private static int captureAxis(double relative, int parentSize, int size, int coordinate) {
+            if (relative == 1) {
+                return parentSize - size - coordinate;
+            }
+            return coordinate;
+        }
+
+        private void requireAnchor() {
+            if (anchor == null) {
+                throw new UnsupportedOperationException("Auto does not have a fixed snapping point");
+            }
         }
     }
 }

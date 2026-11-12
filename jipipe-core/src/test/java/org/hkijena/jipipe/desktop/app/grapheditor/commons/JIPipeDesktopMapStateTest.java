@@ -40,6 +40,7 @@ class JIPipeDesktopMapStateTest {
 
         assertEquals("{\"visible\":true,\"position\":{\"x\":470,\"y\":16}," +
                 "\"size\":{\"w\":280,\"h\":200},\"locked\":false," +
+                "\"anchor\":\"Auto\",\"anchorOffset\":{\"x\":0,\"y\":0}," +
                 "\"layers\":{\"nodes\":true,\"edges\":true,\"notes\":true}}", json);
     }
 
@@ -50,6 +51,8 @@ class JIPipeDesktopMapStateTest {
         state.setPosition(470, 16);
         state.setSize(320, 240);
         state.setLocked(true);
+        state.setAnchor(JIPipeDesktopMapState.AnchorMode.TopRight);
+        state.setAnchorOffset(16, 12);
         state.setLayerNodes(false);
         state.setLayerEdges(false);
         state.setLayerNotes(false);
@@ -64,6 +67,9 @@ class JIPipeDesktopMapStateTest {
         assertEquals(320, restored.getWidth());
         assertEquals(240, restored.getHeight());
         assertTrue(restored.isLocked());
+        assertEquals(JIPipeDesktopMapState.AnchorMode.TopRight, restored.getAnchor());
+        assertEquals(16, restored.getAnchorOffset().getX());
+        assertEquals(12, restored.getAnchorOffset().getY());
         assertFalse(restored.isLayerNodes());
         assertFalse(restored.isLayerEdges());
         assertFalse(restored.isLayerNotes());
@@ -80,9 +86,29 @@ class JIPipeDesktopMapStateTest {
         assertEquals(JIPipeDesktopMapState.MAP_DEFAULT_WIDTH, restored.getWidth());
         assertEquals(JIPipeDesktopMapState.MAP_DEFAULT_HEIGHT, restored.getHeight());
         assertFalse(restored.isLocked());
+        assertEquals(JIPipeDesktopMapState.AnchorMode.Auto, restored.getAnchor());
+        assertEquals(0, restored.getAnchorOffset().getX());
+        assertEquals(0, restored.getAnchorOffset().getY());
         assertTrue(restored.isLayerNodes());
         assertTrue(restored.isLayerEdges());
         assertTrue(restored.isLayerNotes());
+    }
+
+    @Test
+    void legacyJsonWithoutAnchorFieldsFallsBackToAuto() throws Exception {
+        // The JSON shape before the anchor model existed: stored positions
+        // must migrate to the default Auto mode
+        JIPipeDesktopMapState restored = JsonUtils.getObjectMapper().readValue(
+                "{\"visible\":true,\"position\":{\"x\":470,\"y\":16}," +
+                        "\"size\":{\"w\":280,\"h\":200},\"locked\":false," +
+                        "\"layers\":{\"nodes\":true,\"edges\":true,\"notes\":true}}",
+                JIPipeDesktopMapState.class);
+
+        assertEquals(JIPipeDesktopMapState.AnchorMode.Auto, restored.getAnchor());
+        assertEquals(0, restored.getAnchorOffset().getX());
+        assertEquals(0, restored.getAnchorOffset().getY());
+        assertEquals(470, restored.getX());
+        assertEquals(16, restored.getY());
     }
 
     @Test
@@ -90,6 +116,8 @@ class JIPipeDesktopMapStateTest {
         JIPipeDesktopMapState source = JIPipeDesktopMapState.defaultState();
         source.setPosition(470, 16);
         source.setLocked(true);
+        source.setAnchor(JIPipeDesktopMapState.AnchorMode.BottomRight);
+        source.setAnchorOffset(8, 8);
         source.setLayerNotes(false);
 
         JIPipeDesktopMapState copy = new JIPipeDesktopMapState(source);
@@ -97,11 +125,16 @@ class JIPipeDesktopMapStateTest {
 
         copy.setPosition(100, 100);
         copy.setLocked(false);
+        copy.setAnchor(JIPipeDesktopMapState.AnchorMode.TopLeft);
+        copy.setAnchorOffset(1, 2);
         copy.setLayerNotes(true);
 
         assertEquals(470, source.getX());
         assertEquals(16, source.getY());
         assertTrue(source.isLocked());
+        assertEquals(JIPipeDesktopMapState.AnchorMode.BottomRight, source.getAnchor());
+        assertEquals(8, source.getAnchorOffset().getX());
+        assertEquals(8, source.getAnchorOffset().getY());
         assertFalse(source.isLayerNotes());
     }
 }
