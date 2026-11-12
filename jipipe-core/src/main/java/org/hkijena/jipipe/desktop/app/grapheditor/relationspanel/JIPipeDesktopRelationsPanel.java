@@ -161,6 +161,14 @@ public class JIPipeDesktopRelationsPanel extends JIPipeDesktopWorkbenchPanel imp
      * The layer keys ("upstream-N" / "downstream-N") the user expanded.
      */
     private final Set<String> expandedLayers = new LinkedHashSet<>();
+    /**
+     * The upstream/downstream level counts of the previous rebuild: a changed
+     * count means a structural change added or removed a layer, so the
+     * index-based expansion keys shifted and the expansion state is reset
+     * instead of re-attaching to other layers.
+     */
+    private int previousUpstreamLevelCount = -1;
+    private int previousDownstreamLevelCount = -1;
 
     /**
      * Creates a new Relations panel for the given workbench and graph editor.
@@ -264,18 +272,26 @@ public class JIPipeDesktopRelationsPanel extends JIPipeDesktopWorkbenchPanel imp
 
     /**
      * Moves one step back in the visitation trail (the trail move is the
-     * navigation; nothing is appended).
+     * navigation; nothing is appended). The toolbar is updated
+     * unconditionally: also when the target node no longer exists (the
+     * reveal is skipped, but the trail state changed).
      */
     private void navigateBack() {
-        reveal(trail.goBack());
+        String nodeId = trail.goBack();
+        reveal(nodeId);
+        updateToolbar();
     }
 
     /**
      * Moves one step forward in the visitation trail (the trail move is the
-     * navigation; nothing is appended).
+     * navigation; nothing is appended). The toolbar is updated
+     * unconditionally: also when the target node no longer exists (the
+     * reveal is skipped, but the trail state changed).
      */
     private void navigateForward() {
-        reveal(trail.goForward());
+        String nodeId = trail.goForward();
+        reveal(nodeId);
+        updateToolbar();
     }
 
     /**
@@ -450,17 +466,26 @@ public class JIPipeDesktopRelationsPanel extends JIPipeDesktopWorkbenchPanel imp
         rowsPanel.removeAll();
         if (result != null) {
             List<List<RelationLayerCalculator.Layer>> upstream = result.upstream();
+            List<List<RelationLayerCalculator.Layer>> downstream = result.downstream();
+            if (upstream.size() != previousUpstreamLevelCount || downstream.size() != previousDownstreamLevelCount) {
+                // The index-based expansion keys refer to other layers now
+                expandedLayers.clear();
+            }
+            previousUpstreamLevelCount = upstream.size();
+            previousDownstreamLevelCount = downstream.size();
             for (int i = 0; i < upstream.size(); ++i) {
                 addRow(createLayerRow(upstream.get(i), "upstream-" + i));
             }
             addRow(createCenterRow());
-            List<List<RelationLayerCalculator.Layer>> downstream = result.downstream();
             for (int i = 0; i < downstream.size(); ++i) {
                 addRow(createLayerRow(downstream.get(i), "downstream-" + i));
             }
             if (upstream.isEmpty() && downstream.isEmpty()) {
                 addRow(createNoRelationsHint());
             }
+        } else {
+            previousUpstreamLevelCount = -1;
+            previousDownstreamLevelCount = -1;
         }
         applyViewState();
         rowsPanel.revalidate();
