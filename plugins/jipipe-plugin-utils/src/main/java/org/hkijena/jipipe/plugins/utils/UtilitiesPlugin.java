@@ -35,6 +35,8 @@ import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.plugins.utils.algorithms.*;
 import org.hkijena.jipipe.plugins.utils.algorithms.datatable.*;
+import org.hkijena.jipipe.plugins.utils.algorithms.debug.LogHammerAlgorithm;
+import org.hkijena.jipipe.plugins.utils.algorithms.debug.SleepAlgorithm;
 import org.hkijena.jipipe.plugins.utils.algorithms.distribute.DistributeDataRandomlyByCountAlgorithm;
 import org.hkijena.jipipe.plugins.utils.algorithms.distribute.DistributeDataRandomlyByPercentageAlgorithm;
 import org.hkijena.jipipe.plugins.utils.algorithms.iterationsteps.CrasherAlgorithm;
@@ -131,6 +133,7 @@ public class UtilitiesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("run-process-merging", RunProcessMergingAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/cm_runterm.png"));
 
         registerNodeType("sleep", SleepAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/clock.png"));
+        registerNodeType("debug-log-hammer", LogHammerAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/bugs.png"));
         registerNodeType("duplicate", DuplicateDataAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/edit-duplicate.png"));
 
         registerNodeType("check-iteration-step-single", SingleIterationStepCheckerAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/package.png"));

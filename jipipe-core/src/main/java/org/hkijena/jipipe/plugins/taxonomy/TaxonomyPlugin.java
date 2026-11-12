@@ -326,6 +326,7 @@ public class TaxonomyPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 // misc - full-registry audit leaves (curated nodes previously in
                 // the "Miscellaneous" catch-all)
                 new DataUtilitiesFunction(),
+                new DebuggingFunction(),
                 new TextMarkupFunction(),
                 new ScriptingFunction(),
                 new MiscellaneousUnassignedFunction(),

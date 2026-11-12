@@ -117,6 +117,7 @@ class FunctionLeavesTest {
                 FormsFunction.class,
                 // misc - full-registry audit leaves
                 DataUtilitiesFunction.class,
+                DebuggingFunction.class,
                 TextMarkupFunction.class,
                 // scripting - language sub-leaves (re-clustering audit)
                 ScriptingPythonFunction.class,
