@@ -41,6 +41,8 @@ import org.hkijena.jipipe.plugins.canvasnotes.nodes.DefaultTextBoxGraphCanvasNot
 import org.hkijena.jipipe.plugins.canvasnotes.nodes.TextBoxGraphCanvasNote;
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
+import org.hkijena.jipipe.plugins.tunnels.nodes.JIPipeDataFlowTunnelEntrance;
+import org.hkijena.jipipe.plugins.tunnels.nodes.JIPipeDataFlowTunnelExit;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -76,10 +78,13 @@ import java.util.List;
  * ({@code DefaultTextBoxGraphCanvasNote}) form groups ordered by their
  * top-left canvas position, "Ungrouped" last with neutral colors, and - while
  * a search is active - one group per other compartment appended after the
- * current-canvas groups. Canvas notes never appear as entries. Single click
- * only selects an entry (and updates the "In group" pane); double-click
- * navigates: nodes on the current canvas are selected and scrolled to, nodes
- * of other compartments open (or focus) their compartment's editor tab first.
+ * current-canvas groups. A synthetic "All" group (every entry of the tree)
+ * sits on top and is pre-selected when no other selection can be restored.
+ * Canvas notes never appear as entries. Single click only selects a row - a
+ * group shows its entries in the "In group" pane, a node shows the members of
+ * its containing group; double-click navigates: nodes on the current canvas
+ * are selected and scrolled to, nodes of other compartments open (or focus)
+ * their compartment's editor tab first.
  * <p>
  * The grouping geometry comes from {@link NoteGroupingCalculator} (unit
  * tested); this component only renders it and reacts to graph, parameter and
@@ -178,6 +183,15 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
      * state across rebuilds).
      */
     private static final String UNGROUPED_GROUP_ID = "__ungrouped";
+    /**
+     * ID of the synthetic "All" group row (in-memory only; groups the
+     * expansion and selection state across rebuilds).
+     */
+    private static final String GROUP_ID_ALL = "__all";
+    /**
+     * Gap between a group's title and its member count.
+     */
+    private static final int GROUP_COUNT_GAP = 8;
     private static final int TIER_COMPACT = 0;
     private static final int TIER_COMFORTABLE = 1;
     /**
@@ -276,7 +290,7 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
         tree.setRootVisible(false);
         tree.setShowsRootHandles(true);
         tree.setCellRenderer(new FindTreeCellRenderer());
-        tree.setSelectionModel(new NodeRowOnlySelectionModel());
+        tree.setSelectionModel(new RowSelectionModel());
         tree.addTreeSelectionListener(e -> onTreeSelectionChanged());
         tree.addTreeExpansionListener(new TreeExpansionListener() {
             @Override
@@ -512,10 +526,13 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
             nodesById.clear();
             DefaultMutableTreeNode root = new DefaultMutableTreeNode();
 
-            // Remember the selected node across the rebuild (the model reload
+            // Remember the selected row across the rebuild (the model reload
             // drops the tree selection); restored below, mirroring
-            // reapplyExpandedGroups(). A removed entry clears as before.
+            // reapplyExpandedGroups(). When nothing can be restored (first
+            // build, or the selected row no longer exists), the synthetic
+            // "All" group is pre-selected.
             UUID selectedNodeId = selectedEntryNodeId();
+            String selectedGroupId = selectedGroupId();
 
             JIPipeProject project = getProject();
             if (project != null) {
@@ -542,11 +559,29 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
                 if (searching) {
                     addCompartmentGroups(root, project, canvasState.canvasNodeIds(), query, pinnedOnly);
                 }
+
+                // The synthetic "All" group goes first: every entry currently
+                // in the tree (post-filter, including the cross-compartment
+                // search results while searching), deduplicated by node id
+                List<FindEntry> allEntries = new ArrayList<>();
+                for (GroupRow groupRow : groupRows) {
+                    for (FindEntry entry : groupRow.entries()) {
+                        if (allEntries.stream().noneMatch(existing -> existing.getNodeId().equals(entry.getNodeId()))) {
+                            allEntries.add(entry);
+                        }
+                    }
+                }
+                DefaultMutableTreeNode allNode = addGroupRow(root, GROUP_ID_ALL, "All", UNGROUPED_FILL, UNGROUPED_BORDER, allEntries, false, true);
+                if (allNode != null && root.getChildCount() > 1) {
+                    root.insert(allNode, 0);
+                }
             }
 
             treeModel.setRoot(root);
             reapplyExpandedGroups();
-            reapplySelection(selectedNodeId);
+            if (!reapplySelection(selectedGroupId, selectedNodeId)) {
+                selectAllRow();
+            }
             updateInGroupPane();
         } finally {
             rebuilding = false;
@@ -629,7 +664,22 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
                 }
             }
         }
-        return new FindEntry(node.getUUIDInParentGraph(), node.getName(), nodeDescription(node), uuidString(node), compartmentId, compartmentName, node.isBookmarked());
+        return new FindEntry(node.getUUIDInParentGraph(), nodeDisplayTitle(node), nodeDescription(node), uuidString(node), compartmentId, compartmentName, node.isBookmarked());
+    }
+
+    /**
+     * The display title of a node in the Find panel: tunnels are prefixed so
+     * their two node kinds are distinguishable (the canvas shows them by
+     * their algorithm name only). Other nodes keep their plain name.
+     */
+    private static String nodeDisplayTitle(JIPipeGraphNode node) {
+        if (node instanceof JIPipeDataFlowTunnelEntrance) {
+            return "Tunnel entrance: " + node.getName();
+        }
+        if (node instanceof JIPipeDataFlowTunnelExit) {
+            return "Tunnel exit: " + node.getName();
+        }
+        return node.getName();
     }
 
     private static String nodeDescription(JIPipeGraphNode node) {
@@ -656,9 +706,9 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
         return result;
     }
 
-    private void addGroupRow(DefaultMutableTreeNode root, String groupId, String title, Color fill, Color border, List<FindEntry> entries, boolean compartmentGroup, boolean hideWhenEmpty) {
+    private DefaultMutableTreeNode addGroupRow(DefaultMutableTreeNode root, String groupId, String title, Color fill, Color border, List<FindEntry> entries, boolean compartmentGroup, boolean hideWhenEmpty) {
         if (hideWhenEmpty && entries.isEmpty()) {
-            return;
+            return null;
         }
         GroupRow groupRow = new GroupRow(groupId, displayTitle(title), fill, border, entries, compartmentGroup);
         groupRows.add(groupRow);
@@ -668,6 +718,7 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
             groupNode.add(new DefaultMutableTreeNode(new NodeRow(entry, compartmentGroup, node != null ? node.getInfo() : null)));
         }
         root.add(groupNode);
+        return groupNode;
     }
 
     private static String displayTitle(String title) {
@@ -734,8 +785,8 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
     }
 
     /**
-     * The node id of the currently selected tree entry, or null when nothing
-     * node-like is selected.
+     * The node id of the currently selected tree entry, or null when no node
+     * row is selected.
      */
     private UUID selectedEntryNodeId() {
         DefaultMutableTreeNode treeNode = selectedTreeNode();
@@ -746,26 +797,61 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
     }
 
     /**
-     * Reselects the node row of the given node id after a rebuild, mirroring
+     * The group id of the currently selected tree row, or null when no group
+     * row is selected.
+     */
+    private String selectedGroupId() {
+        DefaultMutableTreeNode treeNode = selectedTreeNode();
+        return treeNode != null && treeNode.getUserObject() instanceof GroupRow groupRow ? groupRow.groupId() : null;
+    }
+
+    /**
+     * Reselects the previously selected row after a rebuild, mirroring
      * {@link #reapplyExpandedGroups()}: the model reload drops the tree
      * selection, which would otherwise empty the "In group" pane about a
-     * second after ordinary canvas use (zoom, drop, paste). A node id that no
-     * longer exists (or null) restores nothing, so the selection clears as
-     * before.
+     * second after ordinary canvas use (zoom, drop, paste). Restores a
+     * selected group (by group id) or node (by node id); returns false when
+     * neither exists, so the caller pre-selects the "All" group.
      */
-    private void reapplySelection(UUID nodeId) {
-        if (nodeId == null) {
-            return;
-        }
+    private boolean reapplySelection(String groupId, UUID nodeId) {
         DefaultMutableTreeNode root = (DefaultMutableTreeNode) treeModel.getRoot();
+        if (groupId != null) {
+            for (Enumeration<? extends TreeNode> children = root.children(); children.hasMoreElements(); ) {
+                DefaultMutableTreeNode child = (DefaultMutableTreeNode) children.nextElement();
+                if (child.getUserObject() instanceof GroupRow groupRow && groupId.equals(groupRow.groupId())) {
+                    tree.setSelectionPath(new TreePath(child.getPath()));
+                    return true;
+                }
+            }
+            return false;
+        }
+        if (nodeId == null) {
+            return false;
+        }
         for (Enumeration<? extends TreeNode> groupChildren = root.children(); groupChildren.hasMoreElements(); ) {
             DefaultMutableTreeNode groupNode = (DefaultMutableTreeNode) groupChildren.nextElement();
             for (Enumeration<? extends TreeNode> leafChildren = groupNode.children(); leafChildren.hasMoreElements(); ) {
                 DefaultMutableTreeNode leafNode = (DefaultMutableTreeNode) leafChildren.nextElement();
                 if (leafNode.getUserObject() instanceof NodeRow nodeRow && nodeId.equals(nodeRow.entry().getNodeId())) {
                     tree.setSelectionPath(new TreePath(leafNode.getPath()));
-                    return;
+                    return true;
                 }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Pre-selects the synthetic "All" group row (the first tree row) when no
+     * selection could be restored, so the "In group" pane lists all entries.
+     */
+    private void selectAllRow() {
+        DefaultMutableTreeNode root = (DefaultMutableTreeNode) treeModel.getRoot();
+        for (Enumeration<? extends TreeNode> children = root.children(); children.hasMoreElements(); ) {
+            DefaultMutableTreeNode child = (DefaultMutableTreeNode) children.nextElement();
+            if (child.getUserObject() instanceof GroupRow groupRow && GROUP_ID_ALL.equals(groupRow.groupId())) {
+                tree.setSelectionPath(new TreePath(child.getPath()));
+                return;
             }
         }
     }
@@ -805,7 +891,7 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
 
     private void updateInGroupPane() {
         DefaultListModel<ExistingPipelineNodeDatabaseEntry> listModel = new DefaultListModel<>();
-        for (FindEntry entry : selectedEntryMembers()) {
+        for (FindEntry entry : selectedRowMembers()) {
             JIPipeGraphNode node = nodesById.get(entry.getNodeId());
             if (node == null) {
                 continue;
@@ -813,32 +899,58 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
             // The Add-nodes results-list row for this member: the entry wraps
             // the live node (getGraphNode() maps back for any future click
             // use; the pane stays display-only)
-            listModel.addElement(new ExistingPipelineNodeDatabaseEntry(entry.getUuidString(), node));
+            listModel.addElement(createPaneEntry(entry, node));
         }
         inGroupList.setModel(listModel);
     }
 
     /**
-     * The members of the group that contains the current selection (the union
-     * of the groups for a multi-membership node; the ungrouped members when
-     * the selection is ungrouped). Empty when nothing node-like is selected
-     * (e.g. the selection is a cross-compartment search result, which has no
-     * current-canvas grouping).
+     * The existing-node entry for the "In group" pane: tunnel nodes keep the
+     * display name override of the tree rows (the base class would show the
+     * raw node name); every other node uses the stock entry.
      */
-    private List<FindEntry> selectedEntryMembers() {
+    private ExistingPipelineNodeDatabaseEntry createPaneEntry(FindEntry entry, JIPipeGraphNode node) {
+        if (node instanceof JIPipeDataFlowTunnelEntrance || node instanceof JIPipeDataFlowTunnelExit) {
+            return new TunnelDisplayEntry(entry.getUuidString(), node, nodeDisplayTitle(node));
+        }
+        return new ExistingPipelineNodeDatabaseEntry(entry.getUuidString(), node);
+    }
+
+    /**
+     * The members shown in the "In group" pane for the current selection: a
+     * selected group row lists its entries (the post-filter list the row
+     * displays); a selected node row lists the members of the group
+     * containing that node (the union of the groups for a multi-membership
+     * node; the ungrouped members when the selection is ungrouped). Empty
+     * when nothing row-like is selected (e.g. a node of another compartment,
+     * which has no current-canvas grouping).
+     */
+    private List<FindEntry> selectedRowMembers() {
         DefaultMutableTreeNode treeNode = selectedTreeNode();
-        if (treeNode == null || !(treeNode.getUserObject() instanceof NodeRow nodeRow)) {
+        if (treeNode == null) {
             return List.of();
         }
+        if (treeNode.getUserObject() instanceof GroupRow groupRow) {
+            return new ArrayList<>(groupRow.entries());
+        }
+        if (treeNode.getUserObject() instanceof NodeRow nodeRow) {
+            return nodeRowMembers(nodeRow.entry());
+        }
+        return List.of();
+    }
+
+    private List<FindEntry> nodeRowMembers(FindEntry selected) {
         Map<UUID, FindEntry> members = new LinkedHashMap<>();
         boolean found = false;
         for (GroupRow groupRow : groupRows) {
-            if (groupRow.compartmentGroup()) {
+            // The synthetic "All" group and the compartment groups are not
+            // canvas groups: they must not leak into a node row's member list
+            if (groupRow.compartmentGroup() || GROUP_ID_ALL.equals(groupRow.groupId())) {
                 continue;
             }
             boolean contains = false;
             for (FindEntry entry : groupRow.entries()) {
-                if (entry.getNodeId().equals(nodeRow.entry().getNodeId())) {
+                if (entry.getNodeId().equals(selected.getNodeId())) {
                     contains = true;
                     break;
                 }
@@ -959,41 +1071,62 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
     private record CanvasState(List<NoteGroupingCalculator.NodeRef> nodeRefs, List<NoteGroupingCalculator.NoteRef> noteRefs, Set<UUID> canvasNodeIds) {
     }
 
+    /**
+     * The existing-node entry for the "In group" pane of a tunnel node: only
+     * the display name is overridden so the pane shows the same tunnel title
+     * as the tree rows ("Tunnel entrance: ..." / "Tunnel exit: ...");
+     * everything else (icon, colors, location line) is inherited.
+     */
+    private static final class TunnelDisplayEntry extends ExistingPipelineNodeDatabaseEntry {
+        private final String displayName;
+
+        private TunnelDisplayEntry(String id, JIPipeGraphNode graphNode, String displayName) {
+            super(id, graphNode);
+            this.displayName = displayName;
+        }
+
+        @Override
+        public String getName() {
+            return displayName;
+        }
+    }
+
     // ------------------------------------------------------------------
-    // Selection model (group rows are not selectable)
+    // Selection model (the invisible root is not selectable)
     // ------------------------------------------------------------------
 
     /**
-     * A selection model that filters out all group rows: only node leaves can
-     * be selected (group rows remain expandable/collapsible). A request that
-     * contains only group rows keeps the previous selection instead of
-     * clearing it (clicking a group header must not deselect the node).
+     * A selection model that makes the group rows and the node rows
+     * selectable while keeping the invisible root unselectable. A request
+     * that contains only unselectable rows keeps the previous selection
+     * instead of clearing it (clicking a non-row must not deselect).
      */
-    private static final class NodeRowOnlySelectionModel extends DefaultTreeSelectionModel {
-        private TreePath[] filterNodeRows(TreePath[] paths) {
+    private static final class RowSelectionModel extends DefaultTreeSelectionModel {
+        private TreePath[] filterSelectableRows(TreePath[] paths) {
             if (paths == null) {
                 return null;
             }
-            List<TreePath> nodeRows = new ArrayList<>();
+            List<TreePath> rows = new ArrayList<>();
             for (TreePath path : paths) {
-                if (path.getLastPathComponent() instanceof DefaultMutableTreeNode node && node.getUserObject() instanceof NodeRow) {
-                    nodeRows.add(path);
+                if (path.getLastPathComponent() instanceof DefaultMutableTreeNode node
+                        && (node.getUserObject() instanceof GroupRow || node.getUserObject() instanceof NodeRow)) {
+                    rows.add(path);
                 }
             }
-            if (nodeRows.isEmpty() && paths.length > 0) {
+            if (rows.isEmpty() && paths.length > 0) {
                 return getSelectionPaths();
             }
-            return nodeRows.toArray(new TreePath[0]);
+            return rows.toArray(new TreePath[0]);
         }
 
         @Override
         public void setSelectionPaths(TreePath[] paths) {
-            super.setSelectionPaths(filterNodeRows(paths));
+            super.setSelectionPaths(filterSelectableRows(paths));
         }
 
         @Override
         public void addSelectionPaths(TreePath[] paths) {
-            super.addSelectionPaths(filterNodeRows(paths));
+            super.addSelectionPaths(filterSelectableRows(paths));
         }
     }
 
@@ -1042,10 +1175,10 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
             groupTitlePanel.add(groupCircleLabel);
             groupTitlePanel.add(Box.createHorizontalStrut(5));
             groupTitlePanel.add(groupTitleLabel);
+            groupTitlePanel.add(Box.createHorizontalStrut(GROUP_COUNT_GAP));
+            groupTitlePanel.add(groupCountLabel);
             groupPanel.setOpaque(true);
             groupPanel.add(groupTitlePanel, BorderLayout.WEST);
-            groupCountLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 4));
-            groupPanel.add(groupCountLabel, BorderLayout.EAST);
             groupTitleLabel.setFont(groupTitleLabel.getFont().deriveFont(Font.BOLD));
             groupCountLabel.setForeground(DIM_TEXT_COLOR);
             groupPanel.setBorder(BorderFactory.createEmptyBorder(2, 4, 2, 6));
@@ -1250,11 +1383,18 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
                 return;
             }
             Color color = UIManager.getColor("TextField.inactiveForeground");
-            g.setColor(color != null ? color : DIM_TEXT_COLOR);
-            FontMetrics fontMetrics = g.getFontMetrics();
-            Insets insets = getInsets();
-            int y = (getHeight() - fontMetrics.getHeight()) / 2 + fontMetrics.getAscent();
-            g.drawString(placeholder, insets.left + 1, y);
+            Graphics2D graphics2D = (Graphics2D) g.create();
+            try {
+                graphics2D.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+                graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                graphics2D.setColor(color != null ? color : DIM_TEXT_COLOR);
+                FontMetrics fontMetrics = graphics2D.getFontMetrics();
+                Insets insets = getInsets();
+                int y = (getHeight() - fontMetrics.getHeight()) / 2 + fontMetrics.getAscent();
+                graphics2D.drawString(placeholder, insets.left + 1, y);
+            } finally {
+                graphics2D.dispose();
+            }
         }
     }
 }
