@@ -87,6 +87,7 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
     public static final String DOCK_ERRORS = "ERRORS";
     public static final String DOCK_CALCULATOR = "CALCULATOR";
     public static final String DOCK_CONTEXT_PANEL = "CONTEXT_PANEL";
+    public static final String DOCK_FIND = "FIND";
 
     public static final KeyStroke KEY_STROKE_UNDO = KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_MASK, true);
     public static final KeyStroke KEY_STROKE_REDO = KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK, true);
