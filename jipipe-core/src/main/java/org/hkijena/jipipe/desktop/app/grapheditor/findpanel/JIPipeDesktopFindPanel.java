@@ -1241,6 +1241,14 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
             groupTitleLabel.setForeground(groupRow.compartmentGroup() && !selected ? COMPARTMENT_TEXT_COLOR : groupPanel.getForeground());
             groupCountLabel.setText(String.valueOf(groupRow.entries().size()));
             groupCountLabel.setForeground(selected ? groupPanel.getForeground() : DIM_TEXT_COLOR);
+            // Force a synchronous re-layout with freshly measured sizes:
+            // JLabel.setText only queues an async revalidate, and
+            // CellRendererPane's validate() no-ops on a still-valid
+            // container - without this explicit invalidate+validate the
+            // title panel renders with the PREVIOUS row's text bounds (an
+            // assumed text size instead of the measured one)
+            groupTitlePanel.invalidate();
+            groupTitlePanel.validate();
             return groupPanel;
         }
 
@@ -1282,6 +1290,14 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
             nodeBadgeLabel.setVisible(nodeRow.crossCompartment());
             // The full UUID lives in the row tooltip
             nodePanel.setToolTipText("UUID: " + entry.getUuidString());
+            // Force a synchronous re-layout with freshly measured sizes:
+            // JLabel.setText only queues an async revalidate, and
+            // CellRendererPane's validate() no-ops on a still-valid
+            // container - without this explicit invalidate+validate the row
+            // renders with the PREVIOUS row's text bounds (an assumed text
+            // size instead of the measured one)
+            nodePanel.invalidate();
+            nodePanel.validate();
             return nodePanel;
         }
 
