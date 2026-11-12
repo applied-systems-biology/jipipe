@@ -306,6 +306,10 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
                 }
             }
         });
+        // JTree surfaces the renderer components' tooltips (row UUID, chip and
+        // pin tooltips) only when the tree is registered with the tooltip
+        // manager
+        ToolTipManager.sharedInstance().registerComponent(tree);
         treeScroll = new JScrollPane(tree);
 
         inGroupList.setCellRenderer(new InGroupListCellRenderer());
@@ -1249,7 +1253,7 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
          * The outlined spatial chip of the Add-nodes tree renderer.
          */
         private static JPanel createSpatialChip() {
-            return new JPanel(new GridBagLayout()) {
+            JPanel chip = new JPanel(new GridBagLayout()) {
                 @Override
                 protected void paintComponent(Graphics g) {
                     super.paintComponent(g);
@@ -1263,6 +1267,9 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
                     }
                 }
             };
+            chip.setOpaque(false);
+            chip.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 2));
+            return chip;
         }
 
         private static void initSpatialChip(JPanel chip, JLabel chipLabel, String tooltip) {
