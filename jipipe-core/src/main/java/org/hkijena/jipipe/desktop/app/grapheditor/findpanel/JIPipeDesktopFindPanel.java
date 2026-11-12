@@ -44,6 +44,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.JIPipeDesktop
 import org.hkijena.jipipe.desktop.commons.components.icons.ColoredCircleIcon;
 import org.hkijena.jipipe.desktop.commons.components.layouts.JIPipeDesktopWrapLayout;
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeDesktopNodeDatabaseEntryListCellRenderer;
+import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.desktop.commons.components.selection.JIPipeDesktopRichSelectionBox;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.plugins.canvasnotes.nodes.DefaultTextBoxGraphCanvasNote;
@@ -55,8 +56,6 @@ import org.hkijena.jipipe.plugins.tunnels.nodes.JIPipeDataFlowTunnelExit;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeExpansionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -122,18 +121,15 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
     public static final Color UNGROUPED_BORDER = new Color(0xc4c4c4);
 
     /**
-     * The search field placeholder.
-     */
-    private static final String SEARCH_PLACEHOLDER_TEXT = "Search by name, description or UUID";
-    /**
      * Coalesces event storms (graph changes fire continuously during drags)
      * into one rebuild. Mirrors the reload timer of
      * {@link org.hkijena.jipipe.desktop.app.bookmarks.JIPipeDesktopBookmarkListPanel}.
      */
     private static final int REBUILD_DEBOUNCE_MS = 1000;
     /**
-     * Debounce for the search field. Mirrors
-     * {@code JIPipeDesktopSearchTextField.SEARCH_DEBOUNCE_DELAY}.
+     * Debounce for the filter bar changes (the search field debounces
+     * internally, mirroring
+     * {@code JIPipeDesktopSearchTextField.SEARCH_DEBOUNCE_DELAY}).
      */
     private static final int SEARCH_DEBOUNCE_MS = 150;
     /**
@@ -213,7 +209,7 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
 
     // --- Toolbar ---
     private final JToolBar toolBar = new JToolBar();
-    private final SearchTextField searchField = new SearchTextField(SEARCH_PLACEHOLDER_TEXT);
+    private final JIPipeDesktopSearchTextField searchField = new JIPipeDesktopSearchTextField();
 
     // --- Filter bar (the Add-nodes filter facets; empty selection = disabled) ---
     private final JPanel filterBar = new JPanel();
@@ -392,36 +388,17 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
         rebuildTree();
     }
 
+    /**
+     * The toolbar: the shared Add-nodes search field (the component already
+     * debounces its per-keystroke notifications, so the listener rebuilds
+     * directly instead of stacking the panel's own debounce).
+     */
     private void initializeToolbar() {
         toolBar.setFloatable(false);
         toolBar.setBorder(null);
-        toolBar.add(searchField);
+        searchField.setToolTipText("Search by name, description or UUID");
         searchField.addActionListener(e -> rebuildTree());
-        searchField.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                scheduleSearchRebuild();
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                scheduleSearchRebuild();
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                scheduleSearchRebuild();
-            }
-        });
-
-        JButton clearSearchButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/edit-clear.png"));
-        clearSearchButton.setToolTipText("Clear search");
-        UIUtils.makeButtonFlatWithSize(clearSearchButton, TOOLBAR_BUTTON_SIZE);
-        clearSearchButton.addActionListener(e -> {
-            searchField.setText("");
-            rebuildTree();
-        });
-        toolBar.add(clearSearchButton);
+        toolBar.add(searchField);
     }
 
     /**
@@ -1603,38 +1580,6 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
                 graphics2D.dispose();
             }
             super.paintComponent(g);
-        }
-    }
-
-    /**
-     * A single-line text field that renders a placeholder while empty.
-     */
-    private static final class SearchTextField extends JTextField {
-        private final String placeholder;
-
-        private SearchTextField(String placeholder) {
-            this.placeholder = placeholder;
-        }
-
-        @Override
-        protected void paintComponent(Graphics g) {
-            super.paintComponent(g);
-            if (placeholder.isEmpty() || !getText().isEmpty()) {
-                return;
-            }
-            Color color = UIManager.getColor("TextField.inactiveForeground");
-            Graphics2D graphics2D = (Graphics2D) g.create();
-            try {
-                graphics2D.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-                graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                graphics2D.setColor(color != null ? color : DIM_TEXT_COLOR);
-                FontMetrics fontMetrics = graphics2D.getFontMetrics();
-                Insets insets = getInsets();
-                int y = (getHeight() - fontMetrics.getHeight()) / 2 + fontMetrics.getAscent();
-                graphics2D.drawString(placeholder, insets.left + 1, y);
-            } finally {
-                graphics2D.dispose();
-            }
         }
     }
 }
