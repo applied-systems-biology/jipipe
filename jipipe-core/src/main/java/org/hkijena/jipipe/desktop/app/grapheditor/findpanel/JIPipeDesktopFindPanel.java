@@ -219,6 +219,14 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
      */
     private final List<GroupRow> groupRows = new ArrayList<>();
     /**
+     * The nodes whose parameter events this panel is subscribed to. The
+     * subscriptions are weak, but {@code subscribeWeak} does not dedupe, so
+     * without this set every graph-changed event would stack another
+     * subscriber per node (and each parameter event would dispatch once per
+     * stacked subscription). See {@link #registerNodeEvents()}.
+     */
+    private final Set<JIPipeGraphNode> parameterEventNodes = new HashSet<>();
+    /**
      * The tier at the last view render ({@code -1} = none yet).
      */
     private int lastRenderedTier = -1;
@@ -365,11 +373,24 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
     }
 
     private void registerNodeEvents() {
-        for (JIPipeGraphNode node : graphEditorUI.getGraph().getGraphNodes()) {
-            node.getParameterChangedEventEmitter().subscribeWeak(this);
+        JIPipeGraph graph = graphEditorUI.getGraph();
+        Set<JIPipeGraphNode> liveNodes = new HashSet<>();
+        subscribeNodeEvents(graph.getGraphNodes(), liveNodes);
+        if (graph.getProject() != null) {
+            subscribeNodeEvents(graph.getProject().getCompartmentGraph().getGraphNodes(), liveNodes);
         }
-        if (graphEditorUI.getGraph().getProject() != null) {
-            for (JIPipeGraphNode node : graphEditorUI.getGraph().getProject().getCompartmentGraph().getGraphNodes()) {
+        // Nodes removed from the graphs are dropped from the tracking set:
+        // their weak subscribers die with the node, so removal is enough
+        // (and the set must not retain dead nodes).
+        parameterEventNodes.retainAll(liveNodes);
+    }
+
+    private void subscribeNodeEvents(Set<JIPipeGraphNode> nodes, Set<JIPipeGraphNode> liveNodes) {
+        for (JIPipeGraphNode node : nodes) {
+            liveNodes.add(node);
+            if (parameterEventNodes.add(node)) {
+                // Newcomer: subscribe exactly once (the set already contains
+                // the previously subscribed nodes)
                 node.getParameterChangedEventEmitter().subscribeWeak(this);
             }
         }
@@ -476,6 +497,11 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
             groupRows.clear();
             DefaultMutableTreeNode root = new DefaultMutableTreeNode();
 
+            // Remember the selected node across the rebuild (the model reload
+            // drops the tree selection); restored below, mirroring
+            // reapplyExpandedGroups(). A removed entry clears as before.
+            UUID selectedNodeId = selectedEntryNodeId();
+
             JIPipeProject project = getProject();
             if (project != null) {
                 String query = searchField.getText().trim();
@@ -505,6 +531,7 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
 
             treeModel.setRoot(root);
             reapplyExpandedGroups();
+            reapplySelection(selectedNodeId);
             updateInGroupPane();
         } finally {
             rebuilding = false;
@@ -684,6 +711,43 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
             DefaultMutableTreeNode child = (DefaultMutableTreeNode) children.nextElement();
             if (child.getUserObject() instanceof GroupRow groupRow && expandedGroupIds.contains(groupRow.groupId())) {
                 tree.expandPath(new TreePath(child.getPath()));
+            }
+        }
+    }
+
+    /**
+     * The node id of the currently selected tree entry, or null when nothing
+     * node-like is selected.
+     */
+    private UUID selectedEntryNodeId() {
+        DefaultMutableTreeNode treeNode = selectedTreeNode();
+        if (treeNode == null || !(treeNode.getUserObject() instanceof NodeRow nodeRow)) {
+            return null;
+        }
+        return nodeRow.entry().getNodeId();
+    }
+
+    /**
+     * Reselects the node row of the given node id after a rebuild, mirroring
+     * {@link #reapplyExpandedGroups()}: the model reload drops the tree
+     * selection, which would otherwise empty the "In group" pane about a
+     * second after ordinary canvas use (zoom, drop, paste). A node id that no
+     * longer exists (or null) restores nothing, so the selection clears as
+     * before.
+     */
+    private void reapplySelection(UUID nodeId) {
+        if (nodeId == null) {
+            return;
+        }
+        DefaultMutableTreeNode root = (DefaultMutableTreeNode) treeModel.getRoot();
+        for (Enumeration<? extends TreeNode> groupChildren = root.children(); groupChildren.hasMoreElements(); ) {
+            DefaultMutableTreeNode groupNode = (DefaultMutableTreeNode) groupChildren.nextElement();
+            for (Enumeration<? extends TreeNode> leafChildren = groupNode.children(); leafChildren.hasMoreElements(); ) {
+                DefaultMutableTreeNode leafNode = (DefaultMutableTreeNode) leafChildren.nextElement();
+                if (leafNode.getUserObject() instanceof NodeRow nodeRow && nodeId.equals(nodeRow.entry().getNodeId())) {
+                    tree.setSelectionPath(new TreePath(leafNode.getPath()));
+                    return;
+                }
             }
         }
     }
@@ -873,10 +937,12 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
 
     /**
      * A selection model that filters out all group rows: only node leaves can
-     * be selected (group rows remain expandable/collapsible).
+     * be selected (group rows remain expandable/collapsible). A request that
+     * contains only group rows keeps the previous selection instead of
+     * clearing it (clicking a group header must not deselect the node).
      */
     private static final class NodeRowOnlySelectionModel extends DefaultTreeSelectionModel {
-        private static TreePath[] filterNodeRows(TreePath[] paths) {
+        private TreePath[] filterNodeRows(TreePath[] paths) {
             if (paths == null) {
                 return null;
             }
@@ -885,6 +951,9 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
                 if (path.getLastPathComponent() instanceof DefaultMutableTreeNode node && node.getUserObject() instanceof NodeRow) {
                     nodeRows.add(path);
                 }
+            }
+            if (nodeRows.isEmpty() && paths.length > 0) {
+                return getSelectionPaths();
             }
             return nodeRows.toArray(new TreePath[0]);
         }

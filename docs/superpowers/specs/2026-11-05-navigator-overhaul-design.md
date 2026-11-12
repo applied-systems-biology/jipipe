@@ -120,8 +120,8 @@ Built per query over all compartments of the project:
 - Group order follows the notes' top-left position on the canvas (y, then x; reading order).
 - While a search is active, nodes of other compartments are appended as an extra group per
   compartment with a compartment badge; they are not part of the tree when not searching.
-- Search matches name, description and node UUID (UUID paste = direct hit). Match
-  highlighting as in the Add nodes panel.
+- Search matches name, description and node UUID (UUID paste = direct hit). Search
+  results are filtered lists without inline match highlighting.
 - Pins: pinned node entries show a pin glyph; a "Pinned only" toolbar toggle filters the
   whole tree. Pin storage follows the existing bookmark storage (unchanged data model).
 
@@ -129,8 +129,9 @@ Built per query over all compartments of the project:
 
 - Double-click (single click selects the entry) navigates: if the node is in another
   compartment, the compartment editor is opened first, then `scrollToAlgorithm` + select.
-- Rebuild triggers: graph change events (nodes/notes added/moved/removed) and selection
-  change events, debounced through the existing canvas event emitters.
+- Rebuild triggers: graph change events (nodes/notes added/moved/removed), debounced
+  through the existing canvas event emitters. The "In group" pane follows the tree
+  selection instead of canvas selection change events.
 
 ### Pure logic for tests
 

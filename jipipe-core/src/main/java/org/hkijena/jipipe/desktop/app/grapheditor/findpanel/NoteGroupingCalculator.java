@@ -57,7 +57,8 @@ public class NoteGroupingCalculator {
     }
 
     /**
-     * A group of nodes claimed by one note.
+     * A group of nodes claimed by one note. The member list is an unmodifiable
+     * copy.
      */
     public record Group(String noteId, String title, Color fill, Color border, List<NodeRef> nodes) {
     }
@@ -86,7 +87,7 @@ public class NoteGroupingCalculator {
                 }
             }
             members.sort(NODE_NAME_ORDER);
-            groups.add(new Group(note.id(), note.title(), note.fill(), note.border(), members));
+            groups.add(new Group(note.id(), note.title(), note.fill(), note.border(), List.copyOf(members)));
         }
         return groups;
     }
