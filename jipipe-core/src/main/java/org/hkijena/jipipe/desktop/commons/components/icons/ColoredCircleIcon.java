@@ -76,20 +76,29 @@ public class ColoredCircleIcon implements Icon {
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
 
-            // Circular background (node fill color) + circular border (node border color).
-            // Round-to-nearest-px keeps the 1px ring crisp.
-            int d = SIZE - 2;
-            if (background != null && borderColor != null) {
-                g2d.setColor(background);
-                g2d.fillOval(x + 1, y + 1, d, d);
-            } else if (background != null) {
-                g2d.setColor(background);
-                g2d.fillOval(x, y, d + 2, d + 2);
-            }
+            // Circular background (node fill color) + circular border (node
+            // border color). Fills instead of a stroked outline: a 1px stroke
+            // straddles the oval path, so its outer half would land outside
+            // the icon bounds and get clipped (the ring looks cut off); fills
+            // stay inside the clip.
             if (borderColor != null) {
                 g2d.setColor(borderColor);
+                g2d.fillOval(x, y, SIZE, SIZE);
+            }
+            if (background != null) {
+                g2d.setColor(background);
+                if (borderColor != null) {
+                    g2d.fillOval(x + 1, y + 1, SIZE - 2, SIZE - 2);
+                } else {
+                    g2d.fillOval(x, y, SIZE, SIZE);
+                }
+            }
+            if (background == null && borderColor != null) {
+                // Border-only: a stroked ring, inset so the full 1px stroke
+                // fits inside the icon bounds
+                g2d.setColor(borderColor);
                 g2d.setStroke(new BasicStroke(1f));
-                g2d.drawOval(x, y, d + 2, d + 2);
+                g2d.drawOval(x + 1, y + 1, SIZE - 3, SIZE - 3);
             }
 
             // The wrapped icon, centered (a 16×16 icon lands at the 4,4 offset).
