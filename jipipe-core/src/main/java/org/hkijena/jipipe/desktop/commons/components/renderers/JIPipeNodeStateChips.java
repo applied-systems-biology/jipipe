@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.desktop.commons.components.renderers;
 
 import org.hkijena.jipipe.api.nodes.JIPipeNodeClassification;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.entries.CreateNewNodeByExampleDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.entries.CreateNewNodesByTemplateDatabaseEntry;
@@ -85,34 +84,6 @@ public final class JIPipeNodeStateChips {
             panel.add(chip("unstable", style.getDangerColor()));
         }
         if (entry.isDeprecated()) {
-            panel.add(chip("deprecated", style.getWarningColor()));
-        }
-        return panel;
-    }
-
-    /**
-     * The info-based counterpart of {@link #panel(JIPipeNodeDatabaseEntry)}
-     * for rows that carry a live {@link JIPipeNodeInfo} instead of a database
-     * entry (the Find panel's tree rows): the same states in the same order -
-     * imported ({@link JIPipeNodeClassification#AutoImport}, informational
-     * tone), unstable (danger tone), deprecated (warning tone) - and an empty
-     * panel for a standard node. The panel is non-opaque so it composes onto
-     * any row background.
-     *
-     * @param info the node info to label
-     * @return a panel with zero or more chips, ready to add to a row
-     */
-    public static JPanel panel(JIPipeNodeInfo info) {
-        JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 3, 0));
-        panel.setOpaque(false);
-        var style = ThemeUtils.getCurrentStyle();
-        if (info.getNodeClassification() == JIPipeNodeClassification.AutoImport) {
-            panel.add(chip("imported", style.getInfoColor()));
-        }
-        if (info.isUnstable()) {
-            panel.add(chip("unstable", style.getDangerColor()));
-        }
-        if (info.isDeprecated()) {
             panel.add(chip("deprecated", style.getWarningColor()));
         }
         return panel;

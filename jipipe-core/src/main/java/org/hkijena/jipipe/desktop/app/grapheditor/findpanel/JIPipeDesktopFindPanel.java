@@ -20,10 +20,10 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.annotation.JIPipeGraphCanvasNote;
+import org.hkijena.jipipe.api.nodes.database.entries.ExistingPipelineNodeDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension;
 import org.hkijena.jipipe.api.nodes.taxonomy.NoFramework;
-import org.hkijena.jipipe.api.nodes.taxonomy.TaxonomyView;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
@@ -35,14 +35,12 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.events.JIPipeDe
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.JIPipeDesktopPipelineGraphEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.icons.ColoredCircleIcon;
-import org.hkijena.jipipe.desktop.commons.components.icons.NodeListEntryIcon;
-import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeNodeStateChips;
+import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeDesktopNodeDatabaseEntryListCellRenderer;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.plugins.canvasnotes.nodes.DefaultTextBoxGraphCanvasNote;
 import org.hkijena.jipipe.plugins.canvasnotes.nodes.TextBoxGraphCanvasNote;
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
-import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -125,18 +123,9 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
      */
     private static final int SEARCH_DEBOUNCE_MS = 150;
     /**
-     * Number of leading UUID characters shown in a node row.
-     */
-    private static final int UUID_FRAGMENT_LENGTH = 4;
-    /**
      * Group titles longer than this many characters are truncated for display.
      */
     private static final int GROUP_TITLE_MAX_CHARS = 40;
-    /**
-     * Height of the node row's colored bar icon (the Add-nodes entry row
-     * height).
-     */
-    private static final int ENTRY_ICON_HEIGHT = 50;
     /**
      * Corner radius of the framework / spatial chips (mirrors the Add-nodes
      * tree renderer).
@@ -163,10 +152,6 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
      * Minimum font size of the compartment badge.
      */
     private static final float BADGE_MIN_FONT_SIZE = 9f;
-    /**
-     * Font size reduction of the UUID fragment relative to the row font.
-     */
-    private static final int UUID_FONT_SIZE_REDUCTION = 2;
     /**
      * Font size of the "In group" pane header.
      */
@@ -213,7 +198,7 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
     private final DefaultTreeModel treeModel;
     private final JTree tree;
     private final JScrollPane treeScroll;
-    private final JList<FindEntry> inGroupList = new JList<>();
+    private final JList<ExistingPipelineNodeDatabaseEntry> inGroupList = new JList<>();
     private final JScrollPane inGroupScroll;
     private final JPanel inGroupPanel = new JPanel();
 
@@ -237,6 +222,12 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
      * pane). Freshly built on every rebuild.
      */
     private final List<GroupRow> groupRows = new ArrayList<>();
+    /**
+     * The nodes of the current tree by node id (canvas nodes and
+     * cross-compartment search results). Rebuilt on every rebuild; resolves
+     * the tree rows' node infos and the "In group" pane's wrapped entries.
+     */
+    private final Map<UUID, JIPipeGraphNode> nodesById = new HashMap<>();
     /**
      * The nodes whose parameter events this panel is subscribed to. The
      * subscriptions are weak, but {@code subscribeWeak} does not dedupe, so
@@ -312,7 +303,7 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
         ToolTipManager.sharedInstance().registerComponent(tree);
         treeScroll = new JScrollPane(tree);
 
-        inGroupList.setCellRenderer(new InGroupListCellRenderer());
+        inGroupList.setCellRenderer(new JIPipeDesktopNodeDatabaseEntryListCellRenderer());
         inGroupScroll = new JScrollPane(inGroupList);
         inGroupPanel.setLayout(new BorderLayout());
         JLabel inGroupHeader = new JLabel("In group");
@@ -518,6 +509,7 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
         rebuilding = true;
         try {
             groupRows.clear();
+            nodesById.clear();
             DefaultMutableTreeNode root = new DefaultMutableTreeNode();
 
             // Remember the selected node across the rebuild (the model reload
@@ -538,17 +530,17 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
                 for (NoteGroupingCalculator.Group group : groups) {
                     addGroupRow(root, group.noteId(), group.title(), group.fill(), group.border(),
                             filterEntries(group.nodes().stream().map(NoteGroupingCalculator.NodeRef::entry).toList(), query, pinnedOnly),
-                            false, searching, canvasState.infosByNodeId());
+                            false, searching);
                 }
                 // The "Ungrouped" group is last with the neutral colors; while
                 // a search is active it is skipped when nothing matches (like
                 // all other empty groups), otherwise it is always shown.
                 addGroupRow(root, UNGROUPED_GROUP_ID, "Ungrouped", UNGROUPED_FILL, UNGROUPED_BORDER,
                         filterEntries(ungrouped.stream().map(NoteGroupingCalculator.NodeRef::entry).toList(), query, pinnedOnly),
-                        false, searching, canvasState.infosByNodeId());
+                        false, searching);
 
                 if (searching) {
-                    addCompartmentGroups(root, project, canvasState.canvasNodeIds(), canvasState.infosByNodeId(), query, pinnedOnly);
+                    addCompartmentGroups(root, project, canvasState.canvasNodeIds(), query, pinnedOnly);
                 }
             }
 
@@ -569,7 +561,6 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
         List<NoteGroupingCalculator.NodeRef> nodeRefs = new ArrayList<>();
         List<NoteGroupingCalculator.NoteRef> noteRefs = new ArrayList<>();
         Set<UUID> canvasNodeIds = new HashSet<>();
-        Map<UUID, JIPipeNodeInfo> infosByNodeId = new HashMap<>();
         BiMap<JIPipeGraphNode, JIPipeDesktopGraphNodeUI> nodeUIs = graphEditorUI.getCanvasUI().getNodeUIs();
         for (Map.Entry<JIPipeGraphNode, JIPipeDesktopGraphNodeUI> nodeUI : nodeUIs.entrySet()) {
             JIPipeGraphNode node = nodeUI.getKey();
@@ -587,10 +578,10 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
                 continue;
             }
             canvasNodeIds.add(nodeId);
-            infosByNodeId.put(nodeId, node.getInfo());
+            nodesById.put(nodeId, node);
             nodeRefs.add(new NoteGroupingCalculator.NodeRef(uuidString(node), bounds, createEntry(node, project)));
         }
-        return new CanvasState(nodeRefs, noteRefs, canvasNodeIds, infosByNodeId);
+        return new CanvasState(nodeRefs, noteRefs, canvasNodeIds);
     }
 
     /**
@@ -665,7 +656,7 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
         return result;
     }
 
-    private void addGroupRow(DefaultMutableTreeNode root, String groupId, String title, Color fill, Color border, List<FindEntry> entries, boolean compartmentGroup, boolean hideWhenEmpty, Map<UUID, JIPipeNodeInfo> infosByNodeId) {
+    private void addGroupRow(DefaultMutableTreeNode root, String groupId, String title, Color fill, Color border, List<FindEntry> entries, boolean compartmentGroup, boolean hideWhenEmpty) {
         if (hideWhenEmpty && entries.isEmpty()) {
             return;
         }
@@ -673,7 +664,8 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
         groupRows.add(groupRow);
         DefaultMutableTreeNode groupNode = new DefaultMutableTreeNode(groupRow);
         for (FindEntry entry : entries) {
-            groupNode.add(new DefaultMutableTreeNode(new NodeRow(entry, compartmentGroup, infosByNodeId.get(entry.getNodeId()))));
+            JIPipeGraphNode node = nodesById.get(entry.getNodeId());
+            groupNode.add(new DefaultMutableTreeNode(new NodeRow(entry, compartmentGroup, node != null ? node.getInfo() : null)));
         }
         root.add(groupNode);
     }
@@ -690,7 +682,7 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
      * only), ordered by compartment name, appended after the current-canvas
      * groups.
      */
-    private void addCompartmentGroups(DefaultMutableTreeNode root, JIPipeProject project, Set<UUID> canvasNodeIds, Map<UUID, JIPipeNodeInfo> infosByNodeId, String query, boolean pinnedOnly) {
+    private void addCompartmentGroups(DefaultMutableTreeNode root, JIPipeProject project, Set<UUID> canvasNodeIds, String query, boolean pinnedOnly) {
         Map<UUID, List<FindEntry>> entriesByCompartment = new HashMap<>();
         for (JIPipeGraphNode node : project.getGraph().getGraphNodes()) {
             if (node instanceof JIPipeGraphCanvasNote) {
@@ -710,7 +702,7 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
             if (entry.getCompartmentId() == null) {
                 continue;
             }
-            infosByNodeId.put(nodeId, node.getInfo());
+            nodesById.put(nodeId, node);
             entriesByCompartment.computeIfAbsent(entry.getCompartmentId(), key -> new ArrayList<>()).add(entry);
         }
         List<UUID> compartmentIds = new ArrayList<>(entriesByCompartment.keySet());
@@ -718,7 +710,7 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
         for (UUID compartmentId : compartmentIds) {
             List<FindEntry> entries = entriesByCompartment.get(compartmentId);
             entries.sort(Comparator.comparing(FindEntry::getName, String.CASE_INSENSITIVE_ORDER));
-            addGroupRow(root, compartmentId.toString(), compartmentName(project, compartmentId), COMPARTMENT_GROUP_FILL, COMPARTMENT_GROUP_BORDER, entries, true, true, infosByNodeId);
+            addGroupRow(root, compartmentId.toString(), compartmentName(project, compartmentId), COMPARTMENT_GROUP_FILL, COMPARTMENT_GROUP_BORDER, entries, true, true);
         }
     }
 
@@ -812,9 +804,16 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
     }
 
     private void updateInGroupPane() {
-        DefaultListModel<FindEntry> listModel = new DefaultListModel<>();
+        DefaultListModel<ExistingPipelineNodeDatabaseEntry> listModel = new DefaultListModel<>();
         for (FindEntry entry : selectedEntryMembers()) {
-            listModel.addElement(entry);
+            JIPipeGraphNode node = nodesById.get(entry.getNodeId());
+            if (node == null) {
+                continue;
+            }
+            // The Add-nodes results-list row for this member: the entry wraps
+            // the live node (getGraphNode() maps back for any future click
+            // use; the pane stays display-only)
+            listModel.addElement(new ExistingPipelineNodeDatabaseEntry(entry.getUuidString(), node));
         }
         inGroupList.setModel(listModel);
     }
@@ -957,7 +956,7 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
     /**
      * The current canvas state used for one rebuild.
      */
-    private record CanvasState(List<NoteGroupingCalculator.NodeRef> nodeRefs, List<NoteGroupingCalculator.NoteRef> noteRefs, Set<UUID> canvasNodeIds, Map<UUID, JIPipeNodeInfo> infosByNodeId) {
+    private record CanvasState(List<NoteGroupingCalculator.NodeRef> nodeRefs, List<NoteGroupingCalculator.NoteRef> noteRefs, Set<UUID> canvasNodeIds) {
     }
 
     // ------------------------------------------------------------------
@@ -1001,13 +1000,14 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
     /**
      * Renders the group header rows (colored circle, bold title, member count
      * - the exact function-row look of the Add nodes tree) and the node
-     * leaves (the Add-nodes entry row: colored bar icon with the framework
-     * pattern + node icon, name with the pin glyph, compartment badge,
-     * framework and spatial chips and state chips, and a gray taxonomy
-     * location path; the full UUID lives in the row tooltip).
+     * leaves (the single-line node-leaf look of the Add-nodes tree: pin
+     * glyph, 16px node icon, name, framework abbreviation chip, spatial
+     * chips, and the compartment badge for cross-compartment rows; the full
+     * UUID lives in the row tooltip).
      */
     private final class FindTreeCellRenderer implements TreeCellRenderer {
         private final Icon pinIcon = JIPipe.RESOURCES.getIcon16("actions/window-pin.png");
+        private final Icon genericNodeIcon = JIPipe.RESOURCES.getIcon16("actions/tag.png");
         // --- Group rows: the Add-nodes function-row look (the colored circle
         // doubles as the color legend for the note's fill)
         private final ColoredCircleIcon groupCircleIcon = new ColoredCircleIcon(null, UNGROUPED_FILL, UNGROUPED_BORDER);
@@ -1016,16 +1016,11 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
         private final JLabel groupCircleLabel = new JLabel();
         private final JLabel groupTitleLabel = new JLabel();
         private final JLabel groupCountLabel = new JLabel();
-        // --- Node rows: the two-line Add-nodes entry row
-        private final NodeListEntryIcon nodeListEntryIcon = new NodeListEntryIcon(ENTRY_ICON_HEIGHT);
-        private final JPanel nodePanel = new JPanel(new GridBagLayout());
-        private final JPanel nodeTitlePanel = new JPanel();
-        private final JLabel nodeIconLabel = new JLabel();
+        // --- Node rows: the single-line node-leaf look of the Add-nodes tree
+        private final JPanel nodePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
         private final JLabel nodePinLabel = new JLabel();
         private final JLabel nodeNameLabel = new JLabel();
         private final CompartmentBadgeLabel nodeBadgeLabel = new CompartmentBadgeLabel();
-        private final JPanel nodeStateChipsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 3, 0));
-        private final JLabel nodePathLabel = new JLabel();
         private final JLabel frameworkChipLabel = new JLabel();
         private final JPanel frameworkChip = createFrameworkChip();
         private final JPanel spatialChip2D = createSpatialChip();
@@ -1035,14 +1030,8 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
         // The framework chip paints this row's framework color (renderer
         // components are reused across rows)
         private JIPipeNodeTaxonomyFramework currentFramework;
-        // --- Fallback (no node info; should not happen): the previous
-        // single-line row
-        private final JPanel fallbackPanel = new JPanel(new BorderLayout());
-        private final JPanel fallbackTitlePanel = new JPanel();
-        private final JLabel fallbackPinLabel = new JLabel();
-        private final JLabel fallbackNameLabel = new JLabel();
-        private final CompartmentBadgeLabel fallbackBadgeLabel = new CompartmentBadgeLabel();
-        private final JLabel fallbackUUIDLabel = new JLabel();
+        // --- Fallback (no node info; should not happen): plain name row
+        private final JLabel fallbackLabel = new JLabel();
 
         private FindTreeCellRenderer() {
             // Group rows: colored circle + bold title + right-aligned count
@@ -1061,73 +1050,28 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
             groupCountLabel.setForeground(DIM_TEXT_COLOR);
             groupPanel.setBorder(BorderFactory.createEmptyBorder(2, 4, 2, 6));
 
-            // Node rows: icon column (spanning both lines) | name + inline
-            // chips (row 0) / gray taxonomy location path (row 1), mirroring
-            // JIPipeDesktopNodeDatabaseEntryListCellRenderer
-            nodeTitlePanel.setLayout(new FlowLayout(FlowLayout.LEFT, 3, 0));
-            nodeTitlePanel.setOpaque(false);
+            // Node rows: pin + node icon + name + framework chip + spatial
+            // chips + compartment badge - the exact node-leaf pattern of the
+            // Add-nodes tree renderer (FunctionTreeCellRenderer)
+            nodePanel.setOpaque(true);
+            nodePanel.setBorder(BorderFactory.createEmptyBorder(3, 4, 3, 4));
             frameworkChipLabel.setFont(frameworkChipLabel.getFont().deriveFont(Font.BOLD, CHIP_FONT_SIZE));
             frameworkChip.setOpaque(false);
             frameworkChip.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 2));
             frameworkChip.add(frameworkChipLabel);
-            nodeTitlePanel.add(nodePinLabel);
-            nodeTitlePanel.add(nodeNameLabel);
-            nodeTitlePanel.add(nodeBadgeLabel);
-            nodeTitlePanel.add(frameworkChip);
-            nodeTitlePanel.add(spatialChip2D);
-            nodeTitlePanel.add(spatialChip3D);
-            nodeStateChipsPanel.setOpaque(false);
-            nodeTitlePanel.add(nodeStateChipsPanel);
-            nodePanel.setOpaque(true);
-            nodePanel.add(nodeIconLabel, new GridBagConstraints() {
-                {
-                    gridx = 0;
-                    gridy = 0;
-                    gridheight = 2;
-                }
-            });
-            nodePanel.add(nodeTitlePanel, new GridBagConstraints() {
-                {
-                    gridx = 1;
-                    gridy = 0;
-                    fill = GridBagConstraints.HORIZONTAL;
-                    weightx = 1;
-                    insets = new Insets(0, 4, 0, 0);
-                }
-            });
-            nodePathLabel.setForeground(Color.GRAY);
-            nodePanel.add(nodePathLabel, new GridBagConstraints() {
-                {
-                    gridx = 1;
-                    gridy = 1;
-                    fill = GridBagConstraints.HORIZONTAL;
-                    weightx = 1;
-                    insets = new Insets(0, 4, 0, 0);
-                }
-            });
+            nodePanel.add(nodePinLabel);
+            nodePanel.add(nodeNameLabel);
+            nodePanel.add(frameworkChip);
+            nodePanel.add(spatialChip2D);
+            nodePanel.add(spatialChip3D);
+            nodePanel.add(nodeBadgeLabel);
             nodeBadgeLabel.setForeground(COMPARTMENT_TEXT_COLOR);
-            nodePanel.setBorder(BorderFactory.createEmptyBorder(2, 4, 2, 6));
             initSpatialChip(spatialChip2D, spatialChip2DLabel, "Operates in 2D");
             initSpatialChip(spatialChip3D, spatialChip3DLabel, "Operates in 3D");
 
-            // Fallback row (no node info): the previous single-line row
-            fallbackTitlePanel.setLayout(new BoxLayout(fallbackTitlePanel, BoxLayout.X_AXIS));
-            fallbackTitlePanel.setOpaque(false);
-            fallbackPinLabel.setAlignmentY(Component.CENTER_ALIGNMENT);
-            fallbackNameLabel.setAlignmentY(Component.CENTER_ALIGNMENT);
-            fallbackBadgeLabel.setAlignmentY(Component.CENTER_ALIGNMENT);
-            fallbackTitlePanel.add(fallbackPinLabel);
-            fallbackTitlePanel.add(Box.createHorizontalStrut(2));
-            fallbackTitlePanel.add(fallbackNameLabel);
-            fallbackTitlePanel.add(Box.createHorizontalStrut(4));
-            fallbackTitlePanel.add(fallbackBadgeLabel);
-            fallbackPanel.setOpaque(true);
-            fallbackPanel.add(fallbackTitlePanel, BorderLayout.WEST);
-            fallbackUUIDLabel.setForeground(DIM_TEXT_COLOR);
-            fallbackUUIDLabel.setFont(new Font(Font.MONOSPACED, Font.PLAIN, fallbackUUIDLabel.getFont().getSize() - UUID_FONT_SIZE_REDUCTION));
-            fallbackPanel.add(fallbackUUIDLabel, BorderLayout.EAST);
-            fallbackBadgeLabel.setForeground(COMPARTMENT_TEXT_COLOR);
-            fallbackPanel.setBorder(BorderFactory.createEmptyBorder(2, 4, 2, 6));
+            // Fallback row (no node info): a plain name label
+            fallbackLabel.setOpaque(true);
+            fallbackLabel.setBorder(BorderFactory.createEmptyBorder(3, 4, 3, 4));
         }
 
         @Override
@@ -1162,23 +1106,21 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
             JIPipeNodeInfo info = nodeRow.info();
             if (info == null) {
                 // Defensive: every FindEntry is built from a live node, so
-                // this should not happen - render the simple row rather than
-                // crash
-                return configureFallbackNodeRow(nodeRow, tree, selected);
+                // this should not happen - render a plain name row rather
+                // than crash
+                applySelectionColors(fallbackLabel, tree, selected);
+                fallbackLabel.setText(entry.getName());
+                return fallbackLabel;
             }
-            // The unified entry icon: node fill color + framework signature
-            // pattern + node icon (the Add-nodes list look)
-            nodeListEntryIcon.setFillColor(ThemeUtils.getNodeFillColor(info));
-            nodeListEntryIcon.setFramework(info.getFramework());
-            nodeListEntryIcon.setNodeIcon(info.getIcon());
-            nodeIconLabel.setIcon(nodeListEntryIcon);
             nodePinLabel.setIcon(entry.isBookmarked() ? pinIcon : null);
             nodePinLabel.setVisible(entry.isBookmarked());
             nodePinLabel.setToolTipText(entry.isBookmarked() ? "Pinned" : null);
+            // The 16px node icon with the generic fallback (the Add-nodes
+            // tree pattern)
+            Icon nodeIcon = info.getIcon();
+            nodeNameLabel.setIcon(nodeIcon != null ? nodeIcon : genericNodeIcon);
             nodeNameLabel.setText(entry.getName());
             nodeNameLabel.setForeground(nodePanel.getForeground());
-            nodeBadgeLabel.setText(entry.getCompartmentName());
-            nodeBadgeLabel.setVisible(nodeRow.crossCompartment());
             // The framework abbreviation chip (exact Add-nodes tree pattern:
             // colored chip, bold white abbreviation, gray for NoFramework)
             currentFramework = info.getFramework();
@@ -1192,36 +1134,11 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
             spatialChip3DLabel.setForeground(nodePanel.getForeground());
             spatialChip2D.setVisible(spatial.contains(JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D));
             spatialChip3D.setVisible(spatial.contains(JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D));
-            // The state chips (imported / unstable / deprecated)
-            nodeStateChipsPanel.removeAll();
-            nodeStateChipsPanel.add(JIPipeNodeStateChips.panel(info));
-            nodeStateChipsPanel.revalidate();
-            // Row 1: the gray taxonomy location path; the full UUID moved off
-            // the visible row into the row tooltip
-            String locationPath = TaxonomyView.locationPath(info);
-            nodePathLabel.setText(locationPath);
-            nodePathLabel.setToolTipText(locationPath);
+            nodeBadgeLabel.setText(entry.getCompartmentName());
+            nodeBadgeLabel.setVisible(nodeRow.crossCompartment());
+            // The full UUID lives in the row tooltip
             nodePanel.setToolTipText("UUID: " + entry.getUuidString());
             return nodePanel;
-        }
-
-        /**
-         * The previous single-line row, kept as the defensive fallback for
-         * rows without node info.
-         */
-        private Component configureFallbackNodeRow(NodeRow nodeRow, JTree tree, boolean selected) {
-            applySelectionColors(fallbackPanel, tree, selected);
-            FindEntry entry = nodeRow.entry();
-            fallbackPinLabel.setIcon(entry.isBookmarked() ? pinIcon : null);
-            fallbackPinLabel.setVisible(entry.isBookmarked());
-            fallbackPinLabel.setToolTipText(entry.isBookmarked() ? "Pinned" : null);
-            fallbackNameLabel.setText(entry.getName());
-            fallbackNameLabel.setForeground(fallbackPanel.getForeground());
-            fallbackBadgeLabel.setText(entry.getCompartmentName());
-            fallbackBadgeLabel.setVisible(nodeRow.crossCompartment());
-            fallbackUUIDLabel.setText(uuidFragment(entry.getUuidString()));
-            fallbackUUIDLabel.setForeground(selected ? fallbackPanel.getForeground() : DIM_TEXT_COLOR);
-            return fallbackPanel;
         }
 
         /**
@@ -1278,58 +1195,15 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
             chip.add(chipLabel);
         }
 
-        private void applySelectionColors(JPanel panel, JTree tree, boolean selected) {
+        private void applySelectionColors(JComponent component, JTree tree, boolean selected) {
             Color background = selected ? UIManager.getColor("Tree.selectionBackground") : tree.getBackground();
             Color foreground = selected ? UIManager.getColor("Tree.selectionForeground") : tree.getForeground();
             if (background != null) {
-                panel.setBackground(background);
+                component.setBackground(background);
             }
             if (foreground != null) {
-                panel.setForeground(foreground);
+                component.setForeground(foreground);
             }
-        }
-
-        private String uuidFragment(String uuidString) {
-            if (uuidString == null || uuidString.length() <= UUID_FRAGMENT_LENGTH) {
-                return "";
-            }
-            return uuidString.substring(0, UUID_FRAGMENT_LENGTH) + "...";
-        }
-    }
-
-    /**
-     * Renders the "In group" member rows (pin glyph + name).
-     */
-    private static final class InGroupListCellRenderer extends JPanel implements ListCellRenderer<FindEntry> {
-        private final Icon pinIcon = JIPipe.RESOURCES.getIcon16("actions/window-pin.png");
-        private final JLabel pinLabel = new JLabel();
-        private final JLabel nameLabel = new JLabel();
-
-        private InGroupListCellRenderer() {
-            setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-            setOpaque(true);
-            setBorder(BorderFactory.createEmptyBorder(2, 8, 2, 8));
-            pinLabel.setAlignmentY(Component.CENTER_ALIGNMENT);
-            nameLabel.setAlignmentY(Component.CENTER_ALIGNMENT);
-            add(pinLabel);
-            add(Box.createHorizontalStrut(2));
-            add(nameLabel);
-        }
-
-        @Override
-        public Component getListCellRendererComponent(JList<? extends FindEntry> list, FindEntry entry, int index, boolean selected, boolean hasFocus) {
-            Color background = selected ? UIManager.getColor("List.selectionBackground") : list.getBackground();
-            Color foreground = selected ? UIManager.getColor("List.selectionForeground") : list.getForeground();
-            if (background != null) {
-                setBackground(background);
-            }
-            if (foreground != null) {
-                setForeground(foreground);
-            }
-            pinLabel.setIcon(entry.isBookmarked() ? pinIcon : null);
-            nameLabel.setText(entry.getName());
-            nameLabel.setForeground(getForeground());
-            return this;
         }
     }
 
