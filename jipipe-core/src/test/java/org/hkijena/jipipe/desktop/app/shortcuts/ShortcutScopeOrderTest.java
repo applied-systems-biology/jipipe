@@ -25,12 +25,15 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
 /**
- * Tests for {@link JIPipeDesktopShortcutDispatcher#orderedContainingScopes}.
+ * Tests for the pure dispatch logic of
+ * {@link JIPipeDesktopShortcutDispatcher}: {@link
+ * JIPipeDesktopShortcutDispatcher#orderedContainingScopes} (scope ordering)
+ * and {@link JIPipeDesktopShortcutDispatcher#resolveFirstAvailable}
+ * (candidate ids of a shared stroke).
  * <p>
- * Pure ordering logic over a component tree: no dispatcher installation, no
- * key events, headless-safe. The resolvers are stubs that return a
- * well-known runnable (or null) so a walk can be verified without firing
- * anything.
+ * No dispatcher installation, no key events, headless-safe. The resolvers
+ * are stubs that return a well-known runnable (or null) so a walk can be
+ * verified without firing anything.
  */
 class ShortcutScopeOrderTest {
     /**
@@ -40,6 +43,15 @@ class ShortcutScopeOrderTest {
     private static ShortcutScope.Resolver resolves(String actionId, Runnable r) {
         return id -> actionId.equals(id) ? r : null;
     }
+
+    /**
+     * Well-known runnables standing in for the two actions behind the
+     * shared DELETE stroke (node delete / edge control-point delete).
+     */
+    private static final Runnable nodeRun = () -> {
+    };
+    private static final Runnable edgeRun = () -> {
+    };
 
     @Test void innermostScopeWins() {
         // Outer panel P with resolver A, child panel C (in P) with resolver B;
@@ -131,5 +143,78 @@ class ShortcutScopeOrderTest {
         List<ShortcutScope> ordered =
                 JIPipeDesktopShortcutDispatcher.orderedContainingScopes(List.of(scope), p);
         assertSame(scope, ordered.get(0));
+    }
+
+    // ---------- shared-stroke candidate resolution ----------
+    //
+    // Several actions may share one stroke (e.g. DELETE is bound to both the
+    // node delete and the edge control-point delete; their availability is
+    // disjoint by selection). The dispatcher must try the candidate ids in
+    // registry order and let the first one that resolves in some scope win.
+
+    @Test void sharedStrokeTriesBothIdsInOrderFirstResolvableWins() {
+        // Registry order: node delete first, edge delete second (same shape
+        // as NODE_DELETE / EDGE_DELETE_CONTROL_POINT behind one DELETE stroke).
+        String nodeId = "org.hkijena.jipipe.graph.node.delete";
+        String edgeId = "org.hkijena.jipipe.graph.edge.delete-control-point";
+        JPanel p = new JPanel();
+        ShortcutScope scope = new ShortcutScope(p, id -> id.equals(nodeId) ? nodeRun : id.equals(edgeId) ? edgeRun : null);
+        List<ShortcutScope> ordered = JIPipeDesktopShortcutDispatcher.orderedContainingScopes(List.of(scope), p);
+
+        assertEquals(nodeId,
+                JIPipeDesktopShortcutDispatcher.resolveFirstAvailable(List.of(nodeId, edgeId), ordered),
+                "both resolve, the earlier registry-order candidate must win");
+        assertEquals(edgeId,
+                JIPipeDesktopShortcutDispatcher.resolveFirstAvailable(List.of(edgeId, nodeId), ordered),
+                "the candidate order (not the action's) decides the winner");
+    }
+
+    @Test void sharedStrokeFirstCandidateDeadSecondResolves() {
+        // The node delete is unavailable (a control point is selected, not a
+        // node): its resolver returns null, the walk must continue and fire
+        // the edge delete. This is the exact composition the single-id map
+        // got wrong: only the last-registered id was even tried.
+        String nodeId = "org.hkijena.jipipe.graph.node.delete";
+        String edgeId = "org.hkijena.jipipe.graph.edge.delete-control-point";
+        JPanel p = new JPanel();
+        ShortcutScope scope = new ShortcutScope(p, id -> id.equals(edgeId) ? edgeRun : null);
+        List<ShortcutScope> ordered = JIPipeDesktopShortcutDispatcher.orderedContainingScopes(List.of(scope), p);
+
+        assertEquals(edgeId,
+                JIPipeDesktopShortcutDispatcher.resolveFirstAvailable(List.of(nodeId, edgeId), ordered),
+                "the first candidate that resolves must win, not the first in the list");
+    }
+
+    @Test void candidateUnknownToInnermostFallsThroughToOuter() {
+        // The innermost scope (e.g. a dock panel) does not know either
+        // candidate; the outer graph scope resolves the second one. The walk
+        // restarts at the innermost scope per candidate.
+        String nodeId = "org.hkijena.jipipe.graph.node.delete";
+        String edgeId = "org.hkijena.jipipe.graph.edge.delete-control-point";
+        JPanel outer = new JPanel(new BorderLayout());
+        JPanel inner = new JPanel();
+        outer.add(inner, BorderLayout.CENTER);
+        ShortcutScope outerScope = new ShortcutScope(outer, id -> id.equals(edgeId) ? edgeRun : null);
+        ShortcutScope innerScope = new ShortcutScope(inner, id -> null);
+
+        List<ShortcutScope> ordered =
+                JIPipeDesktopShortcutDispatcher.orderedContainingScopes(List.of(outerScope, innerScope), inner);
+        assertEquals(edgeId,
+                JIPipeDesktopShortcutDispatcher.resolveFirstAvailable(List.of(nodeId, edgeId), ordered));
+    }
+
+    @Test void noCandidateResolvesReturnsNull() {
+        String nodeId = "org.hkijena.jipipe.graph.node.delete";
+        String edgeId = "org.hkijena.jipipe.graph.edge.delete-control-point";
+        JPanel p = new JPanel();
+        ShortcutScope scope = new ShortcutScope(p, id -> null);
+        List<ShortcutScope> ordered =
+                JIPipeDesktopShortcutDispatcher.orderedContainingScopes(List.of(scope), p);
+
+        assertNull(JIPipeDesktopShortcutDispatcher.resolveFirstAvailable(List.of(nodeId, edgeId), ordered));
+        // An empty candidate list resolves to nothing as well (the map
+        // lookup miss short-circuits before this helper is reached in
+        // production, but the helper itself must be total).
+        assertNull(JIPipeDesktopShortcutDispatcher.resolveFirstAvailable(List.of(), ordered));
     }
 }

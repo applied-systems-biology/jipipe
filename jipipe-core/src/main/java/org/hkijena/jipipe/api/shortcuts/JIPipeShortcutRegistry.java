@@ -55,11 +55,12 @@ public final class JIPipeShortcutRegistry {
      * Clears the application-wide singleton so the next
      * {@link #getInstance()} call creates a fresh registry.
      * <p>
-     * Intended for tests that need an isolated registry; production code
+     * Intended for tests that need an isolated registry (including tests
+     * outside this package that pin dispatcher behavior); production code
      * should always use {@link #getInstance()} and rely on the idempotent
      * registration helpers.
      */
-    static void resetInstance() {
+    public static void resetInstance() {
         INSTANCE = null;
     }
 

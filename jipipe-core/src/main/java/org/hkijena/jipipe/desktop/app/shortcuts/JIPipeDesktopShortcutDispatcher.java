@@ -30,7 +30,6 @@ import java.awt.KeyEventDispatcher;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,15 +43,20 @@ import java.util.function.Consumer;
  * <p>
  * A single {@link KeyEventDispatcher} installed on the current
  * {@link KeyboardFocusManager} turns every {@code KEY_PRESSED} event into an
- * action id: length-1 bindings are looked up directly in
- * {@link #singleStrokeMap}; length-2 bindings go through the
+ * ordered list of candidate action ids: length-1 bindings are looked up
+ * directly in {@link #singleStrokeMap}; length-2 bindings go through the
  * {@link JIPipeChordStateMachine} (the prefix press reports
  * {@link EventResult#PREFIX_STARTED}, the second press
- * {@link EventResult#CHORD_COMPLETED} with the full chord). A hit is then
- * resolved against the registered {@link ShortcutScope}s that contain the
- * current focus owner, innermost first ({@link #orderedContainingScopes}),
- * and the first scope whose {@link ShortcutScope.Resolver} returns a
- * non-null runnable fires it on the EDT.
+ * {@link EventResult#CHORD_COMPLETED} with the full chord). The catalog
+ * intentionally lets different actions share a stroke when their
+ * availability is disjoint (e.g. DELETE removes nodes or, when only control
+ * points are selected, control points), so a hit yields one candidate per
+ * bound action, in registry order.
+ * The candidates are tried in registry order against the registered
+ * {@link ShortcutScope}s that contain the current focus owner, innermost
+ * first ({@link #orderedContainingScopes}); the first candidate for which
+ * the first scope whose {@link ShortcutScope.Resolver} returns a non-null
+ * runnable is found fires that runnable on the EDT.
  * <p>
  * The stroke maps and the chord machine are rebuilt from the registry
  * whenever the keymap settings or the action registry change
@@ -78,17 +82,23 @@ public final class JIPipeDesktopShortcutDispatcher implements KeyEventDispatcher
     };
 
     /**
-     * Single-stroke (length-1 variant) bindings, stroke to action id.
-     * A volatile snapshot: rebuilt as a fresh map and published atomically,
-     * so the EDT always reads a consistent map even when a settings change
-     * arrives on a background thread.
+     * Single-stroke (length-1 variant) bindings, stroke to the ordered list
+     * of candidate action ids. Several actions may share one stroke (e.g.
+     * the node and the edge delete on DELETE), so the list holds every id
+     * bound to the stroke in registry order; the fire path tries them in
+     * that order. A volatile snapshot: rebuilt as a fresh map and published
+     * atomically, so the EDT always reads a consistent map even when a
+     * settings change arrives on a background thread. Package-private so
+     * tests can read the published snapshot.
      */
-    private volatile Map<KeyStroke, String> singleStrokeMap = Map.of();
+    volatile Map<KeyStroke, List<String>> singleStrokeMap = Map.of();
     /**
-     * Chord (length-2 variant) bindings, chord to action id. Published as an
-     * immutable snapshot like {@link #singleStrokeMap}.
+     * Chord (length-2 variant) bindings, chord to the ordered list of
+     * candidate action ids. Same candidate semantics as
+     * {@link #singleStrokeMap}; published as an immutable snapshot like it.
+     * Package-private so tests can read the published snapshot.
      */
-    private volatile Map<List<KeyStroke>, String> chordMap = Map.of();
+    volatile Map<List<KeyStroke>, List<String>> chordMap = Map.of();
     /**
      * The pending-chord state machine; driven only from the EDT.
      */
@@ -112,6 +122,18 @@ public final class JIPipeDesktopShortcutDispatcher implements KeyEventDispatcher
      * tracked here.
      */
     private volatile KeyboardFocusManager installedOn;
+
+    /**
+     * Clears the application-wide singleton so the next
+     * {@link #getInstance()} call creates a fresh dispatcher.
+     * <p>
+     * Intended for tests that need an isolated dispatcher (and thus an
+     * isolated settings/registry subscription); production code should
+     * always use {@link #getInstance()}.
+     */
+    static void resetInstance() {
+        INSTANCE = null;
+    }
 
     private JIPipeDesktopShortcutDispatcher() {
         // The settings and registry change listeners fire synchronously on
@@ -227,14 +249,17 @@ public final class JIPipeDesktopShortcutDispatcher implements KeyEventDispatcher
             JIPipeShortcutRegistry registry = JIPipeShortcutRegistry.getInstance();
             KeymapSettings settings = JIPipeShortcutSettings.current();
 
-            Map<KeyStroke, String> single = new HashMap<>();
-            Map<List<KeyStroke>, String> chords = new LinkedHashMap<>();
+            // Registry order (category, then name) defines the candidate
+            // order: for a stroke shared by several actions, the candidates
+            // are tried in exactly this order.
+            Map<KeyStroke, List<String>> single = new LinkedHashMap<>();
+            Map<List<KeyStroke>, List<String>> chords = new LinkedHashMap<>();
             for (JIPipeShortcutAction action : registry.all()) {
                 for (List<KeyStroke> variant : registry.bindingFor(action.id(), settings).variants()) {
                     if (variant.size() == 1) {
-                        single.put(variant.get(0), action.id());
+                        single.computeIfAbsent(variant.get(0), k -> new ArrayList<>()).add(action.id());
                     } else if (variant.size() == 2) {
-                        chords.put(variant, action.id());
+                        chords.computeIfAbsent(variant, k -> new ArrayList<>()).add(action.id());
                     }
                 }
             }
@@ -280,11 +305,11 @@ public final class JIPipeDesktopShortcutDispatcher implements KeyEventDispatcher
         Component focusOwner = focusOwnerOrNull();
         switch (result.result()) {
             case PASSTHROUGH: {
-                String actionId = singleStrokeMap.get(stroke);
-                if (actionId == null) {
+                List<String> candidateIds = singleStrokeMap.get(stroke);
+                if (candidateIds == null || candidateIds.isEmpty()) {
                     return false;
                 }
-                return fireResolvedAction(actionId, focusOwner, false);
+                return fireResolvedAction(candidateIds, focusOwner, false);
             }
             case PREFIX_STARTED: {
                 List<KeyStroke> prefix = chordMachine.pendingPrefix();
@@ -293,14 +318,14 @@ public final class JIPipeDesktopShortcutDispatcher implements KeyEventDispatcher
                 return true;
             }
             case CHORD_COMPLETED: {
-                String actionId = chordMap.get(result.completedChord());
-                if (actionId == null) {
+                List<String> candidateIds = chordMap.get(result.completedChord());
+                if (candidateIds == null || candidateIds.isEmpty()) {
                     // The chord is over and the second key is already
                     // swallowed: report and consume.
                     setStatusText("Chord cancelled");
                     return true;
                 }
-                return fireResolvedAction(actionId, focusOwner, true);
+                return fireResolvedAction(candidateIds, focusOwner, true);
             }
             case CANCELLED: {
                 setStatusText(null);
@@ -312,11 +337,20 @@ public final class JIPipeDesktopShortcutDispatcher implements KeyEventDispatcher
     }
 
     /**
-     * Resolves a hit action id against the scopes containing the focus
-     * owner (innermost first), applies the text-input guard, and fires the
-     * first resolvable scope.
+     * Tries the candidate action ids of one hit (in registry order) against
+     * the scopes containing the focus owner (innermost first), applies the
+     * text-input guard per candidate, and fires the first candidate that
+     * resolves.
+     * <p>
+     * A shared stroke maps to several candidates (e.g. DELETE is bound to
+     * both the node and the edge delete): the guard suppresses a candidate
+     * that is not text-input-safe while typing, and a candidate none of the
+     * scopes can resolve; both simply pass on to the next candidate. The
+     * consume semantics of an overall miss are unchanged: the key is
+     * swallowed only when the chord state machine already consumed it,
+     * otherwise it is passed on (the user types the stroke normally).
      *
-     * @param actionId the resolved action id
+     * @param candidateIds the ordered candidate action ids of the hit
      * @param focusOwner the current focus owner, may be null
      * @param keyAlreadyConsumed whether the chord state machine has already
      * swallowed the key (a {@code CHORD_COMPLETED} result): then the event
@@ -325,28 +359,58 @@ public final class JIPipeDesktopShortcutDispatcher implements KeyEventDispatcher
      * @return true when the event must be consumed (action fired, or the key
      * was already swallowed), false to pass the key on
      */
-    private boolean fireResolvedAction(String actionId, Component focusOwner, boolean keyAlreadyConsumed) {
-        JIPipeShortcutAction action = JIPipeShortcutRegistry.getInstance().byId(actionId);
-        if (action != null && JIPipeShortcutTextGuard.isTextInput(focusOwner)
-                && !action.isTextInputSafe()) {
-            // Not resolvable in a text field: the key is swallowed when the
-            // chord state machine already consumed it (second key of a
-            // chord), otherwise it is passed on (the single stroke is typed
-            // normally).
-            return keyAlreadyConsumed;
-        }
-        for (ShortcutScope scope : orderedContainingScopes(scopes, focusOwner)) {
-            Runnable runnable = scope.resolver().resolve(actionId);
-            if (runnable != null) {
-                SwingUtilities.invokeLater(runnable);
-                String name = action == null ? actionId : action.name();
-                setStatusText("Executed: " + name);
-                return true;
+    private boolean fireResolvedAction(List<String> candidateIds, Component focusOwner, boolean keyAlreadyConsumed) {
+        List<ShortcutScope> containing = orderedContainingScopes(scopes, focusOwner);
+        for (String candidateId : candidateIds) {
+            JIPipeShortcutAction action = JIPipeShortcutRegistry.getInstance().byId(candidateId);
+            if (action != null && JIPipeShortcutTextGuard.isTextInput(focusOwner)
+                    && !action.isTextInputSafe()) {
+                // Not resolvable in a text field: skip this candidate, a
+                // later, text-input-safe candidate may still fire.
+                continue;
+            }
+            for (ShortcutScope scope : containing) {
+                Runnable runnable = scope.resolver().resolve(candidateId);
+                if (runnable != null) {
+                    SwingUtilities.invokeLater(runnable);
+                    setStatusText("Executed: " + (action == null ? candidateId : action.name()));
+                    return true;
+                }
             }
         }
-        // No scope could resolve the action: same consume semantics as the
-        // text-input guard above.
+        // No candidate resolved: same consume semantics as the text-input
+        // guard above.
         return keyAlreadyConsumed;
+    }
+
+    /**
+     * Walks the ordered scopes (innermost first) and resolves every
+     * candidate id in order against each scope, returning the first
+     * candidate id whose resolver produced a non-null runnable, or
+     * {@code null} when none resolves.
+     * <p>
+     * Extracted as a static helper so the candidate walk is testable without
+     * installing the global dispatcher. The scope walk restarts for the
+     * next candidate only when the current one resolved nowhere, so a
+     * candidate unknown to the innermost scope still falls through to the
+     * outer scopes, and the first resolvable candidate wins over later ones.
+     *
+     * @param candidateIds the ordered candidate action ids of one hit
+     * @param orderedScopes the scopes containing the focus owner, innermost
+     *                      first (e.g. the result of
+     *                      {@link #orderedContainingScopes})
+     * @return the first candidate id that resolves in some scope, or
+     * {@code null}
+     */
+    static String resolveFirstAvailable(List<String> candidateIds, List<ShortcutScope> orderedScopes) {
+        for (String candidateId : candidateIds) {
+            for (ShortcutScope scope : orderedScopes) {
+                if (scope.resolver().resolve(candidateId) != null) {
+                    return candidateId;
+                }
+            }
+        }
+        return null;
     }
 
     /**
