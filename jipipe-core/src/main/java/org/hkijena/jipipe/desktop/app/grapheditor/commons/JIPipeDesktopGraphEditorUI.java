@@ -30,10 +30,12 @@ import org.hkijena.jipipe.api.nodes.taxonomy.TaxonomyView;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.settings.JIPipeSettingKey;
 import org.hkijena.jipipe.api.settings.SettingsBinding;
+import org.hkijena.jipipe.api.shortcuts.JIPipeShortcutAction;
 import org.hkijena.jipipe.api.shortcuts.JIPipeShortcutActions;
 import org.hkijena.jipipe.api.shortcuts.JIPipeShortcutBinding;
 import org.hkijena.jipipe.api.shortcuts.JIPipeShortcutRegistry;
 import org.hkijena.jipipe.api.shortcuts.JIPipeShortcutSettings;
+import org.hkijena.jipipe.api.shortcuts.KeymapSettings;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
@@ -163,6 +165,18 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
      * their own.
      */
     private ShortcutScope shortcutScope;
+    /**
+     * The per-chord tool cycle state of the scope resolver: for every shared
+     * effective chord (an immutable variant list, e.g. the LEGACY preset's
+     * ESC on the default tool and the notes-edit tool), the id of the tool
+     * whose selection the most recent cycle fire selected. The next fire of
+     * the same chord advances to the next tool in the chord group
+     * (deterministic registry order, wrapping); a chord that never fired is
+     * cold and starts from the currently selected tool. Updated by
+     * {@link #selectTool} for any selection through a tool that carries the
+     * chord, so manual selections also steer the cycle.
+     */
+    private final Map<List<List<KeyStroke>>, String> lastFiredToolIdByChord = new LinkedHashMap<>();
     private JScrollPane scrollPane;
     /**
      * The floating map panel over the canvas, placed on the overlay's drag
@@ -393,24 +407,29 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
                     action.run(canvasUI, selection);
                 };
             }
-            // Tools: selecting the mapped graph editor tool. Pressing the
-            // chord of the already-active tool switches back to the default
-            // tool (the successor of the old keybinding cycling: today
-            // every tool has its own chord, so a chord never selects
-            // between several tools)
+            // Tools: selecting the mapped graph editor tool. Tools that
+            // share one effective chord (design Section 7: cycling on a
+            // repeated press of a shared chord is kept, e.g. the LEGACY
+            // preset's ESC on the default tool and the notes-edit tool)
+            // cycle on repeated presses; a solo chord re-selects its own
+            // tool. The cycle target differs from this candidate id when the
+            // chord belongs to another tool of the group, in which case this
+            // resolver returns null so the dispatcher falls through to that
+            // candidate (the status bar then reports the action that fired)
             for (Map.Entry<Class<? extends JIPipeDesktopGraphEditorTool>, String> toolEntry : TOOL_SHORTCUT_IDS.entrySet()) {
                 if (toolEntry.getValue().equals(actionId)) {
                     JIPipeDesktopGraphEditorTool tool = toolMap.get(toolEntry.getKey());
                     if (tool == null) {
                         return null;
                     }
-                    return () -> {
-                        if (tool == currentTool) {
-                            selectDefaultTool();
-                        } else {
-                            selectTool(tool);
-                        }
-                    };
+                    if (!actionId.equals(resolveToolCycleTarget(actionId))) {
+                        // This press cycles to the next tool of the chord
+                        // group: let the dispatcher fall through to that
+                        // candidate, so the status bar reports the action
+                        // that actually fires.
+                        return null;
+                    }
+                    return () -> selectTool(tool);
                 }
             }
             // Editor-level actions
@@ -875,6 +894,146 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
         return JIPipeShortcutRegistry.formatVariants(binding.variants());
     }
 
+    /**
+     * Computes the id of the tool that a press of the given tool action's
+     * effective chord must select (design Section 7: cycling on a repeated
+     * press of a shared chord is kept).
+     * <p>
+     * A solo chord selects its own tool. A shared chord selects the tool
+     * AFTER the last one the cycle fired for that chord (the entry of
+     * {@code lastFiredToolIdByChord} keyed by the chord); a cold cycle (no
+     * recorded fire, or the recorded id no longer in the group) starts from
+     * the currently selected tool when that one is in the group, else from
+     * the group's first tool, and advances one step. The result is the group
+     * member at the target position, wrapping around. The {@code chordGroup}
+     * is built by the caller as the tool action ids (see
+     * {@link #TOOL_SHORTCUT_IDS}) whose effective variants equal the
+     * pressed chord, in the deterministic order of
+     * {@link JIPipeShortcutRegistry#all()} (category, then name).
+     * <p>
+     * Pure with respect to the cycle state: the state is recorded by
+     * {@link #selectTool} (via {@link #recordToolChordCycle}) when the
+     * selection this computation drove actually happens, so the next press
+     * advances from the tool that was selected.
+     * <p>
+     * Package-private static so the computation is testable without
+     * building an editor.
+     *
+     * @param actionId the tool action id of the pressed chord; must be a
+     *                 member of {@code chordGroup}
+     * @param chord the effective variants of the pressed chord (the
+     *              cycle-state key; compare by content)
+     * @param chordGroup the tool action ids sharing the pressed chord,
+     *                   deterministic order; never empty (at least
+     *                   {@code actionId} itself)
+     * @param lastFiredToolIdByChord the recorded cycle state of the pressing
+     *                               editor, may be empty
+     * @param currentToolId the id of the currently selected tool, or
+     *                      {@code null} when none is selected
+     * @return the id of the tool to select for this press
+     */
+    static String computeToolCycleTarget(String actionId, List<List<KeyStroke>> chord,
+                                         List<String> chordGroup,
+                                         Map<List<List<KeyStroke>>, String> lastFiredToolIdByChord,
+                                         String currentToolId) {
+        Objects.requireNonNull(actionId, "actionId");
+        Objects.requireNonNull(chord, "chord");
+        Objects.requireNonNull(chordGroup, "chordGroup");
+        Objects.requireNonNull(lastFiredToolIdByChord, "lastFiredToolIdByChord");
+        if (chordGroup.size() == 1 || !chordGroup.contains(actionId)) {
+            return actionId;
+        }
+        String lastFired = lastFiredToolIdByChord.get(chord);
+        int base;
+        if (lastFired != null) {
+            base = chordGroup.indexOf(lastFired);
+        } else if (currentToolId != null) {
+            base = chordGroup.indexOf(currentToolId);
+        } else {
+            base = -1;
+        }
+        if (base == -1) {
+            // Cold cycle whose start tool is not in the group (or no tool
+            // selected): start from the group's first tool, then advance.
+            base = 0;
+        }
+        int target = (base + 1) % chordGroup.size();
+        return chordGroup.get(target);
+    }
+
+    /**
+     * The tool action id of this editor's currently selected tool (per
+     * {@link #TOOL_SHORTCUT_IDS}), or {@code null} when no tool is selected
+     * or the selected tool carries no shortcut action.
+     */
+    private String currentToolActionId() {
+        if (currentTool == null) {
+            return null;
+        }
+        return TOOL_SHORTCUT_IDS.get(currentTool.getClass());
+    }
+
+    /**
+     * The tool action ids that share the given effective chord: every id in
+     * {@link #TOOL_SHORTCUT_IDS} whose effective variants (override-aware,
+     * per {@link JIPipeShortcutRegistry#bindingFor}) are equal to it, in the
+     * deterministic order of {@link JIPipeShortcutRegistry#all()} (category,
+     * then name).
+     * <p>
+     * Tools that are not registered in this editor are still members of the
+     * group: the dispatcher never proposes their candidate id in this scope
+     * (their resolver answers null), so they are simply skipped in the
+     * cycle, and the group shrinks automatically if the chord is re-bound to
+     * another tool's chord.
+     *
+     * @param effective the effective variants of the pressed chord
+     * @return the deterministic group
+     */
+    private List<String> toolChordGroup(List<List<KeyStroke>> effective) {
+        JIPipeShortcutRegistry registry = JIPipeShortcutRegistry.getInstance();
+        KeymapSettings keymap = JIPipeShortcutSettings.current();
+        List<String> group = new ArrayList<>();
+        for (JIPipeShortcutAction action : registry.all()) {
+            if (TOOL_SHORTCUT_IDS.containsValue(action.id())
+                    && effective.equals(registry.bindingFor(action.id(), keymap).variants())) {
+                group.add(action.id());
+            }
+        }
+        return group;
+    }
+
+    /**
+     * The id of the tool that the press of the given tool action's chord
+     * must select, per {@link #computeToolCycleTarget}, over this editor's
+     * chord group and cycle state.
+     *
+     * @param actionId the tool action id of the pressed chord
+     */
+    private String resolveToolCycleTarget(String actionId) {
+        JIPipeShortcutRegistry registry = JIPipeShortcutRegistry.getInstance();
+        KeymapSettings keymap = JIPipeShortcutSettings.current();
+        List<List<KeyStroke>> effective = registry.bindingFor(actionId, keymap).variants();
+        return computeToolCycleTarget(actionId, effective, toolChordGroup(effective),
+                lastFiredToolIdByChord, currentToolActionId());
+    }
+
+    /**
+     * Records, for the given tool selection, the cycle state of the chord
+     * that selects it (the action's effective variants form the chord key),
+     * so the next press of that chord cycles from this tool.
+     *
+     * @param tool the tool that was selected
+     */
+    private void recordToolChordCycle(JIPipeDesktopGraphEditorTool tool) {
+        String toolId = TOOL_SHORTCUT_IDS.get(tool.getClass());
+        if (toolId == null) {
+            return;
+        }
+        List<List<KeyStroke>> chordKey = JIPipeShortcutRegistry.getInstance()
+                .bindingFor(toolId, JIPipeShortcutSettings.current()).variants();
+        lastFiredToolIdByChord.put(chordKey, toolId);
+    }
+
     public List<JIPipeDesktopGraphEditorTool> getTools() {
         return Collections.unmodifiableList(tools);
     }
@@ -922,6 +1081,11 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
             currentTool = toggleableTool;
 
             canvasUI.getToolManager().setCurrentTool(currentTool);
+            // Steer the shared-chord cycle state so the next press of a
+            // chord that also selects this tool cycles from here (design
+            // Section 7). Covers every selection path: toolbar buttons,
+            // the shortcut resolver, and selectToolByClass.
+            recordToolChordCycle(tool);
             tool.activate();
             getDesktopWorkbench().sendStatusBarText("Activated tool '" + tool.getName() + "'");
         } else {
