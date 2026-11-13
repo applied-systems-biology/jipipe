@@ -36,9 +36,10 @@ import java.util.function.Consumer;
  * {@link RelationCardAppearance.Appearance}: the card opacity (the
  * visitation trail ramp), applied to the whole card while painting. The 2px
  * border marks the current node (the trail's current / selected node), which
- * can sit anywhere in the displayed rows; the current node additionally
- * carries a marker icon at the left card edge (the position of the canvas
- * run button, overlaid on the content). The preferred size is MEASURED from
+ * can sit anywhere in the displayed rows; the focused center node (the node
+ * the displayed layers are built around) additionally carries a marker icon
+ * directly left of the node icon (the slot the canvas run button takes).
+ * The preferred size is MEASURED from
  * the name and icon (repo policy: never assume text sizes). A single click
  * navigates to the card's node via the callback given by the panel.
  */
@@ -58,16 +59,10 @@ public class RelationCard extends JComponent {
     static final int CURRENT_BORDER_WIDTH = 2;
 
     /**
-     * Inset of the current-node marker icon at the left card edge: the same
-     * small inset the canvas node UI uses for its run button.
+     * The focused-center marker icon (painted directly left of the node
+     * icon, the slot the canvas node UI uses for its run button).
      */
-    static final int MARKER_INSET = 3;
-
-    /**
-     * The current-node marker icon (painted at the left edge, where the
-     * canvas node UI places its run button).
-     */
-    private static final Icon CURRENT_MARKER_ICON = JIPipe.RESOURCES.getIcon16("actions/edit-select-all.png");
+    private static final Icon CENTER_MARKER_ICON = JIPipe.RESOURCES.getIcon16("actions/edit-select-all.png");
 
     private static final String ELLIPSIS = "...";
 
@@ -77,6 +72,7 @@ public class RelationCard extends JComponent {
     private final RelationCardAppearance.Appearance appearance;
     private final Consumer<String> navigationCallback;
     private boolean current;
+    private boolean focusedCenter;
     private float opacity;
 
     /**
@@ -91,18 +87,22 @@ public class RelationCard extends JComponent {
      *                           factor the panel resolved)
      * @param current            whether the card shows the current node
      *                           (drawn with the thicker border)
+     * @param focusedCenter      whether the card shows the focused center
+     *                           node (carries the center marker icon left of
+     *                           the node icon)
      * @param navigationCallback called with the node id when the card is
      *                           clicked
      */
     public RelationCard(String nodeId, String displayName, JIPipeNodeInfo info,
                         RelationCardAppearance.Appearance appearance, float opacity, boolean current,
-                        Consumer<String> navigationCallback) {
+                        boolean focusedCenter, Consumer<String> navigationCallback) {
         this.nodeId = nodeId;
         this.displayName = displayName;
         this.info = info;
         this.appearance = appearance;
         this.opacity = opacity;
         this.current = current;
+        this.focusedCenter = focusedCenter;
         this.navigationCallback = navigationCallback;
         setOpaque(false);
         setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -139,6 +139,17 @@ public class RelationCard extends JComponent {
      */
     public void setCurrent(boolean current) {
         this.current = current;
+        repaint();
+    }
+
+    /**
+     * Sets whether this card shows the focused center node (the center
+     * marker icon left of the node icon) and repaints.
+     *
+     * @param focusedCenter the new focused-center state
+     */
+    public void setFocusedCenter(boolean focusedCenter) {
+        this.focusedCenter = focusedCenter;
         repaint();
     }
 
@@ -182,7 +193,8 @@ public class RelationCard extends JComponent {
                         appearance.patternInk(), appearance.patternOpacity());
             }
 
-            // Content: icon + name as one group, centered in the card
+            // Content: optional center marker, node icon and name as one
+            // group, centered in the card
             paintContent(g2, width, height, border);
 
             // Border: 1px, 2px for the current card (painted inside)
@@ -191,36 +203,38 @@ public class RelationCard extends JComponent {
             g2.fillRect(0, height - border, width, border);
             g2.fillRect(0, 0, border, height);
             g2.fillRect(width - border, 0, border, height);
-
-            // Current-node marker: the same left-edge position the canvas
-            // node UI uses for its run button, overlaid on the content (the
-            // canvas overlays this region too)
-            if (current && CURRENT_MARKER_ICON != null) {
-                CURRENT_MARKER_ICON.paintIcon(this, g2, MARKER_INSET,
-                        Math.max(0, (height - CURRENT_MARKER_ICON.getIconHeight()) / 2));
-            }
         } finally {
             g2.dispose();
         }
     }
 
     /**
-     * The icon + name group, centered vertically and horizontally: the
-     * group's total width is measured (FontMetrics + icon width).
+     * The content group, centered vertically and horizontally: the focused
+     * center card carries the center marker icon directly left of the node
+     * icon (the slot the canvas node UI's run button takes); the group's
+     * total width is measured (marker + icon widths + FontMetrics text
+     * width) and no slot is reserved when the marker is absent.
      */
     private void paintContent(Graphics2D g2, int width, int height, int border) {
         FontMetrics metrics = g2.getFontMetrics();
         Icon icon = resolvedIcon();
         int iconWidth = icon != null ? icon.getIconWidth() : 0;
         int iconGap = icon != null ? HEADER_ICON_TEXT_GAP : 0;
-        String name = fittedName(metrics, Math.max(0, width - 2 * border - iconWidth - iconGap));
-        int groupWidth = iconWidth + iconGap + metrics.stringWidth(name);
+        int markerWidth = 0;
+        if (focusedCenter && CENTER_MARKER_ICON != null) {
+            markerWidth = CENTER_MARKER_ICON.getIconWidth() + HEADER_ICON_TEXT_GAP;
+        }
+        String name = fittedName(metrics, Math.max(0, width - 2 * border - markerWidth - iconWidth - iconGap));
+        int groupWidth = markerWidth + iconWidth + iconGap + metrics.stringWidth(name);
         int groupX = Math.max(border, (width - groupWidth) / 2);
+        if (focusedCenter && CENTER_MARKER_ICON != null) {
+            CENTER_MARKER_ICON.paintIcon(this, g2, groupX, Math.max(0, (height - CENTER_MARKER_ICON.getIconHeight()) / 2));
+        }
         if (icon != null) {
-            icon.paintIcon(this, g2, groupX, Math.max(0, (height - icon.getIconHeight()) / 2));
+            icon.paintIcon(this, g2, groupX + markerWidth, Math.max(0, (height - icon.getIconHeight()) / 2));
         }
         g2.setPaint(nameColor());
-        UIUtils.drawStringVerticallyCentered(g2, name, groupX + iconWidth + iconGap, height / 2, metrics);
+        UIUtils.drawStringVerticallyCentered(g2, name, groupX + markerWidth + iconWidth + iconGap, height / 2, metrics);
     }
 
     /**
@@ -229,7 +243,7 @@ public class RelationCard extends JComponent {
      */
     private int measuredContentHeight(FontMetrics metrics) {
         Icon icon = resolvedIcon();
-        Icon marker = CURRENT_MARKER_ICON;
+        Icon marker = CENTER_MARKER_ICON;
         int iconHeight = Math.max(icon != null ? icon.getIconHeight() : 0,
                 marker != null ? marker.getIconHeight() : 0);
         return Math.max(iconHeight, metrics.getHeight()) + 2 * HEADER_VERTICAL_PADDING;

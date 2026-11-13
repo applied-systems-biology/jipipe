@@ -468,6 +468,7 @@ public class JIPipeDesktopRelationsPanel extends JIPipeDesktopWorkbenchPanel imp
             if (component instanceof RelationCard) {
                 RelationCard card = (RelationCard) component;
                 card.setCurrent(currentIds.contains(card.getNodeId()));
+                card.setFocusedCenter(focusedIds.contains(card.getNodeId()));
                 card.setOpacity(opacityFor(card.getNodeId()));
             }
         }
@@ -698,6 +699,7 @@ public class JIPipeDesktopRelationsPanel extends JIPipeDesktopWorkbenchPanel imp
         return new RelationCard(nodeId, node.getName(), node.getInfo(),
                 RelationCardAppearance.of(node.getInfo()),
                 opacityFor(nodeId), currentIds.contains(nodeId),
+                focusedIds.contains(nodeId),
                 this::navigateTo);
     }
 
