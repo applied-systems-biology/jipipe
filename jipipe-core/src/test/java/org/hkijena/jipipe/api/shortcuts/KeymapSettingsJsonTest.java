@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.api.shortcuts;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.junit.jupiter.api.Test;
 
@@ -21,6 +22,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class KeymapSettingsJsonTest {
@@ -58,5 +60,16 @@ class KeymapSettingsJsonTest {
                 "{\"activeProfileId\":null,\"overrides\":{\"x\":[[\"not a keystroke\"]]}}", KeymapSettings.class);
         List<List<KeyStroke>> variants = assertDoesNotThrow(() -> s.overrideVariants("x"));
         assertTrue(variants.isEmpty(), "a fully malformed chord is dropped, not thrown");
+    }
+
+    @Test void currentIsNonNullWithDefaultsWhenNothingStored() {
+        // Boots the live service (the module's LauncherSessionListeners isolate the
+        // profile into a temp dir and pre-patch ImageJ, so this is headless-safe).
+        // On a fresh profile the "registry:keymap" block is absent, so the binding
+        // reports the key's null default and current() must coalesce it away.
+        JIPipe.ensureInstance();
+        KeymapSettings current = JIPipeShortcutSettings.current();
+        assertNotNull(current, "current() must never return null on an empty store");
+        assertEquals(KeymapSettings.DEFAULT_CHORD_TIMEOUT_MS, current.getChordTimeoutMs());
     }
 }

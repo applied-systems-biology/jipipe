@@ -65,10 +65,14 @@ public final class JIPipeShortcutSettings {
     }
 
     /**
-     * @return the current keymap state, i.e. the bound value, or the key's
-     * default when nothing is stored yet
+     * @return the current keymap state, i.e. the bound value. This method
+     * never returns {@code null}: when nothing is stored yet (or the stored
+     * value is a JSON {@code null} and the binding fell back to the key's
+     * {@code null} default), a fresh {@link KeymapSettings} with the defaults
+     * is handed out instead.
      */
     public static KeymapSettings current() {
-        return binding().get();
+        KeymapSettings value = binding().get();
+        return value == null ? new KeymapSettings() : value;
     }
 }
