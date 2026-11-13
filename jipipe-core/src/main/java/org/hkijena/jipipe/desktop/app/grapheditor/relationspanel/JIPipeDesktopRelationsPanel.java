@@ -154,7 +154,7 @@ public class JIPipeDesktopRelationsPanel extends JIPipeDesktopWorkbenchPanel imp
     private final JToolBar toolBar = new JToolBar();
     private final JButton backButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/go-previous.png"));
     private final JButton forwardButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/go-next.png"));
-    private final JButton refocusButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/target.png"));
+    private final JButton refocusButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/edit-select-all.png"));
     private final JButton upButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/go-up.png"));
     private final JButton downButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/go-down.png"));
     private final BodyPanel body = new BodyPanel();
