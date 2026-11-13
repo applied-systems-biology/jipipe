@@ -31,6 +31,7 @@ import org.hkijena.jipipe.api.project.io.JIPipeProjectPeek;
 import org.hkijena.jipipe.api.project.jipx.JIPipeXProjectWriter;
 import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
+import org.hkijena.jipipe.api.run.JIPipeRunnableWorker;
 import org.hkijena.jipipe.api.service.components.JIPipePluginsServiceComponent;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
@@ -1185,11 +1186,17 @@ public class JIPipeDesktopProjectWindow extends JFrame {
         };
         final JIPipeProgressInfo.BatchEventSubscription statusSubscription = wireStatusToLoadingScreen(run);
         final AtomicBoolean handled = new AtomicBoolean(false);
+        final AtomicBoolean pushInterruptedToLogs = new AtomicBoolean(false);
         Runnable dispatch = () -> {
             if (!handled.compareAndSet(false, true)) {
                 return;
             }
             statusSubscription.close();
+            if (pushInterruptedToLogs.get()) {
+                // Push the failure to the run logs (the former dialog used
+                // GlobalLogMode.OnlyFailures)
+                JIPipeDesktopRunnableLogsCollection.getInstance().pushToLog(run, false);
+            }
             // The event may arrive off the EDT - hop before touching the
             // callback list (it is EDT-confined)
             SwingUtilities.invokeLater(() -> {
@@ -1201,6 +1208,22 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                 }
             });
         };
+        // Await the completion on the worker's own emitters as well: for a
+        // run cancelled while running, the executor never forwards the late
+        // done() event to the queue emitter (see beginProjectLoad). The
+        // handled flag deduplicates the two event sources.
+        JIPipeRunnableWorker worker = queue.enqueue(run);
+        worker.getFinishedEventEmitter().subscribeLambda((emitter, event) -> {
+            if (event.getRun() == run) {
+                dispatch.run();
+            }
+        });
+        worker.getInterruptedEventEmitter().subscribeLambda((emitter, event) -> {
+            if (event.getRun() == run) {
+                pushInterruptedToLogs.set(true);
+                dispatch.run();
+            }
+        });
         queue.getFinishedEventEmitter().subscribeLambda((emitter, event) -> {
             if (event.getRun() == run) {
                 dispatch.run();
@@ -1208,13 +1231,10 @@ public class JIPipeDesktopProjectWindow extends JFrame {
         });
         queue.getInterruptedEventEmitter().subscribeLambda((emitter, event) -> {
             if (event.getRun() == run) {
-                // Push the failure to the run logs (the former dialog used
-                // GlobalLogMode.OnlyFailures)
-                JIPipeDesktopRunnableLogsCollection.getInstance().pushToLog(run, false);
+                pushInterruptedToLogs.set(true);
                 dispatch.run();
             }
         });
-        queue.enqueue(run);
     }
 
     /**
@@ -1368,14 +1388,39 @@ public class JIPipeDesktopProjectWindow extends JFrame {
         activeLoadQueue = queue;
         final JIPipeProgressInfo.BatchEventSubscription statusSubscription = wireStatusToLoadingScreen(loadRun);
         final AtomicBoolean handled = new AtomicBoolean(false);
+        final AtomicBoolean pushInterruptedToLogs = new AtomicBoolean(false);
         Runnable dispatch = () -> {
             if (!handled.compareAndSet(false, true)) {
                 return;
             }
             statusSubscription.close();
+            if (pushInterruptedToLogs.get()) {
+                // Push genuine failures to the run logs (the former dialog
+                // used GlobalLogMode.OnlyFailures)
+                JIPipeDesktopRunnableLogsCollection.getInstance().pushToLog(loadRun, false);
+            }
             SwingUtilities.invokeLater(() -> thisWindow.onProjectLoadFinished(path, report, notifications, initiatorWindow,
                     loadedProjectHolder[0], failureHolder[0], previousProject, previousWorkbench));
         };
+        // The queue-level events are NOT delivered for a run that is
+        // cancelled while running: the executor unregisters itself from the
+        // worker before the worker's done() emits, so nothing forwards the
+        // event to the queue emitter (that dead-end stuck the loading
+        // screen on cancel). The worker's done() always emits exactly one
+        // completion event on its own emitters - await it there directly.
+        // The handled flag deduplicates the two event sources.
+        JIPipeRunnableWorker worker = queue.enqueue(loadRun);
+        worker.getFinishedEventEmitter().subscribeLambda((emitter, event) -> {
+            if (event.getRun() == loadRun) {
+                dispatch.run();
+            }
+        });
+        worker.getInterruptedEventEmitter().subscribeLambda((emitter, event) -> {
+            if (event.getRun() == loadRun) {
+                pushInterruptedToLogs.set(!loadCancelRequested.get());
+                dispatch.run();
+            }
+        });
         queue.getFinishedEventEmitter().subscribeLambda((emitter, event) -> {
             if (event.getRun() == loadRun) {
                 dispatch.run();
@@ -1383,15 +1428,10 @@ public class JIPipeDesktopProjectWindow extends JFrame {
         });
         queue.getInterruptedEventEmitter().subscribeLambda((emitter, event) -> {
             if (event.getRun() == loadRun) {
-                if (!loadCancelRequested.get()) {
-                    // Push genuine failures to the run logs (the former
-                    // dialog used GlobalLogMode.OnlyFailures)
-                    JIPipeDesktopRunnableLogsCollection.getInstance().pushToLog(loadRun, false);
-                }
+                pushInterruptedToLogs.set(!loadCancelRequested.get());
                 dispatch.run();
             }
         });
-        queue.enqueue(loadRun);
     }
 
     /**
