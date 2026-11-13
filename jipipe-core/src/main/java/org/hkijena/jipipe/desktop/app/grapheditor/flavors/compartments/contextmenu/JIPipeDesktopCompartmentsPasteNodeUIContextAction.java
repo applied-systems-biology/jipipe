@@ -18,6 +18,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.compartments.JIPipeExportedCompartment;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.project.JIPipeProject;
+import org.hkijena.jipipe.api.shortcuts.JIPipeShortcutActions;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
@@ -27,14 +28,19 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGr
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import javax.swing.*;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
 import java.util.List;
 import java.util.Set;
 
 import static org.hkijena.jipipe.utils.UIUtils.getStringFromClipboard;
 
 public class JIPipeDesktopCompartmentsPasteNodeUIContextAction implements GraphInteractiveObjectUIContextAction {
+
+    /**
+     * The id of the shortcut action that triggers this context action
+     * (see {@link org.hkijena.jipipe.api.shortcuts.JIPipeShortcutActions}).
+     */
+    public static final String SHORTCUT_ACTION_ID = JIPipeShortcutActions.NODE_PASTE.id();
+
     @Override
     public boolean matches(Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
         return true;
@@ -90,8 +96,8 @@ public class JIPipeDesktopCompartmentsPasteNodeUIContextAction implements GraphI
     }
 
     @Override
-    public KeyStroke getKeyboardShortcut() {
-        return KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_MASK, true);
+    public String getShortcutActionId() {
+        return SHORTCUT_ACTION_ID;
     }
 
     @Override

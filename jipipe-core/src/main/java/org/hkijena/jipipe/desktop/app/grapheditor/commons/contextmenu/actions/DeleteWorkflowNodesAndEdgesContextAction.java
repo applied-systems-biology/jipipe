@@ -16,6 +16,7 @@ package org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.actions;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.taxonomy.TaxonomyView;
+import org.hkijena.jipipe.api.shortcuts.JIPipeShortcutActions;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.NodeAndEdgesUIContextAction;
@@ -25,12 +26,18 @@ import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeGraphEditorUIApplicationSettings;
 
 import javax.swing.*;
-import java.awt.event.KeyEvent;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class DeleteWorkflowNodesAndEdgesContextAction implements NodeAndEdgesUIContextAction {
+
+    /**
+     * The id of the shortcut action that triggers this context action
+     * (see {@link org.hkijena.jipipe.api.shortcuts.JIPipeShortcutActions}).
+     */
+    public static final String SHORTCUT_ACTION_ID = JIPipeShortcutActions.NODE_DELETE.id();
+
     @Override
     public boolean matchesNodes(Set<JIPipeDesktopGraphNodeUI> selection) {
         if (selection.isEmpty())
@@ -109,7 +116,7 @@ public class DeleteWorkflowNodesAndEdgesContextAction implements NodeAndEdgesUIC
     }
 
     @Override
-    public KeyStroke getKeyboardShortcut() {
-        return KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0, true);
+    public String getShortcutActionId() {
+        return SHORTCUT_ACTION_ID;
     }
 }

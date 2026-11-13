@@ -1,5 +1,8 @@
 package org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.managers;
 
+import org.hkijena.jipipe.api.shortcuts.JIPipeShortcutBinding;
+import org.hkijena.jipipe.api.shortcuts.JIPipeShortcutRegistry;
+import org.hkijena.jipipe.api.shortcuts.JIPipeShortcutSettings;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.GraphInteractiveObjectUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
@@ -19,6 +22,25 @@ public class JIPipeDesktopGraphNodeUINodeContextMenu {
         this.nodeUI = nodeUI;
     }
 
+    /**
+     * Resolves the menu accelerator of a context action from the shortcut
+     * registry: the first stroke of the action's first effective variant, or
+     * null when the action has no shortcut action id or is unassigned.
+     *
+     * @param action the context action
+     * @return the accelerator keystroke or null
+     */
+    private static KeyStroke shortcutAcceleratorFor(GraphInteractiveObjectUIContextAction action) {
+        String actionId = action.getShortcutActionId();
+        if (actionId == null) {
+            return null;
+        }
+        JIPipeShortcutBinding binding = JIPipeShortcutRegistry.getInstance().bindingFor(actionId, JIPipeShortcutSettings.current());
+        if (binding.variants().isEmpty() || binding.variants().get(0).isEmpty()) {
+            return null;
+        }
+        return binding.variants().get(0).get(0);
+    }
 
     public void openRunNodeMenu(MouseEvent event) {
         JPopupMenu menu = new JPopupMenu();
@@ -28,7 +50,7 @@ public class JIPipeDesktopGraphNodeUINodeContextMenu {
             else {
                 JMenuItem item = new JMenuItem(entry.getName(), entry.getIcon());
                 item.setToolTipText(entry.getDescription());
-                item.setAccelerator(entry.getKeyboardShortcut());
+                item.setAccelerator(shortcutAcceleratorFor(entry));
                 item.addActionListener(e -> {
                     if (entry.matches(Collections.singleton(nodeUI))) {
                         entry.run(nodeUI.getGraphCanvasUI(), Collections.singleton(nodeUI));

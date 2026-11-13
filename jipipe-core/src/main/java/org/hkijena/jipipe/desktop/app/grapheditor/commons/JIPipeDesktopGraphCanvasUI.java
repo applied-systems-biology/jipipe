@@ -34,6 +34,9 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartition;
 import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartitionConfiguration;
+import org.hkijena.jipipe.api.shortcuts.JIPipeShortcutBinding;
+import org.hkijena.jipipe.api.shortcuts.JIPipeShortcutRegistry;
+import org.hkijena.jipipe.api.shortcuts.JIPipeShortcutSettings;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
@@ -70,7 +73,6 @@ import org.jfree.graphics2d.svg.SVGGraphics2D;
 import org.scijava.Disposable;
 
 import javax.swing.*;
-import javax.swing.FocusManager;
 import java.awt.*;
 import java.awt.dnd.DropTarget;
 import java.awt.event.*;
@@ -174,9 +176,6 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         // Subscribe events
         graph.getGraphChangedEventEmitter().subscribeWeak(this);
         graph.getNodeConnectedEventEmitter().subscribeWeak(this);
-
-        // Initialize all context menu action hotkeys etc.
-        initializeHotkeys();
 
         // Reload resources
         resources.updateAssets();
@@ -290,31 +289,6 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
 
     public JIPipeGraphEditorUIApplicationSettings getSettings() {
         return settings;
-    }
-
-    private void initializeHotkeys() {
-        KeyboardFocusManager focusManager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
-        focusManager.addKeyEventDispatcher(e -> {
-            KeyStroke keyStroke = KeyStroke.getKeyStrokeForEvent(e);
-            if (this.isDisplayable() && FocusManager.getCurrentManager().getFocusOwner() == this) {
-                for (GraphInteractiveObjectUIContextAction contextAction : contextActions) {
-                    if (contextAction == null)
-                        continue;
-                    if (!contextAction.matches(selectionManager.getSelection()))
-                        continue;
-                    if (contextAction.getKeyboardShortcut() != null && Objects.equals(contextAction.getKeyboardShortcut(), keyStroke)) {
-                        Point mousePosition = this.getMousePosition(true);
-                        if (mousePosition != null) {
-                            setGraphEditCursor(mousePosition);
-                        }
-                        getDesktopWorkbench().sendStatusBarText("Executed: " + contextAction.getName());
-                        SwingUtilities.invokeLater(() -> contextAction.run(this, selectionManager.getSelection()));
-                        return true;
-                    }
-                }
-            }
-            return false;
-        });
     }
 
     private void initialize() {
@@ -946,8 +920,9 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
             item.setToolTipText(action.getDescription());
             if (matches) {
                 item.addActionListener(e -> action.run(this, ImmutableSet.copyOf(selectionManager.getSelection())));
-                if (action.getKeyboardShortcut() != null) {
-                    item.setAccelerator(action.getKeyboardShortcut());
+                KeyStroke accelerator = shortcutAcceleratorFor(action);
+                if (accelerator != null) {
+                    item.setAccelerator(accelerator);
                 }
             } else {
                 item.setEnabled(false);
@@ -1648,6 +1623,26 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
 
     public void setContextActions(List<GraphInteractiveObjectUIContextAction> contextActions) {
         this.contextActions = contextActions;
+    }
+
+    /**
+     * Resolves the menu accelerator of a context action from the shortcut
+     * registry: the first stroke of the action's first effective variant, or
+     * null when the action has no shortcut action id or is unassigned.
+     *
+     * @param action the context action
+     * @return the accelerator keystroke or null
+     */
+    private KeyStroke shortcutAcceleratorFor(GraphInteractiveObjectUIContextAction action) {
+        String actionId = action.getShortcutActionId();
+        if (actionId == null) {
+            return null;
+        }
+        JIPipeShortcutBinding binding = JIPipeShortcutRegistry.getInstance().bindingFor(actionId, JIPipeShortcutSettings.current());
+        if (binding.variants().isEmpty() || binding.variants().get(0).isEmpty()) {
+            return null;
+        }
+        return binding.variants().get(0).get(0);
     }
 
     public <T extends JIPipeGraphNode> Set<JIPipeDesktopGraphNodeUI> getNodeUIsFor(Set<T> nodes) {

@@ -15,16 +15,22 @@ package org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.layers;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.annotation.JIPipeGraphCanvasNote;
+import org.hkijena.jipipe.api.shortcuts.JIPipeShortcutActions;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.NodeUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 
 import javax.swing.*;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
 import java.util.Set;
 
 public class SendToBackgroundUIContextAction implements NodeUIContextAction {
+
+    /**
+     * The id of the shortcut action that triggers this context action
+     * (see {@link org.hkijena.jipipe.api.shortcuts.JIPipeShortcutActions}).
+     */
+    public static final String SHORTCUT_ACTION_ID = JIPipeShortcutActions.NODE_SEND_TO_BACKGROUND.id();
+
     @Override
     public boolean matchesNodes(Set<JIPipeDesktopGraphNodeUI> selection) {
         return selection.stream().anyMatch(ui -> !ui.getNode().isUiLocked() && ui.getNode() instanceof JIPipeGraphCanvasNote);
@@ -52,8 +58,8 @@ public class SendToBackgroundUIContextAction implements NodeUIContextAction {
     }
 
     @Override
-    public KeyStroke getKeyboardShortcut() {
-        return KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_DOWN, InputEvent.SHIFT_MASK | InputEvent.CTRL_MASK);
+    public String getShortcutActionId() {
+        return SHORTCUT_ACTION_ID;
     }
 
     @Override

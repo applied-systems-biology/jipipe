@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.actions;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.shortcuts.JIPipeShortcutActions;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.managers.JIPipeDesktopGraphCanvasEdgeManager;
@@ -22,10 +23,15 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.GraphInter
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.edgeui.JIPipeDesktopGraphEdgeUI;
 
 import javax.swing.*;
-import java.awt.event.KeyEvent;
 import java.util.Set;
 
 public class ClearEdgeControlsPointUIContextAction implements GraphInteractiveObjectUIContextAction {
+
+    /**
+     * The id of the shortcut action that triggers this context action
+     * (see {@link org.hkijena.jipipe.api.shortcuts.JIPipeShortcutActions}).
+     */
+    public static final String SHORTCUT_ACTION_ID = JIPipeShortcutActions.EDGE_CLEAR_CONTROL_POINTS.id();
 
     @Override
     public boolean matches(Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
@@ -67,7 +73,7 @@ public class ClearEdgeControlsPointUIContextAction implements GraphInteractiveOb
 
 
     @Override
-    public KeyStroke getKeyboardShortcut() {
-        return KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, KeyEvent.SHIFT_DOWN_MASK, true);
+    public String getShortcutActionId() {
+        return SHORTCUT_ACTION_ID;
     }
 }

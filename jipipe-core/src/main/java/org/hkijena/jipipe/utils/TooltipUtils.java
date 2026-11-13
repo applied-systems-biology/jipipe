@@ -37,11 +37,24 @@ public class TooltipUtils {
     }
 
     public static String createTooltipWithShortcut(String name, String description, KeyStroke keyStroke) {
+        return createTooltipWithShortcutText(name, description, keyStroke != null ? UIUtils.keyStrokeToString(keyStroke) : null);
+    }
+
+    /**
+     * Creates a tooltip with a pre-rendered shortcut text in the header row.
+     *
+     * @param name         the name
+     * @param description  the description
+     * @param shortcutText the rendered shortcut text (e.g. from
+     *                     {@link org.hkijena.jipipe.api.shortcuts.JIPipeShortcutRegistry}), or null for no shortcut
+     * @return the tooltip
+     */
+    public static String createTooltipWithShortcutText(String name, String description, String shortcutText) {
         return "<html>" +
                 "<table>" +
                 "<tr>" +
                 "<td><strong>" + HtmlEscapers.htmlEscaper().escape(name) + "</strong></td>" +
-                "<td><span style=\"color: gray;\"><i>" + (keyStroke != null ? UIUtils.keyStrokeToString(keyStroke) : "") + "</i></span></td>" +
+                "<td><span style=\"color: gray;\"><i>" + (shortcutText != null ? shortcutText : "") + "</i></span></td>" +
                 "</tr><tr>" +
                 "<td>" + StringUtils.wordWrappedHTMLElement(description, 50) + "</td>" +
                 "<td></td>" +
