@@ -51,6 +51,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.events.NodeUIAc
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.properties.JIPipeDesktopGraphEditorErrorPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.properties.JIPipeDesktopGraphNodeSlotEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.findpanel.JIPipeDesktopFindPanel;
+import org.hkijena.jipipe.desktop.app.grapheditor.relationspanel.JIPipeDesktopRelationsPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.actions.JIPipeDesktopCompartmentsGraphEditorRunManager;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.contextmenu.JIPipeDesktopCompartmentsCopyNodeUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.contextmenu.JIPipeDesktopCompartmentsCutNodeUIContextAction;
@@ -199,6 +200,12 @@ public class JIPipeDesktopCompartmentsGraphEditorUI extends JIPipeDesktopGraphEd
                 JIPipeDesktopDockPanel.PanelLocation.TopLeft,
                 false,
                 0, new JIPipeDesktopFindPanel(getDesktopWorkbench(), this));
+        getDockPanel().addDockPanel(JIPipeDesktopGraphEditorUI.DOCK_RELATIONS,
+                "Relations",
+                JIPipe.RESOURCES.getIcon24("actions/link.png"),
+                JIPipeDesktopDockPanel.PanelLocation.TopLeft,
+                false,
+                0, new JIPipeDesktopRelationsPanel(getDesktopWorkbench(), this));
         getDockPanel().addDockPanel(DOCK_ERRORS,
                 "Errors",
                 JIPipe.RESOURCES.getIcon24("actions/dialog-warning-2.png"),

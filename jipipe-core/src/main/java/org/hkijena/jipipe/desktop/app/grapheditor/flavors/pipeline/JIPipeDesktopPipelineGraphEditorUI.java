@@ -64,6 +64,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.events.NodeUIAc
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.properties.JIPipeDesktopGraphEditorErrorPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.properties.JIPipeDesktopGraphNodeSlotEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.findpanel.JIPipeDesktopFindPanel;
+import org.hkijena.jipipe.desktop.app.grapheditor.relationspanel.JIPipeDesktopRelationsPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.groups.JIPipeDesktopNodeGroupUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.actions.JIPipeDesktopPipelineGraphEditorRunManager;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.actions.JIPipeDesktopRunAndShowResultsAction;
@@ -267,6 +268,12 @@ public class JIPipeDesktopPipelineGraphEditorUI extends JIPipeDesktopGraphEditor
                 JIPipeDesktopDockPanel.PanelLocation.TopLeft,
                 false,
                 0, new JIPipeDesktopFindPanel(getDesktopWorkbench(), this));
+        getDockPanel().addDockPanel(JIPipeDesktopGraphEditorUI.DOCK_RELATIONS,
+                "Relations",
+                JIPipe.RESOURCES.getIcon24("actions/link.png"),
+                JIPipeDesktopDockPanel.PanelLocation.TopLeft,
+                false,
+                0, new JIPipeDesktopRelationsPanel(getDesktopWorkbench(), this));
         getDockPanel().addDockPanel(JIPipeDesktopGraphEditorUI.DOCK_HISTORY,
                 "History",
                 JIPipe.RESOURCES.getIcon24("actions/edit-undo-history.png"),

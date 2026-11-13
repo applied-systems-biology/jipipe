@@ -168,17 +168,29 @@ both flavors, icon `actions/link.png`, panel name "Relations".
 - The panel adds exactly one visual factor, opacity (single source of truth, applied to the
   whole card): current 100%, related 60%, visitation trail 85/80/75/70/65% for one to five
   steps back; older trail members render as related (60%).
+- The body has no scrollbars: the focused center row is pinned to the vertical middle,
+  rows stack with a fixed row pitch, and rows beyond the body height collapse into
+  "N more above"/"N more below" edge tiles that page the visible window (Refocus
+  re-centers it). Rows fill the full body width (leftover width distributed
+  proportionally to the cards' preferred widths, tiles keep their measured width), and
+  full-width horizontal guide lines in the theme border color structure the empty lanes.
 
 ### Navigation
 
-- Click on a card navigates: selects the node on the canvas (`SelectionManager` +
-  `scrollToAlgorithm`) and makes it the panel's center.
+- The panel distinguishes the FOCUSED node (the displayed layers are built around it) from
+  the CURRENT node (the visitation trail's current / selected node). Click on a card,
+  back/forward and up/down navigate: they select the node on the canvas (`SelectionManager`
+  + `scrollToAlgorithm`), update the current node and repaint the opacity ramp and current
+  border; the row layout does not re-position.
 - Panel toolbar (JToolBar): back/forward through the visitation trail (session-scoped,
-  length `TRAIL_LENGTH = 10`), up/down jumps to the nearest node in the adjacent layer
-  (by physical distance). Buttons disable when the step is impossible.
-- The panel subscribes to canvas selection-change events; selection made on the canvas
-  re-centers the panel. Navigating from the panel sets the canvas selection (feedback loop
-  guarded by an equality check to avoid re-center churn).
+  length `TRAIL_LENGTH = 10`), up/down jumps to the nearest node in the adjacent layer of
+  the focused layout (by physical distance), and "Refocus" (`actions/target.png`) rebuilds
+  the layers around the current node (focused := current), the only action that
+  re-positions the rows. Buttons disable when the step is impossible.
+- The panel subscribes to canvas selection-change events; they update the current node
+  (single selections append to the trail) without re-positioning the rows, and an empty
+  panel populates around the selection. Navigating from the panel sets the canvas
+  selection (feedback loop guarded by an equality check to avoid churn).
 
 ### Pure logic for tests
 
