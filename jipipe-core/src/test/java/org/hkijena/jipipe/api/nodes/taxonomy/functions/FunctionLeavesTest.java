@@ -216,7 +216,8 @@ class FunctionLeavesTest {
                     "Id of " + leaf.getName() + " must be a non-null literal starting with 'jipipe:function:', got: " + id);
             ids.add(id);
         }
-        assertEquals(74, ids.size(), "Expected 74 unique leaf ids, got " + ids.size() + " for: " + ids);
+        // 74 base leaves + the debugging leaf added with the #1361 repro tooling
+        assertEquals(75, ids.size(), "Expected 75 unique leaf ids, got " + ids.size() + " for: " + ids);
     }
 
     @Test
@@ -419,7 +420,8 @@ class FunctionLeavesTest {
         for (Class<? extends JIPipeNodeTaxonomyFunction> leaf : allLeaves()) {
             registry.register(instantiate(leaf));
         }
-        assertEquals(14 + 74, registry.all().size());
+        // 14 top levels + 74 base leaves + the debugging leaf added with the #1361 repro tooling
+        assertEquals(14 + 75, registry.all().size());
         Set<String> errors = registry.validate();
         assertTrue(errors.isEmpty(), "Expected no validation errors but got: " + errors);
     }

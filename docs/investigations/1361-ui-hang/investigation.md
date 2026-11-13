@@ -64,6 +64,37 @@ Synthetic workflow: `Generate table rows from expressions` (60 rows) -> `Split t
   `AbstractStringBuilder.ensureCapacitySameCoder`, `Arrays.copyOf`, `String.<init>` -
   i.e. the growing string copy in `getText()`.
 
+## Fix (implemented on this branch)
+
+`IJLogToJIPipeProgressInfoPump` was rewritten (contract-tested in
+`jipipe-core/src/test/java/org/hkijena/jipipe/utils/IJLogToJIPipeProgressInfoPumpTest.java`):
+
+1. **No EDT involvement.** The 250 ms Swing timer is replaced by a poll task on one shared
+   daemon executor thread (`IJ-Log-Pump`). The pump does no UI work, so nothing requires the EDT.
+2. **Line cursor instead of full-text copy.** Each poll reads only the lines appended since the
+   previous poll (`TextPanel.getLineCount()` / `getLine(i)`), at most 20,000 lines per pass;
+   larger backlogs are delivered over subsequent polls. ImageJ1 has no log listener API (verified
+   against the 1.54p sources: the complete listener inventory covers colors/tools/window
+   lifecycle/commands only), so the panel remains the observation point - read incrementally.
+3. **Clear handling.** A `\Clear` resets the cursor via count-shrink detection plus two anchor
+   lines (last read line and the line at half the cursor) for clears that were already refilled
+   past the old cursor. A poll whose read fails mid-pass (the clear race) is discarded entirely.
+4. **Exhaustive close drain.** Iterating algorithms create one pump per data row; a row can
+   finish faster than the first poll, so `close()` drains the whole backlog in capped passes
+   (a single capped pass orphaned the remainder to the next row's attach cursor - caught by the
+   in-app verification below and covered by `closeDrainsBacklogsLargerThanThePollCap`).
+
+### Verification (in-app, same synthetic workflow: 60 rows -> 2 macro nodes x 30,000 prints)
+
+| | before fix | after fix |
+|---|---|---|
+| EDT busy during run (JFR) | 51.8% of wall time | ~1.2% |
+| EDT busy inside the pump | 99.1% of EDT busy time | 0 samples |
+| captured lines | 20,001 per row execution (cap bug) | 30,001 per row execution, strictly sequential, no duplicates (120 executions, 3.6M lines) |
+
+The pump thread (`IJ-Log-Pump`) appears in JFR samples parked in the executor; the EDT's top
+frames during the run are ordinary UI work (painting, thumbnails, dock layout).
+
 Harness (throwaway, not committed): `/tmp/opencode/1361-bench/` -
 `PumpBench.java` (microbenchmark), `InstrumentationDriver.java` + `BuildAndRun.java`
 (instrumentation client), `hammer-workflow.jip` (synthetic project),
