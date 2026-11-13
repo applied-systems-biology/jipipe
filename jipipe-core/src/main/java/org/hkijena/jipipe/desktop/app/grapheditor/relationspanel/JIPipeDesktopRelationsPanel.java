@@ -33,6 +33,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.HierarchyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -230,10 +231,14 @@ public class JIPipeDesktopRelationsPanel extends JIPipeDesktopWorkbenchPanel imp
 
         // The panel is usually created hidden and misses the events of the
         // hidden period: becoming visible catches up with the current
-        // selection.
-        addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentShown(ComponentEvent e) {
+        // selection. The dock framework shows a panel by adding its Swing
+        // component into the layout (JIPipeDesktopDockPanel.updateAll) and
+        // never calls setVisible(true) on the panel component, so
+        // componentShown never fires on dock activation: react to the
+        // hierarchy change instead.
+        addHierarchyListener(e -> {
+            if ((e.getChangeFlags() & (HierarchyEvent.PARENT_CHANGED | HierarchyEvent.SHOWING_CHANGED)) != 0
+                    && isShowing()) {
                 refreshFromSelection();
             }
         });
@@ -469,23 +474,46 @@ public class JIPipeDesktopRelationsPanel extends JIPipeDesktopWorkbenchPanel imp
     }
 
     /**
-     * Catch-up path (panel shown / created): mirrors the canvas selection.
-     * A single-node selection the panel missed while hidden is a navigation
-     * (appended to the trail); multi-selections update the current set
-     * without appending. An empty panel populates around the selection.
+     * Catch-up path (panel shown / created): mirrors the canvas selection
+     * through the same update path the selection event handler uses, so the
+     * panel reflects the LIVE selection after becoming visible (selections
+     * made while hidden are appended to the trail; an empty panel populates
+     * around the selection). Also catches up structural changes of the
+     * hidden period (the graph-changed handler skips while not showing).
      */
     private void refreshFromSelection() {
+        if (!focusedIds.isEmpty()) {
+            recomputeFocused();
+        }
+        applyCanvasSelection();
+    }
+
+    /**
+     * The selection update path shared by the selection event handler and the
+     * show-time catch-up: updates the current node (single selections append
+     * to the trail; multi-selections do not) and populates the panel around
+     * the selection when it has no focused node yet. Callers must have
+     * passed the show/reentrancy guards.
+     */
+    private void applyCanvasSelection() {
         Set<String> selectionIds = currentSelectionIds();
-        if (selectionIds.size() == 1 && !selectionIds.equals(currentIds)) {
+        if (selectionIds.equals(currentIds)) {
+            // No change for the current node set: no trail churn
+            return;
+        }
+        boolean wasEmpty = focusedIds.isEmpty();
+        if (selectionIds.size() == 1) {
+            // A canvas-driven selection of a single node is a navigation;
+            // multi-selections do not append (the trail tracks single centers)
             trail.navigateTo(selectionIds.iterator().next());
         }
+        // After the trail mutation, so the toolbar reflects the final trail
+        // state (updateCurrent refreshes it last)
         updateCurrent(selectionIds);
-        if (focusedIds.isEmpty()) {
-            if (!selectionIds.isEmpty()) {
-                refocusAround(currentIds);
-            }
-        } else {
-            recomputeFocused();
+        if (wasEmpty && !selectionIds.isEmpty()) {
+            // The initial populate: focus the current selection (not a
+            // navigation of an existing layout)
+            refocusAround(currentIds);
         }
     }
 
@@ -701,7 +729,7 @@ public class JIPipeDesktopRelationsPanel extends JIPipeDesktopWorkbenchPanel imp
     @Override
     public void onGraphChanged(JIPipeGraph.GraphChangedEvent event) {
         if (!isShowing()) {
-            return; // caught up on componentShown
+            return; // caught up on the show-time refresh
         }
         structureRebuildTimer.restart();
     }
@@ -714,27 +742,9 @@ public class JIPipeDesktopRelationsPanel extends JIPipeDesktopWorkbenchPanel imp
             return;
         }
         if (!isShowing()) {
-            return; // caught up on componentShown
+            return; // caught up on the show-time refresh
         }
-        Set<String> selectionIds = currentSelectionIds();
-        if (selectionIds.equals(currentIds)) {
-            // No change for the current node set: no trail churn
-            return;
-        }
-        boolean wasEmpty = focusedIds.isEmpty();
-        if (selectionIds.size() == 1) {
-            // A canvas-driven selection of a single node is a navigation;
-            // multi-selections do not append (the trail tracks single centers)
-            trail.navigateTo(selectionIds.iterator().next());
-        }
-        // After the trail mutation, so the toolbar reflects the final trail
-        // state (updateCurrent refreshes it last)
-        updateCurrent(selectionIds);
-        if (wasEmpty && !selectionIds.isEmpty()) {
-            // The initial populate: focus the current selection (not a
-            // navigation of an existing layout)
-            refocusAround(currentIds);
-        }
+        applyCanvasSelection();
     }
 
     private void rebuildStructureIfShowing() {

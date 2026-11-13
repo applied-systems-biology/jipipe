@@ -17,7 +17,6 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.desktop.commons.nodepatterns.NodePatternRenderer;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernThemeStyle;
-import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -30,24 +29,25 @@ import java.util.function.Consumer;
 /**
  * One node card of the Relations panel (MR 3 of the navigator overhaul,
  * #1358): a lightweight node representation that paints like a canvas node -
- * fill, framework signature pattern, border and a header band with icon and
- * name - but without slots.
+ * fill, framework signature pattern, border, and the icon + name as one
+ * group centered in the card - but without slots.
  * <p>
  * The panel contributes exactly one visual factor over the resolved
  * {@link RelationCardAppearance.Appearance}: the card opacity (the
  * visitation trail ramp), applied to the whole card while painting. The 2px
  * border marks the current node (the trail's current / selected node), which
- * can sit anywhere in the displayed rows. The preferred size is MEASURED from
- * the header name and icon (repo policy: never assume text sizes). A single
- * click navigates to the card's node via the callback given by the panel.
+ * can sit anywhere in the displayed rows; the current node additionally
+ * carries a marker icon at the left card edge (the position of the canvas
+ * run button, overlaid on the content). The preferred size is MEASURED from
+ * the name and icon (repo policy: never assume text sizes). A single click
+ * navigates to the card's node via the callback given by the panel.
  */
 public class RelationCard extends JComponent {
 
     /**
-     * Gap-only paddings around the header content (they do not encode a text
-     * size).
+     * Gap-only paddings around the content (they do not encode a text size).
      */
-    static final int HEADER_HORIZONTAL_PADDING = 6;
+    static final int CONTENT_HORIZONTAL_INSET = 6;
     static final int HEADER_VERTICAL_PADDING = 3;
     static final int HEADER_ICON_TEXT_GAP = 4;
 
@@ -58,12 +58,16 @@ public class RelationCard extends JComponent {
     static final int CURRENT_BORDER_WIDTH = 2;
 
     /**
-     * The header band desaturation: the same HSB factors the canvas node uses
-     * for its desaturated node colors (see
-     * {@code JIPipeDesktopGraphNodeUI}).
+     * Inset of the current-node marker icon at the left card edge: the same
+     * small inset the canvas node UI uses for its run button.
      */
-    private static final float HEADER_BAND_SATURATION_FACTOR = 0.25f;
-    private static final float HEADER_BAND_BRIGHTNESS_FACTOR = 0.8f;
+    static final int MARKER_INSET = 3;
+
+    /**
+     * The current-node marker icon (painted at the left edge, where the
+     * canvas node UI places its run button).
+     */
+    private static final Icon CURRENT_MARKER_ICON = JIPipe.RESOURCES.getIcon16("actions/edit-select-all.png");
 
     private static final String ELLIPSIS = "...";
 
@@ -139,10 +143,9 @@ public class RelationCard extends JComponent {
     }
 
     /**
-     * The preferred width is derived from the MEASURED header name and icon,
+     * The preferred width is derived from the MEASURED icon and name,
      * clamped to the panel's card minimum; the height is the panel's card
-     * height (a layout minimum, grown when the measured header band needs
-     * more).
+     * height (a layout minimum, grown when the measured content needs more).
      */
     @Override
     public Dimension getPreferredSize() {
@@ -150,9 +153,9 @@ public class RelationCard extends JComponent {
         Icon icon = resolvedIcon();
         return new Dimension(
                 Math.max(JIPipeDesktopRelationsPanel.CARD_MIN_WIDTH,
-                        HEADER_HORIZONTAL_PADDING + (icon != null ? icon.getIconWidth() : 0) + HEADER_ICON_TEXT_GAP
-                                + metrics.stringWidth(displayName) + HEADER_HORIZONTAL_PADDING),
-                Math.max(JIPipeDesktopRelationsPanel.CARD_HEIGHT, measuredHeaderHeight(metrics)));
+                        CONTENT_HORIZONTAL_INSET + (icon != null ? icon.getIconWidth() : 0) + HEADER_ICON_TEXT_GAP
+                                + metrics.stringWidth(displayName) + CONTENT_HORIZONTAL_INSET),
+                Math.max(JIPipeDesktopRelationsPanel.CARD_HEIGHT, measuredContentHeight(metrics)));
     }
 
     @Override
@@ -166,37 +169,21 @@ public class RelationCard extends JComponent {
             g2.setComposite(AlphaComposite.SrcOver.derive(Math.max(0f, Math.min(1f, opacity))));
             int width = getWidth();
             int height = getHeight();
-            FontMetrics metrics = g2.getFontMetrics();
-            int headerHeight = measuredHeaderHeight(metrics);
             int border = current ? CURRENT_BORDER_WIDTH : BORDER_WIDTH;
 
             // Fill over the whole card
             g2.setPaint(appearance.fill());
             g2.fillRect(0, 0, width, height);
 
-            // Framework signature pattern over the body (below the header band)
-            if (appearance.patternEnabled() && height > headerHeight) {
-                NodePatternRenderer.paint(g2, 0, headerHeight, width, height - headerHeight,
+            // Framework signature pattern over the card
+            if (appearance.patternEnabled()) {
+                NodePatternRenderer.paint(g2, 0, 0, width, height,
                         appearance.patternStyleId(), appearance.patternSeed(),
                         appearance.patternInk(), appearance.patternOpacity());
             }
 
-            // Header band: desaturated like the canvas' desaturated node colors
-            g2.setPaint(ColorUtils.multiplyHSB(appearance.fill(),
-                    1f, HEADER_BAND_SATURATION_FACTOR, HEADER_BAND_BRIGHTNESS_FACTOR));
-            g2.fillRect(0, 0, width, Math.min(headerHeight, height));
-
-            // Header content: icon + name (measured, never assumed)
-            int x = HEADER_HORIZONTAL_PADDING;
-            Icon icon = resolvedIcon();
-            if (icon != null) {
-                icon.paintIcon(this, g2, x, Math.max(0, (headerHeight - icon.getIconHeight()) / 2));
-                x += icon.getIconWidth() + HEADER_ICON_TEXT_GAP;
-            }
-            int availableNameWidth = width - x - HEADER_HORIZONTAL_PADDING - border;
-            g2.setPaint(nameColor());
-            UIUtils.drawStringVerticallyCentered(g2, fittedName(metrics, availableNameWidth), x,
-                    headerHeight / 2, metrics);
+            // Content: icon + name as one group, centered in the card
+            paintContent(g2, width, height, border);
 
             // Border: 1px, 2px for the current card (painted inside)
             g2.setPaint(appearance.border());
@@ -204,19 +191,48 @@ public class RelationCard extends JComponent {
             g2.fillRect(0, height - border, width, border);
             g2.fillRect(0, 0, border, height);
             g2.fillRect(width - border, 0, border, height);
+
+            // Current-node marker: the same left-edge position the canvas
+            // node UI uses for its run button, overlaid on the content (the
+            // canvas overlays this region too)
+            if (current && CURRENT_MARKER_ICON != null) {
+                CURRENT_MARKER_ICON.paintIcon(this, g2, MARKER_INSET,
+                        Math.max(0, (height - CURRENT_MARKER_ICON.getIconHeight()) / 2));
+            }
         } finally {
             g2.dispose();
         }
     }
 
     /**
-     * The header band height: the measured text height or the icon height,
+     * The icon + name group, centered vertically and horizontally: the
+     * group's total width is measured (FontMetrics + icon width).
+     */
+    private void paintContent(Graphics2D g2, int width, int height, int border) {
+        FontMetrics metrics = g2.getFontMetrics();
+        Icon icon = resolvedIcon();
+        int iconWidth = icon != null ? icon.getIconWidth() : 0;
+        int iconGap = icon != null ? HEADER_ICON_TEXT_GAP : 0;
+        String name = fittedName(metrics, Math.max(0, width - 2 * border - iconWidth - iconGap));
+        int groupWidth = iconWidth + iconGap + metrics.stringWidth(name);
+        int groupX = Math.max(border, (width - groupWidth) / 2);
+        if (icon != null) {
+            icon.paintIcon(this, g2, groupX, Math.max(0, (height - icon.getIconHeight()) / 2));
+        }
+        g2.setPaint(nameColor());
+        UIUtils.drawStringVerticallyCentered(g2, name, groupX + iconWidth + iconGap, height / 2, metrics);
+    }
+
+    /**
+     * The content height: the measured text height or the icon height,
      * whichever is larger, plus the vertical paddings.
      */
-    private int measuredHeaderHeight(FontMetrics metrics) {
+    private int measuredContentHeight(FontMetrics metrics) {
         Icon icon = resolvedIcon();
-        return Math.max(icon != null ? icon.getIconHeight() : 0, metrics.getHeight())
-                + 2 * HEADER_VERTICAL_PADDING;
+        Icon marker = CURRENT_MARKER_ICON;
+        int iconHeight = Math.max(icon != null ? icon.getIconHeight() : 0,
+                marker != null ? marker.getIconHeight() : 0);
+        return Math.max(iconHeight, metrics.getHeight()) + 2 * HEADER_VERTICAL_PADDING;
     }
 
     /**
