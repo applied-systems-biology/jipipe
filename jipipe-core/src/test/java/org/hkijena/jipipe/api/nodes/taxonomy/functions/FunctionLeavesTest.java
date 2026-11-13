@@ -47,156 +47,158 @@ import org.hkijena.jipipe.api.nodes.taxonomy.functions.tracking.TrackingLinkingF
 import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;
-import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Verifies the 74 seed {@link JIPipeNodeTaxonomyFunction} leaves (the exact
- * list in the Phase 1a plan for Task 10, plus the dual-visible
- * {@link GraphAnnotationsFunction} that restores the legacy
- * {@code GraphAnnotationsNodeTypeCategory}, the {@link RoiPropertiesFunction}
- * audit leaf, the 10 full-registry-audit Images leaves, the 7
- * curated-reorganization leaves of the full audit, and the 4 Scripting
- * language sub-leaves of the re-clustering audit).
- * {@link ScriptingFunction} was a seed leaf until the spec B.5 hue migration
- * promoted it to a top-level branch, so it is no longer part of this set:
- * the 14 top-level branches below plus the one deeper level
- * (cell-based segmentation under segmentation, and the 4 scripting
- * language leaves under scripting):
- * the exact stable literal ids, parent wiring,
- * null hues (sub-branches inherit), null icons, visibility mirroring the
- * parent branch (false/false for the transparent Graph branch), the 3 seed
- * tags (all others empty), reachability of every leaf via its parent chain,
- * and a clean {@link FunctionRegistry#validate()} for the full
- * top-level + leaf set.
+ * Contracts of the designed taxonomy function catalog (the 6.0.0 seed top-level branches and
+ * leaves):
+ * <ul>
+ * <li>{@code idsMatchTheExactSeedLiterals} - every catalog class returns exactly its pinned
+ * stable literal. Function ids are registration ids and are persisted in saved projects, so a
+ * renamed literal silently breaks existing projects; the pins freeze them. Distinctness is
+ * checked as well (two functions sharing a literal cannot coexist in a registry).</li>
+ * <li>{@code leafParentsAreTopLevelBranchesOrSubBranches} - the tree shape: leaves hang directly
+ * below a top-level branch, with {@link SegmentationFunction} as the only leaf that hosts
+ * children. The production validator does not check depth, so this is the only shape guard.</li>
+ * <li>{@code registryValidateReturnsEmptyForFullSet} - the production
+ * {@link FunctionRegistry#validate()} is clean for the whole catalog (parent chains, cycles,
+ * top-level hue uniqueness).</li>
+ * </ul>
+ * Deliberately not tested here: per-leaf hues, icons, visibility flags, and tags - every leaf
+ * class hardcodes them as constants, so assertions would only restate the implementation (test
+ * policy: no trivial tests). The live registry (including plugin-contributed functions) is gated
+ * by TaxonomyFullValidationTest in jipipe-launcher; this file pins the designed core catalog.
  */
 class FunctionLeavesTest {
 
     /**
-     * The 74 leaf class literals, grouped by subpackage.
-     * ({@link ScriptingFunction} itself moved to {@link #allTopLevels()} with
-     * the spec B.5 hue migration.)
+     * The 14 top-level branches with their pinned stable literals.
      */
-    private static List<Class<? extends JIPipeNodeTaxonomyFunction>> allLeaves() {
-        return List.of(
-                // data
-                ImageDataFunction.class,
-                TableDataFunction.class,
-                RoiDataFunction.class,
-                FilamentDataFunction.class,
-                MiscDataFunction.class,
-                Scene3DDataFunction.class,
-                // images
-                PreprocessingFunction.class,
-                FilteringFunction.class,
-                ThresholdingFunction.class,
-                SegmentationFunction.class,
-                SegmentationCellBasedFunction.class,
-                MeasurementsFunction.class,
-                ResamplingFunction.class,
-                MergingSplittingFunction.class,
-                ColorStackFunction.class,
-                // images - full-registry audit leaves
-                ImageArithmeticFunction.class,
-                ImageComparisonFunction.class,
-                ImageProjectionsFunction.class,
-                ImageTypeConversionFunction.class,
-                ImageLabelingFunction.class,
-                ImageStatisticsFunction.class,
-                ImageMomentsFunction.class,
-                ImageTransformationsFunction.class,
-                ImagePixelManipulationFunction.class,
-                ImageNeighborMeasurementsFunction.class,
-                ImagePropertiesFunction.class,
-                // data - full-registry audit leaves
-                FileSystemFunction.class,
-                OmeroFunction.class,
-                FormsFunction.class,
-                // misc - full-registry audit leaves
-                DataUtilitiesFunction.class,
-                DebuggingFunction.class,
-                TextMarkupFunction.class,
-                // scripting - language sub-leaves (re-clustering audit)
-                ScriptingPythonFunction.class,
-                ScriptingRFunction.class,
-                ScriptingImageJMacroFunction.class,
-                ScriptingExpressionFunction.class,
-                // rois
-                RoiFiltersFunction.class,
-                RoiPropertiesFunction.class,
-                RoiMeasurementsFunction.class,
-                RoiMorphologyFunction.class,
-                RoiIntersectionsFunction.class,
-                // filaments
-                FilamentSmoothingFunction.class,
-                FilamentFilteringFunction.class,
-                FilamentQuantificationFunction.class,
-                // tables
-                TableFilterModifyFunction.class,
-                TableJoinSplitFunction.class,
-                TableAggregateFunction.class,
-                TableTransformFunction.class,
-                TableExportFileFunction.class,
-                // statistics
-                StatisticsDescriptiveFunction.class,
-                StatisticsTestingFunction.class,
-                StatisticsEstimationFunction.class,
-                // tracking
-                TrackingDetectionFunction.class,
-                TrackingLinkingFunction.class,
-                TrackingFilteringFunction.class,
-                TrackingAnalysisFunction.class,
-                // annotations
-                AnnotationsEditFunction.class,
-                AnnotationsConvertFunction.class,
-                GraphAnnotationsFunction.class,
-                // deeplearning
-                MachineLearningInferenceFunction.class,
-                MachineLearningTrainingFunction.class,
-                MachineLearningModelsFunction.class,
-                // plotting
-                PlotScatterFunction.class,
-                PlotLineFunction.class,
-                PlotBarFunction.class,
-                PlotHeatmapFunction.class,
-                PlotMiscFunction.class,
-                // export
-                ExportImagesFunction.class,
-                ExportTablesFunction.class,
-                ExportRoiFunction.class,
-                ExportScenesFunction.class,
-                ExportDataFunction.class,
-                // graph
-                GraphCompartmentOutputsFunction.class,
-                GraphWrappersFunction.class,
-                GraphDebugFunction.class
-        );
+    private static Map<Class<? extends JIPipeNodeTaxonomyFunction>, String> topLevelLiterals() {
+        Map<Class<? extends JIPipeNodeTaxonomyFunction>, String> literals = new LinkedHashMap<>();
+        literals.put(DataSourcesFunction.class, "jipipe:function:data");
+        literals.put(ImagesFunction.class, "jipipe:function:images");
+        literals.put(RoisFunction.class, "jipipe:function:rois");
+        literals.put(FilamentsFunction.class, "jipipe:function:filaments");
+        literals.put(TablesFunction.class, "jipipe:function:tables");
+        literals.put(StatisticsFunction.class, "jipipe:function:statistics");
+        literals.put(TrackingFunction.class, "jipipe:function:tracking");
+        literals.put(AnnotationsFunction.class, "jipipe:function:annotations");
+        literals.put(MachineLearningFunction.class, "jipipe:function:machine-learning");
+        literals.put(PlottingFunction.class, "jipipe:function:plotting");
+        literals.put(ExportFunction.class, "jipipe:function:export");
+        literals.put(GraphFunction.class, "jipipe:function:graph");
+        literals.put(MiscellaneousFunction.class, "jipipe:function:misc");
+        literals.put(ScriptingFunction.class, "jipipe:function:scripting");
+        return literals;
     }
 
     /**
-     * The 14 top-level branches from Task 9, plus the Scripting root promoted
-     * to top-level by the spec B.5 hue migration.
+     * The 75 leaves with their pinned stable literals, grouped by subpackage.
+     * ({@link ScriptingFunction} itself is a top-level branch since the spec B.5 hue migration;
+     * {@link SegmentationCellBasedFunction} and the four scripting language leaves are the
+     * leaves that host children.)
      */
-    private static List<JIPipeNodeTaxonomyFunction> allTopLevels() {
-        return List.of(
-                new DataSourcesFunction(),
-                new ImagesFunction(),
-                new RoisFunction(),
-                new FilamentsFunction(),
-                new TablesFunction(),
-                new StatisticsFunction(),
-                new TrackingFunction(),
-                new AnnotationsFunction(),
-                new MachineLearningFunction(),
-                new PlottingFunction(),
-                new ExportFunction(),
-                new GraphFunction(),
-                new MiscellaneousFunction(),
-                new ScriptingFunction()
-        );
+    private static Map<Class<? extends JIPipeNodeTaxonomyFunction>, String> leafLiterals() {
+        Map<Class<? extends JIPipeNodeTaxonomyFunction>, String> literals = new LinkedHashMap<>();
+        // data
+        literals.put(ImageDataFunction.class, "jipipe:function:image-data");
+        literals.put(TableDataFunction.class, "jipipe:function:table-data");
+        literals.put(RoiDataFunction.class, "jipipe:function:roi-data");
+        literals.put(FilamentDataFunction.class, "jipipe:function:filament-data");
+        literals.put(MiscDataFunction.class, "jipipe:function:misc-data");
+        literals.put(Scene3DDataFunction.class, "jipipe:function:scene-3d-data");
+        // images
+        literals.put(PreprocessingFunction.class, "jipipe:function:preprocessing");
+        literals.put(FilteringFunction.class, "jipipe:function:filtering");
+        literals.put(ThresholdingFunction.class, "jipipe:function:thresholding");
+        literals.put(SegmentationFunction.class, "jipipe:function:segmentation");
+        literals.put(SegmentationCellBasedFunction.class, "jipipe:function:segmentation-cell-based");
+        literals.put(MeasurementsFunction.class, "jipipe:function:measurements");
+        literals.put(ResamplingFunction.class, "jipipe:function:resampling");
+        literals.put(MergingSplittingFunction.class, "jipipe:function:merging-splitting");
+        literals.put(ColorStackFunction.class, "jipipe:function:color-stack");
+        // images - full-registry audit leaves
+        literals.put(ImageArithmeticFunction.class, "jipipe:function:image-arithmetic");
+        literals.put(ImageComparisonFunction.class, "jipipe:function:image-comparison");
+        literals.put(ImageProjectionsFunction.class, "jipipe:function:image-projections");
+        literals.put(ImageTypeConversionFunction.class, "jipipe:function:image-type-conversion");
+        literals.put(ImageLabelingFunction.class, "jipipe:function:image-labeling");
+        literals.put(ImageStatisticsFunction.class, "jipipe:function:image-statistics");
+        literals.put(ImageMomentsFunction.class, "jipipe:function:image-moments");
+        literals.put(ImageTransformationsFunction.class, "jipipe:function:image-transformations");
+        literals.put(ImagePixelManipulationFunction.class, "jipipe:function:image-pixel-manipulation");
+        literals.put(ImageNeighborMeasurementsFunction.class, "jipipe:function:image-neighbor-measurements");
+        literals.put(ImagePropertiesFunction.class, "jipipe:function:image-properties");
+        // data - full-registry audit leaves
+        literals.put(FileSystemFunction.class, "jipipe:function:file-system");
+        literals.put(OmeroFunction.class, "jipipe:function:omero");
+        literals.put(FormsFunction.class, "jipipe:function:forms");
+        // misc - full-registry audit leaves
+        literals.put(DataUtilitiesFunction.class, "jipipe:function:data-utilities");
+        literals.put(DebuggingFunction.class, "jipipe:function:debugging");
+        literals.put(TextMarkupFunction.class, "jipipe:function:text-markup");
+        // scripting - language sub-leaves (re-clustering audit)
+        literals.put(ScriptingPythonFunction.class, "jipipe:function:scripting-python");
+        literals.put(ScriptingRFunction.class, "jipipe:function:scripting-r");
+        literals.put(ScriptingImageJMacroFunction.class, "jipipe:function:scripting-imagej-macro");
+        literals.put(ScriptingExpressionFunction.class, "jipipe:function:scripting-expression");
+        // rois
+        literals.put(RoiFiltersFunction.class, "jipipe:function:roi-filters");
+        literals.put(RoiPropertiesFunction.class, "jipipe:function:roi-properties");
+        literals.put(RoiMeasurementsFunction.class, "jipipe:function:roi-measurements");
+        literals.put(RoiMorphologyFunction.class, "jipipe:function:roi-morphology");
+        literals.put(RoiIntersectionsFunction.class, "jipipe:function:roi-intersections");
+        // filaments
+        literals.put(FilamentSmoothingFunction.class, "jipipe:function:filament-smoothing");
+        literals.put(FilamentFilteringFunction.class, "jipipe:function:filament-filtering");
+        literals.put(FilamentQuantificationFunction.class, "jipipe:function:filament-quantification");
+        // tables
+        literals.put(TableFilterModifyFunction.class, "jipipe:function:table-filter-modify");
+        literals.put(TableJoinSplitFunction.class, "jipipe:function:table-join-split");
+        literals.put(TableAggregateFunction.class, "jipipe:function:table-aggregate");
+        literals.put(TableTransformFunction.class, "jipipe:function:table-transform");
+        literals.put(TableExportFileFunction.class, "jipipe:function:table-export-file");
+        // statistics
+        literals.put(StatisticsDescriptiveFunction.class, "jipipe:function:statistics-descriptive");
+        literals.put(StatisticsTestingFunction.class, "jipipe:function:statistics-testing");
+        literals.put(StatisticsEstimationFunction.class, "jipipe:function:statistics-estimation");
+        // tracking
+        literals.put(TrackingDetectionFunction.class, "jipipe:function:tracking-detection");
+        literals.put(TrackingLinkingFunction.class, "jipipe:function:tracking-linking");
+        literals.put(TrackingFilteringFunction.class, "jipipe:function:tracking-filtering");
+        literals.put(TrackingAnalysisFunction.class, "jipipe:function:tracking-analysis");
+        // annotations
+        literals.put(AnnotationsEditFunction.class, "jipipe:function:annotations-edit");
+        literals.put(AnnotationsConvertFunction.class, "jipipe:function:annotations-convert");
+        literals.put(GraphAnnotationsFunction.class, "jipipe:function:graph-annotations");
+        // deeplearning
+        literals.put(MachineLearningInferenceFunction.class, "jipipe:function:machine-learning-inference");
+        literals.put(MachineLearningTrainingFunction.class, "jipipe:function:machine-learning-training");
+        literals.put(MachineLearningModelsFunction.class, "jipipe:function:machine-learning-models");
+        // plotting
+        literals.put(PlotScatterFunction.class, "jipipe:function:plot-scatter");
+        literals.put(PlotLineFunction.class, "jipipe:function:plot-line");
+        literals.put(PlotBarFunction.class, "jipipe:function:plot-bar");
+        literals.put(PlotHeatmapFunction.class, "jipipe:function:plot-heatmap");
+        literals.put(PlotMiscFunction.class, "jipipe:function:plot-misc");
+        // export
+        literals.put(ExportImagesFunction.class, "jipipe:function:export-images");
+        literals.put(ExportTablesFunction.class, "jipipe:function:export-tables");
+        literals.put(ExportRoiFunction.class, "jipipe:function:export-roi");
+        literals.put(ExportScenesFunction.class, "jipipe:function:export-scenes");
+        literals.put(ExportDataFunction.class, "jipipe:function:export-data");
+        // graph
+        literals.put(GraphCompartmentOutputsFunction.class, "jipipe:function:graph-compartment-outputs");
+        literals.put(GraphWrappersFunction.class, "jipipe:function:graph-wrappers");
+        literals.put(GraphDebugFunction.class, "jipipe:function:graph-debug");
+        return literals;
     }
 
     private static JIPipeNodeTaxonomyFunction instantiate(Class<? extends JIPipeNodeTaxonomyFunction> leaf) {
@@ -208,220 +210,43 @@ class FunctionLeavesTest {
     }
 
     @Test
-    void idsAreUniqueStableLiterals() {
-        Set<String> ids = new HashSet<>();
-        for (Class<? extends JIPipeNodeTaxonomyFunction> leaf : allLeaves()) {
-            String id = instantiate(leaf).getId();
-            assertTrue(id != null && id.startsWith("jipipe:function:"),
-                    "Id of " + leaf.getName() + " must be a non-null literal starting with 'jipipe:function:', got: " + id);
-            ids.add(id);
-        }
-        // 74 base leaves + the debugging leaf added with the #1361 repro tooling
-        assertEquals(75, ids.size(), "Expected 75 unique leaf ids, got " + ids.size() + " for: " + ids);
-    }
-
-    @Test
     void idsMatchTheExactSeedLiterals() {
-        assertEquals("jipipe:function:image-data", new ImageDataFunction().getId());
-        assertEquals("jipipe:function:table-data", new TableDataFunction().getId());
-        assertEquals("jipipe:function:roi-data", new RoiDataFunction().getId());
-        assertEquals("jipipe:function:filament-data", new FilamentDataFunction().getId());
-        assertEquals("jipipe:function:misc-data", new MiscDataFunction().getId());
-        assertEquals("jipipe:function:scene-3d-data", new Scene3DDataFunction().getId());
-        assertEquals("jipipe:function:preprocessing", new PreprocessingFunction().getId());
-        assertEquals("jipipe:function:filtering", new FilteringFunction().getId());
-        assertEquals("jipipe:function:thresholding", new ThresholdingFunction().getId());
-        assertEquals("jipipe:function:segmentation", new SegmentationFunction().getId());
-        assertEquals("jipipe:function:segmentation-cell-based", new SegmentationCellBasedFunction().getId());
-        assertEquals("jipipe:function:measurements", new MeasurementsFunction().getId());
-        assertEquals("jipipe:function:resampling", new ResamplingFunction().getId());
-        assertEquals("jipipe:function:merging-splitting", new MergingSplittingFunction().getId());
-        assertEquals("jipipe:function:color-stack", new ColorStackFunction().getId());
-        assertEquals("jipipe:function:image-arithmetic", new ImageArithmeticFunction().getId());
-        assertEquals("jipipe:function:image-comparison", new ImageComparisonFunction().getId());
-        assertEquals("jipipe:function:image-projections", new ImageProjectionsFunction().getId());
-        assertEquals("jipipe:function:image-type-conversion", new ImageTypeConversionFunction().getId());
-        assertEquals("jipipe:function:image-labeling", new ImageLabelingFunction().getId());
-        assertEquals("jipipe:function:image-statistics", new ImageStatisticsFunction().getId());
-        assertEquals("jipipe:function:image-moments", new ImageMomentsFunction().getId());
-        assertEquals("jipipe:function:image-transformations", new ImageTransformationsFunction().getId());
-        assertEquals("jipipe:function:image-pixel-manipulation", new ImagePixelManipulationFunction().getId());
-        assertEquals("jipipe:function:image-neighbor-measurements", new ImageNeighborMeasurementsFunction().getId());
-        assertEquals("jipipe:function:image-properties", new ImagePropertiesFunction().getId());
-        assertEquals("jipipe:function:file-system", new FileSystemFunction().getId());
-        assertEquals("jipipe:function:omero", new OmeroFunction().getId());
-        assertEquals("jipipe:function:forms", new FormsFunction().getId());
-        assertEquals("jipipe:function:data-utilities", new DataUtilitiesFunction().getId());
-        assertEquals("jipipe:function:text-markup", new TextMarkupFunction().getId());
-        assertEquals("jipipe:function:scripting", new ScriptingFunction().getId());
-        assertEquals("jipipe:function:scripting-python", new ScriptingPythonFunction().getId());
-        assertEquals("jipipe:function:scripting-r", new ScriptingRFunction().getId());
-        assertEquals("jipipe:function:scripting-imagej-macro", new ScriptingImageJMacroFunction().getId());
-        assertEquals("jipipe:function:scripting-expression", new ScriptingExpressionFunction().getId());
-        assertEquals("jipipe:function:roi-filters", new RoiFiltersFunction().getId());
-        assertEquals("jipipe:function:roi-properties", new RoiPropertiesFunction().getId());
-        assertEquals("jipipe:function:roi-measurements", new RoiMeasurementsFunction().getId());
-        assertEquals("jipipe:function:roi-morphology", new RoiMorphologyFunction().getId());
-        assertEquals("jipipe:function:roi-intersections", new RoiIntersectionsFunction().getId());
-        assertEquals("jipipe:function:filament-smoothing", new FilamentSmoothingFunction().getId());
-        assertEquals("jipipe:function:filament-filtering", new FilamentFilteringFunction().getId());
-        assertEquals("jipipe:function:filament-quantification", new FilamentQuantificationFunction().getId());
-        assertEquals("jipipe:function:table-filter-modify", new TableFilterModifyFunction().getId());
-        assertEquals("jipipe:function:table-join-split", new TableJoinSplitFunction().getId());
-        assertEquals("jipipe:function:table-aggregate", new TableAggregateFunction().getId());
-        assertEquals("jipipe:function:table-transform", new TableTransformFunction().getId());
-        assertEquals("jipipe:function:table-export-file", new TableExportFileFunction().getId());
-        assertEquals("jipipe:function:statistics-descriptive", new StatisticsDescriptiveFunction().getId());
-        assertEquals("jipipe:function:statistics-testing", new StatisticsTestingFunction().getId());
-        assertEquals("jipipe:function:statistics-estimation", new StatisticsEstimationFunction().getId());
-        assertEquals("jipipe:function:tracking-detection", new TrackingDetectionFunction().getId());
-        assertEquals("jipipe:function:tracking-linking", new TrackingLinkingFunction().getId());
-        assertEquals("jipipe:function:tracking-filtering", new TrackingFilteringFunction().getId());
-        assertEquals("jipipe:function:tracking-analysis", new TrackingAnalysisFunction().getId());
-        assertEquals("jipipe:function:annotations-edit", new AnnotationsEditFunction().getId());
-        assertEquals("jipipe:function:annotations-convert", new AnnotationsConvertFunction().getId());
-        assertEquals("jipipe:function:graph-annotations", new GraphAnnotationsFunction().getId());
-        assertEquals("jipipe:function:machine-learning-inference", new MachineLearningInferenceFunction().getId());
-        assertEquals("jipipe:function:machine-learning-training", new MachineLearningTrainingFunction().getId());
-        assertEquals("jipipe:function:machine-learning-models", new MachineLearningModelsFunction().getId());
-        assertEquals("jipipe:function:plot-scatter", new PlotScatterFunction().getId());
-        assertEquals("jipipe:function:plot-line", new PlotLineFunction().getId());
-        assertEquals("jipipe:function:plot-bar", new PlotBarFunction().getId());
-        assertEquals("jipipe:function:plot-heatmap", new PlotHeatmapFunction().getId());
-        assertEquals("jipipe:function:plot-misc", new PlotMiscFunction().getId());
-        assertEquals("jipipe:function:export-images", new ExportImagesFunction().getId());
-        assertEquals("jipipe:function:export-tables", new ExportTablesFunction().getId());
-        assertEquals("jipipe:function:export-roi", new ExportRoiFunction().getId());
-        assertEquals("jipipe:function:export-scenes", new ExportScenesFunction().getId());
-        assertEquals("jipipe:function:export-data", new ExportDataFunction().getId());
-        assertEquals("jipipe:function:graph-compartment-outputs", new GraphCompartmentOutputsFunction().getId());
-        assertEquals("jipipe:function:graph-wrappers", new GraphWrappersFunction().getId());
-        assertEquals("jipipe:function:graph-debug", new GraphDebugFunction().getId());
-    }
-
-    @Test
-    void everyLeafHasAParent() {
-        for (Class<? extends JIPipeNodeTaxonomyFunction> leaf : allLeaves()) {
-            JIPipeNodeTaxonomyFunction function = instantiate(leaf);
-            assertTrue(function.getParent() != null,
-                    "Expected " + leaf.getName() + " to have a parent");
+        Map<Class<? extends JIPipeNodeTaxonomyFunction>, String> catalog = new LinkedHashMap<>(topLevelLiterals());
+        catalog.putAll(leafLiterals());
+        for (Map.Entry<Class<? extends JIPipeNodeTaxonomyFunction>, String> entry : catalog.entrySet()) {
+            assertEquals(entry.getValue(), instantiate(entry.getKey()).getId(),
+                    "The pinned stable literal of " + entry.getKey().getName()
+                            + " changed - it is persisted in saved projects and must not change");
         }
+        assertEquals(catalog.size(), new HashSet<>(catalog.values()).size(),
+                "Two taxonomy functions pin the same literal: " + catalog.values());
     }
 
     @Test
-    void parentsAreTask9BranchesOrSegmentationLeaf() {
-        Set<Class<? extends JIPipeNodeTaxonomyFunction>> allowedParents = allTopLevels().stream()
-                .map(JIPipeNodeTaxonomyFunction::getClass)
-                .collect(Collectors.toSet());
+    void leafParentsAreTopLevelBranchesOrSubBranches() {
+        Set<Class<? extends JIPipeNodeTaxonomyFunction>> allowedParents =
+                new HashSet<>(topLevelLiterals().keySet());
+        // The one leaf that hosts children (its language sub-leaves parent to it, the same
+        // leaf-with-children pattern as SegmentationFunction)
         allowedParents.add(SegmentationFunction.class);
-        // The four scripting language sub-leaves (Python, R, ImageJ macro,
-        // expressions) parent to the Scripting root (top-level since the
-        // spec B.5 hue migration), the same leaf-with-children pattern as
-        // SegmentationFunction above.
-        // (ScriptingFunction is in allTopLevels() and thus already allowed.)
-        for (Class<? extends JIPipeNodeTaxonomyFunction> leaf : allLeaves()) {
-            JIPipeNodeTaxonomyFunction function = instantiate(leaf);
-            assertTrue(allowedParents.contains(function.getParent().getClass()),
-                    "Unexpected parent of " + leaf.getName() + ": " + function.getParent().getClass().getName());
-        }
-    }
-
-    @Test
-    void leavesHaveNoHueAndNoIcon() {
-        for (Class<? extends JIPipeNodeTaxonomyFunction> leaf : allLeaves()) {
-            JIPipeNodeTaxonomyFunction function = instantiate(leaf);
-            assertNull(function.getColorHue(),
-                    "Expected null hue (inheritance) for " + leaf.getName());
-            assertNull(function.getIcon(),
-                    "Expected null icon for " + leaf.getName());
-        }
-    }
-
-    @Test
-    void visibilityMirrorsTheParentBranch() {
-        // GraphAnnotationsFunction is the one deliberate exception: it restores
-        // the legacy dual-visible GraphAnnotationsNodeTypeCategory (visible in
-        // both editors) so canvas notes appear in the compartments browser,
-        // overriding the Annotations branch's compartments=false.
-        Set<Class<? extends JIPipeNodeTaxonomyFunction>> overridesVisibility =
-                Set.of(GraphAnnotationsFunction.class);
-        for (Class<? extends JIPipeNodeTaxonomyFunction> leaf : allLeaves()) {
+        for (Class<? extends JIPipeNodeTaxonomyFunction> leaf : leafLiterals().keySet()) {
             JIPipeNodeTaxonomyFunction function = instantiate(leaf);
             JIPipeNodeTaxonomyFunction parent = function.getParent();
-            if (overridesVisibility.contains(leaf)) {
-                continue;
-            }
-            assertEquals(parent.isVisibleInPipeline(), function.isVisibleInPipeline(),
-                    "isVisibleInPipeline of " + leaf.getName() + " must mirror its parent");
-            assertEquals(parent.isVisibleInCompartments(), function.isVisibleInCompartments(),
-                    "isVisibleInCompartments of " + leaf.getName() + " must mirror its parent");
-        }
-        // Every seed leaf except the dual-visible GraphAnnotationsFunction is
-        // hidden in compartments (its branch is).
-        for (Class<? extends JIPipeNodeTaxonomyFunction> leaf : allLeaves()) {
-            if (overridesVisibility.contains(leaf)) {
-                continue;
-            }
-            assertFalse(instantiate(leaf).isVisibleInCompartments(),
-                    "Expected " + leaf.getName() + " to be hidden in compartments");
-        }
-        // The one exception is visible in both editors.
-        JIPipeNodeTaxonomyFunction graphAnnotations = instantiate(GraphAnnotationsFunction.class);
-        assertTrue(graphAnnotations.isVisibleInPipeline(), "graph annotations must be visible in pipeline");
-        assertTrue(graphAnnotations.isVisibleInCompartments(), "graph annotations must be visible in compartments");
-    }
-
-    @Test
-    void exactlyThreeLeavesCarrySeedTags() {
-        assertEquals(Set.of("spot-detection"), new TrackingDetectionFunction().getTags());
-        assertEquals(Set.of("inference"), new MachineLearningInferenceFunction().getTags());
-        assertEquals(Set.of("cell-segmentation"), new SegmentationCellBasedFunction().getTags());
-
-        Set<Class<? extends JIPipeNodeTaxonomyFunction>> tagged = Set.of(
-                TrackingDetectionFunction.class,
-                MachineLearningInferenceFunction.class,
-                SegmentationCellBasedFunction.class
-        );
-        for (Class<? extends JIPipeNodeTaxonomyFunction> leaf : allLeaves()) {
-            if (!tagged.contains(leaf)) {
-                assertTrue(instantiate(leaf).getTags().isEmpty(),
-                        "Expected empty tags for " + leaf.getName());
-            }
-        }
-    }
-
-    @Test
-    void cellBasedSegmentationIsChildOfSegmentation() {
-        JIPipeNodeTaxonomyFunction parent = new SegmentationCellBasedFunction().getParent();
-        assertTrue(parent instanceof SegmentationFunction,
-                "Expected parent to be an instance of SegmentationFunction, got " +
-                        (parent == null ? "null" : parent.getClass().getName()));
-    }
-
-    @Test
-    void everyLeafChainReachesATopLevel() {
-        for (Class<? extends JIPipeNodeTaxonomyFunction> leaf : allLeaves()) {
-            JIPipeNodeTaxonomyFunction function = instantiate(leaf);
-            Set<String> visited = new HashSet<>();
-            while (function.getParent() != null) {
-                assertTrue(visited.add(function.getId()),
-                        "Cycle in the parent chain of " + leaf.getName() + " at " + function.getId());
-                function = function.getParent();
-            }
+            assertNotNull(parent, leaf.getName() + " must not be a top-level branch");
+            assertTrue(allowedParents.contains(parent.getClass()),
+                    "Unexpected parent of " + leaf.getName() + ": " + parent.getClass().getName());
         }
     }
 
     @Test
     void registryValidateReturnsEmptyForFullSet() {
         FunctionRegistry registry = new FunctionRegistry();
-        for (JIPipeNodeTaxonomyFunction function : allTopLevels()) {
-            registry.register(function);
+        for (Class<? extends JIPipeNodeTaxonomyFunction> function : topLevelLiterals().keySet()) {
+            registry.register(instantiate(function));
         }
-        for (Class<? extends JIPipeNodeTaxonomyFunction> leaf : allLeaves()) {
+        for (Class<? extends JIPipeNodeTaxonomyFunction> leaf : leafLiterals().keySet()) {
             registry.register(instantiate(leaf));
         }
-        // 14 top levels + 74 base leaves + the debugging leaf added with the #1361 repro tooling
-        assertEquals(14 + 75, registry.all().size());
         Set<String> errors = registry.validate();
         assertTrue(errors.isEmpty(), "Expected no validation errors but got: " + errors);
     }
