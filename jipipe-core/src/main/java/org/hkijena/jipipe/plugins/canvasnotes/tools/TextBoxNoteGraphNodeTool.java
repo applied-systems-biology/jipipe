@@ -24,11 +24,16 @@ import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParamet
 import org.hkijena.jipipe.plugins.parameters.library.roi.Anchor;
 import org.hkijena.jipipe.utils.StringUtils;
 
-import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyEvent;
 
 public class TextBoxNoteGraphNodeTool extends JIPipeAnnotationGraphNodeTool<TextBoxGraphCanvasNote> {
+
+    /**
+     * The shortcut action id that selects this tool. The id is a stable
+     * string literal (persisted in saved keymaps and the LEGACY preset) and
+     * the action itself is registered by the {@link org.hkijena.jipipe.plugins.canvasnotes.CanvasNotesPlugin}.
+     */
+    public static final String SHORTCUT_ACTION_ID = "org.hkijena.jipipe.canvasnotes.tool.textbox";
 
     private JIPipeDesktopColorPaletteColor color = JIPipeDesktopColorPalette.PASTEL[0];
     private Anchor anchor = Anchor.CenterCenter;
@@ -66,11 +71,6 @@ public class TextBoxNoteGraphNodeTool extends JIPipeAnnotationGraphNodeTool<Text
         target.getShapeParameters().setTo(source.getShapeParameters());
         target.getTitleStyle().setTo(source.getTitleStyle());
         target.getContentStyle().setTo(source.getContentStyle());
-    }
-
-    @Override
-    public KeyStroke getKeyBinding() {
-        return KeyStroke.getKeyStroke(KeyEvent.VK_F4, 0);
     }
 
     @Override

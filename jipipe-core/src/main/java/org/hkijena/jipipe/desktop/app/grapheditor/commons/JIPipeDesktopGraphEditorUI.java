@@ -55,6 +55,10 @@ import org.hkijena.jipipe.desktop.app.shortcuts.ShortcutScope;
 import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeDesktopGenericListCellRenderer;
 import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
+import org.hkijena.jipipe.plugins.canvasnotes.tools.ArrowNoteGraphNodeTool;
+import org.hkijena.jipipe.plugins.canvasnotes.tools.EditNotesGraphNodeTool;
+import org.hkijena.jipipe.plugins.canvasnotes.tools.ImageBoxNoteGraphNodeTool;
+import org.hkijena.jipipe.plugins.canvasnotes.tools.TextBoxNoteGraphNodeTool;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameter;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameterList;
@@ -102,15 +106,19 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
 
     /**
      * Maps the graph editor tool classes to the ids of the shortcut actions
-     * that select them. Only the core tools are mapped here; the canvas
-     * notes tools register their own ids.
+     * that select them: the five core tools and the four canvas notes tools
+     * (registered by the canvasnotes plugin).
      */
     private static final Map<Class<? extends JIPipeDesktopGraphEditorTool>, String> TOOL_SHORTCUT_IDS = Map.of(
             DefaultGraphEditorTool.class, JIPipeShortcutActions.TOOL_DEFAULT.id(),
             MoveNodesGraphEditorTool.class, JIPipeShortcutActions.TOOL_MOVE.id(),
             ConnectGraphEditorTool.class, JIPipeShortcutActions.TOOL_CONNECT.id(),
             RewireGraphEditorTool.class, JIPipeShortcutActions.TOOL_REWIRE.id(),
-            CropViewGraphEditorTool.class, JIPipeShortcutActions.TOOL_CROP_VIEW.id());
+            CropViewGraphEditorTool.class, JIPipeShortcutActions.TOOL_CROP_VIEW.id(),
+            EditNotesGraphNodeTool.class, EditNotesGraphNodeTool.SHORTCUT_ACTION_ID,
+            TextBoxNoteGraphNodeTool.class, TextBoxNoteGraphNodeTool.SHORTCUT_ACTION_ID,
+            ArrowNoteGraphNodeTool.class, ArrowNoteGraphNodeTool.SHORTCUT_ACTION_ID,
+            ImageBoxNoteGraphNodeTool.class, ImageBoxNoteGraphNodeTool.SHORTCUT_ACTION_ID);
 
     private final JIPipeGraphEditorUIApplicationSettings graphUISettings;
     private final JIPipeDesktopGraphCanvasUI canvasUI;
@@ -119,9 +127,6 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
     private final List<JIPipeDesktopGraphEditorTool> tools = new ArrayList<>();
     private final Map<Class<? extends JIPipeDesktopGraphEditorTool>, JIPipeDesktopGraphEditorTool> toolMap = new HashMap<>();
     private final BiMap<JIPipeDesktopToggleableGraphEditorTool, JToggleButton> toolToggles = HashBiMap.create();
-    private final Map<KeyStroke, List<JIPipeDesktopToggleableGraphEditorTool>> keyBindingToToolsMap = new HashMap<>();
-    private final Map<KeyStroke, JIPipeDesktopToggleableGraphEditorTool> keyBindingToLastSelectedTool = new HashMap<>();
-    private final Map<JIPipeDesktopToggleableGraphEditorTool, KeyStroke> toolToKeyBinding = new HashMap<>();
     private final JToolBar toolBar = new JToolBar();
     private final JIPipeDesktopDockPanel dockPanel = new JIPipeDesktopDockPanel();
     private final List<JButton> contextToolbarButtons = new ArrayList<>();
@@ -388,11 +393,24 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
                     action.run(canvasUI, selection);
                 };
             }
-            // Tools
+            // Tools: selecting the mapped graph editor tool. Pressing the
+            // chord of the already-active tool switches back to the default
+            // tool (the successor of the old keybinding cycling: today
+            // every tool has its own chord, so a chord never selects
+            // between several tools)
             for (Map.Entry<Class<? extends JIPipeDesktopGraphEditorTool>, String> toolEntry : TOOL_SHORTCUT_IDS.entrySet()) {
                 if (toolEntry.getValue().equals(actionId)) {
                     JIPipeDesktopGraphEditorTool tool = toolMap.get(toolEntry.getKey());
-                    return tool != null ? () -> selectTool(tool) : null;
+                    if (tool == null) {
+                        return null;
+                    }
+                    return () -> {
+                        if (tool == currentTool) {
+                            selectDefaultTool();
+                        } else {
+                            selectTool(tool);
+                        }
+                    };
                 }
             }
             // Editor-level actions
@@ -793,100 +811,6 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
         toolBar.add(zoomPanel);
     }
 
-    /**
-     * Finds the next tool in sorted order for a given keybinding
-     *
-     * @param keyBinding  The keybinding
-     * @param currentTool The currently selected tool
-     * @return The next tool to select
-     */
-    private JIPipeDesktopToggleableGraphEditorTool findNextToolForCycle(KeyStroke keyBinding, JIPipeDesktopToggleableGraphEditorTool currentTool) {
-        List<JIPipeDesktopToggleableGraphEditorTool> toolsForKeyBinding = keyBindingToToolsMap.get(keyBinding);
-        if (toolsForKeyBinding == null || toolsForKeyBinding.isEmpty()) {
-            return null;
-        }
-
-        // Find current tool index
-        int currentIndex = -1;
-        if (currentTool != null) {
-            currentIndex = toolsForKeyBinding.indexOf(currentTool);
-        }
-
-        // If current tool is not found or is null, get the first tool
-        if (currentIndex == -1) {
-            return toolsForKeyBinding.get(0);
-        }
-
-        // Calculate next index with wrap-around
-        int nextIndex = (currentIndex + 1) % toolsForKeyBinding.size();
-
-        return toolsForKeyBinding.get(nextIndex);
-    }
-
-    /**
-     * Finds the previous tool in sorted order for a given keybinding
-     *
-     * @param keyBinding  The keybinding
-     * @param currentTool The currently selected tool
-     * @return The previous tool to select
-     */
-    private JIPipeDesktopToggleableGraphEditorTool findPreviousToolForCycle(KeyStroke keyBinding, JIPipeDesktopToggleableGraphEditorTool currentTool) {
-        List<JIPipeDesktopToggleableGraphEditorTool> toolsForKeyBinding = keyBindingToToolsMap.get(keyBinding);
-        if (toolsForKeyBinding == null || toolsForKeyBinding.isEmpty()) {
-            return null;
-        }
-
-        // Find current tool index
-        int currentIndex = -1;
-        if (currentTool != null) {
-            currentIndex = toolsForKeyBinding.indexOf(currentTool);
-        }
-
-        // If current tool is not found or is null, get the last tool
-        if (currentIndex == -1) {
-            return toolsForKeyBinding.get(toolsForKeyBinding.size() - 1);
-        }
-
-        // Calculate previous index with wrap-around
-        int previousIndex = (currentIndex - 1 + toolsForKeyBinding.size()) % toolsForKeyBinding.size();
-
-        return toolsForKeyBinding.get(previousIndex);
-    }
-
-    /**
-     * Handles keybinding press for cycling through tools
-     *
-     * @param keyBinding The activated keybinding
-     */
-    private void handleToolCycle(KeyStroke keyBinding) {
-        List<JIPipeDesktopToggleableGraphEditorTool> toolsForKeyBinding = keyBindingToToolsMap.get(keyBinding);
-        if (toolsForKeyBinding == null || toolsForKeyBinding.size() <= 1) {
-            // If there's only one tool or none, use the standard behavior
-            JIPipeDesktopToggleableGraphEditorTool singleTool = null;
-            if (toolsForKeyBinding != null) {
-                singleTool = !toolsForKeyBinding.isEmpty() ? toolsForKeyBinding.getFirst() : null;
-            }
-            if (singleTool != null) {
-                selectTool(singleTool);
-            }
-            return;
-        }
-
-        // Get current tool for this keybinding
-        JIPipeDesktopToggleableGraphEditorTool currentTool = getCurrentTool();
-        if (currentTool == null || !toolsForKeyBinding.contains(currentTool)) {
-            // If no current tool or current tool is not in the list for this keybinding,
-            // select the first tool for this keybinding and reset the cycle
-            currentTool = toolsForKeyBinding.getFirst();
-            selectTool(currentTool);
-            return;
-        }
-
-        // Find and select the next tool
-        JIPipeDesktopToggleableGraphEditorTool nextTool = findNextToolForCycle(keyBinding, currentTool);
-        selectTool(nextTool);
-    }
-
     private void initializeEditingToolbar(Class<? extends JIPipeDesktopGraphEditorTool> baseClass) {
         List<JIPipeDesktopGraphEditorTool> newTools = new ArrayList<>();
         for (Class<? extends JIPipeDesktopGraphEditorTool> klass : JIPipe.getInstance().getGraphEditorTools().getRegisteredTools()) {
@@ -902,60 +826,17 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
         newTools.sort(Comparator.comparing(JIPipeDesktopGraphEditorTool::getCategory).thenComparing(JIPipeDesktopGraphEditorTool::getPriority));
         tools.addAll(newTools);
 
-        // Group tools by keybinding and build maps (only for JIPipeToggleableGraphEditorTool for cycling)
-        for (JIPipeDesktopGraphEditorTool tool : newTools) {
-            if (tool instanceof JIPipeDesktopToggleableGraphEditorTool) {
-                KeyStroke keyBinding = tool.getKeyBinding();
-                if (keyBinding != null) {
-                    toolToKeyBinding.put((JIPipeDesktopToggleableGraphEditorTool) tool, keyBinding);
-                }
-            }
-        }
-
-        // Build map of keybinding to tools (only for JIPipeToggleableGraphEditorTool)
-        for (JIPipeDesktopGraphEditorTool tool : newTools) {
-            if (tool instanceof JIPipeDesktopToggleableGraphEditorTool toggleableTool) {
-                KeyStroke keyBinding = tool.getKeyBinding();
-                if (keyBinding != null) {
-                    keyBindingToToolsMap.computeIfAbsent(keyBinding, k -> new ArrayList<>()).add(toggleableTool);
-                }
-            }
-        }
-
         for (int i = 0; i < newTools.size(); i++) {
             JIPipeDesktopGraphEditorTool tool = newTools.get(i);
             if (i > 0 && !Objects.equals(tool.getCategory(), newTools.get(i - 1).getCategory())) {
                 toolBar.addSeparator();
             }
 
-            // Hotkeys
-            KeyStroke keyBinding = tool.getKeyBinding();
-            if (keyBinding != null) {
-                if (tool instanceof JIPipeDesktopToggleableGraphEditorTool) {
-                    // For toggleable tools, use the cycling handler
-                    registerKeyboardAction(e -> handleToolCycle(keyBinding),
-                            keyBinding,
-                            JComponent.WHEN_IN_FOCUSED_WINDOW);
-                } else {
-                    // For other tools, keep the direct selection
-                    registerKeyboardAction(e -> selectTool(tool),
-                            keyBinding,
-                            JComponent.WHEN_IN_FOCUSED_WINDOW);
-                }
-            }
-
             if (tool instanceof JIPipeDesktopToggleableGraphEditorTool toggleableGraphEditorTool) {
 
                 JToggleButton button = new JToggleButton(tool.getIcon());
                 button.setToolTipText(TooltipUtils.createTooltipWithShortcutText(tool.getName(), tool.getTooltip(), shortcutVariantsText(TOOL_SHORTCUT_IDS.get(tool.getClass()))));
-                button.addActionListener(e -> {
-                    selectTool(tool);
-                    // Update cycling state when a toggleable tool is manually selected via button
-                    if (toolToKeyBinding.containsKey(toggleableGraphEditorTool)) {
-                        KeyStroke binding = toolToKeyBinding.get(toggleableGraphEditorTool);
-                        keyBindingToLastSelectedTool.put(binding, toggleableGraphEditorTool);
-                    }
-                });
+                button.addActionListener(e -> selectTool(tool));
                 UIUtils.makeButtonFlatWithSize(button, 32, 3);
                 toolBar.add(button);
                 toolToggles.put(toggleableGraphEditorTool, button);
@@ -998,6 +879,16 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
         return Collections.unmodifiableList(tools);
     }
 
+    /**
+     * @param toolClass the exact tool class
+     * @return the tool instance of this editor that was registered for the
+     * given class, or null when the class is not registered or the tool
+     * does not support this editor
+     */
+    public <T extends JIPipeDesktopGraphEditorTool> T getTool(Class<T> toolClass) {
+        return toolClass.cast(toolMap.get(toolClass));
+    }
+
     public JIPipeDesktopGraphEditorTool getDefaultTool() {
         return tools.stream().filter(tool -> tool instanceof DefaultGraphEditorTool).findFirst().orElse(null);
     }
@@ -1029,12 +920,6 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
             JToggleButton toggleButton = toolToggles.get(toggleableTool);
             toggleButton.setSelected(true);
             currentTool = toggleableTool;
-
-            // Update cycling state - store last selected tool for this keybinding
-            if (toolToKeyBinding.containsKey(toggleableTool)) {
-                KeyStroke keyBinding = toolToKeyBinding.get(toggleableTool);
-                keyBindingToLastSelectedTool.put(keyBinding, toggleableTool);
-            }
 
             canvasUI.getToolManager().setCurrentTool(currentTool);
             tool.activate();
@@ -1149,14 +1034,6 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
                     contextAction.run(canvasUI, selection);
                     if (contextAction.isDisplayedInToolbar()) {
                         updateContextToolbar();
-                    }
-                    // Context actions might change tool selection, so update cycling state
-                    if (getCurrentTool() instanceof JIPipeDesktopToggleableGraphEditorTool) {
-                        JIPipeDesktopToggleableGraphEditorTool currentToggleableTool = (JIPipeDesktopToggleableGraphEditorTool) getCurrentTool();
-                        if (toolToKeyBinding.containsKey(currentToggleableTool)) {
-                            KeyStroke binding = toolToKeyBinding.get(currentToggleableTool);
-                            keyBindingToLastSelectedTool.put(binding, currentToggleableTool);
-                        }
                     }
                 });
                 UIUtils.makeButtonFlatWithSize(button, 32, 3);

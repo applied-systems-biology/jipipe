@@ -18,11 +18,17 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEdit
 import org.hkijena.jipipe.desktop.app.grapheditor.contextpanel.JIPipeDesktopGraphEditorContextPanelIsland;
 import org.hkijena.jipipe.plugins.canvasnotes.nodes.ArrowGraphCanvasNote;
 
-import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyEvent;
 
 public class ArrowNoteGraphNodeTool extends JIPipeAnnotationGraphNodeTool<ArrowGraphCanvasNote> {
+
+    /**
+     * The shortcut action id that selects this tool. The id is a stable
+     * string literal (persisted in saved keymaps and the LEGACY preset) and
+     * the action itself is registered by the {@link org.hkijena.jipipe.plugins.canvasnotes.CanvasNotesPlugin}.
+     */
+    public static final String SHORTCUT_ACTION_ID = "org.hkijena.jipipe.canvasnotes.tool.arrow";
+
     public ArrowNoteGraphNodeTool() {
         super(ArrowGraphCanvasNote.class);
     }
@@ -53,11 +59,6 @@ public class ArrowNoteGraphNodeTool extends JIPipeAnnotationGraphNodeTool<ArrowG
     @Override
     public boolean isDrawWithAntialiasing() {
         return true;
-    }
-
-    @Override
-    public KeyStroke getKeyBinding() {
-        return KeyStroke.getKeyStroke(KeyEvent.VK_F6, 0);
     }
 
     @Override

@@ -32,7 +32,6 @@ import org.hkijena.jipipe.utils.PointRange;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.Objects;
 import java.util.Set;
@@ -58,11 +57,6 @@ public class RewireGraphEditorTool implements JIPipeDesktopToggleableGraphEditor
     @Override
     public Icon getIcon() {
         return JIPipe.RESOURCES.getIcon16("actions/edit-node.png");
-    }
-
-    @Override
-    public KeyStroke getKeyBinding() {
-        return KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0);
     }
 
     @Override

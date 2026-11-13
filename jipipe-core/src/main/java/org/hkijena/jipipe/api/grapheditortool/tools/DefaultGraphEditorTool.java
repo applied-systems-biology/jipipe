@@ -20,7 +20,6 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEdit
 import org.hkijena.jipipe.desktop.app.grapheditor.contextpanel.JIPipeDesktopGraphEditorContextPanelIsland;
 
 import javax.swing.*;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
 public class DefaultGraphEditorTool implements JIPipeDesktopToggleableGraphEditorTool {
@@ -80,11 +79,6 @@ public class DefaultGraphEditorTool implements JIPipeDesktopToggleableGraphEdito
     @Override
     public void deactivate() {
 
-    }
-
-    @Override
-    public KeyStroke getKeyBinding() {
-        return KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
     }
 
     @Override
