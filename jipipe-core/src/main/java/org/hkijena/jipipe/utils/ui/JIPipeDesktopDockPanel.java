@@ -107,19 +107,15 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
      * for the panels this instance holds (returning null otherwise), so
      * several dock panels in one window can each register a scope for the
      * same root without interfering.
+     *
+     * <p>The root is resolved with {@link SwingUtilities#getRootPane(Component)}
+     * rather than {@link SwingUtilities#getRoot(Component)}: the latter returns
+     * the enclosing {@link Window}, which is not a {@link JComponent}, while the
+     * former returns the window's {@link JRootPane} (a {@link JComponent}) for
+     * all the host types in use (JFrame, JDialog, JWindow).
      */
     private void installShortcutScope() {
-        JComponent rootComponent = null;
-        Component root = SwingUtilities.getRoot(this);
-        if (root instanceof JComponent jComponent) {
-            rootComponent = jComponent;
-        } else {
-            // getRoot() is not a JComponent (rare): fall back to the
-            // enclosing window's content pane.
-            if (SwingUtilities.getWindowAncestor(this) instanceof JWindow jWindow) {
-                rootComponent = (JComponent) jWindow.getContentPane();
-            }
-        }
+        JComponent rootComponent = SwingUtilities.getRootPane(this);
         if (rootComponent == null) {
             return;
         }
