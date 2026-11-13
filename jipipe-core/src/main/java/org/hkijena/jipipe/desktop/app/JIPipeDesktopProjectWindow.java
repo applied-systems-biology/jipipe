@@ -58,11 +58,14 @@ import org.scijava.Context;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowListener;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 
 /**
  * Window that holds an {@link JIPipeDesktopProjectWorkbench} instance
@@ -89,6 +92,46 @@ public class JIPipeDesktopProjectWindow extends JFrame {
     private JIPipeQueuedRunnableExecutor saveQueue;
 
     /**
+     * Feature #1359: non-null while an in-window loading/closing screen is
+     * shown (the content pane replacement for the former modal dialogs).
+     */
+    private JIPipeDesktopProjectWindowLoadingScreen loadingScreen;
+
+    /**
+     * Feature #1359: the content pane shown before the current loading
+     * screen. Restored when a load into this window fails or is cancelled.
+     * Only captured when a workbench is displayed (a freshly created window
+     * has nothing to restore and disposes itself instead).
+     */
+    private Container contentBeforeLoadingScreen;
+
+    /**
+     * Feature #1359: re-entry guard for the asynchronous window teardown.
+     */
+    private boolean disposing;
+
+    /**
+     * Feature #1359: the close callbacks (EDT) per project whose background
+     * close is currently in flight. Requests for the same project are
+     * coalesced: all callbacks run after the single close run finishes.
+     */
+    private final Map<JIPipeProject, List<Runnable>> projectCloseCallbacks = new HashMap<>();
+
+    /**
+     * Feature #1359: the load run that is currently in flight (cancelled
+     * when the window is disposed during a load).
+     */
+    private JIPipeRunnable activeLoadRun;
+    private JIPipeQueuedRunnableExecutor activeLoadQueue;
+
+    /**
+     * Feature #1359: set before the user-requested cancellation of the
+     * active load, so the completion handler can distinguish a deliberate
+     * cancellation from a failure.
+     */
+    private final AtomicBoolean loadCancelRequested = new AtomicBoolean(false);
+
+    /**
      * @param context          context
      * @param project          The project
      * @param showIntroduction whether to show the introduction
@@ -102,6 +145,24 @@ public class JIPipeDesktopProjectWindow extends JFrame {
         WINDOW_OPENED_EVENT_EMITTER.emit(new WindowOpenedEvent(this));
         initialize();
         loadProject(project, showIntroduction, isNewProject);
+    }
+
+    /**
+     * Feature #1359: creates a window without a project. It shows a loading
+     * screen until {@link #loadProject(JIPipeProject, boolean, boolean)} is
+     * called (used by the project-open flow, where the window is created
+     * before the project file is read).
+     *
+     * @param context context
+     */
+    private JIPipeDesktopProjectWindow(Context context) {
+        JIPipeDesktopSplashScreen.getInstance().hideSplash();
+        this.context = context;
+        this.cefClientService = new JIPipeCefClientService(this);
+        OPEN_WINDOWS.add(this);
+        WINDOW_OPENED_EVENT_EMITTER.emit(new WindowOpenedEvent(this));
+        initialize();
+        showLoadingScreen("Loading project", null, false);
     }
 
     /**
@@ -167,6 +228,21 @@ public class JIPipeDesktopProjectWindow extends JFrame {
     }
 
     /**
+     * Feature #1359: creates a new window that shows a loading screen until
+     * a project is loaded into it
+     *
+     * @param context context
+     * @return The window
+     */
+    public static JIPipeDesktopProjectWindow newWindow(Context context) {
+        JIPipeDesktopProjectWindow frame = new JIPipeDesktopProjectWindow(context);
+        frame.pack();
+        frame.setSize(1920, 900);
+        frame.setVisible(true);
+        return frame;
+    }
+
+    /**
      * @return All open project windows
      */
     public static Set<JIPipeDesktopProjectWindow> getOpenWindows() {
@@ -216,24 +292,49 @@ public class JIPipeDesktopProjectWindow extends JFrame {
 
     @Override
     public void dispose() {
+        if (disposing) {
+            return;
+        }
+        disposing = true;
+        // Further X presses during the asynchronous teardown close silently
+        for (WindowListener listener : getWindowListeners()) {
+            removeWindowListener(listener);
+        }
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        OPEN_WINDOWS.remove(this);
+        // Cancel a load that is currently in flight. Its completion handler
+        // releases what was already read (see onProjectLoadFinished).
+        cancelActiveLoad();
         // Release the per-window UI tree FIRST (tab pane → tab contents →
         // graph editors' settings bindings, the settings tab's change-event
         // subscription, ...) while the settings service and the project are
-        // still alive. closeCurrentProject() then runs project.close(...) -
-        // project teardown only, it does not touch the workbench (the
-        // progress dialog is this window's own JFrame and the runnables are
-        // driven by the queued executor).
+        // still alive. The background close then runs project teardown only
+        // - project.close(...) does not touch the workbench (the runnables
+        // are driven by the queued executor).
         if (projectWorkbench != null) {
             projectWorkbench.dispose();
+            projectWorkbench = null;
         }
-        closeCurrentProject();
+        closeAllBalloons();
+        // Feature #1359: replace the workbench with an in-window closing
+        // screen and release the project in the background - no modal
+        // dialog, and no second OS window that a fast close could leave
+        // stuck open (e.g. Ubuntu 24.04 with Mutter).
+        showLoadingScreen("Closing project", projectSavePath, false);
+        requestProjectClose(project, this::finishDispose);
+    }
+
+    /**
+     * Feature #1359: EDT bookkeeping for the final teardown after the
+     * project was released in the background
+     */
+    private void finishDispose() {
         // Drop the closed project's run-log entries (and their NDJSON data files). The project's
         // temporary base - which contains the log files of its graph runs - is cleaned up by
-        // project.close(...) above; removing the entries keeps the Tools > Logs list consistent.
+        // project.close(...); removing the entries keeps the Tools > Logs list consistent.
         if (project != null) {
             JIPipeDesktopRunnableLogsCollection.getInstance().removeProjectEntries(project);
         }
-        OPEN_WINDOWS.remove(this);
         WINDOW_CLOSED_EVENT_EMITTER.emit(new WindowClosedEvent(this));
         super.dispose();
     }
@@ -249,7 +350,12 @@ public class JIPipeDesktopProjectWindow extends JFrame {
         this.project = project;
         this.projectWorkbench = new JIPipeDesktopProjectWorkbench(this, context, project, showIntroduction, isNewProject);
         this.sessionId = UUID.randomUUID();
+        // The workbench replaces the loading screen (feature #1359)
+        this.loadingScreen = null;
+        this.contentBeforeLoadingScreen = null;
         setContentPane(projectWorkbench);
+        revalidate();
+        repaint();
     }
 
     /**
@@ -258,13 +364,14 @@ public class JIPipeDesktopProjectWindow extends JFrame {
      */
     public void newProject() {
         JIPipeProject project = getDefaultTemplateProject();
-        JIPipeDesktopProjectWindow window = openProjectInThisOrNewWindow("New project", project, true, true);
+        JIPipeDesktopProjectWindow window = openProjectInThisOrNewWindow("New project", project, true, true, target -> {
+            target.projectSavePath = null;
+            target.updateTitle();
+            target.getProjectWorkbench().sendStatusBarText("Created new project");
+        });
         if (window == null) {
             return;
         }
-        window.projectSavePath = null;
-        window.updateTitle();
-        window.getProjectWorkbench().sendStatusBarText("Created new project");
     }
 
     /**
@@ -327,19 +434,20 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                 JIPipeValidationReport report = new JIPipeValidationReport();
                 JIPipeNotificationInbox notifications = new JIPipeNotificationInbox();
                 JIPipeProject project = template.loadAsProject(report, notifications, JIPipeProgressInfo.STDOUT);
-                JIPipeDesktopProjectWindow window = openProjectInThisOrNewWindow("New project", project, true, true);
+                JIPipeDesktopProjectWindow window = openProjectInThisOrNewWindow("New project", project, true, true, target -> {
+                    target.projectSavePath = null;
+                    target.updateTitle();
+                    target.getProjectWorkbench().sendStatusBarText("Created new project");
+                    if (!notifications.isEmpty()) {
+                        UIUtils.openNotificationsDialog(target.getProjectWorkbench(), this, notifications, "Potential issues found", "There seem to be potential issues that might prevent the successful execution of the pipeline. Please review the following entries and resolve the issues if possible.", true);
+                    }
+                    if (!report.isValid()) {
+                        UIUtils.showValidityReportDialog(new JIPipeDesktopDummyWorkbench(), this, report, "Errors while loading the project", "It seems that not all parameters/nodes/connections could be restored from the project file. The cause might be that you are using a version of JIPipe that changed the affected features. " +
+                                "Please review the entries and apply the necessary changes (e.g., reconnecting nodes).", false);
+                    }
+                });
                 if (window == null) {
                     return;
-                }
-                window.projectSavePath = null;
-                window.updateTitle();
-                window.getProjectWorkbench().sendStatusBarText("Created new project");
-                if (!notifications.isEmpty()) {
-                    UIUtils.openNotificationsDialog(window.getProjectWorkbench(), this, notifications, "Potential issues found", "There seem to be potential issues that might prevent the successful execution of the pipeline. Please review the following entries and resolve the issues if possible.", true);
-                }
-                if (!report.isValid()) {
-                    UIUtils.showValidityReportDialog(new JIPipeDesktopDummyWorkbench(), this, report, "Errors while loading the project", "It seems that not all parameters/nodes/connections could be restored from the project file. The cause might be that you are using a version of JIPipe that changed the affected features. " +
-                            "Please review the entries and apply the necessary changes (e.g., reconnecting nodes).", false);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -407,6 +515,28 @@ public class JIPipeDesktopProjectWindow extends JFrame {
             JIPipeNotificationInbox notifications = new JIPipeNotificationInbox();
             notifications.connectDismissTo(JIPipeNotificationInbox.getInstance());
             try {
+                // Feature #1359: if this project file is already open in a
+                // window, offer to bring that window to the front instead of
+                // loading a second instance
+                JIPipeDesktopProjectWindow existingWindow = findOpenWindowForProjectFile(path);
+                if (existingWindow != null) {
+                    Button bringToFront = Button.custom("Bring window to front").asDefault();
+                    Button openAnyway = Button.custom("Open anyway");
+                    Optional<Button> alreadyOpen = JIPipeDesktopDialogs.choose(this,
+                            "Project already open",
+                            "The project " + path + " is already open in a project window.\n" +
+                                    "You can bring that window to the front instead of loading the project again.",
+                            bringToFront, openAnyway);
+                    if (alreadyOpen.isEmpty()) {
+                        return;
+                    }
+                    if (alreadyOpen.get() == bringToFront) {
+                        existingWindow.bringWindowToFront();
+                        return;
+                    }
+                    // "Open anyway": continue with a second instance
+                }
+
                 JIPipeProjectPeek peek = JIPipeProjectIOs.peek(path);
                 Set<JIPipeDependency> dependencySet = peek.getDependencies();
 
@@ -431,73 +561,31 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                     }
                 }
 
-                JIPipeQueuedRunnableExecutor localQueue = new JIPipeQueuedRunnableExecutor("Project loading");
-                JIPipeDesktopProjectWindow currentWindow = this;
-                JIPipeRunnable run = new DefaultJIPipeRunnable() {
-                    @Override
-                    public String getTaskLabel() {
-                        return "Load project " + path;
+                // Feature #1359: the This/New placement is decided BEFORE the
+                // file is read (it does not depend on the read result), so the
+                // loading screen can be shown in the window that receives the
+                // project. The former modal "Load project" dialog is gone.
+                final boolean loadIntoThisWindow;
+                if (forceCurrentWindow) {
+                    loadIntoThisWindow = true;
+                } else {
+                    Button openInThisWindow = Button.custom("This window");
+                    Button openInNewWindow = Button.custom("New window").asDefault();
+                    Optional<Button> placement = JIPipeDesktopDialogs.choose(this, "Open project",
+                            "Projects can either be opened in a new window or replace the project in an existing window.",
+                            openInThisWindow, openInNewWindow);
+                    if (placement.isEmpty()) {
+                        return;
                     }
-
-                    @Override
-                    public void run() {
-                        try {
-                            getProgressInfo().log("Loading project " + path);
-                            if (Files.size(path) > 3 * 1024 * 1024) {
-                                getProgressInfo().log("INFO: File size is " + (Files.size(path) / 1024 / 1024) + " MB. Loading this project may take long.");
-                                getProgressInfo().log("INFO: Consider down-sizing your projects if you experience performance issues.");
-                            }
-                            // The dispatcher picks the reader by content
-                            // (ZIP → JIPX, else legacy JSON) and the reader
-                            // performs the full load contract (work directory,
-                            // user path validation, environment fix gate,
-                            // project file)
-                            JIPipeProject project = JIPipeProjectIOs.readerFromPath(path)
-                                    .read(path, new UnspecifiedValidationReportContext(), report, notifications, getProgressInfo());
-
-                            if (getProgressInfo().isCancelled()) {
-                                return;
-                            }
-
-                            SwingUtilities.invokeLater(() -> {
-                                JIPipeDesktopProjectWindow window;
-                                if (forceCurrentWindow) {
-                                    window = currentWindow;
-                                    loadProject(project, false, false);
-                                } else {
-                                    window = openProjectInThisOrNewWindow("Open project", project, false, false);
-                                }
-                                if (window == null) {
-                                    return;
-                                }
-                                window.projectSavePath = path;
-                                window.getProjectWorkbench().sendStatusBarText("Opened project from " + window.projectSavePath);
-                                window.updateTitle();
-                                JIPipe.getInstance().getRecentProjects().add(path);
-                                if (!notifications.isEmpty()) {
-                                    UIUtils.openNotificationsDialog(window.getProjectWorkbench(),
-                                            currentWindow,
-                                            notifications,
-                                            "Potential issues found",
-                                            "There seem to be potential issues that might prevent the successful execution of the pipeline. Please review the following entries and resolve the issues if possible.",
-                                            true);
-                                }
-                            });
-
-                        } catch (Exception e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-                };
-                JIPipeDesktopRunExecuteUI.runInDialog(projectWorkbench, this, run, localQueue, JIPipeDesktopRunExecuteUI.GlobalLogMode.OnlyFailures);
+                    loadIntoThisWindow = placement.get() == openInThisWindow;
+                }
 
                 JIPipeFileChooserApplicationSettings.getInstance().setLastDirectoryBy(JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, path.getParent());
+
+                final JIPipeDesktopProjectWindow targetWindow = loadIntoThisWindow ? this : newWindow(context);
+                targetWindow.beginProjectLoad(path, report, notifications, this, loadIntoThisWindow);
             } catch (IOException e) {
                 throw new RuntimeException(e);
-            }
-            if (!report.isValid()) {
-                UIUtils.showValidityReportDialog(new JIPipeDesktopDummyWorkbench(), this, report, "Errors while loading the project", "It seems that not all parameters/nodes/connections could be restored from the project file. The cause might be that you are using a version of JIPipe that changed the affected features. " +
-                        "Please review the entries and apply the necessary changes (e.g., reconnecting nodes).", false);
             }
         } else if (Files.isDirectory(path)) {
             JIPipeValidationReport report = new JIPipeValidationReport();
@@ -528,42 +616,43 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                         report,
                         notifications,
                         JIPipeProgressInfo.STDOUT);
-                JIPipeDesktopProjectWindow window = openProjectInThisOrNewWindow("Open JIPipe output", newProject, false, false);
+                final Path finalProjectPath = projectPath;
+                JIPipeDesktopProjectWindow window = openProjectInThisOrNewWindow("Open JIPipe output", newProject, false, false, target -> {
+                    JIPipeFileChooserApplicationSettings.getInstance().setLastDirectoryBy(JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, path);
+
+                    target.projectSavePath = finalProjectPath;
+                    target.getProjectWorkbench().sendStatusBarText("Opened project from " + target.projectSavePath);
+                    target.updateTitle();
+
+                    JIPipe.getInstance().getRecentProjects().add(path);
+
+                    // Give user the option to either open in tab or cache
+                    Button loadInNewTab = Button.custom("Load in new tab").asDefault();
+                    Button loadIntoCache = Button.custom("Load into cache");
+                    Optional<Button> selected = JIPipeDesktopDialogs.choose(target,
+                            "Open JIPipe output",
+                            "You can either open the output in a tab or load them into the cache. " +
+                                    "Please note that caching the results might require large amounts of memory.",
+                            loadInNewTab, loadIntoCache);
+
+                    if (selected.orElse(null) == loadInNewTab) {
+                        // Create a new tab
+                        target.getProjectWorkbench().getDocumentTabPane().addTab("Results",
+                                JIPipe.RESOURCES.getIcon16("actions/document-open-folder.png"),
+                                new JIPipeDesktopResultUI(target.getProjectWorkbench(), newProject, path),
+                                JIPipeDesktopTabPane.CloseMode.withAskOnCloseButton,
+                                true);
+                        target.getProjectWorkbench().getDocumentTabPane().switchToLastTab();
+                    } else if (selected.orElse(null) == loadIntoCache) {
+                        // Load into cache with a run
+                        JIPipeDesktopRunExecuteUI.runInDialog(target.getProjectWorkbench(), target, new JIPipeDesktopLoadResultDirectoryIntoCacheRun(target.getProjectWorkbench(), newProject, path, true));
+                    }
+                    if (!notifications.isEmpty()) {
+                        UIUtils.openNotificationsDialog(target.getProjectWorkbench(), this, notifications, "Potential issues found", "There seem to be potential issues that might prevent the successful execution of the pipeline. Please review the following entries and resolve the issues if possible.", true);
+                    }
+                });
                 if (window == null) {
                     return;
-                }
-
-                JIPipeFileChooserApplicationSettings.getInstance().setLastDirectoryBy(JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, path);
-
-                window.projectSavePath = projectPath;
-                window.getProjectWorkbench().sendStatusBarText("Opened project from " + window.projectSavePath);
-                window.updateTitle();
-
-                JIPipe.getInstance().getRecentProjects().add(path);
-
-                // Give user the option to either open in tab or cache
-                Button loadInNewTab = Button.custom("Load in new tab").asDefault();
-                Button loadIntoCache = Button.custom("Load into cache");
-                Optional<Button> selected = JIPipeDesktopDialogs.choose(window,
-                        "Open JIPipe output",
-                        "You can either open the output in a tab or load them into the cache. " +
-                                "Please note that caching the results might require large amounts of memory.",
-                        loadInNewTab, loadIntoCache);
-
-                if (selected.orElse(null) == loadInNewTab) {
-                    // Create a new tab
-                    window.getProjectWorkbench().getDocumentTabPane().addTab("Results",
-                            JIPipe.RESOURCES.getIcon16("actions/document-open-folder.png"),
-                            new JIPipeDesktopResultUI(window.projectWorkbench, project, path),
-                            JIPipeDesktopTabPane.CloseMode.withAskOnCloseButton,
-                            true);
-                    window.getProjectWorkbench().getDocumentTabPane().switchToLastTab();
-                } else if (selected.orElse(null) == loadIntoCache) {
-                    // Load into cache with a run
-                    JIPipeDesktopRunExecuteUI.runInDialog(projectWorkbench, this, new JIPipeDesktopLoadResultDirectoryIntoCacheRun(projectWorkbench, project, path, true));
-                }
-                if (!notifications.isEmpty()) {
-                    UIUtils.openNotificationsDialog(window.getProjectWorkbench(), this, notifications, "Potential issues found", "There seem to be potential issues that might prevent the successful execution of the pipeline. Please review the following entries and resolve the issues if possible.", true);
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -1005,9 +1094,10 @@ public class JIPipeDesktopProjectWindow extends JFrame {
      * @param project          The project
      * @param showIntroduction whether to show the introduction
      * @param isNewProject     if the project is an empty project
-     * @return The window that holds the project
+     * @param postLoadAction   Executed on the EDT when the project is visible in its window (may be null; receives the window)
+     * @return The window that holds the project, or null if the user dismissed the chooser
      */
-    private JIPipeDesktopProjectWindow openProjectInThisOrNewWindow(String messageTitle, JIPipeProject project, boolean showIntroduction, boolean isNewProject) {
+    private JIPipeDesktopProjectWindow openProjectInThisOrNewWindow(String messageTitle, JIPipeProject project, boolean showIntroduction, boolean isNewProject, Consumer<JIPipeDesktopProjectWindow> postLoadAction) {
         Button thisWindow = Button.custom("This window");
         Button newWindow = Button.custom("New window").asDefault();
         Optional<Button> selected = JIPipeDesktopDialogs.choose(this, messageTitle,
@@ -1017,29 +1107,428 @@ public class JIPipeDesktopProjectWindow extends JFrame {
             return null;
         } else if (selected.get() == thisWindow) {
             closeAllBalloons();
-            closeCurrentProject();
-            loadProject(project, false, isNewProject);
+            // Feature #1359: replace the workbench with an in-window loading
+            // screen and release the previous project in the background (the
+            // former modal "Close project" dialog could get stuck open on
+            // some window managers). The post-load action runs once the new
+            // project is visible.
+            showLoadingScreen("Opening project", null, false);
+            if (projectWorkbench != null) {
+                projectWorkbench.dispose();
+                projectWorkbench = null;
+            }
+            final JIPipeProject previousProject = this.project;
+            requestProjectClose(previousProject, () -> {
+                if (disposing) {
+                    return;
+                }
+                loadProject(project, false, isNewProject);
+                if (postLoadAction != null) {
+                    postLoadAction.accept(this);
+                }
+            });
             return this;
         } else {
-            return newWindow(context, project, showIntroduction, isNewProject);
+            JIPipeDesktopProjectWindow window = newWindow(context, project, showIntroduction, isNewProject);
+            if (postLoadAction != null) {
+                postLoadAction.accept(window);
+            }
+            return window;
         }
     }
 
-    private void closeCurrentProject() {
-        if (project != null && projectWorkbench != null) {
-            JIPipeRunnable runnable = new DefaultJIPipeRunnable() {
-                @Override
-                public String getTaskLabel() {
-                    return "Close project";
-                }
-
-                @Override
-                public void run() {
-                    project.close(getProgressInfo());
-                }
-            };
-            JIPipeDesktopRunExecuteUI.runInDialog(projectWorkbench, this, runnable, new JIPipeQueuedRunnableExecutor("Project cleanup"), JIPipeDesktopRunExecuteUI.GlobalLogMode.OnlyFailures);
+    /**
+     * Feature #1359: closes a project in the background (the replacement for
+     * the modal "Close project" dialog) and runs the callback on the EDT
+     * when the close finished. Requests for the same project are coalesced:
+     * all callbacks run after the single close run finished. The close is
+     * also wired to the status line of the loading screen (if one is shown).
+     *
+     * @param target   the project to close (may be null - then the callback runs immediately)
+     * @param onClosed EDT callback after the close (may be null)
+     */
+    private void requestProjectClose(JIPipeProject target, Runnable onClosed) {
+        if (target == null || target.isDisposed()) {
+            if (onClosed != null) {
+                SwingUtilities.invokeLater(onClosed);
+            }
+            return;
         }
+        List<Runnable> callbacks = projectCloseCallbacks.get(target);
+        if (callbacks == null) {
+            callbacks = new ArrayList<>();
+            projectCloseCallbacks.put(target, callbacks);
+            startProjectCloseRun(target, callbacks);
+        }
+        if (onClosed != null) {
+            callbacks.add(onClosed);
+        }
+    }
+
+    /**
+     * Feature #1359: runs the actual background close of a project on a
+     * fresh per-close queue (the same pattern as the former per-operation
+     * "Project cleanup" queue of the modal dialog)
+     */
+    private void startProjectCloseRun(JIPipeProject target, List<Runnable> callbacks) {
+        JIPipeQueuedRunnableExecutor queue = new JIPipeQueuedRunnableExecutor("Project cleanup");
+        DefaultJIPipeRunnable run = new DefaultJIPipeRunnable() {
+            @Override
+            public String getTaskLabel() {
+                return "Close project";
+            }
+
+            @Override
+            public void run() {
+                target.close(getProgressInfo());
+            }
+        };
+        final JIPipeProgressInfo.BatchEventSubscription statusSubscription = wireStatusToLoadingScreen(run);
+        final AtomicBoolean handled = new AtomicBoolean(false);
+        Runnable dispatch = () -> {
+            if (!handled.compareAndSet(false, true)) {
+                return;
+            }
+            statusSubscription.close();
+            // The event may arrive off the EDT - hop before touching the
+            // callback list (it is EDT-confined)
+            SwingUtilities.invokeLater(() -> {
+                List<Runnable> pending = projectCloseCallbacks.remove(target);
+                if (pending != null) {
+                    for (Runnable callback : pending) {
+                        callback.run();
+                    }
+                }
+            });
+        };
+        queue.getFinishedEventEmitter().subscribeLambda((emitter, event) -> {
+            if (event.getRun() == run) {
+                dispatch.run();
+            }
+        });
+        queue.getInterruptedEventEmitter().subscribeLambda((emitter, event) -> {
+            if (event.getRun() == run) {
+                // Push the failure to the run logs (the former dialog used
+                // GlobalLogMode.OnlyFailures)
+                JIPipeDesktopRunnableLogsCollection.getInstance().pushToLog(run, false);
+                dispatch.run();
+            }
+        });
+        queue.enqueue(run);
+    }
+
+    /**
+     * Feature #1359: feeds the latest progress log line of a run into the
+     * status line of the loading screen (so the user can follow what is
+     * happening for larger projects)
+     */
+    private JIPipeProgressInfo.BatchEventSubscription wireStatusToLoadingScreen(JIPipeRunnable run) {
+        return run.getProgressInfo().subscribeToBatchEvents(event -> {
+            if (event.fromLine() > event.toLine()) {
+                return;
+            }
+            JIPipeProgressLog store = (JIPipeProgressLog) event.getSource();
+            List<JIPipeProgressRecord> records = store.readRecords(event.fromLine(), event.toLine() - event.fromLine() + 1);
+            String last = null;
+            for (JIPipeProgressRecord record : records) {
+                if (record instanceof JIPipeProgressRecord.Log logRecord) {
+                    last = logRecord.m();
+                }
+            }
+            if (last == null) {
+                return;
+            }
+            final String status = last;
+            SwingUtilities.invokeLater(() -> {
+                if (loadingScreen != null) {
+                    loadingScreen.setStatus(status);
+                }
+            });
+        });
+    }
+
+    /**
+     * Feature #1359: shows the in-window loading screen (the content pane
+     * replacement for the former modal dialogs)
+     *
+     * @param task       the task label (e.g. "Loading project")
+     * @param detail     optional detail line (e.g. the project path)
+     * @param cancelable whether a cancel button is shown
+     */
+    private void showLoadingScreen(String task, Path detail, boolean cancelable) {
+        if (loadingScreen == null) {
+            // Only a displayed workbench can be restored - a freshly created
+            // window has nothing to restore and disposes itself instead
+            contentBeforeLoadingScreen = projectWorkbench != null ? getContentPane() : null;
+        }
+        loadingScreen = new JIPipeDesktopProjectWindowLoadingScreen(task, detail);
+        loadingScreen.setCancelVisible(cancelable);
+        loadingScreen.setCancelAction(this::cancelActiveLoad);
+        setContentPane(loadingScreen);
+        revalidate();
+        repaint();
+    }
+
+    /**
+     * Feature #1359: cancels the load that is currently in flight (the
+     * loading screen's cancel button)
+     */
+    private void cancelActiveLoad() {
+        loadCancelRequested.set(true);
+        if (activeLoadRun != null && activeLoadQueue != null) {
+            activeLoadQueue.cancel(activeLoadRun);
+        }
+    }
+
+    /**
+     * Feature #1359: restores the content that was shown before the loading
+     * screen (a failed or cancelled load into this window)
+     */
+    private void restoreAfterCancelledLoad() {
+        loadingScreen = null;
+        if (contentBeforeLoadingScreen != null) {
+            setContentPane(contentBeforeLoadingScreen);
+            contentBeforeLoadingScreen = null;
+            revalidate();
+            repaint();
+        }
+    }
+
+    /**
+     * Feature #1359: after an aborted load, either restore the previous
+     * content (load into this window) or dispose the freshly created window
+     * (load into a new window)
+     */
+    private void restoreOrDisposeAfterAbortedLoad(JIPipeDesktopProjectWorkbench previousWorkbench) {
+        if (previousWorkbench != null || contentBeforeLoadingScreen != null) {
+            restoreAfterCancelledLoad();
+        } else {
+            dispose();
+        }
+    }
+
+    /**
+     * Feature #1359: loads a project file into this window with an
+     * in-window loading screen (the replacement for the modal "Load
+     * project" dialog).
+     *
+     * @param path                  the project file
+     * @param report                validation report filled by the reader
+     * @param notifications         notification inbox filled by the reader
+     * @param initiatorWindow       the window the open was initiated from (dialog parenting)
+     * @param replaceCurrentProject if true, the currently displayed project is released once the read succeeded
+     */
+    private void beginProjectLoad(Path path, JIPipeValidationReport report, JIPipeNotificationInbox notifications, JIPipeDesktopProjectWindow initiatorWindow, boolean replaceCurrentProject) {
+        final JIPipeDesktopProjectWindow thisWindow = this;
+        final JIPipeProject previousProject = replaceCurrentProject ? project : null;
+        final JIPipeDesktopProjectWorkbench previousWorkbench = replaceCurrentProject ? projectWorkbench : null;
+        final JIPipeProject[] loadedProjectHolder = new JIPipeProject[1];
+        final Throwable[] failureHolder = new Throwable[1];
+        loadCancelRequested.set(false);
+
+        showLoadingScreen("Loading project", path, true);
+
+        final JIPipeQueuedRunnableExecutor queue = new JIPipeQueuedRunnableExecutor("Project loading");
+        final DefaultJIPipeRunnable loadRun = new DefaultJIPipeRunnable() {
+            @Override
+            public String getTaskLabel() {
+                return "Load project " + path;
+            }
+
+            @Override
+            public void run() {
+                try {
+                    getProgressInfo().log("Loading project " + path);
+                    if (Files.size(path) > 3 * 1024 * 1024) {
+                        getProgressInfo().log("INFO: File size is " + (Files.size(path) / 1024 / 1024) + " MB. Loading this project may take long.");
+                        getProgressInfo().log("INFO: Consider down-sizing your projects if you experience performance issues.");
+                    }
+                    // The dispatcher picks the reader by content
+                    // (ZIP -> JIPX, else legacy JSON) and the reader
+                    // performs the full load contract (work directory,
+                    // user path validation, environment fix gate,
+                    // project file)
+                    JIPipeProject loaded = JIPipeProjectIOs.readerFromPath(path)
+                            .read(path, new UnspecifiedValidationReportContext(), report, notifications, getProgressInfo());
+                    if (getProgressInfo().isCancelled()) {
+                        // The read completed but was cancelled: release the
+                        // throwaway project (its temporary base must not leak)
+                        if (loaded != null) {
+                            loaded.close(getProgressInfo().resolve("Close cancelled load"));
+                        }
+                        return;
+                    }
+                    loadedProjectHolder[0] = loaded;
+                } catch (Exception e) {
+                    failureHolder[0] = e;
+                }
+            }
+        };
+        activeLoadRun = loadRun;
+        activeLoadQueue = queue;
+        final JIPipeProgressInfo.BatchEventSubscription statusSubscription = wireStatusToLoadingScreen(loadRun);
+        final AtomicBoolean handled = new AtomicBoolean(false);
+        Runnable dispatch = () -> {
+            if (!handled.compareAndSet(false, true)) {
+                return;
+            }
+            statusSubscription.close();
+            SwingUtilities.invokeLater(() -> thisWindow.onProjectLoadFinished(path, report, notifications, initiatorWindow,
+                    loadedProjectHolder[0], failureHolder[0], previousProject, previousWorkbench));
+        };
+        queue.getFinishedEventEmitter().subscribeLambda((emitter, event) -> {
+            if (event.getRun() == loadRun) {
+                dispatch.run();
+            }
+        });
+        queue.getInterruptedEventEmitter().subscribeLambda((emitter, event) -> {
+            if (event.getRun() == loadRun) {
+                if (!loadCancelRequested.get()) {
+                    // Push genuine failures to the run logs (the former
+                    // dialog used GlobalLogMode.OnlyFailures)
+                    JIPipeDesktopRunnableLogsCollection.getInstance().pushToLog(loadRun, false);
+                }
+                dispatch.run();
+            }
+        });
+        queue.enqueue(loadRun);
+    }
+
+    /**
+     * Feature #1359: EDT completion of a project load
+     */
+    private void onProjectLoadFinished(Path path, JIPipeValidationReport report, JIPipeNotificationInbox notifications,
+                                       JIPipeDesktopProjectWindow initiatorWindow, JIPipeProject loadedProject, Throwable failure,
+                                       JIPipeProject previousProject, JIPipeDesktopProjectWorkbench previousWorkbench) {
+        activeLoadRun = null;
+        activeLoadQueue = null;
+        if (disposing) {
+            // The window was closed while loading. Silently release what was
+            // already read (its temporary base must not leak) - dispose()
+            // already requested the close of the previous project.
+            requestProjectClose(loadedProject, null);
+            return;
+        }
+        if (failure != null && !loadCancelRequested.get()) {
+            showLoadFailureDialog(path, failure);
+            restoreOrDisposeAfterAbortedLoad(previousWorkbench);
+            return;
+        }
+        if (loadedProject == null) {
+            // The load was cancelled (or the reader produced no project)
+            restoreOrDisposeAfterAbortedLoad(previousWorkbench);
+            return;
+        }
+        if (loadingScreen != null) {
+            loadingScreen.setCancelVisible(false);
+        }
+        if (previousProject != null) {
+            // "This window": release the old workbench UI first (the loading
+            // screen already replaced it as content pane), then release the
+            // old project in the background, then instantiate the workbench
+            // of the loaded project
+            if (previousWorkbench != null) {
+                previousWorkbench.dispose();
+            }
+            projectWorkbench = null;
+            if (loadingScreen != null) {
+                loadingScreen.setTask("Closing project");
+            }
+            requestProjectClose(previousProject, () -> {
+                if (disposing) {
+                    return;
+                }
+                finishProjectLoad(path, loadedProject, report, notifications, initiatorWindow);
+            });
+        } else {
+            finishProjectLoad(path, loadedProject, report, notifications, initiatorWindow);
+        }
+    }
+
+    /**
+     * Feature #1359: EDT bookkeeping after a project file was loaded
+     * successfully (the former EDT callback of the modal dialog flow)
+     */
+    private void finishProjectLoad(Path path, JIPipeProject loadedProject, JIPipeValidationReport report,
+                                   JIPipeNotificationInbox notifications, JIPipeDesktopProjectWindow initiatorWindow) {
+        loadingScreen = null;
+        contentBeforeLoadingScreen = null;
+        loadProject(loadedProject, false, false);
+        projectSavePath = path;
+        if (projectWorkbench != null) {
+            projectWorkbench.sendStatusBarText("Opened project from " + projectSavePath);
+        }
+        updateTitle();
+        JIPipe.getInstance().getRecentProjects().add(path);
+        if (!notifications.isEmpty()) {
+            UIUtils.openNotificationsDialog(projectWorkbench,
+                    initiatorWindow != null ? initiatorWindow : this,
+                    notifications,
+                    "Potential issues found",
+                    "There seem to be potential issues that might prevent the successful execution of the pipeline. Please review the following entries and resolve the issues if possible.",
+                    true);
+        }
+        if (!report.isValid()) {
+            UIUtils.showValidityReportDialog(new JIPipeDesktopDummyWorkbench(),
+                    initiatorWindow != null ? initiatorWindow : this,
+                    report,
+                    "Errors while loading the project",
+                    "It seems that not all parameters/nodes/connections could be restored from the project file. The cause might be that you are using a version of JIPipe that changed the affected features. " +
+                            "Please review the entries and apply the necessary changes (e.g., reconnecting nodes).", false);
+        }
+    }
+
+    /**
+     * Feature #1359: error dialog for a failed project load (the former
+     * modal dialog showed the error in its log panel)
+     */
+    private void showLoadFailureDialog(Path path, Throwable failure) {
+        UIUtils.showErrorDialog(new JIPipeDesktopDummyWorkbench(), this, new JIPipeValidationRuntimeException(failure,
+                "Error while loading the project",
+                "The project file " + path + " could not be loaded: " + failure,
+                "Please check the project file and the Tools > Logs entries for details."));
+    }
+
+    /**
+     * Feature #1359: finds an open window that displays a project loaded
+     * from the given file (the "project already open" route)
+     */
+    public static JIPipeDesktopProjectWindow findOpenWindowForProjectFile(Path path) {
+        for (JIPipeDesktopProjectWindow window : OPEN_WINDOWS) {
+            if (window.disposing || window.projectSavePath == null) {
+                continue;
+            }
+            if (isSameProjectFile(window.projectSavePath, path)) {
+                return window;
+            }
+        }
+        return null;
+    }
+
+    private static boolean isSameProjectFile(Path a, Path b) {
+        if (a == null || b == null) {
+            return false;
+        }
+        if (a.equals(b)) {
+            return true;
+        }
+        try {
+            return Files.isSameFile(a, b);
+        } catch (IOException e) {
+            return false;
+        }
+    }
+
+    /**
+     * Feature #1359: brings this window to the front and un-iconifies it
+     * (the "project already open" route)
+     */
+    public void bringWindowToFront() {
+        if ((getExtendedState() & Frame.ICONIFIED) != 0) {
+            setExtendedState(getExtendedState() & ~Frame.ICONIFIED);
+        }
+        toFront();
+        requestFocus();
     }
 
     private void closeAllBalloons() {
