@@ -18,7 +18,10 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.KeyStroke;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -46,6 +49,18 @@ public final class JIPipeShortcutRegistry {
      * {@link #getInstance()} holds the lazily created singleton.
      */
     JIPipeShortcutRegistry() {
+    }
+
+    /**
+     * Clears the application-wide singleton so the next
+     * {@link #getInstance()} call creates a fresh registry.
+     * <p>
+     * Intended for tests that need an isolated registry; production code
+     * should always use {@link #getInstance()} and rely on the idempotent
+     * registration helpers.
+     */
+    static void resetInstance() {
+        INSTANCE = null;
     }
 
     /**
@@ -112,6 +127,129 @@ public final class JIPipeShortcutRegistry {
         return all().stream()
                 .filter(a -> a.category().equals(category))
                 .toList();
+    }
+
+    /**
+     * Resolves the effective binding of one action against a keymap state.
+     * <p>
+     * Resolution order (design Section 4): a user override in
+     * {@code settings} wins; otherwise the action's non-empty default
+     * variants are used; otherwise the action is unbound.
+     *
+     * @param actionId the id of the action to resolve
+     * @param settings the keymap state carrying the user overrides, may be
+     *                 {@code null} (treated as no overrides)
+     * @return the effective binding, never {@code null}. An unknown
+     *         {@code actionId} resolves to an {@link JIPipeShortcutBinding.Source#UNASSIGNED}
+     *         binding rather than throwing, so callers may probe freely.
+     */
+    public JIPipeShortcutBinding bindingFor(String actionId, KeymapSettings settings) {
+        Objects.requireNonNull(actionId, "actionId");
+        JIPipeShortcutAction action = byId(actionId);
+        if (action == null) {
+            return new JIPipeShortcutBinding(actionId, List.of(), JIPipeShortcutBinding.Source.UNASSIGNED);
+        }
+        if (settings != null && settings.hasOverride(actionId)) {
+            return new JIPipeShortcutBinding(actionId, settings.overrideVariants(actionId),
+                    JIPipeShortcutBinding.Source.OVERRIDE);
+        }
+        if (!action.defaultVariants().isEmpty()) {
+            return new JIPipeShortcutBinding(actionId, action.defaultVariants(),
+                    JIPipeShortcutBinding.Source.DEFAULT);
+        }
+        return new JIPipeShortcutBinding(actionId, List.of(), JIPipeShortcutBinding.Source.UNASSIGNED);
+    }
+
+    /**
+     * Finds the other registered actions whose effective binding collides with
+     * a candidate set of variants.
+     * <p>
+     * A collision is reported only between actions of the <em>same scope
+     * family</em>: a graph action never "conflicts" with a project menu action
+     * on the same key, because their scopes cannot be active at once. Two
+     * variants are equal chords when they carry the same strokes in the same
+     * order, compared with {@link KeyStroke#equals} (which is insensitive to
+     * modifier-key ordering). The candidate set is compared against each other
+     * action's <em>effective</em> binding (override-aware), not its default.
+     *
+     * @param actionId the id of the action being (re)bound; it is never reported
+     *                 as conflicting with itself and its scope family is used
+     *                 to constrain the search
+     * @param variants the candidate variants to check, may be {@code null} or
+     *                 empty (then nothing conflicts)
+     * @param settings the keymap state used to resolve effective bindings, may
+     *                 be {@code null} (treated as no overrides)
+     * @return the ids of the other colliding actions in the same scope family,
+     *         empty when there is no collision
+     */
+    public List<String> findConflicts(String actionId, List<List<KeyStroke>> variants, KeymapSettings settings) {
+        Objects.requireNonNull(actionId, "actionId");
+        if (variants == null || variants.isEmpty()) {
+            return List.of();
+        }
+        JIPipeShortcutAction action = byId(actionId);
+        if (action == null) {
+            return List.of();
+        }
+        String family = action.scopeFamily();
+        List<String> conflicts = new ArrayList<>();
+        for (JIPipeShortcutAction other : all()) {
+            if (other.id().equals(actionId) || !other.scopeFamily().equals(family)) {
+                continue;
+            }
+            List<List<KeyStroke>> effective = bindingFor(other.id(), settings).variants();
+            for (List<KeyStroke> candidate : variants) {
+                boolean clash = effective.stream().anyMatch(eff -> chordsEqual(candidate, eff));
+                if (clash) {
+                    conflicts.add(other.id());
+                    break;
+                }
+            }
+        }
+        return conflicts;
+    }
+
+    /**
+     * Collects the chord prefixes that the
+     * {@link JIPipeChordStateMachine} must watch for: the first stroke of every
+     * length-2 variant across the effective bindings of all registered actions.
+     * <p>
+     * Each prefix is wrapped as a one-element list, matching the state
+     * machine's {@code prefixes} parameter and its
+     * {@code prefixes.contains(List.of(stroke))} lookup. Plain (length-1)
+     * variants contribute nothing: a single key is never a chord prefix.
+     *
+     * @param settings the keymap state used to resolve effective bindings, may
+     *                 be {@code null} (treated as no overrides)
+     * @return the set of chord prefix chords, one element per distinct prefix
+     */
+    public Set<List<KeyStroke>> chordPrefixes(KeymapSettings settings) {
+        Set<List<KeyStroke>> prefixes = new LinkedHashSet<>();
+        for (JIPipeShortcutAction action : all()) {
+            for (List<KeyStroke> variant : bindingFor(action.id(), settings).variants()) {
+                if (variant.size() == 2) {
+                    prefixes.add(List.of(variant.get(0)));
+                }
+            }
+        }
+        return prefixes;
+    }
+
+    /**
+     * Order-sensitive chord equality over two strokes lists, delegating each
+     * stroke to {@link KeyStroke#equals}. Two chords are equal when they have
+     * the same length and the same strokes at the same positions.
+     */
+    private static boolean chordsEqual(List<KeyStroke> a, List<KeyStroke> b) {
+        if (a.size() != b.size()) {
+            return false;
+        }
+        for (int i = 0; i < a.size(); i++) {
+            if (!a.get(i).equals(b.get(i))) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
