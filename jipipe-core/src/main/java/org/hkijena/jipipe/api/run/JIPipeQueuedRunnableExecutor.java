@@ -214,6 +214,13 @@ public class JIPipeQueuedRunnableExecutor implements JIPipeRunnableExecutor,
                 currentlyRunningWorker = null;
                 tryDequeue();
                 unregisterWorkerEvents(worker);
+                // The queue listeners must still learn about the cancellation:
+                // the late done() event of the cancelled worker is not forwarded
+                // (the executor was unsubscribed above), so without this the
+                // queue-level emitters stay silent - the run dialogs never
+                // switched to their close state after a cancel. The not-running
+                // branch below always emitted this event; mirror it here.
+                interruptedEventEmitter.emit(new JIPipeRunnable.InterruptedEvent(worker, new InterruptedException("Operation was cancelled.")));
             } else {
                 queue.remove(worker);
                 interruptedEventEmitter.emit(new JIPipeRunnable.InterruptedEvent(worker, new InterruptedException("Operation was cancelled.")));

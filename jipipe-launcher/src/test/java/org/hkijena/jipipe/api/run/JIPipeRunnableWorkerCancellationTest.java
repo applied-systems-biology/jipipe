@@ -74,6 +74,44 @@ public class JIPipeRunnableWorkerCancellationTest {
     }
 
     @Test
+    public void cancellingRunningRunEmitsInterruptedOnQueueEmitter() throws Exception {
+        JIPipeQueuedRunnableExecutor queue = new JIPipeQueuedRunnableExecutor("Test queue");
+        queue.setSilent(true);
+        CountDownLatch started = new CountDownLatch(1);
+        DefaultJIPipeRunnable run = new DefaultJIPipeRunnable() {
+            @Override
+            public String getTaskLabel() {
+                return "Cancellable test run";
+            }
+
+            @Override
+            public void run() {
+                started.countDown();
+                try {
+                    // Hold until cancel(true) interrupts this worker thread
+                    new CountDownLatch(1).await(30, TimeUnit.SECONDS);
+                } catch (InterruptedException e) {
+                    // Expected: cancel(true) interrupts the worker thread
+                }
+            }
+        };
+
+        queue.enqueue(run);
+        CountDownLatch interrupted = new CountDownLatch(1);
+        queue.getInterruptedEventEmitter().subscribeLambda((emitter, event) -> {
+            if (event.getRun() == run) {
+                interrupted.countDown();
+            }
+        });
+
+        assertTrue(started.await(30, TimeUnit.SECONDS), "The run should start");
+        queue.cancel(run);
+        assertTrue(interrupted.await(10, TimeUnit.SECONDS),
+                "Cancelling a running run must deliver the InterruptedEvent on the queue's emitters "
+                        + "(the modal run dialogs and other queue listeners depend on this)");
+    }
+
+    @Test
     public void normalFinishEmitsFinishedOnWorkerEmitter() throws Exception {
         JIPipeQueuedRunnableExecutor queue = new JIPipeQueuedRunnableExecutor("Test queue");
         queue.setSilent(true);
