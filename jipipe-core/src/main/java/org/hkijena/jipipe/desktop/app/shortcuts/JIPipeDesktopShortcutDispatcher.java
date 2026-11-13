@@ -202,15 +202,22 @@ public final class JIPipeDesktopShortcutDispatcher implements KeyEventDispatcher
 
     /**
      * Adds a scope to the dispatch.
+     * <p>
+     * Several scopes may share one root (e.g. two dock panels in the same
+     * window both install a scope rooted at the window's root pane; their
+     * resolvers only answer for their own panels, and the innermost-first
+     * walk with registration-order tie-break keeps the result deterministic).
      *
      * @param scope the scope to register
-     * @throws IllegalStateException when a scope with the same root is already registered
+     * @throws IllegalStateException when the very same scope instance is
+     *                               already registered (a wiring bug in the
+     *                               scope's host lifecycle)
      */
     public void registerScope(ShortcutScope scope) {
         Objects.requireNonNull(scope, "scope");
-        if (scopes.stream().anyMatch(s -> s.root() == scope.root())) {
+        if (scopes.contains(scope)) {
             throw new IllegalStateException(
-                    "A scope for the component " + scope.root() + " is already registered");
+                    "The scope with root " + scope.root() + " is already registered");
         }
         scopes.add(scope);
     }
@@ -490,5 +497,14 @@ public final class JIPipeDesktopShortcutDispatcher implements KeyEventDispatcher
      */
     public static void setStatusTextSink(Consumer<String> sink) {
         statusTextSink = sink;
+    }
+
+    /**
+     * @return the currently installed status text sink (the default silent
+     * no-op when none is installed), so an owner can remove it only when it
+     * still owns it
+     */
+    public static Consumer<String> currentStatusTextSink() {
+        return statusTextSink;
     }
 }

@@ -7,6 +7,10 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.api.shortcuts.JIPipeShortcutAction;
+import org.hkijena.jipipe.api.shortcuts.JIPipeShortcutRegistry;
+import org.hkijena.jipipe.desktop.app.shortcuts.JIPipeDesktopShortcutDispatcher;
+import org.hkijena.jipipe.desktop.app.shortcuts.ShortcutScope;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopVerticalToolBar;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.ThemeUtils;
@@ -66,11 +70,101 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
     private JComponent mainComponent;
     private String fallbackRight;
     private String fallbackLeft;
+    /**
+     * The shortcut scope of this dock panel instance, registered with the
+     * dispatcher in {@link #addNotify()} and unregistered in
+     * {@link #removeNotify()}.
+     */
+    private ShortcutScope shortcutScope;
 
     public JIPipeDesktopDockPanel() {
         super(new BorderLayout());
         initialize();
         updateAll();
+    }
+
+    @Override
+    public void addNotify() {
+        super.addNotify();
+        if (shortcutScope == null) {
+            installShortcutScope();
+        }
+    }
+
+    @Override
+    public void removeNotify() {
+        if (shortcutScope != null) {
+            JIPipeDesktopShortcutDispatcher.getInstance().unregisterScope(shortcutScope);
+            shortcutScope = null;
+        }
+        super.removeNotify();
+    }
+
+    /**
+     * Installs the window-wide shortcut scope of this dock panel. The scope
+     * is rooted at the enclosing window's root pane so dock toggles fire no
+     * matter where inside the window the focus is; its resolver only answers
+     * for the panels this instance holds (returning null otherwise), so
+     * several dock panels in one window can each register a scope for the
+     * same root without interfering.
+     */
+    private void installShortcutScope() {
+        JComponent rootComponent = null;
+        Component root = SwingUtilities.getRoot(this);
+        if (root instanceof JComponent jComponent) {
+            rootComponent = jComponent;
+        } else {
+            // getRoot() is not a JComponent (rare): fall back to the
+            // enclosing window's content pane.
+            if (SwingUtilities.getWindowAncestor(this) instanceof JWindow jWindow) {
+                rootComponent = (JComponent) jWindow.getContentPane();
+            }
+        }
+        if (rootComponent == null) {
+            return;
+        }
+        shortcutScope = new ShortcutScope(rootComponent, actionId -> {
+            if (actionId == null || !actionId.startsWith("dock:")) {
+                return null;
+            }
+            String panelId = actionId.substring("dock:".length());
+            return panels.containsKey(panelId) ? () -> toggleDockPanel(panelId) : null;
+        });
+        JIPipeDesktopShortcutDispatcher.getInstance().registerScope(shortcutScope);
+    }
+
+    /**
+     * Toggles a dock panel: deactivates it when it is currently displayed on
+     * its side, activates it otherwise.
+     */
+    private void toggleDockPanel(String id) {
+        Panel panel = panels.get(id);
+        if (panel == null) {
+            return;
+        }
+        if (panel.isVisible()) {
+            deactivatePanel(panel, true);
+        } else {
+            activatePanel(panel, true);
+        }
+    }
+
+    /**
+     * Registers the toggle action of one dock panel in the application-wide
+     * shortcut registry, if it is not registered yet. The id is the stable
+     * string {@code dock:<panel-id>}; the action starts unassigned (no
+     * default binding) and can be bound in the keyboard settings, where the
+     * assignment persists across sessions.
+     */
+    private void registerDockToggleAction(String id, String name) {
+        String actionId = "dock:" + id;
+        if (!JIPipeShortcutRegistry.getInstance().isRegistered(actionId)) {
+            JIPipeShortcutRegistry.getInstance().register(
+                    JIPipeShortcutAction.builder(actionId, name, "Dock panels")
+                            .scopeFamily(JIPipeShortcutAction.FAMILY_DOCK)
+                            .textInputSafe(true)
+                            .build());
+        }
     }
 
     private void initialize() {
@@ -652,6 +746,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         panel.setName(name);
         panel.setUiOrder(uiOrder);
         panels.put(id, panel);
+        registerDockToggleAction(id, name);
 
         if (visible) {
             activatePanel(panel, false);
@@ -684,6 +779,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         panel.setName(name);
         panel.setUiOrder(uiOrder);
         panels.put(id, panel);
+        registerDockToggleAction(id, name);
 
         if (visible) {
             activatePanel(panel, false);
