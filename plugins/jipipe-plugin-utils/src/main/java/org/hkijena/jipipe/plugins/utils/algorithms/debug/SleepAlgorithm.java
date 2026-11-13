@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.utils.algorithms;
+package org.hkijena.jipipe.plugins.utils.algorithms.debug;
 
 
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
@@ -25,12 +25,13 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeParameterSlotAlgorithm;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.DataUtilitiesFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.DebuggingFunction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 
 import java.util.List;
 
 @SetJIPipeDocumentation(name = "Wait", description = "Waits/sleeps the specified time and proceeds to pass the input to the output unchanged")
-@ConfigureJIPipeNode(function = DataUtilitiesFunction.class)
+@ConfigureJIPipeNode(function = DebuggingFunction.class)
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Input", create = true, optional = true)
 @AddJIPipeOutputSlot(value = JIPipeData.class, name = "Output", create = true)
 public class SleepAlgorithm extends JIPipeParameterSlotAlgorithm {
