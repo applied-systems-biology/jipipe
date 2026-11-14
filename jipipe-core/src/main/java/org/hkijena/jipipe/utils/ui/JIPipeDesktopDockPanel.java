@@ -296,25 +296,25 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
 
         if (!hideToolbars) {
             for (Panel panel : getPanelsAtLocation(PanelLocation.TopLeft)) {
-                if (panel.isDisplayed() || panel == activeStandIns.get(PinSide.Left)) {
+                if (panel.isDisplayed()) {
                     leftContent.add(panel.getComponent());
                     break;
                 }
             }
             for (Panel panel : getPanelsAtLocation(PanelLocation.BottomLeft)) {
-                if (panel.isDisplayed() || panel == activeStandIns.get(PinSide.Left)) {
+                if (panel.isDisplayed()) {
                     leftContent.add(panel.getComponent());
                     break;
                 }
             }
             for (Panel panel : getPanelsAtLocation(PanelLocation.TopRight)) {
-                if (panel.isDisplayed() || panel == activeStandIns.get(PinSide.Right)) {
+                if (panel.isDisplayed()) {
                     rightContent.add(panel.getComponent());
                     break;
                 }
             }
             for (Panel panel : getPanelsAtLocation(PanelLocation.BottomRight)) {
-                if (panel.isDisplayed() || panel == activeStandIns.get(PinSide.Right)) {
+                if (panel.isDisplayed()) {
                     rightContent.add(panel.getComponent());
                     break;
                 }
@@ -397,6 +397,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
             }
 
             if (bottomPanel != null) {
+                instantiatePanelComponent(bottomPanel);
                 mainSplitPane.setTopComponent(UIUtils.wrapInIslandPanelIfNeeded(mainComponent));
                 mainSplitPane.setBottomComponent(UIUtils.wrapInIslandPanelIfNeeded(bottomPanel.getComponent()));
                 mainSplitPane.applyRatio();
@@ -583,10 +584,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         if (panel.getLocation() != null) {
             pausedStandIns.remove(panel.getLocation().getPinSide());
         }
-        if (panel.getComponent() == null && panel.getComponentSupplier() != null) {
-            panel.setComponent(panel.getComponentSupplier().get());
-            panel.setComponentSupplier(null);
-        }
+        instantiatePanelComponent(panel);
 
         // Deactivate all other buttons
         setPanelVisible(panel);
@@ -947,14 +945,23 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
     }
 
     /**
-     * Instantiates the stand-in's component when needed (exactly like an
-     * activation does) and adds it to the side's content.
+     * Instantiates a panel's component from its supplier when needed (the
+     * same lazy initialization an activation performs). A panel whose
+     * supplier produced nothing stays without a component.
+     */
+    private void instantiatePanelComponent(Panel panel) {
+        if (panel.getComponent() == null && panel.getComponentSupplier() != null) {
+            panel.setComponent(panel.getComponentSupplier().get());
+            panel.setComponentSupplier(null);
+        }
+    }
+
+    /**
+     * Adds the stand-in's component to the side's content, instantiating it
+     * from the supplier when needed.
      */
     private void displayStandIn(Panel standIn, List<JComponent> content) {
-        if (standIn.getComponent() == null && standIn.getComponentSupplier() != null) {
-            standIn.setComponent(standIn.getComponentSupplier().get());
-            standIn.setComponentSupplier(null);
-        }
+        instantiatePanelComponent(standIn);
         if (standIn.getComponent() != null) {
             content.add(standIn.getComponent());
         }

@@ -16,6 +16,7 @@ package org.hkijena.jipipe.utils.ui;
 import org.junit.jupiter.api.Test;
 
 import javax.swing.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -221,5 +222,20 @@ class JIPipeDesktopDockPanelPinTest {
         panel.restoreState(state);
         assertNull(panel.getStandInPanelId(JIPipeDesktopDockPanel.PinSide.Right));
         assertEquals("_RESULTS", panel.getCurrentState().getPins().get("right"));
+    }
+
+    @Test void aLazyPinnedDockInstantiatesItsComponentForTheStandIn() {
+        JIPipeDesktopDockPanel panel = new JIPipeDesktopDockPanel();
+        AtomicBoolean supplied = new AtomicBoolean(false);
+        panel.addDockPanel("TOOLS", "Tools", null,
+                JIPipeDesktopDockPanel.PanelLocation.TopRight, false, 0,
+                () -> {
+                    supplied.set(true);
+                    return new JPanel();
+                });
+        panel.pinDock("TOOLS");
+        assertTrue(supplied.get(), "the stand-in must instantiate a lazy component");
+        assertNotNull(panel.getPanelComponent("TOOLS", JPanel.class));
+        assertEquals("TOOLS", panel.getStandInPanelId(JIPipeDesktopDockPanel.PinSide.Right));
     }
 }
