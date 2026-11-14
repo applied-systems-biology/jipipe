@@ -261,7 +261,7 @@ public class JIPipeDesktopPipelineGraphEditorUI extends JIPipeDesktopGraphEditor
                 JIPipe.RESOURCES.getIcon24("actions/node-add.png"),
                 JIPipeDesktopDockPanel.PanelLocation.TopLeft,
                 false,
-                JIPipeDesktopDockPanel.UI_ORDER_PINNED, nodeBrowser);
+                JIPipeDesktopDockPanel.UI_ORDER_FIRST, nodeBrowser);
         getDockPanel().addDockPanel(JIPipeDesktopGraphEditorUI.DOCK_FIND,
                 "Find",
                 JIPipe.RESOURCES.getIcon24("actions/find.png"),

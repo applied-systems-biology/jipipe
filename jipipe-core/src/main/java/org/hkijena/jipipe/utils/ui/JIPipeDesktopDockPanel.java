@@ -20,6 +20,7 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.font.TextAttribute;
 import java.util.*;
 import java.util.List;
 import java.util.function.Predicate;
@@ -28,7 +29,10 @@ import java.util.stream.Collectors;
 
 public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplitPane.RatioUpdatedEventListener {
 
-    public static final int UI_ORDER_PINNED = -100;
+    /**
+     * UI order that lists a dock first in its dock toolbar
+     */
+    public static final int UI_ORDER_FIRST = -100;
     public static final int UI_ORDER_DEFAULT = 0;
     public static final int BUTTON_MAX_WIDTH = 64;
     private static final int RESIZE_HANDLE_SIZE = 6;
@@ -479,7 +483,16 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         JToggleButton button = new JToggleButton(panel.getIcon());
         button.setOpaque(false);
         button.setSelected(isDockDisplayed(panel.getId()));
-        button.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+        boolean pinned = isDockPinned(panel.getId());
+        if (pinned) {
+            // Pin indicator for the icon-only mode: a thin border, keeping
+            // the padding of the unpinned buttons
+            button.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(ThemeUtils.getCurrentStyle().getIconBaseColor(), 1),
+                    BorderFactory.createEmptyBorder(7, 7, 7, 7)));
+        } else {
+            button.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+        }
         button.setForeground(ThemeUtils.getCurrentStyle().getIconBaseColor());
         button.setToolTipText(panel.getName());
         button.addActionListener(e -> {
@@ -494,10 +507,29 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
             button.setVerticalTextPosition(SwingConstants.BOTTOM);
             button.setHorizontalTextPosition(SwingConstants.CENTER);
             button.setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeTiny()));
+            if (pinned) {
+                // Pin indicator for the labels mode: an underlined dock name
+                Map<TextAttribute, Object> attributes = new HashMap<>();
+                attributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
+                button.setFont(button.getFont().deriveFont(attributes));
+            }
             button.setMaximumSize(new Dimension(Short.MAX_VALUE, BUTTON_MAX_WIDTH));
         }
 
         JPopupMenu popupMenu = UIUtils.addRightClickPopupMenuToButton(button);
+        if (!panel.getId().startsWith("_")) {
+            JCheckBoxMenuItem pinItem = new JCheckBoxMenuItem("Pin dock");
+            pinItem.setToolTipText("Show this dock when its side would be empty");
+            pinItem.setSelected(pinned);
+            pinItem.addActionListener(e -> {
+                if (pinItem.isSelected()) {
+                    pinDock(panel.getId());
+                } else {
+                    unpinDock(panel.getId());
+                }
+            });
+            popupMenu.add(pinItem);
+        }
         popupMenu.add(UIUtils.createMenuItem("Top left", "Move the panel to the top left anchor", JIPipe.RESOURCES.getIcon16("actions/dock-top-left.png"), () -> {
             movePanelToLocation(panel, PanelLocation.TopLeft, true);
         }));
