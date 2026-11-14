@@ -24,6 +24,7 @@ import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
+import org.hkijena.jipipe.desktop.app.commandbar.JIPipeDesktopCommandBar;
 import org.hkijena.jipipe.desktop.app.datatracer.JIPipeDesktopDataTracerUI;
 import org.hkijena.jipipe.desktop.app.quickrun.JIPipeDesktopQuickRun;
 import org.hkijena.jipipe.desktop.app.quickrun.JIPipeDesktopQuickRunSettings;
@@ -86,6 +87,13 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
     private final JIPipeDesktopSmallToggleButtonRibbonAction toggleAutoRefreshFromCache;
     private final StaticDebouncer refreshFromCacheDebouncer;
     private final JIPipeCefClientService cefClientService;
+    /**
+     * The per-window command bar (issue #1346, Task 6). Created in the
+     * constructor (the shortcut dispatcher is installed globally at desktop
+     * startup, so no per-window dispatcher install happens here) and
+     * uninstalled in {@link #dispose()} before the content teardown.
+     */
+    private final JIPipeDesktopCommandBar commandBar;
     private JIPipeDataBrowser dataBrowser;
     private String displayName;
     private JIPipeLocalDataTableBrowser dataTableBrowser;
@@ -107,6 +115,12 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
         OPEN_WINDOWS.add(this);
         initialize();
         registerHotkeys();
+        // The per-window command bar (issue #1346, Task 6). The shortcut
+        // dispatcher is installed once at desktop startup (idempotent), so
+        // the bar only needs its own per-window install here, after the root
+        // pane exists.
+        this.commandBar = new JIPipeDesktopCommandBar();
+        this.commandBar.install(this);
 
         downloaderQueue.getFinishedEventEmitter().subscribe(this);
 
@@ -615,6 +629,12 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
         // Mirror of JIPipeDesktopProjectWindow#dispose: the window leaves
         // the open set before its content is torn down
         OPEN_WINDOWS.remove(this);
+        // Uninstall the per-window command bar (issue #1346, Task 6) before
+        // the content teardown: its uninstall closes the overlay
+        // defensively (a disposed bar must never leave the shortcut dispatch
+        // suspended) and detaches the trigger scope from this window's root
+        // pane.
+        commandBar.uninstall();
         super.dispose();
         destroyCurrentViewer();
         destroyCurrentDataBrowser();

@@ -287,16 +287,15 @@ public class JIPipeDesktopCommandBar extends JPanel {
     }
 
     /**
-     * The list mode the bar renders with. Package-private indirection so
-     * Task 6 can change the body to read the persisted list mode setting
-     * without touching the call sites.
+     * The list mode the bar renders with. Package-private indirection so the
+     * read can be changed without touching the call sites.
      * <p>
-     * Task 4: always {@link JIPipeDesktopCommandBarModel.ListMode#GRAYED}
-     * (the default mode).
+     * Issue #1346, Task 6: reads the persisted list mode setting
+     * ({@link CommandBarSettings#currentMode()}, null/unknown-safe with the
+     * {@link JIPipeDesktopCommandBarModel.ListMode#GRAYED} fallback).
      */
     static JIPipeDesktopCommandBarModel.ListMode currentListMode() {
-        // Task 6 replaces this body with a read of the list mode setting.
-        return JIPipeDesktopCommandBarModel.ListMode.GRAYED;
+        return CommandBarSettings.currentMode();
     }
 
     // ------------------------------------------------------------------

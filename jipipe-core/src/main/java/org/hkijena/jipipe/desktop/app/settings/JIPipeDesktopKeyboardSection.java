@@ -25,6 +25,8 @@ import org.hkijena.jipipe.api.shortcuts.JIPipeShortcutSettings;
 import org.hkijena.jipipe.api.shortcuts.KeymapSettings;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
+import org.hkijena.jipipe.desktop.app.commandbar.CommandBarSettings;
+import org.hkijena.jipipe.desktop.app.commandbar.JIPipeDesktopCommandBarModel;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopSegmentedButtonGroup;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.desktop.commons.dialogs.Button;
@@ -122,6 +124,13 @@ public class JIPipeDesktopKeyboardSection extends JPanel implements JIPipeDeskto
     private final JIPipeShortcutRegistry registry;
 
     private final JIPipeDesktopSegmentedButtonGroup presetGroup = new JIPipeDesktopSegmentedButtonGroup();
+    /**
+     * The command bar list mode picker (issue #1346): one item per
+     * {@link JIPipeDesktopCommandBarModel.ListMode}, in enum order, labeled
+     * with the human wording of each mode.
+     */
+    private final JComboBox<String> listModeCombo = new JComboBox<>(new String[]{
+            "Gray out unavailable", "Available only", "Show everything"});
     private final JSpinner timeoutSpinner = new JSpinner(new SpinnerNumberModel(
             (int) KeymapSettings.DEFAULT_CHORD_TIMEOUT_MS, 0, (int) TIMEOUT_MAX_MS, 100));
     private final JLabel modifiedBadge = new JLabel("Modified");
@@ -141,6 +150,7 @@ public class JIPipeDesktopKeyboardSection extends JPanel implements JIPipeDeskto
 
     private boolean updatingPresetSelection;
     private boolean updatingTimeout;
+    private boolean updatingListMode;
     private boolean disposed;
 
     /**
@@ -199,7 +209,8 @@ public class JIPipeDesktopKeyboardSection extends JPanel implements JIPipeDeskto
 
     /**
      * The header control row: the preset picker on the left, the chord-timeout
-     * spinner and the section reset on the right.
+     * spinner, the command bar list mode picker, and the section reset on the
+     * right.
      */
     private JComponent createControls() {
         JPanel controls = new JPanel(new BorderLayout(8, 0));
@@ -236,6 +247,21 @@ public class JIPipeDesktopKeyboardSection extends JPanel implements JIPipeDeskto
         });
         right.add(new JLabel("Chord timeout:"));
         right.add(timeoutSpinner);
+        // The command bar list mode picker (issue #1346, Task 6). The initial
+        // selection is set before the listener is attached, so it does not
+        // write through; it is refreshed by refreshTable() from the binding.
+        listModeCombo.setToolTipText("Which commands the command bar lists");
+        listModeCombo.setSelectedIndex(listModeIndexFor(CommandBarSettings.currentMode()));
+        listModeCombo.addActionListener(e -> {
+            if (updatingListMode) {
+                return;
+            }
+            JIPipeDesktopCommandBarModel.ListMode mode =
+                    JIPipeDesktopCommandBarModel.ListMode.values()[listModeCombo.getSelectedIndex()];
+            CommandBarSettings.binding().set(mode.id());
+        });
+        right.add(new JLabel("List mode:"));
+        right.add(listModeCombo);
         JButton resetButton = UIUtils.createButton("Reset section",
                 "Clear every shortcut override and restore the default chord timeout",
                 JIPipe.RESOURCES.getIcon16("actions/edit-reset.png"),
@@ -474,6 +500,7 @@ public class JIPipeDesktopKeyboardSection extends JPanel implements JIPipeDeskto
 
         updatePresetSelection(settings);
         updateTimeoutSpinner(settings);
+        updateListModeCombo();
         updateModifiedBadge(settings);
     }
 
@@ -548,6 +575,21 @@ public class JIPipeDesktopKeyboardSection extends JPanel implements JIPipeDeskto
         return 0;
     }
 
+    /**
+     * The combo index of the given list mode (the items are in enum order).
+     * An unknown mode (unreachable while the combo is the only writer) maps
+     * to the default mode's index.
+     */
+    private static int listModeIndexFor(JIPipeDesktopCommandBarModel.ListMode mode) {
+        JIPipeDesktopCommandBarModel.ListMode[] modes = JIPipeDesktopCommandBarModel.ListMode.values();
+        for (int i = 0; i < modes.length; i++) {
+            if (modes[i] == mode) {
+                return i;
+            }
+        }
+        return 0;
+    }
+
     private void updatePresetSelection(KeymapSettings settings) {
         updatingPresetSelection = true;
         try {
@@ -579,6 +621,15 @@ public class JIPipeDesktopKeyboardSection extends JPanel implements JIPipeDeskto
             timeoutSpinner.setValue((int) clamped);
         } finally {
             updatingTimeout = false;
+        }
+    }
+
+    private void updateListModeCombo() {
+        updatingListMode = true;
+        try {
+            listModeCombo.setSelectedIndex(listModeIndexFor(CommandBarSettings.currentMode()));
+        } finally {
+            updatingListMode = false;
         }
     }
 
