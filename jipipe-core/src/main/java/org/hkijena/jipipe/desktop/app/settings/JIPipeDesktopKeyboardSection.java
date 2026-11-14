@@ -282,7 +282,11 @@ public class JIPipeDesktopKeyboardSection extends JPanel implements JIPipeDeskto
         JPanel searchPanel = new JPanel(new BorderLayout(4, 0));
         searchPanel.setOpaque(false);
         searchField.setToolTipText("Filter shortcuts by action name");
-        searchPanel.add(searchField, BorderLayout.WEST);
+        // CENTER (not WEST) so the field stretches to the full page width
+        // (its JPanel maximum size is unbounded), matching the command bar's
+        // search field. The search panel is the content's NORTH row and
+        // stretches horizontally itself.
+        searchPanel.add(searchField, BorderLayout.CENTER);
         // Re-filter the rows as the user types (debounced by the search field).
         searchField.addActionListener(e -> refreshOnEdt());
         content.add(searchPanel, BorderLayout.NORTH);
@@ -815,19 +819,34 @@ public class JIPipeDesktopKeyboardSection extends JPanel implements JIPipeDeskto
 
     /**
      * The State column: a small filled chip reading Modified / Default /
-     * Unassigned.
+     * Unassigned. Chip and text are painted directly (no child label): the
+     * chip rect is measured from the text itself (FontMetrics), so the text
+     * is vertically centered inside the chip. A layout-managed child label
+     * positions itself independently of the painted rect (baseline-based),
+     * which let the text drift out of center.
      */
     private class StateChipRenderer extends JPanel implements TableCellRenderer {
         private static final int CHIP_ARC = 6;
-        private final JLabel label = new JLabel();
+        /**
+         * The horizontal padding between the chip's text and its edge. A pure
+         * gap, not a text-derived size.
+         */
+        private static final int CHIP_TEXT_PADDING_H = 3;
+        /**
+         * The vertical padding between the chip's text and its edge. A pure
+         * gap.
+         */
+        private static final int CHIP_TEXT_PADDING_V = 2;
+        /**
+         * The inset between the chip and the cell's left edge. A pure gap.
+         */
+        private static final int CHIP_INSET = 2;
+        private final Font chipFont = UIManager.getFont("Label.font").deriveFont(Font.BOLD, 9f);
+        private String text = "";
         private Color chipColor;
 
         StateChipRenderer() {
-            super(new FlowLayout(FlowLayout.LEFT, 4, 0));
             setOpaque(true);
-            label.setForeground(Color.WHITE);
-            label.setFont(label.getFont().deriveFont(Font.BOLD, 9f));
-            add(label);
         }
 
         @Override
@@ -835,7 +854,7 @@ public class JIPipeDesktopKeyboardSection extends JPanel implements JIPipeDeskto
                                                        int row, int column) {
             TableRow r = tableModel.rowAt(row);
             if (r instanceof CategoryRow) {
-                label.setText("");
+                text = "";
                 setBackground(ThemeUtils.getCurrentStyle().getWindowBackground());
                 chipColor = null;
             } else {
@@ -843,15 +862,15 @@ public class JIPipeDesktopKeyboardSection extends JPanel implements JIPipeDeskto
                 var style = ThemeUtils.getCurrentStyle();
                 switch (source) {
                     case OVERRIDE -> {
-                        label.setText("Modified");
+                        text = "Modified";
                         chipColor = style.getWarningColor();
                     }
                     case DEFAULT -> {
-                        label.setText("Default");
+                        text = "Default";
                         chipColor = style.getInfoColor();
                     }
                     default -> {
-                        label.setText("Unassigned");
+                        text = "Unassigned";
                         chipColor = style.getSecondaryColor();
                     }
                 }
@@ -865,16 +884,40 @@ public class JIPipeDesktopKeyboardSection extends JPanel implements JIPipeDeskto
         }
 
         @Override
+        public Dimension getPreferredSize() {
+            // The chip follows the measured text, so the column packing (see
+            // packColumns) sizes the State column to its real content.
+            FontMetrics metrics = getFontMetrics(chipFont);
+            return new Dimension(CHIP_INSET + metrics.stringWidth(text) + 2 * CHIP_TEXT_PADDING_H,
+                    metrics.getHeight() + 2 * CHIP_TEXT_PADDING_V);
+        }
+
+        @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
-            if (chipColor == null) {
+            if (chipColor == null || text.isEmpty()) {
                 return;
             }
             Graphics2D g2 = (Graphics2D) g.create();
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            FontMetrics metrics = g2.getFontMetrics(chipFont);
+            int chipWidth = metrics.stringWidth(text) + 2 * CHIP_TEXT_PADDING_H;
+            int chipHeight = metrics.getHeight() + 2 * CHIP_TEXT_PADDING_V;
+            int x = CHIP_INSET;
+            int y = (getHeight() - chipHeight) / 2;
             g2.setColor(chipColor);
-            int h = label.getPreferredSize().height;
-            g2.fillRoundRect(2, (getHeight() - h) / 2, label.getPreferredSize().width + 6, h, CHIP_ARC, CHIP_ARC);
+            g2.fillRoundRect(x, y, chipWidth, chipHeight, CHIP_ARC, CHIP_ARC);
+            // The desktop's font rendering hints: the LaF-drawn cell text is
+            // antialiased through them, so the chip text must match (the
+            // BindingMenuItem pattern). A missing desktop property degrades
+            // to the plain rendering; no hardcoded AA toggle.
+            Object hints = Toolkit.getDefaultToolkit().getDesktopProperty("awt.font.desktophints");
+            if (hints instanceof Map) {
+                g2.addRenderingHints((Map<?, ?>) hints);
+            }
+            g2.setFont(chipFont);
+            g2.setColor(Color.WHITE);
+            g2.drawString(text, x + CHIP_TEXT_PADDING_H, y + CHIP_TEXT_PADDING_V + metrics.getAscent());
             g2.dispose();
         }
     }

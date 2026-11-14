@@ -34,8 +34,8 @@ import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
+import javax.swing.Icon;
 import javax.swing.InputMap;
-import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -58,9 +58,11 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.Insets;
 import java.awt.KeyboardFocusManager;
 import java.awt.KeyEventDispatcher;
+import java.awt.LayoutManager;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ComponentAdapter;
@@ -1505,9 +1507,12 @@ public class JIPipeDesktopCommandBar extends JPanel {
      * The list renderer: category header rows (bold, muted foreground) and
      * entry rows (name left with the row icon, the binding as VS Code-style
      * key chips right in gray - one chip per stroke, chord strokes separated
-     * by a wider gap, variants stacked vertically - and the configure
-     * affordance on the selected available configurable row; the chips end
-     * before the always-reserved configure strip). Unavailable rows are
+     * by a wider gap, variants stacked vertically - and the configure icon
+     * painted into the reserved strip on the selected available configurable
+     * row; the chips end before the always-reserved configure strip). The
+     * icon is painted, not hosted as a live child button: the shared
+     * renderer component would leak a child's visibility toggle across rows
+     * (issue #1346, wave 3). Unavailable rows are
      * fully muted. Row heights come from the renderer's own preferred sizes
      * (no fixed cell height, no assumed text sizes); the reused row panels
      * are force-revalidated after every configure so the freshly set texts
@@ -1517,19 +1522,12 @@ public class JIPipeDesktopCommandBar extends JPanel {
     private final class EntryCellRenderer implements ListCellRenderer<JIPipeDesktopCommandBarModel.Entry> {
         private final JPanel headerPanel = new JPanel(new BorderLayout());
         private final JLabel headerLabel = new JLabel();
-        private final JPanel entryPanel = new JPanel(new BorderLayout());
+        private final EntryRowPanel entryPanel = new EntryRowPanel(new BorderLayout());
         private final JPanel entryEndPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
         private final JPanel bindingPanel = new JPanel();
         private final JPanel configureSlot = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
         private final JLabel nameLabel = new JLabel();
-        private final JButton configureButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/edit.png"));
-        /**
-         * The entry the renderer was last configured with: the shared
-         * renderer component occupies the bounds of the last painted row,
-         * so a mouse click that reaches the (shared) configure button
-         * belongs to this entry (see the constructor's action listener).
-         */
-        private JIPipeDesktopCommandBarModel.Entry configuredEntry;
+        private final Icon editIcon = JIPipe.RESOURCES.getIcon16("actions/edit.png");
 
         EntryCellRenderer() {
             headerLabel.setFont(headerLabel.getFont().deriveFont(Font.BOLD));
@@ -1537,31 +1535,13 @@ public class JIPipeDesktopCommandBar extends JPanel {
             headerPanel.setBorder(BorderFactory.createEmptyBorder(4, 6, 2, 6));
             headerPanel.add(headerLabel, BorderLayout.CENTER);
 
-            configureButton.setToolTipText("Change the key binding of this command");
-            configureButton.setFocusable(false);
-            configureButton.setFocusPainted(false);
-            configureButton.setContentAreaFilled(false);
-            UIUtils.makeButtonFlat25x25(configureButton);
-            // The button must be IN the slot to be visible (issue #1346,
-            // wave 2): the slot's centered, zero-gap FlowLayout paints the
-            // flat 25x25 button exactly inside the reserved area. A Swing
-            // button consumes mouse clicks, so the click is wired to the
-            // same configure path the list's coordinate check uses - an
-            // unwired button would swallow the strip clicks of the row it
-            // is painted into.
-            configureSlot.add(configureButton);
-            configureButton.addActionListener(e -> {
-                JIPipeDesktopCommandBarModel.Entry entry = configuredEntry;
-                if (entry != null && !entry.isCategoryHeader() && entry.isConfigurable()
-                        && entry.isAvailable() && entry.actionId() != null) {
-                    configureEntry(entry);
-                }
-            });
-
             // The configure affordance reserves its area in EVERY row (not
-            // only while the button is visible): the binding chips end
-            // before the strip begins, so a plain click on a chip fires the
-            // command, while a click into the strip configures it.
+            // only while the icon is shown): the binding chips end before
+            // the strip begins, so a plain click on a chip fires the
+            // command, while a click into the strip configures it (see
+            // onListClicked). The slot itself stays EMPTY: the edit icon is
+            // painted by the row panel (see EntryRowPanel), so no shared
+            // child component can leak its visibility across rows.
             configureSlot.setOpaque(false);
             configureSlot.setPreferredSize(new Dimension(CONFIGURE_BUTTON_SIZE, CONFIGURE_BUTTON_SIZE));
 
@@ -1577,17 +1557,46 @@ public class JIPipeDesktopCommandBar extends JPanel {
             entryPanel.add(entryEndPanel, BorderLayout.EAST);
         }
 
+        /**
+         * The entry row panel: paints the configure (edit) icon into the
+         * reserved slot when {@link #iconActive} is set. The icon is painted
+         * instead of hosted as a live child button: the renderer component
+         * is shared between all rows, so a child button's visibility toggle
+         * leaked across rows (a row's paint could leave the button visible,
+         * painting it over later rows, including category headers). A
+         * painted icon is evaluated per row at paint time, and the empty
+         * slot cannot be overdrawn by a child component. Clicks are handled
+         * by the list's own coordinate check ({@link JIPipeDesktopCommandBar#onListClicked}), which
+         * covers the whole reserved strip.
+         */
+        private final class EntryRowPanel extends JPanel {
+            private boolean iconActive;
+
+            private EntryRowPanel(LayoutManager layout) {
+                super(layout);
+            }
+
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                if (!iconActive) {
+                    return;
+                }
+                // The slot's bounds live in the end panel's coordinate
+                // space; converting them into this panel's space follows the
+                // actual layout instead of a hand-computed x.
+                Rectangle slot = SwingUtilities.convertRectangle(entryEndPanel, configureSlot.getBounds(), this);
+                int x = slot.x + (slot.width - editIcon.getIconWidth()) / 2;
+                int y = (getHeight() - editIcon.getIconHeight()) / 2;
+                editIcon.paintIcon(this, g, x, y);
+            }
+        }
+
         @Override
         public Component getListCellRendererComponent(JList<? extends JIPipeDesktopCommandBarModel.Entry> list,
                                                       JIPipeDesktopCommandBarModel.Entry value, int index,
                                                       boolean selected, boolean cellHasFocus) {
-            configuredEntry = value;
             if (value.isCategoryHeader()) {
-                // The button belongs to entry rows only: hiding it here
-                // keeps a click that lands on the shared component's bounds
-                // falling through to the list's coordinate check (the
-                // configuredEntry/listener pairing stays exact).
-                configureButton.setVisible(false);
                 applyRowColors(headerPanel, selected);
                 headerLabel.setText(value.name());
                 headerLabel.setForeground(selected
@@ -1606,8 +1615,11 @@ public class JIPipeDesktopCommandBar extends JPanel {
             nameLabel.setIcon(value.icon());
             nameLabel.setForeground(value.isAvailable() ? foreground : mutedForeground);
             rebuildBindingChips(value, mutedForeground);
-            configureButton.setVisible(selected && value.isConfigurable()
-                    && value.isAvailable() && value.actionId() != null);
+            // The edit icon shows under the exact condition of the click
+            // strip in onListClicked (headers never qualify): evaluated per
+            // row, so nothing persists on the shared component.
+            entryPanel.iconActive = selected && value.isConfigurable()
+                    && value.isAvailable() && value.actionId() != null;
             entryPanel.invalidate();
             entryPanel.validate();
             return entryPanel;
