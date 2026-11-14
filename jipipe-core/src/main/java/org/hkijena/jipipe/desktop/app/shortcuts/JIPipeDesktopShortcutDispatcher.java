@@ -325,11 +325,15 @@ public final class JIPipeDesktopShortcutDispatcher implements KeyEventDispatcher
     /**
      * The global event dispatcher entry point.
      * <p>
-     * Only {@code KEY_PRESSED} is considered. The stroke is normalized with
+     * Only {@code KEY_PRESSED} is considered. Scope resolution comes first
+     * (spec Section 6, step 2): when no registered scope contains the current
+     * focus owner (e.g. inside any dialog), the stroke is not fed to the
+     * chord machine at all - any pending chord is cancelled quietly and the
+     * event passes through. Otherwise the stroke is normalized with
      * {@link KeyStroke#getKeyStrokeForEvent(KeyEvent)} and fed to the chord
-     * machine first; depending on the machine's verdict, the event either
-     * falls through (single-stroke lookup with no hit), is consumed by a
-     * pending chord state, or resolves an action against the scopes.
+     * machine; depending on the machine's verdict, the event either falls
+     * through (single-stroke lookup with no hit), is consumed by a pending
+     * chord state, or resolves an action against the scopes.
      *
      * @param e the key event
      * @return true when the event was consumed by a shortcut (or a chord
@@ -350,15 +354,27 @@ public final class JIPipeDesktopShortcutDispatcher implements KeyEventDispatcher
         if (stroke == null) {
             return false;
         }
-        KeyEventResult result = chordMachine.keyPressed(stroke, System.nanoTime());
         Component focusOwner = focusOwnerOrNull();
+        // Spec Section 6, step 2: scope resolution comes first. When no
+        // registered scope contains the focus owner (e.g. inside any dialog),
+        // the chord machine is not fed at all: a chord prefix must not start
+        // (or stay) pending there, or the following keys of the dialog would
+        // be swallowed. The machine is cancelled quietly (this also cancels a
+        // chord left pending when the focus moved into the dialog) and the
+        // key reaches the dialog untouched.
+        List<ShortcutScope> containingScopes = orderedContainingScopes(scopes, focusOwner);
+        if (containingScopes.isEmpty()) {
+            chordMachine.cancel();
+            return false;
+        }
+        KeyEventResult result = chordMachine.keyPressed(stroke, System.nanoTime());
         switch (result.result()) {
             case PASSTHROUGH: {
                 List<String> candidateIds = singleStrokeMap.get(stroke);
                 if (candidateIds == null || candidateIds.isEmpty()) {
                     return false;
                 }
-                return fireResolvedAction(candidateIds, focusOwner, false);
+                return fireResolvedAction(candidateIds, focusOwner, containingScopes, false);
             }
             case PREFIX_STARTED: {
                 List<KeyStroke> prefix = chordMachine.pendingPrefix();
@@ -374,7 +390,7 @@ public final class JIPipeDesktopShortcutDispatcher implements KeyEventDispatcher
                     setStatusText("Chord cancelled");
                     return true;
                 }
-                return fireResolvedAction(candidateIds, focusOwner, true);
+                return fireResolvedAction(candidateIds, focusOwner, containingScopes, true);
             }
             case CANCELLED: {
                 setStatusText(null);
@@ -401,6 +417,9 @@ public final class JIPipeDesktopShortcutDispatcher implements KeyEventDispatcher
      *
      * @param candidateIds the ordered candidate action ids of the hit
      * @param focusOwner the current focus owner, may be null
+     * @param containingScopes the scopes containing the focus owner,
+     *                         innermost first (computed by the caller before
+     *                         the chord machine was fed)
      * @param keyAlreadyConsumed whether the chord state machine has already
      * swallowed the key (a {@code CHORD_COMPLETED} result): then the event
      * is consumed either way; a {@code PASSTHROUGH} hit must not swallow the
@@ -408,8 +427,8 @@ public final class JIPipeDesktopShortcutDispatcher implements KeyEventDispatcher
      * @return true when the event must be consumed (action fired, or the key
      * was already swallowed), false to pass the key on
      */
-    private boolean fireResolvedAction(List<String> candidateIds, Component focusOwner, boolean keyAlreadyConsumed) {
-        List<ShortcutScope> containing = orderedContainingScopes(scopes, focusOwner);
+    private boolean fireResolvedAction(List<String> candidateIds, Component focusOwner,
+                                       List<ShortcutScope> containingScopes, boolean keyAlreadyConsumed) {
         for (String candidateId : candidateIds) {
             JIPipeShortcutAction action = JIPipeShortcutRegistry.getInstance().byId(candidateId);
             if (action != null && JIPipeShortcutTextGuard.isTextInput(focusOwner)
@@ -418,7 +437,7 @@ public final class JIPipeDesktopShortcutDispatcher implements KeyEventDispatcher
                 // later, text-input-safe candidate may still fire.
                 continue;
             }
-            for (ShortcutScope scope : containing) {
+            for (ShortcutScope scope : containingScopes) {
                 Runnable runnable = scope.resolver().resolve(candidateId);
                 if (runnable != null) {
                     SwingUtilities.invokeLater(runnable);

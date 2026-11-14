@@ -41,6 +41,7 @@ import org.hkijena.jipipe.desktop.app.project.*;
 import org.hkijena.jipipe.desktop.app.resultanalysis.JIPipeDesktopResultUI;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
 import org.hkijena.jipipe.desktop.app.running.logs.JIPipeDesktopRunnableLogsCollection;
+import org.hkijena.jipipe.desktop.app.shortcuts.JIPipeDesktopShortcutDispatcher;
 import org.hkijena.jipipe.desktop.commons.components.app.JIPipeDesktopSplashScreen;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.desktop.commons.dialogs.Button;
@@ -140,6 +141,10 @@ public class JIPipeDesktopProjectWindow extends JFrame {
      */
     public JIPipeDesktopProjectWindow(Context context, JIPipeProject project, boolean showIntroduction, boolean isNewProject) {
         JIPipeDesktopSplashScreen.getInstance().hideSplash();
+        // Spec Section 6: the shortcut dispatcher is installed once at
+        // desktop startup (idempotent), so it covers the whole window
+        // (dock actions included) before any editor initializes its scope.
+        JIPipeDesktopShortcutDispatcher.install();
         this.context = context;
         this.cefClientService = new JIPipeCefClientService(this);
         OPEN_WINDOWS.add(this);
@@ -158,6 +163,10 @@ public class JIPipeDesktopProjectWindow extends JFrame {
      */
     private JIPipeDesktopProjectWindow(Context context) {
         JIPipeDesktopSplashScreen.getInstance().hideSplash();
+        // Same startup install as the main constructor (idempotent): the
+        // project-open flow creates the window before the project file is
+        // read, and the dispatcher must cover this window too.
+        JIPipeDesktopShortcutDispatcher.install();
         this.context = context;
         this.cefClientService = new JIPipeCefClientService(this);
         OPEN_WINDOWS.add(this);

@@ -388,6 +388,17 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
      */
     private void initializeShortcutScope() {
         shortcutScope = new ShortcutScope(this, actionId -> {
+            // Dock panel toggles: this editor's own dock panel instance
+            // answers for its panels (see
+            // JIPipeDesktopDockPanel#resolveDockToggle). Hidden editor tabs
+            // stay in the component hierarchy, so every tab's window-root
+            // dock scope also contains the focus; this editor scope is
+            // strictly deeper, so the visible tab's editor wins via
+            // innermost-first resolution and the window-root dock scopes
+            // remain the fallback for non-editor hosts.
+            if (actionId != null && actionId.startsWith("dock:")) {
+                return dockPanel.resolveDockToggle(actionId);
+            }
             // Context actions: the first action carrying the id must match
             // the current selection, otherwise the action is unavailable
             Set<JIPipeDesktopGraphInteractiveObjectUI> selection = canvasUI.getSelectionManager().getSelection();
@@ -784,12 +795,12 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
 
         JButton zoomOutButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/square-minus.png"));
         UIUtils.makeButtonFlat25x25(zoomOutButton);
-        zoomOutButton.setToolTipText("<html>Zoom out<br><i>Ctrl-NumPad -</i></html>");
+        zoomOutButton.setToolTipText(TooltipUtils.createTooltipWithShortcutText("Zoom out", null, shortcutVariantsText(JIPipeShortcutActions.EDITOR_ZOOM_OUT.id())));
         zoomOutButton.addActionListener(e -> canvasUI.zoomOut());
         zoomPanel.add(zoomOutButton, BorderLayout.WEST);
 
         JButton zoomButton = new JButton((int) (canvasUI.getZoom() * 100) + "%");
-        zoomButton.setToolTipText("<html>Change zoom<br>Reset zoom: <i>Ctrl-NumPad 0</i></html>");
+        zoomButton.setToolTipText(TooltipUtils.createTooltipWithShortcutText("Change zoom", "Reset zoom", shortcutVariantsText(JIPipeShortcutActions.EDITOR_ZOOM_RESET.id())));
         canvasUI.getZoomChangedEventEmitter().subscribeLambda((emitter, event) -> {
             zoomButton.setText((int) (canvasUI.getZoom() * 100) + "%");
         });
@@ -823,7 +834,7 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
 
         JButton zoomInButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/square-plus.png"));
         UIUtils.makeButtonFlat25x25(zoomInButton);
-        zoomInButton.setToolTipText("<html>Zoom in<br><i>Ctrl-NumPad +</i></html>");
+        zoomInButton.setToolTipText(TooltipUtils.createTooltipWithShortcutText("Zoom in", null, shortcutVariantsText(JIPipeShortcutActions.EDITOR_ZOOM_IN.id())));
         zoomInButton.addActionListener(e -> canvasUI.zoomIn());
         zoomPanel.add(zoomInButton, BorderLayout.EAST);
 

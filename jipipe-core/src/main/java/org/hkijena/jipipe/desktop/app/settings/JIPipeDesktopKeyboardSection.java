@@ -255,7 +255,6 @@ public class JIPipeDesktopKeyboardSection extends JPanel implements JIPipeDeskto
 
         JPanel searchPanel = new JPanel(new BorderLayout(4, 0));
         searchPanel.setOpaque(false);
-        searchField.setPreferredSize(new Dimension(320, 28));
         searchField.setToolTipText("Filter shortcuts by action name");
         searchPanel.add(searchField, BorderLayout.WEST);
         // Re-filter the rows as the user types (debounced by the search field).
@@ -569,7 +568,12 @@ public class JIPipeDesktopKeyboardSection extends JPanel implements JIPipeDeskto
     private void updateTimeoutSpinner(KeymapSettings settings) {
         updatingTimeout = true;
         try {
-            timeoutSpinner.setValue((int) settings.getChordTimeoutMs());
+            // Display-only clamp: a hand-edited settings document may hold a
+            // chord timeout outside the spinner's [0, TIMEOUT_MAX_MS] range,
+            // and setValue would throw on the EDT during refresh. The stored
+            // value is not rewritten.
+            long clamped = Math.max(0L, Math.min(TIMEOUT_MAX_MS, settings.getChordTimeoutMs()));
+            timeoutSpinner.setValue((int) clamped);
         } finally {
             updatingTimeout = false;
         }

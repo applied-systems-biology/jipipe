@@ -1721,7 +1721,9 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
     /**
      * Resolves the menu accelerator of a context action from the shortcut
      * registry: the first stroke of the action's first effective variant, or
-     * null when the action has no shortcut action id or is unassigned.
+     * null when the action has no shortcut action id or is unassigned. Only
+     * a single-stroke first variant renders: a chord-bound action has no menu
+     * accelerator (the chord is shown in the tooltip instead).
      *
      * @param action the context action
      * @return the accelerator keystroke or null
@@ -1732,7 +1734,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
             return null;
         }
         JIPipeShortcutBinding binding = JIPipeShortcutRegistry.getInstance().bindingFor(actionId, JIPipeShortcutSettings.current());
-        if (binding.variants().isEmpty() || binding.variants().get(0).isEmpty()) {
+        if (binding.variants().isEmpty() || binding.variants().get(0).size() != 1) {
             return null;
         }
         return binding.variants().get(0).get(0);

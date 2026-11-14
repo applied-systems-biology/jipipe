@@ -146,6 +146,33 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
     }
 
     /**
+     * Resolves the toggle runnable of a {@code dock:<panel-id>} shortcut
+     * action against the panels of THIS instance, with the same toggle logic
+     * the window-root scope's resolver uses (deactivate when visible,
+     * activate otherwise, saving the state).
+     *
+     * <p>Graph editors are hidden (not removed) when their tab is inactive,
+     * so every editor's window-root dock scope keeps containing the focus in
+     * a multi-tab window, and the registration-order tie-break there would
+     * toggle the first-created editor's panel. The editor shortcut scopes
+     * delegate here (one dock panel instance per editor), so the innermost,
+     * visible editor's scope wins and the window-root dock scopes remain the
+     * fallback for non-editor hosts (data viewers, welcome panel, plot
+     * editor).</p>
+     *
+     * @param actionId the shortcut action id, may be null
+     * @return the toggle runnable for one of this instance's panels, or null
+     *         for non-dock ids or panels this instance does not hold
+     */
+    public Runnable resolveDockToggle(String actionId) {
+        if (actionId == null || !actionId.startsWith("dock:")) {
+            return null;
+        }
+        String panelId = actionId.substring("dock:".length());
+        return panels.containsKey(panelId) ? () -> toggleDockPanel(panelId) : null;
+    }
+
+    /**
      * Registers the toggle action of one dock panel in the application-wide
      * shortcut registry, if it is not registered yet. The id is the stable
      * string {@code dock:<panel-id>}; the action starts unassigned (no
