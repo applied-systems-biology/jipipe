@@ -35,9 +35,6 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartition;
 import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartitionConfiguration;
-import org.hkijena.jipipe.api.shortcuts.JIPipeShortcutBinding;
-import org.hkijena.jipipe.api.shortcuts.JIPipeShortcutRegistry;
-import org.hkijena.jipipe.api.shortcuts.JIPipeShortcutSettings;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
@@ -59,6 +56,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGr
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUIUpdateViewCommand;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.events.*;
 import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopRuntimePartitionListEditor;
+import org.hkijena.jipipe.desktop.app.shortcuts.JIPipeDesktopShortcutMenuItems;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopZoomViewPort;
 import org.hkijena.jipipe.desktop.commons.components.slots.JIPipeDesktopAddAlgorithmSlotPanel;
 import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
@@ -939,14 +937,10 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
                 scheduleSeparator = false;
                 menu.addSeparator();
             }
-            JMenuItem item = new JMenuItem(action.getName(), action.getIcon());
-            item.setToolTipText(action.getDescription());
+            JMenuItem item = JIPipeDesktopShortcutMenuItems.createItem(action.getName(), action.getIcon(),
+                    action.getDescription(), action.getShortcutActionId());
             if (matches) {
                 item.addActionListener(e -> action.run(this, ImmutableSet.copyOf(selectionManager.getSelection())));
-                KeyStroke accelerator = shortcutAcceleratorFor(action);
-                if (accelerator != null) {
-                    item.setAccelerator(accelerator);
-                }
             } else {
                 item.setEnabled(false);
             }
@@ -1716,28 +1710,6 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
 
     public void setContextActions(List<GraphInteractiveObjectUIContextAction> contextActions) {
         this.contextActions = contextActions;
-    }
-
-    /**
-     * Resolves the menu accelerator of a context action from the shortcut
-     * registry: the first stroke of the action's first effective variant, or
-     * null when the action has no shortcut action id or is unassigned. Only
-     * a single-stroke first variant renders: a chord-bound action has no menu
-     * accelerator (the chord is shown in the tooltip instead).
-     *
-     * @param action the context action
-     * @return the accelerator keystroke or null
-     */
-    private KeyStroke shortcutAcceleratorFor(GraphInteractiveObjectUIContextAction action) {
-        String actionId = action.getShortcutActionId();
-        if (actionId == null) {
-            return null;
-        }
-        JIPipeShortcutBinding binding = JIPipeShortcutRegistry.getInstance().bindingFor(actionId, JIPipeShortcutSettings.current());
-        if (binding.variants().isEmpty() || binding.variants().get(0).size() != 1) {
-            return null;
-        }
-        return binding.variants().get(0).get(0);
     }
 
     public <T extends JIPipeGraphNode> Set<JIPipeDesktopGraphNodeUI> getNodeUIsFor(Set<T> nodes) {

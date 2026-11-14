@@ -492,11 +492,14 @@ public final class JIPipeShortcutActions {
 
     /**
      * Run the pipeline up to the selected node and show its results.
+     * <p>
+     * Unassigned by default (in-app verification wave 1): the action is
+     * rarely used and will be deprecated at some point. The pre-6.0
+     * Ctrl+Enter binding is available through the LEGACY preset.
      */
     public static final JIPipeShortcutAction NODE_RUN_SHOW_RESULTS =
             JIPipeShortcutAction.builder("org.hkijena.jipipe.graph.node.run-show-results", "Run & show results", "Running")
                     .description("Runs the pipeline up until this algorithm and shows the results")
-                    .defaultChord(stroke("control pressed ENTER"))
                     .build();
     /**
      * Run the pipeline up to the selected node and update its cache.
@@ -645,11 +648,12 @@ public final class JIPipeShortcutActions {
      * Restores every pre-6.0 binding (design Section 8): the bare F-key tools,
      * the F-key notes tools, ESC-cycled notes edit, numpad-only zoom, the
      * {@code L}/{@code Ctrl+L} lock pair, the
-     * {@code Ctrl+P}/{@code Ctrl+Shift+P} pass-through pair, and the keys
+     * {@code Ctrl+P}/{@code Ctrl+Shift+P} pass-through pair, the keys
      * freed by the chord-layer revision (the enable/disable pair, add
-     * parameter set, move node here, and update cache). Only the actions
-     * whose default changed carry an override; everything else stays on its
-     * registry default.
+     * parameter set, move node here, and update cache), and the Ctrl+Enter
+     * binding of run & show results (unassigned since the revision). Only the
+     * actions whose default changed carry an override; everything else stays
+     * on its registry default.
      */
     static Map<String, List<List<KeyStroke>>> legacyOverrides() {
         Map<String, List<List<KeyStroke>>> legacy = new LinkedHashMap<>();
@@ -682,6 +686,8 @@ public final class JIPipeShortcutActions {
         legacy.put(NODE_ADD_PARAMETER_SET.id(), List.of(List.of(stroke("control shift pressed A"))));
         legacy.put(NODE_SELECT_AND_MOVE_HERE.id(), List.of(List.of(stroke("control pressed G"))));
         legacy.put(NODE_UPDATE_CACHE.id(), List.of(List.of(stroke("control pressed SPACE"))));
+        // Run & show results: pre-6.0 held Ctrl+Enter; the revision unassigned it.
+        legacy.put(NODE_RUN_SHOW_RESULTS.id(), List.of(List.of(stroke("control pressed ENTER"))));
         return legacy;
     }
 }
