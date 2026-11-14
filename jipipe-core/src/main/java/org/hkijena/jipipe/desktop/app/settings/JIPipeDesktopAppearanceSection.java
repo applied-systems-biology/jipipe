@@ -355,13 +355,6 @@ public class JIPipeDesktopAppearanceSection extends JPanel implements JIPipeDesk
     }
 
     private void initializeForm() {
-        if (PAGE_KEYBOARD.equals(page)) {
-            formPanel.addWideToForm(UIUtils.createInfoLabel("No keyboard settings yet",
-                    AppearanceSectionModel.KEYBOARD_EMPTY_STATE));
-            formPanel.addVerticalGlue();
-            return;
-        }
-
         Map<String, List<String>> parametersBySheet = AppearanceSectionModel.parametersBySheet(page);
 
         // Appearance: live preview on top of the parameter groups.

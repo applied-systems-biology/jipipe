@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.api.shortcuts;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.junit.jupiter.api.Test;
@@ -22,6 +23,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -39,6 +41,48 @@ class KeymapSettingsJsonTest {
         assertEquals(List.of(List.of("ctrl pressed T", "pressed M")),
                 back.getOverrides().get("org.hkijena.jipipe.graph.tool.move"));
         assertEquals(1, back.overrideVariants("org.hkijena.jipipe.graph.tool.move").size());
+    }
+
+    /**
+     * Pins the "defaults are never materialized" contract (issue #1346, Task
+     * 9): the {@code overrides} map is the bean's actual content, while
+     * {@code chordTimeoutMs} and {@code activeProfileId} serialize only when
+     * they deviate from their default. In particular, the default
+     * {@code 2000} must NOT be written, but the meaningful {@code 0}
+     * (wait indefinitely) and any other value MUST be, so a stored default is
+     * not materialized while a deliberate timeout of {@code 0} survives.
+     */
+    @Test void defaultTimeoutNotMaterializedButZeroAndCustomAre() {
+        // The default: chordTimeoutMs is absent from the stored JSON.
+        KeymapSettings def = new KeymapSettings();
+        JsonNode defNode = JsonUtils.getObjectMapper().valueToTree(def);
+        assertFalse(defNode.has("chordTimeoutMs"),
+                "the default 2000 must not be materialized into the document");
+        assertFalse(defNode.has("activeProfileId"),
+                "a null activeProfileId must not be materialized");
+
+        // A zero timeout is a meaningful value and must survive.
+        KeymapSettings zero = new KeymapSettings();
+        zero.setChordTimeoutMs(0);
+        JsonNode zeroNode = JsonUtils.getObjectMapper().valueToTree(zero);
+        assertTrue(zeroNode.has("chordTimeoutMs") && zeroNode.get("chordTimeoutMs").asLong() == 0L,
+                "a 0 (wait indefinitely) timeout must be serialized, not dropped as the type default");
+        assertEquals(0L, JsonUtils.readFromString(JsonUtils.toJsonString(zero), KeymapSettings.class).getChordTimeoutMs());
+
+        // A custom timeout must survive.
+        KeymapSettings custom = new KeymapSettings();
+        custom.setChordTimeoutMs(1500);
+        custom.setActiveProfileId("legacy");
+        JsonNode customNode = JsonUtils.getObjectMapper().valueToTree(custom);
+        assertTrue(customNode.has("chordTimeoutMs") && customNode.get("chordTimeoutMs").asLong() == 1500L);
+        assertTrue(customNode.has("activeProfileId") && customNode.get("activeProfileId").asText().equals("legacy"));
+        KeymapSettings customBack = JsonUtils.readFromString(JsonUtils.toJsonString(custom), KeymapSettings.class);
+        assertEquals(1500L, customBack.getChordTimeoutMs());
+        assertEquals("legacy", customBack.getActiveProfileId());
+
+        // An absent field reads back as the default.
+        assertEquals(KeymapSettings.DEFAULT_CHORD_TIMEOUT_MS,
+                JsonUtils.readFromString("{}", KeymapSettings.class).getChordTimeoutMs());
     }
 
     @Test void unknownActionIdsSurvive() {

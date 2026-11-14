@@ -20,14 +20,14 @@ import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationsSettingsSheet;
 import javax.swing.*;
 
 /**
- * The <em>Keyboard</em> placeholder section of the settings tab (modern settings
- * system, Task 19).
+ * The <em>Keyboard</em> section of the settings tab (modern settings
+ * system, Task 19; real content since Task 9, issue #1346).
  * <p>
- * No keyboard settings exist yet (shortcut profiles are tracked in issue
- * #1346). The section is still a registered application sheet, so it is
- * first-class in the section tree and can later gain parameters without a
- * rename; the settings tab renders its empty state
- * ({@link org.hkijena.jipipe.desktop.app.settings.AppearanceSectionModel#KEYBOARD_EMPTY_STATE}).
+ * The section is a registered application sheet, so it is first-class in
+ * the section tree; it has no parameters of its own - the settings tab
+ * renders the merged keyboard page ({@link
+ * org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopKeyboardSection})
+ * instead of a form.
  */
 public class JIPipeDesktopKeyboardApplicationSettings extends JIPipeDefaultApplicationsSettingsSheet {
 

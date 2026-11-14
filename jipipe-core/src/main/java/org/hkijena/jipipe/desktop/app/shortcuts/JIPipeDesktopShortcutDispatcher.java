@@ -115,6 +115,18 @@ public final class JIPipeDesktopShortcutDispatcher implements KeyEventDispatcher
      */
     private boolean rebuilding;
     /**
+     * Whether the keyboard-shortcut capture dialog is recording (Task 9).
+     * While capture is active, {@link #dispatchKeyEvent(KeyEvent)} passes
+     * every event through unmodified, so the chord being recorded can be
+     * pressed without triggering the shortcut currently bound to those
+     * strokes (the recorded chord often <em>is</em> an existing binding, e.g.
+     * re-assigning "Move nodes" to its own default). Set by the capture
+     * dialog on the EDT for the lifetime of the modal dialog. Volatile: the
+     * dialog and the event queue are the same thread in practice, but the
+     * flag must be visible to every reader regardless.
+     */
+    private volatile boolean captureActive;
+    /**
      * The focus manager the dispatcher is attached to. Used to detect a
      * focus manager replacement (a new AWT event queue) so that
      * {@link #install()} re-attaches. {@link KeyboardFocusManager} does not
@@ -235,6 +247,30 @@ public final class JIPipeDesktopShortcutDispatcher implements KeyEventDispatcher
     }
 
     /**
+     * Suspends (or resumes) the keyboard-shortcut dispatch while a capture
+     * dialog records a new binding.
+     * <p>
+     * The recorder must see the raw key presses it records, even when the
+     * pressed strokes already resolve to an existing shortcut (re-assigning
+     * an action to its own default is the common case). While suspended,
+     * {@link #dispatchKeyEvent(KeyEvent)} passes every event through, so no
+     * shortcut fires and the chord state machine is not touched.
+     *
+     * @param active whether capture is active
+     */
+    public void setCaptureActive(boolean active) {
+        this.captureActive = active;
+    }
+
+    /**
+     * @return whether the keyboard-shortcut dispatch is suspended for a
+     *         capture dialog (see {@link #setCaptureActive(boolean)})
+     */
+    public boolean isCaptureActive() {
+        return captureActive;
+    }
+
+    /**
      * Rebuilds the stroke maps from the registry and reconfigures the chord
      * machine with the current timeout and prefixes.
      * <p>
@@ -301,6 +337,12 @@ public final class JIPipeDesktopShortcutDispatcher implements KeyEventDispatcher
      */
     @Override
     public boolean dispatchKeyEvent(KeyEvent e) {
+        if (captureActive) {
+            // A capture dialog is recording a new binding: let every key
+            // reach the dialog's recorder instead of resolving it as the
+            // shortcut currently bound to those strokes.
+            return false;
+        }
         if (e.getID() != KeyEvent.KEY_PRESSED) {
             return false;
         }
