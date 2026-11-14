@@ -188,8 +188,6 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
             selectDefaultTool();
         });
 
-        // Always show right panel
-        dockPanel.setAlwaysShowRightPanel(true);
         restoreDockStateFromSettings();
         initializeMapStateFromSettings();
 
@@ -407,8 +405,6 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
                 false,
                 -100,
                 contextPanel);
-        dockPanel.setFallbackRight(DOCK_CONTEXT_PANEL);
-        dockPanel.setFallbackLeft(DOCK_CONTEXT_PANEL);
 
         add(dockPanel, BorderLayout.CENTER);
 
