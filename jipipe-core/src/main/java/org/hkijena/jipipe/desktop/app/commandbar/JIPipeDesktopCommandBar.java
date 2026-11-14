@@ -58,6 +58,7 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.Insets;
 import java.awt.KeyboardFocusManager;
 import java.awt.KeyEventDispatcher;
 import java.awt.Rectangle;
@@ -154,9 +155,20 @@ public class JIPipeDesktopCommandBar extends JPanel {
 
     /**
      * The overlay width as a fraction of the root pane width. A layout
-     * bound, deliberately not text-derived.
+     * bound, deliberately not text-derived. Since wave 2 this is only the
+     * MINIMUM: a wider measured content grows the overlay (see
+     * {@link #measuredContentWidth(boolean)}).
      */
     private static final double OVERLAY_WIDTH_FRACTION = 0.5;
+    /**
+     * The upper bound of the overlay width as a fraction of the root pane
+     * width (issue #1346, wave 2): the content-fitted width (see
+     * {@link #measuredContentWidth(boolean)}) grows past
+     * {@link #OVERLAY_WIDTH_FRACTION} only up to this bound, so the overlay
+     * can never exceed the window. A layout bound, deliberately not
+     * text-derived.
+     */
+    private static final double MAX_OVERLAY_WIDTH_FRACTION = 0.9;
     /**
      * The upper bound of the overlay height as a fraction of the root pane
      * height. A layout bound; a taller list scrolls.
@@ -250,6 +262,12 @@ public class JIPipeDesktopCommandBar extends JPanel {
     private final JIPipeDesktopSearchTextField searchField = new JIPipeDesktopSearchTextField();
     private final DefaultListModel<JIPipeDesktopCommandBarModel.Entry> listModel = new DefaultListModel<>();
     private final JList<JIPipeDesktopCommandBarModel.Entry> list = new JList<>(listModel);
+    /**
+     * The scroll pane around the list. Its vertical scrollbar width is part
+     * of the content-fitted overlay width while the list scrolls (see
+     * {@link #measuredContentWidth(boolean)}).
+     */
+    private final JScrollPane scrollPane = new JScrollPane(list);
     private final JIPipeDesktopShortcutDispatcher dispatcher = JIPipeDesktopShortcutDispatcher.getInstance();
     /**
      * The trigger strokes currently installed in the search field's input
@@ -351,7 +369,6 @@ public class JIPipeDesktopCommandBar extends JPanel {
         // mouse clicks still select rows.
         list.setFocusable(false);
         list.setCellRenderer(new EntryCellRenderer());
-        JScrollPane scrollPane = new JScrollPane(list);
         scrollPane.setBorder(null);
         scrollPane.setViewportBorder(null);
         add(scrollPane, BorderLayout.CENTER);
@@ -489,7 +506,8 @@ public class JIPipeDesktopCommandBar extends JPanel {
 
     /**
      * Opens the overlay in normal mode: top-center of the layered pane, the
-     * width a fraction of the root pane and the height the content's
+     * width at least a fraction of the root pane (content-fitted, see
+     * {@link #repositionOverlay()}) and the height the content's
      * preferred size (clamped to a fraction of the root pane height),
      * focused into the search field, with the app-wide shortcut dispatch
      * suspended for the open lifetime. See the class javadoc for the
@@ -1261,12 +1279,15 @@ public class JIPipeDesktopCommandBar extends JPanel {
     // ------------------------------------------------------------------
 
     /**
-     * Positions the overlay top-center in the layered pane: the width is a
-     * fraction of the root pane width (never text-derived); the height is
-     * the content's preferred size clamped to a fraction of the root pane
-     * height (a clamped list scrolls). The top edge sits below the window's
-     * measured top strip (see {@link #topBarHeight()}) plus the top gap, so
-     * the overlay never covers the toolbar row.
+     * Positions the overlay top-center in the layered pane: the width is at
+     * least a fraction of the root pane width and grows to the measured
+     * content (see {@link #measuredContentWidth(boolean)}), clamped to a
+     * larger fraction of the root pane so it never exceeds the window
+     * (never text-derived; every width is measured or a layout fraction);
+     * the height is the content's preferred size clamped to a fraction of
+     * the root pane height (a clamped list scrolls). The top edge sits
+     * below the window's measured top strip (see {@link #topBarHeight()})
+     * plus the top gap, so the overlay never covers the toolbar row.
      */
     private void repositionOverlay() {
         if (rootPane == null || !isVisible()) {
@@ -1277,12 +1298,62 @@ public class JIPipeDesktopCommandBar extends JPanel {
         if (rootWidth <= 0 || rootHeight <= 0) {
             return;
         }
-        int width = (int) (rootWidth * OVERLAY_WIDTH_FRACTION);
         int maxHeight = (int) (rootHeight * OVERLAY_MAX_HEIGHT_FRACTION);
-        int height = Math.min(getPreferredSize().height, maxHeight);
+        int preferredHeight = getPreferredSize().height;
+        int height = Math.min(preferredHeight, maxHeight);
+        // The fraction is the MINIMUM width only: the overlay grows to the
+        // measured content when the content is wider (issue #1346, wave 2;
+        // the height is clamped exactly when the list scrolls), clamped so
+        // it never exceeds the window.
+        int width = Math.max((int) (rootWidth * OVERLAY_WIDTH_FRACTION),
+                measuredContentWidth(height < preferredHeight));
+        width = Math.min(width, (int) (rootWidth * MAX_OVERLAY_WIDTH_FRACTION));
         int x = (rootWidth - width) / 2;
         setBounds(x, topBarHeight() + OVERLAY_TOP_GAP, width, height);
         doLayout();
+    }
+
+    /**
+     * The measured content width of the overlay (issue #1346, wave 2): the
+     * widest rendered list row (measured through the list's own renderer,
+     * see {@link #widestRowWidth()}), widened by the scroll pane's vertical
+     * scrollbar while the list scrolls (the scrollbar would otherwise cover
+     * the row ends), at least the search field's preferred width, plus the
+     * overlay's own horizontal insets. Every term is measured; the row
+     * paddings and chip gaps are already part of the rendered rows, and the
+     * scroll pane has no border, so no further terms apply.
+     *
+     * @param listScrolls whether the list scrolls (the height was clamped)
+     * @return the content-fitted width in layered-pane coordinates
+     */
+    private int measuredContentWidth(boolean listScrolls) {
+        int contentWidth = widestRowWidth();
+        if (listScrolls) {
+            contentWidth += scrollPane.getVerticalScrollBar().getPreferredSize().width;
+        }
+        contentWidth = Math.max(contentWidth, searchField.getPreferredSize().width);
+        Insets insets = getInsets();
+        return contentWidth + insets.left + insets.right;
+    }
+
+    /**
+     * The widest rendered row width, in list coordinates (issue #1346,
+     * wave 2): every row is configured through the list's own renderer (the
+     * exact component the list paints with) and measured with its preferred
+     * size, so the value is a rendered size, never a hand-computed text
+     * width.
+     */
+    private int widestRowWidth() {
+        ListCellRenderer<? super JIPipeDesktopCommandBarModel.Entry> renderer = list.getCellRenderer();
+        if (renderer == null) {
+            return 0;
+        }
+        int widest = 0;
+        for (int i = 0; i < listModel.size(); i++) {
+            Component row = renderer.getListCellRendererComponent(list, listModel.get(i), i, false, false);
+            widest = Math.max(widest, row.getPreferredSize().width);
+        }
+        return widest;
     }
 
     /**
@@ -1452,6 +1523,13 @@ public class JIPipeDesktopCommandBar extends JPanel {
         private final JPanel configureSlot = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
         private final JLabel nameLabel = new JLabel();
         private final JButton configureButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/edit.png"));
+        /**
+         * The entry the renderer was last configured with: the shared
+         * renderer component occupies the bounds of the last painted row,
+         * so a mouse click that reaches the (shared) configure button
+         * belongs to this entry (see the constructor's action listener).
+         */
+        private JIPipeDesktopCommandBarModel.Entry configuredEntry;
 
         EntryCellRenderer() {
             headerLabel.setFont(headerLabel.getFont().deriveFont(Font.BOLD));
@@ -1464,6 +1542,21 @@ public class JIPipeDesktopCommandBar extends JPanel {
             configureButton.setFocusPainted(false);
             configureButton.setContentAreaFilled(false);
             UIUtils.makeButtonFlat25x25(configureButton);
+            // The button must be IN the slot to be visible (issue #1346,
+            // wave 2): the slot's centered, zero-gap FlowLayout paints the
+            // flat 25x25 button exactly inside the reserved area. A Swing
+            // button consumes mouse clicks, so the click is wired to the
+            // same configure path the list's coordinate check uses - an
+            // unwired button would swallow the strip clicks of the row it
+            // is painted into.
+            configureSlot.add(configureButton);
+            configureButton.addActionListener(e -> {
+                JIPipeDesktopCommandBarModel.Entry entry = configuredEntry;
+                if (entry != null && !entry.isCategoryHeader() && entry.isConfigurable()
+                        && entry.isAvailable() && entry.actionId() != null) {
+                    configureEntry(entry);
+                }
+            });
 
             // The configure affordance reserves its area in EVERY row (not
             // only while the button is visible): the binding chips end
@@ -1488,7 +1581,13 @@ public class JIPipeDesktopCommandBar extends JPanel {
         public Component getListCellRendererComponent(JList<? extends JIPipeDesktopCommandBarModel.Entry> list,
                                                       JIPipeDesktopCommandBarModel.Entry value, int index,
                                                       boolean selected, boolean cellHasFocus) {
+            configuredEntry = value;
             if (value.isCategoryHeader()) {
+                // The button belongs to entry rows only: hiding it here
+                // keeps a click that lands on the shared component's bounds
+                // falling through to the list's coordinate check (the
+                // configuredEntry/listener pairing stays exact).
+                configureButton.setVisible(false);
                 applyRowColors(headerPanel, selected);
                 headerLabel.setText(value.name());
                 headerLabel.setForeground(selected

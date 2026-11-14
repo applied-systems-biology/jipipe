@@ -23,6 +23,9 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Toolkit;
+import java.util.Map;
 
 /**
  * Builds context menu items that display the effective key binding of a
@@ -127,8 +130,18 @@ public final class JIPipeDesktopShortcutMenuItems {
             FontMetrics metrics = g.getFontMetrics();
             int x = getWidth() - metrics.stringWidth(bindingText) - BINDING_RIGHT_GAP;
             int y = (getHeight() - metrics.getHeight()) / 2 + metrics.getAscent();
-            g.setColor(bindingColor(this));
-            g.drawString(bindingText, x, y);
+            // The desktop's font rendering hints: the LaF-drawn item text is
+            // antialiased through them, so the binding text must match
+            // (issue #1346, wave 2). A missing desktop property degrades to
+            // the plain rendering; no hardcoded AA toggle.
+            Graphics2D g2 = (Graphics2D) g.create();
+            Object hints = Toolkit.getDefaultToolkit().getDesktopProperty("awt.font.desktophints");
+            if (hints instanceof Map) {
+                g2.addRenderingHints((Map<?, ?>) hints);
+            }
+            g2.setColor(bindingColor(this));
+            g2.drawString(bindingText, x, y);
+            g2.dispose();
         }
     }
 }
