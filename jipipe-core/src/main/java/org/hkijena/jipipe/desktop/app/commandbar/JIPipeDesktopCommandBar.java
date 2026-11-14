@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.shortcuts.JIPipeShortcutActions;
 import org.hkijena.jipipe.api.shortcuts.JIPipeShortcutRegistry;
 import org.hkijena.jipipe.api.shortcuts.JIPipeShortcutSettings;
 import org.hkijena.jipipe.api.shortcuts.KeymapSettings;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopKeyboardCaptureDialog;
 import org.hkijena.jipipe.desktop.app.shortcuts.JIPipeDesktopShortcutDispatcher;
 import org.hkijena.jipipe.desktop.app.shortcuts.ShortcutScope;
@@ -64,6 +65,9 @@ import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowFocusListener;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -119,6 +123,9 @@ import java.util.function.Predicate;
  * <li>any key press while chord mode is open (fired chord, Escape, or an
  * unlisted non-modifier key, via the local {@link KeyEventDispatcher}; a
  * bare modifier press passes through and leaves chord mode open)</li>
+ * <li>window focus loss while chord mode is open (the local chord
+ * dispatcher is application-wide, so a key pressed in another window must
+ * not be swallowed by this bar)</li>
  * <li>{@link #uninstall()} (defensively, so a disposed bar can never leave
  * the flag set)</li>
  * </ul>
@@ -265,6 +272,13 @@ public class JIPipeDesktopCommandBar extends JPanel {
      */
     private KeyEventDispatcher chordDispatcher;
     /**
+     * The window focus listener of chord mode (removed again in
+     * {@link #close()}): the chord key dispatcher is installed
+     * application-wide, so without this listener a key pressed in ANOTHER
+     * window while chord mode is open would be swallowed by this bar.
+     */
+    private WindowFocusListener chordWindowFocusListener;
+    /**
      * The entries the list currently displays (the same rows the chord
      * dispatcher of chord mode matches against).
      */
@@ -336,6 +350,12 @@ public class JIPipeDesktopCommandBar extends JPanel {
      * Issue #1346, Task 6: reads the persisted list mode setting
      * ({@link CommandBarSettings#currentMode()}, null/unknown-safe with the
      * {@link JIPipeDesktopCommandBarModel.ListMode#GRAYED} fallback).
+     * <p>
+     * The mode's window-kind filter (graph-family actions hidden while no
+     * graph editor hosts the context, in GRAYED and AVAILABLE_ONLY) is
+     * applied by the bar itself (see {@code modeFilteredActions}), not by
+     * the model: EVERYTHING is a real mode that passes every registry
+     * action through.
      */
     static JIPipeDesktopCommandBarModel.ListMode currentListMode() {
         return CommandBarSettings.currentMode();
@@ -521,6 +541,7 @@ public class JIPipeDesktopCommandBar extends JPanel {
         JIPipeDesktopShortcutDispatcher.getInstance().setCaptureActive(true);
         suspendOwned = true;
         installChordDispatcher();
+        installChordWindowFocusListener();
         return true;
     }
 
@@ -576,9 +597,10 @@ public class JIPipeDesktopCommandBar extends JPanel {
 
     /**
      * The single exit path of the overlay: removes the local chord key
-     * dispatcher, hides the overlay, restores the focus owner captured at
-     * open time, and clears the app-wide dispatch suspension - but only
-     * when the bar itself armed it ({@code suspendOwned}): visibility is
+     * dispatcher and the chord window focus listener, hides the overlay,
+     * restores the focus owner captured at open time, and clears the
+     * app-wide dispatch suspension - but only when the bar itself armed it
+     * ({@code suspendOwned}): visibility is
      * not an ownership guarantee, so a close that reaches a bar whose
      * suspension belongs to the capture dialog must leave the flag alone
      * (hiding an already hidden bar, in contrast, is harmless and stays
@@ -590,6 +612,12 @@ public class JIPipeDesktopCommandBar extends JPanel {
         if (chordDispatcher != null) {
             KeyboardFocusManager.getCurrentKeyboardFocusManager().removeKeyEventDispatcher(chordDispatcher);
             chordDispatcher = null;
+        }
+        if (chordWindowFocusListener != null) {
+            if (window != null) {
+                window.removeWindowFocusListener(chordWindowFocusListener);
+            }
+            chordWindowFocusListener = null;
         }
         chordMode = false;
         chordPrefix = null;
@@ -612,6 +640,29 @@ public class JIPipeDesktopCommandBar extends JPanel {
         }
     }
 
+    /**
+     * The component every availability resolution and every fire walks the
+     * scope chain against: the focus owner captured at open time (the bar
+     * itself is only the fallback for the degenerate no-focus case).
+     * <p>
+     * The bar lives in the root pane's LAYERED PANE, a sibling of the
+     * content pane, so no scope rooted inside the content (e.g. a graph
+     * editor) can ever contain the bar component itself: resolving against
+     * the bar would make every non-root command unavailable. The captured
+     * owner makes the walk identical to the dispatcher's own fire path
+     * (design Section 4.1: the scopes containing the focus owner).
+     * <p>
+     * The text-input guard is honored against this reference (no bypass):
+     * {@code dispatcher.resolveAction} applies it, so the bar's
+     * availability mirrors exactly what a raw keypress would fire. Opened
+     * from a text field, graph commands show grayed (and
+     * {@code AVAILABLE_ONLY} hides them); the fallback {@code this} is not
+     * a text input, so the degenerate case resolves without the guard.
+     */
+    private Component referenceComponent() {
+        return previousFocusOwner != null ? previousFocusOwner : this;
+    }
+
     // ------------------------------------------------------------------
     // Entry list
     // ------------------------------------------------------------------
@@ -623,15 +674,19 @@ public class JIPipeDesktopCommandBar extends JPanel {
      * refreshes the trigger keystroke bindings. Must run on the EDT.
      */
     private void rebuildList() {
+        // The window-kind filter of the list modes is computed once per
+        // rebuild and applied to the registry list and the recents alike.
+        boolean graphHosted = graphHosted();
+        List<JIPipeShortcutAction> registryActions = modeFilteredActions(
+                JIPipeShortcutRegistry.getInstance().all(), graphHosted);
         List<JIPipeDesktopCommandBarModel.Entry> registryEntries = JIPipeDesktopCommandBarModel.collect(
-                JIPipeShortcutRegistry.getInstance().all(),
+                registryActions,
                 JIPipeShortcutSettings.current(),
                 currentListMode(),
-                // The bar itself is the focus reference: resolveAction walks
-                // the scope chain, and while the bar is open the text-input
-                // guard of a focused search field must not apply (dispatch
-                // is suspended; see resolveAction's javadoc).
-                id -> dispatcher.resolveAction(id, JIPipeDesktopCommandBar.this),
+                // Availability resolves against the focus owner captured at
+                // open (see referenceComponent): the same scope walk a raw
+                // keypress would take, text-input guard included.
+                id -> dispatcher.resolveAction(id, referenceComponent()),
                 chordMode ? List.of() : JIPipeDesktopCommandBarSwitching.all(window));
         List<JIPipeDesktopCommandBarModel.Entry> display;
         if (chordMode) {
@@ -639,10 +694,12 @@ public class JIPipeDesktopCommandBar extends JPanel {
         } else {
             // The known recent ids are read once per rebuild and shared: the
             // tie-break uses the full list, the "Recently used" section the
-            // first few of their actions.
+            // first few of their actions (through the same mode filter as
+            // the main list, so a mode never lists a command the main list
+            // hides).
             List<String> knownRecentIds = recentCommandIds();
             display = filterByQuery(registryEntries, searchField.getText(),
-                    knownRecentIds, recentActions(knownRecentIds));
+                    knownRecentIds, modeFilteredActions(recentActions(knownRecentIds), graphHosted));
         }
         entries = display;
         listModel.clear();
@@ -651,6 +708,50 @@ public class JIPipeDesktopCommandBar extends JPanel {
         }
         updateTriggerBindings();
         selectFirstSelectable();
+        // The list content changed: the overlay must follow (the open-time
+        // height would otherwise linger after a query filtered the list).
+        repositionOverlay();
+    }
+
+    /**
+     * The window-kind filter of the list modes: in
+     * {@link JIPipeDesktopCommandBarModel.ListMode#GRAYED} and
+     * {@link JIPipeDesktopCommandBarModel.ListMode#AVAILABLE_ONLY},
+     * graph-family actions ({@link JIPipeShortcutAction#scopeFamily()}
+     * equal to {@link JIPipeShortcutAction#FAMILY_GRAPH}) are hidden while
+     * no graph editor hosts the reference component (the captured focus
+     * owner); {@link JIPipeDesktopCommandBarModel.ListMode#EVERYTHING} and
+     * the graph-hosted case pass the given actions through unchanged, as do
+     * project- and dock-family actions in every mode. Ephemeral entries are
+     * filtered by their callers' contract (they are never passed here).
+     */
+    private List<JIPipeShortcutAction> modeFilteredActions(List<JIPipeShortcutAction> actions,
+                                                           boolean graphHosted) {
+        if (currentListMode() == JIPipeDesktopCommandBarModel.ListMode.EVERYTHING || graphHosted) {
+            return actions;
+        }
+        List<JIPipeShortcutAction> result = new ArrayList<>(actions.size());
+        for (JIPipeShortcutAction action : actions) {
+            if (!JIPipeShortcutAction.FAMILY_GRAPH.equals(action.scopeFamily())) {
+                result.add(action);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Whether a graph editor hosts the reference component: some scope
+     * containing it is rooted at a {@link JIPipeDesktopGraphEditorUI}
+     * (the graph editor registers its shortcut scope with itself as root).
+     */
+    private boolean graphHosted() {
+        Component reference = referenceComponent();
+        for (ShortcutScope scope : dispatcher.scopesContaining(reference)) {
+            if (scope.root() instanceof JIPipeDesktopGraphEditorUI) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -771,12 +872,12 @@ public class JIPipeDesktopCommandBar extends JPanel {
     /**
      * Resolves an action id to its runnable in the current window state,
      * or {@code null} when unavailable: the same scope-chain walk the list
-     * build uses (the bar itself is the focus reference; the dispatch is
-     * suspended while the bar is open, so the text-input guard of a focused
-     * search field must not apply).
+     * build uses, against the focus owner captured at open
+     * ({@link #referenceComponent()}). The text-input guard is honored (no
+     * bypass), so the availability mirrors what a raw keypress would fire.
      */
     private Runnable resolveEntry(String actionId) {
-        return dispatcher.resolveAction(actionId, this);
+        return dispatcher.resolveAction(actionId, referenceComponent());
     }
 
     /**
@@ -881,22 +982,31 @@ public class JIPipeDesktopCommandBar extends JPanel {
     }
 
     /**
-     * Fires the selected entry: only available entries with a command fire.
-     * Registry commands are re-resolved through the dispatcher at fire time
-     * (the availability may have changed since the list was built); a
-     * re-resolve that comes up empty leaves the bar open (nothing fired),
-     * otherwise the command runs on the EDT and the bar closes (the exit
-     * path funnels through close()).
+     * Fires the selected entry (the Enter path).
      */
     private void fireSelected() {
-        JIPipeDesktopCommandBarModel.Entry entry = list.getSelectedValue();
+        fireEntry(list.getSelectedValue());
+    }
+
+    /**
+     * Fires the given entry: the shared path of Enter and a plain row
+     * click. Only available entries with a command fire. Registry commands
+     * are re-resolved through the dispatcher at fire time, against the
+     * focus owner captured at open ({@link #referenceComponent()}; the
+     * resolution is one keystroke old at most, since the availability may
+     * have changed since the list was built); a re-resolve that comes up
+     * empty leaves the bar open (nothing fired), otherwise the command
+     * runs on the EDT and the bar closes (the exit path funnels through
+     * close()).
+     */
+    private void fireEntry(JIPipeDesktopCommandBarModel.Entry entry) {
         if (entry == null || entry.isCategoryHeader() || !entry.isAvailable()
                 || entry.command() == null) {
             return;
         }
         Runnable command;
         if (entry.actionId() != null) {
-            command = dispatcher.resolveAction(entry.actionId(), this);
+            command = dispatcher.resolveAction(entry.actionId(), referenceComponent());
             if (command == null) {
                 // No longer resolvable: do not fire (and do not close).
                 return;
@@ -976,6 +1086,30 @@ public class JIPipeDesktopCommandBar extends JPanel {
     }
 
     /**
+     * Installs the chord-mode window focus listener (removed again in
+     * {@link #close()}): the local chord key dispatcher is
+     * application-wide, so with chord mode open in window A, any key
+     * pressed in window B would be swallowed by A's bar. Closing on window
+     * focus loss ends the chord before the focus can move on. (Normal mode
+     * needs no equivalent: its search field closes the bar through its own
+     * focusLost, which chord mode does not have - its search field is
+     * never focused.)
+     */
+    private void installChordWindowFocusListener() {
+        if (chordWindowFocusListener != null || window == null) {
+            return;
+        }
+        WindowFocusListener listener = new WindowAdapter() {
+            @Override
+            public void windowLostFocus(WindowEvent e) {
+                close();
+            }
+        };
+        window.addWindowFocusListener(listener);
+        chordWindowFocusListener = listener;
+    }
+
+    /**
      * @param keyCode a key code
      * @return whether the key is a pure modifier key (Ctrl, Shift, Alt,
      *         Alt Graph or Meta; the key codes of the left/right variants
@@ -996,7 +1130,10 @@ public class JIPipeDesktopCommandBar extends JPanel {
     /**
      * The click handler of the list: a click into the configure affordance
      * (the rightmost {@link #CONFIGURE_HIT_WIDTH} pixels of a configurable,
-     * available row) opens the capture flow for that row.
+     * available row) opens the capture flow for that row; a plain click on
+     * an available registry or ephemeral row FIRES it (the same path as
+     * Enter: re-resolve, fire, close); a click on a grayed/unavailable row
+     * only selects it.
      */
     private void onListClicked(MouseEvent e) {
         int index = list.locationToIndex(e.getPoint());
@@ -1008,14 +1145,21 @@ public class JIPipeDesktopCommandBar extends JPanel {
             return;
         }
         JIPipeDesktopCommandBarModel.Entry entry = listModel.get(index);
-        if (entry == null || entry.isCategoryHeader() || !entry.isConfigurable()
-                || !entry.isAvailable() || entry.actionId() == null) {
+        if (entry == null || entry.isCategoryHeader()) {
             return;
         }
-        if (e.getX() < bounds.x + bounds.width - CONFIGURE_HIT_WIDTH) {
+        if (entry.isConfigurable() && entry.isAvailable() && entry.actionId() != null
+                && e.getX() >= bounds.x + bounds.width - CONFIGURE_HIT_WIDTH) {
+            configureEntry(entry);
             return;
         }
-        configureEntry(entry);
+        // A click selects the row in any case; an available entry is fired
+        // through the Enter path (the affordance strip was handled above).
+        list.setSelectedIndex(index);
+        list.ensureIndexIsVisible(index);
+        if (entry.isAvailable() && entry.command() != null) {
+            fireEntry(entry);
+        }
     }
 
     /**

@@ -147,3 +147,10 @@ Pure tests only (no Swing interaction tests, per project policy):
 
 - Spec: this document. Implementation follows via the writing-plans skill after spec approval.
 - Branch strategy (merge onto the shortcut-overhaul branch vs. stacking on master) is decided at the finish gate of #1346.
+
+### Implementation notes (final review fixes, issue #1346)
+
+- Bar availability resolves against the focus owner captured at open (the bar itself is only a fallback); the text guard is honored, so bar availability mirrors what a raw keypress would fire. Opened from a text field, graph commands show grayed, and AVAILABLE_ONLY hides them.
+- List modes: EVERYTHING shows all registry actions (grayed when unavailable); GRAYED/AVAILABLE_ONLY additionally hide graph-family actions while no graph editor hosts the captured focus owner. The "Recently used" section is filtered the same way; ephemeral switching entries are never family-filtered.
+- Chord-mode firing uses open-time resolution (the resolution is one keystroke old at most). Chord mode also closes on window focus loss, since its key dispatcher is application-wide.
+- Click fires available entries (the same re-resolve path as Enter); a click on a grayed entry only selects, and the affordance strip configures.

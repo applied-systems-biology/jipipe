@@ -207,10 +207,13 @@ class JIPipeDesktopCommandBarModelTest {
         assertTrue(none.isEmpty());
     }
 
-    @Test void everythingModeBehavesLikeGrayed() {
-        // EVERYTHING differs from GRAYED only in what the caller passes as
-        // actions and resolver (the window-kind filter); the model output
-        // for the same input must be identical.
+    @Test void everythingModeCollectsLikeGrayedAtModelLevel() {
+        // The model layer is neutral between GRAYED and EVERYTHING: for the
+        // same input, collect() output is identical. The issue #1346 review
+        // moved the real mode difference into the bar, which applies the
+        // graph-family window-kind filter to the ACTION LIST before calling
+        // collect() in GRAYED/AVAILABLE_ONLY, and passes the full registry
+        // list in EVERYTHING (no family filter).
         register(ID_A1, "A one", "Alpha", CTRL_T, KEY_M);
         register(ID_A2, "A two", "Alpha", CTRL_1);
         register(ID_B1, "B one", "Beta");

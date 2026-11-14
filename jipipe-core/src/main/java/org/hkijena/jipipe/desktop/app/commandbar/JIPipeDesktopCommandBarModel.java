@@ -45,24 +45,30 @@ public final class JIPipeDesktopCommandBarModel {
 
     /**
      * How the list treats registry commands that are not available in the
-     * current window state (design Section 4.1, decision 4).
+     * current window state (design Section 4.1, decision 4), and which
+     * window-kind filter applies (issue #1346 review): GRAYED and
+     * AVAILABLE_ONLY hide graph-family actions while no graph editor hosts
+     * the context (the filter is applied by the bar before it calls
+     * {@link #collect}; see {@code JIPipeDesktopCommandBar#modeFilteredActions}),
+     * while EVERYTHING is a real mode without that filter.
      */
     public enum ListMode {
         /**
          * Unavailable commands are shown, grayed and not fireable. The
-         * default mode.
+         * default mode. Graph-family commands are additionally hidden
+         * while no graph editor hosts the context.
          */
         GRAYED("grayed"),
         /**
          * Unavailable commands are hidden; a category whose commands are
-         * all unavailable loses its header as well.
+         * all unavailable loses its header as well. Graph-family commands
+         * are additionally hidden while no graph editor hosts the context.
          */
         AVAILABLE_ONLY("available-only"),
         /**
-         * All registry commands are shown, regardless of window kind:
-         * the caller passes the full action list and a permissive resolver
-         * (see {@link #collect}). Unavailable entries render grayed like
-         * in {@link #GRAYED}.
+         * A real mode of its own (issue #1346 review): no window-kind
+         * filtering - every registry action the caller passes is listed,
+         * and unavailable entries render grayed like in {@link #GRAYED}.
          */
         EVERYTHING("everything");
 
@@ -324,11 +330,12 @@ public final class JIPipeDesktopCommandBarModel {
      * <li>{@link ListMode#AVAILABLE_ONLY} drops unavailable entries, and
      * drops a category header that would have no entries left under it;</li>
      * <li>{@link ListMode#EVERYTHING} behaves like {@link ListMode#GRAYED}
-     * in this method: the difference is the caller's job, which is expected
-     * to pass <em>all</em> registered actions (dropping the window-kind
-     * filter) and a resolver that answers for the whole application, so
-     * that commands foreign to the current window kind still appear
-     * (grayed when they cannot fire in the current live state).</li>
+     * in this method: no family filtering happens here. The window-kind
+     * filter of GRAYED/AVAILABLE_ONLY (graph-family actions hidden while no
+     * graph editor hosts the context) is the bar's job, applied to the
+     * action list before this method is called, so EVERYTHING receives the
+     * full registry list and lists commands foreign to the current window
+     * kind (grayed when they cannot fire in the current live state).</li>
      * </ul>
      *
      * @param actions   the actions to list, in the order to emit their
