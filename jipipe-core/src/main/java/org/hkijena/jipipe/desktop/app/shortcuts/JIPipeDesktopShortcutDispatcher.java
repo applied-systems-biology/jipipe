@@ -37,6 +37,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 /**
  * The application-wide keyboard shortcut dispatcher.
@@ -80,6 +81,18 @@ public final class JIPipeDesktopShortcutDispatcher implements KeyEventDispatcher
      */
     private static volatile Consumer<String> statusTextSink = text -> {
     };
+
+    /**
+     * The chord-prefix handler. The per-window command bar installs this
+     * (Task 4): when a chord prefix is pressed, the handler receives the
+     * pending prefix stroke and decides whether the chord is consumed by it
+     * (true) or the normal dispatch continues (false). The
+     * {@code PREFIX_STARTED} branch consults it (Task 5 wires the call);
+     * until a handler is installed, the field is {@code null} and chord
+     * prefixes behave exactly as before. Like {@link #statusTextSink}, this
+     * indirection keeps the dispatcher free of command bar imports.
+     */
+    private static volatile Predicate<KeyStroke> chordPrefixHandler;
 
     /**
      * Single-stroke (length-1 variant) bindings, stroke to the ordered list
@@ -626,5 +639,32 @@ public final class JIPipeDesktopShortcutDispatcher implements KeyEventDispatcher
      */
     public static Consumer<String> currentStatusTextSink() {
         return statusTextSink;
+    }
+
+    /**
+     * Registers the chord-prefix handler. The command bar of a window
+     * installs this (Task 4); pass {@code null} to remove the handler.
+     * <p>
+     * At most one handler is installed application-wide: a bar registers
+     * only when {@link #currentChordPrefixHandler()} returns {@code null}
+     * (first bar wins, like the status text sink), and a handler must be
+     * removed only when it is still owned - an uninstaller compares the
+     * currently installed handler with its own one by identity and clears
+     * the field only on a match.
+     *
+     * @param handler receives the pending prefix stroke and returns whether
+     *                it consumed the chord, or {@code null} to clear it
+     */
+    public static void setChordPrefixHandler(Predicate<KeyStroke> handler) {
+        chordPrefixHandler = handler;
+    }
+
+    /**
+     * @return the currently installed chord-prefix handler, or
+     *         {@code null} when none is installed, so an owner can remove
+     *         it only when it still owns it
+     */
+    public static Predicate<KeyStroke> currentChordPrefixHandler() {
+        return chordPrefixHandler;
     }
 }
