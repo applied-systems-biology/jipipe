@@ -373,17 +373,24 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
         applyViewIfNeeded();
 
         // The layout is tier-adaptive (a pure function of the width);
-        // re-applying is a no-op while the tier is unchanged. Becoming
-        // visible triggers one rebuild (the panel is usually created hidden
-        // and misses the events of the hidden period).
+        // re-applying is a no-op while the tier is unchanged.
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
                 applyViewIfNeeded();
             }
+        });
 
-            @Override
-            public void componentShown(ComponentEvent e) {
+        // Becoming visible triggers one rebuild (the panel is usually created
+        // hidden and misses the events of the hidden period). The dock
+        // framework shows a panel by adding its Swing component into the
+        // layout (JIPipeDesktopDockPanel.updateAll) and never calls
+        // setVisible(true) on the panel component, so componentShown never
+        // fires on dock activation: react to the hierarchy change instead
+        // (the same mechanism as JIPipeDesktopRelationsPanel).
+        addHierarchyListener(e -> {
+            if ((e.getChangeFlags() & (HierarchyEvent.PARENT_CHANGED | HierarchyEvent.SHOWING_CHANGED)) != 0
+                    && isShowing()) {
                 rebuildTree();
             }
         });
@@ -624,8 +631,8 @@ public class JIPipeDesktopFindPanel extends JIPipeDesktopWorkbenchPanel implemen
 
     /**
      * Requests a debounced rebuild. Only schedules while the panel is showing:
-     * a hidden panel is stale by design and rebuilds once on
-     * {@code componentShown}.
+     * a hidden panel is stale by design and catches up via the hierarchy
+     * listener when it becomes showing.
      */
     private void scheduleRebuild() {
         if (!isShowing()) {
