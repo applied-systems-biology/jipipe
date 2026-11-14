@@ -159,6 +159,11 @@ default; the Keyboard settings section (`JIPipeDesktopKeyboardSection`) edits ov
 `KeyStroke`s from actions or tooltips: render for display through
 `JIPipeShortcutRegistry.formatChord`/`formatVariants` and pass the pre-rendered text to
 `TooltipUtils.createTooltipWithShortcutText`.
+The per-window command bar lists the registry's actions as entries (including unassigned ones); its trigger action is
+`org.hkijena.jipipe.command-bar.open` (defaults Ctrl+P / Ctrl+Shift+P). A chord prefix opens the bar in chord mode via
+the dispatcher handoff; window/tab switching are ephemeral bar entries (not registry actions, not bindable). The list
+mode (grayed unavailable / available only / everything) is the `registry:command-bar` setting; recently fired commands
+rank first on an empty query.
 
 ## Testing
 

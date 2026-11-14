@@ -41,6 +41,8 @@ class JIPipeDesktopCommandBarSearchTest {
         assertFalse(JIPipeDesktopCommandBarSearch.matches("bc", "Command Bar"));
         // Acronyms fall out of the camel-case split, too.
         assertTrue(JIPipeDesktopCommandBarSearch.matches("rp", "RunPipeline"));
+        // The acronym rung is exactly 0.7.
+        assertEquals(0.7, JIPipeDesktopCommandBarSearch.score("cb", "Command Bar"), 1e-9);
     }
 
     @Test

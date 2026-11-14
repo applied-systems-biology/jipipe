@@ -462,6 +462,9 @@ public final class JIPipeDesktopShortcutDispatcher implements KeyEventDispatcher
                     if (handler.test(prefixStroke)) {
                         chordMachine.cancel();
                         setCaptureActive(true);
+                        // Clear any stale "(prefix) was pressed..." hint so
+                        // it does not linger behind the opened bar.
+                        setStatusText(null);
                         return true;
                     }
                 }
@@ -657,15 +660,22 @@ public final class JIPipeDesktopShortcutDispatcher implements KeyEventDispatcher
     }
 
     /**
-     * Registers the chord-prefix handler. The command bar of a window
-     * installs this (Task 4); pass {@code null} to remove the handler.
+     * Registers the chord-prefix handler. The per-window command bar class
+     * installs a single routing hook here (Task 4): the first bar to install
+     * itself puts that hook into the slot, and the hook routes the pending
+     * prefix through every registered bar - the bar whose window owns the
+     * keyboard focus accepts it and opens chord mode, the rest decline. The
+     * hook is NOT owned per bar: the LAST bar to uninstall clears the slot
+     * (identity check against the routing hook instance the bars installed,
+     * only when no other bar remains), so uninstalling one of several bars
+     * never drops chord mode for the others. Pass {@code null} to remove the
+     * handler.
      * <p>
-     * At most one handler is installed application-wide: a bar registers
-     * only when {@link #currentChordPrefixHandler()} returns {@code null}
-     * (first bar wins, like the status text sink), and a handler must be
-     * removed only when it is still owned - an uninstaller compares the
-     * currently installed handler with its own one by identity and clears
-     * the field only on a match.
+     * The dispatcher consults the hook in the {@code PREFIX_STARTED} branch:
+     * when {@code handler.test(prefix)} returns {@code true}, the pending
+     * chord is cancelled, the dispatch is suspended, and the key is
+     * consumed; a {@code false} result falls through to the status hint and
+     * the normal chord flow.
      *
      * @param handler receives the pending prefix stroke and returns whether
      *                it consumed the chord, or {@code null} to clear it

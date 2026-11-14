@@ -38,8 +38,13 @@ import java.util.regex.Pattern;
  * name need not be covered fully.
  * <p>
  * <b>Ranking is the caller's job.</b> This class only decides whether and
- * how well a name matches a query. The command bar orders matches in
- * registry order (recency tie-breaking arrives in Task 8).
+ * how well a name matches a query. The command bar orders its results by
+ * descending score, with recency as the secondary criterion and the
+ * registry position last.
+ * <p>
+ * Query tokens are split the same way as name words, so a mixed-case query
+ * token splits at camel-case boundaries: "cOpy" is scored as the tokens
+ * "c" and "opy".
  */
 public final class JIPipeDesktopCommandBarSearch {
 

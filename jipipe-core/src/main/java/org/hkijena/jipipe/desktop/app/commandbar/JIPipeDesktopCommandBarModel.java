@@ -124,8 +124,10 @@ public final class JIPipeDesktopCommandBarModel {
 
         /**
          * @return the rendered key binding for the row (e.g.
-         * {@code "Ctrl+T then M"}), or {@code null} when the row has no
-         * binding (ephemeral entries, unassigned commands)
+         * {@code "Ctrl+T then M"}); an empty string for a registry command
+         * with no binding (the unassigned {@code formatVariants} renders
+         * empty), or {@code null} for rows that carry no binding at all
+         * (category headers, ephemeral entries)
          */
         String bindingText();
 

@@ -48,10 +48,18 @@ class CommandBarChordRoutingTest {
     private static final KeyStroke PREFIX = KeyStroke.getKeyStroke("pressed CTRL");
 
     @BeforeAll
-    static void headless() {
-        // The frames constructed below are never shown; the focus-manager
-        // checks read null windows and decline, so headless is sufficient.
-        System.setProperty("java.awt.headless", "true");
+    static void boot() {
+        // The frames below are constructed but never shown, and the
+        // focus-manager checks read null windows and decline. Constructing a
+        // JFrame (a top-level window) nonetheless requires a non-headless
+        // AWT: the java.awt.headless property is read only when the toolkit
+        // initializes, and by the time the suite reaches this class the
+        // toolkit is already up (non-headless). The property set used to be
+        // here was therefore inert, so it is removed and the non-headless
+        // requirement stated plainly. JIPipe boots the full service stack the
+        // same way CommandBarSettingsTest does: the module's
+        // LauncherSessionListeners isolate the profile into a temp directory
+        // and pre-patch ImageJ.
         JIPipe.ensureInstance();
     }
 

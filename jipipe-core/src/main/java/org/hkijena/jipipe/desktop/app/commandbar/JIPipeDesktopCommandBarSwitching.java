@@ -37,14 +37,16 @@ import java.util.List;
  * <p>
  * <strong>Window entries</strong> cover every open
  * {@link JIPipeDesktopProjectWindow} and {@link JIPipeDesktopDataViewerWindow}
- * except the focused one (identity comparison). A window is switchable
- * exactly when {@link Window#isDisplayable()} is true: a disposed window has
- * no native peer and is skipped, while a hidden-but-open window (e.g. a
- * minimized frame) is still displayable and therefore still listed (the
- * switch brings it to the front and un-hides it). Membership in the open
- * window sets should already exclude disposed windows; the
- * {@code isDisplayable()} check additionally guards the race in which the
- * command bar is built while a dispose is in progress.
+ * except the focused one (identity comparison). Displayable windows are
+ * listed: a window is listed exactly when {@link Window#isDisplayable()} is
+ * true. A disposed window has no native peer and is skipped; a minimized
+ * frame is still displayable and therefore included. A hidden-but-displayable
+ * window (hidden via {@code setVisible(false)} rather than minimized) is
+ * likewise listed, although the switch's {@code toFront}/{@code requestFocus}
+ * does not make it visible. Membership in the open window sets should already
+ * exclude disposed windows; the {@code isDisplayable()} check additionally
+ * guards the race in which the command bar is built while a dispose is in
+ * progress.
  * <p>
  * <strong>Tab entries</strong> are a shallow recursive walk over the
  * focused window's descendant components: every {@link JIPipeDesktopTabPane}

@@ -332,15 +332,17 @@ class JIPipeShortcutResolveTest {
     @Test void freedDirectKeysAreUnboundByDefault() {
         // The keys moved to the Ctrl+T chord layer must no longer be held by
         // any action's DEFAULT binding (only the LEGACY preset may re-claim them).
+        // Containment, not whole-variant equality: a freed stroke used as ANY
+        // part of any default variant fails the test.
         JIPipeShortcutRegistry registry = JIPipeShortcutRegistry.getInstance();
         for (String key : new String[]{
                 "control pressed G", "control pressed E", "control shift pressed E",
                 "control pressed L", "control shift pressed L", "control alt pressed P",
                 "control pressed SPACE", "control shift pressed A"}) {
-            List<KeyStroke> candidate = List.of(KeyStroke.getKeyStroke(key));
+            KeyStroke candidate = KeyStroke.getKeyStroke(key);
             for (JIPipeShortcutAction action : registry.all()) {
                 for (List<KeyStroke> variant : action.defaultVariants()) {
-                    assertFalse(variant.equals(candidate),
+                    assertFalse(variant.contains(candidate),
                             "no action's DEFAULT binding may contain the freed key " + key
                                     + " (found on " + action.id() + ")");
                 }

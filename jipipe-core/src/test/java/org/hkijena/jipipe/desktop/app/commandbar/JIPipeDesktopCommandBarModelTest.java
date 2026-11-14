@@ -246,7 +246,6 @@ class JIPipeDesktopCommandBarModelTest {
         // resolved like a collect row.
         JIPipeShortcutAction a1 = register(ID_A1, "A one", "Alpha", CTRL_T, KEY_M);
         JIPipeShortcutAction b1 = register(ID_B1, "B one", "Beta");
-        JIPipeShortcutRegistry registry = JIPipeShortcutRegistry.getInstance();
 
         Runnable a1Run = () -> {
         };
