@@ -450,6 +450,21 @@ public final class JIPipeDesktopShortcutDispatcher implements KeyEventDispatcher
                 return fireResolvedAction(candidateIds, focusOwner, false);
             }
             case PREFIX_STARTED: {
+                // Hand the prefix to an installed chord handler (the command
+                // bar) before falling back to the status hint. When the
+                // handler consumes the prefix, the machine is cancelled and
+                // dispatch is suspended; captureActive is set here as well so
+                // a handler that forgets to suspend is still covered.
+                Predicate<KeyStroke> handler = currentChordPrefixHandler();
+                if (handler != null) {
+                    KeyStroke prefixStroke = chordMachine.pendingPrefix().isEmpty()
+                            ? stroke : chordMachine.pendingPrefix().get(0);
+                    if (handler.test(prefixStroke)) {
+                        chordMachine.cancel();
+                        setCaptureActive(true);
+                        return true;
+                    }
+                }
                 List<KeyStroke> prefix = chordMachine.pendingPrefix();
                 setStatusText("(" + JIPipeShortcutRegistry.formatChord(prefix)
                         + ") was pressed, waiting for second key of chord");
