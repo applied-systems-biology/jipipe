@@ -69,6 +69,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Predicate;
 
 /**
@@ -85,9 +86,17 @@ import java.util.function.Predicate;
  * (invisible) to the window root pane's layered pane, registers a
  * {@link ShortcutScope} rooted at the root pane that answers only the
  * {@link JIPipeShortcutActions#COMMAND_BAR_OPEN} trigger, and installs the
- * dispatcher's chord-prefix hook when no other bar owns it (first bar wins,
- * like the status text sink). Uninstall mirrors both registrations; the hook
- * is cleared only when this bar still owns it (identity check).
+ * dispatcher's chord-prefix hook when no other bar owns it. The hook does
+ * NOT open this bar directly: it routes the pending prefix through the
+ * statically registered bars ({@link #INSTANCES}) in install order, and the
+ * bar whose window owns the keyboard focus accepts it. That makes chord
+ * mode work in every window, not only in the first-constructed one.
+ * Uninstall mirrors both registrations; the hook is removed only when this
+ * is the LAST registered bar AND the dispatcher's slot still holds the
+ * hook instance the bars installed (identity check against a class-level
+ * record, since the last bar to uninstall is typically not the
+ * first-installed owner). With two bars installed, uninstalling one must
+ * not drop chord mode for the other.
  * <p>
  * <b>The captureActive invariant (read this before touching close()).</b>
  * While the bar is open, the application-wide shortcut dispatch is suspended
@@ -171,6 +180,32 @@ public class JIPipeDesktopCommandBar extends JPanel {
      * (identity-compared, like the Keyboard settings page's button).
      */
     private static final Button ASSIGN_ANYWAY = Button.custom("Assign anyway");
+
+    /**
+     * The bars currently installed into windows, in install order. The
+     * dispatcher's chord-prefix hook is a single static slot (first
+     * installer wins), but it routes the pending prefix through every bar
+     * registered here: each bar's focused-window check makes the bars of
+     * the other windows decline cheaply, and the focused window's bar
+     * accepts. This is what makes chord mode work in EVERY window, not
+     * only the first-constructed one.
+     */
+    private static final List<JIPipeDesktopCommandBar> INSTANCES = new CopyOnWriteArrayList<>();
+
+    /**
+     * The chord-prefix hook instance the bars installed into the
+     * dispatcher's static slot, or {@code null} when the slot holds
+     * nothing or something foreign. The slot is owned by the first
+     * installed bar (first bar wins), but the hook it carries routes
+     * through {@link #INSTANCES}. When that first bar uninstalls while
+     * other bars remain, it must NOT clear the slot (the remaining bars
+     * still need it), and the LAST bar to uninstall is typically not the
+     * owner: therefore the clear condition compares the slot with this
+     * class-level field by identity when {@link #INSTANCES} becomes
+     * empty. That also keeps the bars from clearing a handler that
+     * foreign code installed.
+     */
+    private static volatile Predicate<KeyStroke> installedRoutingHook;
 
     private final JIPipeDesktopSearchTextField searchField = new JIPipeDesktopSearchTextField();
     private final DefaultListModel<JIPipeDesktopCommandBarModel.Entry> listModel = new DefaultListModel<>();
@@ -306,8 +341,12 @@ public class JIPipeDesktopCommandBar extends JPanel {
      * Installs the bar into the given window: adds it (invisible) to the
      * root pane's layered pane, registers the trigger shortcut scope rooted
      * at the root pane, and installs the dispatcher's chord-prefix hook when
-     * no other bar owns it. Installing twice into the same window is a
-     * no-op; installing into another window uninstalls first.
+     * no other bar owns it. The hook routes every pending prefix through the
+     * statically registered bars (see {@link #INSTANCES}); each bar's
+     * focused-window check makes only the focused window's bar accept it, so
+     * chord mode works in every window, not only the first-constructed one.
+     * Installing twice into the same window is a no-op; installing into
+     * another window uninstalls first.
      *
      * @param window the host window
      */
@@ -319,6 +358,7 @@ public class JIPipeDesktopCommandBar extends JPanel {
         if (this.window != null) {
             uninstall();
         }
+        INSTANCES.add(this);
         this.window = window;
         this.rootPane = window.getRootPane();
         // Above the content pane and menu bar, below popups (tooltips and
@@ -342,18 +382,30 @@ public class JIPipeDesktopCommandBar extends JPanel {
         dispatcher.registerScope(scope);
 
         // The chord-prefix hook (the dispatcher's PREFIX_STARTED branch is
-        // wired in Task 5). First bar wins, like the status text sink.
+        // wired in Task 5). Only the first installed bar installs it, but
+        // the installed hook routes the prefix through INSTANCES, so every
+        // window's bar keeps receiving chord prefixes (see
+        // routeChordPrefix): the first bar merely owns the static slot.
         if (JIPipeDesktopShortcutDispatcher.currentChordPrefixHandler() == null) {
-            chordPrefixHandler = this::openChordMode;
+            chordPrefixHandler = prefix -> routeChordPrefix(prefix);
             JIPipeDesktopShortcutDispatcher.setChordPrefixHandler(chordPrefixHandler);
+            installedRoutingHook = chordPrefixHandler;
         }
     }
 
     /**
      * Uninstalls the bar: closes it (defensively - a disposed bar must never
-     * leave the dispatch suspended), removes the resize listener, unregisters
-     * the scope, and removes the chord-prefix hook only when this bar still
-     * owns it. Uninstalling a non-installed bar is a no-op.
+     * leave the dispatch suspended), removes the resize listener,
+     * unregisters the scope, removes this bar from the static registry, and
+     * removes the chord-prefix hook only when this bar still owns it
+     * (identity check) AND no other bar remains registered: with two bars
+     * installed, uninstalling one must not drop chord mode for the other,
+     * and the hook goes away only when the LAST bar uninstalls. The clear
+     * compares the slot with the hook instance the bars installed
+     * ({@link #installedRoutingHook}), not with this bar's own reference:
+     * the bar that uninstalls last is typically NOT the first-installed
+     * owner, so a per-bar identity check could never fire for it.
+     * Uninstalling a non-installed bar is a no-op.
      */
     public void uninstall() {
         if (window == null) {
@@ -366,9 +418,11 @@ public class JIPipeDesktopCommandBar extends JPanel {
             dispatcher.unregisterScope(scope);
             scope = null;
         }
-        if (chordPrefixHandler != null
-                && JIPipeDesktopShortcutDispatcher.currentChordPrefixHandler() == chordPrefixHandler) {
+        INSTANCES.remove(this);
+        if (INSTANCES.isEmpty() && installedRoutingHook != null
+                && JIPipeDesktopShortcutDispatcher.currentChordPrefixHandler() == installedRoutingHook) {
             JIPipeDesktopShortcutDispatcher.setChordPrefixHandler(null);
+            installedRoutingHook = null;
         }
         chordPrefixHandler = null;
         layerConstraints = null;
@@ -460,6 +514,56 @@ public class JIPipeDesktopCommandBar extends JPanel {
         suspendOwned = true;
         installChordDispatcher();
         return true;
+    }
+
+    /**
+     * The dispatcher's single chord-prefix hook is a static slot, so it can
+     * be owned by at most one bar. This static method is what the owning
+     * bar's hook delegates to: it routes the pending prefix through every
+     * currently installed bar ({@link #INSTANCES}) in install order and
+     * returns {@code true} when the first bar to accept it did so.
+     *
+     * @param prefix the first stroke of the pending chord
+     * @return whether an installed bar opened (and consumed the chord)
+     */
+    static boolean routeChordPrefix(KeyStroke prefix) {
+        for (JIPipeDesktopCommandBar bar : INSTANCES) {
+            if (bar.acceptChordPrefix(prefix)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * The per-bar seam of {@link #routeChordPrefix(KeyStroke)}: the bar
+     * accepts the prefix only while it is installed AND its host window
+     * owns the keyboard focus (the focused-window check of
+     * {@link #openChordMode(KeyStroke)}), so the bars of the other windows
+     * decline cheaply and the focused window's bar opens. Exposing this
+     * separately from the route makes the acceptance contract testable
+     * without faking the keyboard focus manager.
+     *
+     * @param prefix the first stroke of the pending chord
+     * @return whether this bar opened chord mode and consumed the prefix
+     */
+    boolean acceptChordPrefix(KeyStroke prefix) {
+        if (window == null || rootPane == null) {
+            return false;
+        }
+        KeyboardFocusManager kfm = KeyboardFocusManager.getCurrentKeyboardFocusManager();
+        return kfm.getFocusedWindow() == window && openChordMode(prefix);
+    }
+
+    /**
+     * @return the chord-prefix hook this bar installed, or {@code null}
+     *         when no bar installed one; exposed for the tests of the
+     *         multi-window routing (the clear condition of
+     *         {@link #uninstall()} compares the dispatcher's slot with the
+     *         class-level {@link #installedRoutingHook} instead)
+     */
+    Predicate<KeyStroke> chordPrefixHandler() {
+        return chordPrefixHandler;
     }
 
     /**
