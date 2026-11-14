@@ -293,8 +293,10 @@ public final class JIPipeDesktopShortcutDispatcher implements KeyEventDispatcher
      * the dispatch does (the command bar, design Section 4.1): a command is
      * resolvable when some scope's resolver returns a runnable.
      *
-     * @param focusOwner the component to test, may be {@code null} (then
-     *                   no scope contains it and the result is empty)
+     * @param focusOwner the component to test, may be {@code null}
+     *                   (descending scopes decline a null focus owner;
+     *                   window-level scopes compare the currently focused
+     *                   window, so they can contain even then)
      * @return the registered scopes containing the focus owner, innermost
      * first
      */
@@ -321,7 +323,9 @@ public final class JIPipeDesktopShortcutDispatcher implements KeyEventDispatcher
      *
      * @param actionId   the action id to resolve, must not be {@code null}
      * @param focusOwner the component to test against the scopes, may be
-     *                   {@code null} (then no scope is walked)
+     *                   {@code null} (descending scopes decline a null
+     *                   focus owner; window-level scopes compare the
+     *                   currently focused window)
      * @return the runnable the innermost answering scope produced, or
      * {@code null} when no scope answers or the text-input guard applies
      */
@@ -435,6 +439,11 @@ public final class JIPipeDesktopShortcutDispatcher implements KeyEventDispatcher
         // be swallowed. The machine is cancelled quietly (this also cancels a
         // chord left pending when the focus moved into the dialog) and the
         // key reaches the dialog untouched.
+        // Window-level scopes (dock panels, command bar) also contain when
+        // the focus owner is the window itself or null (the focused window
+        // matches): a chord prefix pressed in such a transient state starts
+        // a chord and can hand off to the focused window's command bar,
+        // whose own focused-window check accepts it.
         List<ShortcutScope> containingScopes = orderedContainingScopes(scopes, focusOwner);
         if (containingScopes.isEmpty()) {
             chordMachine.cancel();
@@ -583,13 +592,14 @@ public final class JIPipeDesktopShortcutDispatcher implements KeyEventDispatcher
      * wins.
      *
      * @param scopes     all registered scopes
-     * @param focusOwner the component holding the keyboard focus
+     * @param focusOwner the component holding the keyboard focus, may be
+     *                   {@code null} (descending scopes decline a null
+     *                   focus owner via {@link ShortcutScope#contains};
+     *                   window-level scopes compare the currently focused
+     *                   window, so they can contain even then)
      * @return the scopes containing the focus owner, innermost first
      */
     static List<ShortcutScope> orderedContainingScopes(List<ShortcutScope> scopes, Component focusOwner) {
-        if (focusOwner == null) {
-            return List.of();
-        }
         List<ShortcutScope> containing = new ArrayList<>();
         for (ShortcutScope scope : scopes) {
             if (scope.contains(focusOwner)) {

@@ -446,10 +446,16 @@ public class JIPipeDesktopCommandBar extends JPanel {
 
         // The trigger scope: rooted at the window's root pane (the same root
         // resolution as JIPipeDesktopDockPanel) and answering only the open
-        // command bar action. openNormalMode ignores a re-open of an already
-        // open bar (toggle semantics; the dispatch is suspended while open,
-        // so the trigger cannot fire through the scope in that state anyway).
-        scope = new ShortcutScope(rootPane, actionId -> {
+        // command bar action. Containment is window-level
+        // (ShortcutScope.windowLevel, the same focus-hole class as the dock
+        // toggles): Ctrl+P must open the bar even when the focus owner is
+        // the window itself or null (transient after a tab switch), while a
+        // modal dialog's focus owner has a different window ancestor and
+        // stays excluded. The resolver answers only COMMAND_BAR_OPEN, and
+        // the dispatch is suspended while the bar is open, so the scope
+        // cannot trigger itself. openNormalMode ignores a re-open of an
+        // already open bar (toggle semantics).
+        scope = ShortcutScope.windowLevel(rootPane, actionId -> {
             if (JIPipeShortcutActions.COMMAND_BAR_OPEN.id().equals(actionId)) {
                 return this::openNormalMode;
             }

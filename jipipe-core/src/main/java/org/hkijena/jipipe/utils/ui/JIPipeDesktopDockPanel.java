@@ -103,7 +103,12 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
     /**
      * Installs the window-wide shortcut scope of this dock panel. The scope
      * is rooted at the enclosing window's root pane so dock toggles fire no
-     * matter where inside the window the focus is; its resolver only answers
+     * matter where inside the window the focus is; containment is
+     * window-level ({@link ShortcutScope#windowLevel(JComponent, Resolver)}),
+     * so the scope also contains the focus when the focus owner is the
+     * window itself or {@code null} (transient states, e.g. right after a
+     * tab switch), while the focus owner of a modal dialog has a different
+     * window ancestor and stays excluded. Its resolver only answers
      * for the panels this instance holds (returning null otherwise), so
      * several dock panels in one window can each register a scope for the
      * same root without interfering.
@@ -128,7 +133,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         if (rootComponent == null) {
             return;
         }
-        shortcutScope = new ShortcutScope(rootComponent, actionId -> {
+        shortcutScope = ShortcutScope.windowLevel(rootComponent, actionId -> {
             if (actionId == null || !actionId.startsWith("dock:")) {
                 return null;
             }

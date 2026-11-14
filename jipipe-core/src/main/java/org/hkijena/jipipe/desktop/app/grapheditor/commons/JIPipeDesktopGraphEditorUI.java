@@ -490,9 +490,12 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
      * {@link JIPipeDesktopDockPanel#installShortcutScope()}): dock toggles
      * are window-level UI (show/hide a panel) and must fire no matter where
      * inside the window the focus is, unlike the editor scope's context
-     * actions and tools, which stay focus-bound by design. Any focus owner
-     * inside the window descends from the root pane, so the scope contains
-     * the focus in every focus state of the window.
+     * actions and tools, which stay focus-bound by design. Containment is
+     * window-level ({@link ShortcutScope#windowLevel(JComponent, Resolver)}),
+     * so the scope contains the focus in every focus state of the window,
+     * including a focus owner that is the window itself or {@code null}
+     * (transient states, e.g. right after a tab switch); the focus owner of
+     * a modal dialog has a different window ancestor and stays excluded.
      * <p>
      * The resolver answers only {@code dock:<panel-id>} ids, delegating to
      * {@link JIPipeDesktopDockPanel#resolveDockToggle(String)}, and only
@@ -515,7 +518,7 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
         if (rootPane == null) {
             return;
         }
-        dockShortcutScope = new ShortcutScope(rootPane, actionId -> {
+        dockShortcutScope = ShortcutScope.windowLevel(rootPane, actionId -> {
             if (actionId == null || !actionId.startsWith("dock:")) {
                 return null;
             }
