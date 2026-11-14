@@ -280,10 +280,18 @@ public final class JIPipeShortcutRegistry {
     }
 
     /**
+     * Renders a single key stroke for display, e.g. "Ctrl+T". The per-stroke
+     * text of {@link #formatChord(List)}.
+     */
+    public static String formatKeyStroke(KeyStroke stroke) {
+        return UIUtils.keyStrokeToString(stroke);
+    }
+
+    /**
      * Renders a chord (an ordered list of key strokes) for display: the
      * strokes are joined with " then " and each stroke is rendered with
-     * {@link UIUtils#keyStrokeToString(KeyStroke)}, e.g. "Ctrl+T then M". An
-     * empty chord renders as "-".
+     * {@link #formatKeyStroke(KeyStroke)}, e.g. "Ctrl+T then M". An empty
+     * chord renders as "-".
      */
     public static String formatChord(List<KeyStroke> chord) {
         if (chord.isEmpty()) {
@@ -291,7 +299,7 @@ public final class JIPipeShortcutRegistry {
         }
         List<String> parts = new ArrayList<>(chord.size());
         for (KeyStroke stroke : chord) {
-            parts.add(UIUtils.keyStrokeToString(stroke));
+            parts.add(formatKeyStroke(stroke));
         }
         return String.join(" then ", parts);
     }

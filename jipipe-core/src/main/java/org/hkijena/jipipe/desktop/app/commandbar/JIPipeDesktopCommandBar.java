@@ -32,6 +32,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.InputMap;
 import javax.swing.JButton;
@@ -40,6 +41,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JList;
+import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JRootPane;
 import javax.swing.JScrollPane;
@@ -52,6 +54,9 @@ import javax.swing.event.DocumentEvent;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.KeyboardFocusManager;
 import java.awt.KeyEventDispatcher;
@@ -158,8 +163,9 @@ public class JIPipeDesktopCommandBar extends JPanel {
      */
     private static final double OVERLAY_MAX_HEIGHT_FRACTION = 0.6;
     /**
-     * The gap between the overlay's top edge and the root pane's top edge.
-     * A pure gap, not a text-derived size.
+     * The gap between the overlay's top edge and the window's measured top
+     * strip (see {@link #topBarHeight()}). A pure gap, not a text-derived
+     * size.
      */
     private static final int OVERLAY_TOP_GAP = 8;
     /**
@@ -183,6 +189,25 @@ public class JIPipeDesktopCommandBar extends JPanel {
      * used" header of the empty-query list (issue #1346, Task 8).
      */
     private static final int RECENT_SECTION_SIZE = 5;
+
+    /**
+     * The horizontal padding inside a binding chip (the compound border's
+     * empty margin). A pure gap, not a text-derived size.
+     */
+    private static final int CHIP_PADDING_H = 5;
+    /**
+     * The vertical padding inside a binding chip. A pure gap.
+     */
+    private static final int CHIP_PADDING_V = 2;
+    /**
+     * The wider horizontal gap between the stroke chips of a chord variant
+     * (the VS Code-style group separation). A pure gap.
+     */
+    private static final int CHORD_STROKE_GAP = 8;
+    /**
+     * The vertical gap between stacked binding variants. A pure gap.
+     */
+    private static final int VARIANT_ROW_GAP = 2;
 
     private static final String ACTION_KEY_UP = "command-bar-up";
     private static final String ACTION_KEY_DOWN = "command-bar-down";
@@ -1239,7 +1264,9 @@ public class JIPipeDesktopCommandBar extends JPanel {
      * Positions the overlay top-center in the layered pane: the width is a
      * fraction of the root pane width (never text-derived); the height is
      * the content's preferred size clamped to a fraction of the root pane
-     * height (a clamped list scrolls).
+     * height (a clamped list scrolls). The top edge sits below the window's
+     * measured top strip (see {@link #topBarHeight()}) plus the top gap, so
+     * the overlay never covers the toolbar row.
      */
     private void repositionOverlay() {
         if (rootPane == null || !isVisible()) {
@@ -1254,8 +1281,50 @@ public class JIPipeDesktopCommandBar extends JPanel {
         int maxHeight = (int) (rootHeight * OVERLAY_MAX_HEIGHT_FRACTION);
         int height = Math.min(getPreferredSize().height, maxHeight);
         int x = (rootWidth - width) / 2;
-        setBounds(x, OVERLAY_TOP_GAP, width, height);
+        setBounds(x, topBarHeight() + OVERLAY_TOP_GAP, width, height);
         doLayout();
+    }
+
+    /**
+     * The measured height of the window's top strip, in layered-pane
+     * coordinates: how far the bar must be pushed down to not cover the
+     * toolbar row (the Cache / Tasks / Logs buttons and similar).
+     * <p>
+     * Measured, never assumed: the strip is the maximum {@code y + height}
+     * over the content pane's laid-out children that start at {@code y == 0}
+     * (the top strip of the content layout). A child that spans the full
+     * content height (a wrapper panel filling the whole pane) is not a
+     * strip - it would push the overlay to the window's bottom - so that
+     * degenerate case falls back to no strip at all, as does a content pane
+     * without any laid-out top children (e.g. before the first layout).
+     * <p>
+     * The overlay lives in the layered pane, which shares its coordinate
+     * space with the root pane (not the content pane): a menu bar is laid
+     * out ABOVE the content pane inside the layered pane, so its measured
+     * height is added on top.
+     */
+    private int topBarHeight() {
+        Container contentPane = rootPane.getContentPane();
+        if (contentPane == null) {
+            return 0;
+        }
+        int stripBottom = 0;
+        boolean fullPaneChild = false;
+        for (Component child : contentPane.getComponents()) {
+            if (child.getY() != 0) {
+                continue;
+            }
+            stripBottom = Math.max(stripBottom, child.getY() + child.getHeight());
+            if (child.getHeight() >= contentPane.getHeight() && contentPane.getHeight() > 0) {
+                fullPaneChild = true;
+            }
+        }
+        if (fullPaneChild || stripBottom <= 0) {
+            return 0;
+        }
+        JMenuBar menuBar = rootPane.getJMenuBar();
+        int menuBarHeight = menuBar != null ? menuBar.getHeight() : 0;
+        return menuBarHeight + stripBottom;
     }
 
     // ------------------------------------------------------------------
@@ -1363,21 +1432,25 @@ public class JIPipeDesktopCommandBar extends JPanel {
 
     /**
      * The list renderer: category header rows (bold, muted foreground) and
-     * entry rows (name left with the row icon, binding text right in gray,
-     * unavailable rows fully muted, the configure affordance on the selected
-     * available configurable row). Row heights come from the renderer's own
-     * preferred sizes (no fixed cell height, no assumed text sizes); the
-     * reused row panels are force-revalidated after every configure so the
-     * freshly set texts are measured synchronously (the
+     * entry rows (name left with the row icon, the binding as VS Code-style
+     * key chips right in gray - one chip per stroke, chord strokes separated
+     * by a wider gap, variants stacked vertically - and the configure
+     * affordance on the selected available configurable row; the chips end
+     * before the always-reserved configure strip). Unavailable rows are
+     * fully muted. Row heights come from the renderer's own preferred sizes
+     * (no fixed cell height, no assumed text sizes); the reused row panels
+     * are force-revalidated after every configure so the freshly set texts
+     * are measured synchronously (the
      * {@code JIPipeDesktopFindPanel.FindTreeCellRenderer} pattern).
      */
     private final class EntryCellRenderer implements ListCellRenderer<JIPipeDesktopCommandBarModel.Entry> {
         private final JPanel headerPanel = new JPanel(new BorderLayout());
         private final JLabel headerLabel = new JLabel();
         private final JPanel entryPanel = new JPanel(new BorderLayout());
-        private final JPanel entryEndPanel = new JPanel(new BorderLayout());
+        private final JPanel entryEndPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+        private final JPanel bindingPanel = new JPanel();
+        private final JPanel configureSlot = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
         private final JLabel nameLabel = new JLabel();
-        private final JLabel bindingLabel = new JLabel();
         private final JButton configureButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/edit.png"));
 
         EntryCellRenderer() {
@@ -1392,11 +1465,19 @@ public class JIPipeDesktopCommandBar extends JPanel {
             configureButton.setContentAreaFilled(false);
             UIUtils.makeButtonFlat25x25(configureButton);
 
+            // The configure affordance reserves its area in EVERY row (not
+            // only while the button is visible): the binding chips end
+            // before the strip begins, so a plain click on a chip fires the
+            // command, while a click into the strip configures it.
+            configureSlot.setOpaque(false);
+            configureSlot.setPreferredSize(new Dimension(CONFIGURE_BUTTON_SIZE, CONFIGURE_BUTTON_SIZE));
+
             nameLabel.setBorder(BorderFactory.createEmptyBorder(2, 6, 2, 0));
-            bindingLabel.setBorder(BorderFactory.createEmptyBorder(2, 4, 2, 0));
+            bindingPanel.setOpaque(false);
+            bindingPanel.setLayout(new BoxLayout(bindingPanel, BoxLayout.Y_AXIS));
             entryEndPanel.setOpaque(false);
-            entryEndPanel.add(bindingLabel, BorderLayout.CENTER);
-            entryEndPanel.add(configureButton, BorderLayout.EAST);
+            entryEndPanel.add(bindingPanel);
+            entryEndPanel.add(configureSlot);
             entryPanel.setOpaque(true);
             entryPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, ROW_RIGHT_PADDING));
             entryPanel.add(nameLabel, BorderLayout.CENTER);
@@ -1425,14 +1506,46 @@ public class JIPipeDesktopCommandBar extends JPanel {
             nameLabel.setText(value.name());
             nameLabel.setIcon(value.icon());
             nameLabel.setForeground(value.isAvailable() ? foreground : mutedForeground);
-            String bindingText = value.bindingText();
-            bindingLabel.setText(bindingText == null ? "" : bindingText);
-            bindingLabel.setForeground(mutedForeground);
+            rebuildBindingChips(value, mutedForeground);
             configureButton.setVisible(selected && value.isConfigurable()
                     && value.isAvailable() && value.actionId() != null);
             entryPanel.invalidate();
             entryPanel.validate();
             return entryPanel;
+        }
+
+        /**
+         * Rebuilds the binding chips of the row: one row of per-key chips
+         * per binding variant (the strokes of a chord separated by the
+         * wider chord gap, variants stacked vertically), right-aligned
+         * where the plain binding label used to sit. Chip sizes come from
+         * the labels' own preferred sizes (the key text is measured); the
+         * chips end before the reserved configure strip, so a chip click
+         * always fires instead of configuring. Unavailable rows render
+         * their chips in the muted (disabled) foreground color.
+         */
+        private void rebuildBindingChips(JIPipeDesktopCommandBarModel.Entry value, Color textColor) {
+            bindingPanel.removeAll();
+            // The muted color comes from the LaF; a LaF without the key would
+            // crash the chip borders at paint time, so fall back to the row
+            // foreground (never null).
+            Color chipColor = textColor != null ? textColor : entryPanel.getForeground();
+            for (List<KeyStroke> variant : value.variants()) {
+                JPanel row = new JPanel(new FlowLayout(FlowLayout.RIGHT, CHORD_STROKE_GAP, 0));
+                row.setOpaque(false);
+                row.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                row.setBorder(BorderFactory.createEmptyBorder(VARIANT_ROW_GAP, 0, 0, 0));
+                for (KeyStroke stroke : variant) {
+                    JLabel chip = new JLabel(JIPipeShortcutRegistry.formatKeyStroke(stroke));
+                    chip.setForeground(chipColor);
+                    chip.setBorder(BorderFactory.createCompoundBorder(
+                            BorderFactory.createLineBorder(chipColor),
+                            BorderFactory.createEmptyBorder(CHIP_PADDING_V, CHIP_PADDING_H,
+                                    CHIP_PADDING_V, CHIP_PADDING_H)));
+                    row.add(chip);
+                }
+                bindingPanel.add(row);
+            }
         }
 
         private void applyRowColors(JPanel panel, boolean selected) {
