@@ -941,7 +941,39 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         BottomLeft,
         TopRight,
         BottomRight,
-        BottomBottom
+        BottomBottom;
+
+        /**
+         * @return the side this location belongs to for the pinning system
+         */
+        public PinSide getPinSide() {
+            return switch (this) {
+                case TopLeft, BottomLeft -> PinSide.Left;
+                case TopRight, BottomRight -> PinSide.Right;
+                case BottomBottom -> PinSide.Bottom;
+            };
+        }
+    }
+
+    /**
+     * The sides a dock can be pinned to: Left covers the top-left and
+     * bottom-left locations, Right the top-right and bottom-right ones, and
+     * Bottom the bottom location. Separate from {@link PanelSide}, which is
+     * the payload of the layer visibility events.
+     */
+    public enum PinSide {
+        Left,
+        Right,
+        Bottom
+    }
+
+    /**
+     * @param side the pin side
+     * @return the map key of this side in the persisted pin layout (the
+     * lowercase side name)
+     */
+    private static String pinKey(PinSide side) {
+        return side.name().toLowerCase(Locale.ROOT);
     }
 
     public enum PanelSide {
@@ -961,12 +993,23 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         private double mainSplitPaneRatio;
         private Map<String, Boolean> visibilities = new HashMap<>();
         private Map<String, PanelLocation> locations = new HashMap<>();
+        private Map<String, String> pins = new HashMap<>();
         private int leftPanelWidth = 350;
         private int rightPanelWidth = 500;
         private double leftSplitPaneRatio = 0.33;
         private double rightSplitPaneRatio = 0.66;
         private boolean alwaysShowLeftPanel = false;
         private boolean alwaysShowRightPanel = false;
+
+        @JsonGetter("pins")
+        public Map<String, String> getPins() {
+            return pins;
+        }
+
+        @JsonSetter("pins")
+        public void setPins(Map<String, String> pins) {
+            this.pins = pins != null ? pins : new HashMap<>();
+        }
 
         @JsonGetter("always-show-left-panel")
         public boolean isAlwaysShowLeftPanel() {
@@ -1070,6 +1113,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         copy.visibilities.putAll(visibilities);
         copy.visibilities.keySet().removeIf(id -> id.startsWith("_"));
         copy.locations.putAll(locations);
+        copy.pins.putAll(pins);
         copy.mainSplitPaneRatio = mainSplitPaneRatio;
         copy.leftPanelWidth = leftPanelWidth;
         copy.rightPanelWidth = rightPanelWidth;
@@ -1077,6 +1121,37 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         copy.rightSplitPaneRatio = rightSplitPaneRatio;
         copy.alwaysShowLeftPanel = alwaysShowLeftPanel;
         copy.alwaysShowRightPanel = alwaysShowRightPanel;
+        return copy;
+    }
+
+    /**
+     * Returns a copy of this state with the legacy always-show flags
+     * converted to the pin layout: a state stored with "always show right
+     * panel" (the pre-pinning behavior) pins the given legacy stand-in dock
+     * on the right, unless a right pin is already present. The legacy left
+     * flag never produces a pin (its fallback never worked). Pure and
+     * idempotent: the flags are copied as-is, so migrating an already
+     * migrated state changes nothing.
+     *
+     * @param legacyRightStandInDockId the dock ID the legacy right fallback
+     *                                 showed, or null to skip the conversion
+     * @return a migrated copy; this state is not modified
+     */
+    public State migrated(String legacyRightStandInDockId) {
+        State copy = new State();
+        copy.visibilities.putAll(visibilities);
+        copy.locations.putAll(locations);
+        copy.pins.putAll(pins);
+        copy.mainSplitPaneRatio = mainSplitPaneRatio;
+        copy.leftPanelWidth = leftPanelWidth;
+        copy.rightPanelWidth = rightPanelWidth;
+        copy.leftSplitPaneRatio = leftSplitPaneRatio;
+        copy.rightSplitPaneRatio = rightSplitPaneRatio;
+        copy.alwaysShowLeftPanel = alwaysShowLeftPanel;
+        copy.alwaysShowRightPanel = alwaysShowRightPanel;
+        if (alwaysShowRightPanel && legacyRightStandInDockId != null && !copy.pins.containsKey(pinKey(PinSide.Right))) {
+            copy.pins.put(pinKey(PinSide.Right), legacyRightStandInDockId);
+        }
         return copy;
     }
 
