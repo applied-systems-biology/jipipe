@@ -271,6 +271,66 @@ public final class JIPipeDesktopShortcutDispatcher implements KeyEventDispatcher
     }
 
     /**
+     * The scopes that contain the given focus owner, innermost first
+     * (deepest scope root first, registration order as tie-break): the
+     * same ordered list the key dispatch walks
+     * (see {@link #dispatchKeyEvent(KeyEvent)}).
+     * <p>
+     * Exposed for consumers that must evaluate command availability like
+     * the dispatch does (the command bar, design Section 4.1): a command is
+     * resolvable when some scope's resolver returns a runnable.
+     *
+     * @param focusOwner the component to test, may be {@code null} (then
+     *                   no scope contains it and the result is empty)
+     * @return the registered scopes containing the focus owner, innermost
+     * first
+     */
+    public List<ShortcutScope> scopesContaining(Component focusOwner) {
+        return orderedContainingScopes(scopes, focusOwner);
+    }
+
+    /**
+     * Resolves one action id against the registered scopes containing the
+     * given focus owner, innermost first, applying the text-input guard
+     * per the action: when the focus owner is a text input and the action
+     * is not {@link JIPipeShortcutAction#isTextInputSafe() text input safe},
+     * the id resolves to nothing.
+     * <p>
+     * This is exactly the per-id work the fire path performs for each
+     * candidate (see {@link #fireResolvedAction}); the command bar reuses
+     * it to compute live availability (design Section 4.1) instead of
+     * duplicating the walk. Note that the text guard does not apply
+     * <em>inside</em> the command bar itself (dispatch is suspended while
+     * the bar is open); the guard is part of the resolution because the
+     * bar is opened with the trigger from a text field and the
+     * availability of commands there must match what the dispatch would
+     * fire.
+     *
+     * @param actionId   the action id to resolve, must not be {@code null}
+     * @param focusOwner the component to test against the scopes, may be
+     *                   {@code null} (then no scope is walked)
+     * @return the runnable the innermost answering scope produced, or
+     * {@code null} when no scope answers or the text-input guard applies
+     */
+    public Runnable resolveAction(String actionId, Component focusOwner) {
+        Objects.requireNonNull(actionId, "actionId");
+        JIPipeShortcutAction action = JIPipeShortcutRegistry.getInstance().byId(actionId);
+        if (action != null && JIPipeShortcutTextGuard.isTextInput(focusOwner)
+                && !action.isTextInputSafe()) {
+            // Not resolvable in a text field (same guard the fire path
+            // applies per candidate).
+            return null;
+        }
+        for (ShortcutScope scope : orderedContainingScopes(scopes, focusOwner)) {
+            Runnable runnable = scope.resolver().resolve(actionId);
+            if (runnable != null) {
+                return runnable;
+            }
+        }
+        return null;
+    }
+
+    /**
      * Rebuilds the stroke maps from the registry and reconfigures the chord
      * machine with the current timeout and prefixes.
      * <p>
@@ -374,7 +434,7 @@ public final class JIPipeDesktopShortcutDispatcher implements KeyEventDispatcher
                 if (candidateIds == null || candidateIds.isEmpty()) {
                     return false;
                 }
-                return fireResolvedAction(candidateIds, focusOwner, containingScopes, false);
+                return fireResolvedAction(candidateIds, focusOwner, false);
             }
             case PREFIX_STARTED: {
                 List<KeyStroke> prefix = chordMachine.pendingPrefix();
@@ -390,7 +450,7 @@ public final class JIPipeDesktopShortcutDispatcher implements KeyEventDispatcher
                     setStatusText("Chord cancelled");
                     return true;
                 }
-                return fireResolvedAction(candidateIds, focusOwner, containingScopes, true);
+                return fireResolvedAction(candidateIds, focusOwner, true);
             }
             case CANCELLED: {
                 setStatusText(null);
@@ -417,9 +477,6 @@ public final class JIPipeDesktopShortcutDispatcher implements KeyEventDispatcher
      *
      * @param candidateIds the ordered candidate action ids of the hit
      * @param focusOwner the current focus owner, may be null
-     * @param containingScopes the scopes containing the focus owner,
-     *                         innermost first (computed by the caller before
-     *                         the chord machine was fed)
      * @param keyAlreadyConsumed whether the chord state machine has already
      * swallowed the key (a {@code CHORD_COMPLETED} result): then the event
      * is consumed either way; a {@code PASSTHROUGH} hit must not swallow the
@@ -428,23 +485,25 @@ public final class JIPipeDesktopShortcutDispatcher implements KeyEventDispatcher
      * was already swallowed), false to pass the key on
      */
     private boolean fireResolvedAction(List<String> candidateIds, Component focusOwner,
-                                       List<ShortcutScope> containingScopes, boolean keyAlreadyConsumed) {
+                                       boolean keyAlreadyConsumed) {
         for (String candidateId : candidateIds) {
-            JIPipeShortcutAction action = JIPipeShortcutRegistry.getInstance().byId(candidateId);
-            if (action != null && JIPipeShortcutTextGuard.isTextInput(focusOwner)
-                    && !action.isTextInputSafe()) {
-                // Not resolvable in a text field: skip this candidate, a
-                // later, text-input-safe candidate may still fire.
-                continue;
+            // The per-id work (text-input guard per the action, then the
+            // innermost-first scope walk) is shared with the command bar
+            // through resolveAction; the guard and the walk are re-evaluated
+            // identically to before (a scope that does not contain the
+            // focus owner simply has no resolver to consult, so the walk
+            // over the containing scopes computed by resolveAction agrees
+            // with the one the caller used to compute).
+            Runnable runnable = resolveAction(candidateId, focusOwner);
+            if (runnable != null) {
+                JIPipeShortcutAction action = JIPipeShortcutRegistry.getInstance().byId(candidateId);
+                SwingUtilities.invokeLater(runnable);
+                setStatusText("Executed: " + (action == null ? candidateId : action.name()));
+                return true;
             }
-            for (ShortcutScope scope : containingScopes) {
-                Runnable runnable = scope.resolver().resolve(candidateId);
-                if (runnable != null) {
-                    SwingUtilities.invokeLater(runnable);
-                    setStatusText("Executed: " + (action == null ? candidateId : action.name()));
-                    return true;
-                }
-            }
+            // A candidate the text-input guard skipped or that no scope
+            // resolves is a miss: a later, text-input-safe candidate may
+            // still fire.
         }
         // No candidate resolved: same consume semantics as the text-input
         // guard above.
