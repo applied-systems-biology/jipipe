@@ -2,6 +2,7 @@ package org.hkijena.jipipe.utils.ui;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.JIPipe;
@@ -100,8 +101,8 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         }
 
         JPopupMenu toolbarContextMenu = new JPopupMenu();
-        UIUtils.addReloadableRightClickPopupMenuToComponent(leftToolBar, toolbarContextMenu, (menu) -> reloadContextMenu(menu, false));
-        UIUtils.addReloadableRightClickPopupMenuToComponent(rightToolBar, toolbarContextMenu, (menu) -> reloadContextMenu(menu, true));
+        UIUtils.addReloadableRightClickPopupMenuToComponent(leftToolBar, toolbarContextMenu, (menu) -> reloadContextMenu(menu));
+        UIUtils.addReloadableRightClickPopupMenuToComponent(rightToolBar, toolbarContextMenu, (menu) -> reloadContextMenu(menu));
 
         showToolbarLabelsMenuItem.setState(showToolbarLabels);
         showToolbarLabelsMenuItem.addActionListener(e -> {
@@ -135,7 +136,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         mainSplitPane.getRatioUpdatedEventEmitter().subscribe(this);
     }
 
-    private void reloadContextMenu(JPopupMenu menu, boolean right) {
+    private void reloadContextMenu(JPopupMenu menu) {
         menu.removeAll();
         menu.add(showToolbarLabelsMenuItem);
     }
@@ -694,7 +695,9 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         panel.setName(name);
         panel.setUiOrder(uiOrder);
         panels.put(id, panel);
-        pausedStandIns.remove(panel.getLocation().getPinSide());
+        if (panel.getLocation() != null) {
+            pausedStandIns.remove(panel.getLocation().getPinSide());
+        }
 
         if (visible) {
             activatePanel(panel, false);
@@ -730,7 +733,9 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         panel.setName(name);
         panel.setUiOrder(uiOrder);
         panels.put(id, panel);
-        pausedStandIns.remove(panel.getLocation().getPinSide());
+        if (panel.getLocation() != null) {
+            pausedStandIns.remove(panel.getLocation().getPinSide());
+        }
 
         if (visible) {
             activatePanel(panel, false);
@@ -833,7 +838,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
      */
     public void pinDock(String id) {
         Panel panel = panels.get(id);
-        if (panel == null || id.startsWith("_")) {
+        if (panel == null || id.startsWith("_") || panel.getLocation() == null) {
             return;
         }
         String key = pinKey(panel.getLocation().getPinSide());
@@ -1167,6 +1172,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         private boolean alwaysShowRightPanel = false;
 
         @JsonGetter("pins")
+        @JsonInclude(JsonInclude.Include.NON_EMPTY)
         public Map<String, String> getPins() {
             return pins;
         }

@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.utils.ui;
 
+import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.junit.jupiter.api.Test;
 
 import javax.swing.*;
@@ -237,5 +238,29 @@ class JIPipeDesktopDockPanelPinTest {
         assertTrue(supplied.get(), "the stand-in must instantiate a lazy component");
         assertNotNull(panel.getPanelComponent("TOOLS", JPanel.class));
         assertEquals("TOOLS", panel.getStandInPanelId(JIPipeDesktopDockPanel.PinSide.Right));
+    }
+
+    @Test void nullLocationEntriesFromHandEditedDocumentsDoNotBreakRegistration() {
+        JIPipeDesktopDockPanel.State state = new JIPipeDesktopDockPanel.State();
+        state.getLocations().put("TOOLS", null);
+        JIPipeDesktopDockPanel panel = new JIPipeDesktopDockPanel();
+        panel.setSavedState(state);
+        assertDoesNotThrow(() -> addPanel(panel, "TOOLS", JIPipeDesktopDockPanel.PanelLocation.TopRight, false));
+        assertNull(panel.getPinnedDockId(JIPipeDesktopDockPanel.PinSide.Right),
+                "a dock without a location cannot be pinned");
+        assertDoesNotThrow(() -> panel.pinDock("TOOLS"));
+    }
+
+    @Test void movingWithinTheSameSideAlsoClearsThePin() {
+        JIPipeDesktopDockPanel panel = new JIPipeDesktopDockPanel();
+        addPanel(panel, "TOOLS", JIPipeDesktopDockPanel.PanelLocation.TopRight, false);
+        panel.pinDock("TOOLS");
+        panel.movePanelToLocation("TOOLS", JIPipeDesktopDockPanel.PanelLocation.BottomRight, false);
+        assertFalse(panel.isDockPinned("TOOLS"));
+    }
+
+    @Test void emptyPinsAreOmittedFromSerializedState() {
+        String json = JsonUtils.toJsonString(new JIPipeDesktopDockPanel.State());
+        assertFalse(json.contains("pins"), "a state without pins must not carry an empty pins object");
     }
 }

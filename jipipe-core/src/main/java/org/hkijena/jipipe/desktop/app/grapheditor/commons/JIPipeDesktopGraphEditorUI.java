@@ -189,6 +189,11 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
         });
 
         restoreDockStateFromSettings();
+        // Without a settings service there is no stored or default dock state
+        // to restore; the default Tools pin still applies
+        if (!JIPipe.isInstantiated()) {
+            dockPanel.pinDock(DOCK_CONTEXT_PANEL);
+        }
         initializeMapStateFromSettings();
 
         dockPanel.getPanelSideVisibilityChangedEventEmitter().subscribe(this);
