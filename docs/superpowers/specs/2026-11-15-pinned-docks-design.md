@@ -157,11 +157,13 @@ must be re-applied; re-pinning is one right-click away from the move entries).
   (who predate the always-show feature) keep their current collapsed-side
   behavior and can pin manually. Fresh installs and everyone who ever saved a
   layout with the default flag get the pin.
-- Migration is applied where a persisted state enters the panel:
-  `restoreState()` migrates internally, and the editors' apply paths
-  (`applyPipelineDockState`, the compartments equivalent) migrate before the
+- Migration is applied where persisted state enters an editor:
+  `applyPipelineDockState` and `applyCompartmentsDockState` migrate before the
   JSON equality check, so the echo suppression compares like-for-like and does
-  not re-apply in a loop.
+  not re-apply in a loop, and the graph editors' `restoreDockStateTemplate`
+  migrates before restoring a layout template. `restoreState()` itself stays
+  generic: the run managers call it with in-memory snapshots that already
+  carry pins.
 - `SettingsKeys.defaultDockState()` pins `right` to
   `JIPipeDesktopGraphEditorUI.DOCK_CONTEXT_PANEL` instead of setting the
   always-show flag. Fresh installs therefore show the Tools dock on first launch,
@@ -195,8 +197,9 @@ must be re-applied; re-pinning is one right-click away from the move entries).
   add/remove flow is untouched.
 - All other dock hosts (data viewer, plot editor, project overview, welcome
   panel, legacy image viewer, run-single-algorithm IO editor) get pin support
-  through the generic panel; none of them gets a default pin. The IO editor's
-  dock state templates carry pins through their existing JSON round-trip.
+  through the generic panel; none of them gets a default pin. Dock layout
+  templates (a graph-editor feature) carry pins through their existing JSON
+  round-trip; templates stored by older versions are migrated on restore.
 - #1346 (keyboard shortcut overhaul, branch `1346-keyboard-shortcut-overhaul`,
   not yet merged): its `toggleDockPanel` currently decides on
   `panel.isVisible()`. With pins the contract is: toggle on **displayed** state
@@ -247,8 +250,8 @@ structure - the underline/border rendering is verified in the running app.
 | File | Change |
 |---|---|
 | `jipipe-core/src/main/java/org/hkijena/jipipe/utils/ui/JIPipeDesktopDockPanel.java` | Core of the feature: `PinSide`, pins in `State` (+ `migrated()`), pin API, stand-in and pause in the display plan, pin menu entry, pin indicator, removal of the always-show/fallback mechanism |
-| `jipipe-core/src/main/java/org/hkijena/jipipe/desktop/app/grapheditor/commons/JIPipeDesktopGraphEditorUI.java` | Remove the fallback wiring |
-| `jipipe-core/src/main/java/org/hkijena/jipipe/desktop/app/grapheditor/flavors/pipeline/JIPipeDesktopPipelineGraphEditorUI.java` | Apply-path migration before the state equality check |
+| `jipipe-core/src/main/java/org/hkijena/jipipe/desktop/app/grapheditor/commons/JIPipeDesktopGraphEditorUI.java` | Remove the fallback wiring and the constructor's always-show default; migrate legacy layout templates on restore |
+| `jipipe-core/src/main/java/org/hkijena/jipipe/desktop/app/grapheditor/flavors/pipeline/JIPipeDesktopPipelineGraphEditorUI.java` | Apply-path migration before the state equality check; the flavor's `restoreDefaultDockState` pins the Tools dock |
 | `jipipe-core/src/main/java/org/hkijena/jipipe/desktop/app/grapheditor/flavors/compartments/JIPipeDesktopCompartmentsGraphEditorUI.java` | Same as the pipeline flavor |
 | `jipipe-core/src/main/java/org/hkijena/jipipe/plugins/settings/SettingsKeys.java` | `defaultDockState()` pins the Tools dock on the right |
 | `jipipe-core/src/test/java/org/hkijena/jipipe/utils/ui/JIPipeDesktopDockPanelStateTest.java` | Extended with pin and migration tests |
