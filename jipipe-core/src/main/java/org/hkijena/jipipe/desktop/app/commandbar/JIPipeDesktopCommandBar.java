@@ -32,7 +32,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
+import javax.swing.Box;
 import javax.swing.DefaultListModel;
 import javax.swing.Icon;
 import javax.swing.InputMap;
@@ -219,9 +219,13 @@ public class JIPipeDesktopCommandBar extends JPanel {
      */
     private static final int CHORD_STROKE_GAP = 8;
     /**
-     * The vertical gap between stacked binding variants. A pure gap.
+     * The nominal separation between binding variants: twice the chord gap.
+     * Within a variant the strokes of a chord sit {@link #CHORD_STROKE_GAP}
+     * apart; between variants a wider invisible spacer separates the groups
+     * (issue #1346, verification wave 4: all variants render inline in ONE
+     * chip row). A pure gap, not a text size.
      */
-    private static final int VARIANT_ROW_GAP = 2;
+    private static final int VARIANT_GAP = 2 * CHORD_STROKE_GAP;
 
     private static final String ACTION_KEY_UP = "command-bar-up";
     private static final String ACTION_KEY_DOWN = "command-bar-down";
@@ -1507,9 +1511,11 @@ public class JIPipeDesktopCommandBar extends JPanel {
      * The list renderer: category header rows (bold, muted foreground) and
      * entry rows (name left with the row icon, the binding as VS Code-style
      * key chips right in gray - one chip per stroke, chord strokes separated
-     * by a wider gap, variants stacked vertically - and the configure icon
-     * painted into the reserved strip on the selected available configurable
-     * row; the chips end before the always-reserved configure strip). The
+     * by the chord gap, all variants inline in ONE row with a wider gap
+     * between variants (issue #1346, verification wave 4) - and the configure
+     * icon painted into the reserved strip on the selected available
+     * configurable row; the chips end before the always-reserved configure
+     * strip). The
      * icon is painted, not hosted as a live child button: the shared
      * renderer component would leak a child's visibility toggle across rows
      * (issue #1346, wave 3). Unavailable rows are
@@ -1547,7 +1553,7 @@ public class JIPipeDesktopCommandBar extends JPanel {
 
             nameLabel.setBorder(BorderFactory.createEmptyBorder(2, 6, 2, 0));
             bindingPanel.setOpaque(false);
-            bindingPanel.setLayout(new BoxLayout(bindingPanel, BoxLayout.Y_AXIS));
+            bindingPanel.setLayout(new FlowLayout(FlowLayout.RIGHT, CHORD_STROKE_GAP, 0));
             entryEndPanel.setOpaque(false);
             entryEndPanel.add(bindingPanel);
             entryEndPanel.add(configureSlot);
@@ -1626,14 +1632,19 @@ public class JIPipeDesktopCommandBar extends JPanel {
         }
 
         /**
-         * Rebuilds the binding chips of the row: one row of per-key chips
-         * per binding variant (the strokes of a chord separated by the
-         * wider chord gap, variants stacked vertically), right-aligned
-         * where the plain binding label used to sit. Chip sizes come from
-         * the labels' own preferred sizes (the key text is measured); the
-         * chips end before the reserved configure strip, so a chip click
-         * always fires instead of configuring. Unavailable rows render
-         * their chips in the muted (disabled) foreground color.
+         * Rebuilds the binding chips of the row: ALL binding variants inline
+         * in ONE right-aligned chip row (issue #1346, verification wave 4;
+         * the wave-2 stacked variant rows made those entries taller and read
+         * as an accidental wrap). The strokes of a chord sit at the chord
+         * gap; between two variants a wider invisible spacer separates the
+         * groups (the FlowLayout already inserts a chord gap on each side of
+         * the spacer, so the rendered variant gap is
+         * {@code VARIANT_GAP + CHORD_STROKE_GAP}, clearly wider than the gap
+         * inside a variant). Chip sizes come from the labels' own preferred
+         * sizes (the key text is measured); the chips end before the
+         * reserved configure strip, so a chip click always fires instead of
+         * configuring. Unavailable rows render their chips in the muted
+         * (disabled) foreground color.
          */
         private void rebuildBindingChips(JIPipeDesktopCommandBarModel.Entry value, Color textColor) {
             bindingPanel.removeAll();
@@ -1641,11 +1652,15 @@ public class JIPipeDesktopCommandBar extends JPanel {
             // crash the chip borders at paint time, so fall back to the row
             // foreground (never null).
             Color chipColor = textColor != null ? textColor : entryPanel.getForeground();
+            boolean firstVariant = true;
             for (List<KeyStroke> variant : value.variants()) {
-                JPanel row = new JPanel(new FlowLayout(FlowLayout.RIGHT, CHORD_STROKE_GAP, 0));
-                row.setOpaque(false);
-                row.setAlignmentX(Component.RIGHT_ALIGNMENT);
-                row.setBorder(BorderFactory.createEmptyBorder(VARIANT_ROW_GAP, 0, 0, 0));
+                if (variant.isEmpty()) {
+                    continue;
+                }
+                if (!firstVariant) {
+                    bindingPanel.add(Box.createHorizontalStrut(VARIANT_GAP - CHORD_STROKE_GAP));
+                }
+                firstVariant = false;
                 for (KeyStroke stroke : variant) {
                     JLabel chip = new JLabel(JIPipeShortcutRegistry.formatKeyStroke(stroke));
                     chip.setForeground(chipColor);
@@ -1653,9 +1668,8 @@ public class JIPipeDesktopCommandBar extends JPanel {
                             BorderFactory.createLineBorder(chipColor),
                             BorderFactory.createEmptyBorder(CHIP_PADDING_V, CHIP_PADDING_H,
                                     CHIP_PADDING_V, CHIP_PADDING_H)));
-                    row.add(chip);
+                    bindingPanel.add(chip);
                 }
-                bindingPanel.add(row);
             }
         }
 

@@ -36,23 +36,24 @@ class CommandBarSettingsTest {
     void currentModeParsesStoredValuesAndFallsBack() {
         JIPipe.ensureInstance();
 
-        // Empty store: the binding falls back to the key's default ("grayed").
-        assertEquals(JIPipeDesktopCommandBarModel.ListMode.GRAYED,
-                CommandBarSettings.currentMode(),
-                "an empty store must report the default mode GRAYED");
-
-        // A stored non-default id parses to its mode.
-        CommandBarSettings.binding().set("available-only");
+        // Empty store: the binding falls back to the key's default
+        // ("available-only" since verification wave 4).
         assertEquals(JIPipeDesktopCommandBarModel.ListMode.AVAILABLE_ONLY,
                 CommandBarSettings.currentMode(),
-                "the stored 'available-only' must parse to AVAILABLE_ONLY");
+                "an empty store must report the default mode AVAILABLE_ONLY");
 
-        // Writing back the default removes the sub-path (defaults are never
-        // materialized) and the mode falls back to GRAYED again.
+        // A stored non-default id parses to its mode.
         CommandBarSettings.binding().set("grayed");
         assertEquals(JIPipeDesktopCommandBarModel.ListMode.GRAYED,
                 CommandBarSettings.currentMode(),
-                "resetting to the default must report GRAYED again");
+                "the stored 'grayed' must parse to GRAYED");
+
+        // Writing back the default removes the sub-path (defaults are never
+        // materialized) and the mode falls back to AVAILABLE_ONLY again.
+        CommandBarSettings.binding().set("available-only");
+        assertEquals(JIPipeDesktopCommandBarModel.ListMode.AVAILABLE_ONLY,
+                CommandBarSettings.currentMode(),
+                "resetting to the default must report AVAILABLE_ONLY again");
 
         // A hand-edited (unknown) id must fall back to GRAYED, not throw.
         CommandBarSettings.binding().set("nonsense");
@@ -82,6 +83,6 @@ class CommandBarSettingsTest {
         // The block path and sub-path are registration identities persisted in
         // saved settings documents: pin them as stable string literals.
         assertEquals("registry:command-bar", CommandBarSettings.BLOCK_PATH);
-        assertEquals("grayed", CommandBarSettings.LIST_MODE.defaultValue());
+        assertEquals("available-only", CommandBarSettings.LIST_MODE.defaultValue());
     }
 }

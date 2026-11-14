@@ -49,11 +49,16 @@ public final class CommandBarSettings {
     /**
      * The typed key of the command bar's list mode: the persisted id of a
      * {@link JIPipeDesktopCommandBarModel.ListMode} at the {@code list-mode}
-     * sub-path of the {@value #BLOCK_PATH} block.
+     * sub-path of the {@value #BLOCK_PATH} block. The default is
+     * {@code "available-only"} (issue #1346, verification wave 4: the
+     * grayed-out rendering of unavailable commands was reported as
+     * confusing); {@link JIPipeDesktopCommandBarModel.ListMode#parse(String)}
+     * still falls back to {@link JIPipeDesktopCommandBarModel.ListMode#GRAYED}
+     * for null or unknown ids.
      */
     public static final JIPipeSettingKey<String> LIST_MODE =
             JIPipeSettingKey.string(BLOCK_PATH, "list-mode", String.class)
-                    .defaultValue("grayed")
+                    .defaultValue("available-only")
                     .name("Command bar list mode")
                     .description("Which commands the command bar lists: grayed-out unavailable commands, only available ones, or everything");
 
@@ -133,16 +138,17 @@ public final class CommandBarSettings {
     /**
      * @return the currently persisted list mode, never {@code null}: an empty
      * store reports the key's default (which parses to
-     * {@link JIPipeDesktopCommandBarModel.ListMode#GRAYED}), and a hand-edited
-     * settings document holding an unknown id falls back to
+     * {@link JIPipeDesktopCommandBarModel.ListMode#AVAILABLE_ONLY}), and a
+     * hand-edited settings document holding an unknown id falls back to
      * {@link JIPipeDesktopCommandBarModel.ListMode#GRAYED} through
      * {@link JIPipeDesktopCommandBarModel.ListMode#parse(String)}.
      */
     public static JIPipeDesktopCommandBarModel.ListMode currentMode() {
         // binding().get() falls back to the key's default for an absent or
         // malformed value (including a stored JSON null), and this key's
-        // default is the non-null "grayed"; parse is null-safe as well, so
-        // the read is correct even if a null ever slips through.
+        // default is the non-null "available-only" (issue #1346, wave 4);
+        // parse is null-safe as well, so the read is correct even if a null
+        // ever slips through.
         return JIPipeDesktopCommandBarModel.ListMode.parse(binding().get());
     }
 }
