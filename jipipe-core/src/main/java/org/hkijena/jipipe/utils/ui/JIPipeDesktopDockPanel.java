@@ -44,6 +44,9 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
     // The pinned dock per side: keys are the lowercase side names (same
     // shape as State.pins), values are dock IDs
     private final Map<String, String> pins = new HashMap<>();
+    // The docks currently displayed as side stand-ins (recomputed on every
+    // update; purely presentational, never persisted)
+    private final Map<PinSide, Panel> activeStandIns = new EnumMap<>(PinSide.class);
     private final JIPipeDesktopSplitPane leftSplitPane = new JIPipeDesktopSplitPane(JIPipeDesktopSplitPane.TOP_BOTTOM, new JIPipeDesktopSplitPane.FixedRatio(0.33, true));
     private final JIPipeDesktopSplitPane rightSplitPane = new JIPipeDesktopSplitPane(JIPipeDesktopSplitPane.TOP_BOTTOM, new JIPipeDesktopSplitPane.FixedRatio(0.66, true));
     private final JIPipeDesktopSplitPane mainSplitPane = new JIPipeDesktopSplitPane(JIPipeDesktopSplitPane.TOP_BOTTOM, new JIPipeDesktopSplitPane.FixedRatio(0.66, true));
@@ -306,38 +309,46 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
 
         if (!hideToolbars) {
             for (Panel panel : getPanelsAtLocation(PanelLocation.TopLeft)) {
-                if (panel.isDisplayed()) {
+                if (panel.isDisplayed() || panel == activeStandIns.get(PinSide.Left)) {
                     leftContent.add(panel.getComponent());
                     break;
                 }
             }
             for (Panel panel : getPanelsAtLocation(PanelLocation.BottomLeft)) {
-                if (panel.isDisplayed()) {
+                if (panel.isDisplayed() || panel == activeStandIns.get(PinSide.Left)) {
                     leftContent.add(panel.getComponent());
                     break;
                 }
             }
             for (Panel panel : getPanelsAtLocation(PanelLocation.TopRight)) {
-                if (panel.isDisplayed()) {
+                if (panel.isDisplayed() || panel == activeStandIns.get(PinSide.Right)) {
                     rightContent.add(panel.getComponent());
                     break;
                 }
             }
             for (Panel panel : getPanelsAtLocation(PanelLocation.BottomRight)) {
-                if (panel.isDisplayed()) {
+                if (panel.isDisplayed() || panel == activeStandIns.get(PinSide.Right)) {
                     rightContent.add(panel.getComponent());
                     break;
                 }
             }
         }
 
-        if (rightContent.isEmpty() && alwaysShowRightPanel && fallbackRight != null && getPanels().containsKey(fallbackRight)) {
+        // A side with no displayed dock shows its pinned dock as a stand-in
+        if (leftContent.isEmpty() && activeStandIns.get(PinSide.Left) != null) {
+            displayStandIn(activeStandIns.get(PinSide.Left), leftContent);
+        }
+        if (rightContent.isEmpty() && activeStandIns.get(PinSide.Right) != null) {
+            displayStandIn(activeStandIns.get(PinSide.Right), rightContent);
+        }
+
+        if (rightContent.isEmpty() && activeStandIns.get(PinSide.Right) == null && alwaysShowRightPanel && fallbackRight != null && getPanels().containsKey(fallbackRight)) {
             Panel panel = getPanels().get(fallbackRight);
             if (panel.location == PanelLocation.TopRight || panel.location == PanelLocation.BottomRight) {
                 rightContent.add(panel.getComponent());
             }
         }
-        if (leftContent.isEmpty() && alwaysShowLeftPanel && fallbackLeft != null && getPanels().containsKey(fallbackLeft)) {
+        if (leftContent.isEmpty() && activeStandIns.get(PinSide.Left) == null && alwaysShowLeftPanel && fallbackLeft != null && getPanels().containsKey(fallbackLeft)) {
             Panel panel = getPanels().get(fallbackLeft);
             if (panel.location == PanelLocation.TopLeft || panel.location == PanelLocation.BottomLeft) {
                 rightContent.add(panel.getComponent());
@@ -405,7 +416,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         if (mainComponent != null) {
             Panel bottomPanel = null;
             for (Panel panel : getPanelsAtLocation(PanelLocation.BottomBottom)) {
-                if (panel.isVisible()) {
+                if (panel.isVisible() || panel == activeStandIns.get(PinSide.Bottom)) {
                     bottomPanel = panel;
                     break;
                 }
@@ -497,7 +508,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
     private JToggleButton createToggleButton(Panel panel) {
         JToggleButton button = new JToggleButton(panel.getIcon());
         button.setOpaque(false);
-        button.setSelected(panel.isDisplayed());
+        button.setSelected(isDockDisplayed(panel.getId()));
         button.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
         button.setForeground(ThemeUtils.getCurrentStyle().getIconBaseColor());
         button.setToolTipText(panel.getName());
@@ -662,7 +673,10 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         if (visible) {
             activatePanel(panel, false);
         } else {
-            updateToolbars();
+            // A hidden registration can still change the display (it may
+            // become the side's stand-in), so the whole display plan
+            // recomputes
+            updateAll();
         }
 
         revalidate();
@@ -694,7 +708,8 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         if (visible) {
             activatePanel(panel, false);
         } else {
-            updateToolbars();
+            // Same as the component overload: the display plan recomputes
+            updateAll();
         }
 
         revalidate();
@@ -742,6 +757,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
 
     private void updateAll() {
         List<PanelSideVisibilityChangedEvent> panelVisibilityChangedEvents = new ArrayList<>();
+        computeStandIns();
         updateToolbars();
         updateContent(panelVisibilityChangedEvents);
         updateSizes();
@@ -829,6 +845,74 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
      */
     public String getPinnedDockId(PinSide side) {
         return pins.get(pinKey(side));
+    }
+
+    /**
+     * Recomputes the stand-in display: the pinned dock of a side is
+     * displayed when no dock on that side is user-displayed. Purely
+     * presentational: the stand-in never flips the dock's visible flag and
+     * is never persisted. Hidden while the toolbars are hidden (the whole
+     * dock area is collapsed then).
+     */
+    private void computeStandIns() {
+        activeStandIns.clear();
+        if (hideToolbars) {
+            return;
+        }
+        for (PinSide side : PinSide.values()) {
+            boolean anyDisplayed = panels.values().stream()
+                    .anyMatch(panel -> panel.getLocation() != null
+                            && panel.getLocation().getPinSide() == side
+                            && panel.isDisplayed());
+            if (anyDisplayed) {
+                continue;
+            }
+            String pinnedId = pins.get(pinKey(side));
+            if (pinnedId == null || pinnedId.startsWith("_")) {
+                continue;
+            }
+            Panel panel = panels.get(pinnedId);
+            if (panel != null) {
+                activeStandIns.put(side, panel);
+            }
+        }
+    }
+
+    /**
+     * @param id the dock ID
+     * @return true when the dock is on screen: user-visible or the active
+     * stand-in of its side. Dock toggles and dock shortcuts toggle on this.
+     */
+    public boolean isDockDisplayed(String id) {
+        Panel panel = panels.get(id);
+        if (panel == null) {
+            return false;
+        }
+        return panel.isDisplayed() || activeStandIns.containsValue(panel);
+    }
+
+    /**
+     * @param side the pin side
+     * @return the ID of the dock currently displayed as the side's stand-in,
+     * or null
+     */
+    public String getStandInPanelId(PinSide side) {
+        Panel panel = activeStandIns.get(side);
+        return panel != null ? panel.getId() : null;
+    }
+
+    /**
+     * Instantiates the stand-in's component when needed (exactly like an
+     * activation does) and adds it to the side's content.
+     */
+    private void displayStandIn(Panel standIn, List<JComponent> content) {
+        if (standIn.getComponent() == null && standIn.getComponentSupplier() != null) {
+            standIn.setComponent(standIn.getComponentSupplier().get());
+            standIn.setComponentSupplier(null);
+        }
+        if (standIn.getComponent() != null) {
+            content.add(standIn.getComponent());
+        }
     }
 
     public <T extends JComponent> T getPanelComponent(String id, Class<T> klass) {
