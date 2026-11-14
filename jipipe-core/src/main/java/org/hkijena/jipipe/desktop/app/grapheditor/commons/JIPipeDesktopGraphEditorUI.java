@@ -166,6 +166,16 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
      */
     private ShortcutScope shortcutScope;
     /**
+     * The window-root shortcut scope of this editor's dock panel toggles,
+     * installed in {@link #addNotify()} (the enclosing window's root pane
+     * exists only once this editor is displayable) and unregistered in
+     * {@link #removeNotify()} and {@link #dispose()}. Its resolver answers
+     * only {@code dock:<panel-id>} ids and only while this editor is
+     * showing, so dock toggles fire regardless of where inside the window
+     * the focus is, while a hidden editor tab declines.
+     */
+    private ShortcutScope dockShortcutScope;
+    /**
      * The per-chord tool cycle state of the scope resolver: for every shared
      * effective chord (an immutable variant list, e.g. the LEGACY preset's
      * ESC on the default tool and the notes-edit tool), the id of the tool
@@ -328,11 +338,18 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
         disposed = true;
         graph.getGraphChangedEventEmitter().unsubscribe(this);
         dockPanel.getParameterChangedEventEmitter().unsubscribe(showDockToolbarLabelsParameterListener);
-        // The scope must not outlive the editor: a disposed scope would
-        // still resolve runnables against the dead canvas
+        // The scopes must not outlive the editor: a disposed scope would
+        // still resolve runnables against the dead canvas. The dock scope
+        // is normally removed in removeNotify(); unregistering it here as
+        // well covers dispose paths that do not detach the editor (both
+        // unregister calls are no-ops for an already-removed scope).
         if (shortcutScope != null) {
             JIPipeDesktopShortcutDispatcher.getInstance().unregisterScope(shortcutScope);
             shortcutScope = null;
+        }
+        if (dockShortcutScope != null) {
+            JIPipeDesktopShortcutDispatcher.getInstance().unregisterScope(dockShortcutScope);
+            dockShortcutScope = null;
         }
         // Each binding owns a document path listener: release the ones this
         // editor created, so opening and closing editors does not accumulate
@@ -384,21 +401,14 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
      *     <li>editor-level ids: undo, redo, zoom, and selection moves</li>
      * </ul>
      * Anything else resolves to null, so the dispatcher falls through to the
-     * next scope.
+     * next scope. Dock toggle ids are deliberately not answered here: this
+     * scope stays focus-bound (context actions and tools are
+     * selection/canvas-dependent), while dock toggles must fire regardless
+     * of the focus location and resolve through the window-root dock scope
+     * installed by {@link #installDockShortcutScope()}.
      */
     private void initializeShortcutScope() {
         shortcutScope = new ShortcutScope(this, actionId -> {
-            // Dock panel toggles: this editor's own dock panel instance
-            // answers for its panels (see
-            // JIPipeDesktopDockPanel#resolveDockToggle). Hidden editor tabs
-            // stay in the component hierarchy, so every tab's window-root
-            // dock scope also contains the focus; this editor scope is
-            // strictly deeper, so the visible tab's editor wins via
-            // innermost-first resolution and the window-root dock scopes
-            // remain the fallback for non-editor hosts.
-            if (actionId != null && actionId.startsWith("dock:")) {
-                return dockPanel.resolveDockToggle(actionId);
-            }
             // Context actions: the first action carrying the id must match
             // the current selection, otherwise the action is unavailable
             Set<JIPipeDesktopGraphInteractiveObjectUI> selection = canvasUI.getSelectionManager().getSelection();
@@ -467,6 +477,77 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
             }
         });
         JIPipeDesktopShortcutDispatcher.getInstance().registerScope(shortcutScope);
+    }
+
+    /**
+     * Installs the window-root shortcut scope of this editor's dock panel
+     * toggles. Called from {@link #addNotify()}: the enclosing window's root
+     * pane exists only once this editor is displayable, so the
+     * constructor-time registration of the editor scope cannot host it.
+     * <p>
+     * The scope is rooted at the enclosing window's root pane (the same root
+     * resolution as the dock panel's own scope, see
+     * {@link JIPipeDesktopDockPanel#installShortcutScope()}): dock toggles
+     * are window-level UI (show/hide a panel) and must fire no matter where
+     * inside the window the focus is, unlike the editor scope's context
+     * actions and tools, which stay focus-bound by design. Any focus owner
+     * inside the window descends from the root pane, so the scope contains
+     * the focus in every focus state of the window.
+     * <p>
+     * The resolver answers only {@code dock:<panel-id>} ids, delegating to
+     * {@link JIPipeDesktopDockPanel#resolveDockToggle(String)}, and only
+     * while this editor is showing: hidden editor tabs stay in the component
+     * hierarchy, so their window-root scopes would still contain the focus,
+     * and since all window-root scopes share the same depth the
+     * registration-order tie-break would let a hidden tab hijack the id from
+     * the visible tab. The {@code isShowing()} guard makes hidden tabs
+     * decline (visible tab wins). Multi-window safe: a window's root pane
+     * never contains another window's focus owner.
+     * <p>
+     * Degenerate fallback: without a root pane (a component hierarchy never
+     * attached to a window, e.g. some headless test hierarchies) no dock
+     * scope can be rooted, so the dock toggles of this editor stay
+     * unresolvable by the dispatcher instead of firing from the wrong
+     * context.
+     */
+    private void installDockShortcutScope() {
+        JRootPane rootPane = SwingUtilities.getRootPane(this);
+        if (rootPane == null) {
+            return;
+        }
+        dockShortcutScope = new ShortcutScope(rootPane, actionId -> {
+            if (actionId == null || !actionId.startsWith("dock:")) {
+                return null;
+            }
+            if (!JIPipeDesktopGraphEditorUI.this.isShowing()) {
+                return null;
+            }
+            return dockPanel.resolveDockToggle(actionId);
+        });
+        JIPipeDesktopShortcutDispatcher.getInstance().registerScope(dockShortcutScope);
+    }
+
+    @Override
+    public void addNotify() {
+        super.addNotify();
+        // A disposed editor must never hold a scope; addNotify after
+        // dispose has no production path, the guard only pins the invariant
+        if (!disposed && dockShortcutScope == null) {
+            installDockShortcutScope();
+        }
+    }
+
+    @Override
+    public void removeNotify() {
+        // The dock scope is rooted at the window's root pane: it must not
+        // outlive this editor's attachment to that window (removeNotify
+        // also fires on window teardown). addNotify() reinstalls it if the
+        // editor is attached to a window again.
+        if (dockShortcutScope != null) {
+            JIPipeDesktopShortcutDispatcher.getInstance().unregisterScope(dockShortcutScope);
+            dockShortcutScope = null;
+        }
+        super.removeNotify();
     }
 
     public JScrollPane getScrollPane() {

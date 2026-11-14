@@ -108,6 +108,15 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
      * several dock panels in one window can each register a scope for the
      * same root without interfering.
      *
+     * <p>The resolver declines while this dock panel is not showing (the
+     * visible tab wins): a hidden host, e.g. an inactive graph editor tab,
+     * stays in the component hierarchy, so this window-root scope would
+     * still contain the focus; without the guard the registration-order
+     * tie-break among the same-depth window-root scopes would let the
+     * hidden host's scope hijack the dock id from the visible host's scope
+     * (see the graph editor's window-root dock scope,
+     * {@code JIPipeDesktopGraphEditorUI#installDockShortcutScope}).</p>
+     *
      * <p>The root is resolved with {@link SwingUtilities#getRootPane(Component)}
      * rather than {@link SwingUtilities#getRoot(Component)}: the latter returns
      * the enclosing {@link Window}, which is not a {@link JComponent}, while the
@@ -121,6 +130,13 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         }
         shortcutScope = new ShortcutScope(rootComponent, actionId -> {
             if (actionId == null || !actionId.startsWith("dock:")) {
+                return null;
+            }
+            // Visible tab wins: decline when this dock panel is not
+            // showing, so a hidden host (an inactive graph editor tab)
+            // cannot answer a dock id that the visible host's own
+            // window-root dock scope should answer
+            if (!JIPipeDesktopDockPanel.this.isShowing()) {
                 return null;
             }
             String panelId = actionId.substring("dock:".length());
@@ -154,11 +170,13 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
      * <p>Graph editors are hidden (not removed) when their tab is inactive,
      * so every editor's window-root dock scope keeps containing the focus in
      * a multi-tab window, and the registration-order tie-break there would
-     * toggle the first-created editor's panel. The editor shortcut scopes
-     * delegate here (one dock panel instance per editor), so the innermost,
-     * visible editor's scope wins and the window-root dock scopes remain the
-     * fallback for non-editor hosts (data viewers, welcome panel, plot
-     * editor).</p>
+     * toggle a hidden editor's panel. Each editor therefore installs its own
+     * window-root dock scope (see
+     * {@code JIPipeDesktopGraphEditorUI#installDockShortcutScope}) that
+     * delegates here and carries an {@code isShowing()} guard, so only the
+     * visible tab's editor answers; this dock panel's own window-root scope
+     * carries the same guard and serves the non-editor hosts (data viewers,
+     * welcome panel, plot editor).</p>
      *
      * @param actionId the shortcut action id, may be null
      * @return the toggle runnable for one of this instance's panels, or null
