@@ -147,6 +147,19 @@ convenient methods for:
 - **UI components**: `registerMenuExtension()`, `registerGraphEditorToolBarButtonExtension()`
 - **Examples**: `registerNodeExample()`, `registerNodeTemplate()`
 
+### Keyboard Shortcuts
+
+Every user-triggerable UI action (graph editor tools, context actions, menu accelerators, dock actions) is a
+`JIPipeShortcutAction` with a stable string-literal id (persisted in saved keymap profiles: never code-derived).
+Register actions in the plugin's `register()` via
+[`JIPipeShortcutRegistry`](jipipe-core/src/main/java/org/hkijena/jipipe/api/shortcuts/JIPipeShortcutRegistry.java)
+(`JIPipeShortcutAction.builder(id, name, category)`; idempotent: skip already-registered ids). The core catalog
+lives in `JIPipeShortcutActions` (registered by `StandardSettingsPlugin`). Bindings resolve user override >
+default; the Keyboard settings section (`JIPipeDesktopKeyboardSection`) edits overrides. Never read
+`KeyStroke`s from actions or tooltips: render for display through
+`JIPipeShortcutRegistry.formatChord`/`formatVariants` and pass the pre-rendered text to
+`TooltipUtils.createTooltipWithShortcutText`.
+
 ## Testing
 
 ### Current Test Infrastructure

@@ -36,10 +36,6 @@ public class TooltipUtils {
 
     }
 
-    public static String createTooltipWithShortcut(String name, String description, KeyStroke keyStroke) {
-        return createTooltipWithShortcutText(name, description, keyStroke != null ? UIUtils.keyStrokeToString(keyStroke) : null);
-    }
-
     /**
      * Creates a tooltip with a pre-rendered shortcut text in the header row.
      *
