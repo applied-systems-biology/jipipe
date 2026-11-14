@@ -298,6 +298,10 @@ public class JIPipeDesktopKeyboardSection extends JPanel implements JIPipeDeskto
         table.setFillsViewportHeight(true);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        // The established data-table row height of the codebase (all data
+        // table UIs use it as their non-preview default); the Swing default
+        // is too dense for the button columns.
+        table.setRowHeight(25);
         table.getTableHeader().setReorderingAllowed(false);
 
         table.getColumnModel().getColumn(COL_ACTION).setCellRenderer(new ActionCellRenderer());
@@ -886,6 +890,11 @@ public class JIPipeDesktopKeyboardSection extends JPanel implements JIPipeDeskto
             setIcon(JIPipe.RESOURCES.getIcon16("actions/edit.png"));
             setFocusPainted(false);
             setContentAreaFilled(false);
+            // Borderless: the bordered button boxes added visual noise around
+            // the action columns. Visual-only (clicks are resolved by the
+            // table's mouse listener), so no hover handling is needed.
+            setBorder(BorderFactory.createEmptyBorder());
+            setBorderPainted(false);
         }
 
         @Override
@@ -919,6 +928,11 @@ public class JIPipeDesktopKeyboardSection extends JPanel implements JIPipeDeskto
             setIcon(JIPipe.RESOURCES.getIcon16("actions/edit-reset.png"));
             setFocusPainted(false);
             setContentAreaFilled(false);
+            // Borderless: the bordered button boxes added visual noise around
+            // the action columns. Visual-only (clicks are resolved by the
+            // table's mouse listener), so no hover handling is needed.
+            setBorder(BorderFactory.createEmptyBorder());
+            setBorderPainted(false);
         }
 
         @Override
