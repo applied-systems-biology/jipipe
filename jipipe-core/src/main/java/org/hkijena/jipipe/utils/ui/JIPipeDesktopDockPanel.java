@@ -41,6 +41,9 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
     private final JPanel rightResizerPanel = new JPanel();
     private final Map<String, Panel> panels = new LinkedHashMap<>();
     private final Map<String, JToggleButton> panelVisibilityToggles = new HashMap<>();
+    // The pinned dock per side: keys are the lowercase side names (same
+    // shape as State.pins), values are dock IDs
+    private final Map<String, String> pins = new HashMap<>();
     private final JIPipeDesktopSplitPane leftSplitPane = new JIPipeDesktopSplitPane(JIPipeDesktopSplitPane.TOP_BOTTOM, new JIPipeDesktopSplitPane.FixedRatio(0.33, true));
     private final JIPipeDesktopSplitPane rightSplitPane = new JIPipeDesktopSplitPane(JIPipeDesktopSplitPane.TOP_BOTTOM, new JIPipeDesktopSplitPane.FixedRatio(0.66, true));
     private final JIPipeDesktopSplitPane mainSplitPane = new JIPipeDesktopSplitPane(JIPipeDesktopSplitPane.TOP_BOTTOM, new JIPipeDesktopSplitPane.FixedRatio(0.66, true));
@@ -594,6 +597,9 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
 
             panel.setLocation(newLocation);
 
+            // Moving loses the pin regardless of the sides involved
+            pins.values().removeIf(panel.getId()::equals);
+
             updateAll();
 
             if (saveState) {
@@ -716,6 +722,8 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
             }
         }
         savedState = state;
+        pins.clear();
+        pins.putAll(state.getPins());
         leftPanelWidth = Math.max(minimumPanelWidth, state.leftPanelWidth);
         rightPanelWidth = Math.max(minimumPanelWidth, state.rightPanelWidth);
         alwaysShowLeftPanel = state.alwaysShowLeftPanel;
@@ -772,6 +780,55 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         if (panel != null) {
             deactivatePanel(panel, saveState);
         }
+    }
+
+    /**
+     * Pins the dock to the side of its current location, replacing the
+     * side's previous pin (one dock is pinned per side). Pinning a context
+     * dock (ID starts with an underscore) or an unknown ID is a no-op.
+     *
+     * @param id the dock ID
+     */
+    public void pinDock(String id) {
+        Panel panel = panels.get(id);
+        if (panel == null || id.startsWith("_")) {
+            return;
+        }
+        String key = pinKey(panel.getLocation().getPinSide());
+        if (id.equals(pins.get(key))) {
+            return;
+        }
+        pins.put(key, id);
+        updateAll();
+        saveState();
+    }
+
+    /**
+     * Unpins the dock if it is pinned. Does not change the dock's visibility.
+     *
+     * @param id the dock ID
+     */
+    public void unpinDock(String id) {
+        if (pins.values().removeIf(id::equals)) {
+            updateAll();
+            saveState();
+        }
+    }
+
+    /**
+     * @param id the dock ID
+     * @return true when the dock is the pin of any side
+     */
+    public boolean isDockPinned(String id) {
+        return pins.containsValue(id);
+    }
+
+    /**
+     * @param side the pin side
+     * @return the ID of the side's pinned dock, or null
+     */
+    public String getPinnedDockId(PinSide side) {
+        return pins.get(pinKey(side));
     }
 
     public <T extends JComponent> T getPanelComponent(String id, Class<T> klass) {
@@ -851,6 +908,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
             state.visibilities.put(panel.getId(), panel.isVisible());
             state.locations.put(panel.getId(), panel.getLocation());
         }
+        state.getPins().putAll(pins);
         state.setLeftPanelWidth(leftPanelWidth);
         state.setRightPanelWidth(rightPanelWidth);
         state.setMainSplitPaneRatio(((JIPipeDesktopSplitPane.FixedRatio) mainSplitPane.getRatio()).getRatio());

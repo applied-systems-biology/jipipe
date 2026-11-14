@@ -1,0 +1,104 @@
+/*
+ * Copyright by Zoltán Cseresnyés, Ruman Gerst
+ *
+ * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
+ * https://www.leibniz-hki.de/en/applied-systems-biology.html
+ * HKI-Center for Systems Biology of Infection
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
+ * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
+ *
+ * The project code is licensed under MIT.
+ * See the LICENSE file provided with the code for the full license.
+ */
+
+package org.hkijena.jipipe.utils.ui;
+
+import org.junit.jupiter.api.Test;
+
+import javax.swing.*;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+/**
+ * Tests for the dock pin API: one dock pinned per side, persisted through the
+ * dock state, cleared when the dock is moved (#1367).
+ */
+class JIPipeDesktopDockPanelPinTest {
+
+    private void addPanel(JIPipeDesktopDockPanel panel, String id, JIPipeDesktopDockPanel.PanelLocation location, boolean visible) {
+        panel.addDockPanel(id, id, null, location, visible, 0, new JPanel());
+    }
+
+    @Test void pinningReplacesTheSidesPreviousPin() {
+        JIPipeDesktopDockPanel panel = new JIPipeDesktopDockPanel();
+        addPanel(panel, "TOOLS", JIPipeDesktopDockPanel.PanelLocation.TopRight, false);
+        addPanel(panel, "ERRORS", JIPipeDesktopDockPanel.PanelLocation.BottomRight, false);
+        panel.pinDock("TOOLS");
+        assertEquals("TOOLS", panel.getPinnedDockId(JIPipeDesktopDockPanel.PinSide.Right));
+        panel.pinDock("ERRORS");
+        assertEquals("ERRORS", panel.getPinnedDockId(JIPipeDesktopDockPanel.PinSide.Right));
+        assertFalse(panel.isDockPinned("TOOLS"));
+    }
+
+    @Test void pinsOnDifferentSidesCoexist() {
+        JIPipeDesktopDockPanel panel = new JIPipeDesktopDockPanel();
+        addPanel(panel, "FIND", JIPipeDesktopDockPanel.PanelLocation.TopLeft, false);
+        addPanel(panel, "TOOLS", JIPipeDesktopDockPanel.PanelLocation.TopRight, false);
+        panel.pinDock("FIND");
+        panel.pinDock("TOOLS");
+        assertTrue(panel.isDockPinned("FIND"));
+        assertTrue(panel.isDockPinned("TOOLS"));
+    }
+
+    @Test void pinningAContextDockIsANoop() {
+        JIPipeDesktopDockPanel panel = new JIPipeDesktopDockPanel();
+        addPanel(panel, "_PARAMETERS", JIPipeDesktopDockPanel.PanelLocation.TopRight, true);
+        panel.pinDock("_PARAMETERS");
+        assertFalse(panel.isDockPinned("_PARAMETERS"));
+    }
+
+    @Test void pinningAnUnknownDockIsANoop() {
+        JIPipeDesktopDockPanel panel = new JIPipeDesktopDockPanel();
+        panel.pinDock("NOPE");
+        assertFalse(panel.isDockPinned("NOPE"));
+    }
+
+    @Test void movingClearsThePin() {
+        JIPipeDesktopDockPanel panel = new JIPipeDesktopDockPanel();
+        addPanel(panel, "TOOLS", JIPipeDesktopDockPanel.PanelLocation.TopRight, false);
+        panel.pinDock("TOOLS");
+        panel.movePanelToLocation("TOOLS", JIPipeDesktopDockPanel.PanelLocation.TopLeft, false);
+        assertFalse(panel.isDockPinned("TOOLS"));
+    }
+
+    @Test void unpinningDoesNotCloseAnOpenDock() {
+        JIPipeDesktopDockPanel panel = new JIPipeDesktopDockPanel();
+        addPanel(panel, "TOOLS", JIPipeDesktopDockPanel.PanelLocation.TopRight, false);
+        panel.pinDock("TOOLS");
+        panel.activatePanel("TOOLS", false);
+        panel.unpinDock("TOOLS");
+        assertFalse(panel.isDockPinned("TOOLS"));
+        assertTrue(panel.getPanels().get("TOOLS").isVisible(), "unpinning must not close a user-opened dock");
+    }
+
+    @Test void pinsArePerPanelInstance() {
+        JIPipeDesktopDockPanel first = new JIPipeDesktopDockPanel();
+        JIPipeDesktopDockPanel second = new JIPipeDesktopDockPanel();
+        addPanel(first, "TOOLS", JIPipeDesktopDockPanel.PanelLocation.TopRight, false);
+        addPanel(second, "FIND", JIPipeDesktopDockPanel.PanelLocation.TopLeft, false);
+        first.pinDock("TOOLS");
+        second.pinDock("FIND");
+        assertNull(second.getPinnedDockId(JIPipeDesktopDockPanel.PinSide.Right));
+        assertNull(first.getPinnedDockId(JIPipeDesktopDockPanel.PinSide.Left));
+    }
+
+    @Test void pinsRoundTripThroughThePanel() {
+        JIPipeDesktopDockPanel panel = new JIPipeDesktopDockPanel();
+        addPanel(panel, "TOOLS", JIPipeDesktopDockPanel.PanelLocation.TopRight, false);
+        panel.pinDock("TOOLS");
+        JIPipeDesktopDockPanel reloaded = new JIPipeDesktopDockPanel();
+        addPanel(reloaded, "TOOLS", JIPipeDesktopDockPanel.PanelLocation.TopRight, false);
+        reloaded.restoreState(panel.getCurrentState());
+        assertEquals("TOOLS", reloaded.getPinnedDockId(JIPipeDesktopDockPanel.PinSide.Right));
+    }
+}
