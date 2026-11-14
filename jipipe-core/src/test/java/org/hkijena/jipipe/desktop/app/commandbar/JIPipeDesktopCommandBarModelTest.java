@@ -238,6 +238,53 @@ class JIPipeDesktopCommandBarModelTest {
         assertNull(everything.get(2).command(), "unavailable entries stay listed, grayed, without a command");
     }
 
+    // ---------- collectRecent ----------
+
+    @Test void collectRecentEmitsGivenOrderWithNoHeaders() {
+        // The "Recently used" rows: the given (most-recent-first) order is
+        // emitted verbatim, as plain registry rows (no headers), each
+        // resolved like a collect row.
+        JIPipeShortcutAction a1 = register(ID_A1, "A one", "Alpha", CTRL_T, KEY_M);
+        JIPipeShortcutAction b1 = register(ID_B1, "B one", "Beta");
+        JIPipeShortcutRegistry registry = JIPipeShortcutRegistry.getInstance();
+
+        Runnable a1Run = () -> {
+        };
+        // Deliberate non-registry order (B one first).
+        List<JIPipeShortcutAction> recentOrder = List.of(b1, a1);
+        List<Entry> entries = JIPipeDesktopCommandBarModel.collectRecent(
+                recentOrder, new KeymapSettings(), ListMode.GRAYED, resolves(ID_A1, a1Run));
+
+        assertEquals(List.of(ID_B1, ID_A1), entries.stream().map(Entry::actionId).toList(),
+                "the given most-recent-first order is emitted, never re-sorted");
+        assertTrue(entries.stream().noneMatch(Entry::isCategoryHeader),
+                "no category headers are emitted: the bar prepends its own");
+        assertFalse(entries.get(0).isAvailable(), "an unavailable recent is kept in GRAYED mode");
+        assertNull(entries.get(0).command());
+        assertEquals("Ctrl+T then M", entries.get(1).bindingText());
+        assertSame(a1Run, entries.get(1).command());
+        assertTrue(entries.get(1).isConfigurable());
+    }
+
+    @Test void collectRecentDropsUnavailableInAvailableOnly() {
+        register(ID_A1, "A one", "Alpha", CTRL_T, KEY_M);
+        register(ID_B1, "B one", "Beta");
+        JIPipeShortcutRegistry registry = JIPipeShortcutRegistry.getInstance();
+        JIPipeShortcutAction b1 = registry.byId(ID_B1);
+
+        // Only the first recent resolves: AVAILABLE_ONLY drops the second.
+        List<Entry> entries = JIPipeDesktopCommandBarModel.collectRecent(
+                List.of(registry.byId(ID_A1), b1), new KeymapSettings(),
+                ListMode.AVAILABLE_ONLY, id -> ID_A1.equals(id) ? () -> {
+                } : null);
+        assertEquals(List.of(ID_A1), entries.stream().map(Entry::actionId).toList());
+
+        // Nothing resolves: empty result (the bar then omits the section).
+        List<Entry> none = JIPipeDesktopCommandBarModel.collectRecent(
+                List.of(b1), new KeymapSettings(), ListMode.AVAILABLE_ONLY, id -> null);
+        assertTrue(none.isEmpty());
+    }
+
     // ---------- collect: binding rendering ----------
 
     @Test void registryEntryRendersEffectiveBinding() {

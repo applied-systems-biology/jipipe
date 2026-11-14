@@ -384,6 +384,46 @@ public final class JIPipeDesktopCommandBarModel {
     }
 
     /**
+     * Builds plain registry rows for the "Recently used" section of the
+     * command bar (issue #1346, Task 8): one entry per given action, in
+     * the given order (most recent first), resolved exactly like the
+     * entries of {@link #collect} (effective binding against the settings,
+     * availability through the resolver) with the same mode rule
+     * ({@link ListMode#AVAILABLE_ONLY} drops unavailable entries). No
+     * category headers are emitted: the caller prepends the single
+     * "Recently used" header itself, and commands that also appear in
+     * their own category below are NOT deduplicated (VS Code behavior).
+     *
+     * @param actions  the recently fired actions, in the order to emit
+     *                 (never re-sorted here)
+     * @param settings the keymap state the effective bindings resolve
+     *                 against (user overrides win), may be {@code null}
+     * @param mode     how unavailable entries are treated
+     * @param resolver resolves an action id to the runnable that performs
+     *                 it in the current window state, or {@code null}
+     *                 when the action is not available
+     * @return the plain registry entries (no headers)
+     */
+    public static List<Entry> collectRecent(List<JIPipeShortcutAction> actions, KeymapSettings settings,
+                                            ListMode mode, Function<String, Runnable> resolver) {
+        Objects.requireNonNull(actions, "actions");
+        Objects.requireNonNull(mode, "mode");
+        Objects.requireNonNull(resolver, "resolver");
+        JIPipeShortcutRegistry registry = JIPipeShortcutRegistry.getInstance();
+        boolean dropUnavailable = mode == ListMode.AVAILABLE_ONLY;
+        List<Entry> entries = new ArrayList<>(actions.size());
+        for (JIPipeShortcutAction action : actions) {
+            Runnable command = resolver.apply(action.id());
+            boolean available = command != null;
+            if (available || !dropUnavailable) {
+                JIPipeShortcutBinding binding = registry.bindingFor(action.id(), settings);
+                entries.add(registryEntry(action, binding, available ? command : null));
+            }
+        }
+        return List.copyOf(entries);
+    }
+
+    /**
      * Builds the command bar list restricted to the chord layer: the
      * registry entries (category headers and ephemeral entries are
      * excluded) whose effective binding has a length-2 variant whose first

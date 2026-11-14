@@ -65,8 +65,11 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -168,6 +171,11 @@ public class JIPipeDesktopCommandBar extends JPanel {
      * paints the button into.
      */
     private static final int CONFIGURE_HIT_WIDTH = CONFIGURE_BUTTON_SIZE + ROW_RIGHT_PADDING;
+    /**
+     * The number of recently fired commands listed under the "Recently
+     * used" header of the empty-query list (issue #1346, Task 8).
+     */
+    private static final int RECENT_SECTION_SIZE = 5;
 
     private static final String ACTION_KEY_UP = "command-bar-up";
     private static final String ACTION_KEY_DOWN = "command-bar-down";
@@ -629,7 +637,12 @@ public class JIPipeDesktopCommandBar extends JPanel {
         if (chordMode) {
             display = JIPipeDesktopCommandBarModel.chordEntries(registryEntries, chordPrefix);
         } else {
-            display = filterByQuery(registryEntries, searchField.getText());
+            // The known recent ids are read once per rebuild and shared: the
+            // tie-break uses the full list, the "Recently used" section the
+            // first few of their actions.
+            List<String> knownRecentIds = recentCommandIds();
+            display = filterByQuery(registryEntries, searchField.getText(),
+                    knownRecentIds, recentActions(knownRecentIds));
         }
         entries = display;
         listModel.clear();
@@ -646,36 +659,171 @@ public class JIPipeDesktopCommandBar extends JPanel {
      * ({@link JIPipeDesktopCommandBarSearch#matches}) or its category
      * contains the query case-insensitively (category filtering keeps the
      * plain substring behavior); a category header is kept only while at
-     * least one of its entries matched; with an empty query everything is
-     * listed. The ordering stays the registry order; recency tie-breaking
-     * arrives in Task 8.
+     * least one of its entries matched. With an empty query a "Recently
+     * used" section is prepended (issue #1346, Task 8): the header plus up
+     * to {@value #RECENT_SECTION_SIZE} recently fired commands that are
+     * still registered and resolvable, most recent first - in front of the
+     * full list, WITHOUT deduplicating: a command that also appears in its
+     * own category below stays there (VS Code behavior).
+     * <p>
+     * With a non-empty query the Task 7 ranking is applied (fuzzy name
+     * matches before category-contains-only matches, descending fuzzy
+     * score, registry order for equal scores), and Task 8 breaks EQUAL
+     * ranks by recency: entries of the same rank are ordered by their
+     * position in the recent list (earlier = better; ids not in the recent
+     * list rank last). Recency is a second criterion only, so entries of
+     * different ranks keep the Task 7 ordering. The re-ranked list is
+     * emitted under a single "Results" header: the ranked list no longer
+     * walks the original category groups, so per-category headers would be
+     * wrong.
      */
-    private static List<JIPipeDesktopCommandBarModel.Entry> filterByQuery(
-            List<JIPipeDesktopCommandBarModel.Entry> entries, String query) {
+    private List<JIPipeDesktopCommandBarModel.Entry> filterByQuery(
+            List<JIPipeDesktopCommandBarModel.Entry> entries, String query,
+            List<String> recentIds, List<JIPipeShortcutAction> recentActions) {
         String q = query == null ? "" : query.trim().toLowerCase(Locale.ROOT);
         if (q.isEmpty()) {
-            return entries;
+            // prependRecent returns fullList unchanged when there is
+            // nothing recent to show.
+            return prependRecent(entries, recentActions);
         }
-        List<JIPipeDesktopCommandBarModel.Entry> result = new ArrayList<>(entries.size());
-        JIPipeDesktopCommandBarModel.Entry pendingHeader = null;
+        Map<String, Integer> recencyIndex = recencyIndex(recentIds);
+        List<ScoredEntry> scored = new ArrayList<>(entries.size());
+        int position = 0;
         for (JIPipeDesktopCommandBarModel.Entry entry : entries) {
+            position++;
             if (entry.isCategoryHeader()) {
-                pendingHeader = entry;
                 continue;
             }
-            if (JIPipeDesktopCommandBarSearch.matches(q, entry.name()) || containsIgnoreCase(entry.category(), q)) {
-                if (pendingHeader != null) {
-                    result.add(pendingHeader);
-                    pendingHeader = null;
-                }
-                result.add(entry);
+            int matchType = 0;
+            double score = JIPipeDesktopCommandBarSearch.score(q, entry.name());
+            if (score > 0.0) {
+                matchType = 1;
+            } else if (containsIgnoreCase(entry.category(), q)) {
+                matchType = 2;
+                score = 0.0;
             }
+            if (matchType == 0) {
+                continue;
+            }
+            int recency = recencyIndex.getOrDefault(entry.actionId(), recencyIndex.size());
+            scored.add(new ScoredEntry(entry, matchType, score, recency, position));
+        }
+        scored.sort(Comparator
+                .comparingInt(ScoredEntry::matchType)
+                .thenComparing(ScoredEntry::score, Comparator.reverseOrder())
+                .thenComparingInt(ScoredEntry::recency)
+                .thenComparingInt(ScoredEntry::position));
+        List<JIPipeDesktopCommandBarModel.Entry> result = new ArrayList<>(scored.size() * 2);
+        boolean headerless = true;
+        for (ScoredEntry s : scored) {
+            if (headerless) {
+                result.add(JIPipeDesktopCommandBarModel.Entry.categoryHeader("Results"));
+                headerless = false;
+            }
+            result.add(s.entry());
         }
         return result;
     }
 
+    /**
+     * Prepends the "Recently used" section to the full (empty-query) list:
+     * one category header plus up to {@value #RECENT_SECTION_SIZE} recently
+     * fired commands that are still registered and resolvable, most recent
+     * first. The recents are resolved through the SAME resolver the rest of
+     * the list used ({@link #resolveEntry}), so their availability (and the
+     * mode applied to them) is identical to a listing of the same registry
+     * commands.
+     */
+    private List<JIPipeDesktopCommandBarModel.Entry> prependRecent(
+            List<JIPipeDesktopCommandBarModel.Entry> fullList,
+            List<JIPipeShortcutAction> recentActions) {
+        if (recentActions.isEmpty()) {
+            return fullList;
+        }
+        KeymapSettings settings = JIPipeShortcutSettings.current();
+        List<JIPipeDesktopCommandBarModel.Entry> recentEntries = JIPipeDesktopCommandBarModel.collectRecent(
+                recentActions, settings, currentListMode(), this::resolveEntry);
+        if (recentEntries.isEmpty()) {
+            // No recent survived the mode (e.g. AVAILABLE_ONLY with every
+            // recent unavailable): no orphan "Recently used" header.
+            return fullList;
+        }
+        List<JIPipeDesktopCommandBarModel.Entry> result =
+                new ArrayList<>(recentEntries.size() + 1 + fullList.size());
+        result.add(JIPipeDesktopCommandBarModel.Entry.categoryHeader("Recently used"));
+        result.addAll(recentEntries);
+        result.addAll(fullList);
+        return result;
+    }
+
+    /**
+     * The id-to-position index of the recent list (earlier = better), used
+     * for the recency tie-break of equal search scores.
+     */
+    private static Map<String, Integer> recencyIndex(List<String> recentIds) {
+        Map<String, Integer> index = new HashMap<>(recentIds.size() * 2);
+        for (int i = 0; i < recentIds.size(); i++) {
+            index.putIfAbsent(recentIds.get(i), i);
+        }
+        return index;
+    }
+
+    /**
+     * Resolves an action id to its runnable in the current window state,
+     * or {@code null} when unavailable: the same scope-chain walk the list
+     * build uses (the bar itself is the focus reference; the dispatch is
+     * suspended while the bar is open, so the text-input guard of a focused
+     * search field must not apply).
+     */
+    private Runnable resolveEntry(String actionId) {
+        return dispatcher.resolveAction(actionId, this);
+    }
+
+    /**
+     * The recently fired command ids (most recent first), filtered down to
+     * ids that are still registered; empty when nothing is stored.
+     */
+    private static List<String> recentCommandIds() {
+        CommandBarState state = CommandBarSettings.stateBinding().get();
+        List<String> recent = state == null
+                ? List.of()
+                : state.getRecentCommandIds();
+        return CommandBarState.knownRecent(recent, JIPipeShortcutRegistry.getInstance()::isRegistered);
+    }
+
+    /**
+     * The actions of the given known recent ids, in the same order,
+     * truncated to {@value #RECENT_SECTION_SIZE}: the rows of the
+     * "Recently used" section (the tie-break uses the full id list).
+     */
+    private static List<JIPipeShortcutAction> recentActions(List<String> knownRecentIds) {
+        JIPipeShortcutRegistry registry = JIPipeShortcutRegistry.getInstance();
+        List<JIPipeShortcutAction> actions = new ArrayList<>(RECENT_SECTION_SIZE);
+        for (String id : knownRecentIds) {
+            JIPipeShortcutAction action = registry.byId(id);
+            if (action != null) {
+                actions.add(action);
+            }
+            if (actions.size() >= RECENT_SECTION_SIZE) {
+                break;
+            }
+        }
+        return actions;
+    }
+
     private static boolean containsIgnoreCase(String text, String query) {
         return text != null && text.toLowerCase(Locale.ROOT).contains(query);
+    }
+
+    /**
+     * One matched entry with its rank components (the tie-break of
+     * {@link #filterByQuery}): the match type (a fuzzy name match outranks
+     * a category-contains-only match), the fuzzy score, the recency
+     * position (unknown ids rank last), and the original list position
+     * (keeps the registry order for fully tied entries).
+     */
+    private record ScoredEntry(JIPipeDesktopCommandBarModel.Entry entry, int matchType,
+                               double score, int recency, int position) {
     }
 
     // ------------------------------------------------------------------
@@ -753,6 +901,10 @@ public class JIPipeDesktopCommandBar extends JPanel {
                 // No longer resolvable: do not fire (and do not close).
                 return;
             }
+            // Record the fire for the "Recently used" section and the
+            // recency tie-break (Task 8); only registry commands carry an
+            // action id, so ephemeral entries are never recorded.
+            CommandBarSettings.recordFired(entry.actionId());
         } else {
             command = entry.command();
         }
