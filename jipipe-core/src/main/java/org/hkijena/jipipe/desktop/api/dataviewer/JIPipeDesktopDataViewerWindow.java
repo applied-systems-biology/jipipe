@@ -52,8 +52,11 @@ import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -62,6 +65,13 @@ import java.util.concurrent.ExecutionException;
 public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDesktopWorkbenchAccess, Disposable, JIPipeRunnable.FinishedEventListener, JIPipeCache.ModifiedEventListener {
 
     private static boolean HOTKEYS_ENABLED = false;
+
+    /**
+     * All data viewer windows that are currently open. Mirrors the
+     * lifecycle of {@code JIPipeDesktopProjectWindow.OPEN_WINDOWS}: added
+     * in the constructor, removed at the start of {@link #dispose()}
+     */
+    private static final Set<JIPipeDesktopDataViewerWindow> OPEN_WINDOWS = new HashSet<>();
 
     private final JIPipeQueuedRunnableExecutor downloaderQueue = new JIPipeQueuedRunnableExecutor("Data download");
 
@@ -94,6 +104,7 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
             }
         });
         this.refreshFromCacheDebouncer = new StaticDebouncer(1500, this::refreshFromLocalCache);
+        OPEN_WINDOWS.add(this);
         initialize();
         registerHotkeys();
 
@@ -105,6 +116,13 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
         }
 
         onDataChanged();
+    }
+
+    /**
+     * @return All open data viewer windows
+     */
+    public static Set<JIPipeDesktopDataViewerWindow> getOpenWindows() {
+        return Collections.unmodifiableSet(OPEN_WINDOWS);
     }
 
     private void registerHotkeys() {
@@ -594,6 +612,9 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
 
     @Override
     public void dispose() {
+        // Mirror of JIPipeDesktopProjectWindow#dispose: the window leaves
+        // the open set before its content is torn down
+        OPEN_WINDOWS.remove(this);
         super.dispose();
         destroyCurrentViewer();
         destroyCurrentDataBrowser();
