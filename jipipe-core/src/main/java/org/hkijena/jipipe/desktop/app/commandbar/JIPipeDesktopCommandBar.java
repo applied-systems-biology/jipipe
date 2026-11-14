@@ -93,12 +93,11 @@ import java.util.function.Predicate;
  * While the bar is open, the application-wide shortcut dispatch is suspended
  * ({@link JIPipeDesktopShortcutDispatcher#setCaptureActive(boolean)}): the
  * trigger keystroke itself must reach the bar instead of re-resolving, and
- * typed text must never fire a shortcut. There is no timeout and no other
- * owner of the flag: if an exit path ever skipped {@link #close()}, every
- * keyboard shortcut in the application would stay dead until the app is
- * restarted. Therefore <em>every</em> exit path funnels through
- * {@link #close()}, which is the only method that clears the flag and hides
- * the overlay:
+ * typed text must never fire a shortcut. There is no timeout: if an exit
+ * path ever skipped {@link #close()}, every keyboard shortcut in the
+ * application would stay dead until the app is restarted. Therefore
+ * <em>every</em> exit path funnels through {@link #close()}, which is the
+ * only method that clears the flag and hides the overlay:
  * <ul>
  * <li>Escape (normal mode, via the search field input map)</li>
  * <li>the trigger keystroke pressed again (a toggle)</li>
@@ -106,10 +105,17 @@ import java.util.function.Predicate;
  * <li>focus loss of the search field (e.g. a click anywhere outside)</li>
  * <li>the configure affordance (before the capture dialog opens)</li>
  * <li>any key press while chord mode is open (fired chord, Escape, or an
- * unlisted key, via the local {@link KeyEventDispatcher})</li>
+ * unlisted non-modifier key, via the local {@link KeyEventDispatcher}; a
+ * bare modifier press passes through and leaves chord mode open)</li>
  * <li>{@link #uninstall()} (defensively, so a disposed bar can never leave
  * the flag set)</li>
  * </ul>
+ * The flag has a second owner: the capture dialog sets it for its lifetime.
+ * The configure path never nests the two owners (it fully closes the bar
+ * first), and {@link #close()} clears the flag only while the bar itself set
+ * it (the {@code suspendOwned} ownership flag set by the open methods), so a
+ * close can never resume the dispatch out from under the dialog's
+ * recording.
  * <p>
  * <b>Why configure closes first.</b> The keybinding capture dialog
  * ({@link JIPipeDesktopKeyboardCaptureDialog}) owns the same suspend flag for
@@ -234,6 +240,16 @@ public class JIPipeDesktopCommandBar extends JPanel {
      * {@link #close()}.
      */
     private Component previousFocusOwner;
+    /**
+     * Whether the bar itself set {@code captureActive} (in
+     * {@link #openNormalMode()} or {@link #openChordMode(KeyStroke)}) and
+     * therefore owns clearing it: {@link #close()} resumes the dispatch
+     * only while this flag is set. Visibility is not an ownership
+     * guarantee, so a close of a bar that did not arm the suspension (or
+     * whose owner was already handed over, e.g. to the capture dialog)
+     * must leave the flag alone.
+     */
+    private boolean suspendOwned;
 
     /**
      * Creates the bar. Use {@link #install(JFrame)} to attach it to a window.
@@ -315,9 +331,9 @@ public class JIPipeDesktopCommandBar extends JPanel {
 
         // The trigger scope: rooted at the window's root pane (the same root
         // resolution as JIPipeDesktopDockPanel) and answering only the open
-        // command bar action. openNormalMode on an already open bar simply
-        // rebuilds and refocuses (the dispatch is suspended while open, so
-        // the trigger cannot fire through the scope in that state anyway).
+        // command bar action. openNormalMode ignores a re-open of an already
+        // open bar (toggle semantics; the dispatch is suspended while open,
+        // so the trigger cannot fire through the scope in that state anyway).
         scope = new ShortcutScope(rootPane, actionId -> {
             if (JIPipeShortcutActions.COMMAND_BAR_OPEN.id().equals(actionId)) {
                 return this::openNormalMode;
@@ -377,15 +393,25 @@ public class JIPipeDesktopCommandBar extends JPanel {
         if (window == null || rootPane == null) {
             return;
         }
+        if (isVisible()) {
+            // Re-entry guard (toggle semantics, symmetric with
+            // openChordMode's focus-owner guard): a second open must not
+            // overwrite previousFocusOwner, or the focus restore of the
+            // original open would be destroyed.
+            return;
+        }
         chordMode = false;
         chordPrefix = null;
-        previousFocusOwner = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner();
+        if (previousFocusOwner == null) {
+            previousFocusOwner = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner();
+        }
         // A fresh open shows the unfiltered list.
         searchField.setText("");
         rebuildList();
         setVisible(true);
         repositionOverlay();
         JIPipeDesktopShortcutDispatcher.getInstance().setCaptureActive(true);
+        suspendOwned = true;
         searchField.getTextField().requestFocusInWindow();
     }
 
@@ -399,9 +425,12 @@ public class JIPipeDesktopCommandBar extends JPanel {
      * <p>
      * While open, a local {@link KeyEventDispatcher} observes every key
      * press (the capture dialog's lifecycle pattern): the second key of a
-     * listed chord variant fires that command and closes; Escape closes; any
-     * other key cancels and closes (all consumed, matching the dispatcher's
-     * swallow semantics for a pending chord).
+     * listed chord variant fires that command and closes; Escape closes; a
+     * bare modifier press passes through untouched and keeps chord mode
+     * open (keyboards emit the modifier before the letter of a shifted
+     * second key); any other key cancels and closes (the non-modifier
+     * presses are all consumed, matching the dispatcher's swallow
+     * semantics for a pending chord).
      *
      * @param prefix the first stroke of the pending chord
      * @return whether the bar opened (and consumed the chord)
@@ -429,17 +458,22 @@ public class JIPipeDesktopCommandBar extends JPanel {
         // Harmless if the dispatcher handoff already set it (Task 5 wires
         // that handoff).
         JIPipeDesktopShortcutDispatcher.getInstance().setCaptureActive(true);
+        suspendOwned = true;
         installChordDispatcher();
         return true;
     }
 
     /**
      * The single exit path of the overlay: removes the local chord key
-     * dispatcher, hides the overlay, clears the app-wide dispatch suspension
-     * (only when the bar is actually open, so a foreign owner of the flag -
-     * the capture dialog - is never stomped), and restores the focus owner
-     * captured at open time. Every exit path funnels here; see the class
-     * javadoc for why this is the most important invariant of the class.
+     * dispatcher, hides the overlay, restores the focus owner captured at
+     * open time, and clears the app-wide dispatch suspension - but only
+     * when the bar itself armed it ({@code suspendOwned}): visibility is
+     * not an ownership guarantee, so a close that reaches a bar whose
+     * suspension belongs to the capture dialog must leave the flag alone
+     * (hiding an already hidden bar, in contrast, is harmless and stays
+     * guarded by visibility alone). Every exit path funnels here; see the
+     * class javadoc for why this is the most important invariant of the
+     * class.
      */
     public void close() {
         if (chordDispatcher != null) {
@@ -450,8 +484,11 @@ public class JIPipeDesktopCommandBar extends JPanel {
         chordPrefix = null;
         if (isVisible()) {
             setVisible(false);
-            JIPipeDesktopShortcutDispatcher.getInstance().setCaptureActive(false);
             restorePreviousFocus();
+        }
+        if (suspendOwned) {
+            JIPipeDesktopShortcutDispatcher.getInstance().setCaptureActive(false);
+            suspendOwned = false;
         }
         previousFocusOwner = null;
     }
@@ -661,14 +698,37 @@ public class JIPipeDesktopCommandBar extends JPanel {
                 close();
                 return true;
             }
-            // An unlisted key (including a bare modifier): cancel and close,
-            // matching the dispatcher's swallow semantics for a chord that
-            // resolves to nothing.
+            if (isModifierKeyCode(stroke.getKeyCode())) {
+                // A bare modifier press never completes a stroke: pass it
+                // through and keep chord mode open (the capture dialog's
+                // recorder follows the same rule). Keyboards emit the
+                // modifier press BEFORE the letter, so closing here would
+                // make every shifted second key (e.g. Ctrl+T then Shift+P)
+                // unreachable: the Shift would swallow the chord, and the
+                // P would arrive in normal dispatch.
+                return false;
+            }
+            // An unlisted key: cancel and close, matching the dispatcher's
+            // swallow semantics for a chord that resolves to nothing.
             close();
             return true;
         };
         KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(localDispatcher);
         chordDispatcher = localDispatcher;
+    }
+
+    /**
+     * @param keyCode a key code
+     * @return whether the key is a pure modifier key (Ctrl, Shift, Alt,
+     *         Alt Graph or Meta; the key codes of the left/right variants
+     *         are the same as the plain ones in AWT)
+     */
+    private static boolean isModifierKeyCode(int keyCode) {
+        return keyCode == KeyEvent.VK_SHIFT
+                || keyCode == KeyEvent.VK_CONTROL
+                || keyCode == KeyEvent.VK_ALT
+                || keyCode == KeyEvent.VK_META
+                || keyCode == KeyEvent.VK_ALT_GRAPH;
     }
 
     // ------------------------------------------------------------------

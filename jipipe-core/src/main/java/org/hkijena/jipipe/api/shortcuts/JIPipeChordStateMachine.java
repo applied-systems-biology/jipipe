@@ -32,6 +32,12 @@ import java.util.Set;
  * <li>idle + stroke that starts a chord -> {@link EventResult#PREFIX_STARTED}</li>
  * <li>idle + any other stroke -> {@link EventResult#PASSTHROUGH}</li>
  * <li>pending + {@code ESCAPE} without modifiers -> {@link EventResult#CANCELLED}</li>
+ * <li>a modifier-only press (a bare Shift, Ctrl, Alt, Meta or Alt Graph)
+ * -> {@link EventResult#PASSTHROUGH}: it never interacts with the chord
+ * state, so a pending chord stays pending. Keyboards emit the modifier
+ * press before the letter, and the exemption also applies while idle (a
+ * modifier-only stroke never starts a chord: the capture dialogs never
+ * record one)</li>
  * <li>pending + any other stroke -> {@link EventResult#CHORD_COMPLETED}, carrying
  * the completed chord. The stroke is <em>not</em> matched against the known
  * chords: the dispatcher resolves the chord against the registry and cancels
@@ -105,6 +111,17 @@ public final class JIPipeChordStateMachine {
      */
     public KeyEventResult keyPressed(KeyStroke stroke, long nanoTime) {
         Objects.requireNonNull(stroke, "stroke");
+        if (isModifierOnly(stroke)) {
+            // A bare modifier press never completes a stroke: it neither
+            // starts, completes nor cancels a chord. Returning PASSTHROUGH
+            // keeps a pending chord armed: the dispatcher's single-stroke
+            // lookup finds nothing bound for a bare modifier, the key
+            // passes through to the app, and the next (possibly shifted)
+            // press resolves the chord. Keyboards emit the modifier press
+            // before the letter, so exempting it is what makes shifted
+            // second keys (e.g. Ctrl+T then Shift+P) usable at all.
+            return new KeyEventResult(EventResult.PASSTHROUGH, null);
+        }
         if (pending && timeoutNanos > 0 && nanoTime - pendingSince > timeoutNanos) {
             // the chord expired before this stroke: forget it and act as if idle
             pending = false;
@@ -156,5 +173,20 @@ public final class JIPipeChordStateMachine {
     private static boolean isEscape(KeyStroke stroke) {
         return stroke.getKeyCode() == KeyEvent.VK_ESCAPE
                 && stroke.getModifiers() == 0;
+    }
+
+    /**
+     * @param stroke a normalized key press
+     * @return whether the stroke is a pure modifier press (Shift, Ctrl,
+     *         Alt, Meta or Alt Graph alone; the key codes of the left/right
+     *         variants are the same as the plain ones in AWT)
+     */
+    private static boolean isModifierOnly(KeyStroke stroke) {
+        int keyCode = stroke.getKeyCode();
+        return keyCode == KeyEvent.VK_SHIFT
+                || keyCode == KeyEvent.VK_CONTROL
+                || keyCode == KeyEvent.VK_ALT
+                || keyCode == KeyEvent.VK_META
+                || keyCode == KeyEvent.VK_ALT_GRAPH;
     }
 }
