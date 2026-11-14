@@ -167,4 +167,59 @@ class JIPipeDesktopDockPanelPinTest {
         addPanel(panel, "TOOLS", JIPipeDesktopDockPanel.PanelLocation.TopRight, false);
         assertEquals("TOOLS", panel.getStandInPanelId(JIPipeDesktopDockPanel.PinSide.Right));
     }
+
+    @Test void closingTheStandInPausesTheSide() {
+        JIPipeDesktopDockPanel panel = new JIPipeDesktopDockPanel();
+        addPanel(panel, "TOOLS", JIPipeDesktopDockPanel.PanelLocation.TopRight, false);
+        panel.pinDock("TOOLS");
+        panel.deactivatePanel("TOOLS", false);
+        assertNull(panel.getStandInPanelId(JIPipeDesktopDockPanel.PinSide.Right));
+    }
+
+    @Test void aContextDockCycleReArmsTheStandIn() {
+        JIPipeDesktopDockPanel panel = new JIPipeDesktopDockPanel();
+        addPanel(panel, "TOOLS", JIPipeDesktopDockPanel.PanelLocation.TopRight, false);
+        panel.pinDock("TOOLS");
+        panel.deactivatePanel("TOOLS", false);
+        addPanel(panel, "_PARAMETERS", JIPipeDesktopDockPanel.PanelLocation.TopRight, true);
+        panel.removeDockPanelsIf(p -> p.getId().startsWith("_"));
+        assertEquals("TOOLS", panel.getStandInPanelId(JIPipeDesktopDockPanel.PinSide.Right));
+    }
+
+    @Test void closingAUserOpenedPinnedDockPausesTheSide() {
+        JIPipeDesktopDockPanel panel = new JIPipeDesktopDockPanel();
+        addPanel(panel, "TOOLS", JIPipeDesktopDockPanel.PanelLocation.TopRight, false);
+        panel.pinDock("TOOLS");
+        panel.activatePanel("TOOLS", false);
+        panel.deactivatePanel("TOOLS", false);
+        assertNull(panel.getStandInPanelId(JIPipeDesktopDockPanel.PinSide.Right));
+    }
+
+    @Test void closingANonPinnedDockDoesNotPauseTheSide() {
+        JIPipeDesktopDockPanel panel = new JIPipeDesktopDockPanel();
+        addPanel(panel, "TOOLS", JIPipeDesktopDockPanel.PanelLocation.TopRight, false);
+        addPanel(panel, "ERRORS", JIPipeDesktopDockPanel.PanelLocation.BottomRight, true);
+        panel.pinDock("TOOLS");
+        panel.deactivatePanel("ERRORS", false);
+        assertEquals("TOOLS", panel.getStandInPanelId(JIPipeDesktopDockPanel.PinSide.Right));
+    }
+
+    @Test void restoreStateClearsStandInPauses() {
+        JIPipeDesktopDockPanel panel = new JIPipeDesktopDockPanel();
+        addPanel(panel, "TOOLS", JIPipeDesktopDockPanel.PanelLocation.TopRight, false);
+        panel.pinDock("TOOLS");
+        panel.deactivatePanel("TOOLS", false);
+        panel.restoreState(panel.getCurrentState());
+        assertEquals("TOOLS", panel.getStandInPanelId(JIPipeDesktopDockPanel.PinSide.Right));
+    }
+
+    @Test void contextDockPinsAreInertButRoundTrip() {
+        JIPipeDesktopDockPanel panel = new JIPipeDesktopDockPanel();
+        addPanel(panel, "TOOLS", JIPipeDesktopDockPanel.PanelLocation.TopRight, false);
+        JIPipeDesktopDockPanel.State state = panel.getCurrentState();
+        state.getPins().put("right", "_RESULTS");
+        panel.restoreState(state);
+        assertNull(panel.getStandInPanelId(JIPipeDesktopDockPanel.PinSide.Right));
+        assertEquals("_RESULTS", panel.getCurrentState().getPins().get("right"));
+    }
 }

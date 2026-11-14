@@ -47,6 +47,9 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
     // The docks currently displayed as side stand-ins (recomputed on every
     // update; purely presentational, never persisted)
     private final Map<PinSide, Panel> activeStandIns = new EnumMap<>(PinSide.class);
+    // Sides whose stand-in the user explicitly closed; the pause ends when
+    // the dock set or activity on that side changes
+    private final EnumSet<PinSide> pausedStandIns = EnumSet.noneOf(PinSide.class);
     private final JIPipeDesktopSplitPane leftSplitPane = new JIPipeDesktopSplitPane(JIPipeDesktopSplitPane.TOP_BOTTOM, new JIPipeDesktopSplitPane.FixedRatio(0.33, true));
     private final JIPipeDesktopSplitPane rightSplitPane = new JIPipeDesktopSplitPane(JIPipeDesktopSplitPane.TOP_BOTTOM, new JIPipeDesktopSplitPane.FixedRatio(0.66, true));
     private final JIPipeDesktopSplitPane mainSplitPane = new JIPipeDesktopSplitPane(JIPipeDesktopSplitPane.TOP_BOTTOM, new JIPipeDesktopSplitPane.FixedRatio(0.66, true));
@@ -549,6 +552,22 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
     }
 
     public void deactivatePanel(Panel panel, boolean saveState) {
+        // An explicit close of the side's pinned dock (while nothing else on
+        // the side is displayed) pauses the stand-in until the dock set or
+        // activity on that side changes
+        if (panel.getLocation() != null) {
+            PinSide side = panel.getLocation().getPinSide();
+            if (panel.getId().equals(pins.get(pinKey(side)))) {
+                boolean onlyDisplayed = panels.values().stream().noneMatch(
+                        other -> other != panel
+                                && other.getLocation() != null
+                                && other.getLocation().getPinSide() == side
+                                && other.isDisplayed());
+                if (onlyDisplayed) {
+                    pausedStandIns.add(side);
+                }
+            }
+        }
         panel.setVisible(false);
         updateAll();
         if (saveState) {
@@ -562,6 +581,9 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
     }
 
     private void activatePanel(Panel panel, boolean saveState) {
+        if (panel.getLocation() != null) {
+            pausedStandIns.remove(panel.getLocation().getPinSide());
+        }
         if (panel.getComponent() == null && panel.getComponentSupplier() != null) {
             panel.setComponent(panel.getComponentSupplier().get());
             panel.setComponentSupplier(null);
@@ -610,6 +632,8 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
 
             // Moving loses the pin regardless of the sides involved
             pins.values().removeIf(panel.getId()::equals);
+            pausedStandIns.remove(oldLocation.getPinSide());
+            pausedStandIns.remove(newLocation.getPinSide());
 
             updateAll();
 
@@ -652,7 +676,11 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
     }
 
     public void removeDockPanel(String id) {
-        if (panels.remove(id) != null) {
+        Panel removed = panels.remove(id);
+        if (removed != null) {
+            if (removed.getLocation() != null) {
+                pausedStandIns.remove(removed.getLocation().getPinSide());
+            }
             updateAll();
         }
     }
@@ -669,6 +697,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         panel.setName(name);
         panel.setUiOrder(uiOrder);
         panels.put(id, panel);
+        pausedStandIns.remove(panel.getLocation().getPinSide());
 
         if (visible) {
             activatePanel(panel, false);
@@ -704,6 +733,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         panel.setName(name);
         panel.setUiOrder(uiOrder);
         panels.put(id, panel);
+        pausedStandIns.remove(panel.getLocation().getPinSide());
 
         if (visible) {
             activatePanel(panel, false);
@@ -739,6 +769,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         savedState = state;
         pins.clear();
         pins.putAll(state.getPins());
+        pausedStandIns.clear();
         leftPanelWidth = Math.max(minimumPanelWidth, state.leftPanelWidth);
         rightPanelWidth = Math.max(minimumPanelWidth, state.rightPanelWidth);
         alwaysShowLeftPanel = state.alwaysShowLeftPanel;
@@ -815,6 +846,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
             return;
         }
         pins.put(key, id);
+        pausedStandIns.remove(panel.getLocation().getPinSide());
         updateAll();
         saveState();
     }
@@ -825,10 +857,23 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
      * @param id the dock ID
      */
     public void unpinDock(String id) {
-        if (pins.values().removeIf(id::equals)) {
-            updateAll();
-            saveState();
+        String key = null;
+        for (Map.Entry<String, String> entry : pins.entrySet()) {
+            if (entry.getValue().equals(id)) {
+                key = entry.getKey();
+                break;
+            }
         }
+        if (key == null) {
+            return;
+        }
+        pins.remove(key);
+        PinSide side = pinSideOfKey(key);
+        if (side != null) {
+            pausedStandIns.remove(side);
+        }
+        updateAll();
+        saveState();
     }
 
     /**
@@ -860,6 +905,9 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
             return;
         }
         for (PinSide side : PinSide.values()) {
+            if (pausedStandIns.contains(side)) {
+                continue;
+            }
             boolean anyDisplayed = panels.values().stream()
                     .anyMatch(panel -> panel.getLocation() != null
                             && panel.getLocation().getPinSide() == side
@@ -974,13 +1022,18 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
 
     public void removeDockPanelsIf(Predicate<Panel> predicate) {
         boolean found = false;
+        EnumSet<PinSide> removedSides = EnumSet.noneOf(PinSide.class);
         for (Panel panel : ImmutableList.copyOf(panels.values())) {
             if (predicate.test(panel)) {
                 panelVisibilityToggles.remove(panel.getId());
                 panels.remove(panel.getId());
+                if (panel.getLocation() != null) {
+                    removedSides.add(panel.getLocation().getPinSide());
+                }
                 found = true;
             }
         }
+        pausedStandIns.removeAll(removedSides);
         if (found) {
             updateAll();
         }
@@ -1011,6 +1064,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
             found = true;
         }
         if (found) {
+            pausedStandIns.clear();
             updateAll();
         }
     }
@@ -1116,6 +1170,19 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
      */
     private static String pinKey(PinSide side) {
         return side.name().toLowerCase(Locale.ROOT);
+    }
+
+    /**
+     * @param key the persisted pin map key
+     * @return the pin side the key names, or null for unknown keys
+     */
+    private static PinSide pinSideOfKey(String key) {
+        for (PinSide side : PinSide.values()) {
+            if (pinKey(side).equals(key)) {
+                return side;
+            }
+        }
+        return null;
     }
 
     public enum PanelSide {
