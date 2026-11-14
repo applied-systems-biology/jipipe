@@ -561,7 +561,8 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
     private void restoreDockStateTemplate(String value) {
         try {
             JIPipeDesktopDockPanel.State state = JsonUtils.readFromString(value, JIPipeDesktopDockPanel.State.class);
-            getDockPanel().restoreState(state.withoutContextDockVisibilities());
+            // Legacy templates migrate their always-show flag to the Tools pin (#1367)
+            getDockPanel().restoreState(state.migrated(JIPipeDesktopGraphEditorUI.DOCK_CONTEXT_PANEL).withoutContextDockVisibilities());
             saveDockStateToSettings();
         } catch (Throwable e) {
             e.printStackTrace();

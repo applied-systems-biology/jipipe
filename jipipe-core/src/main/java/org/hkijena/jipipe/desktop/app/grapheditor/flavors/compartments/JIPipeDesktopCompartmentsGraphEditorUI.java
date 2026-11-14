@@ -402,8 +402,10 @@ public class JIPipeDesktopCompartmentsGraphEditorUI extends JIPipeDesktopGraphEd
             return;
         }
         // Self-heal layouts stored by older versions: the activity state of
-        // context docks is not part of the persisted layout anymore (#1353)
-        state = state.withoutContextDockVisibilities();
+        // context docks is not part of the persisted layout anymore (#1353),
+        // and the legacy "always show right panel" flag becomes the Tools
+        // dock pin (#1367)
+        state = state.migrated(JIPipeDesktopGraphEditorUI.DOCK_CONTEXT_PANEL).withoutContextDockVisibilities();
         // JIPipeDesktopDockPanel.State has no equals(): compare the serialized
         // form, which is exactly what the document stores.
         if (!JsonUtils.getObjectMapper().valueToTree(state)
@@ -458,6 +460,8 @@ public class JIPipeDesktopCompartmentsGraphEditorUI extends JIPipeDesktopGraphEd
         state.put(DOCK_NODE_CONTEXT_PARAMETERS, true, JIPipeDesktopDockPanel.PanelLocation.TopRight);
         state.put(DOCK_NODE_CONTEXT_SLOT_MANAGER, false, JIPipeDesktopDockPanel.PanelLocation.TopRight);
         state.put(DOCK_NODE_CONTEXT_RESULTS, false, JIPipeDesktopDockPanel.PanelLocation.TopRight);
+
+        state.getPins().put("right", JIPipeDesktopGraphEditorUI.DOCK_CONTEXT_PANEL);
 
         getDockPanel().restoreState(state);
     }
