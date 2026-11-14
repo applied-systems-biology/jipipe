@@ -47,7 +47,8 @@ public class EditNotesGraphNodeTool implements JIPipeDesktopToggleableGraphEdito
 
     @Override
     public String getTooltip() {
-        return "Allows to move, edit, and delete canvas notes while active";
+        return "Allows to move, edit, and delete canvas notes while active. "
+                + "Tip: hold Ctrl and drag a note to edit it without activating this tool";
     }
 
     @Override

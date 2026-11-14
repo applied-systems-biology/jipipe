@@ -230,7 +230,7 @@ public class JIPipeDesktopKeyboardSection extends JPanel implements JIPipeDeskto
             if (updatingTimeout) {
                 return;
             }
-            KeymapSettings s = binding.get();
+            KeymapSettings s = JIPipeShortcutSettings.current();
             s.setChordTimeoutMs(((Number) timeoutSpinner.getValue()).longValue());
             binding.set(s);
         });
@@ -306,7 +306,7 @@ public class JIPipeDesktopKeyboardSection extends JPanel implements JIPipeDeskto
                 } else if (e.getClickCount() == 1 && modelColumn == COL_EDIT) {
                     editAction(action);
                 } else if (e.getClickCount() == 1 && modelColumn == COL_RESET
-                        && binding.get().hasOverride(action.id())) {
+                        && JIPipeShortcutSettings.current().hasOverride(action.id())) {
                     resetAction(action);
                 }
             }
@@ -449,7 +449,10 @@ public class JIPipeDesktopKeyboardSection extends JPanel implements JIPipeDeskto
         if (disposed) {
             return;
         }
-        KeymapSettings settings = binding.get();
+        // current() instead of a raw binding read: the keymap block is absent
+        // (and the binding's default is null) until the first write, e.g. on
+        // fresh profiles. Same shared binding, null-safe.
+        KeymapSettings settings = JIPipeShortcutSettings.current();
         JIPipeShortcutRegistry registry = JIPipeShortcutRegistry.getInstance();
         String query = searchField.getText();
 
@@ -559,7 +562,7 @@ public class JIPipeDesktopKeyboardSection extends JPanel implements JIPipeDeskto
             return;
         }
         JIPipeShortcutProfile profile = JIPipeShortcutProfiles.bundled().get(index);
-        KeymapSettings settings = binding.get();
+        KeymapSettings settings = JIPipeShortcutSettings.current();
         JIPipeShortcutProfiles.apply(profile, settings);
         settings.setActiveProfileId(profile.id());
         binding.set(settings);
@@ -597,7 +600,7 @@ public class JIPipeDesktopKeyboardSection extends JPanel implements JIPipeDeskto
      * active profile, all through the binding.
      */
     private void doResetSection() {
-        KeymapSettings settings = binding.get();
+        KeymapSettings settings = JIPipeShortcutSettings.current();
         settings.getOverrides().clear();
         settings.setChordTimeoutMs(KeymapSettings.DEFAULT_CHORD_TIMEOUT_MS);
         settings.setActiveProfileId(null);
@@ -623,7 +626,7 @@ public class JIPipeDesktopKeyboardSection extends JPanel implements JIPipeDeskto
         }
         List<KeyStroke> chord = captured.get();
         if (!chord.isEmpty()) {
-            KeymapSettings settings = binding.get();
+            KeymapSettings settings = JIPipeShortcutSettings.current();
             List<String> conflictIds = registry.findConflicts(action.id(), List.of(chord), settings);
             if (!conflictIds.isEmpty()) {
                 List<String> names = new ArrayList<>();
@@ -647,7 +650,7 @@ public class JIPipeDesktopKeyboardSection extends JPanel implements JIPipeDeskto
                 }
             }
         }
-        KeymapSettings settings = binding.get();
+        KeymapSettings settings = JIPipeShortcutSettings.current();
         settings.setOverride(action.id(), List.of(chord));
         binding.set(settings);
     }
@@ -656,10 +659,10 @@ public class JIPipeDesktopKeyboardSection extends JPanel implements JIPipeDeskto
      * Resets one action to its registry default (removes its override, if any).
      */
     private void resetAction(JIPipeShortcutAction action) {
-        if (!binding.get().hasOverride(action.id())) {
+        if (!JIPipeShortcutSettings.current().hasOverride(action.id())) {
             return;
         }
-        KeymapSettings settings = binding.get();
+        KeymapSettings settings = JIPipeShortcutSettings.current();
         settings.removeOverride(action.id());
         binding.set(settings);
     }
