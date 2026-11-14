@@ -641,11 +641,14 @@ public class JIPipeDesktopCommandBar extends JPanel {
     }
 
     /**
-     * The search filter of the normal mode: an entry is kept when the query
-     * (case insensitive) is contained in the entry name or in its category;
-     * a category header is kept only while at least one of its entries
-     * matched. One small method so Task 7 (fuzzy scoring) touches exactly
-     * this place.
+     * The search filter of the normal mode: with a non-empty query an entry
+     * is kept when its name fuzzy-matches the query
+     * ({@link JIPipeDesktopCommandBarSearch#matches}) or its category
+     * contains the query case-insensitively (category filtering keeps the
+     * plain substring behavior); a category header is kept only while at
+     * least one of its entries matched; with an empty query everything is
+     * listed. The ordering stays the registry order; recency tie-breaking
+     * arrives in Task 8.
      */
     private static List<JIPipeDesktopCommandBarModel.Entry> filterByQuery(
             List<JIPipeDesktopCommandBarModel.Entry> entries, String query) {
@@ -660,7 +663,7 @@ public class JIPipeDesktopCommandBar extends JPanel {
                 pendingHeader = entry;
                 continue;
             }
-            if (containsIgnoreCase(entry.name(), q) || containsIgnoreCase(entry.category(), q)) {
+            if (JIPipeDesktopCommandBarSearch.matches(q, entry.name()) || containsIgnoreCase(entry.category(), q)) {
                 if (pendingHeader != null) {
                     result.add(pendingHeader);
                     pendingHeader = null;
