@@ -181,11 +181,12 @@ class JIPipeShortcutResolveTest {
                                 KeyStroke.getKeyStroke("pressed R"))), settings);
         assertTrue(conflicts.contains(JIPipeShortcutActions.TOOL_REWIRE.id()),
                 "Ctrl+T then R is the default rewire chord: " + conflicts);
-        // A chord with the same first stroke but a different second stroke does not conflict.
+        // A chord with the same first stroke but a different second stroke does not conflict
+        // (K is unbound as a second stroke; X belongs to the tunnel exit chord).
         assertTrue(JIPipeShortcutRegistry.getInstance()
                 .findConflicts(JIPipeShortcutActions.TOOL_CONNECT.id(),
                         List.of(List.of(KeyStroke.getKeyStroke("control pressed T"),
-                                KeyStroke.getKeyStroke("pressed X"))), settings).isEmpty());
+                                KeyStroke.getKeyStroke("pressed K"))), settings).isEmpty());
     }
 
     @Test void legacyPresetRestoresOldBindings() {
@@ -269,5 +270,128 @@ class JIPipeShortcutResolveTest {
                 JIPipeShortcutProfiles.bundled().stream().map(JIPipeShortcutProfile::id).toList());
         assertEquals("Default", JIPipeShortcutProfiles.DEFAULT.name());
         assertEquals("Legacy (pre-6.0)", JIPipeShortcutProfiles.LEGACY.name());
+    }
+
+    @Test void commandBarActionDefaults() {
+        JIPipeShortcutAction a = JIPipeShortcutActions.COMMAND_BAR_OPEN;
+        assertEquals("org.hkijena.jipipe.command-bar.open", a.id());
+        assertEquals("Open command bar", a.name());
+        assertEquals("Menus", a.category());
+        assertEquals(JIPipeShortcutAction.FAMILY_PROJECT, a.scopeFamily());
+        assertTrue(a.isTextInputSafe());
+        // Two interchangeable variants: Ctrl+P and Ctrl+Shift+P.
+        assertEquals(List.of(
+                List.of(KeyStroke.getKeyStroke("control pressed P")),
+                List.of(KeyStroke.getKeyStroke("control shift pressed P"))),
+                a.defaultVariants());
+    }
+
+    @Test void revisedChordDefaults() {
+        KeymapSettings settings = new KeymapSettings();
+        // Pass-through enable/disable.
+        assertEquals(List.of(List.of(KeyStroke.getKeyStroke("control pressed T"),
+                KeyStroke.getKeyStroke("pressed P"))),
+                binding(JIPipeShortcutActions.PASS_THROUGH_ENABLE, settings).variants());
+        assertEquals(List.of(List.of(KeyStroke.getKeyStroke("control pressed T"),
+                KeyStroke.getKeyStroke("shift pressed P"))),
+                binding(JIPipeShortcutActions.PASS_THROUGH_DISABLE, settings).variants());
+        // Lock/unlock.
+        assertEquals(List.of(List.of(KeyStroke.getKeyStroke("control pressed T"),
+                KeyStroke.getKeyStroke("pressed L"))),
+                binding(JIPipeShortcutActions.NODE_LOCK, settings).variants());
+        assertEquals(List.of(List.of(KeyStroke.getKeyStroke("control pressed T"),
+                KeyStroke.getKeyStroke("shift pressed L"))),
+                binding(JIPipeShortcutActions.NODE_UNLOCK, settings).variants());
+        // Enable/disable.
+        assertEquals(List.of(List.of(KeyStroke.getKeyStroke("control pressed T"),
+                KeyStroke.getKeyStroke("shift pressed D"))),
+                binding(JIPipeShortcutActions.NODE_ENABLE, settings).variants());
+        assertEquals(List.of(List.of(KeyStroke.getKeyStroke("control pressed T"),
+                KeyStroke.getKeyStroke("pressed D"))),
+                binding(JIPipeShortcutActions.NODE_DISABLE, settings).variants());
+        // Add parameter set, move here, update cache.
+        assertEquals(List.of(List.of(KeyStroke.getKeyStroke("control pressed T"),
+                KeyStroke.getKeyStroke("pressed S"))),
+                binding(JIPipeShortcutActions.NODE_ADD_PARAMETER_SET, settings).variants());
+        assertEquals(List.of(List.of(KeyStroke.getKeyStroke("control pressed T"),
+                KeyStroke.getKeyStroke("pressed H"))),
+                binding(JIPipeShortcutActions.NODE_SELECT_AND_MOVE_HERE, settings).variants());
+        assertEquals(List.of(List.of(KeyStroke.getKeyStroke("control pressed T"),
+                KeyStroke.getKeyStroke("pressed U"))),
+                binding(JIPipeShortcutActions.NODE_UPDATE_CACHE, settings).variants());
+        // NODE_ADD: single stroke first, then the chord variant.
+        assertEquals(JIPipeShortcutBinding.Source.DEFAULT,
+                binding(JIPipeShortcutActions.NODE_ADD, settings).source());
+        assertEquals(List.of(
+                List.of(KeyStroke.getKeyStroke("shift pressed A")),
+                List.of(KeyStroke.getKeyStroke("control pressed T"),
+                        KeyStroke.getKeyStroke("pressed N"))),
+                binding(JIPipeShortcutActions.NODE_ADD, settings).variants());
+    }
+
+    @Test void freedDirectKeysAreUnboundByDefault() {
+        // The keys moved to the Ctrl+T chord layer must no longer be held by
+        // any action's DEFAULT binding (only the LEGACY preset may re-claim them).
+        JIPipeShortcutRegistry registry = JIPipeShortcutRegistry.getInstance();
+        for (String key : new String[]{
+                "control pressed G", "control pressed E", "control shift pressed E",
+                "control pressed L", "control shift pressed L", "control alt pressed P",
+                "control pressed SPACE", "control shift pressed A"}) {
+            List<KeyStroke> candidate = List.of(KeyStroke.getKeyStroke(key));
+            for (JIPipeShortcutAction action : registry.all()) {
+                for (List<KeyStroke> variant : action.defaultVariants()) {
+                    assertFalse(variant.equals(candidate),
+                            "no action's DEFAULT binding may contain the freed key " + key
+                                    + " (found on " + action.id() + ")");
+                }
+            }
+        }
+    }
+
+    @Test void newContextActionCatalogEntries() {
+        KeymapSettings settings = new KeymapSettings();
+        // Cache intermediate results: Ctrl+T then Shift+U.
+        assertEquals(List.of(List.of(KeyStroke.getKeyStroke("control pressed T"),
+                KeyStroke.getKeyStroke("shift pressed U"))),
+                binding(JIPipeShortcutActions.NODE_CACHE_INTERMEDIATE_RESULTS, settings).variants());
+        // Update predecessor cache: Ctrl+T then B.
+        assertEquals(List.of(List.of(KeyStroke.getKeyStroke("control pressed T"),
+                KeyStroke.getKeyStroke("pressed B"))),
+                binding(JIPipeShortcutActions.NODE_UPDATE_PREDECESSOR_CACHE, settings).variants());
+        // Add tunnel entrance here: Ctrl+T then G.
+        assertEquals(List.of(List.of(KeyStroke.getKeyStroke("control pressed T"),
+                KeyStroke.getKeyStroke("pressed G"))),
+                binding(JIPipeShortcutActions.NODE_ADD_TUNNEL_ENTRANCE, settings).variants());
+        // Add tunnel exit here: Ctrl+T then X.
+        assertEquals(List.of(List.of(KeyStroke.getKeyStroke("control pressed T"),
+                KeyStroke.getKeyStroke("pressed X"))),
+                binding(JIPipeShortcutActions.NODE_ADD_TUNNEL_EXIT, settings).variants());
+        // registerCore is idempotent: a second call must not throw.
+        JIPipeShortcutActions.registerCore();
+    }
+
+    @Test void legacyPresetRestoresMovedActions() {
+        KeymapSettings s = new KeymapSettings();
+        JIPipeShortcutProfiles.apply(JIPipeShortcutProfiles.LEGACY, s);
+        // The five actions moved to the Ctrl+T chord layer regain their pre-6.0 key.
+        assertEquals(List.of(List.of(KeyStroke.getKeyStroke("control pressed E"))),
+                binding(JIPipeShortcutActions.NODE_ENABLE, s).variants());
+        assertEquals(List.of(List.of(KeyStroke.getKeyStroke("control shift pressed E"))),
+                binding(JIPipeShortcutActions.NODE_DISABLE, s).variants());
+        assertEquals(List.of(List.of(KeyStroke.getKeyStroke("control shift pressed A"))),
+                binding(JIPipeShortcutActions.NODE_ADD_PARAMETER_SET, s).variants());
+        assertEquals(List.of(List.of(KeyStroke.getKeyStroke("control pressed G"))),
+                binding(JIPipeShortcutActions.NODE_SELECT_AND_MOVE_HERE, s).variants());
+        assertEquals(List.of(List.of(KeyStroke.getKeyStroke("control pressed SPACE"))),
+                binding(JIPipeShortcutActions.NODE_UPDATE_CACHE, s).variants());
+        // The pre-existing lock/unlock/pass-through legacy entries are unchanged.
+        assertEquals(List.of(List.of(KeyStroke.getKeyStroke("pressed L"))),
+                binding(JIPipeShortcutActions.NODE_LOCK, s).variants());
+        assertEquals(List.of(List.of(KeyStroke.getKeyStroke("control pressed L"))),
+                binding(JIPipeShortcutActions.NODE_UNLOCK, s).variants());
+        assertEquals(List.of(List.of(KeyStroke.getKeyStroke("control pressed P"))),
+                binding(JIPipeShortcutActions.PASS_THROUGH_DISABLE, s).variants());
+        assertEquals(List.of(List.of(KeyStroke.getKeyStroke("control shift pressed P"))),
+                binding(JIPipeShortcutActions.PASS_THROUGH_ENABLE, s).variants());
     }
 }

@@ -236,6 +236,22 @@ public final class JIPipeShortcutActions {
                     .textInputSafe(true)
                     .defaultChord(stroke("control shift pressed S"))
                     .build();
+    /**
+     * Open the command bar.
+     * <p>
+     * Two interchangeable variants: {@code Ctrl+P} (the key moved out of the
+     * graph tools by the 6.0 revision) and the command-palette-style
+     * {@code Ctrl+Shift+P}.
+     */
+    public static final JIPipeShortcutAction COMMAND_BAR_OPEN =
+            JIPipeShortcutAction.builder("org.hkijena.jipipe.command-bar.open", "Open command bar", "Menus")
+                    .description("Opens the command bar")
+                    .scopeFamily(JIPipeShortcutAction.FAMILY_PROJECT)
+                    .textInputSafe(true)
+                    .defaultVariants(List.of(
+                            List.of(stroke("control pressed P")),
+                            List.of(stroke("control shift pressed P"))))
+                    .build();
 
     // ==================== Context actions: selection ====================
 
@@ -249,11 +265,15 @@ public final class JIPipeShortcutActions {
                     .build();
     /**
      * Move a selected node to the cursor position (via the selection dialog).
+     * <p>
+     * The key moved to the {@code Ctrl+T} chord layer (chord: {@code Ctrl+T}
+     * then {@code H}); the pre-6.0 {@code Ctrl+G} is restored by the LEGACY
+     * preset.
      */
     public static final JIPipeShortcutAction NODE_SELECT_AND_MOVE_HERE =
             JIPipeShortcutAction.builder("org.hkijena.jipipe.graph.node.select-and-move-here", "Move node here ...", "Selection")
                     .description("Shows a window to select a node and move it to the current cursor")
-                    .defaultChord(stroke("control pressed G"))
+                    .defaultChord(stroke("control pressed T"), stroke("pressed H"))
                     .build();
 
     // ==================== Context actions: creation ====================
@@ -264,7 +284,9 @@ public final class JIPipeShortcutActions {
     public static final JIPipeShortcutAction NODE_ADD =
             JIPipeShortcutAction.builder("org.hkijena.jipipe.graph.node.add", "Add new node here ...", "Creation")
                     .description("Opens a dialog that allows to search and add a node at the specified location")
-                    .defaultChord(stroke("shift pressed A"))
+                    .defaultVariants(List.of(
+                            List.of(stroke("shift pressed A")),
+                            List.of(stroke("control pressed T"), stroke("pressed N"))))
                     .build();
     /**
      * Add a new compartment at the cursor position (compartments flavor).
@@ -280,7 +302,23 @@ public final class JIPipeShortcutActions {
     public static final JIPipeShortcutAction NODE_ADD_PARAMETER_SET =
             JIPipeShortcutAction.builder("org.hkijena.jipipe.graph.node.add-parameter-set", "Add parameter sets here ...", "Creation")
                     .description("Opens a dialog that allows to add a parameter set node at the specified location")
-                    .defaultChord(stroke("control shift pressed A"))
+                    .defaultChord(stroke("control pressed T"), stroke("pressed S"))
+                    .build();
+    /**
+     * Add a tunnel entrance node at the cursor position.
+     */
+    public static final JIPipeShortcutAction NODE_ADD_TUNNEL_ENTRANCE =
+            JIPipeShortcutAction.builder("org.hkijena.jipipe.graph.node.add-tunnel-entrance", "Add tunnel entrance here ...", "Creation")
+                    .description("Adds a tunnel entrance at the specified location and opens its configuration window")
+                    .defaultChord(stroke("control pressed T"), stroke("pressed G"))
+                    .build();
+    /**
+     * Add a tunnel exit node at the cursor position.
+     */
+    public static final JIPipeShortcutAction NODE_ADD_TUNNEL_EXIT =
+            JIPipeShortcutAction.builder("org.hkijena.jipipe.graph.node.add-tunnel-exit", "Add tunnel exit here ...", "Creation")
+                    .description("Adds a tunnel exit node at the specified location and opens its configuration window")
+                    .defaultChord(stroke("control pressed T"), stroke("pressed X"))
                     .build();
 
     // ==================== Context actions: clipboard ====================
@@ -372,7 +410,7 @@ public final class JIPipeShortcutActions {
     public static final JIPipeShortcutAction NODE_ENABLE =
             JIPipeShortcutAction.builder("org.hkijena.jipipe.graph.node.enable", "Enable", "Input/output")
                     .description("Enables the selected algorithms")
-                    .defaultChord(stroke("control pressed E"))
+                    .defaultChord(stroke("control pressed T"), stroke("shift pressed D"))
                     .build();
     /**
      * Disable the selected nodes.
@@ -380,7 +418,7 @@ public final class JIPipeShortcutActions {
     public static final JIPipeShortcutAction NODE_DISABLE =
             JIPipeShortcutAction.builder("org.hkijena.jipipe.graph.node.disable", "Disable", "Input/output")
                     .description("Disables the selected algorithms")
-                    .defaultChord(stroke("control shift pressed E"))
+                    .defaultChord(stroke("control pressed T"), stroke("pressed D"))
                     .build();
     /**
      * Set the selected nodes to pass their input through to their output.
@@ -388,7 +426,7 @@ public final class JIPipeShortcutActions {
     public static final JIPipeShortcutAction PASS_THROUGH_ENABLE =
             JIPipeShortcutAction.builder("org.hkijena.jipipe.graph.node.pass-through-enable", "Pass-through", "Input/output")
                     .description("Sets the selected algorithms to pass their input through to their output without changes")
-                    .defaultChord(stroke("control alt pressed P"))
+                    .defaultChord(stroke("control pressed T"), stroke("pressed P"))
                     .build();
     /**
      * Set the selected nodes to process input normally.
@@ -396,7 +434,7 @@ public final class JIPipeShortcutActions {
     public static final JIPipeShortcutAction PASS_THROUGH_DISABLE =
             JIPipeShortcutAction.builder("org.hkijena.jipipe.graph.node.pass-through-disable", "Disable pass-through", "Input/output")
                     .description("Sets the selected algorithms to process input to output")
-                    .defaultChord(stroke("control shift pressed P"))
+                    .defaultChord(stroke("control pressed T"), stroke("shift pressed P"))
                     .build();
     /**
      * Lock the location and size of the selected nodes.
@@ -404,7 +442,7 @@ public final class JIPipeShortcutActions {
     public static final JIPipeShortcutAction NODE_LOCK =
             JIPipeShortcutAction.builder("org.hkijena.jipipe.graph.node.lock", "Lock location/size", "Input/output")
                     .description("Locks the location and size of all selected nodes")
-                    .defaultChord(stroke("control pressed L"))
+                    .defaultChord(stroke("control pressed T"), stroke("pressed L"))
                     .build();
     /**
      * Unlock the location and size of the selected nodes.
@@ -412,7 +450,7 @@ public final class JIPipeShortcutActions {
     public static final JIPipeShortcutAction NODE_UNLOCK =
             JIPipeShortcutAction.builder("org.hkijena.jipipe.graph.node.unlock", "Unlock location/size", "Input/output")
                     .description("Unlocks the location and size of all selected nodes")
-                    .defaultChord(stroke("control shift pressed L"))
+                    .defaultChord(stroke("control pressed T"), stroke("shift pressed L"))
                     .build();
 
     // ==================== Context actions: layers ====================
@@ -466,7 +504,25 @@ public final class JIPipeShortcutActions {
     public static final JIPipeShortcutAction NODE_UPDATE_CACHE =
             JIPipeShortcutAction.builder("org.hkijena.jipipe.graph.node.update-cache", "Update cache", "Running")
                     .description("Runs the pipeline up until this algorithm and caches the results. Nothing is written to disk.")
-                    .defaultChord(stroke("control pressed SPACE"))
+                    .defaultChord(stroke("control pressed T"), stroke("pressed U"))
+                    .build();
+    /**
+     * Run the pipeline up to the selected node and cache its results,
+     * including the intermediate results of the node itself.
+     */
+    public static final JIPipeShortcutAction NODE_CACHE_INTERMEDIATE_RESULTS =
+            JIPipeShortcutAction.builder("org.hkijena.jipipe.graph.node.cache-intermediate-results", "Cache intermediate results", "Running")
+                    .description("Runs the pipeline up until this algorithm and caches the results (including intermediate results). Nothing is written to disk.")
+                    .defaultChord(stroke("control pressed T"), stroke("shift pressed U"))
+                    .build();
+    /**
+     * Run the pipeline up to the predecessors of the selected node and
+     * update its cache.
+     */
+    public static final JIPipeShortcutAction NODE_UPDATE_PREDECESSOR_CACHE =
+            JIPipeShortcutAction.builder("org.hkijena.jipipe.graph.node.update-predecessor-cache", "Update predecessor cache", "Running")
+                    .description("Runs the pipeline up until the predecessors of the selected node. Nothing is written to disk.")
+                    .defaultChord(stroke("control pressed T"), stroke("pressed B"))
                     .build();
 
     // ==================== Context actions: navigation ====================
@@ -525,13 +581,14 @@ public final class JIPipeShortcutActions {
             EDITOR_UNDO, EDITOR_REDO, EDITOR_ZOOM_IN, EDITOR_ZOOM_OUT, EDITOR_ZOOM_RESET,
             EDITOR_MOVE_SELECTION_LEFT, EDITOR_MOVE_SELECTION_RIGHT, EDITOR_MOVE_SELECTION_UP, EDITOR_MOVE_SELECTION_DOWN,
             // Menus
-            PROJECT_NEW, PROJECT_OPEN, PROJECT_SAVE, PROJECT_SAVE_AS,
+            PROJECT_NEW, PROJECT_OPEN, PROJECT_SAVE, PROJECT_SAVE_AS, COMMAND_BAR_OPEN,
             // Selection
             NODE_SELECT_ALL, NODE_SELECT_AND_MOVE_HERE, NODE_ISOLATE,
             NODE_COPY, EDGE_COPY, NODE_CUT, NODE_PASTE, NODE_DUPLICATE, NODE_DUPLICATE_WITH_INPUTS,
             NODE_DELETE, EDGE_DELETE_CONTROL_POINT, EDGE_CLEAR_CONTROL_POINTS,
             // Creation
             NODE_ADD, COMPARTMENT_ADD, NODE_ADD_PARAMETER_SET,
+            NODE_ADD_TUNNEL_ENTRANCE, NODE_ADD_TUNNEL_EXIT,
             // Input/output
             NODE_ENABLE, NODE_DISABLE, PASS_THROUGH_ENABLE, PASS_THROUGH_DISABLE,
             NODE_LOCK, NODE_UNLOCK,
@@ -539,6 +596,7 @@ public final class JIPipeShortcutActions {
             NODE_RAISE, NODE_LOWER, NODE_SEND_TO_FOREGROUND, NODE_SEND_TO_BACKGROUND,
             // Running
             NODE_RUN_SHOW_RESULTS, NODE_UPDATE_CACHE,
+            NODE_CACHE_INTERMEDIATE_RESULTS, NODE_UPDATE_PREDECESSOR_CACHE,
             // Navigation
             NODE_MOVE_UI_LEFT, NODE_MOVE_UI_RIGHT, NODE_MOVE_UI_UP, NODE_MOVE_UI_DOWN,
     };
@@ -586,8 +644,10 @@ public final class JIPipeShortcutActions {
      * <p>
      * Restores every pre-6.0 binding (design Section 8): the bare F-key tools,
      * the F-key notes tools, ESC-cycled notes edit, numpad-only zoom, the
-     * {@code L}/{@code Ctrl+L} lock pair, and the
-     * {@code Ctrl+P}/{@code Ctrl+Shift+P} pass-through pair. Only the actions
+     * {@code L}/{@code Ctrl+L} lock pair, the
+     * {@code Ctrl+P}/{@code Ctrl+Shift+P} pass-through pair, and the keys
+     * freed by the chord-layer revision (the enable/disable pair, add
+     * parameter set, move node here, and update cache). Only the actions
      * whose default changed carry an override; everything else stays on its
      * registry default.
      */
@@ -615,6 +675,13 @@ public final class JIPipeShortcutActions {
         // Pass-through: pre-6.0, Ctrl+P disabled / Ctrl+Shift+P enabled.
         legacy.put(PASS_THROUGH_DISABLE.id(), List.of(List.of(stroke("control pressed P"))));
         legacy.put(PASS_THROUGH_ENABLE.id(), List.of(List.of(stroke("control shift pressed P"))));
+        // Chord layer: pre-6.0, these actions held the direct keys that the
+        // revision moved under the Ctrl+T chord.
+        legacy.put(NODE_ENABLE.id(), List.of(List.of(stroke("control pressed E"))));
+        legacy.put(NODE_DISABLE.id(), List.of(List.of(stroke("control shift pressed E"))));
+        legacy.put(NODE_ADD_PARAMETER_SET.id(), List.of(List.of(stroke("control shift pressed A"))));
+        legacy.put(NODE_SELECT_AND_MOVE_HERE.id(), List.of(List.of(stroke("control pressed G"))));
+        legacy.put(NODE_UPDATE_CACHE.id(), List.of(List.of(stroke("control pressed SPACE"))));
         return legacy;
     }
 }
