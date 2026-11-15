@@ -152,8 +152,17 @@ class JIPipeDesktopDockPanelStateTest {
         assertEquals("CONTEXT_PANEL", state.migrated("CONTEXT_PANEL").getPins().get("right"));
     }
 
-    @Test void migratedAddsNoPinWithoutLegacyFlag() {
-        assertTrue(new JIPipeDesktopDockPanel.State().migrated("CONTEXT_PANEL").getPins().isEmpty());
+    @Test void migratedPinsWhenLegacyFlagIsAbsent() {
+        // A document without the flag key: users predating the flag, or
+        // states round-tripped through an older build (which drops the key)
+        assertTrue(new JIPipeDesktopDockPanel.State().migrated("CONTEXT_PANEL").getPins().containsKey("right"));
+    }
+
+    @Test void migratedDoesNotPinWhenLegacyFlagIsExplicitlyFalse() {
+        // An explicit uncheck of "always show right panel" is honored
+        JIPipeDesktopDockPanel.State state = new JIPipeDesktopDockPanel.State();
+        state.setAlwaysShowRightPanel(false);
+        assertTrue(state.migrated("CONTEXT_PANEL").getPins().isEmpty());
     }
 
     @Test void migratedKeepsExistingPins() {
@@ -175,6 +184,7 @@ class JIPipeDesktopDockPanelStateTest {
     @Test void migratedIgnoresLegacyLeftFlag() {
         JIPipeDesktopDockPanel.State state = new JIPipeDesktopDockPanel.State();
         state.setAlwaysShowLeftPanel(true);
+        state.setAlwaysShowRightPanel(false);
         assertTrue(state.migrated("CONTEXT_PANEL").getPins().isEmpty());
     }
 

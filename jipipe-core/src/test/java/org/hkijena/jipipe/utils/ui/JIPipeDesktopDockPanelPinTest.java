@@ -263,4 +263,38 @@ class JIPipeDesktopDockPanelPinTest {
         String json = JsonUtils.toJsonString(new JIPipeDesktopDockPanel.State());
         assertFalse(json.contains("pins"), "a state without pins must not carry an empty pins object");
     }
+
+    /**
+     * The document of a user who never rearranged docks: the legacy flag,
+     * sizes and ratios, but empty visibility and location maps. The apply
+     * path must migrate it to the Tools pin (issue report: the user had to
+     * pin manually).
+     */
+    @Test void legacyStateWithEmptyMapsStillMigratesToTheToolsPin() {
+        String json = "{"
+                + "\"always-show-left-panel\": false,"
+                + "\"always-show-right-panel-v2\": true,"
+                + "\"left-panel-width\": 350,"
+                + "\"left-split-pane-ratio\": 0.33,"
+                + "\"main-split-pane-ratio\": 0.7,"
+                + "\"right-panel-width\": 500,"
+                + "\"right-split-pane-ratio\": 0.66,"
+                + "\"visibilities\": {},"
+                + "\"locations\": {}"
+                + "}";
+        JIPipeDesktopDockPanel.State stored = JsonUtils.readFromString(json, JIPipeDesktopDockPanel.State.class);
+
+        JIPipeDesktopDockPanel panel = new JIPipeDesktopDockPanel();
+        addPanel(panel, "CONTEXT_PANEL", JIPipeDesktopDockPanel.PanelLocation.TopRight, false);
+
+        // The editors' apply path: migrate, then restore when it differs
+        JIPipeDesktopDockPanel.State state = stored.migrated("CONTEXT_PANEL").withoutContextDockVisibilities();
+        if (!JsonUtils.getObjectMapper().valueToTree(state)
+                .equals(JsonUtils.getObjectMapper().valueToTree(panel.getCurrentState().withoutContextDockVisibilities()))) {
+            panel.restoreState(state);
+        }
+
+        assertEquals("CONTEXT_PANEL", panel.getStandInPanelId(JIPipeDesktopDockPanel.PinSide.Right),
+                "the migrated pin must put the Tools dock on the empty right side");
+    }
 }

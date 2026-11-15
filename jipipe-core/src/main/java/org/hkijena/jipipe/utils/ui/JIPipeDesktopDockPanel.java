@@ -486,9 +486,10 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         button.setOpaque(false);
         button.setSelected(isDockDisplayed(panel.getId()));
         boolean pinned = isDockPinned(panel.getId());
-        if (pinned) {
+        if (pinned && !showToolbarLabels) {
             // Pin indicator for the icon-only mode: a thin border, keeping
-            // the padding of the unpinned buttons
+            // the padding of the unpinned buttons (with labels, the
+            // underline is the indicator)
             button.setBorder(BorderFactory.createCompoundBorder(
                     BorderFactory.createLineBorder(ThemeUtils.getCurrentStyle().getIconBaseColor(), 1),
                     BorderFactory.createEmptyBorder(7, 7, 7, 7)));
@@ -1169,7 +1170,13 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         private double leftSplitPaneRatio = 0.33;
         private double rightSplitPaneRatio = 0.66;
         private boolean alwaysShowLeftPanel = false;
-        private boolean alwaysShowRightPanel = false;
+        /**
+         * The legacy "always show right panel" flag, write-only since the
+         * pin system (#1367): a nullable Boolean so a document without the
+         * key (users predating the flag, or states round-tripped through an
+         * older build) is distinguishable from an explicit false.
+         */
+        private Boolean alwaysShowRightPanel = null;
 
         @JsonGetter("pins")
         @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -1193,7 +1200,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         }
 
         @JsonIgnore
-        public boolean isAlwaysShowRightPanel() {
+        public Boolean isAlwaysShowRightPanel() {
             return alwaysShowRightPanel;
         }
 
@@ -1296,11 +1303,13 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
     /**
      * Returns a copy of this state with the legacy always-show flags
      * converted to the pin layout: a state stored with "always show right
-     * panel" (the pre-pinning behavior) pins the given legacy stand-in dock
-     * on the right, unless a right pin is already present. The legacy left
-     * flag never produces a pin (its fallback never worked). Pure and
-     * idempotent: the flags are copied as-is, so migrating an already
-     * migrated state changes nothing.
+     * panel" enabled - or without the flag key at all (users predating the
+     * flag, or states round-tripped through an older build) - pins the given
+     * legacy stand-in dock on the right, unless a right pin is already
+     * present. Only an explicitly stored false (the user unchecked the old
+     * checkbox) keeps the side unpinned. The legacy left flag never produces
+     * a pin (its fallback never worked). Pure and idempotent: the flags are
+     * copied as-is, so migrating an already migrated state changes nothing.
      *
      * @param legacyRightStandInDockId the dock ID the legacy right fallback
      *                                 showed, or null to skip the conversion
@@ -1318,7 +1327,9 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         copy.rightSplitPaneRatio = rightSplitPaneRatio;
         copy.alwaysShowLeftPanel = alwaysShowLeftPanel;
         copy.alwaysShowRightPanel = alwaysShowRightPanel;
-        if (alwaysShowRightPanel && legacyRightStandInDockId != null && !copy.pins.containsKey(pinKey(PinSide.Right))) {
+        if (!Boolean.FALSE.equals(alwaysShowRightPanel)
+                && legacyRightStandInDockId != null
+                && !copy.pins.containsKey(pinKey(PinSide.Right))) {
             copy.pins.put(pinKey(PinSide.Right), legacyRightStandInDockId);
         }
         return copy;

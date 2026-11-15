@@ -147,16 +147,16 @@ must be re-applied; re-pinning is one right-click away from the move entries).
 
   | Stored state | Result |
   |---|---|
-  | `always-show-right-panel-v2` is `true`, no `right` pin | pin `right` to `CONTEXT_PANEL` (the stable literal ID of the Tools dock) |
-  | `always-show-right-panel-v2` is `false` or absent | no pin added |
+  | `always-show-right-panel-v2` is `true` or absent, no `right` pin | pin `right` to `CONTEXT_PANEL` (the stable literal ID of the Tools dock) |
+  | `always-show-right-panel-v2` is explicitly `false` | no pin added |
   | `always-show-left-panel` is `true` | no pin added (the legacy left fallback was hardcoded to a right-side dock and never worked; there is no behavior to preserve) |
   | `pins` already present | untouched |
 
-  Limitation, documented on purpose: a stored state that lacks the legacy key is
-  indistinguishable from an explicit `false` at the `State` level, so such users
-  (who predate the always-show feature) keep their current collapsed-side
-  behavior and can pin manually. Fresh installs and everyone who ever saved a
-  layout with the default flag get the pin.
+  The flag is deserialized into a nullable `Boolean`, so an absent key is
+  distinguishable from an explicit `false`: users predating the flag, and
+  states round-tripped through an older build (which drops the key and would
+  otherwise lose the pin permanently), are pinned like everyone else; only a
+  real uncheck of the old checkbox keeps the side unpinned.
 - Migration is applied where persisted state enters an editor:
   `applyPipelineDockState` and `applyCompartmentsDockState` migrate before the
   JSON equality check, so the echo suppression compares like-for-like and does
@@ -237,8 +237,8 @@ structure - the underline/border rendering is verified in the running app.
   add/remove cycle re-arms it; a pin change re-arms it; closing a non-pinned dock
   does not pause the side.
 - Move clears the pin.
-- Migration: legacy flag `true` pins the Tools dock; explicit `false` and absent
-  keys add nothing; existing pins are untouched; migration is idempotent.
+- Migration: legacy flag `true` or absent pins the Tools dock; an explicit
+  `false` adds nothing; existing pins are untouched; migration is idempotent.
 - Persistence: `pins` JSON round-trip; `withoutContextDockVisibilities()` keeps
   pins; the legacy keys are not written anymore.
 - Inert pins: unknown IDs and context dock IDs.
