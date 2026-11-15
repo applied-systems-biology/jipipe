@@ -334,7 +334,7 @@ public class JIPipeXProjectWriter implements JIPipeProjectWriter {
             // (3) Build the crate and write its metadata + the generated
             // README into the workspace.
             List<String> violations = violationsOut != null ? violationsOut : new ArrayList<>();
-            RoCrate crate = JIPipeProjectCrate.buildCrate(project, violations);
+            RoCrate crate = JIPipeProjectCrate.buildCrate(project, workspace.getManifest().getParts().keySet(), violations);
             if (violationsOut == null) {
                 for (String violation : violations) {
                     progressInfo.log("RO-Crate compliance warning: " + violation);

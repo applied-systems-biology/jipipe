@@ -127,19 +127,24 @@ public final class JIPipeProjectCrate {
      * Builds the Workflow RO-Crate for the given project and runs the
      * compliance checklist.
      *
-     * @param project       the project to crate (its metadata drives the
-     *                      entity graph)
-     * @param violationsOut collects the compliance violations; a
-     *                      well-formed save leaves it empty
+     * @param project        the project to crate (its metadata drives the
+     *                       entity graph)
+     * @param partEntryPaths the zip entry paths of the project parts that
+     *                       the container holds (the manifest's parts
+     *                       table keys; {@link #MAIN_ENTITY_ID} is
+     *                       excluded - the main entity is the
+     *                       {@code ComputationalWorkflow} entity)
+     * @param violationsOut  collects the compliance violations; a
+     *                       well-formed save leaves it empty
      * @return the built crate (validated by the library's JSON-schema
      * validator - violations are printed to {@code System.err} by
      * the library and intentionally left there)
      * @throws JIPipeValidationRuntimeException if the crate cannot be built
      */
-    public static RoCrate buildCrate(JIPipeProject project, List<String> violationsOut) {
+    public static RoCrate buildCrate(JIPipeProject project, Set<String> partEntryPaths, List<String> violationsOut) {
         RoCrate.RoCrateBuilder builder;
         try {
-            builder = newBuilder(project);
+            builder = newBuilder(project, partEntryPaths);
         } catch (RuntimeException e) {
             throw new JIPipeValidationRuntimeException(e, "Could not build the RO-Crate metadata",
                     "The Workflow RO-Crate builder rejected the project metadata: " + e.getMessage(),
@@ -200,7 +205,7 @@ public final class JIPipeProjectCrate {
      * {@code CreateROCrateRun.createROCrateBuilder()} + the entity-adding
      * runs, without {@code location}s).
      */
-    private static RoCrate.RoCrateBuilder newBuilder(JIPipeProject project) {
+    private static RoCrate.RoCrateBuilder newBuilder(JIPipeProject project, Set<String> partEntryPaths) {
         // Root entity: name / description / datePublished / license.
         // License resolution (a non-empty metadata license always wins):
         // metadata license → settings default → MIT.
@@ -304,6 +309,30 @@ public final class JIPipeProjectCrate {
                 .addProperty("encodingFormat", "text/markdown")
                 .addProperty("about", "./")
                 .build());
+
+        // The manifest entity (profile 1.0 container-inventory requirement).
+        builder.addDataEntity(new FileEntity.FileEntityBuilder()
+                .setId(JIPipeXManifest.MANIFEST_FILE_NAME)
+                .addType("File")
+                .addProperty("encodingFormat", "application/json")
+                .addProperty("name", "JIPipe project manifest")
+                .build());
+
+        // One File entity per part except the main entity, which is the
+        // WorkflowEntity added above (same @id - adding it twice would
+        // overwrite the workflow entity). addDataEntity auto-wires the
+        // root hasPart. Unknown/payload entries (data/, graphs/,
+        // history/) are intentionally not listed (profile 1.0: MAY).
+        for (String partEntryPath : partEntryPaths) {
+            if (MAIN_ENTITY_ID.equals(partEntryPath)) {
+                continue;
+            }
+            builder.addDataEntity(new FileEntity.FileEntityBuilder()
+                    .setId(partEntryPath)
+                    .addType("File")
+                    .addProperty("encodingFormat", "application/json")
+                    .build());
+        }
 
         return builder;
     }

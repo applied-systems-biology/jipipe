@@ -267,4 +267,35 @@ class JIPipeProjectCrateConformanceTest {
         assertEquals("graph", manifest.get("parts").get("project/graph.json").asText(),
                 "the parts table must map the main graph path to its part key");
     }
+
+    // ---------------------------------------------------------------------
+    // 5. Container inventory (profile 1.0 requirement 7)
+    // ---------------------------------------------------------------------
+
+    @Test
+    void hasPartInventoriesManifestAndAllParts() throws IOException, URISyntaxException {
+        Path jipx = tmp.resolve("conformance-inventory.jipx");
+        JIPipeProject project = loadFixture();
+        List<String> violations = new ArrayList<>();
+        new JIPipeXProjectWriter().writeWithViolations(project, jipx, JIPipeProgressInfo.SILENT, violations);
+        assertTrue(violations.isEmpty(), violations::toString);
+
+        JsonNode manifest = readZipEntryAsJson(jipx, "jipx.json");
+        JsonNode metadata = readZipEntryAsJson(jipx, "ro-crate-metadata.json");
+        JsonNode root = entityWithId(metadata.get("@graph"), "./");
+        JsonNode hasPart = root.get("hasPart");
+        assertNotNull(hasPart, "the root entity must carry hasPart");
+
+        assertTrue(idArrayContains(hasPart, "jipx.json"), "the manifest must be listed in hasPart");
+        // parts is a JSON object (entry path -> part key); iterate its FIELD NAMES
+        manifest.get("parts").fieldNames().forEachRemaining(partPath ->
+                assertTrue(idArrayContains(hasPart, partPath),
+                        "part " + partPath + " must be listed in hasPart"));
+        assertTrue(idArrayContains(hasPart, "README.md"));
+
+        JsonNode manifestEntity = entityWithId(metadata.get("@graph"), "jipx.json");
+        assertNotNull(manifestEntity, "the manifest data entity must be present");
+        assertEquals("application/json", manifestEntity.get("encodingFormat").asText());
+        assertEquals("JIPipe project manifest", manifestEntity.get("name").asText());
+    }
 }
