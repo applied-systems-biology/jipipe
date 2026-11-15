@@ -21,7 +21,6 @@ import org.hkijena.jipipe.desktop.app.grapheditor.contextpanel.JIPipeDesktopGrap
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
 public class ConnectGraphEditorTool implements JIPipeDesktopToggleableGraphEditorTool {
@@ -46,11 +45,6 @@ public class ConnectGraphEditorTool implements JIPipeDesktopToggleableGraphEdito
     @Override
     public int getPriority() {
         return -9800;
-    }
-
-    @Override
-    public KeyStroke getKeyBinding() {
-        return KeyStroke.getKeyStroke(KeyEvent.VK_F2, 0);
     }
 
     @Override

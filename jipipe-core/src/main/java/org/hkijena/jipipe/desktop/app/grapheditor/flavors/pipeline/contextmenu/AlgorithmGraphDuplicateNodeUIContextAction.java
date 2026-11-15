@@ -16,18 +16,24 @@ package org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.contextmenu;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
+import org.hkijena.jipipe.api.shortcuts.JIPipeShortcutActions;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.NodeUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import javax.swing.*;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 public class AlgorithmGraphDuplicateNodeUIContextAction implements NodeUIContextAction {
+
+    /**
+     * The id of the shortcut action that triggers this context action
+     * (see {@link org.hkijena.jipipe.api.shortcuts.JIPipeShortcutActions}).
+     */
+    public static final String SHORTCUT_ACTION_ID = JIPipeShortcutActions.NODE_DUPLICATE.id();
+
     @Override
     public boolean matchesNodes(Set<JIPipeDesktopGraphNodeUI> selection) {
         return !selection.isEmpty();
@@ -61,8 +67,8 @@ public class AlgorithmGraphDuplicateNodeUIContextAction implements NodeUIContext
     }
 
     @Override
-    public KeyStroke getKeyboardShortcut() {
-        return KeyStroke.getKeyStroke(KeyEvent.VK_D, InputEvent.CTRL_MASK, true);
+    public String getShortcutActionId() {
+        return SHORTCUT_ACTION_ID;
     }
 
     @Override

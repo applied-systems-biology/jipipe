@@ -19,13 +19,23 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.grapheditortool.JIPipeDesktopActionGraphEditorTool;
 import org.hkijena.jipipe.api.grapheditortool.JIPipeDesktopGraphEditorTool;
 import org.hkijena.jipipe.api.grapheditortool.JIPipeDesktopToggleableGraphEditorTool;
+import org.hkijena.jipipe.api.grapheditortool.tools.ConnectGraphEditorTool;
+import org.hkijena.jipipe.api.grapheditortool.tools.CropViewGraphEditorTool;
 import org.hkijena.jipipe.api.grapheditortool.tools.DefaultGraphEditorTool;
+import org.hkijena.jipipe.api.grapheditortool.tools.MoveNodesGraphEditorTool;
+import org.hkijena.jipipe.api.grapheditortool.tools.RewireGraphEditorTool;
 import org.hkijena.jipipe.api.history.JIPipeHistoryJournal;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.taxonomy.TaxonomyView;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.settings.JIPipeSettingKey;
 import org.hkijena.jipipe.api.settings.SettingsBinding;
+import org.hkijena.jipipe.api.shortcuts.JIPipeShortcutAction;
+import org.hkijena.jipipe.api.shortcuts.JIPipeShortcutActions;
+import org.hkijena.jipipe.api.shortcuts.JIPipeShortcutBinding;
+import org.hkijena.jipipe.api.shortcuts.JIPipeShortcutRegistry;
+import org.hkijena.jipipe.api.shortcuts.JIPipeShortcutSettings;
+import org.hkijena.jipipe.api.shortcuts.KeymapSettings;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
@@ -42,9 +52,15 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.events.DefaultN
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.events.NodeUIActionRequestedEvent;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.events.NodeUIActionRequestedEventListener;
 import org.hkijena.jipipe.desktop.app.grapheditor.contextpanel.JIPipeDesktopGraphEditorContextPanel;
+import org.hkijena.jipipe.desktop.app.shortcuts.JIPipeDesktopShortcutDispatcher;
+import org.hkijena.jipipe.desktop.app.shortcuts.ShortcutScope;
 import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeDesktopGenericListCellRenderer;
 import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
+import org.hkijena.jipipe.plugins.canvasnotes.tools.ArrowNoteGraphNodeTool;
+import org.hkijena.jipipe.plugins.canvasnotes.tools.EditNotesGraphNodeTool;
+import org.hkijena.jipipe.plugins.canvasnotes.tools.ImageBoxNoteGraphNodeTool;
+import org.hkijena.jipipe.plugins.canvasnotes.tools.TextBoxNoteGraphNodeTool;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameter;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameterList;
@@ -90,15 +106,21 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
     public static final String DOCK_FIND = "FIND";
     public static final String DOCK_RELATIONS = "RELATIONS";
 
-    public static final KeyStroke KEY_STROKE_UNDO = KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_MASK, true);
-    public static final KeyStroke KEY_STROKE_REDO = KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK, true);
-    public static final KeyStroke KEY_STROKE_ZOOM_IN = KeyStroke.getKeyStroke(KeyEvent.VK_ADD, InputEvent.CTRL_MASK, false);
-    public static final KeyStroke KEY_STROKE_ZOOM_OUT = KeyStroke.getKeyStroke(KeyEvent.VK_SUBTRACT, InputEvent.CTRL_MASK, false);
-    public static final KeyStroke KEY_STROKE_ZOOM_RESET = KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD0, InputEvent.CTRL_MASK, false);
-    public static final KeyStroke KEY_STROKE_MOVE_SELECTION_LEFT = KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0, false);
-    public static final KeyStroke KEY_STROKE_MOVE_SELECTION_RIGHT = KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0, false);
-    public static final KeyStroke KEY_STROKE_MOVE_SELECTION_UP = KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0, false);
-    public static final KeyStroke KEY_STROKE_MOVE_SELECTION_DOWN = KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0, false);
+    /**
+     * Maps the graph editor tool classes to the ids of the shortcut actions
+     * that select them: the five core tools and the four canvas notes tools
+     * (registered by the canvasnotes plugin).
+     */
+    private static final Map<Class<? extends JIPipeDesktopGraphEditorTool>, String> TOOL_SHORTCUT_IDS = Map.of(
+            DefaultGraphEditorTool.class, JIPipeShortcutActions.TOOL_DEFAULT.id(),
+            MoveNodesGraphEditorTool.class, JIPipeShortcutActions.TOOL_MOVE.id(),
+            ConnectGraphEditorTool.class, JIPipeShortcutActions.TOOL_CONNECT.id(),
+            RewireGraphEditorTool.class, JIPipeShortcutActions.TOOL_REWIRE.id(),
+            CropViewGraphEditorTool.class, JIPipeShortcutActions.TOOL_CROP_VIEW.id(),
+            EditNotesGraphNodeTool.class, EditNotesGraphNodeTool.SHORTCUT_ACTION_ID,
+            TextBoxNoteGraphNodeTool.class, TextBoxNoteGraphNodeTool.SHORTCUT_ACTION_ID,
+            ArrowNoteGraphNodeTool.class, ArrowNoteGraphNodeTool.SHORTCUT_ACTION_ID,
+            ImageBoxNoteGraphNodeTool.class, ImageBoxNoteGraphNodeTool.SHORTCUT_ACTION_ID);
 
     private final JIPipeGraphEditorUIApplicationSettings graphUISettings;
     private final JIPipeDesktopGraphCanvasUI canvasUI;
@@ -107,9 +129,6 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
     private final List<JIPipeDesktopGraphEditorTool> tools = new ArrayList<>();
     private final Map<Class<? extends JIPipeDesktopGraphEditorTool>, JIPipeDesktopGraphEditorTool> toolMap = new HashMap<>();
     private final BiMap<JIPipeDesktopToggleableGraphEditorTool, JToggleButton> toolToggles = HashBiMap.create();
-    private final Map<KeyStroke, List<JIPipeDesktopToggleableGraphEditorTool>> keyBindingToToolsMap = new HashMap<>();
-    private final Map<KeyStroke, JIPipeDesktopToggleableGraphEditorTool> keyBindingToLastSelectedTool = new HashMap<>();
-    private final Map<JIPipeDesktopToggleableGraphEditorTool, KeyStroke> toolToKeyBinding = new HashMap<>();
     private final JToolBar toolBar = new JToolBar();
     private final JIPipeDesktopDockPanel dockPanel = new JIPipeDesktopDockPanel();
     private final List<JButton> contextToolbarButtons = new ArrayList<>();
@@ -138,6 +157,36 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
      * instead would leak one document listener per "Save layout" click.
      */
     private SettingsBinding<StringAndStringPairParameterList> dockLayoutTemplatesBinding;
+    /**
+     * The shortcut scope of this editor, registered with the application
+     * shortcut dispatcher in {@link #initializeShortcutScope()} and
+     * unregistered in {@link #dispose()}. One scope per editor instance: the
+     * flavors inherit the scope from this base class and do not register
+     * their own.
+     */
+    private ShortcutScope shortcutScope;
+    /**
+     * The window-root shortcut scope of this editor's dock panel toggles,
+     * installed in {@link #addNotify()} (the enclosing window's root pane
+     * exists only once this editor is displayable) and unregistered in
+     * {@link #removeNotify()} and {@link #dispose()}. Its resolver answers
+     * only {@code dock:<panel-id>} ids and only while this editor is
+     * showing, so dock toggles fire regardless of where inside the window
+     * the focus is, while a hidden editor tab declines.
+     */
+    private ShortcutScope dockShortcutScope;
+    /**
+     * The per-chord tool cycle state of the scope resolver: for every shared
+     * effective chord (an immutable variant list, e.g. the LEGACY preset's
+     * ESC on the default tool and the notes-edit tool), the id of the tool
+     * whose selection the most recent cycle fire selected. The next fire of
+     * the same chord advances to the next tool in the chord group
+     * (deterministic registry order, wrapping); a chord that never fired is
+     * cold and starts from the currently selected tool. Updated by
+     * {@link #selectTool} for any selection through a tool that carries the
+     * chord, so manual selections also steer the cycle.
+     */
+    private final Map<List<List<KeyStroke>>, String> lastFiredToolIdByChord = new LinkedHashMap<>();
     private JScrollPane scrollPane;
     /**
      * The floating map panel over the canvas, placed on the overlay's drag
@@ -182,7 +231,7 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
         initialize();
         graph.getGraphChangedEventEmitter().subscribeWeak(this);
 
-        initializeHotkeys();
+        initializeShortcutScope();
         SwingUtilities.invokeLater(() -> {
             canvasUI.crop(true);
             selectDefaultTool();
@@ -289,6 +338,19 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
         disposed = true;
         graph.getGraphChangedEventEmitter().unsubscribe(this);
         dockPanel.getParameterChangedEventEmitter().unsubscribe(showDockToolbarLabelsParameterListener);
+        // The scopes must not outlive the editor: a disposed scope would
+        // still resolve runnables against the dead canvas. The dock scope
+        // is normally removed in removeNotify(); unregistering it here as
+        // well covers dispose paths that do not detach the editor (both
+        // unregister calls are no-ops for an already-removed scope).
+        if (shortcutScope != null) {
+            JIPipeDesktopShortcutDispatcher.getInstance().unregisterScope(shortcutScope);
+            shortcutScope = null;
+        }
+        if (dockShortcutScope != null) {
+            JIPipeDesktopShortcutDispatcher.getInstance().unregisterScope(dockShortcutScope);
+            dockShortcutScope = null;
+        }
         // Each binding owns a document path listener: release the ones this
         // editor created, so opening and closing editors does not accumulate
         // listeners for the life of the JVM.
@@ -327,18 +389,168 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
         return graphUISettings;
     }
 
-    private void initializeHotkeys() {
+    /**
+     * Registers the editor's shortcut scope with the application-wide
+     * shortcut dispatcher (which is installed there as well). The resolver
+     * answers, for a shortcut action id:
+     * <ul>
+     *     <li>context action ids: the canvas context action with this id,
+     *     only when it matches the current selection (mirroring the old
+     *     per-canvas hotkey dispatcher)</li>
+     *     <li>tool ids: selecting the mapped graph editor tool</li>
+     *     <li>editor-level ids: undo, redo, zoom, and selection moves</li>
+     * </ul>
+     * Anything else resolves to null, so the dispatcher falls through to the
+     * next scope. Dock toggle ids are deliberately not answered here: this
+     * scope stays focus-bound (context actions and tools are
+     * selection/canvas-dependent), while dock toggles must fire regardless
+     * of the focus location and resolve through the window-root dock scope
+     * installed by {@link #installDockShortcutScope()}.
+     */
+    private void initializeShortcutScope() {
+        shortcutScope = new ShortcutScope(this, actionId -> {
+            // Context actions: the first action carrying the id must match
+            // the current selection, otherwise the action is unavailable
+            Set<JIPipeDesktopGraphInteractiveObjectUI> selection = canvasUI.getSelectionManager().getSelection();
+            for (GraphInteractiveObjectUIContextAction action : canvasUI.getContextActions()) {
+                if (action == null || !actionId.equals(action.getShortcutActionId()))
+                    continue;
+                if (!action.matches(selection))
+                    return null;
+                return () -> {
+                    // Mirror the old canvas hotkey dispatcher: place the
+                    // graph edit cursor at the mouse position, so
+                    // cursor-relative actions ("add node here") act there
+                    Point mousePosition = canvasUI.getMousePosition(true);
+                    if (mousePosition != null) {
+                        canvasUI.setGraphEditCursor(mousePosition);
+                    }
+                    action.run(canvasUI, selection);
+                };
+            }
+            // Tools: selecting the mapped graph editor tool. Tools that
+            // share one effective chord (design Section 7: cycling on a
+            // repeated press of a shared chord is kept, e.g. the LEGACY
+            // preset's ESC on the default tool and the notes-edit tool)
+            // cycle on repeated presses; a solo chord re-selects its own
+            // tool. The cycle target differs from this candidate id when the
+            // chord belongs to another tool of the group, in which case this
+            // resolver returns null so the dispatcher falls through to that
+            // candidate (the status bar then reports the action that fired)
+            for (Map.Entry<Class<? extends JIPipeDesktopGraphEditorTool>, String> toolEntry : TOOL_SHORTCUT_IDS.entrySet()) {
+                if (toolEntry.getValue().equals(actionId)) {
+                    JIPipeDesktopGraphEditorTool tool = toolMap.get(toolEntry.getKey());
+                    if (tool == null) {
+                        return null;
+                    }
+                    if (!actionId.equals(resolveToolCycleTarget(actionId))) {
+                        // This press cycles to the next tool of the chord
+                        // group: let the dispatcher fall through to that
+                        // candidate, so the status bar reports the action
+                        // that actually fires.
+                        return null;
+                    }
+                    return () -> selectTool(tool);
+                }
+            }
+            // Editor-level actions
+            if (JIPipeShortcutActions.EDITOR_UNDO.id().equals(actionId)) {
+                return this::undo;
+            } else if (JIPipeShortcutActions.EDITOR_REDO.id().equals(actionId)) {
+                return this::redo;
+            } else if (JIPipeShortcutActions.EDITOR_ZOOM_IN.id().equals(actionId)) {
+                return canvasUI::zoomIn;
+            } else if (JIPipeShortcutActions.EDITOR_ZOOM_OUT.id().equals(actionId)) {
+                return canvasUI::zoomOut;
+            } else if (JIPipeShortcutActions.EDITOR_ZOOM_RESET.id().equals(actionId)) {
+                return canvasUI::resetZoom;
+            } else if (JIPipeShortcutActions.EDITOR_MOVE_SELECTION_LEFT.id().equals(actionId)) {
+                return () -> canvasUI.moveSelection(-1, 0, false);
+            } else if (JIPipeShortcutActions.EDITOR_MOVE_SELECTION_RIGHT.id().equals(actionId)) {
+                return () -> canvasUI.moveSelection(1, 0, false);
+            } else if (JIPipeShortcutActions.EDITOR_MOVE_SELECTION_UP.id().equals(actionId)) {
+                return () -> canvasUI.moveSelection(0, -1, false);
+            } else if (JIPipeShortcutActions.EDITOR_MOVE_SELECTION_DOWN.id().equals(actionId)) {
+                return () -> canvasUI.moveSelection(0, 1, false);
+            } else {
+                return null;
+            }
+        });
+        JIPipeDesktopShortcutDispatcher.getInstance().registerScope(shortcutScope);
+    }
 
-        registerKeyboardAction(e -> undo(), KEY_STROKE_UNDO, JComponent.WHEN_IN_FOCUSED_WINDOW);
-        registerKeyboardAction(e -> redo(), KEY_STROKE_REDO, JComponent.WHEN_IN_FOCUSED_WINDOW);
-        registerKeyboardAction(e -> canvasUI.zoomIn(), KEY_STROKE_ZOOM_IN, JComponent.WHEN_IN_FOCUSED_WINDOW);
-        registerKeyboardAction(e -> canvasUI.zoomOut(), KEY_STROKE_ZOOM_OUT, JComponent.WHEN_IN_FOCUSED_WINDOW);
-        registerKeyboardAction(e -> canvasUI.resetZoom(), KEY_STROKE_ZOOM_RESET, JComponent.WHEN_IN_FOCUSED_WINDOW);
+    /**
+     * Installs the window-root shortcut scope of this editor's dock panel
+     * toggles. Called from {@link #addNotify()}: the enclosing window's root
+     * pane exists only once this editor is displayable, so the
+     * constructor-time registration of the editor scope cannot host it.
+     * <p>
+     * The scope is rooted at the enclosing window's root pane (the same root
+     * resolution as the dock panel's own scope, see
+     * {@link JIPipeDesktopDockPanel#installShortcutScope()}): dock toggles
+     * are window-level UI (show/hide a panel) and must fire no matter where
+     * inside the window the focus is, unlike the editor scope's context
+     * actions and tools, which stay focus-bound by design. Containment is
+     * window-level ({@link ShortcutScope#windowLevel(JComponent, Resolver)}),
+     * so the scope contains the focus in every focus state of the window,
+     * including a focus owner that is the window itself or {@code null}
+     * (transient states, e.g. right after a tab switch); the focus owner of
+     * a modal dialog has a different window ancestor and stays excluded.
+     * <p>
+     * The resolver answers only {@code dock:<panel-id>} ids, delegating to
+     * {@link JIPipeDesktopDockPanel#resolveDockToggle(String)}, and only
+     * while this editor is showing: hidden editor tabs stay in the component
+     * hierarchy, so their window-root scopes would still contain the focus,
+     * and since all window-root scopes share the same depth the
+     * registration-order tie-break would let a hidden tab hijack the id from
+     * the visible tab. The {@code isShowing()} guard makes hidden tabs
+     * decline (visible tab wins). Multi-window safe: a window's root pane
+     * never contains another window's focus owner.
+     * <p>
+     * Degenerate fallback: without a root pane (a component hierarchy never
+     * attached to a window, e.g. some headless test hierarchies) no dock
+     * scope can be rooted, so the dock toggles of this editor stay
+     * unresolvable by the dispatcher instead of firing from the wrong
+     * context.
+     */
+    private void installDockShortcutScope() {
+        JRootPane rootPane = SwingUtilities.getRootPane(this);
+        if (rootPane == null) {
+            return;
+        }
+        dockShortcutScope = ShortcutScope.windowLevel(rootPane, actionId -> {
+            if (actionId == null || !actionId.startsWith("dock:")) {
+                return null;
+            }
+            if (!JIPipeDesktopGraphEditorUI.this.isShowing()) {
+                return null;
+            }
+            return dockPanel.resolveDockToggle(actionId);
+        });
+        JIPipeDesktopShortcutDispatcher.getInstance().registerScope(dockShortcutScope);
+    }
 
-        canvasUI.registerKeyboardAction(e -> canvasUI.moveSelection(-1, 0, false), KEY_STROKE_MOVE_SELECTION_LEFT, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-        canvasUI.registerKeyboardAction(e -> canvasUI.moveSelection(1, 0, false), KEY_STROKE_MOVE_SELECTION_RIGHT, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-        canvasUI.registerKeyboardAction(e -> canvasUI.moveSelection(0, -1, false), KEY_STROKE_MOVE_SELECTION_UP, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-        canvasUI.registerKeyboardAction(e -> canvasUI.moveSelection(0, 1, false), KEY_STROKE_MOVE_SELECTION_DOWN, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+    @Override
+    public void addNotify() {
+        super.addNotify();
+        // A disposed editor must never hold a scope; addNotify after
+        // dispose has no production path, the guard only pins the invariant
+        if (!disposed && dockShortcutScope == null) {
+            installDockShortcutScope();
+        }
+    }
+
+    @Override
+    public void removeNotify() {
+        // The dock scope is rooted at the window's root pane: it must not
+        // outlive this editor's attachment to that window (removeNotify
+        // also fires on window teardown). addNotify() reinstalls it if the
+        // editor is attached to a window again.
+        if (dockShortcutScope != null) {
+            JIPipeDesktopShortcutDispatcher.getInstance().unregisterScope(dockShortcutScope);
+            dockShortcutScope = null;
+        }
+        super.removeNotify();
     }
 
     public JScrollPane getScrollPane() {
@@ -354,6 +566,9 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
     }
 
     private void initialize() {
+        // The application-wide shortcut dispatcher: installed once (idempotent),
+        // before any scope registers itself
+        JIPipeDesktopShortcutDispatcher.install();
         setLayout(new BorderLayout());
 
         toolBar.setFloatable(false);
@@ -664,12 +879,12 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
 
         JButton zoomOutButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/square-minus.png"));
         UIUtils.makeButtonFlat25x25(zoomOutButton);
-        zoomOutButton.setToolTipText("<html>Zoom out<br><i>Ctrl-NumPad -</i></html>");
+        zoomOutButton.setToolTipText(TooltipUtils.createTooltipWithShortcutText("Zoom out", null, shortcutVariantsText(JIPipeShortcutActions.EDITOR_ZOOM_OUT.id())));
         zoomOutButton.addActionListener(e -> canvasUI.zoomOut());
         zoomPanel.add(zoomOutButton, BorderLayout.WEST);
 
         JButton zoomButton = new JButton((int) (canvasUI.getZoom() * 100) + "%");
-        zoomButton.setToolTipText("<html>Change zoom<br>Reset zoom: <i>Ctrl-NumPad 0</i></html>");
+        zoomButton.setToolTipText(TooltipUtils.createTooltipWithShortcutText("Change zoom", "Reset zoom", shortcutVariantsText(JIPipeShortcutActions.EDITOR_ZOOM_RESET.id())));
         canvasUI.getZoomChangedEventEmitter().subscribeLambda((emitter, event) -> {
             zoomButton.setText((int) (canvasUI.getZoom() * 100) + "%");
         });
@@ -703,105 +918,11 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
 
         JButton zoomInButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/square-plus.png"));
         UIUtils.makeButtonFlat25x25(zoomInButton);
-        zoomInButton.setToolTipText("<html>Zoom in<br><i>Ctrl-NumPad +</i></html>");
+        zoomInButton.setToolTipText(TooltipUtils.createTooltipWithShortcutText("Zoom in", null, shortcutVariantsText(JIPipeShortcutActions.EDITOR_ZOOM_IN.id())));
         zoomInButton.addActionListener(e -> canvasUI.zoomIn());
         zoomPanel.add(zoomInButton, BorderLayout.EAST);
 
         toolBar.add(zoomPanel);
-    }
-
-    /**
-     * Finds the next tool in sorted order for a given keybinding
-     *
-     * @param keyBinding  The keybinding
-     * @param currentTool The currently selected tool
-     * @return The next tool to select
-     */
-    private JIPipeDesktopToggleableGraphEditorTool findNextToolForCycle(KeyStroke keyBinding, JIPipeDesktopToggleableGraphEditorTool currentTool) {
-        List<JIPipeDesktopToggleableGraphEditorTool> toolsForKeyBinding = keyBindingToToolsMap.get(keyBinding);
-        if (toolsForKeyBinding == null || toolsForKeyBinding.isEmpty()) {
-            return null;
-        }
-
-        // Find current tool index
-        int currentIndex = -1;
-        if (currentTool != null) {
-            currentIndex = toolsForKeyBinding.indexOf(currentTool);
-        }
-
-        // If current tool is not found or is null, get the first tool
-        if (currentIndex == -1) {
-            return toolsForKeyBinding.get(0);
-        }
-
-        // Calculate next index with wrap-around
-        int nextIndex = (currentIndex + 1) % toolsForKeyBinding.size();
-
-        return toolsForKeyBinding.get(nextIndex);
-    }
-
-    /**
-     * Finds the previous tool in sorted order for a given keybinding
-     *
-     * @param keyBinding  The keybinding
-     * @param currentTool The currently selected tool
-     * @return The previous tool to select
-     */
-    private JIPipeDesktopToggleableGraphEditorTool findPreviousToolForCycle(KeyStroke keyBinding, JIPipeDesktopToggleableGraphEditorTool currentTool) {
-        List<JIPipeDesktopToggleableGraphEditorTool> toolsForKeyBinding = keyBindingToToolsMap.get(keyBinding);
-        if (toolsForKeyBinding == null || toolsForKeyBinding.isEmpty()) {
-            return null;
-        }
-
-        // Find current tool index
-        int currentIndex = -1;
-        if (currentTool != null) {
-            currentIndex = toolsForKeyBinding.indexOf(currentTool);
-        }
-
-        // If current tool is not found or is null, get the last tool
-        if (currentIndex == -1) {
-            return toolsForKeyBinding.get(toolsForKeyBinding.size() - 1);
-        }
-
-        // Calculate previous index with wrap-around
-        int previousIndex = (currentIndex - 1 + toolsForKeyBinding.size()) % toolsForKeyBinding.size();
-
-        return toolsForKeyBinding.get(previousIndex);
-    }
-
-    /**
-     * Handles keybinding press for cycling through tools
-     *
-     * @param keyBinding The activated keybinding
-     */
-    private void handleToolCycle(KeyStroke keyBinding) {
-        List<JIPipeDesktopToggleableGraphEditorTool> toolsForKeyBinding = keyBindingToToolsMap.get(keyBinding);
-        if (toolsForKeyBinding == null || toolsForKeyBinding.size() <= 1) {
-            // If there's only one tool or none, use the standard behavior
-            JIPipeDesktopToggleableGraphEditorTool singleTool = null;
-            if (toolsForKeyBinding != null) {
-                singleTool = !toolsForKeyBinding.isEmpty() ? toolsForKeyBinding.getFirst() : null;
-            }
-            if (singleTool != null) {
-                selectTool(singleTool);
-            }
-            return;
-        }
-
-        // Get current tool for this keybinding
-        JIPipeDesktopToggleableGraphEditorTool currentTool = getCurrentTool();
-        if (currentTool == null || !toolsForKeyBinding.contains(currentTool)) {
-            // If no current tool or current tool is not in the list for this keybinding,
-            // select the first tool for this keybinding and reset the cycle
-            currentTool = toolsForKeyBinding.getFirst();
-            selectTool(currentTool);
-            return;
-        }
-
-        // Find and select the next tool
-        JIPipeDesktopToggleableGraphEditorTool nextTool = findNextToolForCycle(keyBinding, currentTool);
-        selectTool(nextTool);
     }
 
     private void initializeEditingToolbar(Class<? extends JIPipeDesktopGraphEditorTool> baseClass) {
@@ -819,67 +940,24 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
         newTools.sort(Comparator.comparing(JIPipeDesktopGraphEditorTool::getCategory).thenComparing(JIPipeDesktopGraphEditorTool::getPriority));
         tools.addAll(newTools);
 
-        // Group tools by keybinding and build maps (only for JIPipeToggleableGraphEditorTool for cycling)
-        for (JIPipeDesktopGraphEditorTool tool : newTools) {
-            if (tool instanceof JIPipeDesktopToggleableGraphEditorTool) {
-                KeyStroke keyBinding = tool.getKeyBinding();
-                if (keyBinding != null) {
-                    toolToKeyBinding.put((JIPipeDesktopToggleableGraphEditorTool) tool, keyBinding);
-                }
-            }
-        }
-
-        // Build map of keybinding to tools (only for JIPipeToggleableGraphEditorTool)
-        for (JIPipeDesktopGraphEditorTool tool : newTools) {
-            if (tool instanceof JIPipeDesktopToggleableGraphEditorTool toggleableTool) {
-                KeyStroke keyBinding = tool.getKeyBinding();
-                if (keyBinding != null) {
-                    keyBindingToToolsMap.computeIfAbsent(keyBinding, k -> new ArrayList<>()).add(toggleableTool);
-                }
-            }
-        }
-
         for (int i = 0; i < newTools.size(); i++) {
             JIPipeDesktopGraphEditorTool tool = newTools.get(i);
             if (i > 0 && !Objects.equals(tool.getCategory(), newTools.get(i - 1).getCategory())) {
                 toolBar.addSeparator();
             }
 
-            // Hotkeys
-            KeyStroke keyBinding = tool.getKeyBinding();
-            if (keyBinding != null) {
-                if (tool instanceof JIPipeDesktopToggleableGraphEditorTool) {
-                    // For toggleable tools, use the cycling handler
-                    registerKeyboardAction(e -> handleToolCycle(keyBinding),
-                            keyBinding,
-                            JComponent.WHEN_IN_FOCUSED_WINDOW);
-                } else {
-                    // For other tools, keep the direct selection
-                    registerKeyboardAction(e -> selectTool(tool),
-                            keyBinding,
-                            JComponent.WHEN_IN_FOCUSED_WINDOW);
-                }
-            }
-
             if (tool instanceof JIPipeDesktopToggleableGraphEditorTool toggleableGraphEditorTool) {
 
                 JToggleButton button = new JToggleButton(tool.getIcon());
-                button.setToolTipText(TooltipUtils.createTooltipWithShortcut(tool.getName(), tool.getTooltip(), keyBinding));
-                button.addActionListener(e -> {
-                    selectTool(tool);
-                    // Update cycling state when a toggleable tool is manually selected via button
-                    if (toolToKeyBinding.containsKey(toggleableGraphEditorTool)) {
-                        KeyStroke binding = toolToKeyBinding.get(toggleableGraphEditorTool);
-                        keyBindingToLastSelectedTool.put(binding, toggleableGraphEditorTool);
-                    }
-                });
+                button.setToolTipText(TooltipUtils.createTooltipWithShortcutText(tool.getName(), tool.getTooltip(), shortcutVariantsText(TOOL_SHORTCUT_IDS.get(tool.getClass()))));
+                button.addActionListener(e -> selectTool(tool));
                 UIUtils.makeButtonFlatWithSize(button, 32, 3);
                 toolBar.add(button);
                 toolToggles.put(toggleableGraphEditorTool, button);
 
             } else {
                 JButton button = new JButton(tool.getIcon());
-                button.setToolTipText(TooltipUtils.createTooltipWithShortcut(tool.getName(), tool.getTooltip(), keyBinding));
+                button.setToolTipText(TooltipUtils.createTooltipWithShortcutText(tool.getName(), tool.getTooltip(), shortcutVariantsText(TOOL_SHORTCUT_IDS.get(tool.getClass()))));
                 button.addActionListener(e -> selectTool(tool));
                 UIUtils.makeButtonFlatWithSize(button, 32, 3);
                 toolBar.add(button);
@@ -892,8 +970,177 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
         return dockPanel;
     }
 
+    /**
+     * Renders the effective variants of a shortcut action for display, e.g.
+     * "Ctrl+= or Ctrl+Num+". Unassigned or unknown ids render as null, so
+     * the tooltip shows no shortcut.
+     *
+     * @param actionId the shortcut action id, may be null
+     * @return the rendered variants or null
+     */
+    private String shortcutVariantsText(String actionId) {
+        if (actionId == null) {
+            return null;
+        }
+        JIPipeShortcutBinding binding = JIPipeShortcutRegistry.getInstance().bindingFor(actionId, JIPipeShortcutSettings.current());
+        if (binding.variants().isEmpty()) {
+            return null;
+        }
+        return JIPipeShortcutRegistry.formatVariants(binding.variants());
+    }
+
+    /**
+     * Computes the id of the tool that a press of the given tool action's
+     * effective chord must select (design Section 7: cycling on a repeated
+     * press of a shared chord is kept).
+     * <p>
+     * A solo chord selects its own tool. A shared chord selects the tool
+     * AFTER the last one the cycle fired for that chord (the entry of
+     * {@code lastFiredToolIdByChord} keyed by the chord); a cold cycle (no
+     * recorded fire, or the recorded id no longer in the group) starts from
+     * the currently selected tool when that one is in the group, else from
+     * the group's first tool, and advances one step. The result is the group
+     * member at the target position, wrapping around. The {@code chordGroup}
+     * is built by the caller as the tool action ids (see
+     * {@link #TOOL_SHORTCUT_IDS}) whose effective variants equal the
+     * pressed chord, in the deterministic order of
+     * {@link JIPipeShortcutRegistry#all()} (category, then name).
+     * <p>
+     * Pure with respect to the cycle state: the state is recorded by
+     * {@link #selectTool} (via {@link #recordToolChordCycle}) when the
+     * selection this computation drove actually happens, so the next press
+     * advances from the tool that was selected.
+     * <p>
+     * Package-private static so the computation is testable without
+     * building an editor.
+     *
+     * @param actionId the tool action id of the pressed chord; must be a
+     *                 member of {@code chordGroup}
+     * @param chord the effective variants of the pressed chord (the
+     *              cycle-state key; compare by content)
+     * @param chordGroup the tool action ids sharing the pressed chord,
+     *                   deterministic order; never empty (at least
+     *                   {@code actionId} itself)
+     * @param lastFiredToolIdByChord the recorded cycle state of the pressing
+     *                               editor, may be empty
+     * @param currentToolId the id of the currently selected tool, or
+     *                      {@code null} when none is selected
+     * @return the id of the tool to select for this press
+     */
+    static String computeToolCycleTarget(String actionId, List<List<KeyStroke>> chord,
+                                         List<String> chordGroup,
+                                         Map<List<List<KeyStroke>>, String> lastFiredToolIdByChord,
+                                         String currentToolId) {
+        Objects.requireNonNull(actionId, "actionId");
+        Objects.requireNonNull(chord, "chord");
+        Objects.requireNonNull(chordGroup, "chordGroup");
+        Objects.requireNonNull(lastFiredToolIdByChord, "lastFiredToolIdByChord");
+        if (chordGroup.size() == 1 || !chordGroup.contains(actionId)) {
+            return actionId;
+        }
+        String lastFired = lastFiredToolIdByChord.get(chord);
+        int base;
+        if (lastFired != null) {
+            base = chordGroup.indexOf(lastFired);
+        } else if (currentToolId != null) {
+            base = chordGroup.indexOf(currentToolId);
+        } else {
+            base = -1;
+        }
+        if (base == -1) {
+            // Cold cycle whose start tool is not in the group (or no tool
+            // selected): start from the group's first tool, then advance.
+            base = 0;
+        }
+        int target = (base + 1) % chordGroup.size();
+        return chordGroup.get(target);
+    }
+
+    /**
+     * The tool action id of this editor's currently selected tool (per
+     * {@link #TOOL_SHORTCUT_IDS}), or {@code null} when no tool is selected
+     * or the selected tool carries no shortcut action.
+     */
+    private String currentToolActionId() {
+        if (currentTool == null) {
+            return null;
+        }
+        return TOOL_SHORTCUT_IDS.get(currentTool.getClass());
+    }
+
+    /**
+     * The tool action ids that share the given effective chord: every id in
+     * {@link #TOOL_SHORTCUT_IDS} whose effective variants (override-aware,
+     * per {@link JIPipeShortcutRegistry#bindingFor}) are equal to it, in the
+     * deterministic order of {@link JIPipeShortcutRegistry#all()} (category,
+     * then name).
+     * <p>
+     * Tools that are not registered in this editor are still members of the
+     * group: the dispatcher never proposes their candidate id in this scope
+     * (their resolver answers null), so they are simply skipped in the
+     * cycle, and the group shrinks automatically if the chord is re-bound to
+     * another tool's chord.
+     *
+     * @param effective the effective variants of the pressed chord
+     * @return the deterministic group
+     */
+    private List<String> toolChordGroup(List<List<KeyStroke>> effective) {
+        JIPipeShortcutRegistry registry = JIPipeShortcutRegistry.getInstance();
+        KeymapSettings keymap = JIPipeShortcutSettings.current();
+        List<String> group = new ArrayList<>();
+        for (JIPipeShortcutAction action : registry.all()) {
+            if (TOOL_SHORTCUT_IDS.containsValue(action.id())
+                    && effective.equals(registry.bindingFor(action.id(), keymap).variants())) {
+                group.add(action.id());
+            }
+        }
+        return group;
+    }
+
+    /**
+     * The id of the tool that the press of the given tool action's chord
+     * must select, per {@link #computeToolCycleTarget}, over this editor's
+     * chord group and cycle state.
+     *
+     * @param actionId the tool action id of the pressed chord
+     */
+    private String resolveToolCycleTarget(String actionId) {
+        JIPipeShortcutRegistry registry = JIPipeShortcutRegistry.getInstance();
+        KeymapSettings keymap = JIPipeShortcutSettings.current();
+        List<List<KeyStroke>> effective = registry.bindingFor(actionId, keymap).variants();
+        return computeToolCycleTarget(actionId, effective, toolChordGroup(effective),
+                lastFiredToolIdByChord, currentToolActionId());
+    }
+
+    /**
+     * Records, for the given tool selection, the cycle state of the chord
+     * that selects it (the action's effective variants form the chord key),
+     * so the next press of that chord cycles from this tool.
+     *
+     * @param tool the tool that was selected
+     */
+    private void recordToolChordCycle(JIPipeDesktopGraphEditorTool tool) {
+        String toolId = TOOL_SHORTCUT_IDS.get(tool.getClass());
+        if (toolId == null) {
+            return;
+        }
+        List<List<KeyStroke>> chordKey = JIPipeShortcutRegistry.getInstance()
+                .bindingFor(toolId, JIPipeShortcutSettings.current()).variants();
+        lastFiredToolIdByChord.put(chordKey, toolId);
+    }
+
     public List<JIPipeDesktopGraphEditorTool> getTools() {
         return Collections.unmodifiableList(tools);
+    }
+
+    /**
+     * @param toolClass the exact tool class
+     * @return the tool instance of this editor that was registered for the
+     * given class, or null when the class is not registered or the tool
+     * does not support this editor
+     */
+    public <T extends JIPipeDesktopGraphEditorTool> T getTool(Class<T> toolClass) {
+        return toolClass.cast(toolMap.get(toolClass));
     }
 
     public JIPipeDesktopGraphEditorTool getDefaultTool() {
@@ -928,13 +1175,12 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
             toggleButton.setSelected(true);
             currentTool = toggleableTool;
 
-            // Update cycling state - store last selected tool for this keybinding
-            if (toolToKeyBinding.containsKey(toggleableTool)) {
-                KeyStroke keyBinding = toolToKeyBinding.get(toggleableTool);
-                keyBindingToLastSelectedTool.put(keyBinding, toggleableTool);
-            }
-
             canvasUI.getToolManager().setCurrentTool(currentTool);
+            // Steer the shared-chord cycle state so the next press of a
+            // chord that also selects this tool cycles from here (design
+            // Section 7). Covers every selection path: toolbar buttons,
+            // the shortcut resolver, and selectToolByClass.
+            recordToolChordCycle(tool);
             tool.activate();
             getDesktopWorkbench().sendStatusBarText("Activated tool '" + tool.getName() + "'");
         } else {
@@ -1042,19 +1288,11 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
         for (GraphInteractiveObjectUIContextAction contextAction : canvasUI.getContextActions()) {
             if (contextAction != null && contextAction.isDisplayedInToolbar() && contextAction.matches(selection)) {
                 JButton button = new JButton(contextAction.getIcon());
-                button.setToolTipText(TooltipUtils.createTooltipWithShortcut(contextAction.getName(), contextAction.getDescription(), contextAction.getKeyboardShortcut()));
+                button.setToolTipText(TooltipUtils.createTooltipWithShortcutText(contextAction.getName(), contextAction.getDescription(), shortcutVariantsText(contextAction.getShortcutActionId())));
                 button.addActionListener(e -> {
                     contextAction.run(canvasUI, selection);
                     if (contextAction.isDisplayedInToolbar()) {
                         updateContextToolbar();
-                    }
-                    // Context actions might change tool selection, so update cycling state
-                    if (getCurrentTool() instanceof JIPipeDesktopToggleableGraphEditorTool) {
-                        JIPipeDesktopToggleableGraphEditorTool currentToggleableTool = (JIPipeDesktopToggleableGraphEditorTool) getCurrentTool();
-                        if (toolToKeyBinding.containsKey(currentToggleableTool)) {
-                            KeyStroke binding = toolToKeyBinding.get(currentToggleableTool);
-                            keyBindingToLastSelectedTool.put(binding, currentToggleableTool);
-                        }
                     }
                 });
                 UIUtils.makeButtonFlatWithSize(button, 32, 3);

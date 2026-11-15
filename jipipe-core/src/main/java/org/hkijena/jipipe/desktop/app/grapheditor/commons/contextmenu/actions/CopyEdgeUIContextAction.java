@@ -15,6 +15,7 @@ package org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.actions;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.shortcuts.JIPipeShortcutActions;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.managers.JIPipeDesktopGraphCanvasNotificationsManager;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.EdgesOnlyUIContextAction;
@@ -23,10 +24,15 @@ import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import javax.swing.*;
-import java.awt.event.KeyEvent;
 import java.util.Set;
 
 public class CopyEdgeUIContextAction implements EdgesOnlyUIContextAction {
+
+    /**
+     * The id of the shortcut action that triggers this context action
+     * (see {@link org.hkijena.jipipe.api.shortcuts.JIPipeShortcutActions}).
+     */
+    public static final String SHORTCUT_ACTION_ID = JIPipeShortcutActions.EDGE_COPY.id();
 
     @Override
     public String getName() {
@@ -44,8 +50,8 @@ public class CopyEdgeUIContextAction implements EdgesOnlyUIContextAction {
     }
 
     @Override
-    public KeyStroke getKeyboardShortcut() {
-        return KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_DOWN_MASK, true);
+    public String getShortcutActionId() {
+        return SHORTCUT_ACTION_ID;
     }
 
     @Override

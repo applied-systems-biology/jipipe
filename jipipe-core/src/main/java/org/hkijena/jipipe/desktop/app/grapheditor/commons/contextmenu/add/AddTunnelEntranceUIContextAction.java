@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.add;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.shortcuts.JIPipeShortcutActions;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.GraphInteractiveObjectUIContextAction;
@@ -25,6 +26,13 @@ import java.util.Set;
 import java.util.UUID;
 
 public class AddTunnelEntranceUIContextAction implements GraphInteractiveObjectUIContextAction {
+
+    /**
+     * The id of the shortcut action that triggers this context action
+     * (see {@link org.hkijena.jipipe.api.shortcuts.JIPipeShortcutActions}).
+     */
+    public static final String SHORTCUT_ACTION_ID = JIPipeShortcutActions.NODE_ADD_TUNNEL_ENTRANCE.id();
+
     @Override
     public boolean matches(Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
         return true;
@@ -53,5 +61,10 @@ public class AddTunnelEntranceUIContextAction implements GraphInteractiveObjectU
     @Override
     public Icon getIcon() {
         return JIPipe.RESOURCES.getIcon16("actions/xfce-wm-unstick.png");
+    }
+
+    @Override
+    public String getShortcutActionId() {
+        return SHORTCUT_ACTION_ID;
     }
 }

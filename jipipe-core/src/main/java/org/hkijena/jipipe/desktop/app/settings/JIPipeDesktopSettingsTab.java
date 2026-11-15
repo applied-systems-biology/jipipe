@@ -218,6 +218,7 @@ public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implem
     private String selectedSectionKey;
     private JIPipeDesktopParameterFormPanel currentFormPanel;
     private JIPipeDesktopAppearanceSection currentSection;
+    private JIPipeDesktopKeyboardSection currentKeyboardSection;
     private JIPipeDesktopRawSettingsSection currentRawSection;
     private boolean updatingTree;
     /** Whether {@link #dispose()} already ran (it is idempotent). */
@@ -806,6 +807,14 @@ public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implem
                 section.setScope(activeScope);
                 currentRawSection = section;
                 wrapper.add(section, BorderLayout.CENTER);
+            } else if (AppearanceSectionModel.SECTION_KEYBOARD.equals(mergedPage)) {
+                // The keyboard section: a real page now (Task 9), hosted by the
+                // seed-exempt placeholder sheet. It owns no composed sheets, so
+                // the appearance section would only render an empty form.
+                JIPipeDesktopKeyboardSection keyboardSection =
+                        new JIPipeDesktopKeyboardSection(getDesktopWorkbench(), this);
+                currentKeyboardSection = keyboardSection;
+                wrapper.add(keyboardSection, BorderLayout.CENTER);
             } else {
                 // A merged section: render the composed content instead of a form.
                 JIPipeDesktopAppearanceSection section = new JIPipeDesktopAppearanceSection(getDesktopWorkbench(),
@@ -886,6 +895,10 @@ public class JIPipeDesktopSettingsTab extends JIPipeDesktopWorkbenchPanel implem
         if (currentSection != null) {
             currentSection.dispose();
             currentSection = null;
+        }
+        if (currentKeyboardSection != null) {
+            currentKeyboardSection.dispose();
+            currentKeyboardSection = null;
         }
         if (currentRawSection != null) {
             currentRawSection.dispose();

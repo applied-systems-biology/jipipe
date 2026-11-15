@@ -2,6 +2,7 @@ package org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.managers;
 
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.GraphInteractiveObjectUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
+import org.hkijena.jipipe.desktop.app.shortcuts.JIPipeDesktopShortcutMenuItems;
 import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -19,16 +20,14 @@ public class JIPipeDesktopGraphNodeUINodeContextMenu {
         this.nodeUI = nodeUI;
     }
 
-
     public void openRunNodeMenu(MouseEvent event) {
         JPopupMenu menu = new JPopupMenu();
         for (GraphInteractiveObjectUIContextAction entry : RUN_NODE_CONTEXT_MENU_ENTRIES) {
             if (entry == null)
                 UIUtils.addSeparatorIfNeeded(menu);
             else {
-                JMenuItem item = new JMenuItem(entry.getName(), entry.getIcon());
-                item.setToolTipText(entry.getDescription());
-                item.setAccelerator(entry.getKeyboardShortcut());
+                JMenuItem item = JIPipeDesktopShortcutMenuItems.createItem(entry.getName(), entry.getIcon(),
+                        entry.getDescription(), entry.getShortcutActionId());
                 item.addActionListener(e -> {
                     if (entry.matches(Collections.singleton(nodeUI))) {
                         entry.run(nodeUI.getGraphCanvasUI(), Collections.singleton(nodeUI));

@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.add;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.shortcuts.JIPipeShortcutActions;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.GraphInteractiveObjectUIContextAction;
@@ -22,11 +23,17 @@ import org.hkijena.jipipe.plugins.multiparameters.nodes.DefineParametersTableAlg
 import org.hkijena.jipipe.plugins.parameters.library.table.ParameterTable;
 
 import javax.swing.*;
-import java.awt.event.KeyEvent;
 import java.util.List;
 import java.util.Set;
 
 public class AddNewParameterSetNodeUIContextAction implements GraphInteractiveObjectUIContextAction {
+
+    /**
+     * The id of the shortcut action that triggers this context action
+     * (see {@link org.hkijena.jipipe.api.shortcuts.JIPipeShortcutActions}).
+     */
+    public static final String SHORTCUT_ACTION_ID = JIPipeShortcutActions.NODE_ADD_PARAMETER_SET.id();
+
     @Override
     public boolean matches(Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
         return true;
@@ -60,8 +67,8 @@ public class AddNewParameterSetNodeUIContextAction implements GraphInteractiveOb
     }
 
     @Override
-    public KeyStroke getKeyboardShortcut() {
-        return KeyStroke.getKeyStroke(KeyEvent.VK_A, KeyEvent.SHIFT_MASK + KeyEvent.CTRL_MASK, true);
+    public String getShortcutActionId() {
+        return SHORTCUT_ACTION_ID;
     }
 
     @Override

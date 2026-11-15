@@ -147,6 +147,24 @@ convenient methods for:
 - **UI components**: `registerMenuExtension()`, `registerGraphEditorToolBarButtonExtension()`
 - **Examples**: `registerNodeExample()`, `registerNodeTemplate()`
 
+### Keyboard Shortcuts
+
+Every user-triggerable UI action (graph editor tools, context actions, menu accelerators, dock actions) is a
+`JIPipeShortcutAction` with a stable string-literal id (persisted in saved keymap profiles: never code-derived).
+Register actions in the plugin's `register()` via
+[`JIPipeShortcutRegistry`](jipipe-core/src/main/java/org/hkijena/jipipe/api/shortcuts/JIPipeShortcutRegistry.java)
+(`JIPipeShortcutAction.builder(id, name, category)`; idempotent: skip already-registered ids). The core catalog
+lives in `JIPipeShortcutActions` (registered by `StandardSettingsPlugin`). Bindings resolve user override >
+default; the Keyboard settings section (`JIPipeDesktopKeyboardSection`) edits overrides. Never read
+`KeyStroke`s from actions or tooltips: render for display through
+`JIPipeShortcutRegistry.formatChord`/`formatVariants` and pass the pre-rendered text to
+`TooltipUtils.createTooltipWithShortcutText`.
+The per-window command bar lists the registry's actions as entries (including unassigned ones); its trigger action is
+`org.hkijena.jipipe.command-bar.open` (defaults Ctrl+P / Ctrl+Shift+P). A chord prefix opens the bar in chord mode via
+the dispatcher handoff; window/tab switching are ephemeral bar entries (not registry actions, not bindable). The list
+mode (grayed unavailable / available only / everything) is the `registry:command-bar` setting; recently fired commands
+rank first on an empty query.
+
 ## Testing
 
 ### Current Test Infrastructure

@@ -38,10 +38,15 @@ import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
 import org.hkijena.jipipe.api.service.events.JIPipePluginRegisteredEvent;
 import org.hkijena.jipipe.api.service.events.JIPipePluginRegisteredEventListener;
 import org.hkijena.jipipe.api.settings.SettingsScope;
+import org.hkijena.jipipe.api.shortcuts.JIPipeShortcutActions;
+import org.hkijena.jipipe.api.shortcuts.JIPipeShortcutRegistry;
+import org.hkijena.jipipe.api.shortcuts.JIPipeShortcutSettings;
+import org.hkijena.jipipe.api.shortcuts.KeymapSettings;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.desktop.app.backups.JIPipeDesktopBackupManagerPanel;
+import org.hkijena.jipipe.desktop.app.shortcuts.JIPipeDesktopShortcutDispatcher;
 import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopCacheBrowserUI;
 import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopCacheManagerUI;
 import org.hkijena.jipipe.desktop.app.components.JIPipeDesktopAuthorProfileButton;
@@ -106,7 +111,6 @@ import org.scijava.Context;
 import javax.swing.*;
 import javax.swing.Timer;
 import java.awt.*;
-import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.net.URI;
@@ -152,6 +156,25 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
      * creates a fresh workbench per project, but a double dispose must be safe).
      */
     private boolean disposed;
+    /**
+     * The live subscription over the keymap settings, kept so
+     * {@link #dispose()} can release it. The dispatcher already rebuilds its
+     * stroke maps on keymap changes; this subscription re-applies the menu
+     * accelerators, which are a display-only convenience.
+     */
+    private Consumer<KeymapSettings> keymapBindingSubscriber;
+    /**
+     * The status text sink installed in the shortcut dispatcher for this
+     * workbench; kept as a field so {@link #dispose()} can remove it only
+     * when this workbench still owns it (several project windows may be
+     * open at once).
+     */
+    private Consumer<String> shortcutStatusSink;
+    /**
+     * The Project menu items whose accelerators are driven by the shortcut
+     * registry, keyed by their action id (New, Open, Save, Save as).
+     */
+    private final Map<String, JMenuItem> shortcutMenuItems = new LinkedHashMap<>();
     private JLabel statusText;
     private JIPipeDesktopReloadableValidityChecker validityCheckerPanel;
     private JIPipeDesktopPluginValidityCheckerPanel pluginValidityCheckerPanel;
@@ -178,6 +201,18 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         this.context = context;
         this.nodeDatabase = new JIPipeNodeDatabase(project);
         initialize(showIntroduction, isNewProject);
+
+        // Receive the shortcut dispatcher's status text (chord hints, the
+        // "Executed: ..." confirmation) in this workbench's status bar; the
+        // sink is removed again in dispose() when this workbench still owns
+        // it.
+        shortcutStatusSink = this::sendStatusBarText;
+        JIPipeDesktopShortcutDispatcher.setStatusTextSink(shortcutStatusSink);
+
+        // Keep the menu accelerators in sync with the keymap: the menu
+        // accelerators are display-only, the dispatcher fires the actions.
+        keymapBindingSubscriber = settings -> applyMenuAccelerators();
+        JIPipeShortcutSettings.binding().subscribe(keymapBindingSubscriber);
 
         // Feature #753: recompute the publish button's static FAIR badge when
         // project metadata changes and on open/load (the initial call below).
@@ -851,15 +886,62 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         dialog.setVisible(true);
     }
 
+    /**
+     * Creates a Project menu item whose accelerator is driven by the shortcut
+     * registry instead of a hardcoded keystroke. The accelerator is a
+     * display-only convenience: the keypresses themselves are fired by the
+     * shortcut dispatcher through the window scope, so a chord-assigned
+     * action (whose binding cannot be rendered as a single accelerator)
+     * simply has no visible accelerator. The item is tracked in
+     * {@link #shortcutMenuItems} so {@link #applyMenuAccelerators()} can
+     * update it live when the keymap changes.
+     *
+     * @param actionId the shortcut action id, e.g. {@link JIPipeShortcutActions#PROJECT_NEW}
+     * @param text     the menu label
+     * @param icon     the menu icon
+     * @param tooltip  the tooltip
+     * @param action   the menu action
+     * @return the configured menu item
+     */
+    private JMenuItem createShortcutMenuItem(String actionId, String text, Icon icon, String tooltip, Runnable action) {
+        JMenuItem item = new JMenuItem(text, icon);
+        item.setToolTipText(tooltip);
+        item.addActionListener(e -> action.run());
+        item.setAccelerator(menuAcceleratorFor(actionId));
+        shortcutMenuItems.put(actionId, item);
+        return item;
+    }
+
+    /**
+     * Resolves the menu accelerator of a shortcut action from the effective
+     * binding: a length-1 variant renders as the accelerator, anything else
+     * (chords, unassigned) renders as none.
+     */
+    private KeyStroke menuAcceleratorFor(String actionId) {
+        List<List<KeyStroke>> variants = JIPipeShortcutRegistry.getInstance()
+                .bindingFor(actionId, JIPipeShortcutSettings.current()).variants();
+        if (variants.isEmpty() || variants.get(0).size() != 1) {
+            return null;
+        }
+        return variants.get(0).get(0);
+    }
+
+    /**
+     * Re-applies the accelerators of all tracked menu items. Called on
+     * keymap changes (via {@link #keymapBindingSubscriber}) and from
+     * {@link #dispose()} to clear them off the disposed items.
+     */
+    private void applyMenuAccelerators() {
+        for (Map.Entry<String, JMenuItem> entry : shortcutMenuItems.entrySet()) {
+            entry.getValue().setAccelerator(menuAcceleratorFor(entry.getKey()));
+        }
+    }
+
     private void initializeProjectMenu(JMenuBar menu) {
         JMenu projectMenu = new JMenu("Project");
 
         // Add "New project" toolbar entry
-        JMenuItem newProjectButton = new JMenuItem("New", JIPipe.RESOURCES.getIcon16("actions/document-new.png"));
-        newProjectButton.setToolTipText("Creates a new project");
-        newProjectButton.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_DOWN_MASK));
-        newProjectButton.addActionListener(e -> window.newProject());
-        projectMenu.add(newProjectButton);
+        projectMenu.add(createShortcutMenuItem(JIPipeShortcutActions.PROJECT_NEW.id(), "New", JIPipe.RESOURCES.getIcon16("actions/document-new.png"), "Creates a new project", () -> window.newProject()));
 
         JMenuItem newProjectFromTemplateButton = new JMenuItem("New from template", JIPipe.RESOURCES.getIcon16("actions/dialog-templates.png"));
         newProjectFromTemplateButton.setToolTipText("Creates a new project from a template");
@@ -870,11 +952,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         projectMenu.addSeparator();
 
         // "Open project" entry
-        JMenuItem openProjectButton = new JMenuItem("Open ...", JIPipe.RESOURCES.getIcon16("actions/document-open-folder.png"));
-        openProjectButton.setToolTipText("Opens a project from a parameter file");
-        openProjectButton.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK));
-        openProjectButton.addActionListener(e -> window.openProject());
-        projectMenu.add(openProjectButton);
+        projectMenu.add(createShortcutMenuItem(JIPipeShortcutActions.PROJECT_OPEN.id(), "Open ...", JIPipe.RESOURCES.getIcon16("actions/document-open-folder.png"), "Opens a project from a parameter file", () -> window.openProject()));
 
         // "Open project" entry
         JMenuItem importROCrateButton = new JMenuItem("Import RO-Crate ...", JIPipe.RESOURCES.getIcon16("actions/document-open-folder.png"));
@@ -902,28 +980,23 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         projectMenu.addSeparator();
 
         // "Save project" entry
-        JMenuItem saveProjectButton = new JMenuItem("Save ...", JIPipe.RESOURCES.getIcon16("actions/filesave.png"));
-        saveProjectButton.setToolTipText("Saves the project. If the project was opened from a file or previously saved, the file will be overwritten.");
-        saveProjectButton.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK));
-        saveProjectButton.addActionListener(e -> {
-            window.saveProjectAs(true, true);
-            if (JIPipeGeneralUIApplicationSettings.getInstance().isValidateOnSave()) {
-                validateAndOpenReport(true);
-            }
-        });
-        projectMenu.add(saveProjectButton);
+        projectMenu.add(createShortcutMenuItem(JIPipeShortcutActions.PROJECT_SAVE.id(), "Save ...", JIPipe.RESOURCES.getIcon16("actions/filesave.png"),
+                "Saves the project. If the project was opened from a file or previously saved, the file will be overwritten.",
+                () -> {
+                    window.saveProjectAs(true, true);
+                    if (JIPipeGeneralUIApplicationSettings.getInstance().isValidateOnSave()) {
+                        validateAndOpenReport(true);
+                    }
+                }));
 
         // "Save project" entry
-        JMenuItem saveProjectAsButton = new JMenuItem("Save as ...", JIPipe.RESOURCES.getIcon16("actions/filesave.png"));
-        saveProjectAsButton.setToolTipText("Saves the project to a new file.");
-        saveProjectAsButton.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK + KeyEvent.SHIFT_DOWN_MASK));
-        saveProjectAsButton.addActionListener(e -> {
-            window.saveProjectAs(false, true);
-            if (JIPipeGeneralUIApplicationSettings.getInstance().isValidateOnSave()) {
-                validateAndOpenReport(true);
-            }
-        });
-        projectMenu.add(saveProjectAsButton);
+        projectMenu.add(createShortcutMenuItem(JIPipeShortcutActions.PROJECT_SAVE_AS.id(), "Save as ...", JIPipe.RESOURCES.getIcon16("actions/filesave.png"), "Saves the project to a new file.",
+                () -> {
+                    window.saveProjectAs(false, true);
+                    if (JIPipeGeneralUIApplicationSettings.getInstance().isValidateOnSave()) {
+                        validateAndOpenReport(true);
+                    }
+                }));
 
         // "Save project" entry
         JMenuItem saveProjectCopyAsButton = new JMenuItem("Save copy as ...", JIPipe.RESOURCES.getIcon16("actions/filesave.png"));
@@ -1535,6 +1608,20 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
             return;
         }
         disposed = true;
+        // Release the keymap subscription; the menu accelerators are
+        // display-only, so clear them as well (the dispatcher still fires
+        // the actions regardless).
+        if (keymapBindingSubscriber != null) {
+            JIPipeShortcutSettings.binding().unsubscribe(keymapBindingSubscriber);
+            keymapBindingSubscriber = null;
+            applyMenuAccelerators();
+        }
+        // This workbench is no longer the status text owner; a sink left
+        // pointing at a disposed workbench would pin its whole UI tree.
+        if (JIPipeDesktopShortcutDispatcher.currentStatusTextSink() == shortcutStatusSink) {
+            JIPipeDesktopShortcutDispatcher.setStatusTextSink(null);
+        }
+        shortcutStatusSink = null;
         if (documentTabPane != null) {
             documentTabPane.dispose();
         }

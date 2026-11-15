@@ -17,6 +17,7 @@ import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
 import org.hkijena.jipipe.api.service.JIPipeService;
+import org.hkijena.jipipe.api.shortcuts.JIPipeShortcutActions;
 import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopAppearanceSection;
 import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopRawSettingsSection;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
@@ -103,6 +104,9 @@ public class StandardSettingsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerApplicationSettingsSheet(new JIPipeDesktopAppearanceApplicationSettings());
         registerApplicationSettingsSheet(new JIPipeDesktopAccessibilityApplicationSettings());
         registerApplicationSettingsSheet(new JIPipeDesktopKeyboardApplicationSettings());
+        // The core catalog of keyboard shortcut actions (graph editor tools,
+        // editor-level actions, context actions, project menu accelerators)
+        JIPipeShortcutActions.registerCore();
         JIPipeDesktopAppearanceSection.registerCompositions();
 
         // Raw settings editor (Task 20): an anchor sheet plus the
