@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.api.project.jipx;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
@@ -63,7 +64,11 @@ import java.util.Set;
  * provide (license → settings default → MIT, the {@code mainEntity}
  * pointer), {@link #buildCrate} runs the
  * spec's profile checklist and reports every missing piece into
- * {@code violationsOut} - a well-formed save yields ZERO violations.
+ * {@code violationsOut} - a well-formed save yields ZERO violations. The
+ * checklist includes the profile declaration (requirement 2 of the
+ * "JIPipe Workflow RO-Crate" profile 1.0, work item #1360): the metadata
+ * descriptor must carry the JIPipe profile URI alongside the base
+ * profiles.
  */
 public final class JIPipeProjectCrate {
 
@@ -78,11 +83,11 @@ public final class JIPipeProjectCrate {
     /**
      * The id of the JIPipe programming-language contextual entity.
      * <p>
-     * Stable URI placeholder: the spec's §6 follow-up work item publishes
-     * the real language profile page at {@code https://jipipe.org};
-     * {@code jipipe.org} is the registered domain, so the id is stable
-     * across JIPipe versions (the profile <i>content</i> is not part of
-     * the container format).
+     * The URI resolves through the gh-pages redirect at
+     * {@code https://jipipe.org/jipipe} to the language page hosted by
+     * the CMS ({@code https://jipipe.hki-jena.de/jipipe}, work item
+     * #1360). Stable across JIPipe versions (the profile <i>content</i>
+     * is not part of the container format).
      */
     public static final String LANGUAGE_ENTITY_ID = "https://jipipe.org/jipipe";
 
@@ -101,6 +106,20 @@ public final class JIPipeProjectCrate {
     public static final String BIOSCHEMAS_COMPUTATIONAL_WORKFLOW_PROFILE =
             "https://bioschemas.org/profiles/ComputationalWorkflow/1.0-RELEASE";
 
+    /**
+     * The Workflow RO-Crate profile the crate conforms to (the base
+     * profile of the JIPipe Workflow RO-Crate profile).
+     */
+    public static final String WORKFLOW_RO_CRATE_PROFILE_URI = "https://w3id.org/workflowhub/workflow-ro-crate/1.0";
+
+    /**
+     * The permalink of the published "JIPipe Workflow RO-Crate" profile
+     * spec (work item #1360; semantically versioned, served on
+     * jipipe.org via gh-pages redirects to the CMS spec page). Stable
+     * string literal: it is written into saved containers.
+     */
+    public static final String JIPIPE_WORKFLOW_RO_CRATE_PROFILE_URI = "https://jipipe.org/ro-crate/jipipe-workflow/1.0";
+
     private JIPipeProjectCrate() {
     }
 
@@ -108,19 +127,24 @@ public final class JIPipeProjectCrate {
      * Builds the Workflow RO-Crate for the given project and runs the
      * compliance checklist.
      *
-     * @param project       the project to crate (its metadata drives the
-     *                      entity graph)
-     * @param violationsOut collects the compliance violations; a
-     *                      well-formed save leaves it empty
+     * @param project        the project to crate (its metadata drives the
+     *                       entity graph)
+     * @param partEntryPaths the zip entry paths of the project parts that
+     *                       the container holds (the manifest's parts
+     *                       table keys; {@link #MAIN_ENTITY_ID} is
+     *                       excluded - the main entity is the
+     *                       {@code ComputationalWorkflow} entity)
+     * @param violationsOut  collects the compliance violations; a
+     *                       well-formed save leaves it empty
      * @return the built crate (validated by the library's JSON-schema
      * validator - violations are printed to {@code System.err} by
      * the library and intentionally left there)
      * @throws JIPipeValidationRuntimeException if the crate cannot be built
      */
-    public static RoCrate buildCrate(JIPipeProject project, List<String> violationsOut) {
+    public static RoCrate buildCrate(JIPipeProject project, Set<String> partEntryPaths, List<String> violationsOut) {
         RoCrate.RoCrateBuilder builder;
         try {
-            builder = newBuilder(project);
+            builder = newBuilder(project, partEntryPaths);
         } catch (RuntimeException e) {
             throw new JIPipeValidationRuntimeException(e, "Could not build the RO-Crate metadata",
                     "The Workflow RO-Crate builder rejected the project metadata: " + e.getMessage(),
@@ -143,13 +167,20 @@ public final class JIPipeProjectCrate {
         // contextual entity with the same @id (ro-crate-metadata.json)
         // in the @graph.
         crate.setJsonDescriptor(new JsonDescriptor.Builder()
-                .addConformsTo("https://w3id.org/workflowhub/workflow-ro-crate/1.0")
+                .addConformsTo(WORKFLOW_RO_CRATE_PROFILE_URI)
+                .addConformsTo(JIPIPE_WORKFLOW_RO_CRATE_PROFILE_URI)
                 .build());
 
         // Point the root at the main entity (same post-build hook as
         // CreateROCrateRun.addROCrateMainEntity - the builder has no
         // mainEntity setter).
         crate.getRootDataEntity().addIdProperty("mainEntity", MAIN_ENTITY_ID);
+
+        // Declare the profile conformance on the root as well (profile
+        // 1.0 requirement 2: modern tooling discovers profiles on the
+        // root data entity).
+        crate.getRootDataEntity().addIdListProperties("conformsTo",
+                List.of(WORKFLOW_RO_CRATE_PROFILE_URI, JIPIPE_WORKFLOW_RO_CRATE_PROFILE_URI));
 
         // Root keywords: "JIPipe" + the metadata's categories (the
         // library's addProperty overwrites single values, so the list is
@@ -174,7 +205,7 @@ public final class JIPipeProjectCrate {
      * {@code CreateROCrateRun.createROCrateBuilder()} + the entity-adding
      * runs, without {@code location}s).
      */
-    private static RoCrate.RoCrateBuilder newBuilder(JIPipeProject project) {
+    private static RoCrate.RoCrateBuilder newBuilder(JIPipeProject project, Set<String> partEntryPaths) {
         // Root entity: name / description / datePublished / license.
         // License resolution (a non-empty metadata license always wins):
         // metadata license → settings default → MIT.
@@ -191,12 +222,14 @@ public final class JIPipeProjectCrate {
 
         // The JIPipe programming-language contextual entity (the CWL
         // language entity of CreateROCrateRun, replaced by JIPipe - the
-        // stable URI placeholder, see LANGUAGE_ENTITY_ID).
+        // language page hosted by the CMS is the entity's url target,
+        // see LANGUAGE_ENTITY_ID).
         builder.addContextualEntity(new ContextualEntity.ContextualEntityBuilder()
                 .setId(LANGUAGE_ENTITY_ID)
                 .addType("ComputerLanguage")
                 .addProperty("name", "JIPipe")
                 .addProperty("version", JIPipe.getJIPipeVersion())
+                .addIdProperty("url", "https://jipipe.hki-jena.de/jipipe")
                 .build());
 
         // The Bioschemas ComputationalWorkflow profile guide (mirrors
@@ -277,6 +310,30 @@ public final class JIPipeProjectCrate {
                 .addProperty("about", "./")
                 .build());
 
+        // The manifest entity (profile 1.0 container-inventory requirement).
+        builder.addDataEntity(new FileEntity.FileEntityBuilder()
+                .setId(JIPipeXManifest.MANIFEST_FILE_NAME)
+                .addType("File")
+                .addProperty("encodingFormat", "application/json")
+                .addProperty("name", "JIPipe project manifest")
+                .build());
+
+        // One File entity per part except the main entity, which is the
+        // WorkflowEntity added above (same @id - adding it twice would
+        // overwrite the workflow entity). addDataEntity auto-wires the
+        // root hasPart. Unknown/payload entries (data/, graphs/,
+        // history/) are intentionally not listed (profile 1.0: MAY).
+        for (String partEntryPath : partEntryPaths) {
+            if (MAIN_ENTITY_ID.equals(partEntryPath)) {
+                continue;
+            }
+            builder.addDataEntity(new FileEntity.FileEntityBuilder()
+                    .setId(partEntryPath)
+                    .addType("File")
+                    .addProperty("encodingFormat", "application/json")
+                    .build());
+        }
+
         return builder;
     }
 
@@ -289,6 +346,9 @@ public final class JIPipeProjectCrate {
      * the main entity.
      */
     private static void checkCompliance(RoCrate crate, List<String> violationsOut) {
+        if (!descriptorConformsToContains(crate, JIPIPE_WORKFLOW_RO_CRATE_PROFILE_URI)) {
+            violationsOut.add("the JIPipe Workflow RO-Crate profile URI is missing from the metadata descriptor's conformsTo");
+        }
         if (crate.getRootDataEntity().getIdProperty("license") == null) {
             violationsOut.add("license missing on the RO-Crate root entity (the default license setting and metadata license are both empty?)");
         }
@@ -306,6 +366,27 @@ public final class JIPipeProjectCrate {
                 || crate.getDataEntityById(MAIN_ENTITY_ID).getIdProperty("conformsTo") == null) {
             violationsOut.add("Bioschemas conformsTo missing on the main workflow entity");
         }
+    }
+
+    /**
+     * True when the metadata descriptor's conformsTo (single object or
+     * array of objects) carries the given @id. Order-independent: the
+     * library accumulates extra profile values in a HashSet.
+     */
+    private static boolean descriptorConformsToContains(RoCrate crate, String uri) {
+        JsonNode conformsTo = crate.getJsonDescriptor().getProperties().path("conformsTo");
+        if (conformsTo.isMissingNode() || conformsTo.isNull()) {
+            return false;
+        }
+        if (conformsTo.isArray()) {
+            for (JsonNode element : conformsTo) {
+                if (uri.equals(element.path("@id").asText())) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        return uri.equals(conformsTo.path("@id").asText());
     }
 
     /**
