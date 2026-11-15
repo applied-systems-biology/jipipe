@@ -29,14 +29,19 @@ import org.hkijena.jipipe.utils.BufferedImageUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 
 import javax.imageio.ImageIO;
-import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Path;
 
 public class ImageBoxNoteGraphNodeTool extends JIPipeAnnotationGraphNodeTool<ImageBoxGraphCanvasNote> {
+
+    /**
+     * The shortcut action id that selects this tool. The id is a stable
+     * string literal (persisted in saved keymaps and the LEGACY preset) and
+     * the action itself is registered by the {@link org.hkijena.jipipe.plugins.canvasnotes.CanvasNotesPlugin}.
+     */
+    public static final String SHORTCUT_ACTION_ID = "org.hkijena.jipipe.canvasnotes.tool.imagebox";
 
     private JIPipeDesktopColorPaletteColor color;
 
@@ -73,11 +78,6 @@ public class ImageBoxNoteGraphNodeTool extends JIPipeAnnotationGraphNodeTool<Ima
         node.getImageParameters().setBackgroundColor(new OptionalColorParameter(color.getBackground(), true));
 
         return node;
-    }
-
-    @Override
-    public KeyStroke getKeyBinding() {
-        return KeyStroke.getKeyStroke(KeyEvent.VK_F7, 0);
     }
 
     @Override

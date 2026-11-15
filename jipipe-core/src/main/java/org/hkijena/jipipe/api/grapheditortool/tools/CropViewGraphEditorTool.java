@@ -18,7 +18,6 @@ import org.hkijena.jipipe.api.grapheditortool.JIPipeDesktopActionGraphEditorTool
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
 
 import javax.swing.*;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
 public class CropViewGraphEditorTool implements JIPipeDesktopActionGraphEditorTool {
@@ -48,11 +47,6 @@ public class CropViewGraphEditorTool implements JIPipeDesktopActionGraphEditorTo
     @Override
     public void setGraphEditor(JIPipeDesktopGraphEditorUI graphEditorUI) {
         this.graphEditor = graphEditorUI;
-    }
-
-    @Override
-    public KeyStroke getKeyBinding() {
-        return KeyStroke.getKeyStroke(KeyEvent.VK_F12, 0);
     }
 
     @Override

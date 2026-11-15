@@ -20,7 +20,6 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEdit
 import org.hkijena.jipipe.desktop.app.grapheditor.contextpanel.JIPipeDesktopGraphEditorContextPanelIsland;
 
 import javax.swing.*;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
 public class MoveNodesGraphEditorTool implements JIPipeDesktopToggleableGraphEditorTool {
@@ -70,11 +69,6 @@ public class MoveNodesGraphEditorTool implements JIPipeDesktopToggleableGraphEdi
     @Override
     public void activate() {
 
-    }
-
-    @Override
-    public KeyStroke getKeyBinding() {
-        return KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0);
     }
 
     @Override

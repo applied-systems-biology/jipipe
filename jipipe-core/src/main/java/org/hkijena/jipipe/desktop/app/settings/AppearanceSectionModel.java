@@ -129,12 +129,6 @@ public final class AppearanceSectionModel {
     public static final List<String> ACCESSIBILITY_PARAMETER_KEYS = List.of("reduced-motion");
 
     /**
-     * The empty-state text of the keyboard placeholder (no keyboard settings
-     * exist yet; shortcuts are tracked in issue #1346).
-     */
-    public static final String KEYBOARD_EMPTY_STATE = "Shortcut profiles will be available here (#1346)";
-
-    /**
      * The three sections, in display order: the registered merged sheet that
      * hosts the section and the <em>composed</em> sheets whose parameters it
      * shows.

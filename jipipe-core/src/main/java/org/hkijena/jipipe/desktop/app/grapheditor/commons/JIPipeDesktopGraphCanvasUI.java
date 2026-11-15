@@ -22,6 +22,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.*;
+import org.hkijena.jipipe.api.grapheditortool.JIPipeDesktopToggleableGraphEditorTool;
 import org.hkijena.jipipe.api.grapheditortool.JIPipeDesktopToggleableGraphEditorToolNodeLayerMask;
 import org.hkijena.jipipe.api.grapheditortool.tools.DefaultGraphEditorTool;
 import org.hkijena.jipipe.api.history.JIPipeHistoryJournal;
@@ -49,14 +50,17 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.edgeui.JIPipeDesktopGr
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.edgeui.JIPipeDesktopGraphEdgeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.layout.MSTGraphAutoLayoutImplementation;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.layout.SugiyamaGraphAutoLayoutImplementation;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopAnnotationGraphNodeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUIActiveArea;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUIUpdateViewCommand;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.events.*;
 import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopRuntimePartitionListEditor;
+import org.hkijena.jipipe.desktop.app.shortcuts.JIPipeDesktopShortcutMenuItems;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopZoomViewPort;
 import org.hkijena.jipipe.desktop.commons.components.slots.JIPipeDesktopAddAlgorithmSlotPanel;
 import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
+import org.hkijena.jipipe.plugins.canvasnotes.tools.EditNotesGraphNodeTool;
 import org.hkijena.jipipe.plugins.core.nodes.JIPipeCommentNode;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeGraphEditorUIApplicationSettings;
 import org.hkijena.jipipe.utils.PointRange;
@@ -70,7 +74,6 @@ import org.jfree.graphics2d.svg.SVGGraphics2D;
 import org.scijava.Disposable;
 
 import javax.swing.*;
-import javax.swing.FocusManager;
 import java.awt.*;
 import java.awt.dnd.DropTarget;
 import java.awt.event.*;
@@ -138,6 +141,15 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
     private boolean autoMuteEdges;
     private Point lastMousePosition;
     private boolean mouseIsEntered;
+    /**
+     * The tool that transiently receives the mouse interaction while the
+     * user holds Ctrl over a canvas note (hold-Ctrl note editing). Set on a
+     * Ctrl+press on an annotation while the default tool is active, and
+     * cleared on mouse release or when Ctrl is released. The tool manager
+     * state is never modified: the persistent notes edit tool keeps its own
+     * toolbar button and toggle state.
+     */
+    private JIPipeDesktopToggleableGraphEditorTool transientNotesTool;
     private boolean disposed;
 
     /**
@@ -174,9 +186,6 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         // Subscribe events
         graph.getGraphChangedEventEmitter().subscribeWeak(this);
         graph.getNodeConnectedEventEmitter().subscribeWeak(this);
-
-        // Initialize all context menu action hotkeys etc.
-        initializeHotkeys();
 
         // Reload resources
         resources.updateAssets();
@@ -290,31 +299,6 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
 
     public JIPipeGraphEditorUIApplicationSettings getSettings() {
         return settings;
-    }
-
-    private void initializeHotkeys() {
-        KeyboardFocusManager focusManager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
-        focusManager.addKeyEventDispatcher(e -> {
-            KeyStroke keyStroke = KeyStroke.getKeyStrokeForEvent(e);
-            if (this.isDisplayable() && FocusManager.getCurrentManager().getFocusOwner() == this) {
-                for (GraphInteractiveObjectUIContextAction contextAction : contextActions) {
-                    if (contextAction == null)
-                        continue;
-                    if (!contextAction.matches(selectionManager.getSelection()))
-                        continue;
-                    if (contextAction.getKeyboardShortcut() != null && Objects.equals(contextAction.getKeyboardShortcut(), keyStroke)) {
-                        Point mousePosition = this.getMousePosition(true);
-                        if (mousePosition != null) {
-                            setGraphEditCursor(mousePosition);
-                        }
-                        getDesktopWorkbench().sendStatusBarText("Executed: " + contextAction.getName());
-                        SwingUtilities.invokeLater(() -> contextAction.run(this, selectionManager.getSelection()));
-                        return true;
-                    }
-                }
-            }
-            return false;
-        });
     }
 
     private void initialize() {
@@ -658,11 +642,22 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
     @Override
     public void mouseDragged(MouseEvent mouseEvent) {
 
+        // The hold-Ctrl note delegation ends when Ctrl is released mid-drag
+        if (transientNotesTool != null && !mouseEvent.isControlDown()) {
+            transientNotesTool = null;
+        }
+
         // Update last mouse position
         lastMousePosition = new Point(mouseEvent.getX(), mouseEvent.getY());
 
-        // Let the tool handle the event
-        if (toolManager.getCurrentTool() != null) {
+        // Let the tool handle the event: the transient notes tool while the
+        // hold-Ctrl delegation is active, else the current tool
+        if (transientNotesTool != null) {
+            transientNotesTool.mouseDragged(mouseEvent);
+            if (mouseEvent.isConsumed()) {
+                return;
+            }
+        } else if (toolManager.getCurrentTool() != null) {
             toolManager.getCurrentTool().mouseDragged(mouseEvent);
             if (mouseEvent.isConsumed()) {
                 return;
@@ -942,13 +937,10 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
                 scheduleSeparator = false;
                 menu.addSeparator();
             }
-            JMenuItem item = new JMenuItem(action.getName(), action.getIcon());
-            item.setToolTipText(action.getDescription());
+            JMenuItem item = JIPipeDesktopShortcutMenuItems.createItem(action.getName(), action.getIcon(),
+                    action.getDescription(), action.getShortcutActionId());
             if (matches) {
                 item.addActionListener(e -> action.run(this, ImmutableSet.copyOf(selectionManager.getSelection())));
-                if (action.getKeyboardShortcut() != null) {
-                    item.setAccelerator(action.getKeyboardShortcut());
-                }
             } else {
                 item.setEnabled(false);
             }
@@ -1058,8 +1050,27 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         // Update last mouse position
         lastMousePosition = new Point(mouseEvent.getX(), mouseEvent.getY());
 
-        // Let the tool handle the event
-        if (!toolManager.hasDefaultTool()) {
+        // Hold-Ctrl transient note editing: with the default tool active, a
+        // Ctrl+press on the topmost canvas note routes this press and the
+        // following drag/release triple to the notes edit tool, without
+        // changing the tool manager state. Presses on nodes or the
+        // background are not delegated, so Ctrl+click multi-select keeps
+        // working.
+        if (mouseEvent.isControlDown() && isDefaultToolActive() && graphEditorUI != null) {
+            JIPipeDesktopToggleableGraphEditorTool notesTool = graphEditorUI.getTool(EditNotesGraphNodeTool.class);
+            if (notesTool != null && pickTopmostAnnotationNodeUI(mouseEvent) != null) {
+                transientNotesTool = notesTool;
+            }
+        }
+
+        // Let the tool handle the event: the transient notes tool while the
+        // hold-Ctrl delegation is active, else the current tool
+        if (transientNotesTool != null) {
+            transientNotesTool.mousePressed(mouseEvent);
+            if (mouseEvent.isConsumed()) {
+                return;
+            }
+        } else if (!toolManager.hasDefaultTool()) {
             toolManager.getCurrentTool().mousePressed(mouseEvent);
             if (mouseEvent.isConsumed()) {
                 return;
@@ -1131,11 +1142,52 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
     }
 
     public JIPipeDesktopToggleableGraphEditorToolNodeLayerMask getToolLayerMask() {
+        if (transientNotesTool != null) {
+            // While the hold-Ctrl note delegation is active, the canvas
+            // picks annotation UIs like in notes edit mode
+            return transientNotesTool.getNodeLayerMask();
+        }
         if (toolManager.getCurrentTool() != null) {
             return toolManager.getCurrentTool().getNodeLayerMask();
         } else {
             return JIPipeDesktopToggleableGraphEditorToolNodeLayerMask.WorkflowOnly;
         }
+    }
+
+    /**
+     * @return true when the default tool is effectively active: the tool
+     * manager holds no tool, or exactly the default tool. Both states make
+     * the canvas behave in default mode (the toolbar default tool sets
+     * itself as the current tool of the tool manager).
+     */
+    private boolean isDefaultToolActive() {
+        return toolManager.hasDefaultTool() || toolManager.getCurrentTool() instanceof DefaultGraphEditorTool;
+    }
+
+    /**
+     * Picks the topmost annotation (canvas note) node UI at the mouse
+     * position, mirroring {@link #pickNodeUI(MouseEvent)}: the components
+     * are tested in front-to-back order, and the first node UI that
+     * contains the point decides. Returns null when a workflow node UI is
+     * the topmost hit, so node interactions are never stolen for the
+     * hold-Ctrl note editing.
+     *
+     * @param mouseEvent the mouse event
+     * @return the topmost annotation node UI, or null
+     */
+    public JIPipeDesktopAnnotationGraphNodeUI pickTopmostAnnotationNodeUI(MouseEvent mouseEvent) {
+        for (int i = 0; i < getComponentCount(); ++i) {
+            Component component = getComponent(i);
+            if (component.getBounds().contains(mouseEvent.getX(), mouseEvent.getY())) {
+                if (component instanceof JIPipeDesktopAnnotationGraphNodeUI annotationUI) {
+                    return annotationUI;
+                } else if (component instanceof JIPipeDesktopGraphNodeUI) {
+                    // A workflow node UI is in front of any annotation
+                    return null;
+                }
+            }
+        }
+        return null;
     }
 
     public JIPipeDesktopGraphNodeUI pickNodeUI(MouseEvent mouseEvent) {
@@ -1178,6 +1230,10 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
     @Override
     public void mouseReleased(MouseEvent mouseEvent) {
 
+        // The hold-Ctrl note delegation always ends on mouse release
+        JIPipeDesktopToggleableGraphEditorTool delegatedNotesTool = transientNotesTool;
+        transientNotesTool = null;
+
         // Update last mouse position
         lastMousePosition = new Point(mouseEvent.getX(), mouseEvent.getY());
 
@@ -1188,8 +1244,14 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         }
         resizeManager.stopAllResizing();
 
-        // Let the tool handle the event
-        if (!toolManager.hasDefaultTool()) {
+        // Let the tool handle the event: the transient notes tool while the
+        // hold-Ctrl delegation was active, else the current tool
+        if (delegatedNotesTool != null) {
+            delegatedNotesTool.mouseReleased(mouseEvent);
+            if (mouseEvent.isConsumed()) {
+                return;
+            }
+        } else if (!toolManager.hasDefaultTool()) {
             toolManager.getCurrentTool().mouseReleased(mouseEvent);
             if (mouseEvent.isConsumed()) {
                 return;

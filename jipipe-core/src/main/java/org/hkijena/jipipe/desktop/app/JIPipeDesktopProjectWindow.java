@@ -37,10 +37,12 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
+import org.hkijena.jipipe.desktop.app.commandbar.JIPipeDesktopCommandBar;
 import org.hkijena.jipipe.desktop.app.project.*;
 import org.hkijena.jipipe.desktop.app.resultanalysis.JIPipeDesktopResultUI;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
 import org.hkijena.jipipe.desktop.app.running.logs.JIPipeDesktopRunnableLogsCollection;
+import org.hkijena.jipipe.desktop.app.shortcuts.JIPipeDesktopShortcutDispatcher;
 import org.hkijena.jipipe.desktop.commons.components.app.JIPipeDesktopSplashScreen;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.desktop.commons.dialogs.Button;
@@ -133,6 +135,13 @@ public class JIPipeDesktopProjectWindow extends JFrame {
     private final AtomicBoolean loadCancelRequested = new AtomicBoolean(false);
 
     /**
+     * The per-window command bar (issue #1346, Task 6). Created in both
+     * constructors (right after the shortcut dispatcher install) and
+     * uninstalled in {@link #dispose()} before the workbench teardown.
+     */
+    private JIPipeDesktopCommandBar commandBar;
+
+    /**
      * @param context          context
      * @param project          The project
      * @param showIntroduction whether to show the introduction
@@ -140,6 +149,15 @@ public class JIPipeDesktopProjectWindow extends JFrame {
      */
     public JIPipeDesktopProjectWindow(Context context, JIPipeProject project, boolean showIntroduction, boolean isNewProject) {
         JIPipeDesktopSplashScreen.getInstance().hideSplash();
+        // Spec Section 6: the shortcut dispatcher is installed once at
+        // desktop startup (idempotent), so it covers the whole window
+        // (dock actions included) before any editor initializes its scope.
+        JIPipeDesktopShortcutDispatcher.install();
+        // The per-window command bar (issue #1346, Task 6): installed right
+        // after the dispatcher so the trigger scope answers on this window's
+        // root pane.
+        this.commandBar = new JIPipeDesktopCommandBar();
+        this.commandBar.install(this);
         this.context = context;
         this.cefClientService = new JIPipeCefClientService(this);
         OPEN_WINDOWS.add(this);
@@ -158,6 +176,13 @@ public class JIPipeDesktopProjectWindow extends JFrame {
      */
     private JIPipeDesktopProjectWindow(Context context) {
         JIPipeDesktopSplashScreen.getInstance().hideSplash();
+        // Same startup install as the main constructor (idempotent): the
+        // project-open flow creates the window before the project file is
+        // read, and the dispatcher must cover this window too.
+        JIPipeDesktopShortcutDispatcher.install();
+        // Same per-window command bar install as the main constructor.
+        this.commandBar = new JIPipeDesktopCommandBar();
+        this.commandBar.install(this);
         this.context = context;
         this.cefClientService = new JIPipeCefClientService(this);
         OPEN_WINDOWS.add(this);
@@ -303,6 +328,13 @@ public class JIPipeDesktopProjectWindow extends JFrame {
         }
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         OPEN_WINDOWS.remove(this);
+        // Uninstall the per-window command bar (issue #1346, Task 6) before
+        // any UI teardown: its uninstall closes the overlay defensively (a
+        // disposed bar must never leave the shortcut dispatch suspended) and
+        // detaches the trigger scope from this window's root pane.
+        if (commandBar != null) {
+            commandBar.uninstall();
+        }
         // Cancel a load that is currently in flight. Its completion handler
         // releases what was already read (see onProjectLoadFinished).
         cancelActiveLoad();

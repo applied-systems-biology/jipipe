@@ -100,11 +100,20 @@ public interface GraphInteractiveObjectUIContextAction {
     }
 
     /**
-     * Returns an optional keyboard shortcut. Can be null
+     * Returns the id of the shortcut action in the shortcut registry that
+     * triggers this action, or null when the action has no keyboard shortcut.
+     * <p>
+     * Implementing classes declare their id as {@code SHORTCUT_ACTION_ID}
+     * (referencing the matching
+     * {@link org.hkijena.jipipe.api.shortcuts.JIPipeShortcutActions} constant)
+     * and return it here. The effective keystrokes are resolved from the
+     * shortcut registry via
+     * {@link org.hkijena.jipipe.api.shortcuts.JIPipeShortcutRegistry#bindingFor(String, org.hkijena.jipipe.api.shortcuts.KeymapSettings)},
+     * not from this interface.
      *
-     * @return Keyboard shortcut or null
+     * @return the shortcut action id or null
      */
-    default KeyStroke getKeyboardShortcut() {
+    default String getShortcutActionId() {
         return null;
     }
 
