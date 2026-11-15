@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.jipipe.api.settings.JIPipeSettingKey;
 import org.hkijena.jipipe.api.settings.SettingsScope;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopMapState;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameterList;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 
@@ -229,11 +230,13 @@ public final class SettingsKeys {
 
     /**
      * @return the default dock state the graph editors use when the user has
-     * no stored layout: the right panel is always visible
+     * no stored layout: the Tools dock is pinned on the right (#1367), so it
+     * shows before any selection like the pre-pinning "always show right
+     * panel" behavior
      */
     private static JIPipeDesktopDockPanel.State defaultDockState() {
         JIPipeDesktopDockPanel.State state = new JIPipeDesktopDockPanel.State();
-        state.setAlwaysShowRightPanel(true);
+        state.getPins().put("right", JIPipeDesktopGraphEditorUI.DOCK_CONTEXT_PANEL);
         return state;
     }
 }

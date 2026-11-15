@@ -1,6 +1,8 @@
 package org.hkijena.jipipe.utils.ui;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.JIPipe;
@@ -23,6 +25,7 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.font.TextAttribute;
 import java.util.*;
 import java.util.List;
 import java.util.function.Predicate;
@@ -31,7 +34,10 @@ import java.util.stream.Collectors;
 
 public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplitPane.RatioUpdatedEventListener {
 
-    public static final int UI_ORDER_PINNED = -100;
+    /**
+     * UI order that lists a dock first in its dock toolbar
+     */
+    public static final int UI_ORDER_FIRST = -100;
     public static final int UI_ORDER_DEFAULT = 0;
     public static final int BUTTON_MAX_WIDTH = 64;
     private static final int RESIZE_HANDLE_SIZE = 6;
@@ -45,6 +51,15 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
     private final JPanel rightResizerPanel = new JPanel();
     private final Map<String, Panel> panels = new LinkedHashMap<>();
     private final Map<String, JToggleButton> panelVisibilityToggles = new HashMap<>();
+    // The pinned dock per side: keys are the lowercase side names (same
+    // shape as State.pins), values are dock IDs
+    private final Map<String, String> pins = new HashMap<>();
+    // The docks currently displayed as side stand-ins (recomputed on every
+    // update; purely presentational, never persisted)
+    private final Map<PinSide, Panel> activeStandIns = new EnumMap<>(PinSide.class);
+    // Sides whose stand-in the user explicitly closed; the pause ends when
+    // the dock set or activity on that side changes
+    private final EnumSet<PinSide> pausedStandIns = EnumSet.noneOf(PinSide.class);
     private final JIPipeDesktopSplitPane leftSplitPane = new JIPipeDesktopSplitPane(JIPipeDesktopSplitPane.TOP_BOTTOM, new JIPipeDesktopSplitPane.FixedRatio(0.33, true));
     private final JIPipeDesktopSplitPane rightSplitPane = new JIPipeDesktopSplitPane(JIPipeDesktopSplitPane.TOP_BOTTOM, new JIPipeDesktopSplitPane.FixedRatio(0.66, true));
     private final JIPipeDesktopSplitPane mainSplitPane = new JIPipeDesktopSplitPane(JIPipeDesktopSplitPane.TOP_BOTTOM, new JIPipeDesktopSplitPane.FixedRatio(0.66, true));
@@ -65,11 +80,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
     private int toolbarWithLabelsWidth = 92;
     private int toolbarWithoutLabelsWidth = 42;
     private boolean hideToolbars = false;
-    private boolean alwaysShowLeftPanel = false;
-    private boolean alwaysShowRightPanel = false;
     private JComponent mainComponent;
-    private String fallbackRight;
-    private String fallbackLeft;
     /**
      * The shortcut scope of this dock panel instance, registered with the
      * dispatcher in {@link #addNotify()} and unregistered in
@@ -152,14 +163,17 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
 
     /**
      * Toggles a dock panel: deactivates it when it is currently displayed on
-     * its side, activates it otherwise.
+     * its side, activates it otherwise. "Displayed" includes a stand-in
+     * display of a pinned dock (#1367), so a dock shortcut behaves exactly
+     * like the toggle button: closing a stand-in-displayed pinned dock sets
+     * the stand-in pause.
      */
     private void toggleDockPanel(String id) {
         Panel panel = panels.get(id);
         if (panel == null) {
             return;
         }
-        if (panel.isVisible()) {
+        if (isDockDisplayed(id)) {
             deactivatePanel(panel, true);
         } else {
             activatePanel(panel, true);
@@ -230,8 +244,8 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         }
 
         JPopupMenu toolbarContextMenu = new JPopupMenu();
-        UIUtils.addReloadableRightClickPopupMenuToComponent(leftToolBar, toolbarContextMenu, (menu) -> reloadContextMenu(menu, false));
-        UIUtils.addReloadableRightClickPopupMenuToComponent(rightToolBar, toolbarContextMenu, (menu) -> reloadContextMenu(menu, true));
+        UIUtils.addReloadableRightClickPopupMenuToComponent(leftToolBar, toolbarContextMenu, (menu) -> reloadContextMenu(menu));
+        UIUtils.addReloadableRightClickPopupMenuToComponent(rightToolBar, toolbarContextMenu, (menu) -> reloadContextMenu(menu));
 
         showToolbarLabelsMenuItem.setState(showToolbarLabels);
         showToolbarLabelsMenuItem.addActionListener(e -> {
@@ -265,26 +279,9 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         mainSplitPane.getRatioUpdatedEventEmitter().subscribe(this);
     }
 
-    private void reloadContextMenu(JPopupMenu menu, boolean right) {
+    private void reloadContextMenu(JPopupMenu menu) {
         menu.removeAll();
         menu.add(showToolbarLabelsMenuItem);
-        if (right) {
-            JCheckBoxMenuItem pin = new JCheckBoxMenuItem("Always show right panel");
-            pin.setState(alwaysShowRightPanel);
-            pin.addActionListener(e -> {
-                setAlwaysShowRightPanel(pin.getState());
-                saveState();
-            });
-            menu.add(pin);
-        } else {
-            JCheckBoxMenuItem pin = new JCheckBoxMenuItem("Always show left panel");
-            pin.setState(alwaysShowLeftPanel);
-            pin.addActionListener(e -> {
-                setAlwaysShowLeftPanel(pin.getState());
-                saveState();
-            });
-            menu.add(pin);
-        }
     }
 
     private void initializeRightPanel() {
@@ -468,17 +465,12 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
             }
         }
 
-        if (rightContent.isEmpty() && alwaysShowRightPanel && fallbackRight != null && getPanels().containsKey(fallbackRight)) {
-            Panel panel = getPanels().get(fallbackRight);
-            if (panel.location == PanelLocation.TopRight || panel.location == PanelLocation.BottomRight) {
-                rightContent.add(panel.getComponent());
-            }
+        // A side with no displayed dock shows its pinned dock as a stand-in
+        if (leftContent.isEmpty() && activeStandIns.get(PinSide.Left) != null) {
+            displayStandIn(activeStandIns.get(PinSide.Left), leftContent);
         }
-        if (leftContent.isEmpty() && alwaysShowLeftPanel && fallbackLeft != null && getPanels().containsKey(fallbackLeft)) {
-            Panel panel = getPanels().get(fallbackLeft);
-            if (panel.location == PanelLocation.TopLeft || panel.location == PanelLocation.BottomLeft) {
-                rightContent.add(panel.getComponent());
-            }
+        if (rightContent.isEmpty() && activeStandIns.get(PinSide.Right) != null) {
+            displayStandIn(activeStandIns.get(PinSide.Right), rightContent);
         }
 
         if (leftContent.size() >= 2) {
@@ -521,13 +513,13 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
             layeredPaneLeft.setVisible(true);
             layeredPaneLeft.add(leftPanelContent, BorderLayout.CENTER);
         } else {
-            layeredPaneLeft.setVisible(alwaysShowLeftPanel);
+            layeredPaneLeft.setVisible(false);
         }
         if (rightPanelContent != null) {
             layeredPaneRight.setVisible(true);
             layeredPaneRight.add(rightPanelContent, BorderLayout.CENTER);
         } else {
-            layeredPaneRight.setVisible(alwaysShowRightPanel);
+            layeredPaneRight.setVisible(false);
         }
 
         if (oldLeftPanelVisible != layeredPaneLeft.isVisible()) {
@@ -542,13 +534,14 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         if (mainComponent != null) {
             Panel bottomPanel = null;
             for (Panel panel : getPanelsAtLocation(PanelLocation.BottomBottom)) {
-                if (panel.isVisible()) {
+                if (panel.isVisible() || panel == activeStandIns.get(PinSide.Bottom)) {
                     bottomPanel = panel;
                     break;
                 }
             }
 
             if (bottomPanel != null) {
+                instantiatePanelComponent(bottomPanel);
                 mainSplitPane.setTopComponent(UIUtils.wrapInIslandPanelIfNeeded(mainComponent));
                 mainSplitPane.setBottomComponent(UIUtils.wrapInIslandPanelIfNeeded(bottomPanel.getComponent()));
                 mainSplitPane.applyRatio();
@@ -634,8 +627,18 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
     private JToggleButton createToggleButton(Panel panel) {
         JToggleButton button = new JToggleButton(panel.getIcon());
         button.setOpaque(false);
-        button.setSelected(panel.isDisplayed());
-        button.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+        button.setSelected(isDockDisplayed(panel.getId()));
+        boolean pinned = isDockPinned(panel.getId());
+        if (pinned && !showToolbarLabels) {
+            // Pin indicator for the icon-only mode: a thin border, keeping
+            // the padding of the unpinned buttons (with labels, the
+            // underline is the indicator)
+            button.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(ThemeUtils.getCurrentStyle().getIconBaseColor(), 1),
+                    BorderFactory.createEmptyBorder(7, 7, 7, 7)));
+        } else {
+            button.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+        }
         button.setForeground(ThemeUtils.getCurrentStyle().getIconBaseColor());
         button.setToolTipText(panel.getName());
         button.addActionListener(e -> {
@@ -650,10 +653,29 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
             button.setVerticalTextPosition(SwingConstants.BOTTOM);
             button.setHorizontalTextPosition(SwingConstants.CENTER);
             button.setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeTiny()));
+            if (pinned) {
+                // Pin indicator for the labels mode: an underlined dock name
+                Map<TextAttribute, Object> attributes = new HashMap<>();
+                attributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
+                button.setFont(button.getFont().deriveFont(attributes));
+            }
             button.setMaximumSize(new Dimension(Short.MAX_VALUE, BUTTON_MAX_WIDTH));
         }
 
         JPopupMenu popupMenu = UIUtils.addRightClickPopupMenuToButton(button);
+        if (!panel.getId().startsWith("_")) {
+            JCheckBoxMenuItem pinItem = new JCheckBoxMenuItem("Pin dock");
+            pinItem.setToolTipText("Show this dock when its side would be empty");
+            pinItem.setSelected(pinned);
+            pinItem.addActionListener(e -> {
+                if (pinItem.isSelected()) {
+                    pinDock(panel.getId());
+                } else {
+                    unpinDock(panel.getId());
+                }
+            });
+            popupMenu.add(pinItem);
+        }
         popupMenu.add(UIUtils.createMenuItem("Top left", "Move the panel to the top left anchor", JIPipe.RESOURCES.getIcon16("actions/dock-top-left.png"), () -> {
             movePanelToLocation(panel, PanelLocation.TopLeft, true);
         }));
@@ -675,6 +697,22 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
     }
 
     public void deactivatePanel(Panel panel, boolean saveState) {
+        // An explicit close of the side's pinned dock (while nothing else on
+        // the side is displayed) pauses the stand-in until the dock set or
+        // activity on that side changes
+        if (panel.getLocation() != null) {
+            PinSide side = panel.getLocation().getPinSide();
+            if (panel.getId().equals(pins.get(pinKey(side)))) {
+                boolean onlyDisplayed = panels.values().stream().noneMatch(
+                        other -> other != panel
+                                && other.getLocation() != null
+                                && other.getLocation().getPinSide() == side
+                                && other.isDisplayed());
+                if (onlyDisplayed) {
+                    pausedStandIns.add(side);
+                }
+            }
+        }
         panel.setVisible(false);
         updateAll();
         if (saveState) {
@@ -688,10 +726,10 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
     }
 
     private void activatePanel(Panel panel, boolean saveState) {
-        if (panel.getComponent() == null && panel.getComponentSupplier() != null) {
-            panel.setComponent(panel.getComponentSupplier().get());
-            panel.setComponentSupplier(null);
+        if (panel.getLocation() != null) {
+            pausedStandIns.remove(panel.getLocation().getPinSide());
         }
+        instantiatePanelComponent(panel);
 
         // Deactivate all other buttons
         setPanelVisible(panel);
@@ -734,6 +772,11 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
 
             panel.setLocation(newLocation);
 
+            // Moving loses the pin regardless of the sides involved
+            pins.values().removeIf(panel.getId()::equals);
+            pausedStandIns.remove(oldLocation.getPinSide());
+            pausedStandIns.remove(newLocation.getPinSide());
+
             updateAll();
 
             if (saveState) {
@@ -775,7 +818,11 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
     }
 
     public void removeDockPanel(String id) {
-        if (panels.remove(id) != null) {
+        Panel removed = panels.remove(id);
+        if (removed != null) {
+            if (removed.getLocation() != null) {
+                pausedStandIns.remove(removed.getLocation().getPinSide());
+            }
             updateAll();
         }
     }
@@ -793,11 +840,17 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         panel.setUiOrder(uiOrder);
         panels.put(id, panel);
         registerDockToggleAction(id, name);
+        if (panel.getLocation() != null) {
+            pausedStandIns.remove(panel.getLocation().getPinSide());
+        }
 
         if (visible) {
             activatePanel(panel, false);
         } else {
-            updateToolbars();
+            // A hidden registration can still change the display (it may
+            // become the side's stand-in), so the whole display plan
+            // recomputes
+            updateAll();
         }
 
         revalidate();
@@ -826,11 +879,15 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         panel.setUiOrder(uiOrder);
         panels.put(id, panel);
         registerDockToggleAction(id, name);
+        if (panel.getLocation() != null) {
+            pausedStandIns.remove(panel.getLocation().getPinSide());
+        }
 
         if (visible) {
             activatePanel(panel, false);
         } else {
-            updateToolbars();
+            // Same as the component overload: the display plan recomputes
+            updateAll();
         }
 
         revalidate();
@@ -858,10 +915,11 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
             }
         }
         savedState = state;
+        pins.clear();
+        pins.putAll(state.getPins());
+        pausedStandIns.clear();
         leftPanelWidth = Math.max(minimumPanelWidth, state.leftPanelWidth);
         rightPanelWidth = Math.max(minimumPanelWidth, state.rightPanelWidth);
-        alwaysShowLeftPanel = state.alwaysShowLeftPanel;
-        alwaysShowRightPanel = state.alwaysShowRightPanel;
         if (state.leftSplitPaneRatio > 0) {
             ((JIPipeDesktopSplitPane.FixedRatio) leftSplitPane.getRatio()).setRatio(Math.max(0.01, Math.min(0.99, state.leftSplitPaneRatio)));
         }
@@ -876,6 +934,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
 
     private void updateAll() {
         List<PanelSideVisibilityChangedEvent> panelVisibilityChangedEvents = new ArrayList<>();
+        computeStandIns();
         updateToolbars();
         updateContent(panelVisibilityChangedEvents);
         updateSizes();
@@ -913,6 +972,149 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         Panel panel = panels.get(id);
         if (panel != null) {
             deactivatePanel(panel, saveState);
+        }
+    }
+
+    /**
+     * Pins the dock to the side of its current location, replacing the
+     * side's previous pin (one dock is pinned per side). Pinning a context
+     * dock (ID starts with an underscore) or an unknown ID is a no-op.
+     *
+     * @param id the dock ID
+     */
+    public void pinDock(String id) {
+        Panel panel = panels.get(id);
+        if (panel == null || id.startsWith("_") || panel.getLocation() == null) {
+            return;
+        }
+        String key = pinKey(panel.getLocation().getPinSide());
+        if (id.equals(pins.get(key))) {
+            return;
+        }
+        pins.put(key, id);
+        pausedStandIns.remove(panel.getLocation().getPinSide());
+        updateAll();
+        saveState();
+    }
+
+    /**
+     * Unpins the dock if it is pinned. Does not change the dock's visibility.
+     *
+     * @param id the dock ID
+     */
+    public void unpinDock(String id) {
+        String key = null;
+        for (Map.Entry<String, String> entry : pins.entrySet()) {
+            if (entry.getValue().equals(id)) {
+                key = entry.getKey();
+                break;
+            }
+        }
+        if (key == null) {
+            return;
+        }
+        pins.remove(key);
+        PinSide side = pinSideOfKey(key);
+        if (side != null) {
+            pausedStandIns.remove(side);
+        }
+        updateAll();
+        saveState();
+    }
+
+    /**
+     * @param id the dock ID
+     * @return true when the dock is the pin of any side
+     */
+    public boolean isDockPinned(String id) {
+        return pins.containsValue(id);
+    }
+
+    /**
+     * @param side the pin side
+     * @return the ID of the side's pinned dock, or null
+     */
+    public String getPinnedDockId(PinSide side) {
+        return pins.get(pinKey(side));
+    }
+
+    /**
+     * Recomputes the stand-in display: the pinned dock of a side is
+     * displayed when no dock on that side is user-displayed. Purely
+     * presentational: the stand-in never flips the dock's visible flag and
+     * is never persisted. Hidden while the toolbars are hidden (the whole
+     * dock area is collapsed then).
+     */
+    private void computeStandIns() {
+        activeStandIns.clear();
+        if (hideToolbars) {
+            return;
+        }
+        for (PinSide side : PinSide.values()) {
+            if (pausedStandIns.contains(side)) {
+                continue;
+            }
+            boolean anyDisplayed = panels.values().stream()
+                    .anyMatch(panel -> panel.getLocation() != null
+                            && panel.getLocation().getPinSide() == side
+                            && panel.isDisplayed());
+            if (anyDisplayed) {
+                continue;
+            }
+            String pinnedId = pins.get(pinKey(side));
+            if (pinnedId == null || pinnedId.startsWith("_")) {
+                continue;
+            }
+            Panel panel = panels.get(pinnedId);
+            if (panel != null) {
+                activeStandIns.put(side, panel);
+            }
+        }
+    }
+
+    /**
+     * @param id the dock ID
+     * @return true when the dock is on screen: user-visible or the active
+     * stand-in of its side. Dock toggles and dock shortcuts toggle on this.
+     */
+    public boolean isDockDisplayed(String id) {
+        Panel panel = panels.get(id);
+        if (panel == null) {
+            return false;
+        }
+        return panel.isDisplayed() || activeStandIns.containsValue(panel);
+    }
+
+    /**
+     * @param side the pin side
+     * @return the ID of the dock currently displayed as the side's stand-in,
+     * or null
+     */
+    public String getStandInPanelId(PinSide side) {
+        Panel panel = activeStandIns.get(side);
+        return panel != null ? panel.getId() : null;
+    }
+
+    /**
+     * Instantiates a panel's component from its supplier when needed (the
+     * same lazy initialization an activation performs). A panel whose
+     * supplier produced nothing stays without a component.
+     */
+    private void instantiatePanelComponent(Panel panel) {
+        if (panel.getComponent() == null && panel.getComponentSupplier() != null) {
+            panel.setComponent(panel.getComponentSupplier().get());
+            panel.setComponentSupplier(null);
+        }
+    }
+
+    /**
+     * Adds the stand-in's component to the side's content, instantiating it
+     * from the supplier when needed.
+     */
+    private void displayStandIn(Panel standIn, List<JComponent> content) {
+        instantiatePanelComponent(standIn);
+        if (standIn.getComponent() != null) {
+            content.add(standIn.getComponent());
         }
     }
 
@@ -975,13 +1177,18 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
 
     public void removeDockPanelsIf(Predicate<Panel> predicate) {
         boolean found = false;
+        EnumSet<PinSide> removedSides = EnumSet.noneOf(PinSide.class);
         for (Panel panel : ImmutableList.copyOf(panels.values())) {
             if (predicate.test(panel)) {
                 panelVisibilityToggles.remove(panel.getId());
                 panels.remove(panel.getId());
+                if (panel.getLocation() != null) {
+                    removedSides.add(panel.getLocation().getPinSide());
+                }
                 found = true;
             }
         }
+        pausedStandIns.removeAll(removedSides);
         if (found) {
             updateAll();
         }
@@ -993,13 +1200,12 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
             state.visibilities.put(panel.getId(), panel.isVisible());
             state.locations.put(panel.getId(), panel.getLocation());
         }
+        state.getPins().putAll(pins);
         state.setLeftPanelWidth(leftPanelWidth);
         state.setRightPanelWidth(rightPanelWidth);
         state.setMainSplitPaneRatio(((JIPipeDesktopSplitPane.FixedRatio) mainSplitPane.getRatio()).getRatio());
         state.setLeftSplitPaneRatio(((JIPipeDesktopSplitPane.FixedRatio) leftSplitPane.getRatio()).getRatio());
         state.setRightSplitPaneRatio(((JIPipeDesktopSplitPane.FixedRatio) rightSplitPane.getRatio()).getRatio());
-        state.setAlwaysShowLeftPanel(alwaysShowLeftPanel);
-        state.setAlwaysShowRightPanel(alwaysShowRightPanel);
         return state;
     }
 
@@ -1011,6 +1217,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
             found = true;
         }
         if (found) {
+            pausedStandIns.clear();
             updateAll();
         }
     }
@@ -1032,58 +1239,57 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         updateAll();
     }
 
-    public boolean isAlwaysShowLeftPanel() {
-        return alwaysShowLeftPanel;
-    }
-
-    public void setAlwaysShowLeftPanel(boolean alwaysShowLeftPanel) {
-        this.alwaysShowLeftPanel = alwaysShowLeftPanel;
-        updateAll();
-    }
-
-    public boolean isAlwaysShowRightPanel() {
-        return alwaysShowRightPanel;
-    }
-
-    public void setAlwaysShowRightPanel(boolean alwaysShowRightPanel) {
-        this.alwaysShowRightPanel = alwaysShowRightPanel;
-        updateAll();
-    }
-
-    public String getFallbackRight() {
-        return fallbackRight;
-    }
-
-    /**
-     * ID shown if empty space is left when alwaysShowRightPanel is true
-     *
-     * @param fallbackRight the right fallback panel
-     */
-    public void setFallbackRight(String fallbackRight) {
-        this.fallbackRight = fallbackRight;
-        updateAll();
-    }
-
-    public String getFallbackLeft() {
-        return fallbackLeft;
-    }
-
-    /**
-     * ID shown if empty space is left when alwaysShowLeftPanel is true
-     *
-     * @param fallbackLeft the left fallback panel
-     */
-    public void setFallbackLeft(String fallbackLeft) {
-        this.fallbackLeft = fallbackLeft;
-        updateAll();
-    }
-
     public enum PanelLocation {
         TopLeft,
         BottomLeft,
         TopRight,
         BottomRight,
-        BottomBottom
+        BottomBottom;
+
+        /**
+         * @return the side this location belongs to for the pinning system
+         */
+        public PinSide getPinSide() {
+            return switch (this) {
+                case TopLeft, BottomLeft -> PinSide.Left;
+                case TopRight, BottomRight -> PinSide.Right;
+                case BottomBottom -> PinSide.Bottom;
+            };
+        }
+    }
+
+    /**
+     * The sides a dock can be pinned to: Left covers the top-left and
+     * bottom-left locations, Right the top-right and bottom-right ones, and
+     * Bottom the bottom location. Separate from {@link PanelSide}, which is
+     * the payload of the layer visibility events.
+     */
+    public enum PinSide {
+        Left,
+        Right,
+        Bottom
+    }
+
+    /**
+     * @param side the pin side
+     * @return the map key of this side in the persisted pin layout (the
+     * lowercase side name)
+     */
+    private static String pinKey(PinSide side) {
+        return side.name().toLowerCase(Locale.ROOT);
+    }
+
+    /**
+     * @param key the persisted pin map key
+     * @return the pin side the key names, or null for unknown keys
+     */
+    private static PinSide pinSideOfKey(String key) {
+        for (PinSide side : PinSide.values()) {
+            if (pinKey(side).equals(key)) {
+                return side;
+            }
+        }
+        return null;
     }
 
     public enum PanelSide {
@@ -1103,14 +1309,32 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         private double mainSplitPaneRatio;
         private Map<String, Boolean> visibilities = new HashMap<>();
         private Map<String, PanelLocation> locations = new HashMap<>();
+        private Map<String, String> pins = new HashMap<>();
         private int leftPanelWidth = 350;
         private int rightPanelWidth = 500;
         private double leftSplitPaneRatio = 0.33;
         private double rightSplitPaneRatio = 0.66;
         private boolean alwaysShowLeftPanel = false;
-        private boolean alwaysShowRightPanel = false;
+        /**
+         * The legacy "always show right panel" flag, write-only since the
+         * pin system (#1367): a nullable Boolean so a document without the
+         * key (users predating the flag, or states round-tripped through an
+         * older build) is distinguishable from an explicit false.
+         */
+        private Boolean alwaysShowRightPanel = null;
 
-        @JsonGetter("always-show-left-panel")
+        @JsonGetter("pins")
+        @JsonInclude(JsonInclude.Include.NON_EMPTY)
+        public Map<String, String> getPins() {
+            return pins;
+        }
+
+        @JsonSetter("pins")
+        public void setPins(Map<String, String> pins) {
+            this.pins = pins != null ? pins : new HashMap<>();
+        }
+
+        @JsonIgnore
         public boolean isAlwaysShowLeftPanel() {
             return alwaysShowLeftPanel;
         }
@@ -1120,8 +1344,8 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
             this.alwaysShowLeftPanel = alwaysShowLeftPanel;
         }
 
-        @JsonGetter("always-show-right-panel-v2")
-        public boolean isAlwaysShowRightPanel() {
+        @JsonIgnore
+        public Boolean isAlwaysShowRightPanel() {
             return alwaysShowRightPanel;
         }
 
@@ -1212,6 +1436,35 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         copy.visibilities.putAll(visibilities);
         copy.visibilities.keySet().removeIf(id -> id.startsWith("_"));
         copy.locations.putAll(locations);
+        copy.pins.putAll(pins);
+        copy.mainSplitPaneRatio = mainSplitPaneRatio;
+        copy.leftPanelWidth = leftPanelWidth;
+        copy.rightPanelWidth = rightPanelWidth;
+        copy.leftSplitPaneRatio = leftSplitPaneRatio;
+        copy.rightSplitPaneRatio = rightSplitPaneRatio;
+        return copy;
+    }
+
+    /**
+     * Returns a copy of this state with the legacy always-show flags
+     * converted to the pin layout: a state stored with "always show right
+     * panel" enabled - or without the flag key at all (users predating the
+     * flag, or states round-tripped through an older build) - pins the given
+     * legacy stand-in dock on the right, unless a right pin is already
+     * present. Only an explicitly stored false (the user unchecked the old
+     * checkbox) keeps the side unpinned. The legacy left flag never produces
+     * a pin (its fallback never worked). Pure and idempotent: the flags are
+     * copied as-is, so migrating an already migrated state changes nothing.
+     *
+     * @param legacyRightStandInDockId the dock ID the legacy right fallback
+     *                                 showed, or null to skip the conversion
+     * @return a migrated copy; this state is not modified
+     */
+    public State migrated(String legacyRightStandInDockId) {
+        State copy = new State();
+        copy.visibilities.putAll(visibilities);
+        copy.locations.putAll(locations);
+        copy.pins.putAll(pins);
         copy.mainSplitPaneRatio = mainSplitPaneRatio;
         copy.leftPanelWidth = leftPanelWidth;
         copy.rightPanelWidth = rightPanelWidth;
@@ -1219,6 +1472,11 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         copy.rightSplitPaneRatio = rightSplitPaneRatio;
         copy.alwaysShowLeftPanel = alwaysShowLeftPanel;
         copy.alwaysShowRightPanel = alwaysShowRightPanel;
+        if (!Boolean.FALSE.equals(alwaysShowRightPanel)
+                && legacyRightStandInDockId != null
+                && !copy.pins.containsKey(pinKey(PinSide.Right))) {
+            copy.pins.put(pinKey(PinSide.Right), legacyRightStandInDockId);
+        }
         return copy;
     }
 

@@ -146,16 +146,15 @@ class SettingsKeysTest {
     }
 
     /**
-     * The dock state default must be the same "always show right panel"
-     * state the call sites passed as their default, so a fresh profile
-     * behaves exactly like before.
+     * The dock state default pins the Tools dock on the right, so a fresh
+     * profile shows the pinned dock before any selection.
      */
     @Test
-    void pipelineAndCompartmentsDockStateDefaultsAlwaysShowTheRightPanel(@TempDir Path userDir) {
+    void pipelineAndCompartmentsDockStateDefaultsPinTheToolsDockOnTheRight(@TempDir Path userDir) {
         JIPipeSettingsServiceComponent settings = JIPipeSettingsServiceComponent.forTesting(userDir);
         try {
-            assertTrue(SettingsKeys.PIPELINE_DOCK_STATE.defaultValue().isAlwaysShowRightPanel());
-            assertTrue(SettingsKeys.COMPARTMENTS_DOCK_STATE.defaultValue().isAlwaysShowRightPanel());
+            assertEquals("CONTEXT_PANEL", SettingsKeys.PIPELINE_DOCK_STATE.defaultValue().getPins().get("right"));
+            assertEquals("CONTEXT_PANEL", SettingsKeys.COMPARTMENTS_DOCK_STATE.defaultValue().getPins().get("right"));
             assertFalse(settings.bind(SettingsKeys.PIPELINE_DOCK_STATE).isModified());
         } finally {
             settings.dispose();

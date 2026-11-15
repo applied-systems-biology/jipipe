@@ -237,9 +237,12 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
             selectDefaultTool();
         });
 
-        // Always show right panel
-        dockPanel.setAlwaysShowRightPanel(true);
         restoreDockStateFromSettings();
+        // Without a settings service there is no stored or default dock state
+        // to restore; the default Tools pin still applies
+        if (!JIPipe.isInstantiated()) {
+            dockPanel.pinDock(DOCK_CONTEXT_PANEL);
+        }
         initializeMapStateFromSettings();
 
         dockPanel.getPanelSideVisibilityChangedEventEmitter().subscribe(this);
@@ -622,8 +625,6 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
                 false,
                 -100,
                 contextPanel);
-        dockPanel.setFallbackRight(DOCK_CONTEXT_PANEL);
-        dockPanel.setFallbackLeft(DOCK_CONTEXT_PANEL);
 
         add(dockPanel, BorderLayout.CENTER);
 
@@ -776,7 +777,8 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
     private void restoreDockStateTemplate(String value) {
         try {
             JIPipeDesktopDockPanel.State state = JsonUtils.readFromString(value, JIPipeDesktopDockPanel.State.class);
-            getDockPanel().restoreState(state.withoutContextDockVisibilities());
+            // Legacy templates migrate their always-show flag to the Tools pin (#1367)
+            getDockPanel().restoreState(state.migrated(JIPipeDesktopGraphEditorUI.DOCK_CONTEXT_PANEL).withoutContextDockVisibilities());
             saveDockStateToSettings();
         } catch (Throwable e) {
             e.printStackTrace();

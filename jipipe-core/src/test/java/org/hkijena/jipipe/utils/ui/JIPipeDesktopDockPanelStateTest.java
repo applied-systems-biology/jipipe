@@ -46,6 +46,7 @@ class JIPipeDesktopDockPanelStateTest {
         state.put("_SLOT_MANAGER", false, JIPipeDesktopDockPanel.PanelLocation.TopRight);
         state.put("_RESULTS", true, JIPipeDesktopDockPanel.PanelLocation.TopRight);
         state.put("_HELP", false, JIPipeDesktopDockPanel.PanelLocation.BottomRight);
+        state.getPins().put("right", "CONTEXT_PANEL");
         state.setLeftPanelWidth(350);
         state.setRightPanelWidth(500);
         state.setMainSplitPaneRatio(0.7);
@@ -72,6 +73,9 @@ class JIPipeDesktopDockPanelStateTest {
         assertEquals(350, sanitized.getLeftPanelWidth());
         assertEquals(500, sanitized.getRightPanelWidth());
         assertEquals(0.7, sanitized.getMainSplitPaneRatio());
+
+        // Pins are persistent-dock state and are kept
+        assertEquals("CONTEXT_PANEL", sanitized.getPins().get("right"));
     }
 
     @Test void sanitizingDoesNotMutateTheOriginal() {
@@ -81,6 +85,7 @@ class JIPipeDesktopDockPanelStateTest {
         assertNotSame(original, sanitized);
         assertFalse(original.getVisibilities().get("_PARAMETERS"));
         assertTrue(original.getVisibilities().containsKey("_RESULTS"));
+        assertTrue(original.getPins().containsKey("right"));
     }
 
     @Test void sanitizedStateSurvivesJsonRoundTrip() {
@@ -139,5 +144,57 @@ class JIPipeDesktopDockPanelStateTest {
         assertTrue(panel.getPanels().get("_SLOT_MANAGER").isVisible());
         assertFalse(panel.getPanels().get("_PARAMETERS").isVisible());
         assertTrue(panel.getPanels().containsKey("_PARAMETERS"));
+    }
+
+    @Test void migratedPinsToolsDockForLegacyAlwaysShowRight() {
+        JIPipeDesktopDockPanel.State state = new JIPipeDesktopDockPanel.State();
+        state.setAlwaysShowRightPanel(true);
+        assertEquals("CONTEXT_PANEL", state.migrated("CONTEXT_PANEL").getPins().get("right"));
+    }
+
+    @Test void migratedPinsWhenLegacyFlagIsAbsent() {
+        // A document without the flag key: users predating the flag, or
+        // states round-tripped through an older build (which drops the key)
+        assertTrue(new JIPipeDesktopDockPanel.State().migrated("CONTEXT_PANEL").getPins().containsKey("right"));
+    }
+
+    @Test void migratedDoesNotPinWhenLegacyFlagIsExplicitlyFalse() {
+        // An explicit uncheck of "always show right panel" is honored
+        JIPipeDesktopDockPanel.State state = new JIPipeDesktopDockPanel.State();
+        state.setAlwaysShowRightPanel(false);
+        assertTrue(state.migrated("CONTEXT_PANEL").getPins().isEmpty());
+    }
+
+    @Test void migratedKeepsExistingPins() {
+        JIPipeDesktopDockPanel.State state = new JIPipeDesktopDockPanel.State();
+        state.setAlwaysShowRightPanel(true);
+        state.getPins().put("right", "FIND");
+        assertEquals("FIND", state.migrated("CONTEXT_PANEL").getPins().get("right"));
+    }
+
+    @Test void migratedIsIdempotent() {
+        JIPipeDesktopDockPanel.State state = new JIPipeDesktopDockPanel.State();
+        state.setAlwaysShowRightPanel(true);
+        state.put("MAP", true, JIPipeDesktopDockPanel.PanelLocation.TopLeft);
+        String once = JsonUtils.toJsonString(state.migrated("CONTEXT_PANEL"));
+        String twice = JsonUtils.toJsonString(state.migrated("CONTEXT_PANEL").migrated("CONTEXT_PANEL"));
+        assertEquals(once, twice);
+    }
+
+    @Test void migratedIgnoresLegacyLeftFlag() {
+        JIPipeDesktopDockPanel.State state = new JIPipeDesktopDockPanel.State();
+        state.setAlwaysShowLeftPanel(true);
+        state.setAlwaysShowRightPanel(false);
+        assertTrue(state.migrated("CONTEXT_PANEL").getPins().isEmpty());
+    }
+
+    @Test void pinsSurviveJsonRoundTrip() {
+        JIPipeDesktopDockPanel.State state = new JIPipeDesktopDockPanel.State();
+        state.getPins().put("left", "FIND");
+        state.getPins().put("bottom", "LOG");
+        JIPipeDesktopDockPanel.State reloaded =
+                JsonUtils.readFromString(JsonUtils.toJsonString(state), JIPipeDesktopDockPanel.State.class);
+        assertEquals("FIND", reloaded.getPins().get("left"));
+        assertEquals("LOG", reloaded.getPins().get("bottom"));
     }
 }
