@@ -38,6 +38,12 @@ jipipe_ci_base_image:
   image: docker:24
   services:
     - docker:24-dind
+  variables:
+    # The docker CLI must reach the dind service over TCP: the default
+    # unix:///var/run/docker.sock does not exist in the job container
+    # because the daemon runs in the separate service container. TLS is
+    # disabled by the global DOCKER_TLS_CERTDIR variable.
+    DOCKER_HOST: tcp://docker:2375
   before_script: []
   script:
     - docker login -u "$DOCKER_HUB_USERNAME" -p "$DOCKER_HUB_TOKEN"
@@ -461,6 +467,12 @@ docker_build_push:
       artifacts: true
   services:
     - docker:24-dind
+  variables:
+    # The docker CLI must reach the dind service over TCP: the default
+    # unix:///var/run/docker.sock does not exist in the job container
+    # because the daemon runs in the separate service container. TLS is
+    # disabled by the global DOCKER_TLS_CERTDIR variable.
+    DOCKER_HOST: tcp://docker:2375
   script:
     - set -euo pipefail
     - |
