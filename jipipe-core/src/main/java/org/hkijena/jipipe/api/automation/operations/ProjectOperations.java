@@ -8,6 +8,8 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.automation.AsyncAutomationOperation;
 import org.hkijena.jipipe.api.automation.AutomationContext;
 import org.hkijena.jipipe.api.automation.AutomationOperation;
+import org.hkijena.jipipe.api.automation.AutomationOperationCategory;
+import org.hkijena.jipipe.api.automation.AutomationSchemaUtils;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;
 
 /**
@@ -26,6 +28,21 @@ public class ProjectOperations {
         @Override
         public String getDescription() {
             return "List all open projects";
+        }
+
+        @Override
+        public JsonNode getInputSchema() {
+            return AutomationSchemaUtils.emptyObjectSchema();
+        }
+
+        @Override
+        public AutomationOperationCategory getCategory() {
+            return AutomationOperationCategory.Query;
+        }
+
+        @Override
+        public boolean isReadOnly() {
+            return true;
         }
 
         @Override
@@ -54,6 +71,21 @@ public class ProjectOperations {
         @Override
         public String getDescription() {
             return "List all available operations";
+        }
+
+        @Override
+        public JsonNode getInputSchema() {
+            return AutomationSchemaUtils.emptyObjectSchema();
+        }
+
+        @Override
+        public AutomationOperationCategory getCategory() {
+            return AutomationOperationCategory.Meta;
+        }
+
+        @Override
+        public boolean isReadOnly() {
+            return true;
         }
 
         @Override

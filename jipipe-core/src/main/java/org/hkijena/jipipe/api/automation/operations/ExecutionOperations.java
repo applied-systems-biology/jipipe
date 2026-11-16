@@ -21,6 +21,30 @@ public class ExecutionOperations {
         }
 
         @Override
+        public JsonNode getInputSchema() {
+            return AutomationSchemaUtils.parseJson("""
+                    {
+                      "type": "object",
+                      "required": ["nodeId"],
+                      "properties": {
+                        "nodeId": {"type": "string"},
+                        "mode": {"type": "string", "enum": ["UPDATE_CACHE", "CACHE_INTERMEDIATE", "UPDATE_PREDECESSOR_CACHE", "PIPELINE_CACHE", "PIPELINE_FILESYSTEM", "PIPELINE_DISCARD"]}
+                      },
+                      "additionalProperties": false
+                    }""");
+        }
+
+        @Override
+        public AutomationOperationCategory getCategory() {
+            return AutomationOperationCategory.Execute;
+        }
+
+        @Override
+        public boolean isReadOnly() {
+            return false;
+        }
+
+        @Override
         public JsonNode execute(AutomationContext ctx, JsonNode params) throws Exception {
             InstrumentationJob job = executeAsync(ctx, params);
             return new ObjectMapper().createObjectNode().put("jobId", job.getId());
@@ -46,6 +70,29 @@ public class ExecutionOperations {
         }
 
         @Override
+        public JsonNode getInputSchema() {
+            return AutomationSchemaUtils.parseJson("""
+                    {
+                      "type": "object",
+                      "required": ["compartmentId"],
+                      "properties": {
+                        "compartmentId": {"type": "string"}
+                      },
+                      "additionalProperties": false
+                    }""");
+        }
+
+        @Override
+        public AutomationOperationCategory getCategory() {
+            return AutomationOperationCategory.Execute;
+        }
+
+        @Override
+        public boolean isReadOnly() {
+            return false;
+        }
+
+        @Override
         public JsonNode execute(AutomationContext ctx, JsonNode params) throws Exception {
             InstrumentationJob job = executeAsync(ctx, params);
             return new ObjectMapper().createObjectNode().put("jobId", job.getId());
@@ -66,6 +113,28 @@ public class ExecutionOperations {
         @Override
         public String getDescription() {
             return "Run the entire pipeline";
+        }
+
+        @Override
+        public JsonNode getInputSchema() {
+            return AutomationSchemaUtils.parseJson("""
+                    {
+                      "type": "object",
+                      "properties": {
+                        "mode": {"type": "string", "enum": ["UPDATE_CACHE", "CACHE_INTERMEDIATE", "UPDATE_PREDECESSOR_CACHE", "PIPELINE_CACHE", "PIPELINE_FILESYSTEM", "PIPELINE_DISCARD"]}
+                      },
+                      "additionalProperties": false
+                    }""");
+        }
+
+        @Override
+        public AutomationOperationCategory getCategory() {
+            return AutomationOperationCategory.Execute;
+        }
+
+        @Override
+        public boolean isReadOnly() {
+            return false;
         }
 
         @Override

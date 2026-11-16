@@ -1,6 +1,8 @@
 package org.hkijena.jipipe.api.automation.operations;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.hkijena.jipipe.api.automation.AutomationOperationCategory;
+import org.hkijena.jipipe.api.automation.AutomationSchemaUtils;
 import org.hkijena.jipipe.api.automation.JIPipeAutomationAPI;
 import org.hkijena.jipipe.api.automation.AutomationContext;
 import org.hkijena.jipipe.api.automation.AutomationOperation;
@@ -22,6 +24,21 @@ public class PipelineMapOperations {
         }
 
         @Override
+        public JsonNode getInputSchema() {
+            return AutomationSchemaUtils.emptyObjectSchema();
+        }
+
+        @Override
+        public AutomationOperationCategory getCategory() {
+            return AutomationOperationCategory.Query;
+        }
+
+        @Override
+        public boolean isReadOnly() {
+            return true;
+        }
+
+        @Override
         public JsonNode execute(AutomationContext ctx, JsonNode params) {
             return JIPipeAutomationAPI.getPipelineMap(ctx);
         }
@@ -39,6 +56,29 @@ public class PipelineMapOperations {
         }
 
         @Override
+        public JsonNode getInputSchema() {
+            return AutomationSchemaUtils.parseJson("""
+                    {
+                      "type": "object",
+                      "required": ["segmentId"],
+                      "properties": {
+                        "segmentId": {"type": "string"}
+                      },
+                      "additionalProperties": false
+                    }""");
+        }
+
+        @Override
+        public AutomationOperationCategory getCategory() {
+            return AutomationOperationCategory.Query;
+        }
+
+        @Override
+        public boolean isReadOnly() {
+            return true;
+        }
+
+        @Override
         public JsonNode execute(AutomationContext ctx, JsonNode params) {
             return JIPipeAutomationAPI.getSegmentDetail(ctx, params.get("segmentId").asText());
         }
@@ -53,6 +93,30 @@ public class PipelineMapOperations {
         @Override
         public String getDescription() {
             return "Search available JIPipe node types";
+        }
+
+        @Override
+        public JsonNode getInputSchema() {
+            return AutomationSchemaUtils.parseJson("""
+                    {
+                      "type": "object",
+                      "required": ["query"],
+                      "properties": {
+                        "query": {"type": "string"},
+                        "limit": {"type": "integer"}
+                      },
+                      "additionalProperties": false
+                    }""");
+        }
+
+        @Override
+        public AutomationOperationCategory getCategory() {
+            return AutomationOperationCategory.Query;
+        }
+
+        @Override
+        public boolean isReadOnly() {
+            return true;
         }
 
         @Override

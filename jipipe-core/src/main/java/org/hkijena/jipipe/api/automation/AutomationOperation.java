@@ -13,4 +13,34 @@ public interface AutomationOperation {
     String getDescription();
 
     JsonNode execute(AutomationContext ctx, JsonNode params) throws Exception;
+
+    /**
+     * Returns a simplified JSON schema describing the parameters accepted by this operation.
+     * Validated by {@link AutomationSchemaUtils} before dispatch.
+     */
+    JsonNode getInputSchema();
+
+    /**
+     * Returns the functional category shown in tool listings.
+     * Defaults to {@link AutomationOperationCategory#Meta} for operations that do not declare one.
+     */
+    default AutomationOperationCategory getCategory() {
+        return AutomationOperationCategory.Meta;
+    }
+
+    /**
+     * Returns true if the operation does not modify the project.
+     * Defaults to true for operations that do not declare themselves.
+     */
+    default boolean isReadOnly() {
+        return true;
+    }
+
+    /**
+     * Returns documentation targeted at automation agents.
+     * Defaults to {@link #getDescription()}.
+     */
+    default String getAgentDocumentation() {
+        return getDescription();
+    }
 }

@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.hkijena.jipipe.api.automation.JIPipeAutomationAPI;
 import org.hkijena.jipipe.api.automation.AutomationContext;
 import org.hkijena.jipipe.api.automation.AutomationOperation;
+import org.hkijena.jipipe.api.automation.AutomationOperationCategory;
+import org.hkijena.jipipe.api.automation.AutomationSchemaUtils;
 import org.hkijena.jipipe.api.automation.events.CompartmentChangedEvent;
 
 /**
@@ -22,6 +24,32 @@ public class ModificationOperations {
         @Override
         public String getDescription() {
             return "Add a node to a compartment";
+        }
+
+        @Override
+        public JsonNode getInputSchema() {
+            return AutomationSchemaUtils.parseJson("""
+                    {
+                      "type": "object",
+                      "required": ["nodeTypeId"],
+                      "properties": {
+                        "compartmentId": {"type": "string"},
+                        "nodeTypeId": {"type": "string"},
+                        "x": {"type": "integer"},
+                        "y": {"type": "integer"}
+                      },
+                      "additionalProperties": false
+                    }""");
+        }
+
+        @Override
+        public AutomationOperationCategory getCategory() {
+            return AutomationOperationCategory.Modify;
+        }
+
+        @Override
+        public boolean isReadOnly() {
+            return false;
         }
 
         @Override
@@ -49,6 +77,29 @@ public class ModificationOperations {
         }
 
         @Override
+        public JsonNode getInputSchema() {
+            return AutomationSchemaUtils.parseJson("""
+                    {
+                      "type": "object",
+                      "required": ["nodeId"],
+                      "properties": {
+                        "nodeId": {"type": "string"}
+                      },
+                      "additionalProperties": false
+                    }""");
+        }
+
+        @Override
+        public AutomationOperationCategory getCategory() {
+            return AutomationOperationCategory.Modify;
+        }
+
+        @Override
+        public boolean isReadOnly() {
+            return false;
+        }
+
+        @Override
         public JsonNode execute(AutomationContext ctx, JsonNode params) {
             JIPipeAutomationAPI.removeNode(ctx, params.get("nodeId").asText());
             return new ObjectMapper().createObjectNode().put("success", true);
@@ -64,6 +115,32 @@ public class ModificationOperations {
         @Override
         public String getDescription() {
             return "Connect two slots";
+        }
+
+        @Override
+        public JsonNode getInputSchema() {
+            return AutomationSchemaUtils.parseJson("""
+                    {
+                      "type": "object",
+                      "required": ["source", "sourceSlot", "target", "targetSlot"],
+                      "properties": {
+                        "source": {"type": "string"},
+                        "sourceSlot": {"type": "string"},
+                        "target": {"type": "string"},
+                        "targetSlot": {"type": "string"}
+                      },
+                      "additionalProperties": false
+                    }""");
+        }
+
+        @Override
+        public AutomationOperationCategory getCategory() {
+            return AutomationOperationCategory.Modify;
+        }
+
+        @Override
+        public boolean isReadOnly() {
+            return false;
         }
 
         @Override
@@ -87,6 +164,32 @@ public class ModificationOperations {
         }
 
         @Override
+        public JsonNode getInputSchema() {
+            return AutomationSchemaUtils.parseJson("""
+                    {
+                      "type": "object",
+                      "required": ["source", "sourceSlot", "target", "targetSlot"],
+                      "properties": {
+                        "source": {"type": "string"},
+                        "sourceSlot": {"type": "string"},
+                        "target": {"type": "string"},
+                        "targetSlot": {"type": "string"}
+                      },
+                      "additionalProperties": false
+                    }""");
+        }
+
+        @Override
+        public AutomationOperationCategory getCategory() {
+            return AutomationOperationCategory.Modify;
+        }
+
+        @Override
+        public boolean isReadOnly() {
+            return false;
+        }
+
+        @Override
         public JsonNode execute(AutomationContext ctx, JsonNode params) {
             JIPipeAutomationAPI.removeConnection(ctx,
                     params.get("source").asText(), params.get("sourceSlot").asText(),
@@ -107,6 +210,31 @@ public class ModificationOperations {
         }
 
         @Override
+        public JsonNode getInputSchema() {
+            return AutomationSchemaUtils.parseJson("""
+                    {
+                      "type": "object",
+                      "required": ["nodeId", "key", "value"],
+                      "properties": {
+                        "nodeId": {"type": "string"},
+                        "key": {"type": "string"},
+                        "value": {"type": "string"}
+                      },
+                      "additionalProperties": false
+                    }""");
+        }
+
+        @Override
+        public AutomationOperationCategory getCategory() {
+            return AutomationOperationCategory.Modify;
+        }
+
+        @Override
+        public boolean isReadOnly() {
+            return false;
+        }
+
+        @Override
         public JsonNode execute(AutomationContext ctx, JsonNode params) {
             JIPipeAutomationAPI.setParameter(ctx,
                     params.get("nodeId").asText(), params.get("key").asText(), params.get("value").asText());
@@ -123,6 +251,29 @@ public class ModificationOperations {
         @Override
         public String getDescription() {
             return "Set project name and/or description";
+        }
+
+        @Override
+        public JsonNode getInputSchema() {
+            return AutomationSchemaUtils.parseJson("""
+                    {
+                      "type": "object",
+                      "properties": {
+                        "name": {"type": "string"},
+                        "description": {"type": "string"}
+                      },
+                      "additionalProperties": false
+                    }""");
+        }
+
+        @Override
+        public AutomationOperationCategory getCategory() {
+            return AutomationOperationCategory.Modify;
+        }
+
+        @Override
+        public boolean isReadOnly() {
+            return false;
         }
 
         @Override
@@ -146,6 +297,29 @@ public class ModificationOperations {
         }
 
         @Override
+        public JsonNode getInputSchema() {
+            return AutomationSchemaUtils.parseJson("""
+                    {
+                      "type": "object",
+                      "required": ["name"],
+                      "properties": {
+                        "name": {"type": "string"}
+                      },
+                      "additionalProperties": false
+                    }""");
+        }
+
+        @Override
+        public AutomationOperationCategory getCategory() {
+            return AutomationOperationCategory.Modify;
+        }
+
+        @Override
+        public boolean isReadOnly() {
+            return false;
+        }
+
+        @Override
         public JsonNode execute(AutomationContext ctx, JsonNode params) {
             String id = JIPipeAutomationAPI.addCompartment(ctx, params.get("name").asText());
             return new ObjectMapper().createObjectNode().put("compartmentId", id);
@@ -161,6 +335,30 @@ public class ModificationOperations {
         @Override
         public String getDescription() {
             return "Rename a compartment";
+        }
+
+        @Override
+        public JsonNode getInputSchema() {
+            return AutomationSchemaUtils.parseJson("""
+                    {
+                      "type": "object",
+                      "required": ["compartmentId", "name"],
+                      "properties": {
+                        "compartmentId": {"type": "string"},
+                        "name": {"type": "string"}
+                      },
+                      "additionalProperties": false
+                    }""");
+        }
+
+        @Override
+        public AutomationOperationCategory getCategory() {
+            return AutomationOperationCategory.Modify;
+        }
+
+        @Override
+        public boolean isReadOnly() {
+            return false;
         }
 
         @Override

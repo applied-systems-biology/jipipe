@@ -1,6 +1,8 @@
 package org.hkijena.jipipe.api.automation.operations;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.hkijena.jipipe.api.automation.AutomationOperationCategory;
+import org.hkijena.jipipe.api.automation.AutomationSchemaUtils;
 import org.hkijena.jipipe.api.automation.JIPipeAutomationAPI;
 import org.hkijena.jipipe.api.automation.AutomationContext;
 import org.hkijena.jipipe.api.automation.AutomationOperation;
@@ -24,6 +26,33 @@ public class ROCrateOperations {
         @Override
         public String getDescription() {
             return "Create a Workflow RO-Crate from the currently selected project";
+        }
+
+        @Override
+        public JsonNode getInputSchema() {
+            return AutomationSchemaUtils.parseJson("""
+                    {
+                      "type": "object",
+                      "required": ["outputPath"],
+                      "properties": {
+                        "outputPath": {"type": "string"},
+                        "dockerImage": {"type": "string"},
+                        "dockerTag": {"type": "string"},
+                        "dockerEnvVars": {"type": "array"},
+                        "userPathOverrides": {"type": "object"}
+                      },
+                      "additionalProperties": false
+                    }""");
+        }
+
+        @Override
+        public AutomationOperationCategory getCategory() {
+            return AutomationOperationCategory.Execute;
+        }
+
+        @Override
+        public boolean isReadOnly() {
+            return false;
         }
 
         @Override

@@ -1,6 +1,8 @@
 package org.hkijena.jipipe.api.automation.operations;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.hkijena.jipipe.api.automation.AutomationOperationCategory;
+import org.hkijena.jipipe.api.automation.AutomationSchemaUtils;
 import org.hkijena.jipipe.api.automation.JIPipeAutomationAPI;
 import org.hkijena.jipipe.api.automation.AutomationContext;
 import org.hkijena.jipipe.api.automation.AutomationOperation;
@@ -23,6 +25,21 @@ public class QueryOperations {
         }
 
         @Override
+        public JsonNode getInputSchema() {
+            return AutomationSchemaUtils.emptyObjectSchema();
+        }
+
+        @Override
+        public AutomationOperationCategory getCategory() {
+            return AutomationOperationCategory.Query;
+        }
+
+        @Override
+        public boolean isReadOnly() {
+            return true;
+        }
+
+        @Override
         public JsonNode execute(AutomationContext ctx, JsonNode params) {
             return JIPipeAutomationAPI.queryCompartments(ctx);
         }
@@ -37,6 +54,28 @@ public class QueryOperations {
         @Override
         public String getDescription() {
             return "Get nodes and connections for a compartment (or all if not specified)";
+        }
+
+        @Override
+        public JsonNode getInputSchema() {
+            return AutomationSchemaUtils.parseJson("""
+                    {
+                      "type": "object",
+                      "properties": {
+                        "compartmentId": {"type": "string"}
+                      },
+                      "additionalProperties": false
+                    }""");
+        }
+
+        @Override
+        public AutomationOperationCategory getCategory() {
+            return AutomationOperationCategory.Query;
+        }
+
+        @Override
+        public boolean isReadOnly() {
+            return true;
         }
 
         @Override
@@ -58,6 +97,29 @@ public class QueryOperations {
         }
 
         @Override
+        public JsonNode getInputSchema() {
+            return AutomationSchemaUtils.parseJson("""
+                    {
+                      "type": "object",
+                      "required": ["nodeId"],
+                      "properties": {
+                        "nodeId": {"type": "string"}
+                      },
+                      "additionalProperties": false
+                    }""");
+        }
+
+        @Override
+        public AutomationOperationCategory getCategory() {
+            return AutomationOperationCategory.Query;
+        }
+
+        @Override
+        public boolean isReadOnly() {
+            return true;
+        }
+
+        @Override
         public JsonNode execute(AutomationContext ctx, JsonNode params) {
             return JIPipeAutomationAPI.queryNode(ctx, params.get("nodeId").asText());
         }
@@ -72,6 +134,31 @@ public class QueryOperations {
         @Override
         public String getDescription() {
             return "Get data table for a node's slot";
+        }
+
+        @Override
+        public JsonNode getInputSchema() {
+            return AutomationSchemaUtils.parseJson("""
+                    {
+                      "type": "object",
+                      "required": ["nodeId", "slotName"],
+                      "properties": {
+                        "nodeId": {"type": "string"},
+                        "slotName": {"type": "string"},
+                        "limit": {"type": "integer"}
+                      },
+                      "additionalProperties": false
+                    }""");
+        }
+
+        @Override
+        public AutomationOperationCategory getCategory() {
+            return AutomationOperationCategory.Query;
+        }
+
+        @Override
+        public boolean isReadOnly() {
+            return true;
         }
 
         @Override
