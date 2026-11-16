@@ -36,10 +36,15 @@ import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.PosixFilePermission;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -54,9 +59,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 public class MCPBrokerClientTest {
 
+    @org.junit.jupiter.api.io.TempDir
+    Path tempDir;
+
     private HttpServer broker;
     private final List<String> registrationBodies = new CopyOnWriteArrayList<>();
     private final List<String> unregisterBodies = new CopyOnWriteArrayList<>();
+    private final List<String> authorizationHeaders = new CopyOnWriteArrayList<>();
+    private final List<String> healthAuthorizationHeaders = new CopyOnWriteArrayList<>();
+    private final AtomicInteger registerResponseStatus = new AtomicInteger(200);
+    private final AtomicReference<String> registerResponseBody = new AtomicReference<>("ok");
     private final List<List<String>> spawnedCommands = new ArrayList<>();
     private MCPBrokerClient client;
     private AutomationInstanceEndpoint endpoint;
@@ -98,7 +110,7 @@ public class MCPBrokerClientTest {
     @Test
     public void ensureConnectedUsesHealthyBrokerWithoutSpawning() throws Exception {
         startStubBroker();
-        client = new MCPBrokerClient(recordingSpawner, 8781);
+        client = new MCPBrokerClient(recordingSpawner, 8781, tempDir);
         writeDiscoveryFile(ProcessHandle.current().pid(), brokerPort());
 
         client.ensureConnected(new JIPipeProgressInfo());
@@ -112,7 +124,7 @@ public class MCPBrokerClientTest {
     @Test
     public void registerSendsFullRegistrationJsonIncludingToolDescriptors() throws Exception {
         startStubBroker();
-        client = new MCPBrokerClient(recordingSpawner, 8781);
+        client = new MCPBrokerClient(recordingSpawner, 8781, tempDir);
         writeDiscoveryFile(ProcessHandle.current().pid(), brokerPort());
         startStubEndpoint();
         client.setEndpoint(endpoint);
@@ -150,7 +162,7 @@ public class MCPBrokerClientTest {
     @Test
     public void deadBrokerPidTriggersSpawnAndConnects() throws Exception {
         startStubBroker();
-        client = new MCPBrokerClient(spawningStubSpawner, 8781);
+        client = new MCPBrokerClient(spawningStubSpawner, 8781, tempDir);
         writeDiscoveryFile(deadPid(), brokerPort());
 
         client.ensureConnected(new JIPipeProgressInfo());
@@ -178,7 +190,7 @@ public class MCPBrokerClientTest {
     public void deadBrokerPidAndSpawnFailureThrowsRuntimeException() throws Exception {
         client = new MCPBrokerClient(command -> {
             throw new IOException("spawn refused");
-        }, 8781);
+        }, 8781, tempDir);
         writeDiscoveryFile(deadPid(), 1);
 
         assertThrows(RuntimeException.class, () -> client.ensureConnected(new JIPipeProgressInfo()));
@@ -188,7 +200,7 @@ public class MCPBrokerClientTest {
     @Test
     public void unregisterPostsInstanceId() throws Exception {
         startStubBroker();
-        client = new MCPBrokerClient(recordingSpawner, 8781);
+        client = new MCPBrokerClient(recordingSpawner, 8781, tempDir);
         writeDiscoveryFile(ProcessHandle.current().pid(), brokerPort());
         client.setToolSource(List::of);
         client.ensureConnected(new JIPipeProgressInfo());
@@ -204,7 +216,7 @@ public class MCPBrokerClientTest {
     @Test
     public void updateProjectsRepostsRegistrationWithNewProjects() throws Exception {
         startStubBroker();
-        client = new MCPBrokerClient(recordingSpawner, 8781);
+        client = new MCPBrokerClient(recordingSpawner, 8781, tempDir);
         writeDiscoveryFile(ProcessHandle.current().pid(), brokerPort());
         startStubEndpoint();
         client.setEndpoint(endpoint);
@@ -221,6 +233,111 @@ public class MCPBrokerClientTest {
         assertEquals(client.getInstanceId(), json.get("instance-id").asText());
     }
 
+    @Test
+    public void registerRefusalOnNon2xxStatusReportsStatusAndBody() throws Exception {
+        startStubBroker();
+        registerResponseStatus.set(500);
+        registerResponseBody.set("broker unavailable");
+        client = new MCPBrokerClient(recordingSpawner, 8781, tempDir);
+        client.setToolSource(List::of);
+        writeDiscoveryFile(ProcessHandle.current().pid(), brokerPort());
+
+        client.ensureConnected(new JIPipeProgressInfo());
+
+        // The body carries no error marker, so only the HTTP status exposes the refusal.
+        RuntimeException exception = assertThrows(RuntimeException.class, client::register);
+        assertTrue(exception.getMessage().contains("HTTP 500"), exception.getMessage());
+        assertTrue(exception.getMessage().contains("broker unavailable"), exception.getMessage());
+        assertFalse(client.isRegistered());
+    }
+
+    @Test
+    public void registerRefusalViaErrorBodyOnSuccessStatus() throws Exception {
+        startStubBroker();
+        registerResponseStatus.set(200);
+        registerResponseBody.set("{\"error\": \"unknown operation\"}");
+        client = new MCPBrokerClient(recordingSpawner, 8781, tempDir);
+        client.setToolSource(List::of);
+        writeDiscoveryFile(ProcessHandle.current().pid(), brokerPort());
+
+        client.ensureConnected(new JIPipeProgressInfo());
+
+        RuntimeException exception = assertThrows(RuntimeException.class, client::register);
+        assertTrue(exception.getMessage().contains("refused registration"), exception.getMessage());
+        assertTrue(exception.getMessage().contains("unknown operation"), exception.getMessage());
+        assertFalse(client.isRegistered());
+    }
+
+    @Test
+    public void requireTokenGeneratesPersistentOwnerOnlyTokenFileAndPassesItToBroker() throws Exception {
+        startStubBroker();
+        client = tokenClient(spawningStubSpawner);
+
+        client.ensureConnected(new JIPipeProgressInfo());
+
+        // The spawn command carries --token-file <token path>.
+        assertEquals(1, spawnedCommands.size());
+        List<String> jvmArgs = readJvmArgs(spawnedCommands.get(0));
+        int tokenFlagIndex = jvmArgs.indexOf("--token-file");
+        assertTrue(tokenFlagIndex >= 0, "spawn command must carry --token-file: " + jvmArgs);
+        assertEquals(client.getTokenFilePath().toString(), jvmArgs.get(tokenFlagIndex + 1));
+
+        // The token file holds 32 random bytes (base64url) with owner-only permissions.
+        Path tokenFile = client.getTokenFilePath();
+        String token = Files.readString(tokenFile, StandardCharsets.UTF_8).trim();
+        assertEquals(32, Base64.getUrlDecoder().decode(token).length);
+        Set<PosixFilePermission> permissions = Files.getPosixFilePermissions(tokenFile);
+        assertEquals(Set.of(PosixFilePermission.OWNER_READ, PosixFilePermission.OWNER_WRITE), permissions);
+
+        // A second client in the same directory reuses the file: never regenerated.
+        SharedServerDiscoveryFile.delete(client.getDiscoveryFilePath());
+        spawnedCommands.clear();
+        client = tokenClient(spawningStubSpawner);
+        client.ensureConnected(new JIPipeProgressInfo());
+        assertEquals(1, spawnedCommands.size());
+        assertTrue(readJvmArgs(spawnedCommands.get(0)).contains("--token-file"));
+        assertEquals(token, Files.readString(tokenFile, StandardCharsets.UTF_8).trim());
+    }
+
+    @Test
+    public void requireTokenSendsBearerHeaderOnHealthAndControlCalls() throws Exception {
+        startStubBroker();
+        client = tokenClient(spawningStubSpawner);
+        client.setToolSource(List::of);
+
+        client.ensureConnected(new JIPipeProgressInfo());
+        String expected = "Bearer " + Files.readString(client.getTokenFilePath(), StandardCharsets.UTF_8).trim();
+        assertFalse(healthAuthorizationHeaders.isEmpty());
+        assertEquals(expected, healthAuthorizationHeaders.get(healthAuthorizationHeaders.size() - 1));
+
+        client.register();
+        assertEquals(1, authorizationHeaders.size());
+        assertEquals(expected, authorizationHeaders.get(0));
+        assertTrue(client.isRegistered());
+
+        client.unregister();
+        assertEquals(2, authorizationHeaders.size());
+        assertEquals(expected, authorizationHeaders.get(1));
+    }
+
+    /**
+     * A client with token authentication forced on (without the application settings
+     * service) and the MCP directory redirected into the test temp dir.
+     */
+    private MCPBrokerClient tokenClient(MCPBrokerClient.Spawner spawner) {
+        return new MCPBrokerClient(spawner, 8781, tempDir) {
+            @Override
+            boolean isRequireToken() {
+                return true;
+            }
+        };
+    }
+
+    private static List<String> readJvmArgs(List<String> command) throws IOException {
+        // The JVM arguments live in the @argfile.
+        return Files.readAllLines(Path.of(command.get(1).substring(1)), StandardCharsets.UTF_8);
+    }
+
     // --------------------------------------------------------------- helpers
 
     private int brokerPort() {
@@ -229,13 +346,18 @@ public class MCPBrokerClientTest {
 
     private void startStubBroker() throws IOException {
         broker = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
-        broker.createContext("/health", exchange -> respond(exchange, 200, "text/plain; charset=utf-8", "ok"));
-        broker.createContext("/control/register", exchange -> {
-            String body = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
-            registrationBodies.add(body);
+        broker.createContext("/health", exchange -> {
+            healthAuthorizationHeaders.add(exchange.getRequestHeaders().getFirst("Authorization"));
             respond(exchange, 200, "text/plain; charset=utf-8", "ok");
         });
+        broker.createContext("/control/register", exchange -> {
+            authorizationHeaders.add(exchange.getRequestHeaders().getFirst("Authorization"));
+            String body = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
+            registrationBodies.add(body);
+            respond(exchange, registerResponseStatus.get(), "text/plain; charset=utf-8", registerResponseBody.get());
+        });
         broker.createContext("/control/unregister", exchange -> {
+            authorizationHeaders.add(exchange.getRequestHeaders().getFirst("Authorization"));
             String body = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
             unregisterBodies.add(body);
             respond(exchange, 200, "text/plain; charset=utf-8", "ok");

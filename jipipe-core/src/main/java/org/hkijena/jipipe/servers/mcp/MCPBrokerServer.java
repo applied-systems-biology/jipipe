@@ -200,7 +200,8 @@ public class MCPBrokerServer {
      * <p>
      * Registration-carried descriptors take precedence; the local operation metadata
      * registry is only consulted when no registration carries descriptors (legacy
-     * {@code tool-ids}-only path).
+     * {@code tool-ids}-only path). Mixed fleet: registrations without descriptors
+     * contribute no tools while any descriptor-bearing registration exists.
      */
     private synchronized void rebuildTools() {
         for (String toolId : new ArrayList<>(registeredTools)) {

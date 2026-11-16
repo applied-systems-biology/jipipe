@@ -15,6 +15,13 @@ import java.util.Map;
  * Application settings for the shared MCP broker and the per-instance automation endpoint.
  * The permission map persists the user-chosen {@link AutomationPermissionState} per
  * operation id (state name); the permission table UI is provided by the automation UI.
+ * <p>
+ * The {@code requireToken} parameter toggles token authentication: when enabled, the
+ * broker client generates the shared token file {@code <JIPipe user dir>/mcp/token} once
+ * (secure random 32-byte base64url secret, owner-only permissions, POSIX 0600), passes it
+ * to spawned brokers, and presents it as a bearer token on client-to-broker calls. The
+ * file persists until manually deleted: it is never regenerated, so the token survives
+ * broker restarts and is shared by all JIPipe instances of the same user directory.
  */
 public class MCPApplicationSettings extends JIPipeDefaultApplicationsSettingsSheet {
     public static final String ID = "org.hkijena.jipipe:mcp";
@@ -62,7 +69,7 @@ public class MCPApplicationSettings extends JIPipeDefaultApplicationsSettingsShe
         this.autoStart = autoStart;
     }
 
-    @SetJIPipeDocumentation(name = "Require token", description = "Require a bearer token for the MCP broker control and MCP endpoints.")
+    @SetJIPipeDocumentation(name = "Require token", description = "Require a bearer token for the MCP broker control and MCP endpoints. The shared token is generated once at '<JIPipe user dir>/mcp/token' (owner-only permissions) and persists until the file is manually deleted.")
     @JIPipeParameter("require-token")
     public boolean isRequireToken() {
         return requireToken;

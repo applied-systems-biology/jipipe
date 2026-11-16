@@ -9,6 +9,7 @@ import org.hkijena.jipipe.api.automation.AutomationOperationRegistry;
 import org.hkijena.jipipe.api.automation.endpoint.AutomationEndpointHandlers;
 import org.hkijena.jipipe.api.automation.endpoint.AutomationInstanceEndpoint;
 import org.hkijena.jipipe.api.automation.endpoint.MCPBrokerClient;
+import org.hkijena.jipipe.api.automation.endpoint.MCPProjectEntry;
 import org.hkijena.jipipe.api.automation.endpoint.ProjectSource;
 import org.hkijena.jipipe.api.automation.permissions.AutomationPermissionService;
 import org.hkijena.jipipe.api.automation.permissions.AutomationPermissionState;
@@ -25,15 +26,41 @@ import org.hkijena.jipipe.plugins.automation.settings.MCPApplicationSettings;
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public class GuiCommand {
 
     private static InstrumentationServer instrumentationServer;
     private static int pendingInstrumentationPort = -1;
     private static boolean instrumentationFlag = false;
-    private static McpCliOptions mcpOptions = McpCliOptions.parse(List.of());
-    private static MCPBrokerClient mcpBrokerClient;
-    private static AutomationInstanceEndpoint automationEndpoint;
+
+    /**
+     * Single-threaded daemon executor for the whole MCP lifecycle: startup, project
+     * pushes, and shutdown run serialized here. The startup alone can block for up to
+     * 30 seconds (broker health poll plus HTTP calls with 10-30 second timeouts), so it
+     * must never run on the EDT that receives the window events triggering it.
+     */
+    private static final ExecutorService MCP_EXECUTOR = Executors.newSingleThreadExecutor(runnable -> {
+        Thread thread = new Thread(runnable, "JIPipe-MCP-Lifecycle");
+        thread.setDaemon(true);
+        return thread;
+    });
+
+    /**
+     * How long {@link #shutdownMcpOrdered()} waits for the queued shutdown before the
+     * application exits anyway (the broker also reaps dead instance PIDs).
+     */
+    private static final int MCP_SHUTDOWN_AWAIT_SECONDS = 10;
+
+    private static volatile McpCliOptions mcpOptions = McpCliOptions.parse(List.of());
+    private static volatile MCPBrokerClient mcpBrokerClient;
+    private static volatile AutomationInstanceEndpoint automationEndpoint;
+    private static volatile Future<?> mcpStartupTask;
 
     public static InstrumentationServer getInstrumentationServer() {
         return instrumentationServer;
@@ -88,9 +115,14 @@ public class GuiCommand {
     /**
      * Starts the MCP automation layer on the first window (when requested via {@code --mcp}
      * or the auto-start setting): CLI permission overrides, instance endpoint, broker
-     * connection, registration. Every failure is logged and never crashes the GUI startup.
+     * connection, registration. Runs on the MCP background executor (see
+     * {@link #startMcpIfNeededAsync()}), never on the EDT. Every failure is logged and
+     * never crashes the GUI startup.
+     *
+     * @param projectSnapshot the open project windows, snapshotted on the EDT by the
+     *                        submitter (the window set is EDT-confined)
      */
-    private static synchronized void startMcpIfNeeded() {
+    private static synchronized void startMcpIfNeeded(List<MCPProjectEntry> projectSnapshot) {
         if (mcpBrokerClient != null) {
             return;
         }
@@ -127,6 +159,7 @@ public class GuiCommand {
                     ? MCPApplicationSettings.getInstance().getPort() : 8781;
             MCPBrokerClient client = new MCPBrokerClient(MCPBrokerClient.defaultSpawner(), brokerPort);
             client.setEndpoint(automationEndpoint);
+            client.setProjectSource(() -> projectSnapshot);
             mcpBrokerClient = client;
             client.ensureConnected(new JIPipeProgressInfo());
             client.register();
@@ -161,16 +194,89 @@ public class GuiCommand {
         };
     }
 
-    private static void pushMcpProjects() {
+    /**
+     * Snapshots the open project windows on the EDT (the window set is EDT-confined) and
+     * pushes the snapshot to the broker on the MCP executor: the event thread stays cheap
+     * and the POST is serialized with the other MCP tasks.
+     */
+    private static void submitMcpProjectPush() {
+        List<MCPProjectEntry> projects = ProjectSource.openWindows().getProjects();
+        MCP_EXECUTOR.execute(loggedMcpTask("project update", () -> pushMcpProjects(projects)));
+    }
+
+    private static void pushMcpProjects(List<MCPProjectEntry> projects) {
+        MCPBrokerClient client = mcpBrokerClient;
+        if (client == null) {
+            return;
+        }
         try {
-            mcpBrokerClient.updateProjects(ProjectSource.openWindows().getProjects());
+            client.updateProjects(projects);
         } catch (Exception e) {
             System.err.println("MCP project update failed: " + e.getMessage());
         }
     }
 
     /**
-     * Unregisters from the broker and stops the instance endpoint. Never throws.
+     * Submits {@link #startMcpIfNeeded(List)} to the MCP executor: the startup (broker
+     * health poll up to 30 seconds plus HTTP calls) must never run on the EDT, where it
+     * would freeze first-window construction. The single executor serializes startup,
+     * project updates, and shutdown to keep them ordered.
+     */
+    private static void startMcpIfNeededAsync() {
+        if (mcpBrokerClient != null) {
+            return;
+        }
+        List<MCPProjectEntry> projectSnapshot = ProjectSource.openWindows().getProjects();
+        mcpStartupTask = MCP_EXECUTOR.submit(loggedMcpTask("startup",
+                () -> startMcpIfNeeded(projectSnapshot)));
+    }
+
+    /**
+     * Wraps an MCP task so that anything thrown on the executor thread is logged: a
+     * failure must never kill the thread silently without a trace.
+     */
+    private static Runnable loggedMcpTask(String name, Runnable task) {
+        return () -> {
+            try {
+                task.run();
+            } catch (Throwable t) {
+                String message = t.getMessage() != null ? t.getMessage() : t.getClass().getName();
+                System.err.println("MCP background task '" + name + "' crashed: " + message);
+            }
+        };
+    }
+
+    /**
+     * Runs {@link #shutdownMcp()} on the MCP executor, ordered after the queued MCP tasks,
+     * and waits briefly so the unregister POST is not lost to {@link JIPipe#exitLater}.
+     * A still-running startup is cancelled first: its poll loop is interruptible and its
+     * failure path cleans up. {@link #shutdownMcp()} is idempotent, so a shutdown racing
+     * a cancelled startup is a no-op.
+     */
+    private static void shutdownMcpOrdered() {
+        Future<?> startupTask = mcpStartupTask;
+        if (startupTask != null) {
+            startupTask.cancel(true);
+        }
+        try {
+            MCP_EXECUTOR.submit(loggedMcpTask("shutdown", GuiCommand::shutdownMcp))
+                    .get(MCP_SHUTDOWN_AWAIT_SECONDS, TimeUnit.SECONDS);
+        } catch (TimeoutException e) {
+            System.err.println("MCP shutdown did not complete within " + MCP_SHUTDOWN_AWAIT_SECONDS
+                    + " seconds; exiting without confirmed unregister");
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } catch (ExecutionException e) {
+            Throwable cause = e.getCause();
+            System.err.println("MCP shutdown failed: " + (cause != null && cause.getMessage() != null
+                    ? cause.getMessage() : String.valueOf(cause)));
+        }
+    }
+
+    /**
+     * Unregisters from the broker and stops the instance endpoint. Never throws. Runs on
+     * the MCP executor only (via {@link #shutdownMcpOrdered()} or the startup failure
+     * path), so it is always ordered against the other MCP tasks.
      */
     private static synchronized void shutdownMcp() {
         if (mcpBrokerClient != null) {
@@ -202,12 +308,10 @@ public class GuiCommand {
             if (instrumentationServer != null) {
                 SwingUtilities.invokeLater(() -> instrumentationServer.onProjectWindowsChanged());
             }
-            if (mcpBrokerClient != null) {
-                pushMcpProjects();
-            }
+            submitMcpProjectPush();
             int windowsOpen = JIPipeDesktopProjectWindow.getOpenWindows().size();
             if (windowsOpen == 0) {
-                shutdownMcp();
+                shutdownMcpOrdered();
                 if (instrumentationServer != null) {
                     try {
                         instrumentationServer.stop(0);
@@ -242,10 +346,8 @@ public class GuiCommand {
             if (instrumentationServer != null) {
                 SwingUtilities.invokeLater(() -> instrumentationServer.onProjectWindowsChanged());
             }
-            startMcpIfNeeded();
-            if (mcpBrokerClient != null) {
-                pushMcpProjects();
-            }
+            startMcpIfNeededAsync();
+            submitMcpProjectPush();
         }
     }
 }
