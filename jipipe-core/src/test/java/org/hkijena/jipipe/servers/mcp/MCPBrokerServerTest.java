@@ -119,6 +119,52 @@ public class MCPBrokerServerTest {
     }
 
     @Test
+    public void brokerWithoutMetadataAndNoRegistrationsListsNoTools() throws Exception {
+        // Production path (no local operation metadata): with no tool-bearing registration
+        // the tools/list is empty, which is correct while no instance is registered.
+        startBrokerWithoutMetadata();
+        initialize(null);
+        assertEquals(0, listTools().get("result").get("tools").size());
+    }
+
+    @Test
+    public void registrationDescriptorsDriveToolsList() throws Exception {
+        startBrokerWithoutMetadata();
+        registerInstanceWithDescriptors();
+        initialize(null);
+
+        JsonNode tools = listTools().get("result").get("tools");
+        JsonNode echoSpec = null;
+        JsonNode renderSpec = null;
+        List<String> names = new ArrayList<>();
+        for (JsonNode tool : tools) {
+            names.add(tool.get("name").asText());
+            if ("echo_test".equals(tool.get("name").asText())) {
+                echoSpec = tool;
+            }
+            if ("render_image_test".equals(tool.get("name").asText())) {
+                renderSpec = tool;
+            }
+        }
+        assertEquals(2, names.size());
+        assertTrue(names.contains("echo_test"));
+        assertTrue(names.contains("render_image_test"));
+        // Controller ruling: list_operations is a registry meta-operation, never an MCP tool,
+        // even when a registration carries a descriptor for it.
+        assertFalse(names.contains("list_operations"));
+        assertNotNull(echoSpec);
+        assertNotNull(renderSpec);
+        // Specs come from the registration-carried descriptors, not from local metadata.
+        assertEquals("Echoes the message back (descriptor)", echoSpec.get("description").asText());
+        assertEquals("Renders a test image (descriptor)", renderSpec.get("description").asText());
+        assertTrue(echoSpec.get("annotations").get("readOnlyHint").asBoolean());
+        assertFalse(renderSpec.get("annotations").get("readOnlyHint").asBoolean());
+        assertEquals("string", echoSpec.get("inputSchema").get("properties").get("message").get("type").asText());
+        // additionalProperties:false transported verbatim (absent node would NPE here).
+        assertFalse(renderSpec.get("inputSchema").get("additionalProperties").asBoolean());
+    }
+
+    @Test
     public void callEchoToolRoutesToInstanceProject() throws Exception {
         startBroker(null);
         registerInstance();
@@ -128,7 +174,7 @@ public class MCPBrokerServerTest {
         arguments.put("project", INSTANCE_ID + ":p1");
         arguments.put("message", "hello");
         JsonNode result = callTool("echo_test", arguments);
-        assertNull(result.get("error"));
+        assertFalse(result.get("isError").asBoolean());
         JsonNode content = result.get("content").get(0);
         assertEquals("text", content.get("type").asText());
         assertTrue(content.get("text").asText().contains("\"echo\":true"));
@@ -144,7 +190,7 @@ public class MCPBrokerServerTest {
         ObjectNode arguments = JsonUtils.getObjectMapper().createObjectNode();
         arguments.put("project", INSTANCE_ID + ":p1");
         JsonNode result = callTool("render_image_test", arguments);
-        assertNull(result.get("error"));
+        assertFalse(result.get("isError").asBoolean());
         JsonNode content = result.get("content").get(0);
         assertEquals("image", content.get("type").asText());
         assertEquals(PNG_BASE64, content.get("data").asText());
@@ -192,7 +238,7 @@ public class MCPBrokerServerTest {
         arguments.put("project", INSTANCE_ID + ":p1:inner");
         arguments.put("message", "hello");
         JsonNode result = callTool("echo_test", arguments);
-        assertNull(result.get("error"));
+        assertFalse(result.get("isError").asBoolean());
         String text = result.get("content").get(0).get("text").asText();
         assertTrue(text.contains("\"project-key\":\"p1:inner\""));
     }
@@ -238,6 +284,12 @@ public class MCPBrokerServerTest {
         metadata.register("echo_test", new EchoTestOperation());
         metadata.register("render_image_test", new RenderImageTestOperation());
         broker = new MCPBrokerServer(0, new MCPInstanceRegistry(), bearerToken, metadata);
+        broker.start();
+    }
+
+    private void startBrokerWithoutMetadata() throws Exception {
+        startStub();
+        broker = new MCPBrokerServer(0, new MCPInstanceRegistry(), null);
         broker.start();
     }
 
@@ -320,13 +372,51 @@ public class MCPBrokerServerTest {
     }
 
     private HttpResponse<String> registerInstance(String token) throws Exception {
+        return postControl("/control/register", registrationJson(), token);
+    }
+
+    private HttpResponse<String> registerInstanceWithDescriptors() throws Exception {
+        ObjectNode registration = JsonUtils.getObjectMapper().createObjectNode();
+        registration.put("instance-id", INSTANCE_ID);
+        registration.put("jipipe-pid", ProcessHandle.current().pid());
+        registration.put("endpoint-port", stub.getAddress().getPort());
+        registration.put("endpoint-secret", SECRET);
+        registration.put("app-version", "test");
+        ObjectNode echoTool = JsonUtils.getObjectMapper().createObjectNode();
+        echoTool.put("id", "echo_test");
+        echoTool.put("description", "Echoes the message back (descriptor)");
+        echoTool.set("inputSchema", JsonUtils.getObjectMapper().readTree(
+                "{\"type\":\"object\",\"properties\":{\"message\":{\"type\":\"string\"}},\"additionalProperties\":false}"));
+        echoTool.put("read-only", true);
+        ObjectNode renderTool = JsonUtils.getObjectMapper().createObjectNode();
+        renderTool.put("id", "render_image_test");
+        renderTool.put("description", "Renders a test image (descriptor)");
+        renderTool.set("inputSchema", JsonUtils.getObjectMapper().readTree(
+                "{\"type\":\"object\",\"additionalProperties\":false}"));
+        renderTool.put("read-only", false);
+        // A descriptor for the meta-operation: the broker must still exclude it.
+        ObjectNode listOperationsTool = JsonUtils.getObjectMapper().createObjectNode();
+        listOperationsTool.put("id", "list_operations");
+        listOperationsTool.put("description", "List all available operations (descriptor)");
+        listOperationsTool.put("read-only", true);
+        registration.set("tools", JsonUtils.getObjectMapper().createArrayNode()
+                .add(echoTool).add(renderTool).add(listOperationsTool));
+        ObjectNode project = JsonUtils.getObjectMapper().createObjectNode();
+        project.put("key", "p1");
+        project.put("name", "P1");
+        project.put("path", "/tmp/p1");
+        registration.set("projects", JsonUtils.getObjectMapper().createArrayNode().add(project));
+        return postControl("/control/register", registration.toString(), null);
+    }
+
+    private HttpResponse<String> postControl(String path, String body, String token) throws Exception {
         HttpRequest.Builder builder = HttpRequest.newBuilder(
-                        URI.create("http://127.0.0.1:" + broker.getPort() + "/control/register"))
+                        URI.create("http://127.0.0.1:" + broker.getPort() + path))
                 .header("Content-Type", "application/json");
         if (token != null) {
             builder.header("Authorization", "Bearer " + token);
         }
-        return client.send(builder.POST(HttpRequest.BodyPublishers.ofString(registrationJson(),
+        return client.send(builder.POST(HttpRequest.BodyPublishers.ofString(body,
                         StandardCharsets.UTF_8)).build(),
                 HttpResponse.BodyHandlers.ofString());
     }

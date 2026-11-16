@@ -4,6 +4,7 @@ import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.instrumentation.InstrumentationApplicationSettings;
 import org.hkijena.jipipe.api.automation.operations.*;
+import org.hkijena.jipipe.plugins.automation.settings.MCPApplicationSettings;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
@@ -53,6 +54,7 @@ public class AutomationPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     @Override
     public void register(JIPipeService service, Context context, JIPipeProgressInfo progressInfo) {
         registerApplicationSettingsSheet(new InstrumentationApplicationSettings());
+        registerApplicationSettingsSheet(new MCPApplicationSettings());
 
         // Project operations
         registerAutomationOperation("list_projects", new ProjectOperations.ListProjects());

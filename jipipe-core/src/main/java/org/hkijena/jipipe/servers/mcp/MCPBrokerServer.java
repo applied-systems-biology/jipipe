@@ -29,6 +29,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.automation.AutomationOperation;
 import org.hkijena.jipipe.api.automation.AutomationOperationRegistry;
 import org.hkijena.jipipe.api.automation.endpoint.MCPInstanceRegistration;
+import org.hkijena.jipipe.api.automation.endpoint.MCPToolDescriptor;
 import org.hkijena.jipipe.api.servers.ServerLogRingBuffer;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
@@ -60,13 +61,15 @@ import java.util.Set;
  * {@code /mcp} and {@code /control/*} must present {@code Authorization: Bearer <token>}
  * (constant-time comparison) or is rejected with 401 before any processing.
  * <p>
- * Tool specs are rebuilt from the {@link MCPInstanceRegistry}: name = operation id,
- * description, input schema, and read-only hint come from {@link AutomationOperation#getAgentDocumentation()},
- * {@link AutomationOperation#getInputSchema()}, and {@link AutomationOperation#isReadOnly()}
- * when an operation metadata registry is available (constructor overload), otherwise from
- * name-only fallbacks. Registrations only carry tool ids, so the standalone broker process
- * uses the name-only fallbacks; a planned follow-up extends {@link MCPInstanceRegistration}
- * with per-tool descriptors, after which the broker serves specs from the registrations.
+ * Tool specs are rebuilt on every registration change. Registrations carry per-tool
+ * {@link MCPToolDescriptor}s (id, description, verbatim input schema, read-only flag), and
+ * the broker serves {@code tools/list} directly from the aggregated descriptors (name =
+ * descriptor id), excluding the {@code list_operations} meta-operation. When no registration
+ * carries descriptors, a broker constructed with a local {@link AutomationOperationRegistry}
+ * (test/standalone path) falls back to building specs from that registry
+ * ({@link AutomationOperation#getAgentDocumentation()}, {@link AutomationOperation#getInputSchema()},
+ * {@link AutomationOperation#isReadOnly()}); without a local registry the tool list stays
+ * empty, which is correct while no instance is registered.
  * <p>
  * {@code tools/call} removes the {@code project} argument ({@code <instanceId>:<projectKey>},
  * split on the first colon) and forwards the call to
@@ -194,18 +197,44 @@ public class MCPBrokerServer {
 
     /**
      * Removes all previously registered tools and re-adds the aggregated tool set.
+     * <p>
+     * Registration-carried descriptors take precedence; the local operation metadata
+     * registry is only consulted when no registration carries descriptors (legacy
+     * {@code tool-ids}-only path).
      */
     private synchronized void rebuildTools() {
         for (String toolId : new ArrayList<>(registeredTools)) {
             syncServer.removeTool(toolId);
         }
         registeredTools.clear();
-        for (String toolId : registry.aggregateToolIds()) {
-            syncServer.addTool(buildToolSpecification(toolId));
-            registeredTools.add(toolId);
+        List<MCPToolDescriptor> descriptors = registry.aggregateToolDescriptors();
+        if (!descriptors.isEmpty()) {
+            for (MCPToolDescriptor descriptor : descriptors) {
+                syncServer.addTool(buildToolSpecification(descriptor));
+                registeredTools.add(descriptor.getId());
+            }
+        } else if (operationMetadata != null) {
+            for (String toolId : registry.aggregateToolIds()) {
+                syncServer.addTool(buildToolSpecification(toolId));
+                registeredTools.add(toolId);
+            }
         }
         syncServer.notifyToolsListChanged();
         logs.add("info", "Tool list rebuilt: " + registeredTools.size() + " tool(s)");
+    }
+
+    private McpServerFeatures.SyncToolSpecification buildToolSpecification(MCPToolDescriptor descriptor) {
+        McpSchema.Tool.Builder toolBuilder = McpSchema.Tool.builder(descriptor.getId());
+        toolBuilder.description(descriptor.getDescription() != null ? descriptor.getDescription()
+                : fallbackDescription(descriptor.getId()));
+        toolBuilder.inputSchema(inputSchemaMapOf(descriptor.getInputSchema()));
+        toolBuilder.annotations(McpSchema.ToolAnnotations.builder()
+                .readOnlyHint(descriptor.isReadOnly())
+                .build());
+        return McpServerFeatures.SyncToolSpecification.builder()
+                .tool(toolBuilder.build())
+                .callHandler((exchange, request) -> handleToolCall(descriptor.getId(), exchange, request))
+                .build();
     }
 
     private McpServerFeatures.SyncToolSpecification buildToolSpecification(String operationId) {
@@ -213,14 +242,12 @@ public class MCPBrokerServer {
         McpSchema.Tool.Builder toolBuilder = McpSchema.Tool.builder(operationId);
         if (operation != null) {
             toolBuilder.description(operation.getAgentDocumentation());
-            toolBuilder.inputSchema(inputSchemaOf(operation));
+            toolBuilder.inputSchema(inputSchemaMapOf(operation.getInputSchema()));
             toolBuilder.annotations(McpSchema.ToolAnnotations.builder()
                     .readOnlyHint(operation.isReadOnly())
                     .build());
         } else {
-            toolBuilder.description("Executes the operation '" + operationId
-                    + "' on a JIPipe instance. The 'project' argument selects the target as "
-                    + "'<instanceId>:<projectKey>'.");
+            toolBuilder.description(fallbackDescription(operationId));
             toolBuilder.inputSchema(Map.of("type", "object"));
         }
         return McpServerFeatures.SyncToolSpecification.builder()
@@ -229,8 +256,13 @@ public class MCPBrokerServer {
                 .build();
     }
 
-    private Map<String, Object> inputSchemaOf(AutomationOperation operation) {
-        JsonNode schema = operation.getInputSchema();
+    private static String fallbackDescription(String operationId) {
+        return "Executes the operation '" + operationId
+                + "' on a JIPipe instance. The 'project' argument selects the target as "
+                + "'<instanceId>:<projectKey>'.";
+    }
+
+    private Map<String, Object> inputSchemaMapOf(JsonNode schema) {
         if (schema == null || schema.isNull() || !schema.isObject()) {
             return Map.of("type", "object");
         }

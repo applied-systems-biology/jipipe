@@ -22,13 +22,15 @@ import java.util.List;
 
 /**
  * Registration payload a JIPipe instance sends to the MCP broker: endpoint coordinates,
- * secret, app version, and the projects exposed by the instance.
+ * secret, app version, the projects exposed by the instance, and the tool descriptors
+ * of the operations the instance exposes as MCP tools.
  */
 public class MCPInstanceRegistration extends SharedInstanceRegistration {
     private int endpointPort;
     private String endpointSecret;
     private String appVersion;
     private List<String> toolIds = new ArrayList<>();
+    private List<MCPToolDescriptor> tools = new ArrayList<>();
     private List<MCPProjectEntry> projects = new ArrayList<>();
 
     public MCPInstanceRegistration() {
@@ -40,6 +42,7 @@ public class MCPInstanceRegistration extends SharedInstanceRegistration {
         this.endpointSecret = other.endpointSecret;
         this.appVersion = other.appVersion;
         this.toolIds = other.toolIds == null ? new ArrayList<>() : new ArrayList<>(other.toolIds);
+        this.tools = other.tools == null ? new ArrayList<>() : new ArrayList<>(other.tools);
         this.projects = other.projects == null ? new ArrayList<>() : new ArrayList<>(other.projects);
     }
 
@@ -75,6 +78,10 @@ public class MCPInstanceRegistration extends SharedInstanceRegistration {
 
     /**
      * Automation operation ids the instance exposes as MCP tools (set at registration time).
+     * <p>
+     * Legacy field: current instances populate {@link #getTools()} with full descriptors
+     * instead. The ids are still honored by brokers that fall back to locally available
+     * operation metadata.
      */
     @JsonGetter("tool-ids")
     public List<String> getToolIds() {
@@ -84,6 +91,20 @@ public class MCPInstanceRegistration extends SharedInstanceRegistration {
     @JsonSetter("tool-ids")
     public void setToolIds(List<String> toolIds) {
         this.toolIds = toolIds == null ? new ArrayList<>() : new ArrayList<>(toolIds);
+    }
+
+    /**
+     * Full tool descriptors the instance exposes as MCP tools (set at registration time).
+     * The broker serves tools/list directly from these.
+     */
+    @JsonGetter("tools")
+    public List<MCPToolDescriptor> getTools() {
+        return tools;
+    }
+
+    @JsonSetter("tools")
+    public void setTools(List<MCPToolDescriptor> tools) {
+        this.tools = tools == null ? new ArrayList<>() : new ArrayList<>(tools);
     }
 
     @JsonGetter("projects")

@@ -1,10 +1,15 @@
 package org.hkijena.jipipe.servers.mcp;
 
 import org.hkijena.jipipe.api.automation.endpoint.MCPInstanceRegistration;
+import org.hkijena.jipipe.api.automation.endpoint.MCPToolDescriptor;
 import org.hkijena.jipipe.api.servers.SharedInstanceRegistry;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 /**
@@ -35,6 +40,30 @@ public class MCPInstanceRegistry extends SharedInstanceRegistry<MCPInstanceRegis
         }
         aggregated.removeAll(EXCLUDED_TOOL_IDS);
         return aggregated;
+    }
+
+    /**
+     * Union of the registration-carried tool descriptors, keyed by descriptor id (first
+     * registration wins), minus {@link #EXCLUDED_TOOL_IDS}. Empty when no registration
+     * carries tools.
+     */
+    public List<MCPToolDescriptor> aggregateToolDescriptors() {
+        Map<String, MCPToolDescriptor> aggregated = new TreeMap<>();
+        for (MCPInstanceRegistration registration : getAll()) {
+            if (registration.getTools() == null) {
+                continue;
+            }
+            for (MCPToolDescriptor descriptor : registration.getTools()) {
+                if (descriptor == null || descriptor.getId() == null) {
+                    continue;
+                }
+                aggregated.putIfAbsent(descriptor.getId(), descriptor);
+            }
+        }
+        for (String excluded : EXCLUDED_TOOL_IDS) {
+            aggregated.remove(excluded);
+        }
+        return new ArrayList<>(aggregated.values());
     }
 
     /**
