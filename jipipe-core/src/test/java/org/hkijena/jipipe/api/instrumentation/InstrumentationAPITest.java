@@ -3,6 +3,10 @@ package org.hkijena.jipipe.api.instrumentation;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.automation.AutomationContext;
+import org.hkijena.jipipe.api.automation.InstrumentationEventBus;
+import org.hkijena.jipipe.api.automation.InstrumentationJobManager;
+import org.hkijena.jipipe.api.automation.JIPipeAutomationAPI;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -32,18 +36,18 @@ class InstrumentationAPITest {
         }
     }
 
-    private InstrumentationContext createContext(JIPipeProject project) {
+    private AutomationContext createContext(JIPipeProject project) {
         InstrumentationEventBus eventBus = new InstrumentationEventBus();
         InstrumentationJobManager jobManager = new InstrumentationJobManager(eventBus, "test");
-        return new InstrumentationContext(project, "test", new JIPipeProgressInfo(), eventBus, jobManager);
+        return new AutomationContext(project, "test", new JIPipeProgressInfo(), eventBus, jobManager);
     }
 
     @Test
     void queryCompartments_returnsEmptyArrayForNewProject() {
         JIPipeProject project = new JIPipeProject();
-        InstrumentationContext ctx = createContext(project);
+        AutomationContext ctx = createContext(project);
 
-        JsonNode result = InstrumentationAPI.queryCompartments(ctx);
+        JsonNode result = JIPipeAutomationAPI.queryCompartments(ctx);
 
         assertTrue(result.has("compartments"));
         assertEquals(0, result.get("compartments").size());
@@ -54,11 +58,11 @@ class InstrumentationAPITest {
         assumeTrue(hasNodeType("jipipe:project-compartment"),
                 "jipipe:project-compartment node type not registered - skipping");
         JIPipeProject project = new JIPipeProject();
-        InstrumentationContext ctx = createContext(project);
+        AutomationContext ctx = createContext(project);
 
-        InstrumentationAPI.addCompartment(ctx, "My Compartment");
+        JIPipeAutomationAPI.addCompartment(ctx, "My Compartment");
 
-        JsonNode result = InstrumentationAPI.queryCompartments(ctx);
+        JsonNode result = JIPipeAutomationAPI.queryCompartments(ctx);
         assertEquals(1, result.get("compartments").size());
         JsonNode comp = result.get("compartments").get(0);
         assertEquals("My Compartment", comp.get("name").asText());
@@ -67,9 +71,9 @@ class InstrumentationAPITest {
     @Test
     void queryGraph_returnsNodesAndConnectionsArrays() {
         JIPipeProject project = new JIPipeProject();
-        InstrumentationContext ctx = createContext(project);
+        AutomationContext ctx = createContext(project);
 
-        JsonNode result = InstrumentationAPI.queryGraph(ctx, null);
+        JsonNode result = JIPipeAutomationAPI.queryGraph(ctx, null);
 
         assertTrue(result.has("nodes"));
         assertTrue(result.has("connections"));
@@ -80,9 +84,9 @@ class InstrumentationAPITest {
     @Test
     void queryNode_returnsErrorForUnknownNode() {
         JIPipeProject project = new JIPipeProject();
-        InstrumentationContext ctx = createContext(project);
+        AutomationContext ctx = createContext(project);
 
-        JsonNode result = InstrumentationAPI.queryNode(ctx, "nonexistent");
+        JsonNode result = JIPipeAutomationAPI.queryNode(ctx, "nonexistent");
 
         assertTrue(result.has("error"));
     }
@@ -90,9 +94,9 @@ class InstrumentationAPITest {
     @Test
     void getPipelineMap_returnsRootWithProjectName() {
         JIPipeProject project = new JIPipeProject();
-        InstrumentationContext ctx = createContext(project);
+        AutomationContext ctx = createContext(project);
 
-        JsonNode result = InstrumentationAPI.getPipelineMap(ctx);
+        JsonNode result = JIPipeAutomationAPI.getPipelineMap(ctx);
 
         assertNotNull(result);
         assertTrue(result.has("root"));
@@ -100,9 +104,9 @@ class InstrumentationAPITest {
 
     @Test
     void searchNodes_returnsResultsForKnownQuery() {
-        InstrumentationContext ctx = createContext(null);
+        AutomationContext ctx = createContext(null);
 
-        JsonNode result = InstrumentationAPI.searchNodes(ctx, "data", 10);
+        JsonNode result = JIPipeAutomationAPI.searchNodes(ctx, "data", 10);
 
         assertTrue(result.has("results"));
         // Results may be empty in minimal test environments where few plugins are loaded

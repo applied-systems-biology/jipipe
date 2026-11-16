@@ -29,7 +29,7 @@ import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironmentArchetype;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironmentSetupTool;
 import org.hkijena.jipipe.api.grapheditortool.JIPipeDesktopGraphEditorTool;
-import org.hkijena.jipipe.api.instrumentation.InstrumentationOperation;
+import org.hkijena.jipipe.api.automation.AutomationOperation;
 import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -1084,13 +1084,13 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
     }
 
     /**
-     * Registers an instrumentation operation.
+     * Registers an automation operation.
      *
      * @param id        the operation ID (e.g. "query_compartments")
      * @param operation the operation
      */
-    public void registerInstrumentationOperation(String id, InstrumentationOperation operation) {
-        getService().getInstrumentation().getOperationRegistry().register(id, operation);
+    public void registerAutomationOperation(String id, AutomationOperation operation) {
+        getService().getAutomation().getOperationRegistry().register(id, operation);
     }
 
     @Override

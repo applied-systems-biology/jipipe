@@ -616,7 +616,7 @@ public final class JIPipe {
         return getInstance().getMemoryMonitor();
     }
 
-    public static JIPipeInstrumentationServiceComponent getInstrumentation() {
-        return instance.getInstrumentation();
+    public static JIPipeAutomationServiceComponent getAutomation() {
+        return instance.getAutomation();
     }
 }

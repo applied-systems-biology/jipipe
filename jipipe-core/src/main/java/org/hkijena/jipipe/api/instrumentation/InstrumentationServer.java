@@ -5,7 +5,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.instrumentation.events.*;
+import org.hkijena.jipipe.api.automation.AsyncAutomationOperation;
+import org.hkijena.jipipe.api.automation.AutomationContext;
+import org.hkijena.jipipe.api.automation.AutomationOperation;
+import org.hkijena.jipipe.api.automation.InstrumentationEvent;
+import org.hkijena.jipipe.api.automation.InstrumentationEventBus;
+import org.hkijena.jipipe.api.automation.InstrumentationJob;
+import org.hkijena.jipipe.api.automation.InstrumentationJobManager;
+import org.hkijena.jipipe.api.automation.events.*;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;
 import org.java_websocket.WebSocket;
@@ -140,8 +147,8 @@ public class InstrumentationServer extends WebSocketServer {
     }
 
     private void handleOperation(WebSocket conn, String type, JsonNode msg, String requestId) {
-        var registry = JIPipe.getInstrumentation().getOperationRegistry();
-        InstrumentationOperation op = registry.get(type);
+        var registry = JIPipe.getAutomation().getOperationRegistry();
+        AutomationOperation op = registry.get(type);
         if (op == null) {
             sendError(conn, requestId, "Unknown command: " + type);
             return;
@@ -157,13 +164,13 @@ public class InstrumentationServer extends WebSocketServer {
             InstrumentationEventBus eventBus = cc != null && cc.eventBus != null ? cc.eventBus : new InstrumentationEventBus();
             InstrumentationJobManager jobManager = cc != null && cc.jobManager != null ? cc.jobManager : new InstrumentationJobManager(eventBus, projectId);
 
-            InstrumentationContext ctx = new InstrumentationContext(
+            AutomationContext ctx = new AutomationContext(
                     project, projectId,
                     new JIPipeProgressInfo(),
                     eventBus,
                     jobManager);
 
-            if (op instanceof AsyncInstrumentationOperation asyncOp) {
+            if (op instanceof AsyncAutomationOperation asyncOp) {
                 InstrumentationJob job = asyncOp.executeAsync(ctx, msg);
                 ObjectNode response = mapper.createObjectNode();
                 response.put("type", InstrumentationProtocol.EVENT_JOB_STARTED);
@@ -255,8 +262,8 @@ public class InstrumentationServer extends WebSocketServer {
 
     private void broadcastProjectList() {
         try {
-            var registry = JIPipe.getInstrumentation().getOperationRegistry();
-            InstrumentationOperation op = registry.get("list_projects");
+            var registry = JIPipe.getAutomation().getOperationRegistry();
+            AutomationOperation op = registry.get("list_projects");
             if (op != null) {
                 JsonNode result = op.execute(null, mapper.createObjectNode());
                 ObjectNode msg = mapper.createObjectNode();

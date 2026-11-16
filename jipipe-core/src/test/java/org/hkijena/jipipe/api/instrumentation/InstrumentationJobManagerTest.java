@@ -1,7 +1,11 @@
 package org.hkijena.jipipe.api.instrumentation;
 
-import org.hkijena.jipipe.api.instrumentation.events.JobCompletedEvent;
-import org.hkijena.jipipe.api.instrumentation.events.JobStartedEvent;
+import org.hkijena.jipipe.api.automation.InstrumentationEventBus;
+import org.hkijena.jipipe.api.automation.InstrumentationJob;
+import org.hkijena.jipipe.api.automation.InstrumentationJobManager;
+import org.hkijena.jipipe.api.automation.InstrumentationJobStatus;
+import org.hkijena.jipipe.api.automation.events.JobCompletedEvent;
+import org.hkijena.jipipe.api.automation.events.JobStartedEvent;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;

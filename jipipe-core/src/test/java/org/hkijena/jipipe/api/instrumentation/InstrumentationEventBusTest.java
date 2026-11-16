@@ -1,7 +1,8 @@
 package org.hkijena.jipipe.api.instrumentation;
 
-import org.hkijena.jipipe.api.instrumentation.events.NodeAddedEvent;
-import org.hkijena.jipipe.api.instrumentation.events.ParameterChangedEvent;
+import org.hkijena.jipipe.api.automation.InstrumentationEventBus;
+import org.hkijena.jipipe.api.automation.events.NodeAddedEvent;
+import org.hkijena.jipipe.api.automation.events.ParameterChangedEvent;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;

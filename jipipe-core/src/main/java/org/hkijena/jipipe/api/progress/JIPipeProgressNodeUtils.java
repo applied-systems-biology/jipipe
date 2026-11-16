@@ -19,7 +19,7 @@ import java.util.Set;
 
 /**
  * Read-side helpers over a {@link JIPipeProgressLog}'s node index, shared by batch-event consumers
- * (queue UI, instrumentation) that display the <b>live node state</b> of a run instead of the root
+ * (queue UI, automation) that display the <b>live node state</b> of a run instead of the root
  * handle's counters (which stay at their initial values).
  */
 public final class JIPipeProgressNodeUtils {
