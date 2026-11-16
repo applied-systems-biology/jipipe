@@ -2,12 +2,15 @@ package org.hkijena.jipipe.api.automation.operations;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.hkijena.jipipe.api.automation.*;
 
 /**
  * Built-in async execution operations.
  */
 public class ExecutionOperations {
+
+    private static final ObjectMapper mapper = new ObjectMapper();
 
     public static class RunNode implements AsyncAutomationOperation {
         @Override
@@ -147,6 +150,108 @@ public class ExecutionOperations {
         public InstrumentationJob executeAsync(AutomationContext ctx, JsonNode params) {
             RunMode mode = RunMode.valueOf(params.has("mode") ? params.get("mode").asText() : "PIPELINE_CACHE");
             return JIPipeAutomationAPI.runPipeline(ctx, mode);
+        }
+    }
+
+    public static class GetJobStatus implements AutomationOperation {
+        @Override
+        public String getId() {
+            return "get_job_status";
+        }
+
+        @Override
+        public String getDescription() {
+            return "Get the state and progress of an async execution job";
+        }
+
+        @Override
+        public JsonNode getInputSchema() {
+            return AutomationSchemaUtils.parseJson("""
+                    {
+                      "type": "object",
+                      "required": ["job-id"],
+                      "properties": {
+                        "job-id": {"type": "string"}
+                      },
+                      "additionalProperties": false
+                    }""");
+        }
+
+        @Override
+        public AutomationOperationCategory getCategory() {
+            return AutomationOperationCategory.Execute;
+        }
+
+        @Override
+        public boolean isReadOnly() {
+            return true;
+        }
+
+        @Override
+        public JsonNode execute(AutomationContext ctx, JsonNode params) {
+            String jobId = params.get("job-id").asText();
+            InstrumentationJob job = ctx.getJobManager().getJob(jobId);
+            if (job == null) {
+                return mapper.createObjectNode().put("error", "Unknown job id: " + jobId);
+            }
+            ObjectNode data = mapper.createObjectNode();
+            data.put("id", job.getId());
+            data.put("operation", job.getOperation());
+            data.put("state", job.getStatus().name());
+            data.put("progress", job.getProgress());
+            if (job.getMessage() != null) {
+                data.put("message", job.getMessage());
+            }
+            if (job.getError() != null) {
+                data.put("error", job.getError());
+            }
+            return data;
+        }
+    }
+
+    public static class CancelJob implements AutomationOperation {
+        @Override
+        public String getId() {
+            return "cancel_job";
+        }
+
+        @Override
+        public String getDescription() {
+            return "Cancel a pending or running async execution job";
+        }
+
+        @Override
+        public JsonNode getInputSchema() {
+            return AutomationSchemaUtils.parseJson("""
+                    {
+                      "type": "object",
+                      "required": ["job-id"],
+                      "properties": {
+                        "job-id": {"type": "string"}
+                      },
+                      "additionalProperties": false
+                    }""");
+        }
+
+        @Override
+        public AutomationOperationCategory getCategory() {
+            return AutomationOperationCategory.Execute;
+        }
+
+        @Override
+        public boolean isReadOnly() {
+            return false;
+        }
+
+        @Override
+        public JsonNode execute(AutomationContext ctx, JsonNode params) {
+            String jobId = params.get("job-id").asText();
+            InstrumentationJob job = ctx.getJobManager().getJob(jobId);
+            if (job == null) {
+                return mapper.createObjectNode().put("error", "Unknown job id: " + jobId);
+            }
+            boolean cancelled = ctx.getJobManager().cancelJob(jobId);
+            return mapper.createObjectNode().put("cancelled", cancelled);
         }
     }
 }

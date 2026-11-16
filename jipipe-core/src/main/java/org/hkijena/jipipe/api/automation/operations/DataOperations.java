@@ -108,16 +108,7 @@ public class DataOperations {
             return new ResolvedEntry(error("No project loaded"), null, null, null, 0, null, null, null);
         }
         String compartmentId = params.get("compartment").asText();
-        var compartment = project.findCompartment(compartmentId);
-        if (compartment == null) {
-            // findCompartment matches UUIDs and aliases: fall back to the display name
-            for (var entry : project.getCompartments().entrySet()) {
-                if (entry.getValue().getName() != null && entry.getValue().getName().equals(compartmentId)) {
-                    compartment = entry.getValue();
-                    break;
-                }
-            }
-        }
+        var compartment = AutomationOperationUtils.findCompartment(project, compartmentId);
         if (compartment == null) {
             return new ResolvedEntry(error("Compartment not found: " + compartmentId), null, null, null, 0, null, null, null);
         }

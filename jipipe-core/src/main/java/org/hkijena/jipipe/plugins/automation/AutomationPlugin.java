@@ -70,6 +70,10 @@ public class AutomationPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerAutomationOperation("run_node", new ExecutionOperations.RunNode());
         registerAutomationOperation("run_compartment", new ExecutionOperations.RunCompartment());
         registerAutomationOperation("run_pipeline", new ExecutionOperations.RunPipeline());
+        registerAutomationOperation("update_cache", new CacheOperations.UpdateCache());
+        registerAutomationOperation("get_job_status", new ExecutionOperations.GetJobStatus());
+        registerAutomationOperation("cancel_job", new ExecutionOperations.CancelJob());
+        registerAutomationOperation("arrange_nodes", new ArrangeOperations.ArrangeNodes());
 
         // Modification operations
         registerAutomationOperation("add_node", new ModificationOperations.AddNode());
