@@ -107,6 +107,10 @@ public class CacheOperations {
                 Throwable exception = event.getException();
                 String message = exception == null ? "Cache run failed"
                         : exception.getMessage() != null ? exception.getMessage() : exception.toString();
+                // Surface the run failure in the job's progress store (the automation layer's
+                // shared per-project chain): get_errors reports it from there. The job error
+                // alone is only visible via get_job_status.
+                job.getProgressInfo().log(exception != null ? exception : new RuntimeException(message));
                 job.fail(message);
             }
         };
@@ -191,7 +195,8 @@ public class CacheOperations {
         public JsonNode execute(AutomationContext ctx, JsonNode params) {
             try {
                 InstrumentationJob job = executeAsync(ctx, params);
-                return mapper.createObjectNode().put("jobId", job.getId());
+                // Plan-pinned envelope: {"job-id": ...} is the key get_job_status and cancel_job consume
+                return mapper.createObjectNode().put("job-id", job.getId());
             } catch (IllegalArgumentException e) {
                 return mapper.createObjectNode().put("error", e.getMessage());
             }

@@ -23,6 +23,7 @@ import org.hkijena.jipipe.api.automation.AutomationOperationCategory;
 import org.hkijena.jipipe.api.automation.AutomationOperationRegistry;
 import org.hkijena.jipipe.api.automation.AutomationSchemaUtils;
 import org.hkijena.jipipe.api.automation.permissions.AutomationPermissionService;
+import org.hkijena.jipipe.api.automation.permissions.AutomationPermissionState;
 import org.hkijena.jipipe.api.servers.SharedServerDiscoveryFile;
 import org.hkijena.jipipe.servers.mcp.MCPServerProcess;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -32,6 +33,7 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.File;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -50,6 +52,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -129,7 +132,8 @@ public class MCPBrokerClientTest {
         startStubEndpoint();
         client.setEndpoint(endpoint);
         client.setProjectSource(() -> List.of(projectEntry("p1", "Project One", "/tmp/p1")));
-        client.setToolSource(() -> MCPBrokerClient.descriptorsOf(stubOperationRegistry()));
+        client.setToolSource(() -> MCPBrokerClient.descriptorsOf(stubOperationRegistry(),
+                new AutomationPermissionService()));
 
         client.ensureConnected(new JIPipeProgressInfo());
         client.register();
@@ -157,6 +161,87 @@ public class MCPBrokerClientTest {
         JsonNode render = toolById(tools, "render_stub");
         assertNotNull(render);
         assertFalse(render.get("read-only").asBoolean());
+    }
+
+    @Test
+    public void descriptorsExcludeOperationsResolvedToHide() throws Exception {
+        startStubBroker();
+        client = new MCPBrokerClient(recordingSpawner, 8781, tempDir);
+        writeDiscoveryFile(ProcessHandle.current().pid(), brokerPort());
+        startStubEndpoint();
+        client.setEndpoint(endpoint);
+        client.setProjectSource(() -> List.of(projectEntry("p1", "Project One", "/tmp/p1")));
+
+        // Spec section 6: a user-configured Hide must keep the operation out of the
+        // registration payload entirely, so it never appears in tools/list. Resolved with a
+        // null project key: grants do not apply, CLI override and user state keep precedence.
+        AutomationPermissionService permissions = new AutomationPermissionService();
+        permissions.setUserState("hidden_stub", AutomationPermissionState.Hide);
+        AutomationOperationRegistry registry = stubOperationRegistry();
+        registry.register("hidden_stub", new HiddenStubOperation());
+        client.setToolSource(() -> MCPBrokerClient.descriptorsOf(registry, permissions));
+
+        client.ensureConnected(new JIPipeProgressInfo());
+        client.register();
+
+        assertTrue(client.isRegistered());
+        assertEquals(1, registrationBodies.size());
+        JsonNode json = JsonUtils.getObjectMapper().readTree(registrationBodies.get(0));
+        JsonNode tools = json.get("tools");
+        assertNotNull(tools);
+        assertNull(toolById(tools, "hidden_stub"), "a Hide operation must not be registered as a tool");
+        assertNotNull(toolById(tools, "echo_stub"), "the visible operations must remain registered");
+        assertNotNull(toolById(tools, "render_stub"), "the visible operations must remain registered");
+        assertEquals(2, tools.size());
+    }
+
+    @Test
+    public void spawnCommandQuotesArgFileTokensContainingSpaces() throws Exception {
+        client = new MCPBrokerClient(recordingSpawner, 8781, tempDir);
+        // A discovery path containing spaces (and a nested directory) must survive the JDK
+        // argfile tokenizer: the rendered token is double-quoted.
+        Path discoveryFile = tempDir.resolve("discovery dir with space").resolve("discovery.json");
+        List<String> command = client.buildSpawnCommand(discoveryFile);
+        List<String> jvmArgs = readJvmArgs(command);
+
+        String discoveryLine = jvmArgs.stream()
+                .filter(line -> line.endsWith("discovery.json\""))
+                .findFirst().orElse(null);
+        assertNotNull(discoveryLine, "the argfile must carry the discovery file: " + jvmArgs);
+        assertEquals("\"" + discoveryFile + "\"", discoveryLine,
+                "a path containing spaces must be written quoted");
+        // The classpath (typically space-free in the test environment) stays verbatim.
+        int classpathIndex = jvmArgs.indexOf("-cp");
+        assertEquals(System.getProperty("java.class.path"), jvmArgs.get(classpathIndex + 1),
+                "a space-free entry must be unchanged");
+    }
+
+    @Test
+    public void argFileTokenQuotingRoundTripsThroughTheJdkLauncher() throws Exception {
+        // True round-trip: the JDK launcher must read back exactly the tokens we rendered,
+        // including whitespace, a literal double quote, and a Windows-style backslash path.
+        String value = "C:\\Program Files\\dir with space\\a \"quoted\" name";
+        Path argFile = tempDir.resolve("roundtrip-args.txt");
+        Files.writeString(argFile, "-Dmcp.argfile.test=" + MCPBrokerClient.argFileToken(value) + "\n",
+                StandardCharsets.UTF_8);
+        String java = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
+        Process process = new ProcessBuilder(java, "@" + argFile, "-XshowSettings:properties", "-version")
+                .redirectErrorStream(true).start();
+        String output;
+        try (InputStream stream = process.getInputStream()) {
+            output = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
+        }
+        assertEquals(0, process.waitFor(), "the launcher must accept the argfile: " + output);
+        assertTrue(output.contains("mcp.argfile.test = " + value),
+                "the quoted token must round-trip through the JDK argfile parser: " + output);
+    }
+
+    @Test
+    public void argFileTokenLeavesSpaceFreeEntriesUnchanged() {
+        assertEquals("-cp", MCPBrokerClient.argFileToken("-cp"));
+        assertEquals("/opt/jipipe/lib.jar", MCPBrokerClient.argFileToken("/opt/jipipe/lib.jar"));
+        assertEquals("C:\\opt\\jipipe", MCPBrokerClient.argFileToken("C:\\opt\\jipipe"),
+                "backslashes pass through verbatim when quoting is not needed");
     }
 
     @Test
@@ -532,6 +617,41 @@ public class MCPBrokerClientTest {
         @Override
         public boolean isReadOnly() {
             return false;
+        }
+
+        @Override
+        public JsonNode execute(AutomationContext ctx, JsonNode params) {
+            return params;
+        }
+    }
+
+    /**
+     * An operation the tests configure as Hide in the permission service.
+     */
+    private static class HiddenStubOperation implements AutomationOperation {
+        @Override
+        public String getId() {
+            return "hidden_stub";
+        }
+
+        @Override
+        public String getDescription() {
+            return "A hidden test operation";
+        }
+
+        @Override
+        public JsonNode getInputSchema() {
+            return AutomationSchemaUtils.parseJson("{\"type\":\"object\",\"additionalProperties\":false}");
+        }
+
+        @Override
+        public AutomationOperationCategory getCategory() {
+            return AutomationOperationCategory.Query;
+        }
+
+        @Override
+        public boolean isReadOnly() {
+            return true;
         }
 
         @Override

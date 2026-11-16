@@ -50,7 +50,8 @@ public class ExecutionOperations {
         @Override
         public JsonNode execute(AutomationContext ctx, JsonNode params) throws Exception {
             InstrumentationJob job = executeAsync(ctx, params);
-            return new ObjectMapper().createObjectNode().put("jobId", job.getId());
+            // Plan-pinned envelope: {"job-id": ...} is the key get_job_status and cancel_job consume
+            return new ObjectMapper().createObjectNode().put("job-id", job.getId());
         }
 
         @Override
@@ -98,7 +99,8 @@ public class ExecutionOperations {
         @Override
         public JsonNode execute(AutomationContext ctx, JsonNode params) throws Exception {
             InstrumentationJob job = executeAsync(ctx, params);
-            return new ObjectMapper().createObjectNode().put("jobId", job.getId());
+            // Plan-pinned envelope: {"job-id": ...} is the key get_job_status and cancel_job consume
+            return new ObjectMapper().createObjectNode().put("job-id", job.getId());
         }
 
         @Override
@@ -143,7 +145,8 @@ public class ExecutionOperations {
         @Override
         public JsonNode execute(AutomationContext ctx, JsonNode params) throws Exception {
             InstrumentationJob job = executeAsync(ctx, params);
-            return new ObjectMapper().createObjectNode().put("jobId", job.getId());
+            // Plan-pinned envelope: {"job-id": ...} is the key get_job_status and cancel_job consume
+            return new ObjectMapper().createObjectNode().put("job-id", job.getId());
         }
 
         @Override

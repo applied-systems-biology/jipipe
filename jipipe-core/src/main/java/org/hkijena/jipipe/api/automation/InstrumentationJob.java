@@ -90,6 +90,15 @@ public class InstrumentationJob {
         return error;
     }
 
+    /**
+     * The progress handle this job was created with (the creating context's handle: the
+     * automation layer's shared per-project chain). Used by delegation seams to surface
+     * failures of the delegated work in the progress store, where get_errors reads them.
+     */
+    public JIPipeProgressInfo getProgressInfo() {
+        return progressInfo;
+    }
+
     public void updateProgress(double progress, String message) {
         this.progress = progress;
         this.message = message;

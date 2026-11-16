@@ -171,7 +171,8 @@ public class DiagnosticsOperations {
         @Override
         public String getDescription() {
             return "Get diagnostics errors: the project validation report (as shown by the errors panel) and, "
-                    + "when a run happened, the error records of the current run's progress log";
+                    + "when an MCP-triggered run happened (run_node, run_compartment, run_pipeline, update_cache), "
+                    + "the error records of the automation layer's shared per-project progress log";
         }
 
         @Override
@@ -318,8 +319,12 @@ public class DiagnosticsOperations {
 
         @Override
         public String getDescription() {
-            return "Get the progress log of the current run: text records (log, error, notification) with timestamp, "
-                    + "level, and node reference, newest-last. level=INFO returns only INFO records, "
+            return "Get the progress log of the automation layer for the project: text records (log, error, "
+                    + "notification) with timestamp, level, and node reference, newest-last. The log reflects "
+                    + "the records of MCP operations and of the most recent MCP-triggered run "
+                    + "(run_node, run_compartment, run_pipeline); runs started from the desktop UI write "
+                    + "their own progress logs and are not part of it. "
+                    + "level=INFO returns only INFO records, "
                     + "level=DEBUG additionally returns DEBUG records alongside INFO. "
                     + "With level or node filters, the result may contain fewer than tail records even when "
                     + "older matching records exist (the scan is bounded); treat the returned count as a "

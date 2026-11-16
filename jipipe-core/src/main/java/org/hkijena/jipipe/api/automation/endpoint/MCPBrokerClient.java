@@ -17,6 +17,8 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.automation.AutomationOperation;
 import org.hkijena.jipipe.api.automation.AutomationOperationRegistry;
+import org.hkijena.jipipe.api.automation.permissions.AutomationPermissionService;
+import org.hkijena.jipipe.api.automation.permissions.AutomationPermissionState;
 import org.hkijena.jipipe.api.servers.ServerLogEntry;
 import org.hkijena.jipipe.api.servers.SharedServerDiscoveryFile;
 import org.hkijena.jipipe.plugins.automation.settings.MCPApplicationSettings;
@@ -134,10 +136,33 @@ public class MCPBrokerClient {
 
     /**
      * Builds the tool descriptors for the operations of the given registry, sorted by id.
+     * <p>
+     * Hide filtering (spec section 6): an operation whose permission state resolves to
+     * {@link AutomationPermissionState#Hide} is skipped entirely, so the instance never
+     * registers it and it never appears in the broker's {@code tools/list}. The state is
+     * resolved with a null project key, which skips the per-project grant check while the
+     * rest of the precedence stays unchanged (CLI override, then user state, then the
+     * category default; a CLI Allow override can therefore still deliberately expose an
+     * operation). A Hide change takes effect at the next registration push (project
+     * open/close/load) or instance restart, not retroactively.
      */
     public static List<MCPToolDescriptor> descriptorsOf(AutomationOperationRegistry registry) {
+        return descriptorsOf(registry, JIPipe.getAutomation().getPermissionService());
+    }
+
+    /**
+     * Builds the tool descriptors for the operations of the given registry against the given
+     * permission service (see {@link #descriptorsOf(AutomationOperationRegistry)} for the
+     * Hide filtering contract). The overload exists so tests can inject a service instead of
+     * the global one.
+     */
+    public static List<MCPToolDescriptor> descriptorsOf(AutomationOperationRegistry registry,
+                                                        AutomationPermissionService permissionService) {
         List<MCPToolDescriptor> tools = new ArrayList<>();
         for (AutomationOperation operation : registry.getAll().values()) {
+            if (permissionService.resolve(operation, null) == AutomationPermissionState.Hide) {
+                continue;
+            }
             tools.add(MCPToolDescriptor.of(operation));
         }
         tools.sort(Comparator.comparing(MCPToolDescriptor::getId));
@@ -514,28 +539,29 @@ public class MCPBrokerClient {
      * classpath, the {@link MCPServerProcess} main class, the discovery file, the parent
      * PID, the broker port from the settings, and (when token authentication is required
      * and the token file exists, which {@link #ensureConnected} ensures first) the token
-     * file.
+     * file. Tokens are rendered with {@link #argFileToken(String)}, so entries containing
+     * spaces (e.g. a Windows classpath or user directory) survive the JDK argfile tokenizer.
      */
-    private List<String> buildSpawnCommand(Path discoveryFilePath) throws IOException {
+    List<String> buildSpawnCommand(Path discoveryFilePath) throws IOException {
         String javaHome = System.getProperty("java.home");
         String javaExecutable = javaHome + File.separator + "bin" + File.separator + "java";
         List<String> jvmArgs = new ArrayList<>();
-        jvmArgs.add("-cp");
-        jvmArgs.add(System.getProperty("java.class.path"));
-        jvmArgs.add(MCPServerProcess.class.getName());
-        jvmArgs.add("--discovery-file");
-        jvmArgs.add(discoveryFilePath.toString());
-        jvmArgs.add("--parent-pid");
-        jvmArgs.add(String.valueOf(ProcessHandle.current().pid()));
-        jvmArgs.add("--port");
-        jvmArgs.add(String.valueOf(brokerPort));
+        jvmArgs.add(argFileToken("-cp"));
+        jvmArgs.add(argFileToken(System.getProperty("java.class.path")));
+        jvmArgs.add(argFileToken(MCPServerProcess.class.getName()));
+        jvmArgs.add(argFileToken("--discovery-file"));
+        jvmArgs.add(argFileToken(discoveryFilePath.toString()));
+        jvmArgs.add(argFileToken("--parent-pid"));
+        jvmArgs.add(argFileToken(String.valueOf(ProcessHandle.current().pid())));
+        jvmArgs.add(argFileToken("--port"));
+        jvmArgs.add(argFileToken(String.valueOf(brokerPort)));
         if (isRequireToken()) {
             // Only pass the token file when it exists: a failed creation (logged in
             // ensureConnected) degrades to a tokenless broker instead of a crashed spawn.
             Path tokenFile = getTokenFilePath();
             if (Files.exists(tokenFile)) {
-                jvmArgs.add("--token-file");
-                jvmArgs.add(tokenFile.toString());
+                jvmArgs.add(argFileToken("--token-file"));
+                jvmArgs.add(argFileToken(tokenFile.toString()));
             }
         }
 
@@ -547,6 +573,23 @@ public class MCPBrokerClient {
         command.add(javaExecutable);
         command.add("@" + argFile);
         return command;
+    }
+
+    /**
+     * Renders one token for a JDK {@code @argfile} per the argument-file rules: tokens are
+     * whitespace-separated, a token containing whitespace (or a double quote) is enclosed in
+     * double quotes, and inside quotes a literal backslash is doubled and a literal double
+     * quote is escaped with a backslash (verified against the JDK launcher: outside quotes a
+     * backslash passes through verbatim, inside quotes it acts as an escape character, so
+     * {@code \\} is one backslash and {@code \"} is one quote). Space-free, quote-free entries
+     * are returned unchanged, so their bytes are identical to the previous verbatim writing.
+     */
+    static String argFileToken(String token) {
+        boolean needsQuotes = token.chars().anyMatch(c -> Character.isWhitespace(c) || c == '"');
+        if (!needsQuotes) {
+            return token;
+        }
+        return '"' + token.replace("\\", "\\\\").replace("\"", "\\\"") + '"';
     }
 
     private static boolean checkBrokerHealth(String url, String bearerToken) {

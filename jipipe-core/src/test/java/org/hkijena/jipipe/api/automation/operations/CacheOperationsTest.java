@@ -190,7 +190,7 @@ public class CacheOperationsTest {
         JsonNode result = new CacheOperations.UpdateCache(trigger).execute(createContext(fixture.project()), params);
 
         assertTrue(trigger.invoked.await(10, TimeUnit.SECONDS), "the trigger must be invoked");
-        assertTrue(result.has("jobId") && !result.get("jobId").asText().isBlank(),
+        assertTrue(result.has("job-id") && !result.get("job-id").asText().isBlank(),
                 "update_cache must return a job id: " + result);
         assertEquals(fixture.project(), trigger.projects.get(0));
         assertEquals("full", trigger.modes.get(0));
@@ -234,7 +234,7 @@ public class CacheOperationsTest {
         assertTrue(trigger.invoked.await(10, TimeUnit.SECONDS), "the trigger must be invoked");
         InstrumentationJob job = trigger.jobs.get(0);
         assertNotNull(job, "the wiring contract requires the job to be passed into the trigger");
-        assertEquals(job.getId(), result.get("jobId").asText(),
+        assertEquals(job.getId(), result.get("job-id").asText(),
                 "the returned job id must be the job handed to the trigger");
         assertEquals(InstrumentationJobStatus.PENDING, job.getStatus(),
                 "the operation must not complete the job when the trigger returns: the job completes when the cache run finishes");
@@ -264,7 +264,7 @@ public class CacheOperationsTest {
         JsonNode result = new CacheOperations.UpdateCache(trigger).execute(ctx, params);
 
         assertTrue(trigger.invoked.await(10, TimeUnit.SECONDS), "the trigger must be invoked");
-        InstrumentationJob job = ctx.getJobManager().getJob(result.get("jobId").asText());
+        InstrumentationJob job = ctx.getJobManager().getJob(result.get("job-id").asText());
         assertNotNull(job, "the job handed to the trigger must be tracked by the job manager");
         assertEquals(InstrumentationJobStatus.PENDING, job.getStatus(), "a queued cache run must report PENDING");
 
@@ -289,7 +289,7 @@ public class CacheOperationsTest {
         JsonNode result = new CacheOperations.UpdateCache(trigger).execute(ctx, params);
 
         assertTrue(trigger.invoked.await(10, TimeUnit.SECONDS), "the trigger must be invoked");
-        InstrumentationJob job = ctx.getJobManager().getJob(result.get("jobId").asText());
+        InstrumentationJob job = ctx.getJobManager().getJob(result.get("job-id").asText());
         assertNotNull(job);
         job.setStatus(InstrumentationJobStatus.RUNNING);
         job.fail("cache run failed");
@@ -328,7 +328,9 @@ public class CacheOperationsTest {
 
         assertTrue(trigger.invoked.await(10, TimeUnit.SECONDS), "the trigger must be invoked");
         ObjectNode cancelParams = mapper.createObjectNode();
-        cancelParams.put("job-id", result.get("jobId").asText());
+        // The run envelope and the cancel schema share the plan-pinned "job-id" key, so the
+        // value chains directly from the update_cache result into the cancel_job parameters.
+        cancelParams.put("job-id", result.get("job-id").asText());
         JsonNode cancelled = new ExecutionOperations.CancelJob().execute(ctx, cancelParams);
 
         assertTrue(cancelled.get("cancelled").asBoolean(), "a queued cache run must be cancellable");

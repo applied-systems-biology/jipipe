@@ -18,6 +18,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.automation.AutomationContext;
 import org.hkijena.jipipe.api.automation.AutomationOperation;
+import org.hkijena.jipipe.api.automation.AutomationProgressHandles;
 import org.hkijena.jipipe.api.automation.InstrumentationEventBus;
 import org.hkijena.jipipe.api.automation.InstrumentationJobManager;
 import org.hkijena.jipipe.api.automation.ScreenshotSource;
@@ -131,6 +132,11 @@ public final class JIPipeDesktopMCPIntegration implements AutomationEndpointHand
      * Deviation from the original design: the design specified an unbounded wait; the wait is
      * bounded at 300 seconds so a paused or unattended UI cannot hold endpoint threads forever,
      * and the agent receives a denied outcome after the timeout.
+     * <p>
+     * Invariant: the broker's forward timeout (MCPBrokerServer.FORWARD_TIMEOUT, 360 s) must
+     * exceed this Ask bound plus a margin, so a late bubble answer is still delivered to the
+     * agent instead of dying on a broker transport timeout. The relationship is documented on
+     * both constants; the broker deliberately does not depend on this desktop class in code.
      */
     private static final int ASK_TIMEOUT_SECONDS = 300;
 
@@ -153,6 +159,7 @@ public final class JIPipeDesktopMCPIntegration implements AutomationEndpointHand
     private final AtomicInteger inFlight = new AtomicInteger();
     private final InstrumentationEventBus eventBus = new InstrumentationEventBus();
     private final InstrumentationJobManager jobManager = new InstrumentationJobManager(eventBus, null);
+    private final AutomationProgressHandles progressHandles = new AutomationProgressHandles();
     private final ExecutorService lifecycleExecutor = Executors.newSingleThreadExecutor(runnable -> {
         Thread thread = new Thread(runnable, "JIPipe-MCP-UI-Lifecycle");
         thread.setDaemon(true);
@@ -374,6 +381,11 @@ public final class JIPipeDesktopMCPIntegration implements AutomationEndpointHand
      * project. The registry-global operations (list_projects, list_algorithms, get_node_docs)
      * never read the project, while a project-bound operation reached this way fails with its
      * own "No project loaded" style error result (E2E ruling 2026-11-16).
+     * <p>
+     * The progress handle comes from the shared per-project chain
+     * ({@link AutomationProgressHandles}): a run triggered through this context adopts its
+     * file-backed store into the chain, so a later get_log/get_errors call for the same project
+     * reads the run's records (review fix 2026-11-16; see the trace conclusion there).
      */
     @Override
     public JsonNode execute(String operationId, String projectKey, JsonNode params) throws Exception {
@@ -382,7 +394,7 @@ public final class JIPipeDesktopMCPIntegration implements AutomationEndpointHand
         try {
             JIPipeDesktopProjectWindow window = findProjectWindow(projectKey);
             AutomationContext context = new AutomationContext(window != null ? window.getProject() : null,
-                    projectKey, new JIPipeProgressInfo(), eventBus, jobManager);
+                    projectKey, progressHandles.create(projectKey), eventBus, jobManager);
             if (EDT_OPERATIONS.contains(operationId)) {
                 return callOnEdt(() -> JIPipe.getAutomation().getOperationRegistry()
                         .execute(operationId, context, params));

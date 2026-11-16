@@ -52,6 +52,16 @@ public class ScreenshotOperations {
     private static final ObjectMapper mapper = new ObjectMapper();
 
     /**
+     * Description clause shared by all four screenshot tools: where the optional save-to target
+     * may point (the same allowed roots as export_data).
+     */
+    private static final String SAVE_TO_DESCRIPTION =
+            " The optional save-to target must point inside an allowed export root: the "
+                    + "jipipe-mcp-export directory in the system temp directory, or the project "
+                    + "work directory. Targets outside these roots are refused (error naming the roots); "
+                    + "a blank save-to falls back to the inline image.";
+
+    /**
      * Error carried by all operations when no source is registered: the operations are
      * registered unconditionally, but rendering needs the desktop wiring.
      */
@@ -95,24 +105,33 @@ public class ScreenshotOperations {
 
     /**
      * Routes a rendered screenshot through the result envelope: a non-blank save-to target
-     * is written as PNG (parent directories are created) and only the path is returned;
-     * otherwise the image is inlined via {@link AutomationResults#choose(BufferedImage, String)}.
+     * that resolves inside the allowed roots ({@link AutomationOperationUtils#resolveWriteTarget},
+     * the same roots as export_data) is written as PNG (parent directories are created) and only
+     * the path is returned; a blank save-to falls back to the inline image exactly like
+     * {@link AutomationResults#choose(BufferedImage, String)}; a target outside the allowed roots
+     * is refused with an error naming them. All failures (including an unparseable path) are
+     * returned as the error field, never thrown.
      */
-    private static JsonNode finish(BufferedImage image, JsonNode params) {
+    private static JsonNode finish(AutomationContext ctx, BufferedImage image, JsonNode params) {
         String saveTo = textOrNull(params, "save-to");
-        if (saveTo == null) {
+        if (saveTo == null || saveTo.isBlank()) {
             return AutomationResults.choose(image, null);
         }
-        Path target = Path.of(saveTo.trim());
         try {
+            AutomationOperationUtils.TargetPath resolved = AutomationOperationUtils.resolveWriteTarget(
+                    ctx.getProject(), "save-to", saveTo.trim());
+            if (resolved.path() == null) {
+                return error(resolved.errorMessage());
+            }
+            Path target = resolved.path();
             if (target.getParent() != null) {
                 Files.createDirectories(target.getParent());
             }
             ImageIO.write(image, "png", target.toFile());
+            return AutomationResults.choose(image, target.toString());
         } catch (Exception e) {
             return error("Failed to save screenshot: " + e.getMessage());
         }
-        return AutomationResults.choose(image, target.toString());
     }
 
     /**
@@ -180,7 +199,7 @@ public class ScreenshotOperations {
         public String getDescription() {
             return "Render the graph canvas of a compartment as a PNG image of the current view "
                     + "(visible viewport at the current zoom/pan). Use screenshot_minimap for an image "
-                    + "of the full graph.";
+                    + "of the full graph." + SAVE_TO_DESCRIPTION;
         }
 
         @Override
@@ -227,7 +246,7 @@ public class ScreenshotOperations {
             if (image == null) {
                 return error("No canvas available for compartment: " + compartment);
             }
-            return finish(image, params);
+            return finish(ctx, image, params);
         }
     }
 
@@ -260,7 +279,7 @@ public class ScreenshotOperations {
 
         @Override
         public String getDescription() {
-            return "Render the minimap of a compartment as a PNG image, or save it to a file";
+            return "Render the minimap of a compartment as a PNG image, or save it to a file." + SAVE_TO_DESCRIPTION;
         }
 
         @Override
@@ -307,7 +326,7 @@ public class ScreenshotOperations {
             if (image == null) {
                 return error("No minimap available for compartment: " + compartment);
             }
-            return finish(image, params);
+            return finish(ctx, image, params);
         }
     }
 
@@ -341,7 +360,8 @@ public class ScreenshotOperations {
 
         @Override
         public String getDescription() {
-            return "Capture a named UI surface of the project window as a PNG image, or save it to a file";
+            return "Capture a named UI surface of the project window as a PNG image, or save it to a file."
+                    + SAVE_TO_DESCRIPTION;
         }
 
         @Override
@@ -393,7 +413,7 @@ public class ScreenshotOperations {
                 return error("Screenshot failed: no image captured for surface " + surface);
             }
             int scale = (int) Math.round(scaleParam(params));
-            return finish(AutomationResults.scaled(captured, scale), params);
+            return finish(ctx, AutomationResults.scaled(captured, scale), params);
         }
     }
 
@@ -427,7 +447,8 @@ public class ScreenshotOperations {
 
         @Override
         public String getDescription() {
-            return "Capture the project window as a PNG image, optionally with a fake titlebar, or save it to a file";
+            return "Capture the project window as a PNG image, optionally with a fake titlebar, or save it to a file."
+                    + SAVE_TO_DESCRIPTION;
         }
 
         @Override
@@ -467,7 +488,7 @@ public class ScreenshotOperations {
             if (image == null) {
                 return error("No window available for project: " + ctx.getProjectId());
             }
-            return finish(image, params);
+            return finish(ctx, image, params);
         }
     }
 }

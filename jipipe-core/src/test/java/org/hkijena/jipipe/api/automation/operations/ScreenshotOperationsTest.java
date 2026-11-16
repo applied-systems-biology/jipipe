@@ -26,7 +26,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 
 import javax.imageio.ImageIO;
 import java.awt.Component;
@@ -155,11 +154,13 @@ public class ScreenshotOperationsTest {
     }
 
     @Test
-    void canvasWithSaveToWritesPngAndReturnsOnlyPath(@TempDir Path tempDir) throws Exception {
+    void canvasWithSaveToWritesPngAndReturnsOnlyPath() throws Exception {
         JIPipeProject project = createProject();
         AutomationContext ctx = createContext(project);
         FakeSource source = new FakeSource();
-        Path target = tempDir.resolve("out").resolve("canvas.png");
+        // Inside the allowed root (the jipipe-mcp-export system directory)
+        Path target = Path.of(System.getProperty("java.io.tmpdir"), "jipipe-mcp-export",
+                "screenshot-out-test", "canvas.png");
         ObjectNode params = mapper.createObjectNode()
                 .put("compartment", "Screenshot Compartment")
                 .put("save-to", target.toString());
@@ -174,6 +175,60 @@ public class ScreenshotOperationsTest {
         assertEquals(target.toAbsolutePath().normalize().toString(), result.get("saved-to").asText());
         assertFalse(result.has("image-base64"), "save-to results never inline the image (size contract)");
         assertFalse(result.has("mime"), "save-to results never inline the image (size contract)");
+        cleanup(target.getParent());
+    }
+
+    @Test
+    void canvasWithSaveToOutsideAllowedRootsIsRefusedWithErrorNamingTheRoots() {
+        JIPipeProject project = createProject();
+        AutomationContext ctx = createContext(project);
+        FakeSource source = new FakeSource();
+        ObjectNode params = mapper.createObjectNode()
+                .put("compartment", "Screenshot Compartment")
+                .put("save-to", Path.of(System.getProperty("java.io.tmpdir"), "screenshot-forbidden.png").toString());
+        var result = new ScreenshotOperations.ScreenshotCanvas(source).execute(ctx, params);
+
+        assertTrue(result.has("error"), "a save-to outside the allowed roots must be refused: " + result);
+        String error = result.get("error").asText();
+        assertTrue(error.contains("allowed export root"), "the refusal must name the allowed roots: " + error);
+        assertTrue(error.contains(Path.of(System.getProperty("java.io.tmpdir"), "jipipe-mcp-export").toString()),
+                "the refusal must list the system export root: " + error);
+        assertFalse(result.has("saved-to"));
+        assertFalse(result.has("image-base64"));
+    }
+
+    @Test
+    void canvasWithBlankSaveToFallsBackToInlineImage() {
+        JIPipeProject project = createProject();
+        AutomationContext ctx = createContext(project);
+        FakeSource source = new FakeSource();
+        ObjectNode params = mapper.createObjectNode()
+                .put("compartment", "Screenshot Compartment")
+                .put("save-to", "   ");
+        var result = new ScreenshotOperations.ScreenshotCanvas(source).execute(ctx, params);
+
+        assertTrue(result.has("image-base64"), "a blank save-to must fall back to the inline image: " + result);
+        assertFalse(result.has("saved-to"), "a blank save-to must not produce a path");
+    }
+
+    /**
+     * Deletes a directory tree, ignoring failures (best-effort test cleanup).
+     */
+    private static void cleanup(Path path) {
+        if (path == null || !Files.exists(path)) {
+            return;
+        }
+        try (var entries = Files.walk(path)) {
+            entries.sorted(java.util.Comparator.reverseOrder()).forEach(p -> {
+                try {
+                    Files.delete(p);
+                } catch (Exception ignored) {
+                    // Best-effort cleanup
+                }
+            });
+        } catch (Exception ignored) {
+            // Best-effort cleanup
+        }
     }
 
     @Test

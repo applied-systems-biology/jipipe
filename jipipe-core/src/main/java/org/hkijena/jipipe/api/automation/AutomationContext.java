@@ -7,9 +7,9 @@ import org.hkijena.jipipe.api.project.JIPipeProject;
 /**
  * Context passed to automation operations.
  * <p>
- * The {@code graphOverride} allows callers (e.g., the AI agent's stage system)
- * to pass a working graph instead of the project graph. External WebSocket tools
- * always use the project graph (graphOverride is null).
+ * The {@code graphOverride} allows callers to pass a working graph instead of the project
+ * graph. External automation tools (MCP) always use the project graph (graphOverride is null);
+ * the graphOverride mechanism serves the internal AI agent's stage system.
  */
 public class AutomationContext {
     private final JIPipeProject project;

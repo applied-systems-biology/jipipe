@@ -116,7 +116,19 @@ public class MCPBrokerServer {
             "Target project id as returned by list_projects (<instanceId>:<projectKey>)";
 
     private static final String SECRET_HEADER = "X-JIPipe-Endpoint-Secret";
-    private static final Duration FORWARD_TIMEOUT = Duration.ofSeconds(60);
+
+    /**
+     * How long the broker waits for the instance endpoint to answer a forwarded tools/call.
+     * <p>
+     * Invariant: this timeout must exceed the instance-side Ask bound
+     * ({@code JIPipeDesktopMCPIntegration.ASK_TIMEOUT_SECONDS}, 300 s) plus a margin, so an
+     * Ask-classified tool whose permission bubble is answered late is still delivered instead
+     * of dying on a transport timeout while the operation may still execute (a lost result
+     * invites an agent retry, which can double-execute a mutating operation). The Ask bound
+     * lives in the desktop integration and is deliberately NOT referenced in code: the broker
+     * must not depend on the desktop package. 360 s = 300 s Ask bound + 60 s margin.
+     */
+    private static final Duration FORWARD_TIMEOUT = Duration.ofSeconds(360);
 
     /**
      * Accepts every tool input: the instance endpoint validates parameters against the

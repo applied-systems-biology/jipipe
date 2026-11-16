@@ -306,6 +306,30 @@ public class MCPBrokerServerTest {
     }
 
     @Test
+    public void asyncJobEnvelopeIsReturnedImmediatelyAsTextContent() throws Exception {
+        startBroker(null);
+        registerInstance();
+        initialize(null);
+
+        // The async (Execute category) tool returns the job envelope as text content
+        // immediately: the broker passes it through and never waits for the job.
+        long start = System.currentTimeMillis();
+        ObjectNode arguments = JsonUtils.getObjectMapper().createObjectNode();
+        arguments.put("project", INSTANCE_ID + ":p1");
+        JsonNode result = callTool("run_job_test", arguments);
+        long elapsedMs = System.currentTimeMillis() - start;
+
+        assertFalse(result.get("isError").asBoolean());
+        JsonNode content = result.get("content").get(0);
+        assertEquals("text", content.get("type").asText());
+        // Plan-pinned envelope: the key is "job-id" (matching the get_job_status/cancel_job schema)
+        assertTrue(content.get("text").asText().contains("\"job-id\":\"job-test1234\""),
+                "the envelope must carry the plan-pinned job-id key: " + content.get("text").asText());
+        assertTrue(elapsedMs < 10000,
+                "tools/call must return immediately (no broker-side job wait), took " + elapsedMs + " ms");
+    }
+
+    @Test
     public void unknownProjectKeyListsInstanceProjects() throws Exception {
         startBroker(null);
         registerInstance();
@@ -391,6 +415,7 @@ public class MCPBrokerServerTest {
         AutomationOperationRegistry metadata = new AutomationOperationRegistry();
         metadata.register("echo_test", new EchoTestOperation());
         metadata.register("render_image_test", new RenderImageTestOperation());
+        metadata.register("run_job_test", new RunJobTestOperation());
         instanceRegistry = new MCPInstanceRegistry();
         broker = new MCPBrokerServer(0, instanceRegistry, bearerToken, metadata);
         broker.start();
@@ -422,6 +447,7 @@ public class MCPBrokerServerTest {
                 response = switch (opId) {
                     case "echo_test" -> stubResult(echoResult(body));
                     case "get_node_docs" -> stubResult(docsResult(body));
+                    case "run_job_test" -> stubResult(jobEnvelopeResult());
                     case "render_image_test" -> "{\"ok\":true,\"result\":{\"image-base64\":\"" + PNG_BASE64
                             + "\",\"mime\":\"image/png\"}}";
                     default -> "{\"ok\":false,\"code\":\"unknown\",\"error\":\"Unknown operation: " + opId + "\"}";
@@ -445,6 +471,16 @@ public class MCPBrokerServerTest {
         ObjectNode result = JsonUtils.getObjectMapper().createObjectNode();
         result.put("docs", true);
         result.set("project-key", body.path("project-key"));
+        return result;
+    }
+
+    /**
+     * The plan-pinned job envelope of an async (Execute category) operation: the instance
+     * returns it immediately, the broker passes it through unchanged.
+     */
+    private ObjectNode jobEnvelopeResult() {
+        ObjectNode result = JsonUtils.getObjectMapper().createObjectNode();
+        result.put("job-id", "job-test1234");
         return result;
     }
 
@@ -472,7 +508,7 @@ public class MCPBrokerServerTest {
         registration.put("endpoint-secret", SECRET);
         registration.put("app-version", "test");
         registration.set("tool-ids", JsonUtils.getObjectMapper().createArrayNode()
-                .add("echo_test").add("render_image_test").add("list_operations"));
+                .add("echo_test").add("render_image_test").add("run_job_test").add("list_operations"));
         ObjectNode project = JsonUtils.getObjectMapper().createObjectNode();
         project.put("key", "p1");
         project.put("name", "P1");
@@ -696,6 +732,41 @@ public class MCPBrokerServerTest {
         @Override
         public AutomationOperationCategory getCategory() {
             return AutomationOperationCategory.Render;
+        }
+
+        @Override
+        public boolean isReadOnly() {
+            return false;
+        }
+
+        @Override
+        public JsonNode execute(AutomationContext ctx, JsonNode params) {
+            return params;
+        }
+    }
+
+    /**
+     * An async (Execute category) operation whose result is the job envelope.
+     */
+    private static class RunJobTestOperation implements AutomationOperation {
+        @Override
+        public String getId() {
+            return "run_job_test";
+        }
+
+        @Override
+        public String getDescription() {
+            return "Starts a test job";
+        }
+
+        @Override
+        public JsonNode getInputSchema() {
+            return AutomationSchemaUtils.parseJson("{\"type\":\"object\",\"additionalProperties\":false}");
+        }
+
+        @Override
+        public AutomationOperationCategory getCategory() {
+            return AutomationOperationCategory.Execute;
         }
 
         @Override

@@ -46,11 +46,6 @@ public class DataOperations {
      */
     private static final int PREVIEW_SIZE = 256;
 
-    /**
-     * Name of the export directory inside the system temp directory (allowed root and default target).
-     */
-    private static final String EXPORT_DIRECTORY_NAME = "jipipe-mcp-export";
-
     private static ObjectNode error(String message) {
         return mapper.createObjectNode().put("error", message);
     }
@@ -256,51 +251,24 @@ public class DataOperations {
     }
 
     /**
-     * Returns the allowed export roots: the jipipe-mcp-export subdirectory of the system temp directory
-     * and the project work directory if set. The project temporary base directory is deliberately not
-     * a root: JIPipeProject.getTemporaryBaseDirectory() is not stable across calls (it mints a fresh
-     * temporary tree per invocation), so it cannot anchor a reproducible guard or default target.
-     */
-    private static List<Path> allowedRoots(JIPipeProject project) {
-        LinkedHashSet<Path> roots = new LinkedHashSet<>();
-        roots.add(systemExportRoot());
-        if (project != null && project.getWorkDirectory() != null) {
-            roots.add(project.getWorkDirectory().toAbsolutePath().normalize());
-        }
-        return new ArrayList<>(roots);
-    }
-
-    private static Path systemExportRoot() {
-        return Path.of(System.getProperty("java.io.tmpdir"), EXPORT_DIRECTORY_NAME).toAbsolutePath().normalize();
-    }
-
-    /**
      * Resolution outcome of the export target guard. The path is null if the target was refused.
      */
     private record TargetDir(Path path, String errorMessage) {
     }
 
     /**
-     * Resolves the export target directory against the allowed roots. Relative paths are resolved
-     * against the process working directory. Refuses paths outside all allowed roots; '..' traversal
-     * is dead because all paths are normalized before the component-wise startsWith check.
+     * Resolves the export target directory against the allowed roots
+     * ({@link AutomationOperationUtils#allowedRoots}). A blank target-dir defaults to the
+     * jipipe-mcp-export system directory; the guard itself is shared with the screenshot
+     * save-to targets.
      */
     private static TargetDir resolveTargetDir(JIPipeProject project, JsonNode params) {
-        List<Path> roots = allowedRoots(project);
-        Path target;
         if (params.has("target-dir") && !params.get("target-dir").asText().isBlank()) {
-            target = Path.of(params.get("target-dir").asText()).toAbsolutePath().normalize();
-        } else {
-            target = systemExportRoot();
+            AutomationOperationUtils.TargetPath resolved = AutomationOperationUtils.resolveWriteTarget(
+                    project, "target-dir", params.get("target-dir").asText());
+            return new TargetDir(resolved.path(), resolved.errorMessage());
         }
-        for (Path root : roots) {
-            if (target.startsWith(root)) {
-                return new TargetDir(target, null);
-            }
-        }
-        List<String> rootNames = roots.stream().map(Path::toString).toList();
-        return new TargetDir(null, "target-dir '" + target + "' is not inside an allowed export root. Allowed roots: "
-                + String.join(", ", rootNames));
+        return new TargetDir(AutomationOperationUtils.systemExportRoot(), null);
     }
 
     public static class DescribeData implements AutomationOperation {
