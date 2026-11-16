@@ -86,6 +86,11 @@ public class AutomationPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerAutomationOperation("get_segment_detail", new PipelineMapOperations.GetSegmentDetail());
         registerAutomationOperation("search_nodes", new PipelineMapOperations.SearchNodes());
 
+        // Info operations
+        registerAutomationOperation("get_project_info", new InfoOperations.GetProjectInfo());
+        registerAutomationOperation("list_algorithms", new InfoOperations.ListAlgorithms());
+        registerAutomationOperation("get_node_docs", new InfoOperations.GetNodeDocs());
+
         // RO-Crate operations
         registerAutomationOperation("create_ro_crate", new ROCrateOperations.CreateROCrate());
     }
