@@ -27,6 +27,7 @@ public class InstrumentationJob {
     private volatile JsonNode result;
     private volatile String error;
     private volatile Instant completedAt;
+    private volatile Runnable cancellationHandler;
 
     InstrumentationJob(String operation, String description, InstrumentationEventBus eventBus, String projectId, JIPipeProgressInfo progressInfo) {
         this.id = "job-" + UUID.randomUUID().toString().substring(0, 8);
@@ -62,7 +63,14 @@ public class InstrumentationJob {
         return status.get();
     }
 
-    void setStatus(InstrumentationJobStatus newStatus) {
+    /**
+     * Sets the job status. Used by delegation seams whose job lifecycle is driven by an
+     * underlying run (e.g., the cache operations wire the status to the run queue that
+     * executes the cache update).
+     *
+     * @param newStatus the new status
+     */
+    public void setStatus(InstrumentationJobStatus newStatus) {
         status.set(newStatus);
     }
 
@@ -105,9 +113,26 @@ public class InstrumentationJob {
         eventBus.publish(new JobCompletedEvent(projectId, id, InstrumentationJobStatus.FAILED, null, error));
     }
 
+    /**
+     * Registers a handler that cancels the underlying work of this job (e.g., the
+     * {@link org.hkijena.jipipe.api.run.JIPipeRunnable} of a cache update). Invoked by
+     * {@link #cancel()} after the job state was switched to
+     * {@link InstrumentationJobStatus#CANCELLED}. The handler must be safe to call from
+     * any thread and must not block for long.
+     *
+     * @param cancellationHandler the handler, or null to remove it
+     */
+    public void setCancellationHandler(Runnable cancellationHandler) {
+        this.cancellationHandler = cancellationHandler;
+    }
+
     public void cancel() {
         this.completedAt = Instant.now();
         status.set(InstrumentationJobStatus.CANCELLED);
+        Runnable handler = cancellationHandler;
+        if (handler != null) {
+            handler.run();
+        }
         eventBus.publish(new JobCompletedEvent(projectId, id, InstrumentationJobStatus.CANCELLED, null, "Cancelled by user"));
         progressInfo.cancel("Cancelled by user");
     }

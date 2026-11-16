@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.automation.AutomationContext;
 import org.hkijena.jipipe.api.automation.AutomationOperationRegistry;
@@ -27,6 +28,9 @@ import org.hkijena.jipipe.api.automation.InstrumentationJobStatus;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.project.JIPipeProject;
+import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
+import org.hkijena.jipipe.api.run.JIPipeRunnable;
+import org.hkijena.jipipe.api.run.JIPipeRunnableWorker;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -38,14 +42,16 @@ import java.util.concurrent.TimeUnit;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 /**
  * Tests the cache, job, and arrange operations: update_cache schema and conditional
- * requirements, the injectable cache trigger seam, get_job_status and cancel_job against
- * the real job manager, and the layered layout of arrange_nodes.
+ * requirements, the injectable cache trigger seam and its job lifecycle wiring to the
+ * QuickRun on the shared run queue, get_job_status and cancel_job against the real job
+ * manager, and the layered layout of arrange_nodes.
  */
 public class CacheOperationsTest {
 
@@ -56,19 +62,22 @@ public class CacheOperationsTest {
 
     /**
      * Records the delegated cache triggers so tests can assert the operation resolves
-     * targets and modes without invoking the real cache services.
+     * targets and modes without invoking the real cache services. The stub stays silent
+     * about the job: it emulates a queued QuickRun whose wiring has not fired yet.
      */
     private static class RecordingTrigger implements CacheOperations.CacheTrigger {
         final List<JIPipeProject> projects = new ArrayList<>();
         final List<List<JIPipeGraphNode>> targets = new ArrayList<>();
         final List<String> modes = new ArrayList<>();
+        final List<InstrumentationJob> jobs = new ArrayList<>();
         final CountDownLatch invoked = new CountDownLatch(1);
 
         @Override
-        public void run(JIPipeProject project, List<JIPipeGraphNode> targetNodes, String mode) {
+        public void run(JIPipeProject project, List<JIPipeGraphNode> targetNodes, String mode, InstrumentationJob job) {
             projects.add(project);
             targets.add(targetNodes);
             modes.add(mode);
+            jobs.add(job);
             invoked.countDown();
         }
     }
@@ -212,6 +221,202 @@ public class CacheOperationsTest {
         assertTrue(!result.has("error"), () -> "valid args must not produce an error: " + result);
         assertEquals("predecessors", trigger.modes.get(0));
         assertTrue(trigger.targets.get(0).contains(fixture.node()), "the pipeline scope must target the nodes of the project");
+    }
+
+    @Test
+    void updateCachePassesJobIntoTheCacheRunWiring() throws InterruptedException {
+        Fixture fixture = createFixture();
+        RecordingTrigger trigger = new RecordingTrigger();
+        ObjectNode params = updateCacheParams("node", "full", "Cache Test Compartment",
+                fixture.project().getGraph().getAliasIdOf(fixture.node()));
+        JsonNode result = new CacheOperations.UpdateCache(trigger).execute(createContext(fixture.project()), params);
+
+        assertTrue(trigger.invoked.await(10, TimeUnit.SECONDS), "the trigger must be invoked");
+        InstrumentationJob job = trigger.jobs.get(0);
+        assertNotNull(job, "the wiring contract requires the job to be passed into the trigger");
+        assertEquals(job.getId(), result.get("jobId").asText(),
+                "the returned job id must be the job handed to the trigger");
+        assertEquals(InstrumentationJobStatus.PENDING, job.getStatus(),
+                "the operation must not complete the job when the trigger returns: the job completes when the cache run finishes");
+    }
+
+    /**
+     * Emulates the production wiring: the QuickRun is queued when the trigger returns,
+     * and the lifecycle transitions fire later from the run.
+     */
+    private static class QueuedRunTrigger implements CacheOperations.CacheTrigger {
+        InstrumentationJob job;
+        final CountDownLatch invoked = new CountDownLatch(1);
+
+        @Override
+        public void run(JIPipeProject project, List<JIPipeGraphNode> targetNodes, String mode, InstrumentationJob job) {
+            this.job = job;
+            invoked.countDown();
+        }
+    }
+
+    @Test
+    void updateCacheJobFollowsTheCacheRunLifecycle() throws InterruptedException {
+        Fixture fixture = createFixture();
+        AutomationContext ctx = createContext(fixture.project());
+        QueuedRunTrigger trigger = new QueuedRunTrigger();
+        ObjectNode params = updateCacheParams("pipeline", "full", null, null);
+        JsonNode result = new CacheOperations.UpdateCache(trigger).execute(ctx, params);
+
+        assertTrue(trigger.invoked.await(10, TimeUnit.SECONDS), "the trigger must be invoked");
+        InstrumentationJob job = ctx.getJobManager().getJob(result.get("jobId").asText());
+        assertNotNull(job, "the job handed to the trigger must be tracked by the job manager");
+        assertEquals(InstrumentationJobStatus.PENDING, job.getStatus(), "a queued cache run must report PENDING");
+
+        // The executor starts the QuickRun, then the run finishes: the wiring transitions
+        // the job exactly like the production wiring reacts to the executor events
+        job.setStatus(InstrumentationJobStatus.RUNNING);
+        job.complete(null);
+
+        ObjectNode statusParams = mapper.createObjectNode();
+        statusParams.put("job-id", job.getId());
+        JsonNode status = new ExecutionOperations.GetJobStatus().execute(ctx, statusParams);
+        assertEquals(InstrumentationJobStatus.COMPLETED.name(), status.get("state").asText(),
+                "get_job_status must report the final state of the cache run");
+    }
+
+    @Test
+    void updateCacheJobFailsWithTheCacheRunError() throws InterruptedException {
+        Fixture fixture = createFixture();
+        AutomationContext ctx = createContext(fixture.project());
+        QueuedRunTrigger trigger = new QueuedRunTrigger();
+        ObjectNode params = updateCacheParams("pipeline", "full", null, null);
+        JsonNode result = new CacheOperations.UpdateCache(trigger).execute(ctx, params);
+
+        assertTrue(trigger.invoked.await(10, TimeUnit.SECONDS), "the trigger must be invoked");
+        InstrumentationJob job = ctx.getJobManager().getJob(result.get("jobId").asText());
+        assertNotNull(job);
+        job.setStatus(InstrumentationJobStatus.RUNNING);
+        job.fail("cache run failed");
+
+        ObjectNode statusParams = mapper.createObjectNode();
+        statusParams.put("job-id", job.getId());
+        JsonNode status = new ExecutionOperations.GetJobStatus().execute(ctx, statusParams);
+        assertEquals(InstrumentationJobStatus.FAILED.name(), status.get("state").asText());
+        assertEquals("cache run failed", status.get("error").asText(), "the status must carry the cache run error");
+    }
+
+    /**
+     * Emulates the production wiring's cancellation handler: the handler cancels the
+     * underlying QuickRun (here: records the invocation).
+     */
+    private static class CancellableRunTrigger implements CacheOperations.CacheTrigger {
+        InstrumentationJob job;
+        final CountDownLatch invoked = new CountDownLatch(1);
+        final CountDownLatch cancelled = new CountDownLatch(1);
+
+        @Override
+        public void run(JIPipeProject project, List<JIPipeGraphNode> targetNodes, String mode, InstrumentationJob job) {
+            this.job = job;
+            job.setCancellationHandler(cancelled::countDown);
+            invoked.countDown();
+        }
+    }
+
+    @Test
+    void cancelJobCancelsTheUnderlyingCacheRun() throws InterruptedException {
+        Fixture fixture = createFixture();
+        AutomationContext ctx = createContext(fixture.project());
+        CancellableRunTrigger trigger = new CancellableRunTrigger();
+        ObjectNode params = updateCacheParams("pipeline", "full", null, null);
+        JsonNode result = new CacheOperations.UpdateCache(trigger).execute(ctx, params);
+
+        assertTrue(trigger.invoked.await(10, TimeUnit.SECONDS), "the trigger must be invoked");
+        ObjectNode cancelParams = mapper.createObjectNode();
+        cancelParams.put("job-id", result.get("jobId").asText());
+        JsonNode cancelled = new ExecutionOperations.CancelJob().execute(ctx, cancelParams);
+
+        assertTrue(cancelled.get("cancelled").asBoolean(), "a queued cache run must be cancellable");
+        assertTrue(trigger.cancelled.await(10, TimeUnit.SECONDS),
+                "cancel_job must run the cancellation handler that cancels the QuickRun");
+        assertEquals(InstrumentationJobStatus.CANCELLED, trigger.job.getStatus());
+    }
+
+    /**
+     * A silent no-op run for the lifecycle wiring tests (never enqueued: the wiring
+     * under test subscribes to executor-level events, and the events are emitted here
+     * directly, without executing a pipeline).
+     */
+    private static JIPipeRunnable testCacheRun() {
+        return new DefaultJIPipeRunnable() {
+            @Override
+            public void run() {
+            }
+
+            @Override
+            public String getTaskLabel() {
+                return "Test cache run";
+            }
+        };
+    }
+
+    @Test
+    void cacheJobWiringFollowsTheExecutorLifecycleEvents() {
+        // A private executor instance: the wiring must not react to events of other runs
+        JIPipeQueuedRunnableExecutor executor = new JIPipeQueuedRunnableExecutor("cache-operations-test");
+        JIPipeRunnable run = testCacheRun();
+        InstrumentationJob job = new InstrumentationJobManager(new InstrumentationEventBus(), "test")
+                .createJob("update_cache", "Update cache (full)");
+        CacheOperations.wireJobToExecutorLifecycle(job, run, executor);
+
+        JIPipeRunnableWorker worker = new JIPipeRunnableWorker(run, true);
+        JIPipeRunnableWorker otherWorker = new JIPipeRunnableWorker(testCacheRun(), true);
+
+        assertEquals(InstrumentationJobStatus.PENDING, job.getStatus());
+        executor.getFinishedEventEmitter().emit(new JIPipeRunnable.FinishedEvent(otherWorker));
+        assertEquals(InstrumentationJobStatus.PENDING, job.getStatus(), "events of unrelated runs must be ignored");
+
+        // The executor dequeues the run: the wiring turns the job RUNNING
+        executor.getStartedEventEmitter().emit(new JIPipeRunnable.StartedEvent(run, worker));
+        assertEquals(InstrumentationJobStatus.RUNNING, job.getStatus());
+
+        // The run finishes: the wiring completes the job and unsubscribes the listeners
+        executor.getFinishedEventEmitter().emit(new JIPipeRunnable.FinishedEvent(worker));
+        assertEquals(InstrumentationJobStatus.COMPLETED, job.getStatus());
+        executor.getFinishedEventEmitter().emit(new JIPipeRunnable.FinishedEvent(worker));
+        assertEquals(InstrumentationJobStatus.COMPLETED, job.getStatus(), "a late duplicate event must not flip the terminal state");
+    }
+
+    @Test
+    void cacheJobWiringFailsTheJobWithTheRunError() {
+        JIPipeQueuedRunnableExecutor executor = new JIPipeQueuedRunnableExecutor("cache-operations-test");
+        JIPipeRunnable run = testCacheRun();
+        InstrumentationJob job = new InstrumentationJobManager(new InstrumentationEventBus(), "test")
+                .createJob("update_cache", "Update cache (full)");
+        CacheOperations.wireJobToExecutorLifecycle(job, run, executor);
+
+        JIPipeRunnableWorker worker = new JIPipeRunnableWorker(run, true);
+        executor.getStartedEventEmitter().emit(new JIPipeRunnable.StartedEvent(run, worker));
+        executor.getInterruptedEventEmitter().emit(
+                new JIPipeRunnable.InterruptedEvent(worker, new RuntimeException("the cache run failed")));
+
+        assertEquals(InstrumentationJobStatus.FAILED, job.getStatus());
+        assertEquals("the cache run failed", job.getError(), "the job error must carry the run error message");
+    }
+
+    @Test
+    void cacheJobWiringKeepsACancelledJobCancelledWhenTheRunIsInterrupted() {
+        JIPipeQueuedRunnableExecutor executor = new JIPipeQueuedRunnableExecutor("cache-operations-test");
+        JIPipeRunnable run = testCacheRun();
+        InstrumentationJob job = new InstrumentationJobManager(new InstrumentationEventBus(), "test")
+                .createJob("update_cache", "Update cache (full)");
+        CacheOperations.wireJobToExecutorLifecycle(job, run, executor);
+
+        // cancel_job marks the job CANCELLED and runs the handler (executor.cancel),
+        // which interrupts the run: the late interruption must not overwrite the state
+        job.cancel();
+        JIPipeRunnableWorker worker = new JIPipeRunnableWorker(run, true);
+        executor.getInterruptedEventEmitter().emit(
+                new JIPipeRunnable.InterruptedEvent(worker, new RuntimeException("Operation was cancelled.")));
+
+        assertEquals(InstrumentationJobStatus.CANCELLED, job.getStatus(),
+                "the interruption of a cancelled cache run must not overwrite the job state");
+        assertNull(job.getError());
     }
 
     @Test

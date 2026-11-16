@@ -7,9 +7,11 @@ import org.hkijena.jipipe.api.automation.AutomationContext;
 import org.hkijena.jipipe.api.automation.AutomationOperationCategory;
 import org.hkijena.jipipe.api.automation.AutomationSchemaUtils;
 import org.hkijena.jipipe.api.automation.InstrumentationJob;
+import org.hkijena.jipipe.api.automation.InstrumentationJobStatus;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
+import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.desktop.app.quickrun.JIPipeDesktopQuickRun;
 import org.hkijena.jipipe.desktop.app.quickrun.JIPipeDesktopQuickRunSettings;
 
@@ -33,11 +35,14 @@ public class CacheOperations {
 
     /**
      * Delegation seam between the update_cache operation and the cache services that the
-     * desktop cache actions invoke. Implementations must not cache data themselves; the
-     * production trigger hands the resolved targets to {@link JIPipeDesktopQuickRun}.
+     * desktop cache actions invoke. Implementations must not cache data themselves: the
+     * production trigger hands the resolved targets to {@link JIPipeDesktopQuickRun} and
+     * registers the job with the run lifecycle. The trigger owns the job completion: the
+     * job must be completed or failed when the delegated work finishes (immediately for
+     * synchronous implementations), never by the operation itself.
      */
     interface CacheTrigger {
-        void run(JIPipeProject project, List<JIPipeGraphNode> targets, String mode);
+        void run(JIPipeProject project, List<JIPipeGraphNode> targets, String mode, InstrumentationJob job);
     }
 
     /**
@@ -45,15 +50,88 @@ public class CacheOperations {
      * the desktop cache context actions and enqueues the run on the shared run queue.
      * The modes map as: full = cache the targets, intermediate = also store intermediate
      * results, predecessors = run only the dependencies of the targets.
+     * <p>
+     * The job reflects the QuickRun lifecycle: PENDING while the run is queued, RUNNING
+     * once the executor starts it, and COMPLETED or FAILED (with the run error) when the
+     * run finishes. {@code cancel_job} cancels the QuickRun on the shared queue (the
+     * executor cancels queued and running runs).
      */
-    static void runCacheServices(JIPipeProject project, List<JIPipeGraphNode> targets, String mode) {
+    static void runCacheServices(JIPipeProject project, List<JIPipeGraphNode> targets, String mode, InstrumentationJob job) {
         JIPipeDesktopQuickRunSettings settings = new JIPipeDesktopQuickRunSettings(project);
         settings.setSaveToDisk(false);
         settings.setStoreToCache(true);
         settings.setStoreIntermediateResults("intermediate".equals(mode));
         settings.setExcludeSelected("predecessors".equals(mode));
         JIPipeDesktopQuickRun run = new JIPipeDesktopQuickRun(project, targets, settings);
-        JIPipeQueuedRunnableExecutor.getInstance().enqueue(run);
+        JIPipeQueuedRunnableExecutor executor = JIPipeQueuedRunnableExecutor.getInstance();
+        wireJobToExecutorLifecycle(job, run, executor);
+        executor.enqueue(run);
+    }
+
+    /**
+     * Registers the job with the executor lifecycle of the given run and arms the job
+     * cancellation handler ({@link JIPipeQueuedRunnableExecutor#cancel} supports queued
+     * and running runs). Must be called BEFORE the run is enqueued: the executor starts
+     * an enqueued run synchronously when its queue is empty, so the started event can
+     * fire while {@code enqueue()} is still on the stack - a later subscription would
+     * miss it.
+     * <p>
+     * The executor re-emits the worker events of every run unconditionally, so the
+     * listeners filter by run identity (the shared queue also carries unrelated runs).
+     */
+    static void wireJobToExecutorLifecycle(InstrumentationJob job, JIPipeRunnable run, JIPipeQueuedRunnableExecutor executor) {
+        job.setCancellationHandler(() -> executor.cancel(run));
+        final JIPipeRunnable.StartedEventListener[] started = new JIPipeRunnable.StartedEventListener[1];
+        final JIPipeRunnable.FinishedEventListener[] finished = new JIPipeRunnable.FinishedEventListener[1];
+        final JIPipeRunnable.InterruptedEventListener[] interrupted = new JIPipeRunnable.InterruptedEventListener[1];
+        started[0] = event -> {
+            if (event.getRun() == run) {
+                job.setStatus(InstrumentationJobStatus.RUNNING);
+            }
+        };
+        finished[0] = event -> {
+            if (event.getRun() != run) {
+                return;
+            }
+            unsubscribeRunLifecycle(executor, started[0], finished[0], interrupted[0]);
+            if (isActive(job)) {
+                job.complete(null);
+            }
+        };
+        interrupted[0] = event -> {
+            if (event.getRun() != run) {
+                return;
+            }
+            unsubscribeRunLifecycle(executor, started[0], finished[0], interrupted[0]);
+            if (isActive(job)) {
+                Throwable exception = event.getException();
+                String message = exception == null ? "Cache run failed"
+                        : exception.getMessage() != null ? exception.getMessage() : exception.toString();
+                job.fail(message);
+            }
+        };
+        executor.getStartedEventEmitter().subscribe(started[0]);
+        executor.getFinishedEventEmitter().subscribe(finished[0]);
+        executor.getInterruptedEventEmitter().subscribe(interrupted[0]);
+    }
+
+    /**
+     * The listeners must be removed on the first terminal event: they would otherwise
+     * fire for future runs of other jobs (the emitters are shared per executor).
+     * Unsubscribing from within a listener is safe: the emitter iterates a copy.
+     */
+    private static void unsubscribeRunLifecycle(JIPipeQueuedRunnableExecutor executor,
+                                                JIPipeRunnable.StartedEventListener started,
+                                                JIPipeRunnable.FinishedEventListener finished,
+                                                JIPipeRunnable.InterruptedEventListener interrupted) {
+        executor.getStartedEventEmitter().unsubscribe(started);
+        executor.getFinishedEventEmitter().unsubscribe(finished);
+        executor.getInterruptedEventEmitter().unsubscribe(interrupted);
+    }
+
+    private static boolean isActive(InstrumentationJob job) {
+        InstrumentationJobStatus status = job.getStatus();
+        return status == InstrumentationJobStatus.PENDING || status == InstrumentationJobStatus.RUNNING;
     }
 
     public static class UpdateCache implements AsyncAutomationOperation {
@@ -128,8 +206,9 @@ public class CacheOperations {
                     "Update cache (" + mode + ")", ctx.getProgressInfo());
             Thread thread = new Thread(() -> {
                 try {
-                    trigger.run(ctx.getProject(), targets, mode);
-                    job.complete(null);
+                    // The trigger registers the job with the delegated cache run: the job
+                    // completes or fails when the run finishes, not when the trigger returns.
+                    trigger.run(ctx.getProject(), targets, mode, job);
                 } catch (Exception e) {
                     job.fail(e.getMessage());
                 }
