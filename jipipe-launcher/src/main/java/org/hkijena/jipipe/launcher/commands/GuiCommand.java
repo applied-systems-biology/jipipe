@@ -1,18 +1,16 @@
 package org.hkijena.jipipe.launcher.commands;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import net.imagej.ImageJ;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeGUICommand;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.automation.AutomationOperationRegistry;
-import org.hkijena.jipipe.api.automation.endpoint.AutomationEndpointHandlers;
 import org.hkijena.jipipe.api.automation.endpoint.AutomationInstanceEndpoint;
 import org.hkijena.jipipe.api.automation.endpoint.MCPBrokerClient;
 import org.hkijena.jipipe.api.automation.endpoint.MCPProjectEntry;
 import org.hkijena.jipipe.api.automation.endpoint.ProjectSource;
 import org.hkijena.jipipe.api.automation.permissions.AutomationPermissionService;
 import org.hkijena.jipipe.api.automation.permissions.AutomationPermissionState;
+import org.hkijena.jipipe.desktop.app.automation.JIPipeDesktopMCPIntegration;
 import org.hkijena.jipipe.api.instrumentation.InstrumentationApplicationSettings;
 import org.hkijena.jipipe.api.instrumentation.InstrumentationServer;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
@@ -138,6 +136,7 @@ public class GuiCommand {
         if (!requested) {
             return;
         }
+        JIPipeDesktopMCPIntegration.markStarting();
         try {
             // CLI overrides are applied non-persistently to the shared permission service
             // (JIPipeAutomationServiceComponent, reachable from the endpoint, the GUI
@@ -149,11 +148,10 @@ public class GuiCommand {
             if (!mcpOptions.denyIds().isEmpty()) {
                 permissions.setCliOverride(AutomationPermissionState.Deny, mcpOptions.denyIds());
             }
-            // Minimal pre-Task-13 wiring: the endpoint registry is empty, so the endpoint
-            // refuses every operation with the unknown code before reaching the handlers.
-            // Task 13 replaces the registry and handlers with the real GUI dispatch.
-            automationEndpoint = new AutomationInstanceEndpoint(new AutomationOperationRegistry(),
-                    permissions, minimalMcpHandlers(), null, null);
+            // Task 13 wiring: the endpoint serves the global operation registry and the
+            // desktop integration is the real dispatch (project resolution, EDT
+            // marshalling, ask bubble, operation log, screenshot source).
+            automationEndpoint = JIPipeDesktopMCPIntegration.createEndpoint();
             automationEndpoint.start();
             int brokerPort = MCPApplicationSettings.getInstance() != null
                     ? MCPApplicationSettings.getInstance().getPort() : 8781;
@@ -161,6 +159,7 @@ public class GuiCommand {
             client.setEndpoint(automationEndpoint);
             client.setProjectSource(() -> projectSnapshot);
             mcpBrokerClient = client;
+            JIPipeDesktopMCPIntegration.install(automationEndpoint, client);
             client.ensureConnected(new JIPipeProgressInfo());
             client.register();
             System.err.println("MCP broker connected at " + client.getBaseUrl());
@@ -168,30 +167,6 @@ public class GuiCommand {
             System.err.println("MCP automation layer failed to start: " + e.getMessage());
             shutdownMcp();
         }
-    }
-
-    /**
-     * Minimal endpoint handlers for the pre-Task-13 state. The endpoint's operation registry
-     * is empty, so every operation is refused as unknown before these handlers run; they
-     * exist so the endpoint is fully functional without GUI wiring.
-     */
-    private static AutomationEndpointHandlers minimalMcpHandlers() {
-        return new AutomationEndpointHandlers() {
-            @Override
-            public JsonNode execute(String operationId, String projectKey, JsonNode params) {
-                throw new IllegalStateException("GUI operation dispatch is not wired yet (Task 13): " + operationId);
-            }
-
-            @Override
-            public boolean isRegistered(String operationId) {
-                return false;
-            }
-
-            @Override
-            public boolean isHidden(String operationId) {
-                return false;
-            }
-        };
     }
 
     /**
@@ -295,6 +270,8 @@ public class GuiCommand {
             }
             automationEndpoint = null;
         }
+        // Deactivates the desktop integration (screenshot source, pending asks, status).
+        JIPipeDesktopMCPIntegration.uninstall();
     }
 
     public static class WindowWatcher implements WindowOpenedEventListener, WindowClosedEventListener {

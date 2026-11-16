@@ -4,7 +4,10 @@ import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.instrumentation.InstrumentationApplicationSettings;
 import org.hkijena.jipipe.api.automation.operations.*;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
+import org.hkijena.jipipe.desktop.app.automation.JIPipeDesktopMCPPermissionsEditorUI;
 import org.hkijena.jipipe.plugins.automation.settings.MCPApplicationSettings;
+import org.hkijena.jipipe.plugins.automation.settings.MCPPermissionStates;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
@@ -55,6 +58,10 @@ public class AutomationPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     public void register(JIPipeService service, Context context, JIPipeProgressInfo progressInfo) {
         registerApplicationSettingsSheet(new InstrumentationApplicationSettings());
         registerApplicationSettingsSheet(new MCPApplicationSettings());
+        registerParameterType("org.hkijena.jipipe:mcp-permission-states", MCPPermissionStates.class,
+                JIPipeParameterArchetype.Value, "MCP permissions",
+                "User-chosen permission state per automation operation (operation id to state name)",
+                JIPipeDesktopMCPPermissionsEditorUI.class);
 
         // Project operations
         registerAutomationOperation("list_projects", new ProjectOperations.ListProjects());

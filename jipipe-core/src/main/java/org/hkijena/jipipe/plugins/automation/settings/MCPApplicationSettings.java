@@ -8,13 +8,12 @@ import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationSettingsSheetCate
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationsSettingsSheet;
 
 import javax.swing.*;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 /**
  * Application settings for the shared MCP broker and the per-instance automation endpoint.
  * The permission map persists the user-chosen {@link AutomationPermissionState} per
- * operation id (state name); the permission table UI is provided by the automation UI.
+ * operation id (state name); it is edited by the per-tool permission table
+ * ({@code JIPipeDesktopMCPPermissionsEditorUI}).
  * <p>
  * The {@code requireToken} parameter toggles token authentication: when enabled, the
  * broker client generates the shared token file {@code <JIPipe user dir>/mcp/token} once
@@ -30,7 +29,7 @@ public class MCPApplicationSettings extends JIPipeDefaultApplicationsSettingsShe
     private int port = 8781;
     private boolean autoStart = false;
     private boolean requireToken = false;
-    private Map<String, String> permissions = new LinkedHashMap<>();
+    private MCPPermissionStates permissions = new MCPPermissionStates();
 
     public static MCPApplicationSettings getInstance() {
         return JIPipe.getSettings().getById(ID, MCPApplicationSettings.class);
@@ -81,21 +80,19 @@ public class MCPApplicationSettings extends JIPipeDefaultApplicationsSettingsShe
     }
 
     /**
-     * Persisted permission states per operation id (operation id to
-     * {@link AutomationPermissionState} name).
-     * <p>
-     * Hidden from the generated settings UI: no generic editor exists for maps, and the
-     * dedicated permission table UI (automation UI) reads and writes this map.
+     * Persisted permission states per operation id. Edited by the dedicated permission
+     * table editor (registered for {@link MCPPermissionStates}); an edit writes a copy
+     * through the parameter access, so the change events and the settings bridge fire.
      */
-    @SetJIPipeDocumentation(name = "Permissions", description = "User-chosen permission state per automation operation (operation id to state name). Edited in the automation permission table.")
-    @JIPipeParameter(value = "permissions", hidden = true)
-    public Map<String, String> getPermissions() {
+    @SetJIPipeDocumentation(name = "Permissions", description = "User-chosen permission state per automation operation (operation id to state name). Edited in the permission table below.")
+    @JIPipeParameter("permissions")
+    public MCPPermissionStates getPermissions() {
         return permissions;
     }
 
-    @JIPipeParameter(value = "permissions", hidden = true)
-    public void setPermissions(Map<String, String> permissions) {
-        this.permissions = permissions == null ? new LinkedHashMap<>() : new LinkedHashMap<>(permissions);
+    @JIPipeParameter("permissions")
+    public void setPermissions(MCPPermissionStates permissions) {
+        this.permissions = permissions == null ? new MCPPermissionStates() : permissions;
     }
 
     /**
@@ -115,13 +112,12 @@ public class MCPApplicationSettings extends JIPipeDefaultApplicationsSettingsShe
 
     /**
      * Persists the permission state of one operation (null clears it).
+     * Note: this bypasses the parameter access, so no parameter change event fires and
+     * the settings document is not updated; the settings table writes a copy through
+     * {@link #setPermissions(MCPPermissionStates)} instead.
      */
     public void setPermissionState(String operationId, AutomationPermissionState state) {
-        if (state == null) {
-            permissions.remove(operationId);
-        } else {
-            permissions.put(operationId, state.name());
-        }
+        permissions.set(operationId, state == null ? null : state.name());
     }
 
     @Override

@@ -117,6 +117,15 @@ public class AutomationPermissionService {
     }
 
     /**
+     * Removes one grant (no-op when the grant does not exist).
+     */
+    public void revokeGrant(AutomationGrant grant) {
+        if (grant != null) {
+            grants.remove(grant);
+        }
+    }
+
+    /**
      * Returns a sorted snapshot of all grants.
      */
     public List<AutomationGrant> getGrants() {

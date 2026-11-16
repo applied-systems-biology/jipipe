@@ -45,6 +45,7 @@ import org.hkijena.jipipe.api.shortcuts.KeymapSettings;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
+import org.hkijena.jipipe.desktop.app.automation.JIPipeDesktopMCPStatusControl;
 import org.hkijena.jipipe.desktop.app.backups.JIPipeDesktopBackupManagerPanel;
 import org.hkijena.jipipe.desktop.app.shortcuts.JIPipeDesktopShortcutDispatcher;
 import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopCacheBrowserUI;
@@ -641,6 +642,9 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         if (AIApplicationSettings.getInstance().isEnableAI()) {
             // AI control
             statusBar.add(new JIPipeDesktopAIStatusControl(this));
+
+            // MCP control (same AI/automation layer)
+            statusBar.add(new JIPipeDesktopMCPStatusControl(this));
         }
 
         // Server control

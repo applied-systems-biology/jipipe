@@ -17,6 +17,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.automation.AutomationOperation;
 import org.hkijena.jipipe.api.automation.AutomationOperationRegistry;
+import org.hkijena.jipipe.api.servers.ServerLogEntry;
 import org.hkijena.jipipe.api.servers.SharedServerDiscoveryFile;
 import org.hkijena.jipipe.plugins.automation.settings.MCPApplicationSettings;
 import org.hkijena.jipipe.servers.mcp.MCPServerProcess;
@@ -318,6 +319,14 @@ public class MCPBrokerClient {
     }
 
     /**
+     * The shared broker token (public accessor for the MCP UI: the copy-server-URL menu
+     * offers the token when token authentication is enabled). See {@link #currentToken()}.
+     */
+    public String getToken() {
+        return currentToken();
+    }
+
+    /**
      * Registers this instance at the broker (or updates an existing registration).
      *
      * @throws RuntimeException when not connected or the broker refuses the registration
@@ -363,6 +372,31 @@ public class MCPBrokerClient {
         }
         connected = false;
         registered = false;
+    }
+
+    /**
+     * Fetches the broker log entries served by {@code GET /control/logs} (all entries
+     * currently in the broker's ring buffer). The MCP operation log UI displays them
+     * alongside the instance-side operation records.
+     *
+     * @param bearerToken the bearer token, or null when token authentication is off
+     * @return the entries; empty when the broker is unreachable or refuses the call
+     */
+    public List<ServerLogEntry> fetchBrokerLogs(String bearerToken) {
+        if (baseUrl == null) {
+            return new ArrayList<>();
+        }
+        try {
+            HttpResult result = httpGet(baseUrl + "/control/logs", bearerToken);
+            if (!result.isSuccessful() || result.body().isBlank()) {
+                return new ArrayList<>();
+            }
+            ServerLogEntry[] entries = JsonUtils.getObjectMapper().readValue(result.body(), ServerLogEntry[].class);
+            return new ArrayList<>(List.of(entries));
+        } catch (Exception e) {
+            System.err.println("MCP broker log fetch failed: " + e.getMessage());
+            return new ArrayList<>();
+        }
     }
 
     /**
@@ -544,6 +578,18 @@ public class MCPBrokerClient {
         }
         try (OutputStream os = conn.getOutputStream()) {
             os.write(body.getBytes(StandardCharsets.UTF_8));
+        }
+        int status = conn.getResponseCode();
+        return new HttpResult(status, readResponse(conn, status));
+    }
+
+    private static HttpResult httpGet(String urlStr, String bearerToken) throws IOException {
+        HttpURLConnection conn = (HttpURLConnection) new URL(urlStr).openConnection();
+        conn.setRequestMethod("GET");
+        conn.setConnectTimeout(10000);
+        conn.setReadTimeout(30000);
+        if (bearerToken != null) {
+            conn.setRequestProperty("Authorization", "Bearer " + bearerToken);
         }
         int status = conn.getResponseCode();
         return new HttpResult(status, readResponse(conn, status));
