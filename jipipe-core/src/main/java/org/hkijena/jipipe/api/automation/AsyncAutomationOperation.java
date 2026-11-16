@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * Extension of {@link AutomationOperation} for long-running operations.
- * The {@link org.hkijena.jipipe.api.instrumentation.InstrumentationServer} detects async operations and returns a
- * job ID immediately, then broadcasts job progress and completion events.
+ * The automation layer detects async operations and returns a job ID immediately,
+ * then reports job progress and completion events.
  */
 public interface AsyncAutomationOperation extends AutomationOperation {
     /**

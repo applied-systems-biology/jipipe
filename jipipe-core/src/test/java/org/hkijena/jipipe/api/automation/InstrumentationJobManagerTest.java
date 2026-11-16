@@ -1,9 +1,5 @@
-package org.hkijena.jipipe.api.instrumentation;
+package org.hkijena.jipipe.api.automation;
 
-import org.hkijena.jipipe.api.automation.InstrumentationEventBus;
-import org.hkijena.jipipe.api.automation.InstrumentationJob;
-import org.hkijena.jipipe.api.automation.InstrumentationJobManager;
-import org.hkijena.jipipe.api.automation.InstrumentationJobStatus;
 import org.hkijena.jipipe.api.automation.events.JobCompletedEvent;
 import org.hkijena.jipipe.api.automation.events.JobStartedEvent;
 import org.junit.jupiter.api.Test;

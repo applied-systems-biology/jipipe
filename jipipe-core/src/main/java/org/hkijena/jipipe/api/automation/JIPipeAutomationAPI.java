@@ -29,8 +29,8 @@ import java.util.*;
 import java.util.List;
 
 /**
- * Stateless service providing typed Java methods for all built-in instrumentation operations.
- * Both the AI agent and the WebSocket operation wrappers delegate to this class.
+ * Stateless service providing typed Java methods for all built-in automation operations.
+ * The operation implementations delegate to this class.
  */
 public final class JIPipeAutomationAPI {
 
@@ -195,7 +195,7 @@ public final class JIPipeAutomationAPI {
             } catch (Exception e) {
                 job.fail(e.getMessage());
             }
-        }, "instrumentation-run-" + job.getId());
+        }, "automation-run-" + job.getId());
         runThread.setDaemon(true);
         runThread.start();
         return job;
@@ -217,7 +217,7 @@ public final class JIPipeAutomationAPI {
             } catch (Exception e) {
                 job.fail(e.getMessage());
             }
-        }, "instrumentation-run-" + job.getId());
+        }, "automation-run-" + job.getId());
         runThread.setDaemon(true);
         runThread.start();
         return job;
@@ -235,7 +235,7 @@ public final class JIPipeAutomationAPI {
             } catch (Exception e) {
                 job.fail(e.getMessage());
             }
-        }, "instrumentation-run-" + job.getId());
+        }, "automation-run-" + job.getId());
         runThread.setDaemon(true);
         runThread.start();
         return job;

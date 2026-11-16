@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 /**
  * Interface for operations that can be executed via the automation layer.
  * Operations are registered in the {@link AutomationOperationRegistry}
- * and dispatched by the {@link org.hkijena.jipipe.api.instrumentation.InstrumentationServer}.
+ * and dispatched by the {@link org.hkijena.jipipe.api.automation.endpoint.AutomationInstanceEndpoint}.
  */
 public interface AutomationOperation {
     String getId();

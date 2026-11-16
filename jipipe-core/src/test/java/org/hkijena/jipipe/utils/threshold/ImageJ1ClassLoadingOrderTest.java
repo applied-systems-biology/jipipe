@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  * patcher before any test class is loaded.
  *
  * <p>This test alone cannot reproduce the ordering; it is executed before
- * {@code org.hkijena.jipipe.api.instrumentation.InstrumentationAPITest} when
+ * {@code org.hkijena.jipipe.api.automation.InstrumentationAPITest} when
  * running the suite (alphabetical/dependency order) to guard the regression.
  */
 class ImageJ1ClassLoadingOrderTest {

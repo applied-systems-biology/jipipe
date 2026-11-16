@@ -1,12 +1,8 @@
-package org.hkijena.jipipe.api.instrumentation;
+package org.hkijena.jipipe.api.automation;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.automation.AutomationContext;
-import org.hkijena.jipipe.api.automation.InstrumentationEventBus;
-import org.hkijena.jipipe.api.automation.InstrumentationJobManager;
-import org.hkijena.jipipe.api.automation.JIPipeAutomationAPI;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;

@@ -160,7 +160,7 @@ instrumentation operation today, migrated with a schema added.
 | Graph map | `get_pipeline_map`, `get_segment_detail`, `search_nodes` (migrated) | A |
 | Algorithms | `list_algorithms`, `get_node_docs` (node registry, `@JIPipeDocumentation`, taxonomy) | A |
 | Data | `query_data` (migrated), `describe_data` (type, dimensions, image preview), `export_data` (writes to the export/temp directory, returns path) | A |
-| Screenshots | `screenshot_canvas`, `screenshot_minimap`, `screenshot_ui` (named UI surface), `screenshot_window` (optional fake titlebar) | A |
+| Screenshots | `screenshot_canvas` (current view; `screenshot_minimap` covers the full graph), `screenshot_minimap`, `screenshot_ui` (named UI surface), `screenshot_window` (optional fake titlebar) | A |
 | Errors/logs | `get_errors` (validation and last-run errors), `get_log` (progress log tail/filter) | A |
 | Modify | `add_node`, `remove_node`, `add_connection`, `remove_connection`, `set_parameter`, `set_project_metadata`, `add_compartment`, `rename_compartment` (migrated), `arrange_nodes` (reuses the canvas layout code) | Ask |
 | Execute | `run_node`, `run_compartment`, `run_pipeline` (migrated, return job ids), `get_job_status`, `cancel_job`, `update_cache` (scope node/compartment/pipeline; mode full/intermediate/predecessors), `create_ro_crate` (migrated) | Ask |
@@ -179,8 +179,10 @@ Per tool, four states:
 - Ask: a prompt bubble anchored to the MCP statusbar button of the target project window
   (same statusbar pattern as the AI control and author button). Answers: Allow once,
   Allow always (this project), Deny. The agent blocks on the tool call until answered;
-  there is no timeout by default. If the window is minimized, the bubble shows when it is
-  restored; the request is listed in the popup as pending.
+  the wait is bounded at 300 seconds so a paused or unattended UI cannot hold endpoint
+  threads forever; the agent receives a denied outcome after the timeout. If the window
+  is minimized, the bubble shows when it is restored; the request is listed in the popup
+  as pending.
 - Deny: refused with an agent-readable message ("operation denied by the user; do not
   retry this operation"). Deny also applies when the user answers Deny to an Ask.
 - Hide: the instance never registers the tool, so it never appears in `tools/list`.
@@ -311,8 +313,10 @@ bubble behavior.
   it; a call targeting it returns an error listing the still-available projects.
 - Broker dies while instances run: instances detect failed health checks, delete the
   stale discovery file, and respawn (same `ensureConnected` path as the LLM proxy).
-- Ask prompt: no timeout; the tool call blocks until the user answers. The agent may
-  cancel its call, in which case the pending request is dropped and logged.
+- Ask prompt: the tool call blocks until the user answers; the wait is bounded at 300
+  seconds so a paused or unattended UI cannot hold endpoint threads forever, and the
+  agent receives a denied outcome after the timeout. The agent may cancel its call, in
+  which case the pending request is dropped and logged.
 - Broker to instance HTTP timeouts: generous defaults (execution tools are long-running
   and report through job progress; the endpoint acknowledges execution start quickly and
   results are polled via `get_job_status` semantics).

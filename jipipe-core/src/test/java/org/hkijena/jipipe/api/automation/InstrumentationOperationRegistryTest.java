@@ -1,11 +1,7 @@
-package org.hkijena.jipipe.api.instrumentation;
+package org.hkijena.jipipe.api.automation;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.hkijena.jipipe.api.automation.AutomationContext;
-import org.hkijena.jipipe.api.automation.AutomationOperation;
-import org.hkijena.jipipe.api.automation.AutomationOperationRegistry;
-import org.hkijena.jipipe.api.automation.AutomationSchemaUtils;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

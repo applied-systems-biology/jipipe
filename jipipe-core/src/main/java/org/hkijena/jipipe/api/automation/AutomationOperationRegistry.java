@@ -9,7 +9,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Registry of all instrumentation operations (built-in and plugin-registered).
+ * Registry of all automation operations (built-in and plugin-registered).
  */
 public class AutomationOperationRegistry {
     private final Map<String, AutomationOperation> operations = new ConcurrentHashMap<>();

@@ -1,6 +1,5 @@
-package org.hkijena.jipipe.api.instrumentation;
+package org.hkijena.jipipe.api.automation;
 
-import org.hkijena.jipipe.api.automation.InstrumentationEventBus;
 import org.hkijena.jipipe.api.automation.events.NodeAddedEvent;
 import org.hkijena.jipipe.api.automation.events.ParameterChangedEvent;
 import org.junit.jupiter.api.Test;

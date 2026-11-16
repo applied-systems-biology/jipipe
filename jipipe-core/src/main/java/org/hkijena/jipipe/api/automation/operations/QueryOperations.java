@@ -8,7 +8,7 @@ import org.hkijena.jipipe.api.automation.AutomationContext;
 import org.hkijena.jipipe.api.automation.AutomationOperation;
 
 /**
- * Built-in query operations for the instrumentation layer.
+ * Built-in query operations for the automation layer.
  * Each operation wraps a {@link JIPipeAutomationAPI} method.
  */
 public class QueryOperations {

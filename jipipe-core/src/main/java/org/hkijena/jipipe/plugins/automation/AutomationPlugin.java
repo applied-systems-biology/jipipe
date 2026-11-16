@@ -2,7 +2,6 @@ package org.hkijena.jipipe.plugins.automation;
 
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.instrumentation.InstrumentationApplicationSettings;
 import org.hkijena.jipipe.api.automation.operations.*;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
 import org.hkijena.jipipe.desktop.app.automation.JIPipeDesktopMCPPermissionsEditorUI;
@@ -26,7 +25,7 @@ public class AutomationPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public String getName() {
-        return "Instrumentation";
+        return "Automation";
     }
 
     @Override
@@ -56,7 +55,6 @@ public class AutomationPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public void register(JIPipeService service, Context context, JIPipeProgressInfo progressInfo) {
-        registerApplicationSettingsSheet(new InstrumentationApplicationSettings());
         registerApplicationSettingsSheet(new MCPApplicationSettings());
         registerParameterType("org.hkijena.jipipe:mcp-permission-states", MCPPermissionStates.class,
                 JIPipeParameterArchetype.Value, "MCP permissions",

@@ -212,7 +212,7 @@ public class CacheOperations {
                 } catch (Exception e) {
                     job.fail(e.getMessage());
                 }
-            }, "instrumentation-update-cache-" + job.getId());
+            }, "automation-update-cache-" + job.getId());
             thread.setDaemon(true);
             thread.start();
             return job;

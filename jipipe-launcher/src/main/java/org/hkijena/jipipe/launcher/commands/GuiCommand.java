@@ -11,8 +11,6 @@ import org.hkijena.jipipe.api.automation.endpoint.ProjectSource;
 import org.hkijena.jipipe.api.automation.permissions.AutomationPermissionService;
 import org.hkijena.jipipe.api.automation.permissions.AutomationPermissionState;
 import org.hkijena.jipipe.desktop.app.automation.JIPipeDesktopMCPIntegration;
-import org.hkijena.jipipe.api.instrumentation.InstrumentationApplicationSettings;
-import org.hkijena.jipipe.api.instrumentation.InstrumentationServer;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;
 import org.hkijena.jipipe.desktop.commons.events.WindowClosedEvent;
@@ -32,10 +30,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 public class GuiCommand {
-
-    private static InstrumentationServer instrumentationServer;
-    private static int pendingInstrumentationPort = -1;
-    private static boolean instrumentationFlag = false;
 
     /**
      * Single-threaded daemon executor for the whole MCP lifecycle: startup, project
@@ -59,10 +53,6 @@ public class GuiCommand {
     private static volatile MCPBrokerClient mcpBrokerClient;
     private static volatile Future<?> mcpStartupTask;
 
-    public static InstrumentationServer getInstrumentationServer() {
-        return instrumentationServer;
-    }
-
     /**
      * Pure parser for the {@code --mcp} CLI arguments (delegates to {@link McpCliOptions}).
      */
@@ -84,20 +74,7 @@ public class GuiCommand {
                 i += consumed - 1;
                 continue;
             }
-            if ("--instrumentation".equals(argsList.get(i))) {
-                instrumentationFlag = true;
-                if (i + 1 < argsList.size()) {
-                    try {
-                        pendingInstrumentationPort = Integer.parseInt(argsList.get(i + 1));
-                        i++;
-                    } catch (NumberFormatException e) {
-                        // Port will be resolved from settings in onWindowOpened()
-                    }
-                }
-                // else: port will be resolved from settings in onWindowOpened()
-            } else {
-                remainingArgs.add(argsList.get(i));
-            }
+            remainingArgs.add(argsList.get(i));
         }
 
         if (!remainingArgs.isEmpty()) {
@@ -292,47 +269,16 @@ public class GuiCommand {
 
         @Override
         public void onWindowClosed(WindowClosedEvent event) {
-            if (instrumentationServer != null) {
-                SwingUtilities.invokeLater(() -> instrumentationServer.onProjectWindowsChanged());
-            }
             submitMcpProjectPush();
             int windowsOpen = JIPipeDesktopProjectWindow.getOpenWindows().size();
             if (windowsOpen == 0) {
                 shutdownMcpOrdered();
-                if (instrumentationServer != null) {
-                    try {
-                        instrumentationServer.stop(0);
-                    } catch (Exception ignored) {
-                    }
-                }
                 JIPipe.exitLater(0);
             }
         }
 
         @Override
         public void onWindowOpened(WindowOpenedEvent event) {
-            if (instrumentationServer == null) {
-                int port = -1;
-                if (pendingInstrumentationPort > 0) {
-                    port = pendingInstrumentationPort;
-                } else if (instrumentationFlag || InstrumentationApplicationSettings.getInstance().isAutoStart()) {
-                    port = InstrumentationApplicationSettings.getInstance().getPort();
-                }
-                if (port > 0) {
-                    instrumentationServer = new InstrumentationServer(port);
-                    try {
-                        instrumentationServer.start();
-                        System.err.println("Instrumentation server started on port " + port);
-                    } catch (Exception e) {
-                        System.err.println("Failed to start instrumentation server: " + e.getMessage());
-                        instrumentationServer = null;
-                    }
-                    pendingInstrumentationPort = -1;
-                }
-            }
-            if (instrumentationServer != null) {
-                SwingUtilities.invokeLater(() -> instrumentationServer.onProjectWindowsChanged());
-            }
             startMcpIfNeededAsync();
             submitMcpProjectPush();
         }

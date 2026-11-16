@@ -5,7 +5,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 
 /**
- * Context passed to instrumentation operations.
+ * Context passed to automation operations.
  * <p>
  * The {@code graphOverride} allows callers (e.g., the AI agent's stage system)
  * to pass a working graph instead of the project graph. External WebSocket tools
