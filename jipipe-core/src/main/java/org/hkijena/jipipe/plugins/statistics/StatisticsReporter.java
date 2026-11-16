@@ -24,6 +24,36 @@ public class StatisticsReporter {
     private static final Logger logger = LoggerFactory.getLogger(StatisticsReporter.class);
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
+    /**
+     * System property that disables all statistics sending. Intended for CI and
+     * test environments, where every {@code JIPipe.ensureInstance()} would
+     * otherwise report a fresh machine ID and create false installation surges
+     * on the statistics server.
+     */
+    public static final String DISABLED_PROPERTY = "jipipe.statistics.disabled";
+
+    /**
+     * Environment variable that disables all statistics sending. Presence with
+     * any value disables sending (same presence semantics as the
+     * {@code JIPIPE_OVERRIDE_*} variables).
+     */
+    public static final String DISABLED_ENVIRONMENT_VARIABLE = "JIPIPE_DISABLE_STATISTICS";
+
+    /**
+     * @return true if statistics sending is disabled via {@link #DISABLED_PROPERTY}
+     * or {@link #DISABLED_ENVIRONMENT_VARIABLE}
+     */
+    public static boolean isSendingDisabled() {
+        return isSendingDisabled(System.getProperty(DISABLED_PROPERTY), System.getenv(DISABLED_ENVIRONMENT_VARIABLE));
+    }
+
+    static boolean isSendingDisabled(String systemPropertyValue, String environmentVariableValue) {
+        if (systemPropertyValue != null && systemPropertyValue.equalsIgnoreCase("true")) {
+            return true;
+        }
+        return environmentVariableValue != null;
+    }
+
     public static ObjectNode buildPayload(JIPipeStatisticsRegistry registry,
                                           StatisticsPrivacyLevel level,
                                           String machineId) {
@@ -47,6 +77,11 @@ public class StatisticsReporter {
     }
 
     public static void sendNow(Consumer<Boolean> callback) {
+        if (isSendingDisabled()) {
+            if (callback != null) callback.accept(false);
+            return;
+        }
+
         JIPipeStatisticsApplicationSettings settings = JIPipeStatisticsApplicationSettings.getInstance();
         if (!settings.isEnabled() || settings.getPrivacyLevel() == StatisticsPrivacyLevel.None) {
             if (callback != null) callback.accept(false);

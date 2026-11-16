@@ -20,6 +20,10 @@ variables:
   GIT_CLEAN_FLAGS: "-ffdx -e .m2/"
   MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
   DOCKER_TLS_CERTDIR: ""
+  # CI and test activity must not report usage statistics (work item #1371):
+  # every Maven test run initializes the service and would otherwise send a
+  # fresh machine ID, registering a false installation per pipeline
+  JIPIPE_DISABLE_STATISTICS: "1"
 
 # One base image for everything JIPipe CI (see ci/Dockerfile): built and
 # pushed by the jipipe_ci_base_image job when ci/Dockerfile changes on

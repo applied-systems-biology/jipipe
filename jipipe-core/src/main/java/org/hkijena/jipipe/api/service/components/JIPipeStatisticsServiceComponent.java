@@ -281,6 +281,11 @@ public class JIPipeStatisticsServiceComponent extends JIPipeServiceComponent {
         if (!settings.isEnabled() || settings.getPrivacyLevel() == StatisticsPrivacyLevel.None) {
             return;
         }
+        if (StatisticsReporter.isSendingDisabled()) {
+            // CI and test environments must not report statistics (work item #1371);
+            // also skip the last-attempt bookkeeping below
+            return;
+        }
 
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime lastSent = getLastSentTimestamp();

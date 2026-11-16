@@ -454,6 +454,18 @@ See the LICENSE file provided with this code for the full license.
                     <failOnError>false</failOnError>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <systemPropertyVariables>
+                        <!-- Tests initialize the full service (JIPipe.ensureInstance()),
+                             which would report statistics with a fresh machine ID per
+                             run and create false installation surges (work item #1371) -->
+                        <jipipe.statistics.disabled>true</jipipe.statistics.disabled>
+                    </systemPropertyVariables>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 </project>
