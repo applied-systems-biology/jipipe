@@ -4,7 +4,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.IntNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.hkijena.jipipe.utils.VersionUtils;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -76,5 +79,37 @@ class StatisticsReporterTest {
 
         JsonNode items = payload.get("items");
         assertFalse(items.has("a"));
+    }
+
+    @AfterEach
+    void clearDisableProperty() {
+        System.clearProperty(StatisticsReporter.DISABLED_PROPERTY);
+    }
+
+    @Test
+    void sendingDisabled_whenSystemPropertyTrue() {
+        assertTrue(StatisticsReporter.isSendingDisabled("true", null));
+        assertTrue(StatisticsReporter.isSendingDisabled("TRUE", null));
+    }
+
+    @Test
+    void sendingEnabled_whenSystemPropertyAbsentOrNotTrue() {
+        assertFalse(StatisticsReporter.isSendingDisabled(null, null));
+        assertFalse(StatisticsReporter.isSendingDisabled("false", null));
+        assertFalse(StatisticsReporter.isSendingDisabled("0", null));
+    }
+
+    @Test
+    void sendingDisabled_whenEnvironmentVariablePresent() {
+        assertTrue(StatisticsReporter.isSendingDisabled(null, "1"));
+        assertTrue(StatisticsReporter.isSendingDisabled("false", "0"));
+    }
+
+    @Test
+    void sendNow_disabledBySystemProperty_reportsFalseWithoutSending() {
+        System.setProperty(StatisticsReporter.DISABLED_PROPERTY, "true");
+        AtomicReference<Boolean> received = new AtomicReference<>();
+        StatisticsReporter.sendNow(received::set);
+        assertEquals(Boolean.FALSE, received.get());
     }
 }

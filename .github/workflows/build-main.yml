@@ -10,6 +10,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      # Test runs must not report usage statistics (work item #1371)
+      JIPIPE_DISABLE_STATISTICS: '1'
 
     steps:
       - uses: actions/checkout@v4
