@@ -20,6 +20,8 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
+import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.progress.JIPipeProgressLog;
 import org.hkijena.jipipe.api.progress.JIPipeProgressRecord;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
@@ -76,6 +78,7 @@ import java.util.function.Consumer;
 public class JIPipeDesktopProjectWindow extends JFrame {
     public static final WindowOpenedEventEmitter WINDOW_OPENED_EVENT_EMITTER = new WindowOpenedEventEmitter();
     public static final WindowClosedEventEmitter WINDOW_CLOSED_EVENT_EMITTER = new WindowClosedEventEmitter();
+    public static final ProjectLoadedEventEmitter PROJECT_LOADED_EVENT_EMITTER = new ProjectLoadedEventEmitter();
     private static final Set<JIPipeDesktopProjectWindow> OPEN_WINDOWS = new HashSet<>();
     private final Context context;
     private final List<BalloonTip> registeredBalloons = new ArrayList<>();
@@ -389,6 +392,10 @@ public class JIPipeDesktopProjectWindow extends JFrame {
         setContentPane(projectWorkbench);
         revalidate();
         repaint();
+        // The session id was regenerated above: registrations that captured the
+        // old id at window-open time (e.g. the MCP project list) are stale until
+        // they refresh. Fired on the EDT (all loadProject callers are EDT-confined).
+        PROJECT_LOADED_EVENT_EMITTER.emit(new ProjectLoadedEvent(this));
     }
 
     /**
@@ -1897,5 +1904,36 @@ public class JIPipeDesktopProjectWindow extends JFrame {
         };
 
         JIPipeDesktopRunExecuteUI.runInDialog(projectWorkbench, this, run, localQueue, JIPipeDesktopRunExecuteUI.GlobalLogMode.OnlyFailures);
+    }
+
+    public interface ProjectLoadedEventListener {
+        void onProjectLoaded(ProjectLoadedEvent event);
+    }
+
+    /**
+     * Fired at the end of {@link #loadProject(JIPipeProject, boolean, boolean)}: the
+     * window now holds the loaded project under a freshly generated session id, so
+     * listeners that captured the window's identity earlier (window-open time) must
+     * re-read it. Emitted on the EDT.
+     */
+    public static class ProjectLoadedEvent extends AbstractJIPipeEvent {
+        private final JIPipeDesktopProjectWindow window;
+
+        public ProjectLoadedEvent(JIPipeDesktopProjectWindow window) {
+            super(window);
+            this.window = window;
+        }
+
+        public JIPipeDesktopProjectWindow getWindow() {
+            return window;
+        }
+    }
+
+    public static class ProjectLoadedEventEmitter extends JIPipeEventEmitter<ProjectLoadedEvent, ProjectLoadedEventListener> {
+
+        @Override
+        protected void call(ProjectLoadedEventListener listener, ProjectLoadedEvent event) {
+            listener.onProjectLoaded(event);
+        }
     }
 }

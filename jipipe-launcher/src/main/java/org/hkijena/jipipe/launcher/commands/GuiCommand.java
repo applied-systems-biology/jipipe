@@ -92,6 +92,11 @@ public class GuiCommand {
      * connection, registration. Runs on the MCP background executor (see
      * {@link #startMcpIfNeededAsync()}), never on the EDT. Every failure is logged and
      * never crashes the GUI startup.
+     * <p>
+     * A {@code --mcp <port>} override applies to the broker SPAWN only: {@link MCPBrokerClient}
+     * passes the port to the spawned broker process, while a broker that is already reachable
+     * through the discovery file is connected to regardless of the requested port (see
+     * {@link MCPBrokerClient#ensureConnected}).
      *
      * @param projectSnapshot the open project windows, snapshotted on the EDT by the
      *                        submitter (the window set is EDT-confined)
@@ -131,8 +136,15 @@ public class GuiCommand {
             // startup reference must never be reused for shutdown.
             AutomationInstanceEndpoint startupEndpoint = JIPipeDesktopMCPIntegration.createEndpoint();
             startupEndpoint.start();
-            int brokerPort = MCPApplicationSettings.getInstance() != null
-                    ? MCPApplicationSettings.getInstance().getPort() : 8781;
+            // The CLI --mcp port overrides the settings port for the spawn; without it the
+            // settings port (default 8781) is used.
+            int brokerPort;
+            if (mcpOptions.port() != null) {
+                brokerPort = mcpOptions.port();
+            } else {
+                brokerPort = MCPApplicationSettings.getInstance() != null
+                        ? MCPApplicationSettings.getInstance().getPort() : 8781;
+            }
             MCPBrokerClient client = new MCPBrokerClient(MCPBrokerClient.defaultSpawner(), brokerPort);
             client.setEndpoint(startupEndpoint);
             client.setProjectSource(() -> projectSnapshot);
@@ -261,10 +273,11 @@ public class GuiCommand {
         JIPipeDesktopMCPIntegration.uninstall();
     }
 
-    public static class WindowWatcher implements WindowOpenedEventListener, WindowClosedEventListener {
+    public static class WindowWatcher implements WindowOpenedEventListener, WindowClosedEventListener, JIPipeDesktopProjectWindow.ProjectLoadedEventListener {
         public WindowWatcher() {
             JIPipeDesktopProjectWindow.WINDOW_OPENED_EVENT_EMITTER.subscribe(this);
             JIPipeDesktopProjectWindow.WINDOW_CLOSED_EVENT_EMITTER.subscribe(this);
+            JIPipeDesktopProjectWindow.PROJECT_LOADED_EVENT_EMITTER.subscribe(this);
         }
 
         @Override
@@ -280,6 +293,20 @@ public class GuiCommand {
         @Override
         public void onWindowOpened(WindowOpenedEvent event) {
             startMcpIfNeededAsync();
+            submitMcpProjectPush();
+        }
+
+        /**
+         * {@link JIPipeDesktopProjectWindow#loadProject(JIPipeProject, boolean, boolean)}
+         * regenerates the window session id, so a registration that captured the key at
+         * window-open time (before the project file loaded) is stale. Refresh the broker
+         * registration with the new key and the loaded project's name/path. Safe when the
+         * MCP layer is not started (the push is a no-op) and ordered behind the startup
+         * task on the MCP executor, so the refresh cannot be lost to a still-running
+         * startup.
+         */
+        @Override
+        public void onProjectLoaded(JIPipeDesktopProjectWindow.ProjectLoadedEvent event) {
             submitMcpProjectPush();
         }
     }
