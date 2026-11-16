@@ -149,8 +149,9 @@ public class ScreenshotOperations {
     }
 
     /**
-     * Renders the graph canvas of a compartment off-screen (same painter as the on-screen
-     * canvas; no screen interaction).
+     * Renders the visible viewport of a compartment's graph canvas off-screen (the canvas
+     * component at its current zoom and pan; same painter as the on-screen canvas, no
+     * screen interaction). {@link ScreenshotMinimap} renders the full graph instead.
      */
     public static class ScreenshotCanvas implements AutomationOperation {
 
@@ -177,7 +178,9 @@ public class ScreenshotOperations {
 
         @Override
         public String getDescription() {
-            return "Render the graph canvas of a compartment as a PNG image, or save it to a file";
+            return "Render the graph canvas of a compartment as a PNG image of the current view "
+                    + "(visible viewport at the current zoom/pan). Use screenshot_minimap for an image "
+                    + "of the full graph.";
         }
 
         @Override

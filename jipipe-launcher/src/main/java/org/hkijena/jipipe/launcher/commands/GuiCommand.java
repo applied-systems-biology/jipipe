@@ -57,7 +57,6 @@ public class GuiCommand {
 
     private static volatile McpCliOptions mcpOptions = McpCliOptions.parse(List.of());
     private static volatile MCPBrokerClient mcpBrokerClient;
-    private static volatile AutomationInstanceEndpoint automationEndpoint;
     private static volatile Future<?> mcpStartupTask;
 
     public static InstrumentationServer getInstrumentationServer() {
@@ -150,16 +149,18 @@ public class GuiCommand {
             }
             // Task 13 wiring: the endpoint serves the global operation registry and the
             // desktop integration is the real dispatch (project resolution, EDT
-            // marshalling, ask bubble, operation log, screenshot source).
-            automationEndpoint = JIPipeDesktopMCPIntegration.createEndpoint();
-            automationEndpoint.start();
+            // marshalling, ask bubble, operation log, screenshot source). The endpoint is
+            // tracked by the integration (getEndpoint): resume recreates it, so this
+            // startup reference must never be reused for shutdown.
+            AutomationInstanceEndpoint startupEndpoint = JIPipeDesktopMCPIntegration.createEndpoint();
+            startupEndpoint.start();
             int brokerPort = MCPApplicationSettings.getInstance() != null
                     ? MCPApplicationSettings.getInstance().getPort() : 8781;
             MCPBrokerClient client = new MCPBrokerClient(MCPBrokerClient.defaultSpawner(), brokerPort);
-            client.setEndpoint(automationEndpoint);
+            client.setEndpoint(startupEndpoint);
             client.setProjectSource(() -> projectSnapshot);
             mcpBrokerClient = client;
-            JIPipeDesktopMCPIntegration.install(automationEndpoint, client);
+            JIPipeDesktopMCPIntegration.install(startupEndpoint, client);
             client.ensureConnected(new JIPipeProgressInfo());
             client.register();
             System.err.println("MCP broker connected at " + client.getBaseUrl());
@@ -249,6 +250,15 @@ public class GuiCommand {
     }
 
     /**
+     * The integration's current endpoint (resume recreates it), or null when the MCP layer
+     * is not installed. Shutdown must stop this one, not the startup-time endpoint.
+     */
+    private static AutomationInstanceEndpoint currentMcpEndpoint() {
+        JIPipeDesktopMCPIntegration integration = JIPipeDesktopMCPIntegration.getActive();
+        return integration != null ? integration.getEndpoint() : null;
+    }
+
+    /**
      * Unregisters from the broker and stops the instance endpoint. Never throws. Runs on
      * the MCP executor only (via {@link #shutdownMcpOrdered()} or the startup failure
      * path), so it is always ordered against the other MCP tasks.
@@ -262,13 +272,13 @@ public class GuiCommand {
             }
             mcpBrokerClient = null;
         }
-        if (automationEndpoint != null) {
+        AutomationInstanceEndpoint endpoint = currentMcpEndpoint();
+        if (endpoint != null) {
             try {
-                automationEndpoint.stop();
+                endpoint.stop();
             } catch (Exception e) {
                 System.err.println("MCP endpoint stop failed: " + e.getMessage());
             }
-            automationEndpoint = null;
         }
         // Deactivates the desktop integration (screenshot source, pending asks, status).
         JIPipeDesktopMCPIntegration.uninstall();

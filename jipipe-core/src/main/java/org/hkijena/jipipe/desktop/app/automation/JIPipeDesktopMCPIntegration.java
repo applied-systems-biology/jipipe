@@ -49,6 +49,7 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
+import java.awt.Frame;
 import java.awt.Graphics2D;
 import java.awt.KeyboardFocusManager;
 import java.awt.Rectangle;
@@ -83,8 +84,11 @@ import java.util.concurrent.atomic.AtomicInteger;
  * starts or stops them on its own: {@link #createEndpoint()} only builds the endpoint with the
  * real registry and this integration as handlers, and {@link #install(AutomationInstanceEndpoint,
  * MCPBrokerClient)} stores the references so the status bar control can pause and resume
- * through {@link #pauseAsync()} and {@link #resumeAsync()} (endpoint stop/start plus client
- * unregister/register, mirroring the launcher startup path).
+ * through {@link #pauseAsync()} and {@link #resumeAsync()} (endpoint recreation plus client
+ * unregister/register, mirroring the launcher startup path). A paused endpoint cannot simply be
+ * restarted: a JDK {@code HttpServer} forbids start-after-stop, so every resume builds a fresh
+ * endpoint with the same wiring ({@link #getEndpoint()} always returns the current one, and the
+ * launcher's shutdown stops the current endpoint through it).
  * <p>
  * <b>Threading:</b> {@link #execute}, {@link #ask} and {@link #onCall} run on the endpoint's
  * HTTP executor thread. Project resolution always happens on the event dispatch thread
@@ -122,6 +126,10 @@ public final class JIPipeDesktopMCPIntegration implements AutomationEndpointHand
      * How long an unanswered Ask request waits before it is denied, so the waiting endpoint
      * thread can never block forever (a closed window, an overlooked bubble). Shutdown
      * denies pending requests immediately.
+     * <p>
+     * Deviation from the original design: the design specified an unbounded wait; the wait is
+     * bounded at 300 seconds so a paused or unattended UI cannot hold endpoint threads forever,
+     * and the agent receives a denied outcome after the timeout.
      */
     private static final int ASK_TIMEOUT_SECONDS = 300;
 
@@ -201,15 +209,28 @@ public final class JIPipeDesktopMCPIntegration implements AutomationEndpointHand
      * Creates the instance endpoint with the global operation registry, the shared
      * permission service, and this integration as handlers, ask handler, and call listener.
      * Also pushes the persisted permission states into the live permission service, so a
-     * fresh instance starts with the states the user chose in the settings.
+     * fresh instance starts with the states the user chose in the settings. Resume reuses
+     * the same wiring through {@link #newEndpoint()} (without the permission push, which
+     * the settings table applies live).
      *
      * @throws java.io.IOException when the endpoint's server socket cannot be opened
      */
     public static AutomationInstanceEndpoint createEndpoint() throws java.io.IOException {
         applyPersistedPermissions();
-        JIPipeDesktopMCPIntegration integration = getOrCreate();
+        return getOrCreate().newEndpoint();
+    }
+
+    /**
+     * Builds a fresh endpoint wired to the global operation registry, the shared permission
+     * service, and this integration as handlers, ask handler, and call listener (the same
+     * wiring the launcher's startup endpoint has). Resume must call this on every attempt:
+     * the JDK forbids starting an {@code HttpServer} again after {@code stop()}.
+     *
+     * @throws java.io.IOException when the endpoint's server socket cannot be opened
+     */
+    private AutomationInstanceEndpoint newEndpoint() throws java.io.IOException {
         return new AutomationInstanceEndpoint(JIPipe.getAutomation().getOperationRegistry(),
-                JIPipe.getAutomation().getPermissionService(), integration, integration, integration);
+                JIPipe.getAutomation().getPermissionService(), this, this, this);
     }
 
     /**
@@ -328,6 +349,16 @@ public final class JIPipeDesktopMCPIntegration implements AutomationEndpointHand
     }
 
     /**
+     * The current endpoint, or null when not installed. Resume recreates the endpoint (a JDK
+     * {@code HttpServer} cannot restart after {@code stop()}), so this is always the live
+     * instance; the launcher's shutdown stops the endpoint through this accessor instead of
+     * a stale reference.
+     */
+    public AutomationInstanceEndpoint getEndpoint() {
+        return endpoint;
+    }
+
+    /**
      * The instance-side operation log.
      */
     public MCPOperationLog getOperationLog() {
@@ -390,6 +421,14 @@ public final class JIPipeDesktopMCPIntegration implements AutomationEndpointHand
 
     // ── Ask prompt handling (the status bar bubble) ──
 
+    /**
+     * Queues one Ask request and blocks the endpoint thread until a bubble answers it, the
+     * layer shuts down (all pending requests are denied), or {@link #ASK_TIMEOUT_SECONDS}
+     * elapse (the request is then denied). Deviation from the original design: the design
+     * specified an unbounded wait; the wait is bounded so a paused or unattended UI cannot
+     * hold endpoint threads forever, and the agent receives a denied outcome after the
+     * timeout. Runs on the endpoint's HTTP executor thread.
+     */
     @Override
     public boolean ask(String operationId, String projectKey) {
         PendingAsk pending = new PendingAsk(operationId, projectKey);
@@ -581,31 +620,68 @@ public final class JIPipeDesktopMCPIntegration implements AutomationEndpointHand
     }
 
     /**
-     * Resumes the layer: start the endpoint, ensure the broker connection, register, and
-     * push the fresh window list (mirroring the launcher startup path). Runs on the
-     * integration's lifecycle executor.
+     * Resumes the layer: builds a fresh endpoint (a JDK {@code HttpServer} cannot restart
+     * after {@code stop()}), starts it, ensures the broker connection, registers, and pushes
+     * the fresh window list (mirroring the launcher startup path). Runs on the integration's
+     * lifecycle executor. A Resume click can race the launcher's shutdown: if the layer was
+     * uninstalled meanwhile (the {@code active} flag cleared), the freshly created endpoint
+     * is stopped again and the resume is abandoned instead of resurrecting the layer.
      */
     public void resumeAsync() {
         lifecycleExecutor.execute(() -> {
+            AutomationInstanceEndpoint freshEndpoint = null;
             try {
-                AutomationInstanceEndpoint instanceEndpoint = endpoint;
                 MCPBrokerClient brokerClient = client;
-                if (instanceEndpoint != null) {
-                    instanceEndpoint.start();
+                if (brokerClient == null) {
+                    return;
                 }
-                if (brokerClient != null) {
-                    brokerClient.ensureConnected(new JIPipeProgressInfo());
-                    brokerClient.register();
-                    // register() carries the startup snapshot; push the fresh window list
-                    // right after (the window set is EDT-confined).
-                    List<MCPProjectEntry> projects = callOnEdt(ProjectSource.openWindows()::getProjects);
-                    brokerClient.updateProjects(projects);
+                freshEndpoint = newEndpoint();
+                // A failed earlier resume can leave its endpoint running behind the paused
+                // flag; stop it (a stop on the paused, already stopped endpoint is a no-op).
+                AutomationInstanceEndpoint previous = endpoint;
+                if (previous != null) {
+                    previous.stop();
+                }
+                endpoint = freshEndpoint;
+                brokerClient.setEndpoint(freshEndpoint);
+                freshEndpoint.start();
+                if (getActive() != this) {
+                    // The launcher's uninstall won the race before registration: discard the
+                    // fresh endpoint, never resurrect the shut-down layer.
+                    freshEndpoint.stop();
+                    freshEndpoint = null;
+                    System.err.println("MCP resume aborted: the layer was shut down while resuming");
+                    return;
+                }
+                brokerClient.ensureConnected(new JIPipeProgressInfo());
+                brokerClient.register();
+                // register() carries the startup snapshot; push the fresh window list
+                // right after (the window set is EDT-confined).
+                List<MCPProjectEntry> projects = callOnEdt(ProjectSource.openWindows()::getProjects);
+                brokerClient.updateProjects(projects);
+                if (getActive() != this) {
+                    // The shutdown won the race while the broker calls ran: undo the
+                    // registration and discard the fresh endpoint.
+                    brokerClient.unregister();
+                    freshEndpoint.stop();
+                    freshEndpoint = null;
+                    System.err.println("MCP resume aborted: the layer was shut down while resuming");
+                    return;
                 }
                 paused = false;
                 System.err.println("MCP resumed: endpoint started and instance registered");
             } catch (Exception e) {
                 System.err.println("MCP resume failed: " + e.getMessage());
             } finally {
+                if (freshEndpoint != null && getActive() != this) {
+                    // Exception paths (e.g. a refused registration) must not leak a running
+                    // endpoint when the layer is already gone.
+                    try {
+                        freshEndpoint.stop();
+                    } catch (Exception stopError) {
+                        // Best effort: the JVM exit or the next shutdown stops it anyway.
+                    }
+                }
                 emit();
             }
         });
@@ -746,18 +822,22 @@ public final class JIPipeDesktopMCPIntegration implements AutomationEndpointHand
                 return null;
             }
             BufferedImage capture;
-            if (window.isShowing()) {
+            boolean iconified = window instanceof Frame frame
+                    && (frame.getExtendedState() & Frame.ICONIFIED) != 0;
+            if (window.isShowing() && !iconified) {
                 try {
                     // Visible window: screen capture (the Robot-based ScreenImage variant).
                     capture = ScreenImage.createImage((Component) window);
                 } catch (Exception e) {
-                    // No screen access (e.g. headless or minimized): fall back to the
+                    // No screen access (e.g. headless): fall back to the
                     // print-based capture of the content pane.
                     capture = printCapture(window.getContentPane());
                 }
             } else {
                 // Off-screen realization: print the content pane in place (no reparenting,
-                // no screen interaction).
+                // no screen interaction). This also covers the iconified (minimized) state:
+                // the window is still showing, but a Robot capture would grab whatever
+                // desktop pixels now cover its bounds.
                 capture = printCapture(window.getContentPane());
             }
             if (capture == null) {

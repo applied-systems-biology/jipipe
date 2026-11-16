@@ -31,8 +31,9 @@ import java.awt.image.BufferedImage;
 public interface ScreenshotSource {
 
     /**
-     * Renders the graph canvas of a compartment off-screen at the given scale (same painter
-     * as the on-screen canvas; no screen interaction).
+     * Renders the visible viewport of a compartment's graph canvas off-screen at the given
+     * scale (the current view at the current zoom and pan; same painter as the on-screen
+     * canvas, no screen interaction). {@link #renderMinimap} renders the full graph.
      *
      * @param compartmentKey the compartment key (UUID string as resolved by the operation)
      * @param scale          render scale (1 = native size)
