@@ -11,6 +11,7 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Registry of JIPipe instances registered at an MCP broker.
@@ -27,6 +28,28 @@ public class MCPInstanceRegistry extends SharedInstanceRegistry<MCPInstanceRegis
      * aggregation must exclude it (a registered schema does not make it a tool).
      */
     public static final Set<String> EXCLUDED_TOOL_IDS = Set.of("list_operations");
+
+    /**
+     * In-memory registration order (most recent last), maintained by {@link #register} and
+     * {@link #unregister}. It is not part of the serialized registration payload and only
+     * backs the deterministic registry-global tool routing rule
+     * ({@link #findAnyByToolId(String)}).
+     */
+    private final List<String> registrationOrder = new CopyOnWriteArrayList<>();
+
+    @Override
+    public void register(MCPInstanceRegistration registration) {
+        super.register(registration);
+        String instanceId = registration.getInstanceId();
+        registrationOrder.remove(instanceId);
+        registrationOrder.add(instanceId);
+    }
+
+    @Override
+    public void unregister(String instanceId) {
+        super.unregister(instanceId);
+        registrationOrder.remove(instanceId);
+    }
 
     /**
      * Union of the per-instance tool ids, minus {@link #EXCLUDED_TOOL_IDS}.
@@ -64,6 +87,44 @@ public class MCPInstanceRegistry extends SharedInstanceRegistry<MCPInstanceRegis
             aggregated.remove(excluded);
         }
         return new ArrayList<>(aggregated.values());
+    }
+
+    /**
+     * Finds a registration that carries the given tool, for the registry-global tool routing
+     * (a global tool called without a {@code project} argument): the most-recently registered
+     * instance that carries the tool wins; when no order was recorded, the first carrying
+     * registration in iteration order is used.
+     *
+     * @return the registration, or null when no registration carries the tool
+     */
+    public MCPInstanceRegistration findAnyByToolId(String toolId) {
+        for (int i = registrationOrder.size() - 1; i >= 0; i--) {
+            MCPInstanceRegistration registration = get(registrationOrder.get(i));
+            if (registration != null && carriesTool(registration, toolId)) {
+                return registration;
+            }
+        }
+        for (MCPInstanceRegistration registration : getAll()) {
+            if (carriesTool(registration, toolId)) {
+                return registration;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Whether the registration announces the tool: the descriptor list first, the legacy
+     * tool id list second.
+     */
+    public static boolean carriesTool(MCPInstanceRegistration registration, String toolId) {
+        if (registration.getTools() != null) {
+            for (MCPToolDescriptor descriptor : registration.getTools()) {
+                if (descriptor != null && toolId.equals(descriptor.getId())) {
+                    return true;
+                }
+            }
+        }
+        return registration.getToolIds() != null && registration.getToolIds().contains(toolId);
     }
 
     /**

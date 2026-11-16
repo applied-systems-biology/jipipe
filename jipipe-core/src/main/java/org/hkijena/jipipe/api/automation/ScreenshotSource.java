@@ -34,6 +34,12 @@ public interface ScreenshotSource {
      * Renders the visible viewport of a compartment's graph canvas off-screen at the given
      * scale (the current view at the current zoom and pan; same painter as the on-screen
      * canvas, no screen interaction). {@link #renderMinimap} renders the full graph.
+     * <p>
+     * E2E ruling 2026-11-16: when the compartment has no open editor tab, the implementation
+     * opens the compartment's pipeline editor on demand (without switching tabs), renders from
+     * the now-live editor (the render then shows the editor's layout area at its default
+     * view), and closes the editor tab afterwards if it opened it; an editor that was already
+     * open stays open.
      *
      * @param compartmentKey the compartment key (UUID string as resolved by the operation)
      * @param scale          render scale (1 = native size)
@@ -44,6 +50,11 @@ public interface ScreenshotSource {
     /**
      * Renders the floating-map style minimap of a compartment off-screen at the given scale
      * (through the canvas paint manager's minimap painter).
+     * <p>
+     * E2E ruling 2026-11-16: when the compartment has no open editor tab, the implementation
+     * opens the compartment's pipeline editor on demand (without switching tabs), renders from
+     * the now-live editor, and closes the editor tab afterwards if it opened it; an editor
+     * that was already open stays open.
      *
      * @param compartmentKey the compartment key (UUID string as resolved by the operation)
      * @param scale          render scale (1 = native size)

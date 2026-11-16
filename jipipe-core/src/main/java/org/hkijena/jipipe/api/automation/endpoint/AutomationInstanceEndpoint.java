@@ -47,7 +47,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * with code {@code invalid} instead of being dispatched without validation.
  * <p>
  * Handling order: secret check, operation existence (registry lookup), permission resolution
- * (Hide, then Deny, then Ask), body and parameter validation, dispatch. Parameter validation is
+ * (Hide, then Deny, then Ask), body and parameter validation, dispatch. A missing or blank
+ * {@code project-key} is NOT rejected: the request is dispatched with a null project key, so
+ * the registry-global operations run project-less while project-bound operations fail with
+ * their own "No project loaded" style error results (E2E ruling 2026-11-16). Parameter validation is
  * done once, by the registry's validating execute invoked from
  * {@link AutomationEndpointHandlers#execute}; its {@link IllegalArgumentException} maps to
  * {@code invalid}, and an {@link IllegalArgumentException} thrown by the handler implementation
@@ -213,9 +216,11 @@ public class AutomationInstanceEndpoint {
         if (body == null || !body.isObject()) {
             return DispatchResult.of("invalid", "Request body must be a JSON object");
         }
-        if (projectKey == null) {
-            return DispatchResult.of("invalid", "Missing project-key");
-        }
+        // A null project key is forwarded to the handler: the registry-global operations
+        // (list_projects, list_algorithms, get_node_docs) are dispatched with a null-project
+        // context, while project-bound operations fail with their own "No project loaded"
+        // style error results (E2E ruling 2026-11-16 - the broker routes global tools without
+        // a project). No blanket rejection here.
         JsonNode schema = operation.getInputSchema();
         if (schema == null || schema.isNull() || !schema.isObject()) {
             // Fail-closed: never dispatch an operation whose schema cannot be validated.

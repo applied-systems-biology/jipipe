@@ -71,10 +71,15 @@ import java.util.Set;
  * {@link AutomationOperation#isReadOnly()}); without a local registry the tool list stays
  * empty, which is correct while no instance is registered.
  * <p>
- * {@code tools/call} removes the {@code project} argument ({@code <instanceId>:<projectKey>},
+ * {@code tools/call} routes via the {@code project} argument ({@code <instanceId>:<projectKey>},
  * split on the first colon) and forwards the call to
  * {@code POST http://127.0.0.1:<endpointPort>/op/<operationId>} with the endpoint secret
- * header and body {@code {"project-key": k, "params": <args minus project>}}. Results whose
+ * header and body {@code {"project-key": k, "params": <args minus project>}}. The
+ * {@code project} argument is declared in the published input schema of every tool except the
+ * registry-global set ({@link #GLOBAL_TOOL_IDS}), whose members are callable without a project:
+ * when {@code project} is absent, the call is routed to the most-recently registered live
+ * instance that carries the tool (E2E ruling 2026-11-16; {@code list_projects} especially is
+ * unreachable otherwise - chicken-and-egg). Results whose
  * JSON contains non-null {@code image-base64} and {@code mime} fields become MCP image
  * content, everything else becomes JSON text content. Operations classified as jobs (category
  * Execute, except {@code get_job_status}/{@code cancel_job}) return a {@code job-id}
@@ -92,6 +97,23 @@ import java.util.Set;
  * served by {@code /control/logs}.
  */
 public class MCPBrokerServer {
+
+    /**
+     * E2E ruling 2026-11-16: these registry-global tools must be callable WITHOUT a
+     * {@code project} argument (the project list must be readable without a project;
+     * {@code list_projects} especially is chicken-and-egg otherwise). Their published input
+     * schema does not declare {@code project}, and a call without {@code project} is routed to
+     * the most-recently registered live instance that carries the tool. Every other tool gets
+     * a {@code project} property injected into its published schema and requires the argument.
+     */
+    public static final Set<String> GLOBAL_TOOL_IDS = Set.of("list_projects", "list_algorithms", "get_node_docs");
+
+    /**
+     * The schema description of the broker-injected {@code project} argument (verbatim per
+     * the E2E ruling).
+     */
+    private static final String PROJECT_ARGUMENT_DESCRIPTION =
+            "Target project id as returned by list_projects (<instanceId>:<projectKey>)";
 
     private static final String SECRET_HEADER = "X-JIPipe-Endpoint-Secret";
     private static final Duration FORWARD_TIMEOUT = Duration.ofSeconds(60);
@@ -228,7 +250,8 @@ public class MCPBrokerServer {
         McpSchema.Tool.Builder toolBuilder = McpSchema.Tool.builder(descriptor.getId());
         toolBuilder.description(descriptor.getDescription() != null ? descriptor.getDescription()
                 : fallbackDescription(descriptor.getId()));
-        toolBuilder.inputSchema(inputSchemaMapOf(descriptor.getInputSchema()));
+        toolBuilder.inputSchema(withProjectArgument(inputSchemaMapOf(descriptor.getInputSchema()),
+                descriptor.getId()));
         toolBuilder.annotations(McpSchema.ToolAnnotations.builder()
                 .readOnlyHint(descriptor.isReadOnly())
                 .build());
@@ -243,13 +266,13 @@ public class MCPBrokerServer {
         McpSchema.Tool.Builder toolBuilder = McpSchema.Tool.builder(operationId);
         if (operation != null) {
             toolBuilder.description(operation.getAgentDocumentation());
-            toolBuilder.inputSchema(inputSchemaMapOf(operation.getInputSchema()));
+            toolBuilder.inputSchema(withProjectArgument(inputSchemaMapOf(operation.getInputSchema()), operationId));
             toolBuilder.annotations(McpSchema.ToolAnnotations.builder()
                     .readOnlyHint(operation.isReadOnly())
                     .build());
         } else {
             toolBuilder.description(fallbackDescription(operationId));
-            toolBuilder.inputSchema(Map.of("type", "object"));
+            toolBuilder.inputSchema(withProjectArgument(new LinkedHashMap<>(Map.of("type", "object")), operationId));
         }
         return McpServerFeatures.SyncToolSpecification.builder()
                 .tool(toolBuilder.build())
@@ -257,9 +280,40 @@ public class MCPBrokerServer {
                 .build();
     }
 
+    /**
+     * Adds the broker-routed {@code project} argument to the published input schema of every
+     * tool that is not in {@link #GLOBAL_TOOL_IDS}: the property is added into the schema's
+     * {@code properties} object (created when the schema has none), so
+     * {@code additionalProperties:false} keeps holding. Registry-global tools are returned
+     * unchanged: they must stay callable without a project.
+     */
+    private static Map<String, Object> withProjectArgument(Map<String, Object> schema, String operationId) {
+        if (GLOBAL_TOOL_IDS.contains(operationId)) {
+            return schema;
+        }
+        Map<String, Object> result = new LinkedHashMap<>(schema);
+        Map<String, Object> properties = new LinkedHashMap<>();
+        if (result.get("properties") instanceof Map<?, ?> existing) {
+            for (Map.Entry<?, ?> entry : existing.entrySet()) {
+                if (entry.getKey() instanceof String key) {
+                    properties.put(key, entry.getValue());
+                }
+            }
+        }
+        properties.put("project", Map.of(
+                "type", "string",
+                "description", PROJECT_ARGUMENT_DESCRIPTION));
+        result.put("properties", properties);
+        return result;
+    }
+
     private static String fallbackDescription(String operationId) {
+        if (GLOBAL_TOOL_IDS.contains(operationId)) {
+            return "Executes the operation '" + operationId + "' on a JIPipe instance "
+                    + "(registry-global: callable without the 'project' argument).";
+        }
         return "Executes the operation '" + operationId
-                + "' on a JIPipe instance. The 'project' argument selects the target as "
+                + "' on a JIPipe instance. The required 'project' argument selects the target as "
                 + "'<instanceId>:<projectKey>'.";
     }
 
@@ -279,22 +333,34 @@ public class MCPBrokerServer {
                     ? new LinkedHashMap<>()
                     : new LinkedHashMap<>(request.arguments());
             Object projectArgument = forwardedParams.remove("project");
-            if (!(projectArgument instanceof String) || ((String) projectArgument).isBlank()) {
-                return toolError(operationId, projectArgument,
-                        "Missing 'project' argument (expected '<instanceId>:<projectKey>')");
-            }
-            String projectId = (String) projectArgument;
+            String projectId = projectArgument instanceof String text && !text.isBlank() ? text : null;
             MCPInstanceRegistration registration;
-            try {
-                registration = registry.findByProjectId(projectId);
-            } catch (NoSuchElementException e) {
-                return toolError(operationId, projectId, e.getMessage());
+            if (projectId != null) {
+                try {
+                    registration = registry.findByProjectId(projectId);
+                } catch (NoSuchElementException e) {
+                    return toolError(operationId, projectId, e.getMessage());
+                }
+                if (registration == null) {
+                    return toolError(operationId, projectId, "Unknown instance in project id '" + projectId
+                            + "'. Available projects: " + availableProjectIds());
+                }
+            } else if (GLOBAL_TOOL_IDS.contains(operationId)) {
+                // E2E ruling 2026-11-16: registry-global tools are callable without a project.
+                // Deterministic routing: the most-recently registered live instance that
+                // carries the tool, else the first one.
+                registration = registry.findAnyByToolId(operationId);
+                if (registration == null) {
+                    return toolError(operationId, null, "No registered JIPipe instance carries the tool '"
+                            + operationId + "'. Available projects: " + availableProjectIds());
+                }
+                projectId = registration.getInstanceId();
+            } else {
+                return toolError(operationId, projectArgument, "Missing required 'project' argument: the target "
+                        + "project id '<instanceId>:<projectKey>' as returned by list_projects (described in the "
+                        + "tool's input schema)");
             }
-            if (registration == null) {
-                return toolError(operationId, projectId, "Unknown instance in project id '" + projectId
-                        + "'. Available projects: " + availableProjectIds());
-            }
-            String projectKey = projectId.substring(projectId.indexOf(':') + 1);
+            String projectKey = projectId.indexOf(':') >= 0 ? projectId.substring(projectId.indexOf(':') + 1) : null;
             return forward(operationId, projectId, projectKey, registration, forwardedParams);
         } catch (Exception e) {
             logs.add("warn", "Tool '" + operationId + "' call failed: " + describe(e));

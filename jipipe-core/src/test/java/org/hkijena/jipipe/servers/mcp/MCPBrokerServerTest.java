@@ -46,6 +46,7 @@ public class MCPBrokerServerTest {
     private final HttpClient client = HttpClient.newHttpClient();
     private HttpServer stub;
     private MCPBrokerServer broker;
+    private MCPInstanceRegistry instanceRegistry;
 
     @AfterEach
     public void tearDown() {
@@ -146,9 +147,10 @@ public class MCPBrokerServerTest {
                 renderSpec = tool;
             }
         }
-        assertEquals(2, names.size());
+        assertEquals(3, names.size());
         assertTrue(names.contains("echo_test"));
         assertTrue(names.contains("render_image_test"));
+        assertTrue(names.contains("get_node_docs"));
         // Controller ruling: list_operations is a registry meta-operation, never an MCP tool,
         // even when a registration carries a descriptor for it.
         assertFalse(names.contains("list_operations"));
@@ -162,6 +164,112 @@ public class MCPBrokerServerTest {
         assertEquals("string", echoSpec.get("inputSchema").get("properties").get("message").get("type").asText());
         // additionalProperties:false transported verbatim (absent node would NPE here).
         assertFalse(renderSpec.get("inputSchema").get("additionalProperties").asBoolean());
+    }
+
+    @Test
+    public void publishedSchemaDeclaresProjectForProjectBoundToolsOnly() throws Exception {
+        // E2E ruling 2026-11-16: the broker-routed 'project' argument is declared in the
+        // published input schema of every tool except the registry-global set.
+        startBrokerWithoutMetadata();
+        registerInstanceWithDescriptors();
+        initialize(null);
+
+        JsonNode tools = listTools().get("result").get("tools");
+        JsonNode echoSpec = null;
+        JsonNode renderSpec = null;
+        JsonNode docsSpec = null;
+        for (JsonNode tool : tools) {
+            switch (tool.get("name").asText()) {
+                case "echo_test" -> echoSpec = tool;
+                case "render_image_test" -> renderSpec = tool;
+                case "get_node_docs" -> docsSpec = tool;
+            }
+        }
+        assertNotNull(echoSpec);
+        assertNotNull(renderSpec);
+        assertNotNull(docsSpec);
+
+        // Project-bound tools: the 'project' property is injected into the schema's
+        // properties object (created when absent) and additionalProperties:false holds.
+        JsonNode echoProject = echoSpec.get("inputSchema").get("properties").get("project");
+        assertNotNull(echoProject);
+        assertEquals("string", echoProject.get("type").asText());
+        assertTrue(echoProject.get("description").asText().contains("list_projects"));
+        assertTrue(echoProject.get("description").asText().contains("<instanceId>:<projectKey>"));
+        assertEquals("string", echoSpec.get("inputSchema").get("properties").get("message").get("type").asText());
+        assertFalse(echoSpec.get("inputSchema").get("additionalProperties").asBoolean());
+        JsonNode renderProject = renderSpec.get("inputSchema").get("properties").get("project");
+        assertNotNull(renderProject);
+        assertEquals("string", renderProject.get("type").asText());
+        assertFalse(renderSpec.get("inputSchema").get("additionalProperties").asBoolean());
+
+        // Registry-global tools: no 'project' property at all (the project list must be
+        // readable without a project; chicken-and-egg otherwise).
+        JsonNode docsProperties = docsSpec.get("inputSchema").get("properties");
+        assertTrue(docsProperties == null || docsProperties.get("project") == null);
+    }
+
+    @Test
+    public void projectBoundToolWithoutProjectErrorsWithSchemaHint() throws Exception {
+        startBroker(null);
+        registerInstance();
+        initialize(null);
+
+        ObjectNode arguments = JsonUtils.getObjectMapper().createObjectNode();
+        arguments.put("message", "hello");
+        JsonNode result = callTool("echo_test", arguments);
+        assertTrue(result.get("isError").asBoolean());
+        String text = result.get("content").get(0).get("text").asText();
+        assertTrue(text.contains("Missing required 'project' argument"));
+        assertTrue(text.contains("input schema"));
+    }
+
+    @Test
+    public void globalToolWithoutProjectRoutesToRegisteredInstance() throws Exception {
+        startBroker(null);
+        registerInstanceWithDescriptors();
+        initialize(null);
+
+        // No 'project' argument: the call routes to the registered instance that carries
+        // the tool; the forwarded project key is null.
+        JsonNode result = callTool("get_node_docs", JsonUtils.getObjectMapper().createObjectNode());
+        assertFalse(result.get("isError").asBoolean());
+        JsonNode content = result.get("content").get(0);
+        assertEquals("text", content.get("type").asText());
+        assertTrue(content.get("text").asText().contains("\"docs\":true"));
+        assertTrue(content.get("text").asText().contains("\"project-key\":null"));
+    }
+
+    @Test
+    public void globalToolWithProjectRoutesByIt() throws Exception {
+        startBroker(null);
+        registerInstanceWithDescriptors();
+        initialize(null);
+
+        // With a 'project' argument the routing is the strict project-bound one.
+        ObjectNode arguments = JsonUtils.getObjectMapper().createObjectNode();
+        arguments.put("project", INSTANCE_ID + ":p1");
+        JsonNode result = callTool("get_node_docs", arguments);
+        assertFalse(result.get("isError").asBoolean());
+        assertTrue(result.get("content").get(0).get("text").asText().contains("\"project-key\":\"p1\""));
+    }
+
+    @Test
+    public void globalToolWithNoLiveInstanceErrorsCleanly() throws Exception {
+        startBroker(null);
+        registerInstanceWithDescriptors();
+        initialize(null);
+
+        // Simulates the dead-instance sweep: the registration is removed directly in the
+        // registry (no /control/unregister round trip, so no tool-list rebuild happens and
+        // the tool stays callable), exactly the state a global tool call can meet.
+        instanceRegistry.unregister(INSTANCE_ID);
+
+        JsonNode result = callTool("get_node_docs", JsonUtils.getObjectMapper().createObjectNode());
+        assertTrue(result.get("isError").asBoolean());
+        String text = result.get("content").get(0).get("text").asText();
+        assertTrue(text.contains("No registered JIPipe instance carries the tool"));
+        assertTrue(text.contains("get_node_docs"));
     }
 
     @Test
@@ -283,13 +391,15 @@ public class MCPBrokerServerTest {
         AutomationOperationRegistry metadata = new AutomationOperationRegistry();
         metadata.register("echo_test", new EchoTestOperation());
         metadata.register("render_image_test", new RenderImageTestOperation());
-        broker = new MCPBrokerServer(0, new MCPInstanceRegistry(), bearerToken, metadata);
+        instanceRegistry = new MCPInstanceRegistry();
+        broker = new MCPBrokerServer(0, instanceRegistry, bearerToken, metadata);
         broker.start();
     }
 
     private void startBrokerWithoutMetadata() throws Exception {
         startStub();
-        broker = new MCPBrokerServer(0, new MCPInstanceRegistry(), null);
+        instanceRegistry = new MCPInstanceRegistry();
+        broker = new MCPBrokerServer(0, instanceRegistry, null);
         broker.start();
     }
 
@@ -311,6 +421,7 @@ public class MCPBrokerServerTest {
                 String opId = exchange.getRequestURI().getPath().substring("/op/".length());
                 response = switch (opId) {
                     case "echo_test" -> stubResult(echoResult(body));
+                    case "get_node_docs" -> stubResult(docsResult(body));
                     case "render_image_test" -> "{\"ok\":true,\"result\":{\"image-base64\":\"" + PNG_BASE64
                             + "\",\"mime\":\"image/png\"}}";
                     default -> "{\"ok\":false,\"code\":\"unknown\",\"error\":\"Unknown operation: " + opId + "\"}";
@@ -326,6 +437,13 @@ public class MCPBrokerServerTest {
         ObjectNode result = JsonUtils.getObjectMapper().createObjectNode();
         result.put("echo", true);
         result.set("message", body.path("params").path("message"));
+        result.set("project-key", body.path("project-key"));
+        return result;
+    }
+
+    private ObjectNode docsResult(JsonNode body) {
+        ObjectNode result = JsonUtils.getObjectMapper().createObjectNode();
+        result.put("docs", true);
         result.set("project-key", body.path("project-key"));
         return result;
     }
@@ -394,13 +512,21 @@ public class MCPBrokerServerTest {
         renderTool.set("inputSchema", JsonUtils.getObjectMapper().readTree(
                 "{\"type\":\"object\",\"additionalProperties\":false}"));
         renderTool.put("read-only", false);
+        // A registry-global tool: the published schema must NOT declare a project argument
+        // and a call without one must still route (E2E ruling 2026-11-16).
+        ObjectNode docsTool = JsonUtils.getObjectMapper().createObjectNode();
+        docsTool.put("id", "get_node_docs");
+        docsTool.put("description", "Node documentation (descriptor)");
+        docsTool.set("inputSchema", JsonUtils.getObjectMapper().readTree(
+                "{\"type\":\"object\",\"additionalProperties\":false}"));
+        docsTool.put("read-only", true);
         // A descriptor for the meta-operation: the broker must still exclude it.
         ObjectNode listOperationsTool = JsonUtils.getObjectMapper().createObjectNode();
         listOperationsTool.put("id", "list_operations");
         listOperationsTool.put("description", "List all available operations (descriptor)");
         listOperationsTool.put("read-only", true);
         registration.set("tools", JsonUtils.getObjectMapper().createArrayNode()
-                .add(echoTool).add(renderTool).add(listOperationsTool));
+                .add(echoTool).add(renderTool).add(docsTool).add(listOperationsTool));
         ObjectNode project = JsonUtils.getObjectMapper().createObjectNode();
         project.put("key", "p1");
         project.put("name", "P1");

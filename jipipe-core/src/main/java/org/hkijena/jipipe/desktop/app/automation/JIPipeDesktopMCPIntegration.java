@@ -29,6 +29,7 @@ import org.hkijena.jipipe.api.automation.endpoint.ProjectSource;
 import org.hkijena.jipipe.api.automation.operations.ScreenshotOperations;
 import org.hkijena.jipipe.api.automation.permissions.AutomationPermissionService;
 import org.hkijena.jipipe.api.automation.permissions.AutomationPermissionState;
+import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
@@ -367,6 +368,13 @@ public final class JIPipeDesktopMCPIntegration implements AutomationEndpointHand
 
     // ── AutomationEndpointHandlers ──
 
+    /**
+     * {@code projectKey} may be null (registry-global operations routed without a project by
+     * the broker): {@link #findProjectWindow} then returns null and the context carries a null
+     * project. The registry-global operations (list_projects, list_algorithms, get_node_docs)
+     * never read the project, while a project-bound operation reached this way fails with its
+     * own "No project loaded" style error result (E2E ruling 2026-11-16).
+     */
     @Override
     public JsonNode execute(String operationId, String projectKey, JsonNode params) throws Exception {
         lastOperationId = operationId;
@@ -692,43 +700,117 @@ public final class JIPipeDesktopMCPIntegration implements AutomationEndpointHand
     @Override
     public BufferedImage renderCanvas(String compartmentKey, double scale) {
         return callOnEdt(() -> {
-            JIPipeDesktopGraphCanvasUI canvas = findCanvas(compartmentKey);
-            if (canvas == null) {
+            AutoOpenedCanvas opened = findOrOpenCanvas(compartmentKey);
+            if (opened == null) {
                 return null;
             }
-            return renderComponentScaled(canvas, scale);
+            try {
+                return renderComponentScaled(opened.canvas(), scale);
+            } finally {
+                closeAutoOpenedCanvas(opened);
+            }
         });
     }
 
     @Override
     public BufferedImage renderMinimap(String compartmentKey, double scale) {
         return callOnEdt(() -> {
-            JIPipeDesktopGraphCanvasUI canvas = findCanvas(compartmentKey);
-            if (canvas == null) {
+            AutoOpenedCanvas opened = findOrOpenCanvas(compartmentKey);
+            if (opened == null) {
                 return null;
             }
-            Rectangle bounds = new Rectangle();
-            for (JIPipeDesktopGraphNodeUI nodeUI : canvas.getNodeUIs().values()) {
-                bounds.add(nodeUI.getBounds());
-            }
-            if (bounds.isEmpty()) {
-                return null;
-            }
-            int width = Math.max((int) Math.round(bounds.width * scale) + 2 * MINIMAP_MARGIN, 1);
-            int height = Math.max((int) Math.round(bounds.height * scale) + 2 * MINIMAP_MARGIN, 1);
-            BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-            Graphics2D graphics = image.createGraphics();
             try {
-                graphics.setColor(canvas.getBackground());
-                graphics.fillRect(0, 0, width, height);
-                int viewX = MINIMAP_MARGIN - (int) Math.round(bounds.x * scale);
-                int viewY = MINIMAP_MARGIN - (int) Math.round(bounds.y * scale);
-                canvas.getPaintManager().paintMiniMap(graphics, scale, viewX, viewY);
+                JIPipeDesktopGraphCanvasUI canvas = opened.canvas();
+                Rectangle bounds = new Rectangle();
+                for (JIPipeDesktopGraphNodeUI nodeUI : canvas.getNodeUIs().values()) {
+                    bounds.add(nodeUI.getBounds());
+                }
+                if (bounds.isEmpty()) {
+                    return null;
+                }
+                int width = Math.max((int) Math.round(bounds.width * scale) + 2 * MINIMAP_MARGIN, 1);
+                int height = Math.max((int) Math.round(bounds.height * scale) + 2 * MINIMAP_MARGIN, 1);
+                BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+                Graphics2D graphics = image.createGraphics();
+                try {
+                    graphics.setColor(canvas.getBackground());
+                    graphics.fillRect(0, 0, width, height);
+                    int viewX = MINIMAP_MARGIN - (int) Math.round(bounds.x * scale);
+                    int viewY = MINIMAP_MARGIN - (int) Math.round(bounds.y * scale);
+                    canvas.getPaintManager().paintMiniMap(graphics, scale, viewX, viewY);
+                } finally {
+                    graphics.dispose();
+                }
+                return image;
             } finally {
-                graphics.dispose();
+                closeAutoOpenedCanvas(opened);
             }
-            return image;
         });
+    }
+
+    /**
+     * One find-or-open outcome: the canvas to render from, plus the auto-opened editor tab
+     * (null when the editor was already open, so nothing is closed afterwards).
+     */
+    private record AutoOpenedCanvas(JIPipeDesktopGraphCanvasUI canvas, JIPipeDesktopTabPane.DocumentTab tab) {
+    }
+
+    /**
+     * The canvas of the compartment's pipeline editor tab. When no editor tab is open for the
+     * compartment, one is opened on demand through the project workbench (the same
+     * {@link JIPipeDesktopProjectWorkbench#getOrOpenPipelineEditorTab} the Compartments tab
+     * uses; E2E ruling 2026-11-16: the documentation use case must capture without manual UI
+     * steps) and the caller must close it afterwards via {@link #closeAutoOpenedCanvas} so the
+     * prior UI state is restored. Returns null when the compartment does not exist in any open
+     * project. Must run on the EDT.
+     */
+    private static AutoOpenedCanvas findOrOpenCanvas(String compartmentKey) {
+        UUID compartmentUUID;
+        try {
+            compartmentUUID = UUID.fromString(compartmentKey);
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
+        // Already open: render from the live editor and keep it open.
+        for (JIPipeDesktopProjectWindow window : JIPipeDesktopProjectWindow.getOpenWindows()) {
+            JIPipeDesktopProjectWorkbench workbench = window.getProjectWorkbench();
+            if (workbench == null) {
+                continue;
+            }
+            List<JIPipeDesktopPipelineGraphEditorUI> editors = workbench.findOpenPipelineEditorTabs(compartmentUUID);
+            if (!editors.isEmpty()) {
+                return new AutoOpenedCanvas(editors.getFirst().getCanvasUI(), null);
+            }
+        }
+        // Not open: open the editor without switching tabs (the user's current view stays),
+        // render from the now-live editor, and close the tab afterwards.
+        for (JIPipeDesktopProjectWindow window : JIPipeDesktopProjectWindow.getOpenWindows()) {
+            JIPipeDesktopProjectWorkbench workbench = window.getProjectWorkbench();
+            if (workbench == null || window.getProject() == null) {
+                continue;
+            }
+            JIPipeProjectCompartment compartment = window.getProject().getCompartments().get(compartmentUUID);
+            if (compartment == null) {
+                continue;
+            }
+            JIPipeDesktopTabPane.DocumentTab tab = workbench.getOrOpenPipelineEditorTab(compartment, false);
+            if (tab == null || !(tab.getContent() instanceof JIPipeDesktopPipelineGraphEditorUI editor)) {
+                return null;
+            }
+            return new AutoOpenedCanvas(editor.getCanvasUI(), tab);
+        }
+        return null;
+    }
+
+    /**
+     * Closes the auto-opened editor tab (a silent close, no user interaction). A tab that was
+     * already open before the render is left untouched.
+     */
+    private static void closeAutoOpenedCanvas(AutoOpenedCanvas opened) {
+        if (opened == null || opened.tab() == null) {
+            return;
+        }
+        opened.tab().getDocumentTabPane().forceCloseTab(opened.tab());
     }
 
     @Override
@@ -895,28 +977,6 @@ public final class JIPipeDesktopMCPIntegration implements AutomationEndpointHand
             graphics.dispose();
         }
         return result;
-    }
-
-    /**
-     * The canvas of the compartment's open pipeline editor tab, or null.
-     */
-    private static JIPipeDesktopGraphCanvasUI findCanvas(String compartmentKey) {
-        UUID compartmentUUID;
-        try {
-            compartmentUUID = UUID.fromString(compartmentKey);
-        } catch (IllegalArgumentException e) {
-            return null;
-        }
-        for (JIPipeDesktopProjectWindow window : JIPipeDesktopProjectWindow.getOpenWindows()) {
-            JIPipeDesktopProjectWorkbench workbench = window.getProjectWorkbench();
-            if (workbench == null) {
-                continue;
-            }
-            for (JIPipeDesktopPipelineGraphEditorUI editor : workbench.findOpenPipelineEditorTabs(compartmentUUID)) {
-                return editor.getCanvasUI();
-            }
-        }
-        return null;
     }
 
     /**

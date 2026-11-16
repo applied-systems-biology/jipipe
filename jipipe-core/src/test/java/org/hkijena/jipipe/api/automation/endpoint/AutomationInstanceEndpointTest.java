@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.api.automation.endpoint;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.automation.AutomationContext;
 import org.hkijena.jipipe.api.automation.AutomationOperation;
 import org.hkijena.jipipe.api.automation.AutomationOperationRegistry;
@@ -206,16 +207,38 @@ public class AutomationInstanceEndpointTest {
     }
 
     @Test
-    public void missingProjectKeyIsInvalid() throws Exception {
+    public void missingProjectKeyIsForwardedToHandler() throws Exception {
         startEndpoint();
-        HttpResponse<String> response = postOperation("echo_test", endpoint.getSecret(),
+        // E2E ruling 2026-11-16: a missing project key is no longer rejected by the endpoint.
+        // It is forwarded so the registry-global operations run project-less (here: the stub
+        // echoes that the handler saw a null key and no project).
+        HttpResponse<String> response = postOperation("ctx_test", endpoint.getSecret(),
                 "{\"params\":{\"message\":\"hello\"}}");
         JsonNode body = json(response.body());
         assertEquals(200, response.statusCode());
-        assertFalse(body.get("ok").asBoolean());
-        assertEquals("invalid", body.get("code").asText());
+        assertTrue(body.get("ok").asBoolean());
+        assertFalse(body.get("result").get("hasProject").asBoolean());
+        assertEquals(0, body.get("result").get("projectKeyLength").asInt());
         assertEquals(1, listener.calls.size());
-        assertEquals("invalid", listener.calls.get(0).outcome());
+        assertNull(listener.calls.get(0).projectKey());
+        assertEquals("ok", listener.calls.get(0).outcome());
+    }
+
+    @Test
+    public void projectBoundOperationWithoutProjectKeyFailsAtOperationLevel() throws Exception {
+        startEndpoint();
+        // A project-bound operation reached with a null project key fails with its own
+        // "No project loaded" style error result (HTTP 200, ok envelope with an error
+        // payload) instead of an endpoint-level invalid.
+        HttpResponse<String> response = postOperation("project_bound_test", endpoint.getSecret(),
+                "{\"params\":{}}");
+        JsonNode body = json(response.body());
+        assertEquals(200, response.statusCode());
+        assertTrue(body.get("ok").asBoolean());
+        assertEquals("No project loaded", body.get("result").get("error").asText());
+        assertEquals(1, listener.calls.size());
+        assertNull(listener.calls.get(0).projectKey());
+        assertEquals("ok", listener.calls.get(0).outcome());
     }
 
     @Test
@@ -307,6 +330,19 @@ public class AutomationInstanceEndpointTest {
         AutomationOperationRegistry registry = new AutomationOperationRegistry();
         registry.register("echo_test", stubOperation("echo_test", ECHO_SCHEMA,
                 (ctx, params) -> JsonUtils.getObjectMapper().createObjectNode().put("echo", true)));
+        registry.register("ctx_test", stubOperation("ctx_test", AutomationSchemaUtils.parseJson(
+                        "{\"type\":\"object\",\"properties\":{\"message\":{\"type\":\"string\"}},\"additionalProperties\":false}"),
+                (ctx, params) -> JsonUtils.getObjectMapper().createObjectNode()
+                        .put("hasProject", ctx.getProject() != null)
+                        .put("projectKeyLength", ctx.getProjectId() == null ? 0 : ctx.getProjectId().length())));
+        registry.register("project_bound_test", stubOperation("project_bound_test",
+                AutomationSchemaUtils.emptyObjectSchema(),
+                (ctx, params) -> {
+                    if (ctx.getProject() == null) {
+                        return JsonUtils.getObjectMapper().createObjectNode().put("error", "No project loaded");
+                    }
+                    return JsonUtils.getObjectMapper().createObjectNode().put("project", true);
+                }));
         registry.register("boom_test", stubOperation("boom_test", AutomationSchemaUtils.emptyObjectSchema(),
                 (ctx, params) -> {
                     throw new IllegalStateException("boom");
@@ -356,7 +392,10 @@ public class AutomationInstanceEndpointTest {
     }
 
     /**
-     * Emulates the GUI wiring: dispatch goes through the registry's validating execute.
+     * Emulates the GUI wiring: dispatch goes through the registry's validating execute with
+     * a context whose project is null when the key does not resolve (the key is always
+     * unresolvable in this stub - same null-project shape the real handlers build for the
+     * registry-global operations).
      */
     private static class StubHandlers implements AutomationEndpointHandlers {
         private final AutomationOperationRegistry registry;
@@ -367,7 +406,9 @@ public class AutomationInstanceEndpointTest {
 
         @Override
         public JsonNode execute(String operationId, String projectKey, JsonNode params) throws Exception {
-            return registry.execute(operationId, null, params);
+            AutomationContext context = new AutomationContext(null, projectKey,
+                    new JIPipeProgressInfo(), null, null);
+            return registry.execute(operationId, context, params);
         }
 
         @Override
