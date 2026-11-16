@@ -8,6 +8,7 @@ import io.modelcontextprotocol.json.schema.JsonSchemaValidator;
 import io.modelcontextprotocol.server.McpServer;
 import io.modelcontextprotocol.server.McpServerFeatures;
 import io.modelcontextprotocol.server.McpSyncServer;
+import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.server.transport.HttpServletStreamableServerTransportProvider;
 import io.modelcontextprotocol.spec.McpSchema;
 import jakarta.servlet.DispatcherType;
@@ -64,7 +65,8 @@ import java.util.Set;
  * {@link AutomationOperation#getInputSchema()}, and {@link AutomationOperation#isReadOnly()}
  * when an operation metadata registry is available (constructor overload), otherwise from
  * name-only fallbacks. Registrations only carry tool ids, so the standalone broker process
- * uses the fallback until registrations carry full tool metadata.
+ * uses the name-only fallbacks; a planned follow-up extends {@link MCPInstanceRegistration}
+ * with per-tool descriptors, after which the broker serves specs from the registrations.
  * <p>
  * {@code tools/call} removes the {@code project} argument ({@code <instanceId>:<projectKey>},
  * split on the first colon) and forwards the call to
@@ -75,6 +77,13 @@ import java.util.Set;
  * Execute, except {@code get_job_status}/{@code cancel_job}) return a {@code job-id}
  * envelope from the instance immediately; the broker passes it through unchanged and does
  * not wait for job completion.
+ * <p>
+ * Progress: when a {@code tools/call} request carries {@code _meta.progressToken}, the broker
+ * emits a single start-of-dispatch progress notification (progress 0 of 1, message = operation
+ * id) through the SDK exchange. Tool calls return at job-ack by architecture, so there is no
+ * long-running tools/call phase: fine-grained job progress is delivered via the returned
+ * job-id and {@code get_job_status}, while instance-to-broker progress streaming is a
+ * follow-up work item.
  * <p>
  * All routing outcomes and lifecycle events are recorded in the {@link ServerLogRingBuffer}
  * served by {@code /control/logs}.
@@ -216,7 +225,7 @@ public class MCPBrokerServer {
         }
         return McpServerFeatures.SyncToolSpecification.builder()
                 .tool(toolBuilder.build())
-                .callHandler((exchange, request) -> handleToolCall(operationId, request))
+                .callHandler((exchange, request) -> handleToolCall(operationId, exchange, request))
                 .build();
     }
 
@@ -229,8 +238,10 @@ public class MCPBrokerServer {
         });
     }
 
-    private McpSchema.CallToolResult handleToolCall(String operationId, McpSchema.CallToolRequest request) {
+    private McpSchema.CallToolResult handleToolCall(String operationId, McpSyncServerExchange exchange,
+                                                    McpSchema.CallToolRequest request) {
         try {
+            notifyProgressStart(exchange, operationId, request);
             Map<String, Object> forwardedParams = request.arguments() == null
                     ? new LinkedHashMap<>()
                     : new LinkedHashMap<>(request.arguments());
@@ -255,6 +266,25 @@ public class MCPBrokerServer {
         } catch (Exception e) {
             logs.add("warn", "Tool '" + operationId + "' call failed: " + describe(e));
             return errorResult(describe(e));
+        }
+    }
+
+    /**
+     * Emits the single start-of-dispatch progress notification when the incoming
+     * {@code tools/call} request carries {@code _meta.progressToken} (progress 0 of 1,
+     * message = operation id). A failing notification channel is logged and does not fail
+     * the tool call itself.
+     */
+    private void notifyProgressStart(McpSyncServerExchange exchange, String operationId,
+                                     McpSchema.CallToolRequest request) {
+        Object progressToken = request.progressToken();
+        if (progressToken == null) {
+            return;
+        }
+        try {
+            exchange.progressNotification(new McpSchema.ProgressNotification(progressToken, 0.0, 1.0, operationId));
+        } catch (Exception e) {
+            logs.add("warn", "Progress notification for tool '" + operationId + "' failed: " + describe(e));
         }
     }
 
@@ -291,7 +321,9 @@ public class MCPBrokerServer {
             return errorResult(message);
         }
         JsonNode envelope = objectMapper.readTree(response.body());
-        JsonNode result = envelope.get("result");
+        // path(): a 200 + ok:true envelope without a "result" key serializes as "null"
+        // text content instead of NPE-ing on the absent node.
+        JsonNode result = envelope.path("result");
         if (!envelope.path("ok").asBoolean(false)) {
             String message = "Instance '" + instanceId + "' rejected operation '" + operationId + "': "
                     + envelope.path("error").asText("unknown error");

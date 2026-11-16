@@ -181,6 +181,23 @@ public class MCPBrokerServerTest {
     }
 
     @Test
+    public void projectKeyWithColonRoutesToInstance() throws Exception {
+        startBroker(null);
+        registerInstance();
+        initialize(null);
+
+        // The id is split on the FIRST colon: instance id is the UUID, project key is
+        // "p1:inner". Pins the split rule against a regression to lastIndexOf.
+        ObjectNode arguments = JsonUtils.getObjectMapper().createObjectNode();
+        arguments.put("project", INSTANCE_ID + ":p1:inner");
+        arguments.put("message", "hello");
+        JsonNode result = callTool("echo_test", arguments);
+        assertNull(result.get("error"));
+        String text = result.get("content").get(0).get("text").asText();
+        assertTrue(text.contains("\"project-key\":\"p1:inner\""));
+    }
+
+    @Test
     public void bearerTokenRejectsWrongAndAllowsRight() throws Exception {
         startBroker("s3cret");
 
@@ -290,7 +307,11 @@ public class MCPBrokerServerTest {
         project.put("key", "p1");
         project.put("name", "P1");
         project.put("path", "/tmp/p1");
-        registration.set("projects", JsonUtils.getObjectMapper().createArrayNode().add(project));
+        ObjectNode colonProject = JsonUtils.getObjectMapper().createObjectNode();
+        colonProject.put("key", "p1:inner");
+        colonProject.put("name", "P1 Inner");
+        colonProject.put("path", "/tmp/p1/inner");
+        registration.set("projects", JsonUtils.getObjectMapper().createArrayNode().add(project).add(colonProject));
         return registration.toString();
     }
 
