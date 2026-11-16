@@ -99,6 +99,10 @@ public class AutomationPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerAutomationOperation("describe_data", new DataOperations.DescribeData());
         registerAutomationOperation("export_data", new DataOperations.ExportData());
 
+        // Diagnostics operations
+        registerAutomationOperation("get_errors", new DiagnosticsOperations.GetErrors());
+        registerAutomationOperation("get_log", new DiagnosticsOperations.GetLog());
+
         // RO-Crate operations
         registerAutomationOperation("create_ro_crate", new ROCrateOperations.CreateROCrate());
     }
