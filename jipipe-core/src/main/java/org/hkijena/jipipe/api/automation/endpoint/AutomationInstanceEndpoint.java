@@ -38,7 +38,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * HTTP endpoint that exposes the automation operations of one JIPipe instance on 127.0.0.1.
  * <p>
  * Requests are authenticated with a per-endpoint secret sent as the {@code X-JIPipe-Endpoint-Secret}
- * header (constant-time comparison); the secret check runs before the body is parsed.
+ * header (constant-time comparison); the secret check runs before any request body byte is read
+ * or parsed, so unauthorized requests are rejected without buffering their payload.
  * Responses always use HTTP 200: errors are carried by the JSON envelope
  * ({@code ok:false} plus a code of {@code unauthorized|hidden|denied|unknown|invalid|failed}).
  * <p>
@@ -49,8 +50,16 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * (Hide, then Deny, then Ask), body and parameter validation, dispatch. Parameter validation is
  * done once, by the registry's validating execute invoked from
  * {@link AutomationEndpointHandlers#execute}; its {@link IllegalArgumentException} maps to
- * {@code invalid}. Dispatch runs on the HTTP executor thread; EDT marshalling belongs to the
- * {@link AutomationEndpointHandlers} implementation.
+ * {@code invalid}, and an {@link IllegalArgumentException} thrown by the handler implementation
+ * itself is indistinguishable from a validation failure and also maps to {@code invalid}
+ * (single-validator path, by design). Dispatch runs on the HTTP executor thread; EDT
+ * marshalling belongs to the {@link AutomationEndpointHandlers} implementation.
+ * <p>
+ * {@link AutomationEndpointHandlers#isRegistered(String)} and
+ * {@link AutomationEndpointHandlers#isHidden(String)} are NOT consulted by the endpoint:
+ * operation existence comes from the {@link AutomationOperationRegistry} lookup and hidden
+ * state from the {@link AutomationPermissionService}; the two handler methods exist for
+ * GUI-side wiring only.
  */
 public class AutomationInstanceEndpoint {
 
@@ -63,6 +72,9 @@ public class AutomationInstanceEndpoint {
 
     /**
      * Notified once after every dispatch attempt, including unauthorized ones.
+     * <p>
+     * {@link #onCall} fires on the HTTP executor thread, not the EDT: GUI listeners must
+     * marshal to the EDT themselves.
      */
     public interface OperationCallListener {
         void onCall(String operationId, String projectKey, String outcome, long durationMs);
@@ -156,22 +168,23 @@ public class AutomationInstanceEndpoint {
 
     private void handleOperation(HttpExchange exchange) throws IOException {
         long startNanos = System.nanoTime();
-        byte[] request = exchange.getRequestBody().readAllBytes();
         if (!exchange.getRequestMethod().equalsIgnoreCase("POST")) {
             exchange.sendResponseHeaders(405, -1);
             exchange.close();
             return;
         }
         String operationId = extractOperationId(exchange.getRequestURI().getPath());
-        JsonNode lenientBody = tryParse(request);
         String providedSecret = exchange.getRequestHeaders().getFirst(SECRET_HEADER);
         if (providedSecret == null || !constantTimeEquals(secret, providedSecret)) {
-            // The secret check ran first; the body is only parsed leniently so the
-            // listener can report the project key of the rejected attempt.
-            complete(exchange, startNanos, operationId, extractProjectKey(lenientBody),
+            // The secret check runs before any request body byte is read or parsed: an
+            // unauthorized request is rejected without buffering its payload, so the
+            // listener reports no project key. Closing the exchange discards the unread body.
+            complete(exchange, startNanos, operationId, null,
                     DispatchResult.of("unauthorized", "Missing or invalid endpoint secret"));
             return;
         }
+        byte[] request = exchange.getRequestBody().readAllBytes();
+        JsonNode lenientBody = tryParse(request);
         String projectKey = extractProjectKey(lenientBody);
         DispatchResult result;
         try {
@@ -211,7 +224,9 @@ public class AutomationInstanceEndpoint {
         try {
             return DispatchResult.success(handlers.execute(operationId, projectKey, body.get("params")));
         } catch (IllegalArgumentException e) {
-            // The registry's validating execute is the single validator; its violations map to invalid.
+            // The registry's validating execute is the single validator; its violations map to
+            // invalid, and an IllegalArgumentException from the handler implementation itself
+            // is indistinguishable and also maps to invalid (see class Javadoc).
             return DispatchResult.of("invalid", describe(e));
         } catch (Exception e) {
             return DispatchResult.of("failed", describe(e));
@@ -221,7 +236,11 @@ public class AutomationInstanceEndpoint {
     private void complete(HttpExchange exchange, long startNanos, String operationId,
                           String projectKey, DispatchResult result) throws IOException {
         if (callListener != null) {
-            callListener.onCall(operationId, projectKey, result.code(), (System.nanoTime() - startNanos) / 1_000_000);
+            try {
+                callListener.onCall(operationId, projectKey, result.code(), (System.nanoTime() - startNanos) / 1_000_000);
+            } catch (Exception e) {
+                // A misbehaving listener must never prevent the HTTP response.
+            }
         }
         respondJson(exchange, 200, result.body());
     }

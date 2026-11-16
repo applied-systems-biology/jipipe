@@ -33,6 +33,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -95,6 +96,9 @@ public class AutomationInstanceEndpointTest {
         assertEquals("unauthorized", body.get("code").asText());
         assertEquals(1, listener.calls.size());
         assertEquals("unauthorized", listener.calls.get(0).outcome());
+        // The request body carried "project-key":"proj1": a null key proves the body was
+        // not read or parsed on the unauthorized path (secret check runs first).
+        assertNull(listener.calls.get(0).projectKey());
     }
 
     @Test
