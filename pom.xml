@@ -117,6 +117,13 @@ See the LICENSE file provided with this code for the full license.
                 <artifactId>jackson-databind</artifactId>
                 <version>2.18.0</version>
             </dependency>
+            <!-- Jackson 3 (used by the MCP SDK) requires annotations 2.21+; a newer
+                 annotations jar is a backward-compatible superset for the Jackson 2 stack. -->
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-annotations</artifactId>
+                <version>2.21</version>
+            </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
@@ -126,6 +133,44 @@ See the LICENSE file provided with this code for the full license.
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-jdk14</artifactId>
                 <version>1.7.36</version>
+            </dependency>
+            <!-- Jetty 12: pom-scijava manages jetty-http/io/util/security at 9.4.x which
+                 would break the Jetty 12 server used by the MCP broker. No other module
+                 uses Jetty. -->
+            <dependency>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-server</artifactId>
+                <version>12.1.15</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-http</artifactId>
+                <version>12.1.15</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-io</artifactId>
+                <version>12.1.15</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-util</artifactId>
+                <version>12.1.15</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-security</artifactId>
+                <version>12.1.15</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-session</artifactId>
+                <version>12.1.15</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.jetty.ee10</groupId>
+                <artifactId>jetty-ee10-servlet</artifactId>
+                <version>12.1.15</version>
             </dependency>
             <dependency>
                 <groupId>org.swinglabs</groupId>

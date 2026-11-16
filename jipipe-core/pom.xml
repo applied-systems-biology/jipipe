@@ -320,6 +320,31 @@
             <artifactId>simmetrics-core</artifactId>
         </dependency>
         <dependency>
+            <groupId>io.modelcontextprotocol.sdk</groupId>
+            <artifactId>mcp</artifactId>
+            <version>2.2.0</version>
+            <exclusions>
+                <!-- Ships json-schema-validator 3.x whose API conflicts with the 1.5.x
+                     version pinned for the RO-Crate module. The broker never uses the
+                     SDK schema validator: input validation happens on the instance
+                     endpoint, and the broker passes an explicit accept-all validator. -->
+                <exclusion>
+                    <groupId>com.networknt</groupId>
+                    <artifactId>json-schema-validator</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-server</artifactId>
+            <version>12.1.15</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty.ee10</groupId>
+            <artifactId>jetty-ee10-servlet</artifactId>
+            <version>12.1.15</version>
+        </dependency>
+        <dependency>
             <groupId>com.microsoft.onnxruntime</groupId>
             <artifactId>onnxruntime</artifactId>
         </dependency>

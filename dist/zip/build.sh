@@ -235,6 +235,74 @@ if [ ! -e "./dependencies/LICENSE_OrientationJ.txt" ]; then
 	mkdir -p "./dependencies"
 	wget -O ./dependencies/LICENSE_OrientationJ.txt https://raw.githubusercontent.com/Biomedical-Imaging-Group/OrientationJ/master/LICENSE || exit 1
 fi
+if [ ! -e "./dependencies/mcp-2.2.0.jar" ]; then
+	mkdir -p "./dependencies"
+	wget -O ./dependencies/mcp-2.2.0.jar https://repo1.maven.org/maven2/io/modelcontextprotocol/sdk/mcp/2.2.0/mcp-2.2.0.jar || exit 1
+fi
+if [ ! -e "./dependencies/mcp-core-2.2.0.jar" ]; then
+	mkdir -p "./dependencies"
+	wget -O ./dependencies/mcp-core-2.2.0.jar https://repo1.maven.org/maven2/io/modelcontextprotocol/sdk/mcp-core/2.2.0/mcp-core-2.2.0.jar || exit 1
+fi
+if [ ! -e "./dependencies/mcp-json-jackson3-2.2.0.jar" ]; then
+	mkdir -p "./dependencies"
+	wget -O ./dependencies/mcp-json-jackson3-2.2.0.jar https://repo1.maven.org/maven2/io/modelcontextprotocol/sdk/mcp-json-jackson3/2.2.0/mcp-json-jackson3-2.2.0.jar || exit 1
+fi
+if [ ! -e "./dependencies/reactor-core-3.9.0-RC1.jar" ]; then
+	mkdir -p "./dependencies"
+	wget -O ./dependencies/reactor-core-3.9.0-RC1.jar https://repo1.maven.org/maven2/io/projectreactor/reactor-core/3.9.0-RC1/reactor-core-3.9.0-RC1.jar || exit 1
+fi
+if [ ! -e "./dependencies/jakarta.servlet-api-6.0.0.jar" ]; then
+	mkdir -p "./dependencies"
+	wget -O ./dependencies/jakarta.servlet-api-6.0.0.jar https://repo1.maven.org/maven2/jakarta/servlet/jakarta.servlet-api/6.0.0/jakarta.servlet-api-6.0.0.jar || exit 1
+fi
+if [ ! -e "./dependencies/jetty-ee10-servlet-12.1.15.jar" ]; then
+	mkdir -p "./dependencies"
+	wget -O ./dependencies/jetty-ee10-servlet-12.1.15.jar https://repo1.maven.org/maven2/org/eclipse/jetty/ee10/jetty-ee10-servlet/12.1.15/jetty-ee10-servlet-12.1.15.jar || exit 1
+fi
+if [ ! -e "./dependencies/jetty-http-12.1.15.jar" ]; then
+	mkdir -p "./dependencies"
+	wget -O ./dependencies/jetty-http-12.1.15.jar https://repo1.maven.org/maven2/org/eclipse/jetty/jetty-http/12.1.15/jetty-http-12.1.15.jar || exit 1
+fi
+if [ ! -e "./dependencies/jetty-io-12.1.15.jar" ]; then
+	mkdir -p "./dependencies"
+	wget -O ./dependencies/jetty-io-12.1.15.jar https://repo1.maven.org/maven2/org/eclipse/jetty/jetty-io/12.1.15/jetty-io-12.1.15.jar || exit 1
+fi
+if [ ! -e "./dependencies/jetty-security-12.1.15.jar" ]; then
+	mkdir -p "./dependencies"
+	wget -O ./dependencies/jetty-security-12.1.15.jar https://repo1.maven.org/maven2/org/eclipse/jetty/jetty-security/12.1.15/jetty-security-12.1.15.jar || exit 1
+fi
+if [ ! -e "./dependencies/jetty-server-12.1.15.jar" ]; then
+	mkdir -p "./dependencies"
+	wget -O ./dependencies/jetty-server-12.1.15.jar https://repo1.maven.org/maven2/org/eclipse/jetty/jetty-server/12.1.15/jetty-server-12.1.15.jar || exit 1
+fi
+if [ ! -e "./dependencies/jetty-session-12.1.15.jar" ]; then
+	mkdir -p "./dependencies"
+	wget -O ./dependencies/jetty-session-12.1.15.jar https://repo1.maven.org/maven2/org/eclipse/jetty/jetty-session/12.1.15/jetty-session-12.1.15.jar || exit 1
+fi
+if [ ! -e "./dependencies/jetty-util-12.1.15.jar" ]; then
+	mkdir -p "./dependencies"
+	wget -O ./dependencies/jetty-util-12.1.15.jar https://repo1.maven.org/maven2/org/eclipse/jetty/jetty-util/12.1.15/jetty-util-12.1.15.jar || exit 1
+fi
+if [ ! -e "./dependencies/jspecify-1.0.0.jar" ]; then
+	mkdir -p "./dependencies"
+	wget -O ./dependencies/jspecify-1.0.0.jar https://repo1.maven.org/maven2/org/jspecify/jspecify/1.0.0/jspecify-1.0.0.jar || exit 1
+fi
+if [ ! -e "./dependencies/reactive-streams-1.0.4.jar" ]; then
+	mkdir -p "./dependencies"
+	wget -O ./dependencies/reactive-streams-1.0.4.jar https://repo1.maven.org/maven2/org/reactivestreams/reactive-streams/1.0.4/reactive-streams-1.0.4.jar || exit 1
+fi
+if [ ! -e "./dependencies/jackson-core-3.1.8.jar" ]; then
+	mkdir -p "./dependencies"
+	wget -O ./dependencies/jackson-core-3.1.8.jar https://repo1.maven.org/maven2/tools/jackson/core/jackson-core/3.1.8/jackson-core-3.1.8.jar || exit 1
+fi
+if [ ! -e "./dependencies/jackson-databind-3.1.8.jar" ]; then
+	mkdir -p "./dependencies"
+	wget -O ./dependencies/jackson-databind-3.1.8.jar https://repo1.maven.org/maven2/tools/jackson/core/jackson-databind/3.1.8/jackson-databind-3.1.8.jar || exit 1
+fi
+if [ ! -e "./dependencies/jackson-annotations-2.21.jar" ]; then
+	mkdir -p "./dependencies"
+	wget -O ./dependencies/jackson-annotations-2.21.jar https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-annotations/2.21/jackson-annotations-2.21.jar || exit 1
+fi
 
 rm -r package
 mkdir -p package/plugins/JIPipe
