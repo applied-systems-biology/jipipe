@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.automation.AutomationContext;
 import org.hkijena.jipipe.api.automation.AutomationOperation;
 import org.hkijena.jipipe.api.automation.AutomationOperationCategory;
@@ -216,10 +217,12 @@ public class DiagnosticsOperations {
             ArrayNode errors = data.putArray("errors");
 
             // Validation report: the same call the desktop errors panel makes on revalidate
+            // (JIPipeDesktopReloadableValidityChecker passes a fresh silent handle: validation
+            // must not write into the shared run log)
             try {
                 JIPipeValidationReport report = new JIPipeValidationReport();
                 project.reportValidity(new UnspecifiedValidationReportContext(),
-                        JIPipeValidationReportSettings.DEFAULT, report, ctx.getProgressInfo());
+                        JIPipeValidationReportSettings.DEFAULT, report, new JIPipeProgressInfo());
                 for (JIPipeValidationReportEntry reportEntry : report) {
                     addValidationEntry(errors, project, graph, reportEntry, compartmentFilter);
                 }
@@ -317,7 +320,11 @@ public class DiagnosticsOperations {
         public String getDescription() {
             return "Get the progress log of the current run: text records (log, error, notification) with timestamp, "
                     + "level, and node reference, newest-last. level=INFO returns only INFO records, "
-                    + "level=DEBUG also includes DEBUG records";
+                    + "level=DEBUG additionally returns DEBUG records alongside INFO. "
+                    + "With level or node filters, the result may contain fewer than tail records even when "
+                    + "older matching records exist (the scan is bounded); treat the returned count as a "
+                    + "lower bound in that case. window-exhausted is true when the bounded window was fully "
+                    + "consumed and no terminating end-of-log was reached, i.e. older matching records may exist";
         }
 
         @Override
@@ -326,7 +333,7 @@ public class DiagnosticsOperations {
                     {
                       "type": "object",
                       "properties": {
-                        "tail": {"type": "integer"},
+                        "tail": {"type": "integer", "description": "Number of most recent records to return (default 200, maximum 8192); values below 1 are treated as 1"},
                         "level": {"type": "string", "enum": ["INFO", "DEBUG"]},
                         "node": {"type": "string"}
                       },
@@ -373,8 +380,9 @@ public class DiagnosticsOperations {
             // Bounded read: the window over-reads the tail so the filters can still fill it,
             // and is capped by the store's own tail limit
             int window = Math.min(MAX_LOG_TAIL, Math.max(tail + LOG_WINDOW_MIN_EXTRA, tail * LOG_WINDOW_OVERREAD));
+            List<JIPipeProgressRecord> windowRecords = store.readRecent(window);
             List<JIPipeProgressRecord> records = new ArrayList<>();
-            for (JIPipeProgressRecord record : store.readRecent(window)) {
+            for (JIPipeProgressRecord record : windowRecords) {
                 if (!isTextRecord(record)) {
                     continue;
                 }
@@ -397,6 +405,9 @@ public class DiagnosticsOperations {
                 items.add(renderRecord(store, records.get(i)));
             }
             data.put("count", items.size());
+            // The window read filled completely: the scan stopped at the window boundary, not at
+            // the start of the log, so older matching records may exist beyond the window
+            data.put("window-exhausted", windowRecords.size() >= window);
             return data;
         }
 

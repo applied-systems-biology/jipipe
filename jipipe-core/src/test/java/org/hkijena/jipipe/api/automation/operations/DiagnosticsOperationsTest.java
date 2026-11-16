@@ -213,6 +213,37 @@ public class DiagnosticsOperationsTest {
     }
 
     @Test
+    void getLogReportsWindowExhaustedWhenFilteredScanExhaustsTheWindow() {
+        Fixture fixture = createFixture();
+        for (int i = 0; i < 200; i++) {
+            fixture.progressInfo().log("info " + i);
+            fixture.progressInfo().debug("debug " + i);
+        }
+        ObjectNode params = mapper.createObjectNode();
+        params.put("level", "INFO");
+        params.put("tail", 10);
+        JsonNode result = new DiagnosticsOperations.GetLog().execute(createContext(fixture), params);
+
+        assertFalse(result.has("error"), () -> "get_log must not fail: " + result);
+        assertEquals(10, result.get("count").asInt(), "tail=10 must return ten records");
+        assertTrue(result.get("window-exhausted").asBoolean(),
+                "a filtered scan that consumes the whole window must report window-exhausted");
+    }
+
+    @Test
+    void getLogReportsWindowNotExhaustedForSmallStore() {
+        Fixture fixture = createFixture();
+        fixture.progressInfo().log("info one");
+        ObjectNode params = mapper.createObjectNode();
+        params.put("level", "INFO");
+        JsonNode result = new DiagnosticsOperations.GetLog().execute(createContext(fixture), params);
+
+        assertFalse(result.has("error"), () -> "get_log must not fail: " + result);
+        assertFalse(result.get("window-exhausted").asBoolean(),
+                "a store smaller than the read window must not report window-exhausted");
+    }
+
+    @Test
     void getErrorsReportsInvalidGraphWithNodeReference() {
         Fixture fixture = createFixture();
         boolean old = JIPipeRuntimeApplicationSettings.getInstance().isAllowSkipAlgorithmsWithoutInput();
