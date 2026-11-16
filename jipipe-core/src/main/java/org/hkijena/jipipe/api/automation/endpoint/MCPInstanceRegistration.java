@@ -28,6 +28,7 @@ public class MCPInstanceRegistration extends SharedInstanceRegistration {
     private int endpointPort;
     private String endpointSecret;
     private String appVersion;
+    private List<String> toolIds = new ArrayList<>();
     private List<MCPProjectEntry> projects = new ArrayList<>();
 
     public MCPInstanceRegistration() {
@@ -38,6 +39,7 @@ public class MCPInstanceRegistration extends SharedInstanceRegistration {
         this.endpointPort = other.endpointPort;
         this.endpointSecret = other.endpointSecret;
         this.appVersion = other.appVersion;
+        this.toolIds = other.toolIds == null ? new ArrayList<>() : new ArrayList<>(other.toolIds);
         this.projects = other.projects == null ? new ArrayList<>() : new ArrayList<>(other.projects);
     }
 
@@ -69,6 +71,19 @@ public class MCPInstanceRegistration extends SharedInstanceRegistration {
     @JsonSetter("app-version")
     public void setAppVersion(String appVersion) {
         this.appVersion = appVersion;
+    }
+
+    /**
+     * Automation operation ids the instance exposes as MCP tools (set at registration time).
+     */
+    @JsonGetter("tool-ids")
+    public List<String> getToolIds() {
+        return toolIds;
+    }
+
+    @JsonSetter("tool-ids")
+    public void setToolIds(List<String> toolIds) {
+        this.toolIds = toolIds == null ? new ArrayList<>() : new ArrayList<>(toolIds);
     }
 
     @JsonGetter("projects")

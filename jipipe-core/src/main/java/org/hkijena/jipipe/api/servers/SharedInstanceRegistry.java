@@ -17,6 +17,13 @@ public class SharedInstanceRegistry<T extends SharedInstanceRegistration> {
         instances.remove(instanceId);
     }
 
+    /**
+     * Returns the registration for an instance id, or null when unknown.
+     */
+    public T get(String instanceId) {
+        return instances.get(instanceId);
+    }
+
     public int getInstanceCount() {
         return instances.size();
     }

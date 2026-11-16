@@ -1,0 +1,449 @@
+package org.hkijena.jipipe.servers.mcp;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.modelcontextprotocol.json.McpJsonDefaults;
+import io.modelcontextprotocol.json.schema.JsonSchemaValidator;
+import io.modelcontextprotocol.server.McpServer;
+import io.modelcontextprotocol.server.McpServerFeatures;
+import io.modelcontextprotocol.server.McpSyncServer;
+import io.modelcontextprotocol.server.transport.HttpServletStreamableServerTransportProvider;
+import io.modelcontextprotocol.spec.McpSchema;
+import jakarta.servlet.DispatcherType;
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.eclipse.jetty.ee10.servlet.FilterHolder;
+import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
+import org.eclipse.jetty.ee10.servlet.ServletHolder;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
+import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.automation.AutomationOperation;
+import org.hkijena.jipipe.api.automation.AutomationOperationRegistry;
+import org.hkijena.jipipe.api.automation.endpoint.MCPInstanceRegistration;
+import org.hkijena.jipipe.api.servers.ServerLogRingBuffer;
+import org.hkijena.jipipe.utils.json.JsonUtils;
+
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Set;
+
+/**
+ * MCP broker: a Jetty server on 127.0.0.1 that exposes the automation operations of
+ * registered JIPipe instances as MCP tools.
+ * <p>
+ * Routes: {@code GET /health} (open, no bearer token required), MCP endpoint {@code /mcp}
+ * (streamable HTTP via {@link HttpServletStreamableServerTransportProvider}), and control
+ * routes {@code POST /control/register}, {@code POST /control/unregister},
+ * {@code GET /control/logs}. When a bearer token is configured, every request to
+ * {@code /mcp} and {@code /control/*} must present {@code Authorization: Bearer <token>}
+ * (constant-time comparison) or is rejected with 401 before any processing.
+ * <p>
+ * Tool specs are rebuilt from the {@link MCPInstanceRegistry}: name = operation id,
+ * description, input schema, and read-only hint come from {@link AutomationOperation#getAgentDocumentation()},
+ * {@link AutomationOperation#getInputSchema()}, and {@link AutomationOperation#isReadOnly()}
+ * when an operation metadata registry is available (constructor overload), otherwise from
+ * name-only fallbacks. Registrations only carry tool ids, so the standalone broker process
+ * uses the fallback until registrations carry full tool metadata.
+ * <p>
+ * {@code tools/call} removes the {@code project} argument ({@code <instanceId>:<projectKey>},
+ * split on the first colon) and forwards the call to
+ * {@code POST http://127.0.0.1:<endpointPort>/op/<operationId>} with the endpoint secret
+ * header and body {@code {"project-key": k, "params": <args minus project>}}. Results whose
+ * JSON contains non-null {@code image-base64} and {@code mime} fields become MCP image
+ * content, everything else becomes JSON text content. Operations classified as jobs (category
+ * Execute, except {@code get_job_status}/{@code cancel_job}) return a {@code job-id}
+ * envelope from the instance immediately; the broker passes it through unchanged and does
+ * not wait for job completion.
+ * <p>
+ * All routing outcomes and lifecycle events are recorded in the {@link ServerLogRingBuffer}
+ * served by {@code /control/logs}.
+ */
+public class MCPBrokerServer {
+
+    private static final String SECRET_HEADER = "X-JIPipe-Endpoint-Secret";
+    private static final Duration FORWARD_TIMEOUT = Duration.ofSeconds(60);
+
+    /**
+     * Accepts every tool input: the instance endpoint validates parameters against the
+     * operation schema, so the broker must not run the SDK's own validator (whose
+     * json-schema-validator dependency is incompatible with the version pinned by the
+     * RO-Crate module and therefore excluded).
+     */
+    private static final JsonSchemaValidator ACCEPT_ALL_VALIDATOR = new JsonSchemaValidator() {
+        @Override
+        public JsonSchemaValidator.ValidationResponse validate(Map<String, Object> schema, Object args) {
+            return JsonSchemaValidator.ValidationResponse.asValid(null);
+        }
+    };
+
+    private final int port;
+    private final MCPInstanceRegistry registry;
+    private final String bearerToken;
+    private final AutomationOperationRegistry operationMetadata;
+    private final ServerLogRingBuffer logs = new ServerLogRingBuffer(2000);
+    private final ObjectMapper objectMapper = JsonUtils.getObjectMapper();
+    private final HttpClient forwardClient = HttpClient.newBuilder()
+            .connectTimeout(Duration.ofSeconds(10))
+            .build();
+    private final Set<String> registeredTools = new LinkedHashSet<>();
+
+    private Server jettyServer;
+    private ServerConnector connector;
+    private McpSyncServer syncServer;
+
+    public MCPBrokerServer(int port, MCPInstanceRegistry registry, String bearerToken) {
+        this(port, registry, bearerToken, null);
+    }
+
+    /**
+     * @param operationMetadata local operation definitions used for tool descriptions,
+     *                          schemas, and read-only hints (nullable)
+     */
+    public MCPBrokerServer(int port, MCPInstanceRegistry registry, String bearerToken,
+                           AutomationOperationRegistry operationMetadata) {
+        this.port = port;
+        this.registry = registry;
+        this.bearerToken = bearerToken;
+        this.operationMetadata = operationMetadata;
+    }
+
+    public void start() throws Exception {
+        HttpServletStreamableServerTransportProvider transportProvider =
+                HttpServletStreamableServerTransportProvider.builder()
+                        .jsonMapper(McpJsonDefaults.getMapper())
+                        .mcpEndpoint("/mcp")
+                        .build();
+        syncServer = McpServer.sync(transportProvider)
+                .serverInfo("jipipe", JIPipe.getJIPipeVersion())
+                .capabilities(McpSchema.ServerCapabilities.builder().tools(true).build())
+                .jsonSchemaValidator(ACCEPT_ALL_VALIDATOR)
+                .validateToolInputs(false)
+                .build();
+        rebuildTools();
+
+        jettyServer = new Server();
+        connector = new ServerConnector(jettyServer);
+        connector.setHost("127.0.0.1");
+        connector.setPort(port);
+        jettyServer.addConnector(connector);
+
+        ServletContextHandler handler = new ServletContextHandler();
+        handler.setContextPath("/");
+        handler.addFilter(new FilterHolder(new BearerTokenFilter()), "/*", EnumSet.of(DispatcherType.REQUEST));
+        handler.addServlet(new ServletHolder(transportProvider), "/mcp");
+        handler.addServlet(new ServletHolder(new HealthServlet()), "/health");
+        handler.addServlet(new ServletHolder(new ControlServlet()), "/control/*");
+        jettyServer.setHandler(handler);
+
+        jettyServer.start();
+        logs.add("info", "MCP broker listening on 127.0.0.1:" + getPort()
+                + (bearerToken != null ? " (bearer token required)" : " (open access)"));
+    }
+
+    public void stop() {
+        if (jettyServer != null) {
+            try {
+                jettyServer.stop();
+            } catch (Exception e) {
+                logs.add("warn", "Broker stop failed: " + describe(e));
+            }
+            jettyServer = null;
+        }
+    }
+
+    /**
+     * The actually bound port (differs from the constructor port when it was 0).
+     */
+    public int getPort() {
+        return connector == null ? port : connector.getLocalPort();
+    }
+
+    public ServerLogRingBuffer getLogs() {
+        return logs;
+    }
+
+    /**
+     * Removes all previously registered tools and re-adds the aggregated tool set.
+     */
+    private synchronized void rebuildTools() {
+        for (String toolId : new ArrayList<>(registeredTools)) {
+            syncServer.removeTool(toolId);
+        }
+        registeredTools.clear();
+        for (String toolId : registry.aggregateToolIds()) {
+            syncServer.addTool(buildToolSpecification(toolId));
+            registeredTools.add(toolId);
+        }
+        syncServer.notifyToolsListChanged();
+        logs.add("info", "Tool list rebuilt: " + registeredTools.size() + " tool(s)");
+    }
+
+    private McpServerFeatures.SyncToolSpecification buildToolSpecification(String operationId) {
+        AutomationOperation operation = operationMetadata != null ? operationMetadata.get(operationId) : null;
+        McpSchema.Tool.Builder toolBuilder = McpSchema.Tool.builder(operationId);
+        if (operation != null) {
+            toolBuilder.description(operation.getAgentDocumentation());
+            toolBuilder.inputSchema(inputSchemaOf(operation));
+            toolBuilder.annotations(McpSchema.ToolAnnotations.builder()
+                    .readOnlyHint(operation.isReadOnly())
+                    .build());
+        } else {
+            toolBuilder.description("Executes the operation '" + operationId
+                    + "' on a JIPipe instance. The 'project' argument selects the target as "
+                    + "'<instanceId>:<projectKey>'.");
+            toolBuilder.inputSchema(Map.of("type", "object"));
+        }
+        return McpServerFeatures.SyncToolSpecification.builder()
+                .tool(toolBuilder.build())
+                .callHandler((exchange, request) -> handleToolCall(operationId, request))
+                .build();
+    }
+
+    private Map<String, Object> inputSchemaOf(AutomationOperation operation) {
+        JsonNode schema = operation.getInputSchema();
+        if (schema == null || schema.isNull() || !schema.isObject()) {
+            return Map.of("type", "object");
+        }
+        return objectMapper.convertValue(schema, new com.fasterxml.jackson.core.type.TypeReference<Map<String, Object>>() {
+        });
+    }
+
+    private McpSchema.CallToolResult handleToolCall(String operationId, McpSchema.CallToolRequest request) {
+        try {
+            Map<String, Object> forwardedParams = request.arguments() == null
+                    ? new LinkedHashMap<>()
+                    : new LinkedHashMap<>(request.arguments());
+            Object projectArgument = forwardedParams.remove("project");
+            if (!(projectArgument instanceof String) || ((String) projectArgument).isBlank()) {
+                return toolError(operationId, projectArgument,
+                        "Missing 'project' argument (expected '<instanceId>:<projectKey>')");
+            }
+            String projectId = (String) projectArgument;
+            MCPInstanceRegistration registration;
+            try {
+                registration = registry.findByProjectId(projectId);
+            } catch (NoSuchElementException e) {
+                return toolError(operationId, projectId, e.getMessage());
+            }
+            if (registration == null) {
+                return toolError(operationId, projectId, "Unknown instance in project id '" + projectId
+                        + "'. Available projects: " + availableProjectIds());
+            }
+            String projectKey = projectId.substring(projectId.indexOf(':') + 1);
+            return forward(operationId, projectId, projectKey, registration, forwardedParams);
+        } catch (Exception e) {
+            logs.add("warn", "Tool '" + operationId + "' call failed: " + describe(e));
+            return errorResult(describe(e));
+        }
+    }
+
+    private McpSchema.CallToolResult forward(String operationId, String projectId, String projectKey,
+                                             MCPInstanceRegistration registration,
+                                             Map<String, Object> forwardedParams) throws IOException, InterruptedException {
+        String instanceId = registration.getInstanceId();
+        ObjectNode body = objectMapper.createObjectNode();
+        body.put("project-key", projectKey);
+        body.set("params", objectMapper.valueToTree(forwardedParams));
+        HttpRequest httpRequest = HttpRequest.newBuilder(URI.create("http://127.0.0.1:"
+                        + registration.getEndpointPort() + "/op/" + operationId))
+                .header(SECRET_HEADER, registration.getEndpointSecret())
+                .header("Content-Type", "application/json")
+                .timeout(FORWARD_TIMEOUT)
+                .POST(HttpRequest.BodyPublishers.ofString(objectMapper.writeValueAsString(body),
+                        StandardCharsets.UTF_8))
+                .build();
+        HttpResponse<byte[]> response;
+        try {
+            response = forwardClient.send(httpRequest, HttpResponse.BodyHandlers.ofByteArray());
+        } catch (IOException | InterruptedException e) {
+            String message = "Failed to reach instance '" + instanceId + "': " + describe(e);
+            logs.add("warn", "Tool '" + operationId + "' project '" + projectId + "': " + message);
+            if (e instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
+            return errorResult(message);
+        }
+        if (response.statusCode() != 200) {
+            String message = "Instance '" + instanceId + "' returned HTTP " + response.statusCode()
+                    + " for operation '" + operationId + "'";
+            logs.add("warn", "Tool '" + operationId + "' project '" + projectId + "': " + message);
+            return errorResult(message);
+        }
+        JsonNode envelope = objectMapper.readTree(response.body());
+        JsonNode result = envelope.get("result");
+        if (!envelope.path("ok").asBoolean(false)) {
+            String message = "Instance '" + instanceId + "' rejected operation '" + operationId + "': "
+                    + envelope.path("error").asText("unknown error");
+            logs.add("warn", "Tool '" + operationId + "' project '" + projectId + "': " + message);
+            return errorResult(message);
+        }
+        logs.add("info", "Tool '" + operationId + "' project '" + projectId + "' -> instance '"
+                + instanceId + "' ok");
+        JsonNode image = result.path("image-base64");
+        JsonNode mime = result.path("mime");
+        if (image.isTextual() && mime.isTextual()) {
+            return McpSchema.CallToolResult.builder()
+                    .addContent(new McpSchema.ImageContent(null, image.asText(), mime.asText()))
+                    .isError(false)
+                    .build();
+        }
+        return McpSchema.CallToolResult.builder()
+                .addContent(new McpSchema.TextContent(objectMapper.writeValueAsString(result)))
+                .isError(false)
+                .build();
+    }
+
+    private McpSchema.CallToolResult toolError(String operationId, Object projectId, String message) {
+        logs.add("warn", "Tool '" + operationId + "' project '" + projectId + "' routing failed: " + message);
+        return errorResult(message);
+    }
+
+    private static McpSchema.CallToolResult errorResult(String message) {
+        return McpSchema.CallToolResult.builder()
+                .addContent(new McpSchema.TextContent(message))
+                .isError(true)
+                .build();
+    }
+
+    private String availableProjectIds() {
+        List<String> ids = new ArrayList<>();
+        for (MCPInstanceRegistration registration : registry.getAll()) {
+            for (var project : registration.getProjects()) {
+                ids.add(registration.getInstanceId() + ":" + project.getKey());
+            }
+        }
+        return String.join(", ", ids);
+    }
+
+    private static String describe(Throwable throwable) {
+        return throwable.getMessage() != null ? throwable.getMessage() : throwable.getClass().getName();
+    }
+
+    private static boolean constantTimeEquals(String expected, String provided) {
+        return MessageDigest.isEqual(expected.getBytes(StandardCharsets.UTF_8), provided.getBytes(StandardCharsets.UTF_8));
+    }
+
+    /**
+     * Rejects requests without a valid bearer token on {@code /mcp} and {@code /control/*}
+     * before any processing; {@code /health} and all other paths pass through.
+     */
+    private class BearerTokenFilter implements Filter {
+
+        @Override
+        public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain)
+                throws IOException, ServletException {
+            if (bearerToken != null) {
+                HttpServletRequest request = (HttpServletRequest) servletRequest;
+                String path = request.getRequestURI();
+                if (path.equals("/mcp") || path.startsWith("/mcp/") || path.startsWith("/control")) {
+                    HttpServletResponse response = (HttpServletResponse) servletResponse;
+                    String header = request.getHeader("Authorization");
+                    if (header == null || !header.startsWith("Bearer ")
+                            || !constantTimeEquals(bearerToken, header.substring("Bearer ".length()))) {
+                        response.sendError(401);
+                        return;
+                    }
+                }
+            }
+            chain.doFilter(servletRequest, servletResponse);
+        }
+    }
+
+    private static class HealthServlet extends HttpServlet {
+
+        @Override
+        protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+            response.setContentType("text/plain; charset=utf-8");
+            response.setStatus(200);
+            response.getWriter().write("ok");
+        }
+    }
+
+    private class ControlServlet extends HttpServlet {
+
+        @Override
+        protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+            if (request.getRequestURI().equals("/control/logs")) {
+                respondJson(response, 200, objectMapper.valueToTree(logs.getAll()));
+                return;
+            }
+            respondJson(response, 404, objectMapper.createObjectNode().put("error", "Unknown control route"));
+        }
+
+        @Override
+        protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+            byte[] body = request.getInputStream().readAllBytes();
+            if (request.getRequestURI().equals("/control/register")) {
+                MCPInstanceRegistration registration;
+                try {
+                    registration = objectMapper.readValue(body, MCPInstanceRegistration.class);
+                } catch (IOException e) {
+                    respondJson(response, 400, objectMapper.createObjectNode()
+                            .put("error", "Invalid registration payload: " + describe(e)));
+                    return;
+                }
+                if (registration.getInstanceId() == null || registration.getInstanceId().isBlank()) {
+                    respondJson(response, 400, objectMapper.createObjectNode()
+                            .put("error", "Registration payload requires an instance-id"));
+                    return;
+                }
+                registry.register(registration);
+                rebuildTools();
+                logs.add("info", "Registered instance '" + registration.getInstanceId() + "' ("
+                        + registration.getProjects().size() + " project(s))");
+                respondText(response, 200, "ok");
+                return;
+            }
+            if (request.getRequestURI().equals("/control/unregister")) {
+                JsonNode payload = objectMapper.readTree(body);
+                String instanceId = payload.path("instance-id").asText(null);
+                if (instanceId == null || instanceId.isBlank()) {
+                    respondJson(response, 400, objectMapper.createObjectNode()
+                            .put("error", "Unregister payload requires an instance-id"));
+                    return;
+                }
+                registry.unregister(instanceId);
+                rebuildTools();
+                logs.add("info", "Unregistered instance '" + instanceId + "'");
+                respondText(response, 200, "ok");
+                return;
+            }
+            respondJson(response, 404, objectMapper.createObjectNode().put("error", "Unknown control route"));
+        }
+
+        private void respondText(HttpServletResponse response, int status, String text) throws IOException {
+            response.setContentType("text/plain; charset=utf-8");
+            response.setStatus(status);
+            response.getWriter().write(text);
+        }
+
+        private void respondJson(HttpServletResponse response, int status, JsonNode body) throws IOException {
+            byte[] bytes = objectMapper.writeValueAsBytes(body);
+            response.setContentType("application/json");
+            response.setStatus(status);
+            response.setContentLength(bytes.length);
+            response.getOutputStream().write(bytes);
+        }
+    }
+}
