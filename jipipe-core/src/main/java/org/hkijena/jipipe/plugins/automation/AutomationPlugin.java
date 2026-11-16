@@ -103,6 +103,12 @@ public class AutomationPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerAutomationOperation("get_errors", new DiagnosticsOperations.GetErrors());
         registerAutomationOperation("get_log", new DiagnosticsOperations.GetLog());
 
+        // Screenshot operations
+        registerAutomationOperation("screenshot_canvas", new ScreenshotOperations.ScreenshotCanvas());
+        registerAutomationOperation("screenshot_minimap", new ScreenshotOperations.ScreenshotMinimap());
+        registerAutomationOperation("screenshot_ui", new ScreenshotOperations.ScreenshotUi());
+        registerAutomationOperation("screenshot_window", new ScreenshotOperations.ScreenshotWindow());
+
         // RO-Crate operations
         registerAutomationOperation("create_ro_crate", new ROCrateOperations.CreateROCrate());
     }

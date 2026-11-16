@@ -27,7 +27,7 @@ import org.hkijena.jipipe.desktop.commons.components.color.JIPipeDesktopColorCho
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopHTMLEditor;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterFormPanel;
-import org.hkijena.jipipe.launcher.commands.screenshotui.ScreenshotRenderer;
+import org.hkijena.jipipe.desktop.utils.ScreenshotRenderer;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeParameterCollectionList;
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;

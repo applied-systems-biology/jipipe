@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.launcher.commands.screenshotui;
+package org.hkijena.jipipe.desktop.utils;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -21,9 +21,9 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 /**
- * Offscreen Swing → PNG capture used by the {@code screenshot-ui} launcher
- * command (VLM-driven before/after verification for the #1339 parameter UX
- * overhaul).
+ * Offscreen Swing to PNG/BufferedImage capture, used by the {@code screenshot-ui} launcher
+ * command (VLM-driven before/after verification for the #1339 parameter UX overhaul) and
+ * by the automation screenshot operations.
  * <p>
  * A component that has never been shown does not lay out or paint reliably via
  * {@code printAll} alone (and a {@code JScrollPane} reports a clipped preferred
@@ -61,6 +61,23 @@ public final class ScreenshotRenderer {
      * Used for both panels (auto height) and dialogs (fixed height).
      */
     public static void renderFixed(Component c, int width, int height, Path outPng) throws IOException {
+        ImageIO.write(renderImage(c, width, height), "png", outPng.toFile());
+    }
+
+    /**
+     * Lays out the component at the given width inside an off-screen frame, then captures it
+     * at its full realized size into an image (see {@link #renderImage(Component, int, int)}).
+     */
+    public static BufferedImage renderImage(Component c, int width) {
+        return renderImage(c, width, -1);
+    }
+
+    /**
+     * Lays out the component at a fixed width, and (if {@code height > 0}) a fixed height;
+     * otherwise at the component's full realized height, and captures it via
+     * {@code printAll} into an ARGB image. Must be called on the EDT.
+     */
+    public static BufferedImage renderImage(Component c, int width, int height) {
         JFrame frame = new JFrame("screenshot");
         frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         ((JComponent) frame.getContentPane()).setBorder(BorderFactory.createEmptyBorder());
@@ -88,7 +105,7 @@ public final class ScreenshotRenderer {
             g.fillRect(0, 0, capW, capH);
             c.printAll(g);
             g.dispose();
-            ImageIO.write(img, "png", outPng.toFile());
+            return img;
         } finally {
             frame.setVisible(false);
             frame.dispose();
