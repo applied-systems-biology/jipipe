@@ -13,10 +13,14 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
+import org.hkijena.jipipe.api.data.browser.JIPipeLocalDataTableBrowser;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailData;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.project.JIPipeProject;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.api.dataviewer.JIPipeDesktopDataViewerWindow;
 
 import javax.imageio.ImageIO;
 import javax.swing.table.TableModel;
@@ -35,7 +39,8 @@ import java.util.Objects;
 import java.util.UUID;
 
 /**
- * Built-in data operations: describe cached data entries and export them to the file system.
+ * Built-in data operations: describe cached data entries, export them to the file system,
+ * render their thumbnails, and open them in the standard data viewer.
  */
 public class DataOperations {
 
@@ -208,17 +213,31 @@ public class DataOperations {
      * image-base64/mime envelope. Omits the fields if no thumbnail can be rendered.
      */
     private static void putPreview(ObjectNode data, JIPipeData dataObj, JIPipeProgressInfo progressInfo) {
+        byte[] png = renderThumbnailPng(dataObj, PREVIEW_SIZE, PREVIEW_SIZE, progressInfo);
+        if (png == null) {
+            return;
+        }
+        data.put("image-base64", Base64.getEncoder().encodeToString(png));
+        data.put("mime", "image/png");
+    }
+
+    /**
+     * Renders the thumbnail of the data as PNG bytes at the requested size, or null when the
+     * data type has no thumbnail ({@link JIPipeData#createThumbnail} returns null or the
+     * renderer declines) or rendering failed. The render-to-component recipe works off the EDT.
+     */
+    static byte[] renderThumbnailPng(JIPipeData dataObj, int width, int height, JIPipeProgressInfo progressInfo) {
         try {
-            JIPipeThumbnailData thumbnail = dataObj.createThumbnail(PREVIEW_SIZE, PREVIEW_SIZE, progressInfo);
+            JIPipeThumbnailData thumbnail = dataObj.createThumbnail(width, height, progressInfo);
             if (thumbnail == null) {
-                return;
+                return null;
             }
-            Component component = thumbnail.renderToComponent(PREVIEW_SIZE, PREVIEW_SIZE);
+            Component component = thumbnail.renderToComponent(width, height);
             if (component == null) {
-                return;
+                return null;
             }
-            component.setSize(PREVIEW_SIZE, PREVIEW_SIZE);
-            BufferedImage image = new BufferedImage(PREVIEW_SIZE, PREVIEW_SIZE, BufferedImage.TYPE_INT_ARGB);
+            component.setSize(width, height);
+            BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
             var graphics = image.createGraphics();
             try {
                 component.print(graphics);
@@ -227,10 +246,10 @@ public class DataOperations {
             }
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             ImageIO.write(image, "png", stream);
-            data.put("image-base64", Base64.getEncoder().encodeToString(stream.toByteArray()));
-            data.put("mime", "image/png");
+            return stream.toByteArray();
         } catch (Exception e) {
-            // No cheap preview available: omit the image fields
+            // No thumbnail available
+            return null;
         }
     }
 
@@ -387,6 +406,204 @@ public class DataOperations {
             ObjectNode data = mapper.createObjectNode();
             data.put("saved-to", target.toAbsolutePath().normalize().toString());
             data.put("dataType", resolved.dataTypeId());
+            return data;
+        }
+    }
+
+    /**
+     * Renders the thumbnail of one cached data entry as a PNG image. Unlike the describe_data
+     * preview, a data type without a thumbnail is a clear error, never a blank image.
+     */
+    public static class GetThumbnail implements AutomationOperation {
+
+        /**
+         * Default thumbnail edge length in pixels.
+         */
+        private static final int DEFAULT_SIZE = 256;
+
+        /**
+         * Maximum thumbnail edge length in pixels.
+         */
+        private static final int MAX_SIZE = 1024;
+
+        @Override
+        public String getId() {
+            return "get_thumbnail";
+        }
+
+        @Override
+        public String getDescription() {
+            return "Render the thumbnail of one cached data entry as a PNG image, at a requested size "
+                    + "(default 256, maximum 1024 pixels per edge). Returns a clear error when the data "
+                    + "type has no thumbnail";
+        }
+
+        @Override
+        public String getAgentDocumentation() {
+            return getDescription() + ". The result carries the image as image-base64 plus mime, the "
+                    + "same envelope the describe_data preview uses; an MCP broker delivers it as an "
+                    + "image content block";
+        }
+
+        @Override
+        public JsonNode getInputSchema() {
+            return AutomationSchemaUtils.parseJson("""
+                    {
+                      "type": "object",
+                      "required": ["compartment", "node", "slot"],
+                      "properties": {
+                        "compartment": {"type": "string", "description": "Compartment that contains the node (UUID, alias, or name)"},
+                        "node": {"type": "string", "description": "The node id as used by query_graph (alias id or UUID)"},
+                        "slot": {"type": "string", "description": "Slot name; a cached slot is preferred, otherwise the live output or input slot"},
+                        "entry": {"type": "integer", "description": "Row index into the slot (default 0)"},
+                        "width": {"type": "integer", "description": "Thumbnail width in pixels (default 256; clamped into 1..1024)"},
+                        "height": {"type": "integer", "description": "Thumbnail height in pixels (default 256; clamped into 1..1024)"}
+                      },
+                      "additionalProperties": false
+                    }""");
+        }
+
+        @Override
+        public AutomationOperationCategory getCategory() {
+            return AutomationOperationCategory.Render;
+        }
+
+        @Override
+        public boolean isReadOnly() {
+            return true;
+        }
+
+        @Override
+        public JsonNode execute(AutomationContext ctx, JsonNode params) {
+            ResolvedEntry resolved = resolveEntry(ctx, params);
+            if (resolved.error() != null) {
+                return resolved.error();
+            }
+            JIPipeData dataObj;
+            try {
+                dataObj = resolved.store().getData(ctx.getProgressInfo());
+            } catch (Exception e) {
+                return error("Data is not accessible: " + e.getMessage());
+            }
+            int width = thumbnailSize(params, "width");
+            int height = thumbnailSize(params, "height");
+            byte[] png = renderThumbnailPng(dataObj, width, height, ctx.getProgressInfo());
+            if (png == null) {
+                String type = resolved.dataTypeId() != null
+                        ? resolved.dataTypeName() + " (" + resolved.dataTypeId() + ")"
+                        : resolved.dataTypeName();
+                return error("No thumbnail available for type " + type);
+            }
+            ObjectNode data = mapper.createObjectNode();
+            data.put("image-base64", Base64.getEncoder().encodeToString(png));
+            data.put("mime", "image/png");
+            data.put("width", width);
+            data.put("height", height);
+            data.put("node", ctx.getGraph().getAliasIdOf(resolved.node()));
+            data.put("slot", resolved.slotName());
+            data.put("entry", resolved.entry());
+            return data;
+        }
+
+        /**
+         * Reads and clamps a thumbnail edge length parameter into 1..{@link #MAX_SIZE}.
+         */
+        private static int thumbnailSize(JsonNode params, String name) {
+            int size = params.has(name) ? params.get(name).asInt() : DEFAULT_SIZE;
+            return Math.max(1, Math.min(size, MAX_SIZE));
+        }
+    }
+
+    /**
+     * Opens (or re-binds) the standard data viewer window for one cached data entry. The
+     * canonical open recipe is the default data display operation: a new viewer window is
+     * positioned relative to the project window, made visible, and bound to the entry via
+     * browseDataTable; revalidateDockLater settles the dock sizes. Classified read-only:
+     * it opens a window but mutates no project data.
+     */
+    public static class OpenDataViewer implements AutomationOperation {
+
+        @Override
+        public String getId() {
+            return "open_data_viewer";
+        }
+
+        @Override
+        public String getDescription() {
+            return "Open the standard data viewer window for one cached data entry, or re-bind an "
+                    + "already open viewer window of the same project window to the entry. Changes "
+                    + "no project data";
+        }
+
+        @Override
+        public JsonNode getInputSchema() {
+            return AutomationSchemaUtils.parseJson("""
+                    {
+                      "type": "object",
+                      "required": ["compartment", "node", "slot"],
+                      "properties": {
+                        "compartment": {"type": "string", "description": "Compartment that contains the node (UUID, alias, or name)"},
+                        "node": {"type": "string", "description": "The node id as used by query_graph (alias id or UUID)"},
+                        "slot": {"type": "string", "description": "Slot name; a cached slot is preferred, otherwise the live output or input slot"},
+                        "entry": {"type": "integer", "description": "Row index into the slot (default 0)"}
+                      },
+                      "additionalProperties": false
+                    }""");
+        }
+
+        @Override
+        public AutomationOperationCategory getCategory() {
+            return AutomationOperationCategory.Query;
+        }
+
+        @Override
+        public boolean isReadOnly() {
+            return true;
+        }
+
+        @Override
+        public boolean requiresEdt() {
+            return true;
+        }
+
+        @Override
+        public JsonNode execute(AutomationContext ctx, JsonNode params) {
+            ResolvedEntry resolved = resolveEntry(ctx, params);
+            if (resolved.error() != null) {
+                return resolved.error();
+            }
+            JIPipeDesktopProjectWindow window = AutomationOperationUtils.findProjectWindowByKey(ctx.getProjectId());
+            if (window == null) {
+                return error("No open project window is associated with this call (the data viewer needs a running GUI)");
+            }
+            JIPipeDesktopWorkbench workbench = window.getProjectWorkbench();
+            String displayName = resolved.node().getDisplayName() + "/" + resolved.slotName() + "/" + resolved.entry();
+            // Prefer re-binding an already open viewer window of this workbench
+            // (browseDataTable re-binds) over opening a new window per call
+            JIPipeDesktopDataViewerWindow viewer = null;
+            for (JIPipeDesktopDataViewerWindow open : JIPipeDesktopDataViewerWindow.getOpenWindows()) {
+                if (open.getWorkbench() == workbench) {
+                    viewer = open;
+                    break;
+                }
+            }
+            boolean reused = viewer != null;
+            if (reused) {
+                viewer.setVisible(true);
+                viewer.toFront();
+            } else {
+                viewer = new JIPipeDesktopDataViewerWindow(workbench);
+                viewer.setLocationRelativeTo(workbench.getWindow());
+                viewer.setVisible(true);
+            }
+            viewer.browseDataTable(new JIPipeLocalDataTableBrowser(resolved.table()), resolved.entry(), null, displayName);
+            viewer.revalidateDockLater();
+            ObjectNode data = mapper.createObjectNode();
+            data.put("display_name", displayName);
+            data.put("row", resolved.entry());
+            data.put("reused", reused);
+            data.put("node", ctx.getGraph().getAliasIdOf(resolved.node()));
+            data.put("slot", resolved.slotName());
             return data;
         }
     }

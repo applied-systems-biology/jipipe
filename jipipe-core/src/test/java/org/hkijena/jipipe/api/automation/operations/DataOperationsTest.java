@@ -24,6 +24,7 @@ import org.hkijena.jipipe.api.automation.InstrumentationEventBus;
 import org.hkijena.jipipe.api.automation.InstrumentationJobManager;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
+import org.hkijena.jipipe.api.data.JIPipeEmptyData;
 import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeTextThumbnailData;
@@ -46,7 +47,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 /**
- * Tests the data operations: describe_data and export_data, including the export path guard.
+ * Tests the data operations: describe_data and export_data, including the export path guard,
+ * and the get_thumbnail operation (rendering, size clamping, and the thumbnail-less error path).
  */
 public class DataOperationsTest {
 
@@ -98,6 +100,10 @@ public class DataOperationsTest {
         JIPipeOutputDataSlot emptyTable = new JIPipeOutputDataSlot(
                 new JIPipeDataSlotInfo(JIPipeTextThumbnailData.class, JIPipeSlotType.Output, "empty-output", ""), node);
         project.getCache().store(node, node.getUUIDInParentGraph(), emptyTable, "empty-output", new JIPipeProgressInfo());
+        JIPipeOutputDataSlot noThumbnailTable = new JIPipeOutputDataSlot(
+                new JIPipeDataSlotInfo(JIPipeEmptyData.class, JIPipeSlotType.Output, "no-thumbnail-output", ""), node);
+        noThumbnailTable.addData(new JIPipeEmptyData(), new JIPipeProgressInfo());
+        project.getCache().store(node, node.getUUIDInParentGraph(), noThumbnailTable, "no-thumbnail-output", new JIPipeProgressInfo());
         return new Fixture(project, node);
     }
 
@@ -291,5 +297,53 @@ public class DataOperationsTest {
         AutomationOperationRegistry registry = JIPipe.getInstance().getAutomation().getOperationRegistry();
         assertTrue(registry.has("describe_data"), "describe_data must be registered");
         assertTrue(registry.has("export_data"), "export_data must be registered");
+        assertTrue(registry.has("get_thumbnail"), "get_thumbnail must be registered");
+        assertTrue(registry.has("open_data_viewer"), "open_data_viewer must be registered");
+        assertTrue(registry.has("get_ui_state"), "get_ui_state must be registered");
+        assertTrue(registry.has("navigate_to_node"), "navigate_to_node must be registered");
+    }
+
+    @Test
+    void getThumbnailReturnsPngEnvelopeForCachedEntry() {
+        Fixture fixture = createFixture();
+        JsonNode result = new DataOperations.GetThumbnail().execute(createContext(fixture.project()),
+                describeParams(fixture, null, null, null));
+
+        assertFalse(result.has("error"), () -> "a thumbnail-capable entry must not produce an error: " + result);
+        assertEquals("image/png", result.get("mime").asText());
+        assertEquals(256, result.get("width").asInt(), "the default width must be 256");
+        assertEquals(256, result.get("height").asInt(), "the default height must be 256");
+        assertEquals(0, result.get("entry").asInt());
+        byte[] decoded = Base64.getDecoder().decode(result.get("image-base64").asText());
+        assertTrue(decoded.length > 8, "the thumbnail must be a non-empty PNG");
+        assertEquals((byte) 0x89, decoded[0], "PNG magic bytes expected");
+        assertEquals('P', decoded[1], "PNG magic bytes expected");
+        assertEquals('N', decoded[2], "PNG magic bytes expected");
+        assertEquals('G', decoded[3], "PNG magic bytes expected");
+    }
+
+    @Test
+    void getThumbnailClampsSizeIntoAllowedRange() {
+        Fixture fixture = createFixture();
+        ObjectNode params = describeParams(fixture, null, null, null);
+        params.put("width", 5000);
+        params.put("height", 0);
+        JsonNode result = new DataOperations.GetThumbnail().execute(createContext(fixture.project()), params);
+
+        assertFalse(result.has("error"), () -> "a clamped size must still render: " + result);
+        assertEquals(1024, result.get("width").asInt(), "the width must be capped at 1024");
+        assertEquals(1, result.get("height").asInt(), "the height must be clamped up to 1");
+    }
+
+    @Test
+    void getThumbnailReturnsErrorForTypeWithoutThumbnail() {
+        Fixture fixture = createFixture();
+        JsonNode result = new DataOperations.GetThumbnail().execute(createContext(fixture.project()),
+                describeParams(fixture, null, null, "no-thumbnail-output"));
+
+        assertTrue(result.has("error"), "a data type without a thumbnail must return an error field");
+        assertTrue(result.get("error").asText().contains("No thumbnail available for type"),
+                "the error must name the data type problem");
+        assertFalse(result.has("image-base64"), "no image must be rendered for a thumbnail-less type");
     }
 }

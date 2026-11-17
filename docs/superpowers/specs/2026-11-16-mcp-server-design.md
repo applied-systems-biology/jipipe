@@ -171,6 +171,16 @@ screenshots, errors/logs, jobs, cache, arrange). Execution and long-running modi
 are asynchronous via the existing job system and report through MCP progress
 notifications.
 
+### 5.1 Follow-up additions (2026-11-17)
+
+Four read-only tools were added after v1 (work item #1369 follow-up wave; registered in
+`AutomationPlugin` alongside the built-ins, so plugin-extensibility is unchanged):
+
+| Group | Tools | Default |
+|---|---|---|
+| Data | `get_thumbnail` (thumbnail of one data entry as PNG, at a requested size), `open_data_viewer` (opens or re-binds the standard data viewer window for one entry; opens a window but mutates no project data) | A |
+| UI state | `get_ui_state` (active tab, compartment, canvas cursor/mouse/zoom, and selection of a project window), `navigate_to_node` (find-panel-style navigation: opens the compartment editor tab, selects, scrolls) | A |
+
 ## 6. Permissions
 
 Per tool, four states:

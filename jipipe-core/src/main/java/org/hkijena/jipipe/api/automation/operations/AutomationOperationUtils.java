@@ -1,8 +1,13 @@
 package org.hkijena.jipipe.api.automation.operations;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import org.hkijena.jipipe.api.automation.AutomationContext;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.project.JIPipeProject;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;
 
+import java.awt.KeyboardFocusManager;
+import java.awt.Window;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -36,6 +41,50 @@ final class AutomationOperationUtils {
             if (entry.getValue().getName() != null && entry.getValue().getName().equals(compartmentRef)) {
                 return entry.getValue();
             }
+        }
+        return null;
+    }
+
+    /**
+     * Finds the open project window whose session id equals the given project key (the
+     * mapping the MCP registration announces: key = window session id). Returns null for a
+     * null key or when no open window matches. Must run on the EDT
+     * ({@link JIPipeDesktopProjectWindow#getOpenWindows()} is EDT-confined).
+     */
+    static JIPipeDesktopProjectWindow findProjectWindowByKey(String projectKey) {
+        if (projectKey == null) {
+            return null;
+        }
+        for (JIPipeDesktopProjectWindow window : JIPipeDesktopProjectWindow.getOpenWindows()) {
+            if (window.getSessionId().toString().equals(projectKey)) {
+                return window;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * The default project window for desktop-touching operations: the window the dispatch
+     * context is bound to (the MCP layer routes calls by project key, which is the window
+     * session id), else the focused project window (via the keyboard focus owner's window
+     * chain), else the first open one. Returns null if no project window is open.
+     * Must run on the EDT.
+     */
+    static JIPipeDesktopProjectWindow resolveDefaultProjectWindow(AutomationContext ctx) {
+        JIPipeDesktopProjectWindow bound = findProjectWindowByKey(ctx.getProjectId());
+        if (bound != null) {
+            return bound;
+        }
+        Window activeWindow = KeyboardFocusManager.getCurrentKeyboardFocusManager().getActiveWindow();
+        if (activeWindow != null) {
+            for (Window current = activeWindow; current != null; current = current.getOwner()) {
+                if (current instanceof JIPipeDesktopProjectWindow projectWindow) {
+                    return projectWindow;
+                }
+            }
+        }
+        for (JIPipeDesktopProjectWindow window : JIPipeDesktopProjectWindow.getOpenWindows()) {
+            return window;
         }
         return null;
     }
