@@ -52,9 +52,17 @@ import java.util.List;
  * Left-aligned text (mirroring {@link org.hkijena.jipipe.desktop.commons.components.tools.JIPipeDesktopMemoryGraph})
  * shows two measured lines: the current AI phase (with tokens/s when available) and
  * the MCP indicator ("MCP off", "MCP starting...", "MCP paused", "MCP ready", or
- * "MCP: &lt;operation id&gt;"). Both lines and the component's preferred height are derived
+ * "MCP: &lt;operation id&gt;"). Both lines and the compact variant's preferred height are derived
  * from the font metrics (never hardcoded pixel sizes); long operation ids are
  * ellipsized to the available width.
+ * </p>
+ * <p>
+ * Sizing has two variants: the compact status bar variant derives its preferred (and
+ * minimum) height from the font metrics; when an explicit preferred size is set (the
+ * large chart variant, e.g. the AI monitor's overview page), that chart design size is
+ * honored and the minimum height stays at a legible chart height
+ * ({@link #LARGE_MINIMUM_HEIGHT}) so the two timeline rows and the legend cannot
+ * collapse to a text-only sliver.
  * </p>
  * <p>
  * The MCP line is refreshed by a weak subscription to
@@ -89,6 +97,14 @@ public class JIPipeDesktopAIStatusGraph extends JPanel implements MCPStatusEvent
      * Default preferred width. The manager embeds the graph with this width.
      */
     private static final int PREFERRED_WIDTH = 200;
+
+    /**
+     * Minimum chart height of the large variant (an explicitly set preferred size selects
+     * it): keeps the two timeline rows and the legend legible when the layout squeezes
+     * the component below its preferred height. A pure chart widget design size (the
+     * same pattern as the memory graph); the overlay text stays measured and ellipsized.
+     */
+    private static final int LARGE_MINIMUM_HEIGHT = 120;
 
     /**
      * Width of the visible wall-clock window in milliseconds. The right edge is
@@ -179,12 +195,27 @@ public class JIPipeDesktopAIStatusGraph extends JPanel implements MCPStatusEvent
 
     @Override
     public Dimension getPreferredSize() {
+        if (isPreferredSizeSet()) {
+            // Large chart variant: an explicitly set preferred size (the chart design
+            // size, e.g. 400x200 on the overview page) wins over the compact
+            // metrics-derived size.
+            return super.getPreferredSize();
+        }
         return new Dimension(PREFERRED_WIDTH, computePreferredHeight());
     }
 
     @Override
     public Dimension getMinimumSize() {
-        return getPreferredSize();
+        if (isMinimumSizeSet()) {
+            return super.getMinimumSize();
+        }
+        Dimension preferred = getPreferredSize();
+        if (isPreferredSizeSet()) {
+            // Large chart variant: never collapse below a legible chart height (the two
+            // timeline rows plus the legend).
+            return new Dimension(preferred.width, Math.min(preferred.height, LARGE_MINIMUM_HEIGHT));
+        }
+        return preferred;
     }
 
     @Override
