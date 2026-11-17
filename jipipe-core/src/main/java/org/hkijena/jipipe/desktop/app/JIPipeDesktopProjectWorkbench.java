@@ -655,15 +655,15 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         // Acceleration control
         statusBar.add(new JIPipeDesktopAccelerationOptionsControl(this));
 
+        // Server control
+        statusBar.add(new JIPipeDesktopServerStatusControl(this));
+
         if (AIApplicationSettings.getInstance().isEnableAI()) {
             // Unified AI item: activity graph (AI phases + MCP indicator), embedding model
             // popup entries, and the MCP Ask bubble. Replaces the former AI status control
             // and MCP status control; the MCP layer controls and logs live in the AI monitor.
             statusBar.add(new JIPipeDesktopAIManager(this));
         }
-
-        // Server control
-        statusBar.add(new JIPipeDesktopServerStatusControl(this));
 
         // Memory meter
         statusBar.add(new JIPipeDesktopMemoryManager(this));
