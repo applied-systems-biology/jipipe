@@ -17,6 +17,7 @@ import org.hkijena.jipipe.desktop.commons.events.WindowClosedEvent;
 import org.hkijena.jipipe.desktop.commons.events.WindowClosedEventListener;
 import org.hkijena.jipipe.desktop.commons.events.WindowOpenedEvent;
 import org.hkijena.jipipe.desktop.commons.events.WindowOpenedEventListener;
+import org.hkijena.jipipe.plugins.ai.AIApplicationSettings;
 import org.hkijena.jipipe.plugins.automation.settings.MCPApplicationSettings;
 
 import javax.swing.*;
@@ -112,6 +113,13 @@ public class GuiCommand {
      * {@link #startMcpIfNeededAsync()}), never on the EDT. Every failure is logged and
      * never crashes the GUI startup.
      * <p>
+     * The whole layer is gated behind the AI feature toggle ({@code enable-ai}): the AI
+     * toggle is the absolute "no AI" opt-out, so with the AI feature disabled nothing
+     * starts and one info line is logged, regardless of {@code --mcp}, auto-start, or the
+     * enable setting (see {@link #isAiFeatureEnabled()}). The same gate blocks a
+     * paused-resume in {@link #startMcpFromHooks()} and is applied live by the
+     * {@code enable-ai} subscriber of {@link WindowWatcher}.
+     * <p>
      * A {@code --mcp <port>} override applies to the broker SPAWN only: {@link MCPBrokerClient}
      * passes the port to the spawned broker process, while a broker that is already reachable
      * through the discovery file is connected to regardless of the requested port (see
@@ -124,17 +132,12 @@ public class GuiCommand {
         if (mcpBrokerClient != null) {
             return;
         }
-        boolean requested;
-        try {
-            requested = mcpOptions.requested()
-                    || (MCPApplicationSettings.getInstance() != null
-                    && (MCPApplicationSettings.getInstance().isAutoStart()
-                    || MCPApplicationSettings.getInstance().isEnable()));
-        } catch (Exception e) {
-            System.err.println("MCP automation layer unavailable: " + e.getMessage());
+        if (!isMcpStartRequested()) {
             return;
         }
-        if (!requested) {
+        if (!isAiFeatureEnabled()) {
+            System.err.println("MCP stays off: the AI feature is disabled "
+                    + "(enable 'AI functionality' in the settings to use MCP)");
             return;
         }
         JIPipeDesktopMCPIntegration.markStarting();
@@ -176,6 +179,39 @@ public class GuiCommand {
         } catch (Exception e) {
             System.err.println("MCP automation layer failed to start: " + e.getMessage());
             shutdownMcp();
+        }
+    }
+
+    /**
+     * Whether MCP is currently requested: the {@code --mcp} flag of this launch, the
+     * auto-start setting, or the enable setting. Fail-closed: an unreadable settings
+     * registry counts as not requested (logged).
+     */
+    private static boolean isMcpStartRequested() {
+        try {
+            return mcpOptions.requested()
+                    || (MCPApplicationSettings.getInstance() != null
+                    && (MCPApplicationSettings.getInstance().isAutoStart()
+                    || MCPApplicationSettings.getInstance().isEnable()));
+        } catch (Exception e) {
+            System.err.println("MCP automation layer unavailable: " + e.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Whether the AI feature is enabled ({@code AIApplicationSettings#isEnableAI()}). The
+     * AI toggle is the absolute "no AI" opt-out and gates the whole MCP layer: while it
+     * is off, no MCP layer is started or resumed, because MCP is an AI feature.
+     * Fail-closed: an unreadable setting counts as disabled (logged).
+     */
+    private static boolean isAiFeatureEnabled() {
+        try {
+            AIApplicationSettings aiSettings = AIApplicationSettings.getInstance();
+            return aiSettings != null && aiSettings.isEnableAI();
+        } catch (Exception e) {
+            System.err.println("AI setting unavailable: " + e.getMessage());
+            return false;
         }
     }
 
@@ -222,6 +258,11 @@ public class GuiCommand {
      * executor, a paused layer resumes (fresh endpoint, re-register). A running layer
      * is left alone. Marshals to the EDT when needed: the startup snapshots the open
      * project windows, and the window set is EDT-confined.
+     * <p>
+     * The AI feature gate applies here too: with the AI feature disabled, a paused
+     * layer is not resumed (an AI-off state must not bring MCP back). A resume that is
+     * already mid-flight is harmless: the AI-off stop is a pause, ordered behind it on
+     * the same lifecycle executor.
      */
     private static void startMcpFromHooks() {
         if (!SwingUtilities.isEventDispatchThread()) {
@@ -231,6 +272,10 @@ public class GuiCommand {
         if (mcpBrokerClient != null) {
             JIPipeDesktopMCPIntegration integration = JIPipeDesktopMCPIntegration.getActive();
             if (integration != null && integration.isPaused()) {
+                if (!isAiFeatureEnabled()) {
+                    System.err.println("MCP stays paused: the AI feature is disabled");
+                    return;
+                }
                 integration.resumeAsync();
             }
             return;
@@ -313,6 +358,26 @@ public class GuiCommand {
     private static void onEnableSettingChanged(boolean enabled) {
         if (enabled) {
             startMcpFromHooks();
+        } else {
+            stopMcpFromHooks();
+        }
+    }
+
+    /**
+     * The "Enable AI functionality" settings toggle, applied live: the AI feature is the
+     * absolute "no AI" opt-out, so off stops the MCP layer (pause semantics, the same as
+     * the enable-off path), and on restarts it only when MCP itself is currently
+     * requested ({@link #isMcpStartRequested()}: the {@code --mcp} flag, auto-start, or
+     * the enable setting). The explicit requested check is needed because the start
+     * hook's paused-resume branch does not consult the enable setting: without it, an
+     * AI-on toggle would resume a layer the user explicitly stopped with "Enable MCP"
+     * off. Runs on the EDT (the parameter change event source).
+     */
+    private static void onAiSettingChanged(boolean aiEnabled) {
+        if (aiEnabled) {
+            if (isMcpStartRequested()) {
+                startMcpFromHooks();
+            }
         } else {
             stopMcpFromHooks();
         }
@@ -419,6 +484,26 @@ public class GuiCommand {
                 }
             } catch (Exception e) {
                 System.err.println("MCP enable toggle unavailable: " + e.getMessage());
+            }
+            // The "Enable AI functionality" toggle gates the whole MCP layer (the AI
+            // feature is the absolute opt-out: AI off means no MCP at all): off stops the
+            // layer, on restarts it when MCP is requested. Same inert-on-failure contract
+            // as the enable toggle above.
+            try {
+                AIApplicationSettings aiSettings = AIApplicationSettings.getInstance();
+                if (aiSettings != null) {
+                    aiSettings.getParameterChangedEventEmitter().subscribeLambda((emitter, event) -> {
+                        if ("enable-ai".equals(event.getKey())) {
+                            try {
+                                onAiSettingChanged(AIApplicationSettings.getInstance().isEnableAI());
+                            } catch (Exception e) {
+                                System.err.println("AI toggle handling failed: " + e.getMessage());
+                            }
+                        }
+                    });
+                }
+            } catch (Exception e) {
+                System.err.println("AI toggle unavailable: " + e.getMessage());
             }
         }
 

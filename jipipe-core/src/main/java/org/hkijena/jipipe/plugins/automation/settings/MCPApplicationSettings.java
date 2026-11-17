@@ -28,6 +28,13 @@ import javax.swing.*;
  * to spawned brokers, and presents it as a bearer token on client-to-broker calls. The
  * file persists until manually deleted: it is never regenerated, so the token survives
  * broker restarts and is shared by all JIPipe instances of the same user directory.
+ * <p>
+ * The whole MCP layer is gated behind the AI feature toggle (the {@code enable-ai}
+ * parameter of {@code AIApplicationSettings}, sheet {@code org.hkijena.jipipe:ai}):
+ * while the AI feature is disabled, no MCP layer is started or resumed. The gate lives
+ * in the GUI launcher's start paths, so it covers the {@code --mcp} flag, auto-start,
+ * the {@code enable} setting, the live {@code enable} and {@code enable-ai} toggles, and
+ * the AI monitor's start button. With AI off the user gets no AI and no MCP at all.
  */
 public class MCPApplicationSettings extends JIPipeDefaultApplicationsSettingsSheet {
     public static final String ID = "org.hkijena.jipipe:mcp";
@@ -42,7 +49,7 @@ public class MCPApplicationSettings extends JIPipeDefaultApplicationsSettingsShe
         return JIPipe.getSettings().getById(ID, MCPApplicationSettings.class);
     }
 
-    @SetJIPipeDocumentation(name = "Enable MCP", description = "Enable the MCP automation layer (shared broker and instance endpoint). Applied live: the layer starts or stops while the app runs, and a launch with this setting enabled starts the layer without the --mcp flag.")
+    @SetJIPipeDocumentation(name = "Enable MCP", description = "Enable the MCP automation layer (shared broker and instance endpoint). Applied live: the layer starts or stops while the app runs, and a launch with this setting enabled starts the layer without the --mcp flag. Requires the AI feature: while 'Enable AI functionality' (AI settings) is disabled, MCP stays off regardless of this setting.")
     @JIPipeParameter("enable")
     public boolean isEnable() {
         return enable;

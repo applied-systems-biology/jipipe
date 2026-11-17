@@ -30,6 +30,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabase;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.project.JIPipeArchiveProjectToDirectoryRun;
 import org.hkijena.jipipe.api.project.JIPipeArchiveProjectToZIPRun;
 import org.hkijena.jipipe.api.project.JIPipeProject;
@@ -181,6 +182,33 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
     private JIPipeDesktopPluginValidityCheckerPanel pluginValidityCheckerPanel;
     private boolean projectModified;
     private JButton openProjectOverviewButton;
+    /**
+     * The status bar of this workbench. Held as a field so the live AI feature toggle
+     * can add/remove the unified AI item ({@link #updateAiStatusBarItem()}).
+     */
+    private JXStatusBar statusBar;
+    /**
+     * The unified AI status bar item, or null while the AI feature is disabled. The AI
+     * toggle adds/removes it live ({@link #updateAiStatusBarItem()}): a user who turned
+     * AI off does not keep seeing the AI/MCP item.
+     */
+    private JIPipeDesktopAIManager aiStatusBarItem;
+    /**
+     * The status bar item the unified AI item sits before (the memory meter); the
+     * anchor keeps the item order stable across live add/remove cycles.
+     */
+    private JIPipeDesktopMemoryManager aiStatusBarItemAnchor;
+    /**
+     * The live "Enable AI functionality" toggle listener. The settings sheet is a
+     * global singleton that outlives every workbench, so the subscription must be
+     * weak and the listener must be a reachable field (a temporary lambda could be
+     * collected before it is ever invoked). Marshals to the EDT.
+     */
+    private final JIPipeParameterCollection.ParameterChangedEventListener aiSettingListener = event -> {
+        if ("enable-ai".equals(event.getKey())) {
+            SwingUtilities.invokeLater(this::updateAiStatusBarItem);
+        }
+    };
     /**
      * The publish toolbar button (feature #753). Only created when the
      * publish menu has at least one entry. Carries the static FAIR badge:
@@ -618,7 +646,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
     }
 
     private void initializeStatusBar() {
-        JXStatusBar statusBar = new JXStatusBar();
+        statusBar = new JXStatusBar();
         statusBar.putClientProperty(BasicStatusBarUI.AUTO_ADD_SEPARATOR, false);
 
         // Background processes
@@ -658,17 +686,59 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         // Server control
         statusBar.add(new JIPipeDesktopServerStatusControl(this));
 
+        // The memory meter doubles as the anchor of the live AI item toggle: the unified
+        // AI item sits directly before it, and add/remove keeps that position.
+        JIPipeDesktopMemoryManager memoryManager = new JIPipeDesktopMemoryManager(this);
+
+        // Unified AI item: activity graph (AI phases + MCP indicator), embedding model
+        // popup entries, and the MCP Ask bubble. Replaces the former AI status control
+        // and MCP status control; the MCP layer controls and logs live in the AI monitor.
+        // The AI feature toggle is the absolute opt-out: the item exists only while the
+        // AI feature is enabled, and the live toggle adds/removes it
+        // (updateAiStatusBarItem).
+        aiStatusBarItemAnchor = memoryManager;
         if (AIApplicationSettings.getInstance().isEnableAI()) {
-            // Unified AI item: activity graph (AI phases + MCP indicator), embedding model
-            // popup entries, and the MCP Ask bubble. Replaces the former AI status control
-            // and MCP status control; the MCP layer controls and logs live in the AI monitor.
-            statusBar.add(new JIPipeDesktopAIManager(this));
+            aiStatusBarItem = new JIPipeDesktopAIManager(this);
+            statusBar.add(aiStatusBarItem);
         }
 
         // Memory meter
-        statusBar.add(new JIPipeDesktopMemoryManager(this));
+        statusBar.add(memoryManager);
 
         add(statusBar, BorderLayout.SOUTH);
+
+        // Live AI toggle: add/remove the AI status bar item while the app runs. Weak
+        // subscription (the settings sheet outlives every workbench); the listener is a
+        // field so the weak reference stays reachable.
+        AIApplicationSettings.getInstance().getParameterChangedEventEmitter().subscribeWeak(aiSettingListener);
+    }
+
+    /**
+     * Adds or removes the unified AI status bar item according to the live AI feature
+     * toggle (the absolute "no AI" opt-out: with AI off the user gets no AI item and no
+     * MCP status controls). The item is re-added at its original position (directly
+     * before the memory meter anchor). Runs on the EDT (marshalled from the settings
+     * event).
+     */
+    private void updateAiStatusBarItem() {
+        boolean aiEnabled = AIApplicationSettings.getInstance().isEnableAI();
+        if (aiEnabled && aiStatusBarItem == null) {
+            aiStatusBarItem = new JIPipeDesktopAIManager(this);
+            if (statusBar != null) {
+                int anchorIndex = aiStatusBarItemAnchor != null
+                        ? statusBar.getComponentZOrder(aiStatusBarItemAnchor) : -1;
+                statusBar.add(aiStatusBarItem, anchorIndex);
+                statusBar.revalidate();
+                statusBar.repaint();
+            }
+        } else if (!aiEnabled && aiStatusBarItem != null) {
+            if (statusBar != null) {
+                statusBar.remove(aiStatusBarItem);
+                statusBar.revalidate();
+                statusBar.repaint();
+            }
+            aiStatusBarItem = null;
+        }
     }
 
     /**
