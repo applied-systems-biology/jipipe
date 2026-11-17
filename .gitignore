@@ -143,3 +143,4 @@ fabric.properties
 # Taxonomy conversion scratch (19.11a weka+ilastik+opencv+scene-3d applier + byte-identity check).
 /utils/taxonomy-conversion/apply_19_11a.py
 /utils/taxonomy-conversion/bytecheck-19-11a.py
+/opencode.json
