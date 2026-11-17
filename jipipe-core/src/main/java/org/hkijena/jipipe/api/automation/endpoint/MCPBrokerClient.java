@@ -34,8 +34,10 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
@@ -72,7 +74,9 @@ import java.util.function.Supplier;
  * {@code Authorization: Bearer} on all calls to the broker (health and control routes).
  * The token persists until the file is manually deleted: an existing file is never
  * regenerated, so the token survives broker restarts and is shared by all JIPipe
- * instances of the same user directory.
+ * instances of the same user directory. The one sanctioned exception is
+ * {@link #rotateToken()}: the deliberate, user-confirmed regeneration path (the MCP
+ * monitor page's Rotate button) that atomically replaces the file and restarts the layer.
  */
 public class MCPBrokerClient {
 
@@ -211,7 +215,7 @@ public class MCPBrokerClient {
         SharedServerDiscoveryFile.DiscoveryData data = SharedServerDiscoveryFile.read(discoveryFilePath);
         if (data != null && SharedServerDiscoveryFile.isPidAlive(data.getPid())) {
             String url = "http://127.0.0.1:" + data.getPort();
-            if (checkBrokerHealth(url, currentToken())) {
+            if (checkBrokerHealth(url)) {
                 baseUrl = url;
                 connected = true;
                 return;
@@ -242,7 +246,7 @@ public class MCPBrokerClient {
      * True when the currently known broker answers {@code GET /health}.
      */
     public boolean isBrokerAlive() {
-        return baseUrl != null && checkBrokerHealth(baseUrl, currentToken());
+        return baseUrl != null && checkBrokerHealth(baseUrl);
     }
 
     /**
@@ -315,6 +319,78 @@ public class MCPBrokerClient {
             file.setWritable(true, true);
         }
         Files.writeString(tokenFile, token, StandardCharsets.UTF_8);
+    }
+
+    /**
+     * Regenerates the shared broker token file and returns the new token. This is the only
+     * sanctioned regeneration path: {@link #ensureTokenFile} generates the token exactly
+     * once (an existing file is never rewritten, so the token survives broker restarts),
+     * while {@code rotateToken} deliberately bypasses that generate-once guard after an
+     * explicit user confirmation (the MCP monitor page's Rotate button).
+     * <p>
+     * The file is replaced atomically: the new token (a secure random 32-byte base64url
+     * secret without padding) is written to a temporary file in the same directory,
+     * created with owner-only permissions (POSIX 0600, or the best-effort File API
+     * fallback elsewhere), and then moved onto the token file with {@code ATOMIC_MOVE} +
+     * {@code REPLACE_EXISTING} (falling back to a plain move where atomic moves are
+     * unsupported), so a concurrent reader never sees a partial file. The cached token is
+     * cleared: the next {@link #currentToken()} call re-reads the file, which is
+     * authoritative again.
+     * <p>
+     * After a rotation the running broker still holds the old token (it reads the file
+     * only at startup): the next {@link #ensureConnected()} health check fails (401), the
+     * stale discovery file is deleted, and a fresh broker spawns with the new token. The
+     * caller restarts the MCP layer right after rotating (stop, then start) so this
+     * instance reconnects immediately. Other running JIPipe instances converge the same
+     * way on their next connection: their health check with the stale cached token is
+     * rejected, the 401 clears their cached token (see {@link #checkBrokerHealth(String)}),
+     * and they re-read the rotated file and connect to the replaced broker.
+     *
+     * @return the new token
+     * @throws IllegalStateException when token authentication is disabled (there is no
+     *                               token to rotate)
+     */
+    public synchronized String rotateToken() {
+        if (!isRequireToken()) {
+            throw new IllegalStateException("Token authentication is disabled; there is no token to rotate");
+        }
+        Path tokenFile = getTokenFilePath();
+        byte[] secret = new byte[32];
+        new SecureRandom().nextBytes(secret);
+        String token = Base64.getUrlEncoder().withoutPadding().encodeToString(secret);
+        try {
+            Files.createDirectories(tokenFile.getParent());
+            Path tempFile;
+            if (tokenFile.getFileSystem().supportedFileAttributeViews().contains("posix")) {
+                FileAttribute<Set<PosixFilePermission>> permissions =
+                        PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rw-------"));
+                tempFile = Files.createTempFile(tokenFile.getParent(), tokenFile.getFileName().toString(),
+                        ".tmp", permissions);
+            } else {
+                tempFile = Files.createTempFile(tokenFile.getParent(), tokenFile.getFileName().toString(), ".tmp");
+                File file = tempFile.toFile();
+                // Owner-only, best effort: revoke for everyone, then restore for the owner.
+                file.setReadable(false, false);
+                file.setWritable(false, false);
+                file.setExecutable(false, false);
+                file.setReadable(true, true);
+                file.setWritable(true, true);
+            }
+            try {
+                Files.writeString(tempFile, token, StandardCharsets.UTF_8);
+                try {
+                    Files.move(tempFile, tokenFile, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+                } catch (AtomicMoveNotSupportedException e) {
+                    Files.move(tempFile, tokenFile, StandardCopyOption.REPLACE_EXISTING);
+                }
+            } finally {
+                Files.deleteIfExists(tempFile);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("MCP token rotation failed: " + e.getMessage(), e);
+        }
+        cachedToken = null;
+        return token;
     }
 
     /**
@@ -518,7 +594,7 @@ public class MCPBrokerClient {
             SharedServerDiscoveryFile.DiscoveryData data = SharedServerDiscoveryFile.read(discoveryFilePath);
             if (data != null) {
                 baseUrl = "http://127.0.0.1:" + data.getPort();
-                if (checkBrokerHealth(baseUrl, currentToken())) {
+                if (checkBrokerHealth(baseUrl)) {
                     progressInfo.log("MCP broker started at " + baseUrl);
                     return;
                 }
@@ -592,17 +668,31 @@ public class MCPBrokerClient {
         return '"' + token.replace("\\", "\\\\").replace("\"", "\\\"") + '"';
     }
 
-    private static boolean checkBrokerHealth(String url, String bearerToken) {
+    /**
+     * True when the broker at {@code url} answers {@code GET /health}, presenting the
+     * current token (when token authentication is on). A 401 response invalidates the
+     * cached token so the next {@link #currentToken()} call re-reads the token file:
+     * after a {@link #rotateToken()}, this instance and other running JIPipe instances
+     * converge to the replaced broker this way on their next connection instead of
+     * retrying the stale token forever.
+     */
+    private boolean checkBrokerHealth(String url) {
         try {
             HttpURLConnection conn = (HttpURLConnection) new URL(url + "/health").openConnection();
             conn.setRequestMethod("GET");
             conn.setConnectTimeout(2000);
             conn.setReadTimeout(2000);
+            String bearerToken = currentToken();
             if (bearerToken != null) {
                 conn.setRequestProperty("Authorization", "Bearer " + bearerToken);
             }
             int status = conn.getResponseCode();
             conn.disconnect();
+            if (status == 401) {
+                // The broker rejected the presented token (typically a rotated token
+                // file): drop the cache so the next read picks up the current content.
+                cachedToken = null;
+            }
             return status == 200;
         } catch (IOException e) {
             return false;

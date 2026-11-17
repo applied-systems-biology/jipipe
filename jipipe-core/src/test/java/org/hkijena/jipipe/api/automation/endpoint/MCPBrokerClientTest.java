@@ -47,6 +47,7 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -403,6 +404,90 @@ public class MCPBrokerClientTest {
         client.unregister();
         assertEquals(2, authorizationHeaders.size());
         assertEquals(expected, authorizationHeaders.get(1));
+    }
+
+    @Test
+    public void rotateTokenReplacesTokenFileAndClearsCachedToken() throws Exception {
+        startStubBroker();
+        client = tokenClient(recordingSpawner);
+        writeDiscoveryFile(ProcessHandle.current().pid(), brokerPort());
+        client.ensureConnected(new JIPipeProgressInfo());
+
+        Path tokenFile = client.getTokenFilePath();
+        String oldToken = Files.readString(tokenFile, StandardCharsets.UTF_8).trim();
+        assertEquals(oldToken, client.getToken()); // prime the cache
+
+        String rotated = client.rotateToken();
+
+        // The file holds a new 32-byte base64url token without padding.
+        assertNotEquals(oldToken, rotated);
+        assertEquals(rotated, Files.readString(tokenFile, StandardCharsets.UTF_8).trim());
+        assertFalse(rotated.contains("="));
+        assertEquals(32, Base64.getUrlDecoder().decode(rotated).length);
+
+        // Owner-only permissions are kept.
+        assertEquals(Set.of(PosixFilePermission.OWNER_READ, PosixFilePermission.OWNER_WRITE),
+                Files.getPosixFilePermissions(tokenFile));
+
+        // The cached token was cleared (not repopulated with the rotated value): the file
+        // is authoritative again, so an external edit is picked up.
+        Files.writeString(tokenFile, "external-value", StandardCharsets.UTF_8);
+        assertEquals("external-value", client.getToken());
+
+        // The atomic replacement left no temp files behind.
+        try (Stream<Path> entries = Files.list(tempDir)) {
+            assertTrue(entries.noneMatch(entry -> entry.getFileName().toString().endsWith(".tmp")));
+        }
+    }
+
+    @Test
+    public void rotateTokenFailsClosedWhenTokenAuthenticationIsDisabled() {
+        client = new MCPBrokerClient(recordingSpawner, 8781, tempDir);
+        assertThrows(IllegalStateException.class, client::rotateToken);
+    }
+
+    @Test
+    public void brokerRejectionInvalidatesCachedTokenSoTheNextConnectionPicksUpTheRotatedFile() throws Exception {
+        // After a rotate the running broker still holds the old token until it is replaced:
+        // /health accepts only the NEW token here. A client that cached the old token must
+        // recover on its next connection by re-reading the rotated token file (what other
+        // running JIPipe instances do after a rotate).
+        AtomicReference<String> acceptedToken = new AtomicReference<>("old-token");
+        broker = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+        broker.createContext("/health", exchange -> {
+            String authorization = exchange.getRequestHeaders().getFirst("Authorization");
+            healthAuthorizationHeaders.add(authorization);
+            if (("Bearer " + acceptedToken.get()).equals(authorization)) {
+                respond(exchange, 200, "text/plain; charset=utf-8", "ok");
+            } else {
+                respond(exchange, 401, "text/plain; charset=utf-8", "unauthorized");
+            }
+        });
+        broker.start();
+
+        client = tokenClient(command -> {
+            spawnedCommands.add(List.copyOf(command));
+            // The spawned broker runs with the rotated token: rewrite the token file the
+            // way a rotate left it, then serve the discovery file.
+            Files.writeString(client.getTokenFilePath(), acceptedToken.get(), StandardCharsets.UTF_8);
+            writeDiscoveryFile(ProcessHandle.current().pid(), brokerPort());
+            return new StubProcess();
+        });
+
+        Path tokenFile = client.getTokenFilePath();
+        Files.writeString(tokenFile, "old-token", StandardCharsets.UTF_8);
+        assertEquals("old-token", client.getToken()); // prime the cache with the stale token
+        acceptedToken.set("rotated-token");
+
+        writeDiscoveryFile(ProcessHandle.current().pid(), brokerPort());
+        client.ensureConnected(new JIPipeProgressInfo());
+
+        assertTrue(client.isConnected());
+        // The first health check presented the stale cached token (a 401, which clears the
+        // cache); the spawn poll re-read the rotated file and succeeded.
+        assertEquals("Bearer old-token", healthAuthorizationHeaders.get(0));
+        assertTrue(healthAuthorizationHeaders.contains("Bearer rotated-token"));
+        assertEquals("rotated-token", client.getToken());
     }
 
     /**

@@ -21,6 +21,7 @@ import org.hkijena.jipipe.desktop.app.automation.JIPipeDesktopMCPIntegration;
 import org.hkijena.jipipe.desktop.app.automation.MCPStatusEvent;
 import org.hkijena.jipipe.desktop.app.automation.MCPStatusEventListener;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
+import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
 import org.hkijena.jipipe.plugins.automation.settings.MCPApplicationSettings;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -30,14 +31,25 @@ import java.util.List;
 /**
  * MCP page of the AI monitor window: the layer status rows, the lifecycle controls
  * (start/stop through the launcher-installed lifecycle hooks), the broker server URL
- * and access token (with copy buttons), the "Allow always" grants with per-entry
- * revoke, and the pending Ask requests (answering stays in the ask bubble anchored to
- * the AI status item).
+ * (with copy), the access token row (a password-style field with Show/Hide, Copy and
+ * Rotate; a muted note when token authentication is disabled or no broker URL is
+ * available), the "Allow always" grants with per-entry revoke, and the pending Ask
+ * requests (answering stays in the ask bubble anchored to the AI status item).
  * <p>
- * Token reads happen off the event dispatch thread (SwingWorker): reading the token
- * file on the EDT would add disk I/O to every refresh.
+ * Token reads and the rotation happen off the event dispatch thread (SwingWorker):
+ * reading or rewriting the token file on the EDT would add disk I/O to every refresh.
+ * Rotation restarts the MCP layer through the lifecycle hooks (stop, then start) so the
+ * replaced broker is picked up immediately.
  */
 public class JIPipeDesktopAIMonitorMCPPage extends JIPipeDesktopAIMonitorPage implements MCPStatusEventListener {
+
+    private static final String TOKEN_FIELD_CARD = "field";
+    private static final String TOKEN_NOTE_CARD = "note";
+
+    /**
+     * The echo character of the password-style token field (the masked display).
+     */
+    private static final char TOKEN_ECHO_CHAR = '\u2022';
 
     private final JLabel statusLabel = new JLabel();
     private final JLabel brokerUrlLabel = new JLabel();
@@ -49,13 +61,24 @@ public class JIPipeDesktopAIMonitorMCPPage extends JIPipeDesktopAIMonitorPage im
     private final JButton stopButton;
     private final JButton copyUrlButton;
     /**
-     * The token row wrapper: hidden entirely when token authentication is off (a zero
-     * preferred size keeps the form grid from reserving the row).
+     * The token row wrapper: a {@link CardLayout} with the password-style field row
+     * (token authentication on and a broker URL available) and the muted note (disabled
+     * token authentication or not connected).
      */
     private final JPanel tokenRow;
-    private final JLabel tokenLabel = new JLabel();
+    /**
+     * The field card: a non-editable password-style field (masked via the echo character)
+     * plus the Show/Hide, Copy and Rotate controls.
+     */
+    private JPanel tokenFieldRow;
+    private JPasswordField tokenField;
+    /**
+     * The note card: a muted hint shown instead of the field (no field, no buttons).
+     */
+    private JLabel tokenDisabledLabel;
     private final JButton showTokenButton;
     private final JButton copyTokenButton;
+    private final JButton rotateTokenButton;
     private final JPanel grantsPanel;
     private final JPanel asksPanel;
 
@@ -76,6 +99,7 @@ public class JIPipeDesktopAIMonitorMCPPage extends JIPipeDesktopAIMonitorPage im
         this.copyUrlButton = UIUtils.createButton("Copy", JIPipe.RESOURCES.getIcon16("actions/copy.png"), this::copyServerUrl);
         this.showTokenButton = UIUtils.createButton("Show", JIPipe.RESOURCES.getIcon16("actions/key.png"), this::toggleTokenShown);
         this.copyTokenButton = UIUtils.createButton("Copy", JIPipe.RESOURCES.getIcon16("actions/copy.png"), this::copyToken);
+        this.rotateTokenButton = UIUtils.createButton("Rotate", JIPipe.RESOURCES.getIcon16("actions/database-change-key.png"), this::rotateToken);
         this.tokenRow = createTokenRow();
         this.grantsPanel = new JPanel();
         this.asksPanel = new JPanel();
@@ -133,28 +157,33 @@ public class JIPipeDesktopAIMonitorMCPPage extends JIPipeDesktopAIMonitorPage im
     }
 
     /**
-     * Builds the token row: masked or shown token text plus Show and Copy buttons. The
-     * wrapper collapses to zero size when token authentication is off.
+     * Builds the token row: a card layout with the password-style field row (masked
+     * token plus Show/Hide, Copy and Rotate) and the muted note shown when token
+     * authentication is disabled or no broker URL is available.
      */
     private JPanel createTokenRow() {
-        JPanel row = new JPanel(new BorderLayout(8, 0)) {
-            @Override
-            public Dimension getPreferredSize() {
-                return isVisible() ? super.getPreferredSize() : new Dimension();
-            }
+        tokenField = new JPasswordField();
+        tokenField.setEditable(false);
+        tokenField.setEchoChar(TOKEN_ECHO_CHAR);
 
-            @Override
-            public Dimension getMinimumSize() {
-                return isVisible() ? super.getMinimumSize() : new Dimension();
-            }
-        };
-        row.setOpaque(false);
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT, 4, 0));
         buttons.setOpaque(false);
         buttons.add(showTokenButton);
         buttons.add(copyTokenButton);
-        row.add(tokenLabel, BorderLayout.CENTER);
-        row.add(buttons, BorderLayout.EAST);
+        buttons.add(rotateTokenButton);
+
+        tokenFieldRow = new JPanel(new BorderLayout(8, 0));
+        tokenFieldRow.setOpaque(false);
+        tokenFieldRow.add(tokenField, BorderLayout.CENTER);
+        tokenFieldRow.add(buttons, BorderLayout.EAST);
+
+        tokenDisabledLabel = new JLabel();
+        tokenDisabledLabel.setForeground(UIManager.getColor("Label.disabledForeground"));
+
+        JPanel row = new JPanel(new CardLayout(0, 0));
+        row.setOpaque(false);
+        row.add(tokenFieldRow, TOKEN_FIELD_CARD);
+        row.add(tokenDisabledLabel, TOKEN_NOTE_CARD);
         return row;
     }
 
@@ -173,11 +202,19 @@ public class JIPipeDesktopAIMonitorMCPPage extends JIPipeDesktopAIMonitorPage im
     }
 
     private void copyServerUrl() {
-        JIPipeDesktopMCPIntegration integration = JIPipeDesktopMCPIntegration.getActive();
-        MCPBrokerClient client = integration != null ? integration.getClient() : null;
+        MCPBrokerClient client = activeClient();
         if (client != null && client.getBaseUrl() != null) {
             UIUtils.copyToClipboard(client.getBaseUrl());
         }
+    }
+
+    /**
+     * The broker client of the active MCP integration, or null when the layer is not
+     * installed.
+     */
+    private static MCPBrokerClient activeClient() {
+        JIPipeDesktopMCPIntegration integration = JIPipeDesktopMCPIntegration.getActive();
+        return integration != null ? integration.getClient() : null;
     }
 
     /**
@@ -187,15 +224,100 @@ public class JIPipeDesktopAIMonitorMCPPage extends JIPipeDesktopAIMonitorPage im
     private void toggleTokenShown() {
         tokenShown = !tokenShown;
         showTokenButton.setText(tokenShown ? "Hide" : "Show");
-        if (tokenShown) {
+        applyTokenDisplay();
+        if (tokenShown && fetchedToken == null) {
             fetchTokenAsync(false);
-        } else {
-            tokenLabel.setText(TOKEN_MASK);
+        }
+    }
+
+    /**
+     * Applies the shown/hidden state to the password-style field: the mask is the echo
+     * character, the clear text is only rendered while shown.
+     */
+    private void applyTokenDisplay() {
+        tokenField.setEchoChar(tokenShown ? (char) 0 : TOKEN_ECHO_CHAR);
+        if (tokenShown) {
+            if (fetchedToken != null && !fetchedToken.isEmpty()) {
+                tokenField.setText(fetchedToken);
+            } else {
+                tokenField.setText(tokenFetchInFlight ? TOKEN_LOADING : TOKEN_UNAVAILABLE);
+            }
         }
     }
 
     private void copyToken() {
+        if (fetchedToken != null && !fetchedToken.isEmpty()) {
+            UIUtils.copyToClipboard(fetchedToken);
+            return;
+        }
         fetchTokenAsync(true);
+    }
+
+    /**
+     * Rotates the shared broker access token after an explicit confirmation. The file
+     * rewrite and the layer restart run off the EDT:
+     * <ol>
+     *     <li>A confirmation dialog warns that rotating invalidates the current token,
+     *     that agents configured with the old token must be updated, and that the shared
+     *     broker is replaced on the next connection.</li>
+     *     <li>On confirm, {@link MCPBrokerClient#rotateToken()} atomically regenerates the
+     *     token file, clears the cached token, and returns the new token (background
+     *     thread).</li>
+     *     <li>The layer is restarted through the lifecycle hooks (stop, then start) so it
+     *     reconnects: the running broker still holds the old token, the next health check
+     *     fails (401), the stale discovery file is deleted, and a fresh broker spawns with
+     *     the new token. Other running JIPipe instances converge the same way on their
+     *     next connection (the 401 clears their cached token, so they re-read the rotated
+     *     file).</li>
+     *     <li>The page state is refreshed afterwards; the status events refresh it again
+     *     while the layer restarts.</li>
+     * </ol>
+     */
+    private void rotateToken() {
+        if (!JIPipeDesktopDialogs.confirm(this, "Rotate access token",
+                "<html><b>Rotating invalidates the current access token.</b><br/>"
+                        + "Agents configured with the old token must be updated with the new token.<br/>"
+                        + "The shared broker is replaced on the next connection (this instance and other "
+                        + "running JIPipe instances reconnect automatically).<br/><br/>"
+                        + "Rotate the token now?</html>")) {
+            return;
+        }
+        rotateTokenButton.setEnabled(false);
+        SwingWorker<String, Void> worker = new SwingWorker<>() {
+            @Override
+            protected String doInBackground() {
+                MCPBrokerClient client = activeClient();
+                return client != null ? client.rotateToken() : null;
+            }
+
+            @Override
+            protected void done() {
+                rotateTokenButton.setEnabled(true);
+                String rotated;
+                try {
+                    rotated = get();
+                } catch (Exception e) {
+                    UIUtils.showErrorDialog(getDesktopWorkbench(), JIPipeDesktopAIMonitorMCPPage.this, e);
+                    refresh();
+                    return;
+                }
+                if (rotated == null) {
+                    refresh();
+                    return;
+                }
+                // The field immediately renders the new token (still masked unless shown).
+                fetchedToken = rotated;
+                applyTokenDisplay();
+                // Restart the layer so it reconnects with the new token (stop, then start).
+                JIPipeDesktopMCPIntegration.LifecycleHooks hooks = JIPipeDesktopMCPIntegration.getLifecycleHooks();
+                if (hooks != null) {
+                    hooks.stopMcpAsync();
+                    hooks.startMcpAsync();
+                }
+                refresh();
+            }
+        };
+        worker.execute();
     }
 
     /**
@@ -203,8 +325,7 @@ public class JIPipeDesktopAIMonitorMCPPage extends JIPipeDesktopAIMonitorPage im
      * displays or copies it on the EDT.
      */
     private void fetchTokenAsync(boolean copy) {
-        JIPipeDesktopMCPIntegration integration = JIPipeDesktopMCPIntegration.getActive();
-        MCPBrokerClient client = integration != null ? integration.getClient() : null;
+        MCPBrokerClient client = activeClient();
         if (client == null || tokenFetchInFlight) {
             return;
         }
@@ -224,7 +345,7 @@ public class JIPipeDesktopAIMonitorMCPPage extends JIPipeDesktopAIMonitorPage im
                     fetchedToken = null;
                 }
                 if (tokenShown) {
-                    tokenLabel.setText(fetchedToken != null && !fetchedToken.isEmpty() ? fetchedToken : TOKEN_UNAVAILABLE);
+                    applyTokenDisplay();
                 }
                 if (copy && fetchedToken != null && !fetchedToken.isEmpty()) {
                     UIUtils.copyToClipboard(fetchedToken);
@@ -279,35 +400,41 @@ public class JIPipeDesktopAIMonitorMCPPage extends JIPipeDesktopAIMonitorPage im
                 : "The MCP lifecycle is owned by the GUI launcher");
         copyUrlButton.setEnabled(baseUrl != null);
 
-        // Token row: only meaningful when token authentication is on.
+        // Token row: the password-style field when token authentication is on and a broker
+        // URL is available; otherwise a muted note (no field, no buttons).
         boolean requireToken = MCPApplicationSettings.getInstance() != null
                 && MCPApplicationSettings.getInstance().isRequireToken();
-        tokenRow.setVisible(requireToken && baseUrl != null);
-        copyTokenButton.setEnabled(requireToken && baseUrl != null);
-        showTokenButton.setEnabled(requireToken && baseUrl != null);
-        if (!tokenRow.isVisible()) {
+        boolean tokenUiAvailable = requireToken && baseUrl != null;
+        CardLayout tokenCards = (CardLayout) tokenRow.getLayout();
+        tokenCards.show(tokenRow, tokenUiAvailable ? TOKEN_FIELD_CARD : TOKEN_NOTE_CARD);
+        if (tokenUiAvailable) {
+            showTokenButton.setEnabled(true);
+            copyTokenButton.setEnabled(true);
+            rotateTokenButton.setEnabled(hooks != null);
+            rotateTokenButton.setToolTipText(hooks != null
+                    ? "Replaces the shared token (agents configured with the old token must be updated)"
+                    : "The MCP lifecycle is owned by the GUI launcher");
+            // The field always renders the real token (masked unless shown): fetch it once
+            // in the background instead of showing a placeholder.
+            if (fetchedToken == null) {
+                tokenField.setText("");
+                fetchTokenAsync(false);
+            } else {
+                applyTokenDisplay();
+            }
+        } else {
             tokenShown = false;
             fetchedToken = null;
             showTokenButton.setText("Show");
-        }
-        if (!tokenRow.isVisible()) {
-            tokenLabel.setText("");
-        } else if (!tokenShown) {
-            tokenLabel.setText(TOKEN_MASK);
-        } else {
-            tokenLabel.setText(fetchedToken != null && !fetchedToken.isEmpty() ? fetchedToken : TOKEN_LOADING);
-            // A shown-but-unfetched token (the fetch failed or never ran) recovers here
-            // instead of staying on "Loading..." until the next Show click.
-            if (fetchedToken == null) {
-                fetchTokenAsync(false);
-            }
+            tokenDisabledLabel.setText(requireToken
+                    ? "Not connected (no broker URL is available)"
+                    : "Token authentication is disabled (enable 'Require token' in the MCP settings)");
         }
 
         rebuildGrants();
         rebuildAsks(integration);
     }
 
-    private static final String TOKEN_MASK = "Hidden. Use Show to display, Copy to copy.";
     private static final String TOKEN_UNAVAILABLE = "Unavailable";
     private static final String TOKEN_LOADING = "Loading...";
 
