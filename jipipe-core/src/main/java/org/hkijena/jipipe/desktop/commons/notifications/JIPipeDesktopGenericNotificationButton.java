@@ -23,6 +23,10 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 
 /**
+ * This is the notification inbox system. It is different from the balloon tip
+ * notifications (net.java.balloontip.BalloonTip, for example the missing author
+ * info prompt or the MCP permission ask) and is currently not actively used.
+ * <p>
  * UI that monitors the queue
  */
 public class JIPipeDesktopGenericNotificationButton extends JButton implements JIPipeNotificationInbox.UpdatedEventListener {

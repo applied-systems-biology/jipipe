@@ -28,6 +28,11 @@ import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * This is the notification inbox system. It is different from the balloon tip
+ * notifications (net.java.balloontip.BalloonTip, for example the missing author
+ * info prompt or the MCP permission ask) and is currently not actively used.
+ */
 public class JIPipeDesktopWorkbenchNotificationUI extends JIPipeDesktopWorkbenchPanel {
 
     private final JIPipeDesktopWorkbenchNotificationInboxUI inboxUI;

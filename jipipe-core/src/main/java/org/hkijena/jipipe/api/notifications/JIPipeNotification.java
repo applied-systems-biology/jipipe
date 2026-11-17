@@ -17,6 +17,10 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 /**
+ * This is the notification inbox system. It is different from the balloon tip
+ * notifications (net.java.balloontip.BalloonTip, for example the missing author
+ * info prompt or the MCP permission ask) and is currently not actively used.
+ * <p>
  * A notification that is shown to the user
  */
 public class JIPipeNotification implements Comparable<JIPipeNotification> {

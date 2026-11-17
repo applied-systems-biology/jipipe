@@ -26,6 +26,10 @@ import java.util.TreeSet;
 import java.util.concurrent.locks.StampedLock;
 
 /**
+ * This is the notification inbox system. It is different from the balloon tip
+ * notifications (net.java.balloontip.BalloonTip, for example the missing author
+ * info prompt or the MCP permission ask) and is currently not actively used.
+ * <p>
  * A list of notifications that has not yet been reviewed
  */
 public class JIPipeNotificationInbox {

@@ -13,6 +13,8 @@
 
 package org.hkijena.jipipe.desktop.commons.components.ai.statusbar;
 
+import net.java.balloontip.BalloonTip;
+import net.java.balloontip.styles.EdgedBalloonStyle;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.microservice.MicroserviceState;
 import org.hkijena.jipipe.api.microservice.MicroserviceStateChangeEvent;
@@ -36,7 +38,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.FlowLayout;
 
 /**
  * The unified AI status bar item: a flat AI button with the AI activity graph next to it.
@@ -48,7 +49,10 @@ import java.awt.FlowLayout;
  * The MCP layer controls (start/stop, server URL and token, grants, pending asks) and
  * the operation and broker logs live in the AI monitor window.
  * <p>
- * The MCP Ask bubble is anchored below this item. Its trigger is purely event-driven:
+ * The MCP Ask bubble is a {@link BalloonTip} (EdgedBalloonStyle, orientation
+ * LEFT_ABOVE) attached to this item: the same bubble system as the missing author
+ * info prompt, the usage statistics ask, and the project ownership prompt. Its
+ * trigger is purely event-driven:
  * {@link JIPipeDesktopMCPIntegration#STATUS_EVENTS} fires whenever an ask is queued,
  * answered, timed out, or cleared by an uninstall; the bubble then shows the next queued
  * ask that targets this window (or any window when the target is unresolvable). The
@@ -70,9 +74,11 @@ public class JIPipeDesktopAIManager extends JIPipeDesktopProjectWorkbenchPanel
     private JIPipeDesktopMCPIntegration.PendingAsk displayedAsk;
 
     /**
-     * The open ask bubble (EDT-confined), or null.
+     * The ask balloon (EDT-confined), or null until the first ask is shown. Created
+     * once and hidden via {@code setVisible(false)}; the content panel is rebuilt
+     * per ask and swapped in via {@link BalloonTip#setContents}.
      */
-    private JPopupMenu askBubble;
+    private BalloonTip askBubble;
 
     public JIPipeDesktopAIManager(JIPipeDesktopProjectWorkbench workbenchUI) {
         super(workbenchUI);
@@ -250,7 +256,7 @@ public class JIPipeDesktopAIManager extends JIPipeDesktopProjectWorkbenchPanel
     }
 
     /**
-     * Shows the ask bubble anchored below this item. EDT only. One bubble at a time; an
+     * Shows the ask balloon attached to this item. EDT only. One ask at a time; an
      * already shown ask is not re-shown.
      */
     private void showAskBubble(JIPipeDesktopMCPIntegration.PendingAsk ask) {
@@ -260,44 +266,78 @@ public class JIPipeDesktopAIManager extends JIPipeDesktopProjectWorkbenchPanel
         hideAskBubble();
         displayedAsk = ask;
 
-        askBubble = new JPopupMenu();
-        JPanel panel = new JPanel(new GridBagLayout());
-        panel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+        JPanel content = buildAskBalloonContent(ask);
+        if (askBubble == null) {
+            askBubble = createAskBalloon(content);
+        } else {
+            askBubble.setContents(content);
+        }
+        askBubble.refreshLocation();
+        askBubble.setVisible(true);
+        getDesktopProjectWorkbench().getProjectWindow().registerBalloon(askBubble);
+    }
 
-        GridBagConstraints labelConstraints = new GridBagConstraints();
-        labelConstraints.gridx = 0;
-        labelConstraints.gridy = 0;
-        labelConstraints.weightx = 1.0;
-        labelConstraints.fill = GridBagConstraints.HORIZONTAL;
-        labelConstraints.anchor = GridBagConstraints.LINE_START;
+    /**
+     * Creates the ask balloon once, in the house style of the other project window
+     * balloons (missing author info prompt, usage statistics ask, project ownership
+     * prompt). Hidden until {@code showAskBubble} displays it.
+     */
+    private BalloonTip createAskBalloon(JPanel content) {
+        EdgedBalloonStyle style = new EdgedBalloonStyle(UIManager.getColor("TextField.background"), ThemeUtils.getCurrentStyle().getPrimaryColor());
+        BalloonTip balloonTip = new BalloonTip(
+                this,
+                content,
+                style,
+                BalloonTip.Orientation.LEFT_ABOVE,
+                BalloonTip.AttachLocation.ALIGNED,
+                30, 10,
+                true
+        );
+        balloonTip.setVisible(false);
 
-        JLabel title = new JLabel("MCP asks to run:");
-        title.setFont(title.getFont().deriveFont(Font.BOLD));
-        panel.add(title, labelConstraints);
+        JButton closeButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/window-close.png"));
+        closeButton.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+        closeButton.setOpaque(false);
+        closeButton.addActionListener(e -> hideAskBubble());
+        balloonTip.setCloseButton(closeButton, false);
+        return balloonTip;
+    }
 
-        labelConstraints.gridy = 1;
-        panel.add(new JLabel(ask.getOperationId()), labelConstraints);
+    /**
+     * Builds the balloon content for one ask: the title, the operation id and the
+     * project display name, and the answer buttons. The buttons only answer; the
+     * queue, grants, and timeout live in {@link JIPipeDesktopMCPIntegration}.
+     */
+    private JPanel buildAskBalloonContent(JIPipeDesktopMCPIntegration.PendingAsk ask) {
+        JPanel content = new JPanel(new BorderLayout(8, 8));
+        content.setOpaque(false);
+        content.add(UIUtils.createJLabel("MCP asks to run", 16), BorderLayout.NORTH);
+        content.add(new JLabel("<html><strong>" + escapeHtml(ask.getOperationId()) + "</strong><br/>Project: "
+                + escapeHtml(displayProjectName(ask.getProjectKey())) + "</html>"), BorderLayout.CENTER);
+        JPanel buttons = UIUtils.boxHorizontal(
+                UIUtils.createButton("Allow once", JIPipe.RESOURCES.getIcon16("actions/dialog-apply.png"), () -> answerAsk(ask, true, false)),
+                UIUtils.createButton("Allow always (this project)", JIPipe.RESOURCES.getIcon16("actions/im-user-online.png"), () -> answerAsk(ask, true, true)),
+                UIUtils.createButton("Deny", JIPipe.RESOURCES.getIcon16("actions/cancel.png"), () -> answerAsk(ask, false, false))
+        );
+        buttons.setOpaque(false);
+        content.add(buttons, BorderLayout.SOUTH);
+        return content;
+    }
 
-        labelConstraints.gridy = 2;
-        panel.add(new JLabel("Project: " + displayProjectName(ask.getProjectKey())), labelConstraints);
-
-        JPanel buttons = new JPanel(new FlowLayout(FlowLayout.TRAILING, 8, 0));
-        buttons.add(UIUtils.createButton("Allow once", null, null, () -> answerAsk(ask, true, false)));
-        buttons.add(UIUtils.createButton("Allow always (this project)", null, null, () -> answerAsk(ask, true, true)));
-        buttons.add(UIUtils.createButton("Deny", null, null, () -> answerAsk(ask, false, false)));
-
-        labelConstraints.gridy = 3;
-        labelConstraints.insets = new Insets(8, 0, 0, 0);
-        panel.add(buttons, labelConstraints);
-
-        askBubble.add(panel);
-        askBubble.show(this, 0, getHeight());
+    /**
+     * Escapes a dynamic value (operation id, project name) for safe rendering inside
+     * the balloon's HTML label.
+     */
+    private static String escapeHtml(String text) {
+        if (text == null) {
+            return "";
+        }
+        return text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;");
     }
 
     private void hideAskBubble() {
         if (askBubble != null) {
             askBubble.setVisible(false);
-            askBubble = null;
         }
         displayedAsk = null;
     }
