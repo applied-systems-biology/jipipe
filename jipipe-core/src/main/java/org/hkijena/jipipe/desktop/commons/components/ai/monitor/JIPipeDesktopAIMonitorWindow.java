@@ -33,15 +33,20 @@ import java.util.List;
  * Monitor window for the AI service, following a page-based design pattern
  * inspired by the cache monitor.
  * <p>
- * Provides three pages:
+ * Provides six pages:
  * <ul>
  *     <li><b>Overview</b> - shows embedding model status, model type, model ID, start/stop controls, and AI config button</li>
  *     <li><b>Log</b> - displays the AI service task queue log via {@link org.hkijena.jipipe.desktop.app.running.queue.JIPipeDesktopRunQueueLoggerPanel}</li>
  *     <li><b>Embedding log</b> - displays the embedding model operation log via {@link org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopProgressTreePanel}</li>
+ *     <li><b>MCP</b> - MCP layer status, lifecycle controls, server URL and access token, grants, and pending asks</li>
+ *     <li><b>MCP operations</b> - the instance-side operation ring</li>
+ *     <li><b>MCP broker log</b> - the shared broker's log entries</li>
  * </ul>
  * <p>
  * Subscribes to {@link org.hkijena.jipipe.api.microservice.MicroserviceStateChangeEventEmitter} on the
  * {@link JIPipeAIServiceComponent.EmbeddingModelService} for event-driven status updates and auto-refreshes on a timer.
+ * The MCP pages subscribe to the MCP status events themselves (and release those subscriptions in
+ * {@link JIPipeDesktopAIMonitorPage#dispose()}, which this window's dispose chain calls for every page).
  */
 public class JIPipeDesktopAIMonitorWindow extends JFrame implements MicroserviceStateChangeListener, JIPipeDesktopWorkbenchAccess {
 
@@ -63,6 +68,9 @@ public class JIPipeDesktopAIMonitorWindow extends JFrame implements Microservice
         addPage(new JIPipeDesktopAIMonitorOverviewPage(this), "Overview", JIPipe.RESOURCES.getIcon16("actions/document-preview.png"));
         addPage(new JIPipeDesktopAIMonitorLogPage(this), "Log", JIPipe.RESOURCES.getIcon16("actions/document-preview.png"));
         addPage(new JIPipeDesktopAIMonitorEmbeddingLogPage(this), "Embedding log", JIPipe.RESOURCES.getIcon16("actions/document-preview.png"));
+        addPage(new JIPipeDesktopAIMonitorMCPPage(this), "MCP", JIPipe.RESOURCES.getIcon16("actions/robot.png"));
+        addPage(new JIPipeDesktopAIMonitorMCPOperationsPage(this), "MCP operations", JIPipe.RESOURCES.getIcon16("actions/history.png"));
+        addPage(new JIPipeDesktopAIMonitorBrokerLogPage(this), "MCP broker log", JIPipe.RESOURCES.getIcon16("actions/history.png"));
         refresh();
         refreshTimer.start();
 

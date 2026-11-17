@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.service.components.JIPipeAIServiceComponent;
 import org.hkijena.jipipe.api.settings.SettingsScope;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.ai.JIPipeDesktopAISetupDialog;
+import org.hkijena.jipipe.desktop.commons.components.ai.statusbar.JIPipeDesktopAIStatusGraph;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.plugins.ai.AIApplicationSettings;
 import org.hkijena.jipipe.plugins.ai.environments.EmbeddingModelEnvironment;
@@ -88,6 +89,15 @@ public class JIPipeDesktopAIMonitorOverviewPage extends JIPipeDesktopAIMonitorPa
     private void initialize() {
         JIPipeDesktopFormPanel formPanel = new JIPipeDesktopFormPanel(JIPipeDesktopFormPanel.WITH_SCROLLING);
         add(formPanel, BorderLayout.CENTER);
+
+        // Activity graph: the same timeline the status bar item renders, larger and with
+        // the phase legend (mirrors the source implementation's overview page).
+        JIPipeDesktopAIStatusGraph activityGraph = new JIPipeDesktopAIStatusGraph(12, true);
+        activityGraph.setShowLegend(true);
+        activityGraph.setPreferredSize(new Dimension(400, 200));
+        activityGraph.setBorder(UIUtils.createControlBorder());
+        activityGraph.startRepaintTimer();
+        formPanel.addWideToForm(activityGraph);
 
         // Embedding model section
         ModelSection embeddingSection = new ModelSection(

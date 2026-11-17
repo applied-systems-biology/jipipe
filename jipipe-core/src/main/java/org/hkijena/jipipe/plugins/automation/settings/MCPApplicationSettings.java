@@ -15,6 +15,13 @@ import javax.swing.*;
  * operation id (state name); it is edited by the per-tool permission table
  * ({@code JIPipeDesktopMCPPermissionsEditorUI}).
  * <p>
+ * The {@code enable} parameter is applied live: toggling it starts or stops the MCP
+ * automation layer while the app runs (start is a no-op when the layer already runs;
+ * stop uses pause semantics, so the broker stays alive for other instances), and a
+ * launch with {@code enable} set starts the layer without the {@code --mcp} flag. The
+ * lifecycle runs in the GUI launcher, which subscribes to this sheet's parameter change
+ * events for the {@code enable} key.
+ * <p>
  * The {@code requireToken} parameter toggles token authentication: when enabled, the
  * broker client generates the shared token file {@code <JIPipe user dir>/mcp/token} once
  * (secure random 32-byte base64url secret, owner-only permissions, POSIX 0600), passes it
@@ -35,7 +42,7 @@ public class MCPApplicationSettings extends JIPipeDefaultApplicationsSettingsShe
         return JIPipe.getSettings().getById(ID, MCPApplicationSettings.class);
     }
 
-    @SetJIPipeDocumentation(name = "Enable MCP", description = "Enable the MCP automation layer (shared broker and instance endpoint).")
+    @SetJIPipeDocumentation(name = "Enable MCP", description = "Enable the MCP automation layer (shared broker and instance endpoint). Applied live: the layer starts or stops while the app runs, and a launch with this setting enabled starts the layer without the --mcp flag.")
     @JIPipeParameter("enable")
     public boolean isEnable() {
         return enable;
@@ -57,7 +64,7 @@ public class MCPApplicationSettings extends JIPipeDefaultApplicationsSettingsShe
         this.port = port;
     }
 
-    @SetJIPipeDocumentation(name = "Auto-start", description = "Connect to (or spawn) the MCP broker when JIPipe launches, without the --mcp CLI flag.")
+    @SetJIPipeDocumentation(name = "Auto-start", description = "Connect to (or spawn) the MCP broker when JIPipe launches, without the --mcp CLI flag. Launch-time switch only: the running layer is controlled by the 'Enable MCP' setting and the AI monitor.")
     @JIPipeParameter("auto-start")
     public boolean isAutoStart() {
         return autoStart;

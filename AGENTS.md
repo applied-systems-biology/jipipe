@@ -399,8 +399,11 @@ JIPipe exposes its automation operations to external agents over MCP (Model Cont
   connects to a running broker via the discovery file `<JIPipe user dir>/mcp/discovery.json` (PID liveness
   check plus `GET /health`), deletes stale files, and otherwise spawns a broker ([`MCPServerProcess`](jipipe-core/src/main/java/org/hkijena/jipipe/servers/mcp/MCPServerProcess.java),
   SharedServerProcess-based) with a 30 second health poll. The GUI launcher starts the client on the first
-  project window when `--mcp [port]` is given (or `MCPApplicationSettings.autoStart` is set) and shuts it down
-  when the last window closes; the lifecycle runs on a background executor, never on the EDT. Registration
+  project window when `--mcp [port]` is given (or `MCPApplicationSettings.autoStart`/`enable` is set) and shuts
+  it down when the last window closes; the lifecycle runs on a background executor, never on the EDT. The
+  launcher installs `JIPipeDesktopMCPIntegration.LifecycleHooks` at startup, so the AI monitor and the live
+  `enable` toggle can start/stop the layer through the same executor (start of a paused layer resumes it;
+  stop uses pause semantics: unregister plus endpoint stop, the broker stays alive). Registration
   (`POST /control/register`) carries project entries (project key = project window session id) and tool
   descriptors built from the global operation registry.
 - **Broker** (`servers/mcp`): [`MCPBrokerServer`](jipipe-core/src/main/java/org/hkijena/jipipe/servers/mcp/MCPBrokerServer.java)
@@ -414,14 +417,17 @@ JIPipe exposes its automation operations to external agents over MCP (Model Cont
   resolves the [`AutomationPermissionState`](jipipe-core/src/main/java/org/hkijena/jipipe/api/automation/permissions/AutomationPermissionState.java)
   of each operation: Allow, Ask, Deny, Hide. Resolution order: Allow-always grant (per project, in-memory),
   CLI override, user state (settings permission map), then the category default
-  (`isReadOnly() ? Allow : Ask`). Ask shows a bubble anchored to the MCP statusbar button of the target
+  (`isReadOnly() ? Allow : Ask`). Ask shows a bubble anchored to the unified AI status item of the target
   project window; the wait is bounded at 300 seconds so a paused UI cannot hold endpoint threads forever
   (deny on timeout). CLI `--mcp-permissions allow=<ids> deny=<ids>` overrides are session-only and
   fail-closed (the most restrictive state wins).
 - **Desktop integration** (`org.hkijena.jipipe.desktop.app.automation`): [`JIPipeDesktopMCPIntegration`](jipipe-core/src/main/java/org/hkijena/jipipe/desktop/app/automation/JIPipeDesktopMCPIntegration.java)
-  dispatches operations on the EDT, owns the ask bubble, the operation log, and the screenshot source;
-  [`JIPipeDesktopMCPStatusControl`](jipipe-core/src/main/java/org/hkijena/jipipe/desktop/app/automation/JIPipeDesktopMCPStatusControl.java)
-  is the statusbar button and popup.
+  dispatches operations, owns the ask queue, the operation log, and the screenshot source. The unified AI
+  status item ([`JIPipeDesktopAIManager`](jipipe-core/src/main/java/org/hkijena/jipipe/desktop/commons/components/ai/statusbar/JIPipeDesktopAIManager.java),
+  gated behind the AI setting) shows the AI activity graph with an MCP indicator line and hosts the Ask
+  bubble; the MCP layer controls (start/stop, server URL and token, grants, pending asks) and the operation
+  and broker logs live in the AI monitor's MCP pages
+  (`desktop/commons/components/ai/monitor/JIPipeDesktopAIMonitorMCPPage.java` and siblings).
 - **Tool catalog**: `docs/superpowers/specs/2026-11-16-mcp-server-design.md`.
 
 ### Adding a New Operation

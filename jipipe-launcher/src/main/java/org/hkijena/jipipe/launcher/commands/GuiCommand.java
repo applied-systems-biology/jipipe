@@ -66,6 +66,20 @@ public class GuiCommand {
 
     public static void startGui(List<String> argsList) {
         mcpOptions = McpCliOptions.parse(argsList);
+        // The lifecycle hooks route the MCP start/stop requests of the AI monitor and the
+        // "Enable MCP" settings toggle through this class's MCP executor (the lifecycle
+        // owner). Installed before the GUI starts; never blocks the caller.
+        JIPipeDesktopMCPIntegration.setLifecycleHooks(new JIPipeDesktopMCPIntegration.LifecycleHooks() {
+            @Override
+            public void startMcpAsync() {
+                startMcpFromHooks();
+            }
+
+            @Override
+            public void stopMcpAsync() {
+                stopMcpFromHooks();
+            }
+        });
         List<String> remainingArgs = new ArrayList<>();
         for (int i = 0; i < argsList.size(); i++) {
             // MCP arguments are consumed as a block (single source of truth in McpCliOptions).
@@ -87,9 +101,9 @@ public class GuiCommand {
     }
 
     /**
-     * Starts the MCP automation layer on the first window (when requested via {@code --mcp}
-     * or the auto-start setting): CLI permission overrides, instance endpoint, broker
-     * connection, registration. Runs on the MCP background executor (see
+     * Starts the MCP automation layer on the first window (when requested via {@code --mcp},
+     * the auto-start setting, or the enable setting): CLI permission overrides, instance
+     * endpoint, broker connection, registration. Runs on the MCP background executor (see
      * {@link #startMcpIfNeededAsync()}), never on the EDT. Every failure is logged and
      * never crashes the GUI startup.
      * <p>
@@ -109,7 +123,8 @@ public class GuiCommand {
         try {
             requested = mcpOptions.requested()
                     || (MCPApplicationSettings.getInstance() != null
-                    && MCPApplicationSettings.getInstance().isAutoStart());
+                    && (MCPApplicationSettings.getInstance().isAutoStart()
+                    || MCPApplicationSettings.getInstance().isEnable()));
         } catch (Exception e) {
             System.err.println("MCP automation layer unavailable: " + e.getMessage());
             return;
@@ -197,6 +212,54 @@ public class GuiCommand {
     }
 
     /**
+     * The lifecycle hook start path (called by the AI monitor and the "Enable MCP"
+     * settings toggle; never blocks the caller): a stopped layer starts on the MCP
+     * executor, a paused layer resumes (fresh endpoint, re-register). A running layer
+     * is left alone. Marshals to the EDT when needed: the startup snapshots the open
+     * project windows, and the window set is EDT-confined.
+     */
+    private static void startMcpFromHooks() {
+        if (!SwingUtilities.isEventDispatchThread()) {
+            SwingUtilities.invokeLater(GuiCommand::startMcpFromHooks);
+            return;
+        }
+        if (mcpBrokerClient != null) {
+            JIPipeDesktopMCPIntegration integration = JIPipeDesktopMCPIntegration.getActive();
+            if (integration != null && integration.isPaused()) {
+                integration.resumeAsync();
+            }
+            return;
+        }
+        startMcpIfNeededAsync();
+    }
+
+    /**
+     * The lifecycle hook stop path (pause semantics: unregister and endpoint stop; the
+     * broker stays alive for other instances, so a later start resumes). A stopped or
+     * starting layer is left alone (a startup failure cleans up itself). Runs on any
+     * thread; the pause runs on the integration's lifecycle executor.
+     */
+    private static void stopMcpFromHooks() {
+        JIPipeDesktopMCPIntegration integration = JIPipeDesktopMCPIntegration.getActive();
+        if (integration != null) {
+            integration.pauseAsync();
+        }
+    }
+
+    /**
+     * The "Enable MCP" settings toggle, applied live: on starts the layer (a no-op when
+     * it already runs), off pauses it (unregister and endpoint stop; the broker stays
+     * alive). Runs on the EDT (the parameter change event source).
+     */
+    private static void onEnableSettingChanged(boolean enabled) {
+        if (enabled) {
+            startMcpFromHooks();
+        } else {
+            stopMcpFromHooks();
+        }
+    }
+
+    /**
      * Wraps an MCP task so that anything thrown on the executor thread is logged: a
      * failure must never kill the thread silently without a trace.
      */
@@ -278,6 +341,26 @@ public class GuiCommand {
             JIPipeDesktopProjectWindow.WINDOW_OPENED_EVENT_EMITTER.subscribe(this);
             JIPipeDesktopProjectWindow.WINDOW_CLOSED_EVENT_EMITTER.subscribe(this);
             JIPipeDesktopProjectWindow.PROJECT_LOADED_EVENT_EMITTER.subscribe(this);
+            // The "Enable MCP" settings toggle starts/stops the layer live while the app
+            // runs. The lifecycle owner subscribes (this watcher outlives the GUI run: the
+            // static window emitters hold it). A settings read failure leaves the toggle
+            // inert; the launch-time requests (--mcp, auto-start, enable) still apply.
+            try {
+                MCPApplicationSettings settings = MCPApplicationSettings.getInstance();
+                if (settings != null) {
+                    settings.getParameterChangedEventEmitter().subscribeLambda((emitter, event) -> {
+                        if ("enable".equals(event.getKey())) {
+                            try {
+                                onEnableSettingChanged(MCPApplicationSettings.getInstance().isEnable());
+                            } catch (Exception e) {
+                                System.err.println("MCP enable toggle failed: " + e.getMessage());
+                            }
+                        }
+                    });
+                }
+            } catch (Exception e) {
+                System.err.println("MCP enable toggle unavailable: " + e.getMessage());
+            }
         }
 
         @Override
