@@ -183,7 +183,7 @@ public class DiagnosticsOperations {
                     {
                       "type": "object",
                       "properties": {
-                        "compartment": {"type": "string"}
+                        "compartment": {"type": "string", "description": "Only report errors of this compartment (UUID, alias, or name); omit to report all compartments"}
                       },
                       "additionalProperties": false
                     }""");
@@ -343,8 +343,8 @@ public class DiagnosticsOperations {
                       "type": "object",
                       "properties": {
                         "tail": {"type": "integer", "description": "Number of most recent records to return (default 200, maximum 8192); values below 1 are treated as 1"},
-                        "level": {"type": "string", "enum": ["INFO", "DEBUG"]},
-                        "node": {"type": "string"}
+                        "level": {"type": "string", "enum": ["INFO", "DEBUG"], "description": "Minimum log level to return: INFO (default) returns INFO records, DEBUG additionally returns DEBUG records; error and notification records always pass"},
+                        "node": {"type": "string", "description": "Only return records attributed to this node (the node id as used by query_graph)"}
                       },
                       "additionalProperties": false
                     }""");

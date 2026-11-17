@@ -35,8 +35,8 @@ public class ExecutionOperations {
                       "type": "object",
                       "required": ["node-id"],
                       "properties": {
-                        "node-id": {"type": "string"},
-                        "mode": {"type": "string", "enum": ["UPDATE_CACHE", "CACHE_INTERMEDIATE", "UPDATE_PREDECESSOR_CACHE", "PIPELINE_CACHE", "PIPELINE_FILESYSTEM", "PIPELINE_DISCARD"]}
+                        "node-id": {"type": "string", "description": "The node id as used by query_graph (alias id or UUID)"},
+                        "mode": {"type": "string", "enum": ["UPDATE_CACHE", "CACHE_INTERMEDIATE", "UPDATE_PREDECESSOR_CACHE", "PIPELINE_CACHE", "PIPELINE_FILESYSTEM", "PIPELINE_DISCARD"], "description": "How the run caches results (default UPDATE_CACHE: run to the node and cache only its output). CACHE_INTERMEDIATE also caches intermediate outputs, UPDATE_PREDECESSOR_CACHE stops before the target, and the PIPELINE_* values run the entire pipeline (PIPELINE_CACHE in memory, PIPELINE_FILESYSTEM to the output folder, PIPELINE_DISCARD discarding results)"}
                       },
                       "additionalProperties": false
                     }""");
@@ -90,7 +90,7 @@ public class ExecutionOperations {
                       "type": "object",
                       "required": ["compartment-id"],
                       "properties": {
-                        "compartment-id": {"type": "string"}
+                        "compartment-id": {"type": "string", "description": "Compartment whose runnable nodes are run (UUID or alias)"}
                       },
                       "additionalProperties": false
                     }""");
@@ -141,7 +141,7 @@ public class ExecutionOperations {
                     {
                       "type": "object",
                       "properties": {
-                        "mode": {"type": "string", "enum": ["UPDATE_CACHE", "CACHE_INTERMEDIATE", "UPDATE_PREDECESSOR_CACHE", "PIPELINE_CACHE", "PIPELINE_FILESYSTEM", "PIPELINE_DISCARD"]}
+                        "mode": {"type": "string", "enum": ["UPDATE_CACHE", "CACHE_INTERMEDIATE", "UPDATE_PREDECESSOR_CACHE", "PIPELINE_CACHE", "PIPELINE_FILESYSTEM", "PIPELINE_DISCARD"], "description": "How the run caches results (default PIPELINE_CACHE: run the entire pipeline and cache in memory). PIPELINE_FILESYSTEM writes results to the output folder, PIPELINE_DISCARD discards them"}
                       },
                       "additionalProperties": false
                     }""");
@@ -189,7 +189,7 @@ public class ExecutionOperations {
                       "type": "object",
                       "required": ["job-id"],
                       "properties": {
-                        "job-id": {"type": "string"}
+                        "job-id": {"type": "string", "description": "The job id as returned by the run_node, run_compartment, run_pipeline, or update_cache call"}
                       },
                       "additionalProperties": false
                     }""");
@@ -245,7 +245,7 @@ public class ExecutionOperations {
                       "type": "object",
                       "required": ["job-id"],
                       "properties": {
-                        "job-id": {"type": "string"}
+                        "job-id": {"type": "string", "description": "The job id as returned by the run_node, run_compartment, run_pipeline, or update_cache call"}
                       },
                       "additionalProperties": false
                     }""");

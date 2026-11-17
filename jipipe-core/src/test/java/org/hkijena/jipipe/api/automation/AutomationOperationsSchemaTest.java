@@ -46,7 +46,13 @@ public class AutomationOperationsSchemaTest {
             "list_algorithms",
             "get_project_info",
             "get_pipeline_map",
-            "run_pipeline");
+            "run_pipeline",
+            "describe_data",
+            "export_data",
+            "get_thumbnail",
+            "open_data_viewer",
+            "get_ui_state",
+            "navigate_to_node");
 
     @BeforeAll
     static void ensureJIPipe() {
@@ -98,6 +104,31 @@ public class AutomationOperationsSchemaTest {
                 assertEquals(List.of(), errors, "empty args against the schema of '"
                         + entry.getKey() + "' (no required properties) must validate cleanly");
             }
+        }
+    }
+
+    /**
+     * Registry contract: every property of every registered operation's input schema carries a
+     * non-empty description, so agents pass correct arguments without guesswork. The validator
+     * ignores the "description" keyword, but the broker copies property objects verbatim into
+     * the MCP tool schemas, so the descriptions reach clients as-is. Applies to every future
+     * registration too: the automation layer is internal-plugin only, and all plugins register
+     * into the same registry that this test iterates.
+     */
+    @Test
+    void everySchemaPropertyHasADescription() {
+        for (Map.Entry<String, AutomationOperation> entry : registry().getAll().entrySet()) {
+            JsonNode properties = entry.getValue().getInputSchema().get("properties");
+            if (properties == null || !properties.isObject()) {
+                continue;
+            }
+            properties.fields().forEachRemaining(property -> {
+                JsonNode description = property.getValue().get("description");
+                assertNotNull(description, "the schema property '" + property.getKey() + "' of operation '"
+                        + entry.getKey() + "' must declare a description");
+                assertFalse(description.asText().isBlank(), "the description of the schema property '"
+                        + property.getKey() + "' of operation '" + entry.getKey() + "' must not be empty");
+            });
         }
     }
 }

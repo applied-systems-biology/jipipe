@@ -340,9 +340,9 @@ public class ScreenshotOperations {
                       "type": "object",
                       "required": ["compartment"],
                       "properties": {
-                        "compartment": {"type": "string"},
-                        "scale": {"type": "number", "default": 2},
-                        "save-to": {"type": "string"}
+                        "compartment": {"type": "string", "description": "Compartment to render (UUID, alias, or name)"},
+                        "scale": {"type": "number", "default": 2, "description": "Render scale factor (default 2)"},
+                        "save-to": {"type": "string", "description": "Optional file path to save the PNG to; must be inside an allowed export root (the jipipe-mcp-export directory in the system temp directory, or the project work directory). Blank or omitted: the image is returned inline"}
                       },
                       "additionalProperties": false
                     }""");
@@ -425,9 +425,9 @@ public class ScreenshotOperations {
                       "type": "object",
                       "required": ["compartment"],
                       "properties": {
-                        "compartment": {"type": "string"},
-                        "scale": {"type": "number", "default": 2},
-                        "save-to": {"type": "string"}
+                        "compartment": {"type": "string", "description": "Compartment to render (UUID, alias, or name)"},
+                        "scale": {"type": "number", "default": 2, "description": "Render scale factor (default 2)"},
+                        "save-to": {"type": "string", "description": "Optional file path to save the PNG to; must be inside an allowed export root (the jipipe-mcp-export directory in the system temp directory, or the project work directory). Blank or omitted: the image is returned inline"}
                       },
                       "additionalProperties": false
                     }""");
@@ -519,9 +519,9 @@ public class ScreenshotOperations {
                       "type": "object",
                       "required": ["surface"],
                       "properties": {
-                        "surface": {"type": "string"},
-                        "scale": {"type": "number", "default": 2},
-                        "save-to": {"type": "string"}
+                        "surface": {"type": "string", "description": "Named UI surface of the project window to capture: one of graph-canvas, graph-editor, compartments-editor, project-tabs, settings-mcp"},
+                        "scale": {"type": "number", "default": 2, "description": "Upscale factor applied to the captured image (default 2)"},
+                        "save-to": {"type": "string", "description": "Optional file path to save the PNG to; must be inside an allowed export root (the jipipe-mcp-export directory in the system temp directory, or the project work directory). Blank or omitted: the image is returned inline"}
                       },
                       "additionalProperties": false
                     }""");
@@ -617,8 +617,8 @@ public class ScreenshotOperations {
                     {
                       "type": "object",
                       "properties": {
-                        "titlebar": {"type": "boolean", "default": true},
-                        "save-to": {"type": "string"}
+                        "titlebar": {"type": "boolean", "default": true, "description": "Whether to compose a fake titlebar on top of the capture (default true)"},
+                        "save-to": {"type": "string", "description": "Optional file path to save the PNG to; must be inside an allowed export root (the jipipe-mcp-export directory in the system temp directory, or the project work directory). Blank or omitted: the image is returned inline"}
                       },
                       "additionalProperties": false
                     }""");

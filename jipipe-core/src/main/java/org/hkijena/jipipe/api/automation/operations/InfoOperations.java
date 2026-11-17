@@ -164,7 +164,7 @@ public class InfoOperations {
                     {
                       "type": "object",
                       "properties": {
-                        "query": {"type": "string"}
+                        "query": {"type": "string", "description": "Optional filter matched case-insensitively against node type name and id; omit to list the full catalog"}
                       },
                       "additionalProperties": false
                     }""");
@@ -229,7 +229,7 @@ public class InfoOperations {
                       "type": "object",
                       "required": ["node-id"],
                       "properties": {
-                        "node-id": {"type": "string"}
+                        "node-id": {"type": "string", "description": "Registered node type id, as returned by list_algorithms"}
                       },
                       "additionalProperties": false
                     }""");

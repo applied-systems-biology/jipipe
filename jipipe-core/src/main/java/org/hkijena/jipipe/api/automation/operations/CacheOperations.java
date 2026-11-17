@@ -191,10 +191,10 @@ public class CacheOperations {
                       "type": "object",
                       "required": ["scope", "mode"],
                       "properties": {
-                        "scope": {"type": "string", "enum": ["node", "compartment", "pipeline"]},
-                        "mode": {"type": "string", "enum": ["full", "intermediate", "predecessors"]},
-                        "compartment": {"type": "string"},
-                        "node": {"type": "string"}
+                        "scope": {"type": "string", "enum": ["node", "compartment", "pipeline"], "description": "What to run: a single node, all runnable nodes of a compartment, or the whole pipeline"},
+                        "mode": {"type": "string", "enum": ["full", "intermediate", "predecessors"], "description": "Cache mode: full caches the targets, intermediate also stores intermediate results, predecessors runs only the dependencies of the targets"},
+                        "compartment": {"type": "string", "description": "Compartment that contains the target(s) (UUID, alias, or name); required when scope is node or compartment"},
+                        "node": {"type": "string", "description": "The node id as used by query_graph (alias id or UUID); required when scope is node, and the node must be runnable"}
                       },
                       "additionalProperties": false
                     }""");

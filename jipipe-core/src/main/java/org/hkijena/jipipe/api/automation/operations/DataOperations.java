@@ -67,12 +67,12 @@ public class DataOperations {
                       "type": "object",
                       "required": ["compartment", "node", "slot", "format"],
                       "properties": {
-                        "compartment": {"type": "string"},
-                        "node": {"type": "string"},
-                        "slot": {"type": "string"},
-                        "entry": {"type": "integer"},
-                        "format": {"type": "string"},
-                        "target-dir": {"type": "string"}
+                        "compartment": {"type": "string", "description": "Compartment that contains the node (UUID, alias, or name)"},
+                        "node": {"type": "string", "description": "The node id as used by query_graph (alias id or UUID)"},
+                        "slot": {"type": "string", "description": "Slot name; a cached slot is preferred, otherwise the live output or input slot"},
+                        "entry": {"type": "integer", "description": "Row index into the slot, 0-based (default 0)"},
+                        "format": {"type": "string", "description": "Export format: jipipe, the data type id, or the data type display name (matched case-insensitively; all accepted spellings route to the native export)"},
+                        "target-dir": {"type": "string", "description": "Directory to write into; must be inside an allowed export root (the jipipe-mcp-export directory in the system temp directory, or the project work directory). Default: the jipipe-mcp-export directory"}
                       },
                       "additionalProperties": false
                     }""");
@@ -82,10 +82,10 @@ public class DataOperations {
                   "type": "object",
                   "required": ["compartment", "node", "slot"],
                   "properties": {
-                    "compartment": {"type": "string"},
-                    "node": {"type": "string"},
-                    "slot": {"type": "string"},
-                    "entry": {"type": "integer"}
+                    "compartment": {"type": "string", "description": "Compartment that contains the node (UUID, alias, or name)"},
+                    "node": {"type": "string", "description": "The node id as used by query_graph (alias id or UUID)"},
+                    "slot": {"type": "string", "description": "Slot name; a cached slot is preferred, otherwise the live output or input slot"},
+                    "entry": {"type": "integer", "description": "Row index into the slot, 0-based (default 0)"}
                   },
                   "additionalProperties": false
                 }""");

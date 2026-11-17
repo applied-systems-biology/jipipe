@@ -62,7 +62,7 @@ public class PipelineMapOperations {
                       "type": "object",
                       "required": ["segment-id"],
                       "properties": {
-                        "segment-id": {"type": "string"}
+                        "segment-id": {"type": "string", "description": "Segment id from get_pipeline_map (a compartment UUID)"}
                       },
                       "additionalProperties": false
                     }""");
@@ -102,8 +102,8 @@ public class PipelineMapOperations {
                       "type": "object",
                       "required": ["query"],
                       "properties": {
-                        "query": {"type": "string"},
-                        "limit": {"type": "integer"}
+                        "query": {"type": "string", "description": "Text matched case-insensitively against node type name, id, and description"},
+                        "limit": {"type": "integer", "description": "Maximum number of results to return (default 20)"}
                       },
                       "additionalProperties": false
                     }""");

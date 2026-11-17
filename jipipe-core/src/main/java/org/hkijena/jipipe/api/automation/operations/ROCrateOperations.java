@@ -40,11 +40,11 @@ public class ROCrateOperations {
                       "type": "object",
                       "required": ["output-path"],
                       "properties": {
-                        "output-path": {"type": "string"},
-                        "docker-image": {"type": "string"},
-                        "docker-tag": {"type": "string"},
-                        "docker-env-vars": {"type": "array"},
-                        "user-path-overrides": {"type": "object"}
+                        "output-path": {"type": "string", "description": "File path of the RO-Crate zip archive to create"},
+                        "docker-image": {"type": "string", "description": "Docker image recorded in the RO-Crate; default: the value configured in the RO-Crate application settings"},
+                        "docker-tag": {"type": "string", "description": "Docker image tag recorded in the RO-Crate; default: the value configured in the RO-Crate application settings"},
+                        "docker-env-vars": {"type": "array", "description": "Array of {key, value} objects with Docker environment variables; replaces the configured environment variables when given"},
+                        "user-path-overrides": {"type": "object", "description": "Object mapping a project user path to its RO-Crate role: Unspecified, Input, Output, or Ignored"}
                       },
                       "additionalProperties": false
                     }""");

@@ -38,10 +38,10 @@ public class ModificationOperations {
                       "type": "object",
                       "required": ["node-type-id"],
                       "properties": {
-                        "compartment-id": {"type": "string"},
-                        "node-type-id": {"type": "string"},
-                        "x": {"type": "integer"},
-                        "y": {"type": "integer"}
+                        "compartment-id": {"type": "string", "description": "Compartment to add the node to (UUID or alias); omit to add the node without a compartment"},
+                        "node-type-id": {"type": "string", "description": "The id of the node type to add, as returned by list_algorithms"},
+                        "x": {"type": "integer", "description": "Initial node position on the canvas (default 0)"},
+                        "y": {"type": "integer", "description": "Initial node position on the canvas (default 0)"}
                       },
                       "additionalProperties": false
                     }""");
@@ -94,7 +94,7 @@ public class ModificationOperations {
                       "type": "object",
                       "required": ["node-id"],
                       "properties": {
-                        "node-id": {"type": "string"}
+                        "node-id": {"type": "string", "description": "The node id as used by query_graph (alias id or UUID)"}
                       },
                       "additionalProperties": false
                     }""");
@@ -140,10 +140,10 @@ public class ModificationOperations {
                       "type": "object",
                       "required": ["source", "source-slot", "target", "target-slot"],
                       "properties": {
-                        "source": {"type": "string"},
-                        "source-slot": {"type": "string"},
-                        "target": {"type": "string"},
-                        "target-slot": {"type": "string"}
+                        "source": {"type": "string", "description": "The source node id as used by query_graph (alias id or UUID)"},
+                        "source-slot": {"type": "string", "description": "Name of the source node's output slot"},
+                        "target": {"type": "string", "description": "The target node id as used by query_graph (alias id or UUID)"},
+                        "target-slot": {"type": "string", "description": "Name of the target node's input slot"}
                       },
                       "additionalProperties": false
                     }""");
@@ -191,10 +191,10 @@ public class ModificationOperations {
                       "type": "object",
                       "required": ["source", "source-slot", "target", "target-slot"],
                       "properties": {
-                        "source": {"type": "string"},
-                        "source-slot": {"type": "string"},
-                        "target": {"type": "string"},
-                        "target-slot": {"type": "string"}
+                        "source": {"type": "string", "description": "The source node id as used by query_graph (alias id or UUID)"},
+                        "source-slot": {"type": "string", "description": "Name of the source node's output slot"},
+                        "target": {"type": "string", "description": "The target node id as used by query_graph (alias id or UUID)"},
+                        "target-slot": {"type": "string", "description": "Name of the target node's input slot"}
                       },
                       "additionalProperties": false
                     }""");
@@ -242,9 +242,9 @@ public class ModificationOperations {
                       "type": "object",
                       "required": ["node-id", "key", "value"],
                       "properties": {
-                        "node-id": {"type": "string"},
-                        "key": {"type": "string"},
-                        "value": {"type": "string"}
+                        "node-id": {"type": "string", "description": "The node id as used by query_graph (alias id or UUID)"},
+                        "key": {"type": "string", "description": "Parameter key as reported by query_node or get_node_docs"},
+                        "value": {"type": "string", "description": "New value as text; it is converted to the parameter type (numbers, booleans, enum names, paths)"}
                       },
                       "additionalProperties": false
                     }""");
@@ -290,8 +290,8 @@ public class ModificationOperations {
                     {
                       "type": "object",
                       "properties": {
-                        "name": {"type": "string"},
-                        "description": {"type": "string"}
+                        "name": {"type": "string", "description": "New project name; the current name is kept when omitted"},
+                        "description": {"type": "string", "description": "New project description; the current description is kept when omitted"}
                       },
                       "additionalProperties": false
                     }""");
@@ -339,7 +339,7 @@ public class ModificationOperations {
                       "type": "object",
                       "required": ["name"],
                       "properties": {
-                        "name": {"type": "string"}
+                        "name": {"type": "string", "description": "Name of the new compartment"}
                       },
                       "additionalProperties": false
                     }""");
@@ -386,8 +386,8 @@ public class ModificationOperations {
                       "type": "object",
                       "required": ["compartment-id", "name"],
                       "properties": {
-                        "compartment-id": {"type": "string"},
-                        "name": {"type": "string"}
+                        "compartment-id": {"type": "string", "description": "Compartment to rename (UUID or alias)"},
+                        "name": {"type": "string", "description": "New compartment name"}
                       },
                       "additionalProperties": false
                     }""");

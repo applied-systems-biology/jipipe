@@ -75,7 +75,7 @@ public class ArrangeOperations {
                       "type": "object",
                       "required": ["compartment"],
                       "properties": {
-                        "compartment": {"type": "string"}
+                        "compartment": {"type": "string", "description": "Compartment whose nodes are arranged (UUID, alias, or name)"}
                       },
                       "additionalProperties": false
                     }""");
