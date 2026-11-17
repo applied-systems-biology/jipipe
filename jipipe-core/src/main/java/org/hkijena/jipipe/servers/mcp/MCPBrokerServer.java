@@ -79,7 +79,8 @@ import java.util.Set;
  * registry-global set ({@link #GLOBAL_TOOL_IDS}), whose members are callable without a project:
  * when {@code project} is absent, the call is routed to the most-recently registered live
  * instance that carries the tool (E2E ruling 2026-11-16; {@code list_projects} especially is
- * unreachable otherwise - chicken-and-egg). Results whose
+ * unreachable otherwise - chicken-and-egg; the job tools joined the set in the 2026-11-17
+ * follow-up wave because job ids address the shared job manager, not a project). Results whose
  * JSON contains non-null {@code image-base64} and {@code mime} fields become MCP image
  * content, everything else becomes JSON text content. Operations classified as jobs (category
  * Execute, except {@code get_job_status}/{@code cancel_job}) return a {@code job-id}
@@ -106,7 +107,8 @@ public class MCPBrokerServer {
      * the most-recently registered live instance that carries the tool. Every other tool gets
      * a {@code project} property injected into its published schema and requires the argument.
      */
-    public static final Set<String> GLOBAL_TOOL_IDS = Set.of("list_projects", "list_algorithms", "get_node_docs");
+    public static final Set<String> GLOBAL_TOOL_IDS = Set.of("list_projects", "list_algorithms", "get_node_docs",
+            "get_job_status", "cancel_job");
 
     /**
      * The schema description of the broker-injected {@code project} argument (verbatim per

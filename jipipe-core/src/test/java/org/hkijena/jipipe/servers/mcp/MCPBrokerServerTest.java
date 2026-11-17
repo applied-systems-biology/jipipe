@@ -148,10 +148,12 @@ public class MCPBrokerServerTest {
                 renderSpec = tool;
             }
         }
-        assertEquals(3, names.size());
+        assertEquals(5, names.size());
         assertTrue(names.contains("echo_test"));
         assertTrue(names.contains("render_image_test"));
         assertTrue(names.contains("get_node_docs"));
+        assertTrue(names.contains("get_job_status"));
+        assertTrue(names.contains("cancel_job"));
         // Controller ruling: list_operations is a registry meta-operation, never an MCP tool,
         // even when a registration carries a descriptor for it.
         assertFalse(names.contains("list_operations"));
@@ -239,6 +241,48 @@ public class MCPBrokerServerTest {
         assertEquals("text", content.get("type").asText());
         assertTrue(content.get("text").asText().contains("\"docs\":true"));
         assertTrue(content.get("text").asText().contains("\"project-key\":null"));
+    }
+
+    @Test
+    public void jobToolsRouteWithoutProject() throws Exception {
+        startBroker(null);
+        registerInstanceWithDescriptors();
+        initialize(null);
+
+        // The published schemas of the global job tools declare no project argument.
+        JsonNode toolsList = listTools().get("result");
+        JsonNode statusSchema = null;
+        JsonNode cancelSchema = null;
+        for (JsonNode tool : toolsList.get("tools")) {
+            if (tool.get("name").asText().equals("get_job_status")) {
+                statusSchema = tool.get("inputSchema");
+            } else if (tool.get("name").asText().equals("cancel_job")) {
+                cancelSchema = tool.get("inputSchema");
+            }
+        }
+        assertNotNull(statusSchema);
+        assertNotNull(cancelSchema);
+        assertFalse(statusSchema.get("properties").has("project"));
+        assertFalse(cancelSchema.get("properties").has("project"));
+
+        // get_job_status without a project routes to the instance carrying the tool.
+        ObjectNode statusArgs = JsonUtils.getObjectMapper().createObjectNode();
+        statusArgs.put("job-id", "job-abc");
+        JsonNode status = callTool("get_job_status", statusArgs);
+        assertFalse(status.get("isError").asBoolean());
+        String statusText = status.get("content").get(0).get("text").asText();
+        assertTrue(statusText.contains("\"state\":\"RUNNING\""));
+        assertTrue(statusText.contains("\"job-id\":\"job-abc\""));
+        assertTrue(statusText.contains("\"project-key\":null"));
+
+        // cancel_job likewise.
+        ObjectNode cancelArgs = JsonUtils.getObjectMapper().createObjectNode();
+        cancelArgs.put("job-id", "job-abc");
+        JsonNode cancel = callTool("cancel_job", cancelArgs);
+        assertFalse(cancel.get("isError").asBoolean());
+        String cancelText = cancel.get("content").get(0).get("text").asText();
+        assertTrue(cancelText.contains("\"cancelled\":true"));
+        assertTrue(cancelText.contains("\"project-key\":null"));
     }
 
     @Test
@@ -465,6 +509,8 @@ public class MCPBrokerServerTest {
                     case "echo_test" -> stubResult(echoResult(body));
                     case "get_node_docs" -> stubResult(docsResult(body));
                     case "run_job_test" -> stubResult(jobEnvelopeResult());
+                    case "get_job_status" -> stubResult(jobStatusResult(body));
+                    case "cancel_job" -> stubResult(cancelJobResult(body));
                     case "render_image_test" -> "{\"ok\":true,\"result\":{\"image-base64\":\"" + PNG_BASE64
                             + "\",\"mime\":\"image/png\"}}";
                     default -> "{\"ok\":false,\"code\":\"unknown\",\"error\":\"Unknown operation: " + opId + "\"}";
@@ -487,6 +533,22 @@ public class MCPBrokerServerTest {
     private ObjectNode docsResult(JsonNode body) {
         ObjectNode result = JsonUtils.getObjectMapper().createObjectNode();
         result.put("docs", true);
+        result.set("project-key", body.path("project-key"));
+        return result;
+    }
+
+    private ObjectNode jobStatusResult(JsonNode body) {
+        ObjectNode result = JsonUtils.getObjectMapper().createObjectNode();
+        result.put("state", "RUNNING");
+        result.set("job-id", body.path("params").path("job-id"));
+        result.set("project-key", body.path("project-key"));
+        return result;
+    }
+
+    private ObjectNode cancelJobResult(JsonNode body) {
+        ObjectNode result = JsonUtils.getObjectMapper().createObjectNode();
+        result.put("cancelled", true);
+        result.set("job-id", body.path("params").path("job-id"));
         result.set("project-key", body.path("project-key"));
         return result;
     }
@@ -573,13 +635,27 @@ public class MCPBrokerServerTest {
         docsTool.set("inputSchema", JsonUtils.getObjectMapper().readTree(
                 "{\"type\":\"object\",\"additionalProperties\":false}"));
         docsTool.put("read-only", true);
+        // Job tools: registry-global since the 2026-11-17 follow-up wave (job ids address
+        // the shared job manager, not a project).
+        ObjectNode jobStatusTool = JsonUtils.getObjectMapper().createObjectNode();
+        jobStatusTool.put("id", "get_job_status");
+        jobStatusTool.put("description", "Job status (descriptor)");
+        jobStatusTool.set("inputSchema", JsonUtils.getObjectMapper().readTree(
+                "{\"type\":\"object\",\"required\":[\"job-id\"],\"properties\":{\"job-id\":{\"type\":\"string\"}},\"additionalProperties\":false}"));
+        jobStatusTool.put("read-only", true);
+        ObjectNode cancelJobTool = JsonUtils.getObjectMapper().createObjectNode();
+        cancelJobTool.put("id", "cancel_job");
+        cancelJobTool.put("description", "Cancel a job (descriptor)");
+        cancelJobTool.set("inputSchema", JsonUtils.getObjectMapper().readTree(
+                "{\"type\":\"object\",\"required\":[\"job-id\"],\"properties\":{\"job-id\":{\"type\":\"string\"}},\"additionalProperties\":false}"));
+        cancelJobTool.put("read-only", false);
         // A descriptor for the meta-operation: the broker must still exclude it.
         ObjectNode listOperationsTool = JsonUtils.getObjectMapper().createObjectNode();
         listOperationsTool.put("id", "list_operations");
         listOperationsTool.put("description", "List all available operations (descriptor)");
         listOperationsTool.put("read-only", true);
         registration.set("tools", JsonUtils.getObjectMapper().createArrayNode()
-                .add(echoTool).add(renderTool).add(docsTool).add(listOperationsTool));
+                .add(echoTool).add(renderTool).add(docsTool).add(jobStatusTool).add(cancelJobTool).add(listOperationsTool));
         ObjectNode project = JsonUtils.getObjectMapper().createObjectNode();
         project.put("key", "p1");
         project.put("name", "P1");
