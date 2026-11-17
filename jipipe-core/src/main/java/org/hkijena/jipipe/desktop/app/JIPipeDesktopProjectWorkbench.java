@@ -115,6 +115,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.net.URI;
 import java.nio.file.Files;
+import java.lang.ref.WeakReference;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -578,15 +579,31 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
                     compartmentUI,
                     JIPipeDesktopTabPane.CloseMode.withSilentCloseButton,
                     false);
+            // The emitters live as long as the project, but the tab (and its editor) must
+            // not: subscribeLambda subscribers cannot be unsubscribed (they match by
+            // identity only for named listeners), so a strong lambda would retain every
+            // closed tab - one leaked editor shell per screenshot auto-open/close cycle.
+            // The tab is therefore held only weakly here: while the tab is open the tab
+            // pane holds it strongly, and after a close the weak references clear and the
+            // subscriptions become no-ops until the next emit garbage-collects them.
+            WeakReference<JIPipeDesktopTabPane.DocumentTab> titleTabRef = new WeakReference<>(documentTab);
             compartment.getParameterChangedEventEmitter().subscribeLambda((emitter, event) -> {
+                JIPipeDesktopTabPane.DocumentTab tab = titleTabRef.get();
+                if (tab == null) {
+                    return;
+                }
                 if (event.getKey().equals("jipipe:node:name")) {
-                    documentTab.setTitle(compartment.getName());
-                    documentTab.emitParameterChangedEvent("title");
+                    tab.setTitle(compartment.getName());
+                    tab.emitParameterChangedEvent("title");
                 }
             });
+            WeakReference<JIPipeDesktopTabPane.DocumentTab> removedTabRef = new WeakReference<>(documentTab);
             project.getCompartmentRemovedEventEmitter().subscribeLambda((emitter, event) -> {
                 if (event.getCompartment() == compartment) {
-                    documentTabPane.closeTab(documentTab);
+                    JIPipeDesktopTabPane.DocumentTab tab = removedTabRef.get();
+                    if (tab != null) {
+                        documentTabPane.closeTab(tab);
+                    }
                 }
             });
             if (switchToTab)
