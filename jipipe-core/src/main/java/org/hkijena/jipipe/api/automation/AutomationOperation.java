@@ -38,8 +38,12 @@ public interface AutomationOperation {
 
     /**
      * Returns true if the operation must be dispatched on the Swing event dispatch thread:
-     * operations that touch Swing (graph modifications whose change events drive the UI,
-     * runs, screenshots, open-window iteration) return true. The MCP integration consults
+     * operations that touch Swing without bridging it themselves (graph modifications whose
+     * change events drive the UI, runs, open-window iteration) return true. The screenshot
+     * window/ui operations are the exception: their Swing phases are bridged internally
+     * ({@code callOnEdt}) and their Robot-based captures run off the EDT, because the
+     * Wayland screencast portal can block the native capture indefinitely, which would
+     * freeze the whole application. The MCP integration consults
      * this instead of a hardcoded operation id set.
      */
     default boolean requiresEdt() {

@@ -26,6 +26,7 @@ import org.hkijena.jipipe.desktop.utils.ScreenshotRenderer;
 import org.hkijena.jipipe.utils.ui.ScreenImage;
 
 import javax.imageio.ImageIO;
+import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 import java.awt.Component;
 import java.awt.Point;
@@ -229,41 +230,67 @@ public class ScreenshotOperations {
     }
 
     /**
+     * The EDT phase result of the UI surface capture: whether the component was showing
+     * (which decides the print technique of the fallback), and its screen region when the
+     * Robot capture applies and the screen location resolved.
+     */
+    private record SurfaceCapturePreparation(boolean showing, Rectangle region) {
+    }
+
+    /**
      * Captures a UI surface component. Visible components are captured from the screen via
      * the Robot-based {@link ScreenImage#createImage(Rectangle)}, which never runs on the
-     * event dispatch thread: the screen region is read on the EDT (the same math as
-     * {@link ScreenImage#createImage(Component)}), the capture runs off the EDT with a wait
-     * bounded at {@link #CAPTURE_TIMEOUT_SECONDS}, and a capture without a result (no screen
-     * access, a blocked portal, the timeout) falls back to
-     * {@link ScreenshotRenderer#renderImage(Component, int)} on the EDT (the existing print
-     * path). Never-shown components are realized off-screen through the same print path.
-     * Which path applies is decided by the component's shown state: the source decides by
-     * returning a shown or a never-shown component.
+     * event dispatch thread: the shown state and the screen region are read on the EDT (the
+     * same math as {@link ScreenImage#createImage(Component)}), the capture runs off the EDT
+     * with a wait bounded at {@link #CAPTURE_TIMEOUT_SECONDS}, and a capture without a result
+     * (no screen access, a blocked portal, the timeout) falls back to the print path on the
+     * EDT. A showing component prints in place via {@link ScreenImage#createImage(JComponent)}
+     * (no reparenting, no screen access, the same technique as the window capture's print
+     * fallback): the renderer would reparent the live surface into a temporary frame and
+     * detach it from the project window. Never-shown components are realized off-screen
+     * through {@link ScreenshotRenderer#renderImage(Component, int)}, whose reparenting is
+     * the designed behavior there. Which path applies is decided by the component's shown
+     * state: the source decides by returning a shown or a never-shown component.
      */
     private static BufferedImage captureUiSurface(Component component) throws Exception {
         // EDT phase: read the shown state and, when visible, the screen region.
-        Rectangle region = onEdt(() -> {
+        SurfaceCapturePreparation preparation = onEdt(() -> {
             if (!component.isShowing()) {
-                return null;
+                return new SurfaceCapturePreparation(false, null);
             }
             try {
-                return screenRegionOf(component);
+                return new SurfaceCapturePreparation(true, screenRegionOf(component));
             } catch (Exception e) {
                 // Showing but without a usable screen location (no native peer): no
-                // Robot capture, straight to the print fallback.
-                return null;
+                // Robot capture, straight to the in-place print fallback.
+                return new SurfaceCapturePreparation(true, null);
             }
         });
         // Off the EDT: the Robot capture with a bounded wait.
-        if (region != null) {
-            BufferedImage image = robotCaptureOffEdt(region);
+        if (preparation.region() != null) {
+            BufferedImage image = robotCaptureOffEdt(preparation.region());
             if (image != null) {
                 return image;
             }
         }
-        // Print path, on the EDT: the fallback for a failed Robot capture and the
-        // off-screen realization for never-shown components.
-        return onEdt(() -> ScreenshotRenderer.renderImage(component, Math.max(component.getPreferredSize().width, 1)));
+        // Print path, on the EDT: the fallback for a failed Robot capture (in place for
+        // a showing component) and the off-screen realization for never-shown components.
+        return onEdt(() -> printCapture(component, preparation.showing()));
+    }
+
+    /**
+     * The print path of the UI surface capture, on the EDT. A showing component prints in
+     * place via {@link ScreenImage#createImage(JComponent)}: the component's current state,
+     * no reparenting, no screen access. A never-shown component is realized off-screen via
+     * {@link ScreenshotRenderer#renderImage(Component, int)}, whose reparenting into a
+     * temporary frame is the designed behavior there (nothing live to detach). UI surfaces
+     * are Swing components.
+     */
+    private static BufferedImage printCapture(Component component, boolean showing) {
+        if (showing) {
+            return ScreenImage.createImage((JComponent) component);
+        }
+        return ScreenshotRenderer.renderImage(component, Math.max(component.getPreferredSize().width, 1));
     }
 
     /**
@@ -442,7 +469,8 @@ public class ScreenshotOperations {
     /**
      * Captures a named UI surface of the project window. The source resolves the surface
      * catalog entry; the capture technique follows the component's shown state (visible:
-     * ScreenImage; never shown: off-screen realization via the printAll technique).
+     * the Robot-based screen capture off the EDT with an in-place print fallback; never
+     * shown: off-screen realization via the printAll technique).
      */
     public static class ScreenshotUi implements AutomationOperation {
 
@@ -467,9 +495,15 @@ public class ScreenshotOperations {
             return "screenshot_ui";
         }
 
+        /**
+         * False: the operation bridges its Swing phases itself. The surface resolution and
+         * the print path run on the EDT via {@link ScreenshotOperations#onEdt}, the Robot
+         * capture runs on the bounded off-EDT executor. Dispatching the whole operation on
+         * the EDT would stall it for the bounded capture wait.
+         */
         @Override
         public boolean requiresEdt() {
-            return true;
+            return false;
         }
 
         @Override
@@ -559,9 +593,15 @@ public class ScreenshotOperations {
             return "screenshot_window";
         }
 
+        /**
+         * False: the operation bridges its Swing phases itself. The window resolution and
+         * the print path run on the EDT through the integration's {@code callOnEdt}, the
+         * Robot capture runs on the bounded off-EDT executor. Dispatching the whole
+         * operation on the EDT would stall it for the bounded capture wait.
+         */
         @Override
         public boolean requiresEdt() {
-            return true;
+            return false;
         }
 
         @Override

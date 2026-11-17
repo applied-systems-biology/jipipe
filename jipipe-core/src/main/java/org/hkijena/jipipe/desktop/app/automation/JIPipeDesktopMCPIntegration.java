@@ -102,15 +102,18 @@ import java.util.concurrent.atomic.AtomicInteger;
  * <b>Threading:</b> {@link #execute}, {@link #ask} and {@link #onCall} run on the endpoint's
  * HTTP executor thread. Project resolution always happens on the event dispatch thread
  * ({@link JIPipeDesktopProjectWindow#getOpenWindows()} is EDT-confined); operations that touch
- * Swing (graph modifications, runs, screenshots, window iteration) are dispatched on the EDT
- * (each operation declares this via {@link AutomationOperation#requiresEdt()}), all others run
- * directly on the endpoint thread. Status events are emitted from background threads; the
- * controls marshal to the EDT. The one deliberate exception is the Robot-based screen
- * capture: on Wayland/XWayland hosts it goes through the xdg-desktop-portal screencast,
- * which can block indefinitely (no exception, no timeout), so running it on the EDT freezes
- * the whole application (observed live). It therefore runs on {@link #captureExecutor}, off
- * the EDT, with the wait bounded at {@link #CAPTURE_TIMEOUT_SECONDS}; every Swing state
- * read and every print-based capture stays on the EDT.
+ * Swing without bridging it themselves (graph modifications, runs, window iteration) are
+ * dispatched on the EDT (each operation declares this via
+ * {@link AutomationOperation#requiresEdt()}), all others run
+ * directly on the endpoint thread. The screenshot window/ui operations dispatch off the EDT
+ * and bridge their Swing phases themselves ({@link #findUiSurface(String)},
+ * {@link #captureWindow(String, boolean)}); the Robot-based screen capture never runs on the
+ * event dispatch thread: on Wayland/XWayland hosts it goes through the xdg-desktop-portal
+ * screencast, which can block indefinitely (no exception, no timeout), so running it on the
+ * EDT freezes the whole application (observed live). It therefore runs on
+ * {@link #captureExecutor} with the wait bounded at {@link #CAPTURE_TIMEOUT_SECONDS}; every
+ * Swing state read and every print-based capture stays on the EDT. Status events are emitted
+ * from background threads; the controls marshal to the EDT.
  */
 public final class JIPipeDesktopMCPIntegration implements AutomationEndpointHandlers,
         AutomationInstanceEndpoint.AskPromptHandler,
