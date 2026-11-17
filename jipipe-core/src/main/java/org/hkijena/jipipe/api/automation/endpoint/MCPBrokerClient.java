@@ -438,10 +438,16 @@ public class MCPBrokerClient {
     /**
      * Builds the MCP client configuration for external AI agents: a streamable HTTP object
      * pointing at the broker's {@code /mcp} route, plus the shared token as an
-     * {@code Authorization: Bearer} header when a token is given (null or empty omits the
-     * {@code headers} object entirely). Rendered pretty-printed with a two-space indent and
-     * no surrounding text, so the result can be pasted directly into an agent's MCP client
-     * configuration.
+     * {@code Authorization: Bearer} header when a token is given. Rendered pretty-printed
+     * with a two-space indent and no surrounding text, so the result can be pasted
+     * directly into an agent's MCP client configuration.
+     * <p>
+     * Shape contract: a null or empty token renders the block WITHOUT the {@code headers}
+     * object. That form is correct only for brokers that run without token
+     * authentication; a headerless block fails a token-authenticated broker. Callers that
+     * target a token-authenticated broker must resolve the token first and must not pass
+     * null or empty (the MCP monitor page shows an error instead of copying in that
+     * case).
      *
      * @param baseUrl the broker base URL (the Server URL shown on the MCP monitor page)
      * @param token   the shared broker token, or null when token authentication is off

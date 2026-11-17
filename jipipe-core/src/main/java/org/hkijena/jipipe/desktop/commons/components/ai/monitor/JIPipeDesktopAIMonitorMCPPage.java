@@ -40,8 +40,14 @@ import java.util.List;
  * <p>
  * Token reads and the rotation happen off the event dispatch thread (SwingWorker):
  * reading or rewriting the token file on the EDT would add disk I/O to every refresh.
- * Rotation reconnects the broker connection through the lifecycle hooks (the layer
- * keeps running) so the replaced broker is picked up immediately.
+ * The token is re-read on every refresh and before every copy: the token file is shared
+ * between instances, so a cached value goes stale as soon as another JIPipe instance
+ * rotates it. Rotation reconnects the broker connection through the lifecycle hooks (the
+ * layer keeps running) so the replaced broker is picked up immediately.
+ * <p>
+ * Copy actions fail loud: when token authentication is on and the token is unavailable
+ * (unreadable or empty token file), an error is shown instead of copying a headerless
+ * client configuration or nothing at all.
  */
 public class JIPipeDesktopAIMonitorMCPPage extends JIPipeDesktopAIMonitorPage implements MCPStatusEventListener {
 
@@ -89,6 +95,12 @@ public class JIPipeDesktopAIMonitorMCPPage extends JIPipeDesktopAIMonitorPage im
      * Guards overlapping background token reads.
      */
     private boolean tokenFetchInFlight;
+    /**
+     * A copy action parked while a token read is in flight (single slot: the latest user
+     * action wins), or null. Keeps the copy buttons responsive: the overlapping READ is
+     * dropped (the shared guard), but the user action is not.
+     */
+    private Runnable pendingTokenAction;
     /**
      * The last fetched token (background read), or null when unknown/hidden.
      */
@@ -246,42 +258,46 @@ public class JIPipeDesktopAIMonitorMCPPage extends JIPipeDesktopAIMonitorPage im
 
     /**
      * Applies the shown/hidden state to the password-style field: the mask is the echo
-     * character, the clear text is only rendered while shown.
+     * character, the clear text is only rendered while shown. The text is always the
+     * last fetched token (masked unless shown), so the field tracks the current token
+     * even after another instance rotated it. Without a token, the placeholder is shown
+     * unmasked (it is a status, not a secret).
      */
     private void applyTokenDisplay() {
-        tokenField.setEchoChar(tokenShown ? (char) 0 : TOKEN_ECHO_CHAR);
-        if (tokenShown) {
-            if (fetchedToken != null && !fetchedToken.isEmpty()) {
-                tokenField.setText(fetchedToken);
-            } else {
-                tokenField.setText(tokenFetchInFlight ? TOKEN_LOADING : TOKEN_UNAVAILABLE);
-            }
+        if (fetchedToken != null && !fetchedToken.isEmpty()) {
+            tokenField.setEchoChar(tokenShown ? (char) 0 : TOKEN_ECHO_CHAR);
+            tokenField.setText(fetchedToken);
+        } else {
+            tokenField.setEchoChar((char) 0);
+            tokenField.setText(tokenFetchInFlight ? TOKEN_LOADING : TOKEN_UNAVAILABLE);
         }
     }
 
     private void copyToken() {
-        if (fetchedToken != null && !fetchedToken.isEmpty()) {
-            UIUtils.copyToClipboard(fetchedToken);
-            return;
-        }
         fetchTokenAsync(this::copyFetchedToken);
     }
 
     /**
-     * Copies the fetched token (a no-op when the background read returned nothing).
+     * Copies the fetched token, or shows the fail-loud error when the background read
+     * returned nothing (the token file is unreadable or empty).
      */
     private void copyFetchedToken() {
         if (fetchedToken != null && !fetchedToken.isEmpty()) {
             UIUtils.copyToClipboard(fetchedToken);
+        } else {
+            showTokenUnavailableError("no access token can be copied.");
         }
     }
 
     /**
      * Copies the MCP client configuration (the JSON block pasted into an agent's MCP
      * client configuration): the broker URL with the {@code /mcp} path, plus the shared
-     * token as an Authorization header when token authentication is on. A cached token
-     * (already in memory) is used directly; otherwise the token is read in the background
-     * (the read touches the token file) and the configuration is copied on completion.
+     * token as an Authorization header when token authentication is on. The token is
+     * always re-read in the background (the read touches the token file, which other
+     * JIPipe instances share and may have rotated without this instance noticing), so
+     * the copied configuration carries the current token; the cached fast path was
+     * removed for exactly that reason. When token authentication is on and the token is
+     * unavailable, an error is shown instead of copying a headerless configuration.
      */
     private void copyMcpSettings() {
         MCPBrokerClient client = activeClient();
@@ -289,19 +305,32 @@ public class JIPipeDesktopAIMonitorMCPPage extends JIPipeDesktopAIMonitorPage im
             return;
         }
         if (tokenAuthEnabled()) {
-            if (fetchedToken != null && !fetchedToken.isEmpty()) {
+            fetchTokenAsync(() -> {
+                // The connection can drop while the token is being read.
+                if (client.getBaseUrl() == null) {
+                    return;
+                }
+                if (fetchedToken == null || fetchedToken.isEmpty()) {
+                    showTokenUnavailableError("no client configuration can be copied.");
+                    return;
+                }
                 copyMcpSettingsJson(client, fetchedToken);
-            } else {
-                fetchTokenAsync(() -> {
-                    // The connection can drop while the token is being read.
-                    if (client.getBaseUrl() != null) {
-                        copyMcpSettingsJson(client, fetchedToken);
-                    }
-                });
-            }
+            });
         } else {
             copyMcpSettingsJson(client, null);
         }
+    }
+
+    /**
+     * The fail-loud notice for a copy action when the token is unavailable (unreadable
+     * or empty token file): nothing is copied, because a headerless client configuration
+     * would fail the token-authenticated broker.
+     */
+    private void showTokenUnavailableError(String consequence) {
+        JIPipeDesktopDialogs.error(this, "MCP token unavailable",
+                "<html>The MCP token is unavailable, so " + consequence + "<br/>"
+                        + "The token file is shared between JIPipe instances: another instance may have "
+                        + "rotated it, or the file is currently unreadable.</html>", null);
     }
 
     /**
@@ -391,11 +420,20 @@ public class JIPipeDesktopAIMonitorMCPPage extends JIPipeDesktopAIMonitorPage im
     /**
      * Reads the token in the background (the read touches the token file) and then runs
      * the given action on the EDT (display the token, copy it, or copy the client
-     * configuration). The action may be null.
+     * configuration). The action may be null. Overlapping reads are guarded: while a
+     * read is in flight, a given action is parked in the {@link #pendingTokenAction}
+     * single slot (the latest action wins) and runs after the in-flight read completes,
+     * so a copy click during the read is not silently dropped.
      */
     private void fetchTokenAsync(Runnable onComplete) {
         MCPBrokerClient client = activeClient();
-        if (client == null || tokenFetchInFlight) {
+        if (client == null) {
+            return;
+        }
+        if (tokenFetchInFlight) {
+            if (onComplete != null) {
+                pendingTokenAction = onComplete;
+            }
             return;
         }
         tokenFetchInFlight = true;
@@ -413,11 +451,14 @@ public class JIPipeDesktopAIMonitorMCPPage extends JIPipeDesktopAIMonitorPage im
                 } catch (Exception e) {
                     fetchedToken = null;
                 }
-                if (tokenShown) {
-                    applyTokenDisplay();
-                }
+                applyTokenDisplay();
+                Runnable parked = pendingTokenAction;
+                pendingTokenAction = null;
                 if (onComplete != null) {
                     onComplete.run();
+                }
+                if (parked != null) {
+                    parked.run();
                 }
             }
         };
@@ -486,14 +527,13 @@ public class JIPipeDesktopAIMonitorMCPPage extends JIPipeDesktopAIMonitorPage im
             rotateTokenButton.setToolTipText(hooks != null
                     ? "Replaces the shared token (agents configured with the old token must be updated)"
                     : "The MCP lifecycle is owned by the GUI launcher");
-            // The field always renders the real token (masked unless shown): fetch it once
-            // in the background instead of showing a placeholder.
-            if (fetchedToken == null) {
-                tokenField.setText("");
-                fetchTokenAsync(null);
-            } else {
-                applyTokenDisplay();
-            }
+            // The field always renders the real token (masked unless shown). The token is
+            // re-read on EVERY refresh, not only when never fetched: the token file is
+            // shared between instances, so another JIPipe instance may have rotated it
+            // since the last read. The read is off-EDT and overlap-guarded; the display
+            // updates on completion.
+            tokenField.setText("");
+            fetchTokenAsync(null);
         } else {
             tokenShown = false;
             fetchedToken = null;
