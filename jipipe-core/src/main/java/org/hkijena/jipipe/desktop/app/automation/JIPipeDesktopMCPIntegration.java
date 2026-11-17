@@ -58,6 +58,7 @@ import java.awt.Graphics2D;
 import java.awt.KeyboardFocusManager;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.image.BufferedImage;
 import java.util.ArrayDeque;
@@ -803,6 +804,13 @@ public final class JIPipeDesktopMCPIntegration implements AutomationEndpointHand
                 return null;
             }
             try {
+                if (opened.tab() != null) {
+                    // Auto-opened tab: the editor was created a moment ago and its first
+                    // layout and paint cycle are still pending on the EDT. Run that cycle
+                    // now, or the capture below renders a blank image (2026-11-17
+                    // follow-up: the live test captured only 43 non-white pixels).
+                    forceLayoutAndPaintCycle(opened.canvas());
+                }
                 return renderComponentScaled(opened.canvas(), scale);
             } finally {
                 closeAutoOpenedCanvas(opened);
@@ -909,6 +917,42 @@ public final class JIPipeDesktopMCPIntegration implements AutomationEndpointHand
             return;
         }
         opened.tab().getDocumentTabPane().forceCloseTab(opened.tab());
+    }
+
+    /**
+     * Forces the full layout and paint pass of a freshly auto-opened editor before a
+     * {@code printAll} capture. The freshly opened tab marks its hierarchy dirty with
+     * {@code revalidate}, and the EDT would only run that layout and the first paint on a
+     * later cycle - an immediate capture renders components that were never laid out
+     * (zero-sized node content, a blank image).
+     * <p>
+     * Every step runs and completes synchronously on the calling (EDT) thread, so the
+     * component state at return time is deterministic - there is no event-queue wait and no
+     * sleep involved:
+     * <ol>
+     *     <li>the pending layout pass is performed right here by invalidating and validating
+     *     the top-level ancestor (the same full pass the EDT would run on its next cycle;
+     *     the canvas itself has no "laid out" signal - the editor UI exposes none), and</li>
+     *     <li>one full paint cycle of the canvas is performed right here through
+     *     {@link JComponent#paintImmediately} (the documented immediate paint through the
+     *     repaint manager), followed by {@link Toolkit#sync} to flush the graphics
+     *     pipeline.</li>
+     * </ol>
+     */
+    private static void forceLayoutAndPaintCycle(JComponent canvas) {
+        canvas.revalidate();
+        Container root = canvas.getTopLevelAncestor();
+        if (root != null) {
+            root.invalidate();
+            root.validate();
+        } else {
+            canvas.invalidate();
+            canvas.validate();
+        }
+        if (canvas.getWidth() > 0 && canvas.getHeight() > 0) {
+            canvas.paintImmediately(0, 0, canvas.getWidth(), canvas.getHeight());
+            Toolkit.getDefaultToolkit().sync();
+        }
     }
 
     @Override
