@@ -85,7 +85,9 @@ import java.util.concurrent.atomic.AtomicInteger;
  * The desktop wiring of the MCP automation layer: the real
  * {@link AutomationEndpointHandlers} (project-key resolution, EDT marshalling, dispatch
  * through the global operation registry), the {@link AutomationInstanceEndpoint.AskPromptHandler}
- * behind the status bar ask bubble, the {@link AutomationInstanceEndpoint.OperationCallListener}
+ * whose asks are presented by the pluggable {@link MCPAskPresenter} (the default presents
+ * them as the status bar ask balloon; see {@link #setAskPresenter}), the
+ * {@link AutomationInstanceEndpoint.OperationCallListener}
  * feeding the operation log and the status controls, and the production {@link ScreenshotSource}.
  * <p>
  * <b>Ownership seam:</b> the endpoint and the broker client are created and shut down by the
@@ -235,7 +237,15 @@ public final class JIPipeDesktopMCPIntegration implements AutomationEndpointHand
     private static volatile boolean starting;
 
     private final MCPOperationLog operationLog = new MCPOperationLog(500);
-    private final ConcurrentLinkedDeque<PendingAsk> pendingAsks = new ConcurrentLinkedDeque<>();
+
+    /**
+     * Presents the asks (the presentation half of the ask flow, see {@link MCPAskPresenter}).
+     * Defaults to the status bar balloon presentation; replaceable through
+     * {@link #setAskPresenter} (the seam for the ACP agent-chat presentation, #1376).
+     * Volatile: the presenter methods run on the endpoint's HTTP executor thread while the
+     * setter can run anywhere.
+     */
+    private volatile MCPAskPresenter askPresenter = new DefaultAskPresenter();
     private final AtomicInteger inFlight = new AtomicInteger();
     private final InstrumentationEventBus eventBus = new InstrumentationEventBus();
     private final InstrumentationJobManager jobManager = new InstrumentationJobManager(eventBus, null);
@@ -434,7 +444,7 @@ public final class JIPipeDesktopMCPIntegration implements AutomationEndpointHand
             return new StatusSnapshot(starting ? LayerState.Starting : LayerState.Off, null, 0, 0);
         }
         return new StatusSnapshot(currentLayerState(), integration.lastOperationId,
-                integration.inFlight.get(), integration.pendingAsks.size());
+                integration.inFlight.get(), integration.askPresenter.getPendingAsks().size());
     }
 
     /**
@@ -565,21 +575,39 @@ public final class JIPipeDesktopMCPIntegration implements AutomationEndpointHand
         return null;
     }
 
-    // ── Ask prompt handling (the status bar bubble) ──
+    // ── Ask prompt handling (resolution here, presentation via MCPAskPresenter) ──
 
     /**
-     * Queues one Ask request and blocks the endpoint thread until a bubble answers it, the
-     * layer shuts down (all pending requests are denied), or {@link #ASK_TIMEOUT_SECONDS}
-     * elapse (the request is then denied). Deviation from the original design: the design
-     * specified an unbounded wait; the wait is bounded so a paused or unattended UI cannot
-     * hold endpoint threads forever, and the agent receives a denied outcome after the
-     * timeout. Runs on the endpoint's HTTP executor thread.
+     * The two-argument ask handler: the origin defaults to the endpoint's MCP origin
+     * ({@link AutomationInstanceEndpoint#ASK_ORIGIN_MCP}), because every ask that reaches
+     * this handler arrives through the automation endpoint.
      */
     @Override
     public boolean ask(String operationId, String projectKey) {
-        PendingAsk pending = new PendingAsk(operationId, projectKey);
-        pendingAsks.addLast(pending);
-        emit();
+        return ask(operationId, projectKey, AutomationInstanceEndpoint.ASK_ORIGIN_MCP);
+    }
+
+    /**
+     * Queues one Ask request (the installed {@link MCPAskPresenter} presents it) and
+     * blocks the endpoint thread until a presentation answers it, the layer shuts down
+     * (all pending requests are denied), or {@link #ASK_TIMEOUT_SECONDS} elapse (the
+     * request is then denied). Deviation from the original design: the design specified
+     * an unbounded wait; the wait is bounded so a paused or unattended UI cannot hold
+     * endpoint threads forever, and the agent receives a denied outcome after the
+     * timeout. Runs on the endpoint's HTTP executor thread.
+     * <p>
+     * {@code origin} is free-form metadata naming who asked; it is carried on the
+     * {@link PendingAsk} so a presenter can tell ask sources apart. Today every ask
+     * arrives through the automation endpoint and reports
+     * {@link AutomationInstanceEndpoint#ASK_ORIGIN_MCP} (the endpoint has no richer
+     * origin information). Invariant: the broker's forward timeout
+     * (MCPBrokerServer.FORWARD_TIMEOUT, 360 s) must exceed the ask bound, so a late
+     * answer is still delivered to the agent.
+     */
+    @Override
+    public boolean ask(String operationId, String projectKey, String origin) {
+        PendingAsk pending = new PendingAsk(operationId, projectKey, origin);
+        askPresenter.askPosted(pending);
         try {
             if (!pending.latch.await(ASK_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
                 // Timed out or interrupted: deny, so the endpoint thread never blocks forever.
@@ -589,8 +617,7 @@ public final class JIPipeDesktopMCPIntegration implements AutomationEndpointHand
             Thread.currentThread().interrupt();
             pending.answer(false, false);
         } finally {
-            pendingAsks.remove(pending);
-            emit();
+            askPresenter.askRemoved(pending);
         }
         if (pending.isAllowed() && pending.isGrantAlways()) {
             JIPipe.getAutomation().getPermissionService().grantAlways(operationId, projectKey);
@@ -599,10 +626,33 @@ public final class JIPipeDesktopMCPIntegration implements AutomationEndpointHand
     }
 
     /**
-     * The queued Ask requests, oldest first.
+     * The presented (queued) Ask requests, oldest first, as reported by the installed
+     * {@link MCPAskPresenter}.
      */
     public List<PendingAsk> getPendingAsks() {
-        return new ArrayList<>(pendingAsks);
+        return askPresenter.getPendingAsks();
+    }
+
+    /**
+     * Installs the ask presenter: the presentation half of the ask flow (see
+     * {@link MCPAskPresenter}). This is the seam for alternative ask presentations; the
+     * ACP integration (#1376) will register a presenter that redirects asks into the
+     * active agent's chat. {@code null} restores the default status bar balloon
+     * presenter. The resolution half (the PendingAsk latch, the ask bound, the grant
+     * writeback) is not affected. A presenter swap does not migrate the asks queued with
+     * the previous presenter: install a presenter before the layer serves asks, or deny
+     * the pending asks first.
+     */
+    public void setAskPresenter(MCPAskPresenter presenter) {
+        askPresenter = presenter != null ? presenter : new DefaultAskPresenter();
+    }
+
+    /**
+     * The installed ask presenter (the default presents asks as the status bar ask
+     * balloon).
+     */
+    public MCPAskPresenter getAskPresenter() {
+        return askPresenter;
     }
 
     /**
@@ -614,36 +664,42 @@ public final class JIPipeDesktopMCPIntegration implements AutomationEndpointHand
             return;
         }
         ask.answer(allow, grantAlways);
-        emit();
+        askPresenter.askAnswered(ask);
     }
 
     /**
-     * Denies all pending Ask requests (used on uninstall).
+     * Denies all presented Ask requests (used on uninstall).
      */
     private void denyAllPending() {
-        for (PendingAsk ask : pendingAsks) {
-            ask.answer(false, false);
-        }
-        pendingAsks.clear();
+        askPresenter.denyAll();
     }
 
     /**
      * One pending "ask before running" request. The endpoint thread blocks on the latch
-     * until a bubble answers it, the request times out, or the layer shuts down.
+     * until a presentation (the default: the status bar balloon) answers it, the request
+     * times out, or the layer shuts down.
      */
     public static final class PendingAsk {
 
         private final String operationId;
         private final String projectKey;
+
+        /**
+         * Free-form metadata naming who asked. "mcp" today: every ask arrives through the
+         * automation endpoint ({@link AutomationInstanceEndpoint#ASK_ORIGIN_MCP}); a
+         * future ask source passes its own origin.
+         */
+        private final String origin;
         private final long createdAt = System.currentTimeMillis();
         private final CountDownLatch latch = new CountDownLatch(1);
         private final AtomicBoolean answered = new AtomicBoolean();
         private volatile boolean allowed;
         private volatile boolean grantAlways;
 
-        private PendingAsk(String operationId, String projectKey) {
+        private PendingAsk(String operationId, String projectKey, String origin) {
             this.operationId = operationId;
             this.projectKey = projectKey;
+            this.origin = origin;
         }
 
         /**
@@ -667,6 +723,13 @@ public final class JIPipeDesktopMCPIntegration implements AutomationEndpointHand
             return projectKey;
         }
 
+        /**
+         * Free-form metadata naming who asked (see {@link AutomationInstanceEndpoint#ASK_ORIGIN_MCP}).
+         */
+        public String getOrigin() {
+            return origin;
+        }
+
         public long getCreatedAt() {
             return createdAt;
         }
@@ -681,6 +744,50 @@ public final class JIPipeDesktopMCPIntegration implements AutomationEndpointHand
 
         public boolean isAnswered() {
             return answered.get();
+        }
+    }
+
+    /**
+     * The default ask presenter: the pre-seam presentation, moved verbatim. Owns the
+     * pending-ask queue and fires {@link #STATUS_EVENTS} exactly where the ask flow fired
+     * it before the seam (on queue, on answer, on removal; not in {@link #denyAll},
+     * whose denies are followed by the uninstall path's own final status event). With
+     * this presenter installed, the behavior is unchanged: STATUS_EVENTS drives the ask
+     * balloon of the {@code JIPipeDesktopAIManager} and the ask lists of the AI monitor
+     * pages.
+     */
+    private static final class DefaultAskPresenter implements MCPAskPresenter {
+
+        private final ConcurrentLinkedDeque<PendingAsk> pendingAsks = new ConcurrentLinkedDeque<>();
+
+        @Override
+        public void askPosted(PendingAsk ask) {
+            pendingAsks.addLast(ask);
+            emit();
+        }
+
+        @Override
+        public void askAnswered(PendingAsk ask) {
+            emit();
+        }
+
+        @Override
+        public void askRemoved(PendingAsk ask) {
+            pendingAsks.remove(ask);
+            emit();
+        }
+
+        @Override
+        public List<PendingAsk> getPendingAsks() {
+            return new ArrayList<>(pendingAsks);
+        }
+
+        @Override
+        public void denyAll() {
+            for (PendingAsk ask : pendingAsks) {
+                ask.answer(false, false);
+            }
+            pendingAsks.clear();
         }
     }
 

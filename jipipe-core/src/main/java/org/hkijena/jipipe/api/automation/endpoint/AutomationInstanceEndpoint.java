@@ -67,10 +67,31 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class AutomationInstanceEndpoint {
 
     /**
+     * The origin metadata this endpoint reports for its asks: every ask that reaches the
+     * {@link AskPromptHandler} through this endpoint was requested by an MCP client, and
+     * the endpoint has no richer origin information (session, agent id) today. A future
+     * ask source (the ACP integration, #1376) passes its own origin through the
+     * three-argument {@link AskPromptHandler#ask(String, String, String)}.
+     */
+    public static final String ASK_ORIGIN_MCP = "mcp";
+
+    /**
      * Decides one "ask before running" prompt (true = allow once).
      */
     public interface AskPromptHandler {
+
         boolean ask(String operationId, String projectKey);
+
+        /**
+         * Same as {@link #ask(String, String)}, with origin metadata naming who asked
+         * (free-form; see {@link #ASK_ORIGIN_MCP}). The endpoint always passes
+         * {@link #ASK_ORIGIN_MCP}: it has no richer origin information today. Handlers
+         * that do not care about the origin only implement the two-argument form; this
+         * default delegates to it.
+         */
+        default boolean ask(String operationId, String projectKey, String origin) {
+            return ask(operationId, projectKey);
+        }
     }
 
     /**
@@ -210,7 +231,8 @@ public class AutomationInstanceEndpoint {
         if (state == AutomationPermissionState.Deny) {
             return DispatchResult.of("denied", "Operation '" + operationId + "' is denied");
         }
-        if (state == AutomationPermissionState.Ask && (askHandler == null || !askHandler.ask(operationId, projectKey))) {
+        if (state == AutomationPermissionState.Ask && (askHandler == null
+                || !askHandler.ask(operationId, projectKey, ASK_ORIGIN_MCP))) {
             return DispatchResult.of("denied", "Operation '" + operationId + "' was not approved");
         }
         if (body == null || !body.isObject()) {
