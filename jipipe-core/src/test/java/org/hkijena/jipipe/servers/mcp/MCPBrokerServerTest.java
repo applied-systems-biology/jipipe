@@ -29,6 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -406,6 +407,22 @@ public class MCPBrokerServerTest {
         JsonNode tools = listTools(null);
         assertTrue(tools.get("result").get("tools").size() > 0);
         assertNotEquals(401, postRpc("/control/logs", null, null, null).status());
+    }
+
+    @Test
+    public void stopIsIdempotentAndReleasesThePort() throws Exception {
+        startBroker(null);
+        int port = broker.getPort();
+
+        // A double stop (production shuts the broker down with the last window) must not
+        // throw: the MCP server close and the Jetty stop are both guarded.
+        broker.stop();
+        broker.stop();
+
+        // The listening socket is released: new connections are refused.
+        assertThrows(IOException.class, () -> client.send(HttpRequest.newBuilder(
+                        URI.create("http://127.0.0.1:" + port + "/health")).GET().build(),
+                HttpResponse.BodyHandlers.ofString()));
     }
 
     // ------------------------------------------------------- stub instance

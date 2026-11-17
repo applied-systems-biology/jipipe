@@ -108,6 +108,27 @@ public class FakeTitlebarPainterTest {
     }
 
     @Test
+    void layoutHasNoNegativeCoordinatesAtNarrowWidth() {
+        // The three buttons plus margins need roughly 84 px: below that the x clamp must
+        // keep every rectangle inside the bar (the javadoc promises non-negative
+        // coordinates unqualified). The rects may overlap at such widths.
+        FontMetrics metrics = metrics();
+        for (int width : List.of(28, 27, 10, 1)) {
+            FakeTitlebarPainter.FakeTitlebarLayout layout = FakeTitlebarPainter.layout("T", metrics, width);
+            assertTrue(layout.titleX() >= 0, "titleX at width " + width);
+            assertTrue(layout.titleBaselineY() >= 0, "titleBaselineY at width " + width);
+            assertTrue(layout.maxTitleWidth() >= 0, "maxTitleWidth at width " + width);
+            assertEquals(3, layout.buttons().size(), "three buttons at width " + width);
+            for (Rectangle button : layout.buttons()) {
+                assertTrue(button.x >= 0, "button x at width " + width + ": " + button);
+                assertTrue(button.y >= 0, "button y at width " + width + ": " + button);
+                assertTrue(button.width > 0 && button.height > 0,
+                        "button size at width " + width + ": " + button);
+            }
+        }
+    }
+
+    @Test
     void paintIsDeterministic() {
         FontMetrics metrics = metrics();
         String title = "Deterministic documentation titlebar";

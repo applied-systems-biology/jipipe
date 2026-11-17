@@ -87,4 +87,29 @@ public class AutomationSchemaUtilsTest {
                 AutomationSchemaUtils.parseJson("{\"x\": 1}"));
         assertEquals(List.of(), errors, "optional properties may be absent");
     }
+
+    @Test
+    void nullSchemaIsRejected() {
+        // Fail-closed: a missing schema must not silently pass validation.
+        List<String> errors = AutomationSchemaUtils.validate(null,
+                AutomationSchemaUtils.parseJson("{}"));
+        assertFalse(errors.isEmpty(), "a null schema must produce an error");
+        assertTrue(errors.get(0).contains("schema"), "the error must describe the schema problem: "
+                + errors);
+    }
+
+    @Test
+    void nonObjectSchemasAreRejected() {
+        for (JsonNode malformed : List.of(
+                AutomationSchemaUtils.parseJson("\"just a string\""),
+                AutomationSchemaUtils.parseJson("[1, 2]"),
+                AutomationSchemaUtils.parseJson("42"),
+                AutomationSchemaUtils.parseJson("null"))) {
+            List<String> errors = AutomationSchemaUtils.validate(malformed,
+                    AutomationSchemaUtils.parseJson("{}"));
+            assertFalse(errors.isEmpty(), "a non-object schema must produce an error: " + malformed);
+            assertTrue(errors.get(0).contains("schema"), "the error must describe the schema problem: "
+                    + errors);
+        }
+    }
 }

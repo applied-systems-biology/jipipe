@@ -208,6 +208,19 @@ public class MCPBrokerServer {
     }
 
     public void stop() {
+        // Close the MCP server first, then Jetty: the SDK server owns the open sessions
+        // and the tools/list change notifications, so it must shut down before its
+        // transport servlet disappears. Idempotent and exception-safe: a close failure
+        // is logged and must not prevent the Jetty stop.
+        McpSyncServer mcpServer = this.syncServer;
+        this.syncServer = null;
+        if (mcpServer != null) {
+            try {
+                mcpServer.close();
+            } catch (Exception e) {
+                logs.add("warn", "MCP server close failed: " + describe(e));
+            }
+        }
         if (jettyServer != null) {
             try {
                 jettyServer.stop();
@@ -490,6 +503,10 @@ public class MCPBrokerServer {
     /**
      * Rejects requests without a valid bearer token on {@code /mcp} and {@code /control/*}
      * before any processing; {@code /health} and all other paths pass through.
+     * <p>
+     * Matching uses {@link HttpServletRequest#getServletPath()}, not the raw request URI:
+     * under the {@code "/"} context both are identical, but the servlet path stays correct
+     * if the context path ever changes.
      */
     private class BearerTokenFilter implements Filter {
 
@@ -498,7 +515,7 @@ public class MCPBrokerServer {
                 throws IOException, ServletException {
             if (bearerToken != null) {
                 HttpServletRequest request = (HttpServletRequest) servletRequest;
-                String path = request.getRequestURI();
+                String path = request.getServletPath();
                 if (path.equals("/mcp") || path.startsWith("/mcp/") || path.startsWith("/control")) {
                     HttpServletResponse response = (HttpServletResponse) servletResponse;
                     String header = request.getHeader("Authorization");

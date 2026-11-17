@@ -30,10 +30,10 @@ public class MCPInstanceRegistry extends SharedInstanceRegistry<MCPInstanceRegis
     public static final Set<String> EXCLUDED_TOOL_IDS = Set.of("list_operations");
 
     /**
-     * In-memory registration order (most recent last), maintained by {@link #register} and
-     * {@link #unregister}. It is not part of the serialized registration payload and only
-     * backs the deterministic registry-global tool routing rule
-     * ({@link #findAnyByToolId(String)}).
+     * In-memory registration order (most recent last), maintained by {@link #register},
+     * {@link #unregister}, and the dead-instance sweep ({@link #removeDeadInstances}).
+     * It is not part of the serialized registration payload and only backs the
+     * deterministic registry-global tool routing rule ({@link #findAnyByToolId(String)}).
      */
     private final List<String> registrationOrder = new CopyOnWriteArrayList<>();
 
@@ -49,6 +49,22 @@ public class MCPInstanceRegistry extends SharedInstanceRegistry<MCPInstanceRegis
     public void unregister(String instanceId) {
         super.unregister(instanceId);
         registrationOrder.remove(instanceId);
+    }
+
+    /**
+     * Sweeps dead instances and prunes their ids from {@link #registrationOrder}: the
+     * sweep in {@link SharedInstanceRegistry#removeDeadInstances} removes through the
+     * underlying map (bypassing {@link #unregister}), so the order list would otherwise
+     * accumulate stale ids. The relative order of the surviving ids (most recently
+     * registered last) is preserved.
+     */
+    @Override
+    public int removeDeadInstances() {
+        int removed = super.removeDeadInstances();
+        if (removed > 0) {
+            registrationOrder.removeIf(instanceId -> get(instanceId) == null);
+        }
+        return removed;
     }
 
     /**

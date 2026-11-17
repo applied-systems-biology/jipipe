@@ -71,8 +71,10 @@ public final class FakeTitlebarPainter {
         List<Rectangle> buttons = new ArrayList<>(3);
         for (int i = 0; i < 3; i++) {
             // Build from the right edge so the group is right-aligned; insertion at index 0
-            // yields the minimize, maximize, close order left to right.
-            int x = right - BUTTON_SIZE;
+            // yields the minimize, maximize, close order left to right. x is clamped to 0
+            // so the non-negative coordinate promise also holds for bar widths below the
+            // button group width (the rects then overlap instead of leaving the bar).
+            int x = Math.max(0, right - BUTTON_SIZE);
             int y = Math.max(0, (barHeight - BUTTON_SIZE) / 2);
             buttons.add(0, new Rectangle(x, y, BUTTON_SIZE, BUTTON_SIZE));
             right = x - BUTTON_GAP;

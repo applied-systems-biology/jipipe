@@ -40,10 +40,16 @@ public class AutomationSchemaUtils {
     /**
      * Validates arguments against a schema and returns the list of errors (empty when valid).
      * Null or missing arguments are treated as an empty object.
+     * <p>
+     * Fail-closed: a null or non-object schema (e.g. a malformed schema literal) produces a
+     * single descriptive error instead of silently passing. The instance endpoint rejects
+     * such operations before dispatch, so this is the second line of defense for direct
+     * {@link AutomationOperationRegistry#execute} callers.
      */
     public static List<String> validate(JsonNode schema, JsonNode args) {
         List<String> errors = new ArrayList<>();
         if (schema == null || schema.isNull() || !schema.isObject()) {
+            errors.add("operation schema is missing or malformed");
             return errors;
         }
         JsonNode argsNode = args == null || args.isNull() ? JsonUtils.getObjectMapper().createObjectNode() : args;
