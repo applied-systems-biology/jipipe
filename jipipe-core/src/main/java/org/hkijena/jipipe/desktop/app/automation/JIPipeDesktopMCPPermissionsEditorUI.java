@@ -14,12 +14,14 @@
 package org.hkijena.jipipe.desktop.app.automation;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.automation.AutomationOperation;
 import org.hkijena.jipipe.api.automation.permissions.AutomationPermissionService;
 import org.hkijena.jipipe.api.automation.permissions.AutomationPermissionState;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.plugins.automation.settings.MCPPermissionStates;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import java.awt.*;
@@ -34,11 +36,15 @@ import java.util.List;
  * An edit writes a copy of the states through the parameter access (so the parameter
  * change events and the settings bridge fire) and applies it to the live permission
  * service immediately. "Default" clears the stored state: the category default applies
- * (read-only operations: Allow, others: Ask).
+ * (read-only operations: Allow, others: Ask). The Default entries are displayed with
+ * their resolved category default ("Default (Allow)" / "Default (Ask)"); the stored
+ * value stays the cleared-state sentinel.
  */
 public class JIPipeDesktopMCPPermissionsEditorUI extends JIPipeDesktopParameterEditorUI<MCPPermissionStates> {
 
     private static final String DEFAULT_LABEL = "Default";
+    private static final String DEFAULT_ALLOW_LABEL = "Default (Allow)";
+    private static final String DEFAULT_ASK_LABEL = "Default (Ask)";
 
     private final DefaultTableModel model = new DefaultTableModel(new Object[]{"Operation", "Permission"}, 0) {
         @Override
@@ -61,12 +67,18 @@ public class JIPipeDesktopMCPPermissionsEditorUI extends JIPipeDesktopParameterE
         setLayout(new BorderLayout(8, 8));
 
         JTable table = new JTable(model);
-        table.setRowHeight(table.getRowHeight() + 4);
+        // The established data-table row height of the codebase (all data table UIs
+        // use it as their non-preview default, same as the keyboard shortcuts
+        // section); the Swing default is too dense for the dropdown column.
+        table.setRowHeight(25);
         TableColumn permissionColumn = table.getColumnModel().getColumn(1);
+        permissionColumn.setCellRenderer(new PermissionStateCellRenderer());
         JComboBox<String> stateBox = new JComboBox<>(new String[]{DEFAULT_LABEL,
                 AutomationPermissionState.Allow.name(), AutomationPermissionState.Ask.name(),
                 AutomationPermissionState.Deny.name(), AutomationPermissionState.Hide.name()});
-        permissionColumn.setCellEditor(new DefaultCellEditor(stateBox));
+        PermissionStateCellEditor editor = new PermissionStateCellEditor(stateBox);
+        stateBox.setRenderer(new PermissionStateComboRenderer(editor));
+        permissionColumn.setCellEditor(editor);
         model.addTableModelListener(e -> apply());
 
         JScrollPane scrollPane = new JScrollPane(table);
@@ -126,5 +138,85 @@ public class JIPipeDesktopMCPPermissionsEditorUI extends JIPipeDesktopParameterE
             }
         }
         setParameter(updated, true);
+    }
+
+    /**
+     * Returns the displayed label of a stored cell value: the Default entry is decorated
+     * with the category default of the operation ("Default (Allow)" for read-only
+     * operations, "Default (Ask)" otherwise). Operations that are no longer in the
+     * registry keep the plain label. Only the display is decorated; the stored value
+     * stays the plain cleared-state sentinel.
+     */
+    private static String displayLabel(String value, String operationId) {
+        if (value == null || !DEFAULT_LABEL.equals(value)) {
+            return value;
+        }
+        AutomationOperation operation = operationId != null
+                ? JIPipe.getAutomation().getOperationRegistry().get(operationId) : null;
+        if (operation == null) {
+            return DEFAULT_LABEL;
+        }
+        return operation.isReadOnly() ? DEFAULT_ALLOW_LABEL : DEFAULT_ASK_LABEL;
+    }
+
+    /**
+     * Displays the permission column: the Default entry is decorated with the category
+     * default of the row's operation. The model keeps holding the plain stored values.
+     */
+    private static class PermissionStateCellRenderer extends DefaultTableCellRenderer {
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+                                                       boolean hasFocus, int row, int column) {
+            super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            Object id = table.getModel().getValueAt(row, 0);
+            setText(displayLabel(value != null ? String.valueOf(value) : null,
+                    id != null ? String.valueOf(id) : null));
+            return this;
+        }
+    }
+
+    /**
+     * The dropdown editor of the permission column: resolves the edited row's operation
+     * id so the combo renderer can decorate the Default entry. The combo items stay the
+     * plain stored values, so the selected display text never leaks into the persisted
+     * map (the table writes the selected item, which is always a plain item).
+     */
+    private static class PermissionStateCellEditor extends DefaultCellEditor {
+
+        private String currentOperationId;
+
+        private PermissionStateCellEditor(JComboBox<String> stateBox) {
+            super(stateBox);
+        }
+
+        @Override
+        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected,
+                                                     int row, int column) {
+            Object id = table.getModel().getValueAt(row, 0);
+            currentOperationId = id != null ? String.valueOf(id) : null;
+            return super.getTableCellEditorComponent(table, value, isSelected, row, column);
+        }
+    }
+
+    /**
+     * Renders the combo items (popup and closed editor state): the Default entry is
+     * decorated with the category default of the edited row's operation.
+     */
+    private static class PermissionStateComboRenderer extends DefaultListCellRenderer {
+
+        private final PermissionStateCellEditor editor;
+
+        private PermissionStateComboRenderer(PermissionStateCellEditor editor) {
+            this.editor = editor;
+        }
+
+        @Override
+        public Component getListCellRendererComponent(JList<?> list, Object value, int index,
+                                                      boolean isSelected, boolean cellHasFocus) {
+            JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+            label.setText(displayLabel(value != null ? String.valueOf(value) : null, editor.currentOperationId));
+            return label;
+        }
     }
 }
