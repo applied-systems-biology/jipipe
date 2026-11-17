@@ -33,8 +33,10 @@ import java.util.List;
  * (start/stop through the launcher-installed lifecycle hooks), the broker server URL
  * (with copy), the access token row (a password-style field with Show/Hide, Copy and
  * Rotate; a muted note when token authentication is disabled or no broker URL is
- * available), the "Allow always" grants with per-entry revoke, and the pending Ask
- * requests (answering stays in the ask bubble anchored to the AI status item).
+ * available), the client configuration copy (the JSON block that is pasted into an
+ * agent's MCP client configuration), the "Allow always" grants with per-entry revoke,
+ * and the pending Ask requests (answering stays in the ask bubble anchored to the AI
+ * status item).
  * <p>
  * Token reads and the rotation happen off the event dispatch thread (SwingWorker):
  * reading or rewriting the token file on the EDT would add disk I/O to every refresh.
@@ -79,6 +81,7 @@ public class JIPipeDesktopAIMonitorMCPPage extends JIPipeDesktopAIMonitorPage im
     private final JButton showTokenButton;
     private final JButton copyTokenButton;
     private final JButton rotateTokenButton;
+    private final JButton copySettingsButton;
     private final JPanel grantsPanel;
     private final JPanel asksPanel;
 
@@ -100,6 +103,7 @@ public class JIPipeDesktopAIMonitorMCPPage extends JIPipeDesktopAIMonitorPage im
         this.showTokenButton = UIUtils.createButton("Show", JIPipe.RESOURCES.getIcon16("actions/key.png"), this::toggleTokenShown);
         this.copyTokenButton = UIUtils.createButton("Copy", JIPipe.RESOURCES.getIcon16("actions/copy.png"), this::copyToken);
         this.rotateTokenButton = UIUtils.createButton("Rotate", JIPipe.RESOURCES.getIcon16("actions/database-change-key.png"), this::rotateToken);
+        this.copySettingsButton = UIUtils.createButton("Copy MCP settings", JIPipe.RESOURCES.getIcon16("actions/copy.png"), this::copyMcpSettings);
         this.tokenRow = createTokenRow();
         this.grantsPanel = new JPanel();
         this.asksPanel = new JPanel();
@@ -138,6 +142,16 @@ public class JIPipeDesktopAIMonitorMCPPage extends JIPipeDesktopAIMonitorPage im
         formPanel.addToForm(urlRow, new JLabel("Server URL"));
 
         formPanel.addToForm(tokenRow, new JLabel("Access token"));
+
+        // Client configuration
+        formPanel.addGroupHeader("Client configuration", JIPipe.RESOURCES.getIcon16("actions/code-block.png"));
+        JLabel clientConfigHint = new JLabel("Paste this into your agent's MCP client configuration");
+        clientConfigHint.setForeground(UIManager.getColor("Label.disabledForeground"));
+        JPanel clientConfigRow = new JPanel(new BorderLayout(8, 0));
+        clientConfigRow.setOpaque(false);
+        clientConfigRow.add(clientConfigHint, BorderLayout.CENTER);
+        clientConfigRow.add(copySettingsButton, BorderLayout.EAST);
+        formPanel.addToForm(clientConfigRow, new JLabel("MCP settings"));
 
         // Grants
         formPanel.addGroupHeader("Allow-always grants", JIPipe.RESOURCES.getIcon16("actions/check.png"));
@@ -226,7 +240,7 @@ public class JIPipeDesktopAIMonitorMCPPage extends JIPipeDesktopAIMonitorPage im
         showTokenButton.setText(tokenShown ? "Hide" : "Show");
         applyTokenDisplay();
         if (tokenShown && fetchedToken == null) {
-            fetchTokenAsync(false);
+            fetchTokenAsync(null);
         }
     }
 
@@ -250,7 +264,60 @@ public class JIPipeDesktopAIMonitorMCPPage extends JIPipeDesktopAIMonitorPage im
             UIUtils.copyToClipboard(fetchedToken);
             return;
         }
-        fetchTokenAsync(true);
+        fetchTokenAsync(this::copyFetchedToken);
+    }
+
+    /**
+     * Copies the fetched token (a no-op when the background read returned nothing).
+     */
+    private void copyFetchedToken() {
+        if (fetchedToken != null && !fetchedToken.isEmpty()) {
+            UIUtils.copyToClipboard(fetchedToken);
+        }
+    }
+
+    /**
+     * Copies the MCP client configuration (the JSON block pasted into an agent's MCP
+     * client configuration): the broker URL with the {@code /mcp} path, plus the shared
+     * token as an Authorization header when token authentication is on. A cached token
+     * (already in memory) is used directly; otherwise the token is read in the background
+     * (the read touches the token file) and the configuration is copied on completion.
+     */
+    private void copyMcpSettings() {
+        MCPBrokerClient client = activeClient();
+        if (client == null || client.getBaseUrl() == null) {
+            return;
+        }
+        if (tokenAuthEnabled()) {
+            if (fetchedToken != null && !fetchedToken.isEmpty()) {
+                copyMcpSettingsJson(client, fetchedToken);
+            } else {
+                fetchTokenAsync(() -> {
+                    // The connection can drop while the token is being read.
+                    if (client.getBaseUrl() != null) {
+                        copyMcpSettingsJson(client, fetchedToken);
+                    }
+                });
+            }
+        } else {
+            copyMcpSettingsJson(client, null);
+        }
+    }
+
+    /**
+     * Renders and copies the client configuration with the given token (null when token
+     * authentication is off or the token is unavailable).
+     */
+    private void copyMcpSettingsJson(MCPBrokerClient client, String token) {
+        UIUtils.copyToClipboard(MCPBrokerClient.clientConfigurationJson(client.getBaseUrl(), token));
+    }
+
+    /**
+     * Whether token authentication is required (the {@code require-token} setting).
+     */
+    private static boolean tokenAuthEnabled() {
+        MCPApplicationSettings settings = MCPApplicationSettings.getInstance();
+        return settings != null && settings.isRequireToken();
     }
 
     /**
@@ -322,10 +389,11 @@ public class JIPipeDesktopAIMonitorMCPPage extends JIPipeDesktopAIMonitorPage im
     }
 
     /**
-     * Reads the token in the background (the read touches the token file) and then
-     * displays or copies it on the EDT.
+     * Reads the token in the background (the read touches the token file) and then runs
+     * the given action on the EDT (display the token, copy it, or copy the client
+     * configuration). The action may be null.
      */
-    private void fetchTokenAsync(boolean copy) {
+    private void fetchTokenAsync(Runnable onComplete) {
         MCPBrokerClient client = activeClient();
         if (client == null || tokenFetchInFlight) {
             return;
@@ -348,8 +416,8 @@ public class JIPipeDesktopAIMonitorMCPPage extends JIPipeDesktopAIMonitorPage im
                 if (tokenShown) {
                     applyTokenDisplay();
                 }
-                if (copy && fetchedToken != null && !fetchedToken.isEmpty()) {
-                    UIUtils.copyToClipboard(fetchedToken);
+                if (onComplete != null) {
+                    onComplete.run();
                 }
             }
         };
@@ -400,11 +468,14 @@ public class JIPipeDesktopAIMonitorMCPPage extends JIPipeDesktopAIMonitorPage im
         stopButton.setToolTipText(hasHooks ? "Unregisters this instance and stops the endpoint (the broker stays alive)"
                 : "The MCP lifecycle is owned by the GUI launcher");
         copyUrlButton.setEnabled(baseUrl != null);
+        copySettingsButton.setEnabled(baseUrl != null);
+        copySettingsButton.setToolTipText(baseUrl != null
+                ? "Copies the MCP client configuration (JSON) to the clipboard"
+                : "MCP is not running");
 
         // Token row: the password-style field when token authentication is on and a broker
         // URL is available; otherwise a muted note (no field, no buttons).
-        boolean requireToken = MCPApplicationSettings.getInstance() != null
-                && MCPApplicationSettings.getInstance().isRequireToken();
+        boolean requireToken = tokenAuthEnabled();
         boolean tokenUiAvailable = requireToken && baseUrl != null;
         CardLayout tokenCards = (CardLayout) tokenRow.getLayout();
         tokenCards.show(tokenRow, tokenUiAvailable ? TOKEN_FIELD_CARD : TOKEN_NOTE_CARD);
@@ -419,7 +490,7 @@ public class JIPipeDesktopAIMonitorMCPPage extends JIPipeDesktopAIMonitorPage im
             // in the background instead of showing a placeholder.
             if (fetchedToken == null) {
                 tokenField.setText("");
-                fetchTokenAsync(false);
+                fetchTokenAsync(null);
             } else {
                 applyTokenDisplay();
             }

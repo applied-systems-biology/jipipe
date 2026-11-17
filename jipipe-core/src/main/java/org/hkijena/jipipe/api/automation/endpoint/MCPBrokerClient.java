@@ -13,6 +13,8 @@
 
 package org.hkijena.jipipe.api.automation.endpoint;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.automation.AutomationOperation;
@@ -431,6 +433,32 @@ public class MCPBrokerClient {
      */
     public String getToken() {
         return currentToken();
+    }
+
+    /**
+     * Builds the MCP client configuration for external AI agents: a streamable HTTP object
+     * pointing at the broker's {@code /mcp} route, plus the shared token as an
+     * {@code Authorization: Bearer} header when a token is given (null or empty omits the
+     * {@code headers} object entirely). Rendered pretty-printed with a two-space indent and
+     * no surrounding text, so the result can be pasted directly into an agent's MCP client
+     * configuration.
+     *
+     * @param baseUrl the broker base URL (the Server URL shown on the MCP monitor page)
+     * @param token   the shared broker token, or null when token authentication is off
+     * @return the pretty-printed JSON configuration
+     */
+    public static String clientConfigurationJson(String baseUrl, String token) {
+        ObjectNode config = JsonUtils.getObjectMapper().createObjectNode();
+        config.put("type", "streamable-http");
+        config.put("url", baseUrl + "/mcp");
+        if (token != null && !token.isEmpty()) {
+            config.putObject("headers").put("Authorization", "Bearer " + token);
+        }
+        try {
+            return JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(config);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Failed to render the MCP client configuration: " + e.getMessage(), e);
+        }
     }
 
     /**

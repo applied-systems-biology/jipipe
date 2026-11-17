@@ -447,6 +447,32 @@ public class MCPBrokerClientTest {
     }
 
     @Test
+    public void clientConfigurationJsonCarriesEndpointAndBearerHeader() throws Exception {
+        // Without token: exactly the streamable-http type and the broker URL with the
+        // /mcp path, no headers object, pretty-printed with a two-space indent (the text
+        // is copied to the clipboard and pasted into an agent's client configuration).
+        String withoutToken = MCPBrokerClient.clientConfigurationJson("http://127.0.0.1:8781", null);
+        JsonNode without = JsonUtils.getObjectMapper().readTree(withoutToken);
+        assertEquals(2, without.size());
+        assertEquals("streamable-http", without.get("type").asText());
+        assertEquals("http://127.0.0.1:8781/mcp", without.get("url").asText());
+        assertNull(without.get("headers"), "no Authorization header must be present without a token");
+        String lineFeed = System.lineSeparator();
+        assertEquals("{" + lineFeed
+                + "  \"type\" : \"streamable-http\"," + lineFeed
+                + "  \"url\" : \"http://127.0.0.1:8781/mcp\"" + lineFeed
+                + "}", withoutToken);
+
+        // With token: the Authorization header carries the Bearer value.
+        String withToken = MCPBrokerClient.clientConfigurationJson("http://127.0.0.1:8781", "secret-token");
+        JsonNode with = JsonUtils.getObjectMapper().readTree(withToken);
+        assertEquals(3, with.size());
+        assertEquals("streamable-http", with.get("type").asText());
+        assertEquals("http://127.0.0.1:8781/mcp", with.get("url").asText());
+        assertEquals("Bearer secret-token", with.get("headers").get("Authorization").asText());
+    }
+
+    @Test
     public void brokerRejectionInvalidatesCachedTokenSoTheNextConnectionPicksUpTheRotatedFile() throws Exception {
         // After a rotate the running broker still holds the old token until it is replaced:
         // /health accepts only the NEW token here. A client that cached the old token must
