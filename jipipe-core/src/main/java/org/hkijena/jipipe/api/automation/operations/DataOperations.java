@@ -331,7 +331,12 @@ public class DataOperations {
 
         @Override
         public String getDescription() {
-            return "Export a cached data entry into an allowed export directory (default: the jipipe-mcp-export directory in the system temp directory) and return the written location";
+            return "Export a cached data entry into an allowed export directory (default: the jipipe-mcp-export "
+                    + "directory in the system temp directory) and return the written location. All accepted "
+                    + "formats (jipipe, the data type id, and the data type display name, matched "
+                    + "case-insensitively) route to the data type's native export: the format only selects "
+                    + "the accepted spellings, never a different writer. The saved-to field of the result "
+                    + "reports the target directory the exported files were written into";
         }
 
         @Override

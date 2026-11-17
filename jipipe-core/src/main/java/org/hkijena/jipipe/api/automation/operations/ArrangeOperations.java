@@ -59,6 +59,11 @@ public class ArrangeOperations {
         }
 
         @Override
+        public boolean requiresEdt() {
+            return true;
+        }
+
+        @Override
         public String getDescription() {
             return "Arrange the nodes of a compartment in topological layers and return the new positions";
         }

@@ -24,6 +24,11 @@ public class ROCrateOperations {
         }
 
         @Override
+        public boolean requiresEdt() {
+            return true;
+        }
+
+        @Override
         public String getDescription() {
             return "Create a Workflow RO-Crate from the currently selected project";
         }

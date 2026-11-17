@@ -26,6 +26,11 @@ public class ProjectOperations {
         }
 
         @Override
+        public boolean requiresEdt() {
+            return true;
+        }
+
+        @Override
         public String getDescription() {
             return "List all open projects";
         }
@@ -53,7 +58,10 @@ public class ProjectOperations {
             for (var window : JIPipeDesktopProjectWindow.getOpenWindows()) {
                 ObjectNode p = projects.addObject();
                 p.put("id", window.getSessionId().toString());
-                p.put("name", window.getProject() != null ? window.getProject().getMetadata().getName() : "Untitled");
+                // Same null guards as ProjectSource.openWindows(): a window can exist without a
+                // project or without metadata (e.g. while the window is still initializing)
+                p.put("name", window.getProject() != null && window.getProject().getMetadata() != null
+                        ? window.getProject().getMetadata().getName() : "Untitled");
                 p.put("path", window.getProject() != null && window.getProject().getWorkDirectory() != null
                         ? window.getProject().getWorkDirectory().toString() : null);
                 p.put("isOpen", true);

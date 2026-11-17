@@ -19,6 +19,11 @@ public class ExecutionOperations {
         }
 
         @Override
+        public boolean requiresEdt() {
+            return true;
+        }
+
+        @Override
         public String getDescription() {
             return "Run pipeline up to a node with specified mode";
         }
@@ -69,6 +74,11 @@ public class ExecutionOperations {
         }
 
         @Override
+        public boolean requiresEdt() {
+            return true;
+        }
+
+        @Override
         public String getDescription() {
             return "Run all output nodes of a compartment";
         }
@@ -113,6 +123,11 @@ public class ExecutionOperations {
         @Override
         public String getId() {
             return "run_pipeline";
+        }
+
+        @Override
+        public boolean requiresEdt() {
+            return true;
         }
 
         @Override

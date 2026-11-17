@@ -46,6 +46,24 @@ public class CacheOperations {
     }
 
     /**
+     * Maps an update_cache mode to the QuickRun settings, mirroring the settings blocks of the
+     * desktop cache context actions: full = UpdateCacheNodeUIContextAction, intermediate =
+     * UpdateCacheShowIntermediateNodeUIContextAction, predecessors =
+     * UpdateCacheOnlyPredecessorsNodeUIContextAction (package
+     * org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.running). All three set
+     * saveToDisk=false and storeToCache=true; the mode decides storeIntermediateResults and
+     * excludeSelected.
+     */
+    static JIPipeDesktopQuickRunSettings quickRunSettings(JIPipeProject project, String mode) {
+        JIPipeDesktopQuickRunSettings settings = new JIPipeDesktopQuickRunSettings(project);
+        settings.setSaveToDisk(false);
+        settings.setStoreToCache(true);
+        settings.setStoreIntermediateResults("intermediate".equals(mode));
+        settings.setExcludeSelected("predecessors".equals(mode));
+        return settings;
+    }
+
+    /**
      * Production trigger: configures {@link JIPipeDesktopQuickRunSettings} exactly like
      * the desktop cache context actions and enqueues the run on the shared run queue.
      * The modes map as: full = cache the targets, intermediate = also store intermediate
@@ -57,11 +75,7 @@ public class CacheOperations {
      * executor cancels queued and running runs).
      */
     static void runCacheServices(JIPipeProject project, List<JIPipeGraphNode> targets, String mode, InstrumentationJob job) {
-        JIPipeDesktopQuickRunSettings settings = new JIPipeDesktopQuickRunSettings(project);
-        settings.setSaveToDisk(false);
-        settings.setStoreToCache(true);
-        settings.setStoreIntermediateResults("intermediate".equals(mode));
-        settings.setExcludeSelected("predecessors".equals(mode));
+        JIPipeDesktopQuickRunSettings settings = quickRunSettings(project, mode);
         JIPipeDesktopQuickRun run = new JIPipeDesktopQuickRun(project, targets, settings);
         JIPipeQueuedRunnableExecutor executor = JIPipeQueuedRunnableExecutor.getInstance();
         wireJobToExecutorLifecycle(job, run, executor);
@@ -158,6 +172,11 @@ public class CacheOperations {
         @Override
         public String getId() {
             return "update_cache";
+        }
+
+        @Override
+        public boolean requiresEdt() {
+            return true;
         }
 
         @Override

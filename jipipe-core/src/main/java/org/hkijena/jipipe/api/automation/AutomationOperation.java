@@ -37,6 +37,16 @@ public interface AutomationOperation {
     }
 
     /**
+     * Returns true if the operation must be dispatched on the Swing event dispatch thread:
+     * operations that touch Swing (graph modifications whose change events drive the UI,
+     * runs, screenshots, open-window iteration) return true. The MCP integration consults
+     * this instead of a hardcoded operation id set.
+     */
+    default boolean requiresEdt() {
+        return false;
+    }
+
+    /**
      * Returns documentation targeted at automation agents.
      * Defaults to {@link #getDescription()}.
      */

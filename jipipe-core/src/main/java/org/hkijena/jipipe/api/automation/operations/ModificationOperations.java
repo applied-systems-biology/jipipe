@@ -22,6 +22,11 @@ public class ModificationOperations {
         }
 
         @Override
+        public boolean requiresEdt() {
+            return true;
+        }
+
+        @Override
         public String getDescription() {
             return "Add a node to a compartment";
         }
@@ -73,6 +78,11 @@ public class ModificationOperations {
         }
 
         @Override
+        public boolean requiresEdt() {
+            return true;
+        }
+
+        @Override
         public String getDescription() {
             return "Remove a node from the graph";
         }
@@ -111,6 +121,11 @@ public class ModificationOperations {
         @Override
         public String getId() {
             return "add_connection";
+        }
+
+        @Override
+        public boolean requiresEdt() {
+            return true;
         }
 
         @Override
@@ -160,6 +175,11 @@ public class ModificationOperations {
         }
 
         @Override
+        public boolean requiresEdt() {
+            return true;
+        }
+
+        @Override
         public String getDescription() {
             return "Disconnect two slots";
         }
@@ -203,6 +223,11 @@ public class ModificationOperations {
         @Override
         public String getId() {
             return "set_parameter";
+        }
+
+        @Override
+        public boolean requiresEdt() {
+            return true;
         }
 
         @Override
@@ -250,6 +275,11 @@ public class ModificationOperations {
         }
 
         @Override
+        public boolean requiresEdt() {
+            return true;
+        }
+
+        @Override
         public String getDescription() {
             return "Set project name and/or description";
         }
@@ -293,6 +323,11 @@ public class ModificationOperations {
         }
 
         @Override
+        public boolean requiresEdt() {
+            return true;
+        }
+
+        @Override
         public String getDescription() {
             return "Create a new compartment";
         }
@@ -332,6 +367,11 @@ public class ModificationOperations {
         @Override
         public String getId() {
             return "rename_compartment";
+        }
+
+        @Override
+        public boolean requiresEdt() {
+            return true;
         }
 
         @Override

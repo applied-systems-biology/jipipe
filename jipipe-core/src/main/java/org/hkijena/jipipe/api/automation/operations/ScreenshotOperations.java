@@ -196,6 +196,11 @@ public class ScreenshotOperations {
         }
 
         @Override
+        public boolean requiresEdt() {
+            return true;
+        }
+
+        @Override
         public String getDescription() {
             return "Render the graph canvas of a compartment as a PNG image of the current view "
                     + "(visible viewport at the current zoom/pan). Use screenshot_minimap for an image "
@@ -278,6 +283,11 @@ public class ScreenshotOperations {
         }
 
         @Override
+        public boolean requiresEdt() {
+            return true;
+        }
+
+        @Override
         public String getDescription() {
             return "Render the minimap of a compartment as a PNG image, or save it to a file." + SAVE_TO_DESCRIPTION;
         }
@@ -356,6 +366,11 @@ public class ScreenshotOperations {
         @Override
         public String getId() {
             return "screenshot_ui";
+        }
+
+        @Override
+        public boolean requiresEdt() {
+            return true;
         }
 
         @Override
@@ -446,9 +461,15 @@ public class ScreenshotOperations {
         }
 
         @Override
+        public boolean requiresEdt() {
+            return true;
+        }
+
+        @Override
         public String getDescription() {
-            return "Capture the project window as a PNG image, optionally with a fake titlebar, or save it to a file."
-                    + SAVE_TO_DESCRIPTION;
+            return "Capture the project window as a PNG image, optionally with a fake titlebar, or save it to a "
+                    + "file. The capture is 1:1 (the window at its current size): unlike the other screenshot "
+                    + "operations there is no scale parameter by design." + SAVE_TO_DESCRIPTION;
         }
 
         @Override

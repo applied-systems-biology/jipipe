@@ -213,11 +213,12 @@ public class DiagnosticsOperationsTest {
     }
 
     @Test
-    void getLogReportsWindowExhaustedWhenFilteredScanExhaustsTheWindow() {
+    void getLogReportsWindowExhaustedWhenTheLogHoldsMoreThanTheWindow() {
         Fixture fixture = createFixture();
-        for (int i = 0; i < 200; i++) {
+        // tail=10 reads a window of max(10 + 64, 10 * 8) = 80 records: one more than the
+        // window (81) proves that the scan stopped at the boundary, not at the log start
+        for (int i = 0; i < 81; i++) {
             fixture.progressInfo().log("info " + i);
-            fixture.progressInfo().debug("debug " + i);
         }
         ObjectNode params = mapper.createObjectNode();
         params.put("level", "INFO");
@@ -227,20 +228,27 @@ public class DiagnosticsOperationsTest {
         assertFalse(result.has("error"), () -> "get_log must not fail: " + result);
         assertEquals(10, result.get("count").asInt(), "tail=10 must return ten records");
         assertTrue(result.get("window-exhausted").asBoolean(),
-                "a filtered scan that consumes the whole window must report window-exhausted");
+                "a log holding one record more than the window must report window-exhausted");
     }
 
     @Test
-    void getLogReportsWindowNotExhaustedForSmallStore() {
+    void getLogReportsWindowNotExhaustedWhenTheLogHoldsExactlyTheWindow() {
         Fixture fixture = createFixture();
-        fixture.progressInfo().log("info one");
+        // The corner that must not over-claim: a store holding exactly the window records
+        // (tail=10 reads a window of 80) serves the read completely, so window-exhausted
+        // stays false: the end of the log was reached
+        for (int i = 0; i < 80; i++) {
+            fixture.progressInfo().log("info " + i);
+        }
         ObjectNode params = mapper.createObjectNode();
         params.put("level", "INFO");
+        params.put("tail", 10);
         JsonNode result = new DiagnosticsOperations.GetLog().execute(createContext(fixture), params);
 
         assertFalse(result.has("error"), () -> "get_log must not fail: " + result);
+        assertEquals(10, result.get("count").asInt(), "tail=10 must return ten records");
         assertFalse(result.get("window-exhausted").asBoolean(),
-                "a store smaller than the read window must not report window-exhausted");
+                "a store holding exactly the window records must not report window-exhausted");
     }
 
     @Test

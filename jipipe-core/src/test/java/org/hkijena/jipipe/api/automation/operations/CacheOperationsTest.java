@@ -31,6 +31,7 @@ import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeRunnableWorker;
+import org.hkijena.jipipe.desktop.app.quickrun.JIPipeDesktopQuickRunSettings;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -40,6 +41,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -563,6 +565,32 @@ public class CacheOperationsTest {
         JsonNode result = new ExecutionOperations.CancelJob().execute(createContext(fixture.project()), params);
 
         assertTrue(result.has("error"), "an unknown job id must return an error field");
+    }
+
+    @Test
+    void quickRunSettingsMirrorTheDesktopCacheContextActions() {
+        Fixture fixture = createFixture();
+
+        // full: the settings block of UpdateCacheNodeUIContextAction.enqueue
+        JIPipeDesktopQuickRunSettings full = CacheOperations.quickRunSettings(fixture.project(), "full");
+        assertFalse(full.isSaveToDisk(), "the desktop actions never write to disk");
+        assertTrue(full.isStoreToCache(), "the desktop actions always store to the cache");
+        assertFalse(full.isStoreIntermediateResults(), "full must not store intermediate results");
+        assertFalse(full.isExcludeSelected(), "full must run the selected targets");
+
+        // intermediate: the settings block of UpdateCacheShowIntermediateNodeUIContextAction.enqueue
+        JIPipeDesktopQuickRunSettings intermediate = CacheOperations.quickRunSettings(fixture.project(), "intermediate");
+        assertFalse(intermediate.isSaveToDisk());
+        assertTrue(intermediate.isStoreToCache());
+        assertTrue(intermediate.isStoreIntermediateResults(), "intermediate must store intermediate results");
+        assertFalse(intermediate.isExcludeSelected(), "intermediate must run the selected targets");
+
+        // predecessors: the settings block of UpdateCacheOnlyPredecessorsNodeUIContextAction.enqueue
+        JIPipeDesktopQuickRunSettings predecessors = CacheOperations.quickRunSettings(fixture.project(), "predecessors");
+        assertFalse(predecessors.isSaveToDisk());
+        assertTrue(predecessors.isStoreToCache());
+        assertFalse(predecessors.isStoreIntermediateResults(), "predecessors must not store intermediate results");
+        assertTrue(predecessors.isExcludeSelected(), "predecessors must exclude the selected targets");
     }
 
     @Test

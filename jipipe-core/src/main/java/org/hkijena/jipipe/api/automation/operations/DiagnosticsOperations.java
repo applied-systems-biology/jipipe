@@ -172,7 +172,9 @@ public class DiagnosticsOperations {
         public String getDescription() {
             return "Get diagnostics errors: the project validation report (as shown by the errors panel) and, "
                     + "when an MCP-triggered run happened (run_node, run_compartment, run_pipeline, update_cache), "
-                    + "the error records of the automation layer's shared per-project progress log";
+                    + "the error records of the automation layer's shared per-project progress log. "
+                    + "Note that when the shared progress store has already been closed (post-run adoption "
+                    + "window), a failed update_cache may report its error record only via get_job_status";
         }
 
         @Override
@@ -328,8 +330,10 @@ public class DiagnosticsOperations {
                     + "level=DEBUG additionally returns DEBUG records alongside INFO. "
                     + "With level or node filters, the result may contain fewer than tail records even when "
                     + "older matching records exist (the scan is bounded); treat the returned count as a "
-                    + "lower bound in that case. window-exhausted is true when the bounded window was fully "
-                    + "consumed and no terminating end-of-log was reached, i.e. older matching records may exist";
+                    + "lower bound in that case. window-exhausted is true when the scan stopped at the "
+                    + "window boundary while the log provably holds records older than the window (the "
+                    + "window read over-reads by one record to detect that boundary), i.e. older matching "
+                    + "records may exist";
         }
 
         @Override
@@ -383,9 +387,11 @@ public class DiagnosticsOperations {
             }
 
             // Bounded read: the window over-reads the tail so the filters can still fill it,
-            // and is capped by the store's own tail limit
+            // and is capped by the store's own tail limit. The extra one record beyond the
+            // window is the boundary probe: readRecent serves at most that many records, so
+            // a full window means the log provably holds records older than the window.
             int window = Math.min(MAX_LOG_TAIL, Math.max(tail + LOG_WINDOW_MIN_EXTRA, tail * LOG_WINDOW_OVERREAD));
-            List<JIPipeProgressRecord> windowRecords = store.readRecent(window);
+            List<JIPipeProgressRecord> windowRecords = store.readRecent(window + 1);
             List<JIPipeProgressRecord> records = new ArrayList<>();
             for (JIPipeProgressRecord record : windowRecords) {
                 if (!isTextRecord(record)) {
@@ -410,9 +416,11 @@ public class DiagnosticsOperations {
                 items.add(renderRecord(store, records.get(i)));
             }
             data.put("count", items.size());
-            // The window read filled completely: the scan stopped at the window boundary, not at
-            // the start of the log, so older matching records may exist beyond the window
-            data.put("window-exhausted", windowRecords.size() >= window);
+            // The read returned one record more than the window: the scan stopped at the window
+            // boundary, not at the start of the log, so older matching records may exist beyond
+            // the window. A store that holds exactly the window records reports false (the whole
+            // log was served).
+            data.put("window-exhausted", windowRecords.size() > window);
             return data;
         }
 

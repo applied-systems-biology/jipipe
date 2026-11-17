@@ -96,8 +96,9 @@ import java.util.concurrent.atomic.AtomicInteger;
  * HTTP executor thread. Project resolution always happens on the event dispatch thread
  * ({@link JIPipeDesktopProjectWindow#getOpenWindows()} is EDT-confined); operations that touch
  * Swing (graph modifications, runs, screenshots, window iteration) are dispatched on the EDT
- * (see {@link #EDT_OPERATIONS}), all others run directly on the endpoint thread. Status events
- * are emitted from background threads; the controls marshal to the EDT.
+ * (each operation declares this via {@link AutomationOperation#requiresEdt()}), all others run
+ * directly on the endpoint thread. Status events are emitted from background threads; the
+ * controls marshal to the EDT.
  */
 public final class JIPipeDesktopMCPIntegration implements AutomationEndpointHandlers,
         AutomationInstanceEndpoint.AskPromptHandler,
@@ -109,20 +110,6 @@ public final class JIPipeDesktopMCPIntegration implements AutomationEndpointHand
      * survive install and uninstall cycles (pause/resume does not uninstall).
      */
     public static final MCPStatusEventEmitter STATUS_EVENTS = new MCPStatusEventEmitter();
-
-    /**
-     * Operations whose dispatch runs on the event dispatch thread: they mutate project state
-     * whose change events synchronously drive Swing (the graph modifications and runs), they
-     * render or capture live components (the screenshots), or they iterate the EDT-confined
-     * open-window set (list_projects, create_ro_crate). Everything else runs directly on the
-     * endpoint thread.
-     */
-    private static final Set<String> EDT_OPERATIONS = Set.of(
-            "add_node", "remove_node", "add_connection", "remove_connection", "set_parameter",
-            "set_project_metadata", "add_compartment", "rename_compartment", "arrange_nodes",
-            "run_node", "run_compartment", "run_pipeline", "update_cache",
-            "screenshot_canvas", "screenshot_minimap", "screenshot_ui", "screenshot_window",
-            "list_projects", "create_ro_crate");
 
     /**
      * How long an unanswered Ask request waits before it is denied, so the waiting endpoint
@@ -395,7 +382,8 @@ public final class JIPipeDesktopMCPIntegration implements AutomationEndpointHand
             JIPipeDesktopProjectWindow window = findProjectWindow(projectKey);
             AutomationContext context = new AutomationContext(window != null ? window.getProject() : null,
                     projectKey, progressHandles.create(projectKey), eventBus, jobManager);
-            if (EDT_OPERATIONS.contains(operationId)) {
+            AutomationOperation operation = JIPipe.getAutomation().getOperationRegistry().get(operationId);
+            if (operation != null && operation.requiresEdt()) {
                 return callOnEdt(() -> JIPipe.getAutomation().getOperationRegistry()
                         .execute(operationId, context, params));
             }
