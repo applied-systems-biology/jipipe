@@ -16,6 +16,7 @@ package org.hkijena.jipipe.desktop.app.automation;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.ai.llm.activity.LLMActivityPhase;
 import org.hkijena.jipipe.api.automation.AutomationContext;
 import org.hkijena.jipipe.api.automation.AutomationOperation;
 import org.hkijena.jipipe.api.automation.AutomationProgressHandles;
@@ -31,6 +32,7 @@ import org.hkijena.jipipe.api.automation.operations.ScreenshotOperations;
 import org.hkijena.jipipe.api.automation.permissions.AutomationPermissionService;
 import org.hkijena.jipipe.api.automation.permissions.AutomationPermissionState;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
+import org.hkijena.jipipe.api.service.components.JIPipeAIServiceComponent;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
@@ -110,6 +112,47 @@ public final class JIPipeDesktopMCPIntegration implements AutomationEndpointHand
      * survive install and uninstall cycles (pause/resume does not uninstall).
      */
     public static final MCPStatusEventEmitter STATUS_EVENTS = new MCPStatusEventEmitter();
+
+    /**
+     * Core-side hook for the MCP lifecycle: starts and stops the whole layer (broker
+     * client, endpoint, registration). Installed by the GUI launcher at startup because
+     * the lifecycle executor and the broker client live there; the AI monitor's start
+     * and stop buttons and the "Enable MCP" settings toggle call through it. All
+     * implementations must be non-blocking: the work runs on background executors.
+     */
+    public interface LifecycleHooks {
+
+        /**
+         * Starts the MCP layer (a no-op when it already runs). Never blocks the caller.
+         */
+        void startMcpAsync();
+
+        /**
+         * Stops the MCP layer with pause semantics (unregister and endpoint stop; the
+         * broker stays alive for other instances). Never blocks the caller.
+         */
+        void stopMcpAsync();
+    }
+
+    /**
+     * The installed lifecycle hooks, or null when no launcher owns the lifecycle.
+     */
+    private static volatile LifecycleHooks lifecycleHooks;
+
+    /**
+     * Installs the lifecycle hooks (called once by the GUI launcher at startup).
+     */
+    public static void setLifecycleHooks(LifecycleHooks hooks) {
+        lifecycleHooks = hooks;
+    }
+
+    /**
+     * The installed lifecycle hooks, or null when no launcher owns the lifecycle
+     * (start/stop controls then have nothing to call and must stay disabled).
+     */
+    public static LifecycleHooks getLifecycleHooks() {
+        return lifecycleHooks;
+    }
 
     /**
      * How long an unanswered Ask request waits before it is denied, so the waiting endpoint
@@ -378,6 +421,7 @@ public final class JIPipeDesktopMCPIntegration implements AutomationEndpointHand
     public JsonNode execute(String operationId, String projectKey, JsonNode params) throws Exception {
         lastOperationId = operationId;
         inFlight.incrementAndGet();
+        recordToolCallBegin(operationId);
         try {
             JIPipeDesktopProjectWindow window = findProjectWindow(projectKey);
             AutomationContext context = new AutomationContext(window != null ? window.getProject() : null,
@@ -389,7 +433,42 @@ public final class JIPipeDesktopMCPIntegration implements AutomationEndpointHand
             }
             return JIPipe.getAutomation().getOperationRegistry().execute(operationId, context, params);
         } finally {
+            recordToolCallEnd();
             emit();
+        }
+    }
+
+    /**
+     * Records the begin of one MCP operation dispatch as a ToolCall phase in the AI
+     * activity tracker (agent tool calls ARE tool calls), so the AI status graph shows
+     * MCP activity. Cheap and failure-proof: any tracker problem is swallowed and never
+     * affects the dispatch. Runs on the endpoint's HTTP executor thread (the tracker is
+     * synchronized, so any thread is fine). Overlapping dispatches share one phase
+     * interval: the graph is a glance, not an audit log.
+     */
+    private static void recordToolCallBegin(String operationId) {
+        try {
+            JIPipeAIServiceComponent aiService = JIPipe.getInstance().getAiService();
+            if (aiService != null) {
+                aiService.getLLMActivityTracker().beginPhase(LLMActivityPhase.ToolCall, operationId);
+            }
+        } catch (Throwable ignored) {
+            // The status graph must never affect dispatch.
+        }
+    }
+
+    /**
+     * Records the end of the MCP operation dispatch begun by {@link #recordToolCallBegin}.
+     * Failure-proof for the same reason.
+     */
+    private static void recordToolCallEnd() {
+        try {
+            JIPipeAIServiceComponent aiService = JIPipe.getInstance().getAiService();
+            if (aiService != null) {
+                aiService.getLLMActivityTracker().finalizeCurrentPhase();
+            }
+        } catch (Throwable ignored) {
+            // The status graph must never affect dispatch.
         }
     }
 

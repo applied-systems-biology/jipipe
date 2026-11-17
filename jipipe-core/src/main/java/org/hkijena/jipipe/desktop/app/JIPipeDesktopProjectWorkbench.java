@@ -45,7 +45,6 @@ import org.hkijena.jipipe.api.shortcuts.KeymapSettings;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
-import org.hkijena.jipipe.desktop.app.automation.JIPipeDesktopMCPStatusControl;
 import org.hkijena.jipipe.desktop.app.backups.JIPipeDesktopBackupManagerPanel;
 import org.hkijena.jipipe.desktop.app.shortcuts.JIPipeDesktopShortcutDispatcher;
 import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopCacheBrowserUI;
@@ -79,7 +78,7 @@ import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopProjectOverviewUI;
 import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopRawSettingsSection;
 import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopSettingsTab;
 import org.hkijena.jipipe.desktop.commons.components.SplitButton;
-import org.hkijena.jipipe.desktop.commons.components.ai.JIPipeDesktopAIStatusControl;
+import org.hkijena.jipipe.desktop.commons.components.ai.statusbar.JIPipeDesktopAIManager;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.desktop.commons.components.project.JIPipeDesktopAccelerationOptionsControl;
 import org.hkijena.jipipe.desktop.commons.components.project.JIPipeDesktopArtifactsOptionsControl;
@@ -640,11 +639,10 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         statusBar.add(new JIPipeDesktopAccelerationOptionsControl(this));
 
         if (AIApplicationSettings.getInstance().isEnableAI()) {
-            // AI control
-            statusBar.add(new JIPipeDesktopAIStatusControl(this));
-
-            // MCP control (same AI/automation layer)
-            statusBar.add(new JIPipeDesktopMCPStatusControl(this));
+            // Unified AI item: activity graph (AI phases + MCP indicator), embedding model
+            // popup entries, and the MCP Ask bubble. Replaces the former AI status control
+            // and MCP status control; the MCP layer controls and logs live in the AI monitor.
+            statusBar.add(new JIPipeDesktopAIManager(this));
         }
 
         // Server control
