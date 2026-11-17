@@ -403,7 +403,7 @@ public class JIPipeDesktopAIStatusGraph extends JPanel implements MCPStatusEvent
     private static String formatElapsed(long ms) {
         long totalSeconds = Math.max(0, ms) / 1000;
         if (totalSeconds < 60) {
-            return String.format(Locale.ROOT, "%.1fs", totalSeconds / 1000.0);
+            return String.format(Locale.ROOT, "%.1fs", Math.max(0, ms) / 1000.0);
         }
         return (totalSeconds / 60) + "m " + String.format(Locale.ROOT, "%02ds", totalSeconds % 60);
     }
