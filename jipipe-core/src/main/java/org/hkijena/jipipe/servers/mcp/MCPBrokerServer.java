@@ -81,8 +81,9 @@ import java.util.Set;
  * registry-global set ({@link #GLOBAL_TOOL_IDS}), whose members are callable without a project:
  * when {@code project} is absent, the call is routed to the most-recently registered live
  * instance that carries the tool (E2E ruling 2026-11-16; the job tools joined the set in the
- * 2026-11-17 follow-up wave because job ids address the shared job manager, not a project).
- * {@code list_projects} is the exception to the single-instance routing:
+ * 2026-11-17 follow-up wave because job ids address the shared job manager, not a project, and
+ * {@code search_nodes} joined it because it searches the node type registry, which does not
+ * involve a project). {@code list_projects} is the exception to the single-instance routing:
  * the broker aggregates it across EVERY live instance that carries the tool (routing it to one
  * instance would hide every other instance's projects) and rewrites each returned project id
  * to the full routable {@code <instanceId>:<projectKey>} form that it owns; instances that do
@@ -112,13 +113,14 @@ public class MCPBrokerServer {
      * schema does not declare {@code project}, and a call without {@code project} is routed to
      * the most-recently registered live instance that carries the tool - except
      * {@code list_projects}, which the broker aggregates across ALL such instances and returns
-     * with fully-qualified routable ids (2026-11-17 follow-up). The job tools joined the set in
-     * the 2026-11-17 follow-up wave because job ids address the shared job manager, not a
-     * project. Every other tool gets a {@code project}
+     * with fully-qualified routable ids (2026-11-17 follow-up). The job tools and
+     * {@code search_nodes} joined the set in the 2026-11-17 follow-up wave: job ids address the
+     * shared job manager, not a project, and {@code search_nodes} searches the node type
+     * registry, which does not involve a project. Every other tool gets a {@code project}
      * property injected into its published schema and requires the argument.
      */
     public static final Set<String> GLOBAL_TOOL_IDS = Set.of("list_projects", "list_algorithms", "get_node_docs",
-            "get_job_status", "cancel_job");
+            "get_job_status", "cancel_job", "search_nodes");
 
     /**
      * The one global tool that the broker handles itself instead of routing to a single

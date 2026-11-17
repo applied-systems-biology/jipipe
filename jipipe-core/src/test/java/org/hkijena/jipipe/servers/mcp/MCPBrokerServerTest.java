@@ -154,10 +154,11 @@ public class MCPBrokerServerTest {
                 renderSpec = tool;
             }
         }
-        assertEquals(5, names.size());
+        assertEquals(6, names.size());
         assertTrue(names.contains("echo_test"));
         assertTrue(names.contains("render_image_test"));
         assertTrue(names.contains("get_node_docs"));
+        assertTrue(names.contains("search_nodes"));
         assertTrue(names.contains("get_job_status"));
         assertTrue(names.contains("cancel_job"));
         // Controller ruling: list_operations is a registry meta-operation, never an MCP tool,
@@ -187,16 +188,19 @@ public class MCPBrokerServerTest {
         JsonNode echoSpec = null;
         JsonNode renderSpec = null;
         JsonNode docsSpec = null;
+        JsonNode searchSpec = null;
         for (JsonNode tool : tools) {
             switch (tool.get("name").asText()) {
                 case "echo_test" -> echoSpec = tool;
                 case "render_image_test" -> renderSpec = tool;
                 case "get_node_docs" -> docsSpec = tool;
+                case "search_nodes" -> searchSpec = tool;
             }
         }
         assertNotNull(echoSpec);
         assertNotNull(renderSpec);
         assertNotNull(docsSpec);
+        assertNotNull(searchSpec);
 
         // Project-bound tools: the 'project' property is injected into the schema's
         // properties object (created when absent) and additionalProperties:false holds.
@@ -213,9 +217,12 @@ public class MCPBrokerServerTest {
         assertFalse(renderSpec.get("inputSchema").get("additionalProperties").asBoolean());
 
         // Registry-global tools: no 'project' property at all (the project list must be
-        // readable without a project; chicken-and-egg otherwise).
+        // readable without a project; chicken-and-egg otherwise). search_nodes is global
+        // too since the 2026-11-17 follow-up wave (registry-only search, no project).
         JsonNode docsProperties = docsSpec.get("inputSchema").get("properties");
         assertTrue(docsProperties == null || docsProperties.get("project") == null);
+        JsonNode searchProperties = searchSpec.get("inputSchema").get("properties");
+        assertTrue(searchProperties == null || searchProperties.get("project") == null);
     }
 
     @Test
@@ -380,6 +387,25 @@ public class MCPBrokerServerTest {
         assertTrue(result.get("isError").asBoolean());
         String text = result.get("content").get(0).get("text").asText();
         assertTrue(text.contains("No registered JIPipe instance answered the 'list_projects' call"));
+    }
+
+    @Test
+    public void searchNodesIsCallableWithoutProject() throws Exception {
+        startBroker(null);
+        registerInstanceWithDescriptors();
+        initialize(null);
+
+        // No 'project' argument: the call routes (the node type registry is project-free).
+        ObjectNode arguments = JsonUtils.getObjectMapper().createObjectNode();
+        arguments.put("query", "threshold");
+        JsonNode result = callTool("search_nodes", arguments);
+        assertFalse(result.get("isError").asBoolean());
+        JsonNode content = result.get("content").get(0);
+        assertEquals("text", content.get("type").asText());
+        String text = content.get("text").asText();
+        assertTrue(text.contains("\"results\""));
+        assertTrue(text.contains("\"query\":\"threshold\""));
+        assertTrue(text.contains("\"project-key\":null"));
     }
 
     @Test
@@ -645,6 +671,7 @@ public class MCPBrokerServerTest {
                 response = switch (opId) {
                     case "echo_test" -> stubResult(echoResult(body));
                     case "get_node_docs" -> stubResult(docsResult(body));
+                    case "search_nodes" -> stubResult(searchNodesResult(body));
                     case "list_projects" -> stubResult(listProjectsResult());
                     case "run_job_test" -> stubResult(jobEnvelopeResult());
                     case "get_job_status" -> stubResult(jobStatusResult(body));
@@ -672,6 +699,16 @@ public class MCPBrokerServerTest {
         ObjectNode result = JsonUtils.getObjectMapper().createObjectNode();
         result.put("docs", true);
         result.set("project-key", body.path("project-key"));
+        return result;
+    }
+
+    private ObjectNode searchNodesResult(JsonNode body) {
+        ObjectNode result = JsonUtils.getObjectMapper().createObjectNode();
+        result.set("query", body.path("params").path("query"));
+        result.set("project-key", body.path("project-key"));
+        ObjectNode hit = result.putArray("results").addObject();
+        hit.put("id", "test-node");
+        hit.put("name", "Test Node");
         return result;
     }
 
@@ -801,6 +838,14 @@ public class MCPBrokerServerTest {
         docsTool.set("inputSchema", JsonUtils.getObjectMapper().readTree(
                 "{\"type\":\"object\",\"additionalProperties\":false}"));
         docsTool.put("read-only", true);
+        // Registry-global since the 2026-11-17 follow-up wave: search_nodes searches the
+        // node type registry, which does not involve a project.
+        ObjectNode searchNodesTool = JsonUtils.getObjectMapper().createObjectNode();
+        searchNodesTool.put("id", "search_nodes");
+        searchNodesTool.put("description", "Node search (descriptor)");
+        searchNodesTool.set("inputSchema", JsonUtils.getObjectMapper().readTree(
+                "{\"type\":\"object\",\"required\":[\"query\"],\"properties\":{\"query\":{\"type\":\"string\"}},\"additionalProperties\":false}"));
+        searchNodesTool.put("read-only", true);
         // Job tools: registry-global since the 2026-11-17 follow-up wave (job ids address
         // the shared job manager, not a project).
         ObjectNode jobStatusTool = JsonUtils.getObjectMapper().createObjectNode();
@@ -821,7 +866,7 @@ public class MCPBrokerServerTest {
         listOperationsTool.put("description", "List all available operations (descriptor)");
         listOperationsTool.put("read-only", true);
         registration.set("tools", JsonUtils.getObjectMapper().createArrayNode()
-                .add(echoTool).add(renderTool).add(docsTool).add(jobStatusTool).add(cancelJobTool)
+                .add(echoTool).add(renderTool).add(docsTool).add(searchNodesTool).add(jobStatusTool).add(cancelJobTool)
                 .add(listOperationsTool));
         ObjectNode project = JsonUtils.getObjectMapper().createObjectNode();
         project.put("key", "p1");
