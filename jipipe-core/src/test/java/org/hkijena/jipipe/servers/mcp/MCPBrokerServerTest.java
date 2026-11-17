@@ -39,6 +39,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class MCPBrokerServerTest {
 
     private static final String SECRET = "test-endpoint-secret";
+    private static final String SECOND_SECRET = "test-endpoint-secret-2";
     private static final String INSTANCE_ID = "11111111-1111-1111-1111-111111111111";
     private static final String OTHER_INSTANCE_ID = "22222222-2222-2222-2222-222222222222";
     private static final String PNG_BASE64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==";
@@ -46,6 +47,7 @@ public class MCPBrokerServerTest {
 
     private final HttpClient client = HttpClient.newHttpClient();
     private HttpServer stub;
+    private HttpServer secondStub;
     private MCPBrokerServer broker;
     private MCPInstanceRegistry instanceRegistry;
 
@@ -54,6 +56,10 @@ public class MCPBrokerServerTest {
         if (stub != null) {
             stub.stop(0);
             stub = null;
+        }
+        if (secondStub != null) {
+            secondStub.stop(0);
+            secondStub = null;
         }
         if (broker != null) {
             broker.stop();
@@ -286,6 +292,97 @@ public class MCPBrokerServerTest {
     }
 
     @Test
+    public void listProjectsAggregatesInstancesAndReturnsRoutableIds() throws Exception {
+        startBroker(null);
+        // First instance: live stub, one project ("p1").
+        assertEquals(200, registerListProjectsInstance(INSTANCE_ID, stub.getAddress().getPort(),
+                SECRET, "p1").statusCode());
+        initialize(null);
+
+        // Single instance: the returned id is the full routable form, not the bare key.
+        JsonNode single = callTool("list_projects", JsonUtils.getObjectMapper().createObjectNode());
+        assertFalse(single.get("isError").asBoolean());
+        JsonNode singleMerged = JsonUtils.getObjectMapper().readTree(
+                single.get("content").get(0).get("text").asText());
+        assertTrue(singleMerged.has("projects"));
+        assertEquals(1, singleMerged.get("projects").size());
+        assertEquals(INSTANCE_ID + ":p1", singleMerged.get("projects").get(0).get("id").asText());
+        assertEquals("P1", singleMerged.get("projects").get(0).get("name").asText());
+
+        // Second instance (own endpoint, own project "p2"): the project-free call must
+        // aggregate BOTH instances - routing it to one instance would hide the other's
+        // projects (2026-11-17 follow-up).
+        startSecondStub();
+        assertEquals(200, registerListProjectsInstance(OTHER_INSTANCE_ID, secondStub.getAddress().getPort(),
+                SECOND_SECRET, "p2").statusCode());
+
+        JsonNode merged = callTool("list_projects", JsonUtils.getObjectMapper().createObjectNode());
+        assertFalse(merged.get("isError").asBoolean());
+        JsonNode mergedProjects = JsonUtils.getObjectMapper().readTree(
+                merged.get("content").get(0).get("text").asText()).get("projects");
+        assertEquals(2, mergedProjects.size());
+        List<String> ids = new ArrayList<>();
+        for (JsonNode entry : mergedProjects) {
+            ids.add(entry.get("id").asText());
+        }
+        assertTrue(ids.contains(INSTANCE_ID + ":p1"));
+        assertTrue(ids.contains(OTHER_INSTANCE_ID + ":p2"));
+
+        // The returned ids are the exact ids the project-bound tools route by.
+        ObjectNode routeArgs = JsonUtils.getObjectMapper().createObjectNode();
+        routeArgs.put("project", OTHER_INSTANCE_ID + ":p2");
+        routeArgs.put("message", "hello");
+        JsonNode routed = callTool("echo_test", routeArgs);
+        assertFalse(routed.get("isError").asBoolean());
+        assertTrue(routed.get("content").get(0).get("text").asText().contains("hello"));
+    }
+
+    @Test
+    public void listProjectsSkipsUnreachableInstance() throws Exception {
+        startBroker(null);
+        assertEquals(200, registerListProjectsInstance(INSTANCE_ID, stub.getAddress().getPort(),
+                SECRET, "p1").statusCode());
+        // Registered but unreachable: the endpoint port refuses connections.
+        assertEquals(200, registerListProjectsInstance(OTHER_INSTANCE_ID, deadEndpointPort(),
+                SECRET, "p2").statusCode());
+        initialize(null);
+
+        // The reachable instance's entries still return; the dead one is skipped.
+        JsonNode result = callTool("list_projects", JsonUtils.getObjectMapper().createObjectNode());
+        assertFalse(result.get("isError").asBoolean());
+        JsonNode projects = JsonUtils.getObjectMapper().readTree(
+                result.get("content").get(0).get("text").asText()).get("projects");
+        assertEquals(1, projects.size());
+        assertEquals(INSTANCE_ID + ":p1", projects.get(0).get("id").asText());
+
+        // The skip is recorded in the ring buffer.
+        boolean logged = false;
+        for (org.hkijena.jipipe.api.servers.ServerLogEntry entry : broker.getLogs().getAll()) {
+            if (entry.getMessage() != null && entry.getMessage().contains("list_projects")
+                    && entry.getMessage().contains(OTHER_INSTANCE_ID) && entry.getMessage().contains("skipped")) {
+                logged = true;
+            }
+        }
+        assertTrue(logged, "the unreachable instance's skip must be logged to the ring buffer");
+    }
+
+    @Test
+    public void listProjectsWithNoAnsweringInstanceErrors() throws Exception {
+        startBroker(null);
+        // Both instances carry the tool but neither endpoint answers.
+        assertEquals(200, registerListProjectsInstance(INSTANCE_ID, deadEndpointPort(),
+                SECRET, "p1").statusCode());
+        assertEquals(200, registerListProjectsInstance(OTHER_INSTANCE_ID, deadEndpointPort(),
+                SECRET, "p2").statusCode());
+        initialize(null);
+
+        JsonNode result = callTool("list_projects", JsonUtils.getObjectMapper().createObjectNode());
+        assertTrue(result.get("isError").asBoolean());
+        String text = result.get("content").get(0).get("text").asText();
+        assertTrue(text.contains("No registered JIPipe instance answered the 'list_projects' call"));
+    }
+
+    @Test
     public void globalToolWithProjectRoutesByIt() throws Exception {
         startBroker(null);
         registerInstanceWithDescriptors();
@@ -495,6 +592,46 @@ public class MCPBrokerServerTest {
         stub.start();
     }
 
+    /**
+     * A second, separate stub instance endpoint (own port and secret) so a second broker
+     * registration answers with its own project list.
+     */
+    private void startSecondStub() throws IOException {
+        secondStub = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+        secondStub.createContext("/op", exchange -> {
+            try {
+                String providedSecret = exchange.getRequestHeaders().getFirst(SECRET_HEADER);
+                byte[] request = exchange.getRequestBody().readAllBytes();
+                String response;
+                if (!SECOND_SECRET.equals(providedSecret)) {
+                    response = "{\"ok\":false,\"code\":\"unauthorized\",\"error\":\"Missing or invalid endpoint secret\"}";
+                } else {
+                    JsonNode body = JsonUtils.getObjectMapper().readTree(request);
+                    String opId = exchange.getRequestURI().getPath().substring("/op/".length());
+                    response = switch (opId) {
+                        case "list_projects" -> stubResult(secondStubProjectsResult());
+                        case "echo_test" -> stubResult(echoResult(body));
+                        default -> "{\"ok\":false,\"code\":\"unknown\",\"error\":\"Unknown operation: " + opId + "\"}";
+                    };
+                }
+                respond(exchange, 200, response);
+            } catch (Exception e) {
+                respond(exchange, 500, "{\"ok\":false,\"code\":\"failed\",\"error\":\"" + e.getMessage() + "\"}");
+            }
+        });
+        secondStub.start();
+    }
+
+    /**
+     * A port that refuses connections: bind and release it, so an instance registered there
+     * is unreachable (connection refused, no timeout wait).
+     */
+    private int deadEndpointPort() throws IOException {
+        try (java.net.ServerSocket socket = new java.net.ServerSocket(0, 1, java.net.InetAddress.getByName("127.0.0.1"))) {
+            return socket.getLocalPort();
+        }
+    }
+
     private void handleStubOperation(HttpExchange exchange) throws IOException {
         try {
             String providedSecret = exchange.getRequestHeaders().getFirst(SECRET_HEADER);
@@ -508,6 +645,7 @@ public class MCPBrokerServerTest {
                 response = switch (opId) {
                     case "echo_test" -> stubResult(echoResult(body));
                     case "get_node_docs" -> stubResult(docsResult(body));
+                    case "list_projects" -> stubResult(listProjectsResult());
                     case "run_job_test" -> stubResult(jobEnvelopeResult());
                     case "get_job_status" -> stubResult(jobStatusResult(body));
                     case "cancel_job" -> stubResult(cancelJobResult(body));
@@ -534,6 +672,34 @@ public class MCPBrokerServerTest {
         ObjectNode result = JsonUtils.getObjectMapper().createObjectNode();
         result.put("docs", true);
         result.set("project-key", body.path("project-key"));
+        return result;
+    }
+
+    /**
+     * The project list of the first stub instance. The entry {@code id} is the instance-local
+     * project key (the window session id in production): the broker must rewrite it to the
+     * full {@code <instanceId>:<projectKey>} form.
+     */
+    private ObjectNode listProjectsResult() {
+        ObjectNode result = JsonUtils.getObjectMapper().createObjectNode();
+        ObjectNode project = result.putArray("projects").addObject();
+        project.put("id", "p1");
+        project.put("name", "P1");
+        project.put("path", "/tmp/p1");
+        project.put("isOpen", true);
+        return result;
+    }
+
+    /**
+     * The project list of the second stub instance (own endpoint, own project key).
+     */
+    private ObjectNode secondStubProjectsResult() {
+        ObjectNode result = JsonUtils.getObjectMapper().createObjectNode();
+        ObjectNode project = result.putArray("projects").addObject();
+        project.put("id", "p2");
+        project.put("name", "P2");
+        project.put("path", "/tmp/p2");
+        project.put("isOpen", true);
         return result;
     }
 
@@ -655,11 +821,34 @@ public class MCPBrokerServerTest {
         listOperationsTool.put("description", "List all available operations (descriptor)");
         listOperationsTool.put("read-only", true);
         registration.set("tools", JsonUtils.getObjectMapper().createArrayNode()
-                .add(echoTool).add(renderTool).add(docsTool).add(jobStatusTool).add(cancelJobTool).add(listOperationsTool));
+                .add(echoTool).add(renderTool).add(docsTool).add(jobStatusTool).add(cancelJobTool)
+                .add(listOperationsTool));
         ObjectNode project = JsonUtils.getObjectMapper().createObjectNode();
         project.put("key", "p1");
         project.put("name", "P1");
         project.put("path", "/tmp/p1");
+        registration.set("projects", JsonUtils.getObjectMapper().createArrayNode().add(project));
+        return postControl("/control/register", registration.toString(), null);
+    }
+
+    /**
+     * Registers an instance that carries {@code list_projects} and {@code echo_test} (legacy
+     * tool-id list) and exposes one project, answering at the given endpoint.
+     */
+    private HttpResponse<String> registerListProjectsInstance(String instanceId, int endpointPort, String secret,
+                                                              String projectKey) throws Exception {
+        ObjectNode registration = JsonUtils.getObjectMapper().createObjectNode();
+        registration.put("instance-id", instanceId);
+        registration.put("jipipe-pid", ProcessHandle.current().pid());
+        registration.put("endpoint-port", endpointPort);
+        registration.put("endpoint-secret", secret);
+        registration.put("app-version", "test");
+        registration.set("tool-ids", JsonUtils.getObjectMapper().createArrayNode()
+                .add("list_projects").add("echo_test"));
+        ObjectNode project = JsonUtils.getObjectMapper().createObjectNode();
+        project.put("key", projectKey);
+        project.put("name", "Project " + projectKey);
+        project.put("path", "/tmp/" + projectKey);
         registration.set("projects", JsonUtils.getObjectMapper().createArrayNode().add(project));
         return postControl("/control/register", registration.toString(), null);
     }

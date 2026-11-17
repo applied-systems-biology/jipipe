@@ -1,7 +1,9 @@
 package org.hkijena.jipipe.servers.mcp;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.modelcontextprotocol.json.McpJsonDefaults;
 import io.modelcontextprotocol.json.schema.JsonSchemaValidator;
@@ -78,9 +80,13 @@ import java.util.Set;
  * {@code project} argument is declared in the published input schema of every tool except the
  * registry-global set ({@link #GLOBAL_TOOL_IDS}), whose members are callable without a project:
  * when {@code project} is absent, the call is routed to the most-recently registered live
- * instance that carries the tool (E2E ruling 2026-11-16; {@code list_projects} especially is
- * unreachable otherwise - chicken-and-egg; the job tools joined the set in the 2026-11-17
- * follow-up wave because job ids address the shared job manager, not a project). Results whose
+ * instance that carries the tool (E2E ruling 2026-11-16; the job tools joined the set in the
+ * 2026-11-17 follow-up wave because job ids address the shared job manager, not a project).
+ * {@code list_projects} is the exception to the single-instance routing:
+ * the broker aggregates it across EVERY live instance that carries the tool (routing it to one
+ * instance would hide every other instance's projects) and rewrites each returned project id
+ * to the full routable {@code <instanceId>:<projectKey>} form that it owns; instances that do
+ * not answer are skipped, and the call fails only when no instance answers. Results whose
  * JSON contains non-null {@code image-base64} and {@code mime} fields become MCP image
  * content, everything else becomes JSON text content. Operations classified as jobs (category
  * Execute, except {@code get_job_status}/{@code cancel_job}) return a {@code job-id}
@@ -104,11 +110,23 @@ public class MCPBrokerServer {
      * {@code project} argument (the project list must be readable without a project;
      * {@code list_projects} especially is chicken-and-egg otherwise). Their published input
      * schema does not declare {@code project}, and a call without {@code project} is routed to
-     * the most-recently registered live instance that carries the tool. Every other tool gets
-     * a {@code project} property injected into its published schema and requires the argument.
+     * the most-recently registered live instance that carries the tool - except
+     * {@code list_projects}, which the broker aggregates across ALL such instances and returns
+     * with fully-qualified routable ids (2026-11-17 follow-up). The job tools joined the set in
+     * the 2026-11-17 follow-up wave because job ids address the shared job manager, not a
+     * project. Every other tool gets a {@code project}
+     * property injected into its published schema and requires the argument.
      */
     public static final Set<String> GLOBAL_TOOL_IDS = Set.of("list_projects", "list_algorithms", "get_node_docs",
             "get_job_status", "cancel_job");
+
+    /**
+     * The one global tool that the broker handles itself instead of routing to a single
+     * instance: the project-free {@code list_projects} call is aggregated across all live
+     * instances that carry the tool, and the returned ids are rewritten to the routable
+     * {@code <instanceId>:<projectKey>} form ({@link #aggregateListProjects()}).
+     */
+    private static final String LIST_PROJECTS_TOOL_ID = "list_projects";
 
     /**
      * The schema description of the broker-injected {@code project} argument (verbatim per
@@ -373,6 +391,12 @@ public class MCPBrokerServer {
                             + "'. Available projects: " + availableProjectIds());
                 }
             } else if (GLOBAL_TOOL_IDS.contains(operationId)) {
+                if (LIST_PROJECTS_TOOL_ID.equals(operationId)) {
+                    // 2026-11-17 follow-up: not routed to one instance. The broker aggregates
+                    // the project lists of every live instance that carries the tool and
+                    // returns fully-qualified routable ids.
+                    return aggregateListProjects();
+                }
                 // E2E ruling 2026-11-16: registry-global tools are callable without a project.
                 // Deterministic routing: the most-recently registered live instance that
                 // carries the tool, else the first one.
@@ -416,7 +440,121 @@ public class MCPBrokerServer {
 
     private McpSchema.CallToolResult forward(String operationId, String projectId, String projectKey,
                                              MCPInstanceRegistration registration,
-                                             Map<String, Object> forwardedParams) throws IOException, InterruptedException {
+                                             Map<String, Object> forwardedParams) throws JsonProcessingException {
+        JsonNode envelope;
+        try {
+            envelope = postToInstance(operationId, projectId, registration, projectKey, forwardedParams);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            String message = "Failed to reach instance '" + registration.getInstanceId() + "': " + describe(e);
+            logs.add("warn", "Tool '" + operationId + "' project '" + projectId + "': " + message);
+            return errorResult(message);
+        } catch (IOException e) {
+            String message = e.getMessage() != null ? e.getMessage() : describe(e);
+            logs.add("warn", "Tool '" + operationId + "' project '" + projectId + "': " + message);
+            return errorResult(message);
+        }
+        // path(): a 200 + ok:true envelope without a "result" key serializes as "null"
+        // text content instead of NPE-ing on the absent node.
+        JsonNode result = envelope.path("result");
+        JsonNode image = result.path("image-base64");
+        JsonNode mime = result.path("mime");
+        if (image.isTextual() && mime.isTextual()) {
+            return McpSchema.CallToolResult.builder()
+                    .addContent(new McpSchema.ImageContent(null, image.asText(), mime.asText()))
+                    .isError(false)
+                    .build();
+        }
+        return McpSchema.CallToolResult.builder()
+                .addContent(new McpSchema.TextContent(objectMapper.writeValueAsString(result)))
+                .isError(false)
+                .build();
+    }
+
+    /**
+     * Aggregates the project-free {@code list_projects} call across ALL live instances that
+     * carry the tool (2026-11-17 follow-up: routing it to a single instance hid every other
+     * instance's projects, and the returned instance-local ids were not routable by the
+     * project-bound tools). Each returned project entry's {@code id} (the instance-local
+     * project key) is rewritten to the full {@code <instanceId>:<projectKey>} form owned by
+     * the broker; identical full ids are deduplicated. An instance that does not answer
+     * (unreachable, non-200, or error envelope) is skipped with a ring-buffer log entry; the
+     * call fails only when no instance answers.
+     */
+    private McpSchema.CallToolResult aggregateListProjects() throws JsonProcessingException {
+        List<MCPInstanceRegistration> carriers = new ArrayList<>();
+        for (MCPInstanceRegistration registration : registry.getAll()) {
+            if (MCPInstanceRegistry.carriesTool(registration, LIST_PROJECTS_TOOL_ID)) {
+                carriers.add(registration);
+            }
+        }
+        if (carriers.isEmpty()) {
+            return toolError(LIST_PROJECTS_TOOL_ID, null, "No registered JIPipe instance carries the tool '"
+                    + LIST_PROJECTS_TOOL_ID + "'. Available projects: " + availableProjectIds());
+        }
+        Map<String, JsonNode> projects = new LinkedHashMap<>();
+        boolean anyAnswered = false;
+        for (MCPInstanceRegistration registration : carriers) {
+            String instanceId = registration.getInstanceId();
+            JsonNode envelope;
+            try {
+                envelope = postToInstance(LIST_PROJECTS_TOOL_ID, null, registration, null, new LinkedHashMap<>());
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return toolError(LIST_PROJECTS_TOOL_ID, null, "The '" + LIST_PROJECTS_TOOL_ID
+                        + "' aggregation was interrupted while reaching instance '" + instanceId + "'");
+            } catch (IOException e) {
+                // The instance is unreachable or rejected the call: skip it and let the
+                // remaining instances answer (already logged by postToInstance).
+                logs.add("warn", "Tool '" + LIST_PROJECTS_TOOL_ID + "' instance '" + instanceId
+                        + "' skipped: " + (e.getMessage() != null ? e.getMessage() : describe(e)));
+                continue;
+            }
+            anyAnswered = true;
+            for (JsonNode entry : envelope.path("result").path("projects")) {
+                if (!entry.isObject()) {
+                    continue;
+                }
+                ObjectNode rewritten = ((ObjectNode) entry).deepCopy();
+                String localId = rewritten.path("id").asText(null);
+                if (localId == null || localId.isBlank()) {
+                    continue;
+                }
+                String fullId = instanceId + ":" + localId;
+                rewritten.put("id", fullId);
+                projects.putIfAbsent(fullId, rewritten);
+            }
+        }
+        if (!anyAnswered) {
+            return toolError(LIST_PROJECTS_TOOL_ID, null, "No registered JIPipe instance answered the '"
+                    + LIST_PROJECTS_TOOL_ID + "' call. Available projects: " + availableProjectIds());
+        }
+        ObjectNode result = objectMapper.createObjectNode();
+        ArrayNode merged = result.putArray("projects");
+        for (JsonNode entry : projects.values()) {
+            merged.add(entry);
+        }
+        logs.add("info", "Tool '" + LIST_PROJECTS_TOOL_ID + "' aggregated " + merged.size()
+                + " project(s) from the live instances");
+        return McpSchema.CallToolResult.builder()
+                .addContent(new McpSchema.TextContent(objectMapper.writeValueAsString(result)))
+                .isError(false)
+                .build();
+    }
+
+    /**
+     * Forwards one operation call to an instance endpoint and returns the parsed response
+     * envelope of an {@code ok:true} answer. Any failure is turned into an {@link IOException}
+     * whose message describes it (unreachable instance, non-200 status, or an
+     * {@code ok:false} envelope) and is logged to the ring buffer, so callers decide between
+     * failing the tool result ({@link #forward}) and skipping the instance
+     * ({@link #aggregateListProjects}).
+     *
+     * @throws InterruptedException when the forward was interrupted (not wrapped)
+     */
+    private JsonNode postToInstance(String operationId, String projectId, MCPInstanceRegistration registration,
+                                    String projectKey, Map<String, Object> forwardedParams)
+            throws IOException, InterruptedException {
         String instanceId = registration.getInstanceId();
         ObjectNode body = objectMapper.createObjectNode();
         body.put("project-key", projectKey);
@@ -436,40 +574,26 @@ public class MCPBrokerServer {
             String message = "Failed to reach instance '" + instanceId + "': " + describe(e);
             logs.add("warn", "Tool '" + operationId + "' project '" + projectId + "': " + message);
             if (e instanceof InterruptedException) {
-                Thread.currentThread().interrupt();
+                throw (InterruptedException) e;
             }
-            return errorResult(message);
+            throw new IOException(message, e);
         }
         if (response.statusCode() != 200) {
             String message = "Instance '" + instanceId + "' returned HTTP " + response.statusCode()
                     + " for operation '" + operationId + "'";
             logs.add("warn", "Tool '" + operationId + "' project '" + projectId + "': " + message);
-            return errorResult(message);
+            throw new IOException(message);
         }
         JsonNode envelope = objectMapper.readTree(response.body());
-        // path(): a 200 + ok:true envelope without a "result" key serializes as "null"
-        // text content instead of NPE-ing on the absent node.
-        JsonNode result = envelope.path("result");
         if (!envelope.path("ok").asBoolean(false)) {
             String message = "Instance '" + instanceId + "' rejected operation '" + operationId + "': "
                     + envelope.path("error").asText("unknown error");
             logs.add("warn", "Tool '" + operationId + "' project '" + projectId + "': " + message);
-            return errorResult(message);
+            throw new IOException(message);
         }
         logs.add("info", "Tool '" + operationId + "' project '" + projectId + "' -> instance '"
                 + instanceId + "' ok");
-        JsonNode image = result.path("image-base64");
-        JsonNode mime = result.path("mime");
-        if (image.isTextual() && mime.isTextual()) {
-            return McpSchema.CallToolResult.builder()
-                    .addContent(new McpSchema.ImageContent(null, image.asText(), mime.asText()))
-                    .isError(false)
-                    .build();
-        }
-        return McpSchema.CallToolResult.builder()
-                .addContent(new McpSchema.TextContent(objectMapper.writeValueAsString(result)))
-                .isError(false)
-                .build();
+        return envelope;
     }
 
     private McpSchema.CallToolResult toolError(String operationId, Object projectId, String message) {
