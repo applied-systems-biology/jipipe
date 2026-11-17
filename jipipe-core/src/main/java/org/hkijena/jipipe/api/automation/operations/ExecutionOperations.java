@@ -28,9 +28,9 @@ public class ExecutionOperations {
             return AutomationSchemaUtils.parseJson("""
                     {
                       "type": "object",
-                      "required": ["nodeId"],
+                      "required": ["node-id"],
                       "properties": {
-                        "nodeId": {"type": "string"},
+                        "node-id": {"type": "string"},
                         "mode": {"type": "string", "enum": ["UPDATE_CACHE", "CACHE_INTERMEDIATE", "UPDATE_PREDECESSOR_CACHE", "PIPELINE_CACHE", "PIPELINE_FILESYSTEM", "PIPELINE_DISCARD"]}
                       },
                       "additionalProperties": false
@@ -56,9 +56,9 @@ public class ExecutionOperations {
 
         @Override
         public InstrumentationJob executeAsync(AutomationContext ctx, JsonNode params) {
-            String nodeId = params.get("nodeId").asText();
+            String node = params.get("node-id").asText();
             RunMode mode = RunMode.valueOf(params.has("mode") ? params.get("mode").asText() : "UPDATE_CACHE");
-            return JIPipeAutomationAPI.runNode(ctx, nodeId, mode);
+            return JIPipeAutomationAPI.runNode(ctx, node, mode);
         }
     }
 
@@ -78,9 +78,9 @@ public class ExecutionOperations {
             return AutomationSchemaUtils.parseJson("""
                     {
                       "type": "object",
-                      "required": ["compartmentId"],
+                      "required": ["compartment-id"],
                       "properties": {
-                        "compartmentId": {"type": "string"}
+                        "compartment-id": {"type": "string"}
                       },
                       "additionalProperties": false
                     }""");
@@ -105,7 +105,7 @@ public class ExecutionOperations {
 
         @Override
         public InstrumentationJob executeAsync(AutomationContext ctx, JsonNode params) {
-            return JIPipeAutomationAPI.runCompartment(ctx, params.get("compartmentId").asText());
+            return JIPipeAutomationAPI.runCompartment(ctx, params.get("compartment-id").asText());
         }
     }
 

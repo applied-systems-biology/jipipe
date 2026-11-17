@@ -60,9 +60,9 @@ public class PipelineMapOperations {
             return AutomationSchemaUtils.parseJson("""
                     {
                       "type": "object",
-                      "required": ["segmentId"],
+                      "required": ["segment-id"],
                       "properties": {
-                        "segmentId": {"type": "string"}
+                        "segment-id": {"type": "string"}
                       },
                       "additionalProperties": false
                     }""");
@@ -80,7 +80,7 @@ public class PipelineMapOperations {
 
         @Override
         public JsonNode execute(AutomationContext ctx, JsonNode params) {
-            return JIPipeAutomationAPI.getSegmentDetail(ctx, params.get("segmentId").asText());
+            return JIPipeAutomationAPI.getSegmentDetail(ctx, params.get("segment-id").asText());
         }
     }
 

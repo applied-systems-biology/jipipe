@@ -27,13 +27,13 @@ final class AutomationOperationUtils {
      * {@link JIPipeProject#findCompartment(String)} matches UUIDs and aliases: this helper
      * additionally falls back to the display name.
      */
-    static JIPipeProjectCompartment findCompartment(JIPipeProject project, String compartmentId) {
-        var resolved = project.findCompartment(compartmentId);
+    static JIPipeProjectCompartment findCompartment(JIPipeProject project, String compartmentRef) {
+        var resolved = project.findCompartment(compartmentRef);
         if (resolved != null) {
             return resolved;
         }
         for (var entry : project.getCompartments().entrySet()) {
-            if (entry.getValue().getName() != null && entry.getValue().getName().equals(compartmentId)) {
+            if (entry.getValue().getName() != null && entry.getValue().getName().equals(compartmentRef)) {
                 return entry.getValue();
             }
         }

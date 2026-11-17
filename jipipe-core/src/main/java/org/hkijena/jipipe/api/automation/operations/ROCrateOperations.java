@@ -33,13 +33,13 @@ public class ROCrateOperations {
             return AutomationSchemaUtils.parseJson("""
                     {
                       "type": "object",
-                      "required": ["outputPath"],
+                      "required": ["output-path"],
                       "properties": {
-                        "outputPath": {"type": "string"},
-                        "dockerImage": {"type": "string"},
-                        "dockerTag": {"type": "string"},
-                        "dockerEnvVars": {"type": "array"},
-                        "userPathOverrides": {"type": "object"}
+                        "output-path": {"type": "string"},
+                        "docker-image": {"type": "string"},
+                        "docker-tag": {"type": "string"},
+                        "docker-env-vars": {"type": "array"},
+                        "user-path-overrides": {"type": "object"}
                       },
                       "additionalProperties": false
                     }""");
@@ -57,20 +57,20 @@ public class ROCrateOperations {
 
         @Override
         public JsonNode execute(AutomationContext ctx, JsonNode params) {
-            String outputPath = params.get("outputPath").asText();
+            String outputDir = params.get("output-path").asText();
 
             ROCrateDockerSettings dockerSettings;
-            if (params.has("dockerImage") || params.has("dockerTag") || params.has("dockerEnvVars")) {
+            if (params.has("docker-image") || params.has("docker-tag") || params.has("docker-env-vars")) {
                 dockerSettings = ROCrateApplicationSettings.getInstance().toDockerSettings();
-                if (params.has("dockerImage")) {
-                    dockerSettings.setDockerImage(params.get("dockerImage").asText());
+                if (params.has("docker-image")) {
+                    dockerSettings.setDockerImage(params.get("docker-image").asText());
                 }
-                if (params.has("dockerTag")) {
-                    dockerSettings.setDockerTag(params.get("dockerTag").asText());
+                if (params.has("docker-tag")) {
+                    dockerSettings.setDockerTag(params.get("docker-tag").asText());
                 }
-                if (params.has("dockerEnvVars")) {
+                if (params.has("docker-env-vars")) {
                     StringAndStringPairParameterList envVars = new StringAndStringPairParameterList();
-                    for (JsonNode entry : params.get("dockerEnvVars")) {
+                    for (JsonNode entry : params.get("docker-env-vars")) {
                         envVars.add(new StringAndStringPairParameter(
                                 entry.get("key").asText(),
                                 entry.get("value").asText()));
@@ -81,15 +81,15 @@ public class ROCrateOperations {
                 dockerSettings = ROCrateApplicationSettings.getInstance().toDockerSettings();
             }
 
-            Map<String, JIPipeProjectUserPaths.Role> userPathOverrides = null;
-            if (params.has("userPathOverrides")) {
-                userPathOverrides = new HashMap<>();
+            Map<String, JIPipeProjectUserPaths.Role> pathOverrides = null;
+            if (params.has("user-path-overrides")) {
+                pathOverrides = new HashMap<>();
                 for (Map.Entry<String, JsonNode> entry : com.google.common.collect.ImmutableList.copyOf(
-                        params.get("userPathOverrides").fields())) {
+                        params.get("user-path-overrides").fields())) {
                     String roleStr = entry.getValue().asText();
                     try {
                         JIPipeProjectUserPaths.Role role = JIPipeProjectUserPaths.Role.valueOf(roleStr);
-                        userPathOverrides.put(entry.getKey(), role);
+                        pathOverrides.put(entry.getKey(), role);
                     } catch (IllegalArgumentException e) {
                         throw new RuntimeException("Invalid user path role: " + roleStr +
                                 ". Valid values: Unspecified, Input, Output, Ignored");
@@ -97,7 +97,7 @@ public class ROCrateOperations {
                 }
             }
 
-            return JIPipeAutomationAPI.createROCrate(ctx, outputPath, dockerSettings, userPathOverrides);
+            return JIPipeAutomationAPI.createROCrate(ctx, outputDir, dockerSettings, pathOverrides);
         }
     }
 }

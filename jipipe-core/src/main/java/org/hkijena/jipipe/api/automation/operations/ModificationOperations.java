@@ -31,10 +31,10 @@ public class ModificationOperations {
             return AutomationSchemaUtils.parseJson("""
                     {
                       "type": "object",
-                      "required": ["nodeTypeId"],
+                      "required": ["node-type-id"],
                       "properties": {
-                        "compartmentId": {"type": "string"},
-                        "nodeTypeId": {"type": "string"},
+                        "compartment-id": {"type": "string"},
+                        "node-type-id": {"type": "string"},
                         "x": {"type": "integer"},
                         "y": {"type": "integer"}
                       },
@@ -54,11 +54,12 @@ public class ModificationOperations {
 
         @Override
         public JsonNode execute(AutomationContext ctx, JsonNode params) {
-            String compartmentId = params.has("compartmentId") ? params.get("compartmentId").asText() : null;
-            String nodeTypeId = params.get("nodeTypeId").asText();
+            String compartment = params.has("compartment-id") ? params.get("compartment-id").asText() : null;
+            String nodeType = params.get("node-type-id").asText();
             int x = params.has("x") ? params.get("x").asInt() : 0;
             int y = params.has("y") ? params.get("y").asInt() : 0;
-            String alias = JIPipeAutomationAPI.addNode(ctx, compartmentId, nodeTypeId, x, y);
+            String alias = JIPipeAutomationAPI.addNode(ctx, compartment, nodeType, x, y);
+            // Result payload key: the kebab-case convention applies to input parameters only
             ObjectNode result = new ObjectMapper().createObjectNode();
             result.put("nodeId", alias);
             return result;
@@ -81,9 +82,9 @@ public class ModificationOperations {
             return AutomationSchemaUtils.parseJson("""
                     {
                       "type": "object",
-                      "required": ["nodeId"],
+                      "required": ["node-id"],
                       "properties": {
-                        "nodeId": {"type": "string"}
+                        "node-id": {"type": "string"}
                       },
                       "additionalProperties": false
                     }""");
@@ -101,7 +102,7 @@ public class ModificationOperations {
 
         @Override
         public JsonNode execute(AutomationContext ctx, JsonNode params) {
-            JIPipeAutomationAPI.removeNode(ctx, params.get("nodeId").asText());
+            JIPipeAutomationAPI.removeNode(ctx, params.get("node-id").asText());
             return new ObjectMapper().createObjectNode().put("success", true);
         }
     }
@@ -122,12 +123,12 @@ public class ModificationOperations {
             return AutomationSchemaUtils.parseJson("""
                     {
                       "type": "object",
-                      "required": ["source", "sourceSlot", "target", "targetSlot"],
+                      "required": ["source", "source-slot", "target", "target-slot"],
                       "properties": {
                         "source": {"type": "string"},
-                        "sourceSlot": {"type": "string"},
+                        "source-slot": {"type": "string"},
                         "target": {"type": "string"},
-                        "targetSlot": {"type": "string"}
+                        "target-slot": {"type": "string"}
                       },
                       "additionalProperties": false
                     }""");
@@ -146,8 +147,8 @@ public class ModificationOperations {
         @Override
         public JsonNode execute(AutomationContext ctx, JsonNode params) {
             JIPipeAutomationAPI.addConnection(ctx,
-                    params.get("source").asText(), params.get("sourceSlot").asText(),
-                    params.get("target").asText(), params.get("targetSlot").asText());
+                    params.get("source").asText(), params.get("source-slot").asText(),
+                    params.get("target").asText(), params.get("target-slot").asText());
             return new ObjectMapper().createObjectNode().put("success", true);
         }
     }
@@ -168,12 +169,12 @@ public class ModificationOperations {
             return AutomationSchemaUtils.parseJson("""
                     {
                       "type": "object",
-                      "required": ["source", "sourceSlot", "target", "targetSlot"],
+                      "required": ["source", "source-slot", "target", "target-slot"],
                       "properties": {
                         "source": {"type": "string"},
-                        "sourceSlot": {"type": "string"},
+                        "source-slot": {"type": "string"},
                         "target": {"type": "string"},
-                        "targetSlot": {"type": "string"}
+                        "target-slot": {"type": "string"}
                       },
                       "additionalProperties": false
                     }""");
@@ -192,8 +193,8 @@ public class ModificationOperations {
         @Override
         public JsonNode execute(AutomationContext ctx, JsonNode params) {
             JIPipeAutomationAPI.removeConnection(ctx,
-                    params.get("source").asText(), params.get("sourceSlot").asText(),
-                    params.get("target").asText(), params.get("targetSlot").asText());
+                    params.get("source").asText(), params.get("source-slot").asText(),
+                    params.get("target").asText(), params.get("target-slot").asText());
             return new ObjectMapper().createObjectNode().put("success", true);
         }
     }
@@ -214,9 +215,9 @@ public class ModificationOperations {
             return AutomationSchemaUtils.parseJson("""
                     {
                       "type": "object",
-                      "required": ["nodeId", "key", "value"],
+                      "required": ["node-id", "key", "value"],
                       "properties": {
-                        "nodeId": {"type": "string"},
+                        "node-id": {"type": "string"},
                         "key": {"type": "string"},
                         "value": {"type": "string"}
                       },
@@ -237,7 +238,7 @@ public class ModificationOperations {
         @Override
         public JsonNode execute(AutomationContext ctx, JsonNode params) {
             JIPipeAutomationAPI.setParameter(ctx,
-                    params.get("nodeId").asText(), params.get("key").asText(), params.get("value").asText());
+                    params.get("node-id").asText(), params.get("key").asText(), params.get("value").asText());
             return new ObjectMapper().createObjectNode().put("success", true);
         }
     }
@@ -322,6 +323,7 @@ public class ModificationOperations {
         @Override
         public JsonNode execute(AutomationContext ctx, JsonNode params) {
             String id = JIPipeAutomationAPI.addCompartment(ctx, params.get("name").asText());
+            // Result payload key: the kebab-case convention applies to input parameters only
             return new ObjectMapper().createObjectNode().put("compartmentId", id);
         }
     }
@@ -342,9 +344,9 @@ public class ModificationOperations {
             return AutomationSchemaUtils.parseJson("""
                     {
                       "type": "object",
-                      "required": ["compartmentId", "name"],
+                      "required": ["compartment-id", "name"],
                       "properties": {
-                        "compartmentId": {"type": "string"},
+                        "compartment-id": {"type": "string"},
                         "name": {"type": "string"}
                       },
                       "additionalProperties": false
@@ -365,10 +367,10 @@ public class ModificationOperations {
         public JsonNode execute(AutomationContext ctx, JsonNode params) {
             var project = ctx.getProject();
             if (project == null) throw new IllegalStateException("No project available");
-            String compartmentId = params.get("compartmentId").asText();
+            String compartment = params.get("compartment-id").asText();
             String name = params.get("name").asText();
-            var comp = project.findCompartment(compartmentId);
-            if (comp == null) throw new IllegalArgumentException("Compartment not found: " + compartmentId);
+            var comp = project.findCompartment(compartment);
+            if (comp == null) throw new IllegalArgumentException("Compartment not found: " + compartment);
             comp.setCustomName(name);
             ctx.getEventBus().publish(new CompartmentChangedEvent(
                     ctx.getProjectId(), comp.getProjectCompartmentUUID().toString(), name, "renamed"));

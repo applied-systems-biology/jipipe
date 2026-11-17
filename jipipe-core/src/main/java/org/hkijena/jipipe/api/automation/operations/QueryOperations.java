@@ -62,7 +62,7 @@ public class QueryOperations {
                     {
                       "type": "object",
                       "properties": {
-                        "compartmentId": {"type": "string"}
+                        "compartment-id": {"type": "string"}
                       },
                       "additionalProperties": false
                     }""");
@@ -80,8 +80,8 @@ public class QueryOperations {
 
         @Override
         public JsonNode execute(AutomationContext ctx, JsonNode params) {
-            String compartmentId = params.has("compartmentId") ? params.get("compartmentId").asText() : null;
-            return JIPipeAutomationAPI.queryGraph(ctx, compartmentId);
+            String compartment = params.has("compartment-id") ? params.get("compartment-id").asText() : null;
+            return JIPipeAutomationAPI.queryGraph(ctx, compartment);
         }
     }
 
@@ -101,9 +101,9 @@ public class QueryOperations {
             return AutomationSchemaUtils.parseJson("""
                     {
                       "type": "object",
-                      "required": ["nodeId"],
+                      "required": ["node-id"],
                       "properties": {
-                        "nodeId": {"type": "string"}
+                        "node-id": {"type": "string"}
                       },
                       "additionalProperties": false
                     }""");
@@ -121,7 +121,7 @@ public class QueryOperations {
 
         @Override
         public JsonNode execute(AutomationContext ctx, JsonNode params) {
-            return JIPipeAutomationAPI.queryNode(ctx, params.get("nodeId").asText());
+            return JIPipeAutomationAPI.queryNode(ctx, params.get("node-id").asText());
         }
     }
 
@@ -141,10 +141,10 @@ public class QueryOperations {
             return AutomationSchemaUtils.parseJson("""
                     {
                       "type": "object",
-                      "required": ["nodeId", "slotName"],
+                      "required": ["node-id", "slot-name"],
                       "properties": {
-                        "nodeId": {"type": "string"},
-                        "slotName": {"type": "string"},
+                        "node-id": {"type": "string"},
+                        "slot-name": {"type": "string"},
                         "limit": {"type": "integer"}
                       },
                       "additionalProperties": false
@@ -163,10 +163,10 @@ public class QueryOperations {
 
         @Override
         public JsonNode execute(AutomationContext ctx, JsonNode params) {
-            String nodeId = params.get("nodeId").asText();
-            String slotName = params.get("slotName").asText();
+            String node = params.get("node-id").asText();
+            String slot = params.get("slot-name").asText();
             int limit = params.has("limit") ? params.get("limit").asInt() : 50;
-            return JIPipeAutomationAPI.queryData(ctx, nodeId, slotName, limit);
+            return JIPipeAutomationAPI.queryData(ctx, node, slot, limit);
         }
     }
 }

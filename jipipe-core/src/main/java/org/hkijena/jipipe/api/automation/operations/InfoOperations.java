@@ -247,11 +247,11 @@ public class InfoOperations {
 
         @Override
         public JsonNode execute(AutomationContext ctx, JsonNode params) {
-            String nodeTypeId = params.get("node-id").asText();
-            if (!JIPipe.getNodes().hasNodeInfoWithId(nodeTypeId)) {
-                return mapper.createObjectNode().put("error", "Unknown node type: " + nodeTypeId);
+            String nodeType = params.get("node-id").asText();
+            if (!JIPipe.getNodes().hasNodeInfoWithId(nodeType)) {
+                return mapper.createObjectNode().put("error", "Unknown node type: " + nodeType);
             }
-            JIPipeNodeInfo info = JIPipe.getNodes().getInfoById(nodeTypeId);
+            JIPipeNodeInfo info = JIPipe.getNodes().getInfoById(nodeType);
             ObjectNode data = mapper.createObjectNode();
             data.put("id", info.getId());
             data.put("name", info.getName() != null ? info.getName() : info.getId());

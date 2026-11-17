@@ -91,15 +91,15 @@ public class DiagnosticsOperations {
      * or null.
      */
     private static JIPipeProgressNode attributedNode(JIPipeProgressLog store, JIPipeProgressRecord record) {
-        int nodeId;
+        int recordId;
         if (record instanceof JIPipeProgressRecord.Log logRecord) {
-            nodeId = logRecord.id();
+            recordId = logRecord.id();
         } else if (record instanceof JIPipeProgressRecord.Error errorRecord) {
-            nodeId = errorRecord.id();
+            recordId = errorRecord.id();
         } else {
             return null;
         }
-        return store.getNode(nodeId);
+        return store.getNode(recordId);
     }
 
     /**
@@ -206,10 +206,10 @@ public class DiagnosticsOperations {
             JIPipeGraph graph = ctx.getGraph();
             UUID compartmentFilter = null;
             if (params.has("compartment")) {
-                String compartmentId = params.get("compartment").asText();
-                var compartment = AutomationOperationUtils.findCompartment(project, compartmentId);
+                String compartmentRef = params.get("compartment").asText();
+                var compartment = AutomationOperationUtils.findCompartment(project, compartmentRef);
                 if (compartment == null) {
-                    return error("Compartment not found: " + compartmentId);
+                    return error("Compartment not found: " + compartmentRef);
                 }
                 compartmentFilter = compartment.getProjectCompartmentUUID();
             }

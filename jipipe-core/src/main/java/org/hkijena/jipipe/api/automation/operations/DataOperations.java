@@ -102,19 +102,19 @@ public class DataOperations {
         if (project == null) {
             return new ResolvedEntry(error("No project loaded"), null, null, null, 0, null, null, null);
         }
-        String compartmentId = params.get("compartment").asText();
-        var compartment = AutomationOperationUtils.findCompartment(project, compartmentId);
+        String compartmentRef = params.get("compartment").asText();
+        var compartment = AutomationOperationUtils.findCompartment(project, compartmentRef);
         if (compartment == null) {
-            return new ResolvedEntry(error("Compartment not found: " + compartmentId), null, null, null, 0, null, null, null);
+            return new ResolvedEntry(error("Compartment not found: " + compartmentRef), null, null, null, 0, null, null, null);
         }
-        String nodeId = params.get("node").asText();
-        JIPipeGraphNode node = ctx.getGraph().findNode(nodeId);
+        String nodeRef = params.get("node").asText();
+        JIPipeGraphNode node = ctx.getGraph().findNode(nodeRef);
         if (node == null) {
-            return new ResolvedEntry(error("Node not found: " + nodeId), null, null, null, 0, null, null, null);
+            return new ResolvedEntry(error("Node not found: " + nodeRef), null, null, null, 0, null, null, null);
         }
         UUID nodeCompartment = ctx.getGraph().getCompartmentUUIDOf(node);
         if (!Objects.equals(compartment.getProjectCompartmentUUID(), nodeCompartment)) {
-            return new ResolvedEntry(error("Node '" + nodeId + "' is not in compartment '" + compartmentId + "'"),
+            return new ResolvedEntry(error("Node '" + nodeRef + "' is not in compartment '" + compartmentRef + "'"),
                     null, null, null, 0, null, null, null);
         }
         String slotName = params.get("slot").asText();
@@ -123,7 +123,7 @@ public class DataOperations {
             return new ResolvedEntry(error("Slot not found: " + slotName), null, null, null, 0, null, null, null);
         }
         if (table.getRowCount() == 0) {
-            return new ResolvedEntry(error("No cached data for slot '" + slotName + "' of node '" + nodeId + "'"),
+            return new ResolvedEntry(error("No cached data for slot '" + slotName + "' of node '" + nodeRef + "'"),
                     null, null, null, 0, null, null, null);
         }
         int entry = params.has("entry") ? params.get("entry").asInt() : 0;

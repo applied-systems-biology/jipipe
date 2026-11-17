@@ -144,8 +144,8 @@ public class ArrangeOperations {
             }
             for (JIPipeGraphNode node : nodes) {
                 for (JIPipeDataSlot inputSlot : node.getInputSlots()) {
-                    for (JIPipeDataSlot sourceSlot : graph.getInputIncomingSourceSlots(inputSlot)) {
-                        JIPipeGraphNode source = sourceSlot.getNode();
+                    for (JIPipeDataSlot incomingSlot : graph.getInputIncomingSourceSlots(inputSlot)) {
+                        JIPipeGraphNode source = incomingSlot.getNode();
                         if (source == node || !nodeSet.contains(source)) {
                             // Skip self loops and connections that leave the compartment
                             continue;
