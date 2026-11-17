@@ -136,6 +136,84 @@ public final class JIPipeProjectSaveTarget {
     }
 
     /**
+     * The explicit save format. MODERN is the .jipx format (the prompt's "Modern
+     * format (Recommended)" button, the automation save_project parameter value
+     * "jipx"), LEGACY the .jip format, AUTO the no-prompt behavior of an existing
+     * save: honor the extension of the save target.
+     */
+    public enum Format {
+        AUTO,
+        /**
+         * The modern .jipx format.
+         */
+        MODERN,
+        /**
+         * The legacy .jip format.
+         */
+        LEGACY
+    }
+
+    /**
+     * The resolved save target: the final file (with a defaulted extension where the
+     * decision requires one) and whether it is written in the modern .jipx format.
+     */
+    public record ResolvedTarget(Path path, boolean modern) {
+    }
+
+    /**
+     * Resolves the save target for a save to the given file. This is the shared
+     * decision of the interactive save flow (the migration prompt feeds the user's
+     * answer, the compatibility gate and the no-prompt saves pass AUTO) and the
+     * automation save_project operation (which passes its explicit format
+     * parameter). Rules:
+     * <ul>
+     * <li>LEGACY - save as .jip (the extension is ensured); a target that is
+     * already a .jipx file keeps its format (the modern container cannot be forced
+     * into the legacy writer);</li>
+     * <li>MODERN, or AUTO with {@link #isLegacyCompatible(JIPipeProject)} false -
+     * save as .jipx: a legacy .jip target is replaced by the .jipx sibling name,
+     * any other target gets the .jipx extension;</li>
+     * <li>AUTO with a compatible project - honor the target extension: .jip saves
+     * legacy, .jipx saves modern, any other name keeps the verbatim path and the
+     * legacy writer (the unchanged interactive routing; the automation operations
+     * default such targets to .jipx themselves).</li>
+     * </ul>
+     *
+     * @param project  the project to save (drives the compatibility gate; may be null)
+     * @param savePath the save target
+     * @param format   the explicit format, null for AUTO
+     * @return the resolved target (final path and writer format)
+     */
+    public static ResolvedTarget resolveSaveTarget(JIPipeProject project, Path savePath, Format format) {
+        Format effective = format == null ? Format.AUTO : format;
+        if (effective == Format.LEGACY) {
+            if (PathUtils.isJipxPath(savePath)) {
+                // A .jipx target cannot be forced into the legacy writer: it keeps
+                // its format
+                return new ResolvedTarget(savePath, true);
+            }
+            return new ResolvedTarget(PathUtils.ensureExtension(savePath, ".jip"), false);
+        }
+        if (effective == Format.MODERN || !isLegacyCompatible(project)) {
+            // The gate overrides everything: a project that cannot be expressed in
+            // the legacy format is always saved as .jipx
+            Path resolved = PathUtils.replaceExtension(savePath, ".jip", ".jipx");
+            return new ResolvedTarget(PathUtils.ensureExtension(resolved, ".jipx"), true);
+        }
+        // AUTO: honor the target extension (an existing save keeps its format)
+        if (PathUtils.isJipPath(savePath)) {
+            return new ResolvedTarget(savePath, false);
+        }
+        if (PathUtils.isJipxPath(savePath)) {
+            return new ResolvedTarget(savePath, true);
+        }
+        // No recognizable extension: the path is kept verbatim and written by the
+        // legacy writer (the unchanged routing of the interactive flow). The
+        // automation operations default such targets to .jipx themselves.
+        return new ResolvedTarget(savePath, false);
+    }
+
+    /**
      * The save-target decision
      */
     public enum SaveTarget {

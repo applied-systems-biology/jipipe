@@ -404,14 +404,34 @@ public class JIPipeDesktopProjectWindow extends JFrame {
      */
     public void newProject() {
         JIPipeProject project = getDefaultTemplateProject();
-        JIPipeDesktopProjectWindow window = openProjectInThisOrNewWindow("New project", project, true, true, target -> {
+        openProjectInThisOrNewWindow("New project", project, true, true, newProjectPostLoadAction(this, null, null));
+    }
+
+    /**
+     * The post-load action of the new-project flows: resets the save path, updates
+     * the title, and reports load issues (notifications and validity report) in
+     * dialogs parented to dialogParent. Shared between the interactive new-project
+     * flows and the automation create_project operation (issue #1379); a null
+     * report/notifications pair skips the issue dialogs.
+     *
+     * @param dialogParent  the parent of the issue dialogs
+     * @param notifications the notification inbox filled by the template loader (may be null)
+     * @param report        the validation report filled by the template loader (may be null)
+     * @return the post-load action
+     */
+    public Consumer<JIPipeDesktopProjectWindow> newProjectPostLoadAction(Component dialogParent, JIPipeValidationReport report, JIPipeNotificationInbox notifications) {
+        return target -> {
             target.projectSavePath = null;
             target.updateTitle();
             target.getProjectWorkbench().sendStatusBarText("Created new project");
-        });
-        if (window == null) {
-            return;
-        }
+            if (notifications != null && !notifications.isEmpty()) {
+                UIUtils.openNotificationsDialog(target.getProjectWorkbench(), dialogParent, notifications, "Potential issues found", "There seem to be potential issues that might prevent the successful execution of the pipeline. Please review the following entries and resolve the issues if possible.", true);
+            }
+            if (report != null && !report.isValid()) {
+                UIUtils.showValidityReportDialog(new JIPipeDesktopDummyWorkbench(), dialogParent, report, "Errors while loading the project", "It seems that not all parameters/nodes/connections could be restored from the project file. The cause might be that you are using a version of JIPipe that changed the affected features. " +
+                        "Please review the entries and apply the necessary changes (e.g., reconnecting nodes).", false);
+            }
+        };
     }
 
     /**
@@ -441,9 +461,17 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                         "The template contains " + Precision.round(sizeMB, 2) + " MB of data.\nYou can choose to either load only the " +
                                 "pipeline or extract the template project and related data into a directory.",
                         loadWithData, loadOnlyPipeline);
-                if (selected.isEmpty()) {
+                // The shared data-mode decision (issue #1379): the dialog answer feeds
+                // the same mapping the automation create_project operation uses for
+                // its template-data parameter. The dismissal (null) cancels.
+                JIPipeProjectFlowDecisions.TemplateDataMode mode = JIPipeProjectFlowDecisions.decideTemplateDataMode(true,
+                        selected.isEmpty() ? null
+                                : selected.get() == loadWithData ? JIPipeProjectFlowDecisions.TemplateDataMode.WITH_DATA
+                                : JIPipeProjectFlowDecisions.TemplateDataMode.PIPELINE_ONLY);
+                if (mode == JIPipeProjectFlowDecisions.TemplateDataMode.CANCELLED) {
                     return;
-                } else if (selected.get() == loadWithData) {
+                }
+                if (mode == JIPipeProjectFlowDecisions.TemplateDataMode.WITH_DATA) {
                     loadZipTarget = JIPipeDesktop.saveDirectory(this,
                             getProjectWorkbench(),
                             JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects,
@@ -474,18 +502,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                 JIPipeValidationReport report = new JIPipeValidationReport();
                 JIPipeNotificationInbox notifications = new JIPipeNotificationInbox();
                 JIPipeProject project = template.loadAsProject(report, notifications, JIPipeProgressInfo.STDOUT);
-                JIPipeDesktopProjectWindow window = openProjectInThisOrNewWindow("New project", project, true, true, target -> {
-                    target.projectSavePath = null;
-                    target.updateTitle();
-                    target.getProjectWorkbench().sendStatusBarText("Created new project");
-                    if (!notifications.isEmpty()) {
-                        UIUtils.openNotificationsDialog(target.getProjectWorkbench(), this, notifications, "Potential issues found", "There seem to be potential issues that might prevent the successful execution of the pipeline. Please review the following entries and resolve the issues if possible.", true);
-                    }
-                    if (!report.isValid()) {
-                        UIUtils.showValidityReportDialog(new JIPipeDesktopDummyWorkbench(), this, report, "Errors while loading the project", "It seems that not all parameters/nodes/connections could be restored from the project file. The cause might be that you are using a version of JIPipe that changed the affected features. " +
-                                "Please review the entries and apply the necessary changes (e.g., reconnecting nodes).", false);
-                    }
-                });
+                JIPipeDesktopProjectWindow window = openProjectInThisOrNewWindow("New project", project, true, true, newProjectPostLoadAction(this, report, notifications));
                 if (window == null) {
                     return;
                 }
@@ -518,36 +535,61 @@ public class JIPipeDesktopProjectWindow extends JFrame {
      * @param forceCurrentWindow if the project will be forced to be opened in the current window
      */
     public void openProject(Path path, boolean forceCurrentWindow) {
+        openProject(path, forceCurrentWindow, ProjectOpenDecisions.INTERACTIVE);
+    }
+
+    /**
+     * Opens a project from a file or folder with explicit decisions (issue #1379).
+     * This is the single open flow for the GUI and the automation open_project
+     * operation: where the interactive path shows a prompt, the prompt's answer and
+     * the automation's decision value feed the same shared decision helpers
+     * ({@link JIPipeProjectFlowDecisions}), so both routes behave identically.
+     *
+     * @param path               JSON project file, RO-Crate container, or result folder
+     * @param forceCurrentWindow if the project will be forced to be opened in the current window
+     * @param decisions          the explicit decisions; {@link ProjectOpenDecisions#INTERACTIVE}
+     *                           shows the prompts
+     * @return the window that holds (or will hold) the project, or null when the open
+     * was aborted or routed through the asynchronous crate import
+     */
+    public JIPipeDesktopProjectWindow openProject(Path path, boolean forceCurrentWindow, ProjectOpenDecisions decisions) {
         if (Files.isRegularFile(path)) {
             // .crate.zip files are imported through the RO-Crate flow
             // BEFORE the project peek (peek refuses non-JIPX ZIPs; the
             // open chooser offers crate.zip for imports)
             if (path.getFileName().toString().toLowerCase(Locale.ROOT).endsWith(".crate.zip")) {
                 importROCrate(path, true, true, forceCurrentWindow);
-                return;
+                return null;
             }
             // A legacy .jip with an existing .jipx sibling: offer the
             // project crate (existence-based - mtimes are unreliable
             // across NAS/SFTP/USB copies, the user decides which is current).
             Path jipxSibling = PathUtils.findJipxSibling(path);
             if (jipxSibling != null) {
-                Button openProjectCrate = Button.custom("Open project crate").asDefault();
-                Button openLegacyProject = Button.custom("Open legacy project");
-                Optional<Button> selected = JIPipeDesktopDialogs.choose(this,
-                        "Project crate available",
-                        "A project crate of this project (" + jipxSibling.getFileName()
-                                + ") exists next to the legacy project. Open that one instead?",
-                        openProjectCrate, openLegacyProject);
-                if (selected.orElse(null) == openProjectCrate) {
-                    openProject(jipxSibling, forceCurrentWindow);
-                    return;
+                JIPipeProjectFlowDecisions.SiblingChoice siblingChoice;
+                if (decisions.siblingChoice() != null) {
+                    siblingChoice = decisions.siblingChoice();
+                } else {
+                    Button openProjectCrate = Button.custom("Open project crate").asDefault();
+                    Button openLegacyProject = Button.custom("Open legacy project");
+                    Optional<Button> selected = JIPipeDesktopDialogs.choose(this,
+                            "Project crate available",
+                            "A project crate of this project (" + jipxSibling.getFileName()
+                                    + ") exists next to the legacy project. Open that one instead?",
+                            openProjectCrate, openLegacyProject);
+                    // Anything that is not an explicit "open the legacy project"
+                    // aborts the open: the implicit Cancel button and a dismissal
+                    // (the window's X / Escape) - a press of X must not be
+                    // treated as a choice.
+                    siblingChoice = selected.isEmpty() ? JIPipeProjectFlowDecisions.SiblingChoice.CANCELLED
+                            : selected.get() == openProjectCrate ? JIPipeProjectFlowDecisions.SiblingChoice.OPEN_CRATE
+                            : JIPipeProjectFlowDecisions.SiblingChoice.OPEN_LEGACY;
                 }
-                // Anything that is not an explicit "open the legacy project"
-                // aborts the open: the implicit Cancel button and a dismissal
-                // (the window's X / Escape) - a press of X must not be
-                // treated as a choice.
-                if (selected.isEmpty()) {
-                    return;
+                if (siblingChoice == JIPipeProjectFlowDecisions.SiblingChoice.OPEN_CRATE) {
+                    return openProject(jipxSibling, forceCurrentWindow, decisions);
+                }
+                if (siblingChoice == JIPipeProjectFlowDecisions.SiblingChoice.CANCELLED) {
+                    return null;
                 }
                 // "Open legacy project": continue with the legacy .jip
             }
@@ -560,19 +602,29 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                 // loading a second instance
                 JIPipeDesktopProjectWindow existingWindow = findOpenWindowForProjectFile(path);
                 if (existingWindow != null) {
-                    Button bringToFront = Button.custom("Bring window to front").asDefault();
-                    Button openAnyway = Button.custom("Open anyway");
-                    Optional<Button> alreadyOpen = JIPipeDesktopDialogs.choose(this,
-                            "Project already open",
-                            "The project " + path + " is already open in a project window.\n" +
-                                    "You can bring that window to the front instead of loading the project again.",
-                            bringToFront, openAnyway);
-                    if (alreadyOpen.isEmpty()) {
-                        return;
+                    JIPipeProjectFlowDecisions.AlreadyOpenChoice alreadyOpenChoice;
+                    if (decisions.alreadyOpenChoice() != null) {
+                        alreadyOpenChoice = decisions.alreadyOpenChoice();
+                    } else {
+                        Button bringToFront = Button.custom("Bring window to front").asDefault();
+                        Button openAnyway = Button.custom("Open anyway");
+                        Optional<Button> alreadyOpen = JIPipeDesktopDialogs.choose(this,
+                                "Project already open",
+                                "The project " + path + " is already open in a project window.\n" +
+                                        "You can bring that window to the front instead of loading the project again.",
+                                bringToFront, openAnyway);
+                        // A dismissal aborts the open; "Open anyway" continues
+                        // with a second instance
+                        alreadyOpenChoice = alreadyOpen.isEmpty() ? JIPipeProjectFlowDecisions.AlreadyOpenChoice.ABORT
+                                : alreadyOpen.get() == bringToFront ? JIPipeProjectFlowDecisions.AlreadyOpenChoice.BRING_TO_FRONT
+                                : JIPipeProjectFlowDecisions.AlreadyOpenChoice.OPEN_ANYWAY;
                     }
-                    if (alreadyOpen.get() == bringToFront) {
+                    if (alreadyOpenChoice == JIPipeProjectFlowDecisions.AlreadyOpenChoice.BRING_TO_FRONT) {
                         existingWindow.bringWindowToFront();
-                        return;
+                        return existingWindow;
+                    }
+                    if (alreadyOpenChoice == JIPipeProjectFlowDecisions.AlreadyOpenChoice.ABORT) {
+                        return null;
                     }
                     // "Open anyway": continue with a second instance
                 }
@@ -597,7 +649,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                 Set<JIPipeDependency> missingDependencies = JIPipePluginsServiceComponent.findUnsatisfiedDependencies(dependencySet);
                 if (!missingDependencies.isEmpty() || !missingUpdateSites.isEmpty()) {
                     if (!JIPipeDesktopInvalidProjectDependenciesInfoDialog.showDialog(getProjectWorkbench(), path, missingDependencies)) {
-                        return;
+                        return null;
                     }
                 }
 
@@ -606,7 +658,9 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                 // loading screen can be shown in the window that receives the
                 // project. The former modal "Load project" dialog is gone.
                 final boolean loadIntoThisWindow;
-                if (forceCurrentWindow) {
+                if (decisions.loadIntoThisWindow() != null) {
+                    loadIntoThisWindow = decisions.loadIntoThisWindow();
+                } else if (forceCurrentWindow) {
                     loadIntoThisWindow = true;
                 } else {
                     Button openInThisWindow = Button.custom("This window");
@@ -615,7 +669,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                             "Projects can either be opened in a new window or replace the project in an existing window.",
                             openInThisWindow, openInNewWindow);
                     if (placement.isEmpty()) {
-                        return;
+                        return null;
                     }
                     loadIntoThisWindow = placement.get() == openInThisWindow;
                 }
@@ -624,6 +678,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
 
                 final JIPipeDesktopProjectWindow targetWindow = loadIntoThisWindow ? this : newWindow(context);
                 targetWindow.beginProjectLoad(path, report, notifications, this, loadIntoThisWindow);
+                return targetWindow;
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -634,20 +689,14 @@ public class JIPipeDesktopProjectWindow extends JFrame {
             try {
                 // The output-folder convention carries project.jip; the JIPX
                 // convention writes project.jipx - try the legacy name first
-                Path projectPath = path.resolve("project.jip");
-                if (!Files.isRegularFile(projectPath)) {
-                    Path legacyProjectPath = projectPath;
-                    projectPath = path.resolve("project.jipx");
-                    if (!Files.isRegularFile(projectPath)) {
-                        projectPath = legacyProjectPath;
-                    }
-                }
+                // (the shared resolution, also used by the automation open_project)
+                Path projectPath = JIPipeProjectFlowDecisions.resolveOutputFolderProjectFile(path);
                 JIPipeProjectPeek peek = JIPipeProjectIOs.peek(projectPath);
                 Set<JIPipeDependency> dependencySet = peek.getDependencies();
                 Set<JIPipeDependency> missingDependencies = JIPipePluginsServiceComponent.findUnsatisfiedDependencies(dependencySet);
                 if (!missingDependencies.isEmpty()) {
                     if (!JIPipeDesktopInvalidProjectDependenciesInfoDialog.showDialog(getProjectWorkbench(), path, missingDependencies)) {
-                        return;
+                        return null;
                     }
                 }
 
@@ -666,16 +715,25 @@ public class JIPipeDesktopProjectWindow extends JFrame {
 
                     JIPipe.getInstance().getRecentProjects().add(path);
 
-                    // Give user the option to either open in tab or cache
-                    Button loadInNewTab = Button.custom("Load in new tab").asDefault();
-                    Button loadIntoCache = Button.custom("Load into cache");
-                    Optional<Button> selected = JIPipeDesktopDialogs.choose(target,
-                            "Open JIPipe output",
-                            "You can either open the output in a tab or load them into the cache. " +
-                                    "Please note that caching the results might require large amounts of memory.",
-                            loadInNewTab, loadIntoCache);
-
-                    if (selected.orElse(null) == loadInNewTab) {
+                    // Give user the option to either open in tab or cache (the
+                    // shared decision: the prompt answer and the automation
+                    // open_project output-folder decision feed the same branch)
+                    JIPipeProjectFlowDecisions.OutputFolderChoice outputChoice;
+                    if (decisions.outputFolderChoice() != null) {
+                        outputChoice = decisions.outputFolderChoice();
+                    } else {
+                        Button loadInNewTab = Button.custom("Load in new tab").asDefault();
+                        Button loadIntoCache = Button.custom("Load into cache");
+                        Optional<Button> selected = JIPipeDesktopDialogs.choose(target,
+                                "Open JIPipe output",
+                                "You can either open the output in a tab or load them into the cache. " +
+                                        "Please note that caching the results might require large amounts of memory.",
+                                loadInNewTab, loadIntoCache);
+                        outputChoice = selected.orElse(null) == loadInNewTab ? JIPipeProjectFlowDecisions.OutputFolderChoice.NEW_TAB
+                                : selected.orElse(null) == loadIntoCache ? JIPipeProjectFlowDecisions.OutputFolderChoice.INTO_CACHE
+                                : JIPipeProjectFlowDecisions.OutputFolderChoice.SKIP;
+                    }
+                    if (outputChoice == JIPipeProjectFlowDecisions.OutputFolderChoice.NEW_TAB) {
                         // Create a new tab
                         target.getProjectWorkbench().getDocumentTabPane().addTab("Results",
                                 JIPipe.RESOURCES.getIcon16("actions/document-open-folder.png"),
@@ -683,16 +741,16 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                                 JIPipeDesktopTabPane.CloseMode.withAskOnCloseButton,
                                 true);
                         target.getProjectWorkbench().getDocumentTabPane().switchToLastTab();
-                    } else if (selected.orElse(null) == loadIntoCache) {
+                    } else if (outputChoice == JIPipeProjectFlowDecisions.OutputFolderChoice.INTO_CACHE) {
                         // Load into cache with a run
                         JIPipeDesktopRunExecuteUI.runInDialog(target.getProjectWorkbench(), target, new JIPipeDesktopLoadResultDirectoryIntoCacheRun(target.getProjectWorkbench(), newProject, path, true));
                     }
                     if (!notifications.isEmpty()) {
                         UIUtils.openNotificationsDialog(target.getProjectWorkbench(), this, notifications, "Potential issues found", "There seem to be potential issues that might prevent the successful execution of the pipeline. Please review the following entries and resolve the issues if possible.", true);
                     }
-                });
+                }, decisions.loadIntoThisWindow());
                 if (window == null) {
-                    return;
+                    return null;
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -708,6 +766,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
             }
 
         }
+        return null;
     }
 
     /**
@@ -771,8 +830,9 @@ public class JIPipeDesktopProjectWindow extends JFrame {
         // project that cannot be expressed in the legacy format (see
         // JIPipeProjectSaveTarget.isLegacyCompatible) is always saved as
         // .jipx (forward hook for future jipx-exclusive features).
+        JIPipeProjectSaveTarget.Format explicitFormat = null;
         if (!JIPipeProjectSaveTarget.isLegacyCompatible(getProject())) {
-            savePath = PathUtils.replaceExtension(savePath, ".jip", ".jipx");
+            explicitFormat = JIPipeProjectSaveTarget.Format.MODERN;
         } else if (JIPipeProjectSaveTarget.shouldPrompt(savePath, avoidDialog, updateSavePath)) {
             Button modernFormat = Button.custom("Modern format (Recommended)").asDefault();
             Button legacyFormat = Button.custom("Legacy format");
@@ -786,18 +846,39 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                 // save (spec §7).
                 return;
             }
-            if (selected.get() == modernFormat) {
-                // A sibling .jipx in the same directory: replace the
-                // extension, preserving the base name's original casing -
-                // the original .jip is never touched on disk.
-                savePath = PathUtils.replaceExtension(savePath, ".jip", ".jipx");
-            }
+            explicitFormat = selected.get() == modernFormat ? JIPipeProjectSaveTarget.Format.MODERN : JIPipeProjectSaveTarget.Format.LEGACY;
         }
 
-        if (PathUtils.isJipxPath(savePath)) {
-            saveProjectAsJipx(savePath, updateSavePath);
+        // The shared format resolution (issue #1379): the prompt answer above, the
+        // compatibility gate, and the automation save_project operation's format
+        // parameter all feed the same decision
+        JIPipeProjectSaveTarget.ResolvedTarget target = JIPipeProjectSaveTarget.resolveSaveTarget(getProject(), savePath, explicitFormat);
+        if (target.modern()) {
+            saveProjectAsJipx(target.path(), updateSavePath);
         } else {
-            saveProjectAsLegacy(savePath, updateSavePath);
+            saveProjectAsLegacy(target.path(), updateSavePath);
+        }
+    }
+
+    /**
+     * The automation save entry (the save_project operation, issue #1379): saves the
+     * project to the given target with an explicit format decision and reports the
+     * real outcome through the listener. The tracked save path is updated (the
+     * Ctrl+S and save-as semantics). Must run on the EDT: the non-modal JIPX save
+     * performs its EDT pre-steps and enqueues from here (the listener is invoked
+     * later, when the background save finished); the synchronous legacy save
+     * completes and reports before this method returns.
+     *
+     * @param savePath the save target (resolved by the caller against the allowed roots)
+     * @param format   the explicit format (null for AUTO: honor the target extension)
+     * @param listener the completion listener (invoked exactly once, on the EDT)
+     */
+    public void saveProjectTo(Path savePath, JIPipeProjectSaveTarget.Format format, JIPipeProjectSaveListener listener) {
+        JIPipeProjectSaveTarget.ResolvedTarget target = JIPipeProjectSaveTarget.resolveSaveTarget(getProject(), savePath, format);
+        if (target.modern()) {
+            saveProjectAsJipx(target.path(), true, listener);
+        } else {
+            saveProjectAsLegacy(target.path(), true, listener);
         }
     }
 
@@ -829,6 +910,22 @@ public class JIPipeDesktopProjectWindow extends JFrame {
      * @param updateSavePath if the internally tracked project file path should be updated to the new save path
      */
     private void saveProjectAsJipx(Path savePath, boolean updateSavePath) {
+        saveProjectAsJipx(savePath, updateSavePath, null);
+    }
+
+    /**
+     * The JIPX save with an optional completion signal for the automation layer
+     * (issue #1379): the listener is invoked exactly once, on the EDT, after the
+     * outcome is known - {@link JIPipeProjectSaveListener#onSaveFinished(Throwable, String)}
+     * with the write failure (null = the container was written and re-verified;
+     * stage "write" / "recheck") or {@link JIPipeProjectSaveListener#onSaveCancelled()}
+     * on interruption. The GUI flow passes null and is unchanged.
+     *
+     * @param savePath       the JIPX target file
+     * @param updateSavePath if the internally tracked project file path should be updated to the new save path
+     * @param listener       the completion listener (may be null)
+     */
+    private void saveProjectAsJipx(Path savePath, boolean updateSavePath, JIPipeProjectSaveListener listener) {
         JIPipeProject project = getProject();
         // EDT pre-steps: the work directory (it must be set before the
         // first workspace access - temp-base memoization) and the GUI
@@ -961,7 +1058,12 @@ public class JIPipeDesktopProjectWindow extends JFrame {
             queue.getInterruptedEventEmitter().unsubscribe(interruptHolder[0]);
             queue.getStartedEventEmitter().unsubscribe(startListener);
             stageSubscription.close();
-            SwingUtilities.invokeLater(() -> onSaveFinished(run, failure, failureStage, savePath, updateSavePath));
+            SwingUtilities.invokeLater(() -> {
+                onSaveFinished(run, failure, failureStage, savePath, updateSavePath);
+                if (listener != null) {
+                    listener.onSaveFinished(failure[0], failureStage[0]);
+                }
+            });
         };
         JIPipeRunnable.InterruptedEventListener interruptListener = event -> {
             if (event.getRun() != run) {
@@ -971,7 +1073,12 @@ public class JIPipeDesktopProjectWindow extends JFrame {
             queue.getInterruptedEventEmitter().unsubscribe(interruptHolder[0]);
             queue.getStartedEventEmitter().unsubscribe(startListener);
             stageSubscription.close();
-            SwingUtilities.invokeLater(() -> onSaveCancelled(run, savePath));
+            SwingUtilities.invokeLater(() -> {
+                onSaveCancelled(run, savePath);
+                if (listener != null) {
+                    listener.onSaveCancelled();
+                }
+            });
         };
         finishHolder[0] = finishListener;
         interruptHolder[0] = interruptListener;
@@ -1083,6 +1190,21 @@ public class JIPipeDesktopProjectWindow extends JFrame {
      * @param updateSavePath if the internally tracked project file path should be updated to the new save path
      */
     private void saveProjectAsLegacy(Path savePath, boolean updateSavePath) {
+        saveProjectAsLegacy(savePath, updateSavePath, null);
+    }
+
+    /**
+     * The legacy save with an optional completion signal for the automation layer
+     * (issue #1379). The behavior is unchanged: the flow is synchronous, a write
+     * failure shows the error dialog and keeps the modified flag. The return value
+     * and the listener report the real outcome to automated callers.
+     *
+     * @param savePath       the legacy target file
+     * @param updateSavePath if the internally tracked project file path should be updated to the new save path
+     * @param listener       the completion listener (may be null; invoked on the caller's thread before returning)
+     * @return true when the save completed
+     */
+    private boolean saveProjectAsLegacy(Path savePath, boolean updateSavePath, JIPipeProjectSaveListener listener) {
         try {
             Path tempFile = PathUtils.createSubTempFilePath(savePath.getParent(), savePath.getFileName().toString(), ".part");
             getProject().setWorkDirectory(savePath.getParent());
@@ -1120,12 +1242,20 @@ public class JIPipeDesktopProjectWindow extends JFrame {
 
             // Remove tmp file
             Files.delete(tempFile);
+            if (listener != null) {
+                listener.onSaveFinished(null, "write");
+            }
+            return true;
         } catch (IOException e) {
             UIUtils.showErrorDialog(getProjectWorkbench(), this, new JIPipeValidationRuntimeException(e,
                     "Error during saving!",
                     "While saving the project into '" + savePath + "'. Any existing file was not changed or overwritten." + " The issue cannot be determined. Please contact the JIPipe authors.",
                     "Please check if you have write access to the temporary directory and the target directory. " +
                             "If this is the case, please contact the JIPipe authors."));
+            if (listener != null) {
+                listener.onSaveFinished(e, "write");
+            }
+            return false;
         }
     }
 
@@ -1138,14 +1268,39 @@ public class JIPipeDesktopProjectWindow extends JFrame {
      * @return The window that holds the project, or null if the user dismissed the chooser
      */
     private JIPipeDesktopProjectWindow openProjectInThisOrNewWindow(String messageTitle, JIPipeProject project, boolean showIntroduction, boolean isNewProject, Consumer<JIPipeDesktopProjectWindow> postLoadAction) {
-        Button thisWindow = Button.custom("This window");
-        Button newWindow = Button.custom("New window").asDefault();
-        Optional<Button> selected = JIPipeDesktopDialogs.choose(this, messageTitle,
-                "Projects can either be opened in a new window or replace the project in an existing window.",
-                thisWindow, newWindow);
-        if (selected.isEmpty()) {
-            return null;
-        } else if (selected.get() == thisWindow) {
+        return openProjectInThisOrNewWindow(messageTitle, project, showIntroduction, isNewProject, postLoadAction, null);
+    }
+
+    /**
+     * The This/New placement of the open-in-window flows (issue #1379). The
+     * interactive path shows the placement chooser; an explicit
+     * {@code explicitLoadIntoThisWindow} (the automation flows) replaces it. The
+     * branch bodies are identical for both routes.
+     *
+     * @param messageTitle              Description of the project source
+     * @param project                   The project
+     * @param showIntroduction          whether to show the introduction
+     * @param isNewProject              if the project is an empty project
+     * @param postLoadAction            Executed on the EDT when the project is visible in its window (may be null; receives the window)
+     * @param explicitLoadIntoThisWindow the explicit placement (null shows the chooser)
+     * @return The window that holds the project, or null if the user dismissed the chooser
+     */
+    private JIPipeDesktopProjectWindow openProjectInThisOrNewWindow(String messageTitle, JIPipeProject project, boolean showIntroduction, boolean isNewProject, Consumer<JIPipeDesktopProjectWindow> postLoadAction, Boolean explicitLoadIntoThisWindow) {
+        final boolean loadIntoThisWindow;
+        if (explicitLoadIntoThisWindow != null) {
+            loadIntoThisWindow = explicitLoadIntoThisWindow;
+        } else {
+            Button thisWindow = Button.custom("This window");
+            Button newWindow = Button.custom("New window").asDefault();
+            Optional<Button> selected = JIPipeDesktopDialogs.choose(this, messageTitle,
+                    "Projects can either be opened in a new window or replace the project in an existing window.",
+                    thisWindow, newWindow);
+            if (selected.isEmpty()) {
+                return null;
+            }
+            loadIntoThisWindow = selected.get() == thisWindow;
+        }
+        if (loadIntoThisWindow) {
             closeAllBalloons();
             // Feature #1359: replace the workbench with an in-window loading
             // screen and release the previous project in the background (the
@@ -1618,6 +1773,25 @@ public class JIPipeDesktopProjectWindow extends JFrame {
     }
 
     /**
+     * Opens a NEW project window for a freshly created project and applies the
+     * new-project post-load bookkeeping (issue #1379): the automation create_project
+     * operation always opens a new window (the placement prompt's default) and runs
+     * the same post-load action as the interactive new-project flows. Issue dialogs
+     * (notifications, validity report) are skipped for null inputs.
+     *
+     * @param context       the SciJava context
+     * @param project       the project (already named)
+     * @param notifications the notification inbox filled by the template loader (may be null)
+     * @param report        the validation report filled by the template loader (may be null)
+     * @return the new window
+     */
+    public static JIPipeDesktopProjectWindow openCreatedProjectWindow(Context context, JIPipeProject project, JIPipeNotificationInbox notifications, JIPipeValidationReport report) {
+        JIPipeDesktopProjectWindow window = newWindow(context, project, true, true);
+        window.newProjectPostLoadAction(window, report, notifications).accept(window);
+        return window;
+    }
+
+    /**
      * @return GUI command
      */
     public Context getContext() {
@@ -1734,9 +1908,9 @@ public class JIPipeDesktopProjectWindow extends JFrame {
             baseExtractPath = projectPath.getParent();
         }
 
-        String uniqueFileNameNoExt = StringUtils.makeUniqueString(fileNameNoExt, "-", str -> Files.exists(baseExtractPath.resolve(str)));
-        extractPath = baseExtractPath.resolve(uniqueFileNameNoExt);
-
+        // The shared unique-directory decision (issue #1379): the same helper the
+        // automation crate import uses for its extract target
+        extractPath = JIPipeProjectFlowDecisions.uniqueSubDirectory(baseExtractPath, fileNameNoExt);
         Button continueButton = Button.custom("Continue").asDefault();
         Button customPathButton = Button.custom("Select custom path");
 
