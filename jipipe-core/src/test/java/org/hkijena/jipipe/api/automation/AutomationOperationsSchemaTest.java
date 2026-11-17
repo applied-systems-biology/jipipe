@@ -52,7 +52,11 @@ public class AutomationOperationsSchemaTest {
             "get_thumbnail",
             "open_data_viewer",
             "get_ui_state",
-            "navigate_to_node");
+            "navigate_to_node",
+            "create_project",
+            "open_project",
+            "save_project",
+            "get_project_metadata");
 
     @BeforeAll
     static void ensureJIPipe() {
