@@ -115,10 +115,12 @@ public final class JIPipeDesktopMCPIntegration implements AutomationEndpointHand
 
     /**
      * Core-side hook for the MCP lifecycle: starts and stops the whole layer (broker
-     * client, endpoint, registration). Installed by the GUI launcher at startup because
-     * the lifecycle executor and the broker client live there; the AI monitor's start
-     * and stop buttons and the "Enable MCP" settings toggle call through it. All
-     * implementations must be non-blocking: the work runs on background executors.
+     * client, endpoint, registration) and reconnects the broker connection after a token
+     * rotation (the layer keeps running). Installed by the GUI launcher at startup
+     * because the lifecycle executor and the broker client live there; the AI monitor's
+     * start and stop buttons, the token rotation, and the "Enable MCP" settings toggle
+     * call through it. All implementations must be non-blocking: the work runs on
+     * background executors.
      */
     public interface LifecycleHooks {
 
@@ -132,6 +134,14 @@ public final class JIPipeDesktopMCPIntegration implements AutomationEndpointHand
          * broker stays alive for other instances). Never blocks the caller.
          */
         void stopMcpAsync();
+
+        /**
+         * Re-establishes the broker connection without stopping the layer (used after
+         * token rotation: the connection state is invalidated, so the next connect
+         * replaces the old-token broker). A stopped layer is started. Never blocks the
+         * caller.
+         */
+        void reconnectMcpAsync();
     }
 
     /**
@@ -309,6 +319,15 @@ public final class JIPipeDesktopMCPIntegration implements AutomationEndpointHand
 
     private static void emit() {
         STATUS_EVENTS.emit(new MCPStatusEvent(active));
+    }
+
+    /**
+     * Emits a status event from outside the integration (used by the launcher's reconnect
+     * path: a successful reconnect changes the broker URL without any pause, resume, or
+     * install transition that would emit on its own).
+     */
+    public static void emitStatus() {
+        emit();
     }
 
     /**

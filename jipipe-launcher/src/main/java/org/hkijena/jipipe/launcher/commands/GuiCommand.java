@@ -79,6 +79,11 @@ public class GuiCommand {
             public void stopMcpAsync() {
                 stopMcpFromHooks();
             }
+
+            @Override
+            public void reconnectMcpAsync() {
+                reconnectMcpFromHooks();
+            }
         });
         List<String> remainingArgs = new ArrayList<>();
         for (int i = 0; i < argsList.size(); i++) {
@@ -243,6 +248,60 @@ public class GuiCommand {
         JIPipeDesktopMCPIntegration integration = JIPipeDesktopMCPIntegration.getActive();
         if (integration != null) {
             integration.pauseAsync();
+        }
+    }
+
+    /**
+     * The lifecycle hook reconnect path (called by the AI monitor after a token
+     * rotation; never blocks the caller): re-establishes the broker connection without
+     * stopping the layer. With no client (layer not started), this delegates to the
+     * startup path. A paused layer is resumed instead (its endpoint must not be
+     * registered while stopped); the pause unregistration already cleared the client's
+     * connection state, so the resume connect re-runs the full discovery path. Otherwise
+     * the current windows are snapshotted here (the window set is EDT-confined) and the
+     * reconnect runs on the MCP executor, serialized with the other MCP tasks.
+     */
+    private static void reconnectMcpFromHooks() {
+        if (!SwingUtilities.isEventDispatchThread()) {
+            SwingUtilities.invokeLater(GuiCommand::reconnectMcpFromHooks);
+            return;
+        }
+        if (mcpBrokerClient == null) {
+            startMcpIfNeededAsync();
+            return;
+        }
+        JIPipeDesktopMCPIntegration integration = JIPipeDesktopMCPIntegration.getActive();
+        if (integration != null && integration.isPaused()) {
+            startMcpFromHooks();
+            return;
+        }
+        List<MCPProjectEntry> projectSnapshot = ProjectSource.openWindows().getProjects();
+        MCP_EXECUTOR.execute(loggedMcpTask("reconnect", () -> reconnectMcp(projectSnapshot)));
+    }
+
+    /**
+     * The reconnect sequence on the MCP executor, mirroring the startup path after
+     * connect (register, then push the current window list): the invalidated client
+     * re-runs the full discovery, and a 401 from the old-token broker deletes the stale
+     * discovery file and spawns a fresh broker with the rotated token. Failures are
+     * logged and non-fatal.
+     */
+    private static void reconnectMcp(List<MCPProjectEntry> projectSnapshot) {
+        MCPBrokerClient client = mcpBrokerClient;
+        if (client == null) {
+            return;
+        }
+        try {
+            client.invalidateConnection();
+            client.ensureConnected(new JIPipeProgressInfo());
+            client.register();
+            System.err.println("MCP broker reconnected at " + client.getBaseUrl());
+            client.updateProjects(projectSnapshot);
+        } catch (Exception e) {
+            System.err.println("MCP reconnect failed: " + e.getMessage());
+        } finally {
+            // The broker URL may have changed without any other lifecycle transition.
+            JIPipeDesktopMCPIntegration.emitStatus();
         }
     }
 

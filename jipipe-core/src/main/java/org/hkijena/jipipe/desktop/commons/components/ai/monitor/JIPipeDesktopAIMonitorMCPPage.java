@@ -38,8 +38,8 @@ import java.util.List;
  * <p>
  * Token reads and the rotation happen off the event dispatch thread (SwingWorker):
  * reading or rewriting the token file on the EDT would add disk I/O to every refresh.
- * Rotation restarts the MCP layer through the lifecycle hooks (stop, then start) so the
- * replaced broker is picked up immediately.
+ * Rotation reconnects the broker connection through the lifecycle hooks (the layer
+ * keeps running) so the replaced broker is picked up immediately.
  */
 public class JIPipeDesktopAIMonitorMCPPage extends JIPipeDesktopAIMonitorPage implements MCPStatusEventListener {
 
@@ -255,7 +255,7 @@ public class JIPipeDesktopAIMonitorMCPPage extends JIPipeDesktopAIMonitorPage im
 
     /**
      * Rotates the shared broker access token after an explicit confirmation. The file
-     * rewrite and the layer restart run off the EDT:
+     * rewrite and the reconnect run off the EDT:
      * <ol>
      *     <li>A confirmation dialog warns that rotating invalidates the current token,
      *     that agents configured with the old token must be updated, and that the shared
@@ -263,14 +263,15 @@ public class JIPipeDesktopAIMonitorMCPPage extends JIPipeDesktopAIMonitorPage im
      *     <li>On confirm, {@link MCPBrokerClient#rotateToken()} atomically regenerates the
      *     token file, clears the cached token, and returns the new token (background
      *     thread).</li>
-     *     <li>The layer is restarted through the lifecycle hooks (stop, then start) so it
-     *     reconnects: the running broker still holds the old token, the next health check
-     *     fails (401), the stale discovery file is deleted, and a fresh broker spawns with
-     *     the new token. Other running JIPipe instances converge the same way on their
-     *     next connection (the 401 clears their cached token, so they re-read the rotated
-     *     file).</li>
+     *     <li>The broker connection is re-established through the lifecycle hooks
+     *     (reconnectMcpAsync; the layer keeps running): the connection state is
+     *     invalidated, so the next connect re-runs the full discovery. The running broker
+     *     still holds the old token, the health check fails (401), the stale discovery
+     *     file is deleted, and a fresh broker spawns with the new token. Other running
+     *     JIPipe instances converge the same way on their next connection (the 401 clears
+     *     their cached token, so they re-read the rotated file).</li>
      *     <li>The page state is refreshed afterwards; the status events refresh it again
-     *     while the layer restarts.</li>
+     *     while the layer reconnects.</li>
      * </ol>
      */
     private void rotateToken() {
@@ -308,11 +309,11 @@ public class JIPipeDesktopAIMonitorMCPPage extends JIPipeDesktopAIMonitorPage im
                 // The field immediately renders the new token (still masked unless shown).
                 fetchedToken = rotated;
                 applyTokenDisplay();
-                // Restart the layer so it reconnects with the new token (stop, then start).
+                // Reconnect the broker connection so the replaced broker is picked up
+                // (the layer keeps running; only the connection is re-established).
                 JIPipeDesktopMCPIntegration.LifecycleHooks hooks = JIPipeDesktopMCPIntegration.getLifecycleHooks();
                 if (hooks != null) {
-                    hooks.stopMcpAsync();
-                    hooks.startMcpAsync();
+                    hooks.reconnectMcpAsync();
                 }
                 refresh();
             }

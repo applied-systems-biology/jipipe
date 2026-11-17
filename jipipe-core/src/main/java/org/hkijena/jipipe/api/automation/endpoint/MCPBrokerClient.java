@@ -76,7 +76,9 @@ import java.util.function.Supplier;
  * regenerated, so the token survives broker restarts and is shared by all JIPipe
  * instances of the same user directory. The one sanctioned exception is
  * {@link #rotateToken()}: the deliberate, user-confirmed regeneration path (the MCP
- * monitor page's Rotate button) that atomically replaces the file and restarts the layer.
+ * monitor page's Rotate button) that atomically replaces the file and reconnects the
+ * broker connection via {@link #invalidateConnection()} (the old-token broker is
+ * replaced on the next connect; the layer itself keeps running).
  */
 public class MCPBrokerClient {
 
@@ -340,11 +342,15 @@ public class MCPBrokerClient {
      * After a rotation the running broker still holds the old token (it reads the file
      * only at startup): the next {@link #ensureConnected()} health check fails (401), the
      * stale discovery file is deleted, and a fresh broker spawns with the new token. The
-     * caller restarts the MCP layer right after rotating (stop, then start) so this
-     * instance reconnects immediately. Other running JIPipe instances converge the same
-     * way on their next connection: their health check with the stale cached token is
-     * rejected, the 401 clears their cached token (see {@link #checkBrokerHealth(String)}),
-     * and they re-read the rotated file and connect to the replaced broker.
+     * caller reconnects right after rotating ({@link #invalidateConnection()} plus
+     * {@link #ensureConnected()}, without pausing the layer) so this instance replaces
+     * the broker immediately. The old-token broker lingers harmlessly: its remaining
+     * clients 401 away and converge to the replaced broker, and the port fallback
+     * assigns the new broker a free port when the old one still holds the configured
+     * port. Other running JIPipe instances converge the same way on their next
+     * connection: their health check with the stale cached token is rejected, the 401
+     * clears their cached token (see {@link #checkBrokerHealth(String)}), and they
+     * re-read the rotated file and connect to the replaced broker.
      *
      * @return the new token
      * @throws IllegalStateException when token authentication is disabled (there is no
@@ -473,6 +479,18 @@ public class MCPBrokerClient {
         }
         connected = false;
         registered = false;
+    }
+
+    /**
+     * Resets the connection state so the next {@link #ensureConnected()} re-runs the full
+     * discovery, PID, and health path: on a 401 from the old-token broker, the stale
+     * discovery file is deleted and a fresh broker spawns with the current token. Used
+     * after token rotation; the old broker is replaced on the next connect.
+     */
+    public synchronized void invalidateConnection() {
+        connected = false;
+        registered = false;
+        baseUrl = null;
     }
 
     /**

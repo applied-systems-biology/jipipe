@@ -490,6 +490,98 @@ public class MCPBrokerClientTest {
         assertEquals("rotated-token", client.getToken());
     }
 
+    @Test
+    public void invalidateConnectionReconnectsThroughTheFullDiscoveryPath() throws Exception {
+        startStubBroker();
+        client = new MCPBrokerClient(recordingSpawner, 8781, tempDir);
+        writeDiscoveryFile(ProcessHandle.current().pid(), brokerPort());
+        client.ensureConnected(new JIPipeProgressInfo());
+        assertEquals("http://127.0.0.1:" + brokerPort(), client.getBaseUrl());
+        assertTrue(client.isConnected());
+
+        // A replacement broker takes over the discovery file at a different port while
+        // the old broker is still reachable: only an invalidated connection state makes
+        // the next connect re-read the discovery file instead of reusing the cached
+        // connection.
+        HttpServer replacement = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+        AtomicInteger replacementHealthHits = new AtomicInteger();
+        replacement.createContext("/health", exchange -> {
+            replacementHealthHits.incrementAndGet();
+            respond(exchange, 200, "text/plain; charset=utf-8", "ok");
+        });
+        replacement.start();
+        try {
+            int replacementPort = replacement.getAddress().getPort();
+            writeDiscoveryFile(ProcessHandle.current().pid(), replacementPort);
+
+            client.invalidateConnection();
+            assertFalse(client.isConnected());
+            assertNull(client.getBaseUrl());
+
+            client.ensureConnected(new JIPipeProgressInfo());
+
+            assertTrue(client.isConnected());
+            assertEquals("http://127.0.0.1:" + replacementPort, client.getBaseUrl());
+            assertEquals(1, replacementHealthHits.get(), "the replacement broker's health endpoint must be re-checked");
+            assertTrue(spawnedCommands.isEmpty());
+        } finally {
+            replacement.stop(0);
+        }
+    }
+
+    @Test
+    public void invalidateConnectionAfterRotationReplacesOldTokenBrokerOn401() throws Exception {
+        // The old broker holds the OLD token (it read the file at startup): /health
+        // accepts only that token. After a rotate plus invalidateConnection, the next
+        // connect must replace it: the 401 deletes the stale discovery file and a fresh
+        // broker spawns with the rotated token.
+        AtomicReference<String> acceptedToken = new AtomicReference<>("old-token");
+        broker = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+        broker.createContext("/health", exchange -> {
+            String authorization = exchange.getRequestHeaders().getFirst("Authorization");
+            healthAuthorizationHeaders.add(authorization);
+            if (("Bearer " + acceptedToken.get()).equals(authorization)) {
+                respond(exchange, 200, "text/plain; charset=utf-8", "ok");
+            } else {
+                respond(exchange, 401, "text/plain; charset=utf-8", "unauthorized");
+            }
+        });
+        broker.start();
+
+        client = tokenClient(command -> {
+            spawnedCommands.add(List.copyOf(command));
+            // The spawned broker runs with the rotated token file and takes over the
+            // discovery file (the client deleted the stale one).
+            acceptedToken.set(Files.readString(client.getTokenFilePath(), StandardCharsets.UTF_8).trim());
+            writeDiscoveryFile(ProcessHandle.current().pid(), brokerPort());
+            return new StubProcess();
+        });
+
+        Path tokenFile = client.getTokenFilePath();
+        Files.writeString(tokenFile, "old-token", StandardCharsets.UTF_8);
+        writeDiscoveryFile(ProcessHandle.current().pid(), brokerPort());
+
+        client.ensureConnected(new JIPipeProgressInfo());
+        assertTrue(client.isConnected());
+        assertEquals("old-token", client.getToken());
+
+        String rotated = client.rotateToken();
+        assertNotEquals("old-token", rotated);
+        client.invalidateConnection();
+        assertFalse(client.isConnected());
+
+        client.ensureConnected(new JIPipeProgressInfo());
+
+        // The 401 from the old-token broker deleted the discovery file and spawned a
+        // fresh broker, which accepted the rotated token.
+        assertEquals(1, spawnedCommands.size());
+        assertTrue(client.isConnected());
+        assertEquals(brokerPort(), SharedServerDiscoveryFile.read(client.getDiscoveryFilePath()).getPort());
+        assertEquals("Bearer old-token", healthAuthorizationHeaders.get(0));
+        assertTrue(healthAuthorizationHeaders.contains("Bearer " + rotated));
+        assertEquals(rotated, client.getToken());
+    }
+
     /**
      * A client with token authentication forced on (without the application settings
      * service) and the MCP directory redirected into the test temp dir.
