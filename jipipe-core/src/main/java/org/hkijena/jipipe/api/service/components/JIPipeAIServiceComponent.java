@@ -3,6 +3,8 @@ package org.hkijena.jipipe.api.service.components;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.ai.llm.activity.LLMActivityPhase;
+import org.hkijena.jipipe.api.ai.llm.activity.LLMActivityTracker;
 import org.hkijena.jipipe.api.progress.JIPipeProgressLog;
 import org.hkijena.jipipe.api.ai.JIPipeEmbeddingAIModelRunner;
 import org.hkijena.jipipe.api.artifacts.JIPipeArtifact;
@@ -29,6 +31,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Service component that manages AI model lifecycle and provides service-aware executors
@@ -62,6 +68,43 @@ public class JIPipeAIServiceComponent extends JIPipeServiceComponent {
     private final JIPipeProgressInfo embeddingProgressInfo = createEmbeddingProgressInfo();
 
     /**
+     * How long the embedding activity phase stays open after the last progress batch
+     * before it is finalized (milliseconds). Batches are coalesced to at most one per
+     * 100 ms, so 1500 ms of silence reliably means the current embedding-related work
+     * has stopped writing records.
+     */
+    private static final long EMBEDDING_ACTIVITY_QUIET_MS = 1500;
+
+    /**
+     * The rolling LLM activity history rendered by the AI status graph
+     * ({@code JIPipeDesktopAIStatusGraph}). Producers: the embedding activity feed
+     * below (Embedding phase) and the MCP dispatch in
+     * {@code JIPipeDesktopMCPIntegration} (ToolCall phase).
+     */
+    private final LLMActivityTracker llmActivityTracker = new LLMActivityTracker();
+
+    /**
+     * Guards the embedding activity phase bookkeeping between the batch listener
+     * (store writer thread) and the quiet-period finalizer (scheduler thread).
+     */
+    private final ReentrantLock embeddingActivityLock = new ReentrantLock();
+
+    /**
+     * Wall-clock time of the last embedding progress batch.
+     */
+    private volatile long lastEmbeddingActivityMs;
+
+    /**
+     * Serializes the quiet-period checks for the embedding activity phase.
+     */
+    private final ScheduledExecutorService embeddingActivityFinalizer = Executors.newSingleThreadScheduledExecutor(
+            runnable -> {
+                Thread thread = new Thread(runnable, "JIPipe-AI-Embedding-Activity");
+                thread.setDaemon(true);
+                return thread;
+            });
+
+    /**
      * Creates the embedding progress handle on its file-backed store.
      */
     private static JIPipeProgressInfo createEmbeddingProgressInfo() {
@@ -89,6 +132,69 @@ public class JIPipeAIServiceComponent extends JIPipeServiceComponent {
                 // Best effort on shutdown
             }
         }, "JIPipe-AI-Embedding-Shutdown"));
+
+        // Feed the AI status graph's embedding row from the embedding progress store: every
+        // batch proves actual embedding-related activity (model load, embed calls, cache I/O).
+        // The subscription lives for the component's lifetime (application lifetime).
+        embeddingProgressInfo.subscribeToBatchEvents(this::onEmbeddingActivityBatch);
+        embeddingActivityFinalizer.scheduleAtFixedRate(this::finalizeEmbeddingActivityIfQuiet,
+                500, 500, TimeUnit.MILLISECONDS);
+    }
+
+    // ===== LLM activity tracking (AI status graph) =====
+
+    /**
+     * Gets the rolling LLM activity tracker rendered by the AI status graph. Producers
+     * record phases into it (embedding activity here, MCP tool calls in the desktop
+     * integration); the graph only reads.
+     */
+    public LLMActivityTracker getLLMActivityTracker() {
+        return llmActivityTracker;
+    }
+
+    /**
+     * Embedding activity feed: a progress batch proves that embedding-related work is
+     * (still) writing records, so it opens (or extends) an Embedding phase in the
+     * tracker. Phase bookkeeping is serialized against the quiet-period finalizer.
+     * Never throws: the status graph must not be able to break embedding operations.
+     */
+    private void onEmbeddingActivityBatch(JIPipeProgressLog.ProgressBatchEvent event) {
+        try {
+            embeddingActivityLock.lock();
+            try {
+                lastEmbeddingActivityMs = System.currentTimeMillis();
+                if (llmActivityTracker.getCurrentPhase() != LLMActivityPhase.Embedding) {
+                    llmActivityTracker.beginPhase(LLMActivityPhase.Embedding, null);
+                }
+            } finally {
+                embeddingActivityLock.unlock();
+            }
+        } catch (Throwable ignored) {
+            // The status graph must never break embedding operations.
+        }
+    }
+
+    /**
+     * Finalizes an open Embedding phase once no progress batch arrived for
+     * {@link #EMBEDDING_ACTIVITY_QUIET_MS}. Never throws.
+     */
+    private void finalizeEmbeddingActivityIfQuiet() {
+        try {
+            embeddingActivityLock.lock();
+            try {
+                if (llmActivityTracker.getCurrentPhase() != LLMActivityPhase.Embedding) {
+                    return;
+                }
+                if (System.currentTimeMillis() - lastEmbeddingActivityMs < EMBEDDING_ACTIVITY_QUIET_MS) {
+                    return;
+                }
+                llmActivityTracker.finalizeCurrentPhase();
+            } finally {
+                embeddingActivityLock.unlock();
+            }
+        } catch (Throwable ignored) {
+            // Best effort: the next batch reopens the phase.
+        }
     }
 
     // ===== Public API (delegating to EmbeddingModelService) =====

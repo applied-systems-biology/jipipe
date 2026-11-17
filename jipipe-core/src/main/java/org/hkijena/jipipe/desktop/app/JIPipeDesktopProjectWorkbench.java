@@ -30,6 +30,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabase;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.project.JIPipeArchiveProjectToDirectoryRun;
 import org.hkijena.jipipe.api.project.JIPipeArchiveProjectToZIPRun;
 import org.hkijena.jipipe.api.project.JIPipeProject;
@@ -78,7 +79,7 @@ import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopProjectOverviewUI;
 import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopRawSettingsSection;
 import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopSettingsTab;
 import org.hkijena.jipipe.desktop.commons.components.SplitButton;
-import org.hkijena.jipipe.desktop.commons.components.ai.JIPipeDesktopAIStatusControl;
+import org.hkijena.jipipe.desktop.commons.components.ai.statusbar.JIPipeDesktopAIManager;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.desktop.commons.components.project.JIPipeDesktopAccelerationOptionsControl;
 import org.hkijena.jipipe.desktop.commons.components.project.JIPipeDesktopArtifactsOptionsControl;
@@ -115,6 +116,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.net.URI;
 import java.nio.file.Files;
+import java.lang.ref.WeakReference;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -180,6 +182,33 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
     private JIPipeDesktopPluginValidityCheckerPanel pluginValidityCheckerPanel;
     private boolean projectModified;
     private JButton openProjectOverviewButton;
+    /**
+     * The status bar of this workbench. Held as a field so the live AI feature toggle
+     * can add/remove the unified AI item ({@link #updateAiStatusBarItem()}).
+     */
+    private JXStatusBar statusBar;
+    /**
+     * The unified AI status bar item, or null while the AI feature is disabled. The AI
+     * toggle adds/removes it live ({@link #updateAiStatusBarItem()}): a user who turned
+     * AI off does not keep seeing the AI/MCP item.
+     */
+    private JIPipeDesktopAIManager aiStatusBarItem;
+    /**
+     * The status bar item the unified AI item sits before (the memory meter); the
+     * anchor keeps the item order stable across live add/remove cycles.
+     */
+    private JIPipeDesktopMemoryManager aiStatusBarItemAnchor;
+    /**
+     * The live "Enable AI functionality" toggle listener. The settings sheet is a
+     * global singleton that outlives every workbench, so the subscription must be
+     * weak and the listener must be a reachable field (a temporary lambda could be
+     * collected before it is ever invoked). Marshals to the EDT.
+     */
+    private final JIPipeParameterCollection.ParameterChangedEventListener aiSettingListener = event -> {
+        if ("enable-ai".equals(event.getKey())) {
+            SwingUtilities.invokeLater(this::updateAiStatusBarItem);
+        }
+    };
     /**
      * The publish toolbar button (feature #753). Only created when the
      * publish menu has at least one entry. Carries the static FAIR badge:
@@ -578,15 +607,31 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
                     compartmentUI,
                     JIPipeDesktopTabPane.CloseMode.withSilentCloseButton,
                     false);
+            // The emitters live as long as the project, but the tab (and its editor) must
+            // not: subscribeLambda subscribers cannot be unsubscribed (they match by
+            // identity only for named listeners), so a strong lambda would retain every
+            // closed tab - one leaked editor shell per screenshot auto-open/close cycle.
+            // The tab is therefore held only weakly here: while the tab is open the tab
+            // pane holds it strongly, and after a close the weak references clear and the
+            // subscriptions become no-ops until the next emit garbage-collects them.
+            WeakReference<JIPipeDesktopTabPane.DocumentTab> titleTabRef = new WeakReference<>(documentTab);
             compartment.getParameterChangedEventEmitter().subscribeLambda((emitter, event) -> {
+                JIPipeDesktopTabPane.DocumentTab tab = titleTabRef.get();
+                if (tab == null) {
+                    return;
+                }
                 if (event.getKey().equals("jipipe:node:name")) {
-                    documentTab.setTitle(compartment.getName());
-                    documentTab.emitParameterChangedEvent("title");
+                    tab.setTitle(compartment.getName());
+                    tab.emitParameterChangedEvent("title");
                 }
             });
+            WeakReference<JIPipeDesktopTabPane.DocumentTab> removedTabRef = new WeakReference<>(documentTab);
             project.getCompartmentRemovedEventEmitter().subscribeLambda((emitter, event) -> {
                 if (event.getCompartment() == compartment) {
-                    documentTabPane.closeTab(documentTab);
+                    JIPipeDesktopTabPane.DocumentTab tab = removedTabRef.get();
+                    if (tab != null) {
+                        documentTabPane.closeTab(tab);
+                    }
                 }
             });
             if (switchToTab)
@@ -601,7 +646,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
     }
 
     private void initializeStatusBar() {
-        JXStatusBar statusBar = new JXStatusBar();
+        statusBar = new JXStatusBar();
         statusBar.putClientProperty(BasicStatusBarUI.AUTO_ADD_SEPARATOR, false);
 
         // Background processes
@@ -638,18 +683,62 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         // Acceleration control
         statusBar.add(new JIPipeDesktopAccelerationOptionsControl(this));
 
-        if (AIApplicationSettings.getInstance().isEnableAI()) {
-            // AI control
-            statusBar.add(new JIPipeDesktopAIStatusControl(this));
-        }
-
         // Server control
         statusBar.add(new JIPipeDesktopServerStatusControl(this));
 
+        // The memory meter doubles as the anchor of the live AI item toggle: the unified
+        // AI item sits directly before it, and add/remove keeps that position.
+        JIPipeDesktopMemoryManager memoryManager = new JIPipeDesktopMemoryManager(this);
+
+        // Unified AI item: activity graph (AI phases + MCP indicator), embedding model
+        // popup entries, and the MCP Ask bubble. Replaces the former AI status control
+        // and MCP status control; the MCP layer controls and logs live in the AI monitor.
+        // The AI feature toggle is the absolute opt-out: the item exists only while the
+        // AI feature is enabled, and the live toggle adds/removes it
+        // (updateAiStatusBarItem).
+        aiStatusBarItemAnchor = memoryManager;
+        if (AIApplicationSettings.getInstance().isEnableAI()) {
+            aiStatusBarItem = new JIPipeDesktopAIManager(this);
+            statusBar.add(aiStatusBarItem);
+        }
+
         // Memory meter
-        statusBar.add(new JIPipeDesktopMemoryManager(this));
+        statusBar.add(memoryManager);
 
         add(statusBar, BorderLayout.SOUTH);
+
+        // Live AI toggle: add/remove the AI status bar item while the app runs. Weak
+        // subscription (the settings sheet outlives every workbench); the listener is a
+        // field so the weak reference stays reachable.
+        AIApplicationSettings.getInstance().getParameterChangedEventEmitter().subscribeWeak(aiSettingListener);
+    }
+
+    /**
+     * Adds or removes the unified AI status bar item according to the live AI feature
+     * toggle (the absolute "no AI" opt-out: with AI off the user gets no AI item and no
+     * MCP status controls). The item is re-added at its original position (directly
+     * before the memory meter anchor). Runs on the EDT (marshalled from the settings
+     * event).
+     */
+    private void updateAiStatusBarItem() {
+        boolean aiEnabled = AIApplicationSettings.getInstance().isEnableAI();
+        if (aiEnabled && aiStatusBarItem == null) {
+            aiStatusBarItem = new JIPipeDesktopAIManager(this);
+            if (statusBar != null) {
+                int anchorIndex = aiStatusBarItemAnchor != null
+                        ? statusBar.getComponentZOrder(aiStatusBarItemAnchor) : -1;
+                statusBar.add(aiStatusBarItem, anchorIndex);
+                statusBar.revalidate();
+                statusBar.repaint();
+            }
+        } else if (!aiEnabled && aiStatusBarItem != null) {
+            if (statusBar != null) {
+                statusBar.remove(aiStatusBarItem);
+                statusBar.revalidate();
+                statusBar.repaint();
+            }
+            aiStatusBarItem = null;
+        }
     }
 
     /**

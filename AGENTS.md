@@ -369,58 +369,78 @@ and pipelines** (e.g. as `field-class-id` in project JSON). They must never be d
 The project uses a multi-module Maven structure with careful dependency management. Core plugins depend on each other in
 a specific order during initialization.
 
-## Instrumentation System
+## MCP server / automation layer
 
-JIPipe includes a WebSocket-based instrumentation API for external automation and diagnostics (used by the AI agent and
-test harnesses). The server runs on `127.0.0.1:8780` by default and is started by the GUI launcher with
-`--instrumentation [port]` or when auto-start is enabled in settings.
+JIPipe exposes its automation operations to external agents over MCP (Model Context Protocol). A shared broker
+(servers/mcp) fronts per-instance HTTP endpoints. The old WebSocket-based instrumentation API
+(`api/instrumentation`) was removed in this change and replaced by this layer.
 
-### Key Classes
+### Architecture
 
-- **[
-  `InstrumentationServer`](jipipe-core/src/main/java/org/hkijena/jipipe/api/instrumentation/InstrumentationServer.java)** -
-  WebSocket server (extends `WebSocketServer`), handles client connections and message dispatch
-- **[
-  `InstrumentationProtocol`](jipipe-core/src/main/java/org/hkijena/jipipe/api/instrumentation/InstrumentationProtocol.java)** -
-  Message type constants (commands and events)
-- **[
-  `InstrumentationOperation`](jipipe-core/src/main/java/org/hkijena/jipipe/api/instrumentation/InstrumentationOperation.java)** -
-  Core operation interface: `getId()`, `getDescription()`, `execute()`
-- **[
-  `AsyncInstrumentationOperation`](jipipe-core/src/main/java/org/hkijena/jipipe/api/instrumentation/AsyncInstrumentationOperation.java)** -
-  Extension for long-running operations; returns a job ID immediately
-- **[`InstrumentationAPI`](jipipe-core/src/main/java/org/hkijena/jipipe/api/instrumentation/InstrumentationAPI.java)** -
-  Stateless service class with all business logic; shared between the WebSocket layer and the internal AI agent
-- **[
-  `InstrumentationOperationRegistry`](jipipe-core/src/main/java/org/hkijena/jipipe/api/instrumentation/InstrumentationOperationRegistry.java)** -
-  `ConcurrentHashMap`-backed registry mapping string IDs to operations
-- **[
-  `InstrumentationContext`](jipipe-core/src/main/java/org/hkijena/jipipe/api/instrumentation/InstrumentationContext.java)** -
-  Immutable context passed to operations (project, progress info, event bus, job manager)
-- **[
-  `InstrumentationApplicationSettings`](jipipe-core/src/main/java/org/hkijena/jipipe/api/instrumentation/InstrumentationApplicationSettings.java)** -
-  Settings: enable/disable, port (default 8780), auto-start
-
-### Protocol
-
-All messages are JSON objects with a `"type"` field. Clients send commands; the server responds with `operation_result`
-(sync) or `job_started`/`job_progress`/`job_completed` (async). Clients must call `select_project` before most
-operations. Key commands: `list_projects`, `select_project`, `query_graph`, `query_node`, `run_node`, `run_compartment`,
-`run_pipeline`, `add_node`, `remove_node`, `add_connection`, `remove_connection`, `set_parameter`,
-`set_project_metadata`, `add_compartment`, `rename_compartment`, `get_pipeline_map`, `search_nodes`, `list_operations`,
-`get_job_status`, `cancel_job`.
+- **Operation layer** (`api/automation`): [`AutomationOperation`](jipipe-core/src/main/java/org/hkijena/jipipe/api/automation/AutomationOperation.java)
+  is the operation interface: `getId()`, `getDescription()`, `getInputSchema()` (JSON schema mirroring what
+  `execute()` parses, `additionalProperties:false`), `getCategory()`/`isReadOnly()`, and
+  `execute(AutomationContext, JsonNode)`. [`AsyncAutomationOperation`](jipipe-core/src/main/java/org/hkijena/jipipe/api/automation/AsyncAutomationOperation.java)
+  adds `executeAsync` for long-running operations (returns an `InstrumentationJob` immediately).
+  [`AutomationOperationRegistry`](jipipe-core/src/main/java/org/hkijena/jipipe/api/automation/AutomationOperationRegistry.java)
+  is the ConcurrentHashMap-backed registry; it validates parameters against the input schema before dispatch.
+  [`AutomationContext`](jipipe-core/src/main/java/org/hkijena/jipipe/api/automation/AutomationContext.java)
+  carries project, project key, progress, event bus, and job manager; `ctx.getGraph()` (not
+  `ctx.getProject().getGraph()`) respects the graph override mechanism used by the AI agent's stage system.
+  [`JIPipeAutomationAPI`](jipipe-core/src/main/java/org/hkijena/jipipe/api/automation/JIPipeAutomationAPI.java)
+  holds the typed static methods that operation implementations delegate to. Registration is plugin-extensible
+  (any `JIPipeJavaPlugin` can register operations).
+- **Instance endpoint** (`api/automation/endpoint`): [`AutomationInstanceEndpoint`](jipipe-core/src/main/java/org/hkijena/jipipe/api/automation/endpoint/AutomationInstanceEndpoint.java)
+  serves the global operation registry on 127.0.0.1, authenticated by a per-endpoint secret
+  (`X-JIPipe-Endpoint-Secret` header, constant-time compare). Errors travel in the JSON envelope as
+  `ok:false` with a code of `unauthorized|hidden|denied|unknown|invalid|failed`; operations with a null or
+  non-object input schema are refused (fail-closed).
+- **Broker client lifecycle**: [`MCPBrokerClient`](jipipe-core/src/main/java/org/hkijena/jipipe/api/automation/endpoint/MCPBrokerClient.java)
+  connects to a running broker via the discovery file `<JIPipe user dir>/mcp/discovery.json` (PID liveness
+  check plus `GET /health`), deletes stale files, and otherwise spawns a broker ([`MCPServerProcess`](jipipe-core/src/main/java/org/hkijena/jipipe/servers/mcp/MCPServerProcess.java),
+  SharedServerProcess-based) with a 30 second health poll. The GUI launcher starts the client on the first
+  project window when `--mcp [port]` is given (or `MCPApplicationSettings.autoStart`/`enable` is set) and shuts
+  it down when the last window closes; the lifecycle runs on a background executor, never on the EDT. The
+  launcher installs `JIPipeDesktopMCPIntegration.LifecycleHooks` at startup, so the AI monitor and the live
+  `enable` toggle can start/stop the layer through the same executor (start of a paused layer resumes it;
+  stop uses pause semantics: unregister plus endpoint stop, the broker stays alive). Registration
+  (`POST /control/register`) carries project entries (project key = project window session id) and tool
+  descriptors built from the global operation registry.
+- **Broker** (`servers/mcp`): [`MCPBrokerServer`](jipipe-core/src/main/java/org/hkijena/jipipe/servers/mcp/MCPBrokerServer.java)
+  serves streamable HTTP MCP on `/mcp` plus the control routes `POST /control/register`,
+  `POST /control/unregister`, and `GET /control/logs` (`GET /health` is open). Default port 8781 via
+  [`MCPApplicationSettings`](jipipe-core/src/main/java/org/hkijena/jipipe/plugins/automation/settings/MCPApplicationSettings.java)
+  (an occupied port falls back to a free one). Optional bearer token (`require-token` setting): the shared
+  token file `<JIPipe user dir>/mcp/token` is generated once and presented as `Authorization: Bearer` on
+  `/mcp` and `/control/*`.
+- **Permissions** (`api/automation/permissions`): [`AutomationPermissionService`](jipipe-core/src/main/java/org/hkijena/jipipe/api/automation/permissions/AutomationPermissionService.java)
+  resolves the [`AutomationPermissionState`](jipipe-core/src/main/java/org/hkijena/jipipe/api/automation/permissions/AutomationPermissionState.java)
+  of each operation: Allow, Ask, Deny, Hide. Resolution order: Allow-always grant (per project, in-memory),
+  CLI override, user state (settings permission map), then the category default
+  (`isReadOnly() ? Allow : Ask`). Ask shows a bubble anchored to the unified AI status item of the target
+  project window; the wait is bounded at 300 seconds so a paused UI cannot hold endpoint threads forever
+  (deny on timeout). CLI `--mcp-permissions allow=<ids> deny=<ids>` overrides are session-only and
+  fail-closed (the most restrictive state wins).
+- **Desktop integration** (`org.hkijena.jipipe.desktop.app.automation`): [`JIPipeDesktopMCPIntegration`](jipipe-core/src/main/java/org/hkijena/jipipe/desktop/app/automation/JIPipeDesktopMCPIntegration.java)
+  dispatches operations, owns the ask queue, the operation log, and the screenshot source. The unified AI
+  status item ([`JIPipeDesktopAIManager`](jipipe-core/src/main/java/org/hkijena/jipipe/desktop/commons/components/ai/statusbar/JIPipeDesktopAIManager.java),
+  gated behind the AI setting) shows the AI activity graph with an MCP indicator line and hosts the Ask
+  bubble; the MCP layer controls (start/stop, server URL and token, grants, pending asks) and the operation
+  and broker logs live in the AI monitor's MCP pages
+  (`desktop/commons/components/ai/monitor/JIPipeDesktopAIMonitorMCPPage.java` and siblings).
+- **Tool catalog**: `docs/superpowers/specs/2026-11-16-mcp-server-design.md`.
 
 ### Adding a New Operation
 
-1. Create a static inner class implementing `InstrumentationOperation` (or `AsyncInstrumentationOperation` for
-   long-running tasks) in a file under `api/instrumentation/operations/`
-2. Register it in [
-   `InstrumentationPlugin.register()`](jipipe-core/src/main/java/org/hkijena/jipipe/plugins/instrumentation/InstrumentationPlugin.java)
-   via `registerInstrumentationOperation(id, operation)`
-3. Delegate business logic to `InstrumentationAPI` static methods so it's reusable by the AI agent
+1. Create a static inner class implementing `AutomationOperation` (or `AsyncAutomationOperation` for
+   long-running tasks) in an operations group file under `api/automation/operations/`
+2. Implement `getId()` (stable snake_case string literal, persisted in permission settings and CLI
+   overrides), `getDescription()`, `getInputSchema()` (mirroring what `execute()` parses,
+   `additionalProperties:false`), `getCategory()`/`isReadOnly()`, and `execute(AutomationContext, JsonNode)`
+3. Register it in [`AutomationPlugin.register()`](jipipe-core/src/main/java/org/hkijena/jipipe/plugins/automation/AutomationPlugin.java)
+   via `registerAutomationOperation(id, operation)`; MCP exposure is automatic (`list_operations` itself is
+   excluded from the tool catalog)
 4. Fire events via `ctx.getEventBus().publish(...)` so connected clients are notified of changes
-5. Use `ctx.getGraph()` (not `ctx.getProject().getGraph()`) to respect the graph override mechanism used by the AI
-   agent's stage system
 
 ## Progress system (6.0.0)
 

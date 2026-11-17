@@ -1,0 +1,71 @@
+package org.hkijena.jipipe.api.automation;
+
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeGraph;
+import org.hkijena.jipipe.api.project.JIPipeProject;
+
+/**
+ * Context passed to automation operations.
+ * <p>
+ * The {@code graphOverride} allows callers to pass a working graph instead of the project
+ * graph. External automation tools (MCP) always use the project graph (graphOverride is null);
+ * the graphOverride mechanism serves the internal AI agent's stage system.
+ */
+public class AutomationContext {
+    private final JIPipeProject project;
+    private final JIPipeGraph graphOverride;
+    private final JIPipeProgressInfo progressInfo;
+    private final InstrumentationEventBus eventBus;
+    private final InstrumentationJobManager jobManager;
+    private final String projectId;
+
+    public AutomationContext(JIPipeProject project, String projectId,
+                                  JIPipeProgressInfo progressInfo,
+                                  InstrumentationEventBus eventBus,
+                                  InstrumentationJobManager jobManager) {
+        this(project, projectId, null, progressInfo, eventBus, jobManager);
+    }
+
+    public AutomationContext(JIPipeProject project, String projectId,
+                                  JIPipeGraph graphOverride,
+                                  JIPipeProgressInfo progressInfo,
+                                  InstrumentationEventBus eventBus,
+                                  InstrumentationJobManager jobManager) {
+        this.project = project;
+        this.projectId = projectId;
+        this.graphOverride = graphOverride;
+        this.progressInfo = progressInfo != null ? progressInfo : new JIPipeProgressInfo();
+        this.eventBus = eventBus;
+        this.jobManager = jobManager;
+    }
+
+    public JIPipeProject getProject() {
+        return project;
+    }
+
+    public String getProjectId() {
+        return projectId;
+    }
+
+    public JIPipeProgressInfo getProgressInfo() {
+        return progressInfo;
+    }
+
+    public InstrumentationEventBus getEventBus() {
+        return eventBus;
+    }
+
+    public InstrumentationJobManager getJobManager() {
+        return jobManager;
+    }
+
+    /**
+     * Returns the graph to operate on. If a graphOverride was set (e.g., a stage's
+     * working graph), returns that; otherwise returns the project's graph.
+     */
+    public JIPipeGraph getGraph() {
+        if (graphOverride != null) return graphOverride;
+        if (project != null) return project.getGraph();
+        return null;
+    }
+}

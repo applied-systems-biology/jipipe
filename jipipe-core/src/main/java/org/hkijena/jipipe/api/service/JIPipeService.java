@@ -71,7 +71,7 @@ public class JIPipeService extends AbstractService implements JIPipeValidatable 
     private final JIPipeAIServiceComponent aiService;
     private final JIPipeServerServiceComponent serverService;
     private final JIPipeStatisticsServiceComponent statistics;
-    private final JIPipeInstrumentationServiceComponent instrumentation;
+    private final JIPipeAutomationServiceComponent automation;
     private final JIPipeDatatypeRegisteredEventEmitter datatypeRegisteredEventEmitter = new JIPipeDatatypeRegisteredEventEmitter();
     private final JIPipePluginDiscoveredEventEmitter extensionDiscoveredEventEmitter = new JIPipePluginDiscoveredEventEmitter();
     private final JIPipePluginRegisteredEventEmitter extensionRegisteredEventEmitter = new JIPipePluginRegisteredEventEmitter();
@@ -117,12 +117,12 @@ public class JIPipeService extends AbstractService implements JIPipeValidatable 
         aiService = new JIPipeAIServiceComponent(this);
         serverService = new JIPipeServerServiceComponent(this);
         statistics = new JIPipeStatisticsServiceComponent(this);
-        instrumentation = new JIPipeInstrumentationServiceComponent(this);
+        automation = new JIPipeAutomationServiceComponent(this);
 
         // Add into components list so we can later postprocess them
         this.components = new JIPipeServiceComponent[]{
                 recentProjects, nodeTaxonomy, nodes, dataTypes, imageJDataAdapters, customMenuItems, parameterTypes, applicationSettings, settings, projectSettings, expressionFunctions, utilityClasses,
-                environments, plugins, projectTemplates, artifacts, nodeTemplates, acceleration, cleanup, projectBackup, memoryMonitor, aiService, serverService, statistics, instrumentation
+                environments, plugins, projectTemplates, artifacts, nodeTemplates, acceleration, cleanup, projectBackup, memoryMonitor, aiService, serverService, statistics, automation
         };
     }
 
@@ -317,9 +317,9 @@ public class JIPipeService extends AbstractService implements JIPipeValidatable 
         return statistics;
     }
 
-    public JIPipeInstrumentationServiceComponent getInstrumentation() {
+    public JIPipeAutomationServiceComponent getAutomation() {
         ensureInitialized();
-        return instrumentation;
+        return automation;
     }
 
     public JIPipeProgressInfo getProgressInfo() {

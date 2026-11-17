@@ -608,6 +608,15 @@ public class JIPipeDesktopTabPane extends JPanel implements Disposable {
     }
 
     /**
+     * Returns the currently selected tab.
+     *
+     * @return the selected tab. Null if the pane has no tabs
+     */
+    public DocumentTab getSelectedTab() {
+        return findTabFor(getCurrentContent());
+    }
+
+    /**
      * Adds a tab that can be silently closed and brought up again
      *
      * @param id                Unique tab identifier

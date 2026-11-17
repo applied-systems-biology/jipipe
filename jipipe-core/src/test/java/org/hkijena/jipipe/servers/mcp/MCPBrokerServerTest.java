@@ -1,0 +1,1109 @@
+package org.hkijena.jipipe.servers.mcp;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpServer;
+import org.hkijena.jipipe.api.automation.AutomationContext;
+import org.hkijena.jipipe.api.automation.AutomationOperation;
+import org.hkijena.jipipe.api.automation.AutomationOperationCategory;
+import org.hkijena.jipipe.api.automation.AutomationOperationRegistry;
+import org.hkijena.jipipe.api.automation.AutomationSchemaUtils;
+import org.hkijena.jipipe.utils.json.JsonUtils;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.InetSocketAddress;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+/**
+ * Tests the {@link MCPBrokerServer} HTTP surface with a real MCP client flow (raw JSON-RPC
+ * over the streamable HTTP transport) against a stub instance endpoint.
+ */
+public class MCPBrokerServerTest {
+
+    private static final String SECRET = "test-endpoint-secret";
+    private static final String SECOND_SECRET = "test-endpoint-secret-2";
+    private static final String INSTANCE_ID = "11111111-1111-1111-1111-111111111111";
+    private static final String OTHER_INSTANCE_ID = "22222222-2222-2222-2222-222222222222";
+    private static final String PNG_BASE64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==";
+    private static final String SECRET_HEADER = "X-JIPipe-Endpoint-Secret";
+
+    private final HttpClient client = HttpClient.newHttpClient();
+    private HttpServer stub;
+    private HttpServer secondStub;
+    private MCPBrokerServer broker;
+    private MCPInstanceRegistry instanceRegistry;
+
+    @AfterEach
+    public void tearDown() {
+        if (stub != null) {
+            stub.stop(0);
+            stub = null;
+        }
+        if (secondStub != null) {
+            secondStub.stop(0);
+            secondStub = null;
+        }
+        if (broker != null) {
+            broker.stop();
+            broker = null;
+        }
+    }
+
+    // ------------------------------------------------------------------ tests
+
+    @Test
+    public void healthIsOpenAndReturnsOk() throws Exception {
+        startBroker(null);
+        HttpResponse<String> response = client.send(HttpRequest.newBuilder(
+                        URI.create("http://127.0.0.1:" + broker.getPort() + "/health")).GET().build(),
+                HttpResponse.BodyHandlers.ofString());
+        assertEquals(200, response.statusCode());
+        assertEquals("ok", response.body());
+    }
+
+    @Test
+    public void registerLogsAndListsToolsWithReadOnlyHint() throws Exception {
+        startBroker(null);
+        assertEquals(200, registerInstance().statusCode());
+        initialize(null);
+
+        JsonNode tools = listTools();
+        List<String> names = new ArrayList<>();
+        JsonNode echoSpec = null;
+        JsonNode renderSpec = null;
+        for (JsonNode tool : tools.get("result").get("tools")) {
+            names.add(tool.get("name").asText());
+            if ("echo_test".equals(tool.get("name").asText())) {
+                echoSpec = tool;
+            }
+            if ("render_image_test".equals(tool.get("name").asText())) {
+                renderSpec = tool;
+            }
+        }
+        assertTrue(names.contains("echo_test"));
+        assertTrue(names.contains("render_image_test"));
+        // Controller ruling: list_operations is a registry meta-operation, never an MCP tool.
+        assertFalse(names.contains("list_operations"));
+        assertNotNull(echoSpec);
+        assertNotNull(renderSpec);
+        assertTrue(echoSpec.get("annotations").get("readOnlyHint").asBoolean());
+        assertFalse(renderSpec.get("annotations").get("readOnlyHint").asBoolean());
+
+        // Lifecycle events land in the ring buffer (register + tool rebuild).
+        HttpResponse<String> logs = client.send(HttpRequest.newBuilder(
+                        URI.create("http://127.0.0.1:" + broker.getPort() + "/control/logs")).GET().build(),
+                HttpResponse.BodyHandlers.ofString());
+        assertEquals(200, logs.statusCode());
+        JsonNode logArray = JsonUtils.getObjectMapper().readTree(logs.body());
+        assertTrue(logArray.isArray());
+        assertFalse(logArray.isEmpty());
+        boolean hasRegister = false;
+        for (JsonNode entry : logArray) {
+            assertTrue(entry.has("level"));
+            assertTrue(entry.has("message"));
+            if (entry.get("message").asText().contains("Registered instance")) {
+                hasRegister = true;
+            }
+        }
+        assertTrue(hasRegister);
+    }
+
+    @Test
+    public void brokerWithoutMetadataAndNoRegistrationsListsNoTools() throws Exception {
+        // Production path (no local operation metadata): with no tool-bearing registration
+        // the tools/list is empty, which is correct while no instance is registered.
+        startBrokerWithoutMetadata();
+        initialize(null);
+        assertEquals(0, listTools().get("result").get("tools").size());
+    }
+
+    @Test
+    public void registrationDescriptorsDriveToolsList() throws Exception {
+        startBrokerWithoutMetadata();
+        registerInstanceWithDescriptors();
+        initialize(null);
+
+        JsonNode tools = listTools().get("result").get("tools");
+        JsonNode echoSpec = null;
+        JsonNode renderSpec = null;
+        List<String> names = new ArrayList<>();
+        for (JsonNode tool : tools) {
+            names.add(tool.get("name").asText());
+            if ("echo_test".equals(tool.get("name").asText())) {
+                echoSpec = tool;
+            }
+            if ("render_image_test".equals(tool.get("name").asText())) {
+                renderSpec = tool;
+            }
+        }
+        assertEquals(6, names.size());
+        assertTrue(names.contains("echo_test"));
+        assertTrue(names.contains("render_image_test"));
+        assertTrue(names.contains("get_node_docs"));
+        assertTrue(names.contains("search_nodes"));
+        assertTrue(names.contains("get_job_status"));
+        assertTrue(names.contains("cancel_job"));
+        // Controller ruling: list_operations is a registry meta-operation, never an MCP tool,
+        // even when a registration carries a descriptor for it.
+        assertFalse(names.contains("list_operations"));
+        assertNotNull(echoSpec);
+        assertNotNull(renderSpec);
+        // Specs come from the registration-carried descriptors, not from local metadata.
+        assertEquals("Echoes the message back (descriptor)", echoSpec.get("description").asText());
+        assertEquals("Renders a test image (descriptor)", renderSpec.get("description").asText());
+        assertTrue(echoSpec.get("annotations").get("readOnlyHint").asBoolean());
+        assertFalse(renderSpec.get("annotations").get("readOnlyHint").asBoolean());
+        assertEquals("string", echoSpec.get("inputSchema").get("properties").get("message").get("type").asText());
+        // additionalProperties:false transported verbatim (absent node would NPE here).
+        assertFalse(renderSpec.get("inputSchema").get("additionalProperties").asBoolean());
+    }
+
+    @Test
+    public void publishedSchemaDeclaresProjectForProjectBoundToolsOnly() throws Exception {
+        // E2E ruling 2026-11-16: the broker-routed 'project' argument is declared in the
+        // published input schema of every tool except the registry-global set.
+        startBrokerWithoutMetadata();
+        registerInstanceWithDescriptors();
+        initialize(null);
+
+        JsonNode tools = listTools().get("result").get("tools");
+        JsonNode echoSpec = null;
+        JsonNode renderSpec = null;
+        JsonNode docsSpec = null;
+        JsonNode searchSpec = null;
+        for (JsonNode tool : tools) {
+            switch (tool.get("name").asText()) {
+                case "echo_test" -> echoSpec = tool;
+                case "render_image_test" -> renderSpec = tool;
+                case "get_node_docs" -> docsSpec = tool;
+                case "search_nodes" -> searchSpec = tool;
+            }
+        }
+        assertNotNull(echoSpec);
+        assertNotNull(renderSpec);
+        assertNotNull(docsSpec);
+        assertNotNull(searchSpec);
+
+        // Project-bound tools: the 'project' property is injected into the schema's
+        // properties object (created when absent) and additionalProperties:false holds.
+        JsonNode echoProject = echoSpec.get("inputSchema").get("properties").get("project");
+        assertNotNull(echoProject);
+        assertEquals("string", echoProject.get("type").asText());
+        assertTrue(echoProject.get("description").asText().contains("list_projects"));
+        assertTrue(echoProject.get("description").asText().contains("<instanceId>:<projectKey>"));
+        assertEquals("string", echoSpec.get("inputSchema").get("properties").get("message").get("type").asText());
+        assertFalse(echoSpec.get("inputSchema").get("additionalProperties").asBoolean());
+        JsonNode renderProject = renderSpec.get("inputSchema").get("properties").get("project");
+        assertNotNull(renderProject);
+        assertEquals("string", renderProject.get("type").asText());
+        assertFalse(renderSpec.get("inputSchema").get("additionalProperties").asBoolean());
+
+        // Registry-global tools: no 'project' property at all (the project list must be
+        // readable without a project; chicken-and-egg otherwise). search_nodes is global
+        // too since the 2026-11-17 follow-up wave (registry-only search, no project).
+        JsonNode docsProperties = docsSpec.get("inputSchema").get("properties");
+        assertTrue(docsProperties == null || docsProperties.get("project") == null);
+        JsonNode searchProperties = searchSpec.get("inputSchema").get("properties");
+        assertTrue(searchProperties == null || searchProperties.get("project") == null);
+    }
+
+    @Test
+    public void projectBoundToolWithoutProjectErrorsWithSchemaHint() throws Exception {
+        startBroker(null);
+        registerInstance();
+        initialize(null);
+
+        ObjectNode arguments = JsonUtils.getObjectMapper().createObjectNode();
+        arguments.put("message", "hello");
+        JsonNode result = callTool("echo_test", arguments);
+        assertTrue(result.get("isError").asBoolean());
+        String text = result.get("content").get(0).get("text").asText();
+        assertTrue(text.contains("Missing required 'project' argument"));
+        assertTrue(text.contains("input schema"));
+    }
+
+    @Test
+    public void globalToolWithoutProjectRoutesToRegisteredInstance() throws Exception {
+        startBroker(null);
+        registerInstanceWithDescriptors();
+        initialize(null);
+
+        // No 'project' argument: the call routes to the registered instance that carries
+        // the tool; the forwarded project key is null.
+        JsonNode result = callTool("get_node_docs", JsonUtils.getObjectMapper().createObjectNode());
+        assertFalse(result.get("isError").asBoolean());
+        JsonNode content = result.get("content").get(0);
+        assertEquals("text", content.get("type").asText());
+        assertTrue(content.get("text").asText().contains("\"docs\":true"));
+        assertTrue(content.get("text").asText().contains("\"project-key\":null"));
+    }
+
+    @Test
+    public void jobToolsRouteWithoutProject() throws Exception {
+        startBroker(null);
+        registerInstanceWithDescriptors();
+        initialize(null);
+
+        // The published schemas of the global job tools declare no project argument.
+        JsonNode toolsList = listTools().get("result");
+        JsonNode statusSchema = null;
+        JsonNode cancelSchema = null;
+        for (JsonNode tool : toolsList.get("tools")) {
+            if (tool.get("name").asText().equals("get_job_status")) {
+                statusSchema = tool.get("inputSchema");
+            } else if (tool.get("name").asText().equals("cancel_job")) {
+                cancelSchema = tool.get("inputSchema");
+            }
+        }
+        assertNotNull(statusSchema);
+        assertNotNull(cancelSchema);
+        assertFalse(statusSchema.get("properties").has("project"));
+        assertFalse(cancelSchema.get("properties").has("project"));
+
+        // get_job_status without a project routes to the instance carrying the tool.
+        ObjectNode statusArgs = JsonUtils.getObjectMapper().createObjectNode();
+        statusArgs.put("job-id", "job-abc");
+        JsonNode status = callTool("get_job_status", statusArgs);
+        assertFalse(status.get("isError").asBoolean());
+        String statusText = status.get("content").get(0).get("text").asText();
+        assertTrue(statusText.contains("\"state\":\"RUNNING\""));
+        assertTrue(statusText.contains("\"job-id\":\"job-abc\""));
+        assertTrue(statusText.contains("\"project-key\":null"));
+
+        // cancel_job likewise.
+        ObjectNode cancelArgs = JsonUtils.getObjectMapper().createObjectNode();
+        cancelArgs.put("job-id", "job-abc");
+        JsonNode cancel = callTool("cancel_job", cancelArgs);
+        assertFalse(cancel.get("isError").asBoolean());
+        String cancelText = cancel.get("content").get(0).get("text").asText();
+        assertTrue(cancelText.contains("\"cancelled\":true"));
+        assertTrue(cancelText.contains("\"project-key\":null"));
+    }
+
+    @Test
+    public void listProjectsAggregatesInstancesAndReturnsRoutableIds() throws Exception {
+        startBroker(null);
+        // First instance: live stub, one project ("p1").
+        assertEquals(200, registerListProjectsInstance(INSTANCE_ID, stub.getAddress().getPort(),
+                SECRET, "p1").statusCode());
+        initialize(null);
+
+        // Single instance: the returned id is the full routable form, not the bare key.
+        JsonNode single = callTool("list_projects", JsonUtils.getObjectMapper().createObjectNode());
+        assertFalse(single.get("isError").asBoolean());
+        JsonNode singleMerged = JsonUtils.getObjectMapper().readTree(
+                single.get("content").get(0).get("text").asText());
+        assertTrue(singleMerged.has("projects"));
+        assertEquals(1, singleMerged.get("projects").size());
+        assertEquals(INSTANCE_ID + ":p1", singleMerged.get("projects").get(0).get("id").asText());
+        assertEquals("P1", singleMerged.get("projects").get(0).get("name").asText());
+
+        // Second instance (own endpoint, own project "p2"): the project-free call must
+        // aggregate BOTH instances - routing it to one instance would hide the other's
+        // projects (2026-11-17 follow-up).
+        startSecondStub();
+        assertEquals(200, registerListProjectsInstance(OTHER_INSTANCE_ID, secondStub.getAddress().getPort(),
+                SECOND_SECRET, "p2").statusCode());
+
+        JsonNode merged = callTool("list_projects", JsonUtils.getObjectMapper().createObjectNode());
+        assertFalse(merged.get("isError").asBoolean());
+        JsonNode mergedProjects = JsonUtils.getObjectMapper().readTree(
+                merged.get("content").get(0).get("text").asText()).get("projects");
+        assertEquals(2, mergedProjects.size());
+        List<String> ids = new ArrayList<>();
+        for (JsonNode entry : mergedProjects) {
+            ids.add(entry.get("id").asText());
+        }
+        assertTrue(ids.contains(INSTANCE_ID + ":p1"));
+        assertTrue(ids.contains(OTHER_INSTANCE_ID + ":p2"));
+
+        // The returned ids are the exact ids the project-bound tools route by.
+        ObjectNode routeArgs = JsonUtils.getObjectMapper().createObjectNode();
+        routeArgs.put("project", OTHER_INSTANCE_ID + ":p2");
+        routeArgs.put("message", "hello");
+        JsonNode routed = callTool("echo_test", routeArgs);
+        assertFalse(routed.get("isError").asBoolean());
+        assertTrue(routed.get("content").get(0).get("text").asText().contains("hello"));
+    }
+
+    @Test
+    public void listProjectsSkipsUnreachableInstance() throws Exception {
+        startBroker(null);
+        assertEquals(200, registerListProjectsInstance(INSTANCE_ID, stub.getAddress().getPort(),
+                SECRET, "p1").statusCode());
+        // Registered but unreachable: the endpoint port refuses connections.
+        assertEquals(200, registerListProjectsInstance(OTHER_INSTANCE_ID, deadEndpointPort(),
+                SECRET, "p2").statusCode());
+        initialize(null);
+
+        // The reachable instance's entries still return; the dead one is skipped.
+        JsonNode result = callTool("list_projects", JsonUtils.getObjectMapper().createObjectNode());
+        assertFalse(result.get("isError").asBoolean());
+        JsonNode projects = JsonUtils.getObjectMapper().readTree(
+                result.get("content").get(0).get("text").asText()).get("projects");
+        assertEquals(1, projects.size());
+        assertEquals(INSTANCE_ID + ":p1", projects.get(0).get("id").asText());
+
+        // The skip is recorded in the ring buffer.
+        boolean logged = false;
+        for (org.hkijena.jipipe.api.servers.ServerLogEntry entry : broker.getLogs().getAll()) {
+            if (entry.getMessage() != null && entry.getMessage().contains("list_projects")
+                    && entry.getMessage().contains(OTHER_INSTANCE_ID) && entry.getMessage().contains("skipped")) {
+                logged = true;
+            }
+        }
+        assertTrue(logged, "the unreachable instance's skip must be logged to the ring buffer");
+    }
+
+    @Test
+    public void listProjectsWithNoAnsweringInstanceErrors() throws Exception {
+        startBroker(null);
+        // Both instances carry the tool but neither endpoint answers.
+        assertEquals(200, registerListProjectsInstance(INSTANCE_ID, deadEndpointPort(),
+                SECRET, "p1").statusCode());
+        assertEquals(200, registerListProjectsInstance(OTHER_INSTANCE_ID, deadEndpointPort(),
+                SECRET, "p2").statusCode());
+        initialize(null);
+
+        JsonNode result = callTool("list_projects", JsonUtils.getObjectMapper().createObjectNode());
+        assertTrue(result.get("isError").asBoolean());
+        String text = result.get("content").get(0).get("text").asText();
+        assertTrue(text.contains("No registered JIPipe instance answered the 'list_projects' call"));
+    }
+
+    @Test
+    public void searchNodesIsCallableWithoutProject() throws Exception {
+        startBroker(null);
+        registerInstanceWithDescriptors();
+        initialize(null);
+
+        // No 'project' argument: the call routes (the node type registry is project-free).
+        ObjectNode arguments = JsonUtils.getObjectMapper().createObjectNode();
+        arguments.put("query", "threshold");
+        JsonNode result = callTool("search_nodes", arguments);
+        assertFalse(result.get("isError").asBoolean());
+        JsonNode content = result.get("content").get(0);
+        assertEquals("text", content.get("type").asText());
+        String text = content.get("text").asText();
+        assertTrue(text.contains("\"results\""));
+        assertTrue(text.contains("\"query\":\"threshold\""));
+        assertTrue(text.contains("\"project-key\":null"));
+    }
+
+    @Test
+    public void globalToolWithProjectRoutesByIt() throws Exception {
+        startBroker(null);
+        registerInstanceWithDescriptors();
+        initialize(null);
+
+        // With a 'project' argument the routing is the strict project-bound one.
+        ObjectNode arguments = JsonUtils.getObjectMapper().createObjectNode();
+        arguments.put("project", INSTANCE_ID + ":p1");
+        JsonNode result = callTool("get_node_docs", arguments);
+        assertFalse(result.get("isError").asBoolean());
+        assertTrue(result.get("content").get(0).get("text").asText().contains("\"project-key\":\"p1\""));
+    }
+
+    @Test
+    public void globalToolWithNoLiveInstanceErrorsCleanly() throws Exception {
+        startBroker(null);
+        registerInstanceWithDescriptors();
+        initialize(null);
+
+        // Simulates the dead-instance sweep: the registration is removed directly in the
+        // registry (no /control/unregister round trip, so no tool-list rebuild happens and
+        // the tool stays callable), exactly the state a global tool call can meet.
+        instanceRegistry.unregister(INSTANCE_ID);
+
+        JsonNode result = callTool("get_node_docs", JsonUtils.getObjectMapper().createObjectNode());
+        assertTrue(result.get("isError").asBoolean());
+        String text = result.get("content").get(0).get("text").asText();
+        assertTrue(text.contains("No registered JIPipe instance carries the tool"));
+        assertTrue(text.contains("get_node_docs"));
+    }
+
+    @Test
+    public void callEchoToolRoutesToInstanceProject() throws Exception {
+        startBroker(null);
+        registerInstance();
+        initialize(null);
+
+        ObjectNode arguments = JsonUtils.getObjectMapper().createObjectNode();
+        arguments.put("project", INSTANCE_ID + ":p1");
+        arguments.put("message", "hello");
+        JsonNode result = callTool("echo_test", arguments);
+        assertFalse(result.get("isError").asBoolean());
+        JsonNode content = result.get("content").get(0);
+        assertEquals("text", content.get("type").asText());
+        assertTrue(content.get("text").asText().contains("\"echo\":true"));
+        assertTrue(content.get("text").asText().contains("hello"));
+    }
+
+    @Test
+    public void callImageToolReturnsImageContent() throws Exception {
+        startBroker(null);
+        registerInstance();
+        initialize(null);
+
+        ObjectNode arguments = JsonUtils.getObjectMapper().createObjectNode();
+        arguments.put("project", INSTANCE_ID + ":p1");
+        JsonNode result = callTool("render_image_test", arguments);
+        assertFalse(result.get("isError").asBoolean());
+        JsonNode content = result.get("content").get(0);
+        assertEquals("image", content.get("type").asText());
+        assertEquals(PNG_BASE64, content.get("data").asText());
+        assertEquals("image/png", content.get("mimeType").asText());
+    }
+
+    @Test
+    public void asyncJobEnvelopeIsReturnedImmediatelyAsTextContent() throws Exception {
+        startBroker(null);
+        registerInstance();
+        initialize(null);
+
+        // The async (Execute category) tool returns the job envelope as text content
+        // immediately: the broker passes it through and never waits for the job.
+        long start = System.currentTimeMillis();
+        ObjectNode arguments = JsonUtils.getObjectMapper().createObjectNode();
+        arguments.put("project", INSTANCE_ID + ":p1");
+        JsonNode result = callTool("run_job_test", arguments);
+        long elapsedMs = System.currentTimeMillis() - start;
+
+        assertFalse(result.get("isError").asBoolean());
+        JsonNode content = result.get("content").get(0);
+        assertEquals("text", content.get("type").asText());
+        // Plan-pinned envelope: the key is "job-id" (matching the get_job_status/cancel_job schema)
+        assertTrue(content.get("text").asText().contains("\"job-id\":\"job-test1234\""),
+                "the envelope must carry the plan-pinned job-id key: " + content.get("text").asText());
+        assertTrue(elapsedMs < 10000,
+                "tools/call must return immediately (no broker-side job wait), took " + elapsedMs + " ms");
+    }
+
+    @Test
+    public void unknownProjectKeyListsInstanceProjects() throws Exception {
+        startBroker(null);
+        registerInstance();
+        initialize(null);
+
+        ObjectNode arguments = JsonUtils.getObjectMapper().createObjectNode();
+        arguments.put("project", INSTANCE_ID + ":nope");
+        arguments.put("message", "hello");
+        JsonNode result = callTool("echo_test", arguments);
+        assertTrue(result.get("isError").asBoolean());
+        assertTrue(result.get("content").get(0).get("text").asText().contains("p1"));
+    }
+
+    @Test
+    public void unknownInstanceListsAvailableProjects() throws Exception {
+        startBroker(null);
+        registerInstance();
+        initialize(null);
+
+        ObjectNode arguments = JsonUtils.getObjectMapper().createObjectNode();
+        arguments.put("project", OTHER_INSTANCE_ID + ":p1");
+        arguments.put("message", "hello");
+        JsonNode result = callTool("echo_test", arguments);
+        assertTrue(result.get("isError").asBoolean());
+        String text = result.get("content").get(0).get("text").asText();
+        assertTrue(text.contains(INSTANCE_ID + ":p1"));
+    }
+
+    @Test
+    public void projectKeyWithColonRoutesToInstance() throws Exception {
+        startBroker(null);
+        registerInstance();
+        initialize(null);
+
+        // The id is split on the FIRST colon: instance id is the UUID, project key is
+        // "p1:inner". Pins the split rule against a regression to lastIndexOf.
+        ObjectNode arguments = JsonUtils.getObjectMapper().createObjectNode();
+        arguments.put("project", INSTANCE_ID + ":p1:inner");
+        arguments.put("message", "hello");
+        JsonNode result = callTool("echo_test", arguments);
+        assertFalse(result.get("isError").asBoolean());
+        String text = result.get("content").get(0).get("text").asText();
+        assertTrue(text.contains("\"project-key\":\"p1:inner\""));
+    }
+
+    @Test
+    public void bearerTokenRejectsWrongAndAllowsRight() throws Exception {
+        startBroker("s3cret");
+
+        // Health stays open (process supervision probes it without credentials).
+        HttpResponse<String> health = client.send(HttpRequest.newBuilder(
+                        URI.create("http://127.0.0.1:" + broker.getPort() + "/health")).GET().build(),
+                HttpResponse.BodyHandlers.ofString());
+        assertEquals(200, health.statusCode());
+
+        // Wrong bearer on /mcp and /control/* -> 401 before any processing.
+        assertEquals(401, postRpc("/mcp", initializeBody(), "wrong", null).status());
+        assertEquals(401, postRpc("/control/register", registrationJson(), "wrong", null).status());
+        assertEquals(401, postRpc("/control/logs", null, "wrong", null).status());
+
+        // Correct bearer passes and the MCP handshake succeeds.
+        assertEquals(200, registerInstance("s3cret").statusCode());
+        initialize("s3cret");
+        JsonNode tools = listTools("s3cret");
+        assertTrue(tools.get("result").get("tools").size() > 0);
+    }
+
+    @Test
+    public void openAccessWithoutToken() throws Exception {
+        startBroker(null);
+        // No Authorization header at all: the full flow works.
+        registerInstance();
+        initialize(null);
+        JsonNode tools = listTools(null);
+        assertTrue(tools.get("result").get("tools").size() > 0);
+        assertNotEquals(401, postRpc("/control/logs", null, null, null).status());
+    }
+
+    @Test
+    public void stopIsIdempotentAndReleasesThePort() throws Exception {
+        startBroker(null);
+        int port = broker.getPort();
+
+        // A double stop (production shuts the broker down with the last window) must not
+        // throw: the MCP server close and the Jetty stop are both guarded.
+        broker.stop();
+        broker.stop();
+
+        // The listening socket is released: new connections are refused.
+        assertThrows(IOException.class, () -> client.send(HttpRequest.newBuilder(
+                        URI.create("http://127.0.0.1:" + port + "/health")).GET().build(),
+                HttpResponse.BodyHandlers.ofString()));
+    }
+
+    // ------------------------------------------------------- stub instance
+
+    private void startBroker(String bearerToken) throws Exception {
+        startStub();
+        AutomationOperationRegistry metadata = new AutomationOperationRegistry();
+        metadata.register("echo_test", new EchoTestOperation());
+        metadata.register("render_image_test", new RenderImageTestOperation());
+        metadata.register("run_job_test", new RunJobTestOperation());
+        instanceRegistry = new MCPInstanceRegistry();
+        broker = new MCPBrokerServer(0, instanceRegistry, bearerToken, metadata);
+        broker.start();
+    }
+
+    private void startBrokerWithoutMetadata() throws Exception {
+        startStub();
+        instanceRegistry = new MCPInstanceRegistry();
+        broker = new MCPBrokerServer(0, instanceRegistry, null);
+        broker.start();
+    }
+
+    private void startStub() throws IOException {
+        stub = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+        stub.createContext("/op", this::handleStubOperation);
+        stub.start();
+    }
+
+    /**
+     * A second, separate stub instance endpoint (own port and secret) so a second broker
+     * registration answers with its own project list.
+     */
+    private void startSecondStub() throws IOException {
+        secondStub = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+        secondStub.createContext("/op", exchange -> {
+            try {
+                String providedSecret = exchange.getRequestHeaders().getFirst(SECRET_HEADER);
+                byte[] request = exchange.getRequestBody().readAllBytes();
+                String response;
+                if (!SECOND_SECRET.equals(providedSecret)) {
+                    response = "{\"ok\":false,\"code\":\"unauthorized\",\"error\":\"Missing or invalid endpoint secret\"}";
+                } else {
+                    JsonNode body = JsonUtils.getObjectMapper().readTree(request);
+                    String opId = exchange.getRequestURI().getPath().substring("/op/".length());
+                    response = switch (opId) {
+                        case "list_projects" -> stubResult(secondStubProjectsResult());
+                        case "echo_test" -> stubResult(echoResult(body));
+                        default -> "{\"ok\":false,\"code\":\"unknown\",\"error\":\"Unknown operation: " + opId + "\"}";
+                    };
+                }
+                respond(exchange, 200, response);
+            } catch (Exception e) {
+                respond(exchange, 500, "{\"ok\":false,\"code\":\"failed\",\"error\":\"" + e.getMessage() + "\"}");
+            }
+        });
+        secondStub.start();
+    }
+
+    /**
+     * A port that refuses connections: bind and release it, so an instance registered there
+     * is unreachable (connection refused, no timeout wait).
+     */
+    private int deadEndpointPort() throws IOException {
+        try (java.net.ServerSocket socket = new java.net.ServerSocket(0, 1, java.net.InetAddress.getByName("127.0.0.1"))) {
+            return socket.getLocalPort();
+        }
+    }
+
+    private void handleStubOperation(HttpExchange exchange) throws IOException {
+        try {
+            String providedSecret = exchange.getRequestHeaders().getFirst(SECRET_HEADER);
+            byte[] request = exchange.getRequestBody().readAllBytes();
+            String response;
+            if (!SECRET.equals(providedSecret)) {
+                response = "{\"ok\":false,\"code\":\"unauthorized\",\"error\":\"Missing or invalid endpoint secret\"}";
+            } else {
+                JsonNode body = JsonUtils.getObjectMapper().readTree(request);
+                String opId = exchange.getRequestURI().getPath().substring("/op/".length());
+                response = switch (opId) {
+                    case "echo_test" -> stubResult(echoResult(body));
+                    case "get_node_docs" -> stubResult(docsResult(body));
+                    case "search_nodes" -> stubResult(searchNodesResult(body));
+                    case "list_projects" -> stubResult(listProjectsResult());
+                    case "run_job_test" -> stubResult(jobEnvelopeResult());
+                    case "get_job_status" -> stubResult(jobStatusResult(body));
+                    case "cancel_job" -> stubResult(cancelJobResult(body));
+                    case "render_image_test" -> "{\"ok\":true,\"result\":{\"image-base64\":\"" + PNG_BASE64
+                            + "\",\"mime\":\"image/png\"}}";
+                    default -> "{\"ok\":false,\"code\":\"unknown\",\"error\":\"Unknown operation: " + opId + "\"}";
+                };
+            }
+            respond(exchange, 200, response);
+        } catch (Exception e) {
+            respond(exchange, 500, "{\"ok\":false,\"code\":\"failed\",\"error\":\"" + e.getMessage() + "\"}");
+        }
+    }
+
+    private ObjectNode echoResult(JsonNode body) {
+        ObjectNode result = JsonUtils.getObjectMapper().createObjectNode();
+        result.put("echo", true);
+        result.set("message", body.path("params").path("message"));
+        result.set("project-key", body.path("project-key"));
+        return result;
+    }
+
+    private ObjectNode docsResult(JsonNode body) {
+        ObjectNode result = JsonUtils.getObjectMapper().createObjectNode();
+        result.put("docs", true);
+        result.set("project-key", body.path("project-key"));
+        return result;
+    }
+
+    private ObjectNode searchNodesResult(JsonNode body) {
+        ObjectNode result = JsonUtils.getObjectMapper().createObjectNode();
+        result.set("query", body.path("params").path("query"));
+        result.set("project-key", body.path("project-key"));
+        ObjectNode hit = result.putArray("results").addObject();
+        hit.put("id", "test-node");
+        hit.put("name", "Test Node");
+        return result;
+    }
+
+    /**
+     * The project list of the first stub instance. The entry {@code id} is the instance-local
+     * project key (the window session id in production): the broker must rewrite it to the
+     * full {@code <instanceId>:<projectKey>} form.
+     */
+    private ObjectNode listProjectsResult() {
+        ObjectNode result = JsonUtils.getObjectMapper().createObjectNode();
+        ObjectNode project = result.putArray("projects").addObject();
+        project.put("id", "p1");
+        project.put("name", "P1");
+        project.put("path", "/tmp/p1");
+        project.put("isOpen", true);
+        return result;
+    }
+
+    /**
+     * The project list of the second stub instance (own endpoint, own project key).
+     */
+    private ObjectNode secondStubProjectsResult() {
+        ObjectNode result = JsonUtils.getObjectMapper().createObjectNode();
+        ObjectNode project = result.putArray("projects").addObject();
+        project.put("id", "p2");
+        project.put("name", "P2");
+        project.put("path", "/tmp/p2");
+        project.put("isOpen", true);
+        return result;
+    }
+
+    private ObjectNode jobStatusResult(JsonNode body) {
+        ObjectNode result = JsonUtils.getObjectMapper().createObjectNode();
+        result.put("state", "RUNNING");
+        result.set("job-id", body.path("params").path("job-id"));
+        result.set("project-key", body.path("project-key"));
+        return result;
+    }
+
+    private ObjectNode cancelJobResult(JsonNode body) {
+        ObjectNode result = JsonUtils.getObjectMapper().createObjectNode();
+        result.put("cancelled", true);
+        result.set("job-id", body.path("params").path("job-id"));
+        result.set("project-key", body.path("project-key"));
+        return result;
+    }
+
+    /**
+     * The plan-pinned job envelope of an async (Execute category) operation: the instance
+     * returns it immediately, the broker passes it through unchanged.
+     */
+    private ObjectNode jobEnvelopeResult() {
+        ObjectNode result = JsonUtils.getObjectMapper().createObjectNode();
+        result.put("job-id", "job-test1234");
+        return result;
+    }
+
+    private String stubResult(JsonNode result) {
+        ObjectNode envelope = JsonUtils.getObjectMapper().createObjectNode();
+        envelope.put("ok", true);
+        envelope.set("result", result);
+        return envelope.toString();
+    }
+
+    private void respond(HttpExchange exchange, int status, String body) throws IOException {
+        byte[] bytes = body.getBytes(StandardCharsets.UTF_8);
+        exchange.getResponseHeaders().set("Content-Type", "application/json");
+        exchange.sendResponseHeaders(status, bytes.length);
+        try (OutputStream outputStream = exchange.getResponseBody()) {
+            outputStream.write(bytes);
+        }
+    }
+
+    private String registrationJson() {
+        ObjectNode registration = JsonUtils.getObjectMapper().createObjectNode();
+        registration.put("instance-id", INSTANCE_ID);
+        registration.put("jipipe-pid", ProcessHandle.current().pid());
+        registration.put("endpoint-port", stub.getAddress().getPort());
+        registration.put("endpoint-secret", SECRET);
+        registration.put("app-version", "test");
+        registration.set("tool-ids", JsonUtils.getObjectMapper().createArrayNode()
+                .add("echo_test").add("render_image_test").add("run_job_test").add("list_operations"));
+        ObjectNode project = JsonUtils.getObjectMapper().createObjectNode();
+        project.put("key", "p1");
+        project.put("name", "P1");
+        project.put("path", "/tmp/p1");
+        ObjectNode colonProject = JsonUtils.getObjectMapper().createObjectNode();
+        colonProject.put("key", "p1:inner");
+        colonProject.put("name", "P1 Inner");
+        colonProject.put("path", "/tmp/p1/inner");
+        registration.set("projects", JsonUtils.getObjectMapper().createArrayNode().add(project).add(colonProject));
+        return registration.toString();
+    }
+
+    private HttpResponse<String> registerInstance() throws Exception {
+        return registerInstance(null);
+    }
+
+    private HttpResponse<String> registerInstance(String token) throws Exception {
+        return postControl("/control/register", registrationJson(), token);
+    }
+
+    private HttpResponse<String> registerInstanceWithDescriptors() throws Exception {
+        ObjectNode registration = JsonUtils.getObjectMapper().createObjectNode();
+        registration.put("instance-id", INSTANCE_ID);
+        registration.put("jipipe-pid", ProcessHandle.current().pid());
+        registration.put("endpoint-port", stub.getAddress().getPort());
+        registration.put("endpoint-secret", SECRET);
+        registration.put("app-version", "test");
+        ObjectNode echoTool = JsonUtils.getObjectMapper().createObjectNode();
+        echoTool.put("id", "echo_test");
+        echoTool.put("description", "Echoes the message back (descriptor)");
+        echoTool.set("inputSchema", JsonUtils.getObjectMapper().readTree(
+                "{\"type\":\"object\",\"properties\":{\"message\":{\"type\":\"string\"}},\"additionalProperties\":false}"));
+        echoTool.put("read-only", true);
+        ObjectNode renderTool = JsonUtils.getObjectMapper().createObjectNode();
+        renderTool.put("id", "render_image_test");
+        renderTool.put("description", "Renders a test image (descriptor)");
+        renderTool.set("inputSchema", JsonUtils.getObjectMapper().readTree(
+                "{\"type\":\"object\",\"additionalProperties\":false}"));
+        renderTool.put("read-only", false);
+        // A registry-global tool: the published schema must NOT declare a project argument
+        // and a call without one must still route (E2E ruling 2026-11-16).
+        ObjectNode docsTool = JsonUtils.getObjectMapper().createObjectNode();
+        docsTool.put("id", "get_node_docs");
+        docsTool.put("description", "Node documentation (descriptor)");
+        docsTool.set("inputSchema", JsonUtils.getObjectMapper().readTree(
+                "{\"type\":\"object\",\"additionalProperties\":false}"));
+        docsTool.put("read-only", true);
+        // Registry-global since the 2026-11-17 follow-up wave: search_nodes searches the
+        // node type registry, which does not involve a project.
+        ObjectNode searchNodesTool = JsonUtils.getObjectMapper().createObjectNode();
+        searchNodesTool.put("id", "search_nodes");
+        searchNodesTool.put("description", "Node search (descriptor)");
+        searchNodesTool.set("inputSchema", JsonUtils.getObjectMapper().readTree(
+                "{\"type\":\"object\",\"required\":[\"query\"],\"properties\":{\"query\":{\"type\":\"string\"}},\"additionalProperties\":false}"));
+        searchNodesTool.put("read-only", true);
+        // Job tools: registry-global since the 2026-11-17 follow-up wave (job ids address
+        // the shared job manager, not a project).
+        ObjectNode jobStatusTool = JsonUtils.getObjectMapper().createObjectNode();
+        jobStatusTool.put("id", "get_job_status");
+        jobStatusTool.put("description", "Job status (descriptor)");
+        jobStatusTool.set("inputSchema", JsonUtils.getObjectMapper().readTree(
+                "{\"type\":\"object\",\"required\":[\"job-id\"],\"properties\":{\"job-id\":{\"type\":\"string\"}},\"additionalProperties\":false}"));
+        jobStatusTool.put("read-only", true);
+        ObjectNode cancelJobTool = JsonUtils.getObjectMapper().createObjectNode();
+        cancelJobTool.put("id", "cancel_job");
+        cancelJobTool.put("description", "Cancel a job (descriptor)");
+        cancelJobTool.set("inputSchema", JsonUtils.getObjectMapper().readTree(
+                "{\"type\":\"object\",\"required\":[\"job-id\"],\"properties\":{\"job-id\":{\"type\":\"string\"}},\"additionalProperties\":false}"));
+        cancelJobTool.put("read-only", false);
+        // A descriptor for the meta-operation: the broker must still exclude it.
+        ObjectNode listOperationsTool = JsonUtils.getObjectMapper().createObjectNode();
+        listOperationsTool.put("id", "list_operations");
+        listOperationsTool.put("description", "List all available operations (descriptor)");
+        listOperationsTool.put("read-only", true);
+        registration.set("tools", JsonUtils.getObjectMapper().createArrayNode()
+                .add(echoTool).add(renderTool).add(docsTool).add(searchNodesTool).add(jobStatusTool).add(cancelJobTool)
+                .add(listOperationsTool));
+        ObjectNode project = JsonUtils.getObjectMapper().createObjectNode();
+        project.put("key", "p1");
+        project.put("name", "P1");
+        project.put("path", "/tmp/p1");
+        registration.set("projects", JsonUtils.getObjectMapper().createArrayNode().add(project));
+        return postControl("/control/register", registration.toString(), null);
+    }
+
+    /**
+     * Registers an instance that carries {@code list_projects} and {@code echo_test} (legacy
+     * tool-id list) and exposes one project, answering at the given endpoint.
+     */
+    private HttpResponse<String> registerListProjectsInstance(String instanceId, int endpointPort, String secret,
+                                                              String projectKey) throws Exception {
+        ObjectNode registration = JsonUtils.getObjectMapper().createObjectNode();
+        registration.put("instance-id", instanceId);
+        registration.put("jipipe-pid", ProcessHandle.current().pid());
+        registration.put("endpoint-port", endpointPort);
+        registration.put("endpoint-secret", secret);
+        registration.put("app-version", "test");
+        registration.set("tool-ids", JsonUtils.getObjectMapper().createArrayNode()
+                .add("list_projects").add("echo_test"));
+        ObjectNode project = JsonUtils.getObjectMapper().createObjectNode();
+        project.put("key", projectKey);
+        project.put("name", "Project " + projectKey);
+        project.put("path", "/tmp/" + projectKey);
+        registration.set("projects", JsonUtils.getObjectMapper().createArrayNode().add(project));
+        return postControl("/control/register", registration.toString(), null);
+    }
+
+    private HttpResponse<String> postControl(String path, String body, String token) throws Exception {
+        HttpRequest.Builder builder = HttpRequest.newBuilder(
+                        URI.create("http://127.0.0.1:" + broker.getPort() + path))
+                .header("Content-Type", "application/json");
+        if (token != null) {
+            builder.header("Authorization", "Bearer " + token);
+        }
+        return client.send(builder.POST(HttpRequest.BodyPublishers.ofString(body,
+                        StandardCharsets.UTF_8)).build(),
+                HttpResponse.BodyHandlers.ofString());
+    }
+
+    // ------------------------------------------------------------ MCP flow
+
+    private record RpcResponse(int status, JsonNode body, String sessionId) {
+    }
+
+    private String initializeBody() {
+        return "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"initialize\",\"params\":"
+                + "{\"protocolVersion\":\"2025-06-18\",\"capabilities\":{},"
+                + "\"clientInfo\":{\"name\":\"test\",\"version\":\"0\"}}}";
+    }
+
+    private RpcResponse postRpc(String path, String json, String token, String session) throws Exception {
+        HttpRequest.Builder builder = HttpRequest.newBuilder(URI.create("http://127.0.0.1:" + broker.getPort() + path));
+        if (json != null) {
+            builder.header("Content-Type", "application/json");
+            builder.POST(HttpRequest.BodyPublishers.ofString(json, StandardCharsets.UTF_8));
+        } else {
+            builder.GET();
+        }
+        builder.header("Accept", "application/json, text/event-stream");
+        if (token != null) {
+            builder.header("Authorization", "Bearer " + token);
+        }
+        if (session != null) {
+            builder.header("mcp-session-id", session);
+        }
+        HttpResponse<byte[]> response = client.send(builder.build(), HttpResponse.BodyHandlers.ofByteArray());
+        JsonNode parsed = parseMcpBody(response.headers().firstValue("Content-Type").orElse(""), response.body());
+        return new RpcResponse(response.statusCode(), parsed,
+                response.headers().firstValue("mcp-session-id").orElse(null));
+    }
+
+    private JsonNode parseMcpBody(String contentType, byte[] bytes) throws IOException {
+        String text = new String(bytes, StandardCharsets.UTF_8).trim();
+        if (text.isEmpty()) {
+            return null;
+        }
+        boolean eventStream = contentType.contains("text/event-stream") || text.startsWith("event:")
+                || text.startsWith("data:");
+        if (!eventStream) {
+            return JsonUtils.getObjectMapper().readTree(text);
+        }
+        JsonNode best = null;
+        for (String line : text.split("\n")) {
+            if (!line.startsWith("data:")) {
+                continue;
+            }
+            String data = line.substring(5).stripLeading();
+            if (data.isEmpty()) {
+                continue;
+            }
+            JsonNode parsed = JsonUtils.getObjectMapper().readTree(data);
+            if (best == null || parsed.has("result") || parsed.has("error")) {
+                best = parsed;
+            }
+        }
+        return best;
+    }
+
+    private void initialize(String token) throws Exception {
+        RpcResponse init = postRpc("/mcp", initializeBody(), token, null);
+        assertEquals(200, init.status());
+        assertNotNull(init.sessionId());
+        currentSession = init.sessionId();
+        RpcResponse notified = postRpc("/mcp", "{\"jsonrpc\":\"2.0\",\"method\":\"notifications/initialized\"}",
+                token, currentSession);
+        assertEquals(202, notified.status());
+    }
+
+    private JsonNode listTools(String token) throws Exception {
+        RpcResponse response = postRpc("/mcp", "{\"jsonrpc\":\"2.0\",\"id\":2,\"method\":\"tools/list\"}",
+                token, currentSession);
+        assertEquals(200, response.status());
+        return response.body();
+    }
+
+    private JsonNode listTools() throws Exception {
+        return listTools(null);
+    }
+
+    private String currentSession;
+
+    private JsonNode callTool(String name, ObjectNode arguments) throws Exception {
+        ObjectNode params = JsonUtils.getObjectMapper().createObjectNode();
+        params.put("name", name);
+        params.set("arguments", arguments);
+        String json = "{\"jsonrpc\":\"2.0\",\"id\":3,\"method\":\"tools/call\",\"params\":"
+                + JsonUtils.getObjectMapper().writeValueAsString(params) + "}";
+        RpcResponse response = postRpc("/mcp", json, null, currentSession);
+        assertEquals(200, response.status());
+        assertNotNull(response.body());
+        assertNull(response.body().get("error"));
+        return response.body().get("result");
+    }
+
+    // --------------------------------------------------- metadata stub ops
+
+    private static class EchoTestOperation implements AutomationOperation {
+        @Override
+        public String getId() {
+            return "echo_test";
+        }
+
+        @Override
+        public String getDescription() {
+            return "Echoes the message back";
+        }
+
+        @Override
+        public JsonNode getInputSchema() {
+            return AutomationSchemaUtils.parseJson(
+                    "{\"type\":\"object\",\"properties\":{\"message\":{\"type\":\"string\"}},\"additionalProperties\":false}");
+        }
+
+        @Override
+        public AutomationOperationCategory getCategory() {
+            return AutomationOperationCategory.Query;
+        }
+
+        @Override
+        public boolean isReadOnly() {
+            return true;
+        }
+
+        @Override
+        public JsonNode execute(AutomationContext ctx, JsonNode params) {
+            return params;
+        }
+    }
+
+    private static class RenderImageTestOperation implements AutomationOperation {
+        @Override
+        public String getId() {
+            return "render_image_test";
+        }
+
+        @Override
+        public String getDescription() {
+            return "Renders a test image";
+        }
+
+        @Override
+        public JsonNode getInputSchema() {
+            return AutomationSchemaUtils.parseJson("{\"type\":\"object\",\"additionalProperties\":false}");
+        }
+
+        @Override
+        public AutomationOperationCategory getCategory() {
+            return AutomationOperationCategory.Render;
+        }
+
+        @Override
+        public boolean isReadOnly() {
+            return false;
+        }
+
+        @Override
+        public JsonNode execute(AutomationContext ctx, JsonNode params) {
+            return params;
+        }
+    }
+
+    /**
+     * An async (Execute category) operation whose result is the job envelope.
+     */
+    private static class RunJobTestOperation implements AutomationOperation {
+        @Override
+        public String getId() {
+            return "run_job_test";
+        }
+
+        @Override
+        public String getDescription() {
+            return "Starts a test job";
+        }
+
+        @Override
+        public JsonNode getInputSchema() {
+            return AutomationSchemaUtils.parseJson("{\"type\":\"object\",\"additionalProperties\":false}");
+        }
+
+        @Override
+        public AutomationOperationCategory getCategory() {
+            return AutomationOperationCategory.Execute;
+        }
+
+        @Override
+        public boolean isReadOnly() {
+            return false;
+        }
+
+        @Override
+        public JsonNode execute(AutomationContext ctx, JsonNode params) {
+            return params;
+        }
+    }
+}

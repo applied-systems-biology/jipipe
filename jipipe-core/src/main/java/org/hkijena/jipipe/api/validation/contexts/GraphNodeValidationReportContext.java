@@ -39,6 +39,15 @@ public class GraphNodeValidationReportContext extends JIPipeValidationReportCont
         this.graphNode = graphNode;
     }
 
+    /**
+     * Returns the graph node referenced by this context.
+     *
+     * @return the graph node
+     */
+    public JIPipeGraphNode getGraphNode() {
+        return graphNode;
+    }
+
     private JIPipeGraphNode findTargetNode(JIPipeWorkbench workbench) {
         if (workbench instanceof JIPipeDesktopProjectWorkbench) {
             JIPipeGraph parentGraph = graphNode.getParentGraph();

@@ -48,7 +48,6 @@
     "tokenizers-0.36.0.jar": "https://repo1.maven.org/maven2/ai/djl/huggingface/tokenizers/0.36.0/tokenizers-0.36.0.jar",
     "api-0.36.0.jar": "https://repo1.maven.org/maven2/ai/djl/api/0.36.0/api-0.36.0.jar",
     "onnxruntime-1.25.1.jar": "https://repo1.maven.org/maven2/com/microsoft/onnxruntime/onnxruntime/1.25.1/onnxruntime-1.25.1.jar",
-    "Java-WebSocket-1.5.7.jar": "https://repo1.maven.org/maven2/org/java-websocket/Java-WebSocket/1.5.7/Java-WebSocket-1.5.7.jar",
     "LICENSE_Javaluator.html": "https://opensource.org/licenses/lgpl-3.0.html",
     "LICENSE_JGraphT.txt": "https://raw.githubusercontent.com/jgrapht/jgrapht/master/license-EPL.txt",
     "LICENSE_OpenHTMLToPDF.txt": "https://raw.githubusercontent.com/danfickle/openhtmltopdf/open-dev-v1/LICENSE",
@@ -56,7 +55,24 @@
     "LICENSE_Flexmark.txt": "https://raw.githubusercontent.com/vsch/flexmark-java/master/LICENSE.txt",
     "LICENSE_Reflections.txt": "https://raw.githubusercontent.com/ronmamo/reflections/master/COPYING.txt",
     "LICENSE_mslinks.txt": "https://raw.githubusercontent.com/DmitriiShamrikov/mslinks/master/LICENSE",
-    "LICENSE_OrientationJ.txt": "https://raw.githubusercontent.com/Biomedical-Imaging-Group/OrientationJ/master/LICENSE"
+    "LICENSE_OrientationJ.txt": "https://raw.githubusercontent.com/Biomedical-Imaging-Group/OrientationJ/master/LICENSE",
+    "mcp-2.2.0.jar": "https://repo1.maven.org/maven2/io/modelcontextprotocol/sdk/mcp/2.2.0/mcp-2.2.0.jar",
+    "mcp-core-2.2.0.jar": "https://repo1.maven.org/maven2/io/modelcontextprotocol/sdk/mcp-core/2.2.0/mcp-core-2.2.0.jar",
+    "mcp-json-jackson3-2.2.0.jar": "https://repo1.maven.org/maven2/io/modelcontextprotocol/sdk/mcp-json-jackson3/2.2.0/mcp-json-jackson3-2.2.0.jar",
+    "reactor-core-3.9.0-RC1.jar": "https://repo1.maven.org/maven2/io/projectreactor/reactor-core/3.9.0-RC1/reactor-core-3.9.0-RC1.jar",
+    "jakarta.servlet-api-6.0.0.jar": "https://repo1.maven.org/maven2/jakarta/servlet/jakarta.servlet-api/6.0.0/jakarta.servlet-api-6.0.0.jar",
+    "jetty-ee10-servlet-12.1.15.jar": "https://repo1.maven.org/maven2/org/eclipse/jetty/ee10/jetty-ee10-servlet/12.1.15/jetty-ee10-servlet-12.1.15.jar",
+    "jetty-http-12.1.15.jar": "https://repo1.maven.org/maven2/org/eclipse/jetty/jetty-http/12.1.15/jetty-http-12.1.15.jar",
+    "jetty-io-12.1.15.jar": "https://repo1.maven.org/maven2/org/eclipse/jetty/jetty-io/12.1.15/jetty-io-12.1.15.jar",
+    "jetty-security-12.1.15.jar": "https://repo1.maven.org/maven2/org/eclipse/jetty/jetty-security/12.1.15/jetty-security-12.1.15.jar",
+    "jetty-server-12.1.15.jar": "https://repo1.maven.org/maven2/org/eclipse/jetty/jetty-server/12.1.15/jetty-server-12.1.15.jar",
+    "jetty-session-12.1.15.jar": "https://repo1.maven.org/maven2/org/eclipse/jetty/jetty-session/12.1.15/jetty-session-12.1.15.jar",
+    "jetty-util-12.1.15.jar": "https://repo1.maven.org/maven2/org/eclipse/jetty/jetty-util/12.1.15/jetty-util-12.1.15.jar",
+    "jspecify-1.0.0.jar": "https://repo1.maven.org/maven2/org/jspecify/jspecify/1.0.0/jspecify-1.0.0.jar",
+    "reactive-streams-1.0.4.jar": "https://repo1.maven.org/maven2/org/reactivestreams/reactive-streams/1.0.4/reactive-streams-1.0.4.jar",
+    "jackson-core-3.1.8.jar": "https://repo1.maven.org/maven2/tools/jackson/core/jackson-core/3.1.8/jackson-core-3.1.8.jar",
+    "jackson-databind-3.1.8.jar": "https://repo1.maven.org/maven2/tools/jackson/core/jackson-databind/3.1.8/jackson-databind-3.1.8.jar",
+    "jackson-annotations-2.21.jar": "https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-annotations/2.21/jackson-annotations-2.21.jar"
   },
   "contrib-dependencies": [
     "jipipe-ro-crate-java-2.1.0"
