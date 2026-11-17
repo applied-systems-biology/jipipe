@@ -78,7 +78,10 @@ public enum LLMActivityPhase {
     }
 
     /**
-     * @return the single-character label (E, T, R, C, I) used in the graph legend
+     * @return the single-character label used in the graph overlay and legend: the first
+     * letter of the phase name (Embedding: E, Thinking: T, Response: R, ToolCall: T,
+     * Queued: Q, Idle: I). Thinking and ToolCall share the letter "T"; the overlay's
+     * suffix (tok/s versus elapsed time) tells them apart.
      */
     public String getShortLabel() {
         return name().substring(0, 1);

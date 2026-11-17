@@ -27,6 +27,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * A two-row, wall-clock activity timeline for the AI features.
@@ -50,7 +51,8 @@ import java.util.List;
  * </p>
  * <p>
  * Left-aligned text (mirroring {@link org.hkijena.jipipe.desktop.commons.components.tools.JIPipeDesktopMemoryGraph})
- * shows two measured lines: the current AI phase (with tokens/s when available) and
+ * shows two measured lines: the current AI phase (with tokens/s when available, or the
+ * elapsed time for MCP tool-call phases, which record no token flow) and
  * the MCP indicator ("MCP off", "MCP starting...", "MCP paused", "MCP ready", or
  * "MCP: &lt;operation id&gt;"). Both lines and the compact variant's preferred height are derived
  * from the font metrics (never hardcoded pixel sizes); long operation ids are
@@ -325,7 +327,7 @@ public class JIPipeDesktopAIStatusGraph extends JPanel implements MCPStatusEvent
             g2d.drawLine(innerLeft, separatorY, innerRight, separatorY);
 
             // --- Left-aligned text (AI phase line + MCP indicator line) ---
-            paintText(history, currentPhase, currentTokens, g2d, width);
+            paintText(history, currentPhase, currentTokens, phaseStartMs, now, g2d, width);
 
             if (showLegend) {
                 paintLegend(g2d, width, height);
@@ -343,13 +345,18 @@ public class JIPipeDesktopAIStatusGraph extends JPanel implements MCPStatusEvent
      *
      * <p>Line 1 is the AI phase: {@code "AI: <phase>"} plus {@code "<tokens> tok/s"}
      * when a non-zero tokens/s value is available (from the in-progress phase or the
-     * most recently finalized entry); {@code "AI: Idle"} when idle. Line 2 is the MCP
-     * indicator from {@link JIPipeDesktopMCPIntegration#currentSnapshot()}. Both lines
-     * are ellipsized to the available width.</p>
+     * most recently finalized entry); {@code "AI: Idle"} when idle. A ToolCall phase
+     * (the MCP operation dispatches, which record no token flow) shows the elapsed
+     * time instead ({@code "AI: T 3.2s"}); the operation id itself is already shown on
+     * the MCP line. Line 2 is the MCP indicator from
+     * {@link JIPipeDesktopMCPIntegration#currentSnapshot()}. Both lines are ellipsized
+     * to the available width.</p>
      */
     private void paintText(List<LLMActivityEntry> history,
                            LLMActivityPhase currentPhase,
                            int currentTokens,
+                           long phaseStartMs,
+                           long now,
                            Graphics2D g2d,
                            int width) {
         g2d.setFont(infoFont);
@@ -367,13 +374,18 @@ public class JIPipeDesktopAIStatusGraph extends JPanel implements MCPStatusEvent
         }
 
         String aiText;
-        if (currentPhase != LLMActivityPhase.Idle) {
+        if (currentPhase == LLMActivityPhase.Idle) {
+            aiText = "AI: Idle";
+        } else if (currentPhase == LLMActivityPhase.ToolCall && phaseStartMs > 0) {
+            // MCP operations are ToolCall phases without a token flow (tokenCount = 0):
+            // a tok/s figure would be zero or would leak the previous phase's tokens, so
+            // the elapsed time is shown instead. The operation id stays on line 2.
+            aiText = "AI: " + currentPhase.getShortLabel() + " " + formatElapsed(now - phaseStartMs);
+        } else {
             aiText = "AI: " + currentPhase.getShortLabel();
             if (tokensPerSec > 0) {
                 aiText += " " + tokensPerSec + " tok/s";
             }
-        } else {
-            aiText = "AI: Idle";
         }
 
         int line1Baseline = PADDING + fontMetrics.getAscent();
@@ -381,6 +393,19 @@ public class JIPipeDesktopAIStatusGraph extends JPanel implements MCPStatusEvent
 
         g2d.drawString(ellipsize(aiText, fontMetrics, maxWidth), TEXT_X, line1Baseline);
         g2d.drawString(ellipsize(mcpStatusText(), fontMetrics, maxWidth), TEXT_X, line2Baseline);
+    }
+
+    /**
+     * Formats an elapsed phase duration for the overlay line: seconds with one decimal
+     * below a minute, minutes and seconds above. Locale-neutral (the default locale's
+     * decimal separator would vary the rendered width).
+     */
+    private static String formatElapsed(long ms) {
+        long totalSeconds = Math.max(0, ms) / 1000;
+        if (totalSeconds < 60) {
+            return String.format(Locale.ROOT, "%.1fs", totalSeconds / 1000.0);
+        }
+        return (totalSeconds / 60) + "m " + String.format(Locale.ROOT, "%02ds", totalSeconds % 60);
     }
 
     /**
