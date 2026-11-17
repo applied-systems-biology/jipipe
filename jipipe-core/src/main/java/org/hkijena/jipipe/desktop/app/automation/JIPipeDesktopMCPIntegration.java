@@ -56,6 +56,7 @@ import java.awt.FontMetrics;
 import java.awt.Frame;
 import java.awt.Graphics2D;
 import java.awt.KeyboardFocusManager;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Toolkit;
@@ -71,9 +72,12 @@ import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -101,7 +105,12 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Swing (graph modifications, runs, screenshots, window iteration) are dispatched on the EDT
  * (each operation declares this via {@link AutomationOperation#requiresEdt()}), all others run
  * directly on the endpoint thread. Status events are emitted from background threads; the
- * controls marshal to the EDT.
+ * controls marshal to the EDT. The one deliberate exception is the Robot-based screen
+ * capture: on Wayland/XWayland hosts it goes through the xdg-desktop-portal screencast,
+ * which can block indefinitely (no exception, no timeout), so running it on the EDT freezes
+ * the whole application (observed live). It therefore runs on {@link #captureExecutor}, off
+ * the EDT, with the wait bounded at {@link #CAPTURE_TIMEOUT_SECONDS}; every Swing state
+ * read and every print-based capture stays on the EDT.
  */
 public final class JIPipeDesktopMCPIntegration implements AutomationEndpointHandlers,
         AutomationInstanceEndpoint.AskPromptHandler,
@@ -191,6 +200,33 @@ public final class JIPipeDesktopMCPIntegration implements AutomationEndpointHand
      */
     private static final Set<String> UI_SURFACES = Set.of(
             "graph-canvas", "graph-editor", "compartments-editor", "project-tabs", "settings-mcp");
+
+    /**
+     * How long the Robot-based screen capture may take before it is abandoned (treated as
+     * "no capture" and answered by the print fallback). On Wayland/XWayland hosts the JDK's
+     * Robot capture goes through the xdg-desktop-portal screencast, which can block
+     * indefinitely and without an exception; the bound turns that hang into a degraded
+     * capture instead of a frozen application.
+     */
+    private static final long CAPTURE_TIMEOUT_SECONDS = 15;
+
+    private static final AtomicInteger captureThreadId = new AtomicInteger();
+
+    /**
+     * Executes the Robot-based screen captures off the event dispatch thread: a capture
+     * blocked inside the native screencast portal would otherwise freeze the whole
+     * application (observed live: the EDT stuck inside
+     * {@code sun.awt.screencast.ScreencastHelper}). Daemon threads. A hung native capture
+     * can pin its pool thread until the portal responds; the pool bound keeps that leak
+     * bounded, and when both threads hang, further captures time out after
+     * {@link #CAPTURE_TIMEOUT_SECONDS} and take the print fallback: the tool degrades, the
+     * application never freezes.
+     */
+    private static final ExecutorService captureExecutor = Executors.newFixedThreadPool(2, runnable -> {
+        Thread thread = new Thread(runnable, "jipipe-mcp-capture-" + captureThreadId.incrementAndGet());
+        thread.setDaemon(true);
+        return thread;
+    });
 
     private static volatile JIPipeDesktopMCPIntegration active;
     private static volatile boolean starting;
@@ -1038,40 +1074,101 @@ public final class JIPipeDesktopMCPIntegration implements AutomationEndpointHand
         return null;
     }
 
+    /**
+     * Captures the project window. Visible (non-iconified) windows are captured from the
+     * screen via the Robot-based {@link ScreenImage#createImage(Rectangle)}; off-screen or
+     * iconified windows are realized in place via the print-based capture of the content
+     * pane. The Robot capture never runs on the event dispatch thread: on Wayland/XWayland
+     * hosts it goes through the xdg-desktop-portal screencast, which can block indefinitely
+     * (no exception, no timeout) and would freeze the whole application. Instead, the window
+     * state and the screen region are read on the EDT (phase 1), the Robot capture runs on
+     * {@link #captureExecutor} with a wait bounded at {@link #CAPTURE_TIMEOUT_SECONDS}
+     * (phase 2), and a capture without a result falls back to the EDT print path (phase 3).
+     * The fake titlebar compositing is pure graphics and runs on the calling thread.
+     */
     @Override
     public BufferedImage captureWindow(String projectKey, boolean titlebar) {
-        return callOnEdt(() -> {
+        // Phase 1 (EDT): resolve the window, read the shown/iconified state, compute the
+        // screen region (the exact math of ScreenImage.createImage(Component)) and the title.
+        WindowCapturePreparation preparation = callOnEdt(() -> {
             JIPipeDesktopProjectWindow window = findProjectWindowOnEdt(projectKey);
             if (window == null) {
                 return null;
             }
-            BufferedImage capture;
             boolean iconified = window instanceof Frame frame
                     && (frame.getExtendedState() & Frame.ICONIFIED) != 0;
             if (window.isShowing() && !iconified) {
                 try {
-                    // Visible window: screen capture (the Robot-based ScreenImage variant).
-                    capture = ScreenImage.createImage((Component) window);
+                    Point location = new Point(0, 0);
+                    SwingUtilities.convertPointToScreen(location, window);
+                    Rectangle region = window.getBounds();
+                    region.x = location.x;
+                    region.y = location.y;
+                    return new WindowCapturePreparation(window, true, region, window.getTitle());
                 } catch (Exception e) {
-                    // No screen access (e.g. headless): fall back to the
-                    // print-based capture of the content pane.
-                    capture = printCapture(window.getContentPane());
+                    // The window is showing but has no usable screen location (no native
+                    // peer): the Robot capture cannot address it, so go straight to the
+                    // print fallback (the same outcome as the previous single-phase code).
+                    return new WindowCapturePreparation(window, false, null, window.getTitle());
                 }
-            } else {
-                // Off-screen realization: print the content pane in place (no reparenting,
-                // no screen interaction). This also covers the iconified (minimized) state:
-                // the window is still showing, but a Robot capture would grab whatever
-                // desktop pixels now cover its bounds.
-                capture = printCapture(window.getContentPane());
             }
-            if (capture == null) {
-                return null;
-            }
-            if (!titlebar) {
-                return capture;
-            }
-            return composeFakeTitlebar(capture, window.getTitle());
+            // Off-screen realization: print the content pane in place (no reparenting,
+            // no screen interaction). This also covers the iconified (minimized) state:
+            // the window is still showing, but a Robot capture would grab whatever
+            // desktop pixels now cover its bounds.
+            return new WindowCapturePreparation(window, false, null, window.getTitle());
         });
+        if (preparation == null) {
+            return null;
+        }
+        // Phase 2 (off the EDT): the Robot capture with a bounded wait.
+        BufferedImage capture = null;
+        if (preparation.robotCapture()) {
+            capture = robotCaptureOffEdt(preparation.region());
+        }
+        // Phase 3: no screen capture (no screen access such as headless, a blocked portal,
+        // the timeout, or an off-screen/iconified window): the print-based capture of the
+        // content pane, on the EDT.
+        if (capture == null) {
+            capture = callOnEdt(() -> printCapture(preparation.window().getContentPane()));
+        }
+        if (capture == null) {
+            return null;
+        }
+        if (!titlebar) {
+            return capture;
+        }
+        return composeFakeTitlebar(capture, preparation.title());
+    }
+
+    /**
+     * The EDT phase result of {@link #captureWindow(String, boolean)}: the resolved window
+     * (for the print fallback), whether the Robot-based screen capture applies, the screen
+     * region (when it does), and the window title (for the fake titlebar).
+     */
+    private record WindowCapturePreparation(JIPipeDesktopProjectWindow window, boolean robotCapture,
+                                            Rectangle region, String title) {
+    }
+
+    /**
+     * Runs the Robot-based capture of the screen region on {@link #captureExecutor} (never
+     * on the event dispatch thread) and waits at most {@link #CAPTURE_TIMEOUT_SECONDS}. Any
+     * failure (no screen access, the portal blocking the native call, the timeout) is
+     * treated as "no capture": the caller takes the print fallback. An interrupted wait
+     * restores the interrupt flag.
+     */
+    private static BufferedImage robotCaptureOffEdt(Rectangle region) {
+        Future<BufferedImage> future = captureExecutor.submit(() -> ScreenImage.createImage(region));
+        try {
+            return future.get(CAPTURE_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            future.cancel(true);
+            return null;
+        } catch (ExecutionException | TimeoutException e) {
+            future.cancel(true);
+            return null;
+        }
     }
 
     /**

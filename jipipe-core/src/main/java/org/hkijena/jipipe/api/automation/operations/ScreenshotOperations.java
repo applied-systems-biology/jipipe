@@ -27,11 +27,20 @@ import org.hkijena.jipipe.utils.ui.ScreenImage;
 
 import javax.imageio.ImageIO;
 import javax.swing.SwingUtilities;
-import java.awt.AWTException;
 import java.awt.Component;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
 /**
@@ -135,21 +144,44 @@ public class ScreenshotOperations {
     }
 
     /**
-     * Captures a UI surface component on the event dispatch thread. Visible components are
-     * captured via {@link ScreenImage#createImage(Component)}; never-shown ones are realized
-     * off-screen through {@link ScreenshotRenderer#renderImage(Component, int)} (printAll
-     * technique). Which path applies is decided by the component's shown state: the source
-     * decides by returning a shown or a never-shown component.
+     * How long the Robot-based screen capture may take before it is abandoned (treated as
+     * "no capture" and answered by the print fallback). On Wayland/XWayland hosts the JDK's
+     * Robot capture goes through the xdg-desktop-portal screencast, which can block
+     * indefinitely and without an exception; the bound turns that hang into a degraded
+     * capture instead of a frozen application.
      */
-    private static BufferedImage captureUiSurface(Component component) throws Exception {
+    private static final long CAPTURE_TIMEOUT_SECONDS = 15;
+
+    private static final AtomicInteger captureThreadId = new AtomicInteger();
+
+    /**
+     * Executes the Robot-based screen captures off the event dispatch thread: a capture
+     * blocked inside the native screencast portal would otherwise freeze the whole
+     * application. Daemon threads. A hung native capture can pin its pool thread until the
+     * portal responds; the pool bound keeps that leak bounded, and when both threads hang,
+     * further captures time out after {@link #CAPTURE_TIMEOUT_SECONDS} and take the print
+     * fallback: the tool degrades, the application never freezes.
+     */
+    private static final ExecutorService captureExecutor = Executors.newFixedThreadPool(2, runnable -> {
+        Thread thread = new Thread(runnable, "jipipe-mcp-capture-" + captureThreadId.incrementAndGet());
+        thread.setDaemon(true);
+        return thread;
+    });
+
+    /**
+     * Runs the callable on the event dispatch thread and returns its result: directly on
+     * the EDT, otherwise via {@link SwingUtilities#invokeAndWait}. Every Swing state read
+     * and every print-based capture of the screenshot operations goes through this helper.
+     */
+    private static <T> T onEdt(Callable<T> callable) throws Exception {
         if (SwingUtilities.isEventDispatchThread()) {
-            return captureUiSurfaceOnEdt(component);
+            return callable.call();
         }
-        final BufferedImage[] image = new BufferedImage[1];
+        final Object[] result = new Object[1];
         final Exception[] failure = new Exception[1];
         SwingUtilities.invokeAndWait(() -> {
             try {
-                image[0] = captureUiSurfaceOnEdt(component);
+                result[0] = callable.call();
             } catch (Exception e) {
                 failure[0] = e;
             }
@@ -157,14 +189,81 @@ public class ScreenshotOperations {
         if (failure[0] != null) {
             throw failure[0];
         }
-        return image[0];
+        //noinspection unchecked
+        return (T) result[0];
     }
 
-    private static BufferedImage captureUiSurfaceOnEdt(Component component) throws AWTException {
-        if (component.isShowing()) {
-            return ScreenImage.createImage(component);
+    /**
+     * The screen region of a showing component: the exact math of
+     * {@link ScreenImage#createImage(Component)} (the component bounds translated to screen
+     * coordinates). Must run on the EDT (it reads the component state).
+     */
+    private static Rectangle screenRegionOf(Component component) {
+        Point location = new Point(0, 0);
+        SwingUtilities.convertPointToScreen(location, component);
+        Rectangle region = component.getBounds();
+        region.x = location.x;
+        region.y = location.y;
+        return region;
+    }
+
+    /**
+     * Runs the Robot-based capture of the screen region on {@link #captureExecutor} (never
+     * on the event dispatch thread) and waits at most {@link #CAPTURE_TIMEOUT_SECONDS}. Any
+     * failure (no screen access, the portal blocking the native call, the timeout) is
+     * treated as "no capture": the caller takes the print fallback. An interrupted wait
+     * restores the interrupt flag.
+     */
+    private static BufferedImage robotCaptureOffEdt(Rectangle region) {
+        Future<BufferedImage> future = captureExecutor.submit(() -> ScreenImage.createImage(region));
+        try {
+            return future.get(CAPTURE_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            future.cancel(true);
+            return null;
+        } catch (ExecutionException | TimeoutException e) {
+            future.cancel(true);
+            return null;
         }
-        return ScreenshotRenderer.renderImage(component, Math.max(component.getPreferredSize().width, 1));
+    }
+
+    /**
+     * Captures a UI surface component. Visible components are captured from the screen via
+     * the Robot-based {@link ScreenImage#createImage(Rectangle)}, which never runs on the
+     * event dispatch thread: the screen region is read on the EDT (the same math as
+     * {@link ScreenImage#createImage(Component)}), the capture runs off the EDT with a wait
+     * bounded at {@link #CAPTURE_TIMEOUT_SECONDS}, and a capture without a result (no screen
+     * access, a blocked portal, the timeout) falls back to
+     * {@link ScreenshotRenderer#renderImage(Component, int)} on the EDT (the existing print
+     * path). Never-shown components are realized off-screen through the same print path.
+     * Which path applies is decided by the component's shown state: the source decides by
+     * returning a shown or a never-shown component.
+     */
+    private static BufferedImage captureUiSurface(Component component) throws Exception {
+        // EDT phase: read the shown state and, when visible, the screen region.
+        Rectangle region = onEdt(() -> {
+            if (!component.isShowing()) {
+                return null;
+            }
+            try {
+                return screenRegionOf(component);
+            } catch (Exception e) {
+                // Showing but without a usable screen location (no native peer): no
+                // Robot capture, straight to the print fallback.
+                return null;
+            }
+        });
+        // Off the EDT: the Robot capture with a bounded wait.
+        if (region != null) {
+            BufferedImage image = robotCaptureOffEdt(region);
+            if (image != null) {
+                return image;
+            }
+        }
+        // Print path, on the EDT: the fallback for a failed Robot capture and the
+        // off-screen realization for never-shown components.
+        return onEdt(() -> ScreenshotRenderer.renderImage(component, Math.max(component.getPreferredSize().width, 1)));
     }
 
     /**
