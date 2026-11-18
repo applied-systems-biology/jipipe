@@ -55,8 +55,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -305,6 +307,64 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
         thread.setDaemon(true);
         return thread;
     });
+
+    /**
+     * Scaling limit 1 - incremental node index. The rebuild used to walk every node of the store
+     * on every dirty tick (O(N) per tick: the child map, the per-node state touch, and the
+     * newest-RUNNING scan), which is fine at ~100k nodes and a wall beyond. The child map and the
+     * RUNNING set are now maintained incrementally: {@link #accumulate} records the deltas of
+     * every accumulated record (both constant-time per record), and the rebuild folds them in
+     * with {@link #applyNodeIndexDeltas} and drops the nodes of a store change with
+     * {@link #resetNodeIndex}.
+     *
+     * <p>Both structures are rebuilt-side state: mutated on the EDT (the rebuild folds the
+     * deltas into the tick's snapshot), replaced wholesale on a store switch. The volatile swap
+     * keeps a concurrent switch (the batch handler's {@link #switchStore} runs on the store's
+     * writer thread) from corrupting an in-flight rebuild iteration - a tick that already
+     * snapshotted the old map renders it once, the next tick sees the fresh one (the same
+     * one-stale-tick tolerance as the {@code store} snapshot in {@link #refreshTick}).</p>
+     */
+    private volatile Map<Integer, List<Integer>> childMap = new HashMap<>();
+
+    /**
+     * The nodes currently RUNNING (execution state, not the level filter): created by a node
+     * delta, removed by its terminal delta. The rebuild's active-node pick (R44) reads the
+     * candidates' {@link NodeUiState#lastTs} from here instead of walking every node of the
+     * store; a final per-candidate state check against the store heals divergence (the
+     * read-only reopen's finish sweep fixes index states without records). Volatile-swapped on
+     * a store switch, see {@link #childMap}.
+     */
+    private volatile Set<Integer> runningNodeIds = new HashSet<>();
+
+    /**
+     * The parent of every indexed node (the normalized creation parent): lets a work-start delta
+     * mark the ancestor chains whose sibling sort keys can change (R49: a node's sort key is its
+     * subtree-activity start, so a descendant starting work can change the keys of every
+     * ancestor above it whose own start is still unset). Volatile-swapped on a store switch,
+     * see {@link #childMap}.
+     */
+    private volatile Map<Integer, Integer> parentOfNode = new HashMap<>();
+
+    /**
+     * The parents whose child lists must be re-sorted at the next rebuild: a creation delta adds
+     * the parent, a work-start delta adds every ancestor on the started node's parent chain
+     * (once per node per run, so the amortized cost is trivial). Cleared by the rebuild after
+     * the re-sort; volatile-swapped on a store switch, see {@link #childMap}.
+     */
+    private volatile Set<Integer> dirtySortParents = new HashSet<>();
+
+    /**
+     * Record deltas observed by {@link #accumulate} since the last rebuild, tagged with the
+     * {@link #generation} of their store: node creations ({@code int[0] = generation},
+     * {@code int[1] = id}, {@code int[2] = parent &gt;= 1}), terminal transitions
+     * ({@code int[2] = -1}) and work starts ({@code int[2] = -2}, the node's first work record
+     * stamped its {@link NodeUiState#workFirstTs}). A node is RUNNING from its creation delta
+     * until its terminal delta. The generation tag lets the EDT drop deltas of a store that was
+     * switched away mid catch-up - the scan stops at its next generation check, but its last
+     * page can land after {@link #resetNodeIndex} cleared the queue. Drained on the EDT in
+     * {@link #applyNodeIndexDeltas}.
+     */
+    private final ConcurrentLinkedQueue<int[]> nodeIndexDeltas = new ConcurrentLinkedQueue<>();
 
     /**
      * Creates a new progress tree panel.
@@ -662,6 +722,8 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
                 count.set(0);
             }
             catchUpScheduled.set(false);
+            // Scaling limit 1: the incremental child map and RUNNING set belong to the old store
+            resetNodeIndex();
         }
         dirty = true;
         SwingUtilities.invokeLater(() -> {
@@ -695,6 +757,20 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
             if (nodeId <= 0) {
                 continue;
             }
+            // Scaling limit 1: feed the incremental node index. Node records create the node
+            // (RUNNING from creation, JIPipeProgressLog applies the terminal state when the
+            // NodeFinished record drains); NodeFinished records terminate it. The delta triple
+            // carries both cases: p >= 1 creates with that parent, the -1-sentinel terminates.
+            // The record stream is complete: the store's finish sweep emits a NodeFinished for
+            // every node still RUNNING at run end, and the read-only reopen applies the same
+            // sweep to the reconstructed index. The generation tag lets the rebuild drop the
+            // deltas of a store that was switched away mid catch-up.
+            if (record instanceof JIPipeProgressRecord.Node nodeRecord) {
+                int parent = nodeRecord.p() > 0 ? nodeRecord.p() : rootNodeId;
+                nodeIndexDeltas.add(new int[]{generation.get(), nodeId, parent});
+            } else if (record instanceof JIPipeProgressRecord.NodeFinished) {
+                nodeIndexDeltas.add(new int[]{generation.get(), nodeId, -1});
+            }
             NodeUiState state = nodeState(nodeId);
             long ts = recordTs(record);
             if (ts > 0) {
@@ -710,7 +786,13 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
                 if (!(record instanceof JIPipeProgressRecord.Node)
                         && !(record instanceof JIPipeProgressRecord.Log logRecord
                         && logRecord.lv() == JIPipeLogLevel.DEBUG.value())) {
-                    state.workFirstTs.compareAndExchange(0, ts);
+                    // Scaling limit 1: the transition from never-started to started changes the
+                    // node's R49 sibling sort key, so the rebuild must re-sort the ancestor
+                    // chains (the -2 delta marks them at drain time). The CAS result is the
+                    // transition detector: exactly one record wins the 0 -> ts race.
+                    if (state.workFirstTs.compareAndExchange(0, ts) == 0) {
+                        nodeIndexDeltas.add(new int[]{generation.get(), nodeId, -2});
+                    }
                 }
             }
             if (record instanceof JIPipeProgressRecord.Log logRecord) {
@@ -1146,35 +1228,131 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
         }
     }
 
+    /**
+     * Scaling limit 1: folds the node index deltas accumulated since the last rebuild into the
+     * tick's child map and RUNNING set. Constant-time per delta, so a tick costs O(new records)
+     * instead of the former O(store nodes) walk - the walk (and with it the per-node
+     * {@code nodeState} touch and the full RUNNING scan) is gone. Deltas of an older generation
+     * (a store switched away mid catch-up) are dropped.
+     *
+     * <p>Creation deltas append to the parent's child list and mark it for the sibling re-sort;
+     * work-start deltas (-2) mark every ancestor on the node's parent chain, since a descendant
+     * starting work can change each ancestor's R49 sort key (the subtree-activity start).
+     * Terminal deltas only leave the RUNNING set - the sort keys never read the execution
+     * state.</p>
+     *
+     * <p>Called on the EDT only. The delta stream is complete and duplicate-free: the batch and
+     * catch-up ranges never overlap (every covered line is accumulated exactly once), and the
+     * store writes one creation record per node. Out-of-order accumulate (a mid-run attach
+     * accumulates the first batch before the catch-up scan delivers the earlier creations) is
+     * order-safe: a terminal delta for a not-yet-created node removes nothing, and the later
+     * creation/terminal pair converges; the active-node pick re-checks each candidate against
+     * the store regardless.</p>
+     */
+    static void foldNodeIndexDeltas(Queue<int[]> deltas,
+                                    int currentGeneration,
+                                    Map<Integer, List<Integer>> tickChildMap,
+                                    Set<Integer> tickRunningIds,
+                                    Map<Integer, Integer> tickParentOf,
+                                    Set<Integer> tickDirtyParents) {
+        int[] delta;
+        while ((delta = deltas.poll()) != null) {
+            if (delta[0] != currentGeneration) {
+                continue;
+            }
+            int id = delta[1];
+            int marker = delta[2];
+            if (marker < 0) {
+                if (marker == -2) {
+                    // Work started: the node's key changed, and with it the key of every
+                    // ancestor whose own start is still unset (their key is the min over their
+                    // children). Walking the whole chain marks a superset - the extra lists
+                    // re-sort to the order they already have.
+                    Integer current = id;
+                    while (current != null) {
+                        Integer parent = tickParentOf.get(current);
+                        if (parent == null) {
+                            break;
+                        }
+                        tickDirtyParents.add(parent);
+                        current = parent;
+                    }
+                } else {
+                    tickRunningIds.remove(id);
+                }
+            } else {
+                tickChildMap.computeIfAbsent(marker, k -> new ArrayList<>()).add(id);
+                tickRunningIds.add(id);
+                tickParentOf.put(id, marker);
+                tickDirtyParents.add(marker);
+            }
+        }
+    }
+
+    private void applyNodeIndexDeltas(Map<Integer, List<Integer>> tickChildMap,
+                                      Set<Integer> tickRunningIds,
+                                      Map<Integer, Integer> tickParentOf,
+                                      Set<Integer> tickDirtyParents) {
+        if (!nodeIndexDeltas.isEmpty()) {
+            foldNodeIndexDeltas(nodeIndexDeltas, generation.get(), tickChildMap, tickRunningIds, tickParentOf, tickDirtyParents);
+        }
+    }
+
+    /**
+     * Scaling limit 1: drops the incremental node index (a store switch - the new store's nodes
+     * re-accumulate through the catch-up scan, whose {@link #accumulate} calls re-emit the
+     * deltas). Replaces the structures wholesale instead of clearing them: the switch can run on
+     * the store's writer thread while the EDT rebuild iterates its snapshot (see
+     * {@link #childMap}). Deltas queued by the old store's in-flight scan carry the old
+     * generation and are dropped by the next {@link #applyNodeIndexDeltas}.
+     */
+    private void resetNodeIndex() {
+        childMap = new HashMap<>();
+        runningNodeIds = new HashSet<>();
+        parentOfNode = new HashMap<>();
+        dirtySortParents = new HashSet<>();
+        nodeIndexDeltas.clear();
+    }
+
     private void updateTreeModel(JIPipeProgressLog s) {
         List<JIPipeDesktopProgressTreeRowRenderer.Row> rows = new ArrayList<>();
         rowPositions.clear();
         rebuildBlocks.clear();
         rebuildBlockShift = 0;
         renderedSubtreeCountMemo.clear();
-        Map<Integer, List<Integer>> childMap = new HashMap<>();
-        int nextId = s.nextNodeId();
+        // Scaling limit 1: the child map and the RUNNING set are maintained incrementally (the
+        // deltas accumulate() emits per record). The former per-tick walk over every store node
+        // (child map rebuild, per-node state touch, newest-RUNNING scan) is gone: a tick now
+        // costs O(new records) plus O(running nodes) for the active-node pick. The tick works on
+        // its snapshot of the volatile structures - a store switch that lands mid-tick swaps the
+        // fields, the snapshot renders once more, the next tick picks the fresh ones up.
+        Map<Integer, List<Integer>> childMap = this.childMap;
+        Set<Integer> runningIds = this.runningNodeIds;
+        Map<Integer, Integer> parentOf = this.parentOfNode;
+        Set<Integer> dirtyParents = this.dirtySortParents;
+        applyNodeIndexDeltas(childMap, runningIds, parentOf, dirtyParents);
         // R44: the active node is the newest RUNNING node that passes the level filters (its row
-        // renders - R42 keeps RUNNING leaves); "newest" by the node's last record timestamp
+        // renders - R42 keeps RUNNING leaves); "newest" by the node's last record timestamp.
+        // The candidates are the incremental RUNNING set (small), each re-checked against the
+        // store: the read-only reopen's finish sweep fixes index states without records, so a
+        // stale set entry must not win. The level filter reads the store node too (the debug
+        // toggle can flip between ticks).
+        boolean debugVisible = visibleCategories.contains(RecordCategory.DEBUG);
         int newestRunningId = 0;
         long newestRunningTs = Long.MIN_VALUE;
-        boolean debugVisible = visibleCategories.contains(RecordCategory.DEBUG);
-        for (int id = 2; id < nextId; id++) {
-            JIPipeProgressNode node = s.getNode(id);
-            if (node == null) {
+        for (Integer candidateId : runningIds) {
+            JIPipeProgressNode node = s.getNode(candidateId);
+            if (node == null || node.getState() != JIPipeProgressNodeState.RUNNING) {
                 continue;
             }
-            nodeState(id);
-            int parentId = node.getParentId() <= 0 ? s.getRootNodeId() : node.getParentId();
-            childMap.computeIfAbsent(parentId, k -> new ArrayList<>()).add(id);
-            if (node.getState() == JIPipeProgressNodeState.RUNNING
-                    && (node.getLevel() != JIPipeLogLevel.DEBUG || debugVisible)) {
-                NodeUiState candidateState = nodeStates.get(id);
-                long ts = candidateState != null ? candidateState.lastTs.get() : 0;
-                if (ts >= newestRunningTs) {
-                    newestRunningTs = ts;
-                    newestRunningId = id;
-                }
+            if (node.getLevel() == JIPipeLogLevel.DEBUG && !debugVisible) {
+                continue;
+            }
+            NodeUiState candidateState = nodeStates.get(candidateId);
+            long ts = candidateState != null ? candidateState.lastTs.get() : 0;
+            if (ts >= newestRunningTs) {
+                newestRunningTs = ts;
+                newestRunningId = candidateId;
             }
         }
         // R49: siblings render in execution chronology - creation order reads as pipeline order
@@ -1182,10 +1360,21 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
         // ABOVE chains that already executed. The sort key is the child's subtree-activity start
         // (memoized bottom-up, no per-child subtree flatten), never-started rows render last,
         // ties break by node id (deterministic; keeps creation order within a timestamp group).
-        Map<Integer, Long> subtreeStartMemo = new HashMap<>();
-        for (List<Integer> children : childMap.values()) {
-            children.sort(Comparator.comparingLong((Integer child) -> subtreeActivityStart(childMap, child, subtreeStartMemo))
-                    .thenComparing(child -> child));
+        // Scaling limit 1: only the lists a delta touched are re-sorted - a list that gained no
+        // child and holds no node whose subtree-activity start changed already IS in the order
+        // the sort would produce (the comparator is total, the sort stable), so re-sorting every
+        // list on every tick was pure O(N log N) overhead. The memo stays per-tick fresh; the
+        // recursion stays confined to the dirty lists' subtrees.
+        if (!dirtyParents.isEmpty()) {
+            Map<Integer, Long> subtreeStartMemo = new HashMap<>();
+            for (Integer parentId : dirtyParents) {
+                List<Integer> children = childMap.get(parentId);
+                if (children != null && children.size() > 1) {
+                    children.sort(Comparator.comparingLong((Integer child) -> subtreeActivityStart(childMap, child, subtreeStartMemo))
+                            .thenComparing(child -> child));
+                }
+            }
+            dirtyParents.clear();
         }
         activeNodeId = newestRunningId;
         nodeState(s.getRootNodeId());
