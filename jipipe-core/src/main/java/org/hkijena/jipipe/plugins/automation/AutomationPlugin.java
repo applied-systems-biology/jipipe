@@ -114,6 +114,17 @@ public class AutomationPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerAutomationOperation("get_ui_state", new UiStateOperations.GetUiState());
         registerAutomationOperation("navigate_to_node", new UiStateOperations.NavigateToNode());
 
+        // UI interaction operations (structured actions/docks and synthetic input)
+        registerAutomationOperation("fire_action", new UiInteractionOperations.FireAction());
+        registerAutomationOperation("list_ui_actions", new UiInteractionOperations.ListUiActions());
+        registerAutomationOperation("set_dock_visible", new UiInteractionOperations.SetDockVisible());
+        registerAutomationOperation("list_docks", new UiInteractionOperations.ListDocks());
+        registerAutomationOperation("ui_probe", new UiInteractionOperations.UiProbe());
+        registerAutomationOperation("ui_click", new UiInteractionOperations.UiClick());
+        registerAutomationOperation("ui_drag", new UiInteractionOperations.UiDrag());
+        registerAutomationOperation("ui_scroll", new UiInteractionOperations.UiScroll());
+        registerAutomationOperation("ui_type_text", new UiInteractionOperations.UiTypeText());
+
         // Data viewer operations
         registerAutomationOperation("get_viewer_state", new ViewerOperations.GetViewerState());
         registerAutomationOperation("goto_viewer_row", new ViewerOperations.GotoViewerRow());
