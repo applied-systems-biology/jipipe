@@ -58,6 +58,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -102,6 +103,24 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
     private int currentDataRow = -1;
     private int currentDataAnnotationColumn = -1;
     private JIPipeDesktopDataViewer currentDataViewer;
+    /**
+     * Stable per-window identity used by the automation operations to target a
+     * specific viewer window (the viewer_id in their parameters and results).
+     */
+    private final String id = UUID.randomUUID().toString();
+    /**
+     * Whether connected AI agents may navigate and close this window. Default off;
+     * the user toggles it via {@link #toggleAgentControl} in the ribbon, and the
+     * open_data_viewer automation operation turns it on for windows it opens. Plain
+     * window state, never persisted.
+     */
+    private boolean agentControlled;
+    /**
+     * The ribbon toggle of {@link #agentControlled}. One instance per window that is
+     * re-added to the Data band on every ribbon rebuild (same pattern as
+     * {@link #toggleAutoRefreshFromCache}).
+     */
+    private final JIPipeDesktopSmallToggleButtonRibbonAction toggleAgentControl;
 
     public JIPipeDesktopDataViewerWindow(JIPipeDesktopWorkbench workbench) {
         this.workbench = workbench;
@@ -111,6 +130,10 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
                 refreshFromLocalCache();
             }
         });
+        this.toggleAgentControl = new JIPipeDesktopSmallToggleButtonRibbonAction("Agent control",
+                "Agent control: allow connected AI agents to navigate and close this window",
+                JIPipe.RESOURCES.getIcon16("actions/ai.png"), agentControlled,
+                (button) -> this.agentControlled = button.isSelected());
         this.refreshFromCacheDebouncer = new StaticDebouncer(1500, this::refreshFromLocalCache);
         OPEN_WINDOWS.add(this);
         initialize();
@@ -365,6 +388,7 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
                     "Go to the next data item",
                     JIPipe.RESOURCES.getIcon16("actions/caret-down.png"),
                     this::goToNextData));
+            dataBand.add(toggleAgentControl);
         }
         if (isDisplayingLocallyCachedData()) {
             JIPipeDesktopRibbon.Band cacheBand = generalTask.addBand("Cache");
@@ -518,6 +542,26 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
         }
     }
 
+    /**
+     * Navigates this window to a 1-based data table row, keeping the current data
+     * annotation column. The agent-facing navigation entry point (used by the
+     * goto_viewer_row automation operation) around the private {@link #goToRow}.
+     * Returns false when the window does not display a data table or the row is out
+     * of range; callers that need the distinction check {@link #getDataTableRowCount()}
+     * first.
+     */
+    public boolean navigateToRow(int oneBasedRow) {
+        if (dataTableInfo == null || dataTableInfo.getRowCount() == 0) {
+            return false;
+        }
+        int row = oneBasedRow - 1;
+        if (row < 0 || row >= dataTableInfo.getRowCount()) {
+            return false;
+        }
+        goToRow(row, currentDataAnnotationColumn, false);
+        return true;
+    }
+
     public JIPipeQueuedRunnableExecutor getDownloaderQueue() {
         return downloaderQueue;
     }
@@ -574,6 +618,57 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
 
     public String getDisplayName() {
         return displayName;
+    }
+
+    /**
+     * @return The stable id of this window (the viewer_id the automation operations use)
+     */
+    public String getId() {
+        return id;
+    }
+
+    /**
+     * @return Whether connected AI agents may navigate and close this window
+     */
+    public boolean isAgentControlled() {
+        return agentControlled;
+    }
+
+    /**
+     * Sets whether connected AI agents may navigate and close this window. Keeps the
+     * ribbon toggle in sync (the toggle is shown once the window displays a data table).
+     */
+    public void setAgentControlled(boolean agentControlled) {
+        this.agentControlled = agentControlled;
+        toggleAgentControl.getButton().setSelected(agentControlled);
+    }
+
+    /**
+     * @return The 0-based index of the currently displayed data table row, or -1 when
+     * the window does not display a data table
+     */
+    public int getCurrentDataRow() {
+        return currentDataRow;
+    }
+
+    /**
+     * @return The row count of the displayed data table, or 0 when the window does not
+     * display a data table
+     */
+    public int getDataTableRowCount() {
+        return dataTableInfo != null ? dataTableInfo.getRowCount() : 0;
+    }
+
+    /**
+     * @return The name of the currently displayed data annotation column, or null when
+     * no annotation column is selected
+     */
+    public String getCurrentDataAnnotationColumn() {
+        if (dataTableInfo == null || currentDataAnnotationColumn < 0
+                || currentDataAnnotationColumn >= dataTableInfo.getDataAnnotationColumns().size()) {
+            return null;
+        }
+        return dataTableInfo.getDataAnnotationColumns().get(currentDataAnnotationColumn);
     }
 
     public void browseData(JIPipeDataBrowser dataBrowser, String displayName) {

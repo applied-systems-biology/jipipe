@@ -518,8 +518,10 @@ public class DataOperations {
      * Opens (or re-binds) the standard data viewer window for one cached data entry. The
      * canonical open recipe is the default data display operation: a new viewer window is
      * positioned relative to the project window, made visible, and bound to the entry via
-     * browseDataTable; revalidateDockLater settles the dock sizes. Classified read-only:
-     * it opens a window but mutates no project data.
+     * browseDataTable; revalidateDockLater settles the dock sizes. A newly opened window
+     * has agent control enabled (the user can turn it off in the viewer ribbon); a re-used
+     * window keeps its current setting. Classified read-only: it opens a window but
+     * mutates no project data.
      */
     public static class OpenDataViewer implements AutomationOperation {
 
@@ -531,8 +533,10 @@ public class DataOperations {
         @Override
         public String getDescription() {
             return "Open the standard data viewer window for one cached data entry, or re-bind an "
-                    + "already open viewer window of the same project window to the entry. Changes "
-                    + "no project data";
+                    + "already open viewer window of the same project window to the entry. A newly "
+                    + "opened window has agent control enabled (the user can turn it off in the "
+                    + "viewer ribbon); a re-used window keeps its current setting. Changes no "
+                    + "project data";
         }
 
         @Override
@@ -593,6 +597,9 @@ public class DataOperations {
                 viewer.toFront();
             } else {
                 viewer = new JIPipeDesktopDataViewerWindow(workbench);
+                // Standing agent control for a window the agent opened; a re-used
+                // user-opened window keeps its current setting
+                viewer.setAgentControlled(true);
                 viewer.setLocationRelativeTo(workbench.getWindow());
                 viewer.setVisible(true);
             }
@@ -600,6 +607,7 @@ public class DataOperations {
             viewer.revalidateDockLater();
             ObjectNode data = mapper.createObjectNode();
             data.put("display_name", displayName);
+            data.put("viewer_id", viewer.getId());
             data.put("row", resolved.entry());
             data.put("reused", reused);
             data.put("node", ctx.getGraph().getAliasIdOf(resolved.node()));
