@@ -357,7 +357,17 @@ public class UiInteractionOperations {
                     "The point (" + x + ", " + y + ") is not inside a JIPipe window",
                     AgentWindowResolver.allowedRectangles(allBounds));
         }
-        return hitIn(candidates.get(bounds.indexOf(resolved)), screenPoint);
+        // Walked by index in REVERSE, never by value: WindowBounds is a value record,
+        // so two windows with identical on-screen bounds compare equal and a value
+        // lookup would hit-test the first (possibly hidden) one. The resolver returns
+        // topmost last, so the reverse walk finds the resolved window first and the
+        // topmost window wins for overlapping bounds, exactly like a real click.
+        for (int i = candidates.size() - 1; i >= 0; i--) {
+            if (bounds.get(i).equals(resolved)) {
+                return hitIn(candidates.get(i), screenPoint);
+            }
+        }
+        throw new IllegalStateException("The window resolver returned a candidate's own bounds");
     }
 
     /**
@@ -463,8 +473,8 @@ public class UiInteractionOperations {
     }
 
     /**
-     * The accessible name of the component, or null when it has none (the probe passes it
-     * to the pure suggestion table; for dock panel content the dock id replaces it).
+     * The accessible name of the component, or null when it has none (passed to the
+     * pure suggestion table for non-dock components).
      */
     private static String accessibleNameOf(Component component) {
         if (component instanceof JComponent jComponent && jComponent.getAccessibleContext() != null) {
@@ -600,9 +610,10 @@ public class UiInteractionOperations {
      * Classifies what is under the point of a resolved window (the shared body of
      * {@code ui_probe} and the {@code probe} field of the input operation responses;
      * must run on the EDT): a graph-canvas node (body, slot, or run badge) through the
-     * canvas pickers and the node's own active areas, otherwise a component (with the
-     * dock id passed as the accessible name to the pure suggestion table, and a
-     * best-effort button-text to fireable-action lookup for buttons and menu items).
+     * canvas pickers and the node's own active areas, a dock panel hit when the
+     * component sits inside a specific panel's content (the dock id names the
+     * set_dock_visible argument), otherwise a component (with a best-effort
+     * button-text to fireable-action lookup for buttons and menu items).
      */
     private static ObjectNode probeAt(WindowResolution resolution) {
         ObjectNode result = mapper.createObjectNode();
@@ -654,24 +665,28 @@ public class UiInteractionOperations {
             suggestedOperation = hitProbe.suggestedOperation();
             suggestedArguments = hitProbe.suggestedArguments();
         } else {
-            // The dock rule of the pure table fires on the accessible name, so the DOCK
-            // ID is passed as the accessible name when the component is inside a
-            // specific panel's content (the dock content); the plain accessible name
-            // otherwise
+            // A component inside a specific panel's content is a DOCK hit: the resolved
+            // dock id directly names the set_dock_visible argument. The hit is
+            // constructed here (identical to the pure table's dock branch) instead of
+            // going through the table: its dock rule matches the wrapper class name
+            // 'JIPipeDesktopDockPanel$Panel', which a Component ancestor chain cannot
+            // contain (the wrapper is not a Component, and simple names carry no '$').
+            // Dock chrome (toolbar buttons, split pane borders) has no dock id and
+            // falls through to the plain component table, so no set_dock_visible
+            // suggestion is made there.
             String dockId = dockIdOf(hit);
-            String accessibleName = dockId != null ? dockId : accessibleNameOf(hit);
-            AgentElementProbe.ProbeHit hitProbe = AgentElementProbe.suggestForComponent(
-                    componentChain(hit, 6), accessibleName);
+            AgentElementProbe.ProbeHit hitProbe;
+            if (dockId != null) {
+                hitProbe = new AgentElementProbe.ProbeHit("dock", dockId, "set_dock_visible",
+                        "{\"dock-id\": \"" + dockId + "\"}");
+            } else {
+                hitProbe = AgentElementProbe.suggestForComponent(
+                        componentChain(hit, 6), accessibleNameOf(hit));
+            }
             kind = hitProbe.kind();
             detail = hitProbe.detail();
             suggestedOperation = hitProbe.suggestedOperation();
             suggestedArguments = hitProbe.suggestedArguments();
-            if ("dock".equals(kind) && dockId == null) {
-                // Dock chrome (toolbar buttons, split pane borders): no single dock id
-                // applies, so the set_dock_visible suggestion is not made
-                suggestedOperation = null;
-                suggestedArguments = null;
-            }
             String buttonText = null;
             if (hit instanceof JButton button) {
                 buttonText = button.getText();
@@ -798,9 +813,10 @@ public class UiInteractionOperations {
             // root), so the editor's context actions, tools, and editor-level actions
             // answer for the TARGET editor, never for wherever the user's keyboard focus
             // currently is. Window-level scopes (dock toggles, command bar) answer
-            // against the focused window, which is this editor's window. Resolving
-            // through the dispatcher (instead of calling a scope directly) keeps the
-            // exact text-input guards the keyboard path applies.
+            // against the window hosting the anchor (this editor's window): they match
+            // the focus owner's window, so any focus inside this window qualifies.
+            // Resolving through the dispatcher (instead of calling a scope directly)
+            // keeps the exact text-input guards the keyboard path applies.
             Runnable runnable = JIPipeDesktopShortcutDispatcher.getInstance()
                     .resolveAction(actionId, editorUI.getCanvasUI());
             if (runnable == null) {
@@ -842,7 +858,8 @@ public class UiInteractionOperations {
             return schemaWithProject("""
                     {
                       "type": "object",
-                      "properties": {}
+                      "properties": {},
+                      "additionalProperties": false
                     }""", null);
         }
 
@@ -988,7 +1005,8 @@ public class UiInteractionOperations {
             return schemaWithProject("""
                     {
                       "type": "object",
-                      "properties": {}
+                      "properties": {},
+                      "additionalProperties": false
                     }""", null);
         }
 
@@ -1107,7 +1125,7 @@ public class UiInteractionOperations {
 
         @Override
         public String getDescription() {
-            return "Deliver a mouse click (or double click) at a screen point inside a JIPipe window."
+            return "Deliver a mouse click (single, double, or triple) at a screen point inside a JIPipe window."
                     + CONFIRM_CLAUSE;
         }
 
@@ -1120,8 +1138,8 @@ public class UiInteractionOperations {
                       "properties": {
                         "x": {"type": "integer", "description": "The x coordinate in screen coordinates"},
                         "y": {"type": "integer", "description": "The y coordinate in screen coordinates"},
-                        "click-count": {"type": "integer", "default": 1, "description": "Number of clicks: 1 (default) or 2 for a double click"},
-                        "button": {"type": "string", "enum": ["left", "middle", "right"], "default": "left", "description": "The mouse button. A right click sets the popup trigger flag on the release, so popup menus that react to isPopupTrigger() open"}
+                        "click-count": {"type": "integer", "default": 1, "description": "Number of clicks, limited to 1 (default, single), 2 (double), or 3 (triple)"},
+                        "button": {"type": "string", "enum": ["left", "middle", "right"], "default": "left", "description": "The mouse button. A right click sets the popup trigger flag on the press (the real X11 convention), so popup menus that react to isPopupTrigger() open"}
                       },
                       "additionalProperties": false
                     }""", " (informational for this operation: the point alone resolves the window)");
@@ -1158,7 +1176,10 @@ public class UiInteractionOperations {
                 return error("Unknown button '" + params.get("button").asText()
                         + "'; expected left, middle, or right");
             }
-            int clickCount = Math.max(1, intParam(params, "click-count", 1));
+            int clickCount = intParam(params, "click-count", 1);
+            if (clickCount < 1 || clickCount > 3) {
+                return error("click-count is limited to 1 (single), 2 (double), or 3 (triple)");
+            }
             try {
                 modeOrError.mode.click(resolution.hit(), resolution.local().x, resolution.local().y,
                         clickCount, buttonId);
@@ -1272,9 +1293,10 @@ public class UiInteractionOperations {
         public String getDescription() {
             return "Deliver a signed mouse wheel rotation at a screen point inside a JIPipe window. The amount "
                     + "is the wheel rotation in the standard wheel orientation: positive scrolls down/away from "
-                    + "the user (on the graph canvas with Ctrl held, positive zooms out and negative zooms in), "
-                    + "negative scrolls up/towards the user. One rotation per unit, so scroll listeners read "
-                    + "exactly the amount (getWheelRotation and getUnitsToScroll agree)." + CONFIRM_CLAUSE;
+                    + "the user, negative scrolls up/towards the user. One rotation per unit, so scroll listeners "
+                    + "read exactly the amount (getWheelRotation and getUnitsToScroll agree). The delivered wheel "
+                    + "events carry no keyboard modifiers (the canvas zoom is a physical Ctrl+wheel gesture and "
+                    + "cannot be reached through this operation)." + CONFIRM_CLAUSE;
         }
 
         @Override
@@ -1286,7 +1308,7 @@ public class UiInteractionOperations {
                       "properties": {
                         "x": {"type": "integer", "description": "The x coordinate in screen coordinates"},
                         "y": {"type": "integer", "description": "The y coordinate in screen coordinates"},
-                        "amount": {"type": "integer", "description": "The signed wheel rotation: positive scrolls down/away from the user (with Ctrl on the graph canvas this zooms out), negative scrolls up/towards the user (with Ctrl this zooms in)"}
+                        "amount": {"type": "integer", "description": "The signed wheel rotation: positive scrolls down/away from the user, negative scrolls up/towards the user. The delivered events carry no keyboard modifiers"}
                       },
                       "additionalProperties": false
                     }""", " (informational for this operation: the point alone resolves the window)");

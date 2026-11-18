@@ -315,10 +315,10 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
 
     /**
      * The node's current active areas, sorted by priority (the same list the mouse
-     * listeners hit-test, whole-node area last). Exposed read-only so external
-     * consumers (the agent UI probe, which maps a point to the node's run badge, slot,
-     * or body) can classify a point the way the mouse events do, without a copy of
-     * the area bookkeeping.
+     * listeners hit-test, whole-node area last). Returns the live list, not a copy:
+     * external consumers (the agent UI probe, which maps a point to the node's run
+     * badge, slot, or body) classify a point the way the mouse events do without
+     * duplicating the area bookkeeping. Callers must not modify the list.
      */
     public List<JIPipeDesktopGraphNodeUIActiveArea> getActiveAreas() {
         return activeAreas;
