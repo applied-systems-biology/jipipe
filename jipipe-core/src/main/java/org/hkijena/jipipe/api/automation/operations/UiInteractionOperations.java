@@ -378,9 +378,12 @@ public class UiInteractionOperations {
         // Hit-test the Swing root pane (the decorated-window hit surface: a JFrame's
         // content lives in its JRootPane, and the root pane accounts for the decoration
         // insets when the screen point is converted). Container#getComponentAt is SHALLOW
-        // (it returns the immediate child only), so the deepest component under the point
-        // is found with the same front-to-back, recursive traversal the AWT event dispatch
-        // uses to route real mouse events (spec 4.1: the probe hit-tests like the mouse).
+        // (it returns the immediate child only), so the deepest, topmost component under
+        // the point is found with a recursive traversal. The result is the component
+        // UNDER THE POINT (the probe's resolution), not yet the AWT delivery target:
+        // real dispatch additionally requires the target to have a mouse listener and
+        // otherwise routes the event to the nearest qualifying ancestor
+        // (deliveryTargetOf), while the probe deliberately stays component-precise.
         JComponent root = SwingUtilities.getRootPane(window);
         Component hitSurface = root != null ? root : window;
         Point surfaceLocal = new Point(screenPoint);
@@ -398,12 +401,17 @@ public class UiInteractionOperations {
 
     /**
      * The deepest visible component of the container at the point (in the container's
-     * coordinate system), found by a front-to-back, recursive traversal: this is exactly
-     * how the AWT event dispatch routes a real mouse event to a leaf. Returns null when no
-     * visible child contains the point (the caller then uses the container itself).
+     * coordinate system), found by a recursive traversal that iterates the children in
+     * INDEX order 0 to count-1: in the Swing z-order index 0 is the TOPMOST child, so
+     * the first containing hit is the topmost one and overlapping components resolve
+     * like a real click (the AWT dispatch iterates the same ascending order). This is
+     * the probe's component resolution (what is under the point); the AWT delivery
+     * semantics (the mouse-event listener filter) are applied separately by
+     * {@link #deliveryTargetOf}. Returns null when no visible child contains the point
+     * (the caller then uses the container itself).
      */
     private static Component deepestComponentAt(Container container, Point pointInContainer) {
-        for (int i = container.getComponentCount() - 1; i >= 0; i--) {
+        for (int i = 0; i < container.getComponentCount(); i++) {
             Component child = container.getComponent(i);
             if (!child.isVisible()) {
                 continue;
@@ -423,6 +431,46 @@ public class UiInteractionOperations {
             }
         }
         return null;
+    }
+
+    /**
+     * The delivery target of a mouse input operation: the component the synthetic event
+     * is aimed at, the point in its coordinate space, and an honesty warning for the
+     * response (null when the event reaches a component with listeners).
+     */
+    private record DeliveryTarget(Component target, Point local, String warning) {
+    }
+
+    /**
+     * The AWT-faithful delivery target for a resolved hit. Real dispatch (the JDK's
+     * MouseEventTargetFilter) requires the target component to have an actual mouse
+     * listener or event mask; a listener-less component is SKIPPED and the search
+     * continues with the parent, so a plain MouseEvent never reaches a listener-less
+     * component (only MOUSE_WHEEL events retarget themselves upward). This matters for
+     * node UIs: they implement MouseListener but never register it, so a real click on
+     * a node body targets the canvas, which picks and handles the node itself. The
+     * nearest component with at least one mouse, mouse-motion, or mouse-wheel listener
+     * (the public-API equivalent of the JDK filter) is therefore the delivery target,
+     * with the point converted into each candidate's space on the way up. When no
+     * component up to the window has listeners, the deepest component is kept (that is
+     * the real behavior too: the event would go nowhere) and the returned warning says
+     * so, keeping the response honest.
+     */
+    private static DeliveryTarget deliveryTargetOf(WindowResolution resolution) {
+        Point point = new Point(resolution.local());
+        for (Component c = resolution.hit(); c != null; c = c.getParent()) {
+            if (c.getMouseListeners().length > 0 || c.getMouseMotionListeners().length > 0
+                    || c.getMouseWheelListeners().length > 0) {
+                return new DeliveryTarget(c, point, null);
+            }
+            if (c.getParent() != null) {
+                // SwingUtilities.convertPoint RETURNS the converted point (it does not
+                // mutate its argument), so the result must be assigned
+                point = SwingUtilities.convertPoint(c, point, c.getParent());
+            }
+        }
+        return new DeliveryTarget(resolution.hit(), resolution.local(),
+                "the target component has no mouse listeners; the event will have no effect");
     }
 
     /**
@@ -743,12 +791,24 @@ public class UiInteractionOperations {
      */
     private static ObjectNode inputResult(AgentInputDispatch.AgentInputMode mode,
                                           WindowResolution resolution) {
+        return inputResult(mode, resolution, null);
+    }
+
+    /**
+     * The input response with an optional honesty warning (the delivery target has no
+     * mouse listeners anywhere up the chain, so the event will have no effect).
+     */
+    private static ObjectNode inputResult(AgentInputDispatch.AgentInputMode mode,
+                                          WindowResolution resolution, String warning) {
         ObjectNode data = mapper.createObjectNode();
         data.put("ok", true);
         data.put("input_mode", mode.name());
         data.put("window", windowTitle(resolution.window()));
         data.put("target_component", componentChain(resolution.hit(), 3));
         data.set("probe", probeAt(resolution));
+        if (warning != null) {
+            data.put("warning", warning);
+        }
         return data;
     }
 
@@ -1183,13 +1243,17 @@ public class UiInteractionOperations {
             if (clickCount < 1 || clickCount > 3) {
                 return error("click-count is limited to 1 (single), 2 (double), or 3 (triple)");
             }
+            // AWT-faithful delivery target: the nearest ancestor with mouse listeners
+            // (plain MouseEvents do not retarget upward, so the deepest component is
+            // only the probe's resolution, not the dispatch target)
+            DeliveryTarget target = deliveryTargetOf(resolution);
             try {
-                modeOrError.mode.click(resolution.hit(), resolution.local().x, resolution.local().y,
+                modeOrError.mode.click(target.target(), target.local().x, target.local().y,
                         clickCount, buttonId);
             } catch (Exception e) {
                 return error("Input delivery failed: " + e.getMessage());
             }
-            return inputResult(modeOrError.mode, resolution);
+            return inputResult(modeOrError.mode, resolution, target.warning());
         }
     }
 
@@ -1270,15 +1334,20 @@ public class UiInteractionOperations {
             }
             Point toWindow = new Point(toScreen);
             SwingUtilities.convertPointFromScreen(toWindow, resolution.window());
+            // AWT-faithful delivery target (see ui_click): the nearest ancestor with
+            // mouse listeners. Both drag end points are expressed in the target's
+            // coordinate space, so the press, the interpolated moves, and the release
+            // stay consistent (the canvas press handler picks and drags the node itself)
+            DeliveryTarget target = deliveryTargetOf(resolution);
             Point toLocal = new Point(toWindow);
-            toLocal = SwingUtilities.convertPoint(resolution.window(), toLocal, resolution.hit());
+            toLocal = SwingUtilities.convertPoint(resolution.window(), toLocal, target.target());
             try {
-                modeOrError.mode.drag(resolution.hit(), resolution.local().x, resolution.local().y,
+                modeOrError.mode.drag(target.target(), target.local().x, target.local().y,
                         toLocal.x, toLocal.y, buttonId);
             } catch (Exception e) {
                 return error("Input delivery failed: " + e.getMessage());
             }
-            return inputResult(modeOrError.mode, resolution);
+            return inputResult(modeOrError.mode, resolution, target.warning());
         }
     }
 
