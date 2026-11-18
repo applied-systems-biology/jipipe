@@ -114,6 +114,11 @@ public class AutomationPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerAutomationOperation("get_ui_state", new UiStateOperations.GetUiState());
         registerAutomationOperation("navigate_to_node", new UiStateOperations.NavigateToNode());
 
+        // Data viewer operations
+        registerAutomationOperation("get_viewer_state", new ViewerOperations.GetViewerState());
+        registerAutomationOperation("goto_viewer_row", new ViewerOperations.GotoViewerRow());
+        registerAutomationOperation("close_viewer", new ViewerOperations.CloseViewer());
+
         // Diagnostics operations
         registerAutomationOperation("get_errors", new DiagnosticsOperations.GetErrors());
         registerAutomationOperation("get_log", new DiagnosticsOperations.GetLog());
