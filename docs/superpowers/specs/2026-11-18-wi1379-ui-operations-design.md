@@ -8,7 +8,7 @@ Work item: #1379 (Agentic interactions through MCP). Depends on: MCP v1 (#1369, 
 
 AI agents driving JIPipe must be able to operate the user interface: trigger commands, open and close panels, configure parameters the generic `set_parameter` cannot express, and - for custom-painted surfaces such as the 3D viewers and interactive annotation tools planned for the Interactive JIPipe milestone - deliver real input events.
 
-Work item #1369 listed this capability as "browse-style UI interaction (clicking controls, typing text, opening menus)". Exploration (see `.superpowers/sdd/2026-11-17-wi1379/explore-ui-toolkit.md`) found that literal mouse emulation is needed for almost nothing in the current UI: a fire-by-id primitive exists, docks and node UIs carry stable identifiers, and the "typing" gap is a value-conversion gap, not a UI gap. This spec therefore reshapes the capability into two layers:
+Work item #1369 listed this capability as "browse-style UI interaction (clicking controls, typing text, opening menus)". Exploration (see `.superpowers/sdd/2026-11-17-wi1379/explore-ui-toolkit.md`) found that literal mouse emulation is needed for almost nothing in the current UI: a fire-by-id primitive exists, docks and node UIs carry stable identifiers, and the "typing" gap is a value-conversion gap, not a UI gap. This spec therefore reshapes the capability into two layers, mirroring the proven design of the AI browser-control extensions (semantic element refs as the primary addressing, `elementsFromPoint`-style probes, coordinates only for canvas/custom-painted surfaces, probe-act-confirm loop, delivery-is-not-effect):
 
 - **Layer 1 - structured UI operations** (no synthetic events): deterministic, reviewable operations on the three addressing axes that already exist (shortcut-action ids, dock panel ids, node UUIDs and parameter keys).
 - **Layer 2 - synthetic input** (the escape hatch): coordinate-based input for custom-painted surfaces that have no element identity, restricted to JIPipe's own windows.
@@ -59,14 +59,17 @@ Rules: conversions are additive; the raw-String fallthrough remains for anything
 
 ### 4.1 Operations
 
-Four operations, all Modify (Ask), all `requiresEdt`-bridged like the existing desktop-touching ops:
+Four input operations plus a probe, all Modify (Ask) except the probe (read-only), all `requiresEdt`-bridged like the existing desktop-touching ops:
 
+- `ui_probe` (Query, read-only): the virtual cursor's peek, the direct equivalent of the browser extensions' `elementsFromPoint`. Params: `x`, `y` (screen coordinates, required), optional `input-mode` (ignored; the probe only hit-tests). Returns, WITHOUT delivering any event: the window (title), and what is under the point, resolved with the same hit-testing the real mouse events use - `Component.getComponentAt(Point)` for Swing components (with the component chain's class names, and its accessible name/label where available), plus the graph-canvas-specific pickers when the point is over a canvas (`pickNodeUI` for the node UUID, `getSlotActiveArea` for the slot name).
+  - **Cross-reference to Layer 1 (the core "aim right" rule).** When the probed point resolves to an element that HAS a Layer 1 identity - a node, a node slot/badge, a dock panel, a fireable action - the probe says so and names the better operation, e.g. "point is the run-and-show-results badge of node `<uuid>`; use `fire_action` with `run-node-and-show-results` rather than `ui_click`". The agent is thereby steered to the deterministic semantic path; `ui_click` at raw coordinates remains only for surfaces with no identity (3D viewers, annotation canvases). This mirrors the extensions' rule "use the ref/semantic target; use coordinates only for canvas/custom-painted surfaces."
+  - No input mode needed - it is pure read.
 - `ui_click`: params `x`, `y` (screen coordinates, required), optional `click-count` (default 1; 2 = double), optional `button` (default left), optional `input-mode`.
 - `ui_drag`: params `from-x`, `from-y`, `to-x`, `to-y` (required), optional `button`, optional `input-mode`.
 - `ui_scroll`: params `x`, `y`, `amount` (signed; required), optional `input-mode`.
 - `ui_type_text`: params `text` (required), optional `input-mode`. Delivers the text as key events to the current keyboard-focus owner; the intended sequence is `ui_click` into a field (which transfers focus), then `ui_type_text`. Refuses when no keyboard-focus owner exists inside a showing JIPipe JVM window. No separate element-id API exists in this layer by design: everything with identity belongs to Layer 1, and custom-painted surfaces are addressed by coordinates.
 
-Each operation returns: the `input-mode` that actually ran, the resolved target (window title, component class, component-relative and screen bounds), and for refusals the reason plus the allowed rectangles.
+Every input operation hit-tests its target FIRST (same resolution as `ui_probe`) and the response echoes the resolved element (window title, component class chain, node UUID/slot when over a canvas, the `input-mode` that ran) - so every click is self-describing and the agent never acts blind. For refusals the response lists the allowed rectangles.
 
 ### 4.2 Target validation (JIPipe windows only)
 
@@ -81,11 +84,21 @@ Before any event is delivered, the target must be inside the JIPipe JVM: for poi
 
 Every Layer 2 call is recorded in the MCP operation log with the parameters, the resolved target, and the mode (the standard operation logging; no separate mechanism). The response echoes the same data.
 
+### 4.5 The probe, act, confirm loop (agent guidance)
+
+Layer 2 input is best-effort delivery, not proof of effect: a successful `ui_click` confirms the event reached the component, not that the component did what the agent expected (the same caveat the browser extensions state - an `ok` only confirms input delivery). The operations therefore follow the extension loop, and the operation descriptions say so:
+
+1. **Probe** - `ui_probe` the point (or use `screenshot_canvas`/`screenshot_window` plus `ui_probe`) to learn exactly what is there and whether a Layer 1 operation applies.
+2. **Act** - prefer the Layer 1 operation the probe named (`fire_action`, `set_dock_visible`, `set_parameter`); only if no identity exists, deliver the coordinate input.
+3. **Confirm** - re-read after the action (`get_ui_state`, `ui_probe` the same point, `get_viewer_state`, or a screenshot) to verify the intended change happened. If not, re-probe and retry rather than assuming success.
+
+This is the mechanism that lets an agent "know it targeted the right element": the probe resolves the element and its best operation before acting, and the post-action read confirms the effect. The optional user-facing virtual-cursor visual (a pointer that glides to the target, off by default) is a future cosmetic for the Interactive JIPipe milestone and is explicitly out of scope here - it is what the user watches, not how the agent aims.
+
 ## 5. Permissions
 
 - `fire_action`: Modify, Ask (actions mutate; per-id classification is deliberately not attempted).
 - `list_ui_actions`, `list_docks`, `set_dock_visible`: Query class, read-only (`set_dock_visible` follows the `navigate_to_node` "view state only" precedent).
-- `ui_click`, `ui_drag`, `ui_scroll`, `ui_type_text`: Modify, Ask.
+- `ui_click`, `ui_drag`, `ui_scroll`, `ui_type_text`: Modify, Ask. `ui_probe`: Query, read-only.
 - Composite conversion: no new operation; `set_parameter` keeps its existing permission (Ask for non-read-only targets per the existing classification).
 
 ## 6. Testing policy
@@ -96,7 +109,7 @@ Every Layer 2 call is recorded in the MCP operation log with the parameters, the
 
 ## 7. Expected files
 
-- `api/automation/operations/UiInteractionOperations.java` (new): the eight operations (fire_action, list_ui_actions, set_dock_visible, list_docks, ui_click, ui_drag, ui_scroll, ui_type_text) - or a split into two files (structured vs input) if the input layer's executor needs isolation; implementer judgment, coherence first.
+- `api/automation/operations/UiInteractionOperations.java` (new): the nine operations (fire_action, list_ui_actions, set_dock_visible, list_docks, ui_probe, ui_click, ui_drag, ui_scroll, ui_type_text) - or a split into two files (structured vs input) if the input layer's executor needs isolation; implementer judgment, coherence first.
 - `api/automation/JIPipeAutomationAPI.java`: composite conversion additions to `convertParameterValue`.
 - `api/shortcuts/JIPipeShortcutActions.java` + the graph editor scope: id assignments for the nine context actions.
 - `AutomationPlugin.java`: registrations.
