@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.actions;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.shortcuts.JIPipeShortcutActions;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.managers.JIPipeDesktopGraphCanvasEdgeManager;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.EdgesOnlyUIContextAction;
@@ -24,6 +25,12 @@ import java.awt.*;
 import java.util.Set;
 
 public class AddEdgeControlPointUIContextAction implements EdgesOnlyUIContextAction {
+
+    /**
+     * The id of the shortcut action that triggers this context action
+     * (see {@link org.hkijena.jipipe.api.shortcuts.JIPipeShortcutActions}).
+     */
+    public static final String SHORTCUT_ACTION_ID = JIPipeShortcutActions.NODE_ADD_EDGE_CONTROL_POINT.id();
 
     @Override
     public String getName() {
@@ -57,4 +64,11 @@ public class AddEdgeControlPointUIContextAction implements EdgesOnlyUIContextAct
             edgeManager.addControlPointToEdge(edgeUI, graphEditorCursor);
         }
     }
+
+    @Override
+    public String getShortcutActionId() {
+        return SHORTCUT_ACTION_ID;
+    }
+
 }
+

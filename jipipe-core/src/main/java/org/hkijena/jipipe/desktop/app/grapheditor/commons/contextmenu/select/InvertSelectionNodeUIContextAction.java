@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.select;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.shortcuts.JIPipeShortcutActions;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.GraphInteractiveObjectUIContextAction;
@@ -22,6 +23,13 @@ import javax.swing.*;
 import java.util.Set;
 
 public class InvertSelectionNodeUIContextAction implements GraphInteractiveObjectUIContextAction {
+
+    /**
+     * The id of the shortcut action that triggers this context action
+     * (see {@link org.hkijena.jipipe.api.shortcuts.JIPipeShortcutActions}).
+     */
+    public static final String SHORTCUT_ACTION_ID = JIPipeShortcutActions.NODE_INVERT_SELECTION.id();
+
     @Override
     public boolean matches(Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
         return !selection.isEmpty();
@@ -51,4 +59,11 @@ public class InvertSelectionNodeUIContextAction implements GraphInteractiveObjec
     public boolean showInMultiSelectionPanel() {
         return false;
     }
+
+    @Override
+    public String getShortcutActionId() {
+        return SHORTCUT_ACTION_ID;
+    }
+
 }
+

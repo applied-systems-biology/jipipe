@@ -22,6 +22,7 @@ import org.hkijena.jipipe.api.grouping.GraphWrapperAlgorithmOutput;
 import org.hkijena.jipipe.api.grouping.JIPipeNodeGroup;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.shortcuts.JIPipeShortcutActions;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.NodeUIContextAction;
@@ -34,6 +35,13 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class GroupNodeUIContextAction implements NodeUIContextAction {
+
+    /**
+     * The id of the shortcut action that triggers this context action
+     * (see {@link org.hkijena.jipipe.api.shortcuts.JIPipeShortcutActions}).
+     */
+    public static final String SHORTCUT_ACTION_ID = JIPipeShortcutActions.NODE_GROUP.id();
+
     @Override
     public boolean matchesNodes(Set<JIPipeDesktopGraphNodeUI> selection) {
         return JIPipe.getNodes().hasNodeInfoWithId("node-group") && !selection.isEmpty();
@@ -168,4 +176,10 @@ public class GroupNodeUIContextAction implements NodeUIContextAction {
         return JIPipe.RESOURCES.getIcon16("actions/object-group.png");
     }
 
+    @Override
+    public String getShortcutActionId() {
+        return SHORTCUT_ACTION_ID;
+    }
+
 }
+

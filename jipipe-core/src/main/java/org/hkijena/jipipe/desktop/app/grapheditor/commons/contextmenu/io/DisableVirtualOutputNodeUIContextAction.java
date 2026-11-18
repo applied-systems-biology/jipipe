@@ -16,6 +16,7 @@ package org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.io;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
+import org.hkijena.jipipe.api.shortcuts.JIPipeShortcutActions;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.NodeUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
@@ -24,6 +25,13 @@ import javax.swing.*;
 import java.util.Set;
 
 public class DisableVirtualOutputNodeUIContextAction implements NodeUIContextAction {
+
+    /**
+     * The id of the shortcut action that triggers this context action
+     * (see {@link org.hkijena.jipipe.api.shortcuts.JIPipeShortcutActions}).
+     */
+    public static final String SHORTCUT_ACTION_ID = JIPipeShortcutActions.NODE_VIRTUAL_OUTPUTS_DISABLE.id();
+
     @Override
     public boolean matchesNodes(Set<JIPipeDesktopGraphNodeUI> selection) {
         for (JIPipeDesktopGraphNodeUI ui : selection) {
@@ -66,4 +74,10 @@ public class DisableVirtualOutputNodeUIContextAction implements NodeUIContextAct
         return JIPipe.RESOURCES.getIcon16("devices/media-memory.png");
     }
 
+    @Override
+    public String getShortcutActionId() {
+        return SHORTCUT_ACTION_ID;
+    }
+
 }
+

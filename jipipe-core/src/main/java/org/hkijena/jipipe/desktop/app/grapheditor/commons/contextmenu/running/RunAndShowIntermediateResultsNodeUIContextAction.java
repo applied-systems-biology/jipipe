@@ -17,6 +17,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeGraphType;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.shortcuts.JIPipeShortcutActions;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.NodeUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
@@ -27,6 +28,13 @@ import javax.swing.*;
 import java.util.Set;
 
 public class RunAndShowIntermediateResultsNodeUIContextAction implements NodeUIContextAction {
+
+    /**
+     * The id of the shortcut action that triggers this context action
+     * (see {@link org.hkijena.jipipe.api.shortcuts.JIPipeShortcutActions}).
+     */
+    public static final String SHORTCUT_ACTION_ID = JIPipeShortcutActions.RUN_AND_SHOW_INTERMEDIATE_RESULTS.id();
+
     @Override
     public boolean matchesNodes(Set<JIPipeDesktopGraphNodeUI> selection) {
         if (selection.size() == 1) {
@@ -64,4 +72,10 @@ public class RunAndShowIntermediateResultsNodeUIContextAction implements NodeUIC
         return JIPipe.RESOURCES.getIcon16("actions/rabbitvcs-update.png");
     }
 
+    @Override
+    public String getShortcutActionId() {
+        return SHORTCUT_ACTION_ID;
+    }
+
 }
+
