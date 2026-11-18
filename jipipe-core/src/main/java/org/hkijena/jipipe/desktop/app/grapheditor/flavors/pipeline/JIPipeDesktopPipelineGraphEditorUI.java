@@ -114,6 +114,16 @@ public class JIPipeDesktopPipelineGraphEditorUI extends JIPipeDesktopGraphEditor
      * closed in {@link #closeDockStateBinding()} when the editor is disposed.
      */
     private SettingsBinding<JIPipeDesktopDockPanel.State> pipelineDockStateBinding;
+
+    /**
+     * Set while this editor writes its own dock layout into the settings
+     * document: the write synchronously delivers the new value back to this
+     * editor's binding subscriber ({@link #applyPipelineDockState}), and
+     * re-applying it would tear down and re-add every displayed panel
+     * (the addNotify chain of a live progress panel costs seconds). Foreign
+     * writers keep re-applying: their events arrive outside our own write.
+     */
+    private boolean applyingOwnDockStateWrite;
     /**
      * The "Add nodes" browser, held so {@link #dispose()} can release its
      * pinned-ids binding with the editor.
@@ -528,6 +538,13 @@ public class JIPipeDesktopPipelineGraphEditorUI extends JIPipeDesktopGraphEditor
         if (state == null) {
             return;
         }
+        // The echo of this editor's own write: the live layout already IS the
+        // stored state, so applying it is a pure teardown + re-add of every
+        // displayed panel. Skip it; the serialized-equality guard below stays
+        // as the second line of defense for foreign writes.
+        if (applyingOwnDockStateWrite) {
+            return;
+        }
         // Self-heal layouts stored by older versions: the activity state of
         // context docks is not part of the persisted layout anymore (#1353),
         // and the legacy "always show right panel" flag becomes the Tools
@@ -547,7 +564,16 @@ public class JIPipeDesktopPipelineGraphEditorUI extends JIPipeDesktopGraphEditor
             if (pipelineDockStateBinding == null) {
                 pipelineDockStateBinding = JIPipe.getSettingsService().bind(SettingsKeys.PIPELINE_DOCK_STATE);
             }
-            pipelineDockStateBinding.set(getDockPanel().getCurrentState().withoutContextDockVisibilities());
+            // set() fires the binding subscribers synchronously inside the
+            // call, so the flag is consumed by our own subscriber during the
+            // write; a no-op write (unchanged state) fires nothing, and the
+            // finally resets the flag so the next foreign change still applies
+            applyingOwnDockStateWrite = true;
+            try {
+                pipelineDockStateBinding.set(getDockPanel().getCurrentState().withoutContextDockVisibilities());
+            } finally {
+                applyingOwnDockStateWrite = false;
+            }
         }
     }
 

@@ -54,8 +54,11 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -108,6 +111,11 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
     private static final int DETAIL_PAGE_SIZE = 1000;
     private static final int COPY_LINE_LIMIT = 8192;
     private static final int CATCH_UP_PAGE_SIZE = 10_000;
+    /**
+     * Above this many content-changed rows, the silent-swap tier repaints the whole list once
+     * instead of querying per-row bounds.
+     */
+    private static final int REPAINT_ROW_LIMIT = 256;
 
     /**
      * R36 chunked virtual detail loading over slot space. A chunk covers
@@ -217,6 +225,13 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
      * row disappearing from the model - re-arms the chain expansion and the scroll.
      */
     private int lastFollowedActiveNodeId;
+    /**
+     * The active node that the row scroll last followed: a separate marker from
+     * {@link #lastFollowedActiveNodeId} because the expansion now runs before the row build
+     * (follow-before-build) while the scroll must still only follow a NEWLY active node -
+     * re-scrolling on every tick would fight the user's own scrolling (R44).
+     */
+    private int lastScrolledActiveNodeId;
     private volatile long latestNodeTs;
     private volatile long lastKnownLine;
     /**
@@ -247,6 +262,14 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
      */
     private final List<VirtualBlock> rebuildBlocks = new ArrayList<>();
     private int rebuildBlockShift;
+    /**
+     * Per-rebuild memo of {@link #countRenderedSubtreeNodes} (the R29 badge numbers). The badge
+     * count of each rendered node walks the subtree twice and shares its recursion shape with its
+     * ancestors' walks, which made a plain rebuild O(N x depth); the memo makes the counting one
+     * pass over the renderable node set. Cleared at the start of every rebuild (it depends on the
+     * filters and the state, which the rebuild re-reads).
+     */
+    private final Map<Integer, Integer> renderedSubtreeCountMemo = new HashMap<>();
 
     // --- Virtual detail scroll state (R30; all EDT-only) ---
     /**
@@ -284,6 +307,64 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
         thread.setDaemon(true);
         return thread;
     });
+
+    /**
+     * Scaling limit 1 - incremental node index. The rebuild used to walk every node of the store
+     * on every dirty tick (O(N) per tick: the child map, the per-node state touch, and the
+     * newest-RUNNING scan), which is fine at ~100k nodes and a wall beyond. The child map and the
+     * RUNNING set are now maintained incrementally: {@link #accumulate} records the deltas of
+     * every accumulated record (both constant-time per record), and the rebuild folds them in
+     * with {@link #applyNodeIndexDeltas} and drops the nodes of a store change with
+     * {@link #resetNodeIndex}.
+     *
+     * <p>Both structures are rebuilt-side state: mutated on the EDT (the rebuild folds the
+     * deltas into the tick's snapshot), replaced wholesale on a store switch. The volatile swap
+     * keeps a concurrent switch (the batch handler's {@link #switchStore} runs on the store's
+     * writer thread) from corrupting an in-flight rebuild iteration - a tick that already
+     * snapshotted the old map renders it once, the next tick sees the fresh one (the same
+     * one-stale-tick tolerance as the {@code store} snapshot in {@link #refreshTick}).</p>
+     */
+    private volatile Map<Integer, List<Integer>> childMap = new HashMap<>();
+
+    /**
+     * The nodes currently RUNNING (execution state, not the level filter): created by a node
+     * delta, removed by its terminal delta. The rebuild's active-node pick (R44) reads the
+     * candidates' {@link NodeUiState#lastTs} from here instead of walking every node of the
+     * store; a final per-candidate state check against the store heals divergence (the
+     * read-only reopen's finish sweep fixes index states without records). Volatile-swapped on
+     * a store switch, see {@link #childMap}.
+     */
+    private volatile Set<Integer> runningNodeIds = new HashSet<>();
+
+    /**
+     * The parent of every indexed node (the normalized creation parent): lets a work-start delta
+     * mark the ancestor chains whose sibling sort keys can change (R49: a node's sort key is its
+     * subtree-activity start, so a descendant starting work can change the keys of every
+     * ancestor above it whose own start is still unset). Volatile-swapped on a store switch,
+     * see {@link #childMap}.
+     */
+    private volatile Map<Integer, Integer> parentOfNode = new HashMap<>();
+
+    /**
+     * The parents whose child lists must be re-sorted at the next rebuild: a creation delta adds
+     * the parent, a work-start delta adds every ancestor on the started node's parent chain
+     * (once per node per run, so the amortized cost is trivial). Cleared by the rebuild after
+     * the re-sort; volatile-swapped on a store switch, see {@link #childMap}.
+     */
+    private volatile Set<Integer> dirtySortParents = new HashSet<>();
+
+    /**
+     * Record deltas observed by {@link #accumulate} since the last rebuild, tagged with the
+     * {@link #generation} of their store: node creations ({@code int[0] = generation},
+     * {@code int[1] = id}, {@code int[2] = parent &gt;= 1}), terminal transitions
+     * ({@code int[2] = -1}) and work starts ({@code int[2] = -2}, the node's first work record
+     * stamped its {@link NodeUiState#workFirstTs}). A node is RUNNING from its creation delta
+     * until its terminal delta. The generation tag lets the EDT drop deltas of a store that was
+     * switched away mid catch-up - the scan stops at its next generation check, but its last
+     * page can land after {@link #resetNodeIndex} cleared the queue. Drained on the EDT in
+     * {@link #applyNodeIndexDeltas}.
+     */
+    private final ConcurrentLinkedQueue<int[]> nodeIndexDeltas = new ConcurrentLinkedQueue<>();
 
     /**
      * Creates a new progress tree panel.
@@ -633,6 +714,7 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
             runActive = false;
             revealedGateNodeIds.clear();
             lastFollowedActiveNodeId = 0;
+            lastScrolledActiveNodeId = 0;
             latestNodeTs = 0;
             lastKnownLine = 0;
             fileSize = 0;
@@ -640,6 +722,8 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
                 count.set(0);
             }
             catchUpScheduled.set(false);
+            // Scaling limit 1: the incremental child map and RUNNING set belong to the old store
+            resetNodeIndex();
         }
         dirty = true;
         SwingUtilities.invokeLater(() -> {
@@ -673,6 +757,20 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
             if (nodeId <= 0) {
                 continue;
             }
+            // Scaling limit 1: feed the incremental node index. Node records create the node
+            // (RUNNING from creation, JIPipeProgressLog applies the terminal state when the
+            // NodeFinished record drains); NodeFinished records terminate it. The delta triple
+            // carries both cases: p >= 1 creates with that parent, the -1-sentinel terminates.
+            // The record stream is complete: the store's finish sweep emits a NodeFinished for
+            // every node still RUNNING at run end, and the read-only reopen applies the same
+            // sweep to the reconstructed index. The generation tag lets the rebuild drop the
+            // deltas of a store that was switched away mid catch-up.
+            if (record instanceof JIPipeProgressRecord.Node nodeRecord) {
+                int parent = nodeRecord.p() > 0 ? nodeRecord.p() : rootNodeId;
+                nodeIndexDeltas.add(new int[]{generation.get(), nodeId, parent});
+            } else if (record instanceof JIPipeProgressRecord.NodeFinished) {
+                nodeIndexDeltas.add(new int[]{generation.get(), nodeId, -1});
+            }
             NodeUiState state = nodeState(nodeId);
             long ts = recordTs(record);
             if (ts > 0) {
@@ -688,7 +786,13 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
                 if (!(record instanceof JIPipeProgressRecord.Node)
                         && !(record instanceof JIPipeProgressRecord.Log logRecord
                         && logRecord.lv() == JIPipeLogLevel.DEBUG.value())) {
-                    state.workFirstTs.compareAndExchange(0, ts);
+                    // Scaling limit 1: the transition from never-started to started changes the
+                    // node's R49 sibling sort key, so the rebuild must re-sort the ancestor
+                    // chains (the -2 delta marks them at drain time). The CAS result is the
+                    // transition detector: exactly one record wins the 0 -> ts race.
+                    if (state.workFirstTs.compareAndExchange(0, ts) == 0) {
+                        nodeIndexDeltas.add(new int[]{generation.get(), nodeId, -2});
+                    }
                 }
             }
             if (record instanceof JIPipeProgressRecord.Log logRecord) {
@@ -896,6 +1000,103 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
     }
 
     /**
+     * Whether two rows render the same content. The rebuild produces fresh row objects per tick,
+     * so identity never holds; the display comparison drives the silent-swap tier of the row
+     * model's {@code publish} (same key, same kind, same rendered values - only then can the
+     * snapshot change without a list event). Rows compared here always share their
+     * {@code selectionKey}, hence their kind.
+     */
+    private static boolean rowsDisplayEqual(JIPipeDesktopProgressTreeRowRenderer.Row a,
+                                            JIPipeDesktopProgressTreeRowRenderer.Row b) {
+        if (a == b) {
+            return true;
+        }
+        if (a == null || b == null || a.getClass() != b.getClass()) {
+            return false;
+        }
+        if (a instanceof JIPipeDesktopProgressTreeRowRenderer.NodeRow x) {
+            JIPipeDesktopProgressTreeRowRenderer.NodeRow y = (JIPipeDesktopProgressTreeRowRenderer.NodeRow) b;
+            return x.getNodeId() == y.getNodeId()
+                    && x.getDepth() == y.getDepth()
+                    && Objects.equals(x.getPartitionChip(), y.getPartitionChip())
+                    && Objects.equals(x.getLabel(), y.getLabel())
+                    && Objects.equals(x.getUuidSuffix(), y.getUuidSuffix())
+                    && x.getState() == y.getState()
+                    && x.isExpandable() == y.isExpandable()
+                    && x.isExpanded() == y.isExpanded()
+                    && x.getBadgeCount() == y.getBadgeCount()
+                    && x.getDebugCount() == y.getDebugCount()
+                    && x.getProgressValue() == y.getProgressValue()
+                    && x.getProgressMax() == y.getProgressMax()
+                    && x.isShowProgressBar() == y.isShowProgressBar()
+                    && Objects.equals(x.getPhaseText(), y.getPhaseText());
+        }
+        if (a instanceof JIPipeDesktopProgressTreeRowRenderer.DetailRow x) {
+            JIPipeDesktopProgressTreeRowRenderer.DetailRow y = (JIPipeDesktopProgressTreeRowRenderer.DetailRow) b;
+            return x.nodeId() == y.nodeId()
+                    && x.slot() == y.slot()
+                    && x.hasStack() == y.hasStack()
+                    && x.stackOpen() == y.stackOpen()
+                    && recordKey(x.record()).equals(recordKey(y.record()));
+        }
+        if (a instanceof JIPipeDesktopProgressTreeRowRenderer.StackRow x) {
+            JIPipeDesktopProgressTreeRowRenderer.StackRow y = (JIPipeDesktopProgressTreeRowRenderer.StackRow) b;
+            return x.nodeId() == y.nodeId() && x.line().equals(y.line());
+        }
+        if (a instanceof JIPipeDesktopProgressTreeRowRenderer.MoreRow x) {
+            JIPipeDesktopProgressTreeRowRenderer.MoreRow y = (JIPipeDesktopProgressTreeRowRenderer.MoreRow) b;
+            return x.nodeId() == y.nodeId() && x.olderCount() == y.olderCount();
+        }
+        if (a instanceof JIPipeDesktopProgressTreeRowRenderer.LoadingRow x) {
+            JIPipeDesktopProgressTreeRowRenderer.LoadingRow y = (JIPipeDesktopProgressTreeRowRenderer.LoadingRow) b;
+            return x.nodeId() == y.nodeId();
+        }
+        if (a instanceof JIPipeDesktopProgressTreeRowRenderer.PlaceholderRow x) {
+            JIPipeDesktopProgressTreeRowRenderer.PlaceholderRow y = (JIPipeDesktopProgressTreeRowRenderer.PlaceholderRow) b;
+            return x.nodeId() == y.nodeId();
+        }
+        if (a instanceof JIPipeDesktopProgressTreeRowRenderer.FinishedItemsGateRow x) {
+            JIPipeDesktopProgressTreeRowRenderer.FinishedItemsGateRow y = (JIPipeDesktopProgressTreeRowRenderer.FinishedItemsGateRow) b;
+            return x.parentNodeId() == y.parentNodeId()
+                    && x.depth() == y.depth()
+                    && x.count() == y.count()
+                    && x.firstTs() == y.firstTs()
+                    && x.lastTs() == y.lastTs()
+                    && x.revealed() == y.revealed();
+        }
+        return false;
+    }
+
+    /**
+     * Bounded repaint of specific materialized rows after a silent snapshot swap: the model fired
+     * no event, so the changed rows' flat bounds are repainted directly. Above the row limit the
+     * whole list repaints once (cheaper than per-row bounds queries).
+     */
+    private void repaintRows(List<Integer> materializedIndices) {
+        if (materializedIndices.isEmpty()) {
+            return;
+        }
+        if (materializedIndices.size() > REPAINT_ROW_LIMIT) {
+            list.repaint();
+            return;
+        }
+        for (int materializedIndex : materializedIndices) {
+            int flat = materializedIndex;
+            for (VirtualBlock block : listModel.blocks) {
+                if (block.rowsBefore <= materializedIndex) {
+                    flat += block.extent;
+                } else {
+                    break;
+                }
+            }
+            Rectangle bounds = list.getCellBounds(flat, flat);
+            if (bounds != null) {
+                list.repaint(bounds);
+            }
+        }
+    }
+
+    /**
      * Captures the current selection as rebuild-stable row keys (fix round 1, R46). Runs on the
      * EDT before a model reset.
      */
@@ -1027,34 +1228,131 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
         }
     }
 
+    /**
+     * Scaling limit 1: folds the node index deltas accumulated since the last rebuild into the
+     * tick's child map and RUNNING set. Constant-time per delta, so a tick costs O(new records)
+     * instead of the former O(store nodes) walk - the walk (and with it the per-node
+     * {@code nodeState} touch and the full RUNNING scan) is gone. Deltas of an older generation
+     * (a store switched away mid catch-up) are dropped.
+     *
+     * <p>Creation deltas append to the parent's child list and mark it for the sibling re-sort;
+     * work-start deltas (-2) mark every ancestor on the node's parent chain, since a descendant
+     * starting work can change each ancestor's R49 sort key (the subtree-activity start).
+     * Terminal deltas only leave the RUNNING set - the sort keys never read the execution
+     * state.</p>
+     *
+     * <p>Called on the EDT only. The delta stream is complete and duplicate-free: the batch and
+     * catch-up ranges never overlap (every covered line is accumulated exactly once), and the
+     * store writes one creation record per node. Out-of-order accumulate (a mid-run attach
+     * accumulates the first batch before the catch-up scan delivers the earlier creations) is
+     * order-safe: a terminal delta for a not-yet-created node removes nothing, and the later
+     * creation/terminal pair converges; the active-node pick re-checks each candidate against
+     * the store regardless.</p>
+     */
+    static void foldNodeIndexDeltas(Queue<int[]> deltas,
+                                    int currentGeneration,
+                                    Map<Integer, List<Integer>> tickChildMap,
+                                    Set<Integer> tickRunningIds,
+                                    Map<Integer, Integer> tickParentOf,
+                                    Set<Integer> tickDirtyParents) {
+        int[] delta;
+        while ((delta = deltas.poll()) != null) {
+            if (delta[0] != currentGeneration) {
+                continue;
+            }
+            int id = delta[1];
+            int marker = delta[2];
+            if (marker < 0) {
+                if (marker == -2) {
+                    // Work started: the node's key changed, and with it the key of every
+                    // ancestor whose own start is still unset (their key is the min over their
+                    // children). Walking the whole chain marks a superset - the extra lists
+                    // re-sort to the order they already have.
+                    Integer current = id;
+                    while (current != null) {
+                        Integer parent = tickParentOf.get(current);
+                        if (parent == null) {
+                            break;
+                        }
+                        tickDirtyParents.add(parent);
+                        current = parent;
+                    }
+                } else {
+                    tickRunningIds.remove(id);
+                }
+            } else {
+                tickChildMap.computeIfAbsent(marker, k -> new ArrayList<>()).add(id);
+                tickRunningIds.add(id);
+                tickParentOf.put(id, marker);
+                tickDirtyParents.add(marker);
+            }
+        }
+    }
+
+    private void applyNodeIndexDeltas(Map<Integer, List<Integer>> tickChildMap,
+                                      Set<Integer> tickRunningIds,
+                                      Map<Integer, Integer> tickParentOf,
+                                      Set<Integer> tickDirtyParents) {
+        if (!nodeIndexDeltas.isEmpty()) {
+            foldNodeIndexDeltas(nodeIndexDeltas, generation.get(), tickChildMap, tickRunningIds, tickParentOf, tickDirtyParents);
+        }
+    }
+
+    /**
+     * Scaling limit 1: drops the incremental node index (a store switch - the new store's nodes
+     * re-accumulate through the catch-up scan, whose {@link #accumulate} calls re-emit the
+     * deltas). Replaces the structures wholesale instead of clearing them: the switch can run on
+     * the store's writer thread while the EDT rebuild iterates its snapshot (see
+     * {@link #childMap}). Deltas queued by the old store's in-flight scan carry the old
+     * generation and are dropped by the next {@link #applyNodeIndexDeltas}.
+     */
+    private void resetNodeIndex() {
+        childMap = new HashMap<>();
+        runningNodeIds = new HashSet<>();
+        parentOfNode = new HashMap<>();
+        dirtySortParents = new HashSet<>();
+        nodeIndexDeltas.clear();
+    }
+
     private void updateTreeModel(JIPipeProgressLog s) {
         List<JIPipeDesktopProgressTreeRowRenderer.Row> rows = new ArrayList<>();
         rowPositions.clear();
         rebuildBlocks.clear();
         rebuildBlockShift = 0;
-        Map<Integer, List<Integer>> childMap = new HashMap<>();
-        int nextId = s.nextNodeId();
+        renderedSubtreeCountMemo.clear();
+        // Scaling limit 1: the child map and the RUNNING set are maintained incrementally (the
+        // deltas accumulate() emits per record). The former per-tick walk over every store node
+        // (child map rebuild, per-node state touch, newest-RUNNING scan) is gone: a tick now
+        // costs O(new records) plus O(running nodes) for the active-node pick. The tick works on
+        // its snapshot of the volatile structures - a store switch that lands mid-tick swaps the
+        // fields, the snapshot renders once more, the next tick picks the fresh ones up.
+        Map<Integer, List<Integer>> childMap = this.childMap;
+        Set<Integer> runningIds = this.runningNodeIds;
+        Map<Integer, Integer> parentOf = this.parentOfNode;
+        Set<Integer> dirtyParents = this.dirtySortParents;
+        applyNodeIndexDeltas(childMap, runningIds, parentOf, dirtyParents);
         // R44: the active node is the newest RUNNING node that passes the level filters (its row
-        // renders - R42 keeps RUNNING leaves); "newest" by the node's last record timestamp
+        // renders - R42 keeps RUNNING leaves); "newest" by the node's last record timestamp.
+        // The candidates are the incremental RUNNING set (small), each re-checked against the
+        // store: the read-only reopen's finish sweep fixes index states without records, so a
+        // stale set entry must not win. The level filter reads the store node too (the debug
+        // toggle can flip between ticks).
+        boolean debugVisible = visibleCategories.contains(RecordCategory.DEBUG);
         int newestRunningId = 0;
         long newestRunningTs = Long.MIN_VALUE;
-        boolean debugVisible = visibleCategories.contains(RecordCategory.DEBUG);
-        for (int id = 2; id < nextId; id++) {
-            JIPipeProgressNode node = s.getNode(id);
-            if (node == null) {
+        for (Integer candidateId : runningIds) {
+            JIPipeProgressNode node = s.getNode(candidateId);
+            if (node == null || node.getState() != JIPipeProgressNodeState.RUNNING) {
                 continue;
             }
-            nodeState(id);
-            int parentId = node.getParentId() <= 0 ? s.getRootNodeId() : node.getParentId();
-            childMap.computeIfAbsent(parentId, k -> new ArrayList<>()).add(id);
-            if (node.getState() == JIPipeProgressNodeState.RUNNING
-                    && (node.getLevel() != JIPipeLogLevel.DEBUG || debugVisible)) {
-                NodeUiState candidateState = nodeStates.get(id);
-                long ts = candidateState != null ? candidateState.lastTs.get() : 0;
-                if (ts >= newestRunningTs) {
-                    newestRunningTs = ts;
-                    newestRunningId = id;
-                }
+            if (node.getLevel() == JIPipeLogLevel.DEBUG && !debugVisible) {
+                continue;
+            }
+            NodeUiState candidateState = nodeStates.get(candidateId);
+            long ts = candidateState != null ? candidateState.lastTs.get() : 0;
+            if (ts >= newestRunningTs) {
+                newestRunningTs = ts;
+                newestRunningId = candidateId;
             }
         }
         // R49: siblings render in execution chronology - creation order reads as pipeline order
@@ -1062,10 +1360,21 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
         // ABOVE chains that already executed. The sort key is the child's subtree-activity start
         // (memoized bottom-up, no per-child subtree flatten), never-started rows render last,
         // ties break by node id (deterministic; keeps creation order within a timestamp group).
-        Map<Integer, Long> subtreeStartMemo = new HashMap<>();
-        for (List<Integer> children : childMap.values()) {
-            children.sort(Comparator.comparingLong((Integer child) -> subtreeActivityStart(childMap, child, subtreeStartMemo))
-                    .thenComparing(child -> child));
+        // Scaling limit 1: only the lists a delta touched are re-sorted - a list that gained no
+        // child and holds no node whose subtree-activity start changed already IS in the order
+        // the sort would produce (the comparator is total, the sort stable), so re-sorting every
+        // list on every tick was pure O(N log N) overhead. The memo stays per-tick fresh; the
+        // recursion stays confined to the dirty lists' subtrees.
+        if (!dirtyParents.isEmpty()) {
+            Map<Integer, Long> subtreeStartMemo = new HashMap<>();
+            for (Integer parentId : dirtyParents) {
+                List<Integer> children = childMap.get(parentId);
+                if (children != null && children.size() > 1) {
+                    children.sort(Comparator.comparingLong((Integer child) -> subtreeActivityStart(childMap, child, subtreeStartMemo))
+                            .thenComparing(child -> child));
+                }
+            }
+            dirtyParents.clear();
         }
         activeNodeId = newestRunningId;
         nodeState(s.getRootNodeId());
@@ -1092,7 +1401,20 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
             autoscrollNodeId = 0;
             scrollToDetailEndNodeId = 0;
             lastFollowedActiveNodeId = 0;
+            lastScrolledActiveNodeId = 0;
             detailAutoscrollButton.setSelected(false);
+        }
+        // Follow-before-build: the auto-follow's chain expansion runs BEFORE the rows are
+        // built, so a newly active node renders its expanded chain (and the tail-follow
+        // engagement) in THIS rebuild, instead of the old order (build, then expand, then a
+        // second full rebuild from followActiveNode's refreshNow) that rebuilt the whole row
+        // list twice per tick while a run iterates. expandActiveNodeChain is idempotent (it
+        // only sets flags that are not already set), and the scroll itself still happens
+        // after the build (followActiveNode).
+        if (autoShowProgressCheckBox.isSelected() && activeNodeId > 0
+                && activeNodeId != lastFollowedActiveNodeId) {
+            lastFollowedActiveNodeId = activeNodeId;
+            expandActiveNodeChain(s, activeNodeId);
         }
         NodeUiState rootState = nodeStates.get(rootNodeId);
         if (rootState != null && visibleRecordCount(rootState) > 0) {
@@ -1108,7 +1430,7 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
         // every dirty tick of a live run. The selection is captured as rebuild-stable row keys
         // and restored after the reset (rows that no longer exist are dropped).
         List<String> selectionKeys = captureSelectionKeys();
-        listModel.reset(rows, new ArrayList<>(rebuildBlocks));
+        listModel.publish(rows, new ArrayList<>(rebuildBlocks));
         restoreSelection(selectionKeys);
     }
 
@@ -1431,6 +1753,13 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
      * aggregates them into the gate's ONE row.
      */
     private int countRenderedSubtreeNodes(JIPipeProgressLog s, Map<Integer, List<Integer>> childMap, int nodeId) {
+        // Memoized per rebuild (the value is a pure function of the store snapshot, the filters,
+        // and the node states - all fixed within one rebuild): the badge walk re-enters the same
+        // subtrees through every rendered ancestor, which made a plain rebuild O(N x depth)
+        Integer memoized = renderedSubtreeCountMemo.get(nodeId);
+        if (memoized != null) {
+            return memoized;
+        }
         JIPipeProgressNode node = s.getNode(nodeId);
         if (node == null) {
             return 0;
@@ -1451,17 +1780,22 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
                 && node.getKind() != JIPipeProgressNodeKind.PARTITION
                 && nodeId != s.getRootNodeId();
         int childTotal = countChildRows(s, childMap, nodeId, hostsGate);
+        int result;
         if (node.getKind() == JIPipeProgressNodeKind.PARTITION) {
-            return childTotal;
+            result = childTotal;
+        } else {
+            NodeUiState state = nodeStates.get(nodeId);
+            boolean selfRenders = selfRunning || (state != null && visibleRecordCount(state) > 0);
+            if (!selfRenders && childTotal == 0) {
+                // R42: a finished node with no visible records and no rendering descendants is
+                // skipped by appendNodeRow - counting it would promise a +N that reveals nothing
+                result = 0;
+            } else {
+                result = 1 + childTotal;
+            }
         }
-        NodeUiState state = nodeStates.get(nodeId);
-        boolean selfRenders = selfRunning || (state != null && visibleRecordCount(state) > 0);
-        if (!selfRenders && childTotal == 0) {
-            // R42: a finished node with no visible records and no rendering descendants is
-            // skipped by appendNodeRow - counting it would promise a +N that reveals nothing
-            return 0;
-        }
-        return 1 + childTotal;
+        renderedSubtreeCountMemo.put(nodeId, result);
+        return result;
     }
 
     /**
@@ -2399,36 +2733,27 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
     }
 
     /**
-     * R44: keeps the active node visible. Triggered only on an active-node change or when the
-     * active row is missing from the model (hidden under a collapsed ancestor) - never on every
-     * tick. Expands the active node and its ancestor chain (mirroring toggleNode's expansion
-     * semantics, including the detail tail follow for the RUNNING node itself), rebuilds, and
-     * scrolls the row into view. Unrelated collapsed subtrees are never touched, and nothing is
-     * ever collapsed. No-op when "Auto show progress" is off.
+     * R44: keeps the active node visible. The chain expansion (mirroring toggleNode's expansion
+     * semantics, including the detail tail follow for the RUNNING node itself) happens before the
+     * row build (follow-before-build, see {@link #updateTreeModel}); this method only scrolls the
+     * row into view, and only when the active node changed or its row appeared. Unrelated
+     * collapsed subtrees are never touched, and nothing is ever collapsed. No-op when
+     * "Auto show progress" is off.
      */
     private void followActiveNode() {
         if (!autoShowProgressCheckBox.isSelected() || activeNodeId <= 0) {
             return;
         }
-        JIPipeProgressLog s = store;
-        if (s == null) {
+        // The chain expansion ran before the build (follow-before-build). The scroll only
+        // follows a NEWLY active node: re-scrolling on every tick would fight the user's own
+        // scrolling (R44: a scrolled-out active row is the user's scroll, not a lost follow).
+        // A changed node whose row does not exist yet retries on the next tick.
+        if (activeNodeId == lastScrolledActiveNodeId) {
             return;
-        }
-        boolean changed = activeNodeId != lastFollowedActiveNodeId;
-        Integer row = rowPositions.get(activeNodeId);
-        if (!changed && row != null) {
-            // The active node is unchanged and its row exists (it may be scrolled out of the
-            // viewport - that is the user's scroll, which this follow must not fight)
-            return;
-        }
-        lastFollowedActiveNodeId = activeNodeId;
-        boolean expanded = expandActiveNodeChain(s, activeNodeId);
-        if (expanded) {
-            // Rebuild within this tick: the expanded rows must exist before the scroll
-            refreshNow();
         }
         int target = rowPositions.getOrDefault(activeNodeId, -1);
         if (target >= 0) {
+            lastScrolledActiveNodeId = activeNodeId;
             list.ensureIndexIsVisible(target);
         }
     }
@@ -3133,6 +3458,150 @@ public class JIPipeDesktopProgressTreePanel extends JPanel {
             if (size > 0) {
                 fireIntervalAdded(this, 0, size - 1);
             }
+        }
+
+        /**
+         * Publishes a fresh rebuild of the whole row space with the MINIMAL list events the
+         * snapshot allows. The R21 rebuild produces fresh row objects on every dirty tick; firing
+         * a full remove+add for that (the old reset) made the list UI discard and re-measure its
+         * whole layout on every progress batch of a live run. Instead, rows are matched by their
+         * rebuild-stable keys ({@code selectionKey}) and display content:
+         * <ul>
+         * <li>Identical rows and blocks: nothing is fired.</li>
+         * <li>Same keys and block layout, some row contents changed (a streaming node's counters,
+         * phase text): the snapshot is swapped silently - paints read it fresh, row heights are
+         * constant per row kind so the layout stays valid - and only the changed rows' bounds are
+         * repainted.</li>
+         * <li>Identity changes: one interval removal + interval addition over the divergent flat
+         * tail. The divergence point also covers blocks anchored inside the key prefix whose
+         * extent or anchors changed (their flat positions precede the first divergent row).</li>
+         * </ul>
+         * {@link #reset} remains for full model switches (store change, dispose).
+         */
+        void publish(List<JIPipeDesktopProgressTreeRowRenderer.Row> nextMaterialized, List<VirtualBlock> nextBlocks) {
+            List<JIPipeDesktopProgressTreeRowRenderer.Row> oldRows = materialized;
+            List<VirtualBlock> oldBlocks = blocks;
+            int oldSize = oldRows.size();
+            int newSize = nextMaterialized.size();
+            int common = Math.min(oldSize, newSize);
+            int prefix = 0;
+            while (prefix < common
+                    && selectionKey(oldRows.get(prefix)).equals(selectionKey(nextMaterialized.get(prefix)))) {
+                prefix++;
+            }
+            // Blocks anchored inside the key prefix belong to prefix rows (a block's owner is the
+            // materialized row rowsBefore - 1): their extent or anchors can change while every
+            // row key matches, and their flat positions precede the first divergent row. The
+            // boundary is the first such difference, or the key divergence, whichever is first.
+            int boundary = prefix;
+            boolean blockDiverged = false;
+            int oi = 0;
+            int ni = 0;
+            while (oi < oldBlocks.size() && ni < nextBlocks.size()) {
+                VirtualBlock oldBlock = oldBlocks.get(oi);
+                VirtualBlock newBlock = nextBlocks.get(ni);
+                if (oldBlock.rowsBefore != newBlock.rowsBefore) {
+                    boundary = Math.min(boundary, Math.min(oldBlock.rowsBefore, newBlock.rowsBefore));
+                    blockDiverged = true;
+                    break;
+                }
+                if (oldBlock.nodeId != newBlock.nodeId || oldBlock.extent != newBlock.extent
+                        || !anchorsEquivalent(oldBlock, newBlock)) {
+                    boundary = Math.min(boundary, oldBlock.rowsBefore);
+                    blockDiverged = true;
+                    break;
+                }
+                oi++;
+                ni++;
+            }
+            // A block list longer than the other: a block was added or removed (inside the key
+            // prefix that is a structural change; beyond it the flag changes nothing)
+            if (!blockDiverged && (oi < oldBlocks.size() || ni < nextBlocks.size())) {
+                VirtualBlock firstLeft = oi < oldBlocks.size() ? oldBlocks.get(oi) : nextBlocks.get(ni);
+                boundary = Math.min(boundary, firstLeft.rowsBefore);
+                blockDiverged = true;
+            }
+            boolean allKeysMatch = prefix == oldSize && prefix == newSize;
+            if (allKeysMatch && !blockDiverged) {
+                // Every row key matches and no block diverged: content-only territory
+                List<Integer> changed = changedRowIndices(oldRows, nextMaterialized);
+                this.materialized = nextMaterialized;
+                assignStartIndices(nextBlocks);
+                this.blocks = nextBlocks;
+                if (changed.isEmpty()) {
+                    return;
+                }
+                repaintRows(changed);
+                return;
+            }
+            // Structural: swap, then remove+add the divergent flat tail. All blocks with
+            // rowsBefore < boundary match pairwise (the boundary walk stopped at the first
+            // difference), so the flat span start is identical on both sides.
+            int spanStart = boundary;
+            for (VirtualBlock block : oldBlocks) {
+                if (block.rowsBefore >= boundary) {
+                    break;
+                }
+                spanStart += block.extent;
+            }
+            this.materialized = nextMaterialized;
+            this.blocks = nextBlocks;
+            int shifted = 0;
+            for (VirtualBlock block : nextBlocks) {
+                block.startIndex = block.rowsBefore + shifted;
+                shifted += block.extent;
+            }
+            size = nextMaterialized.size() + shifted;
+            int oldFlatSize = oldSize;
+            for (VirtualBlock block : oldBlocks) {
+                oldFlatSize += block.extent;
+            }
+            if (oldFlatSize > spanStart) {
+                fireIntervalRemoved(this, spanStart, oldFlatSize - 1);
+            }
+            if (size > spanStart) {
+                fireIntervalAdded(this, spanStart, size - 1);
+            }
+        }
+
+        private void assignStartIndices(List<VirtualBlock> blockList) {
+            int shifted = 0;
+            for (VirtualBlock block : blockList) {
+                block.startIndex = block.rowsBefore + shifted;
+                shifted += block.extent;
+            }
+        }
+
+        /**
+         * The materialized indices whose row content differs between the previous and the fresh
+         * snapshot (the silent-swap tier's repaint targets). Keys already match positionally at
+         * this point, so a difference is always a pure value change.
+         */
+        private List<Integer> changedRowIndices(List<JIPipeDesktopProgressTreeRowRenderer.Row> oldRows,
+                                                List<JIPipeDesktopProgressTreeRowRenderer.Row> nextRows) {
+            List<Integer> changed = new ArrayList<>();
+            for (int i = 0; i < nextRows.size(); i++) {
+                if (!rowsDisplayEqual(oldRows.get(i), nextRows.get(i))) {
+                    changed.add(i);
+                }
+            }
+            return changed;
+        }
+
+        private static boolean anchorsEquivalent(VirtualBlock a, VirtualBlock b) {
+            if (a.anchors.size() != b.anchors.size()) {
+                return false;
+            }
+            for (int i = 0; i < a.anchors.size(); i++) {
+                StackAnchor x = a.anchors.get(i);
+                StackAnchor y = b.anchors.get(i);
+                // The lines content is owned by the error record the key names: the same key
+                // renders the same lines, so the slot and key identify the anchor
+                if (x.errorSlot() != y.errorSlot() || !x.key().equals(y.key())) {
+                    return false;
+                }
+            }
+            return true;
         }
 
         List<VirtualBlock> blocks() {

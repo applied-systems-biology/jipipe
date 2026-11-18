@@ -33,9 +33,14 @@ import java.time.format.DateTimeFormatter;
  * Renders the flat rows of the {@link JIPipeDesktopProgressTreePanel} - the Swing implementation of
  * the v2 design contract ({@code docs/superpowers/specs/2026-11-04-progress-system-overhaul/ui/v2-progress-panel.html}).
  * <p>
- * Rows are plain data snapshots (built by the panel's refresh cycle); the renderer is stateless
- * except for its prebuilt colors. Rows are painted fresh per render call - the list renders only
- * the visible rows (virtualized), so allocations are bounded by the viewport.
+ * Rows are plain data snapshots (built by the panel's refresh cycle). Each row kind owns ONE
+ * prebuilt component tree that {@link #getListCellRendererComponent} reconfigures per call (the
+ * {@code JIPipeDesktopFindPanel.FindTreeCellRenderer} pattern): BasicListUI re-renders EVERY model
+ * row on every layout pass ({@code updateLayoutState}), and the panel resets the model on every
+ * progress batch, so constructing a fresh component tree per call saturated the EDT during large
+ * runs. The renderer is EDT-confined and one row is configured at a time, so reuse is safe; a
+ * reused row ends with an explicit invalidate + validate so freshly set text is measured
+ * synchronously instead of rendering with the previous row's bounds.
  * <p>
  * Node rows: indent, expander caret, state icon (running spinner / done / failed / cancelled),
  * dim partition chip ({@code P0}), label with a faint {@code [uuid]} suffix when the label carries
@@ -162,6 +167,18 @@ public class JIPipeDesktopProgressTreeRowRenderer implements ListCellRenderer<JI
         public String getUuidSuffix() {
             return uuidSuffix;
         }
+
+        public int getDepth() {
+            return depth;
+        }
+
+        public int getBadgeCount() {
+            return badgeCount;
+        }
+
+        public int getDebugCount() {
+            return debugCount;
+        }
     }
 
     /**
@@ -236,6 +253,51 @@ public class JIPipeDesktopProgressTreeRowRenderer implements ListCellRenderer<JI
     private int barTrackWidth;
     private int barTrackHeight;
 
+    // Prebuilt row components (one per row kind), reconfigured per render call. Built once here
+    // instead of per call: BasicListUI.updateLayoutState renders every model row on every layout
+    // pass, and the panel resets the model on every progress batch, so per-call construction
+    // saturated the EDT on large runs. Visibility is the per-call switch for conditional parts
+    // (BoxLayout skips invisible children).
+    private final JPanel nodePanel = new JPanel(new BorderLayout(6, 0));
+    private final JPanel nodeWest = new JPanel();
+    private final JLabel nodeCaretLabel = new JLabel();
+    private final JLabel nodeStateLabel = new JLabel();
+    private final JLabel nodeChipLabel = new JLabel();
+    private final JPanel nodeCenter = new JPanel();
+    private final JLabel nodeNameLabel = new JLabel();
+    private final JLabel nodeUuidLabel = new JLabel();
+    private final JPanel nodeEast = new JPanel();
+    private final JLabel nodeDebugChip = new JLabel();
+    private final Component nodeDebugStrut = Box.createHorizontalStrut(6);
+    private final JLabel nodeBadgeLabel = new JLabel();
+    private final Component nodeBadgeStrut = Box.createHorizontalStrut(6);
+    private final Component nodeChipStrut = Box.createHorizontalStrut(2);
+    private final Component nodeUuidStrut = Box.createHorizontalStrut(4);
+    private final JPanel nodeProgressSegment = new JPanel();
+    private final ProgressBar nodeBar = new ProgressBar();
+    private final JLabel nodeProgressTextLabel = new JLabel();
+    private final JLabel nodePhaseLabel = new JLabel();
+    private final JPanel detailPanel = new JPanel(new BorderLayout(8, 0));
+    private final JPanel detailWest = new JPanel();
+    private final JLabel detailTsLabel = new JLabel();
+    private final JLabel detailLevelLabel = new JLabel();
+    private final JLabel detailMessageLabel = new JLabel();
+    private final JLabel detailStackToggle = new JLabel();
+    private final JLabel stackLabel = new JLabel();
+    private final JLabel virtualLabel = new JLabel();
+    private final JLabel actionLabel = new JLabel();
+    private final JLabel fallbackLabel = new JLabel();
+    private final JPanel gatePanel = new JPanel(new BorderLayout(6, 0));
+    private final JPanel gateWest = new JPanel();
+    private final JLabel gateCaretLabel = new JLabel();
+    private final JLabel gateTitleLabel = new JLabel();
+    private final JLabel gateCountLabel = new JLabel();
+    private final JLabel gateSpanLabel = new JLabel();
+    // Resolved lazily on first use (the renderer can be built before JIPipe is instantiated)
+    private Icon statusOkIcon;
+    private Icon statusErrorIcon;
+    private Icon statusCancelledIcon;
+
     /**
      * Re-derives the font-dependent geometry when the list's font changed (identity check - one
      * {@code stringWidth} per font change, not per row). Called from
@@ -260,6 +322,25 @@ public class JIPipeDesktopProgressTreeRowRenderer implements ListCellRenderer<JI
         barTrackHeight = Math.max(7, Math.round(statusTextSize * 9f / 11.5f));
         // Widest sensible phase/status text: a run running for a full day in seconds
         phaseColumnWidth = list.getFontMetrics(phaseFont).stringWidth("running 86400s") + 6;
+        // The reused rows carry the font-derived geometry: fonts of the fixed columns, the
+        // fixed column widths, and the bar track size (one re-derivation per font change,
+        // never per row)
+        nodeProgressTextLabel.setFont(progressTextFont);
+        nodeProgressTextLabel.setPreferredSize(new Dimension(progressTextColumnWidth, 14));
+        nodeProgressTextLabel.setMaximumSize(new Dimension(progressTextColumnWidth, 14));
+        nodePhaseLabel.setFont(phaseFont);
+        nodePhaseLabel.setPreferredSize(new Dimension(phaseColumnWidth, 14));
+        nodePhaseLabel.setMaximumSize(new Dimension(phaseColumnWidth, 14));
+        nodeBar.setTrackSize(barTrackWidth, barTrackHeight);
+        Dimension progressSegmentSize = new Dimension(barTrackWidth + 7 + progressTextColumnWidth,
+                Math.max(18, barTrackHeight + 4));
+        nodeProgressSegment.setPreferredSize(progressSegmentSize);
+        nodeProgressSegment.setMaximumSize(progressSegmentSize);
+        detailTsLabel.setFont(progressTextFont);
+        stackLabel.setFont(progressTextFont);
+        gateSpanLabel.setFont(phaseFont);
+        gateSpanLabel.setPreferredSize(new Dimension(phaseColumnWidth, 14));
+        gateSpanLabel.setMaximumSize(new Dimension(phaseColumnWidth, 14));
     }
 
     /**
@@ -282,6 +363,145 @@ public class JIPipeDesktopProgressTreeRowRenderer implements ListCellRenderer<JI
         colorRowBackground = themeStyle.getPanelBackground();
         colorDetailBackground = mix(themeStyle.getPanelBackground(), themeStyle.getTextForeground(), 0.035f);
         colorChipBackground = mix(themeStyle.getPanelBackground(), themeStyle.getTextForeground(), 0.07f);
+        buildRowComponents();
+    }
+
+    /**
+     * Assembles the row component trees once: structure, constants (fonts, alignments, fixed
+     * borders, struts), and visibility defaults. Per-call state (texts, colors, icons,
+     * conditional visibility, the depth indent border) is applied by the configure methods; the
+     * font-derived geometry is applied by {@link #updateFontDependentWidths}.
+     */
+    private void buildRowComponents() {
+        // Node row: west (caret + state + partition chip), center (label + uuid suffix),
+        // east (debug chip + badge + progress segment + phase column)
+        nodePanel.setOpaque(true);
+        nodeWest.setOpaque(false);
+        nodeWest.setLayout(new BoxLayout(nodeWest, BoxLayout.X_AXIS));
+        nodeCaretLabel.setFont(nodeCaretLabel.getFont().deriveFont(9.0f));
+        nodeCaretLabel.setPreferredSize(new Dimension(14, 14));
+        nodeWest.add(nodeCaretLabel);
+        // Fixed gap so the caret triangle and the state icon never touch, at any indent level
+        nodeWest.add(Box.createHorizontalStrut(3));
+        nodeStateLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        nodeStateLabel.setPreferredSize(new Dimension(16, 16));
+        nodeWest.add(nodeStateLabel);
+        nodeChipLabel.setFont(nodeChipLabel.getFont().deriveFont(10.0f));
+        nodeChipLabel.setOpaque(true);
+        nodeChipLabel.setBorder(BorderFactory.createEmptyBorder(1, 5, 1, 5));
+        // Align the small chip with the text baseline
+        nodeChipLabel.setAlignmentY(0.5f);
+        nodeChipLabel.setVisible(false);
+        nodeChipStrut.setVisible(false);
+        nodeWest.add(nodeChipStrut);
+        nodeWest.add(nodeChipLabel);
+        nodePanel.add(nodeWest, BorderLayout.WEST);
+        nodeCenter.setOpaque(false);
+        nodeCenter.setLayout(new BoxLayout(nodeCenter, BoxLayout.X_AXIS));
+        nodeCenter.add(nodeNameLabel);
+        nodeUuidLabel.setFont(nodeUuidLabel.getFont().deriveFont(nodeUuidLabel.getFont().getSize2D() - 1.5f));
+        nodeUuidLabel.setVisible(false);
+        nodeUuidStrut.setVisible(false);
+        nodeCenter.add(nodeUuidStrut);
+        nodeCenter.add(nodeUuidLabel);
+        nodePanel.add(nodeCenter, BorderLayout.CENTER);
+        nodeEast.setOpaque(false);
+        nodeEast.setLayout(new BoxLayout(nodeEast, BoxLayout.X_AXIS));
+        nodeDebugChip.setFont(nodeDebugChip.getFont().deriveFont(11.0f));
+        nodeDebugChip.setOpaque(true);
+        nodeDebugChip.setBorder(BorderFactory.createEmptyBorder(1, 6, 1, 6));
+        nodeDebugChip.setAlignmentY(0.5f);
+        nodeDebugChip.setVisible(false);
+        nodeDebugStrut.setVisible(false);
+        nodeEast.add(nodeDebugChip);
+        nodeEast.add(nodeDebugStrut);
+        nodeBadgeLabel.setFont(nodeBadgeLabel.getFont().deriveFont(11.0f));
+        nodeBadgeLabel.setOpaque(true);
+        nodeBadgeLabel.setBorder(BorderFactory.createEmptyBorder(1, 6, 1, 6));
+        nodeBadgeLabel.setAlignmentY(0.5f);
+        nodeBadgeLabel.setVisible(false);
+        nodeBadgeStrut.setVisible(false);
+        nodeEast.add(nodeBadgeLabel);
+        nodeEast.add(nodeBadgeStrut);
+        // The progress segment always occupies its fixed width (a row without determinate
+        // progress leaves it empty - no bar is painted, but the phase/status column does not
+        // shift); the v/mx text is right-aligned within its fixed sub-width
+        nodeProgressSegment.setOpaque(false);
+        nodeProgressSegment.setLayout(new BoxLayout(nodeProgressSegment, BoxLayout.X_AXIS));
+        nodeBar.setOpaque(false);
+        nodeBar.setTrack(colorBarTrack);
+        nodeBar.setAlignmentY(0.5f);
+        nodeProgressSegment.add(nodeBar);
+        nodeProgressSegment.add(Box.createHorizontalStrut(7));
+        nodeProgressTextLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+        nodeProgressSegment.add(nodeProgressTextLabel);
+        nodeProgressSegment.setAlignmentY(0.5f);
+        nodeEast.add(nodeProgressSegment);
+        // The phase/status text is the last column: fixed (font-derived) width, right-aligned
+        // (rows without a phase reserve the same space)
+        nodePhaseLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+        nodePhaseLabel.setAlignmentY(0.5f);
+        nodeEast.add(nodePhaseLabel);
+        nodePanel.add(nodeEast, BorderLayout.EAST);
+
+        // Detail row: west (timestamp + level), center (message), east (stack toggle)
+        detailPanel.setOpaque(true);
+        detailWest.setOpaque(false);
+        detailWest.setLayout(new BoxLayout(detailWest, BoxLayout.X_AXIS));
+        detailWest.add(detailTsLabel);
+        detailWest.add(Box.createHorizontalStrut(8));
+        detailLevelLabel.setFont(detailLevelLabel.getFont().deriveFont(10.5f));
+        detailLevelLabel.setPreferredSize(new Dimension(42, 14));
+        detailLevelLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+        detailWest.add(detailLevelLabel);
+        detailPanel.add(detailWest, BorderLayout.WEST);
+        detailMessageLabel.setFont(detailMessageLabel.getFont().deriveFont(12.0f));
+        detailPanel.add(detailMessageLabel, BorderLayout.CENTER);
+        detailStackToggle.setFont(detailStackToggle.getFont().deriveFont(11.0f));
+        detailStackToggle.setOpaque(true);
+        detailStackToggle.setBorder(BorderFactory.createEmptyBorder(1, 5, 1, 5));
+        detailStackToggle.setVisible(false);
+        detailPanel.add(detailStackToggle, BorderLayout.EAST);
+
+        // Stack row: a dark monospace line
+        stackLabel.setOpaque(true);
+        stackLabel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
+
+        // Virtual row: same background/separator as a detail row so a detail block stays
+        // visually continuous, with a faint marker text
+        virtualLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        virtualLabel.setFont(virtualLabel.getFont().deriveFont(11.0f));
+        virtualLabel.setOpaque(true);
+        virtualLabel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createMatteBorder(0, 0, 1, 0, mix(colorLine, colorDetailBackground, 0.5f)),
+                BorderFactory.createEmptyBorder(0, 8, 0, 8)));
+
+        // Action row ("Show N older records...", "Loading records...")
+        actionLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        actionLabel.setFont(actionLabel.getFont().deriveFont(11.5f));
+        actionLabel.setOpaque(true);
+        actionLabel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createMatteBorder(0, 0, 1, 0, colorLine),
+                BorderFactory.createEmptyBorder(2, 8, 2, 8)));
+
+        // Gate row: caret + italic title + count chip, span in the duration column
+        gatePanel.setOpaque(true);
+        gateWest.setOpaque(false);
+        gateWest.setLayout(new BoxLayout(gateWest, BoxLayout.X_AXIS));
+        gateCaretLabel.setFont(gateCaretLabel.getFont().deriveFont(9.0f));
+        gateCaretLabel.setPreferredSize(new Dimension(14, 14));
+        gateWest.add(gateCaretLabel);
+        gateWest.add(Box.createHorizontalStrut(3));
+        gateTitleLabel.setFont(gateTitleLabel.getFont().deriveFont(Font.ITALIC, gateTitleLabel.getFont().getSize2D()));
+        gateWest.add(gateTitleLabel);
+        gateWest.add(Box.createHorizontalStrut(6));
+        gateCountLabel.setFont(gateCountLabel.getFont().deriveFont(11.0f));
+        gateCountLabel.setOpaque(true);
+        gateCountLabel.setBorder(BorderFactory.createEmptyBorder(1, 6, 1, 6));
+        gateWest.add(gateCountLabel);
+        gatePanel.add(gateWest, BorderLayout.WEST);
+        gateSpanLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+        gatePanel.add(gateSpanLabel, BorderLayout.EAST);
     }
 
     /**
@@ -306,23 +526,23 @@ public class JIPipeDesktopProgressTreeRowRenderer implements ListCellRenderer<JI
         // Font-relative geometry: re-derive the fixed text-column widths when the font changed
         updateFontDependentWidths(list);
         if (value instanceof NodeRow nodeRow) {
-            return renderNodeRow(list, nodeRow, isSelected);
+            return configureNodeRow(list, nodeRow, isSelected);
         } else if (value instanceof DetailRow detailRow) {
-            return renderDetailRow(list, detailRow, isSelected);
+            return configureDetailRow(list, detailRow, isSelected);
         } else if (value instanceof StackRow stackRow) {
-            return renderStackRow(list, stackRow, isSelected);
+            return configureStackRow(list, stackRow, isSelected);
         } else if (value instanceof MoreRow moreRow) {
-            return renderActionRow("Show " + formatCount(moreRow.olderCount()) + " older records from run data…", colorAccent, list, isSelected);
+            return configureActionRow("Show " + formatCount(moreRow.olderCount()) + " older records from run data…", colorAccent, list, isSelected);
         } else if (value instanceof LoadingRow) {
-            return renderActionRow("Loading records…", colorFaint, list, isSelected);
+            return configureActionRow("Loading records…", colorFaint, list, isSelected);
         } else if (value instanceof PlaceholderRow) {
             // Unloaded chunk: a lightweight placeholder row - the chunk load for the surrounding
             // viewport replaces it with the real rows
-            return renderVirtualRow("…", colorFaint, list, isSelected);
+            return configureVirtualRow("…", colorFaint, list, isSelected);
         } else if (value instanceof FinishedItemsGateRow gateRow) {
-            return renderGateRow(list, gateRow, isSelected);
+            return configureGateRow(list, gateRow, isSelected);
         }
-        return new JLabel();
+        return fallbackLabel;
     }
 
     /**
@@ -337,153 +557,106 @@ public class JIPipeDesktopProgressTreeRowRenderer implements ListCellRenderer<JI
         return list.getSelectionForeground() != null ? list.getSelectionForeground() : colorText;
     }
 
-    private Component renderNodeRow(JList<? extends Row> list, NodeRow row, boolean isSelected) {
+    private Component configureNodeRow(JList<? extends Row> list, NodeRow row, boolean isSelected) {
         Color selBackground = isSelected ? selectionBackground(list) : null;
         Color selForeground = isSelected ? selectionForeground(list) : null;
-        JPanel panel = new JPanel(new BorderLayout(6, 0));
-        panel.setOpaque(true);
-        panel.setBackground(isSelected ? selBackground : colorRowBackground);
-        panel.setBorder(BorderFactory.createCompoundBorder(
+        nodePanel.setBackground(isSelected ? selBackground : colorRowBackground);
+        nodePanel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createMatteBorder(0, 0, 1, 0, colorLine),
                 BorderFactory.createEmptyBorder(0, 8 + row.depth * INDENT_PER_LEVEL, 0, 10)));
 
         // West: caret + state icon + partition chip
-        JPanel west = new JPanel();
-        west.setOpaque(false);
-        west.setLayout(new BoxLayout(west, BoxLayout.X_AXIS));
-
-        JLabel caretLabel = new JLabel(row.expandable ? (row.expanded ? "▼" : "▶") : "");
-        caretLabel.setFont(caretLabel.getFont().deriveFont(9.0f));
-        caretLabel.setForeground(isSelected ? mix(selForeground, selBackground, 0.25f) : colorDim);
-        caretLabel.setPreferredSize(new Dimension(14, 14));
-        west.add(caretLabel);
-        // Fixed gap so the caret triangle and the state icon never touch, at any indent level
-        west.add(Box.createHorizontalStrut(3));
-
-        JLabel stateLabel = new JLabel();
-        stateLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        stateLabel.setPreferredSize(new Dimension(16, 16));
+        nodeCaretLabel.setText(row.expandable ? (row.expanded ? "▼" : "▶") : "");
+        nodeCaretLabel.setForeground(isSelected ? mix(selForeground, selBackground, 0.25f) : colorDim);
         if (row.state == JIPipeProgressNodeState.RUNNING) {
-            stateLabel.setIcon(spinnerIcon);
+            nodeStateLabel.setIcon(spinnerIcon);
         } else {
             // Resource state icons (R33): no UTF8 glyphs (they render inconsistently across OS
             // fonts); the same icons the footer's state label uses. CANCELLED previously fell
             // into the failure glyph branch and now gets its own icon.
-            stateLabel.setText("");
-            stateLabel.setIcon(switch (row.state) {
-                case OK -> JIPipe.RESOURCES.getIcon16(JIPipeDesktopProgressTreePanel.ICON_STATUS_OK);
-                case FAILED -> JIPipe.RESOURCES.getIcon16(JIPipeDesktopProgressTreePanel.ICON_STATUS_ERROR);
-                case CANCELLED -> JIPipe.RESOURCES.getIcon16(JIPipeDesktopProgressTreePanel.ICON_STATUS_CANCELLED);
+            nodeStateLabel.setText("");
+            if (statusOkIcon == null) {
+                statusOkIcon = JIPipe.RESOURCES.getIcon16(JIPipeDesktopProgressTreePanel.ICON_STATUS_OK);
+                statusErrorIcon = JIPipe.RESOURCES.getIcon16(JIPipeDesktopProgressTreePanel.ICON_STATUS_ERROR);
+                statusCancelledIcon = JIPipe.RESOURCES.getIcon16(JIPipeDesktopProgressTreePanel.ICON_STATUS_CANCELLED);
+            }
+            nodeStateLabel.setIcon(switch (row.state) {
+                case OK -> statusOkIcon;
+                case FAILED -> statusErrorIcon;
+                case CANCELLED -> statusCancelledIcon;
                 default -> null;
             });
         }
-        west.add(stateLabel);
 
         if (row.partitionChip != null) {
-            JLabel chipLabel = new JLabel(row.partitionChip);
-            chipLabel.setFont(chipLabel.getFont().deriveFont(10.0f));
-            chipLabel.setForeground(isSelected ? mix(selForeground, selBackground, 0.30f) : colorFaint);
-            chipLabel.setBackground(isSelected ? mix(selBackground, selForeground, 0.14f) : colorChipBackground);
-            chipLabel.setOpaque(true);
-            chipLabel.setBorder(BorderFactory.createEmptyBorder(1, 5, 1, 5));
-            // Align the small chip with the text baseline
-            chipLabel.setAlignmentY(0.5f);
-            west.add(Box.createHorizontalStrut(2));
-            west.add(chipLabel);
+            nodeChipLabel.setText(row.partitionChip);
+            nodeChipLabel.setForeground(isSelected ? mix(selForeground, selBackground, 0.30f) : colorFaint);
+            nodeChipLabel.setBackground(isSelected ? mix(selBackground, selForeground, 0.14f) : colorChipBackground);
+            nodeChipLabel.setVisible(true);
+            nodeChipStrut.setVisible(true);
+        } else {
+            nodeChipLabel.setVisible(false);
+            nodeChipStrut.setVisible(false);
         }
-        panel.add(west, BorderLayout.WEST);
 
         // Center: label (+ faint uuid suffix)
-        JPanel center = new JPanel();
-        center.setOpaque(false);
-        center.setLayout(new BoxLayout(center, BoxLayout.X_AXIS));
-        JLabel nameLabel = new JLabel(row.label);
-        nameLabel.setForeground(isSelected ? selForeground : colorText);
-        center.add(nameLabel);
+        nodeNameLabel.setText(row.label);
+        nodeNameLabel.setForeground(isSelected ? selForeground : colorText);
         if (row.uuidSuffix != null) {
-            JLabel uuidLabel = new JLabel(row.uuidSuffix);
-            uuidLabel.setFont(uuidLabel.getFont().deriveFont(uuidLabel.getFont().getSize2D() - 1.5f));
-            uuidLabel.setForeground(isSelected ? mix(selForeground, selBackground, 0.35f) : colorFaint);
-            center.add(Box.createHorizontalStrut(4));
-            center.add(uuidLabel);
+            nodeUuidLabel.setText(row.uuidSuffix);
+            nodeUuidLabel.setForeground(isSelected ? mix(selForeground, selBackground, 0.35f) : colorFaint);
+            nodeUuidLabel.setVisible(true);
+            nodeUuidStrut.setVisible(true);
+        } else {
+            nodeUuidLabel.setVisible(false);
+            nodeUuidStrut.setVisible(false);
         }
-        panel.add(center, BorderLayout.CENTER);
 
         // East: right-aligned fixed-order segments - [+N badge] [progress bar + v/mx text]
         // [phase/status text] - with stable widths, so bars and the status column align across
         // rows even when some rows lack progress (user report "Align")
-        JPanel east = new JPanel();
-        east.setOpaque(false);
-        east.setLayout(new BoxLayout(east, BoxLayout.X_AXIS));
-
         if (row.debugCount > 0) {
-            JLabel debugChip = new JLabel(formatCount(row.debugCount) + " debug");
-            debugChip.setFont(debugChip.getFont().deriveFont(11.0f));
-            debugChip.setForeground(isSelected ? mix(selForeground, selBackground, 0.30f) : colorFaint);
-            debugChip.setBackground(isSelected ? mix(selBackground, selForeground, 0.14f) : colorChipBackground);
-            debugChip.setOpaque(true);
-            debugChip.setBorder(BorderFactory.createEmptyBorder(1, 6, 1, 6));
-            debugChip.setAlignmentY(0.5f);
-            east.add(debugChip);
-            east.add(Box.createHorizontalStrut(6));
+            nodeDebugChip.setText(formatCount(row.debugCount) + " debug");
+            nodeDebugChip.setForeground(isSelected ? mix(selForeground, selBackground, 0.30f) : colorFaint);
+            nodeDebugChip.setBackground(isSelected ? mix(selBackground, selForeground, 0.14f) : colorChipBackground);
+            nodeDebugChip.setVisible(true);
+            nodeDebugStrut.setVisible(true);
+        } else {
+            nodeDebugChip.setVisible(false);
+            nodeDebugStrut.setVisible(false);
         }
 
         if (!row.expanded && row.badgeCount > 0) {
-            JLabel badgeLabel = new JLabel("+" + formatCount(row.badgeCount));
-            badgeLabel.setFont(badgeLabel.getFont().deriveFont(11.0f));
-            badgeLabel.setForeground(isSelected ? mix(selForeground, selBackground, 0.25f) : colorDim);
-            badgeLabel.setBackground(isSelected ? mix(selBackground, selForeground, 0.14f) : colorChipBackground);
-            badgeLabel.setOpaque(true);
-            badgeLabel.setBorder(BorderFactory.createEmptyBorder(1, 6, 1, 6));
-            badgeLabel.setAlignmentY(0.5f);
-            east.add(badgeLabel);
-            east.add(Box.createHorizontalStrut(6));
+            nodeBadgeLabel.setText("+" + formatCount(row.badgeCount));
+            nodeBadgeLabel.setForeground(isSelected ? mix(selForeground, selBackground, 0.25f) : colorDim);
+            nodeBadgeLabel.setBackground(isSelected ? mix(selBackground, selForeground, 0.14f) : colorChipBackground);
+            nodeBadgeLabel.setVisible(true);
+            nodeBadgeStrut.setVisible(true);
+        } else {
+            nodeBadgeLabel.setVisible(false);
+            nodeBadgeStrut.setVisible(false);
         }
 
-        // The progress segment always occupies its fixed width (a row without determinate
-        // progress leaves it empty - no bar is painted, but the phase/status column does not
-        // shift); the v/mx text is right-aligned within its fixed sub-width
-        JPanel progressSegment = new JPanel();
-        progressSegment.setOpaque(false);
-        progressSegment.setLayout(new BoxLayout(progressSegment, BoxLayout.X_AXIS));
         // R38: a row that must not show a bar renders with max <= 0 (no bar, no v/mx text), while
         // the fixed-width segment keeps the phase/status column aligned across rows
         int barMax = row.showProgressBar ? row.progressMax : 0;
         int barValue = row.showProgressBar ? row.progressValue : 0;
-        ProgressBar bar = new ProgressBar(barTrackWidth, barTrackHeight, colorBarTrack);
-        bar.setProgress(barValue, barMax, barFillFraction(row), barFillFull(row), barFillColor(row));
-        bar.setAlignmentY(0.5f);
-        progressSegment.add(bar);
-        progressSegment.add(Box.createHorizontalStrut(7));
-        JLabel progressTextLabel = new JLabel(barMax > 0
+        nodeBar.setProgress(barValue, barMax, barFillFraction(row), barFillFull(row), barFillColor(row));
+        nodeProgressTextLabel.setText(barMax > 0
                 ? row.progressValue + "/" + row.progressMax + " (" + progressPercent(row) + "%)"
                 : "");
-        progressTextLabel.setFont(progressTextFont);
-        progressTextLabel.setForeground(isSelected ? mix(selForeground, selBackground, 0.25f) : colorDim);
-        progressTextLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-        progressTextLabel.setPreferredSize(new Dimension(progressTextColumnWidth, 14));
-        progressTextLabel.setMaximumSize(new Dimension(progressTextColumnWidth, 14));
-        progressSegment.add(progressTextLabel);
-        Dimension progressSegmentSize = new Dimension(barTrackWidth + 7 + progressTextColumnWidth,
-                Math.max(18, barTrackHeight + 4));
-        progressSegment.setPreferredSize(progressSegmentSize);
-        progressSegment.setMaximumSize(progressSegmentSize);
-        progressSegment.setAlignmentY(0.5f);
-        east.add(progressSegment);
+        nodeProgressTextLabel.setForeground(isSelected ? mix(selForeground, selBackground, 0.25f) : colorDim);
 
-        // The phase/status text is the last column: fixed (font-derived) width, right-aligned
-        // (rows without a phase reserve the same space)
-        JLabel phaseLabel = new JLabel(row.phaseText == null ? "" : row.phaseText);
-        phaseLabel.setFont(phaseFont);
-        phaseLabel.setForeground(isSelected ? mix(selForeground, selBackground, 0.30f) : colorFaint);
-        phaseLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-        phaseLabel.setPreferredSize(new Dimension(phaseColumnWidth, 14));
-        phaseLabel.setMaximumSize(new Dimension(phaseColumnWidth, 14));
-        phaseLabel.setAlignmentY(0.5f);
-        east.add(phaseLabel);
-        panel.add(east, BorderLayout.EAST);
+        nodePhaseLabel.setText(row.phaseText == null ? "" : row.phaseText);
+        nodePhaseLabel.setForeground(isSelected ? mix(selForeground, selBackground, 0.30f) : colorFaint);
 
-        return panel;
+        // Force a synchronous re-layout with the freshly set texts and visibilities:
+        // JLabel.setText only queues an async revalidate, and CellRendererPane's validate()
+        // no-ops on a still-valid container - without this the row renders with the PREVIOUS
+        // row's text bounds
+        nodePanel.invalidate();
+        nodePanel.validate();
+        return nodePanel;
     }
 
     /**
@@ -531,11 +704,9 @@ public class JIPipeDesktopProgressTreeRowRenderer implements ListCellRenderer<JI
         return Math.max(0, Math.min(100, (int) (100.0 * row.progressValue / row.progressMax)));
     }
 
-    private Component renderDetailRow(JList<? extends Row> list, DetailRow row, boolean isSelected) {
+    private Component configureDetailRow(JList<? extends Row> list, DetailRow row, boolean isSelected) {
         Color selBackground = isSelected ? selectionBackground(list) : null;
         Color selForeground = isSelected ? selectionForeground(list) : null;
-        JPanel panel = new JPanel(new BorderLayout(8, 0));
-        panel.setOpaque(true);
         Color background = isSelected ? selBackground : colorDetailBackground;
         Color levelColor = colorFaint;
         String levelText = "";
@@ -574,82 +745,58 @@ public class JIPipeDesktopProgressTreeRowRenderer implements ListCellRenderer<JI
             ts = 0;
             message = row.record.type();
         }
-        panel.setBackground(background);
-        panel.setBorder(BorderFactory.createCompoundBorder(
+        detailPanel.setBackground(background);
+        detailPanel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createMatteBorder(0, 0, 1, 0, mix(colorLine, background, 0.5f)),
                 BorderFactory.createEmptyBorder(0, 8, 0, 10)));
 
-        JPanel west = new JPanel();
-        west.setOpaque(false);
-        west.setLayout(new BoxLayout(west, BoxLayout.X_AXIS));
-        JLabel tsLabel = new JLabel(TIME_FORMAT.format(Instant.ofEpochMilli(ts)));
-        tsLabel.setFont(progressTextFont);
-        tsLabel.setForeground(isSelected ? mix(selForeground, selBackground, 0.30f) : colorFaint);
-        west.add(tsLabel);
-        west.add(Box.createHorizontalStrut(8));
-        JLabel levelLabel = new JLabel(levelText);
-        levelLabel.setFont(levelLabel.getFont().deriveFont(10.5f));
-        levelLabel.setForeground(levelColor);
-        levelLabel.setPreferredSize(new Dimension(42, 14));
-        levelLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-        west.add(levelLabel);
-        panel.add(west, BorderLayout.WEST);
+        detailTsLabel.setText(TIME_FORMAT.format(Instant.ofEpochMilli(ts)));
+        detailTsLabel.setForeground(isSelected ? mix(selForeground, selBackground, 0.30f) : colorFaint);
+        detailLevelLabel.setText(levelText);
+        detailLevelLabel.setForeground(levelColor);
 
-        JLabel messageLabel = new JLabel(message);
-        messageLabel.setFont(messageLabel.getFont().deriveFont(12.0f));
-        messageLabel.setForeground(isSelected ? selForeground : colorText);
-        panel.add(messageLabel, BorderLayout.CENTER);
+        detailMessageLabel.setText(message);
+        detailMessageLabel.setForeground(isSelected ? selForeground : colorText);
 
         if (row.hasStack()) {
-            JLabel stackToggle = new JLabel(row.stackOpen() ? "Hide stack trace ▴" : "Show stack trace ▾");
-            stackToggle.setFont(stackToggle.getFont().deriveFont(11.0f));
-            stackToggle.setForeground(colorAccent);
-            stackToggle.setBackground(isSelected
+            detailStackToggle.setText(row.stackOpen() ? "Hide stack trace ▴" : "Show stack trace ▾");
+            detailStackToggle.setForeground(colorAccent);
+            detailStackToggle.setBackground(isSelected
                     ? mix(selBackground, colorAccent, 0.20f)
                     : mix(colorRowBackground, colorAccent, 0.12f));
-            stackToggle.setOpaque(true);
-            stackToggle.setBorder(BorderFactory.createEmptyBorder(1, 5, 1, 5));
-            panel.add(stackToggle, BorderLayout.EAST);
+            detailStackToggle.setVisible(true);
+        } else {
+            detailStackToggle.setVisible(false);
         }
-        return panel;
+        // Synchronous re-layout of the freshly set texts (see configureNodeRow)
+        detailPanel.invalidate();
+        detailPanel.validate();
+        return detailPanel;
     }
 
-    private Component renderStackRow(JList<? extends Row> list, StackRow row, boolean isSelected) {
-        JLabel label = new JLabel(row.line());
-        label.setFont(progressTextFont);
-        label.setForeground(isSelected ? selectionForeground(list) : colorStackForeground);
-        label.setBackground(isSelected ? selectionBackground(list) : colorStackBackground);
-        label.setOpaque(true);
-        label.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
-        return label;
+    private Component configureStackRow(JList<? extends Row> list, StackRow row, boolean isSelected) {
+        stackLabel.setText(row.line());
+        stackLabel.setForeground(isSelected ? selectionForeground(list) : colorStackForeground);
+        stackLabel.setBackground(isSelected ? selectionBackground(list) : colorStackBackground);
+        return stackLabel;
     }
 
     /**
      * The empty-virtual-row render: same background/separator as a detail row so a detail block
      * stays visually continuous, with a faint marker text.
      */
-    private Component renderVirtualRow(String text, Color color, JList<? extends Row> list, boolean isSelected) {
-        JLabel label = new JLabel(text, SwingConstants.CENTER);
-        label.setFont(label.getFont().deriveFont(11.0f));
-        label.setForeground(isSelected ? selectionForeground(list) : color);
-        label.setBackground(isSelected ? selectionBackground(list) : colorDetailBackground);
-        label.setOpaque(true);
-        label.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createMatteBorder(0, 0, 1, 0, mix(colorLine, colorDetailBackground, 0.5f)),
-                BorderFactory.createEmptyBorder(0, 8, 0, 8)));
-        return label;
+    private Component configureVirtualRow(String text, Color color, JList<? extends Row> list, boolean isSelected) {
+        virtualLabel.setText(text);
+        virtualLabel.setForeground(isSelected ? selectionForeground(list) : color);
+        virtualLabel.setBackground(isSelected ? selectionBackground(list) : colorDetailBackground);
+        return virtualLabel;
     }
 
-    private Component renderActionRow(String text, Color color, JList<? extends Row> list, boolean isSelected) {
-        JLabel label = new JLabel(text, SwingConstants.CENTER);
-        label.setFont(label.getFont().deriveFont(11.5f));
-        label.setForeground(isSelected ? selectionForeground(list) : color);
-        label.setBackground(isSelected ? selectionBackground(list) : colorDetailBackground);
-        label.setOpaque(true);
-        label.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createMatteBorder(0, 0, 1, 0, colorLine),
-                BorderFactory.createEmptyBorder(2, 8, 2, 8)));
-        return label;
+    private Component configureActionRow(String text, Color color, JList<? extends Row> list, boolean isSelected) {
+        actionLabel.setText(text);
+        actionLabel.setForeground(isSelected ? selectionForeground(list) : color);
+        actionLabel.setBackground(isSelected ? selectionBackground(list) : colorDetailBackground);
+        return actionLabel;
     }
 
     /**
@@ -657,47 +804,28 @@ public class JIPipeDesktopProgressTreeRowRenderer implements ListCellRenderer<JI
      * grouped count as a +N-style badge, and the group's time span in the duration column (the
      * mockup's gate rows).
      */
-    private Component renderGateRow(JList<? extends Row> list, FinishedItemsGateRow row, boolean isSelected) {
+    private Component configureGateRow(JList<? extends Row> list, FinishedItemsGateRow row, boolean isSelected) {
         Color selBackground = isSelected ? selectionBackground(list) : null;
         Color selForeground = isSelected ? selectionForeground(list) : null;
-        JPanel panel = new JPanel(new BorderLayout(6, 0));
-        panel.setOpaque(true);
-        panel.setBackground(isSelected ? selBackground : colorDetailBackground);
-        panel.setBorder(BorderFactory.createCompoundBorder(
+        gatePanel.setBackground(isSelected ? selBackground : colorDetailBackground);
+        gatePanel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createMatteBorder(0, 0, 1, 0, mix(colorLine, colorDetailBackground, 0.5f)),
                 BorderFactory.createEmptyBorder(0, 8 + row.depth() * INDENT_PER_LEVEL, 0, 10)));
 
-        JPanel west = new JPanel();
-        west.setOpaque(false);
-        west.setLayout(new BoxLayout(west, BoxLayout.X_AXIS));
-        JLabel caretLabel = new JLabel(row.revealed() ? "▼" : "▶");
-        caretLabel.setFont(caretLabel.getFont().deriveFont(9.0f));
-        caretLabel.setForeground(isSelected ? mix(selForeground, selBackground, 0.25f) : colorDim);
-        caretLabel.setPreferredSize(new Dimension(14, 14));
-        west.add(caretLabel);
-        west.add(Box.createHorizontalStrut(3));
-        JLabel label = new JLabel("Finished items");
-        label.setFont(label.getFont().deriveFont(Font.ITALIC, label.getFont().getSize2D()));
-        label.setForeground(isSelected ? selForeground : colorDim);
-        west.add(label);
-        west.add(Box.createHorizontalStrut(6));
-        JLabel countLabel = new JLabel(formatCount(row.count()));
-        countLabel.setFont(countLabel.getFont().deriveFont(11.0f));
-        countLabel.setForeground(isSelected ? mix(selForeground, selBackground, 0.25f) : colorDim);
-        countLabel.setBackground(isSelected ? mix(selBackground, selForeground, 0.14f) : colorChipBackground);
-        countLabel.setOpaque(true);
-        countLabel.setBorder(BorderFactory.createEmptyBorder(1, 6, 1, 6));
-        west.add(countLabel);
-        panel.add(west, BorderLayout.WEST);
+        gateCaretLabel.setText(row.revealed() ? "▼" : "▶");
+        gateCaretLabel.setForeground(isSelected ? mix(selForeground, selBackground, 0.25f) : colorDim);
+        gateTitleLabel.setText("Finished items");
+        gateTitleLabel.setForeground(isSelected ? selForeground : colorDim);
+        gateCountLabel.setText(formatCount(row.count()));
+        gateCountLabel.setForeground(isSelected ? mix(selForeground, selBackground, 0.25f) : colorDim);
+        gateCountLabel.setBackground(isSelected ? mix(selBackground, selForeground, 0.14f) : colorChipBackground);
 
-        JLabel spanLabel = new JLabel(formatDuration(Math.max(0, row.lastTs() - row.firstTs())));
-        spanLabel.setFont(phaseFont);
-        spanLabel.setForeground(isSelected ? mix(selForeground, selBackground, 0.30f) : colorFaint);
-        spanLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-        spanLabel.setPreferredSize(new Dimension(phaseColumnWidth, 14));
-        spanLabel.setMaximumSize(new Dimension(phaseColumnWidth, 14));
-        panel.add(spanLabel, BorderLayout.EAST);
-        return panel;
+        gateSpanLabel.setText(formatDuration(Math.max(0, row.lastTs() - row.firstTs())));
+        gateSpanLabel.setForeground(isSelected ? mix(selForeground, selBackground, 0.30f) : colorFaint);
+        // Synchronous re-layout of the freshly set texts (see configureNodeRow)
+        gatePanel.invalidate();
+        gatePanel.validate();
+        return gatePanel;
     }
 
     /**
@@ -735,20 +863,26 @@ public class JIPipeDesktopProgressTreeRowRenderer implements ListCellRenderer<JI
      */
     private static final class ProgressBar extends JComponent {
         private static final Color TRACK_INSET_SHADOW = new Color(0, 0, 0, 15);
-        private final int trackWidth;
-        private final int trackHeight;
-        private final Color track;
+        private int trackWidth = 1;
+        private int trackHeight = 1;
+        private Color track = Color.GRAY;
         private int value;
         private int max;
         private float fraction;
         private boolean full;
         private Color fill;
 
-        ProgressBar(int trackWidth, int trackHeight, Color track) {
+        /**
+         * The track geometry: re-applied when the font-derived sizes change (the bar is a
+         * long-lived renderer component now, not a per-row construction).
+         */
+        void setTrackSize(int trackWidth, int trackHeight) {
             this.trackWidth = trackWidth;
             this.trackHeight = trackHeight;
+        }
+
+        void setTrack(Color track) {
             this.track = track;
-            setOpaque(false);
         }
 
         void setProgress(int value, int max, float fraction, boolean full, Color fill) {
