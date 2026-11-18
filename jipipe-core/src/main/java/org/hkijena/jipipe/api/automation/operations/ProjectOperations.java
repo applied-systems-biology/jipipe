@@ -553,6 +553,11 @@ public class ProjectOperations {
      * Opens a project (.jip, .jipx, RO-Crate container, or JIPipe output folder)
      * through the standard open flow with explicit decisions and waits for the load
      * to complete. The non-interactive twin of the GUI open flow.
+     * <p>
+     * The path is not restricted to the allowed roots (user ruling 2026-11-17):
+     * opening mirrors the GUI, where a user may open any file, and is confirmed by
+     * the user through the permission prompt. The write targets of the other
+     * lifecycle operations (save-to) stay rooted.
      */
     public static class OpenProject implements AutomationOperation {
         @Override
@@ -588,7 +593,7 @@ public class ProjectOperations {
                       "type": "object",
                       "required": ["path"],
                       "properties": {
-                        "path": {"type": "string", "description": "Absolute path to a .jip/.jipx project file, a .crate.zip RO-Crate container, or a JIPipe output folder; must be inside an allowed export root"},
+                        "path": {"type": "string", "description": "Absolute path to a .jip/.jipx project file, a .crate.zip RO-Crate container, or a JIPipe output folder; any location is allowed (opening is confirmed by the user through the operation's permission prompt)"},
                         "format": {"type": "string", "enum": ["auto", "jipx", "legacy", "crate"], "description": "auto applies the GUI defaults without prompting (a .crate.zip imports through the RO-Crate flow, a legacy .jip with a .jipx sibling opens the sibling, an output folder loads its results into a new tab), jipx and legacy force the sibling choice, crate forces the RO-Crate import (requires a .crate.zip file)"},
                         "force-current-window": {"type": "boolean", "description": "Replace the project of the routed window instead of opening a new window (default: false)"}
                       },
@@ -608,13 +613,11 @@ public class ProjectOperations {
 
         @Override
         public JsonNode execute(AutomationContext ctx, JsonNode params) {
-            // The allowed-roots check (the export_data mechanism)
-            AutomationOperationUtils.TargetPath resolved = AutomationOperationUtils.resolveWriteTarget(
-                    ctx.getProject(), "path", params.get("path").asText());
-            if (resolved.path() == null) {
-                return error(resolved.errorMessage());
-            }
-            Path path = resolved.path();
+            // The path is NOT restricted to the allowed roots (user ruling
+            // 2026-11-17): opening mirrors the GUI, where a user may open any file,
+            // and the Ask permission is the consent gate. The write targets
+            // (save-to) stay rooted. Normalized like the previous rooted resolution.
+            Path path = Path.of(params.get("path").asText()).toAbsolutePath().normalize();
 
             JIPipeProjectFlowDecisions.OpenFormat format = JIPipeProjectFlowDecisions.OpenFormat.parse(
                     params.has("format") ? params.get("format").asText() : null);
@@ -872,7 +875,7 @@ public class ProjectOperations {
                       "properties": {
                         "project": {"type": "string", "description": "Session id of the project window to save (as returned by list_projects). Default: the window this call was routed to, else the focused project window, else the first open one"},
                         "save-to": {"type": "string", "description": "Absolute path (.jipx or .jip) inside an allowed export root to save the project to (save-as: the tracked save path switches to this file). Omit to save to the current save path; a project that was never saved must be given save-to"},
-                        "format": {"type": "string", "enum": ["auto", "jipx", "legacy"], "description": "auto honors the target extension (a .jip target stays legacy, anything else is saved as .jipx) and always saves as .jipx when the project cannot be expressed in the legacy format; jipx and legacy force the format"}
+                        "format": {"type": "string", "enum": ["auto", "jipx", "legacy"], "description": "auto honors the target extension (a .jip target stays legacy, anything else is saved as .jipx) and always saves as .jipx when the project cannot be expressed in the legacy format; jipx and legacy force the format (the matching extension is appended to a target without one)"}
                       },
                       "additionalProperties": false
                     }""");
@@ -918,12 +921,13 @@ public class ProjectOperations {
             }
 
             // The shared format resolution (the same decision the interactive save
-            // flow runs through). A target without a recognized extension is
-            // defaulted to .jipx first (the save chooser's first filter); the
-            // shared resolution itself keeps such paths verbatim.
+            // flow runs through). Only AUTO defaults an unrecognized extension to
+            // .jipx (the save chooser's first filter); the explicit formats reach
+            // the helper verbatim, so legacy appends .jip and jipx appends .jipx.
             JIPipeProjectSaveTarget.ResolvedTarget target = callOnEdt(() -> {
-                Path normalized = PathUtils.isJipPath(savePath) || PathUtils.isJipxPath(savePath)
-                        ? savePath : PathUtils.ensureExtension(savePath, ".jipx");
+                Path normalized = format == JIPipeProjectSaveTarget.Format.AUTO
+                        && !PathUtils.isJipPath(savePath) && !PathUtils.isJipxPath(savePath)
+                        ? PathUtils.ensureExtension(savePath, ".jipx") : savePath;
                 return JIPipeProjectSaveTarget.resolveSaveTarget(window.getProject(), normalized, format);
             });
 
