@@ -392,8 +392,7 @@ public class UiInteractionOperations {
             // the window and the input operations still act (the plan's Review Focus 1)
             component = hitSurface;
         }
-        Point componentLocal = new Point(surfaceLocal);
-        SwingUtilities.convertPoint(hitSurface, componentLocal, component);
+        Point componentLocal = SwingUtilities.convertPoint(hitSurface, surfaceLocal, component);
         return new WindowResolution(window, component, componentLocal, null, null);
     }
 
@@ -409,8 +408,12 @@ public class UiInteractionOperations {
             if (!child.isVisible()) {
                 continue;
             }
-            Point childPoint = new Point(pointInContainer);
-            SwingUtilities.convertPoint(container, childPoint, child);
+            // The point is re-expressed in the child's coordinate system by subtracting
+            // the child's location (the same math as SwingUtilities.getDeepestComponentAt;
+            // SwingUtilities.convertPoint cannot be used here: it RETURNS the converted
+            // point instead of mutating its argument)
+            Point loc = child.getLocation();
+            Point childPoint = new Point(pointInContainer.x - loc.x, pointInContainer.y - loc.y);
             if (child.contains(childPoint)) {
                 if (child instanceof Container childContainer) {
                     Component deeper = deepestComponentAt(childContainer, childPoint);
@@ -561,7 +564,7 @@ public class UiInteractionOperations {
     private static CanvasRegionMatch nodeRegion(JIPipeDesktopGraphNodeUI nodeUI,
                                                 Component hitComponent, Point hitLocal) {
         Point nodeLocal = new Point(hitLocal);
-        SwingUtilities.convertPoint(hitComponent, nodeLocal, nodeUI);
+        nodeLocal = SwingUtilities.convertPoint(hitComponent, nodeLocal, nodeUI);
         for (JIPipeDesktopGraphNodeUIActiveArea area : nodeUI.getActiveAreas()) {
             Rectangle hitArea = area.getZoomedHitArea();
             if (hitArea != null && hitArea.contains(nodeLocal)) {
@@ -638,7 +641,7 @@ public class UiInteractionOperations {
             nodeUI = node;
         } else if (canvasUI != null) {
             Point canvasLocal = new Point(resolution.local());
-            SwingUtilities.convertPoint(hit, canvasLocal, canvasUI);
+            canvasLocal = SwingUtilities.convertPoint(hit, canvasLocal, canvasUI);
             MouseEvent pickEvent = new MouseEvent(canvasUI, MouseEvent.MOUSE_MOVED,
                     System.currentTimeMillis(), 0,
                     canvasLocal.x, canvasLocal.y, 0, false, MouseEvent.NOBUTTON);
@@ -649,7 +652,7 @@ public class UiInteractionOperations {
                 // coordinates so the region classification and the echoed
                 // target_component both refer to the node
                 Point nodeLocal = new Point(canvasLocal);
-                SwingUtilities.convertPoint(canvasUI, nodeLocal, nodeUI);
+                nodeLocal = SwingUtilities.convertPoint(canvasUI, nodeLocal, nodeUI);
                 resolution = new WindowResolution(resolution.window(), nodeUI, nodeLocal, null, null);
                 hit = nodeUI;
             }
@@ -1268,7 +1271,7 @@ public class UiInteractionOperations {
             Point toWindow = new Point(toScreen);
             SwingUtilities.convertPointFromScreen(toWindow, resolution.window());
             Point toLocal = new Point(toWindow);
-            SwingUtilities.convertPoint(resolution.window(), toLocal, resolution.hit());
+            toLocal = SwingUtilities.convertPoint(resolution.window(), toLocal, resolution.hit());
             try {
                 modeOrError.mode.drag(resolution.hit(), resolution.local().x, resolution.local().y,
                         toLocal.x, toLocal.y, buttonId);
