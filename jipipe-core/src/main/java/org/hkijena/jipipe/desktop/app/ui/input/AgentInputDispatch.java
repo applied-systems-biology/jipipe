@@ -44,8 +44,14 @@ public final class AgentInputDispatch {
          * Clicks at the component-local point. A click is a {@code MOUSE_PRESSED}/{@code MOUSE_RELEASED}/
          * {@code MOUSE_CLICKED} triple; a multi-click is delivered like the real event stream, as one
          * triple per click with growing {@code clickCount} (1, 2, ...). The popup trigger flag of a
-         * right click is set on the released and clicked events, not on the pressed event (the X11
-         * and Windows convention), so popup checks wired to both press and release fire exactly once.
+         * right click is set on the pressed event only, and never on the released or clicked event:
+         * that is the real stream of the X11/XWayland pipeline this project runs on
+         * ({@code sun.awt.X11.XWindow.handleButtonPressRelease} computes the flag only in its
+         * button-press branch and hardcodes false for the synthesized click). A press-only flag
+         * single-fires every known JIPipe consumer: the template dialog checks every event id and
+         * the add-node browser is wired to both press and release. Windows sets the flag on
+         * release instead; JIPipe mirrors the host pipeline, so press-only is the deliberate
+         * convention (and the only one that does not come close to a double fire on X11).
          *
          * @param target     the component that receives the events; also the event source
          * @param x          the x coordinate, component-local
@@ -139,15 +145,17 @@ public final class AgentInputDispatch {
         public void click(Component target, int x, int y, int clickCount, int button) {
             int mask = buttonMask(button);
             int clicks = Math.max(1, clickCount);
+            // Press-only popup trigger (the X11/XWayland stream of this host): the released and
+            // clicked events always carry false. See the interface javadoc for the evidence.
             boolean popupTrigger = button == MouseEvent.BUTTON3;
             for (int i = 1; i <= clicks; i++) {
                 long when = System.currentTimeMillis();
                 target.dispatchEvent(new MouseEvent(target, MouseEvent.MOUSE_PRESSED, when, mask,
-                        x, y, i, false, button));
+                        x, y, i, popupTrigger, button));
                 target.dispatchEvent(new MouseEvent(target, MouseEvent.MOUSE_RELEASED, when, mask,
-                        x, y, i, popupTrigger, button));
+                        x, y, i, false, button));
                 target.dispatchEvent(new MouseEvent(target, MouseEvent.MOUSE_CLICKED, when, mask,
-                        x, y, i, popupTrigger, button));
+                        x, y, i, false, button));
             }
         }
 

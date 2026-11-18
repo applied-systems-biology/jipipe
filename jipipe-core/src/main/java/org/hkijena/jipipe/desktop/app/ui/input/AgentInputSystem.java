@@ -42,6 +42,13 @@ public final class AgentInputSystem {
 
     /**
      * The system-mode implementation (its {@link #name()} is {@code "system"}).
+     * <p>
+     * Popup trigger alignment with the dispatch mode: the Robot path sets no popup-trigger
+     * flag of its own (there is no {@code BUTTON3_POPUP_MASK} to pass). The XTEST-injected
+     * events traverse the same native-to-AWT conversion as physical input, and on the X11
+     * pipeline ({@code sun.awt.X11.XWindow}) that conversion computes the flag only in the
+     * button-press branch, so the system mode's stream carries the flag on the press exactly
+     * like {@code AgentInputDispatch}.
      */
     public static final class Mode implements AgentInputDispatch.AgentInputMode {
 
