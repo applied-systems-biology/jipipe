@@ -69,4 +69,3 @@ public class AddBookmarkNodeUIContextAction implements NodeUIContextAction {
     }
 
 }
-

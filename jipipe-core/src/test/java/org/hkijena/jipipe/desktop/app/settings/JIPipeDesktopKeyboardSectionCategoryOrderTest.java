@@ -35,7 +35,7 @@ class JIPipeDesktopKeyboardSectionCategoryOrderTest {
     @Test
     void fixedCategoriesComeFirstThenRemainingAlphabetically() {
         // The input is in the registry's all() order: category (alpha), then
-        // name. The section must re-bucket into CATEGORY_ORDER (the ten spec
+        // name. The section must re-bucket into CATEGORY_ORDER (the spec
         // categories) and append the plugin categories alphabetically.
         List<JIPipeShortcutAction> all = List.of(
                 action("q", "Alpha extras"),          // plugin category

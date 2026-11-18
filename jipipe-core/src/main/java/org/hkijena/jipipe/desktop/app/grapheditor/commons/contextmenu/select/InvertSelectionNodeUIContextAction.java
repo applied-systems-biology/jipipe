@@ -66,4 +66,3 @@ public class InvertSelectionNodeUIContextAction implements GraphInteractiveObjec
     }
 
 }
-

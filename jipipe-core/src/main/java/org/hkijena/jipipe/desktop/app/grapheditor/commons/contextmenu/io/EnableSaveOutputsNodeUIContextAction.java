@@ -80,4 +80,3 @@ public class EnableSaveOutputsNodeUIContextAction implements NodeUIContextAction
     }
 
 }
-

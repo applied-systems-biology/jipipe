@@ -97,7 +97,7 @@ public class JIPipeDesktopKeyboardSection extends JPanel implements JIPipeDeskto
      */
     private static final List<String> CATEGORY_ORDER = List.of(
             "Graph editor tools", "Selection", "Creation", "Input/output", "Layers",
-            "Running", "Navigation", "Editor", "Menus", "Dock panels");
+            "Running", "Cache", "Navigation", "Editor", "Menus", "Dock panels");
 
     /**
      * The upper bound offered by the chord-timeout spinner, in milliseconds.

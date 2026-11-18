@@ -69,4 +69,3 @@ public class RemoveBookmarkNodeUIContextAction implements NodeUIContextAction {
     }
 
 }
-

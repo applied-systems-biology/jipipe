@@ -505,7 +505,7 @@ public final class JIPipeShortcutActions {
      * Run the pipeline up to the selected node and update its cache.
      */
     public static final JIPipeShortcutAction NODE_UPDATE_CACHE =
-            JIPipeShortcutAction.builder("org.hkijena.jipipe.graph.node.update-cache", "Update cache", "Running")
+            JIPipeShortcutAction.builder("org.hkijena.jipipe.graph.node.update-cache", "Update cache", "Cache")
                     .description("Runs the pipeline up until this algorithm and caches the results. Nothing is written to disk.")
                     .defaultChord(stroke("control pressed T"), stroke("pressed U"))
                     .build();
@@ -514,7 +514,7 @@ public final class JIPipeShortcutActions {
      * including the intermediate results of the node itself.
      */
     public static final JIPipeShortcutAction NODE_CACHE_INTERMEDIATE_RESULTS =
-            JIPipeShortcutAction.builder("org.hkijena.jipipe.graph.node.cache-intermediate-results", "Cache intermediate results", "Running")
+            JIPipeShortcutAction.builder("org.hkijena.jipipe.graph.node.cache-intermediate-results", "Cache intermediate results", "Cache")
                     .description("Runs the pipeline up until this algorithm and caches the results (including intermediate results). Nothing is written to disk.")
                     .defaultChord(stroke("control pressed T"), stroke("shift pressed U"))
                     .build();
@@ -523,7 +523,7 @@ public final class JIPipeShortcutActions {
      * update its cache.
      */
     public static final JIPipeShortcutAction NODE_UPDATE_PREDECESSOR_CACHE =
-            JIPipeShortcutAction.builder("org.hkijena.jipipe.graph.node.update-predecessor-cache", "Update predecessor cache", "Running")
+            JIPipeShortcutAction.builder("org.hkijena.jipipe.graph.node.update-predecessor-cache", "Update predecessor cache", "Cache")
                     .description("Runs the pipeline up until the predecessors of the selected node. Nothing is written to disk.")
                     .defaultChord(stroke("control pressed T"), stroke("pressed B"))
                     .build();
@@ -582,28 +582,28 @@ public final class JIPipeShortcutActions {
      * Enable automated output saving for the selected algorithms.
      */
     public static final JIPipeShortcutAction NODE_SAVE_OUTPUTS_ENABLE =
-            JIPipeShortcutAction.builder("org.hkijena.jipipe.graph.node.save-outputs-enable", "Enable save outputs", "Node")
+            JIPipeShortcutAction.builder("org.hkijena.jipipe.graph.node.save-outputs-enable", "Enable save outputs", "Input/output")
                     .description("Enables automated output saving of the selected algorithms")
                     .build();
     /**
      * Disable automated output saving for the selected algorithms.
      */
     public static final JIPipeShortcutAction NODE_SAVE_OUTPUTS_DISABLE =
-            JIPipeShortcutAction.builder("org.hkijena.jipipe.graph.node.save-outputs-disable", "Disable save outputs", "Node")
+            JIPipeShortcutAction.builder("org.hkijena.jipipe.graph.node.save-outputs-disable", "Disable save outputs", "Input/output")
                     .description("Disables automated output saving of the selected algorithms")
                     .build();
     /**
      * Store the output data of the selected algorithms on the hard drive.
      */
     public static final JIPipeShortcutAction NODE_VIRTUAL_OUTPUTS_ENABLE =
-            JIPipeShortcutAction.builder("org.hkijena.jipipe.graph.node.virtual-outputs-enable", "Enable virtual outputs", "Node")
+            JIPipeShortcutAction.builder("org.hkijena.jipipe.graph.node.virtual-outputs-enable", "Enable virtual outputs", "Input/output")
                     .description("Stores the output data of the selected algorithms on the hard drive instead of memory")
                     .build();
     /**
      * Store the output data of the selected algorithms in memory.
      */
     public static final JIPipeShortcutAction NODE_VIRTUAL_OUTPUTS_DISABLE =
-            JIPipeShortcutAction.builder("org.hkijena.jipipe.graph.node.virtual-outputs-disable", "Disable virtual outputs", "Node")
+            JIPipeShortcutAction.builder("org.hkijena.jipipe.graph.node.virtual-outputs-disable", "Disable virtual outputs", "Input/output")
                     .description("Stores the output data of the selected algorithms in memory instead of the hard drive")
                     .build();
     /**
@@ -611,7 +611,7 @@ public final class JIPipeShortcutActions {
      * including intermediate results.
      */
     public static final JIPipeShortcutAction RUN_AND_SHOW_INTERMEDIATE_RESULTS =
-            JIPipeShortcutAction.builder("org.hkijena.jipipe.graph.run-and-show-intermediate-results", "Run and show intermediate results", "Run")
+            JIPipeShortcutAction.builder("org.hkijena.jipipe.graph.run-and-show-intermediate-results", "Run and show intermediate results", "Running")
                     .description("Runs the pipeline up until the selected algorithm and shows the results, including intermediate results")
                     .build();
     /**
