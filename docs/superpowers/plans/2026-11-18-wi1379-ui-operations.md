@@ -97,8 +97,8 @@ class AutomationUtilityHelpersTest {
     }
 
     @Test
-    void colorAcceptsEightDigitHexWithAlpha() {
-        Object parsed = AutomationOperationUtils.parseCompositeValue("#80FF8000", Color.class);
+    void colorAcceptsEightDigitHexWithAlphaLast() {
+        Object parsed = AutomationOperationUtils.parseCompositeValue("#FF800080", Color.class);
         assertEquals(new Color(255, 128, 0, 128), parsed);
     }
 
@@ -118,7 +118,7 @@ Expected: FAIL at compile time, `parseCompositeValue` does not exist.
 
 - [ ] **Step 4: Implement `parseCompositeValue`**
 
-Signature as in Interfaces. Order: `Color` first (8-digit then 6-digit hex, case-insensitive, message must contain `#RRGGBB` and `#AARRGGBB`), then expression, quantity, dynamic enum (using the parse entry points found in Step 1), then `return null`. Never throw for an unsupported type; throw `IllegalArgumentException` only for a supported type with an invalid value.
+Signature as in Interfaces. Order: `Color` first (8-digit then 6-digit hex, case-insensitive, message must contain `#RRGGBB` and `#RRGGBBAA (alpha last)` - JIPipe's ColorUtils convention, ruling 2026-11-18), then expression, quantity, dynamic enum (using the parse entry points found in Step 1), then `return null`. Never throw for an unsupported type; throw `IllegalArgumentException` only for a supported type with an invalid value.
 
 - [ ] **Step 5: Run the tests to verify they pass**
 

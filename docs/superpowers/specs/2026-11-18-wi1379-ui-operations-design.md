@@ -49,7 +49,7 @@ The implementation adds explicit conversions for exactly these composite leaf ty
 | Type | Encoding (proposed) |
 |---|---|
 | Expression parameters (`JIPipeExpressionParameter` and subclasses) | the expression string |
-| `Color` | `#RRGGBB` or `#AARRGGBB` hex |
+| `Color` | `#RRGGBB` or `#RRGGBBAA` hex (alpha LAST - JIPipe's own `ColorUtils` convention; ruling 2026-11-18, the classes are the authority) |
 | `Quantity`-style value+unit parameters | `"<value> <unit>"`, unit optional when the parameter has a default unit |
 | Dynamic enum parameters (`JIPipeDynamicEnumParameter` family) | the registered item string |
 
