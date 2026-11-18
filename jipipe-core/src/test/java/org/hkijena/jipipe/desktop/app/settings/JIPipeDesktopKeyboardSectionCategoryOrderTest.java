@@ -83,4 +83,21 @@ class JIPipeDesktopKeyboardSectionCategoryOrderTest {
         List<String> actual = ordered.stream().map(JIPipeShortcutAction::name).toList();
         assertEquals(List.of("tool", "only"), actual);
     }
+
+    @Test
+    void cacheAndNodeComeAfterRunningAndBeforeNavigation() {
+        // The run/cache/structural groups sit between the layer group and the
+        // navigation/panel groups: Cache then Node, not appended at the end.
+        List<JIPipeShortcutAction> all = List.of(
+                action("cache", "Cache"),
+                action("dock", "Dock panels"),
+                action("layers", "Layers"),
+                action("nav", "Navigation"),
+                action("node", "Node"),
+                action("run", "Running")
+        );
+        List<JIPipeShortcutAction> ordered = JIPipeDesktopKeyboardSection.categoryOrdered(all);
+        List<String> actual = ordered.stream().map(JIPipeShortcutAction::name).toList();
+        assertEquals(List.of("layers", "run", "cache", "node", "nav", "dock"), actual);
+    }
 }
