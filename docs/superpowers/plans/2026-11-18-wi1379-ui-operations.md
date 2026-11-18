@@ -258,10 +258,12 @@ git commit -m "feat(#1379): assign stable ids to the remaining graph context act
 - Test: `jipipe-core/src/test/java/org/hkijena/jipipe/desktop/app/ui/input/AgentWindowResolverTest.java`
 
 **Interfaces:**
-- Produces:
-  - `public static Window resolveWindow(List<? extends Window> candidates, Point screenPoint)` - the topmost showing window whose on-screen bounds contain the point; `null` when none.
-  - `public static List<Rectangle> allowedRectangles(List<? extends Window> candidates)` - the on-screen bounds of every showing window, in the list order.
-  - `public static boolean isInside(Window window, Point screenPoint)`.
+- Produces (final, superseding the earlier live-window sketch - the Steps and the headless-testability requirement control):
+  - `public record WindowBounds(Rectangle onScreenBounds, boolean showing)` nested in `AgentWindowResolver`
+  - `public static WindowBounds resolve(List<WindowBounds> bounds, Point screenPoint)` - topmost = LAST in list order; the CALLER owns the ordering (see the Review Focus note: `Window.getWindows()` has no documented z-order - Task 6 must prefer the focused window when it contains the point)
+  - `public static List<Rectangle> allowedRectangles(List<WindowBounds> bounds)`
+  - `public static boolean isInside(WindowBounds bounds, Point screenPoint)`
+  - `public static WindowBounds of(java.awt.Window window)`
 - Consumed by: Task 4 (probe), Task 5 (dispatch), Task 6 (operations).
 
 - [ ] **Step 1: Write the failing test with a resolution table**
