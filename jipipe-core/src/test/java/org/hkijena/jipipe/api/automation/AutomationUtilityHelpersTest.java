@@ -26,8 +26,16 @@ class AutomationUtilityHelpersTest {
 
     @Test
     void colorAcceptsEightDigitHexWithAlpha() {
-        Object parsed = AutomationOperationUtils.parseCompositeValue("#80FF8000", Color.class);
+        Object parsed = AutomationOperationUtils.parseCompositeValue("#FF800080", Color.class);
         assertEquals(new Color(255, 128, 0, 128), parsed);
+    }
+
+    @Test
+    void eightDigitHexIsAlphaLastNotAlphaFirst() {
+        Color parsed = (Color) AutomationOperationUtils.parseCompositeValue("#FF800080", Color.class);
+        assertEquals(128, parsed.getAlpha());
+        assertEquals(255, parsed.getRed());
+        assertNotEquals(new Color(128, 0, 128, 255), parsed);
     }
 
     @Test

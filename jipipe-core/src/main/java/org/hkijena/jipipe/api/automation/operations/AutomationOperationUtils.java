@@ -9,6 +9,7 @@ import org.hkijena.jipipe.plugins.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionEvaluator;
 import org.hkijena.jipipe.plugins.parameters.api.enums.JIPipeDynamicEnumParameter;
 import org.hkijena.jipipe.plugins.parameters.library.quantities.Quantity;
+import org.hkijena.jipipe.utils.ColorUtils;
 
 import java.awt.Color;
 import java.awt.KeyboardFocusManager;
@@ -155,13 +156,14 @@ public final class AutomationOperationUtils {
     }
 
     /**
-     * Pattern of the supported color encodings: #RRGGBB or #AARRGGBB (case-insensitive).
+     * Pattern of the supported color encodings: #RRGGBB or #RRGGBBAA (alpha last, the project
+     * convention), case-insensitive.
      */
     private static final Pattern COLOR_HEX_PATTERN = Pattern.compile("#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})");
 
     /**
      * Converts a raw string into an instance of a supported composite parameter type. Supported:
-     * {@link Color} (encoding #RRGGBB or #AARRGGBB hex), expression parameters (the
+     * {@link Color} (encoding #RRGGBB or #RRGGBBAA hex, alpha last), expression parameters (the
      * {@link DefaultExpressionParameter} family: the expression string, syntax-checked),
      * {@link Quantity} (encoding '&lt;value&gt; &lt;unit&gt;', the unit optional), and dynamic enum
      * parameters (the {@link JIPipeDynamicEnumParameter} family: the registered item string).
@@ -198,21 +200,26 @@ public final class AutomationOperationUtils {
     }
 
     /**
-     * Parses a color from the #RRGGBB or #AARRGGBB encoding. Alpha (when present) is the first
-     * byte after the '#'. Case-insensitive. A dedicated parser is used because
-     * {@code ColorUtils.hexStringToColor} reads the 8-digit form as #RRGGBBAA, which is a
-     * different encoding.
+     * Parses a color from the #RRGGBB or #RRGGBBAA encoding: alpha, when present, is the last
+     * byte (the project convention, see {@link ColorUtils#colorToHexString(Color)}, the writer
+     * the color parameter editor displays). The 6-digit form is opaque. Case-insensitive.
+     * The strict pattern check runs first so that a malformed value always produces this
+     * method's error message naming the accepted encoding. The decode is local instead of a
+     * delegation to {@link ColorUtils#hexStringToColor(String)} because that parser reads the
+     * alpha pair as a decimal number (Integer.parseInt without a radix), so it neither
+     * round-trips colorToHexString (an alpha of 128, written as hex "80", would read back
+     * as decimal 80) nor accepts alpha bytes with hex letters.
      */
     private static Color parseColorHex(String value) {
         Matcher matcher = COLOR_HEX_PATTERN.matcher(value == null ? "" : value.trim());
         if (!matcher.matches()) {
             throw new IllegalArgumentException("Invalid color '" + value
-                    + "'. Expected encoding: '#RRGGBB' or '#AARRGGBB' hex, for example '#FF8000' or '#80FF8000'.");
+                    + "'. Expected encoding: '#RRGGBB' or '#RRGGBBAA' (alpha last) hex, for example '#FF8000' or '#FF800080'.");
         }
         String hex = matcher.group(1);
         int decoded = Integer.parseUnsignedInt(hex, 16);
         if (hex.length() == 8) {
-            return new Color((decoded >>> 16) & 0xFF, (decoded >>> 8) & 0xFF, decoded & 0xFF, (decoded >>> 24) & 0xFF);
+            return new Color((decoded >>> 24) & 0xFF, (decoded >>> 16) & 0xFF, (decoded >>> 8) & 0xFF, decoded & 0xFF);
         }
         return new Color(decoded);
     }
