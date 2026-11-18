@@ -5,18 +5,27 @@ import org.hkijena.jipipe.api.automation.AutomationContext;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;
+import org.hkijena.jipipe.plugins.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionEvaluator;
+import org.hkijena.jipipe.plugins.parameters.api.enums.JIPipeDynamicEnumParameter;
+import org.hkijena.jipipe.plugins.parameters.library.quantities.Quantity;
 
+import java.awt.Color;
 import java.awt.KeyboardFocusManager;
 import java.awt.Window;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Shared helpers for the built-in automation operations.
+ * Public because {@code JIPipeAutomationAPI} (in the parent package) uses the
+ * composite parameter value decoding for set_parameter.
  */
-final class AutomationOperationUtils {
+public final class AutomationOperationUtils {
 
     /**
      * Name of the export directory inside the system temp directory (allowed root and default
@@ -143,5 +152,124 @@ final class AutomationOperationUtils {
         List<String> rootNames = roots.stream().map(Path::toString).toList();
         return new TargetPath(null, parameterName + " '" + normalized
                 + "' is not inside an allowed export root. Allowed roots: " + String.join(", ", rootNames));
+    }
+
+    /**
+     * Pattern of the supported color encodings: #RRGGBB or #AARRGGBB (case-insensitive).
+     */
+    private static final Pattern COLOR_HEX_PATTERN = Pattern.compile("#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})");
+
+    /**
+     * Converts a raw string into an instance of a supported composite parameter type. Supported:
+     * {@link Color} (encoding #RRGGBB or #AARRGGBB hex), expression parameters (the
+     * {@link DefaultExpressionParameter} family: the expression string, syntax-checked),
+     * {@link Quantity} (encoding '&lt;value&gt; &lt;unit&gt;', the unit optional), and dynamic enum
+     * parameters (the {@link JIPipeDynamicEnumParameter} family: the registered item string).
+     * Returns null when the type is not supported: the caller then keeps the raw string
+     * (the pre-existing behavior for unsupported leaf types).
+     *
+     * @param value      the raw string value
+     * @param fieldClass the declared class of the parameter field
+     * @return the decoded object, or null when the type is not supported
+     * @throws IllegalArgumentException when the type is supported but the value cannot be decoded
+     */
+    public static Object parseCompositeValue(String value, Class<?> fieldClass) {
+        if (fieldClass == null) {
+            return null;
+        }
+        if (fieldClass == Color.class) {
+            return parseColorHex(value);
+        }
+        if (DefaultExpressionParameter.class.isAssignableFrom(fieldClass)) {
+            return parseExpressionParameter(value, fieldClass);
+        }
+        if (fieldClass == Quantity.class) {
+            Quantity quantity = Quantity.parse(value);
+            if (quantity == null) {
+                throw new IllegalArgumentException("Invalid quantity '" + value
+                        + "'. Expected encoding: '<value> <unit>' where the unit is optional, for example '5 px' or '2.5 mm'.");
+            }
+            return quantity;
+        }
+        if (JIPipeDynamicEnumParameter.class.isAssignableFrom(fieldClass)) {
+            return parseDynamicEnumParameter(value, fieldClass);
+        }
+        return null;
+    }
+
+    /**
+     * Parses a color from the #RRGGBB or #AARRGGBB encoding. Alpha (when present) is the first
+     * byte after the '#'. Case-insensitive. A dedicated parser is used because
+     * {@code ColorUtils.hexStringToColor} reads the 8-digit form as #RRGGBBAA, which is a
+     * different encoding.
+     */
+    private static Color parseColorHex(String value) {
+        Matcher matcher = COLOR_HEX_PATTERN.matcher(value == null ? "" : value.trim());
+        if (!matcher.matches()) {
+            throw new IllegalArgumentException("Invalid color '" + value
+                    + "'. Expected encoding: '#RRGGBB' or '#AARRGGBB' hex, for example '#FF8000' or '#80FF8000'.");
+        }
+        String hex = matcher.group(1);
+        int decoded = Integer.parseUnsignedInt(hex, 16);
+        if (hex.length() == 8) {
+            return new Color((decoded >>> 16) & 0xFF, (decoded >>> 8) & 0xFF, decoded & 0xFF, (decoded >>> 24) & 0xFF);
+        }
+        return new Color(decoded);
+    }
+
+    /**
+     * Creates an instance of an expression parameter class (a {@link DefaultExpressionParameter}
+     * subclass) from the expression string. The string is syntax-checked with the evaluator of
+     * the parameter class (the same check the expression editor UI applies) before it is stored.
+     * Returns null when the class has no usable standard constructor (the caller keeps the raw
+     * string, the pre-existing behavior).
+     */
+    private static Object parseExpressionParameter(String value, Class<?> fieldClass) {
+        DefaultExpressionParameter parameter;
+        try {
+            var constructor = fieldClass.getDeclaredConstructor();
+            constructor.setAccessible(true);
+            parameter = (DefaultExpressionParameter) constructor.newInstance();
+        } catch (ReflectiveOperationException e) {
+            return null;
+        }
+        if (parameter.getEvaluator() instanceof JIPipeExpressionEvaluator evaluator) {
+            Exception syntaxError = evaluator.checkSyntax(value == null ? "" : value);
+            if (syntaxError != null) {
+                throw new IllegalArgumentException("Invalid expression '" + value + "': " + syntaxError.getMessage()
+                        + ". Expected encoding: a valid JIPipe expression string.");
+            }
+        }
+        parameter.setExpression(value);
+        return parameter;
+    }
+
+    /**
+     * Creates an instance of a dynamic enum parameter class (a {@link JIPipeDynamicEnumParameter}
+     * subclass) and sets its value from the registered item string (the same write the JSON
+     * deserializers of these classes perform). When the fresh instance reports registered items
+     * (some classes populate them in their constructor) and all items are strings, the value must
+     * be one of them. Returns null when the class has no usable standard constructor (the caller
+     * keeps the raw string, the pre-existing behavior).
+     */
+    @SuppressWarnings("unchecked")
+    private static Object parseDynamicEnumParameter(String value, Class<?> fieldClass) {
+        JIPipeDynamicEnumParameter<?> parameter;
+        try {
+            var constructor = fieldClass.getDeclaredConstructor();
+            constructor.setAccessible(true);
+            parameter = (JIPipeDynamicEnumParameter<?>) constructor.newInstance();
+        } catch (ReflectiveOperationException e) {
+            return null;
+        }
+        List<?> allowedValues = parameter.getAllowedValues();
+        if (!allowedValues.isEmpty() && allowedValues.stream().allMatch(String.class::isInstance)
+                && !allowedValues.contains(value)) {
+            throw new IllegalArgumentException("Invalid dynamic enum value '" + value
+                    + "'. Expected encoding: one of the registered items: " + String.join(", ",
+                    allowedValues.stream().map(item -> (String) item).toList()));
+        }
+        ((JIPipeDynamicEnumParameter<Object>) parameter).setValue(value);
+        return parameter;
     }
 }

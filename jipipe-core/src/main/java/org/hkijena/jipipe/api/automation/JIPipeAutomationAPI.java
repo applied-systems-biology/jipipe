@@ -10,6 +10,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.automation.events.*;
 import org.hkijena.jipipe.api.automation.pipeline_map.PipelineMap;
 import org.hkijena.jipipe.api.automation.pipeline_map.SegmentNode;
+import org.hkijena.jipipe.api.automation.operations.AutomationOperationUtils;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -473,7 +474,8 @@ public final class JIPipeAutomationAPI {
         if (Path.class.isAssignableFrom(fieldClass)) {
             return Path.of(value);
         }
-        return value;
+        Object composite = AutomationOperationUtils.parseCompositeValue(value, fieldClass);
+        return composite != null ? composite : value;
     }
 
     private static UUID resolveCompartmentUUID(AutomationContext ctx, String compartmentId) {
