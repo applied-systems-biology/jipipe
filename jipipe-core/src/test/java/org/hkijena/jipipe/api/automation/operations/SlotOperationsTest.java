@@ -94,8 +94,10 @@ public class SlotOperationsTest {
         // The fixed-slots fixture node is a test-only type: its slot
         // configuration is a non-mutable JIPipeSlotConfiguration stub, which
         // pins the "node does not support slot editing" refusal of both slot
-        // operations. It extends the comment node so the fixture inherits
-        // valid node plumbing; the id cannot collide with a real registration.
+        // operations. It extends JIPipeGraphNode directly because the fixture
+        // needs the slot-configuration constructor of the graph node (the
+        // comment node does not provide one); the id cannot collide with a
+        // real registration.
         if (!JIPipe.getNodes().hasNodeInfoWithId(FIXED_SLOT_NODE_ID)) {
             JIPipe.getNodes().register(new JIPipeJavaNodeInfo(FIXED_SLOT_NODE_ID, FixedSlotNode.class), TEST_DEPENDENCY);
             registeredFixedSlotNodeHere = true;
@@ -104,9 +106,11 @@ public class SlotOperationsTest {
         // configuration is sealed on both sides (the setters setInputSealed
         // and setOutputSealed of JIPipeDefaultMutableSlotConfiguration), which
         // pins that add_slot refuses a sealed side BEFORE any mutation (the
-        // configuration itself would throw on a user add). It extends the
-        // comment node so the fixture inherits valid node plumbing; the id
-        // cannot collide with a real registration.
+        // configuration itself would throw on a user add). It extends
+        // JIPipeGraphNode directly because the fixture needs the
+        // slot-configuration constructor of the graph node (the comment node
+        // does not provide one); the id cannot collide with a real
+        // registration.
         if (!JIPipe.getNodes().hasNodeInfoWithId(SEALED_SLOT_NODE_ID)) {
             JIPipe.getNodes().register(new JIPipeJavaNodeInfo(SEALED_SLOT_NODE_ID, SealedSlotNode.class), TEST_DEPENDENCY);
             registeredSealedSlotNodeHere = true;
@@ -316,6 +320,27 @@ public class SlotOperationsTest {
                 "the configuration is unchanged: no slot was added before the refusal");
         assertFalse(sealed.getOutputSlots().stream().anyMatch(slot -> slot.getName().equals("extra")),
                 "the node has no added slot after the refusal");
+    }
+
+    @Test
+    void addSlot_sealedStockNodeRefused() {
+        // A fresh comment node keeps its stock state: the annotation-built
+        // slot configuration is sealed by the JIPipeGraphNode constructor
+        // after building it from the annotations, so the stock node refuses
+        // add_slot. No unsealing step: the stock sealed state is the point.
+        JIPipeGraphNode comment = JIPipe.getNodes().getInfoById(COMMENT_NODE_ID).newInstance();
+        JIPipeProject project = projectWithNode(comment);
+        AutomationContext ctx = createContext(project);
+        String alias = project.getGraph().getAliasIdOf(comment);
+
+        JsonNode result = new SlotOperations.AddSlot().execute(ctx,
+                addSlotParams(alias, "output", "extra", DATA_TYPE_ID));
+
+        assertTrue(result.has("error"), "the sealed stock node must be refused: " + result);
+        assertTrue(result.get("error").asText().contains("sealed"),
+                "the refusal names the sealed state: " + result);
+        assertFalse(comment.getSlotConfiguration().hasOutputSlot("extra"),
+                "the configuration is unchanged: the output slot map has no extra slot");
     }
 
     @Test
