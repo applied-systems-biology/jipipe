@@ -21,6 +21,9 @@ import org.hkijena.jipipe.api.project.jipx.JIPipeProjectFairCheck;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.utils.StringUtils;
 
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -30,7 +33,8 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Built-in info operations: project summary, FAIR check, algorithm catalog, and node documentation.
+ * Built-in info operations: project summary, FAIR check, project report, algorithm catalog,
+ * and node documentation.
  */
 public class InfoOperations {
 
@@ -40,6 +44,76 @@ public class InfoOperations {
      * Maximum number of catalog entries returned by list_algorithms before truncation.
      */
     private static final int LIST_ALGORITHMS_LIMIT = 200;
+
+    /**
+     * Fixed heading level of get_project_report: the report mirrors the Project Report UI,
+     * whose top level is heading level 3.
+     */
+    private static final int REPORT_HEADING_LEVEL = 3;
+
+    /**
+     * Inline cap of get_project_report: responses without save-to refuse reports above this
+     * length instead of truncating them. Package-visible for the boundary test.
+     */
+    static final int INLINE_CAP_CHARS = 100_000;
+
+    private static ObjectNode error(String message) {
+        return mapper.createObjectNode().put("error", message);
+    }
+
+    private static String textOrNull(JsonNode params, String field) {
+        return params.has(field) && !params.get(field).isNull() ? params.get(field).asText() : null;
+    }
+
+    /**
+     * Renders the project report text and applies the get_project_report response contract.
+     * Package-visible seam so the inline cap boundary is testable without a context. The
+     * rendered text mirrors the Project Report UI (compartments, nodes, connections, and
+     * non-default parameters) at the fixed heading level {@link #REPORT_HEADING_LEVEL}. A
+     * non-blank save-to that resolves inside the allowed roots
+     * ({@link AutomationOperationUtils#resolveWriteTarget}, the same machinery as the
+     * screenshot save-to) is written as UTF-8 and only the path and size are returned, never
+     * the inline text (size contract); a refused target returns the guard's error naming the
+     * roots. Without save-to, reports of at most {@link #INLINE_CAP_CHARS} characters are
+     * returned inline with truncated=false; longer reports are refused with an error naming
+     * the actual size and advising save-to. The cap is a hard refusal, never a truncation:
+     * exactly the cap still inlines.
+     */
+    static JsonNode renderReport(JIPipeProject project, String saveTo) {
+        StringBuilder stringBuilder = new StringBuilder();
+        project.getTextDescription(stringBuilder, REPORT_HEADING_LEVEL);
+        String report = stringBuilder.toString();
+        if (saveTo != null && !saveTo.isBlank()) {
+            try {
+                AutomationOperationUtils.TargetPath resolved = AutomationOperationUtils.resolveWriteTarget(
+                        project, "save-to", saveTo.trim());
+                if (resolved.path() == null) {
+                    return error(resolved.errorMessage());
+                }
+                Path target = resolved.path();
+                if (target.getParent() != null) {
+                    Files.createDirectories(target.getParent());
+                }
+                Files.writeString(target, report, StandardCharsets.UTF_8);
+                ObjectNode data = mapper.createObjectNode();
+                data.put("savedTo", target.toString());
+                data.put("sizeBytes", Files.size(target));
+                return data;
+            } catch (Exception e) {
+                return error("Failed to save project report: " + e.getMessage());
+            }
+        }
+        if (report.length() > INLINE_CAP_CHARS) {
+            return error("The rendered project report is " + report.length() + " characters, above the inline cap of "
+                    + INLINE_CAP_CHARS + " characters. Use the save-to parameter to write the full report to a file "
+                    + "inside an allowed export root (the jipipe-mcp-export directory in the system temp directory, "
+                    + "or the project work directory).");
+        }
+        ObjectNode data = mapper.createObjectNode();
+        data.put("report", report);
+        data.put("truncated", false);
+        return data;
+    }
 
     /**
      * Renders the taxonomy path(s) of a node as human-readable function chains,
@@ -367,6 +441,61 @@ public class InfoOperations {
                 // Node could not be instantiated in this environment: return the docs without parameters
             }
             return data;
+        }
+    }
+
+    /**
+     * Project report query: the Project Report UI's text, with an inline cap and a rooted
+     * save-to alternative for large projects.
+     */
+    public static class GetProjectReport implements AutomationOperation {
+        @Override
+        public String getId() {
+            return "get_project_report";
+        }
+
+        @Override
+        public String getDescription() {
+            return "Get the project report: the text of the Project Report UI (compartments with their nodes, "
+                    + "connections, and non-default parameters), rendered at fixed heading level 3. Reports of at "
+                    + "most 100000 characters are returned inline in the report field; truncated is always false "
+                    + "because the cap refuses oversized reports instead of truncating them. For a larger report, "
+                    + "or to keep the text, pass save-to: the full report is written as a UTF-8 text file and only "
+                    + "savedTo and sizeBytes are returned. The optional save-to target must point inside an allowed "
+                    + "export root: the jipipe-mcp-export directory in the system temp directory, or the project "
+                    + "work directory. Targets outside these roots are refused (error naming the roots); a blank "
+                    + "save-to falls back to the inline response";
+        }
+
+        @Override
+        public JsonNode getInputSchema() {
+            return AutomationSchemaUtils.parseJson("""
+                    {
+                      "type": "object",
+                      "properties": {
+                        "save-to": {"type": "string", "description": "Optional file path to save the full report to as a UTF-8 text file; must be inside an allowed export root (the jipipe-mcp-export directory in the system temp directory, or the project work directory). Targets outside these roots are refused (error naming the roots). Blank or omitted: the report is returned inline, subject to the inline cap stated in the operation description"}
+                      },
+                      "additionalProperties": false
+                    }""");
+        }
+
+        @Override
+        public AutomationOperationCategory getCategory() {
+            return AutomationOperationCategory.Query;
+        }
+
+        @Override
+        public boolean isReadOnly() {
+            return true;
+        }
+
+        @Override
+        public JsonNode execute(AutomationContext ctx, JsonNode params) {
+            JIPipeProject project = ctx.getProject();
+            if (project == null) {
+                return error("No project loaded");
+            }
+            return renderReport(project, textOrNull(params, "save-to"));
         }
     }
 }

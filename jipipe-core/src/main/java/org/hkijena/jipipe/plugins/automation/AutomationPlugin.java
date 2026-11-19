@@ -113,6 +113,7 @@ public class AutomationPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
         // Info operations
         registerAutomationOperation("get_project_info", new InfoOperations.GetProjectInfo());
+        registerAutomationOperation("get_project_report", new InfoOperations.GetProjectReport());
         registerAutomationOperation("check_fair", new InfoOperations.CheckFair());
         registerAutomationOperation("list_algorithms", new InfoOperations.ListAlgorithms());
         registerAutomationOperation("get_node_docs", new InfoOperations.GetNodeDocs());
