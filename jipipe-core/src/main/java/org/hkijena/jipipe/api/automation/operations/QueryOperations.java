@@ -1,17 +1,23 @@
 package org.hkijena.jipipe.api.automation.operations;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hkijena.jipipe.api.automation.AutomationOperationCategory;
 import org.hkijena.jipipe.api.automation.AutomationSchemaUtils;
 import org.hkijena.jipipe.api.automation.JIPipeAutomationAPI;
 import org.hkijena.jipipe.api.automation.AutomationContext;
 import org.hkijena.jipipe.api.automation.AutomationOperation;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Built-in query operations for the automation layer.
  * Each operation wraps a {@link JIPipeAutomationAPI} method.
  */
 public class QueryOperations {
+
+    private static final ObjectMapper mapper = new ObjectMapper();
 
     public static class QueryCompartments implements AutomationOperation {
         @Override
@@ -62,7 +68,10 @@ public class QueryOperations {
                     {
                       "type": "object",
                       "properties": {
-                        "compartment-id": {"type": "string", "description": "Limit the result to this compartment (UUID or alias); omit to return nodes and connections of all compartments"}
+                        "compartment-id": {"type": "string", "description": "Limit the result to this compartment (UUID, alias, or name); omit to return nodes and connections of all compartments"},
+                        "fields": {"type": "array", "description": "Whitelist of fields to include in each node object (they are emitted in the canonical order regardless of the request order); omit to include all fields", "items": {"type": "string", "enum": ["id", "name", "typeId", "compartmentId", "uuid", "x", "y"]}},
+                        "omit-positions": {"type": "boolean", "description": "Drop the x and y fields from node objects, even when listed in fields"},
+                        "connections-only": {"type": "boolean", "description": "Return only the connections: the nodes array is empty"}
                       },
                       "additionalProperties": false
                     }""");
@@ -81,7 +90,121 @@ public class QueryOperations {
         @Override
         public JsonNode execute(AutomationContext ctx, JsonNode params) {
             String compartment = params.has("compartment-id") ? params.get("compartment-id").asText() : null;
-            return JIPipeAutomationAPI.queryGraph(ctx, compartment);
+            List<String> fields = null;
+            if (params.has("fields")) {
+                fields = new ArrayList<>();
+                for (JsonNode field : params.get("fields")) {
+                    String name = field.asText();
+                    if (!JIPipeAutomationAPI.QUERY_GRAPH_NODE_FIELDS.contains(name)) {
+                        return mapper.createObjectNode().put("error", "Unknown field '" + name
+                                + "'. Valid fields: " + String.join(", ", JIPipeAutomationAPI.QUERY_GRAPH_NODE_FIELDS));
+                    }
+                    fields.add(name);
+                }
+            }
+            boolean omitPositions = params.path("omit-positions").asBoolean(false);
+            boolean connectionsOnly = params.path("connections-only").asBoolean(false);
+            try {
+                return JIPipeAutomationAPI.queryGraph(ctx, compartment, fields, omitPositions, connectionsOnly);
+            } catch (IllegalArgumentException e) {
+                return mapper.createObjectNode().put("error", e.getMessage() + " (see query_compartments for ids)");
+            }
+        }
+    }
+
+    public static class FindNodes implements AutomationOperation {
+        @Override
+        public String getId() {
+            return "find_nodes";
+        }
+
+        @Override
+        public String getDescription() {
+            return "Search nodes inside the open project by name, node type id, and compartment (find_nodes searches the project; search_nodes searches the algorithm catalog)";
+        }
+
+        @Override
+        public JsonNode getInputSchema() {
+            return AutomationSchemaUtils.parseJson("""
+                    {
+                      "type": "object",
+                      "properties": {
+                        "query": {"type": "string", "description": "Matched case-insensitively as a substring of the node name; omit or leave blank to match all node names"},
+                        "type-id": {"type": "string", "description": "Matched case-insensitively as a substring of the registered node type id; omit or leave blank to match all node types"},
+                        "compartment": {"type": "string", "description": "Limit the search to this compartment (UUID, alias, or name); omit or leave blank to search all compartments"},
+                        "limit": {"type": "integer", "minimum": 0, "description": "Maximum number of matches to return (default 50)"}
+                      },
+                      "additionalProperties": false
+                    }""");
+        }
+
+        @Override
+        public AutomationOperationCategory getCategory() {
+            return AutomationOperationCategory.Query;
+        }
+
+        @Override
+        public boolean isReadOnly() {
+            return true;
+        }
+
+        @Override
+        public JsonNode execute(AutomationContext ctx, JsonNode params) {
+            String query = params.has("query") ? params.get("query").asText() : null;
+            String typeId = params.has("type-id") ? params.get("type-id").asText() : null;
+            String compartment = params.has("compartment") ? params.get("compartment").asText() : null;
+            int limit = params.has("limit") ? params.get("limit").asInt() : 50;
+            try {
+                return JIPipeAutomationAPI.findNodes(ctx, query, typeId, compartment, limit);
+            } catch (IllegalArgumentException e) {
+                return mapper.createObjectNode().put("error", e.getMessage() + " (see query_compartments for ids)");
+            }
+        }
+    }
+
+    public static class QueryAnnotations implements AutomationOperation {
+        @Override
+        public String getId() {
+            return "query_annotations";
+        }
+
+        @Override
+        public String getDescription() {
+            return "List all comments and text boxes of the project with title, content, compartment, and bbox in one call (id, uuid, typeId, kind, compartmentId, title, content for text boxes, x, y, and width, height for text boxes)";
+        }
+
+        @Override
+        public JsonNode getInputSchema() {
+            return AutomationSchemaUtils.parseJson("""
+                    {
+                      "type": "object",
+                      "properties": {
+                        "compartment": {"type": "string", "description": "Limit the result to annotations within this compartment (UUID, alias, or name); omit to return annotations of all compartments"},
+                        "kind": {"type": "string", "enum": ["comment", "text-box"], "description": "Only return annotations of this kind; omit to return both kinds"}
+                      },
+                      "additionalProperties": false
+                    }""");
+        }
+
+        @Override
+        public AutomationOperationCategory getCategory() {
+            return AutomationOperationCategory.Query;
+        }
+
+        @Override
+        public boolean isReadOnly() {
+            return true;
+        }
+
+        @Override
+        public JsonNode execute(AutomationContext ctx, JsonNode params) {
+            String compartment = params.has("compartment") ? params.get("compartment").asText() : null;
+            String kind = params.has("kind") ? params.get("kind").asText() : null;
+            try {
+                return JIPipeAutomationAPI.queryAnnotations(ctx, compartment, kind);
+            } catch (IllegalArgumentException e) {
+                return mapper.createObjectNode().put("error", e.getMessage() + " (see query_compartments for ids)");
+            }
         }
     }
 
@@ -93,7 +216,7 @@ public class QueryOperations {
 
         @Override
         public String getDescription() {
-            return "Get detailed info for a single node including parameters and slots";
+            return "Get detailed info for a single node including parameters and slots. Parameter values are normalized objects {value, type, raw?}: value is the effective readable string (expressions without the 'Expression: ' prefix), raw is the plain toString when it differs";
         }
 
         @Override

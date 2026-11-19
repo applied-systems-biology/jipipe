@@ -72,8 +72,10 @@ public class AutomationPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         // Query operations
         registerAutomationOperation("query_compartments", new QueryOperations.QueryCompartments());
         registerAutomationOperation("query_graph", new QueryOperations.QueryGraph());
+        registerAutomationOperation("query_annotations", new QueryOperations.QueryAnnotations());
         registerAutomationOperation("query_node", new QueryOperations.QueryNode());
         registerAutomationOperation("query_data", new QueryOperations.QueryData());
+        registerAutomationOperation("find_nodes", new QueryOperations.FindNodes());
 
         // Execution operations
         registerAutomationOperation("run_node", new ExecutionOperations.RunNode());
