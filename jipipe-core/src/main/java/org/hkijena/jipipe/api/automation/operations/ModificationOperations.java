@@ -235,7 +235,7 @@ public class ModificationOperations {
 
         @Override
         public String getDescription() {
-            return "Set a parameter on a node";
+            return "Set a parameter on a node. The response carries the effective value after conversion - verify it matches your intent.";
         }
 
         @Override
@@ -265,9 +265,11 @@ public class ModificationOperations {
 
         @Override
         public JsonNode execute(AutomationContext ctx, JsonNode params) {
-            JIPipeAutomationAPI.setParameter(ctx,
+            ObjectNode parameter = JIPipeAutomationAPI.setParameter(ctx,
                     params.get("node-id").asText(), params.get("key").asText(), params.get("value").asText());
-            return new ObjectMapper().createObjectNode().put("success", true);
+            ObjectNode result = new ObjectMapper().createObjectNode().put("success", true);
+            result.set("parameter", parameter);
+            return result;
         }
     }
 

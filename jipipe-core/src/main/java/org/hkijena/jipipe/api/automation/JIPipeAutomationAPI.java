@@ -127,6 +127,20 @@ public final class JIPipeAutomationAPI {
     }
 
     public static JsonNode queryNode(AutomationContext ctx, String nodeIdStr) {
+        return queryNode(ctx, nodeIdStr, false);
+    }
+
+    /**
+     * Renders one node of the query_node operation. When includeDocs is true,
+     * every entry of the parameters object additionally carries the name,
+     * description, and important flag of its parameter access: name and
+     * description render as empty strings when the access provides none or a
+     * blank value (a parameter without a documentation annotation derives its
+     * name from the key), and important is always present as a boolean.
+     * Without includeDocs the entries carry only the normalized value fields
+     * (value, type, raw?).
+     */
+    public static JsonNode queryNode(AutomationContext ctx, String nodeIdStr, boolean includeDocs) {
         JIPipeProject project = ctx.getProject();
         if (project == null) return mapper.createObjectNode().put("error", "No project loaded");
         JIPipeGraph graph = project.getGraph();
@@ -143,7 +157,15 @@ public final class JIPipeAutomationAPI {
         for (JIPipeParameterAccess access : JIPipeParameterTree.getParameters(node).values()) {
             String key = access.getKey();
             if (key == null || key.startsWith("jipipe:") || key.startsWith("jipipe-ui:")) continue;
-            params.set(key, renderParameterValue(access));
+            ObjectNode entry = renderParameterValue(access);
+            if (includeDocs) {
+                String name = access.getName();
+                String description = access.getDescription();
+                entry.put("name", name != null && !name.isBlank() ? name : "");
+                entry.put("description", description != null && !description.isBlank() ? description : "");
+                entry.put("important", access.isImportant());
+            }
+            params.set(key, entry);
         }
         ArrayNode inputSlots = data.putArray("inputSlots");
         for (JIPipeDataSlot slot : node.getInputSlots()) {
@@ -195,6 +217,79 @@ public final class JIPipeAutomationAPI {
             entry.put("raw", rawText);
         }
         return entry;
+    }
+
+    /**
+     * Renders the changed-vs-default parameter diff of one node with the
+     * project report's own machinery (the approach of
+     * {@link JIPipeGraphNode#getTextDescription(StringBuilder)}): a fresh
+     * reference instance of the node type is created via
+     * {@code node.getInfo().newInstance()} (a new instance per call, never
+     * mutated), a {@link JIPipeParameterTree} is built over the live node and
+     * the reference, and the keys of the CURRENT tree are iterated (the
+     * report's behavior; keys that only the reference has are out of scope).
+     * Both sides are rendered through {@link #renderParameterValue}, so
+     * "changed" is the rendered "value" string differing from the rendered
+     * "defaultValue" string. The jipipe:node:name and jipipe:node:description
+     * keys are skipped (the same exclusions the report applies). The
+     * "defaultValue" of an entry is the rendered reference value, or the JSON
+     * null value when the reference tree has no such key (a present-but-null
+     * parameter renders the string "null", never JSON null). The parameters
+     * array carries the changed entries only unless includeUnchanged is true;
+     * changedCount counts the changed entries either way.
+     *
+     * @param ctx             the automation context
+     * @param nodeIdStr       the node id (alias id or UUID)
+     * @param includeUnchanged also list parameters that match the reference
+     * @return the response object with nodeId, parameters, and changedCount
+     */
+    public static JsonNode getParameterDiff(AutomationContext ctx, String nodeIdStr, boolean includeUnchanged) {
+        JIPipeProject project = ctx.getProject();
+        if (project == null) return mapper.createObjectNode().put("error", "No project loaded");
+        JIPipeGraph graph = ctx.getGraph();
+        JIPipeGraphNode node = graph.findNode(nodeIdStr);
+        if (node == null) return mapper.createObjectNode().put("error", "Node not found: " + nodeIdStr);
+        JIPipeGraphNode referenceInstance = node.getInfo().newInstance();
+        JIPipeParameterTree currentTree = new JIPipeParameterTree(node);
+        JIPipeParameterTree referenceTree = new JIPipeParameterTree(referenceInstance);
+        ObjectNode data = mapper.createObjectNode();
+        data.put("nodeId", graph.getAliasIdOf(node));
+        ArrayNode parameters = data.putArray("parameters");
+        int changedCount = 0;
+        for (String key : currentTree.getParameters().keySet()) {
+            if ("jipipe:node:name".equals(key)) {
+                continue;
+            }
+            if ("jipipe:node:description".equals(key)) {
+                continue;
+            }
+            JIPipeParameterAccess currentAccess = currentTree.getParameterAccess(key);
+            JIPipeParameterAccess referenceAccess = referenceTree.getParameterAccess(key);
+            ObjectNode currentRendered = renderParameterValue(currentAccess);
+            String value = currentRendered.get("value").asText();
+            ObjectNode entry = mapper.createObjectNode();
+            entry.put("key", key);
+            entry.put("value", value);
+            entry.put("type", currentRendered.get("type").asText());
+            boolean changed;
+            if (referenceAccess == null) {
+                entry.putNull("defaultValue");
+                changed = true;
+            } else {
+                String defaultValue = renderParameterValue(referenceAccess).get("value").asText();
+                entry.put("defaultValue", defaultValue);
+                changed = !value.equals(defaultValue);
+            }
+            entry.put("changed", changed);
+            if (changed) {
+                changedCount++;
+            }
+            if (changed || includeUnchanged) {
+                parameters.add(entry);
+            }
+        }
+        data.put("changedCount", changedCount);
+        return data;
     }
 
     public static JsonNode queryData(AutomationContext ctx, String nodeIdStr, String slotName, int limit) {
@@ -478,7 +573,21 @@ public final class JIPipeAutomationAPI {
         ctx.getEventBus().publish(new ConnectionChangedEvent(ctx.getProjectId(), source, sourceSlot, target, targetSlot, "removed"));
     }
 
-    public static void setParameter(AutomationContext ctx, String nodeId, String key, String value) {
+    /**
+     * Sets a parameter on a node: the text value is converted to the field
+     * class of the parameter access, the access is set, and the
+     * ParameterChangedEvent is published. Returns the SAME access rendered
+     * through {@link #renderParameterValue} AFTER the set, so callers (the
+     * set_parameter operation) can verify the effective value after
+     * conversion in the same call.
+     *
+     * @param ctx    the automation context
+     * @param nodeId the node id (alias id or UUID)
+     * @param key    the parameter key as reported by query_node
+     * @param value  the new value as text
+     * @return the rendered parameter entry (value, type, raw?)
+     */
+    public static ObjectNode setParameter(AutomationContext ctx, String nodeId, String key, String value) {
         JIPipeGraph graph = ctx.getGraph();
         if (graph == null) throw new IllegalStateException("No graph available");
         JIPipeGraphNode node = graph.findNode(nodeId);
@@ -488,6 +597,7 @@ public final class JIPipeAutomationAPI {
         Object converted = convertParameterValue(value, access.getFieldClass());
         access.set(converted);
         ctx.getEventBus().publish(new ParameterChangedEvent(ctx.getProjectId(), nodeId, key, value));
+        return renderParameterValue(access);
     }
 
     public static String addCompartment(AutomationContext ctx, String name) {

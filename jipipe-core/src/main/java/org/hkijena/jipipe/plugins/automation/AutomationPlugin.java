@@ -74,6 +74,7 @@ public class AutomationPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerAutomationOperation("query_graph", new QueryOperations.QueryGraph());
         registerAutomationOperation("query_annotations", new QueryOperations.QueryAnnotations());
         registerAutomationOperation("query_node", new QueryOperations.QueryNode());
+        registerAutomationOperation("get_parameter_diff", new QueryOperations.GetParameterDiff());
         registerAutomationOperation("query_data", new QueryOperations.QueryData());
         registerAutomationOperation("find_nodes", new QueryOperations.FindNodes());
 
@@ -96,6 +97,10 @@ public class AutomationPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerAutomationOperation("add_compartment", new ModificationOperations.AddCompartment());
         registerAutomationOperation("rename_compartment", new ModificationOperations.RenameCompartment());
 
+        // Slot operations
+        registerAutomationOperation("add_slot", new SlotOperations.AddSlot());
+        registerAutomationOperation("remove_slot", new SlotOperations.RemoveSlot());
+
         // User path operations
         registerAutomationOperation("list_user_paths", new UserPathOperations.ListUserPaths());
         registerAutomationOperation("set_user_path", new UserPathOperations.SetUserPath());
@@ -108,6 +113,7 @@ public class AutomationPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
         // Info operations
         registerAutomationOperation("get_project_info", new InfoOperations.GetProjectInfo());
+        registerAutomationOperation("get_project_report", new InfoOperations.GetProjectReport());
         registerAutomationOperation("check_fair", new InfoOperations.CheckFair());
         registerAutomationOperation("list_algorithms", new InfoOperations.ListAlgorithms());
         registerAutomationOperation("get_node_docs", new InfoOperations.GetNodeDocs());
