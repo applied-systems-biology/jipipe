@@ -97,6 +97,10 @@ public class AutomationPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerAutomationOperation("add_compartment", new ModificationOperations.AddCompartment());
         registerAutomationOperation("rename_compartment", new ModificationOperations.RenameCompartment());
 
+        // Slot operations
+        registerAutomationOperation("add_slot", new SlotOperations.AddSlot());
+        registerAutomationOperation("remove_slot", new SlotOperations.RemoveSlot());
+
         // User path operations
         registerAutomationOperation("list_user_paths", new UserPathOperations.ListUserPaths());
         registerAutomationOperation("set_user_path", new UserPathOperations.SetUserPath());
