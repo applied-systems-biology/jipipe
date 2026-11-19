@@ -2,6 +2,7 @@ package org.hkijena.jipipe.api.automation.operations;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.hkijena.jipipe.api.automation.JIPipeAutomationAPI;
 import org.hkijena.jipipe.api.automation.AutomationContext;
@@ -9,6 +10,8 @@ import org.hkijena.jipipe.api.automation.AutomationOperation;
 import org.hkijena.jipipe.api.automation.AutomationOperationCategory;
 import org.hkijena.jipipe.api.automation.AutomationSchemaUtils;
 import org.hkijena.jipipe.api.automation.events.CompartmentChangedEvent;
+import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
+import org.hkijena.jipipe.api.metadata.JIPipeOrganizationMetadata;
 
 /**
  * Built-in modification operations.
@@ -269,6 +272,41 @@ public class ModificationOperations {
     }
 
     public static class SetProjectMetadata implements AutomationOperation {
+
+        /**
+         * Schema of one authors/acknowledgements entry. Shared by both array
+         * parameters so the two shapes cannot drift apart.
+         */
+        private static final String AUTHOR_ENTRY_SCHEMA = """
+                {
+                  "type": "object",
+                  "description": "One author entry: firstName and lastName are required (non-blank), all other fields are optional",
+                  "properties": {
+                    "firstName": {"type": "string", "description": "Author first name (required, non-blank)"},
+                    "lastName": {"type": "string", "description": "Author last name (required, non-blank)"},
+                    "orcid": {"type": "string", "description": "ORCID (URL or ID)"},
+                    "email": {"type": "string", "description": "E-Mail address"},
+                    "website": {"type": "string", "description": "Author website"},
+                    "firstAuthor": {"type": "boolean", "description": "Marks the author as first author"},
+                    "correspondingAuthor": {"type": "boolean", "description": "Marks the author as corresponding author"},
+                    "affiliations": {
+                      "type": "array",
+                      "description": "Author affiliations",
+                      "items": {
+                        "type": "object",
+                        "description": "One affiliation",
+                        "properties": {
+                          "name": {"type": "string", "description": "Organization name"},
+                          "ror": {"type": "string", "description": "ROR ID or URL"},
+                          "website": {"type": "string", "description": "Organization website"}
+                        },
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "additionalProperties": false
+                }""";
+
         @Override
         public String getId() {
             return "set_project_metadata";
@@ -281,7 +319,7 @@ public class ModificationOperations {
 
         @Override
         public String getDescription() {
-            return "Set project name and/or description";
+            return "Set project name, description, license, summary, website, citation, authors, or acknowledgements. The FAIR check needs license, summary, and at least one author - see check_fair.";
         }
 
         @Override
@@ -291,10 +329,16 @@ public class ModificationOperations {
                       "type": "object",
                       "properties": {
                         "name": {"type": "string", "description": "New project name; the current name is kept when omitted"},
-                        "description": {"type": "string", "description": "New project description; the current description is kept when omitted"}
+                        "description": {"type": "string", "description": "New project description; the current description is kept when omitted"},
+                        "license": {"type": "string", "description": "New license name like MIT or GPL v3; the current license is kept when omitted; a blank string is stored as-is (clears the field)"},
+                        "summary": {"type": "string", "description": "New short summary; the current summary is kept when omitted; a blank string is stored as-is (clears the field)"},
+                        "website": {"type": "string", "description": "New project website; the current website is kept when omitted; a blank string is stored as-is (clears the field)"},
+                        "citation": {"type": "string", "description": "New citation of the work where the project is published; the current citation is kept when omitted; a blank string is stored as-is (clears the field)"},
+                        "authors": {"type": "array", "description": "Replaces the whole author list (no merge): a present array, even an empty one, replaces the current list, only an omitted key keeps it. Each entry needs a non-blank firstName and lastName; one invalid entry refuses the whole call and leaves the project untouched", "items": %s},
+                        "acknowledgements": {"type": "array", "description": "Replaces the whole acknowledgements list (no merge): a present array, even an empty one, replaces the current list, only an omitted key keeps it. Each entry needs a non-blank firstName and lastName; one invalid entry refuses the whole call and leaves the project untouched", "items": %s}
                       },
                       "additionalProperties": false
-                    }""");
+                    }""".formatted(AUTHOR_ENTRY_SCHEMA, AUTHOR_ENTRY_SCHEMA));
         }
 
         @Override
@@ -311,8 +355,85 @@ public class ModificationOperations {
         public JsonNode execute(AutomationContext ctx, JsonNode params) {
             String name = params.has("name") ? params.get("name").asText() : null;
             String description = params.has("description") ? params.get("description").asText() : null;
-            JIPipeAutomationAPI.setProjectMetadata(ctx, name, description);
+            String license = params.has("license") ? params.get("license").asText() : null;
+            String summary = params.has("summary") ? params.get("summary").asText() : null;
+            String website = params.has("website") ? params.get("website").asText() : null;
+            String citation = params.has("citation") ? params.get("citation").asText() : null;
+            // Both arrays are parsed and fully validated before anything is applied,
+            // so an invalid entry refuses the whole call
+            JIPipeAuthorMetadata.List authors = params.has("authors")
+                    ? parseAuthors(params.get("authors"), "authors") : null;
+            JIPipeAuthorMetadata.List acknowledgements = params.has("acknowledgements")
+                    ? parseAuthors(params.get("acknowledgements"), "acknowledgements") : null;
+            JIPipeAutomationAPI.setProjectMetadata(ctx, name, description, license, summary, website, citation,
+                    authors, acknowledgements);
             return new ObjectMapper().createObjectNode().put("success", true);
+        }
+
+        /**
+         * Parses an authors or acknowledgements array parameter into a typed list.
+         * The whole array is validated before anything is built: every entry must
+         * carry a non-blank firstName and lastName, and the first invalid entry
+         * refuses the whole call with an error naming the index and the missing
+         * field, so the project keeps its current lists.
+         */
+        private static JIPipeAuthorMetadata.List parseAuthors(JsonNode array, String listName) {
+            if (!array.isArray()) {
+                throw new IllegalArgumentException(listName + " must be an array");
+            }
+            for (int i = 0; i < array.size(); i++) {
+                JsonNode entry = array.get(i);
+                for (String field : new String[]{"firstName", "lastName"}) {
+                    JsonNode value = entry.get(field);
+                    if (value == null || !value.isTextual() || value.asText().trim().isEmpty()) {
+                        throw new IllegalArgumentException("Invalid " + listName + " entry at index " + i
+                                + ": " + field + " is required");
+                    }
+                }
+            }
+            JIPipeAuthorMetadata.List list = new JIPipeAuthorMetadata.List();
+            for (JsonNode entry : array) {
+                JIPipeAuthorMetadata author = new JIPipeAuthorMetadata();
+                author.setFirstName(entry.get("firstName").asText());
+                author.setLastName(entry.get("lastName").asText());
+                String orcid = optionalString(entry, "orcid");
+                if (orcid != null) author.setOrcid(orcid);
+                String email = optionalString(entry, "email");
+                if (email != null) author.setEmail(email);
+                String website = optionalString(entry, "website");
+                if (website != null) author.setWebsite(website);
+                if (entry.has("firstAuthor")) author.setFirstAuthor(entry.get("firstAuthor").asBoolean());
+                if (entry.has("correspondingAuthor")) {
+                    author.setCorrespondingAuthor(entry.get("correspondingAuthor").asBoolean());
+                }
+                author.setAffiliations(parseAffiliations(entry.get("affiliations")));
+                list.add(author);
+            }
+            return list;
+        }
+
+        private static JIPipeOrganizationMetadata.List parseAffiliations(JsonNode array) {
+            JIPipeOrganizationMetadata.List list = new JIPipeOrganizationMetadata.List();
+            if (array == null || !array.isArray()) {
+                return list;
+            }
+            for (JsonNode entry : array) {
+                JIPipeOrganizationMetadata organization = new JIPipeOrganizationMetadata();
+                organization.setName(optionalString(entry, "name"));
+                organization.setRor(optionalString(entry, "ror"));
+                organization.setWebsite(optionalString(entry, "website"));
+                list.add(organization);
+            }
+            return list;
+        }
+
+        /**
+         * Reads an optional string field of a JSON object; non-textual values are
+         * treated as absent.
+         */
+        private static String optionalString(JsonNode entry, String field) {
+            JsonNode value = entry.get(field);
+            return value != null && value.isTextual() ? value.asText() : null;
         }
     }
 

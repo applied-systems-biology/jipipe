@@ -12,6 +12,7 @@ import org.hkijena.jipipe.api.automation.pipeline_map.PipelineMap;
 import org.hkijena.jipipe.api.automation.pipeline_map.SegmentNode;
 import org.hkijena.jipipe.api.automation.operations.AutomationOperationUtils;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
+import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -20,12 +21,14 @@ import org.hkijena.jipipe.api.parameters.JIPipeCustomTextDescriptionParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.project.JIPipeProject;
+import org.hkijena.jipipe.api.project.JIPipeProjectMetadata;
 import org.hkijena.jipipe.api.project.JIPipeProjectUserPaths;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasGrid;
 import org.hkijena.jipipe.plugins.core.nodes.JIPipeCommentNode;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.publish.rocrate.CreateROCrateRun;
 import org.hkijena.jipipe.plugins.publish.rocrate.ROCrateDockerSettings;
+import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.awt.*;
 import java.io.IOException;
@@ -495,11 +498,47 @@ public final class JIPipeAutomationAPI {
         return compartment.getProjectCompartmentUUID().toString();
     }
 
-    public static void setProjectMetadata(AutomationContext ctx, String name, String description) {
+    /**
+     * Sets project metadata fields. A null argument keeps the current value;
+     * a provided authors/acknowledgements list replaces the whole list (an empty
+     * list is a replacement with an empty list). Blank strings are stored as-is:
+     * clearing a field is a legitimate intent (the FAIR check reports it as missing).
+     *
+     * @param ctx              the automation context
+     * @param name             the new project name (null keeps the current)
+     * @param description      the new description as plain text (null keeps the current)
+     * @param license          the new license (null keeps the current)
+     * @param summary          the new summary as plain text (null keeps the current)
+     * @param website          the new website (null keeps the current)
+     * @param citation         the new citation (null keeps the current)
+     * @param authors          the replacement author list (null keeps the current)
+     * @param acknowledgements the replacement acknowledgements list (null keeps the current)
+     */
+    public static void setProjectMetadata(AutomationContext ctx, String name, String description,
+                                          String license, String summary, String website, String citation,
+                                          JIPipeAuthorMetadata.List authors, JIPipeAuthorMetadata.List acknowledgements) {
         JIPipeProject project = ctx.getProject();
         if (project == null) throw new IllegalStateException("No project available");
         if (name != null) project.getMetadata().setName(name);
         if (description != null) project.getMetadata().setDescription(new HTMLText(description));
+        if (license != null) project.getMetadata().setLicense(license);
+        if (summary != null) project.getMetadata().setSummary(new HTMLText(summary));
+        if (website != null) project.getMetadata().setWebsite(website);
+        if (citation != null) project.getMetadata().setCitation(citation);
+        if (authors != null) {
+            JIPipeProjectMetadata metadata = project.getMetadata();
+            // Fire the authors-changed signal only on an actual change (feature #753
+            // pattern), so an open project window recomputes the FAIR badge without
+            // being spammed
+            boolean changed = !JsonUtils.toJsonString(metadata.getAuthors()).equals(JsonUtils.toJsonString(authors));
+            metadata.setAuthors(authors);
+            if (changed) {
+                metadata.getAuthorsChangedEventEmitter().emit(new JIPipeProjectMetadata.AuthorsChangedEvent(metadata));
+            }
+        }
+        if (acknowledgements != null) {
+            project.getMetadata().setAcknowledgements(acknowledgements);
+        }
     }
 
     // ── Pipeline Map ──
