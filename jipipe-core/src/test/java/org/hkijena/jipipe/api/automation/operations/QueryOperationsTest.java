@@ -43,6 +43,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -368,6 +369,25 @@ public class QueryOperationsTest {
     }
 
     @Test
+    void queryGraph_schemaFieldEnumMatchesSharedConstant() {
+        // Pins the cross-representation contract: the schema enum, the
+        // emission whitelist, and the unknown-field refusal message all
+        // derive from JIPipeAutomationAPI.QUERY_GRAPH_NODE_FIELDS.
+        JsonNode schema = new QueryOperations.QueryGraph().getInputSchema();
+        JsonNode enumNode = schema.get("properties").get("fields").get("items").get("enum");
+
+        assertNotNull(enumNode, "the fields items schema carries no enum: " + schema);
+        assertTrue(enumNode.isArray(), "the fields enum must be an array: " + enumNode);
+        List<String> schemaFields = new ArrayList<>();
+        for (JsonNode entry : enumNode) {
+            schemaFields.add(entry.asText());
+        }
+
+        assertEquals(JIPipeAutomationAPI.QUERY_GRAPH_NODE_FIELDS, schemaFields,
+                "the schema enum must equal the shared field whitelist, in order");
+    }
+
+    @Test
     void queryGraph_fieldsWhitelist() {
         assumeTrue(hasNodeType(COMMENT_NODE_ID), COMMENT_NODE_ID + " node type not registered - skipping");
         TwoCompartmentFixture fixture = createTwoCompartmentFixture("Preprocessing", "Analysis");
@@ -486,6 +506,8 @@ public class QueryOperationsTest {
         JsonNode comment = findEntryByUuid(result, commentUuid);
         assertNotNull(comment, "the comment entry is missing: " + result);
         assertEquals("comment", comment.get("kind").asText());
+        assertEquals(fixture.project().getGraph().getAliasIdOf(fixture.comment()), comment.get("id").asText(),
+                "the comment entry id must be the graph alias");
         assertEquals("My note", comment.get("title").asText());
         assertEquals(COMMENT_NODE_ID, comment.get("typeId").asText());
         assertEquals(fixture.compartment().getProjectCompartmentUUID().toString(),
@@ -497,6 +519,8 @@ public class QueryOperationsTest {
         JsonNode textBox = findEntryByUuid(result, textBoxUuid);
         assertNotNull(textBox, "the text box entry is missing: " + result);
         assertEquals("text-box", textBox.get("kind").asText());
+        assertEquals(fixture.project().getGraph().getAliasIdOf(fixture.textBox()), textBox.get("id").asText(),
+                "the text box entry id must be the graph alias");
         assertEquals(TEXT_BOX_NODE_ID, textBox.get("typeId").asText());
         assertEquals(fixture.compartment().getProjectCompartmentUUID().toString(),
                 textBox.get("compartmentId").asText());

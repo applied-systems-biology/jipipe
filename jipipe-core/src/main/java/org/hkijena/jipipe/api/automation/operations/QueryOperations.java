@@ -68,7 +68,7 @@ public class QueryOperations {
                     {
                       "type": "object",
                       "properties": {
-                        "compartment-id": {"type": "string", "description": "Limit the result to this compartment (UUID or alias); omit to return nodes and connections of all compartments"},
+                        "compartment-id": {"type": "string", "description": "Limit the result to this compartment (UUID, alias, or name); omit to return nodes and connections of all compartments"},
                         "fields": {"type": "array", "description": "Whitelist of fields to include in each node object (they are emitted in the canonical order regardless of the request order); omit to include all fields", "items": {"type": "string", "enum": ["id", "name", "typeId", "compartmentId", "uuid", "x", "y"]}},
                         "omit-positions": {"type": "boolean", "description": "Drop the x and y fields from node objects, even when listed in fields"},
                         "connections-only": {"type": "boolean", "description": "Return only the connections: the nodes array is empty"}
@@ -131,7 +131,7 @@ public class QueryOperations {
                       "properties": {
                         "query": {"type": "string", "description": "Matched case-insensitively as a substring of the node name; omit or leave blank to match all node names"},
                         "type-id": {"type": "string", "description": "Matched case-insensitively as a substring of the registered node type id; omit or leave blank to match all node types"},
-                        "compartment": {"type": "string", "description": "Limit the search to this compartment (UUID or alias); omit or leave blank to search all compartments"},
+                        "compartment": {"type": "string", "description": "Limit the search to this compartment (UUID, alias, or name); omit or leave blank to search all compartments"},
                         "limit": {"type": "integer", "minimum": 0, "description": "Maximum number of matches to return (default 50)"}
                       },
                       "additionalProperties": false
@@ -179,7 +179,7 @@ public class QueryOperations {
                     {
                       "type": "object",
                       "properties": {
-                        "compartment": {"type": "string", "description": "Limit the result to annotations within this compartment (UUID or alias); omit to return annotations of all compartments"},
+                        "compartment": {"type": "string", "description": "Limit the result to annotations within this compartment (UUID, alias, or name); omit to return annotations of all compartments"},
                         "kind": {"type": "string", "enum": ["comment", "text-box"], "description": "Only return annotations of this kind; omit to return both kinds"}
                       },
                       "additionalProperties": false
