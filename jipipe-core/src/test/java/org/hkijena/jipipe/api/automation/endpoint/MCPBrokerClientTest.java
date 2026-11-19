@@ -211,10 +211,12 @@ public class MCPBrokerClientTest {
         assertNotNull(discoveryLine, "the argfile must carry the discovery file: " + jvmArgs);
         assertEquals("\"" + discoveryFile + "\"", discoveryLine,
                 "a path containing spaces must be written quoted");
-        // The classpath (typically space-free in the test environment) stays verbatim.
+        // The classpath token is the curated classpath (MCPBrokerClasspath.curate); the
+        // curation is byte-identical whenever the raw classpath has no duplicate artifact
+        // families and no empty entries.
         int classpathIndex = jvmArgs.indexOf("-cp");
-        assertEquals(System.getProperty("java.class.path"), jvmArgs.get(classpathIndex + 1),
-                "a space-free entry must be unchanged");
+        assertEquals(MCPBrokerClasspath.curate(System.getProperty("java.class.path")), jvmArgs.get(classpathIndex + 1),
+                "the classpath token must carry the curated classpath");
     }
 
     @Test

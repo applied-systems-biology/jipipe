@@ -669,13 +669,21 @@ public class MCPBrokerClient {
      * and the token file exists, which {@link #ensureConnected} ensures first) the token
      * file. Tokens are rendered with {@link #argFileToken(String)}, so entries containing
      * spaces (e.g. a Windows classpath or user directory) survive the JDK argfile tokenizer.
+     * <p>
+     * The classpath is passed through {@link MCPBrokerClasspath#curate(String)}: on released
+     * Fiji installs, JIPipe's dependency jars land in the same {@code jars/} directory as the
+     * Fiji base's jars (e.g. Fiji's jackson-annotations-2.18.0 next to JIPipe's 2.21), and
+     * jaunch builds the classpath via directory globs whose within-glob order is unspecified,
+     * so the raw {@code java.class.path} can shadow the newer jar. The broker therefore gets
+     * a deterministically ordered classpath where duplicate artifact families resolve
+     * newest-first (first-match-wins), per the root pom's annotations-superset policy.
      */
     List<String> buildSpawnCommand(Path discoveryFilePath) throws IOException {
         String javaHome = System.getProperty("java.home");
         String javaExecutable = javaHome + File.separator + "bin" + File.separator + "java";
         List<String> jvmArgs = new ArrayList<>();
         jvmArgs.add(argFileToken("-cp"));
-        jvmArgs.add(argFileToken(System.getProperty("java.class.path")));
+        jvmArgs.add(argFileToken(MCPBrokerClasspath.curate(System.getProperty("java.class.path"))));
         jvmArgs.add(argFileToken(MCPServerProcess.class.getName()));
         jvmArgs.add(argFileToken("--discovery-file"));
         jvmArgs.add(argFileToken(discoveryFilePath.toString()));
