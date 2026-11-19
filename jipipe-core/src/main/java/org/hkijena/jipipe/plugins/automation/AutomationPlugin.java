@@ -96,6 +96,11 @@ public class AutomationPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerAutomationOperation("add_compartment", new ModificationOperations.AddCompartment());
         registerAutomationOperation("rename_compartment", new ModificationOperations.RenameCompartment());
 
+        // User path operations
+        registerAutomationOperation("list_user_paths", new UserPathOperations.ListUserPaths());
+        registerAutomationOperation("set_user_path", new UserPathOperations.SetUserPath());
+        registerAutomationOperation("remove_user_path", new UserPathOperations.RemoveUserPath());
+
         // Pipeline map operations
         registerAutomationOperation("get_pipeline_map", new PipelineMapOperations.GetPipelineMap());
         registerAutomationOperation("get_segment_detail", new PipelineMapOperations.GetSegmentDetail());
@@ -103,6 +108,7 @@ public class AutomationPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
         // Info operations
         registerAutomationOperation("get_project_info", new InfoOperations.GetProjectInfo());
+        registerAutomationOperation("check_fair", new InfoOperations.CheckFair());
         registerAutomationOperation("list_algorithms", new InfoOperations.ListAlgorithms());
         registerAutomationOperation("get_node_docs", new InfoOperations.GetNodeDocs());
 
