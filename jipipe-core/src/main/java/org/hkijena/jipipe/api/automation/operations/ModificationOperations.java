@@ -294,9 +294,10 @@ public class ModificationOperations {
                       "description": "Author affiliations",
                       "items": {
                         "type": "object",
-                        "description": "One affiliation",
+                        "description": "One affiliation: name is required (non-blank), ror and website are optional",
+                        "required": ["name"],
                         "properties": {
-                          "name": {"type": "string", "description": "Organization name"},
+                          "name": {"type": "string", "description": "Organization name (required, non-blank)"},
                           "ror": {"type": "string", "description": "ROR ID or URL"},
                           "website": {"type": "string", "description": "Organization website"}
                         },
@@ -406,20 +407,26 @@ public class ModificationOperations {
                 if (entry.has("correspondingAuthor")) {
                     author.setCorrespondingAuthor(entry.get("correspondingAuthor").asBoolean());
                 }
-                author.setAffiliations(parseAffiliations(entry.get("affiliations")));
+                author.setAffiliations(parseAffiliations(entry.get("affiliations"), listName));
                 list.add(author);
             }
             return list;
         }
 
-        private static JIPipeOrganizationMetadata.List parseAffiliations(JsonNode array) {
+        private static JIPipeOrganizationMetadata.List parseAffiliations(JsonNode array, String listName) {
             JIPipeOrganizationMetadata.List list = new JIPipeOrganizationMetadata.List();
             if (array == null || !array.isArray()) {
                 return list;
             }
-            for (JsonNode entry : array) {
+            for (int i = 0; i < array.size(); i++) {
+                JsonNode entry = array.get(i);
+                String name = optionalString(entry, "name");
+                if (name == null || name.trim().isEmpty()) {
+                    throw new IllegalArgumentException("Invalid " + listName + " affiliation at index " + i
+                            + ": name is required");
+                }
                 JIPipeOrganizationMetadata organization = new JIPipeOrganizationMetadata();
-                organization.setName(optionalString(entry, "name"));
+                organization.setName(name);
                 organization.setRor(optionalString(entry, "ror"));
                 organization.setWebsite(optionalString(entry, "website"));
                 list.add(organization);

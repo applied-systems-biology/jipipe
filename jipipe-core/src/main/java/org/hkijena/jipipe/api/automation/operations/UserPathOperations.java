@@ -96,6 +96,11 @@ public class UserPathOperations {
         }
 
         @Override
+        public boolean requiresEdt() {
+            return true;
+        }
+
+        @Override
         public String getDescription() {
             return "Create or update a user path entry of the current project, matched by its key. An existing key "
                     + "updates its entry in place (only provided fields change, the path is always overwritten); "
@@ -184,6 +189,11 @@ public class UserPathOperations {
         @Override
         public String getId() {
             return "remove_user_path";
+        }
+
+        @Override
+        public boolean requiresEdt() {
+            return true;
         }
 
         @Override

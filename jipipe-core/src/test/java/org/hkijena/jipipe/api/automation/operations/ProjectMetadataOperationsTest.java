@@ -269,6 +269,32 @@ public class ProjectMetadataOperationsTest {
     }
 
     @Test
+    void setProjectMetadata_affiliationWithoutNameRefusesWholeCall() {
+        JIPipeProject project = new JIPipeProject();
+        setMetadata(project, (ObjectNode) mapper.createObjectNode()
+                .set("authors", arrayNode(authorParam("A", "One"))));
+        JsonNode authorsBefore = getInfo(project).get("metadata").get("authors").deepCopy();
+
+        // A missing and a blank affiliation name are both refusals with the same error
+        ObjectNode missingName = authorParam("B", "Two");
+        missingName.putArray("affiliations").addObject();
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+                () -> setMetadata(project, (ObjectNode) mapper.createObjectNode()
+                        .set("authors", arrayNode(missingName))));
+        assertEquals("Invalid authors affiliation at index 0: name is required", ex.getMessage());
+
+        ObjectNode blankName = authorParam("C", "Three");
+        blankName.putArray("affiliations").addObject().put("name", "   ");
+        ex = assertThrows(IllegalArgumentException.class,
+                () -> setMetadata(project, (ObjectNode) mapper.createObjectNode()
+                        .set("authors", arrayNode(blankName))));
+        assertEquals("Invalid authors affiliation at index 0: name is required", ex.getMessage());
+
+        // No partial apply: the pre-existing list is byte-identical after the failed calls
+        assertEquals(authorsBefore, getInfo(project).get("metadata").get("authors"));
+    }
+
+    @Test
     void setProjectMetadata_emptyArrayReplacesWithEmpty() {
         JIPipeProject project = new JIPipeProject();
         setMetadata(project, (ObjectNode) mapper.createObjectNode()
