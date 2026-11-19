@@ -226,7 +226,8 @@ public class QueryOperations {
                       "type": "object",
                       "required": ["node-id"],
                       "properties": {
-                        "node-id": {"type": "string", "description": "The node id as used by query_graph (alias id or UUID)"}
+                        "node-id": {"type": "string", "description": "The node id as used by query_graph (alias id or UUID)"},
+                        "include-docs": {"type": "boolean", "default": false, "description": "Add documentation metadata to every entry of parameters: the name, description, and important flag from the parameter definition"}
                       },
                       "additionalProperties": false
                     }""");
@@ -244,7 +245,8 @@ public class QueryOperations {
 
         @Override
         public JsonNode execute(AutomationContext ctx, JsonNode params) {
-            return JIPipeAutomationAPI.queryNode(ctx, params.get("node-id").asText());
+            boolean includeDocs = params.path("include-docs").asBoolean(false);
+            return JIPipeAutomationAPI.queryNode(ctx, params.get("node-id").asText(), includeDocs);
         }
     }
 

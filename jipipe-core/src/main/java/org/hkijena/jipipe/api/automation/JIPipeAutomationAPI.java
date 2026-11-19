@@ -127,6 +127,20 @@ public final class JIPipeAutomationAPI {
     }
 
     public static JsonNode queryNode(AutomationContext ctx, String nodeIdStr) {
+        return queryNode(ctx, nodeIdStr, false);
+    }
+
+    /**
+     * Renders one node of the query_node operation. When includeDocs is true,
+     * every entry of the parameters object additionally carries the name,
+     * description, and important flag of its parameter access: name and
+     * description render as empty strings when the access provides none or a
+     * blank value (a parameter without a documentation annotation derives its
+     * name from the key), and important is always present as a boolean.
+     * Without includeDocs the entries carry only the normalized value fields
+     * (value, type, raw?).
+     */
+    public static JsonNode queryNode(AutomationContext ctx, String nodeIdStr, boolean includeDocs) {
         JIPipeProject project = ctx.getProject();
         if (project == null) return mapper.createObjectNode().put("error", "No project loaded");
         JIPipeGraph graph = project.getGraph();
@@ -143,7 +157,15 @@ public final class JIPipeAutomationAPI {
         for (JIPipeParameterAccess access : JIPipeParameterTree.getParameters(node).values()) {
             String key = access.getKey();
             if (key == null || key.startsWith("jipipe:") || key.startsWith("jipipe-ui:")) continue;
-            params.set(key, renderParameterValue(access));
+            ObjectNode entry = renderParameterValue(access);
+            if (includeDocs) {
+                String name = access.getName();
+                String description = access.getDescription();
+                entry.put("name", name != null && !name.isBlank() ? name : "");
+                entry.put("description", description != null && !description.isBlank() ? description : "");
+                entry.put("important", access.isImportant());
+            }
+            params.set(key, entry);
         }
         ArrayNode inputSlots = data.putArray("inputSlots");
         for (JIPipeDataSlot slot : node.getInputSlots()) {
