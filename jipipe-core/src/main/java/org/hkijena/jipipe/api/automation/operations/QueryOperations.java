@@ -1,6 +1,7 @@
 package org.hkijena.jipipe.api.automation.operations;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hkijena.jipipe.api.automation.AutomationOperationCategory;
 import org.hkijena.jipipe.api.automation.AutomationSchemaUtils;
 import org.hkijena.jipipe.api.automation.JIPipeAutomationAPI;
@@ -12,6 +13,8 @@ import org.hkijena.jipipe.api.automation.AutomationOperation;
  * Each operation wraps a {@link JIPipeAutomationAPI} method.
  */
 public class QueryOperations {
+
+    private static final ObjectMapper mapper = new ObjectMapper();
 
     public static class QueryCompartments implements AutomationOperation {
         @Override
@@ -81,7 +84,11 @@ public class QueryOperations {
         @Override
         public JsonNode execute(AutomationContext ctx, JsonNode params) {
             String compartment = params.has("compartment-id") ? params.get("compartment-id").asText() : null;
-            return JIPipeAutomationAPI.queryGraph(ctx, compartment);
+            try {
+                return JIPipeAutomationAPI.queryGraph(ctx, compartment);
+            } catch (IllegalArgumentException e) {
+                return mapper.createObjectNode().put("error", e.getMessage() + " (see query_compartments for ids)");
+            }
         }
     }
 

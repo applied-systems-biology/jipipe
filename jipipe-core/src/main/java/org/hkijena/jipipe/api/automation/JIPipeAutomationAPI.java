@@ -11,6 +11,7 @@ import org.hkijena.jipipe.api.automation.events.*;
 import org.hkijena.jipipe.api.automation.pipeline_map.PipelineMap;
 import org.hkijena.jipipe.api.automation.pipeline_map.SegmentNode;
 import org.hkijena.jipipe.api.automation.operations.AutomationOperationUtils;
+import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -67,14 +68,16 @@ public final class JIPipeAutomationAPI {
         JIPipeGraph graph = project.getGraph();
         UUID compartmentFilter = null;
         if (compartmentIdStr != null && !compartmentIdStr.isBlank()) {
-            try {
-                compartmentFilter = UUID.fromString(compartmentIdStr);
-            } catch (IllegalArgumentException e) {
-                var comp = project.findCompartment(compartmentIdStr);
-                if (comp != null) {
-                    compartmentFilter = comp.getProjectCompartmentUUID();
+            JIPipeProjectCompartment compartment = findCompartment(project, compartmentIdStr);
+            if (compartment == null) {
+                StringJoiner knownCompartments = new StringJoiner(", ");
+                for (JIPipeProjectCompartment known : project.getCompartments().values()) {
+                    knownCompartments.add(String.valueOf(known.getName()));
                 }
+                throw new IllegalArgumentException("Compartment not found: '" + compartmentIdStr
+                        + "'. Known compartments: " + knownCompartments);
             }
+            compartmentFilter = compartment.getProjectCompartmentUUID();
         }
         if (compartmentFilter != null) {
             data.put("compartmentId", compartmentFilter.toString());
@@ -92,6 +95,7 @@ public final class JIPipeAutomationAPI {
             n.put("uuid", uuid != null ? uuid.toString() : null);
             n.put("name", node.getName());
             n.put("typeId", node.getInfo() != null ? node.getInfo().getId() : "?");
+            n.put("compartmentId", nodeCompartment != null ? nodeCompartment.toString() : null);
             n.put("x", loc != null ? loc.x : 0);
             n.put("y", loc != null ? loc.y : 0);
         }
@@ -425,6 +429,43 @@ public final class JIPipeAutomationAPI {
     }
 
     // ── Helpers ──
+
+    /**
+     * Resolves a compartment reference against the project's registered compartments.
+     * Resolution order: (a) a well-formed UUID string that matches a registered
+     * compartment, (b) the alias lookup of {@link JIPipeProject#findCompartment(String)},
+     * (c) the first compartment whose display name equals the reference (case-sensitive).
+     * Returns null for a null or blank reference. A well-formed UUID that matches no
+     * compartment returns null (no alias or name fallback for UUID input).
+     *
+     * @param project the project (may be null, then null is returned)
+     * @param ref     the compartment UUID, alias, or display name (may be null/blank)
+     * @return the compartment or null if the reference could not be resolved
+     */
+    public static JIPipeProjectCompartment findCompartment(JIPipeProject project, String ref) {
+        if (project == null || ref == null || ref.isBlank()) {
+            return null;
+        }
+        UUID uuid = null;
+        try {
+            uuid = UUID.fromString(ref);
+        } catch (IllegalArgumentException ignored) {
+            // Not a UUID: resolve via alias and display name below
+        }
+        if (uuid != null) {
+            return project.getCompartments().get(uuid);
+        }
+        JIPipeProjectCompartment resolved = project.findCompartment(ref);
+        if (resolved != null) {
+            return resolved;
+        }
+        for (var entry : project.getCompartments().entrySet()) {
+            if (entry.getValue().getName() != null && entry.getValue().getName().equals(ref)) {
+                return entry.getValue();
+            }
+        }
+        return null;
+    }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     private static Object convertParameterValue(String value, Class<?> fieldClass) {
