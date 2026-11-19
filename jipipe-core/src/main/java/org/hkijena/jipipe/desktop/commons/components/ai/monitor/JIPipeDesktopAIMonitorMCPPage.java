@@ -21,13 +21,16 @@ import org.hkijena.jipipe.desktop.app.automation.JIPipeDesktopMCPIntegration;
 import org.hkijena.jipipe.desktop.app.automation.MCPStatusEvent;
 import org.hkijena.jipipe.desktop.app.automation.MCPStatusEventListener;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
+import org.hkijena.jipipe.desktop.commons.dialogs.Button;
 import org.hkijena.jipipe.desktop.commons.dialogs.JIPipeDesktopDialogs;
+import org.hkijena.jipipe.plugins.ai.AIApplicationSettings;
 import org.hkijena.jipipe.plugins.automation.settings.MCPApplicationSettings;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
+import java.util.Optional;
 /**
  * MCP page of the AI monitor window: the layer status rows, the lifecycle controls
  * (start/stop through the launcher-installed lifecycle hooks), the broker server URL
@@ -53,6 +56,12 @@ public class JIPipeDesktopAIMonitorMCPPage extends JIPipeDesktopAIMonitorPage im
 
     private static final String TOKEN_FIELD_CARD = "field";
     private static final String TOKEN_NOTE_CARD = "note";
+
+    /**
+     * The confirmation button that enables MCP in the application settings and starts
+     * the layer (the default button of the disabled-start dialogue).
+     */
+    private static final Button ENABLE_AND_START = Button.custom("Enable and start");
 
     /**
      * The echo character of the password-style token field (the masked display).
@@ -213,11 +222,42 @@ public class JIPipeDesktopAIMonitorMCPPage extends JIPipeDesktopAIMonitorPage im
         return row;
     }
 
+    /**
+     * The start control: starts the layer through the lifecycle hooks. The start request
+     * is only swallowed silently by the settings when the layer never started (state
+     * off) and "Enable MCP" is disabled while the AI feature is on: in that state a
+     * confirmation offers to enable MCP and start it now. The confirmed write goes
+     * through the parameter access (not the setter), so the parameter change event
+     * starts the layer via the lifecycle owner's subscriber: exactly the one start path
+     * the settings checkbox uses, and the checkbox flips consistently. Every other
+     * state (no hooks, AI feature off, paused or running layer, MCP already enabled)
+     * keeps the previous behavior.
+     */
     private void startMcp() {
         JIPipeDesktopMCPIntegration.LifecycleHooks hooks = JIPipeDesktopMCPIntegration.getLifecycleHooks();
-        if (hooks != null) {
-            hooks.startMcpAsync();
+        if (hooks == null) {
+            return;
         }
+        MCPApplicationSettings settings = MCPApplicationSettings.getInstance();
+        JIPipeDesktopMCPIntegration.StatusSnapshot snapshot = JIPipeDesktopMCPIntegration.currentSnapshot();
+        boolean settingsWouldSwallowStart = settings != null
+                && snapshot.state() == JIPipeDesktopMCPIntegration.LayerState.Off
+                && AIApplicationSettings.getInstance().isEnableAI()
+                && !settings.isEnable();
+        if (settingsWouldSwallowStart) {
+            // asDefault() returns a copy; keep that instance for the identity
+            // comparison (the chrome records the exact instance).
+            Button enableAndStart = ENABLE_AND_START.asDefault();
+            Optional<Button> choice = JIPipeDesktopDialogs.choose(this, "MCP is disabled",
+                    "MCP is currently disabled in the application settings. Enable MCP and start it now?",
+                    enableAndStart, Button.CANCEL);
+            if (choice.filter(button -> button == enableAndStart).isEmpty()) {
+                return;
+            }
+            settings.setParameter("enable", true);
+            return;
+        }
+        hooks.startMcpAsync();
     }
 
     private void stopMcp() {
