@@ -63,6 +63,10 @@ public class ProjectMetadataOperationsTest {
         return new ModificationOperations.SetProjectMetadata().execute(createContext(project), params);
     }
 
+    private static JsonNode checkFair(JIPipeProject project) {
+        return new InfoOperations.CheckFair().execute(createContext(project), mapper.createObjectNode());
+    }
+
     private static ObjectNode authorParam(String firstName, String lastName) {
         ObjectNode entry = mapper.createObjectNode();
         entry.put("firstName", firstName);
@@ -293,5 +297,105 @@ public class ProjectMetadataOperationsTest {
         JsonNode info = getInfo(project);
         assertEquals("Renamed project", info.get("name").asText());
         assertEquals("A new description", info.get("metadata").get("description").asText());
+    }
+
+    @Test
+    void checkFair_freshProjectMissingAllThree() {
+        JIPipeProject project = new JIPipeProject();
+
+        JsonNode result = checkFair(project);
+
+        assertFalse(result.get("fair").asBoolean());
+        assertTrue(result.get("missing").isArray(), "missing must be an array, never an omitted key");
+        assertEquals(3, result.get("missing").size());
+
+        // The checker strings pass through verbatim; the prefixes are pinned so a
+        // rewording in the checker fails here and not in dependent agents
+        assertTrue(result.get("missing").get(0).asText().startsWith("License -"),
+                "got: " + result.get("missing").get(0).asText());
+        assertTrue(result.get("missing").get(1).asText().startsWith("Summary -"),
+                "got: " + result.get("missing").get(1).asText());
+        assertTrue(result.get("missing").get(2).asText().startsWith("Authors -"),
+                "got: " + result.get("missing").get(2).asText());
+
+        // The exact known string for the license item
+        assertEquals("License - no license is set on the project metadata.",
+                result.get("missing").get(0).asText());
+    }
+
+    @Test
+    void checkFair_completeProjectIsFair() {
+        JIPipeProject project = new JIPipeProject();
+        ObjectNode params = mapper.createObjectNode();
+        params.put("license", "MIT");
+        params.put("summary", "A short summary");
+        params.set("authors", arrayNode(authorParam("A", "One")));
+        setMetadata(project, params);
+
+        JsonNode result = checkFair(project);
+
+        assertTrue(result.get("fair").asBoolean());
+        assertEquals(0, result.get("missing").size());
+    }
+
+    @Test
+    void checkFair_eachFieldFlipsItsItem() {
+        JIPipeProject project = new JIPipeProject();
+        ObjectNode complete = mapper.createObjectNode();
+        complete.put("license", "MIT");
+        complete.put("summary", "A short summary");
+        complete.set("authors", arrayNode(authorParam("A", "One")));
+        setMetadata(project, complete);
+
+        // Clear the license (blank string) -> only the license item is missing
+        setMetadata(project, (ObjectNode) mapper.createObjectNode().put("license", ""));
+        JsonNode result = checkFair(project);
+        assertFalse(result.get("fair").asBoolean());
+        assertEquals(1, result.get("missing").size());
+        assertTrue(result.get("missing").get(0).asText().startsWith("License -"),
+                "got: " + result.get("missing").get(0).asText());
+
+        // Restore the license, clear the summary -> only the summary item is missing
+        ObjectNode restoreLicenseClearSummary = mapper.createObjectNode();
+        restoreLicenseClearSummary.put("license", "MIT");
+        restoreLicenseClearSummary.put("summary", "");
+        setMetadata(project, restoreLicenseClearSummary);
+        result = checkFair(project);
+        assertFalse(result.get("fair").asBoolean());
+        assertEquals(1, result.get("missing").size());
+        assertTrue(result.get("missing").get(0).asText().startsWith("Summary -"),
+                "got: " + result.get("missing").get(0).asText());
+
+        // Restore the summary, remove the author (authors: []) -> only the authors item is missing
+        ObjectNode restoreSummaryRemoveAuthor = mapper.createObjectNode();
+        restoreSummaryRemoveAuthor.put("summary", "A short summary");
+        restoreSummaryRemoveAuthor.putArray("authors");
+        setMetadata(project, restoreSummaryRemoveAuthor);
+        result = checkFair(project);
+        assertFalse(result.get("fair").asBoolean());
+        assertEquals(1, result.get("missing").size());
+        assertTrue(result.get("missing").get(0).asText().startsWith("Authors -"),
+                "got: " + result.get("missing").get(0).asText());
+    }
+
+    @Test
+    void checkFair_blankStringsCountAsMissing() {
+        JIPipeProject project = new JIPipeProject();
+        ObjectNode params = mapper.createObjectNode();
+        params.put("license", "   ");
+        params.put("summary", "   ");
+        params.set("authors", arrayNode(authorParam("A", "One")));
+        setMetadata(project, params);
+
+        // set_project_metadata stores blank values as-is (no defaults); the FAIR
+        // report must still flag them as missing (the checker trims)
+        JsonNode result = checkFair(project);
+
+        assertFalse(result.get("fair").asBoolean());
+        assertEquals(2, result.get("missing").size());
+        assertTrue(result.get("missing").get(0).asText().startsWith("License -"),
+                "got: " + result.get("missing").get(0).asText());
+        assertTrue(result.get("missing").get(1).asText().startsWith("Summary -"),
+                "got: " + result.get("missing").get(1).asText());
     }
 }

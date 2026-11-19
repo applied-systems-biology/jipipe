@@ -30,7 +30,8 @@ public class ROCrateOperations {
 
         @Override
         public String getDescription() {
-            return "Create a Workflow RO-Crate from the currently selected project";
+            return "Create a Workflow RO-Crate from the currently selected project. "
+                    + "Metadata completeness is the pre-save check (check_fair); the crate's own compliance list remains the post-save check.";
         }
 
         @Override
