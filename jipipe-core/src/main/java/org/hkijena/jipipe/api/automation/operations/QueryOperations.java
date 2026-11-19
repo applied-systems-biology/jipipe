@@ -8,6 +8,9 @@ import org.hkijena.jipipe.api.automation.JIPipeAutomationAPI;
 import org.hkijena.jipipe.api.automation.AutomationContext;
 import org.hkijena.jipipe.api.automation.AutomationOperation;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Built-in query operations for the automation layer.
  * Each operation wraps a {@link JIPipeAutomationAPI} method.
@@ -65,7 +68,10 @@ public class QueryOperations {
                     {
                       "type": "object",
                       "properties": {
-                        "compartment-id": {"type": "string", "description": "Limit the result to this compartment (UUID or alias); omit to return nodes and connections of all compartments"}
+                        "compartment-id": {"type": "string", "description": "Limit the result to this compartment (UUID or alias); omit to return nodes and connections of all compartments"},
+                        "fields": {"type": "array", "description": "Whitelist of fields to include in each node object (they are emitted in the canonical order regardless of the request order); omit to include all fields", "items": {"type": "string", "enum": ["id", "name", "typeId", "compartmentId", "uuid", "x", "y"]}},
+                        "omit-positions": {"type": "boolean", "description": "Drop the x and y fields from node objects, even when listed in fields"},
+                        "connections-only": {"type": "boolean", "description": "Return only the connections: the nodes array is empty"}
                       },
                       "additionalProperties": false
                     }""");
@@ -84,8 +90,22 @@ public class QueryOperations {
         @Override
         public JsonNode execute(AutomationContext ctx, JsonNode params) {
             String compartment = params.has("compartment-id") ? params.get("compartment-id").asText() : null;
+            List<String> fields = null;
+            if (params.has("fields")) {
+                fields = new ArrayList<>();
+                for (JsonNode field : params.get("fields")) {
+                    String name = field.asText();
+                    if (!JIPipeAutomationAPI.QUERY_GRAPH_NODE_FIELDS.contains(name)) {
+                        return mapper.createObjectNode().put("error", "Unknown field '" + name
+                                + "'. Valid fields: " + String.join(", ", JIPipeAutomationAPI.QUERY_GRAPH_NODE_FIELDS));
+                    }
+                    fields.add(name);
+                }
+            }
+            boolean omitPositions = params.path("omit-positions").asBoolean(false);
+            boolean connectionsOnly = params.path("connections-only").asBoolean(false);
             try {
-                return JIPipeAutomationAPI.queryGraph(ctx, compartment);
+                return JIPipeAutomationAPI.queryGraph(ctx, compartment, fields, omitPositions, connectionsOnly);
             } catch (IllegalArgumentException e) {
                 return mapper.createObjectNode().put("error", e.getMessage() + " (see query_compartments for ids)");
             }

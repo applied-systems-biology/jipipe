@@ -57,7 +57,18 @@ public final class JIPipeAutomationAPI {
         return data;
     }
 
+    /**
+     * The canonical node fields of the query_graph response, in emission order.
+     * Shared by the API emission, the operation schema enum, and the unknown-field refusal.
+     */
+    public static final List<String> QUERY_GRAPH_NODE_FIELDS = List.of("id", "name", "typeId", "compartmentId", "uuid", "x", "y");
+
     public static JsonNode queryGraph(AutomationContext ctx, String compartmentIdStr) {
+        return queryGraph(ctx, compartmentIdStr, null, false, false);
+    }
+
+    public static JsonNode queryGraph(AutomationContext ctx, String compartmentIdStr, List<String> fields,
+                                      boolean omitPositions, boolean connectionsOnly) {
         ObjectNode data = mapper.createObjectNode();
         JIPipeProject project = ctx.getProject();
         if (project == null) {
@@ -84,20 +95,36 @@ public final class JIPipeAutomationAPI {
         }
         ArrayNode nodes = data.putArray("nodes");
         ArrayNode connections = data.putArray("connections");
-        for (JIPipeGraphNode node : graph.getGraphNodes()) {
-            UUID nodeCompartment = graph.getCompartmentUUIDOf(node);
-            if (compartmentFilter != null && !compartmentFilter.equals(nodeCompartment)) continue;
-            UUID uuid = graph.getUUIDOf(node);
-            String alias = graph.getAliasIdOf(node);
-            Point loc = node.getNodeUILocationWithin(nodeCompartment != null ? nodeCompartment.toString() : "");
-            ObjectNode n = nodes.addObject();
-            n.put("id", alias != null ? alias : (uuid != null ? uuid.toString() : "?"));
-            n.put("uuid", uuid != null ? uuid.toString() : null);
-            n.put("name", node.getName());
-            n.put("typeId", node.getInfo() != null ? node.getInfo().getId() : "?");
-            n.put("compartmentId", nodeCompartment != null ? nodeCompartment.toString() : null);
-            n.put("x", loc != null ? loc.x : 0);
-            n.put("y", loc != null ? loc.y : 0);
+        // The emitted node fields are the whitelist entries selected by the
+        // fields parameter, always in whitelist order (never the request order);
+        // omitPositions additionally removes x and y
+        Set<String> requested = fields != null ? new LinkedHashSet<>(fields) : null;
+        List<String> emittedFields = new ArrayList<>();
+        for (String field : QUERY_GRAPH_NODE_FIELDS) {
+            if (requested != null && !requested.contains(field)) continue;
+            if (omitPositions && ("x".equals(field) || "y".equals(field))) continue;
+            emittedFields.add(field);
+        }
+        if (!connectionsOnly) {
+            for (JIPipeGraphNode node : graph.getGraphNodes()) {
+                UUID nodeCompartment = graph.getCompartmentUUIDOf(node);
+                if (compartmentFilter != null && !compartmentFilter.equals(nodeCompartment)) continue;
+                UUID uuid = graph.getUUIDOf(node);
+                String alias = graph.getAliasIdOf(node);
+                Point loc = node.getNodeUILocationWithin(nodeCompartment != null ? nodeCompartment.toString() : "");
+                ObjectNode n = nodes.addObject();
+                for (String field : emittedFields) {
+                    switch (field) {
+                        case "id" -> n.put("id", alias != null ? alias : (uuid != null ? uuid.toString() : "?"));
+                        case "name" -> n.put("name", node.getName());
+                        case "typeId" -> n.put("typeId", node.getInfo() != null ? node.getInfo().getId() : "?");
+                        case "compartmentId" -> n.put("compartmentId", nodeCompartment != null ? nodeCompartment.toString() : null);
+                        case "uuid" -> n.put("uuid", uuid != null ? uuid.toString() : null);
+                        case "x" -> n.put("x", loc != null ? loc.x : 0);
+                        case "y" -> n.put("y", loc != null ? loc.y : 0);
+                    }
+                }
+            }
         }
         for (Map.Entry<JIPipeDataSlot, JIPipeDataSlot> edge : graph.getSlotEdges()) {
             JIPipeDataSlot source = edge.getKey();
