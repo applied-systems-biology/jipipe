@@ -505,7 +505,7 @@ public final class JIPipeShortcutActions {
      * Run the pipeline up to the selected node and update its cache.
      */
     public static final JIPipeShortcutAction NODE_UPDATE_CACHE =
-            JIPipeShortcutAction.builder("org.hkijena.jipipe.graph.node.update-cache", "Update cache", "Running")
+            JIPipeShortcutAction.builder("org.hkijena.jipipe.graph.node.update-cache", "Update cache", "Cache")
                     .description("Runs the pipeline up until this algorithm and caches the results. Nothing is written to disk.")
                     .defaultChord(stroke("control pressed T"), stroke("pressed U"))
                     .build();
@@ -514,7 +514,7 @@ public final class JIPipeShortcutActions {
      * including the intermediate results of the node itself.
      */
     public static final JIPipeShortcutAction NODE_CACHE_INTERMEDIATE_RESULTS =
-            JIPipeShortcutAction.builder("org.hkijena.jipipe.graph.node.cache-intermediate-results", "Cache intermediate results", "Running")
+            JIPipeShortcutAction.builder("org.hkijena.jipipe.graph.node.cache-intermediate-results", "Cache intermediate results", "Cache")
                     .description("Runs the pipeline up until this algorithm and caches the results (including intermediate results). Nothing is written to disk.")
                     .defaultChord(stroke("control pressed T"), stroke("shift pressed U"))
                     .build();
@@ -523,7 +523,7 @@ public final class JIPipeShortcutActions {
      * update its cache.
      */
     public static final JIPipeShortcutAction NODE_UPDATE_PREDECESSOR_CACHE =
-            JIPipeShortcutAction.builder("org.hkijena.jipipe.graph.node.update-predecessor-cache", "Update predecessor cache", "Running")
+            JIPipeShortcutAction.builder("org.hkijena.jipipe.graph.node.update-predecessor-cache", "Update predecessor cache", "Cache")
                     .description("Runs the pipeline up until the predecessors of the selected node. Nothing is written to disk.")
                     .defaultChord(stroke("control pressed T"), stroke("pressed B"))
                     .build();
@@ -574,10 +574,118 @@ public final class JIPipeShortcutActions {
                     .defaultChord(stroke("control shift pressed I"))
                     .build();
 
+    // ==================== Context actions: the previously id-less graph operations ====================
+    // Assigned stable ids for the MCP fire_action operation (work item
+    // #1379). These are menu-only actions: no default chords.
+
+    /**
+     * Enable automated output saving for the selected algorithms.
+     */
+    public static final JIPipeShortcutAction NODE_SAVE_OUTPUTS_ENABLE =
+            JIPipeShortcutAction.builder("org.hkijena.jipipe.graph.node.save-outputs-enable", "Enable save outputs", "Input/output")
+                    .description("Enables automated output saving of the selected algorithms")
+                    .build();
+    /**
+     * Disable automated output saving for the selected algorithms.
+     */
+    public static final JIPipeShortcutAction NODE_SAVE_OUTPUTS_DISABLE =
+            JIPipeShortcutAction.builder("org.hkijena.jipipe.graph.node.save-outputs-disable", "Disable save outputs", "Input/output")
+                    .description("Disables automated output saving of the selected algorithms")
+                    .build();
+    /**
+     * Store the output data of the selected algorithms on the hard drive.
+     */
+    public static final JIPipeShortcutAction NODE_VIRTUAL_OUTPUTS_ENABLE =
+            JIPipeShortcutAction.builder("org.hkijena.jipipe.graph.node.virtual-outputs-enable", "Enable virtual outputs", "Input/output")
+                    .description("Stores the output data of the selected algorithms on the hard drive instead of memory")
+                    .build();
+    /**
+     * Store the output data of the selected algorithms in memory.
+     */
+    public static final JIPipeShortcutAction NODE_VIRTUAL_OUTPUTS_DISABLE =
+            JIPipeShortcutAction.builder("org.hkijena.jipipe.graph.node.virtual-outputs-disable", "Disable virtual outputs", "Input/output")
+                    .description("Stores the output data of the selected algorithms in memory instead of the hard drive")
+                    .build();
+    /**
+     * Run the pipeline up to the selected algorithm and show its results,
+     * including intermediate results.
+     */
+    public static final JIPipeShortcutAction RUN_AND_SHOW_INTERMEDIATE_RESULTS =
+            JIPipeShortcutAction.builder("org.hkijena.jipipe.graph.run-and-show-intermediate-results", "Run and show intermediate results", "Running")
+                    .description("Runs the pipeline up until the selected algorithm and shows the results, including intermediate results")
+                    .build();
+    /**
+     * Invert the current selection.
+     */
+    public static final JIPipeShortcutAction NODE_INVERT_SELECTION =
+            JIPipeShortcutAction.builder("org.hkijena.jipipe.graph.node.invert-selection", "Invert selection", "Selection")
+                    .description("Inverts the selection")
+                    .build();
+    /**
+     * Add a control point into the selected edge.
+     */
+    public static final JIPipeShortcutAction NODE_ADD_EDGE_CONTROL_POINT =
+            JIPipeShortcutAction.builder("org.hkijena.jipipe.graph.node.add-edge-control-point", "Add edge control point", "Node")
+                    .description("Adds a control point into the selected edge that allows to customize its route")
+                    .build();
+    /**
+     * Move the selected nodes into a group node.
+     */
+    public static final JIPipeShortcutAction NODE_GROUP =
+            JIPipeShortcutAction.builder("org.hkijena.jipipe.graph.node.group", "Group", "Node")
+                    .description("Moves the selected nodes into a group node")
+                    .build();
+    /**
+     * Collapse the selected IO interface algorithm.
+     */
+    public static final JIPipeShortcutAction NODE_COLLAPSE_IO_INTERFACE =
+            JIPipeShortcutAction.builder("org.hkijena.jipipe.graph.node.collapse-io-interface", "Collapse IO interface", "Node")
+                    .description("Collapses the selected IO interface: deletes the algorithm, but keeps the connections that were passed through it")
+                    .build();
+    /**
+     * Export the selected compartment as a *.jipc file.
+     */
+    public static final JIPipeShortcutAction COMPARTMENT_EXPORT_JSON =
+            JIPipeShortcutAction.builder("org.hkijena.jipipe.graph.compartment.export-json", "Export compartment as JSON", "Node")
+                    .description("Exports the selected compartment as a *.jipc file that can be imported back into the compartment graph")
+                    .build();
+    /**
+     * Open the cache browser of the selected algorithm in a new window.
+     */
+    public static final JIPipeShortcutAction NODE_OPEN_CACHE_BROWSER =
+            JIPipeShortcutAction.builder("org.hkijena.jipipe.graph.node.open-cache-browser", "Open cache browser", "Cache")
+                    .description("Opens the cache browser of the selected algorithm in a new window")
+                    .build();
+    /**
+     * Clear the cache of the selected algorithms.
+     */
+    public static final JIPipeShortcutAction NODE_CLEAR_CACHE =
+            JIPipeShortcutAction.builder("org.hkijena.jipipe.graph.node.clear-cache", "Clear cache", "Cache")
+                    .description("Clears the cache of the selected node(s)")
+                    .build();
+    /**
+     * Add the selected nodes to the bookmark list.
+     */
+    public static final JIPipeShortcutAction BOOKMARK_ADD =
+            JIPipeShortcutAction.builder("org.hkijena.jipipe.graph.bookmark.add", "Add bookmark", "Navigation")
+                    .description("Adds the selected nodes to the bookmark list")
+                    .build();
+    /**
+     * Remove the selected nodes from the bookmark list.
+     */
+    public static final JIPipeShortcutAction BOOKMARK_REMOVE =
+            JIPipeShortcutAction.builder("org.hkijena.jipipe.graph.bookmark.remove", "Remove bookmark", "Navigation")
+                    .description("Removes the selected nodes from the bookmark list")
+                    .build();
+
     /**
      * Every core constant, in declaration order, as a stable array.
+     * <p>
+     * Package-private so tests in this package can iterate the catalog
+     * (e.g. the id-presence gate); production code registers through
+     * {@link #registerCore()}.
      */
-    private static final JIPipeShortcutAction[] CORE_ACTIONS = {
+    static final JIPipeShortcutAction[] CORE_ACTIONS = {
             // Graph editor tools
             TOOL_DEFAULT, TOOL_MOVE, TOOL_CONNECT, TOOL_REWIRE, TOOL_CROP_VIEW,
             // Editor
@@ -602,6 +710,12 @@ public final class JIPipeShortcutActions {
             NODE_CACHE_INTERMEDIATE_RESULTS, NODE_UPDATE_PREDECESSOR_CACHE,
             // Navigation
             NODE_MOVE_UI_LEFT, NODE_MOVE_UI_RIGHT, NODE_MOVE_UI_UP, NODE_MOVE_UI_DOWN,
+            // Previously id-less context actions (no default chords)
+            NODE_SAVE_OUTPUTS_ENABLE, NODE_SAVE_OUTPUTS_DISABLE,
+            NODE_VIRTUAL_OUTPUTS_ENABLE, NODE_VIRTUAL_OUTPUTS_DISABLE,
+            RUN_AND_SHOW_INTERMEDIATE_RESULTS, NODE_INVERT_SELECTION, NODE_ADD_EDGE_CONTROL_POINT,
+            NODE_GROUP, NODE_COLLAPSE_IO_INTERFACE, COMPARTMENT_EXPORT_JSON,
+            NODE_OPEN_CACHE_BROWSER, NODE_CLEAR_CACHE, BOOKMARK_ADD, BOOKMARK_REMOVE,
     };
 
     /**

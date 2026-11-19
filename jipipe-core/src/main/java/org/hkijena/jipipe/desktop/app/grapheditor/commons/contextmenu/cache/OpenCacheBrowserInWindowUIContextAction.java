@@ -16,6 +16,7 @@ package org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.cache;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeGraphType;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
+import org.hkijena.jipipe.api.shortcuts.JIPipeShortcutActions;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopAlgorithmCacheBrowserUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
@@ -28,6 +29,13 @@ import javax.swing.*;
 import java.util.Set;
 
 public class OpenCacheBrowserInWindowUIContextAction implements NodeUIContextAction {
+
+    /**
+     * The id of the shortcut action that triggers this context action
+     * (see {@link org.hkijena.jipipe.api.shortcuts.JIPipeShortcutActions}).
+     */
+    public static final String SHORTCUT_ACTION_ID = JIPipeShortcutActions.NODE_OPEN_CACHE_BROWSER.id();
+
     @Override
     public boolean matchesNodes(Set<JIPipeDesktopGraphNodeUI> selection) {
         return !selection.isEmpty() && selection.stream().allMatch(ui -> ui.getNode().getInfo().isRunnable() &&
@@ -70,6 +78,11 @@ public class OpenCacheBrowserInWindowUIContextAction implements NodeUIContextAct
     @Override
     public Icon getIcon() {
         return JIPipe.RESOURCES.getIcon16("actions/window-new.png");
+    }
+
+    @Override
+    public String getShortcutActionId() {
+        return SHORTCUT_ACTION_ID;
     }
 
 }

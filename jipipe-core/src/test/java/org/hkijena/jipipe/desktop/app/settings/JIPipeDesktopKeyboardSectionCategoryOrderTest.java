@@ -35,7 +35,7 @@ class JIPipeDesktopKeyboardSectionCategoryOrderTest {
     @Test
     void fixedCategoriesComeFirstThenRemainingAlphabetically() {
         // The input is in the registry's all() order: category (alpha), then
-        // name. The section must re-bucket into CATEGORY_ORDER (the ten spec
+        // name. The section must re-bucket into CATEGORY_ORDER (the spec
         // categories) and append the plugin categories alphabetically.
         List<JIPipeShortcutAction> all = List.of(
                 action("q", "Alpha extras"),          // plugin category
@@ -82,5 +82,22 @@ class JIPipeDesktopKeyboardSectionCategoryOrderTest {
         List<JIPipeShortcutAction> ordered = JIPipeDesktopKeyboardSection.categoryOrdered(all);
         List<String> actual = ordered.stream().map(JIPipeShortcutAction::name).toList();
         assertEquals(List.of("tool", "only"), actual);
+    }
+
+    @Test
+    void cacheAndNodeComeAfterRunningAndBeforeNavigation() {
+        // The run/cache/structural groups sit between the layer group and the
+        // navigation/panel groups: Cache then Node, not appended at the end.
+        List<JIPipeShortcutAction> all = List.of(
+                action("cache", "Cache"),
+                action("dock", "Dock panels"),
+                action("layers", "Layers"),
+                action("nav", "Navigation"),
+                action("node", "Node"),
+                action("run", "Running")
+        );
+        List<JIPipeShortcutAction> ordered = JIPipeDesktopKeyboardSection.categoryOrdered(all);
+        List<String> actual = ordered.stream().map(JIPipeShortcutAction::name).toList();
+        assertEquals(List.of("layers", "run", "cache", "node", "nav", "dock"), actual);
     }
 }

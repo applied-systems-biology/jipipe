@@ -313,6 +313,17 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         return inputSlotMap;
     }
 
+    /**
+     * The node's current active areas, sorted by priority (the same list the mouse
+     * listeners hit-test, whole-node area last). Returns the live list, not a copy:
+     * external consumers (the agent UI probe, which maps a point to the node's run
+     * badge, slot, or body) classify a point the way the mouse events do without
+     * duplicating the area bookkeeping. Callers must not modify the list.
+     */
+    public List<JIPipeDesktopGraphNodeUIActiveArea> getActiveAreas() {
+        return activeAreas;
+    }
+
     public Map<String, JIPipeDesktopGraphNodeUISlotActiveArea> getOutputSlotMap() {
         return outputSlotMap;
     }
