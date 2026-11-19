@@ -250,6 +250,48 @@ public class QueryOperations {
         }
     }
 
+    public static class GetParameterDiff implements AutomationOperation {
+        @Override
+        public String getId() {
+            return "get_parameter_diff";
+        }
+
+        @Override
+        public String getDescription() {
+            return "Get the changed-vs-default parameter diff of a single node: every parameter of the node is compared against a fresh instance of its node type (the same machinery the project report uses to list non-default parameters), so defaultValue mirrors a fresh node. Both sides are rendered like query_node values and compared as text; defaultValue is JSON null when the fresh instance has no such parameter. Only changed entries are returned unless include-unchanged is set; changedCount counts the changed entries";
+        }
+
+        @Override
+        public JsonNode getInputSchema() {
+            return AutomationSchemaUtils.parseJson("""
+                    {
+                      "type": "object",
+                      "required": ["node-id"],
+                      "properties": {
+                        "node-id": {"type": "string", "description": "The node id as used by query_graph (alias id or UUID)"},
+                        "include-unchanged": {"type": "boolean", "default": false, "description": "Also include parameters whose rendered value matches the fresh instance (changed false)"}
+                      },
+                      "additionalProperties": false
+                    }""");
+        }
+
+        @Override
+        public AutomationOperationCategory getCategory() {
+            return AutomationOperationCategory.Query;
+        }
+
+        @Override
+        public boolean isReadOnly() {
+            return true;
+        }
+
+        @Override
+        public JsonNode execute(AutomationContext ctx, JsonNode params) {
+            boolean includeUnchanged = params.path("include-unchanged").asBoolean(false);
+            return JIPipeAutomationAPI.getParameterDiff(ctx, params.get("node-id").asText(), includeUnchanged);
+        }
+    }
+
     public static class QueryData implements AutomationOperation {
         @Override
         public String getId() {

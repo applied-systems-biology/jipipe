@@ -219,6 +219,79 @@ public final class JIPipeAutomationAPI {
         return entry;
     }
 
+    /**
+     * Renders the changed-vs-default parameter diff of one node with the
+     * project report's own machinery (the approach of
+     * {@link JIPipeGraphNode#getTextDescription(StringBuilder)}): a fresh
+     * reference instance of the node type is created via
+     * {@code node.getInfo().newInstance()} (a new instance per call, never
+     * mutated), a {@link JIPipeParameterTree} is built over the live node and
+     * the reference, and the keys of the CURRENT tree are iterated (the
+     * report's behavior; keys that only the reference has are out of scope).
+     * Both sides are rendered through {@link #renderParameterValue}, so
+     * "changed" is the rendered "value" string differing from the rendered
+     * "defaultValue" string. The jipipe:node:name and jipipe:node:description
+     * keys are skipped (the same exclusions the report applies). The
+     * "defaultValue" of an entry is the rendered reference value, or the JSON
+     * null value when the reference tree has no such key (a present-but-null
+     * parameter renders the string "null", never JSON null). The parameters
+     * array carries the changed entries only unless includeUnchanged is true;
+     * changedCount counts the changed entries either way.
+     *
+     * @param ctx             the automation context
+     * @param nodeIdStr       the node id (alias id or UUID)
+     * @param includeUnchanged also list parameters that match the reference
+     * @return the response object with nodeId, parameters, and changedCount
+     */
+    public static JsonNode getParameterDiff(AutomationContext ctx, String nodeIdStr, boolean includeUnchanged) {
+        JIPipeProject project = ctx.getProject();
+        if (project == null) return mapper.createObjectNode().put("error", "No project loaded");
+        JIPipeGraph graph = ctx.getGraph();
+        JIPipeGraphNode node = graph.findNode(nodeIdStr);
+        if (node == null) return mapper.createObjectNode().put("error", "Node not found: " + nodeIdStr);
+        JIPipeGraphNode referenceInstance = node.getInfo().newInstance();
+        JIPipeParameterTree currentTree = new JIPipeParameterTree(node);
+        JIPipeParameterTree referenceTree = new JIPipeParameterTree(referenceInstance);
+        ObjectNode data = mapper.createObjectNode();
+        data.put("nodeId", graph.getAliasIdOf(node));
+        ArrayNode parameters = data.putArray("parameters");
+        int changedCount = 0;
+        for (String key : currentTree.getParameters().keySet()) {
+            if ("jipipe:node:name".equals(key)) {
+                continue;
+            }
+            if ("jipipe:node:description".equals(key)) {
+                continue;
+            }
+            JIPipeParameterAccess currentAccess = currentTree.getParameterAccess(key);
+            JIPipeParameterAccess referenceAccess = referenceTree.getParameterAccess(key);
+            ObjectNode currentRendered = renderParameterValue(currentAccess);
+            String value = currentRendered.get("value").asText();
+            ObjectNode entry = mapper.createObjectNode();
+            entry.put("key", key);
+            entry.put("value", value);
+            entry.put("type", currentRendered.get("type").asText());
+            boolean changed;
+            if (referenceAccess == null) {
+                entry.putNull("defaultValue");
+                changed = true;
+            } else {
+                String defaultValue = renderParameterValue(referenceAccess).get("value").asText();
+                entry.put("defaultValue", defaultValue);
+                changed = !value.equals(defaultValue);
+            }
+            entry.put("changed", changed);
+            if (changed) {
+                changedCount++;
+            }
+            if (changed || includeUnchanged) {
+                parameters.add(entry);
+            }
+        }
+        data.put("changedCount", changedCount);
+        return data;
+    }
+
     public static JsonNode queryData(AutomationContext ctx, String nodeIdStr, String slotName, int limit) {
         JIPipeProject project = ctx.getProject();
         if (project == null) return mapper.createObjectNode().put("error", "No project loaded");
