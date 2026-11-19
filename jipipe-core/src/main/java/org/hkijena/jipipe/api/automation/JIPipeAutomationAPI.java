@@ -573,7 +573,21 @@ public final class JIPipeAutomationAPI {
         ctx.getEventBus().publish(new ConnectionChangedEvent(ctx.getProjectId(), source, sourceSlot, target, targetSlot, "removed"));
     }
 
-    public static void setParameter(AutomationContext ctx, String nodeId, String key, String value) {
+    /**
+     * Sets a parameter on a node: the text value is converted to the field
+     * class of the parameter access, the access is set, and the
+     * ParameterChangedEvent is published. Returns the SAME access rendered
+     * through {@link #renderParameterValue} AFTER the set, so callers (the
+     * set_parameter operation) can verify the effective value after
+     * conversion in the same call.
+     *
+     * @param ctx    the automation context
+     * @param nodeId the node id (alias id or UUID)
+     * @param key    the parameter key as reported by query_node
+     * @param value  the new value as text
+     * @return the rendered parameter entry (value, type, raw?)
+     */
+    public static ObjectNode setParameter(AutomationContext ctx, String nodeId, String key, String value) {
         JIPipeGraph graph = ctx.getGraph();
         if (graph == null) throw new IllegalStateException("No graph available");
         JIPipeGraphNode node = graph.findNode(nodeId);
@@ -583,6 +597,7 @@ public final class JIPipeAutomationAPI {
         Object converted = convertParameterValue(value, access.getFieldClass());
         access.set(converted);
         ctx.getEventBus().publish(new ParameterChangedEvent(ctx.getProjectId(), nodeId, key, value));
+        return renderParameterValue(access);
     }
 
     public static String addCompartment(AutomationContext ctx, String name) {

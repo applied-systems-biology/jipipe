@@ -29,6 +29,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.infos.JIPipeJavaNodeInfo;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.graph.GraphDebugFunction;
+import org.hkijena.jipipe.api.parameters.JIPipeCustomTextDescriptionParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.project.JIPipeProject;
@@ -59,7 +60,10 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
  * key-derived access name and an empty description), and the changed-vs-default
  * diff of the get_parameter_diff operation, which compares every parameter of
  * a node against a fresh reference instance (the project report's own
- * machinery) and renders both sides through the same normalized seam.
+ * machinery) and renders both sides through the same normalized seam, and the
+ * read-back of the set_parameter operation, which renders the parameter from
+ * the same access after the set (the effective value after conversion, in the
+ * identical shape query_node reports for that access).
  */
 public class ParameterIntrospectionOperationsTest {
 
@@ -67,6 +71,7 @@ public class ParameterIntrospectionOperationsTest {
     private static final String TEXT_BOX_NODE_ID = "graph-annotation-text-box";
     private static final String DYNAMIC_PARAMS_NODE_ID = "annotations-to-parameters";
     private static final String NULL_VALUE_PARAM_NODE_ID = "parameter-introspection-test:null-value-parameter";
+    private static final String ENUM_PARAM_NODE_ID = "parameter-introspection-test:enum-parameter";
     private static final JIPipeMutableDependency TEST_DEPENDENCY =
             new JIPipeMutableDependency("parameter-introspection-operations-test", "1.0.0",
                     "parameter-introspection-operations-test");
@@ -77,6 +82,7 @@ public class ParameterIntrospectionOperationsTest {
     private static boolean registeredTextBoxNodeHere;
     private static boolean registeredDynamicParamsNodeHere;
     private static boolean registeredNullValueParamNodeHere;
+    private static boolean registeredEnumParamNodeHere;
 
     @BeforeAll
     static void ensureJIPipe() {
@@ -119,6 +125,16 @@ public class ParameterIntrospectionOperationsTest {
             JIPipe.getNodes().register(new JIPipeJavaNodeInfo(NULL_VALUE_PARAM_NODE_ID, NullValueParameterNode.class), TEST_DEPENDENCY);
             registeredNullValueParamNodeHere = true;
         }
+        // The enum-parameter fixture node is a test-only type: its
+        // render-mode parameter is an enum whose normalized value rendering
+        // (the text description) differs from its raw rendering (toString()),
+        // which pins the raw rule of the set_parameter read-back. It extends
+        // the comment node so the fixture inherits valid node plumbing; the
+        // id cannot collide with a real registration.
+        if (!JIPipe.getNodes().hasNodeInfoWithId(ENUM_PARAM_NODE_ID)) {
+            JIPipe.getNodes().register(new JIPipeJavaNodeInfo(ENUM_PARAM_NODE_ID, EnumParameterNode.class), TEST_DEPENDENCY);
+            registeredEnumParamNodeHere = true;
+        }
     }
 
     @AfterAll
@@ -138,6 +154,10 @@ public class ParameterIntrospectionOperationsTest {
         if (registeredNullValueParamNodeHere) {
             JIPipe.getNodes().unregister(NULL_VALUE_PARAM_NODE_ID);
             registeredNullValueParamNodeHere = false;
+        }
+        if (registeredEnumParamNodeHere) {
+            JIPipe.getNodes().unregister(ENUM_PARAM_NODE_ID);
+            registeredEnumParamNodeHere = false;
         }
     }
 
@@ -199,6 +219,8 @@ public class ParameterIntrospectionOperationsTest {
                 DYNAMIC_PARAMS_NODE_ID + " is not registered: the parameter docs tests would silently skip");
         assertTrue(hasNodeType(NULL_VALUE_PARAM_NODE_ID),
                 NULL_VALUE_PARAM_NODE_ID + " is not registered: the parameter diff tests would silently skip");
+        assertTrue(hasNodeType(ENUM_PARAM_NODE_ID),
+                ENUM_PARAM_NODE_ID + " is not registered: the set_parameter read-back tests would silently skip");
     }
 
     @Test
@@ -486,6 +508,116 @@ public class ParameterIntrospectionOperationsTest {
         JsonNode result = new QueryOperations.GetParameterDiff().execute(ctx, parameterDiffParams("nope", null));
         assertEquals("Node not found: nope", result.get("error").asText(),
                 "an unknown node yields the house error envelope: " + result);
+    }
+
+    @Test
+    void setParameter_responseCarriesEffectiveValue() {
+        assumeTrue(hasNodeType(TEXT_BOX_NODE_ID), TEXT_BOX_NODE_ID + " node type not registered - skipping");
+        var info = JIPipe.getNodes().getInfoById(TEXT_BOX_NODE_ID);
+        JIPipeProject project = new JIPipeProject();
+        JIPipeProjectCompartment compartment = project.addCompartment("Notes");
+        JIPipeGraphNode textBox = info.newInstance();
+        project.getGraph().insertNode(textBox, compartment.getProjectCompartmentUUID());
+        AutomationContext ctx = createContext(project);
+        String alias = project.getGraph().getAliasIdOf(textBox);
+
+        ObjectNode setParams = mapper.createObjectNode();
+        setParams.put("node-id", alias);
+        setParams.put("key", "text-title");
+        setParams.put("value", "Hello readback");
+        JsonNode result = new ModificationOperations.SetParameter().execute(ctx, setParams);
+
+        assertTrue(result.get("success").asBoolean(), "the set must succeed: " + result);
+        JsonNode parameter = result.get("parameter");
+        assertNotNull(parameter, "the response must carry the parameter read-back: " + result);
+        assertEquals("Hello readback", parameter.get("value").asText(),
+                "the response carries the effective value after conversion: " + result);
+        assertEquals("String", parameter.get("type").asText(),
+                "type is the field class simple name, same as query_node: " + result);
+        assertEquals(Set.of("value", "type"), fieldNames(parameter),
+                "a string set renders value and type without the raw key (the renderings agree): " + result);
+    }
+
+    @Test
+    void setParameter_responseNormalizedLikeQueryNode() {
+        assumeTrue(hasNodeType(ENUM_PARAM_NODE_ID), ENUM_PARAM_NODE_ID + " node type not registered - skipping");
+        var info = JIPipe.getNodes().getInfoById(ENUM_PARAM_NODE_ID);
+        JIPipeProject project = new JIPipeProject();
+        JIPipeProjectCompartment compartment = project.addCompartment("Notes");
+        EnumParameterNode node = (EnumParameterNode) info.newInstance();
+        project.getGraph().insertNode(node, compartment.getProjectCompartmentUUID());
+        AutomationContext ctx = createContext(project);
+        String alias = project.getGraph().getAliasIdOf(node);
+
+        ObjectNode setParams = mapper.createObjectNode();
+        setParams.put("node-id", alias);
+        setParams.put("key", "render-mode");
+        setParams.put("value", "fancy");
+        JsonNode result = new ModificationOperations.SetParameter().execute(ctx, setParams);
+
+        assertTrue(result.get("success").asBoolean(), "the set must succeed: " + result);
+        JsonNode parameter = result.get("parameter");
+        assertNotNull(parameter, "the response must carry the parameter read-back: " + result);
+        assertEquals("fancy", parameter.get("value").asText(),
+                "the enum parameter set by name renders its normalized value: " + result);
+        assertEquals("FANCY", parameter.get("raw").asText(),
+                "raw appears exactly when the renderings differ and carries the plain toString() form: " + result);
+        assertEquals(Set.of("value", "type", "raw"), fieldNames(parameter),
+                "the entry carries exactly the normalized value keys: " + result);
+
+        JsonNode viaQueryNode = new QueryOperations.QueryNode().execute(ctx, queryNodeParams(alias, null));
+        assertEquals(viaQueryNode.get("parameters").get("render-mode"), parameter,
+                "the read-back is identical to what query_node returns for the same access: " + result);
+    }
+
+    /**
+     * Test-only node type whose render-mode parameter is an enum that
+     * renders its normalized value differently from its raw form: setting by
+     * name stores the FANCY constant, whose normalized value rendering is
+     * "fancy" (the text description) while the raw rendering is "FANCY" (the
+     * plain toString()), which pins the raw rule of the read-back (raw
+     * appears exactly when the renderings differ, the same rule query_node
+     * applies). It extends the comment node so the fixture inherits valid
+     * node plumbing and needs no additional setup.
+     */
+    @ConfigureJIPipeNode(function = GraphDebugFunction.class)
+    public static class EnumParameterNode extends JIPipeCommentNode {
+
+        private RenderMode renderMode = RenderMode.PLAIN;
+
+        public EnumParameterNode(JIPipeNodeInfo info) {
+            super(info);
+        }
+
+        public EnumParameterNode(EnumParameterNode other) {
+            super(other);
+            this.renderMode = other.renderMode;
+        }
+
+        @JIPipeParameter("render-mode")
+        public RenderMode getRenderMode() {
+            return renderMode;
+        }
+
+        @JIPipeParameter("render-mode")
+        public void setRenderMode(RenderMode renderMode) {
+            this.renderMode = renderMode;
+        }
+
+        /**
+         * Test-only enum whose normalized value rendering (the text
+         * description, "fancy") differs from the raw rendering (the plain
+         * toString(), "FANCY"), which lets the read-back test pin the raw
+         * rule.
+         */
+        private enum RenderMode implements JIPipeCustomTextDescriptionParameter {
+            PLAIN, FANCY;
+
+            @Override
+            public String getTextDescription() {
+                return name().toLowerCase();
+            }
+        }
     }
 
     /**
