@@ -307,8 +307,12 @@ public final class JIPipeAutomationAPI {
         if (compartment != null) {
             compartmentFilter = requireCompartment(project, compartment).getProjectCompartmentUUID();
         }
+        // Both matching sides are folded once: the filter values and each node
+        // label (the searchNodes convention)
         String nameFilter = normalizeFilter(query);
+        if (nameFilter != null) nameFilter = nameFilter.toLowerCase();
         String typeIdFilter = normalizeFilter(typeId);
+        if (typeIdFilter != null) typeIdFilter = typeIdFilter.toLowerCase();
         int total = 0;
         for (JIPipeGraphNode node : graph.getGraphNodes()) {
             UUID nodeCompartment = graph.getCompartmentUUIDOf(node);

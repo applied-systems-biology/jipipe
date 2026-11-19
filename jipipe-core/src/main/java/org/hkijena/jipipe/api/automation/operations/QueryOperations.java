@@ -132,7 +132,7 @@ public class QueryOperations {
                         "query": {"type": "string", "description": "Matched case-insensitively as a substring of the node name; omit or leave blank to match all node names"},
                         "type-id": {"type": "string", "description": "Matched case-insensitively as a substring of the registered node type id; omit or leave blank to match all node types"},
                         "compartment": {"type": "string", "description": "Limit the search to this compartment (UUID or alias); omit or leave blank to search all compartments"},
-                        "limit": {"type": "integer", "description": "Maximum number of matches to return (default 50)"}
+                        "limit": {"type": "integer", "minimum": 0, "description": "Maximum number of matches to return (default 50)"}
                       },
                       "additionalProperties": false
                     }""");

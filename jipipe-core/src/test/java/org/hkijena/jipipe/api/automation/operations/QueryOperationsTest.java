@@ -590,6 +590,14 @@ public class QueryOperationsTest {
         JsonNode filterMatch = new QueryOperations.FindNodes().execute(ctx, findNodesParams("filter", null, null, null));
         assertEquals(1, filterMatch.get("matches").size());
         assertEquals("Filter", filterMatch.get("matches").get(0).get("name").asText());
+
+        // The reverse direction: uppercase queries must match too (both sides folded)
+        JsonNode upperQueryMatch = new QueryOperations.FindNodes().execute(ctx, findNodesParams("CSV", null, null, null));
+        assertEquals(1, upperQueryMatch.get("matches").size(), "an uppercase query must match case-insensitively");
+        assertEquals("Input CSV", upperQueryMatch.get("matches").get(0).get("name").asText());
+
+        JsonNode upperTypeIdMatch = new QueryOperations.FindNodes().execute(ctx, findNodesParams(null, "COMMENT", null, null));
+        assertEquals(2, upperTypeIdMatch.get("matches").size(), "an uppercase type-id must match case-insensitively");
     }
 
     @Test
