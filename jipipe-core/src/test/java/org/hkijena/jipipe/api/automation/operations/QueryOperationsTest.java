@@ -23,18 +23,28 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.automation.AutomationContext;
 import org.hkijena.jipipe.api.automation.InstrumentationEventBus;
 import org.hkijena.jipipe.api.automation.InstrumentationJobManager;
+import org.hkijena.jipipe.api.automation.JIPipeAutomationAPI;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.annotation.JIPipeGraphCanvasNote;
 import org.hkijena.jipipe.api.nodes.infos.JIPipeJavaNodeInfo;
+import org.hkijena.jipipe.api.parameters.JIPipeCustomTextDescriptionParameter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.plugins.canvasnotes.nodes.TextBoxGraphCanvasNote;
 import org.hkijena.jipipe.plugins.core.nodes.JIPipeCommentNode;
+import org.hkijena.jipipe.plugins.expressions.DataExportExpressionParameter;
+import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
+import org.hkijena.jipipe.utils.json.JIPipePathMetadataStore;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.lang.annotation.Annotation;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -60,6 +70,9 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
  * Also tests the find_nodes operation: case-insensitive name and node type id
  * substring filters, compartment restriction with the fail-loud error, limit
  * with totalCount, and the no-filter default that matches every node.
+ * Also tests the normalized query_node parameter values: the
+ * renderParameterValue contract (effective text description, type, raw only
+ * when it differs, null, and a throwing renderer) and the node-level wiring.
  */
 public class QueryOperationsTest {
 
@@ -188,6 +201,12 @@ public class QueryOperationsTest {
         }
         params.put("omit-positions", omitPositions);
         params.put("connections-only", connectionsOnly);
+        return params;
+    }
+
+    private static ObjectNode queryNodeParams(String nodeId) {
+        ObjectNode params = mapper.createObjectNode();
+        params.put("node-id", nodeId);
         return params;
     }
 
@@ -697,5 +716,204 @@ public class QueryOperationsTest {
         assertTrue(error.contains("Compartment not found: 'Nope'."), error);
         assertTrue(error.contains("Preprocessing") && error.contains("Analysis"), error);
         assertTrue(error.endsWith("(see query_compartments for ids)"), error);
+    }
+
+    @Test
+    void queryNode_parametersUseTheRenderer() {
+        assumeTrue(hasNodeType(COMMENT_NODE_ID), COMMENT_NODE_ID + " node type not registered - skipping");
+        var info = JIPipe.getNodes().getInfoById(COMMENT_NODE_ID);
+        JIPipeProject project = new JIPipeProject();
+        JIPipeProjectCompartment compartment = project.addCompartment("Notes");
+        JIPipeGraphNode comment = info.newInstance();
+        project.getGraph().insertNode(comment, compartment.getProjectCompartmentUUID());
+        AutomationContext ctx = createContext(project);
+
+        JsonNode result = new QueryOperations.QueryNode().execute(ctx,
+                queryNodeParams(project.getGraph().getAliasIdOf(comment)));
+
+        JsonNode parameters = result.get("parameters");
+        JsonNode backgroundColor = parameters.get("background-color");
+        assertTrue(backgroundColor.isObject(),
+                "parameter entries must be normalized objects, not flat strings: " + backgroundColor);
+        assertEquals(Set.of("value", "type"), fieldNames(backgroundColor),
+                "both renderings of a Color agree, so there is no raw key: " + backgroundColor);
+        assertEquals("Color", backgroundColor.get("type").asText());
+        assertEquals(String.valueOf(((JIPipeCommentNode) comment).getBackgroundColor()),
+                backgroundColor.get("value").asText());
+        for (String key : fieldNames(parameters)) {
+            assertFalse(key.startsWith("jipipe:") || key.startsWith("jipipe-ui:"),
+                    "jipipe-prefixed keys must stay excluded, but '" + key + "' was emitted");
+        }
+    }
+
+    /**
+     * Minimal canned parameter access for the renderer-seam tests: the key,
+     * value, and field class are fixed, everything else is inert.
+     */
+    private static final class CannedParameterAccess implements JIPipeParameterAccess {
+        private final String key;
+        private final Object value;
+        private final Class<?> fieldClass;
+
+        private CannedParameterAccess(String key, Object value, Class<?> fieldClass) {
+            this.key = key;
+            this.value = value;
+            this.fieldClass = fieldClass;
+        }
+
+        @Override
+        public String getKey() {
+            return key;
+        }
+
+        @Override
+        public String getName() {
+            return key;
+        }
+
+        @Override
+        public String getDescription() {
+            return "";
+        }
+
+        @Override
+        public boolean isHidden() {
+            return false;
+        }
+
+        @Override
+        public boolean isImportant() {
+            return false;
+        }
+
+        @Override
+        public <T extends Annotation> T getAnnotationOfType(Class<T> klass) {
+            return null;
+        }
+
+        @Override
+        public Collection<Annotation> getAnnotations() {
+            return Collections.emptyList();
+        }
+
+        @Override
+        public Class<?> getFieldClass() {
+            return fieldClass;
+        }
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public <T> T get(Class<T> klass) {
+            return (T) value;
+        }
+
+        @Override
+        public <T> boolean set(T value) {
+            return false;
+        }
+
+        @Override
+        public JIPipeParameterCollection getSource() {
+            return null;
+        }
+
+        @Override
+        public double getPriority() {
+            return 0;
+        }
+
+        @Override
+        public String getShortKey() {
+            return key;
+        }
+
+        @Override
+        public int getUIOrder() {
+            return 0;
+        }
+
+        @Override
+        public JIPipePathMetadataStore getMetadata() {
+            return null;
+        }
+    }
+
+    /**
+     * A parameter value whose text description always fails (pins Review Focus 5).
+     */
+    private static final class ThrowingTextDescription implements JIPipeCustomTextDescriptionParameter {
+        @Override
+        public String getTextDescription() {
+            throw new IllegalStateException("boom");
+        }
+    }
+
+    @Test
+    void renderParameterValue_stringHasNoRaw() {
+        ObjectNode rendered = JIPipeAutomationAPI.renderParameterValue(
+                new CannedParameterAccess("my-string", "hello", String.class));
+        assertEquals(Set.of("value", "type"), fieldNames(rendered));
+        assertEquals("hello", rendered.get("value").asText());
+        assertEquals("String", rendered.get("type").asText());
+    }
+
+    @Test
+    void renderParameterValue_expressionIsBare() {
+        ObjectNode rendered = JIPipeAutomationAPI.renderParameterValue(new CannedParameterAccess(
+                "expression", new JIPipeExpressionParameter("foo(bar)"), JIPipeExpressionParameter.class));
+        assertEquals(Set.of("value", "type", "raw"), fieldNames(rendered));
+        assertEquals("foo(bar)", rendered.get("value").asText(),
+                "the text description must not carry the 'Expression: ' prefix");
+        assertEquals("Expression: foo(bar)", rendered.get("raw").asText(), "raw carries the plain toString() form");
+        assertEquals("JIPipeExpressionParameter", rendered.get("type").asText());
+    }
+
+    @Test
+    void renderParameterValue_dataExportWrapperIsBare() {
+        ObjectNode rendered = JIPipeAutomationAPI.renderParameterValue(new CannedParameterAccess(
+                "export-path", new DataExportExpressionParameter("PATH_COMBINE(data_dir, \"x\")"),
+                DataExportExpressionParameter.class));
+        assertEquals(Set.of("value", "type", "raw"), fieldNames(rendered));
+        assertEquals("PATH_COMBINE(data_dir, \"x\")", rendered.get("value").asText());
+        assertEquals("Expression: PATH_COMBINE(data_dir, \"x\")", rendered.get("raw").asText());
+        assertEquals("DataExportExpressionParameter", rendered.get("type").asText());
+    }
+
+    @Test
+    void renderParameterValue_rawOnlyWhenDifferent() {
+        // Absence: both renderings of a plain String agree
+        ObjectNode stringRendered = JIPipeAutomationAPI.renderParameterValue(
+                new CannedParameterAccess("my-string", "hello", String.class));
+        assertFalse(stringRendered.has("raw"), "raw must be absent when both renderings agree: " + stringRendered);
+        // Presence: raw carries the plain toString() form
+        ObjectNode expressionRendered = JIPipeAutomationAPI.renderParameterValue(new CannedParameterAccess(
+                "expression", new JIPipeExpressionParameter("foo(bar)"), JIPipeExpressionParameter.class));
+        assertEquals("Expression: foo(bar)", expressionRendered.get("raw").asText());
+    }
+
+    @Test
+    void renderParameterValue_throwingRendererDoesNotFail() {
+        ObjectNode rendered = JIPipeAutomationAPI.renderParameterValue(new CannedParameterAccess(
+                "broken", new ThrowingTextDescription(), ThrowingTextDescription.class));
+        assertEquals(Set.of("value", "type"), fieldNames(rendered));
+        assertTrue(rendered.get("value").asText().startsWith("error rendering value:"),
+                "a failing rendering must yield the error placeholder: " + rendered);
+        assertFalse(rendered.has("raw"), "the error case must not emit a raw key: " + rendered);
+        assertEquals("ThrowingTextDescription", rendered.get("type").asText());
+        // A healthy entry rendered after the failure still renders normally
+        ObjectNode healthy = JIPipeAutomationAPI.renderParameterValue(
+                new CannedParameterAccess("my-string", "hello", String.class));
+        assertEquals("hello", healthy.get("value").asText());
+        assertFalse(healthy.has("raw"));
+    }
+
+    @Test
+    void renderParameterValue_nullValue() {
+        ObjectNode rendered = JIPipeAutomationAPI.renderParameterValue(
+                new CannedParameterAccess("empty", null, String.class));
+        assertEquals(Set.of("value", "type"), fieldNames(rendered));
+        assertEquals("null", rendered.get("value").asText(), "a null value renders the literal string 'null'");
+        assertFalse(rendered.has("raw"));
+        assertEquals("String", rendered.get("type").asText());
     }
 }

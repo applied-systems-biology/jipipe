@@ -216,7 +216,7 @@ public class QueryOperations {
 
         @Override
         public String getDescription() {
-            return "Get detailed info for a single node including parameters and slots";
+            return "Get detailed info for a single node including parameters and slots. Parameter values are normalized objects {value, type, raw?}: value is the effective readable string (expressions without the 'Expression: ' prefix), raw is the plain toString when it differs";
         }
 
         @Override

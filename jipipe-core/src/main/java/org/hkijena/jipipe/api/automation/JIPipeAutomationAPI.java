@@ -16,6 +16,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.annotation.JIPipeGraphCanvasNote;
+import org.hkijena.jipipe.api.parameters.JIPipeCustomTextDescriptionParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.project.JIPipeProject;
@@ -139,8 +140,7 @@ public final class JIPipeAutomationAPI {
         for (JIPipeParameterAccess access : JIPipeParameterTree.getParameters(node).values()) {
             String key = access.getKey();
             if (key == null || key.startsWith("jipipe:") || key.startsWith("jipipe-ui:")) continue;
-            Object value = access.get(Object.class);
-            params.put(key, value != null ? value.toString() : "null");
+            params.set(key, renderParameterValue(access));
         }
         ArrayNode inputSlots = data.putArray("inputSlots");
         for (JIPipeDataSlot slot : node.getInputSlots()) {
@@ -155,6 +155,43 @@ public final class JIPipeAutomationAPI {
             s.put("dataType", JIPipeData.getNameOf(slot.getAcceptedDataType()));
         }
         return data;
+    }
+
+    /**
+     * Renders one parameter of the query_node response as the normalized
+     * object {"value", "type", "raw"?}: "value" is the effective readable
+     * string (the text description when the value implements
+     * {@link JIPipeCustomTextDescriptionParameter}, e.g. expressions without
+     * the "Expression: " prefix, the plain toString() otherwise, the literal
+     * string "null" for a null value), "type" is the field class simple name
+     * ("?" when absent), and "raw" is the plain toString() form, present only
+     * when it differs from "value". A RuntimeException from either rendering
+     * path yields value = "error rendering value: <exception simple name>" and
+     * no raw key.
+     *
+     * @param access the parameter access
+     * @return the rendered parameter object
+     */
+    public static ObjectNode renderParameterValue(JIPipeParameterAccess access) {
+        Object value = access.get(Object.class);
+        String valueText = null;
+        String rawText = null;
+        String errorText = null;
+        try {
+            valueText = value instanceof JIPipeCustomTextDescriptionParameter
+                    ? JIPipeCustomTextDescriptionParameter.getTextDescriptionOf(value)
+                    : String.valueOf(value);
+            rawText = String.valueOf(value);
+        } catch (RuntimeException e) {
+            errorText = "error rendering value: " + e.getClass().getSimpleName();
+        }
+        ObjectNode entry = mapper.createObjectNode();
+        entry.put("value", errorText != null ? errorText : valueText);
+        entry.put("type", access.getFieldClass() != null ? access.getFieldClass().getSimpleName() : "?");
+        if (errorText == null && !rawText.equals(valueText)) {
+            entry.put("raw", rawText);
+        }
+        return entry;
     }
 
     public static JsonNode queryData(AutomationContext ctx, String nodeIdStr, String slotName, int limit) {
