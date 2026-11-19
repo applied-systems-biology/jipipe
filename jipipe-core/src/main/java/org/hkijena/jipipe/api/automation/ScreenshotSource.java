@@ -63,6 +63,37 @@ public interface ScreenshotSource {
     BufferedImage renderMinimap(String compartmentKey, double scale);
 
     /**
+     * Renders the FULL graph of a compartment's graph canvas off-screen at natural zoom (1.0):
+     * full-fidelity node rendering with the same painter as the on-screen canvas, independent
+     * of the user's current zoom and scroll. The implementation remembers the current zoom,
+     * sets 1.0 (skipped when already 1.0), forces the layout/paint cycle for auto-opened tabs,
+     * renders, and restores the old zoom in {@code finally} before closing an auto-opened
+     * editor tab - all within one EDT run so nothing is painted in between.
+     * <p>
+     * E2E ruling 2026-11-16: same editor-on-demand contract as {@link #renderCanvas}: when the
+     * compartment has no open editor tab, the implementation opens the compartment's pipeline
+     * editor on demand (without switching tabs), renders from the now-live editor, and closes
+     * the editor tab afterwards if it opened it; an editor that was already open stays open.
+     *
+     * @param compartmentKey the compartment key (UUID string as resolved by the operation)
+     * @param scale          render scale (1 = native size)
+     * @return the rendered canvas, or null if the compartment has no canvas in this window
+     */
+    BufferedImage renderFullCanvas(String compartmentKey, double scale);
+
+    /**
+     * Renders the FULL graph of a compartment's graph canvas as an SVG element string at
+     * natural zoom (1.0): the SVG element (via {@code SVGGraphics2D.getSVGElement()}) of a
+     * full-fidelity render with the same painter as the on-screen canvas, independent of the
+     * user's current zoom and scroll. The zoom normalize/restore bracket and the
+     * editor-on-demand contract are the same as in {@link #renderFullCanvas(String, double)}.
+     *
+     * @param compartmentKey the compartment key (UUID string as resolved by the operation)
+     * @return the SVG element string, or null if the compartment has no canvas in this window
+     */
+    String renderFullCanvasSvg(String compartmentKey);
+
+    /**
      * Returns the live component of a named UI surface (curated catalog implemented by the
      * desktop wiring), or null if the surface is unknown or not available. Whether the
      * returned component is already visible (captured via ScreenImage) or never shown

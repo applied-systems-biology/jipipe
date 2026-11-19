@@ -45,6 +45,7 @@ import org.hkijena.jipipe.desktop.utils.FakeTitlebarPainter;
 import org.hkijena.jipipe.plugins.automation.settings.MCPApplicationSettings;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.ui.ScreenImage;
+import org.hkijena.jipipe.utils.ui.ScreenImageSVG;
 
 import javax.swing.*;
 import java.awt.Color;
@@ -994,6 +995,69 @@ public final class JIPipeDesktopMCPIntegration implements AutomationEndpointHand
                     graphics.dispose();
                 }
                 return image;
+            } finally {
+                closeAutoOpenedCanvas(opened);
+            }
+        });
+    }
+
+    @Override
+    public BufferedImage renderFullCanvas(String compartmentKey, double scale) {
+        return callOnEdt(() -> {
+            AutoOpenedCanvas opened = findOrOpenCanvas(compartmentKey);
+            if (opened == null) {
+                return null;
+            }
+            try {
+                JIPipeDesktopGraphCanvasUI canvas = opened.canvas();
+                double oldZoom = canvas.getZoom();
+                if (oldZoom != 1.0) {
+                    canvas.setZoom(1.0);
+                }
+                try {
+                    if (opened.tab() != null) {
+                        // Auto-opened tab: run the pending layout and paint cycle now, or the
+                        // capture below renders a blank image (same hazard as renderCanvas).
+                        forceLayoutAndPaintCycle(canvas);
+                    }
+                    return renderComponentScaled(canvas, scale);
+                } finally {
+                    if (oldZoom != 1.0) {
+                        canvas.setZoom(oldZoom);
+                    }
+                }
+            } finally {
+                closeAutoOpenedCanvas(opened);
+            }
+        });
+    }
+
+    @Override
+    public String renderFullCanvasSvg(String compartmentKey) {
+        return callOnEdt(() -> {
+            AutoOpenedCanvas opened = findOrOpenCanvas(compartmentKey);
+            if (opened == null) {
+                return null;
+            }
+            try {
+                JIPipeDesktopGraphCanvasUI canvas = opened.canvas();
+                double oldZoom = canvas.getZoom();
+                if (oldZoom != 1.0) {
+                    canvas.setZoom(1.0);
+                }
+                try {
+                    if (opened.tab() != null) {
+                        // Auto-opened tab: run the pending layout and paint cycle now, or the
+                        // render below draws components that were never laid out (same hazard
+                        // as renderCanvas).
+                        forceLayoutAndPaintCycle(canvas);
+                    }
+                    return ScreenImageSVG.createImage(canvas).getSVGElement();
+                } finally {
+                    if (oldZoom != 1.0) {
+                        canvas.setZoom(oldZoom);
+                    }
+                }
             } finally {
                 closeAutoOpenedCanvas(opened);
             }
