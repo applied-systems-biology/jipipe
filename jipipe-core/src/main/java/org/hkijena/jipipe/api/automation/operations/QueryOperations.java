@@ -112,6 +112,56 @@ public class QueryOperations {
         }
     }
 
+    public static class FindNodes implements AutomationOperation {
+        @Override
+        public String getId() {
+            return "find_nodes";
+        }
+
+        @Override
+        public String getDescription() {
+            return "Search nodes inside the open project by name, node type id, and compartment (find_nodes searches the project; search_nodes searches the algorithm catalog)";
+        }
+
+        @Override
+        public JsonNode getInputSchema() {
+            return AutomationSchemaUtils.parseJson("""
+                    {
+                      "type": "object",
+                      "properties": {
+                        "query": {"type": "string", "description": "Matched case-insensitively as a substring of the node name; omit or leave blank to match all node names"},
+                        "type-id": {"type": "string", "description": "Matched case-insensitively as a substring of the registered node type id; omit or leave blank to match all node types"},
+                        "compartment": {"type": "string", "description": "Limit the search to this compartment (UUID or alias); omit or leave blank to search all compartments"},
+                        "limit": {"type": "integer", "description": "Maximum number of matches to return (default 50)"}
+                      },
+                      "additionalProperties": false
+                    }""");
+        }
+
+        @Override
+        public AutomationOperationCategory getCategory() {
+            return AutomationOperationCategory.Query;
+        }
+
+        @Override
+        public boolean isReadOnly() {
+            return true;
+        }
+
+        @Override
+        public JsonNode execute(AutomationContext ctx, JsonNode params) {
+            String query = params.has("query") ? params.get("query").asText() : null;
+            String typeId = params.has("type-id") ? params.get("type-id").asText() : null;
+            String compartment = params.has("compartment") ? params.get("compartment").asText() : null;
+            int limit = params.has("limit") ? params.get("limit").asInt() : 50;
+            try {
+                return JIPipeAutomationAPI.findNodes(ctx, query, typeId, compartment, limit);
+            } catch (IllegalArgumentException e) {
+                return mapper.createObjectNode().put("error", e.getMessage() + " (see query_compartments for ids)");
+            }
+        }
+    }
+
     public static class QueryAnnotations implements AutomationOperation {
         @Override
         public String getId() {

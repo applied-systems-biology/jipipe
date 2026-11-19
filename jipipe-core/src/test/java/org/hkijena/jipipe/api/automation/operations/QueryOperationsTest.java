@@ -57,6 +57,9 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
  * Also tests the query_annotations operation: both annotation families in one
  * response, the kind filter, compartment filtering with the fail-loud error,
  * and the position consistency with query_graph.
+ * Also tests the find_nodes operation: case-insensitive name and node type id
+ * substring filters, compartment restriction with the fail-loud error, limit
+ * with totalCount, and the no-filter default that matches every node.
  */
 public class QueryOperationsTest {
 
@@ -154,6 +157,23 @@ public class QueryOperationsTest {
         }
         if (kind != null) {
             params.put("kind", kind);
+        }
+        return params;
+    }
+
+    private static ObjectNode findNodesParams(String query, String typeId, String compartment, Integer limit) {
+        ObjectNode params = mapper.createObjectNode();
+        if (query != null) {
+            params.put("query", query);
+        }
+        if (typeId != null) {
+            params.put("type-id", typeId);
+        }
+        if (compartment != null) {
+            params.put("compartment", compartment);
+        }
+        if (limit != null) {
+            params.put("limit", limit);
         }
         return params;
     }
@@ -547,5 +567,127 @@ public class QueryOperationsTest {
         assertEquals(graphNode.get("y"), annotation.get("y"), "y must match query_graph");
         assertEquals(120, annotation.get("x").asInt());
         assertEquals(340, annotation.get("y").asInt());
+    }
+
+    @Test
+    void find_nodes_nameSubstringCaseInsensitive() {
+        assumeTrue(hasNodeType(COMMENT_NODE_ID), COMMENT_NODE_ID + " node type not registered - skipping");
+        var info = JIPipe.getNodes().getInfoById(COMMENT_NODE_ID);
+        JIPipeProject project = new JIPipeProject();
+        JIPipeProjectCompartment compartment = project.addCompartment("Notes");
+        JIPipeGraphNode csv = info.newInstance();
+        csv.setCustomName("Input CSV");
+        project.getGraph().insertNode(csv, compartment.getProjectCompartmentUUID());
+        JIPipeGraphNode filter = info.newInstance();
+        filter.setCustomName("Filter");
+        project.getGraph().insertNode(filter, compartment.getProjectCompartmentUUID());
+        AutomationContext ctx = createContext(project);
+
+        JsonNode csvMatch = new QueryOperations.FindNodes().execute(ctx, findNodesParams("csv", null, null, null));
+        assertEquals(1, csvMatch.get("matches").size());
+        assertEquals("Input CSV", csvMatch.get("matches").get(0).get("name").asText());
+
+        JsonNode filterMatch = new QueryOperations.FindNodes().execute(ctx, findNodesParams("filter", null, null, null));
+        assertEquals(1, filterMatch.get("matches").size());
+        assertEquals("Filter", filterMatch.get("matches").get(0).get("name").asText());
+    }
+
+    @Test
+    void find_nodes_typeIdFilter() {
+        assumeTrue(hasNodeType(COMMENT_NODE_ID) && hasNodeType(TEXT_BOX_NODE_ID),
+                COMMENT_NODE_ID + " or " + TEXT_BOX_NODE_ID + " node type not registered - skipping");
+        var commentInfo = JIPipe.getNodes().getInfoById(COMMENT_NODE_ID);
+        var textBoxInfo = JIPipe.getNodes().getInfoById(TEXT_BOX_NODE_ID);
+        JIPipeProject project = new JIPipeProject();
+        JIPipeProjectCompartment compartment = project.addCompartment("Notes");
+        JIPipeGraphNode comment = commentInfo.newInstance();
+        project.getGraph().insertNode(comment, compartment.getProjectCompartmentUUID());
+        JIPipeGraphNode textBox = textBoxInfo.newInstance();
+        project.getGraph().insertNode(textBox, compartment.getProjectCompartmentUUID());
+        AutomationContext ctx = createContext(project);
+
+        JsonNode result = new QueryOperations.FindNodes().execute(ctx, findNodesParams(null, "comment", null, null));
+
+        assertEquals(1, result.get("matches").size());
+        assertEquals(COMMENT_NODE_ID, result.get("matches").get(0).get("typeId").asText());
+        assertEquals(project.getGraph().getUUIDOf(comment).toString(),
+                result.get("matches").get(0).get("uuid").asText());
+    }
+
+    @Test
+    void find_nodes_compartmentFilter() {
+        assumeTrue(hasNodeType(COMMENT_NODE_ID), COMMENT_NODE_ID + " node type not registered - skipping");
+        TwoCompartmentFixture fixture = createTwoCompartmentFixture("Preprocessing", "Analysis");
+        AutomationContext ctx = createContext(fixture.project());
+
+        JsonNode result = new QueryOperations.FindNodes().execute(ctx,
+                findNodesParams(null, null, "Preprocessing", null));
+
+        assertEquals(1, result.get("matches").size());
+        assertEquals(fixture.project().getGraph().getUUIDOf(fixture.firstNode()).toString(),
+                result.get("matches").get(0).get("uuid").asText());
+        assertEquals(fixture.first().getProjectCompartmentUUID().toString(),
+                result.get("matches").get(0).get("compartmentId").asText());
+    }
+
+    @Test
+    void find_nodes_limitAndTotalCount() {
+        assumeTrue(hasNodeType(COMMENT_NODE_ID), COMMENT_NODE_ID + " node type not registered - skipping");
+        var info = JIPipe.getNodes().getInfoById(COMMENT_NODE_ID);
+        JIPipeProject project = new JIPipeProject();
+        JIPipeProjectCompartment compartment = project.addCompartment("Notes");
+        for (int i = 0; i < 3; i++) {
+            JIPipeGraphNode node = info.newInstance();
+            node.setCustomName("Node " + i);
+            project.getGraph().insertNode(node, compartment.getProjectCompartmentUUID());
+        }
+        AutomationContext ctx = createContext(project);
+
+        JsonNode result = new QueryOperations.FindNodes().execute(ctx, findNodesParams(null, null, null, 2));
+
+        assertEquals(2, result.get("matches").size(), "the limit must cap the matches array");
+        assertEquals(3, result.get("totalCount").asInt(), "totalCount must count the matches before limiting");
+    }
+
+    @Test
+    void find_nodes_noFiltersReturnsEverythingLimited() {
+        assumeTrue(hasNodeType(COMMENT_NODE_ID), COMMENT_NODE_ID + " node type not registered - skipping");
+        var info = JIPipe.getNodes().getInfoById(COMMENT_NODE_ID);
+        JIPipeProject project = new JIPipeProject();
+        JIPipeProjectCompartment compartment = project.addCompartment("Notes");
+        for (int i = 0; i < 2; i++) {
+            JIPipeGraphNode node = info.newInstance();
+            project.getGraph().insertNode(node, compartment.getProjectCompartmentUUID());
+        }
+        AutomationContext ctx = createContext(project);
+
+        JsonNode result = new QueryOperations.FindNodes().execute(ctx, mapper.createObjectNode());
+
+        assertEquals(2, result.get("totalCount").asInt(), "no filters must match every node");
+        assertTrue(result.get("matches").size() <= 50, "the default limit caps the matches at 50");
+        assertEquals(Math.min(2, 50), result.get("matches").size());
+
+        // Blank params are treated as omitted: the same call must match everything
+        JsonNode blank = new QueryOperations.FindNodes().execute(ctx, findNodesParams("   ", " ", "", null));
+        assertEquals(result.get("totalCount"), blank.get("totalCount"),
+                "blank filters must behave like omitted filters");
+        assertEquals(result.get("matches").size(), blank.get("matches").size(),
+                "blank filters must behave like omitted filters");
+    }
+
+    @Test
+    void find_nodes_unknownCompartmentErrors() {
+        assumeTrue(hasNodeType(COMMENT_NODE_ID), COMMENT_NODE_ID + " node type not registered - skipping");
+        TwoCompartmentFixture fixture = createTwoCompartmentFixture("Preprocessing", "Analysis");
+        AutomationContext ctx = createContext(fixture.project());
+
+        JsonNode result = new QueryOperations.FindNodes().execute(ctx, findNodesParams(null, null, "Nope", null));
+
+        assertTrue(result.has("error"),
+                "an unknown compartment name must error, not return an empty match list: " + result);
+        String error = result.get("error").asText();
+        assertTrue(error.contains("Compartment not found: 'Nope'."), error);
+        assertTrue(error.contains("Preprocessing") && error.contains("Analysis"), error);
+        assertTrue(error.endsWith("(see query_compartments for ids)"), error);
     }
 }

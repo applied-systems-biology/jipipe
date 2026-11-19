@@ -103,21 +103,7 @@ public final class JIPipeAutomationAPI {
             for (JIPipeGraphNode node : graph.getGraphNodes()) {
                 UUID nodeCompartment = graph.getCompartmentUUIDOf(node);
                 if (compartmentFilter != null && !compartmentFilter.equals(nodeCompartment)) continue;
-                UUID uuid = graph.getUUIDOf(node);
-                String alias = graph.getAliasIdOf(node);
-                Point loc = node.getNodeUILocationWithin(nodeCompartment != null ? nodeCompartment.toString() : "");
-                ObjectNode n = nodes.addObject();
-                for (String field : emittedFields) {
-                    switch (field) {
-                        case "id" -> n.put("id", alias != null ? alias : (uuid != null ? uuid.toString() : "?"));
-                        case "name" -> n.put("name", node.getName());
-                        case "typeId" -> n.put("typeId", node.getInfo() != null ? node.getInfo().getId() : "?");
-                        case "compartmentId" -> n.put("compartmentId", nodeCompartment != null ? nodeCompartment.toString() : null);
-                        case "uuid" -> n.put("uuid", uuid != null ? uuid.toString() : null);
-                        case "x" -> n.put("x", loc != null ? loc.x : 0);
-                        case "y" -> n.put("y", loc != null ? loc.y : 0);
-                    }
-                }
+                nodes.add(buildGraphNodeObject(graph, node, nodeCompartment, emittedFields));
             }
         }
         for (Map.Entry<JIPipeDataSlot, JIPipeDataSlot> edge : graph.getSlotEdges()) {
@@ -286,6 +272,57 @@ public final class JIPipeAutomationAPI {
         if (access == null) return "";
         Object value = access.get(Object.class);
         return value instanceof String s ? s : "";
+    }
+
+    /**
+     * Searches the nodes of the open project by name, node type id, and
+     * compartment. All filters are optional and combined with AND: the query
+     * matches case-insensitively as a substring of the node name, the type
+     * filter matches case-insensitively as a substring of the registered node
+     * type id, and the compartment reference (UUID, alias, or display name)
+     * restricts the result to that compartment. Blank filters are treated as
+     * omitted. The response holds the "matches" array of query_graph node
+     * objects (all canonical fields in canonical order) and "totalCount", the
+     * number of matches before the limit is applied.
+     *
+     * @param ctx            the automation context
+     * @param query          optional node name substring filter (null or blank matches all node names)
+     * @param typeId         optional node type id substring filter (null or blank matches all node types)
+     * @param compartmentRef optional compartment filter (UUID, alias, or display name; null or blank matches all compartments)
+     * @param limit          maximum number of matches to return
+     * @return the response object with the "matches" array and "totalCount"
+     * @throws IllegalArgumentException if the compartment reference cannot be resolved
+     */
+    public static JsonNode findNodes(AutomationContext ctx, String query, String typeId, String compartmentRef, int limit) {
+        ObjectNode data = mapper.createObjectNode();
+        ArrayNode matches = data.putArray("matches");
+        JIPipeProject project = ctx.getProject();
+        if (project == null) {
+            data.put("totalCount", 0);
+            return data;
+        }
+        JIPipeGraph graph = project.getGraph();
+        String compartment = normalizeFilter(compartmentRef);
+        UUID compartmentFilter = null;
+        if (compartment != null) {
+            compartmentFilter = requireCompartment(project, compartment).getProjectCompartmentUUID();
+        }
+        String nameFilter = normalizeFilter(query);
+        String typeIdFilter = normalizeFilter(typeId);
+        int total = 0;
+        for (JIPipeGraphNode node : graph.getGraphNodes()) {
+            UUID nodeCompartment = graph.getCompartmentUUIDOf(node);
+            if (compartmentFilter != null && !compartmentFilter.equals(nodeCompartment)) continue;
+            String nodeTypeId = node.getInfo() != null ? node.getInfo().getId() : "?";
+            if (typeIdFilter != null && !nodeTypeId.toLowerCase().contains(typeIdFilter)) continue;
+            if (nameFilter != null && !node.getName().toLowerCase().contains(nameFilter)) continue;
+            total++;
+            if (total <= limit) {
+                matches.add(buildGraphNodeObject(graph, node, nodeCompartment, QUERY_GRAPH_NODE_FIELDS));
+            }
+        }
+        data.put("totalCount", total);
+        return data;
     }
 
     // ── Execution (async) ──
@@ -533,6 +570,51 @@ public final class JIPipeAutomationAPI {
     }
 
     // ── Helpers ──
+
+    /**
+     * Builds one node object of the query_graph response shape, emitting the
+     * requested fields in the given order. Shared by queryGraph and findNodes
+     * so both responses carry identical node objects.
+     *
+     * @param graph           the project graph
+     * @param node            the node
+     * @param nodeCompartment the node's compartment UUID (may be null)
+     * @param fields          the fields to emit, in emission order
+     * @return the node object
+     */
+    private static ObjectNode buildGraphNodeObject(JIPipeGraph graph, JIPipeGraphNode node,
+                                                   UUID nodeCompartment, List<String> fields) {
+        UUID uuid = graph.getUUIDOf(node);
+        String alias = graph.getAliasIdOf(node);
+        Point loc = node.getNodeUILocationWithin(nodeCompartment != null ? nodeCompartment.toString() : "");
+        ObjectNode n = mapper.createObjectNode();
+        for (String field : fields) {
+            switch (field) {
+                case "id" -> n.put("id", alias != null ? alias : (uuid != null ? uuid.toString() : "?"));
+                case "name" -> n.put("name", node.getName());
+                case "typeId" -> n.put("typeId", node.getInfo() != null ? node.getInfo().getId() : "?");
+                case "compartmentId" -> n.put("compartmentId", nodeCompartment != null ? nodeCompartment.toString() : null);
+                case "uuid" -> n.put("uuid", uuid != null ? uuid.toString() : null);
+                case "x" -> n.put("x", loc != null ? loc.x : 0);
+                case "y" -> n.put("y", loc != null ? loc.y : 0);
+            }
+        }
+        return n;
+    }
+
+    /**
+     * Normalizes an optional string filter: null stays null, blank values
+     * (after trimming) are treated as omitted (null), other values are
+     * trimmed.
+     *
+     * @param value the raw filter value (may be null)
+     * @return the normalized filter value (null when omitted)
+     */
+    private static String normalizeFilter(String value) {
+        if (value == null) return null;
+        String trimmed = value.trim();
+        return trimmed.isEmpty() ? null : trimmed;
+    }
 
     /**
      * Resolves a compartment reference against the project's registered compartments.

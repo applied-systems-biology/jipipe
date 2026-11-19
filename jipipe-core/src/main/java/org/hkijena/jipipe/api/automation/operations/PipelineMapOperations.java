@@ -92,7 +92,7 @@ public class PipelineMapOperations {
 
         @Override
         public String getDescription() {
-            return "Search available JIPipe node types";
+            return "Search available JIPipe node types (searches the algorithm catalog; use find_nodes to search inside the open project)";
         }
 
         @Override
