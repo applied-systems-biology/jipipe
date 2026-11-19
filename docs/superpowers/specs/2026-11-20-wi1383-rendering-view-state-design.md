@@ -38,9 +38,9 @@ New operation in `ScreenshotOperations` following the house seam: production con
 
 Operation params: `compartment` (required, UUID/alias/name), `format` (optional enum `png|svg`, default `png`), `scale` (optional number, default 1, PNG only), `save-to` (optional rooted path).
 
-- PNG without `save-to`: inline `{image-base64, mime: "image/png"}`.
-- PNG with `save-to`: `{savedTo, sizeBytes}` (screenshot size contract; nothing inline).
-- SVG: file format only - without `save-to` the response is an error naming the restriction (SVG cannot travel the inline image envelope); with `save-to` the element is written UTF-8 and the response is `{savedTo, sizeBytes}` where sizeBytes is the byte length.
+- PNG without `save-to`: inline `{image-base64, mime: "image/png"}` (the `AutomationResults.choose` envelope, corrected 2026-11-20: the screenshot size contract returns ONLY `{"saved-to": path}`, no size field).
+- PNG with `save-to`: exactly the screenshot envelope `{"saved-to": path}` via the same `finish` helper as the sibling operations.
+- SVG: file format only - without `save-to` the response is an error naming the restriction (SVG cannot travel the inline image envelope); with `save-to` the element is written UTF-8 and the response is `{"saved-to": path, "sizeBytes": n}` (the byte length; useful because there is no inline fallback to eyeball).
 - Unknown compartment, no source, or no project: the existing `error(...)` envelope style of the sibling operations.
 
 Description names the distinction explicitly: full graph at natural zoom with full-fidelity node rendering; use `screenshot_canvas` for the user's current view and `screenshot_minimap` for the minimap painter. Category Render, `isReadOnly() = true`, `requiresEdt() = true`.
