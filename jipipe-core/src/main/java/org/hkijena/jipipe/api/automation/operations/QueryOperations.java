@@ -112,6 +112,52 @@ public class QueryOperations {
         }
     }
 
+    public static class QueryAnnotations implements AutomationOperation {
+        @Override
+        public String getId() {
+            return "query_annotations";
+        }
+
+        @Override
+        public String getDescription() {
+            return "List all comments and text boxes of the project with title, content, compartment, and bbox in one call (id, uuid, typeId, kind, compartmentId, title, content for text boxes, x, y, and width, height for text boxes)";
+        }
+
+        @Override
+        public JsonNode getInputSchema() {
+            return AutomationSchemaUtils.parseJson("""
+                    {
+                      "type": "object",
+                      "properties": {
+                        "compartment": {"type": "string", "description": "Limit the result to annotations within this compartment (UUID or alias); omit to return annotations of all compartments"},
+                        "kind": {"type": "string", "enum": ["comment", "text-box"], "description": "Only return annotations of this kind; omit to return both kinds"}
+                      },
+                      "additionalProperties": false
+                    }""");
+        }
+
+        @Override
+        public AutomationOperationCategory getCategory() {
+            return AutomationOperationCategory.Query;
+        }
+
+        @Override
+        public boolean isReadOnly() {
+            return true;
+        }
+
+        @Override
+        public JsonNode execute(AutomationContext ctx, JsonNode params) {
+            String compartment = params.has("compartment") ? params.get("compartment").asText() : null;
+            String kind = params.has("kind") ? params.get("kind").asText() : null;
+            try {
+                return JIPipeAutomationAPI.queryAnnotations(ctx, compartment, kind);
+            } catch (IllegalArgumentException e) {
+                return mapper.createObjectNode().put("error", e.getMessage() + " (see query_compartments for ids)");
+            }
+        }
+    }
+
     public static class QueryNode implements AutomationOperation {
         @Override
         public String getId() {

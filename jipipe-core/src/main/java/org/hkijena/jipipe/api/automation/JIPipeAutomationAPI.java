@@ -15,10 +15,13 @@ import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.annotation.JIPipeGraphCanvasNote;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.project.JIPipeProjectUserPaths;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasGrid;
+import org.hkijena.jipipe.plugins.core.nodes.JIPipeCommentNode;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.publish.rocrate.CreateROCrateRun;
 import org.hkijena.jipipe.plugins.publish.rocrate.ROCrateDockerSettings;
@@ -79,16 +82,7 @@ public final class JIPipeAutomationAPI {
         JIPipeGraph graph = project.getGraph();
         UUID compartmentFilter = null;
         if (compartmentIdStr != null && !compartmentIdStr.isBlank()) {
-            JIPipeProjectCompartment compartment = findCompartment(project, compartmentIdStr);
-            if (compartment == null) {
-                StringJoiner knownCompartments = new StringJoiner(", ");
-                for (JIPipeProjectCompartment known : project.getCompartments().values()) {
-                    knownCompartments.add(String.valueOf(known.getName()));
-                }
-                throw new IllegalArgumentException("Compartment not found: '" + compartmentIdStr
-                        + "'. Known compartments: " + knownCompartments);
-            }
-            compartmentFilter = compartment.getProjectCompartmentUUID();
+            compartmentFilter = requireCompartment(project, compartmentIdStr).getProjectCompartmentUUID();
         }
         if (compartmentFilter != null) {
             data.put("compartmentId", compartmentFilter.toString());
@@ -209,6 +203,89 @@ public final class JIPipeAutomationAPI {
             }
         }
         return data;
+    }
+
+    /**
+     * Returns all comments and text boxes of the project in one response.
+     * The "annotations" array holds one object per annotation node with the
+     * fields id (the alias id, JSON null when unassigned), uuid, typeId,
+     * kind ("comment" or "text-box", decided by the node type), compartmentId,
+     * title, x, y and, for text boxes, content, width, and height (the grid
+     * size times the canvas grid constants). Comment nodes carry their node
+     * name as title and no content, width, or height fields. The text box
+     * title and content are read from the "text-title" and "text-content"
+     * parameters (empty strings when absent). Node types that are neither
+     * comments nor canvas notes are skipped.
+     *
+     * @param ctx            the automation context
+     * @param compartmentRef optional compartment filter (UUID, alias, or display name; null or blank for all compartments)
+     * @param kind           optional kind filter ("comment" or "text-box"; null or blank for both kinds)
+     * @return the response object with the "annotations" array
+     * @throws IllegalArgumentException if the compartment reference cannot be resolved
+     */
+    public static JsonNode queryAnnotations(AutomationContext ctx, String compartmentRef, String kind) {
+        ObjectNode data = mapper.createObjectNode();
+        ArrayNode annotations = data.putArray("annotations");
+        JIPipeProject project = ctx.getProject();
+        if (project == null) return data;
+        JIPipeGraph graph = project.getGraph();
+        UUID compartmentFilter = null;
+        if (compartmentRef != null && !compartmentRef.isBlank()) {
+            compartmentFilter = requireCompartment(project, compartmentRef).getProjectCompartmentUUID();
+        }
+        boolean filterByKind = kind != null && !kind.isBlank();
+        for (JIPipeGraphNode node : graph.getGraphNodes()) {
+            String annotationKind;
+            if (node instanceof JIPipeCommentNode) {
+                annotationKind = "comment";
+            } else if (node instanceof JIPipeGraphCanvasNote) {
+                annotationKind = "text-box";
+            } else {
+                continue;
+            }
+            if (filterByKind && !kind.equals(annotationKind)) continue;
+            UUID nodeCompartment = graph.getCompartmentUUIDOf(node);
+            if (compartmentFilter != null && !compartmentFilter.equals(nodeCompartment)) continue;
+            UUID uuid = graph.getUUIDOf(node);
+            String alias = graph.getAliasIdOf(node);
+            Point loc = node.getNodeUILocationWithin(nodeCompartment != null ? nodeCompartment.toString() : "");
+            boolean textBox = node instanceof JIPipeGraphCanvasNote;
+            ObjectNode n = annotations.addObject();
+            n.put("id", alias);
+            n.put("uuid", uuid != null ? uuid.toString() : null);
+            n.put("typeId", node.getInfo() != null ? node.getInfo().getId() : "?");
+            n.put("kind", annotationKind);
+            n.put("compartmentId", nodeCompartment != null ? nodeCompartment.toString() : null);
+            if (textBox) {
+                Map<String, JIPipeParameterAccess> parameters = JIPipeParameterTree.getParameters(node);
+                n.put("title", parameterStringValue(parameters, "text-title"));
+                n.put("content", parameterStringValue(parameters, "text-content"));
+            } else {
+                n.put("title", node.getName());
+            }
+            n.put("x", loc != null ? loc.x : 0);
+            n.put("y", loc != null ? loc.y : 0);
+            if (textBox) {
+                JIPipeGraphCanvasNote note = (JIPipeGraphCanvasNote) node;
+                n.put("width", note.getGridWidth() * JIPipeDesktopGraphCanvasGrid.GRID_WIDTH);
+                n.put("height", note.getGridHeight() * JIPipeDesktopGraphCanvasGrid.GRID_HEIGHT);
+            }
+        }
+        return data;
+    }
+
+    /**
+     * Reads one string-valued parameter of a node's parameter tree.
+     *
+     * @param parameters the node's parameter tree accesses
+     * @param key        the parameter key
+     * @return the string value, or an empty string when the parameter is absent or not a string
+     */
+    private static String parameterStringValue(Map<String, JIPipeParameterAccess> parameters, String key) {
+        JIPipeParameterAccess access = parameters.get(key);
+        if (access == null) return "";
+        Object value = access.get(Object.class);
+        return value instanceof String s ? s : "";
     }
 
     // ── Execution (async) ──
@@ -492,6 +569,31 @@ public final class JIPipeAutomationAPI {
             }
         }
         return null;
+    }
+
+    /**
+     * Resolves a compartment reference like {@link #findCompartment} but
+     * throws the canonical fail-loud {@link IllegalArgumentException} (with
+     * the list of known compartments) when the reference cannot be resolved.
+     * Shared by the query operations so the error message contract stays
+     * identical across them.
+     *
+     * @param project the project (must not be null)
+     * @param ref     the compartment UUID, alias, or display name (must not be null or blank)
+     * @return the compartment (never null)
+     * @throws IllegalArgumentException if the reference cannot be resolved
+     */
+    private static JIPipeProjectCompartment requireCompartment(JIPipeProject project, String ref) {
+        JIPipeProjectCompartment compartment = findCompartment(project, ref);
+        if (compartment == null) {
+            StringJoiner knownCompartments = new StringJoiner(", ");
+            for (JIPipeProjectCompartment known : project.getCompartments().values()) {
+                knownCompartments.add(String.valueOf(known.getName()));
+            }
+            throw new IllegalArgumentException("Compartment not found: '" + ref
+                    + "'. Known compartments: " + knownCompartments);
+        }
+        return compartment;
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
