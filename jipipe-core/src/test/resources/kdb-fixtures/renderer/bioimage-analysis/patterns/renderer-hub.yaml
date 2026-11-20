@@ -1,0 +1,13 @@
+kind: pattern
+title: "Renderer hub"
+aliases: [renderer]
+slots:
+  problem: "Render determinism"
+  nodeChain: [renderer-legacy-node, renderer-fresh-node, renderer-unknown-node]
+  parameterEvidence:
+    - "Observed in 3 of 60 workflows"
+  elaborates: [bioimage-analysis/concepts/renderer-target]
+body: |
+  The hub body explains the renderer fixture.
+sourceRefs:
+  - "workflow-pattern-analysis.md#section-7.2"

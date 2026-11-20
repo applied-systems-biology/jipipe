@@ -42,7 +42,12 @@ import static org.junit.jupiter.api.Assertions.*;
  * "reef"/"coral". The lexicon is deliberately disjoint from the tokenizer
  * surface of the query: the corpus fixture pairs a "feline" entry with a
  * "cat" query, so the vector hit has no lexical overlap and can only be
- * reached through the vector lane.
+ * reached through the vector lane. The lexicon is also disjoint from every
+ * other token the rendered embedding text can carry (the section wording, the
+ * entry keys of neighbors in the next steps lines, kind and domain ids): the
+ * lane embeds the rendered text since the renderer exists (design spec 5.6),
+ * and a lexicon token hiding in a neighbor key would silently turn an
+ * unrelated entry into a vector hit.
  */
 class KdbVectorLaneTest {
 
@@ -103,7 +108,7 @@ class KdbVectorLaneTest {
         // the corpus are not vector hits at all.
         List<KdbVectorLane.ScoredEntry> laneHits = lane.search("zebra cat", 10);
         assertEquals(List.of("bioimage-analysis/patterns/feline-waypoint",
-                "bioimage-analysis/patterns/feline-bridge"),
+                "bioimage-analysis/patterns/bridge-crossing"),
                 laneHits.stream().map(KdbVectorLane.ScoredEntry::entryKey).toList(),
                 "Only the feline entries are vector hits, ordered by cosine similarity");
         assertEquals(1.0, laneHits.get(0).score(), 1e-9, "The waypoint points exactly at the query");
@@ -118,7 +123,7 @@ class KdbVectorLaneTest {
         assertEquals(List.of("bioimage-analysis/patterns/feline-waypoint",
                 "bioimage-analysis/patterns/moor-plain",
                 "bioimage-analysis/patterns/zebra-crossing",
-                "bioimage-analysis/patterns/feline-bridge",
+                "bioimage-analysis/patterns/bridge-crossing",
                 "bioimage-analysis/patterns/island-map"), keys(results),
                 "All five entries surface, ordered by fused score then entry key");
         Map<String, KnowledgeResult> hits = byKey(results);
@@ -126,18 +131,18 @@ class KdbVectorLaneTest {
                 "The waypoint is reachable only through the vector lane");
         assertEquals(Set.of(KnowledgeService.LANE_LEXICAL), hits.get("bioimage-analysis/patterns/zebra-crossing").lanes());
         assertEquals(Set.of(KnowledgeService.LANE_RELATION), hits.get("bioimage-analysis/patterns/moor-plain").lanes());
-        assertEquals(Set.of(KnowledgeService.LANE_VECTOR), hits.get("bioimage-analysis/patterns/feline-bridge").lanes());
+        assertEquals(Set.of(KnowledgeService.LANE_VECTOR), hits.get("bioimage-analysis/patterns/bridge-crossing").lanes());
         assertEquals(Set.of(KnowledgeService.LANE_RELATION), hits.get("bioimage-analysis/patterns/island-map").lanes(),
                 "The island map is only a neighbor of the vector hit: the vector lane seeds the relation lane");
         // Reciprocal rank fusion, k = 60, 1-based ranks: the vector ranking
-        // is [feline-waypoint, feline-bridge], the lexical ranking is
+        // is [feline-waypoint, bridge-crossing], the lexical ranking is
         // [zebra-crossing], and the relation ranking is [moor-plain,
         // island-map] (the vector hit's neighbor enters at rank 2).
         assertEquals(1.0 / (KnowledgeService.RRF_K + 1),
                 hits.get("bioimage-analysis/patterns/feline-waypoint").score(),
                 "Vector rank 1 contributes 1/(k+1)");
         assertEquals(1.0 / (KnowledgeService.RRF_K + 2),
-                hits.get("bioimage-analysis/patterns/feline-bridge").score(),
+                hits.get("bioimage-analysis/patterns/bridge-crossing").score(),
                 "Vector rank 2 contributes 1/(k+2)");
         assertEquals(1.0 / (KnowledgeService.RRF_K + 1),
                 hits.get("bioimage-analysis/patterns/zebra-crossing").score(),

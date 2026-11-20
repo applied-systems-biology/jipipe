@@ -79,6 +79,7 @@ public final class KnowledgeService {
     private final KdbLexicalIndex lexicalIndex;
     private final KdbEntryGraph graph;
     private final KdbVectorLane vectorLane;
+    private final KdbRenderer renderer;
 
     /**
      * Creates a service over the loaded corpus without a vector lane. The
@@ -107,6 +108,10 @@ public final class KnowledgeService {
         this.lexicalIndex = KdbLexicalIndex.build(entries);
         this.graph = new KdbEntryGraph(entries);
         this.vectorLane = vectorLane;
+        // The render time joins are live (design spec 5.5.1): the payload
+        // renderer resolves node facts from the registry per lookup and takes
+        // the next steps from this service's graph.
+        this.renderer = new KdbRenderer(KdbRenderer.liveRegistryResolver(), graph::neighbors);
     }
 
     /**
@@ -204,14 +209,32 @@ public final class KnowledgeService {
     }
 
     /**
-     * Resolves an entry by key, independent of search visibility: an entry
+     * Resolves an entry by key with its rendered agent facing text: the
+     * structured corpus entry plus the render (design spec 5.5). The node
+     * facts in the rendered part are resolved from the live registry per
+     * lookup, so the payload reflects the current deprecation and successor
+     * state, never a cached one. Independent of search visibility: an entry
      * that the version drop hides from search stays resolvable here for
      * provenance.
      *
      * @param entryKey the entry key
+     * @return the payload, or empty for an unknown key
+     */
+    public Optional<KnowledgeEntryPayload> getKnowledgeEntry(String entryKey) {
+        KdbEntry entry = entriesByKey.get(entryKey);
+        if (entry == null) {
+            return Optional.empty();
+        }
+        return Optional.of(new KnowledgeEntryPayload(entry, renderer.render(entry, KdbRenderer.DEFAULT_MAX_TOKENS)));
+    }
+
+    /**
+     * Resolves the structured corpus entry by key, without rendering.
+     *
+     * @param entryKey the entry key
      * @return the entry, or empty for an unknown key
      */
-    public Optional<KdbEntry> getKnowledgeEntry(String entryKey) {
+    public Optional<KdbEntry> getKnowledgeEntryRaw(String entryKey) {
         return Optional.ofNullable(entriesByKey.get(entryKey));
     }
 

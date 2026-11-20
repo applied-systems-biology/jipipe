@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.function.Function;
 
 /**
@@ -39,10 +38,10 @@ import java.util.function.Function;
  * The embedder is injectable ({@code Function<String, float[]>}): production
  * passes the AI service component's synchronous embed operation, tests pass a
  * deterministic stub, so the lane is fully testable without a running
- * embedding model. Until the rendered payload exists (design spec 5.6), the
- * embedded text is the title, the TEXT slot values, and the body; switching
- * to the rendered text is a one method change
- * ({@link #embeddingText(KdbEntry)}), and the cache key follows automatically
+ * embedding model. The embedded text is the rendered entry text (design spec
+ * 5.6) produced by {@link KdbRenderer} with the registry free resolver, so the
+ * lane never touches the node registry and the embedding stays consistent with
+ * what an agent is shown by construction. The cache key follows automatically
  * because it is the hash of exactly that text.
  * <p>
  * Per entry vectors are cached on disk keyed by the content hash of the
@@ -77,9 +76,18 @@ public final class KdbVectorLane {
      */
     private static final int MAX_CACHED_DIMENSION = 65536;
 
+    /**
+     * The token bound of the rendered embedding text. Today the same bound
+     * as the agent facing default; declared separately so the embedding
+     * input size is a decision of the lane (a change here re-keys the vector
+     * cache through the content hash, which is the intended invalidation).
+     */
+    private static final int RENDER_BOUND = KdbRenderer.DEFAULT_MAX_TOKENS;
+
     private final List<KdbEntry> entries;
     private final Function<String, float[]> embedder;
     private final Path cacheDir;
+    private final KdbRenderer renderer;
 
     /**
      * Creates the lane over the given corpus.
@@ -96,6 +104,11 @@ public final class KdbVectorLane {
         this.entries = List.copyOf(entries);
         this.embedder = embedder;
         this.cacheDir = cacheDir;
+        // The renderer renders with raw node ids only (no registry access in
+        // the lane) and takes the next steps lines from a graph over the same
+        // corpus, so the embedded text matches the rendered text by shape.
+        KdbEntryGraph graph = new KdbEntryGraph(this.entries);
+        this.renderer = new KdbRenderer(KdbRenderer.rawIdResolver(), graph::neighbors);
     }
 
     /**
@@ -164,42 +177,13 @@ public final class KdbVectorLane {
     }
 
     /**
-     * The text that is embedded for an entry: the title, the TEXT slot
-     * values, and the body. Until the rendered payload exists (design spec
-     * 5.6) this is the embedding text; switching to the rendered text changes
-     * this method only, and the cache key follows because it hashes exactly
-     * this text. Non-string TEXT values cannot occur (the loader narrows TEXT
-     * to strings) and are skipped defensively.
+     * The text that is embedded for an entry: the rendered entry text (design
+     * spec 5.6) under the lane's render bound, produced with the registry
+     * free resolver. The cache key follows automatically because it hashes
+     * exactly this text.
      */
     private String embeddingText(KdbEntry entry) {
-        StringBuilder text = new StringBuilder();
-        if (entry.getTitle() != null) {
-            text.append(entry.getTitle());
-        }
-        for (Map.Entry<String, List<Object>> slot : entry.getSlotValues().entrySet()) {
-            if (entry.getKind().getSlot(slot.getKey())
-                    .map(def -> def.type() != KdbValueType.TEXT)
-                    .orElse(true)) {
-                // Unknown slots are loader findings, not embedding material;
-                // other value types carry no prose surface.
-                continue;
-            }
-            for (Object value : slot.getValue()) {
-                if (value instanceof String string) {
-                    if (text.length() > 0) {
-                        text.append(' ');
-                    }
-                    text.append(string);
-                }
-            }
-        }
-        if (entry.getBody() != null) {
-            if (text.length() > 0) {
-                text.append(' ');
-            }
-            text.append(entry.getBody());
-        }
-        return text.toString();
+        return renderer.render(entry, RENDER_BOUND);
     }
 
     /**

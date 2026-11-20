@@ -56,8 +56,21 @@ class KnowledgeServiceTest {
         assertEquals(List.of("bioimage-analysis/patterns/current-cellpose"),
                 results.stream().map(KnowledgeResult::entryKey).toList(),
                 "Only the entry that is valid at the corpus version survives");
-        assertTrue(service.getKnowledgeEntry("bioimage-analysis/patterns/legacy-cellpose").isPresent(),
+        assertTrue(service.getKnowledgeEntryRaw("bioimage-analysis/patterns/legacy-cellpose").isPresent(),
                 "A version-dropped entry stays resolvable by key for provenance");
+    }
+
+    @Test
+    void knowledgeEntryPayloadCarriesTheStructuredEntryAndTheRenderedText() {
+        KnowledgeService service = service();
+        assertTrue(service.getKnowledgeEntry("bioimage-analysis/patterns/missing").isEmpty(),
+                "An unknown key yields no payload");
+        KnowledgeEntryPayload payload = service.getKnowledgeEntry("bioimage-analysis/patterns/current-cellpose")
+                .orElseThrow();
+        assertEquals("bioimage-analysis/patterns/current-cellpose", payload.entry().getEntryKey(),
+                "The structured part is the corpus entry itself");
+        assertTrue(payload.rendered().contains(payload.entry().getTitle()),
+                "The rendered part is the agent facing text");
     }
 
     @Test
