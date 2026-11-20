@@ -110,6 +110,7 @@ public class AutomationPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         // Pipeline map operations
         registerAutomationOperation("get_pipeline_map", new PipelineMapOperations.GetPipelineMap());
         registerAutomationOperation("get_segment_detail", new PipelineMapOperations.GetSegmentDetail());
+        registerAutomationOperation("describe_project", new PipelineMapOperations.DescribeProject());
         registerAutomationOperation("search_nodes", new PipelineMapOperations.SearchNodes());
 
         // Info operations

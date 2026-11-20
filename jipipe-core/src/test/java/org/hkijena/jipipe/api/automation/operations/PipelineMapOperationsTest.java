@@ -15,6 +15,7 @@ package org.hkijena.jipipe.api.automation.operations;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
@@ -27,6 +28,7 @@ import org.hkijena.jipipe.api.compartments.datatypes.JIPipeCompartmentOutputData
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
+import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -34,6 +36,7 @@ import org.hkijena.jipipe.api.nodes.infos.JIPipeJavaNodeInfo;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.graph.GraphDebugFunction;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.plugins.core.nodes.JIPipeCommentNode;
+import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -52,6 +55,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * edges derived from the compartment graph (label = the source compartment's
  * output slot name), and the map version. The status per compartment is the
  * SegmentStatusLogic contract over validation issue counts and cache coverage.
+ * Also tests the describe_project composite: the metadata extraction pin on
+ * get_project_info, the summary sections (including the store-to-disk x
+ * skip-export file-writer matrix), and the full detail's per-compartment node
+ * lists.
  */
 public class PipelineMapOperationsTest {
 
@@ -272,6 +279,229 @@ public class PipelineMapOperationsTest {
                 "an empty compartment is UNKNOWN: " + segment);
         assertEquals(0, segment.get("cachedNodes").asInt());
         assertEquals(0, segment.get("totalNodes").asInt());
+    }
+
+    private static JsonNode describeProject(JIPipeProject project, String detail) {
+        ObjectNode params = mapper.createObjectNode();
+        if (detail != null) {
+            params.put("detail", detail);
+        }
+        return new PipelineMapOperations.DescribeProject().execute(createContext(project), params);
+    }
+
+    /**
+     * Returns the describe_project compartments entry of the compartment (matched by id), or null.
+     */
+    private static JsonNode compartmentEntry(JsonNode compartments, JIPipeProjectCompartment compartment) {
+        for (JsonNode entry : compartments) {
+            if (compartment.getProjectCompartmentUUID().toString().equals(entry.get("id").asText())) {
+                return entry;
+            }
+        }
+        return null;
+    }
+
+    @Test
+    void getProjectInfoResponseIsUnchangedByTheExtraction() {
+        JIPipeProject project = new JIPipeProject();
+        project.getMetadata().setName("Metadata Pin Project");
+        project.getMetadata().setDescription(new HTMLText("<p>Pin description</p>"));
+        project.getMetadata().setLicense("MIT");
+        project.getMetadata().setSummary(new HTMLText("Pin summary"));
+        project.getMetadata().setWebsite("https://www.jipipe.org");
+        project.getMetadata().setCitation("Pin citation 2026");
+        JIPipeAuthorMetadata author = new JIPipeAuthorMetadata();
+        author.setFirstName("Jane");
+        author.setLastName("Doe");
+        project.getMetadata().setAuthors(new JIPipeAuthorMetadata.List(author));
+        JIPipeAuthorMetadata acknowledgement = new JIPipeAuthorMetadata();
+        acknowledgement.setFirstName("Ack");
+        acknowledgement.setLastName("Nowledgement");
+        project.getMetadata().setAcknowledgements(new JIPipeAuthorMetadata.List(acknowledgement));
+
+        JsonNode data = new InfoOperations.GetProjectInfo().execute(createContext(project),
+                mapper.createObjectNode());
+
+        JsonNode metadata = data.get("metadata");
+        assertEquals("Pin description", metadata.get("description").asText());
+        assertEquals("MIT", metadata.get("license").asText());
+        assertEquals("Pin summary", metadata.get("summary").asText());
+        assertEquals("https://www.jipipe.org", metadata.get("website").asText());
+        assertEquals("Pin citation 2026", metadata.get("citation").asText());
+        JsonNode authors = metadata.get("authors");
+        assertEquals(1, authors.size(), "one author: " + authors);
+        assertEquals("Jane", authors.get(0).get("firstName").asText());
+        assertEquals("Doe", authors.get(0).get("lastName").asText());
+        assertFalse(authors.get(0).get("firstAuthor").asBoolean());
+        assertFalse(authors.get(0).get("correspondingAuthor").asBoolean());
+        assertTrue(authors.get(0).get("affiliations").isArray(), "the author shape stays stable");
+        JsonNode acknowledgements = metadata.get("acknowledgements");
+        assertEquals(1, acknowledgements.size(), "one acknowledgement: " + acknowledgements);
+        assertEquals("Ack", acknowledgements.get(0).get("firstName").asText());
+        assertTrue(metadata.get("globalParameters").isObject(),
+                "the metadata block ends with the globalParameters object");
+    }
+
+    @Test
+    void describeProjectSummaryHasAllSections() {
+        JIPipeProject project = new JIPipeProject();
+        project.getMetadata().setName("Describe Project");
+        project.getMetadata().setLicense("MIT");
+        JIPipeProjectCompartment a = project.addCompartment("A");
+        JIPipeProjectCompartment b = project.addCompartment("B");
+        addOutputSlot(a, "Out");
+        project.connectCompartments(a, b);
+        JIPipeGraphNode nodeA = insertTestNode(project, a);
+        JIPipeGraphNode nodeB = insertTestNode(project, a);
+        JIPipeGraphNode nodeC = insertTestNode(project, a);
+        // The store-to-disk x skip-export matrix through the composite: only
+        // nodeA's output slot qualifies (defaults), nodeB skips the export and
+        // nodeC has store-to-disk disabled on the slot info
+        nodeB.getOutputSlot("Comment").setSkipExport(true);
+        nodeC.getOutputSlot("Comment").getInfo().setStoreToDisk(false);
+
+        AutomationContext ctx = createContext(project);
+        JsonNode summary = new PipelineMapOperations.DescribeProject().execute(ctx, mapper.createObjectNode());
+        JsonNode projectInfo = new InfoOperations.GetProjectInfo().execute(ctx, mapper.createObjectNode());
+        JsonNode map = new PipelineMapOperations.GetPipelineMap().execute(ctx, mapper.createObjectNode());
+
+        assertEquals("Describe Project", summary.get("name").asText(),
+                "the name uses the GetProjectInfo resolution");
+        assertTrue(summary.has("path"), "the path field is present (null for an unsaved project)");
+
+        JsonNode metadata = summary.get("metadata");
+        assertEquals("MIT", metadata.get("license").asText(),
+                "the metadata block is the shared projectMetadata static: " + metadata);
+        assertTrue(metadata.has("authors"), "the metadata block carries the authors array");
+
+        JsonNode compartments = summary.get("compartments");
+        assertEquals(2, compartments.size(), "one compartments entry per project compartment");
+        JsonNode compartmentA = compartmentEntry(compartments, a);
+        JsonNode compartmentB = compartmentEntry(compartments, b);
+        assertNotNull(compartmentA);
+        assertNotNull(compartmentB);
+        for (JsonNode compartment : compartments) {
+            assertTrue(compartment.has("id") && compartment.has("name") && compartment.has("nodeCount")
+                            && compartment.has("cachedNodes") && compartment.has("totalNodes")
+                            && compartment.has("status") && compartment.has("fileWriterCount"),
+                    "every compartments entry carries the full summary shape: " + compartment);
+            assertFalse(compartment.has("nodes"),
+                    "the summary does not carry per-compartment node lists: " + compartment);
+        }
+        assertEquals(project.getGraph().getNodesWithinCompartment(a.getProjectCompartmentUUID()).size(),
+                compartmentA.get("totalNodes").asInt(),
+                "totalNodes is the compartment's project-graph node count (the three test nodes "
+                        + "plus the compartment output node that the graph maintains for the Out slot)");
+        assertEquals(0, compartmentB.get("totalNodes").asInt(), "compartment B is empty");
+        // nodeCount agrees with get_project_info's compartments
+        assertEquals(projectInfo.get("compartments").size(), compartments.size());
+        for (JsonNode infoCompartment : projectInfo.get("compartments")) {
+            JsonNode compartment = null;
+            for (JsonNode candidate : compartments) {
+                if (infoCompartment.get("id").asText().equals(candidate.get("id").asText())) {
+                    compartment = candidate;
+                    break;
+                }
+            }
+            assertNotNull(compartment, "the compartments entry of " + infoCompartment.get("id").asText());
+            assertEquals(infoCompartment.get("nodeCount").asInt(), compartment.get("nodeCount").asInt(),
+                    "the nodeCount matches get_project_info for " + infoCompartment.get("id").asText());
+        }
+
+        // The wiring is the map's edge list, element for element
+        JsonNode wiring = summary.get("wiring");
+        assertTrue(wiring.isArray(), "the wiring is an array");
+        assertEquals(map.get("edges").size(), wiring.size(),
+                "the wiring carries the map's edges: " + wiring);
+        for (int i = 0; i < map.get("edges").size(); i++) {
+            JsonNode edge = map.get("edges").get(i);
+            JsonNode wire = wiring.get(i);
+            assertEquals(edge.get("source").asText(), wire.get("source").asText(), "edge " + i + " source");
+            assertEquals(edge.get("target").asText(), wire.get("target").asText(), "edge " + i + " target");
+            assertEquals(edge.get("label").asText(), wire.get("label").asText(), "edge " + i + " label");
+        }
+
+        // The annotations array is the queryAnnotations pass-through: the test
+        // nodes are comment nodes, so they must appear
+        JsonNode annotations = summary.get("annotations");
+        assertTrue(annotations.isArray(), "the annotations section is an array");
+        Set<String> annotationIds = new HashSet<>();
+        for (JsonNode annotation : annotations) {
+            annotationIds.add(annotation.get("id").asText());
+        }
+        assertTrue(annotationIds.contains(project.getGraph().getAliasIdOf(nodeA)),
+                "the annotations carry the comment nodes: " + annotations);
+
+        // The file-writer matrix: only nodeA qualifies
+        JsonNode fileWritingNodes = summary.get("fileWritingNodes");
+        assertEquals(1, fileWritingNodes.size(), "only nodeA is a file writer: " + fileWritingNodes);
+        JsonNode writer = fileWritingNodes.get(0);
+        assertEquals(project.getGraph().getAliasIdOf(nodeA), writer.get("id").asText(),
+                "the writer id is nodeA's alias: " + writer);
+        assertEquals(nodeA.getName(), writer.get("name").asText());
+        assertEquals(TEST_NODE_ID, writer.get("typeId").asText());
+        assertEquals(a.getProjectCompartmentUUID().toString(), writer.get("compartmentId").asText());
+        assertEquals(1, writer.get("outputSlots").size(), "nodeA's qualifying slots: " + writer);
+        assertEquals("Comment", writer.get("outputSlots").get(0).asText());
+        Set<String> writerIds = new HashSet<>();
+        for (JsonNode entry : fileWritingNodes) {
+            writerIds.add(entry.get("id").asText());
+        }
+        assertFalse(writerIds.contains(project.getGraph().getAliasIdOf(nodeB)),
+                "the skipExport slot does not qualify");
+        assertFalse(writerIds.contains(project.getGraph().getAliasIdOf(nodeC)),
+                "the store-to-disk disabled slot does not qualify");
+
+        // The per-compartment fileWriterCount sums to the project-wide list
+        int fileWriterCountSum = 0;
+        for (JsonNode compartment : compartments) {
+            fileWriterCountSum += compartment.get("fileWriterCount").asInt();
+        }
+        assertEquals(fileWritingNodes.size(), fileWriterCountSum,
+                "the fileWriterCount sums match the fileWritingNodes list");
+    }
+
+    @Test
+    void describeProjectFullAddsNodeLists() {
+        JIPipeProject project = new JIPipeProject();
+        JIPipeProjectCompartment a = project.addCompartment("A");
+        JIPipeGraphNode nodeA = insertTestNode(project, a);
+        JIPipeGraphNode nodeB = insertTestNode(project, a);
+
+        JsonNode full = describeProject(project, "full");
+
+        JsonNode compartmentA = compartmentEntry(full.get("compartments"), a);
+        assertNotNull(compartmentA);
+        JsonNode nodes = compartmentA.get("nodes");
+        assertTrue(nodes.isArray(), "the full detail adds the node list: " + compartmentA);
+        assertEquals(2, nodes.size(), "the node list covers every node of the compartment: " + nodes);
+        Set<String> ids = new HashSet<>();
+        for (JsonNode node : nodes) {
+            assertTrue(node.has("id") && node.has("name") && node.has("typeId"),
+                    "the node entries carry the get_segment_detail shape: " + node);
+            assertEquals(TEST_NODE_ID, node.get("typeId").asText());
+            ids.add(node.get("id").asText());
+        }
+        Set<String> expectedIds = new HashSet<>();
+        for (JIPipeGraphNode node : project.getGraph().getNodesWithinCompartment(a.getProjectCompartmentUUID())) {
+            expectedIds.add(project.getGraph().getAliasIdOf(node));
+        }
+        assertEquals(expectedIds, ids, "the node list matches the compartment's project-graph nodes");
+    }
+
+    @Test
+    void describeProjectDetailDefaultsToSummary() {
+        JIPipeProject project = new JIPipeProject();
+        JIPipeProjectCompartment a = project.addCompartment("A");
+        insertTestNode(project, a);
+
+        JsonNode summary = describeProject(project, null);
+
+        assertTrue(summary.get("compartments").size() > 0, "the compartments are present");
+        for (JsonNode compartment : summary.get("compartments")) {
+            assertFalse(compartment.has("nodes"),
+                    "without the detail parameter the node lists are omitted: " + compartment);
+        }
     }
 
     /**

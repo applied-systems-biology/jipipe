@@ -8,6 +8,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.automation.events.*;
 import org.hkijena.jipipe.api.automation.pipeline_map.PipelineMap;
 import org.hkijena.jipipe.api.automation.pipeline_map.SegmentEdge;
@@ -16,6 +17,7 @@ import org.hkijena.jipipe.api.automation.pipeline_map.SegmentStatusLogic;
 import org.hkijena.jipipe.api.automation.operations.AutomationOperationUtils;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
+import org.hkijena.jipipe.api.metadata.JIPipeOrganizationMetadata;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -39,6 +41,7 @@ import org.hkijena.jipipe.plugins.core.nodes.JIPipeCommentNode;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.publish.rocrate.CreateROCrateRun;
 import org.hkijena.jipipe.plugins.publish.rocrate.ROCrateDockerSettings;
+import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.jgrapht.Graph;
 
@@ -817,6 +820,95 @@ public final class JIPipeAutomationAPI {
         }
     }
 
+    /**
+     * The describe_project composite: the whole project in one response. The
+     * sections reuse the map builder internals (the compartment walk via
+     * {@link #enrichCompartmentSegment}, the wiring via
+     * {@link #extractSegmentEdges}) and the metadata block of get_project_info
+     * (via {@link #projectMetadata}). The compartments entries carry the
+     * map's node counts, cache coverage, and status plus the number of file
+     * writers; with detail "full" each entry additionally carries the nodes
+     * array of {@link #getSegmentDetail}. The fileWritingNodes section lists
+     * the project-graph nodes with at least one qualifying output slot (the
+     * {@link #isFileWriterSlot} filter), the wiring is the map's edge list,
+     * and the annotations section is the array of
+     * {@link #queryAnnotations(AutomationContext, String, String)} without
+     * filters.
+     *
+     * @param ctx    the automation context
+     * @param detail null or "summary" for the sections with counts, "full" to
+     *               additionally list the nodes per compartment
+     * @return the response object
+     */
+    public static JsonNode describeProject(AutomationContext ctx, String detail) {
+        JIPipeProject project = ctx.getProject();
+        if (project == null) return mapper.createObjectNode().put("error", "No project loaded");
+        JIPipeGraph graph = project.getGraph();
+        ObjectNode data = mapper.createObjectNode();
+        String name = project.getMetadata().getName();
+        if (name == null || name.isBlank()) {
+            name = project.getProjectFile() != null
+                    ? project.getProjectFile().getFileName().toString() : "Untitled";
+        }
+        data.put("name", name);
+        data.put("path", project.getProjectFile() != null ? project.getProjectFile().toString() : null);
+        data.set("metadata", projectMetadata(project));
+        Map<UUID, Integer> errorCounts = new HashMap<>();
+        Map<UUID, Integer> warningCounts = new HashMap<>();
+        fillValidationCounts(project, graph, errorCounts, warningCounts);
+        boolean full = "full".equals(detail);
+        ArrayNode compartments = data.putArray("compartments");
+        for (var entry : project.getCompartments().entrySet()) {
+            SegmentNode segment = enrichCompartmentSegment(project, graph, entry.getValue(), entry.getKey(),
+                    errorCounts, warningCounts);
+            ObjectNode compartment = compartments.addObject();
+            compartment.put("id", entry.getKey().toString());
+            compartment.put("name", entry.getValue().getName());
+            compartment.put("nodeCount", segment.getTotalNodes());
+            compartment.put("cachedNodes", segment.getCachedNodes());
+            compartment.put("totalNodes", segment.getTotalNodes());
+            compartment.put("status", segment.getStatus().name());
+            int fileWriterCount = 0;
+            for (JIPipeGraphNode node : graph.getNodesWithinCompartment(entry.getKey())) {
+                if (isFileWriterNode(node)) {
+                    ++fileWriterCount;
+                }
+            }
+            compartment.put("fileWriterCount", fileWriterCount);
+            if (full) {
+                ArrayNode nodes = compartment.putArray("nodes");
+                for (JIPipeGraphNode node : graph.getNodesWithinCompartment(entry.getKey())) {
+                    ObjectNode n = nodes.addObject();
+                    n.put("id", graph.getAliasIdOf(node));
+                    n.put("name", node.getName());
+                    n.put("typeId", node.getInfo() != null ? node.getInfo().getId() : "?");
+                }
+            }
+        }
+        data.set("wiring", mapper.valueToTree(extractSegmentEdges(project)));
+        data.set("annotations", queryAnnotations(ctx, null, null).get("annotations"));
+        ArrayNode fileWritingNodes = data.putArray("fileWritingNodes");
+        for (JIPipeGraphNode node : graph.getGraphNodes()) {
+            if (!isFileWriterNode(node)) {
+                continue;
+            }
+            String alias = graph.getAliasIdOf(node);
+            ObjectNode writer = fileWritingNodes.addObject();
+            writer.put("id", alias != null ? alias : node.getName());
+            writer.put("name", node.getName());
+            writer.put("typeId", node.getInfo() != null ? node.getInfo().getId() : "?");
+            UUID nodeCompartment = graph.getCompartmentUUIDOf(node);
+            writer.put("compartmentId", nodeCompartment != null ? nodeCompartment.toString() : null);
+            ArrayNode outputSlots = writer.putArray("outputSlots");
+            for (JIPipeOutputDataSlot slot : node.getOutputSlots()) {
+                if (isFileWriterSlot(slot)) {
+                    outputSlots.add(slot.getName());
+                }
+            }
+        }
+        return data;
+    }
+
     // ── Node Search ──
 
     public static JsonNode searchNodes(AutomationContext ctx, String query, int limit) {
@@ -879,6 +971,93 @@ public final class JIPipeAutomationAPI {
     }
 
     // ── Helpers ──
+
+    /**
+     * Renders the project metadata block shared by get_project_info and
+     * describe_project: description, license, summary, website, citation,
+     * authors, acknowledgements, and the global parameters (skipping the
+     * jipipe: and jipipe-ui: keys). String fields are emitted as empty
+     * strings when unset, so the shape is stable at every level.
+     *
+     * @param project the project
+     * @return the metadata object
+     */
+    public static ObjectNode projectMetadata(JIPipeProject project) {
+        ObjectNode metadata = mapper.createObjectNode();
+        metadata.put("description", project.getMetadata().getDescription() != null
+                ? project.getMetadata().getDescription().toPlainText() : "");
+        metadata.put("license", StringUtils.nullToEmpty(project.getMetadata().getLicense()));
+        metadata.put("summary", project.getMetadata().getSummary() != null
+                ? project.getMetadata().getSummary().toPlainText() : "");
+        metadata.put("website", StringUtils.nullToEmpty(project.getMetadata().getWebsite()));
+        metadata.put("citation", StringUtils.nullToEmpty(project.getMetadata().getCitation()));
+        metadata.set("authors", authorsToArray(project.getMetadata().getAuthors()));
+        metadata.set("acknowledgements", authorsToArray(project.getMetadata().getAcknowledgements()));
+        ObjectNode globalParameters = metadata.putObject("globalParameters");
+        for (JIPipeParameterAccess access : project.getMetadata().getGlobalParameters().getParameters().values()) {
+            String key = access.getKey();
+            if (key == null || key.startsWith("jipipe:") || key.startsWith("jipipe-ui:")) continue;
+            Object value = access.get(Object.class);
+            globalParameters.put(key, value != null ? value.toString() : "null");
+        }
+        return metadata;
+    }
+
+    /**
+     * Converts the authors or acknowledgements list of the project metadata
+     * into the response array. Every string field is emitted as an empty
+     * string when unset (never an omitted key) and the booleans are always
+     * present, so the shape is stable at every level. Moved here from
+     * InfoOperations so the metadata block lives next to its only consumers.
+     */
+    private static ArrayNode authorsToArray(JIPipeAuthorMetadata.List authors) {
+        ArrayNode array = mapper.createArrayNode();
+        if (authors == null) {
+            return array;
+        }
+        for (JIPipeAuthorMetadata author : authors) {
+            ObjectNode entry = array.addObject();
+            entry.put("firstName", StringUtils.nullToEmpty(author.getFirstName()));
+            entry.put("lastName", StringUtils.nullToEmpty(author.getLastName()));
+            entry.put("orcid", StringUtils.nullToEmpty(author.getOrcid()));
+            entry.put("email", StringUtils.nullToEmpty(author.getEmail()));
+            entry.put("website", StringUtils.nullToEmpty(author.getWebsite()));
+            entry.put("firstAuthor", author.isFirstAuthor());
+            entry.put("correspondingAuthor", author.isCorrespondingAuthor());
+            ArrayNode affiliations = entry.putArray("affiliations");
+            for (JIPipeOrganizationMetadata affiliation : author.getAffiliations()) {
+                ObjectNode affiliationNode = affiliations.addObject();
+                affiliationNode.put("name", StringUtils.nullToEmpty(affiliation.getName()));
+                affiliationNode.put("ror", StringUtils.nullToEmpty(affiliation.getRor()));
+                affiliationNode.put("website", StringUtils.nullToEmpty(affiliation.getWebsite()));
+            }
+        }
+        return array;
+    }
+
+    /**
+     * The file-writer filter: an output slot qualifies when its info has
+     * store-to-disk enabled and the slot instance does not skip the export.
+     * Input slots never qualify (store-to-disk is documented as only valid
+     * for output slots).
+     */
+    private static boolean isFileWriterSlot(JIPipeDataSlot slot) {
+        return slot.getInfo().isStoreToDisk()
+                && slot instanceof JIPipeOutputDataSlot outputSlot
+                && !outputSlot.isSkipExport();
+    }
+
+    /**
+     * A node is a file writer when it has at least one qualifying output slot.
+     */
+    private static boolean isFileWriterNode(JIPipeGraphNode node) {
+        for (JIPipeOutputDataSlot slot : node.getOutputSlots()) {
+            if (isFileWriterSlot(slot)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     /**
      * Builds one node object of the query_graph response shape, emitting the
