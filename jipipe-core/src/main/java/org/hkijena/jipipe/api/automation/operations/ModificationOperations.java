@@ -214,6 +214,17 @@ public class ModificationOperations {
         }
 
         @Override
+        public boolean appliesSchemaDefaults() {
+            // The schema declares width/height defaults (they document the text-box behavior),
+            // but the execute body passes absent keys as null on purpose, so createNote can
+            // refuse text-box-only parameters on a comment. Injecting the defaults would turn
+            // every comment creation without width/height into "width is only supported for
+            // kind text-box". The schema's width/height defaults are a spec violation to fix
+            // once the pre-migration snapshot no longer pins this schema.
+            return false;
+        }
+
+        @Override
         public JsonNode execute(AutomationContext ctx, JsonNode params) {
             // Omitted optional parameters are passed as null (not as defaults): the
             // static method must see WHICH text-box-only keys were provided so it can

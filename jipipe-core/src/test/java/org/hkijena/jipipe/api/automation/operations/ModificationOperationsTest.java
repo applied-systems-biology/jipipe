@@ -385,6 +385,17 @@ public class ModificationOperationsTest {
     }
 
     @Test
+    void createNoteOptsOutOfSchemaDefaultApplication() {
+        // The create_note schema declares width/height defaults (for the text-box kind), but
+        // the execute body passes absent keys as null on purpose, so createNote can refuse
+        // text-box-only parameters on a comment. If the registry injected the defaults, every
+        // comment creation without width/height would fail with "width is only supported for
+        // kind text-box". This pin guards the opt-out contract.
+        assertFalse(new ModificationOperations.CreateNote().appliesSchemaDefaults(),
+                "create_note must see parameter absence, not injected schema defaults");
+    }
+
+    @Test
     void createNoteUnknownCompartmentReturnsError() {
         JIPipeProject project = createProject();
         AutomationContext ctx = createContext(project);
