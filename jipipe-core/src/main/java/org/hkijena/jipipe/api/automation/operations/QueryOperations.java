@@ -162,15 +162,29 @@ public class QueryOperations {
         }
     }
 
-    public static class QueryAnnotations implements AutomationOperation {
+    public static class QueryNotes implements AutomationOperation {
         @Override
         public String getId() {
-            return "query_annotations";
+            return "query_notes";
         }
 
         @Override
         public String getDescription() {
-            return "List all comments and text boxes of the project with title, content, compartment, and bbox in one call (id, uuid, typeId, kind, compartmentId, title, content for text boxes, x, y, and width, height for text boxes)";
+            return "List all canvas notes of the project (comments and text boxes) with id, uuid, typeId, kind, "
+                    + "compartmentId, title, and content for text boxes. Positions and sizes are grid cells "
+                    + "(1 cell = 25 px): x/y are the stored grid position; text boxes additionally report "
+                    + "gridWidth/gridHeight (the values of the grid-width/grid-height parameters) and "
+                    + "width/height in pixels. Resize with set_parameter on grid-width/grid-height, create "
+                    + "with create_note";
+        }
+
+        @Override
+        public String getAgentDocumentation() {
+            return getDescription() + ". x/y/width/height and gridWidth/gridHeight are grid cells "
+                    + "(1 cell = 25 px): to move a note write x/y in grid cells, to resize a text box write "
+                    + "the grid-width/grid-height parameters in grid cells (width/height in the response are "
+                    + "the same sizes in pixels). Annotation DATA is a different concept: text annotation and "
+                    + "data annotation columns live in query_data, not here";
         }
 
         @Override
@@ -179,8 +193,8 @@ public class QueryOperations {
                     {
                       "type": "object",
                       "properties": {
-                        "compartment": {"type": "string", "description": "Limit the result to annotations within this compartment (UUID, alias, or name); omit to return annotations of all compartments"},
-                        "kind": {"type": "string", "enum": ["comment", "text-box"], "description": "Only return annotations of this kind; omit to return both kinds"}
+                        "compartment": {"type": "string", "description": "Limit the result to notes within this compartment (UUID, alias, or name); omit to return notes of all compartments"},
+                        "kind": {"type": "string", "enum": ["comment", "text-box"], "description": "Only return notes of this kind; omit to return both kinds"}
                       },
                       "additionalProperties": false
                     }""");
@@ -201,7 +215,7 @@ public class QueryOperations {
             String compartment = params.has("compartment") ? params.get("compartment").asText() : null;
             String kind = params.has("kind") ? params.get("kind").asText() : null;
             try {
-                return JIPipeAutomationAPI.queryAnnotations(ctx, compartment, kind);
+                return JIPipeAutomationAPI.queryNotes(ctx, compartment, kind);
             } catch (IllegalArgumentException e) {
                 return mapper.createObjectNode().put("error", e.getMessage() + " (see query_compartments for ids)");
             }

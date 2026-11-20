@@ -329,26 +329,30 @@ public final class JIPipeAutomationAPI {
     }
 
     /**
-     * Returns all comments and text boxes of the project in one response.
-     * The "annotations" array holds one object per annotation node with the
+     * Returns all comments and text boxes (the canvas notes) of the project in one response.
+     * The "notes" array holds one object per canvas note with the
      * fields id (the alias id, JSON null when unassigned), uuid, typeId,
      * kind ("comment" or "text-box", decided by the node type), compartmentId,
-     * title, x, y and, for text boxes, content, width, and height (the grid
-     * size times the canvas grid constants). Comment nodes carry their node
-     * name as title and no content, width, or height fields. The text box
-     * title and content are read from the "text-title" and "text-content"
-     * parameters (empty strings when absent). Node types that are neither
-     * comments nor canvas notes are skipped.
+     * title, and x, y. Positions and sizes are grid cells (1 cell = 25 px): x and y
+     * are the stored grid position; text boxes additionally report gridWidth and
+     * gridHeight (the values of the grid-width/grid-height parameters) together with
+     * width and height in pixels (the grid size times the canvas grid constants).
+     * Comment nodes carry their node name as title and no content, gridWidth,
+     * gridHeight, width, or height fields. The text box title and content are read
+     * from the "text-title" and "text-content" parameters (empty strings when
+     * absent). Node types that are neither comments nor canvas notes are skipped.
+     * Annotation DATA (text annotation and data annotation columns) is not canvas
+     * furniture and is read through {@link #queryData}.
      *
      * @param ctx            the automation context
      * @param compartmentRef optional compartment filter (UUID, alias, or display name; null or blank for all compartments)
      * @param kind           optional kind filter ("comment" or "text-box"; null or blank for both kinds)
-     * @return the response object with the "annotations" array
+     * @return the response object with the "notes" array
      * @throws IllegalArgumentException if the compartment reference cannot be resolved
      */
-    public static JsonNode queryAnnotations(AutomationContext ctx, String compartmentRef, String kind) {
+    public static JsonNode queryNotes(AutomationContext ctx, String compartmentRef, String kind) {
         ObjectNode data = mapper.createObjectNode();
-        ArrayNode annotations = data.putArray("annotations");
+        ArrayNode notes = data.putArray("notes");
         JIPipeProject project = ctx.getProject();
         if (project == null) return data;
         JIPipeGraph graph = project.getGraph();
@@ -373,7 +377,7 @@ public final class JIPipeAutomationAPI {
             String alias = graph.getAliasIdOf(node);
             Point loc = node.getNodeUILocationWithin(nodeCompartment != null ? nodeCompartment.toString() : "");
             boolean textBox = node instanceof JIPipeGraphCanvasNote;
-            ObjectNode n = annotations.addObject();
+            ObjectNode n = notes.addObject();
             n.put("id", alias);
             n.put("uuid", uuid != null ? uuid.toString() : null);
             n.put("typeId", node.getInfo() != null ? node.getInfo().getId() : "?");
@@ -390,6 +394,8 @@ public final class JIPipeAutomationAPI {
             n.put("y", loc != null ? loc.y : 0);
             if (textBox) {
                 JIPipeGraphCanvasNote note = (JIPipeGraphCanvasNote) node;
+                n.put("gridWidth", note.getGridWidth());
+                n.put("gridHeight", note.getGridHeight());
                 n.put("width", note.getGridWidth() * JIPipeDesktopGraphCanvasGrid.GRID_WIDTH);
                 n.put("height", note.getGridHeight() * JIPipeDesktopGraphCanvasGrid.GRID_HEIGHT);
             }
