@@ -23,6 +23,7 @@ import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeSuccessor;
 import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.RoiDataFunction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -37,6 +38,7 @@ import java.awt.*;
 @AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Output")
 @Deprecated
 @LabelAsJIPipeHidden
+@JIPipeNodeSuccessor(value = {}, reason = "Deprecated hidden node; no replacement declared")
 public class DefineRectangularRoiAlgorithm extends JIPipeAlgorithm {
 
     private RectangleList rectangles = new RectangleList();

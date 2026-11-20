@@ -275,8 +275,9 @@ Consumers (each is separately useful, none of them depends on the KDB):
 
 The migration of existing deprecated nodes into `@JIPipeNodeSuccessor` is part of this project
 (today the known deprecated node classes are the hidden loop helper nodes `LoopStartNode` /
-`LoopEndNode`, which have no successor and are marked as such explicitly rather than left to
-default).
+`LoopEndNode` and the hidden rectangular ROI node `DefineRectangularRoiAlgorithm`
+(`ij1-roi-from-rectangles`), which have no successor and are marked as such explicitly with an
+empty successor list and a factual reason, rather than left to default).
 
 ### 5.4 Relations
 
@@ -315,6 +316,11 @@ Lanes, fused with reciprocal rank fusion (k = 60), then deterministic re-rank:
    machines, so the golden relevance test can assert them, and a global/no-project MCP call has a
    stable answer. User-authored templates do not enter KDB evidence (they are the user's own
    arrangement, not canon).
+
+**Shipped state (final review amendment):** the shipped relation lane is ENTRY_REF-only (the
+one-hop `KdbEntryGraph` expansion). The node-database expansion (`previous`/`next`/`similar`
+evidence mined from system templates) and the deprecated-node re-rank penalty are a later phase,
+ledgered as follow-up work: the next content phase must not assume they exist.
 
 Deterministic re-rank, in order: entries whose `untilVersion` is below the **pinned corpus
 version constant** (not the running application version, so the golden test is time-stable) are

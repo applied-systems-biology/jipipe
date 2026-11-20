@@ -1,0 +1,8 @@
+kind: pattern
+title: "Upcoming route notes"
+aliases: [upcoming]
+sinceVersion: "9.0.0"
+slots:
+  problem: "Notes for a route that does not exist yet"
+body: |
+  Notes for a route that does not exist yet.

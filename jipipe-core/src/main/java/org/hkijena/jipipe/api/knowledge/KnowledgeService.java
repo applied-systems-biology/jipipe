@@ -279,8 +279,11 @@ public final class KnowledgeService {
         if (!aiService.hasConfiguredAndReadyEmbeddingModel()) {
             return null;
         }
-        // The embed backend serializes its calls: MCP operations run on
-        // endpoint threads, so two searches could embed concurrently.
+        // The synchronized wrapper serializes KDB lane calls against each
+        // other: MCP operations run on endpoint threads, so two searches
+        // could reach this lane concurrently. embedNow itself is documented
+        // queue-thread-only, and concurrent embed-queue users are outside
+        // this wrapper's guarantee.
         Function<String, float[]> embedder = text -> {
             synchronized (aiService) {
                 return aiService.embedNow(text);
@@ -323,8 +326,9 @@ public final class KnowledgeService {
      * vector lane ranks it by embedding similarity, the relation lane
      * expands the hits of both retrieval lanes by one hop through ENTRY_REF,
      * and reciprocal rank fusion (k = 60) merges the rankings. The re-rank
-     * then drops entries whose {@code untilVersion} is below the pinned
-     * corpus version, applies the exact-match filters, and orders by fused
+     * then drops entries whose version qualifiers exclude the pinned
+     * corpus version (an untilVersion below it, or a sinceVersion above
+     * it), applies the exact-match filters, and orders by fused
      * score descending with the entry key ascending as the stable tiebreak.
      *
      * @param query       the search query (null or blank yields nothing)
@@ -473,22 +477,30 @@ public final class KnowledgeService {
     }
 
     /**
-     * Whether search must hide the entry: its {@code untilVersion} is below
-     * the pinned corpus version. An {@code untilVersion} is inclusive, so
-     * the corpus version itself keeps the entry searchable. An
-     * unparsable version keeps the entry searchable (fail open): the loader
-     * narrows versions at the boundary, so this only guards against
-     * hand-built entries.
+     * Whether search must hide the entry: one of its version qualifiers
+     * excludes the pinned corpus version. The entry is not yet in force
+     * when its {@code sinceVersion} is above the corpus version (a future
+     * fact), and expired when its {@code untilVersion} is below the corpus
+     * version. Both boundaries are inclusive, so an entry qualified at the
+     * corpus version itself stays searchable. An unparsable qualifier keeps
+     * the entry searchable (fail open): the loader narrows versions at the
+     * boundary, so this only guards against hand-built entries.
      */
     private boolean isVersionDropped(KdbEntry entry) {
-        if (entry.getUntilVersion() == null) {
-            return false;
+        int[] corpus = parseVersionCore(CORPUS_VERSION);
+        if (entry.getSinceVersion() != null) {
+            int[] since = parseVersionCore(entry.getSinceVersion());
+            if (since != null && compareVersions(since, corpus) > 0) {
+                return true;
+            }
         }
-        int[] until = parseVersionCore(entry.getUntilVersion());
-        if (until == null) {
-            return false;
+        if (entry.getUntilVersion() != null) {
+            int[] until = parseVersionCore(entry.getUntilVersion());
+            if (until != null && compareVersions(until, corpus) < 0) {
+                return true;
+            }
         }
-        return compareVersions(until, parseVersionCore(CORPUS_VERSION)) < 0;
+        return false;
     }
 
     /**

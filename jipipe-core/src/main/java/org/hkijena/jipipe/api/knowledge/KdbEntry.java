@@ -172,8 +172,13 @@ public final class KdbEntry {
     }
 
     /**
-     * Optional version the entry is valid from, compared against the pinned
-     * corpus version.
+     * Optional version the entry is valid from. Enforced at search time
+     * against the pinned corpus version constant
+     * ({@link KnowledgeService#CORPUS_VERSION}): a {@code sinceVersion}
+     * above the corpus version hides the entry from search results (a
+     * future fact), while a dropped entry remains resolvable by key. The
+     * boundary is inclusive: a {@code sinceVersion} equal to the corpus
+     * version keeps the entry searchable.
      *
      * @return the version, or null
      */
@@ -182,8 +187,13 @@ public final class KdbEntry {
     }
 
     /**
-     * Optional version the entry is valid until, compared against the pinned
-     * corpus version.
+     * Optional version the entry is valid until. Enforced at search time
+     * against the pinned corpus version constant
+     * ({@link KnowledgeService#CORPUS_VERSION}): an {@code untilVersion}
+     * below the corpus version hides the entry from search results (an
+     * expired fact), while a dropped entry remains resolvable by key. The
+     * boundary is inclusive: an {@code untilVersion} equal to the corpus
+     * version keeps the entry searchable.
      *
      * @return the version, or null
      */

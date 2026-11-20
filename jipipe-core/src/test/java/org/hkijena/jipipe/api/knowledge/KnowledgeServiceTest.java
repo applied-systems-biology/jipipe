@@ -61,6 +61,20 @@ class KnowledgeServiceTest {
     }
 
     @Test
+    void sinceVersionAboveCorpusVersionLeavesSearchButStaysResolvable() {
+        // upcoming-route carries sinceVersion 9.0.0, strictly above the
+        // pinned corpus version 6.0.0: a future fact, dropped from search
+        // exactly like an expired untilVersion. Both qualifiers are
+        // enforced by the same comparison, and a dropped entry stays
+        // resolvable by key for provenance.
+        KnowledgeService service = service();
+        assertTrue(service.searchKnowledge("upcoming", null, null, 10).isEmpty(),
+                "An entry whose sinceVersion is above the corpus version is hidden from search");
+        assertTrue(service.getKnowledgeEntryRaw("bioimage-analysis/patterns/upcoming-route").isPresent(),
+                "A not-yet-in-force entry stays resolvable by key for provenance");
+    }
+
+    @Test
     void knowledgeEntryPayloadCarriesTheStructuredEntryAndTheRenderedText() {
         KnowledgeService service = service();
         assertTrue(service.getKnowledgeEntry("bioimage-analysis/patterns/missing").isEmpty(),
@@ -140,10 +154,11 @@ class KnowledgeServiceTest {
 
     @Test
     void domainsListTheCorpusWithHumanReadableLabels() {
-        // The version-dropped legacy entry still belongs to the corpus and is
-        // counted: only its search visibility is dropped.
+        // The version-dropped legacy entry and the not-yet-in-force entry
+        // still belong to the corpus and are counted: only their search
+        // visibility is dropped.
         assertEquals(
-                List.of(new DomainInfo("bioimage-analysis", "Bioimage Analysis", 6),
+                List.of(new DomainInfo("bioimage-analysis", "Bioimage Analysis", 7),
                         new DomainInfo("tables", "Tables", 1)),
                 service().listKnowledgeDomains());
     }
