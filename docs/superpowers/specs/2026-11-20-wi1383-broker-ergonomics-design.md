@@ -29,7 +29,7 @@ A fresh MCP session must be able to create and open projects without satisfying 
 
 ## 4. C1: machine-readable tool scope (deletes the broker's precognition)
 
-New enum `AutomationToolScope` (`api/automation/endpoint`, beside the descriptor):
+New enum `AutomationToolScope` (`org.hkijena.jipipe.api.automation`, beside `AutomationOperation` - the operation interface references it, so it lives above the endpoint layer; amended during implementation, plan-binding):
 
 - `PROJECT_BOUND` (default): the tool acts on a project; the broker injects the `project` argument into the published schema and requires it (until C2 makes it optional-but-routable).
 - `INSTANCE_GLOBAL`: callable without a project; the broker routes a project-less call to the most-recently registered live instance carrying the tool (the E2E ruling 2026-11-16 semantics, now declared by the tool). Members today: `list_algorithms`, `get_node_docs`, `get_job_status`, `cancel_job`, `search_nodes`, and the lifecycle tools `create_project`, `open_project`, `get_server_info`.
@@ -38,7 +38,7 @@ New enum `AutomationToolScope` (`api/automation/endpoint`, beside the descriptor
 
 `AutomationOperation` gains `default AutomationToolScope getToolScope() { return AutomationToolScope.PROJECT_BOUND; }` - the operation is the registered item and carries ALL information about itself (the registry convention). The eight non-default operations above override it; everything else keeps the default.
 
-`MCPToolDescriptor` gains a `toolScope` field (serialized as the enum name string, omitted when `PROJECT_BOUND`; `of(operation)` copies it; unknown or absent values on parse default to `PROJECT_BOUND`). The broker reads the scope from the descriptor it already holds - in `buildToolSpecification` (schema injection), in `handleToolCall` (routing), and in the `tools/list` aggregation (exclusion). `GLOBAL_TOOL_IDS`, `EXCLUDED_TOOL_IDS`, and `LIST_PROJECTS_TOOL_ID` as a scope source are DELETED; the `list_projects` aggregation code path remains (it is the broker answering `INSTANCE_GLOBAL_AGGREGATED`), selected by scope, not by id. The broker class Javadoc is rewritten to describe the declared-scope contract. Mixed broker/instance versions are not a supported deployment (both ship in one build); the absent-field default is documented in the descriptor.
+`MCPToolDescriptor` gains a `toolScope` field (serialized as the enum name string under `"tool-scope"`; ALWAYS emitted, matching the `"read-only"` style; absent on parse defaults to `PROJECT_BOUND`; an unknown value fails fast - mixed broker/instance versions are not a supported deployment, both ship in one build). The broker reads the scope from the descriptor it already holds - in `buildToolSpecification` (schema injection), in `handleToolCall` (routing), and in the `tools/list` aggregation (exclusion). `GLOBAL_TOOL_IDS`, `EXCLUDED_TOOL_IDS`, and `LIST_PROJECTS_TOOL_ID` as a scope source are DELETED; the `list_projects` aggregation code path remains (it is the broker answering `INSTANCE_GLOBAL_AGGREGATED`), selected by scope, not by id. The broker class Javadoc is rewritten to describe the declared-scope contract. Mixed broker/instance versions are not a supported deployment (both ship in one build); the absent-field default is documented in the descriptor.
 
 ## 5. C2: `project` optional on every tool (default routing)
 
