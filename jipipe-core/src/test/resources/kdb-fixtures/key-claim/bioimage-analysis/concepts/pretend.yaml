@@ -1,0 +1,4 @@
+kind: concept
+title: "Concept whose key another file claims"
+slots:
+  nodes: [some-node-id]

@@ -1,0 +1,5 @@
+kind: pattern
+title: "Real pattern at its own path"
+entryKey: bioimage-analysis/concepts/pretend
+slots:
+  problem: "The entryKey field in the body must be ignored in favour of the path"

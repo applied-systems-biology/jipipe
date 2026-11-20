@@ -22,7 +22,10 @@ import java.io.UncheckedIOException;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -114,6 +117,52 @@ class KdbEntryLoaderTest {
         assertTrue(result.getFindings().stream().anyMatch(finding ->
                         finding.getCode() == KdbFindingCode.EMPTY_CORPUS),
                 "An empty corpus must be reported as an EMPTY_CORPUS warning");
+    }
+
+    @Test
+    void malformedYamlProducesAFindingNotAnException() {
+        // A syntactically broken file must surface as a finding that names the
+        // file (via its path-derived entry key), never as a thrown exception:
+        // the gate decides what fails the build, the loader only reports.
+        KdbLoadResult result = assertDoesNotThrow(() -> new KdbEntryLoader().loadAll(fixture("malformed-yaml")));
+        assertTrue(result.getEntries().isEmpty());
+        assertTrue(result.getFindings().stream().anyMatch(finding ->
+                        (finding.getCode() == KdbFindingCode.TYPE_MISMATCH
+                                || finding.getCode() == KdbFindingCode.UNKNOWN_KIND)
+                                && finding.getMessage().contains("bioimage-analysis/patterns/broken")),
+                "Expected a TYPE_MISMATCH or UNKNOWN_KIND finding naming the broken file, got: "
+                        + result.getFindings());
+    }
+
+    @Test
+    void entryKeyInTheFileIsIgnoredInFavourOfThePath() {
+        // The entry key is derived from the path, never from a YAML field. The
+        // fixture's real.yaml claims the key of the second file; if the loader
+        // honored the claim, both files would collide on
+        // bioimage-analysis/concepts/pretend and the collision would have to
+        // be a DUPLICATE_ENTRY_KEY. Claims are ignored, so both entries load
+        // with their own path-derived keys and no duplicate fires.
+        KdbLoadResult result = assertDoesNotThrow(() -> new KdbEntryLoader().loadAll(fixture("key-claim")));
+        assertEquals(2, result.getEntries().size(),
+                "Both files must load, got findings: " + result.getFindings());
+        Set<String> keys = result.getEntries().stream().map(KdbEntry::getEntryKey)
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+        assertEquals(Set.of("bioimage-analysis/patterns/real", "bioimage-analysis/concepts/pretend"),
+                keys,
+                "The path-derived key must win over the entryKey field claimed in the body");
+        assertTrue(result.getFindings(KdbFindingCode.DUPLICATE_ENTRY_KEY).isEmpty(),
+                "Ignoring the claimed key must not produce a duplicate, got: "
+                        + result.getFindings(KdbFindingCode.DUPLICATE_ENTRY_KEY));
+        // Classification still comes from the path segments.
+        KdbEntry real = result.getEntries().stream()
+                .filter(entry -> entry.getEntryKey().equals("bioimage-analysis/patterns/real"))
+                .findFirst().orElseThrow();
+        assertEquals(KdbEntryKind.PATTERN, real.getKind());
+        assertEquals(KdbDomain.BIOIMAGE_ANALYSIS, real.getDomain());
+        KdbEntry pretend = result.getEntries().stream()
+                .filter(entry -> entry.getEntryKey().equals("bioimage-analysis/concepts/pretend"))
+                .findFirst().orElseThrow();
+        assertEquals(KdbEntryKind.CONCEPT, pretend.getKind());
     }
 
     @Test
