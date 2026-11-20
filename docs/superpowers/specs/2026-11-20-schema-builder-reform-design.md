@@ -212,6 +212,25 @@ Rendering rules (matching today's JSON exactly, verified by the snapshot):
 - `toJson()` builds a fresh `ObjectNode` per call (no caching; the registry validates and the broker
   forwards per registration - both cheap).
 
+**Shipped API notes (post-implementation):** the sketch above understates the shipped surface:
+
+- `JsonObjectSchema.freeFormObject(description)` is a built-in starter for the warehouse's free-form
+  object properties (no `properties` or `additionalProperties` keyword).
+- `JsonArraySchema` renders a null item schema by omitting the `items` keyword (the itemless array
+  shape), and `.arrayOfAny(name, description)` on the automation builder declares exactly that.
+- `JsonNumberSchema.defaultsTo(int)` is the integral spelling (2, not 2.0); `defaultsTo(double)`
+  renders the floating-point form.
+- The automation builder also carries `.arrayOfEnumStrings(name, description, values)` (enumerated
+  string items) and `.freeFormObject(name, description)` alongside `.arrayOfAny`.
+- `AutomationSchemaSpec` ships as two builder classes: `Builder` (the spec builder, whose terminal
+  methods apply to the most recently declared parameter) and `ParameterBuilder` (returned by every
+  starter, bound to THAT parameter, forwarding starters and `build()` to the spec builder so any
+  declaration order chains).
+- Constraint-violating defaults fail fast at `build()` (not at the terminal methods, since
+  constraints and defaults can be declared in either order): an enumeration-violating string
+  default or an integer default below a declared minimum throws `IllegalArgumentException` naming
+  the parameter, the constraint, and the offending default.
+
 ### 5.2 The interface changes (`AutomationOperation`)
 
 - New method `default AutomationSchemaSpec getSchemaSpec() { return AutomationSchemaSpec.object().build(); }`
@@ -227,9 +246,6 @@ Rendering rules (matching today's JSON exactly, verified by the snapshot):
 - The reuse contract (for phase 4, documented on the interface): a consumer derives tool definitions
   from `getParameters()` or the AST; `getInputSchema()` is always the derivation of `getSchemaSpec()`.
   A harness adapter needs nothing but these methods, and the general AST is usable outside automation.
-- The reuse contract (for phase 4, documented on the interface): a consumer derives tool definitions
-  from `getParameters()`; `getInputSchema()` is always its derivation. A future harness adapter needs
-  nothing but these two methods.
 
 ### 5.3.1 Shared parameters and the `project` property (builder-check item 2)
 
@@ -274,6 +290,22 @@ validation first); required parameters are unaffected (absence still fails valid
 effective args are what reaches `execute()` and the operation log. Reads of the JSON `default`
 keyword keep the dispatch path spec-free - the registry works from the schema JSON, so the change
 is one new helper plus one call site.
+
+**The absence-vs-default rule and `AutomationOperation.appliesSchemaDefaults()`.** The default
+rule above holds only for parameters whose absence is NOT semantically distinct from their
+default value. An operation whose `execute()` distinguishes absence from a value opts out with
+`default boolean appliesSchemaDefaults() { return true; }` overridden to `false`: the registry
+then validates as usual but dispatches the caller's args unchanged, and absence semantics survive
+until the schema is corrected. The preferred end state is the corrected schema (no `default`
+keyword on such a parameter) plus the default `true`, with no override left behind.
+
+`create_note` is the reference end state: its `width`/`height` parameters are text-box-only and
+`execute()` refuses them (with a named error) on a `comment`, so the earlier `width`/`height`
+defaults made every registry-dispatched comment fail the text-box-only guard. The fix removed both
+defaults from the schema, deleted the operation's `appliesSchemaDefaults()` override, and pinned
+the outcome end to end: `ModificationOperationsTest.registryDispatchedCommentWithAbsentWidthHeightSucceeds`
+drives the comment creation through the registry, and the schema pins assert that `width`/`height`
+carry no `default` keyword.
 
 Known consequence, accepted: operations whose `execute()` re-applies the same fallback in code
 (e.g. `params.has("limit") ? params.get("limit").asInt() : 8`) behave identically (they read the

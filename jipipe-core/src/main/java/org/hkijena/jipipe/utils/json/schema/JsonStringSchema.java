@@ -75,6 +75,15 @@ public final class JsonStringSchema implements JsonSchema {
         return new JsonStringSchema(description, enumValues, value);
     }
 
+    /**
+     * Returns the allowed values.
+     *
+     * @return the allowed values, or null when no enumeration is declared
+     */
+    public List<String> getEnumValues() {
+        return enumValues;
+    }
+
     @Override
     public JsonNode toJson() {
         ObjectNode node = JsonUtils.getObjectMapper().createObjectNode();

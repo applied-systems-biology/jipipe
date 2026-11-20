@@ -81,9 +81,12 @@ public final class AutomationSchemaSpec {
      * so the terminals chain in any order after any starter. On the spec builder they apply
      * to the most recently declared parameter.
      * <p>
-     * Programmer errors fail fast at construction: duplicate parameter names and
-     * type-inappropriate keywords (e.g. {@code minimum(int)} on a string parameter) throw
-     * immediately instead of producing a broken schema.
+     * Programmer errors fail fast at construction: duplicate parameter names,
+     * type-inappropriate keywords (e.g. {@code minimum(int)} on a string parameter), and
+     * defaults violating the parameter's own constraints (an enumeration-violating string
+     * default, a default below a declared minimum; checked at {@code build()} since constraints
+     * and defaults can be declared in either order) throw immediately instead of producing a
+     * broken schema.
      */
     public static final class Builder {
 
@@ -301,6 +304,9 @@ public final class AutomationSchemaSpec {
          * @return the frozen spec
          */
         public AutomationSchemaSpec build() {
+            for (Map.Entry<String, Entry> entry : entries.entrySet()) {
+                validateDefaultAgainstConstraints(entry.getKey(), entry.getValue());
+            }
             JsonObjectSchema.Builder objectBuilder = JsonObjectSchema.object();
             List<AutomationParameterSpec> parameters = new ArrayList<>();
             for (Map.Entry<String, Entry> entry : entries.entrySet()) {
@@ -309,6 +315,33 @@ public final class AutomationSchemaSpec {
                 parameters.add(new AutomationParameterSpec(e.name, e.schema, e.required, e.defaultValue));
             }
             return new AutomationSchemaSpec(objectBuilder.build(), List.copyOf(parameters));
+        }
+
+        /**
+         * Fails fast when a declared default violates the parameter's own constraints. Runs at
+         * {@code build()} (not at the terminal methods) because constraints and defaults can be
+         * declared in either order; {@code applyDefaults} injects post-validation, so such a
+         * default would otherwise flow into {@code execute()} unchecked.
+         */
+        private static void validateDefaultAgainstConstraints(String name, Entry entry) {
+            if (entry.defaultValue == null) {
+                return;
+            }
+            if (entry.schema instanceof JsonStringSchema stringSchema) {
+                List<String> enumValues = stringSchema.getEnumValues();
+                if (enumValues != null && !enumValues.isEmpty() && !enumValues.contains(entry.defaultValue)) {
+                    throw new IllegalArgumentException("The default of parameter '" + name
+                            + "' violates its enumeration constraint: '" + entry.defaultValue
+                            + "' is not one of " + enumValues);
+                }
+            } else if (entry.schema instanceof JsonIntegerSchema integerSchema) {
+                Integer minimum = integerSchema.getMinimum();
+                if (minimum != null && (Integer) entry.defaultValue < minimum) {
+                    throw new IllegalArgumentException("The default of parameter '" + name
+                            + "' violates its minimum constraint: " + entry.defaultValue
+                            + " is below the minimum " + minimum);
+                }
+            }
         }
 
         private ParameterBuilder add(Entry entry) {

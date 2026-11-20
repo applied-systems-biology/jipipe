@@ -159,6 +159,22 @@ public class AutomationOperationsSchemaTest {
         }
     }
 
+    /**
+     * The completeness half of the curated-set pair (the presence gate
+     * {@link #coreOperationsAreRegistered} pins the opposite direction): every id the live
+     * registry holds must be curated, so a core operation registered but not added to
+     * {@code EXPECTED_CORE_OPERATION_IDS} cannot silently escape the schema and bijection gates.
+     */
+    @Test
+    void everyRegisteredOperationIsCurated() {
+        List<String> uncurated = registry().getAll().keySet().stream()
+                .filter(id -> !EXPECTED_CORE_OPERATION_IDS.contains(id))
+                .sorted()
+                .toList();
+        assertTrue(uncurated.isEmpty(), "operation(s) registered but missing from the curated set: "
+                + uncurated + " - add it to EXPECTED_CORE_OPERATION_IDS");
+    }
+
     @Test
     void everyOperationDeclaresAnObjectSchema() {
         for (Map.Entry<String, AutomationOperation> entry : registry().getAll().entrySet()) {

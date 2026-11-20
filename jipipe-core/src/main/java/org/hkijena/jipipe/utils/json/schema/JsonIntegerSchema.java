@@ -72,6 +72,15 @@ public final class JsonIntegerSchema implements JsonSchema {
         return new JsonIntegerSchema(description, minimum, value);
     }
 
+    /**
+     * Returns the inclusive lower bound.
+     *
+     * @return the minimum, or null when none is declared
+     */
+    public Integer getMinimum() {
+        return minimum;
+    }
+
     @Override
     public JsonNode toJson() {
         ObjectNode node = JsonUtils.getObjectMapper().createObjectNode();

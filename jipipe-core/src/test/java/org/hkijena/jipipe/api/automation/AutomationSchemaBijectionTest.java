@@ -32,6 +32,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  * metadata, and the broker's tool descriptors all derive from the same builder calls. An
  * operation that re-introduces a hand-written {@code getInputSchema()} override (or any
  * other second schema source) fails here, because its wire schema drifts from its spec.
+ * The parameters projection is pinned alongside: {@code getParameters()} must be the
+ * derivation of the same spec, so an operation overriding it alone drifts into this gate.
  * This replaces the deleted pre-migration snapshot scaffold, whose full-schema copy made
  * every future schema edit a two-place edit.
  * <p>
@@ -54,6 +56,8 @@ public class AutomationSchemaBijectionTest {
             assertNotNull(operation, "core operation '" + id + "' must be registered");
             assertEquals(operation.getSchemaSpec().toJsonSchema(), operation.getInputSchema(),
                     "the input schema of '" + id + "' must be the derivation of its schema spec");
+            assertEquals(operation.getSchemaSpec().getParameters(), operation.getParameters(),
+                    "the parameters of '" + id + "' must be the derivation of its schema spec");
         }
     }
 }

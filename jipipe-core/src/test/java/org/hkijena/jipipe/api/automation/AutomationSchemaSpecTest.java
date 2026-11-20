@@ -154,6 +154,38 @@ class AutomationSchemaSpecTest {
     }
 
     @Test
+    void enumViolatingStringDefaultIsRejected() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> AutomationSchemaSpec.object()
+                        .enumeration("kind", "The note kind", "text-box", "comment")
+                        .defaultsTo("sticky-note")
+                        .build(),
+                "an enum-violating default would flow through applyDefaults into execute() unchecked");
+        assertTrue(exception.getMessage().contains("kind"),
+                "the message names the parameter: " + exception.getMessage());
+        assertTrue(exception.getMessage().contains("enumeration"),
+                "the message names the constraint: " + exception.getMessage());
+        assertTrue(exception.getMessage().contains("sticky-note"),
+                "the message names the offending default: " + exception.getMessage());
+    }
+
+    @Test
+    void minimumViolatingIntegerDefaultIsRejected() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> AutomationSchemaSpec.object()
+                        .integer("limit", "Maximum results").defaultsTo(0).minimum(1)
+                        .build(),
+                "an integer default below the minimum would flow through applyDefaults into execute()"
+                        + " unchecked; the default-before-minimum order is why the check runs at build()");
+        assertTrue(exception.getMessage().contains("limit"),
+                "the message names the parameter: " + exception.getMessage());
+        assertTrue(exception.getMessage().contains("minimum"),
+                "the message names the constraint: " + exception.getMessage());
+        assertTrue(exception.getMessage().contains("0"),
+                "the message names the offending default: " + exception.getMessage());
+    }
+
+    @Test
     void arrayOfEnumStringsAndTheIntegralNumberDefaultRenderTheEnumeratedAndIntegralShapes() throws Exception {
         AutomationSchemaSpec spec = AutomationSchemaSpec.object()
                 .arrayOfEnumStrings("fields", "Whitelist of fields", List.of("id", "name"))
